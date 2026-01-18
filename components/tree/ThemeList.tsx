@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Lesson, NodeStatus } from '@/types/curriculum';
 import { ThemeItem } from './ThemeItem';
 import { getThemeProgress } from '@/data/progress';
@@ -13,6 +14,8 @@ interface ThemeListProps {
 }
 
 export function ThemeList({ lesson, status, isExpanded, completedThemes }: ThemeListProps) {
+  const router = useRouter();
+
   if (!isExpanded) return null;
 
   // Determine which themes are available based on lesson status
@@ -51,8 +54,7 @@ export function ThemeList({ lesson, status, isExpanded, completedThemes }: Theme
               progress={getThemeProgress(theme.id)}
               isAvailable={getThemeAvailability(theme.id, index)}
               onClick={() => {
-                // Future: Navigate to puzzle session
-                console.log('Start theme:', theme.name);
+                router.push(`/puzzle/${theme.id}`);
               }}
             />
           ))}

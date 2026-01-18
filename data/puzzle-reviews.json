@@ -1,0 +1,14 @@
+{
+  "reviews": [
+    {
+      "puzzleId": "002GQ",
+      "decision": "approved",
+      "assignedTheme": null,
+      "originalThemes": "crushing endgame fork short",
+      "rating": 654,
+      "notes": "",
+      "reviewedAt": "2026-01-16T19:54:58.787Z"
+    }
+  ],
+  "criteria": {}
+}

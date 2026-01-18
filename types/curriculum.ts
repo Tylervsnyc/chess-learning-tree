@@ -26,3 +26,11 @@ export interface ThemeProgress {
   puzzlesSolved: number;
   totalPuzzles: number;
 }
+
+export interface Puzzle {
+  id: string;        // "1.4.4.1"
+  themeId: string;   // "1.4.4"
+  fen: string;       // Starting position
+  solution: string[];// Correct moves ["e2e4", "d7d5"]
+  playerColor: 'white' | 'black';
+}
