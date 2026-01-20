@@ -95,7 +95,10 @@ export function NavHeader() {
                         key={level.key}
                         href={`/learn?level=${level.key}`}
                         className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
-                        onClick={() => setLearnDropdownOpen(false)}
+                        onClick={() => {
+                          setLearnDropdownOpen(false);
+                          window.scrollTo(0, 0);
+                        }}
                       >
                         {level.label}
                       </Link>
@@ -107,7 +110,7 @@ export function NavHeader() {
                 onClick={handleSignOut}
                 className="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors"
               >
-                Out
+                Log out
               </button>
             </>
           ) : (
