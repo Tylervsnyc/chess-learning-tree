@@ -235,23 +235,19 @@ export function OnboardingPuzzleBoard({
         </div>
       )}
 
-      {/* Bottom result bar - Duolingo style */}
+      {/* Bottom result bar - Duolingo style (fixed to bottom) */}
       {moveStatus === 'correct' && (
-        <div className="mt-4 -mx-4 rounded-t-xl overflow-hidden">
-          <PuzzleResultPopup
-            type="correct"
-            onContinue={handleContinue}
-          />
-        </div>
+        <PuzzleResultPopup
+          type="correct"
+          onContinue={handleContinue}
+        />
       )}
 
       {moveStatus === 'wrong' && (
-        <div className="mt-4 -mx-4 rounded-t-xl overflow-hidden">
-          <PuzzleResultPopup
-            type="incorrect"
-            onContinue={handleContinue}
-          />
-        </div>
+        <PuzzleResultPopup
+          type="incorrect"
+          onContinue={handleContinue}
+        />
       )}
     </div>
   );

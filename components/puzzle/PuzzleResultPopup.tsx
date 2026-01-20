@@ -20,9 +20,9 @@ export function PuzzleResultPopup({
   return (
     <div
       className={`
-        w-full px-4 py-4
-        ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFE0E0]'}
-        animate-[slideUp_0.2s_ease-out]
+        fixed bottom-0 left-0 right-0 z-50
+        px-4 py-4 pb-8
+        ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFDFE0]'}
       `}
       style={{
         animation: 'slideUp 0.2s ease-out',
@@ -30,7 +30,7 @@ export function PuzzleResultPopup({
     >
       <div className="max-w-lg mx-auto">
         {/* Icon + Text row */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-4">
           {isCorrect ? (
             <div className="w-8 h-8 rounded-full bg-[#58CC02] flex items-center justify-center flex-shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
@@ -44,7 +44,7 @@ export function PuzzleResultPopup({
               </svg>
             </div>
           )}
-          <span className={`text-lg font-bold ${isCorrect ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
+          <span className={`text-xl font-bold ${isCorrect ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
             {isCorrect ? 'Excellent!' : "Oops, that's not correct"}
           </span>
         </div>
@@ -53,15 +53,15 @@ export function PuzzleResultPopup({
         {!isCorrect && !showSolution && onShowSolution ? (
           <button
             onClick={onShowSolution}
-            className="w-full py-3 bg-[#FF4B4B] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#CC3939] active:translate-y-[2px] active:shadow-[0_2px_0_#CC3939] transition-all"
+            className="w-full py-3.5 bg-[#FF4B4B] text-white font-bold rounded-2xl uppercase tracking-wide shadow-[0_4px_0_#CC3939] active:translate-y-[2px] active:shadow-[0_2px_0_#CC3939] transition-all"
           >
-            Show Solution
+            Try Again
           </button>
         ) : (
           <button
             onClick={onContinue}
             className={`
-              w-full py-3 font-bold rounded-xl uppercase tracking-wide transition-all
+              w-full py-3.5 font-bold rounded-2xl uppercase tracking-wide transition-all
               active:translate-y-[2px]
               ${isCorrect
                 ? 'bg-[#58CC02] text-white shadow-[0_4px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
@@ -78,7 +78,7 @@ export function PuzzleResultPopup({
         @keyframes slideUp {
           0% {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(100%);
           }
           100% {
             opacity: 1;
