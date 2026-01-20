@@ -64,7 +64,11 @@ export function NavHeader() {
 
         <nav className="flex items-center gap-2">
           {loading ? (
-            <div className="text-gray-400 text-sm">...</div>
+            <>
+              {/* Skeleton buttons to prevent layout shift */}
+              <div className="px-3 py-1.5 w-16 h-8 bg-gray-700/50 rounded-lg animate-pulse" />
+              <div className="px-3 py-1.5 w-16 h-8 bg-gray-700/50 rounded-lg animate-pulse" />
+            </>
           ) : user ? (
             <>
               <div className="relative" ref={dropdownRef}>
