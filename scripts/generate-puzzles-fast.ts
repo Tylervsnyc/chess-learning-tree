@@ -1,6 +1,6 @@
 /**
  * Fast puzzle generation script - selects puzzles by theme and rating
- * without the expensive difficulty analysis
+ * Embeds full puzzle data for Vercel deployment (no runtime CSV access)
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
@@ -13,8 +13,7 @@ import { level4 } from '../data/level4-curriculum';
 import { level5 } from '../data/level5-curriculum';
 
 const PUZZLES_BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
-const MIN_PLAYS = 500; // Lower threshold for more matches
-const PUZZLES_PER_LESSON = 6;
+const MIN_PLAYS = 500;
 
 interface LevelConfig {
   level: Level;
@@ -35,6 +34,16 @@ interface RawPuzzle {
   moves: string;
   rating: number;
   nbPlays: number;
+  themes: string[];
+  url: string;
+}
+
+// Embedded puzzle format (what we save)
+interface EmbeddedPuzzle {
+  id: string;
+  fen: string;
+  moves: string;
+  rating: number;
   themes: string[];
   url: string;
 }
@@ -83,13 +92,11 @@ function loadPuzzlesForBracket(bracket: string): RawPuzzle[] {
   return puzzles;
 }
 
-// Get the piece making the first solution move
 function getMovingPiece(fen: string, moves: string): string | null {
   try {
     const chess = new Chess(fen);
     const moveList = moves.split(' ');
 
-    // Apply setup move
     const setup = moveList[0];
     chess.move({
       from: setup.slice(0, 2),
@@ -97,7 +104,6 @@ function getMovingPiece(fen: string, moves: string): string | null {
       promotion: setup[4] as any
     });
 
-    // Get first solution move piece
     if (moveList.length > 1) {
       const firstMove = moveList[1];
       const from = firstMove.slice(0, 2);
@@ -117,17 +123,14 @@ function getMovingPiece(fen: string, moves: string): string | null {
 }
 
 function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
-  // Check rating range
   if (puzzle.rating < lesson.ratingMin || puzzle.rating > lesson.ratingMax) {
     return false;
   }
 
-  // Check minimum plays
   if (lesson.minPlays && puzzle.nbPlays < lesson.minPlays) {
     return false;
   }
 
-  // Check excluded tags
   if (lesson.excludeTags) {
     for (const tag of lesson.excludeTags) {
       if (puzzle.themes.includes(tag)) {
@@ -136,7 +139,6 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
     }
   }
 
-  // Check piece filter
   if (lesson.pieceFilter) {
     const movingPiece = getMovingPiece(puzzle.fen, puzzle.moves);
     if (movingPiece !== lesson.pieceFilter) {
@@ -144,7 +146,6 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
     }
   }
 
-  // Mixed practice: just check mixedThemes if provided
   if (lesson.isMixedPractice) {
     if (lesson.mixedThemes && lesson.mixedThemes.length > 0) {
       const hasMatchingTheme = lesson.mixedThemes.some(t => puzzle.themes.includes(t));
@@ -155,7 +156,6 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
     return true;
   }
 
-  // Check required tags
   for (const tag of lesson.requiredTags) {
     if (!puzzle.themes.includes(tag)) {
       return false;
@@ -166,11 +166,7 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
 }
 
 function selectPuzzles(candidates: RawPuzzle[], targetElo: number): RawPuzzle[] {
-  // Sort by rating
   const sorted = [...candidates].sort((a, b) => a.rating - b.rating);
-
-  // Select 6 puzzles with progression
-  // Warmup: 2 easier, Core: 2 at level, Stretch: 2 harder
   const selected: RawPuzzle[] = [];
   const usedIds = new Set<string>();
 
@@ -207,7 +203,7 @@ function selectPuzzles(candidates: RawPuzzle[], targetElo: number): RawPuzzle[] 
     }
   }
 
-  // Fill remaining from any candidates
+  // Fill remaining
   const remaining = candidates.filter(p => !usedIds.has(p.puzzleId));
   for (let i = 0; i < remaining.length && selected.length < 6; i++) {
     const idx = Math.floor(Math.random() * remaining.length);
@@ -218,19 +214,19 @@ function selectPuzzles(candidates: RawPuzzle[], targetElo: number): RawPuzzle[] 
     }
   }
 
-  // Sort final selection by rating
   return selected.sort((a, b) => a.rating - b.rating);
 }
 
 interface LessonPuzzleSet {
   lessonId: string;
   lessonName: string;
-  puzzleIds: string[];
+  puzzles: EmbeddedPuzzle[];
 }
 
 async function main() {
   console.log('='.repeat(60));
   console.log('FAST PUZZLE GENERATION FOR LEVELS 1-5');
+  console.log('(Embedding full puzzle data for Vercel)');
   console.log('='.repeat(60));
 
   const allLessonPuzzleSets: LessonPuzzleSet[] = [];
@@ -257,7 +253,7 @@ async function main() {
         allLessonPuzzleSets.push({
           lessonId: lesson.id,
           lessonName: lesson.name,
-          puzzleIds: [],
+          puzzles: [],
         });
         console.log(`✗ ${lesson.id.padEnd(8)} ${lesson.name.padEnd(40)} 0/6 (no matches)`);
         empty++;
@@ -266,10 +262,20 @@ async function main() {
 
       const selected = selectPuzzles(matching, targetElo);
 
+      // Convert to embedded format (full data, no nbPlays)
+      const embeddedPuzzles: EmbeddedPuzzle[] = selected.map(p => ({
+        id: p.puzzleId,
+        fen: p.fen,
+        moves: p.moves,
+        rating: p.rating,
+        themes: p.themes,
+        url: p.url,
+      }));
+
       allLessonPuzzleSets.push({
         lessonId: lesson.id,
         lessonName: lesson.name,
-        puzzleIds: selected.map(p => p.puzzleId),
+        puzzles: embeddedPuzzles,
       });
 
       const status = selected.length >= 6 ? '✓' : selected.length > 0 ? '⚠' : '✗';
@@ -290,21 +296,36 @@ async function main() {
     console.log(`\n${level.name} Summary: ${complete} complete, ${partial} partial, ${empty} empty`);
   }
 
-  // Write output
-  const tsOutput = `// Auto-generated lesson puzzle sets
+  // Write output with full puzzle data
+  const tsOutput = `// Auto-generated lesson puzzle sets with FULL puzzle data
 // Generated with ${MIN_PLAYS}+ plays filter
+// This file contains all puzzle data embedded for Vercel deployment
+
+export interface EmbeddedPuzzle {
+  id: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  themes: string[];
+  url: string;
+}
 
 export interface LessonPuzzleSet {
   lessonId: string;
   lessonName: string;
-  puzzleIds: string[];
+  puzzles: EmbeddedPuzzle[];
 }
 
 export const lessonPuzzleSets: LessonPuzzleSet[] = ${JSON.stringify(allLessonPuzzleSets, null, 2)};
 
-export function getPuzzleIdsForLesson(lessonId: string): string[] {
+export function getPuzzlesForLesson(lessonId: string): EmbeddedPuzzle[] {
   const set = lessonPuzzleSets.find(s => s.lessonId === lessonId);
-  return set?.puzzleIds || [];
+  return set?.puzzles || [];
+}
+
+export function getLessonInfo(lessonId: string): { name: string } | null {
+  const set = lessonPuzzleSets.find(s => s.lessonId === lessonId);
+  return set ? { name: set.lessonName } : null;
 }
 `;
 
@@ -313,10 +334,10 @@ export function getPuzzleIdsForLesson(lessonId: string): string[] {
   console.log(`\n${'='.repeat(60)}`);
   console.log(`Written to: ${outputPath}`);
 
-  const totalComplete = allLessonPuzzleSets.filter(s => s.puzzleIds.length >= 6).length;
-  const totalPartial = allLessonPuzzleSets.filter(s => s.puzzleIds.length > 0 && s.puzzleIds.length < 6).length;
-  const totalEmpty = allLessonPuzzleSets.filter(s => s.puzzleIds.length === 0).length;
-  const totalPuzzles = allLessonPuzzleSets.reduce((sum, s) => sum + s.puzzleIds.length, 0);
+  const totalComplete = allLessonPuzzleSets.filter(s => s.puzzles.length >= 6).length;
+  const totalPartial = allLessonPuzzleSets.filter(s => s.puzzles.length > 0 && s.puzzles.length < 6).length;
+  const totalEmpty = allLessonPuzzleSets.filter(s => s.puzzles.length === 0).length;
+  const totalPuzzles = allLessonPuzzleSets.reduce((sum, s) => sum + s.puzzles.length, 0);
 
   console.log(`\nFINAL SUMMARY:`);
   console.log(`  Total lessons: ${allLessonPuzzleSets.length}`);
