@@ -122,6 +122,7 @@ export async function GET(request: NextRequest) {
   const targetRating = parseInt(searchParams.get('rating') || '800', 10);
   const count = Math.min(parseInt(searchParams.get('count') || '5', 10), 20);
   const excludeIds = searchParams.get('exclude')?.split(',').filter(Boolean) || [];
+  const theme = searchParams.get('theme'); // Optional theme filter
 
   const ratingBracket = getRatingBracket(targetRating);
   const bracketDir = join(PUZZLES_DIR, ratingBracket);
@@ -134,8 +135,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get all theme files in the bracket
-    const themeFiles = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
+    // Get theme files - filter to specific theme if provided
+    let themeFiles = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
+
+    if (theme) {
+      // Try to find a file matching the theme
+      const themeFile = themeFiles.find(f => f.toLowerCase().includes(theme.toLowerCase()));
+      if (themeFile) {
+        themeFiles = [themeFile];
+      }
+    }
 
     if (themeFiles.length === 0) {
       return NextResponse.json(

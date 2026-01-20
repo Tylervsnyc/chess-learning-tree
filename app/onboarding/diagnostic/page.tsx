@@ -2,17 +2,25 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useOnboarding, getNextRating, getFinalEloFromDiagnostic } from '@/hooks/useOnboarding';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
-
-const DIAGNOSTIC_COUNT = 5;
-const STARTING_RATING = 800;
 
 const COLORS = {
   green: '#58CC02',
   blue: '#1CB0F6',
   orange: '#FF9600',
 };
+
+// Fixed progression: 500 → 800 → 1100 → 1400 → 1700
+const PUZZLE_CONFIG = [
+  { rating: 500, theme: 'fork' },
+  { rating: 800, theme: 'pin' },
+  { rating: 1100, theme: 'discoveredAttack' },
+  { rating: 1400, theme: 'sacrifice' },
+  { rating: 1700, theme: 'mateIn2' },
+];
+
+const DIAGNOSTIC_COUNT = PUZZLE_CONFIG.length;
 
 // Streak animation styles (same as lesson page)
 const streakStyles = `
@@ -60,13 +68,11 @@ export default function DiagnosticPage() {
 
   const [currentPuzzle, setCurrentPuzzle] = useState<OnboardingPuzzle | null>(null);
   const [puzzlesCompleted, setPuzzlesCompleted] = useState(0);
-  const [puzzlesCorrect, setPuzzlesCorrect] = useState(0);
-  const [currentRating, setCurrentRating] = useState(STARTING_RATING);
+  const [correctAnswers, setCorrectAnswers] = useState<boolean[]>([]); // Track each puzzle result
   const [seenPuzzleIds, setSeenPuzzleIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
-  const [justAnswered, setJustAnswered] = useState(false);
 
   const initialized = useRef(false);
 
@@ -77,13 +83,18 @@ export default function DiagnosticPage() {
     }
   }, [isLoaded, reset]);
 
-  const loadNextPuzzle = useCallback(async (targetRating: number, exclude: string[]) => {
+  // Load puzzle based on current index in PUZZLE_CONFIG
+  const loadPuzzleAtIndex = useCallback(async (index: number, exclude: string[]) => {
+    if (index >= PUZZLE_CONFIG.length) return;
+
     setLoading(true);
     setError(null);
 
+    const config = PUZZLE_CONFIG[index];
+
     try {
       const excludeParam = exclude.length > 0 ? `&exclude=${exclude.join(',')}` : '';
-      const res = await fetch(`/api/onboarding-puzzles?rating=${targetRating}&count=1${excludeParam}`);
+      const res = await fetch(`/api/onboarding-puzzles?rating=${config.rating}&theme=${config.theme}&count=1${excludeParam}`);
       const data = await res.json();
 
       if (data.error) {
@@ -99,29 +110,26 @@ export default function DiagnosticPage() {
     }
 
     setLoading(false);
-    setJustAnswered(false);
   }, []);
 
+  // Load first puzzle on mount
   useEffect(() => {
     if (isLoaded && initialized.current && puzzlesCompleted === 0 && !currentPuzzle) {
-      loadNextPuzzle(STARTING_RATING, []);
+      loadPuzzleAtIndex(0, []);
     }
-  }, [isLoaded, puzzlesCompleted, currentPuzzle, loadNextPuzzle]);
+  }, [isLoaded, puzzlesCompleted, currentPuzzle, loadPuzzleAtIndex]);
 
   const handleResult = useCallback((correct: boolean) => {
     if (!currentPuzzle) return;
 
     const newCompleted = puzzlesCompleted + 1;
-    const newCorrect = correct ? puzzlesCorrect + 1 : puzzlesCorrect;
-    const newRating = getNextRating(currentRating, correct, newCompleted);
+    const newCorrectAnswers = [...correctAnswers, correct];
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
 
     setPuzzlesCompleted(newCompleted);
-    setPuzzlesCorrect(newCorrect);
-    setCurrentRating(newRating);
+    setCorrectAnswers(newCorrectAnswers);
     setSeenPuzzleIds(newSeen);
     recordResult(currentPuzzle.puzzleId, correct);
-    setJustAnswered(true);
 
     // Update streak
     if (correct) {
@@ -131,22 +139,34 @@ export default function DiagnosticPage() {
     }
 
     if (newCompleted >= DIAGNOSTIC_COUNT) {
-      const finalElo = getFinalEloFromDiagnostic(newRating);
-      const levelName = finalElo < 700 ? 'beginner' :
-                        finalElo < 1000 ? 'intermediate' : 'advanced';
+      // Calculate ELO based on highest puzzle solved correctly
+      // Find the highest rating puzzle they got right
+      let highestCorrect = 400; // Base ELO
+      for (let i = 0; i < newCorrectAnswers.length; i++) {
+        if (newCorrectAnswers[i]) {
+          highestCorrect = PUZZLE_CONFIG[i].rating;
+        }
+      }
+
+      // Add bonus for getting multiple correct
+      const totalCorrect = newCorrectAnswers.filter(Boolean).length;
+      const finalElo = highestCorrect + (totalCorrect * 50);
+
+      const levelName = finalElo < 800 ? 'beginner' :
+                        finalElo < 1200 ? 'intermediate' : 'advanced';
 
       const params = new URLSearchParams({
         elo: finalElo.toString(),
         level: levelName,
-        finalRating: newRating.toString(),
+        correct: totalCorrect.toString(),
       });
 
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
       setCurrentPuzzle(null);
-      loadNextPuzzle(newRating, newSeen);
+      loadPuzzleAtIndex(newCompleted, newSeen);
     }
-  }, [currentPuzzle, puzzlesCompleted, puzzlesCorrect, currentRating, seenPuzzleIds, recordResult, router, loadNextPuzzle]);
+  }, [currentPuzzle, puzzlesCompleted, correctAnswers, seenPuzzleIds, recordResult, router, loadPuzzleAtIndex]);
 
   const handleBack = () => {
     router.push('/onboarding');
@@ -178,8 +198,8 @@ export default function DiagnosticPage() {
     );
   }
 
-  // Calculate progress - include just answered state
-  const progressPercent = ((puzzlesCompleted + (justAnswered ? 0 : 0)) / DIAGNOSTIC_COUNT) * 100;
+  // Calculate progress
+  const progressPercent = (puzzlesCompleted / DIAGNOSTIC_COUNT) * 100;
 
   return (
     <div className="min-h-screen bg-[#131F24] flex flex-col">
