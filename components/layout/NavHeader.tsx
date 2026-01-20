@@ -46,14 +46,10 @@ export function NavHeader() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-    // Always redirect to home, even if signOut has issues
-    window.location.href = '/';
+  const handleSignOut = () => {
+    signOut().finally(() => {
+      window.location.replace('/');
+    });
   };
 
   // Don't show header on auth pages
