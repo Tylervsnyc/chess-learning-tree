@@ -13,11 +13,11 @@ function LearnContent() {
   // Map level name to index (6 levels total)
   const levelMap: Record<string, number> = {
     beginner: 0,
-    intermediate: 1,
-    advanced: 2,
-    expert: 3,
-    master: 4,
-    grandmaster: 5,
+    casual: 1,
+    club: 2,
+    tournament: 3,
+    advanced: 4,
+    expert: 5,
   };
   const levelIndex = level ? (levelMap[level] ?? 0) : 0;
 

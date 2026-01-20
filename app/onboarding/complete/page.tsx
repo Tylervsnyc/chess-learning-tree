@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 const LEVEL_CONFIG = {
   beginner: { label: 'Beginner', color: '#58CC02', emoji: '🌱', firstLesson: '1.1.1' },
-  intermediate: { label: 'Intermediate', color: '#1CB0F6', emoji: '⚡', firstLesson: '2.1.1' },
-  advanced: { label: 'Advanced', color: '#FF9600', emoji: '🔥', firstLesson: '3.1.1' },
-  expert: { label: 'Expert', color: '#FF4B4B', emoji: '💪', firstLesson: '4.1.1' },
-  master: { label: 'Master', color: '#A560E8', emoji: '👑', firstLesson: '5.1.1' },
-  grandmaster: { label: 'Grandmaster', color: '#FFC800', emoji: '🏆', firstLesson: '6.1.1' },
+  casual: { label: 'Casual', color: '#1CB0F6', emoji: '⚡', firstLesson: '2.1.1' },
+  club: { label: 'Club Player', color: '#FF9600', emoji: '🔥', firstLesson: '3.1.1' },
+  tournament: { label: 'Tournament', color: '#FF4B4B', emoji: '💪', firstLesson: '4.1.1' },
+  advanced: { label: 'Advanced', color: '#A560E8', emoji: '🎯', firstLesson: '5.1.1' },
+  expert: { label: 'Expert', color: '#FFC800', emoji: '👑', firstLesson: '6.1.1' },
 };
 
 function Confetti() {

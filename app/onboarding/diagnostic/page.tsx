@@ -159,7 +159,7 @@ export default function DiagnosticPage() {
                          finalElo < 1400 ? 3 :
                          finalElo < 1600 ? 4 : 5;
 
-      const levelNames = ['beginner', 'intermediate', 'advanced', 'expert', 'master', 'grandmaster'];
+      const levelNames = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'expert'];
       const levelName = levelNames[levelIndex];
 
       const params = new URLSearchParams({
