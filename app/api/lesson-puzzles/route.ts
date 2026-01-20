@@ -2,10 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { Chess } from 'chess.js';
-import { getLessonById } from '@/data/level1-curriculum';
+import { getLessonById as getLevel1Lesson } from '@/data/level1-curriculum';
+import { getLessonByIdLevel2 as getLevel2Lesson } from '@/data/level2-curriculum';
+import { getLessonByIdLevel3 as getLevel3Lesson } from '@/data/level3-curriculum';
+import { getLessonByIdLevel4 as getLevel4Lesson } from '@/data/level4-curriculum';
+import { getLessonByIdLevel5 as getLevel5Lesson } from '@/data/level5-curriculum';
 import { getPuzzleIdsForLesson } from '@/data/lesson-puzzle-sets';
 
-const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating', '0400-0800');
+const PUZZLES_BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+
+// Map level prefix to puzzle bracket
+function getPuzzleBracket(lessonId: string): string {
+  const levelPrefix = lessonId.split('.')[0];
+  switch (levelPrefix) {
+    case '1': return '0400-0800';
+    case '2': return '0800-1200';
+    case '3': return '0800-1200';
+    case '4': return '1200-1600';
+    case '5': return '1200-1600';
+    default: return '0400-0800';
+  }
+}
+
+// Get lesson from any level
+function getLessonById(lessonId: string) {
+  const levelPrefix = lessonId.split('.')[0];
+  switch (levelPrefix) {
+    case '1': return getLevel1Lesson(lessonId);
+    case '2': return getLevel2Lesson(lessonId);
+    case '3': return getLevel3Lesson(lessonId);
+    case '4': return getLevel4Lesson(lessonId);
+    case '5': return getLevel5Lesson(lessonId);
+    default: return null;
+  }
+}
 
 interface RawPuzzle {
   puzzleId: string;
@@ -138,10 +168,12 @@ export async function GET(request: NextRequest) {
     // Load the specific puzzles by ID from CSV files
     const puzzleIdSet = new Set(puzzleIds);
     const foundPuzzles: RawPuzzle[] = [];
-    const themeFiles = readdirSync(PUZZLES_DIR).filter(f => f.endsWith('.csv'));
+    const puzzleBracket = getPuzzleBracket(lessonId);
+    const puzzlesDir = join(PUZZLES_BASE_DIR, puzzleBracket);
+    const themeFiles = readdirSync(puzzlesDir).filter(f => f.endsWith('.csv'));
 
     for (const file of themeFiles) {
-      const content = readFileSync(join(PUZZLES_DIR, file), 'utf-8');
+      const content = readFileSync(join(puzzlesDir, file), 'utf-8');
       const lines = content.trim().split('\n');
 
       for (let i = 1; i < lines.length; i++) {
