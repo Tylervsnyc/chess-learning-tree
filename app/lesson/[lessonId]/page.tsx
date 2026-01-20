@@ -500,7 +500,10 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => {
+                const levelKey = getLevelKeyFromLessonId(lessonId);
+                router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
+              }}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -679,7 +682,10 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => {
+                const levelKey = getLevelKeyFromLessonId(lessonId);
+                router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
+              }}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -702,7 +708,10 @@ export default function LessonPage() {
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => {
+              const levelKey = getLevelKeyFromLessonId(lessonId);
+              router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
+            }}
             className="text-gray-400 hover:text-white"
           >
             ✕
@@ -763,7 +772,7 @@ export default function LessonPage() {
             </button>
           </div>
 
-          {/* Chessboard with popup overlay */}
+          {/* Chessboard */}
           <div className="relative">
             <Chessboard
               options={{
@@ -779,23 +788,6 @@ export default function LessonPage() {
                 lightSquareStyle: { backgroundColor: '#edeed1' },
               }}
             />
-
-            {/* Popup overlay */}
-            {moveStatus === 'correct' && (
-              <PuzzleResultPopup
-                type="correct"
-                onContinue={handleContinue}
-              />
-            )}
-
-            {moveStatus === 'wrong' && (
-              <PuzzleResultPopup
-                type="incorrect"
-                onContinue={handleContinue}
-                showSolution={showingSolution}
-                onShowSolution={showSolutionAndContinue}
-              />
-            )}
           </div>
 
           {/* Status text - fixed height to prevent layout shift */}
@@ -806,6 +798,23 @@ export default function LessonPage() {
           </div>
         </div>
       </div>
+
+      {/* Bottom result bar - Duolingo style */}
+      {moveStatus === 'correct' && (
+        <PuzzleResultPopup
+          type="correct"
+          onContinue={handleContinue}
+        />
+      )}
+
+      {moveStatus === 'wrong' && (
+        <PuzzleResultPopup
+          type="incorrect"
+          onContinue={handleContinue}
+          showSolution={showingSolution}
+          onShowSolution={showSolutionAndContinue}
+        />
+      )}
     </div>
   );
 }

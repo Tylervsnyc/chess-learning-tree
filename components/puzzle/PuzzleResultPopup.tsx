@@ -18,53 +18,42 @@ export function PuzzleResultPopup({
   const isCorrect = type === 'correct';
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/40 rounded-lg">
-      <div
-        className={`
-          px-5 py-3 rounded-xl text-center mx-4 max-w-[200px] w-full
-          ${isCorrect ? 'bg-[#58CC02]' : 'bg-[#FF4B4B]'}
-          animate-[scaleIn_0.2s_ease-out]
-          shadow-xl
-        `}
-        style={{
-          animation: 'scaleIn 0.2s ease-out',
-        }}
-      >
-        {/* Icon */}
-        <div className="mb-2">
+    <div
+      className={`
+        w-full px-4 py-4
+        ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFE0E0]'}
+        animate-[slideUp_0.2s_ease-out]
+      `}
+      style={{
+        animation: 'slideUp 0.2s ease-out',
+      }}
+    >
+      <div className="max-w-lg mx-auto">
+        {/* Icon + Text row */}
+        <div className="flex items-center gap-3 mb-3">
           {isCorrect ? (
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="white"
-              className="mx-auto"
-            >
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg>
+            <div className="w-8 h-8 rounded-full bg-[#58CC02] flex items-center justify-center flex-shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+            </div>
           ) : (
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="white"
-              className="mx-auto"
-            >
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-            </svg>
+            <div className="w-8 h-8 rounded-full bg-[#FF4B4B] flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </div>
           )}
+          <span className={`text-lg font-bold ${isCorrect ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
+            {isCorrect ? 'Excellent!' : "Oops, that's not correct"}
+          </span>
         </div>
 
-        {/* Text */}
-        <h2 className="text-lg font-black text-white mb-3">
-          {isCorrect ? 'Correct!' : 'Incorrect'}
-        </h2>
-
-        {/* Buttons */}
+        {/* Button */}
         {!isCorrect && !showSolution && onShowSolution ? (
           <button
             onClick={onShowSolution}
-            className="w-full py-2 bg-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/30 transition-all"
+            className="w-full py-3 bg-[#FF4B4B] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#CC3939] active:translate-y-[2px] active:shadow-[0_2px_0_#CC3939] transition-all"
           >
             Show Solution
           </button>
@@ -72,10 +61,11 @@ export function PuzzleResultPopup({
           <button
             onClick={onContinue}
             className={`
-              w-full py-2 text-sm font-bold rounded-lg transition-all
+              w-full py-3 font-bold rounded-xl uppercase tracking-wide transition-all
+              active:translate-y-[2px]
               ${isCorrect
-                ? 'bg-white text-[#58CC02] hover:bg-white/90'
-                : 'bg-white text-[#FF4B4B] hover:bg-white/90'
+                ? 'bg-[#58CC02] text-white shadow-[0_4px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
+                : 'bg-[#FF4B4B] text-white shadow-[0_4px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
               }
             `}
           >
@@ -85,14 +75,14 @@ export function PuzzleResultPopup({
       </div>
 
       <style jsx>{`
-        @keyframes scaleIn {
+        @keyframes slideUp {
           0% {
             opacity: 0;
-            transform: scale(0.8);
+            transform: translateY(20px);
           }
           100% {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
           }
         }
       `}</style>

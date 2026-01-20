@@ -200,9 +200,9 @@ export function OnboardingPuzzleBoard({
   }, [moveStatus, onResult, hasReported]);
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col">
       {/* Turn indicator */}
-      <div className="text-center">
+      <div className="text-center mb-2">
         <span className={`text-lg font-bold ${
           puzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
         }`}>
@@ -210,8 +210,8 @@ export function OnboardingPuzzleBoard({
         </span>
       </div>
 
-      {/* Chessboard with popup overlay */}
-      <div className="relative rounded-lg overflow-hidden shadow-lg">
+      {/* Chessboard */}
+      <div className="rounded-lg overflow-hidden shadow-lg">
         <Chessboard
           options={{
             position: currentFen,
@@ -226,27 +226,31 @@ export function OnboardingPuzzleBoard({
             lightSquareStyle: { backgroundColor: '#edeed1' },
           }}
         />
-
-        {/* Popup overlay */}
-        {moveStatus === 'correct' && (
-          <PuzzleResultPopup
-            type="correct"
-            onContinue={handleContinue}
-          />
-        )}
-
-        {moveStatus === 'wrong' && (
-          <PuzzleResultPopup
-            type="incorrect"
-            onContinue={handleContinue}
-          />
-        )}
       </div>
 
       {/* Status text when playing */}
       {moveStatus === 'playing' && (
-        <div className="text-center text-gray-400">
+        <div className="text-center text-gray-400 mt-3">
           Find the best move
+        </div>
+      )}
+
+      {/* Bottom result bar - Duolingo style */}
+      {moveStatus === 'correct' && (
+        <div className="mt-4 -mx-4 rounded-t-xl overflow-hidden">
+          <PuzzleResultPopup
+            type="correct"
+            onContinue={handleContinue}
+          />
+        </div>
+      )}
+
+      {moveStatus === 'wrong' && (
+        <div className="mt-4 -mx-4 rounded-t-xl overflow-hidden">
+          <PuzzleResultPopup
+            type="incorrect"
+            onContinue={handleContinue}
+          />
         </div>
       )}
     </div>
