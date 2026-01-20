@@ -4,6 +4,7 @@ import React from 'react';
 
 interface PuzzleResultPopupProps {
   type: 'correct' | 'incorrect';
+  message?: string;
   onContinue: () => void;
   showSolution?: boolean;
   onShowSolution?: () => void;
@@ -11,11 +12,13 @@ interface PuzzleResultPopupProps {
 
 export function PuzzleResultPopup({
   type,
+  message,
   onContinue,
   showSolution,
   onShowSolution,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
+  const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
 
   return (
     <div
@@ -46,7 +49,7 @@ export function PuzzleResultPopup({
             </div>
           )}
           <span className={`text-lg font-bold ${isCorrect ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
-            {isCorrect ? 'Excellent!' : "Oops, that's not correct"}
+            {displayMessage}
           </span>
         </div>
 

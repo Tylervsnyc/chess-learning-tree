@@ -20,6 +20,7 @@ import { level2 } from '../data/level2-curriculum';
 import { level3 } from '../data/level3-curriculum';
 import { level4 } from '../data/level4-curriculum';
 import { level5 } from '../data/level5-curriculum';
+import { level6 } from '../data/level6-curriculum';
 import {
   analyzePuzzle,
   selectLessonPuzzles,
@@ -43,6 +44,7 @@ const LEVEL_CONFIGS: LevelConfig[] = [
   { level: level3, puzzleBracket: '0800-1200' }, // Level 3 (1000-1200) uses 0800-1200 bracket
   { level: level4, puzzleBracket: '1200-1600' },
   { level: level5, puzzleBracket: '1200-1600' }, // Level 5 (1400-1600) uses 1200-1600 bracket
+  { level: level6, puzzleBracket: '1600-2000' }, // Level 6 (1600-1800) uses 1600-2000 bracket
 ];
 
 // ============================================

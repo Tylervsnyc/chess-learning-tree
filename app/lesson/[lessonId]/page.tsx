@@ -20,6 +20,7 @@ import { level3 } from '@/data/level3-curriculum';
 import { level4 } from '@/data/level4-curriculum';
 import { level5 } from '@/data/level5-curriculum';
 import { level6 } from '@/data/level6-curriculum';
+import { getPuzzleResponse } from '@/data/puzzle-responses';
 
 const LEVELS = [level1, level2, level3, level4, level5, level6];
 
@@ -148,6 +149,9 @@ export default function LessonPage() {
   const [streak, setStreak] = useState(0);
   const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
   const [completedPuzzleCount, setCompletedPuzzleCount] = useState(0);
+
+  // Feedback message for popup
+  const [feedbackMessage, setFeedbackMessage] = useState('');
 
   // Flagged puzzles tracking
   const [flaggedPuzzles, setFlaggedPuzzles] = useState<Set<string>>(new Set());
@@ -305,9 +309,12 @@ export default function LessonPage() {
 
         if (nextMoveIndex >= currentPuzzle.solutionMoves.length) {
           // Puzzle complete!
+          const newStreak = streak + 1;
+          const puzzleNum = completedPuzzleCount + 1;
           setMoveStatus('correct');
+          setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
           playCorrectSound(completedPuzzleCount);
-          setStreak(s => s + 1);
+          setStreak(newStreak);
           setCompletedPuzzleCount(c => c + 1);
           return true;
         }
@@ -329,15 +336,21 @@ export default function LessonPage() {
             }
 
             if (nextMoveIndex + 1 >= currentPuzzle.solutionMoves.length) {
+              const newStreak = streak + 1;
+              const puzzleNum = completedPuzzleCount + 1;
               setMoveStatus('correct');
+              setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
               playCorrectSound(completedPuzzleCount);
-              setStreak(s => s + 1);
+              setStreak(newStreak);
               setCompletedPuzzleCount(c => c + 1);
             }
           } catch {
+            const newStreak = streak + 1;
+            const puzzleNum = completedPuzzleCount + 1;
             setMoveStatus('correct');
+            setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
             playCorrectSound(completedPuzzleCount);
-            setStreak(s => s + 1);
+            setStreak(newStreak);
             setCompletedPuzzleCount(c => c + 1);
           }
         }, 400);
@@ -345,7 +358,9 @@ export default function LessonPage() {
         return true;
       } else {
         // Wrong move
+        const puzzleNum = completedPuzzleCount + 1;
         setMoveStatus('wrong');
+        setFeedbackMessage(getPuzzleResponse(false, 0, currentPuzzle.themes, streak, puzzleNum));
         setSelectedSquare(null);
         playErrorSound();
         setStreak(0);
@@ -355,7 +370,7 @@ export default function LessonPage() {
     } catch {
       return false;
     }
-  }, [game, currentPuzzle, moveIndex, moveStatus]);
+  }, [game, currentPuzzle, moveIndex, moveStatus, streak, completedPuzzleCount]);
 
   // Handle square click
   const onSquareClick = useCallback(
@@ -787,6 +802,7 @@ export default function LessonPage() {
           {moveStatus === 'correct' && (
             <PuzzleResultPopup
               type="correct"
+              message={feedbackMessage}
               onContinue={handleContinue}
             />
           )}
@@ -794,6 +810,7 @@ export default function LessonPage() {
           {moveStatus === 'wrong' && (
             <PuzzleResultPopup
               type="incorrect"
+              message={feedbackMessage}
               onContinue={handleContinue}
               showSolution={showingSolution}
               onShowSolution={showSolutionAndContinue}
