@@ -20,7 +20,7 @@ const COLORS = {
   accent3: '#FF9600',   // Orange
 };
 
-const GLOW = 44; // Neon intensity
+const GLOW = 0; // Flat - no glow
 
 // Module colors cycle through the palette
 const MODULE_COLORS = [
