@@ -6,7 +6,6 @@ interface PuzzleResultPopupProps {
   type: 'correct' | 'incorrect';
   onContinue: () => void;
   showSolution?: boolean;
-  solutionText?: string;
   onShowSolution?: () => void;
 }
 
@@ -14,30 +13,29 @@ export function PuzzleResultPopup({
   type,
   onContinue,
   showSolution,
-  solutionText,
   onShowSolution,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/60 rounded-lg">
+    <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/40 rounded-lg">
       <div
         className={`
-          px-8 py-6 rounded-2xl text-center mx-4 max-w-sm w-full
+          px-5 py-3 rounded-xl text-center mx-4 max-w-[200px] w-full
           ${isCorrect ? 'bg-[#58CC02]' : 'bg-[#FF4B4B]'}
           animate-[scaleIn_0.2s_ease-out]
-          shadow-2xl
+          shadow-xl
         `}
         style={{
           animation: 'scaleIn 0.2s ease-out',
         }}
       >
         {/* Icon */}
-        <div className="mb-3">
+        <div className="mb-2">
           {isCorrect ? (
             <svg
-              width="64"
-              height="64"
+              width="36"
+              height="36"
               viewBox="0 0 24 24"
               fill="white"
               className="mx-auto"
@@ -46,8 +44,8 @@ export function PuzzleResultPopup({
             </svg>
           ) : (
             <svg
-              width="64"
-              height="64"
+              width="36"
+              height="36"
               viewBox="0 0 24 24"
               fill="white"
               className="mx-auto"
@@ -58,23 +56,15 @@ export function PuzzleResultPopup({
         </div>
 
         {/* Text */}
-        <h2 className="text-2xl font-black text-white mb-4">
+        <h2 className="text-lg font-black text-white mb-3">
           {isCorrect ? 'Correct!' : 'Incorrect'}
         </h2>
-
-        {/* Solution display for incorrect */}
-        {!isCorrect && showSolution && solutionText && (
-          <div className="bg-white/20 rounded-xl p-3 mb-4">
-            <div className="text-white/80 text-sm mb-1">The correct move was:</div>
-            <div className="text-white font-bold text-lg">{solutionText}</div>
-          </div>
-        )}
 
         {/* Buttons */}
         {!isCorrect && !showSolution && onShowSolution ? (
           <button
             onClick={onShowSolution}
-            className="w-full py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 transition-all"
+            className="w-full py-2 bg-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/30 transition-all"
           >
             Show Solution
           </button>
@@ -82,7 +72,7 @@ export function PuzzleResultPopup({
           <button
             onClick={onContinue}
             className={`
-              w-full py-3 font-bold rounded-xl transition-all
+              w-full py-2 text-sm font-bold rounded-lg transition-all
               ${isCorrect
                 ? 'bg-white text-[#58CC02] hover:bg-white/90'
                 : 'bg-white text-[#FF4B4B] hover:bg-white/90'

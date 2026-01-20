@@ -793,7 +793,6 @@ export default function LessonPage() {
                 type="incorrect"
                 onContinue={handleContinue}
                 showSolution={showingSolution}
-                solutionText={currentPuzzle.solutionMoves[0]}
                 onShowSolution={showSolutionAndContinue}
               />
             )}
