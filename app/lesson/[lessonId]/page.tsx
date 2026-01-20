@@ -598,23 +598,13 @@ export default function LessonPage() {
               </div>
 
               {/* Continue button */}
-              {getNextLessonId(lessonId) ? (
-                <button
-                  onClick={() => window.location.href = `/lesson/${getNextLessonId(lessonId)}?guest=true`}
-                  className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
-                  style={{ backgroundColor: COLORS.green }}
-                >
-                  Next Lesson
-                </button>
-              ) : (
-                <button
-                  onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
-                  className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
-                  style={{ backgroundColor: COLORS.green }}
-                >
-                  Level Complete!
-                </button>
-              )}
+              <button
+                onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
+                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
+                style={{ backgroundColor: COLORS.green }}
+              >
+                Continue
+              </button>
 
               {/* Signup prompt */}
               <div className="bg-[#1A2C35] rounded-2xl p-4">
@@ -670,23 +660,13 @@ export default function LessonPage() {
               )}
             </div>
 
-            {getNextLessonId(lessonId) ? (
-              <button
-                onClick={() => window.location.href = `/lesson/${getNextLessonId(lessonId)}`}
-                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-                style={{ backgroundColor: COLORS.green }}
-              >
-                Next Lesson
-              </button>
-            ) : (
-              <button
-                onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
-                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-                style={{ backgroundColor: COLORS.green }}
-              >
-                Level Complete!
-              </button>
-            )}
+            <button
+              onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+              style={{ backgroundColor: COLORS.green }}
+            >
+              Continue
+            </button>
           </div>
         </div>
       </div>
