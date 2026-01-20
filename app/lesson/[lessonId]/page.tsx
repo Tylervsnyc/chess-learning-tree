@@ -13,6 +13,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
+import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
 // CSS for streak animations
 const streakStyles = `
@@ -610,10 +611,10 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
       <style>{streakStyles}</style>
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3">
+      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push('/')}
@@ -643,111 +644,80 @@ export default function LessonPage() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-lg mx-auto px-4 py-6">
-        {/* Lesson info */}
-        <div className="text-center mb-4">
-          <h1 className="text-lg font-semibold text-gray-300">{lessonName}</h1>
-          {inRetryMode && (
-            <p className="text-yellow-400 text-sm mt-1">
-              Let&apos;s try {retryQueue.length === 1 ? 'that one' : 'those'} again
-            </p>
-          )}
-        </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
+        <div className="w-full max-w-lg">
+          {/* Lesson info */}
+          <div className="text-center mb-3">
+            <h1 className="text-lg font-semibold text-gray-300">{lessonName}</h1>
+            {inRetryMode && (
+              <p className="text-yellow-400 text-sm mt-1">
+                Let&apos;s try {retryQueue.length === 1 ? 'that one' : 'those'} again
+              </p>
+            )}
+          </div>
 
-        {/* Turn indicator + Flag button */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <span className={`text-xl font-bold ${
-            currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
-          }`}>
-            {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
-          </span>
-          <button
-            onClick={() => toggleFlag(currentPuzzle.puzzleId)}
-            className={`p-1.5 rounded transition-colors ${
-              flaggedPuzzles.has(currentPuzzle.puzzleId)
-                ? 'text-red-500 bg-red-500/20'
-                : 'text-gray-500 hover:text-gray-300 hover:bg-white/10'
-            }`}
-            title={flaggedPuzzles.has(currentPuzzle.puzzleId) ? 'Unflag puzzle' : 'Flag puzzle as problematic'}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
+          {/* Turn indicator + Flag button */}
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <span className={`text-xl font-bold ${
+              currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
+            }`}>
+              {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
+            </span>
+            <button
+              onClick={() => toggleFlag(currentPuzzle.puzzleId)}
+              className={`p-1.5 rounded transition-colors ${
+                flaggedPuzzles.has(currentPuzzle.puzzleId)
+                  ? 'text-red-500 bg-red-500/20'
+                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/10'
+              }`}
+              title={flaggedPuzzles.has(currentPuzzle.puzzleId) ? 'Unflag puzzle' : 'Flag puzzle as problematic'}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
 
-        {/* Chessboard */}
-        <div className="mb-4">
-          <Chessboard
-            options={{
-              position: currentFen || currentPuzzle.puzzleFen,
-              boardOrientation: currentPuzzle.playerColor,
-              onSquareClick: onSquareClick,
-              squareStyles: squareStyles,
-              boardStyle: {
-                borderRadius: '8px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              },
-              darkSquareStyle: { backgroundColor: '#779952' },
-              lightSquareStyle: { backgroundColor: '#edeed1' },
-            }}
-          />
-        </div>
+          {/* Chessboard with popup overlay */}
+          <div className="relative">
+            <Chessboard
+              options={{
+                position: currentFen || currentPuzzle.puzzleFen,
+                boardOrientation: currentPuzzle.playerColor,
+                onSquareClick: onSquareClick,
+                squareStyles: squareStyles,
+                boardStyle: {
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                },
+                darkSquareStyle: { backgroundColor: '#779952' },
+                lightSquareStyle: { backgroundColor: '#edeed1' },
+              }}
+            />
 
-        {/* Feedback area */}
-        <div className="mt-6">
+            {/* Popup overlay */}
+            {moveStatus === 'correct' && (
+              <PuzzleResultPopup
+                type="correct"
+                onContinue={handleContinue}
+              />
+            )}
+
+            {moveStatus === 'wrong' && (
+              <PuzzleResultPopup
+                type="incorrect"
+                onContinue={handleContinue}
+                showSolution={showingSolution}
+                solutionText={currentPuzzle.solutionMoves[0]}
+                onShowSolution={showSolutionAndContinue}
+              />
+            )}
+          </div>
+
+          {/* Status text when playing */}
           {moveStatus === 'playing' && (
-            <div className="text-center text-gray-400">
+            <div className="text-center text-gray-400 mt-4">
               Find the best move
-            </div>
-          )}
-
-          {moveStatus === 'correct' && (
-            <div className="space-y-4">
-              <div className="p-4 bg-green-600/20 border border-green-500 rounded-xl text-center">
-                <div className="text-2xl mb-1">✓</div>
-                <div className="text-green-400 font-bold text-lg">Correct!</div>
-              </div>
-              <button
-                onClick={handleContinue}
-                className="w-full py-4 bg-[#58CC02] text-white font-bold rounded-xl text-lg shadow-[0_4px_0_#3d8c01] hover:shadow-[0_2px_0_#3d8c01] hover:translate-y-[2px] transition-all"
-              >
-                Continue
-              </button>
-            </div>
-          )}
-
-          {moveStatus === 'wrong' && !showingSolution && (
-            <div className="space-y-4">
-              <div className="p-4 bg-red-600/20 border border-red-500 rounded-xl text-center">
-                <div className="text-2xl mb-1">✗</div>
-                <div className="text-red-400 font-bold text-lg">Incorrect</div>
-              </div>
-              <button
-                onClick={showSolutionAndContinue}
-                className="w-full py-4 bg-[#FF4B4B] text-white font-bold rounded-xl text-lg shadow-[0_4px_0_#cc2929] hover:shadow-[0_2px_0_#cc2929] hover:translate-y-[2px] transition-all"
-              >
-                Show Solution
-              </button>
-            </div>
-          )}
-
-          {moveStatus === 'wrong' && showingSolution && (
-            <div className="space-y-4">
-              <div className="p-4 bg-[#1A2C35] border border-green-500/50 rounded-xl">
-                <div className="text-green-400 font-medium mb-1">
-                  The correct move: {currentPuzzle.solutionMoves[0]}
-                </div>
-                <div className="text-gray-400 text-sm">
-                  Look at the highlighted squares on the board
-                </div>
-              </div>
-              <button
-                onClick={handleContinue}
-                className="w-full py-4 bg-[#1A2C35] text-white font-bold rounded-xl text-lg border border-white/20 hover:bg-[#2A3C45] transition-all"
-              >
-                Got it
-              </button>
             </div>
           )}
         </div>

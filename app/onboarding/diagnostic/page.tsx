@@ -209,11 +209,11 @@ export default function DiagnosticPage() {
   const progressPercent = (puzzlesCompleted / DIAGNOSTIC_COUNT) * 100;
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col">
+    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
       <style jsx>{streakStyles}</style>
 
       {/* Header - same style as lesson page */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3">
+      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={handleBack}
@@ -242,7 +242,7 @@ export default function DiagnosticPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-4">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
         <div className="w-full max-w-lg">
           {/* Loading state */}
           {loading && !currentPuzzle && (

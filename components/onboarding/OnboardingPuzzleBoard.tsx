@@ -9,6 +9,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
+import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
 export interface OnboardingPuzzle {
   puzzleId: string;
@@ -209,8 +210,8 @@ export function OnboardingPuzzleBoard({
         </span>
       </div>
 
-      {/* Chessboard */}
-      <div className="rounded-lg overflow-hidden shadow-lg">
+      {/* Chessboard with popup overlay */}
+      <div className="relative rounded-lg overflow-hidden shadow-lg">
         <Chessboard
           options={{
             position: currentFen,
@@ -225,46 +226,29 @@ export function OnboardingPuzzleBoard({
             lightSquareStyle: { backgroundColor: '#edeed1' },
           }}
         />
-      </div>
 
-      {/* Feedback area */}
-      <div className="mt-4">
-        {moveStatus === 'playing' && (
-          <div className="text-center text-gray-400">
-            Find the best move
-          </div>
-        )}
-
+        {/* Popup overlay */}
         {moveStatus === 'correct' && (
-          <div className="space-y-3">
-            <div className="p-3 bg-green-600/20 border border-green-500 rounded-xl text-center">
-              <div className="text-xl mb-1">✓</div>
-              <div className="text-green-400 font-bold">Correct!</div>
-            </div>
-            <button
-              onClick={handleContinue}
-              className="w-full py-3 bg-[#58CC02] text-white font-bold rounded-xl shadow-[0_4px_0_#3d8c01] hover:shadow-[0_2px_0_#3d8c01] hover:translate-y-[2px] transition-all"
-            >
-              Continue
-            </button>
-          </div>
+          <PuzzleResultPopup
+            type="correct"
+            onContinue={handleContinue}
+          />
         )}
 
         {moveStatus === 'wrong' && (
-          <div className="space-y-3">
-            <div className="p-3 bg-red-600/20 border border-red-500 rounded-xl text-center">
-              <div className="text-xl mb-1">✗</div>
-              <div className="text-red-400 font-bold">Not quite</div>
-            </div>
-            <button
-              onClick={handleContinue}
-              className="w-full py-3 bg-[#1A2C35] text-white font-bold rounded-xl border border-white/20 hover:bg-[#2A3C45] transition-all"
-            >
-              Got it
-            </button>
-          </div>
+          <PuzzleResultPopup
+            type="incorrect"
+            onContinue={handleContinue}
+          />
         )}
       </div>
+
+      {/* Status text when playing */}
+      {moveStatus === 'playing' && (
+        <div className="text-center text-gray-400">
+          Find the best move
+        </div>
+      )}
     </div>
   );
 }
