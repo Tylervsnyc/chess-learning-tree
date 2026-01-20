@@ -565,26 +565,33 @@ export default function LessonPage() {
                 )}
               </div>
 
-              {/* Signup prompt */}
-              <div className="bg-[#1A2C35] rounded-2xl p-5 mb-4">
-                <p className="text-white font-semibold mb-1">Keep your progress!</p>
-                <p className="text-gray-400 text-sm mb-4">Create a free account to continue learning</p>
-
-                <Link
-                  href="/auth/signup?from=lesson"
-                  className="block w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-                  style={{ backgroundColor: COLORS.green }}
-                >
-                  Create Free Account
-                </Link>
-              </div>
-
-              <Link
-                href="/auth/login"
-                className="text-gray-500 text-sm hover:text-gray-300 transition-colors"
+              {/* Continue button */}
+              <button
+                onClick={() => router.push('/learn?guest=true')}
+                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
+                style={{ backgroundColor: COLORS.green }}
               >
-                Sign in
-              </Link>
+                Continue to Chess Path
+              </button>
+
+              {/* Signup prompt */}
+              <div className="bg-[#1A2C35] rounded-2xl p-4">
+                <p className="text-gray-400 text-sm mb-3">Create a free account to save progress</p>
+                <div className="flex gap-3">
+                  <Link
+                    href="/auth/signup?from=lesson"
+                    className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                  <Link
+                    href="/auth/login"
+                    className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -626,7 +633,7 @@ export default function LessonPage() {
               className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
               style={{ backgroundColor: COLORS.green }}
             >
-              Continue
+              Continue to Chess Path
             </button>
           </div>
         </div>
