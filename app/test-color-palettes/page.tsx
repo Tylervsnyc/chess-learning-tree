@@ -84,7 +84,7 @@ interface MiniChessPathProps {
 
 function MiniChessPath({ colors, bg, surface, intensity }: MiniChessPathProps) {
   const { glow, textGlow } = intensity;
-
+  const [c1, c2, c3] = colors;
 
   const boxGlow = (color: string) =>
     glow > 0 ? `0 0 ${glow}px ${color}50, 0 0 ${glow * 2}px ${color}25` : 'none';
@@ -204,7 +204,7 @@ function MiniChessPath({ colors, bg, surface, intensity }: MiniChessPathProps) {
 export default function TestColorPalettes() {
   const [selectedPalette, setSelectedPalette] = useState<number | null>(null);
   const [selectedIntensity, setSelectedIntensity] = useState<number | null>(null);
-
+  const [selectedBg, setSelectedBg] = useState<keyof typeof BACKGROUNDS>('dark3');
 
   const bgOption = BACKGROUNDS[selectedBg];
 
