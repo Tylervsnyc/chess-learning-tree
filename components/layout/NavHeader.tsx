@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { useRouter, usePathname } from 'next/navigation';
 
-// Level configuration with ELO thresholds
+// Level configuration with ELO thresholds and rating ranges
 const LEVELS = [
-  { key: 'beginner', label: 'Level 1', minElo: 0 },
-  { key: 'casual', label: 'Level 2', minElo: 600 },
-  { key: 'club', label: 'Level 3', minElo: 800 },
-  { key: 'tournament', label: 'Level 4', minElo: 1100 },
-  { key: 'advanced', label: 'Level 5', minElo: 1400 },
-  { key: 'expert', label: 'Level 6', minElo: 1700 },
+  { key: 'beginner', label: 'Level 1', minElo: 0, ratingRange: '400-800' },
+  { key: 'casual', label: 'Level 2', minElo: 600, ratingRange: '800-1000' },
+  { key: 'club', label: 'Level 3', minElo: 800, ratingRange: '1000-1200' },
+  { key: 'tournament', label: 'Level 4', minElo: 1100, ratingRange: '1200-1400' },
+  { key: 'advanced', label: 'Level 5', minElo: 1400, ratingRange: '1400-1600' },
+  { key: 'expert', label: 'Level 6', minElo: 1700, ratingRange: '1600-1800' },
 ];
 
 function getUnlockedLevels(elo: number) {
@@ -91,18 +91,19 @@ export function NavHeader() {
                   </svg>
                 </button>
                 {learnDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[120px] z-50">
+                  <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[180px] z-50">
                     {getUnlockedLevels(profile?.elo_rating || 800).map((level) => (
                       <button
                         key={level.key}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors"
                         onClick={() => {
                           setLearnDropdownOpen(false);
                           router.push(`/learn?level=${level.key}`);
                           window.scrollTo(0, 0);
                         }}
                       >
-                        {level.label}
+                        <span className="text-gray-300 hover:text-white">{level.label}</span>
+                        <span className="text-gray-500 ml-2 text-xs">{level.ratingRange}</span>
                       </button>
                     ))}
                   </div>
