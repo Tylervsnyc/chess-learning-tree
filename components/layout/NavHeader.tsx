@@ -47,6 +47,7 @@ export function NavHeader() {
   }, []);
 
   const handleSignOut = () => {
+    alert('Logging out...');
     signOut().finally(() => {
       window.location.replace('/');
     });
