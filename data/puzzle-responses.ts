@@ -1,376 +1,382 @@
-// Fun responses for puzzle feedback
-// Keep them short, punchy, and encouraging!
+// Fun, edgy responses for puzzle feedback
+// Trash talk energy, action movie vibes, personality
 
 // ===========================================
 // GENERIC CORRECT RESPONSES (fallback)
 // ===========================================
 export const correctResponses = [
-  "Nailed it!",
-  "Boom!",
-  "Chef's kiss.",
-  "You see it.",
-  "Sharp eyes!",
-  "That's the move.",
-  "Textbook.",
-  "Clean.",
-  "Smooth.",
-  "Crushed it.",
-  "Nice find!",
-  "Gotcha.",
-  "Beautiful.",
-  "Yep, that's it.",
-  "Spot on.",
-  "Money.",
-  "There it is.",
-  "You're cooking.",
-  "Big brain move.",
-  "Like butter.",
+  "Violence was the answer.",
+  "Absolutely disgusting. I love it.",
+  "That was mean. Do it again.",
+  "They never saw it coming.",
+  "Cold-blooded.",
+  "No mercy.",
+  "Ruthless.",
+  "You woke up and chose violence.",
+  "That was personal.",
+  "Someone call the police.",
+  "Straight to jail. For them.",
+  "You didn't have to do them like that.",
+  "Emotional damage.",
+  "Get wrecked.",
+  "Built different.",
+  "That piece had a family.",
+  "Disrespectful. I'm here for it.",
+  "Too easy.",
+  "You're dangerous.",
+  "They should've stayed home today.",
 ];
 
 // ===========================================
 // THEME-SPECIFIC CORRECT RESPONSES
-// Keys match against theme names/tags (case-insensitive, partial match)
 // ===========================================
 export const themedCorrectResponses: Record<string, string[]> = {
   // FORKS
   fork: [
-    "Forking brilliant!",
-    "Stick a fork in 'em!",
-    "Two birds, one piece.",
-    "Fork yeah!",
-    "Double trouble served.",
-    "They're forked.",
-    "Can't save both!",
-    "Fork-tastic!",
-    "Dinner is served. 🍴",
-    "Two targets, one move.",
+    "Two victims, one move.",
+    "Pick your poison.",
+    "Can't save both. Won't save either.",
+    "Double homicide.",
+    "They brought a knife. You brought chaos.",
+    "Fork around and find out.",
+    "Two birds. One piece. No survivors.",
+    "Greedy. I respect it.",
+    "Why take one when you can take two?",
+    "The audacity.",
   ],
   "knight fork": [
-    "The knight strikes twice!",
-    "Horsey goes brrr.",
-    "L-shaped destruction.",
-    "The fork master!",
-    "Knights are sneaky like that.",
+    "That knight just ate. No crumbs.",
+    "L-shaped violence.",
+    "The horse has no mercy.",
+    "Horsey chose chaos.",
+    "Knights don't ask permission.",
+    "The L stands for Loss. Theirs.",
+    "That knight woke up dangerous.",
+    "Neigh means neigh. Wait—",
+    "The knight said 'and I took that personally.'",
+    "Bounced in, caused problems, left.",
   ],
   "pawn fork": [
-    "Little pawn, big damage!",
-    "Pawn power!",
-    "The mighty pawn strikes.",
-    "Never underestimate a pawn.",
-    "Small but deadly.",
+    "Little guy woke up violent.",
+    "The disrespect of a pawn fork.",
+    "Smallest piece, biggest damage.",
+    "Pawn said 'know your place.'",
+    "They got forked by a PAWN.",
+    "That's embarrassing for them.",
+    "One square at a time. Two pieces at once.",
   ],
   "royal fork": [
-    "King AND Queen? Greedy!",
-    "The royal treatment.",
-    "Forking royalty!",
-    "Bow before the fork.",
-    "Crown jewels attacked!",
+    "King AND Queen? You're sick.",
+    "The royal family in shambles.",
+    "Monarchy in crisis.",
+    "Crown jewels? More like crown fools.",
+    "Regicide on the menu.",
   ],
 
   // PINS
   pin: [
-    "Pinned and helpless.",
-    "Stuck like glue.",
-    "They can't move!",
-    "Frozen in place.",
-    "Pinned to perfection.",
-    "That piece isn't going anywhere.",
-    "Absolute dominance.",
-    "X-ray vision!",
-    "The pin is in.",
-    "Immobilized!",
+    "Sit. Stay. Good piece.",
+    "Frozen like a deer in headlights.",
+    "Can't move. Won't move. Doesn't matter.",
+    "Pinned to the wall of shame.",
+    "That piece is a statue now.",
+    "X-ray vision activated.",
+    "See through you. Literally.",
+    "Don't. Even. Think about it.",
+    "Stuck between a rock and checkmate.",
+    "That piece just became furniture.",
   ],
   "absolute pin": [
-    "Absolutely pinned!",
-    "Can't move, won't move.",
-    "Illegal to escape!",
-    "The king says stay.",
+    "Absolutely pinned. Absolutely cooked.",
+    "Move and it's illegal. Don't move and suffer.",
+    "The king says you're grounded.",
+    "Legally frozen.",
   ],
 
   // SKEWERS
   skewer: [
-    "Skewered!",
-    "Shish kebab!",
-    "Run away... into danger.",
-    "Move and lose more.",
-    "The reverse pin!",
-    "Skewered like a kebab.",
-    "X-ray attack!",
-    "Through and through.",
-    "Step aside? Don't mind if I do.",
-    "Nowhere to hide.",
+    "Run. Leave your friend behind.",
+    "Save yourself. Abandon the squad.",
+    "Shish kebab'd.",
+    "Threaded the needle. Through their soul.",
+    "Move aside and watch them fall.",
+    "The reverse pin. Same energy.",
+    "X-ray through your defenses.",
+    "Step aside. I wasn't asking.",
+    "Thanks for moving. I'll take what's behind you.",
+    "Coward runs, piece dies.",
   ],
 
   // DISCOVERED ATTACKS
   discovered: [
-    "Surprise!",
-    "Didn't see that coming!",
-    "The hidden threat.",
-    "Revealed!",
-    "Double whammy.",
-    "Discovery channel.",
-    "Now you see it.",
-    "Unmasked!",
-    "Two threats for one.",
-    "Ambush!",
+    "Surprise. You're dead.",
+    "Peek-a-boo. Checkmate.",
+    "The hidden blade.",
+    "Ambush successful.",
+    "Now you see it. Too late.",
+    "The piece behind the piece.",
+    "It was a trap all along.",
+    "Unmasked and unhinged.",
+    "Two threats enter. One survives.",
+    "The real danger was behind me.",
   ],
   "double check": [
-    "DOUBLE CHECK!",
-    "Two checks, one move!",
-    "Can't block that.",
-    "King must run!",
-    "The ultimate threat.",
+    "DOUBLE CHECK. Run, coward.",
+    "Can't block. Can't capture. Can only cry.",
+    "Two checks, zero options.",
+    "The king must flee in shame.",
+    "Ultimate disrespect.",
   ],
 
   // CHECKMATE PATTERNS
   mate: [
-    "Checkmate!",
-    "Game over.",
-    "The king falls.",
-    "No escape.",
-    "That's mate!",
+    "Game. Set. Match. Get out.",
+    "The king falls. Long live nothing.",
     "Lights out.",
-    "GG.",
-    "Crown taken.",
-    "Finished!",
-    "The end.",
+    "That's a wrap.",
+    "GG. No re.",
+    "Crown's in the dirt.",
+    "Finish him.",
+    "Fatality.",
+    "The end. Roll credits.",
+    "You just ended a whole bloodline.",
   ],
   "mateIn1": [
-    "One and done!",
-    "Mate in one, seen!",
-    "Quick finish.",
-    "Instant checkmate.",
-    "One-move wonder.",
+    "One move. One kill.",
+    "Speed run complete.",
+    "Didn't even need a second move.",
+    "Blink and they're dead.",
+    "Express delivery: death.",
   ],
   "mateIn2": [
-    "Two moves to glory!",
-    "Calculated.",
-    "Saw it all the way.",
-    "Two steps ahead.",
-    "The setup pays off.",
+    "Calculated. Twice.",
+    "Two moves to destruction.",
+    "They had one move to live. They wasted it.",
+    "Setup, knockout.",
+    "The one-two punch.",
   ],
   "mateIn3": [
-    "Three moves deep!",
-    "Big brain calculation.",
-    "You saw all that?!",
-    "Grandmaster vision.",
-    "Calculated to the end.",
+    "Three moves ahead. Three moves to death.",
+    "Saw the whole thing. Brutal.",
+    "Planned their demise in advance.",
+    "Long-term violence.",
+    "Patience. Then murder.",
   ],
   "back rank": [
-    "Back rank beauty!",
-    "No escape square!",
-    "Trapped on the back rank.",
-    "Classic back rank.",
-    "The corridor of doom.",
+    "Back rank? Back to the lobby.",
+    "Trapped by their own pawns. Poetic.",
+    "No escape. No air. No hope.",
+    "The corridor of death.",
+    "Suffocated at home.",
+    "Their own wall became their tomb.",
   ],
   "smothered": [
-    "Smothered mate!",
-    "Suffocated by friends.",
-    "The knight does it again.",
-    "No room to breathe.",
-    "Classic smother!",
+    "Smothered by friends. Tragic.",
+    "Killed by their own pieces.",
+    "The knight said 'shhhh.'",
+    "No room to breathe. No room to live.",
+    "Suffocated. By a horse.",
   ],
   "arabian": [
-    "Arabian mate!",
-    "Rook and knight combo.",
-    "Ancient technique.",
-    "The Arabian classic.",
+    "Arabian mate. Ancient violence.",
+    "A classic kill.",
+    "Rook and knight: the deadly duo.",
+    "Old school destruction.",
   ],
   "anastasia": [
-    "Anastasia's mate!",
-    "The deadly duo.",
-    "Knight and rook strike.",
-    "Anastasia approved.",
+    "Anastasia's mate. Elegant death.",
+    "The wall and the knight agree: you're done.",
+    "Historic execution.",
   ],
 
   // SACRIFICES
   sacrifice: [
-    "Worth it!",
-    "Sacrifice accepted... and punished!",
-    "Gave to gain.",
-    "The gambit pays off.",
-    "Brilliant sacrifice!",
-    "Material is temporary.",
-    "Who needs that piece anyway?",
-    "Sacrifice for glory!",
+    "Worth. Every. Piece.",
+    "Sacrifice accepted. Consequences delivered.",
+    "Gave a piece. Took their soul.",
+    "Material is temporary. Victory is forever.",
+    "A small price for total destruction.",
+    "Traded wood for glory.",
+    "They took the bait. Now they pay.",
+    "You gave them a gift. It was a bomb.",
   ],
   "queen sacrifice": [
-    "QUEEN SAC!",
-    "The queen dies... for glory!",
-    "Worth the crown.",
-    "Bold move!",
-    "The ultimate sacrifice.",
+    "QUEEN SAC. You absolute psycho.",
+    "Gave up the queen. Took their will to live.",
+    "The queen died for this. Worth it.",
+    "Biggest piece off. Biggest flex on.",
+    "Crown for a kill. Fair trade.",
   ],
 
   // DEFLECTION / DECOY / INTERFERENCE
   deflection: [
-    "Deflected!",
-    "Look over there!",
-    "Distraction successful.",
-    "Defender removed.",
-    "Misdirection master.",
+    "Look over there! ...too late.",
+    "Distracted. Destroyed.",
+    "Defender had one job. Failed.",
+    "Pulled away. Punished.",
+    "Misdirection complete.",
   ],
   decoy: [
-    "Baited!",
     "Walked right into it.",
-    "The trap worked.",
-    "Lured into position.",
-    "Decoy deployed.",
+    "Come here... perfect.",
+    "Baited. Hooked. Cooked.",
+    "They took the bait. They always do.",
+    "Lured to their doom.",
   ],
   interference: [
-    "Interference!",
-    "Blocked the connection.",
-    "Communication cut.",
-    "In the way!",
-    "Disrupted.",
+    "Blocked. Connection lost.",
+    "Communication severed.",
+    "I stepped between you and safety.",
+    "Your friends can't help you now.",
+    "Disrupted. Dismantled.",
   ],
   overloading: [
-    "Overloaded!",
-    "Too many jobs.",
-    "Can't do both!",
-    "Stretched too thin.",
-    "One piece, two duties.",
+    "Too many jobs. Not enough piece.",
+    "Overworked and overwhelmed.",
+    "Can't be everywhere. Paid the price.",
+    "One piece, two duties, zero chance.",
+    "Stretched thin. Snapped.",
   ],
   "removing the defender": [
     "Defender deleted.",
-    "Who's protecting now?",
-    "Support removed.",
-    "Exposed!",
-    "No more backup.",
+    "Bodyguard dismissed.",
+    "No backup. No hope.",
+    "Took out the support. Took out the king.",
+    "Who's protecting you now?",
   ],
   attraction: [
-    "Come here...",
-    "Lured in!",
-    "Walked right into it.",
-    "The trap is set.",
+    "Come closer... closer... gotcha.",
+    "Lured into the kill zone.",
+    "Attracted to disaster.",
+    "Walked right where I wanted.",
   ],
 
   // ZWISCHENZUG (INTERMEZZO)
   zwischenzug: [
-    "Zwischenzug!",
-    "In-between move!",
-    "Wait, not yet!",
-    "Sneaky intermezzo.",
-    "The unexpected pause.",
+    "Wait wait wait. Not so fast.",
+    "In-between move. Out-of-this-world damage.",
+    "You expected A. I did B. Then A.",
+    "Sneaky intermediate chaos.",
+    "The pause that kills.",
   ],
   intermezzo: [
-    "Intermezzo!",
-    "In-between brilliance.",
-    "Patience pays.",
-    "Not so fast!",
+    "Hold on. First, violence.",
+    "Patience. Then destruction.",
+    "The unexpected intermission.",
+    "Wait your turn. My threat first.",
   ],
 
   // TRAPPED PIECES
   "trapped piece": [
-    "Trapped!",
-    "No way out.",
-    "Caged!",
-    "Going nowhere.",
-    "Caught!",
+    "Trapped like a rat.",
+    "Nowhere to run.",
+    "Caged. Soon to be captured.",
+    "That piece is already dead.",
+    "The walls closed in.",
   ],
   trapping: [
-    "Trapped!",
-    "Nowhere to run.",
-    "Boxed in!",
-    "The cage closes.",
-    "Escape impossible.",
+    "Got 'em cornered.",
+    "Escape? In this economy?",
+    "Boxed in. Checked out.",
+    "The cage is complete.",
+    "Going nowhere. Ever.",
   ],
 
   // HANGING PIECES
   hanging: [
-    "Free piece!",
-    "Don't mind if I do.",
-    "Undefended? Mine!",
-    "Easy pickings.",
+    "Free real estate.",
+    "Undefended? Don't mind if I do.",
+    "They left that hanging. I left it gone.",
     "Gift accepted.",
+    "Thanks for the donation.",
   ],
 
   // ENDGAME
   endgame: [
-    "Endgame technique!",
-    "The finish line.",
-    "Converting the advantage.",
-    "Endgame excellence.",
-    "Technical precision.",
+    "Endgame technique. Clinical.",
+    "Slow death. Best death.",
+    "The conversion begins.",
+    "From here, it's just cleanup.",
+    "Technical knockout incoming.",
   ],
   promotion: [
-    "New queen incoming!",
-    "Pawn's big day!",
-    "Promotion!",
-    "From pawn to queen!",
-    "Level up!",
+    "Pawn glow-up.",
+    "From nothing to everything.",
+    "That pawn believed in itself.",
+    "Smallest to strongest. Inspiring.",
+    "New queen just dropped.",
   ],
   opposition: [
-    "Opposition seized!",
-    "King battle won.",
-    "The key squares.",
-    "Endgame fundamentals.",
+    "King vs King. Yours loses.",
+    "Opposition seized. Game over.",
+    "The stare-down champion.",
+    "You blinked first.",
   ],
 
   // CAPTURES
   capture: [
-    "Clean capture!",
-    "Material gained.",
-    "Took it.",
-    "Nom nom.",
-    "Piece collected.",
+    "Nom.",
+    "Yoink.",
+    "Deleted.",
+    "One less problem.",
+    "Piece acquired.",
   ],
   "winning material": [
-    "Free real estate.",
-    "Material advantage!",
-    "That's profit.",
-    "Banking material.",
+    "Material up. Morale up.",
+    "Banking pieces like a loan shark.",
+    "Profit secured.",
+    "You're richer now. In chess.",
   ],
 
   // CHECK
   check: [
-    "Check!",
-    "King under fire.",
-    "Move that king!",
+    "Run, king. RUN.",
     "Incoming!",
-    "Your majesty, duck!",
+    "Your majesty, duck.",
+    "The king flinches.",
+    "Check yourself. Literally.",
   ],
 
   // CASTLING
   castling: [
-    "Castle complete!",
-    "King is safe.",
-    "Tucked away.",
-    "Safety first.",
-    "Fortress built.",
+    "King's in the bunker.",
+    "Safety protocol engaged.",
+    "Castle built. Storm coming.",
+    "Tucked in. Ready to attack.",
+    "Fort Knox'd.",
   ],
 
   // OPENING
   opening: [
-    "Strong opening!",
-    "Development first.",
-    "Center control.",
-    "Principles followed.",
-    "Solid start.",
+    "Principles followed. Chaos incoming.",
+    "Solid foundation for violence.",
+    "The calm before the storm.",
+    "Setup complete. Let's eat.",
+    "Opening book? More like opening hook.",
   ],
 
   // DEFENSE
   defense: [
-    "Solid defense!",
-    "Held the line.",
-    "Not today!",
-    "Threat neutralized.",
-    "Defense wins games.",
+    "Not today.",
+    "Blocked and survived.",
+    "You shall not pass.",
+    "Threat? What threat?",
+    "Defense wins championships.",
   ],
   "defensive move": [
-    "Great defense!",
-    "Crisis averted.",
-    "Saved it!",
-    "Dodged that one.",
+    "Crisis? What crisis?",
+    "Dodged that bullet.",
+    "Survived to fight another move.",
+    "Teflon defense.",
   ],
 
   // QUIET MOVES
   "quiet move": [
-    "Quiet but deadly.",
-    "The calm before the storm.",
-    "Subtle!",
-    "No rush.",
-    "Positional!",
+    "Quiet. Deadly.",
+    "No rush. Just doom.",
+    "The calm before their death.",
+    "Subtle violence is still violence.",
+    "They won't see this one until it's too late.",
   ],
 };
 
@@ -379,115 +385,115 @@ export const themedCorrectResponses: Record<string, string[]> = {
 // ===========================================
 export const streakResponses: Record<number, string[]> = {
   2: [
-    "Two in a row!",
-    "Double trouble.",
+    "Two in a row. They're scared now.",
+    "Back to back. Getting warm.",
     "Heating up...",
-    "Back to back!",
-    "Encore!",
+    "Double kill.",
+    "That's a pattern forming.",
   ],
   3: [
-    "Three-peat!",
-    "Hat trick!",
-    "On fire!",
-    "Unstoppable.",
-    "Triple threat.",
+    "HAT TRICK.",
+    "Three-peat. They're panicking.",
+    "Triple kill. Rampage incoming.",
+    "On. Fire.",
+    "Three bodies. Keep stacking.",
   ],
   5: [
-    "High five! 🖐️",
-    "Halfway to legend.",
-    "Five alive!",
-    "Dominant.",
-    "Can't touch this.",
+    "FIVE STREAK. You're a menace.",
+    "Killing spree.",
+    "Five and alive. They're not.",
+    "Hand of death.",
+    "High five... of doom.",
   ],
   10: [
-    "Double digits!",
-    "TEN. Sheesh.",
-    "Machine mode.",
-    "Are you a GM?",
-    "Flawless.",
+    "TEN. You're actually scary.",
+    "Double digits of destruction.",
+    "Ten down. More to go.",
+    "Unstoppable.",
+    "The streak has legs now.",
   ],
   15: [
-    "Fifteen and thriving!",
-    "You're built different.",
-    "This is scary good.",
-    "No signs of stopping.",
-    "Legendary run.",
+    "FIFTEEN. This is a crime scene.",
+    "Are you okay? This is excessive.",
+    "Fifteen and thriving. They're not surviving.",
+    "The bodies keep piling.",
+    "Call the authorities.",
   ],
   20: [
-    "TWENTY. Wow.",
-    "Hall of fame stuff.",
-    "Is this even legal?",
-    "Absolute monster.",
-    "Peak performance.",
+    "TWENTY. You're a war crime.",
+    "Two decades of damage. Wait, wrong math.",
+    "This is getting uncomfortable.",
+    "You should be stopped. But don't stop.",
+    "Twenty. Legendary.",
   ],
   25: [
-    "Quarter century!",
-    "You can't be stopped.",
-    "Grandmaster vibes.",
-    "This is art.",
-    "Incredible.",
+    "Quarter hundred. Is that a thing? It is now.",
+    "Twenty-five. Silver anniversary of pain.",
+    "This streak has its own Wikipedia page.",
+    "You're writing history.",
+    "Absolutely unhinged run.",
   ],
   30: [
-    "THIRTY?!",
-    "You're in the zone.",
-    "History in the making.",
-    "Unreal.",
-    "Built different.",
+    "THIRTY?! Go outside. After you're done.",
+    "Three. Zero. Three whole tens.",
+    "The streak is old enough to have opinions now.",
+    "You're not human.",
+    "I've run out of words. Keep going anyway.",
   ],
   40: [
-    "Forty and counting!",
-    "Save some for the rest of us.",
-    "This is getting ridiculous.",
-    "Untouchable.",
-    "Magnus who?",
+    "FORTY. This is performance art.",
+    "Are you speedrunning chess mastery?",
+    "Forty streak. Magnus is watching. Nervously.",
+    "This is historically significant.",
+    "Scholars will study this run.",
   ],
   50: [
-    "FIFTY! 🔥",
-    "Half a hundred!",
-    "You're a legend.",
-    "Take a bow.",
-    "Absolutely insane.",
+    "FIFTY. FIFTY.",
+    "Half a hundred. All skill.",
+    "The streak of legends.",
+    "You've peaked. Wait no you haven't.",
+    "This is the greatest run I've ever seen.",
   ],
   75: [
-    "75?! Unbelievable.",
-    "You're writing history.",
-    "I'm out of words.",
-    "GOAT status.",
-    "Bow down.",
+    "SEVENTY-FIVE?!",
+    "I need to lie down.",
+    "This shouldn't be possible.",
+    "You've transcended.",
+    "The streak has achieved consciousness.",
   ],
   100: [
-    "💯 ONE HUNDRED! 💯",
-    "The promised land.",
-    "You did it. You crazy legend.",
-    "Perfection achieved.",
-    "Century club!",
+    "ONE. HUNDRED.",
+    "The prophecy is fulfilled.",
+    "You did it. You absolute madman.",
+    "100 streak. Retire. You've won chess.",
+    "The century. Immortality achieved.",
   ],
 };
 
 // ===========================================
-// WRONG RESPONSES (encouraging)
+// WRONG RESPONSES (still encouraging but with flavor)
 // ===========================================
 export const wrongResponses = [
-  "Not quite. Try again!",
-  "Close! Keep going.",
-  "Oops. You got this.",
-  "Almost there.",
-  "Tricky one! Retry?",
-  "Nope, but you're learning.",
-  "Missed it. No worries.",
-  "That's a tough one.",
-  "Shake it off.",
-  "Part of the journey.",
-  "Good try though.",
-  "The board is sneaky.",
-  "Happens to the best.",
-  "Reset and refocus.",
-  "Keep looking!",
-  "Not this time.",
-  "Learn and move on.",
-  "Chess is hard!",
-  "One step closer.",
-  "You'll get the next one.",
+  "Oops. Violence delayed, not denied.",
+  "Nope. But you'll get 'em.",
+  "Wrong victim. Try again.",
+  "Not that one. The other one.",
+  "Close. The board is tricky.",
+  "They survived. For now.",
+  "Missed. Reload.",
+  "That ain't it. But you're close.",
+  "The pieces are lying to you.",
+  "Almost. Almost doesn't count though.",
+  "Swing and a miss. Swing again.",
+  "They escaped. Temporarily.",
+  "Not quite. Eyes on the prize.",
+  "Wrong move. Right energy though.",
+  "The board said no. Ask again.",
+  "Denied. For now.",
+  "That piece lives another day.",
+  "Try again. They can't hide forever.",
+  "Missed opportunity. Create another.",
+  "Not today. But soon.",
 ];
 
 // ===========================================
@@ -495,42 +501,42 @@ export const wrongResponses = [
 // ===========================================
 export const themedWrongResponses: Record<string, string[]> = {
   fork: [
-    "Look for two targets!",
-    "Find the fork!",
-    "Which piece attacks two?",
-    "Think forks...",
+    "Find two targets. Hurt both.",
+    "Something attacks two things...",
+    "Fork's hiding. Find it.",
+    "Two victims await.",
   ],
   pin: [
-    "Something's pinned...",
-    "Look for the line!",
+    "Something's stuck...",
     "What can't move?",
-    "Find the pin!",
+    "Find the frozen piece.",
+    "The pin is there. See it.",
   ],
   skewer: [
-    "X-ray through!",
-    "Make them move into trouble.",
-    "Think skewer...",
+    "Force them to move. Take what's behind.",
+    "X-ray through...",
+    "Big piece hides a little one.",
   ],
   mate: [
-    "Checkmate is close!",
-    "The king can be trapped.",
-    "Find the killing blow.",
-    "Mate is there!",
+    "The kill is there. Find it.",
+    "Checkmate exists. See it.",
+    "End them. Where's the finish?",
+    "The king can die here.",
   ],
   mateIn1: [
-    "One move wins!",
-    "Checkmate in one exists.",
-    "Look closer!",
+    "One move kills. Which one?",
+    "Checkmate in one. It's there.",
+    "Finish them. One shot.",
   ],
   sacrifice: [
-    "Sometimes you have to give.",
-    "What if you sacrificed?",
+    "Sometimes you gotta give to get.",
+    "What if you... sacrificed something?",
     "Material isn't everything.",
   ],
   discovered: [
-    "What's hiding?",
+    "What's hiding behind?",
     "Move one, reveal another.",
-    "The hidden attack...",
+    "The real threat is behind.",
   ],
 };
 
@@ -538,51 +544,47 @@ export const themedWrongResponses: Record<string, string[]> = {
 // STREAK BROKEN RESPONSES
 // ===========================================
 export const streakBrokenResponses = [
-  "Streak broken, but what a run!",
-  "All good things... Now rebuild!",
-  "That was impressive though.",
-  "Back to zero, back to greatness.",
-  "The comeback starts now.",
-  "Shake it off. Go again.",
-  "Nice streak! Let's beat it.",
-  "Reset the counter, not the skill.",
-  "That was a good run!",
-  "Time for a new streak.",
+  "Streak's dead. Revenge arc starts now.",
+  "That was a good run. This one will be better.",
+  "The streak fell. You didn't.",
+  "Back to zero. Back to hunting.",
+  "RIP streak. Time for a new one.",
+  "Streak broken but not forgotten.",
+  "The comeback starts here.",
+  "That streak lived a good life.",
+  "Gone but not forgotten. Build again.",
+  "One ends. Another begins.",
 ];
 
 // ===========================================
 // SIMPLE RESPONSES (for puzzles 2, 4, etc.)
 // ===========================================
 export const simpleCorrectResponses = [
-  "Correct.",
+  "Yep.",
   "Got it.",
-  "Right.",
+  "Clean.",
+  "Next.",
+  "Done.",
   "Yes.",
-  "Correct!",
-  "✓",
 ];
 
 export const simpleWrongResponses = [
-  "Try again.",
-  "Not quite.",
   "Nope.",
-  "Incorrect.",
+  "Try again.",
+  "Not that.",
+  "Wrong.",
   "Miss.",
 ];
 
 // ===========================================
 // WHICH PUZZLES GET FUN MESSAGES
-// Puzzles 1, 3, 5 get themed/fun responses
-// Puzzles 2, 4 get simple "Correct" / "Try again"
 // ===========================================
 const FUN_MESSAGE_PUZZLES = new Set([1, 3, 5]);
 
 export function shouldShowFunMessage(puzzleNumber: number): boolean {
-  // First 5 puzzles follow the 1,3,5 pattern
   if (puzzleNumber <= 5) {
     return FUN_MESSAGE_PUZZLES.has(puzzleNumber);
   }
-  // After puzzle 5, show fun message every 3rd puzzle
   return puzzleNumber % 3 === 0;
 }
 
@@ -594,21 +596,15 @@ function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/**
- * Match theme string against our themed responses
- * Handles: "Knight forks", "fork", "mateIn2", "back rank mate", etc.
- */
 function findThemeMatch(theme: string | string[]): string | null {
   const themes = Array.isArray(theme) ? theme : [theme];
   const normalizedThemes = themes.map(t => t.toLowerCase());
 
-  // Priority order: more specific matches first
   const keys = Object.keys(themedCorrectResponses).sort((a, b) => b.length - a.length);
 
   for (const key of keys) {
     const keyLower = key.toLowerCase();
     for (const t of normalizedThemes) {
-      // Check if theme contains the key or key contains the theme
       if (t.includes(keyLower) || keyLower.includes(t)) {
         return key;
       }
@@ -629,12 +625,10 @@ export function getCorrectResponse(theme?: string | string[]): string {
 }
 
 export function getStreakResponse(streak: number): string {
-  // Find exact streak tier
   if (streakResponses[streak]) {
     return pickRandom(streakResponses[streak]);
   }
 
-  // For non-exact matches, find applicable tier
   const tiers = Object.keys(streakResponses)
     .map(Number)
     .sort((a, b) => a - b);
@@ -670,15 +664,6 @@ export function getSimpleWrongResponse(): string {
   return pickRandom(simpleWrongResponses);
 }
 
-/**
- * Main function - get appropriate response based on puzzle result
- *
- * @param correct - Whether the puzzle was solved correctly
- * @param streak - Current streak count (after this puzzle)
- * @param theme - Puzzle theme(s) for themed responses
- * @param previousStreak - Streak before this puzzle (for streak broken messages)
- * @param puzzleNumber - Which puzzle in the set (1-indexed) for fun/simple message logic
- */
 export function getPuzzleResponse(
   correct: boolean,
   streak: number,
@@ -686,7 +671,6 @@ export function getPuzzleResponse(
   previousStreak?: number,
   puzzleNumber?: number
 ): string {
-  // Streak milestones ALWAYS get special messages
   if (correct && streakResponses[streak]) {
     return getStreakResponse(streak);
   }
@@ -694,19 +678,15 @@ export function getPuzzleResponse(
     return getStreakResponse(streak);
   }
 
-  // Streak broken ALWAYS gets special message
   if (!correct && previousStreak && previousStreak >= 5) {
     return getStreakBrokenResponse();
   }
 
-  // Check if this puzzle should get a fun message
   const showFun = puzzleNumber ? shouldShowFunMessage(puzzleNumber) : true;
 
   if (!showFun) {
-    // Simple response for puzzles 2, 4, etc.
     return correct ? getSimpleCorrectResponse() : getSimpleWrongResponse();
   }
 
-  // Fun response for puzzles 1, 3, 5, etc.
   return correct ? getCorrectResponse(theme) : getWrongResponse(theme);
 }
