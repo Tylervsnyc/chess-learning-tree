@@ -781,7 +781,7 @@ export default function LessonPage() {
                 onSquareClick: onSquareClick,
                 squareStyles: squareStyles,
                 boardStyle: {
-                  borderRadius: '8px',
+                  borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 },
                 darkSquareStyle: { backgroundColor: '#779952' },
@@ -790,31 +790,31 @@ export default function LessonPage() {
             />
           </div>
 
-          {/* Status text - fixed height to prevent layout shift */}
-          <div className="text-center mt-3 h-6">
-            {moveStatus === 'playing' && (
+          {/* Result popup - directly below board */}
+          {moveStatus === 'correct' && (
+            <PuzzleResultPopup
+              type="correct"
+              onContinue={handleContinue}
+            />
+          )}
+
+          {moveStatus === 'wrong' && (
+            <PuzzleResultPopup
+              type="incorrect"
+              onContinue={handleContinue}
+              showSolution={showingSolution}
+              onShowSolution={showSolutionAndContinue}
+            />
+          )}
+
+          {/* Status text - only show when playing */}
+          {moveStatus === 'playing' && (
+            <div className="text-center mt-3 h-6">
               <span className="text-gray-400">Find the best move</span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Bottom result bar - Duolingo style */}
-      {moveStatus === 'correct' && (
-        <PuzzleResultPopup
-          type="correct"
-          onContinue={handleContinue}
-        />
-      )}
-
-      {moveStatus === 'wrong' && (
-        <PuzzleResultPopup
-          type="incorrect"
-          onContinue={handleContinue}
-          showSolution={showingSolution}
-          onShowSolution={showSolutionAndContinue}
-        />
-      )}
     </div>
   );
 }

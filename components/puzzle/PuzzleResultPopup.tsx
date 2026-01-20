@@ -20,12 +20,13 @@ export function PuzzleResultPopup({
   return (
     <div
       className={`
-        fixed bottom-0 left-0 right-0 z-50
-        px-4 py-4 pb-8
+        w-full z-50
+        px-4 py-4
+        rounded-b-2xl
         ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFDFE0]'}
       `}
       style={{
-        animation: 'slideUp 0.2s ease-out',
+        animation: 'fadeIn 0.2s ease-out',
       }}
     >
       <div className="max-w-lg mx-auto">
@@ -75,14 +76,12 @@ export function PuzzleResultPopup({
       </div>
 
       <style jsx>{`
-        @keyframes slideUp {
+        @keyframes fadeIn {
           0% {
             opacity: 0;
-            transform: translateY(100%);
           }
           100% {
             opacity: 1;
-            transform: translateY(0);
           }
         }
       `}</style>
