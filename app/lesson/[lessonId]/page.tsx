@@ -211,7 +211,7 @@ export default function LessonPage() {
     loadLesson();
   }, [lessonId]);
 
-  // Reset puzzle state when current puzzle changes
+  // Reset puzzle state when current puzzle changes or when entering retry mode
   useEffect(() => {
     if (currentPuzzle) {
       setCurrentFen(currentPuzzle.puzzleFen);
@@ -221,7 +221,7 @@ export default function LessonPage() {
       setShowingSolution(false);
       setSolutionMoveShown(false);
     }
-  }, [currentPuzzle]);
+  }, [currentPuzzle, inRetryMode, currentIndex]);
 
   // Chess game for current position
   const game = useMemo(() => {
