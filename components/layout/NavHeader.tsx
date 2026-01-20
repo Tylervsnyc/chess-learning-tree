@@ -91,17 +91,17 @@ export function NavHeader() {
                 {learnDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[120px] z-50">
                     {getUnlockedLevels(profile?.elo_rating || 800).map((level) => (
-                      <Link
+                      <button
                         key={level.key}
-                        href={`/learn?level=${level.key}`}
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
                         onClick={() => {
                           setLearnDropdownOpen(false);
+                          router.push(`/learn?level=${level.key}`);
                           window.scrollTo(0, 0);
                         }}
                       >
                         {level.label}
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 )}

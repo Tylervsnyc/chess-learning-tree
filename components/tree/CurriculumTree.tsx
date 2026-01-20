@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { level1, Module, LessonCriteria, Level } from '@/data/level1-curriculum';
 import { level2 } from '@/data/level2-curriculum';
@@ -191,6 +191,11 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
 
   const currentLevel = LEVELS[initialLevel];
+
+  // Reset expanded module when level changes
+  useEffect(() => {
+    setExpandedModule('mod-1');
+  }, [initialLevel]);
 
   const allLessonIds = useMemo(() => {
     return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
