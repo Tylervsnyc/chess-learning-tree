@@ -9,38 +9,6 @@ import { useLessonProgress } from '@/hooks/useProgress';
 
 const LEVELS: Level[] = [level1, level2, level3];
 
-// Bold Primary palette with neon glow
-const COLORS = {
-  bg: '#131F24',
-  surface: '#1A2C35',
-  primary: '#58CC02',   // Green
-  secondary: '#FF4B4B', // Red
-  accent1: '#1CB0F6',   // Blue
-  accent2: '#FFC800',   // Yellow
-  accent3: '#FF9600',   // Orange
-};
-
-const GLOW = 0; // Flat - no glow
-
-// Module colors cycle through the palette
-const MODULE_COLORS = [
-  COLORS.primary,   // Green
-  COLORS.accent1,   // Blue
-  COLORS.accent3,   // Orange
-  COLORS.secondary, // Red
-  COLORS.accent2,   // Yellow
-];
-
-// Glow helper functions
-const boxGlow = (color: string, intensity = GLOW) =>
-  `0 0 ${intensity}px ${color}50, 0 0 ${intensity * 2}px ${color}25`;
-
-const textGlow = (color: string, intensity = GLOW / 2) =>
-  `0 0 ${intensity}px ${color}`;
-
-const subtleGlow = (color: string) =>
-  `0 0 ${GLOW / 3}px ${color}40, inset 0 0 ${GLOW / 2}px ${color}15`;
-
 interface LessonCardProps {
   lesson: LessonCriteria;
   moduleColor: string;
@@ -61,45 +29,32 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted }: LessonCard
     <button
       onClick={handleClick}
       disabled={!isUnlocked}
-      className="w-full text-left p-3 rounded-xl transition-all border"
-      style={{
-        backgroundColor: isUnlocked ? COLORS.surface : '#0D1B21',
-        borderColor: isUnlocked
-          ? isCompleted ? `${COLORS.primary}60` : `${moduleColor}40`
-          : 'rgba(255,255,255,0.05)',
-        boxShadow: isUnlocked && !isCompleted ? subtleGlow(moduleColor) : 'none',
-        opacity: isUnlocked ? 1 : 0.5,
-        cursor: isUnlocked ? 'pointer' : 'not-allowed',
-      }}
+      className={`w-full text-left p-3 rounded-xl transition-all border ${
+        isUnlocked
+          ? 'bg-[#1A2C35] hover:bg-[#2A3C45] border-white/10 hover:border-white/20 cursor-pointer'
+          : 'bg-[#0D1B21] border-white/5 cursor-not-allowed opacity-60'
+      }`}
     >
       <div className="flex items-center gap-3">
         <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
+          className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
+            isCompleted ? 'text-white' : isUnlocked ? 'text-white' : 'text-gray-500'
+          }`}
           style={{
-            backgroundColor: isCompleted ? COLORS.primary : isUnlocked ? moduleColor : COLORS.surface,
-            color: isCompleted || isUnlocked ? COLORS.bg : '#666',
-            boxShadow: isCompleted
-              ? boxGlow(COLORS.primary, GLOW / 2)
-              : isUnlocked ? boxGlow(moduleColor, GLOW / 3) : 'none',
+            backgroundColor: isCompleted ? '#58CC02' : isUnlocked ? moduleColor : '#1A2C35',
           }}
         >
           {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
         </div>
         <div className="flex-1 min-w-0">
-          <div
-            className="font-medium truncate"
-            style={{
-              color: isUnlocked ? '#fff' : '#666',
-              textShadow: isUnlocked && !isCompleted ? textGlow(moduleColor, 8) : 'none',
-            }}
-          >
+          <div className={`font-medium truncate ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
             {lesson.name}
           </div>
-          <div className="text-xs truncate" style={{ color: isUnlocked ? '#9CA3AF' : '#555' }}>
+          <div className={`text-xs truncate ${isUnlocked ? 'text-gray-400' : 'text-gray-600'}`}>
             {lesson.description}
           </div>
         </div>
-        <div style={{ color: isUnlocked ? moduleColor : '#444' }}>
+        <div className={isUnlocked ? 'text-gray-500' : 'text-gray-700'}>
           {isUnlocked ? '→' : '🔒'}
         </div>
       </div>
@@ -116,6 +71,17 @@ interface ModuleSectionProps {
   isLessonUnlocked: (id: string, all: string[]) => boolean;
   isLessonCompleted: (id: string) => boolean;
 }
+
+const MODULE_COLORS = [
+  '#58CC02', // Green
+  '#1CB0F6', // Blue
+  '#FF9600', // Orange
+  '#FF4B4B', // Red
+  '#A560E8', // Purple
+  '#2FCBEF', // Cyan
+  '#FFC800', // Yellow
+  '#FF6B6B', // Coral
+];
 
 function ModuleSection({
   module,
@@ -139,50 +105,32 @@ function ModuleSection({
         onClick={onToggle}
         className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all"
         style={{
-          backgroundColor: isExpanded ? color : COLORS.surface,
-          boxShadow: isExpanded ? boxGlow(color) : 'none',
-          border: isExpanded ? 'none' : `1px solid ${color}30`,
+          backgroundColor: isExpanded ? color : '#1A2C35',
         }}
       >
         <div
           className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold"
           style={{
-            backgroundColor: isModuleComplete
-              ? COLORS.primary
-              : isExpanded ? 'rgba(0,0,0,0.25)' : color,
+            backgroundColor: isModuleComplete ? '#58CC02' : isExpanded ? 'rgba(255,255,255,0.2)' : color,
             color: 'white',
-            boxShadow: isModuleComplete
-              ? boxGlow(COLORS.primary, GLOW / 2)
-              : !isExpanded ? boxGlow(color, GLOW / 3) : 'none',
           }}
         >
           {isModuleComplete ? '✓' : module.id.replace('mod-', '')}
         </div>
         <div className="flex-1 text-left">
-          <div
-            className="font-bold text-lg"
-            style={{
-              color: 'white',
-              textShadow: isExpanded ? 'none' : textGlow(color, 10),
-            }}
-          >
-            {module.name}
-          </div>
-          <div style={{ color: isExpanded ? 'rgba(255,255,255,0.7)' : '#9CA3AF' }}>
+          <div className="font-bold text-white text-lg">{module.name}</div>
+          <div className={`text-sm ${isExpanded ? 'text-white/70' : 'text-gray-400'}`}>
             {completedCount}/{module.lessons.length} lessons
           </div>
         </div>
-        <div
-          className={`text-2xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-          style={{ color: isExpanded ? 'white' : color }}
-        >
+        <div className={`text-2xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
           ▼
         </div>
       </button>
 
       {/* Lessons */}
       {isExpanded && (
-        <div className="mt-3 ml-4 space-y-2">
+        <div className="mt-2 ml-4 space-y-2">
           {module.lessons.map(lesson => (
             <LessonCard
               key={lesson.id}
@@ -217,77 +165,52 @@ export function CurriculumTree() {
 
   const handleLevelChange = (index: number) => {
     setSelectedLevelIndex(index);
-    setExpandedModule('mod-1');
+    setExpandedModule('mod-1'); // Reset to first module when changing levels
   };
 
   // Count totals for current level
   const totalLessons = allLessonIds.length;
   const completedCount = allLessonIds.filter(id => completedLessons.includes(id)).length;
 
-  // Level tab colors
-  const levelColors = [COLORS.primary, COLORS.accent1, COLORS.accent3];
-
-  // Don't render until progress is loaded
+  // Don't render until progress is loaded to avoid hydration mismatch
   if (!loaded) {
     return (
       <div className="px-4 pb-20">
         <div className="text-center mb-6">
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: COLORS.primary, textShadow: textGlow(COLORS.primary) }}
-          >
-            {currentLevel.name}
-          </h1>
-          <p style={{ color: '#9CA3AF' }}>{currentLevel.ratingRange} • {totalLessons} lessons</p>
+          <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
+          <p className="text-gray-400">{currentLevel.ratingRange} • {totalLessons} lessons</p>
         </div>
-        <div className="text-center py-8" style={{ color: '#9CA3AF' }}>Loading...</div>
+        <div className="text-center text-gray-400 py-8">Loading...</div>
       </div>
     );
   }
 
   return (
     <div className="px-4 pb-20">
-      {/* Title */}
-      <h1
-        className="text-center text-2xl font-bold mb-4 tracking-wide"
-        style={{
-          color: COLORS.primary,
-          textShadow: textGlow(COLORS.primary),
-        }}
-      >
-        THE CHESS PATH
-      </h1>
 
       {/* Level selector tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto hide-scrollbar">
+      <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
         {LEVELS.map((level, index) => {
           const levelLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
           const levelCompletedCount = levelLessonIds.filter(id => completedLessons.includes(id)).length;
           const isSelected = index === selectedLevelIndex;
-          const tabColor = levelColors[index % levelColors.length];
 
           return (
             <button
               key={level.id}
               onClick={() => handleLevelChange(index)}
-              className="flex-shrink-0 px-4 py-3 rounded-xl transition-all"
-              style={{
-                backgroundColor: isSelected ? tabColor : COLORS.surface,
-                color: isSelected ? COLORS.bg : tabColor,
-                border: `2px solid ${isSelected ? tabColor : `${tabColor}50`}`,
-                boxShadow: isSelected ? boxGlow(tabColor) : 'none',
-                textShadow: !isSelected ? textGlow(tabColor, 6) : 'none',
-              }}
+              className={`flex-shrink-0 px-4 py-3 rounded-xl transition-all border ${
+                isSelected
+                  ? 'bg-[#58CC02] border-[#58CC02] text-white'
+                  : 'bg-[#1A2C35] border-white/10 text-gray-300 hover:border-white/20'
+              }`}
             >
               <div className="font-bold text-sm">Level {index + 1}</div>
-              <div
-                className="text-xs"
-                style={{ opacity: isSelected ? 0.9 : 0.7 }}
-              >
+              <div className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
                 {level.ratingRange}
               </div>
               {levelCompletedCount > 0 && (
-                <div className="text-xs mt-1" style={{ opacity: 0.8 }}>
+                <div className={`text-xs mt-1 ${isSelected ? 'text-white/70' : 'text-gray-500'}`}>
                   {levelCompletedCount}/{levelLessonIds.length}
                 </div>
               )}
@@ -298,15 +221,14 @@ export function CurriculumTree() {
 
       {/* Level header */}
       <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-white">{currentLevel.name}</h2>
-        <p style={{ color: '#9CA3AF' }}>
+        <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
+        <p className="text-gray-400">
           {currentLevel.ratingRange} • {completedCount}/{totalLessons} lessons completed
         </p>
         {completedCount > 0 && (
           <button
             onClick={resetProgress}
-            className="mt-2 text-xs underline transition-colors"
-            style={{ color: '#666' }}
+            className="mt-2 text-xs text-gray-500 hover:text-gray-400 underline"
           >
             Reset progress
           </button>
@@ -315,23 +237,16 @@ export function CurriculumTree() {
 
       {/* Progress bar */}
       <div className="mb-6 mx-4">
-        <div
-          className="h-3 rounded-full overflow-hidden"
-          style={{ backgroundColor: COLORS.surface }}
-        >
+        <div className="h-2 bg-[#1A2C35] rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${(completedCount / totalLessons) * 100}%`,
-              backgroundColor: COLORS.primary,
-              boxShadow: completedCount > 0 ? `0 0 ${GLOW}px ${COLORS.primary}80` : 'none',
-            }}
+            className="h-full bg-[#58CC02] transition-all duration-500"
+            style={{ width: `${(completedCount / totalLessons) * 100}%` }}
           />
         </div>
       </div>
 
       {/* Modules */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {currentLevel.modules.map((module, index) => (
           <ModuleSection
             key={module.id}
