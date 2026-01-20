@@ -2,8 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { level1, Module, LessonCriteria } from '@/data/level1-curriculum';
+import { level1, Module, LessonCriteria, Level } from '@/data/level1-curriculum';
+import { level2 } from '@/data/level2-curriculum';
+import { level3 } from '@/data/level3-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
+
+const LEVELS: Level[] = [level1, level2, level3];
 
 interface LessonCardProps {
   lesson: LessonCriteria;
@@ -144,29 +148,37 @@ function ModuleSection({
 
 export function CurriculumTree() {
   const router = useRouter();
+  const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
   const [expandedModule, setExpandedModule] = useState<string | null>('mod-1');
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons, resetProgress } = useLessonProgress();
 
-  // Get all lesson IDs in order
+  const currentLevel = LEVELS[selectedLevelIndex];
+
+  // Get all lesson IDs in order for the current level
   const allLessonIds = useMemo(() => {
-    return level1.modules.flatMap(m => m.lessons.map(l => l.id));
-  }, []);
+    return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
+  }, [currentLevel]);
 
   const handleToggle = (moduleId: string) => {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));
   };
 
-  // Count totals
+  const handleLevelChange = (index: number) => {
+    setSelectedLevelIndex(index);
+    setExpandedModule('mod-1'); // Reset to first module when changing levels
+  };
+
+  // Count totals for current level
   const totalLessons = allLessonIds.length;
-  const completedCount = completedLessons.length;
+  const completedCount = allLessonIds.filter(id => completedLessons.includes(id)).length;
 
   // Don't render until progress is loaded to avoid hydration mismatch
   if (!loaded) {
     return (
       <div className="px-4 pb-20">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white">{level1.name}</h1>
-          <p className="text-gray-400">{level1.ratingRange} • {totalLessons} lessons</p>
+          <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
+          <p className="text-gray-400">{currentLevel.ratingRange} • {totalLessons} lessons</p>
         </div>
         <div className="text-center text-gray-400 py-8">Loading...</div>
       </div>
@@ -175,34 +187,43 @@ export function CurriculumTree() {
 
   return (
     <div className="px-4 pb-20">
-      {/* Top buttons */}
-      <div className="flex justify-between items-center mb-2">
-        {/* Daily Challenge button */}
-        <button
-          onClick={() => router.push('/daily-challenge')}
-          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-red-600 transition-all shadow-lg"
-        >
-          <span className="text-lg">⚡</span>
-          <span>Daily Challenge</span>
-        </button>
 
-        {/* Profile button */}
-        <button
-          onClick={() => router.push('/profile')}
-          className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-          title="View Profile"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-          </svg>
-        </button>
+      {/* Level selector tabs */}
+      <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
+        {LEVELS.map((level, index) => {
+          const levelLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
+          const levelCompletedCount = levelLessonIds.filter(id => completedLessons.includes(id)).length;
+          const isSelected = index === selectedLevelIndex;
+
+          return (
+            <button
+              key={level.id}
+              onClick={() => handleLevelChange(index)}
+              className={`flex-shrink-0 px-4 py-3 rounded-xl transition-all border ${
+                isSelected
+                  ? 'bg-[#58CC02] border-[#58CC02] text-white'
+                  : 'bg-[#1A2C35] border-white/10 text-gray-300 hover:border-white/20'
+              }`}
+            >
+              <div className="font-bold text-sm">Level {index + 1}</div>
+              <div className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                {level.ratingRange}
+              </div>
+              {levelCompletedCount > 0 && (
+                <div className={`text-xs mt-1 ${isSelected ? 'text-white/70' : 'text-gray-500'}`}>
+                  {levelCompletedCount}/{levelLessonIds.length}
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Level header */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-white">{level1.name}</h1>
+        <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
         <p className="text-gray-400">
-          {level1.ratingRange} • {completedCount}/{totalLessons} lessons completed
+          {currentLevel.ratingRange} • {completedCount}/{totalLessons} lessons completed
         </p>
         {completedCount > 0 && (
           <button
@@ -226,7 +247,7 @@ export function CurriculumTree() {
 
       {/* Modules */}
       <div className="space-y-2">
-        {level1.modules.map((module, index) => (
+        {currentLevel.modules.map((module, index) => (
           <ModuleSection
             key={module.id}
             module={module}

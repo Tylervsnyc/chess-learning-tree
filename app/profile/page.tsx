@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
-import { useLessonProgress, ThemeStats, PuzzleAttempt } from '@/hooks/useProgress';
+import { useProfileData } from '@/hooks/useProfileData';
+import { useSubscription } from '@/hooks/useSubscription';
+import { UpgradeModal } from '@/components/subscription/UpgradeModal';
 import { forceSimulation, forceCollide, forceX, forceY, forceManyBody, SimulationNodeDatum } from 'd3-force';
 
 // Theme display names
@@ -422,29 +423,37 @@ function BubbleChart({ strengths, weaknesses, onSelectTheme }: BubbleChartProps)
 export default function ProfilePage() {
   const router = useRouter();
   const {
-    puzzleAttempts,
-    themePerformance,
-    totalPuzzlesSolved,
-    totalPuzzlesAttempted,
-    loaded,
-  } = useLessonProgress();
+    user,
+    profile,
+    themeData,
+    stats,
+    loading,
+    isAuthenticated,
+  } = useProfileData();
+
+  const {
+    isPremium,
+    status: subscriptionStatus,
+    expiresAt,
+    openPortal,
+    dailyPuzzlesRemaining,
+  } = useSubscription();
 
   // Selected theme for drill-down
   const [selectedTheme, setSelectedTheme] = useState<ThemeData | null>(null);
-  const [useSampleData, setUseSampleData] = useState(true); // Force sample data for testing
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
-  // Check if we have real data
-  const hasRealData = Object.keys(themePerformance).length > 0;
+  // Check if we have real data from Supabase
+  const hasRealData = themeData.length > 0;
 
-  // Use sample data if toggled on (for testing visualization)
-  const showingSampleData = useSampleData;
+  // Use sample data when not logged in or no real data yet
+  const showingSampleData = !isAuthenticated || !hasRealData;
 
   // Calculate stats
-  const displayPuzzlesAttempted = showingSampleData ? 2076 : totalPuzzlesAttempted;
-  const displayPuzzlesSolved = showingSampleData ? 1298 : totalPuzzlesSolved;
-  const overallAccuracy = displayPuzzlesAttempted > 0
-    ? Math.round((displayPuzzlesSolved / displayPuzzlesAttempted) * 100)
-    : 0;
+  const displayPuzzlesAttempted = showingSampleData ? 2076 : stats.totalAttempts;
+  const displayPuzzlesSolved = showingSampleData ? 1298 : stats.totalSolved;
+  const overallAccuracy = showingSampleData ? 63 : stats.overallAccuracy;
 
   // Process theme data
   const { strengths, weaknesses, allThemes } = useMemo(() => {
@@ -457,21 +466,17 @@ export default function ProfilePage() {
       return { strengths, weaknesses, allThemes: sorted };
     }
 
-    const themes: ThemeData[] = [];
-
-    for (const [theme, stats] of Object.entries(themePerformance)) {
-      if (stats.attempts >= 2) { // Minimum 2 attempts to show
-        const accuracy = Math.round((stats.solved / stats.attempts) * 100);
-        themes.push({
-          theme,
-          label: getThemeLabel(theme),
-          attempts: stats.attempts,
-          solved: stats.solved,
-          accuracy,
-          puzzleIds: stats.puzzleIds,
-        });
-      }
-    }
+    // Convert Supabase theme data to ThemeData format
+    const themes: ThemeData[] = themeData
+      .filter(t => t.attempts >= 2) // Minimum 2 attempts to show
+      .map(t => ({
+        theme: t.theme,
+        label: getThemeLabel(t.theme),
+        attempts: t.attempts,
+        solved: t.solved,
+        accuracy: t.accuracy,
+        puzzleIds: [], // Not storing individual puzzle IDs in Supabase
+      }));
 
     // Sort by accuracy
     themes.sort((a, b) => b.accuracy - a.accuracy);
@@ -481,16 +486,9 @@ export default function ProfilePage() {
     const weaknesses = themes.filter(t => t.accuracy < overallAccuracy).reverse();
 
     return { strengths, weaknesses, allThemes: themes };
-  }, [themePerformance, overallAccuracy, showingSampleData]);
+  }, [themeData, overallAccuracy, showingSampleData]);
 
-  // Get puzzles for a theme
-  const getThemePuzzles = (theme: ThemeData, solved: boolean) => {
-    return puzzleAttempts
-      .filter(a => a.themes?.includes(theme.theme) && a.correct === solved)
-      .slice(-5); // Last 5 puzzles
-  };
-
-  if (!loaded) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#131F24] text-white flex items-center justify-center">
         <div className="text-gray-400">Loading...</div>
@@ -501,7 +499,6 @@ export default function ProfilePage() {
   // Theme drill-down view
   if (selectedTheme) {
     const isStrength = selectedTheme.accuracy >= overallAccuracy;
-    const puzzles = getThemePuzzles(selectedTheme, isStrength);
 
     return (
       <div className="min-h-screen bg-[#131F24] text-white">
@@ -539,58 +536,23 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Puzzles */}
-          <h2 className="text-lg font-semibold mb-3 text-gray-300">
-            {isStrength ? 'Recent Correct Puzzles' : 'Recent Missed Puzzles'}
-          </h2>
-
-          {puzzles.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">
-              No puzzles recorded yet for this theme.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {puzzles.map((puzzle, index) => (
-                <div
-                  key={`${puzzle.puzzleId}-${index}`}
-                  className="bg-[#1A2C35] rounded-xl p-4"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-32 h-32 flex-shrink-0">
-                      {puzzle.fen && (
-                        <Chessboard
-                          options={{
-                            position: puzzle.fen,
-                            boardStyle: { borderRadius: '4px' },
-                            darkSquareStyle: { backgroundColor: '#779952' },
-                            lightSquareStyle: { backgroundColor: '#edeed1' },
-                          }}
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={puzzle.correct ? 'text-green-400' : 'text-red-400'}>
-                          {puzzle.correct ? '✓' : '✗'}
-                        </span>
-                        <span className="text-gray-400 text-sm">
-                          Rating: {puzzle.rating || 'N/A'}
-                        </span>
-                      </div>
-                      {puzzle.solution && (
-                        <div className="text-sm text-gray-300 font-mono mb-2">
-                          {puzzle.solution}
-                        </div>
-                      )}
-                      <div className="text-xs text-gray-500">
-                        {new Date(puzzle.timestamp).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Practice CTA */}
+          <div className="bg-[#1A2C35] rounded-xl p-6 text-center">
+            <h2 className="text-lg font-semibold mb-2 text-gray-300">
+              {isStrength ? 'Keep up the good work!' : 'Want to improve?'}
+            </h2>
+            <p className="text-gray-500 mb-4">
+              {isStrength
+                ? `You're doing great with ${selectedTheme.label} puzzles.`
+                : `Practice more ${selectedTheme.label} puzzles to improve your skills.`}
+            </p>
+            <button
+              onClick={() => router.push(`/workout?theme=${selectedTheme.theme}`)}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Practice {selectedTheme.label}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -608,7 +570,16 @@ export default function ProfilePage() {
           >
             &larr; Back
           </button>
-          <h1 className="text-xl font-bold">Skills Profile</h1>
+          <div className="text-center">
+            <h1 className="text-xl font-bold">
+              {isAuthenticated ? (profile?.display_name || 'Your Profile') : 'Skills Profile'}
+            </h1>
+            {isAuthenticated && profile?.elo_rating && (
+              <span className="text-xs text-gray-400 bg-[#131F24] px-2 py-0.5 rounded">
+                Rating: {profile.elo_rating}
+              </span>
+            )}
+          </div>
           <div className="w-16" />
         </div>
       </div>
@@ -629,11 +600,61 @@ export default function ProfilePage() {
             <div className="text-xs text-gray-400">Themes</div>
           </div>
         </div>
-        {/* Sample data toggle */}
+
+        {/* Subscription status */}
+        {isAuthenticated && (
+          <div className="max-w-6xl mx-auto mt-3 flex justify-center">
+            {isPremium ? (
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold rounded-full">
+                  Premium
+                </span>
+                {expiresAt && (
+                  <span className="text-xs text-gray-400">
+                    Renews {new Date(expiresAt).toLocaleDateString()}
+                  </span>
+                )}
+                <button
+                  onClick={async () => {
+                    setPortalLoading(true);
+                    try {
+                      await openPortal();
+                    } catch {
+                      setPortalLoading(false);
+                    }
+                  }}
+                  disabled={portalLoading}
+                  className="text-xs text-gray-400 hover:text-white underline disabled:opacity-50"
+                >
+                  {portalLoading ? 'Loading...' : 'Manage subscription'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-gray-700 text-gray-300 text-sm font-medium rounded-full">
+                  Free Plan
+                </span>
+                <span className="text-xs text-gray-400">
+                  {dailyPuzzlesRemaining} puzzles left today
+                </span>
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="text-xs text-[#58CC02] hover:text-[#4CAF00] font-medium"
+                >
+                  Upgrade to Premium
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sample data notice */}
         {showingSampleData && (
           <div className="max-w-6xl mx-auto mt-2 text-center">
             <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-1 rounded">
-              Showing sample data for preview
+              {!isAuthenticated
+                ? 'Sign in to track your progress'
+                : 'Showing sample data - start solving puzzles to see your stats!'}
             </span>
           </div>
         )}
@@ -719,6 +740,12 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />
     </div>
   );
 }

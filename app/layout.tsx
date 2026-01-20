@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { NavHeader } from '@/components/layout/NavHeader';
 
 export const metadata: Metadata = {
-  title: 'ChessPro - Learn Chess',
-  description: 'A Duolingo-style chess learning app',
+  title: 'The Chess Path',
+  description: 'Master chess tactics through a structured learning journey',
 };
 
 export const viewport: Viewport = {
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <NavHeader />
         {children}
       </body>
     </html>

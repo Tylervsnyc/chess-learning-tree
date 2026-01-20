@@ -1,44 +1,43 @@
-import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { stripe } from '@/lib/stripe';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    if (userError || !user) {
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Not authenticated' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Get user's Stripe customer ID
-    const serviceClient = createServiceClient();
-    const { data: customer, error: customerError } = await serviceClient
-      .from('customers')
+    // Get Stripe customer ID from profile
+    const { data: profile } = await supabase
+      .from('profiles')
       .select('stripe_customer_id')
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .single();
 
-    if (customerError || !customer) {
+    if (!profile?.stripe_customer_id) {
       return NextResponse.json(
         { error: 'No subscription found' },
         { status: 404 }
       );
     }
 
-    // Create billing portal session
+    // Create portal session
     const session = await stripe.billingPortal.sessions.create({
-      customer: customer.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      customer: profile.stripe_customer_id,
+      return_url: `${request.nextUrl.origin}/profile`,
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Portal session error:', error);
+    console.error('Portal error:', error);
     return NextResponse.json(
       { error: 'Failed to create portal session' },
       { status: 500 }

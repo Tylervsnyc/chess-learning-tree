@@ -1,16 +1,27 @@
 /**
  * Generate static puzzle sets for each lesson
  *
- * Criteria:
- * 1. 5000+ plays (well-vetted by community)
- * 2. Matches lesson tag requirements
- * 3. Our theme analyzer confirms the primary theme matches what we're teaching
+ * Selection Funnel:
+ * 1. Load all puzzles from CSV files (2000+ plays minimum)
+ * 2. Filter by lesson criteria (rating range, tags, piece filter)
+ * 3. Verify primary theme matches using theme analyzer
+ * 4. Run difficulty analysis on candidates
+ * 5. Select optimal 6-puzzle arc using selectLessonPuzzles()
+ *    - Slot 1-2: Warmup (easy, obvious patterns)
+ *    - Slot 3-4: Core (at-level challenge)
+ *    - Slot 5-6: Stretch (harder, boss level finish)
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { Chess } from 'chess.js';
 import { level1, LessonCriteria } from '../data/level1-curriculum';
+import {
+  analyzePuzzle,
+  selectLessonPuzzles,
+  PuzzleAnalysis,
+  SlotAssignment,
+} from '../lib/theme-analyzer';
 
 const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating', '0400-0800');
 const MIN_PLAYS = 2000;
@@ -104,6 +115,42 @@ function getMovingPiece(fen: string, moves: string): string | null {
   return null;
 }
 
+// Get a signature of the player's first move: "piece-destinationSquare"
+// e.g., "knight-e4" or "queen-h7"
+// Used to ensure variety - no consecutive puzzles with same piece to same square
+function getFirstMoveSignature(fen: string, moves: string): string | null {
+  try {
+    const chess = new Chess(fen);
+    const moveList = moves.split(' ');
+
+    // Apply setup move (opponent's last move)
+    const setup = moveList[0];
+    chess.move({
+      from: setup.slice(0, 2),
+      to: setup.slice(2, 4),
+      promotion: setup[4] as any
+    });
+
+    // Get first solution move
+    if (moveList.length > 1) {
+      const firstMove = moveList[1];
+      const from = firstMove.slice(0, 2);
+      const to = firstMove.slice(2, 4);
+      const piece = chess.get(from as any);
+      if (piece) {
+        const pieceNames: Record<string, string> = {
+          'p': 'pawn', 'n': 'knight', 'b': 'bishop',
+          'r': 'rook', 'q': 'queen', 'k': 'king'
+        };
+        return `${pieceNames[piece.type]}-${to}`;
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 // ============================================
 // Puzzle loading and filtering
 // ============================================
@@ -160,11 +207,9 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
     return false;
   }
 
-  // Check required tags
-  for (const tag of lesson.requiredTags) {
-    if (!puzzle.themes.includes(tag)) {
-      return false;
-    }
+  // Check minimum plays (for high-quality "best move" lessons)
+  if (lesson.minPlays && puzzle.nbPlays < lesson.minPlays) {
+    return false;
   }
 
   // Check excluded tags
@@ -180,6 +225,26 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
   if (lesson.pieceFilter) {
     const movingPiece = getMovingPiece(puzzle.fen, puzzle.moves);
     if (movingPiece !== lesson.pieceFilter) {
+      return false;
+    }
+  }
+
+  // MIXED PRACTICE: Skip theme validation, just check mixedThemes if provided
+  if (lesson.isMixedPractice) {
+    // If mixedThemes specified, puzzle must have at least one
+    if (lesson.mixedThemes && lesson.mixedThemes.length > 0) {
+      const hasMatchingTheme = lesson.mixedThemes.some(t => puzzle.themes.includes(t));
+      if (!hasMatchingTheme) {
+        return false;
+      }
+    }
+    // Mixed practice passes without theme validation
+    return true;
+  }
+
+  // Check required tags (for themed lessons)
+  for (const tag of lesson.requiredTags) {
+    if (!puzzle.themes.includes(tag)) {
       return false;
     }
   }
@@ -259,10 +324,20 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
 // Main generation
 // ============================================
 
+interface PuzzleSlotInfo {
+  puzzleId: string;
+  slot: 1 | 2 | 3 | 4 | 5 | 6;
+  lichessRating: number;
+  trueDifficulty: number;
+  executingPiece: string | null;
+  solutionOutcome: string;
+}
+
 interface LessonPuzzleSet {
   lessonId: string;
   lessonName: string;
-  puzzleIds: string[];
+  targetElo: number;
+  puzzles: PuzzleSlotInfo[];
   puzzleCount: number;
   criteria: {
     requiredTags: string[];
@@ -279,25 +354,64 @@ async function main() {
   const allLessons = level1.modules.flatMap(m => m.lessons);
 
   console.log(`\nGenerating puzzle sets for ${allLessons.length} lessons...\n`);
+  console.log('Using 6-puzzle lesson arc with difficulty analysis:\n');
+  console.log('  Slot 1-2: Warmup  (obvious patterns, confidence builders)');
+  console.log('  Slot 3-4: Core    (at-level challenges)');
+  console.log('  Slot 5-6: Stretch (harder puzzles, boss level finish)\n');
 
   for (const lesson of allLessons) {
-    // Find matching puzzles
+    // Step 1: Filter by lesson criteria
     const matching = allPuzzles.filter(p => matchesLesson(p, lesson));
 
-    // Sort by rating, then by plays (higher plays = more reliable)
-    matching.sort((a, b) => {
-      if (a.rating !== b.rating) return a.rating - b.rating;
-      return b.nbPlays - a.nbPlays;
-    });
+    if (matching.length === 0) {
+      lessonPuzzleSets.push({
+        lessonId: lesson.id,
+        lessonName: lesson.name,
+        targetElo: Math.round((lesson.ratingMin + lesson.ratingMax) / 2),
+        puzzles: [],
+        puzzleCount: 0,
+        criteria: {
+          requiredTags: lesson.requiredTags,
+          ratingRange: `${lesson.ratingMin}-${lesson.ratingMax}`,
+          pieceFilter: lesson.pieceFilter,
+        },
+      });
+      console.log(`✗ ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} 0/${PUZZLES_PER_LESSON} (no matches)`);
+      continue;
+    }
 
-    // Take top puzzles
-    const selected = matching.slice(0, PUZZLES_PER_LESSON);
+    // Step 2: Prepare candidates for difficulty analysis
+    const candidates = matching.map(p => ({
+      puzzleId: p.puzzleId,
+      fen: p.fen,
+      moves: p.moves,
+      rating: p.rating,
+      themes: p.themes.join(' '),
+      url: p.url,
+    }));
+
+    // Step 3: Target ELO for this lesson (midpoint of range)
+    const targetElo = Math.round((lesson.ratingMin + lesson.ratingMax) / 2);
+
+    // Step 4: Select optimal 6-puzzle arc using difficulty analysis
+    const slotAssignments = selectLessonPuzzles(candidates, targetElo);
+
+    // Step 5: Build puzzle set with slot info
+    const puzzles: PuzzleSlotInfo[] = slotAssignments.map(sa => ({
+      puzzleId: sa.puzzleId,
+      slot: sa.slot,
+      lichessRating: sa.analysis.rating,
+      trueDifficulty: sa.analysis.trueDifficultyScore,
+      executingPiece: sa.analysis.executingPiece,
+      solutionOutcome: sa.analysis.solutionOutcome,
+    }));
 
     const puzzleSet: LessonPuzzleSet = {
       lessonId: lesson.id,
       lessonName: lesson.name,
-      puzzleIds: selected.map(p => p.puzzleId),
-      puzzleCount: selected.length,
+      targetElo,
+      puzzles,
+      puzzleCount: puzzles.length,
       criteria: {
         requiredTags: lesson.requiredTags,
         ratingRange: `${lesson.ratingMin}-${lesson.ratingMax}`,
@@ -307,17 +421,22 @@ async function main() {
 
     lessonPuzzleSets.push(puzzleSet);
 
-    // Log status
-    const status = selected.length >= PUZZLES_PER_LESSON
+    // Log status with difficulty info
+    const status = puzzles.length >= PUZZLES_PER_LESSON
       ? '✓'
-      : selected.length > 0
+      : puzzles.length > 0
         ? '⚠'
         : '✗';
 
+    const diffRange = puzzles.length > 0
+      ? `[${Math.min(...puzzles.map(p => p.trueDifficulty))}-${Math.max(...puzzles.map(p => p.trueDifficulty))}]`
+      : '';
+
     console.log(
       `${status} ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} ` +
-      `${selected.length}/${PUZZLES_PER_LESSON} puzzles ` +
-      `(${matching.length} matched criteria)`
+      `${puzzles.length}/${PUZZLES_PER_LESSON} ` +
+      `(${matching.length} candidates) ` +
+      `${diffRange}`
     );
   }
 
@@ -331,40 +450,72 @@ async function main() {
   console.log(`Partial (1-5 puzzles): ${partial}`);
   console.log(`Empty (0 puzzles): ${empty}`);
 
-  // Write output
+  // Write JSON output (with full difficulty data)
   const outputPath = join(process.cwd(), 'data', 'lesson-puzzle-sets.json');
   writeFileSync(outputPath, JSON.stringify(lessonPuzzleSets, null, 2));
   console.log(`\nWritten to: ${outputPath}`);
 
-  // Also generate TypeScript file for import
+  // Generate TypeScript file for import (simpler format for runtime use)
   const tsOutput = `// Auto-generated lesson puzzle sets
-// Generated with ${MIN_PLAYS}+ plays filter and theme analyzer verification
+// Generated with difficulty analysis and 6-puzzle lesson arc
+// Slot 1-2: Warmup | Slot 3-4: Core | Slot 5-6: Stretch
+
+export interface PuzzleSlot {
+  puzzleId: string;
+  slot: 1 | 2 | 3 | 4 | 5 | 6;
+  trueDifficulty: number;
+}
 
 export interface LessonPuzzleSet {
   lessonId: string;
   lessonName: string;
-  puzzleIds: string[];
+  targetElo: number;
+  puzzles: PuzzleSlot[];
 }
 
 export const lessonPuzzleSets: LessonPuzzleSet[] = ${JSON.stringify(
     lessonPuzzleSets.map(s => ({
       lessonId: s.lessonId,
       lessonName: s.lessonName,
-      puzzleIds: s.puzzleIds,
+      targetElo: s.targetElo,
+      puzzles: s.puzzles.map(p => ({
+        puzzleId: p.puzzleId,
+        slot: p.slot,
+        trueDifficulty: p.trueDifficulty,
+      })),
     })),
     null,
     2
   )};
 
-export function getPuzzleIdsForLesson(lessonId: string): string[] {
+export function getPuzzlesForLesson(lessonId: string): PuzzleSlot[] {
   const set = lessonPuzzleSets.find(s => s.lessonId === lessonId);
-  return set?.puzzleIds || [];
+  return set?.puzzles || [];
+}
+
+export function getPuzzleIdsForLesson(lessonId: string): string[] {
+  return getPuzzlesForLesson(lessonId).map(p => p.puzzleId);
 }
 `;
 
   const tsOutputPath = join(process.cwd(), 'data', 'lesson-puzzle-sets.ts');
   writeFileSync(tsOutputPath, tsOutput);
   console.log(`Written to: ${tsOutputPath}`);
+
+  // Print sample lesson arc for verification
+  const sampleLesson = lessonPuzzleSets.find(s => s.puzzleCount === 6);
+  if (sampleLesson) {
+    console.log(`\n=== SAMPLE LESSON ARC: ${sampleLesson.lessonName} ===`);
+    console.log(`Target ELO: ${sampleLesson.targetElo}\n`);
+    console.log('Slot  Puzzle ID   Lichess  TrueDiff  Piece   Outcome');
+    console.log('----  ----------  -------  --------  ------  --------');
+    for (const p of sampleLesson.puzzles) {
+      const slotLabel = p.slot <= 2 ? 'Warm' : p.slot <= 4 ? 'Core' : 'Strch';
+      console.log(
+        `${p.slot} ${slotLabel}  ${p.puzzleId.padEnd(10)}  ${String(p.lichessRating).padEnd(7)}  ${String(p.trueDifficulty).padEnd(8)}  ${(p.executingPiece || '?').padEnd(6)}  ${p.solutionOutcome}`
+      );
+    }
+  }
 }
 
 main();

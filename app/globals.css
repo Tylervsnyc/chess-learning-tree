@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -16,6 +17,17 @@
   --animate-bounce-subtle: bounce-subtle 1s ease-in-out infinite;
   --animate-expand: expand 0.3s ease-out;
   --animate-scale-tap: scale-tap 0.1s ease-out;
+}
+
+:root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --path-base: #1A2C35;
+  --path-glow-start: #22C55E;
+  --path-glow-mid: #06B6D4;
+  --path-glow-end: #F59E0B;
+  --text-primary: #F1F5F9;
+  --text-muted: #94A3B8;
 }
 
 @keyframes pulse-glow {
@@ -145,4 +157,140 @@ body {
   background-color: #131F24;
   color: white;
   min-height: 100vh;
+}
+
+/* ===== Landing Page Journey Path Styles ===== */
+
+/* Landing page specific styles */
+.landing-page {
+  background: linear-gradient(135deg, #0A1014 0%, #131F24 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grain texture overlay */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Diagonal lines background */
+.diagonal-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    rgba(255, 255, 255, 0.1) 20px,
+    rgba(255, 255, 255, 0.1) 21px
+  );
+}
+
+/* Path draw animation */
+@keyframes drawPath {
+  from { stroke-dashoffset: var(--path-length, 1000); }
+  to { stroke-dashoffset: var(--target-offset, 0); }
+}
+
+.path-draw {
+  animation: drawPath 1.5s ease-out forwards;
+}
+
+/* Milestone reveal animation */
+@keyframes revealMilestone {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.milestone-reveal {
+  animation: revealMilestone 0.3s ease-out forwards;
+}
+
+/* Current position pulse for journey path */
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px var(--path-glow-start)) drop-shadow(0 0 16px var(--path-glow-start));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 16px var(--path-glow-mid)) drop-shadow(0 0 32px var(--path-glow-mid));
+    opacity: 0.8;
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Floating particles */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(0.3); opacity: 0; }
+}
+
+.particle {
+  animation: floatUp 2s ease-out infinite;
+}
+
+/* CTA button glow effect */
+@keyframes ctaGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.2); }
+}
+
+.cta-glow {
+  animation: ctaGlow 3s ease-in-out infinite;
+}
+
+/* Tooltip styles */
+.milestone-tooltip {
+  position: absolute;
+  background: rgba(19, 31, 36, 0.95);
+  border: 1px solid var(--path-base);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.milestone-tooltip.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Level cards */
+.level-card {
+  background: linear-gradient(180deg, rgba(26, 44, 53, 0.6) 0%, rgba(26, 44, 53, 0.3) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.level-card:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive path sizing */
+@media (max-width: 768px) {
+  .journey-path-container {
+    max-width: 200px;
+    margin: 0 auto;
+  }
 }

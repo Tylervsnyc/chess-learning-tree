@@ -1,26 +1,55 @@
 import Stripe from 'stripe';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
+// Initialize Stripe lazily to avoid build-time errors when env vars aren't set
+let _stripe: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not set');
+    }
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-12-15.clover',
+    });
+  }
+  return _stripe;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-12-15.clover',
-  typescript: true,
-});
+// For backwards compatibility, export stripe getter
+export const stripe = {
+  get customers() { return getStripe().customers; },
+  get subscriptions() { return getStripe().subscriptions; },
+  get checkout() { return getStripe().checkout; },
+  get billingPortal() { return getStripe().billingPortal; },
+  get webhooks() { return getStripe().webhooks; },
+};
 
-export const PRICING_PLANS = {
-  monthly: {
-    name: 'Monthly',
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
-    price: 9.99,
+// Price IDs from Stripe Dashboard
+export const PRICES = {
+  MONTHLY: process.env.STRIPE_PRICE_MONTHLY!,
+  YEARLY: process.env.STRIPE_PRICE_YEARLY!,
+};
+
+// Price details for display
+export const PRICE_DETAILS = {
+  MONTHLY: {
+    id: 'monthly',
+    amount: 999, // $9.99 in cents
     interval: 'month' as const,
+    label: 'Monthly',
+    description: '$9.99/month',
   },
-  yearly: {
-    name: 'Yearly',
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
-    price: 79.99,
+  YEARLY: {
+    id: 'yearly',
+    amount: 7999, // $79.99 in cents
     interval: 'year' as const,
+    label: 'Yearly',
+    description: '$79.99/year',
     savings: 'Save 33%',
   },
+};
+
+// Free tier limits
+export const FREE_TIER = {
+  DAILY_PUZZLE_LIMIT: 15,
 };

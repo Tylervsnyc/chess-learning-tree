@@ -29,8 +29,12 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refreshes the auth token
-  await supabase.auth.getUser();
+  // Refresh session if expired - ignore error when no session exists
+  // (AuthSessionMissingError is expected for unauthenticated users)
+  const { error } = await supabase.auth.getUser();
+  if (error && error.name !== 'AuthSessionMissingError') {
+    console.error('Auth error:', error);
+  }
 
   return supabaseResponse;
 }
