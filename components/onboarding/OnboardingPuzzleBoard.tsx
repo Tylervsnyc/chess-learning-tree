@@ -219,7 +219,7 @@ export function OnboardingPuzzleBoard({
             onSquareClick: onSquareClick,
             squareStyles: squareStyles,
             boardStyle: {
-              borderRadius: '8px',
+              borderRadius: '8px 8px 0 0',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             },
             darkSquareStyle: { backgroundColor: '#779952' },
@@ -228,14 +228,7 @@ export function OnboardingPuzzleBoard({
         />
       </div>
 
-      {/* Status text when playing */}
-      {moveStatus === 'playing' && (
-        <div className="text-center text-gray-400 mt-3">
-          Find the best move
-        </div>
-      )}
-
-      {/* Bottom result bar - Duolingo style (fixed to bottom) */}
+      {/* Result popup - directly below board */}
       {moveStatus === 'correct' && (
         <PuzzleResultPopup
           type="correct"
@@ -248,6 +241,13 @@ export function OnboardingPuzzleBoard({
           type="incorrect"
           onContinue={handleContinue}
         />
+      )}
+
+      {/* Status text when playing */}
+      {moveStatus === 'playing' && (
+        <div className="text-center text-gray-400 mt-3">
+          Find the best move
+        </div>
       )}
     </div>
   );

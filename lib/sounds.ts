@@ -3,11 +3,29 @@
 // Chromatic scale frequencies (C, C#, D, D#, E, F)
 export const CHROMATIC_SCALE = [262, 277, 294, 311, 330, 349];
 
+// Shared AudioContext for better browser compatibility
+let sharedAudioContext: AudioContext | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
+
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+
+  // Resume if suspended (browser autoplay policy)
+  if (sharedAudioContext.state === 'suspended') {
+    sharedAudioContext.resume();
+  }
+
+  return sharedAudioContext;
+}
+
 // Mellow coin sound at a specific frequency
 export function playMellowCoin(baseFreq: number) {
-  if (typeof window === 'undefined') return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
 
-  const ctx = new AudioContext();
   const osc1 = ctx.createOscillator();
   const osc2 = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -38,9 +56,9 @@ export function playCorrectSound(puzzleIndex: number) {
 
 // Play error sound
 export function playErrorSound() {
-  if (typeof window === 'undefined') return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
 
-  const ctx = new AudioContext();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
@@ -59,9 +77,8 @@ export function playErrorSound() {
 
 // Play triumphant climb celebration (for lesson complete)
 export function playCelebrationSound() {
-  if (typeof window === 'undefined') return;
-
-  const ctx = new AudioContext();
+  const ctx = getAudioContext();
+  if (!ctx) return;
 
   // Continue chromatic then burst into major
   const buildup = [370, 392, 415]; // F#, G, G#
@@ -70,18 +87,20 @@ export function playCelebrationSound() {
   });
 
   setTimeout(() => {
+    const celebCtx = getAudioContext();
+    if (!celebCtx) return;
     // Explosion into C major
     [523, 659, 784, 1047].forEach(f => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      const osc = celebCtx.createOscillator();
+      const gain = celebCtx.createGain();
       osc.type = 'triangle';
       osc.frequency.value = f;
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+      gain.gain.setValueAtTime(0.25, celebCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, celebCtx.currentTime + 1);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(celebCtx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 1);
+      osc.stop(celebCtx.currentTime + 1);
     });
   }, 350);
 }
@@ -89,17 +108,25 @@ export function playCelebrationSound() {
 // Play move sound
 export function playMoveSound() {
   if (typeof window === 'undefined') return;
+  // Ensure AudioContext is active for better browser compatibility
+  getAudioContext();
   const audio = new Audio('/sounds/move.mp3');
   audio.volume = 0.7;
-  audio.play();
+  audio.play().catch(() => {
+    // Ignore autoplay errors
+  });
 }
 
 // Play capture sound
 export function playCaptureSound() {
   if (typeof window === 'undefined') return;
+  // Ensure AudioContext is active for better browser compatibility
+  getAudioContext();
   const audio = new Audio('/sounds/capture.mp3');
   audio.volume = 0.7;
-  audio.play();
+  audio.play().catch(() => {
+    // Ignore autoplay errors
+  });
 }
 
 // Supernova Gentle streak effect styles
