@@ -7,9 +7,10 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 
+// King Hunt puzzle - 8 move checkmate (mateIn4)
 const PUZZLE = {
-  fen: '3rkb1r/pp1nqppp/5n2/1B2p1B1/4P3/1Q6/PPP2PPP/2KR3R w k - 0 1',
-  moves: ['d1d7', 'd8d7', 'h1d1', 'e7e6', 'b5d7', 'f6d7', 'b3b8', 'd7b8', 'd1d8'],
+  fen: 'r1bqr1kR/pp1n2p1/2n1p1P1/2ppP1P1/3P1P2/P1P5/2P5/R1BQK3 b Q - 2 17',
+  moves: ['g8h8', 'd1h5', 'h8g8', 'h5h7', 'g8f8', 'h7h8', 'f8e7', 'h8g7'],
   orientation: 'white' as const,
 };
 
@@ -17,11 +18,13 @@ function AnimatedBoard({ size }: { size: number }) {
   const [game, setGame] = useState(() => new Chess(PUZZLE.fen));
   const [moveIndex, setMoveIndex] = useState(-1);
   const [lastMove, setLastMove] = useState<[string, string] | null>(null);
+  const [isCheckmate, setIsCheckmate] = useState(false);
 
   const resetPuzzle = useCallback(() => {
     setGame(new Chess(PUZZLE.fen));
     setMoveIndex(-1);
     setLastMove(null);
+    setIsCheckmate(false);
   }, []);
 
   useEffect(() => {
@@ -39,13 +42,19 @@ function AnimatedBoard({ size }: { size: number }) {
           setGame(newGame);
           setLastMove([from, to]);
           setMoveIndex(nextIndex);
+
+          // Check for checkmate
+          if (newGame.isCheckmate()) {
+            setIsCheckmate(true);
+          }
         } catch {
           resetPuzzle();
         }
       } else {
-        setTimeout(resetPuzzle, 2000);
+        // Pause longer on checkmate, then reset
+        setTimeout(resetPuzzle, 2500);
       }
-    }, moveIndex === -1 ? 1000 : 700);
+    }, moveIndex === -1 ? 1200 : 800);
 
     return () => clearTimeout(timeout);
   }, [moveIndex, game, resetPuzzle]);
@@ -56,7 +65,7 @@ function AnimatedBoard({ size }: { size: number }) {
   } : {};
 
   return (
-    <div style={{ width: size, height: size }}>
+    <div style={{ width: size, height: size }} className="relative">
       <Chessboard
         options={{
           position: game.fen(),
@@ -67,6 +76,16 @@ function AnimatedBoard({ size }: { size: number }) {
           lightSquareStyle: { backgroundColor: '#edeed1' },
         }}
       />
+      {isCheckmate && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div
+            className="bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-lg shadow-lg animate-pulse"
+            style={{ boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)' }}
+          >
+            CHECKMATE!
+          </div>
+        </div>
+      )}
     </div>
   );
 }
