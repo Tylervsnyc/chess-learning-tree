@@ -96,11 +96,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!loading && user && profile) {
-      if (profile.onboarding_completed) {
-        router.push('/learn');
-      } else {
-        router.push('/onboarding/diagnostic');
-      }
+      // Always redirect signed-in users to the chess path
+      // They can see their next lesson and click to start
+      router.push('/learn');
     }
   }, [user, profile, loading, router]);
 

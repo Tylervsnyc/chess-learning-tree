@@ -14,6 +14,14 @@ import {
   playCaptureSound,
 } from '@/lib/sounds';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
+import { level1 } from '@/data/level1-curriculum';
+import { level2 } from '@/data/level2-curriculum';
+import { level3 } from '@/data/level3-curriculum';
+import { level4 } from '@/data/level4-curriculum';
+import { level5 } from '@/data/level5-curriculum';
+import { level6 } from '@/data/level6-curriculum';
+
+const LEVELS = [level1, level2, level3, level4, level5, level6];
 
 // CSS for streak animations
 const streakStyles = `
@@ -88,6 +96,23 @@ const LEVEL_KEYS = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'exp
 function getLevelKeyFromLessonId(lessonId: string): string {
   const levelNum = parseInt(lessonId.split('.')[0], 10);
   return LEVEL_KEYS[levelNum - 1] || 'beginner';
+}
+
+// Get the next lesson ID in the curriculum
+function getNextLessonId(currentLessonId: string): string | null {
+  const levelNum = parseInt(currentLessonId.split('.')[0], 10);
+  const level = LEVELS[levelNum - 1];
+  if (!level) return null;
+
+  // Get all lesson IDs in order
+  const allLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
+  const currentIndex = allLessonIds.indexOf(currentLessonId);
+
+  if (currentIndex === -1 || currentIndex >= allLessonIds.length - 1) {
+    return null; // Not found or last lesson
+  }
+
+  return allLessonIds[currentIndex + 1];
 }
 
 export default function LessonPage() {
@@ -573,13 +598,23 @@ export default function LessonPage() {
               </div>
 
               {/* Continue button */}
-              <button
-                onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
-                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
-                style={{ backgroundColor: COLORS.green }}
-              >
-                Continue to Chess Path
-              </button>
+              {getNextLessonId(lessonId) ? (
+                <button
+                  onClick={() => window.location.href = `/lesson/${getNextLessonId(lessonId)}?guest=true`}
+                  className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
+                  style={{ backgroundColor: COLORS.green }}
+                >
+                  Next Lesson
+                </button>
+              ) : (
+                <button
+                  onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
+                  className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
+                  style={{ backgroundColor: COLORS.green }}
+                >
+                  Level Complete!
+                </button>
+              )}
 
               {/* Signup prompt */}
               <div className="bg-[#1A2C35] rounded-2xl p-4">
@@ -635,13 +670,23 @@ export default function LessonPage() {
               )}
             </div>
 
-            <button
-              onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
-              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-              style={{ backgroundColor: COLORS.green }}
-            >
-              Continue to Chess Path
-            </button>
+            {getNextLessonId(lessonId) ? (
+              <button
+                onClick={() => window.location.href = `/lesson/${getNextLessonId(lessonId)}`}
+                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+                style={{ backgroundColor: COLORS.green }}
+              >
+                Next Lesson
+              </button>
+            ) : (
+              <button
+                onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
+                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+                style={{ backgroundColor: COLORS.green }}
+              >
+                Level Complete!
+              </button>
+            )}
           </div>
         </div>
       </div>
