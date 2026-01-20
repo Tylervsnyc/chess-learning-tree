@@ -187,11 +187,10 @@ interface CurriculumTreeProps {
 }
 
 export function CurriculumTree({ isGuest = false, initialLevel = 0 }: CurriculumTreeProps) {
-  const [selectedLevelIndex] = useState(initialLevel);
   const [expandedModule, setExpandedModule] = useState<string | null>('mod-1');
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
 
-  const currentLevel = LEVELS[selectedLevelIndex];
+  const currentLevel = LEVELS[initialLevel];
 
   const allLessonIds = useMemo(() => {
     return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
