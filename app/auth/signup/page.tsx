@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromLesson = searchParams.get('from') === 'lesson';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -43,17 +46,19 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="bg-[#1A2C35] rounded-xl p-8">
+      <div className="min-h-screen bg-[#131F24] flex flex-col">
+        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+        <div className="flex-1 flex items-center justify-center px-5">
+          <div className="max-w-sm w-full text-center">
             <div className="text-5xl mb-4">✉️</div>
-            <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
+            <h1 className="text-2xl font-black text-white mb-2">Check your email</h1>
             <p className="text-gray-400 mb-6">
-              We've sent a confirmation link to <strong className="text-white">{email}</strong>
+              We sent a confirmation link to <strong className="text-white">{email}</strong>
             </p>
             <Link
               href="/auth/login"
-              className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-3 rounded-xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0e7fb5]"
+              style={{ backgroundColor: '#1CB0F6' }}
             >
               Back to Login
             </Link>
@@ -64,83 +69,119 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-          <p className="text-gray-400">Start your chess improvement journey</p>
-        </div>
+    <div className="min-h-screen bg-[#131F24] flex flex-col">
+      {/* Gradient accent */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
 
-        <form onSubmit={handleSignup} className="bg-[#1A2C35] rounded-xl p-6 space-y-4">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
-              {error}
+      <div className="flex-1 flex items-center justify-center px-5 py-6">
+        <div className="max-w-sm w-full">
+          {/* Congratulatory header for guests who completed a lesson */}
+          {fromLesson ? (
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-2">🎉</div>
+              <h1
+                className="text-2xl font-black bg-clip-text text-transparent mb-2"
+                style={{
+                  backgroundImage: 'linear-gradient(90deg, #58CC02, #1CB0F6, #FF9600)',
+                }}
+              >
+                You're on The Chess Path!
+              </h1>
+              <p className="text-gray-400 text-sm">
+                Create an account to save your progress and keep learning
+              </p>
+            </div>
+          ) : (
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-black text-white mb-2">Create Account</h1>
+              <p className="text-gray-400 text-sm">Start your chess improvement journey</p>
             </div>
           )}
 
-          <div>
-            <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-1">
-              Display Name
-            </label>
-            <input
-              id="displayName"
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
-              className="w-full px-4 py-2 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              placeholder="ChessMaster2000"
-            />
-          </div>
+          <form onSubmit={handleSignup} className="space-y-4">
+            {error && (
+              <div className="bg-[#FF4B4B]/10 border border-[#FF4B4B]/50 rounded-xl p-3 text-[#FF4B4B] text-sm">
+                {error}
+              </div>
+            )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              placeholder="you@example.com"
-            />
-          </div>
+            <div>
+              <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-1">
+                Display Name
+              </label>
+              <input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#1CB0F6] transition-colors"
+                placeholder="ChessMaster2000"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full px-4 py-2 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              placeholder="••••••••"
-            />
-            <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
-          </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#1CB0F6] transition-colors"
+                placeholder="you@example.com"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-semibold rounded-lg transition-colors"
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#1CB0F6] transition-colors"
+                placeholder="••••••••"
+              />
+              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+            </div>
 
-          <p className="text-center text-gray-400 text-sm">
-            Already have an account?{' '}
-            <Link href="/auth/login" className="text-blue-400 hover:text-blue-300">
-              Sign in
-            </Link>
-          </p>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-2xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
+              style={{ backgroundColor: '#58CC02' }}
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </button>
+
+            <p className="text-center text-gray-400 text-sm pt-2">
+              Already have an account?{' '}
+              <Link href="/auth/login" className="text-[#1CB0F6] hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    }>
+      <SignupContent />
+    </Suspense>
   );
 }

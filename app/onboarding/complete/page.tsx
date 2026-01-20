@@ -1,141 +1,126 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser } from '@/hooks/useUser';
-import { useOnboarding, SelectedLevel } from '@/hooks/useOnboarding';
-import { PlacementResults } from '@/components/onboarding/PlacementResults';
-import { playCelebrationSound } from '@/lib/sounds';
+
+const LEVEL_CONFIG = {
+  beginner: { label: 'Beginner', color: '#58CC02', emoji: '🌱', firstLesson: '1.1' },
+  intermediate: { label: 'Intermediate', color: '#1CB0F6', emoji: '⚡', firstLesson: '2.1' },
+  advanced: { label: 'Advanced', color: '#FF9600', emoji: '🔥', firstLesson: '3.1' },
+};
+
+function Confetti() {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; delay: number; size: number }>>([]);
+
+  useEffect(() => {
+    const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#FFC800', '#FF4B4B', '#A560E8'];
+    const newParticles = Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      delay: Math.random() * 0.5,
+      size: 6 + Math.random() * 6,
+    }));
+    setParticles(newParticles);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute animate-confetti-fall"
+          style={{
+            left: `${p.x}%`,
+            top: -20,
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+      <style jsx>{`
+        @keyframes confetti-fall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .animate-confetti-fall {
+          animation: confetti-fall 3s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
+}
 
 function OnboardingCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading: userLoading } = useUser();
-  const { complete } = useOnboarding();
+  const [showConfetti, setShowConfetti] = useState(true);
 
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasCelebrated, setHasCelebrated] = useState(false);
+  const elo = parseInt(searchParams.get('elo') || '800', 10);
+  const level = (searchParams.get('level') || 'beginner') as keyof typeof LEVEL_CONFIG;
+  const config = LEVEL_CONFIG[level] || LEVEL_CONFIG.beginner;
 
-  // Parse URL params
-  const elo = parseInt(searchParams.get('elo') || '600', 10);
-  const level = searchParams.get('level') as SelectedLevel;
-  const passed = searchParams.get('passed') === 'true';
-  const score = searchParams.get('score') || '0/0';
-  const suggestedLevel = searchParams.get('suggestedLevel') as SelectedLevel | undefined;
-  const isDiagnostic = searchParams.get('diagnostic') === 'true';
-  const finalRating = searchParams.get('finalRating')
-    ? parseInt(searchParams.get('finalRating')!, 10)
-    : undefined;
-
-  // Play celebration sound on mount
   useEffect(() => {
-    if (!hasCelebrated) {
-      setHasCelebrated(true);
-      playCelebrationSound();
-    }
-  }, [hasCelebrated]);
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!userLoading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, userLoading, router]);
-
-  // Save rating and complete onboarding
-  const saveAndContinue = useCallback(async (eloToSave: number) => {
-    setSaving(true);
-    setError(null);
-
     try {
-      const res = await fetch('/api/profile/update-rating', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          elo_rating: eloToSave,
-          onboarding_completed: true,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to save');
-      }
-
-      // Clear onboarding state
-      complete();
-
-      // Redirect to learn page
-      router.push('/learn');
-    } catch (err) {
-      console.error('Error saving rating:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save your rating');
-      setSaving(false);
+      localStorage.setItem('chess-guest-progress', JSON.stringify({
+        elo,
+        level,
+        diagnosticComplete: true,
+        timestamp: Date.now(),
+      }));
+    } catch {
+      // Ignore
     }
-  }, [complete, router]);
 
-  // Handle continue (use current ELO)
-  const handleContinue = useCallback(() => {
-    saveAndContinue(elo);
-  }, [elo, saveAndContinue]);
+    const timer = setTimeout(() => setShowConfetti(false), 3000);
+    return () => clearTimeout(timer);
+  }, [elo, level]);
 
-  // Handle trying lower level
-  const handleTryLower = useCallback(() => {
-    // Redirect to lower level's complete page
-    if (suggestedLevel === 'beginner') {
-      saveAndContinue(600);
-    } else if (suggestedLevel === 'intermediate') {
-      saveAndContinue(800);
-    }
-  }, [suggestedLevel, saveAndContinue]);
-
-  if (userLoading) {
-    return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
-      </div>
-    );
-  }
+  const handleContinue = () => {
+    router.push(`/learn?guest=true&level=${level}`);
+  };
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col items-center justify-center px-4 py-8">
-      {/* Error message */}
-      {error && (
-        <div className="max-w-md w-full mb-6 p-4 bg-red-600/20 border border-red-500 rounded-xl text-center">
-          <p className="text-red-400 mb-3">{error}</p>
-          <button
-            onClick={handleContinue}
-            className="text-sm text-white underline"
-          >
-            Try again
-          </button>
-        </div>
-      )}
+    <div className="min-h-screen bg-[#131F24] flex flex-col items-center justify-center px-5 relative">
+      {showConfetti && <Confetti />}
 
-      {/* Loading overlay */}
-      {saving && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#1A2C35] rounded-xl p-6 text-center">
-            <div className="text-2xl mb-3">🚀</div>
-            <div className="text-white font-semibold">Setting up your account...</div>
-          </div>
-        </div>
-      )}
+      {/* Decorative gradient accent */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
 
-      {/* Results */}
-      <PlacementResults
-        score={score}
-        passed={passed || isDiagnostic}
-        determinedLevel={level}
-        startingElo={elo}
-        suggestedLevel={suggestedLevel}
-        isDiagnostic={isDiagnostic}
-        finalRating={finalRating}
-        onContinue={handleContinue}
-        onTryLower={handleTryLower}
-      />
+      <div className="text-center max-w-sm">
+        {/* Animated emoji */}
+        <div
+          className="text-7xl mb-4 animate-bounce"
+          style={{ animationDuration: '0.6s' }}
+        >
+          {config.emoji}
+        </div>
+
+        {/* Title */}
+        <h1 className="text-2xl font-black text-white mb-1">
+          Level Found!
+        </h1>
+
+        {/* Level badge */}
+        <div
+          className="inline-block px-5 py-2 rounded-full font-bold text-lg mt-3 mb-6"
+          style={{ backgroundColor: config.color, color: '#000' }}
+        >
+          {config.label}
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={handleContinue}
+          className="w-full py-4 rounded-2xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          style={{ backgroundColor: '#58CC02' }}
+        >
+          See Your Path
+        </button>
+      </div>
     </div>
   );
 }

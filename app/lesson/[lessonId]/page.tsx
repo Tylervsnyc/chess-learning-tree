@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
+import Link from 'next/link';
 import { useLessonProgress } from '@/hooks/useProgress';
 import {
   playCorrectSound,
@@ -72,10 +73,21 @@ interface LessonPuzzle {
 
 type PuzzleResult = 'pending' | 'correct' | 'wrong';
 
+// Duolingo colors
+const COLORS = {
+  green: '#58CC02',
+  blue: '#1CB0F6',
+  orange: '#FF9600',
+  background: '#131F24',
+  card: '#1A2C35',
+};
+
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
+  const isGuest = searchParams.get('guest') === 'true';
   const { completeLesson, recordPuzzleAttempt } = useLessonProgress();
 
   // Lesson state
@@ -456,24 +468,134 @@ export default function LessonPage() {
   }
 
   if (lessonComplete) {
-    return (
-      <div className="min-h-screen bg-[#131F24] text-white flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <div className="text-6xl">🎉</div>
-          <h1 className="text-3xl font-bold text-[#58CC02]">Lesson Complete!</h1>
-          <p className="text-xl text-gray-300">{lessonName}</p>
-          <div className="text-lg">
-            <span className="text-green-400">{correctCount} correct</span>
-            {wrongCount > 0 && (
-              <span className="text-gray-400"> (retried {wrongCount})</span>
-            )}
+    // Confetti component
+    const ConfettiEffect = () => (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {Array.from({ length: 40 }).map((_, i) => {
+          const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#FFC800', '#FF4B4B', '#A560E8'];
+          return (
+            <div
+              key={i}
+              className="absolute animate-confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: -20,
+                width: 8 + Math.random() * 8,
+                height: 8 + Math.random() * 8,
+                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+                borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                animationDelay: `${Math.random() * 0.5}s`,
+              }}
+            />
+          );
+        })}
+        <style>{`
+          @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+          }
+          .animate-confetti { animation: confetti 3s ease-out forwards; }
+        `}</style>
+      </div>
+    );
+
+    // Guest signup prompt
+    if (isGuest) {
+      return (
+        <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative">
+          <ConfettiEffect />
+          <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+
+          <div className="flex-1 flex items-center justify-center px-5">
+            <div className="max-w-sm w-full text-center">
+              {/* Trophy */}
+              <div className="text-7xl mb-4 animate-bounce" style={{ animationDuration: '0.6s' }}>
+                🏆
+              </div>
+
+              <h1 className="text-2xl font-black mb-1" style={{ color: COLORS.green }}>
+                Lesson Complete!
+              </h1>
+              <p className="text-gray-400 mb-6">{lessonName}</p>
+
+              {/* Stats */}
+              <div className="flex justify-center gap-8 mb-8">
+                <div className="text-center">
+                  <div className="text-2xl font-black" style={{ color: COLORS.green }}>{correctCount}</div>
+                  <div className="text-xs text-gray-500">Correct</div>
+                </div>
+                {wrongCount > 0 && (
+                  <div className="text-center">
+                    <div className="text-2xl font-black text-gray-400">{wrongCount}</div>
+                    <div className="text-xs text-gray-500">Retried</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Signup prompt */}
+              <div className="bg-[#1A2C35] rounded-2xl p-5 mb-4">
+                <p className="text-white font-semibold mb-1">Keep your progress!</p>
+                <p className="text-gray-400 text-sm mb-4">Create a free account to continue learning</p>
+
+                <Link
+                  href="/auth/signup?from=lesson"
+                  className="block w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+                  style={{ backgroundColor: COLORS.green }}
+                >
+                  Create Free Account
+                </Link>
+              </div>
+
+              <Link
+                href="/auth/login"
+                className="text-gray-500 text-sm hover:text-gray-300 transition-colors"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
-          <button
-            onClick={() => router.push('/')}
-            className="mt-8 px-8 py-4 bg-[#58CC02] text-white font-bold rounded-xl text-xl shadow-[0_4px_0_#3d8c01] hover:shadow-[0_2px_0_#3d8c01] hover:translate-y-[2px] transition-all"
-          >
-            Continue
-          </button>
+        </div>
+      );
+    }
+
+    // Logged-in user completion
+    return (
+      <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative">
+        <ConfettiEffect />
+        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+
+        <div className="flex-1 flex items-center justify-center px-5">
+          <div className="max-w-sm w-full text-center">
+            <div className="text-7xl mb-4 animate-bounce" style={{ animationDuration: '0.6s' }}>
+              🏆
+            </div>
+
+            <h1 className="text-2xl font-black mb-1" style={{ color: COLORS.green }}>
+              Lesson Complete!
+            </h1>
+            <p className="text-gray-400 mb-6">{lessonName}</p>
+
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-2xl font-black" style={{ color: COLORS.green }}>{correctCount}</div>
+                <div className="text-xs text-gray-500">Correct</div>
+              </div>
+              {wrongCount > 0 && (
+                <div className="text-center">
+                  <div className="text-2xl font-black text-gray-400">{wrongCount}</div>
+                  <div className="text-xs text-gray-500">Retried</div>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => router.push('/learn')}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+              style={{ backgroundColor: COLORS.green }}
+            >
+              Continue
+            </button>
+          </div>
         </div>
       </div>
     );

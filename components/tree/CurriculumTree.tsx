@@ -9,19 +9,33 @@ import { useLessonProgress } from '@/hooks/useProgress';
 
 const LEVELS: Level[] = [level1, level2, level3];
 
+const MODULE_COLORS = [
+  '#58CC02', // Green
+  '#1CB0F6', // Blue
+  '#FF9600', // Orange
+  '#FF4B4B', // Red
+  '#A560E8', // Purple
+  '#2FCBEF', // Cyan
+  '#FFC800', // Yellow
+  '#FF6B6B', // Coral
+];
+
 interface LessonCardProps {
   lesson: LessonCriteria;
   moduleColor: string;
   isUnlocked: boolean;
   isCompleted: boolean;
+  isGuest?: boolean;
+  isFirst?: boolean;
 }
 
-function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted }: LessonCardProps) {
+function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isFirst }: LessonCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
     if (isUnlocked) {
-      router.push(`/lesson/${lesson.id}`);
+      const url = isGuest ? `/lesson/${lesson.id}?guest=true` : `/lesson/${lesson.id}`;
+      router.push(url);
     }
   };
 
@@ -29,35 +43,59 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted }: LessonCard
     <button
       onClick={handleClick}
       disabled={!isUnlocked}
-      className={`w-full text-left p-3 rounded-xl transition-all border ${
+      className={`w-full text-left p-3 rounded-xl transition-all border-2 ${
+        isFirst && isUnlocked && !isCompleted
+          ? 'animate-pulse-subtle'
+          : ''
+      } ${
         isUnlocked
-          ? 'bg-[#1A2C35] hover:bg-[#2A3C45] border-white/10 hover:border-white/20 cursor-pointer'
-          : 'bg-[#0D1B21] border-white/5 cursor-not-allowed opacity-60'
+          ? 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+          : 'bg-[#0D1B21] cursor-not-allowed opacity-50'
       }`}
+      style={{
+        borderColor: isFirst && isUnlocked && !isCompleted ? moduleColor : 'transparent',
+      }}
     >
       <div className="flex items-center gap-3">
         <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
-            isCompleted ? 'text-white' : isUnlocked ? 'text-white' : 'text-gray-500'
-          }`}
+          className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
           style={{
             backgroundColor: isCompleted ? '#58CC02' : isUnlocked ? moduleColor : '#1A2C35',
+            color: '#fff',
           }}
         >
           {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
         </div>
         <div className="flex-1 min-w-0">
-          <div className={`font-medium truncate ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
+          <div className={`font-semibold truncate ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
             {lesson.name}
           </div>
           <div className={`text-xs truncate ${isUnlocked ? 'text-gray-400' : 'text-gray-600'}`}>
             {lesson.description}
           </div>
         </div>
-        <div className={isUnlocked ? 'text-gray-500' : 'text-gray-700'}>
-          {isUnlocked ? '→' : '🔒'}
-        </div>
+        {isFirst && isUnlocked && !isCompleted ? (
+          <div
+            className="px-2 py-1 rounded-lg text-xs font-bold"
+            style={{ backgroundColor: moduleColor, color: '#000' }}
+          >
+            START
+          </div>
+        ) : (
+          <div className={isUnlocked ? 'text-gray-500' : 'text-gray-700'}>
+            {isUnlocked ? '→' : '🔒'}
+          </div>
+        )}
       </div>
+      <style jsx>{`
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.85; }
+        }
+        .animate-pulse-subtle {
+          animation: pulse-subtle 2s ease-in-out infinite;
+        }
+      `}</style>
     </button>
   );
 }
@@ -70,18 +108,9 @@ interface ModuleSectionProps {
   allLessonIds: string[];
   isLessonUnlocked: (id: string, all: string[]) => boolean;
   isLessonCompleted: (id: string) => boolean;
+  isGuest?: boolean;
+  isFirstModule?: boolean;
 }
-
-const MODULE_COLORS = [
-  '#58CC02', // Green
-  '#1CB0F6', // Blue
-  '#FF9600', // Orange
-  '#FF4B4B', // Red
-  '#A560E8', // Purple
-  '#2FCBEF', // Cyan
-  '#FFC800', // Yellow
-  '#FF6B6B', // Coral
-];
 
 function ModuleSection({
   module,
@@ -91,25 +120,24 @@ function ModuleSection({
   allLessonIds,
   isLessonUnlocked,
   isLessonCompleted,
+  isGuest,
+  isFirstModule,
 }: ModuleSectionProps) {
   const color = MODULE_COLORS[colorIndex % MODULE_COLORS.length];
-
-  // Count completed lessons in this module
   const completedCount = module.lessons.filter(l => isLessonCompleted(l.id)).length;
   const isModuleComplete = completedCount === module.lessons.length;
 
   return (
-    <div className="mb-4">
-      {/* Module header */}
+    <div className="mb-3">
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all"
+        className="w-full flex items-center gap-3 p-3 rounded-2xl transition-all"
         style={{
           backgroundColor: isExpanded ? color : '#1A2C35',
         }}
       >
         <div
-          className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold"
+          className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-black"
           style={{
             backgroundColor: isModuleComplete ? '#58CC02' : isExpanded ? 'rgba(255,255,255,0.2)' : color,
             color: 'white',
@@ -118,26 +146,30 @@ function ModuleSection({
           {isModuleComplete ? '✓' : module.id.replace('mod-', '')}
         </div>
         <div className="flex-1 text-left">
-          <div className="font-bold text-white text-lg">{module.name}</div>
-          <div className={`text-sm ${isExpanded ? 'text-white/70' : 'text-gray-400'}`}>
-            {completedCount}/{module.lessons.length} lessons
+          <div className="font-bold text-white">{module.name}</div>
+          <div className={`text-xs ${isExpanded ? 'text-white/70' : 'text-gray-400'}`}>
+            {completedCount}/{module.lessons.length} complete
           </div>
         </div>
-        <div className={`text-2xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-          ▼
+        <div
+          className={`text-xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          style={{ color: isExpanded ? 'rgba(255,255,255,0.7)' : color }}
+        >
+          ▾
         </div>
       </button>
 
-      {/* Lessons */}
       {isExpanded && (
-        <div className="mt-2 ml-4 space-y-2">
-          {module.lessons.map(lesson => (
+        <div className="mt-2 space-y-2 pl-2">
+          {module.lessons.map((lesson, idx) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}
               moduleColor={color}
               isUnlocked={isLessonUnlocked(lesson.id, allLessonIds)}
               isCompleted={isLessonCompleted(lesson.id)}
+              isGuest={isGuest}
+              isFirst={isFirstModule && idx === 0 && completedCount === 0}
             />
           ))}
         </div>
@@ -146,15 +178,18 @@ function ModuleSection({
   );
 }
 
-export function CurriculumTree() {
-  const router = useRouter();
-  const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
+interface CurriculumTreeProps {
+  isGuest?: boolean;
+  initialLevel?: number;
+}
+
+export function CurriculumTree({ isGuest = false, initialLevel = 0 }: CurriculumTreeProps) {
+  const [selectedLevelIndex] = useState(initialLevel);
   const [expandedModule, setExpandedModule] = useState<string | null>('mod-1');
-  const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons, resetProgress } = useLessonProgress();
+  const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
 
   const currentLevel = LEVELS[selectedLevelIndex];
 
-  // Get all lesson IDs in order for the current level
   const allLessonIds = useMemo(() => {
     return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
   }, [currentLevel]);
@@ -163,90 +198,47 @@ export function CurriculumTree() {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));
   };
 
-  const handleLevelChange = (index: number) => {
-    setSelectedLevelIndex(index);
-    setExpandedModule('mod-1'); // Reset to first module when changing levels
-  };
-
-  // Count totals for current level
   const totalLessons = allLessonIds.length;
   const completedCount = allLessonIds.filter(id => completedLessons.includes(id)).length;
+  const progressPercent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
 
-  // Don't render until progress is loaded to avoid hydration mismatch
   if (!loaded) {
     return (
-      <div className="px-4 pb-20">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
-          <p className="text-gray-400">{currentLevel.ratingRange} • {totalLessons} lessons</p>
-        </div>
-        <div className="text-center text-gray-400 py-8">Loading...</div>
+      <div className="px-4 py-6">
+        <div className="text-center text-gray-400">Loading...</div>
       </div>
     );
   }
 
   return (
     <div className="px-4 pb-20">
+      {/* Gradient accent */}
+      <div className="h-1 -mx-4 mb-4 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
 
-      {/* Level selector tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
-        {LEVELS.map((level, index) => {
-          const levelLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
-          const levelCompletedCount = levelLessonIds.filter(id => completedLessons.includes(id)).length;
-          const isSelected = index === selectedLevelIndex;
+      {/* Level header - compact */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-xl font-black text-white">{currentLevel.name}</h1>
+          <span className="text-sm text-gray-400">{currentLevel.ratingRange}</span>
+        </div>
 
-          return (
-            <button
-              key={level.id}
-              onClick={() => handleLevelChange(index)}
-              className={`flex-shrink-0 px-4 py-3 rounded-xl transition-all border ${
-                isSelected
-                  ? 'bg-[#58CC02] border-[#58CC02] text-white'
-                  : 'bg-[#1A2C35] border-white/10 text-gray-300 hover:border-white/20'
-              }`}
-            >
-              <div className="font-bold text-sm">Level {index + 1}</div>
-              <div className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
-                {level.ratingRange}
-              </div>
-              {levelCompletedCount > 0 && (
-                <div className={`text-xs mt-1 ${isSelected ? 'text-white/70' : 'text-gray-500'}`}>
-                  {levelCompletedCount}/{levelLessonIds.length}
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Level header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-white">{currentLevel.name}</h1>
-        <p className="text-gray-400">
-          {currentLevel.ratingRange} • {completedCount}/{totalLessons} lessons completed
-        </p>
-        {completedCount > 0 && (
-          <button
-            onClick={resetProgress}
-            className="mt-2 text-xs text-gray-500 hover:text-gray-400 underline"
-          >
-            Reset progress
-          </button>
-        )}
-      </div>
-
-      {/* Progress bar */}
-      <div className="mb-6 mx-4">
+        {/* Progress bar */}
         <div className="h-2 bg-[#1A2C35] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#58CC02] transition-all duration-500"
-            style={{ width: `${(completedCount / totalLessons) * 100}%` }}
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${progressPercent}%`,
+              background: 'linear-gradient(90deg, #58CC02, #1CB0F6)',
+            }}
           />
+        </div>
+        <div className="text-xs text-gray-500 mt-1">
+          {completedCount}/{totalLessons} lessons
         </div>
       </div>
 
       {/* Modules */}
-      <div className="space-y-2">
+      <div>
         {currentLevel.modules.map((module, index) => (
           <ModuleSection
             key={module.id}
@@ -257,6 +249,8 @@ export function CurriculumTree() {
             allLessonIds={allLessonIds}
             isLessonUnlocked={isLessonUnlocked}
             isLessonCompleted={isLessonCompleted}
+            isGuest={isGuest}
+            isFirstModule={index === 0}
           />
         ))}
       </div>

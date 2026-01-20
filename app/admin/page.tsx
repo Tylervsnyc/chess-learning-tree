@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 const mvpPages = [
+  { name: 'MVP Funnel', path: '/admin/mvp-funnel', description: 'Full user flow in phone frame preview' },
   { name: 'Landing', path: '/admin/landing-preview', description: 'Journey path landing with auto-animation' },
   { name: 'Login', path: '/auth/login', description: 'User authentication' },
   { name: 'Signup', path: '/auth/signup', description: 'User registration' },

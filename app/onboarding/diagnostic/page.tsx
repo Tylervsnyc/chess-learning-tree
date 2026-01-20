@@ -5,53 +5,58 @@ import { useRouter } from 'next/navigation';
 import { useOnboarding, getNextRating, getFinalEloFromDiagnostic } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
 
-const DIAGNOSTIC_COUNT = 10;
-const STARTING_RATING = 700;
+const DIAGNOSTIC_COUNT = 5;
+const STARTING_RATING = 800;
 
-// Animated rating display component
-function AdaptiveRatingDisplay({ rating, isAnimating }: { rating: number; isAnimating: boolean }) {
-  const getLevelInfo = (r: number) => {
-    if (r < 700) return { label: 'Beginner', color: '#58CC02' };
-    if (r < 900) return { label: 'Developing', color: '#58CC02' };
-    if (r < 1100) return { label: 'Intermediate', color: '#1CB0F6' };
-    return { label: 'Advanced', color: '#FF9600' };
+const COLORS = {
+  green: '#58CC02',
+  blue: '#1CB0F6',
+  orange: '#FF9600',
+};
+
+// Streak animation styles (same as lesson page)
+const streakStyles = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+  }
+  @keyframes rainbowFlow {
+    0% { background-position: 0% 50%, 0% 50%; }
+    100% { background-position: 0% 50%, 300% 50%; }
+  }
+`;
+
+function getStreakStyle(streak: number): React.CSSProperties {
+  if (streak < 2) {
+    return {
+      background: COLORS.green,
+      backgroundSize: 'auto',
+      animation: 'none',
+      boxShadow: 'none',
+    };
+  }
+  const intensity = Math.min(streak / 5, 1);
+  return {
+    background: `
+      radial-gradient(ellipse at center,
+        rgba(255, 255, 255, ${0.3 + intensity * 0.7}) 0%,
+        rgba(255, 220, 240, ${0.2 + intensity * 0.4}) 20%,
+        transparent 50%),
+      linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))
+    `,
+    backgroundSize: '100% 100%, 300% 100%',
+    animation: `rainbowFlow ${3 - streak * 0.3}s linear infinite${streak >= 4 ? `, shake 0.4s infinite` : ''}`,
+    boxShadow: `
+      0 0 ${streak * 5}px rgba(255, 200, 220, ${0.4 + intensity * 0.4}),
+      0 0 ${streak * 10}px rgba(255, 150, 200, 0.4)
+    `,
   };
-
-  const info = getLevelInfo(rating);
-  const progress = Math.min(100, Math.max(0, ((rating - 400) / 1200) * 100));
-
-  return (
-    <div className="bg-[#1A2C35] rounded-xl p-4 border border-white/10">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-gray-400 text-sm">Estimated Rating</span>
-        <span
-          className={`text-lg font-bold transition-all duration-500 ${isAnimating ? 'scale-110' : 'scale-100'}`}
-          style={{ color: info.color }}
-        >
-          {rating}
-        </span>
-      </div>
-      <div className="h-2 bg-[#131F24] rounded-full overflow-hidden">
-        <div
-          className="h-full transition-all duration-500 ease-out"
-          style={{
-            width: `${progress}%`,
-            background: `linear-gradient(90deg, #58CC02, ${info.color})`,
-          }}
-        />
-      </div>
-      <div className="mt-2 text-center">
-        <span className="text-sm" style={{ color: info.color }}>
-          {info.label}
-        </span>
-      </div>
-    </div>
-  );
 }
 
 export default function DiagnosticPage() {
   const router = useRouter();
-  const { recordResult, state, isLoaded, reset } = useOnboarding();
+  const { recordResult, isLoaded, reset } = useOnboarding();
 
   const [currentPuzzle, setCurrentPuzzle] = useState<OnboardingPuzzle | null>(null);
   const [puzzlesCompleted, setPuzzlesCompleted] = useState(0);
@@ -60,12 +65,11 @@ export default function DiagnosticPage() {
   const [seenPuzzleIds, setSeenPuzzleIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isRatingAnimating, setIsRatingAnimating] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [justAnswered, setJustAnswered] = useState(false);
 
-  // Track if we've initialized
   const initialized = useRef(false);
 
-  // Reset state on mount
   useEffect(() => {
     if (isLoaded && !initialized.current) {
       initialized.current = true;
@@ -73,7 +77,6 @@ export default function DiagnosticPage() {
     }
   }, [isLoaded, reset]);
 
-  // Load next puzzle based on current rating
   const loadNextPuzzle = useCallback(async (targetRating: number, exclude: string[]) => {
     setLoading(true);
     setError(null);
@@ -96,16 +99,15 @@ export default function DiagnosticPage() {
     }
 
     setLoading(false);
+    setJustAnswered(false);
   }, []);
 
-  // Load first puzzle
   useEffect(() => {
     if (isLoaded && initialized.current && puzzlesCompleted === 0 && !currentPuzzle) {
       loadNextPuzzle(STARTING_RATING, []);
     }
   }, [isLoaded, puzzlesCompleted, currentPuzzle, loadNextPuzzle]);
 
-  // Handle puzzle result
   const handleResult = useCallback((correct: boolean) => {
     if (!currentPuzzle) return;
 
@@ -114,22 +116,21 @@ export default function DiagnosticPage() {
     const newRating = getNextRating(currentRating, correct, newCompleted);
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
 
-    // Animate rating change
-    setIsRatingAnimating(true);
-    setTimeout(() => setIsRatingAnimating(false), 500);
-
-    // Update state
     setPuzzlesCompleted(newCompleted);
     setPuzzlesCorrect(newCorrect);
     setCurrentRating(newRating);
     setSeenPuzzleIds(newSeen);
-
-    // Record result in hook
     recordResult(currentPuzzle.puzzleId, correct);
+    setJustAnswered(true);
 
-    // Check if done
+    // Update streak
+    if (correct) {
+      setStreak(prev => prev + 1);
+    } else {
+      setStreak(0);
+    }
+
     if (newCompleted >= DIAGNOSTIC_COUNT) {
-      // Navigate to complete page with final rating
       const finalElo = getFinalEloFromDiagnostic(newRating);
       const levelName = finalElo < 700 ? 'beginner' :
                         finalElo < 1000 ? 'intermediate' : 'advanced';
@@ -137,20 +138,16 @@ export default function DiagnosticPage() {
       const params = new URLSearchParams({
         elo: finalElo.toString(),
         level: levelName,
-        score: `${newCorrect}/${DIAGNOSTIC_COUNT}`,
-        diagnostic: 'true',
         finalRating: newRating.toString(),
       });
 
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
-      // Load next puzzle at new rating
       setCurrentPuzzle(null);
       loadNextPuzzle(newRating, newSeen);
     }
   }, [currentPuzzle, puzzlesCompleted, puzzlesCorrect, currentRating, seenPuzzleIds, recordResult, router, loadNextPuzzle]);
 
-  // Handle back navigation
   const handleBack = () => {
     router.push('/onboarding');
   };
@@ -167,12 +164,12 @@ export default function DiagnosticPage() {
     return (
       <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="text-5xl mb-4">😔</div>
           <h1 className="text-xl font-bold text-white mb-2">Unable to load puzzles</h1>
           <p className="text-gray-400 mb-6">{error}</p>
           <button
             onClick={handleBack}
-            className="px-6 py-3 bg-[#1A2C35] text-white rounded-xl border border-white/20 hover:bg-[#2A3C45] transition-all"
+            className="px-6 py-3 rounded-xl font-bold shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] transition-all"
+            style={{ backgroundColor: COLORS.green, color: '#fff' }}
           >
             Go Back
           </button>
@@ -181,66 +178,48 @@ export default function DiagnosticPage() {
     );
   }
 
+  // Calculate progress - include just answered state
+  const progressPercent = ((puzzlesCompleted + (justAnswered ? 0 : 0)) / DIAGNOSTIC_COUNT) * 100;
+
   return (
     <div className="min-h-screen bg-[#131F24] flex flex-col">
-      {/* Header */}
+      <style jsx>{streakStyles}</style>
+
+      {/* Header - same style as lesson page */}
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={handleBack}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white text-xl"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            ✕
           </button>
 
-          {/* Progress bar */}
+          {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
             <div className="h-3 bg-[#131F24] rounded-full overflow-hidden">
               <div
-                className="h-full transition-all duration-300"
+                className="h-full transition-all duration-300 rounded-full"
                 style={{
-                  width: `${(puzzlesCompleted / DIAGNOSTIC_COUNT) * 100}%`,
-                  background: 'linear-gradient(90deg, #58CC02, #1CB0F6)',
+                  width: `${progressPercent}%`,
+                  ...getStreakStyle(streak),
                 }}
               />
             </div>
           </div>
 
-          <div className="text-gray-400 text-sm">
+          <div className="text-gray-400 font-medium">
             {puzzlesCompleted + 1}/{DIAGNOSTIC_COUNT}
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 py-6">
-        <div className="max-w-lg w-full">
-          {/* Title */}
-          <div className="text-center mb-4">
-            <h1 className="text-lg font-semibold text-white">Diagnostic Quiz</h1>
-            <p className="text-gray-400 text-sm">
-              Finding your perfect starting point
-            </p>
-          </div>
-
-          {/* Rating display */}
-          <div className="mb-4">
-            <AdaptiveRatingDisplay
-              rating={currentRating}
-              isAnimating={isRatingAnimating}
-            />
-          </div>
-
+      <div className="flex-1 flex flex-col items-center px-4 pt-4">
+        <div className="w-full max-w-lg">
           {/* Loading state */}
           {loading && !currentPuzzle && (
-            <div className="bg-[#1A2C35] rounded-xl p-8 text-center">
-              <div className="text-gray-400 mb-2">Loading puzzle...</div>
-              <div className="text-gray-500 text-sm">
-                Targeting ~{currentRating} rating
-              </div>
-            </div>
+            <div className="text-center text-gray-400">Loading puzzle...</div>
           )}
 
           {/* Puzzle board */}
@@ -251,22 +230,6 @@ export default function DiagnosticPage() {
               onResult={handleResult}
             />
           )}
-
-          {/* Progress indicators */}
-          <div className="mt-4 flex justify-center gap-1">
-            {Array.from({ length: DIAGNOSTIC_COUNT }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  i < puzzlesCompleted
-                    ? 'bg-[#1CB0F6]'
-                    : i === puzzlesCompleted
-                      ? 'bg-white'
-                      : 'bg-gray-600'
-                }`}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
