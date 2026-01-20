@@ -462,8 +462,40 @@ export default function LessonPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] text-white flex items-center justify-center">
-        <div className="text-xl">Loading lesson...</div>
+      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+        <style>{streakStyles}</style>
+        {/* Header placeholder */}
+        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <button
+              onClick={() => router.push('/')}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <div className="flex-1 mx-4">
+              <div className="h-3 bg-[#131F24] rounded-full overflow-hidden">
+                <div className="h-full w-0 bg-[#58CC02]" />
+              </div>
+            </div>
+            <div className="text-gray-400">0/6</div>
+          </div>
+        </div>
+        {/* Loading content */}
+        <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
+          <div className="w-full max-w-lg">
+            <div className="text-center mb-2 h-12 flex flex-col justify-center">
+              <div className="h-5 w-32 mx-auto bg-gray-700 rounded animate-pulse" />
+            </div>
+            <div className="flex items-center justify-center gap-3 mb-2 h-8">
+              <div className="h-6 w-36 bg-gray-700 rounded animate-pulse" />
+            </div>
+            <div className="aspect-square bg-gray-800 rounded-lg animate-pulse" />
+            <div className="text-center mt-3 h-6">
+              <span className="text-gray-500">Loading puzzle...</span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -604,8 +636,22 @@ export default function LessonPage() {
 
   if (!currentPuzzle) {
     return (
-      <div className="min-h-screen bg-[#131F24] text-white flex items-center justify-center">
-        <div className="text-xl">No puzzles found for this lesson.</div>
+      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <button
+              onClick={() => router.push('/')}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <div className="flex-1 mx-4" />
+            <div />
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-xl text-gray-400">No puzzles found for this lesson.</div>
+        </div>
       </div>
     );
   }
@@ -643,21 +689,21 @@ export default function LessonPage() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
+      {/* Main content - fixed layout to prevent board movement */}
+      <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
         <div className="w-full max-w-lg">
-          {/* Lesson info */}
-          <div className="text-center mb-3">
+          {/* Lesson info - fixed height to prevent layout shift */}
+          <div className="text-center mb-2 h-12 flex flex-col justify-center">
             <h1 className="text-lg font-semibold text-gray-300">{lessonName}</h1>
             {inRetryMode && (
-              <p className="text-yellow-400 text-sm mt-1">
+              <p className="text-yellow-400 text-sm">
                 Let&apos;s try {retryQueue.length === 1 ? 'that one' : 'those'} again
               </p>
             )}
           </div>
 
-          {/* Turn indicator + Flag button */}
-          <div className="flex items-center justify-center gap-3 mb-3">
+          {/* Turn indicator + Flag button - fixed height */}
+          <div className="flex items-center justify-center gap-3 mb-2 h-8">
             <span className={`text-xl font-bold ${
               currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
             }`}>
@@ -714,12 +760,12 @@ export default function LessonPage() {
             )}
           </div>
 
-          {/* Status text when playing */}
-          {moveStatus === 'playing' && (
-            <div className="text-center text-gray-400 mt-4">
-              Find the best move
-            </div>
-          )}
+          {/* Status text - fixed height to prevent layout shift */}
+          <div className="text-center mt-3 h-6">
+            {moveStatus === 'playing' && (
+              <span className="text-gray-400">Find the best move</span>
+            )}
+          </div>
         </div>
       </div>
     </div>
