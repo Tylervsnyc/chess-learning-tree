@@ -29,7 +29,12 @@ const streakStyles = `
 // Supernova Gentle streak effect
 function getStreakStyle(streak: number, hadWrongAnswer: boolean): React.CSSProperties {
   if (hadWrongAnswer || streak < 2) {
-    return { backgroundColor: '#58CC02' };
+    return {
+      background: '#58CC02',
+      backgroundSize: 'auto',
+      animation: 'none',
+      boxShadow: 'none',
+    };
   }
   const intensity = Math.min(streak / 6, 1);
   return {
