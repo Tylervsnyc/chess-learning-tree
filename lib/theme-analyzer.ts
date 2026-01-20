@@ -951,16 +951,24 @@ function pieceValue(piece: string): number {
 
 function attacksHighValueTarget(
   position: Chess,
-  move: { from: Square; to: Square; piece: string }
+  move: { from: Square; to: Square; piece: string; promotion?: string }
 ): boolean {
-  const testPos = new Chess(position.fen());
-  const result = testPos.move({ from: move.from, to: move.to });
-  if (!result) return false;
+  try {
+    const testPos = new Chess(position.fen());
+    const result = testPos.move({
+      from: move.from,
+      to: move.to,
+      promotion: move.promotion as 'q' | 'r' | 'b' | 'n' | undefined
+    });
+    if (!result) return false;
 
-  const attacks = testPos.moves({ verbose: true });
-  return attacks.some(m =>
-    m.from === move.to && (m.captured === 'q' || m.captured === 'k')
-  );
+    const attacks = testPos.moves({ verbose: true });
+    return attacks.some(m =>
+      m.from === move.to && (m.captured === 'q' || m.captured === 'k')
+    );
+  } catch {
+    return false;
+  }
 }
 
 function getExecutingPiece(position: Chess, moveUci: string): PieceSymbol | null {

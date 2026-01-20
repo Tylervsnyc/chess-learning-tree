@@ -3,6 +3,9 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { Chess } from 'chess.js';
 
+// Bundled diagnostic puzzles (for Vercel deployment)
+import diagnosticPuzzles from '@/data/diagnostic-puzzles.json';
+
 const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
 
 interface RawPuzzle {
@@ -124,6 +127,24 @@ export async function GET(request: NextRequest) {
   const excludeIds = searchParams.get('exclude')?.split(',').filter(Boolean) || [];
   const theme = searchParams.get('theme'); // Optional theme filter
 
+  // Try bundled diagnostic puzzles first (works on Vercel)
+  const ratingKey = String(targetRating) as keyof typeof diagnosticPuzzles;
+  const bundledPuzzles = diagnosticPuzzles[ratingKey];
+
+  if (bundledPuzzles && bundledPuzzles.length > 0) {
+    const excludeSet = new Set(excludeIds);
+    const available = bundledPuzzles.filter((p: { puzzleId: string }) => !excludeSet.has(p.puzzleId));
+    const shuffled = available.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, count);
+
+    return NextResponse.json({
+      puzzles: selected,
+      targetRating,
+      source: 'bundled',
+    });
+  }
+
+  // Fall back to CSV files (local development)
   const ratingBracket = getRatingBracket(targetRating);
   const bracketDir = join(PUZZLES_DIR, ratingBracket);
 

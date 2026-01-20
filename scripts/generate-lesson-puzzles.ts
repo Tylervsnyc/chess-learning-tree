@@ -15,7 +15,11 @@
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { Chess } from 'chess.js';
-import { level1, LessonCriteria } from '../data/level1-curriculum';
+import { level1, LessonCriteria, Level } from '../data/level1-curriculum';
+import { level2 } from '../data/level2-curriculum';
+import { level3 } from '../data/level3-curriculum';
+import { level4 } from '../data/level4-curriculum';
+import { level5 } from '../data/level5-curriculum';
 import {
   analyzePuzzle,
   selectLessonPuzzles,
@@ -23,9 +27,23 @@ import {
   SlotAssignment,
 } from '../lib/theme-analyzer';
 
-const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating', '0400-0800');
-const MIN_PLAYS = 2000;
+const PUZZLES_BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+const MIN_PLAYS = 1000; // Lowered for higher levels which have fewer puzzles
 const PUZZLES_PER_LESSON = 6;
+
+// Map each level to its puzzle bracket
+interface LevelConfig {
+  level: Level;
+  puzzleBracket: string;
+}
+
+const LEVEL_CONFIGS: LevelConfig[] = [
+  { level: level1, puzzleBracket: '0400-0800' },
+  { level: level2, puzzleBracket: '0800-1200' },
+  { level: level3, puzzleBracket: '0800-1200' }, // Level 3 (1000-1200) uses 0800-1200 bracket
+  { level: level4, puzzleBracket: '1200-1600' },
+  { level: level5, puzzleBracket: '1200-1600' }, // Level 5 (1400-1600) uses 1200-1600 bracket
+];
 
 // ============================================
 // Theme analyzer (from lib/theme-analyzer.ts)
@@ -45,28 +63,35 @@ function predictPrimaryTheme(themes: string[]): string {
     if (themes.includes(pattern)) return pattern;
   }
 
-  // Mate in N
+  // Mate in N (in order of specificity)
   if (themes.includes('mateIn1')) return 'mateIn1';
   if (themes.includes('mateIn2')) return 'mateIn2';
   if (themes.includes('mateIn3')) return 'mateIn3';
   if (themes.includes('mateIn4')) return 'mateIn4';
+  if (themes.includes('mateIn5')) return 'mateIn5';
   if (themes.includes('mate')) return 'mate';
 
   // Key tactical themes (in priority order)
   if (themes.includes('intermezzo')) return 'intermezzo';
+  if (themes.includes('xRayAttack')) return 'xRayAttack';
+  if (themes.includes('doubleCheck')) return 'doubleCheck';
+  if (themes.includes('discoveredCheck')) return 'discoveredCheck';
   if (themes.includes('attraction')) return 'attraction';
   if (themes.includes('deflection')) return 'deflection';
   if (themes.includes('discoveredAttack')) return 'discoveredAttack';
+  if (themes.includes('exposedKing')) return 'exposedKing';
   if (themes.includes('fork')) return 'fork';
   if (themes.includes('pin')) return 'pin';
   if (themes.includes('skewer')) return 'skewer';
   if (themes.includes('interference')) return 'interference';
   if (themes.includes('clearance')) return 'clearance';
+  if (themes.includes('advancedPawn')) return 'advancedPawn';
   if (themes.includes('promotion')) return 'promotion';
   if (themes.includes('trappedPiece')) return 'trappedPiece';
   if (themes.includes('hangingPiece')) return 'hangingPiece';
   if (themes.includes('defensiveMove')) return 'defensiveMove';
   if (themes.includes('quietMove')) return 'quietMove';
+  if (themes.includes('sacrifice')) return 'sacrifice';
 
   // Endgame types
   for (const eg of ENDGAME_TYPES) {
@@ -165,13 +190,22 @@ interface RawPuzzle {
   url: string;
 }
 
-function loadAllPuzzles(): RawPuzzle[] {
-  const themeFiles = readdirSync(PUZZLES_DIR).filter(f => f.endsWith('.csv'));
+// Cache for loaded puzzles by bracket
+const puzzleCache: Map<string, RawPuzzle[]> = new Map();
+
+function loadPuzzlesForBracket(bracket: string): RawPuzzle[] {
+  // Return cached if available
+  if (puzzleCache.has(bracket)) {
+    return puzzleCache.get(bracket)!;
+  }
+
+  const puzzlesDir = join(PUZZLES_BASE_DIR, bracket);
+  const themeFiles = readdirSync(puzzlesDir).filter(f => f.endsWith('.csv'));
   const seenIds = new Set<string>();
   const puzzles: RawPuzzle[] = [];
 
   for (const file of themeFiles) {
-    const content = readFileSync(join(PUZZLES_DIR, file), 'utf-8');
+    const content = readFileSync(join(puzzlesDir, file), 'utf-8');
     const lines = content.trim().split('\n');
 
     for (let i = 1; i < lines.length; i++) {
@@ -196,7 +230,8 @@ function loadAllPuzzles(): RawPuzzle[] {
     }
   }
 
-  console.log(`Loaded ${puzzles.length} puzzles with ${MIN_PLAYS}+ plays`);
+  console.log(`  Loaded ${puzzles.length} puzzles from ${bracket} with ${MIN_PLAYS}+ plays`);
+  puzzleCache.set(bracket, puzzles);
   return puzzles;
 }
 
@@ -305,6 +340,63 @@ function matchesLesson(puzzle: RawPuzzle, lesson: LessonCriteria): boolean {
     if (predictedTheme !== 'attraction') {
       return false;
     }
+  } else if (lesson.requiredTags.includes('mateIn4')) {
+    if (predictedTheme !== 'mateIn4' && !MATE_PATTERNS.includes(predictedTheme)) {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('mateIn5')) {
+    if (predictedTheme !== 'mateIn5' && !MATE_PATTERNS.includes(predictedTheme)) {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('intermezzo')) {
+    if (predictedTheme !== 'intermezzo') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('quietMove')) {
+    if (predictedTheme !== 'quietMove') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('defensiveMove')) {
+    if (predictedTheme !== 'defensiveMove') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('exposedKing')) {
+    if (predictedTheme !== 'exposedKing') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('trappedPiece')) {
+    if (predictedTheme !== 'trappedPiece') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('advancedPawn')) {
+    if (predictedTheme !== 'advancedPawn' && predictedTheme !== 'promotion') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('xRayAttack')) {
+    if (predictedTheme !== 'xRayAttack') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('interference')) {
+    if (predictedTheme !== 'interference') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('clearance')) {
+    if (predictedTheme !== 'clearance') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('doubleCheck')) {
+    if (predictedTheme !== 'doubleCheck' && predictedTheme !== 'discoveredAttack') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('discoveredCheck')) {
+    if (predictedTheme !== 'discoveredCheck' && predictedTheme !== 'discoveredAttack') {
+      return false;
+    }
+  } else if (lesson.requiredTags.includes('sacrifice')) {
+    // Sacrifice is often combined with other themes, be more lenient
+    if (!puzzle.themes.includes('sacrifice')) {
+      return false;
+    }
   } else if (MATE_PATTERNS.includes(mainRequiredTag)) {
     // Famous mate patterns - must match exactly
     if (predictedTheme !== mainRequiredTag) {
@@ -347,98 +439,111 @@ interface LessonPuzzleSet {
 }
 
 async function main() {
-  console.log('Loading puzzles...');
-  const allPuzzles = loadAllPuzzles();
-
-  const lessonPuzzleSets: LessonPuzzleSet[] = [];
-  const allLessons = level1.modules.flatMap(m => m.lessons);
-
-  console.log(`\nGenerating puzzle sets for ${allLessons.length} lessons...\n`);
-  console.log('Using 6-puzzle lesson arc with difficulty analysis:\n');
+  console.log('='.repeat(60));
+  console.log('GENERATING PUZZLE SETS FOR LEVELS 1-5');
+  console.log('='.repeat(60));
+  console.log('\nUsing 6-puzzle lesson arc with difficulty analysis:');
   console.log('  Slot 1-2: Warmup  (obvious patterns, confidence builders)');
   console.log('  Slot 3-4: Core    (at-level challenges)');
   console.log('  Slot 5-6: Stretch (harder puzzles, boss level finish)\n');
 
-  for (const lesson of allLessons) {
-    // Step 1: Filter by lesson criteria
-    const matching = allPuzzles.filter(p => matchesLesson(p, lesson));
+  const lessonPuzzleSets: LessonPuzzleSet[] = [];
 
-    if (matching.length === 0) {
-      lessonPuzzleSets.push({
+  // Process each level
+  for (const config of LEVEL_CONFIGS) {
+    const { level, puzzleBracket } = config;
+    console.log('\n' + '='.repeat(60));
+    console.log(`LEVEL: ${level.name} (${level.ratingRange})`);
+    console.log(`Puzzle Bracket: ${puzzleBracket}`);
+    console.log('='.repeat(60));
+
+    // Load puzzles for this bracket
+    const allPuzzles = loadPuzzlesForBracket(puzzleBracket);
+    const allLessons = level.modules.flatMap(m => m.lessons);
+
+    console.log(`Processing ${allLessons.length} lessons...\n`);
+
+    for (const lesson of allLessons) {
+      // Step 1: Filter by lesson criteria
+      const matching = allPuzzles.filter(p => matchesLesson(p, lesson));
+
+      if (matching.length === 0) {
+        lessonPuzzleSets.push({
+          lessonId: lesson.id,
+          lessonName: lesson.name,
+          targetElo: Math.round((lesson.ratingMin + lesson.ratingMax) / 2),
+          puzzles: [],
+          puzzleCount: 0,
+          criteria: {
+            requiredTags: lesson.requiredTags,
+            ratingRange: `${lesson.ratingMin}-${lesson.ratingMax}`,
+            pieceFilter: lesson.pieceFilter,
+          },
+        });
+        console.log(`✗ ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} 0/${PUZZLES_PER_LESSON} (no matches)`);
+        continue;
+      }
+
+      // Step 2: Prepare candidates for difficulty analysis
+      const candidates = matching.map(p => ({
+        puzzleId: p.puzzleId,
+        fen: p.fen,
+        moves: p.moves,
+        rating: p.rating,
+        themes: p.themes.join(' '),
+        url: p.url,
+      }));
+
+      // Step 3: Target ELO for this lesson (midpoint of range)
+      const targetElo = Math.round((lesson.ratingMin + lesson.ratingMax) / 2);
+
+      // Step 4: Select optimal 6-puzzle arc using difficulty analysis
+      const slotAssignments = selectLessonPuzzles(candidates, targetElo);
+
+      // Step 5: Build puzzle set with slot info
+      const puzzles: PuzzleSlotInfo[] = slotAssignments.map(sa => ({
+        puzzleId: sa.puzzleId,
+        slot: sa.slot,
+        lichessRating: sa.analysis.rating,
+        trueDifficulty: sa.analysis.trueDifficultyScore,
+        executingPiece: sa.analysis.executingPiece,
+        solutionOutcome: sa.analysis.solutionOutcome,
+      }));
+
+      const puzzleSet: LessonPuzzleSet = {
         lessonId: lesson.id,
         lessonName: lesson.name,
-        targetElo: Math.round((lesson.ratingMin + lesson.ratingMax) / 2),
-        puzzles: [],
-        puzzleCount: 0,
+        targetElo,
+        puzzles,
+        puzzleCount: puzzles.length,
         criteria: {
           requiredTags: lesson.requiredTags,
           ratingRange: `${lesson.ratingMin}-${lesson.ratingMax}`,
           pieceFilter: lesson.pieceFilter,
         },
-      });
-      console.log(`✗ ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} 0/${PUZZLES_PER_LESSON} (no matches)`);
-      continue;
+      };
+
+      lessonPuzzleSets.push(puzzleSet);
+
+      // Log status with difficulty info
+      const status = puzzles.length >= PUZZLES_PER_LESSON
+        ? '✓'
+        : puzzles.length > 0
+          ? '⚠'
+          : '✗';
+
+      const diffRange = puzzles.length > 0
+        ? `[${Math.min(...puzzles.map(p => p.trueDifficulty))}-${Math.max(...puzzles.map(p => p.trueDifficulty))}]`
+        : '';
+
+      console.log(
+        `${status} ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} ` +
+        `${puzzles.length}/${PUZZLES_PER_LESSON} ` +
+        `(${matching.length} candidates) ` +
+        `${diffRange}`
+      );
     }
-
-    // Step 2: Prepare candidates for difficulty analysis
-    const candidates = matching.map(p => ({
-      puzzleId: p.puzzleId,
-      fen: p.fen,
-      moves: p.moves,
-      rating: p.rating,
-      themes: p.themes.join(' '),
-      url: p.url,
-    }));
-
-    // Step 3: Target ELO for this lesson (midpoint of range)
-    const targetElo = Math.round((lesson.ratingMin + lesson.ratingMax) / 2);
-
-    // Step 4: Select optimal 6-puzzle arc using difficulty analysis
-    const slotAssignments = selectLessonPuzzles(candidates, targetElo);
-
-    // Step 5: Build puzzle set with slot info
-    const puzzles: PuzzleSlotInfo[] = slotAssignments.map(sa => ({
-      puzzleId: sa.puzzleId,
-      slot: sa.slot,
-      lichessRating: sa.analysis.rating,
-      trueDifficulty: sa.analysis.trueDifficultyScore,
-      executingPiece: sa.analysis.executingPiece,
-      solutionOutcome: sa.analysis.solutionOutcome,
-    }));
-
-    const puzzleSet: LessonPuzzleSet = {
-      lessonId: lesson.id,
-      lessonName: lesson.name,
-      targetElo,
-      puzzles,
-      puzzleCount: puzzles.length,
-      criteria: {
-        requiredTags: lesson.requiredTags,
-        ratingRange: `${lesson.ratingMin}-${lesson.ratingMax}`,
-        pieceFilter: lesson.pieceFilter,
-      },
-    };
-
-    lessonPuzzleSets.push(puzzleSet);
-
-    // Log status with difficulty info
-    const status = puzzles.length >= PUZZLES_PER_LESSON
-      ? '✓'
-      : puzzles.length > 0
-        ? '⚠'
-        : '✗';
-
-    const diffRange = puzzles.length > 0
-      ? `[${Math.min(...puzzles.map(p => p.trueDifficulty))}-${Math.max(...puzzles.map(p => p.trueDifficulty))}]`
-      : '';
-
-    console.log(
-      `${status} ${lesson.id.padEnd(8)} ${lesson.name.padEnd(35)} ` +
-      `${puzzles.length}/${PUZZLES_PER_LESSON} ` +
-      `(${matching.length} candidates) ` +
-      `${diffRange}`
-    );
-  }
+  } // End of level config loop
 
   // Summary
   const complete = lessonPuzzleSets.filter(s => s.puzzleCount >= PUZZLES_PER_LESSON).length;
