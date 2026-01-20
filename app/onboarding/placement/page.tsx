@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useOnboarding, getPlacementPuzzleRating, getPlacementElo } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
@@ -8,7 +8,7 @@ import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding
 const PLACEMENT_COUNT = 5;
 const PASS_THRESHOLD = 3;
 
-export default function PlacementPage() {
+function PlacementContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, isLoaded } = useOnboarding();
@@ -192,5 +192,20 @@ export default function PlacementPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PlacementPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-400 mb-2">Loading puzzles...</div>
+          <div className="text-gray-500 text-sm">Preparing your placement test</div>
+        </div>
+      </div>
+    }>
+      <PlacementContent />
+    </Suspense>
   );
 }
