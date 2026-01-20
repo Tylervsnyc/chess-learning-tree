@@ -29,7 +29,7 @@ function getUnlockedLevels(elo: number) {
 }
 
 export function NavHeader() {
-  const { user, profile, loading, signOut } = useUser();
+  const { user, profile, loading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
@@ -47,10 +47,7 @@ export function NavHeader() {
   }, []);
 
   const handleSignOut = () => {
-    alert('Logging out...');
-    signOut().finally(() => {
-      window.location.replace('/');
-    });
+    window.location.href = '/api/auth/logout';
   };
 
   // Don't show header on auth pages
