@@ -517,18 +517,13 @@ export default function LessonPage() {
           </div>
         </div>
         {/* Loading content */}
-        <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
+        <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
           <div className="w-full max-w-lg">
-            <div className="text-center mb-2 h-12 flex flex-col justify-center">
-              <div className="h-5 w-32 mx-auto bg-gray-700 rounded animate-pulse" />
-            </div>
-            <div className="flex items-center justify-center gap-3 mb-2 h-8">
-              <div className="h-6 w-36 bg-gray-700 rounded animate-pulse" />
+            <div className="flex items-center justify-between mb-2 h-8">
+              <div className="h-5 w-24 bg-gray-700 rounded animate-pulse" />
+              <div className="h-5 w-28 bg-gray-700 rounded animate-pulse" />
             </div>
             <div className="aspect-square bg-gray-800 rounded-lg animate-pulse" />
-            <div className="text-center mt-3 h-6">
-              <span className="text-gray-500">Loading puzzle...</span>
-            </div>
           </div>
         </div>
       </div>
@@ -738,38 +733,36 @@ export default function LessonPage() {
       </div>
 
       {/* Main content - fixed layout to prevent board movement */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
         <div className="w-full max-w-lg">
-          {/* Lesson info - fixed height to prevent layout shift */}
-          <div className="text-center mb-2 h-12 flex flex-col justify-center">
-            <h1 className="text-lg font-semibold text-gray-300">{lessonName}</h1>
-            {inRetryMode && (
-              <p className="text-yellow-400 text-sm">
-                Let&apos;s try {retryQueue.length === 1 ? 'that one' : 'those'} again
-              </p>
-            )}
-          </div>
-
-          {/* Turn indicator + Flag button - fixed height */}
-          <div className="flex items-center justify-center gap-3 mb-2 h-8">
-            <span className={`text-xl font-bold ${
-              currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
-            }`}>
-              {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
-            </span>
-            <button
-              onClick={() => toggleFlag(currentPuzzle.puzzleId)}
-              className={`p-1.5 rounded transition-colors ${
-                flaggedPuzzles.has(currentPuzzle.puzzleId)
-                  ? 'text-red-500 bg-red-500/20'
-                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/10'
-              }`}
-              title={flaggedPuzzles.has(currentPuzzle.puzzleId) ? 'Unflag puzzle' : 'Flag puzzle as problematic'}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
-              </svg>
-            </button>
+          {/* Theme + Turn indicator on same line */}
+          <div className="flex items-center justify-between mb-2 h-8">
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold text-gray-300">{lessonName}</h1>
+              {inRetryMode && (
+                <span className="text-yellow-400 text-xs">(retry)</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-base font-bold ${
+                currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
+              }`}>
+                {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
+              </span>
+              <button
+                onClick={() => toggleFlag(currentPuzzle.puzzleId)}
+                className={`p-1 rounded transition-colors ${
+                  flaggedPuzzles.has(currentPuzzle.puzzleId)
+                    ? 'text-red-500 bg-red-500/20'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/10'
+                }`}
+                title={flaggedPuzzles.has(currentPuzzle.puzzleId) ? 'Unflag puzzle' : 'Flag puzzle as problematic'}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Chessboard */}
@@ -807,12 +800,6 @@ export default function LessonPage() {
             />
           )}
 
-          {/* Status text - only show when playing */}
-          {moveStatus === 'playing' && (
-            <div className="text-center mt-3 h-6">
-              <span className="text-gray-400">Find the best move</span>
-            </div>
-          )}
         </div>
       </div>
     </div>
