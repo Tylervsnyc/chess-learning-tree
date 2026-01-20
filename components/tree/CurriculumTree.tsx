@@ -2,8 +2,44 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { level1, Module, LessonCriteria } from '@/data/level1-curriculum';
+import { level1, Module, LessonCriteria, Level } from '@/data/level1-curriculum';
+import { level2 } from '@/data/level2-curriculum';
+import { level3 } from '@/data/level3-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
+
+const LEVELS: Level[] = [level1, level2, level3];
+
+// Bold Primary palette with neon glow
+const COLORS = {
+  bg: '#131F24',
+  surface: '#1A2C35',
+  primary: '#58CC02',   // Green
+  secondary: '#FF4B4B', // Red
+  accent1: '#1CB0F6',   // Blue
+  accent2: '#FFC800',   // Yellow
+  accent3: '#FF9600',   // Orange
+};
+
+const GLOW = 44; // Neon intensity
+
+// Module colors cycle through the palette
+const MODULE_COLORS = [
+  COLORS.primary,   // Green
+  COLORS.accent1,   // Blue
+  COLORS.accent3,   // Orange
+  COLORS.secondary, // Red
+  COLORS.accent2,   // Yellow
+];
+
+// Glow helper functions
+const boxGlow = (color: string, intensity = GLOW) =>
+  `0 0 ${intensity}px ${color}50, 0 0 ${intensity * 2}px ${color}25`;
+
+const textGlow = (color: string, intensity = GLOW / 2) =>
+  `0 0 ${intensity}px ${color}`;
+
+const subtleGlow = (color: string) =>
+  `0 0 ${GLOW / 3}px ${color}40, inset 0 0 ${GLOW / 2}px ${color}15`;
 
 interface LessonCardProps {
   lesson: LessonCriteria;
@@ -25,32 +61,45 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted }: LessonCard
     <button
       onClick={handleClick}
       disabled={!isUnlocked}
-      className={`w-full text-left p-3 rounded-xl transition-all border ${
-        isUnlocked
-          ? 'bg-[#1A2C35] hover:bg-[#2A3C45] border-white/10 hover:border-white/20 cursor-pointer'
-          : 'bg-[#0D1B21] border-white/5 cursor-not-allowed opacity-60'
-      }`}
+      className="w-full text-left p-3 rounded-xl transition-all border"
+      style={{
+        backgroundColor: isUnlocked ? COLORS.surface : '#0D1B21',
+        borderColor: isUnlocked
+          ? isCompleted ? `${COLORS.primary}60` : `${moduleColor}40`
+          : 'rgba(255,255,255,0.05)',
+        boxShadow: isUnlocked && !isCompleted ? subtleGlow(moduleColor) : 'none',
+        opacity: isUnlocked ? 1 : 0.5,
+        cursor: isUnlocked ? 'pointer' : 'not-allowed',
+      }}
     >
       <div className="flex items-center gap-3">
         <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
-            isCompleted ? 'text-white' : isUnlocked ? 'text-white' : 'text-gray-500'
-          }`}
+          className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
           style={{
-            backgroundColor: isCompleted ? '#58CC02' : isUnlocked ? moduleColor : '#1A2C35',
+            backgroundColor: isCompleted ? COLORS.primary : isUnlocked ? moduleColor : COLORS.surface,
+            color: isCompleted || isUnlocked ? COLORS.bg : '#666',
+            boxShadow: isCompleted
+              ? boxGlow(COLORS.primary, GLOW / 2)
+              : isUnlocked ? boxGlow(moduleColor, GLOW / 3) : 'none',
           }}
         >
           {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
         </div>
         <div className="flex-1 min-w-0">
-          <div className={`font-medium truncate ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
+          <div
+            className="font-medium truncate"
+            style={{
+              color: isUnlocked ? '#fff' : '#666',
+              textShadow: isUnlocked && !isCompleted ? textGlow(moduleColor, 8) : 'none',
+            }}
+          >
             {lesson.name}
           </div>
-          <div className={`text-xs truncate ${isUnlocked ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className="text-xs truncate" style={{ color: isUnlocked ? '#9CA3AF' : '#555' }}>
             {lesson.description}
           </div>
         </div>
-        <div className={isUnlocked ? 'text-gray-500' : 'text-gray-700'}>
+        <div style={{ color: isUnlocked ? moduleColor : '#444' }}>
           {isUnlocked ? '→' : '🔒'}
         </div>
       </div>
@@ -67,17 +116,6 @@ interface ModuleSectionProps {
   isLessonUnlocked: (id: string, all: string[]) => boolean;
   isLessonCompleted: (id: string) => boolean;
 }
-
-const MODULE_COLORS = [
-  '#58CC02', // Green
-  '#1CB0F6', // Blue
-  '#FF9600', // Orange
-  '#FF4B4B', // Red
-  '#A560E8', // Purple
-  '#2FCBEF', // Cyan
-  '#FFC800', // Yellow
-  '#FF6B6B', // Coral
-];
 
 function ModuleSection({
   module,
@@ -101,32 +139,50 @@ function ModuleSection({
         onClick={onToggle}
         className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all"
         style={{
-          backgroundColor: isExpanded ? color : '#1A2C35',
+          backgroundColor: isExpanded ? color : COLORS.surface,
+          boxShadow: isExpanded ? boxGlow(color) : 'none',
+          border: isExpanded ? 'none' : `1px solid ${color}30`,
         }}
       >
         <div
           className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold"
           style={{
-            backgroundColor: isModuleComplete ? '#58CC02' : isExpanded ? 'rgba(255,255,255,0.2)' : color,
+            backgroundColor: isModuleComplete
+              ? COLORS.primary
+              : isExpanded ? 'rgba(0,0,0,0.25)' : color,
             color: 'white',
+            boxShadow: isModuleComplete
+              ? boxGlow(COLORS.primary, GLOW / 2)
+              : !isExpanded ? boxGlow(color, GLOW / 3) : 'none',
           }}
         >
           {isModuleComplete ? '✓' : module.id.replace('mod-', '')}
         </div>
         <div className="flex-1 text-left">
-          <div className="font-bold text-white text-lg">{module.name}</div>
-          <div className={`text-sm ${isExpanded ? 'text-white/70' : 'text-gray-400'}`}>
+          <div
+            className="font-bold text-lg"
+            style={{
+              color: 'white',
+              textShadow: isExpanded ? 'none' : textGlow(color, 10),
+            }}
+          >
+            {module.name}
+          </div>
+          <div style={{ color: isExpanded ? 'rgba(255,255,255,0.7)' : '#9CA3AF' }}>
             {completedCount}/{module.lessons.length} lessons
           </div>
         </div>
-        <div className={`text-2xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+        <div
+          className={`text-2xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          style={{ color: isExpanded ? 'white' : color }}
+        >
           ▼
         </div>
       </button>
 
       {/* Lessons */}
       {isExpanded && (
-        <div className="mt-2 ml-4 space-y-2">
+        <div className="mt-3 ml-4 space-y-2">
           {module.lessons.map(lesson => (
             <LessonCard
               key={lesson.id}
@@ -144,70 +200,113 @@ function ModuleSection({
 
 export function CurriculumTree() {
   const router = useRouter();
+  const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
   const [expandedModule, setExpandedModule] = useState<string | null>('mod-1');
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons, resetProgress } = useLessonProgress();
 
-  // Get all lesson IDs in order
+  const currentLevel = LEVELS[selectedLevelIndex];
+
+  // Get all lesson IDs in order for the current level
   const allLessonIds = useMemo(() => {
-    return level1.modules.flatMap(m => m.lessons.map(l => l.id));
-  }, []);
+    return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
+  }, [currentLevel]);
 
   const handleToggle = (moduleId: string) => {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));
   };
 
-  // Count totals
-  const totalLessons = allLessonIds.length;
-  const completedCount = completedLessons.length;
+  const handleLevelChange = (index: number) => {
+    setSelectedLevelIndex(index);
+    setExpandedModule('mod-1');
+  };
 
-  // Don't render until progress is loaded to avoid hydration mismatch
+  // Count totals for current level
+  const totalLessons = allLessonIds.length;
+  const completedCount = allLessonIds.filter(id => completedLessons.includes(id)).length;
+
+  // Level tab colors
+  const levelColors = [COLORS.primary, COLORS.accent1, COLORS.accent3];
+
+  // Don't render until progress is loaded
   if (!loaded) {
     return (
       <div className="px-4 pb-20">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white">{level1.name}</h1>
-          <p className="text-gray-400">{level1.ratingRange} • {totalLessons} lessons</p>
+          <h1
+            className="text-2xl font-bold"
+            style={{ color: COLORS.primary, textShadow: textGlow(COLORS.primary) }}
+          >
+            {currentLevel.name}
+          </h1>
+          <p style={{ color: '#9CA3AF' }}>{currentLevel.ratingRange} • {totalLessons} lessons</p>
         </div>
-        <div className="text-center text-gray-400 py-8">Loading...</div>
+        <div className="text-center py-8" style={{ color: '#9CA3AF' }}>Loading...</div>
       </div>
     );
   }
 
   return (
     <div className="px-4 pb-20">
-      {/* Top buttons */}
-      <div className="flex justify-between items-center mb-2">
-        {/* Daily Challenge button */}
-        <button
-          onClick={() => router.push('/daily-challenge')}
-          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-red-600 transition-all shadow-lg"
-        >
-          <span className="text-lg">⚡</span>
-          <span>Daily Challenge</span>
-        </button>
+      {/* Title */}
+      <h1
+        className="text-center text-2xl font-bold mb-4 tracking-wide"
+        style={{
+          color: COLORS.primary,
+          textShadow: textGlow(COLORS.primary),
+        }}
+      >
+        THE CHESS PATH
+      </h1>
 
-        {/* Profile button */}
-        <button
-          onClick={() => router.push('/profile')}
-          className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-          title="View Profile"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-          </svg>
-        </button>
+      {/* Level selector tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto hide-scrollbar">
+        {LEVELS.map((level, index) => {
+          const levelLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
+          const levelCompletedCount = levelLessonIds.filter(id => completedLessons.includes(id)).length;
+          const isSelected = index === selectedLevelIndex;
+          const tabColor = levelColors[index % levelColors.length];
+
+          return (
+            <button
+              key={level.id}
+              onClick={() => handleLevelChange(index)}
+              className="flex-shrink-0 px-4 py-3 rounded-xl transition-all"
+              style={{
+                backgroundColor: isSelected ? tabColor : COLORS.surface,
+                color: isSelected ? COLORS.bg : tabColor,
+                border: `2px solid ${isSelected ? tabColor : `${tabColor}50`}`,
+                boxShadow: isSelected ? boxGlow(tabColor) : 'none',
+                textShadow: !isSelected ? textGlow(tabColor, 6) : 'none',
+              }}
+            >
+              <div className="font-bold text-sm">Level {index + 1}</div>
+              <div
+                className="text-xs"
+                style={{ opacity: isSelected ? 0.9 : 0.7 }}
+              >
+                {level.ratingRange}
+              </div>
+              {levelCompletedCount > 0 && (
+                <div className="text-xs mt-1" style={{ opacity: 0.8 }}>
+                  {levelCompletedCount}/{levelLessonIds.length}
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Level header */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-white">{level1.name}</h1>
-        <p className="text-gray-400">
-          {level1.ratingRange} • {completedCount}/{totalLessons} lessons completed
+        <h2 className="text-xl font-bold text-white">{currentLevel.name}</h2>
+        <p style={{ color: '#9CA3AF' }}>
+          {currentLevel.ratingRange} • {completedCount}/{totalLessons} lessons completed
         </p>
         {completedCount > 0 && (
           <button
             onClick={resetProgress}
-            className="mt-2 text-xs text-gray-500 hover:text-gray-400 underline"
+            className="mt-2 text-xs underline transition-colors"
+            style={{ color: '#666' }}
           >
             Reset progress
           </button>
@@ -216,17 +315,24 @@ export function CurriculumTree() {
 
       {/* Progress bar */}
       <div className="mb-6 mx-4">
-        <div className="h-2 bg-[#1A2C35] rounded-full overflow-hidden">
+        <div
+          className="h-3 rounded-full overflow-hidden"
+          style={{ backgroundColor: COLORS.surface }}
+        >
           <div
-            className="h-full bg-[#58CC02] transition-all duration-500"
-            style={{ width: `${(completedCount / totalLessons) * 100}%` }}
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${(completedCount / totalLessons) * 100}%`,
+              backgroundColor: COLORS.primary,
+              boxShadow: completedCount > 0 ? `0 0 ${GLOW}px ${COLORS.primary}80` : 'none',
+            }}
           />
         </div>
       </div>
 
       {/* Modules */}
-      <div className="space-y-2">
-        {level1.modules.map((module, index) => (
+      <div className="space-y-3">
+        {currentLevel.modules.map((module, index) => (
           <ModuleSection
             key={module.id}
             module={module}

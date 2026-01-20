@@ -4,7 +4,7 @@
 # Usage: ./preprocess-puzzles.sh /path/to/lichess_db_puzzle.csv
 
 SOURCE_FILE="${1:-/Users/tyler.schwartz/Downloads/lichess_db_puzzle.csv}"
-OUTPUT_DIR="/Users/tyler.schwartz/chess-learning-tree/data/puzzles-by-rating"
+OUTPUT_DIR="/Users/tyler.schwartz/chess-path/data/puzzles-by-rating"
 
 echo "Source: $SOURCE_FILE"
 echo "Output: $OUTPUT_DIR"

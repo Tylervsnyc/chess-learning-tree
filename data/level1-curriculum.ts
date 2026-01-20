@@ -22,6 +22,9 @@ export interface LessonCriteria {
   ratingMax: number;
   pieceFilter?: 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn';
   minPlays?: number;
+  // For mixed practice / best move lessons
+  isMixedPractice?: boolean;  // If true, pulls from any theme (no theme validation)
+  mixedThemes?: string[];     // Optional: limit to these themes (any match, not all)
 }
 
 export interface Module {
@@ -78,6 +81,19 @@ export const level1: Level = {
           ratingMin: 400,
           ratingMax: 700,
         },
+        // Module Review
+        {
+          id: '1.1.R',
+          name: 'Module 1 Review: Best Move',
+          description: 'Find the best move - any tactic from this module',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['fork', 'discoveredAttack', 'skewer'],
+          excludeTags: ['mateIn1', 'mateIn2', 'mateIn3'],
+          ratingMin: 400,
+          ratingMax: 700,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -116,6 +132,18 @@ export const level1: Level = {
           ratingMin: 600,
           ratingMax: 750,
           pieceFilter: 'queen',
+        },
+        // Mixed Practice after 4 lessons
+        {
+          id: '1.2.M',
+          name: 'Mixed Practice: Mate in 1',
+          description: 'Find the checkmate - any piece',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['mateIn1'],
+          ratingMin: 400,
+          ratingMax: 600,
+          minPlays: 5000,
         },
         // Rook mates
         {
@@ -164,6 +192,18 @@ export const level1: Level = {
           ratingMin: 400,
           ratingMax: 800,
           pieceFilter: 'knight',
+        },
+        // Module Review
+        {
+          id: '1.2.R',
+          name: 'Module 2 Review: Best Move',
+          description: 'Find the mate in 1 - any piece, any pattern',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['mateIn1'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -216,6 +256,18 @@ export const level1: Level = {
           ratingMin: 600,
           ratingMax: 800,
         },
+        // Module Review
+        {
+          id: '1.3.R',
+          name: 'Module 3 Review: Best Move',
+          description: 'Find the back rank mate - any variation',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['backRankMate'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -267,6 +319,19 @@ export const level1: Level = {
           ratingMax: 750,
           pieceFilter: 'knight',
         },
+        // Mixed Practice after 4 lessons
+        {
+          id: '1.4.M',
+          name: 'Mixed Practice: Knight Forks',
+          description: 'Find the knight fork - varying difficulty',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['fork'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 750,
+          minPlays: 5000,
+        },
         {
           id: '1.4.5',
           name: 'Knight Forks: Hard',
@@ -276,6 +341,19 @@ export const level1: Level = {
           ratingMin: 700,
           ratingMax: 800,
           pieceFilter: 'knight',
+        },
+        // Module Review
+        {
+          id: '1.4.R',
+          name: 'Module 4 Review: Best Move',
+          description: 'Find the best fork with the knight',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['fork'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -328,6 +406,19 @@ export const level1: Level = {
           ratingMax: 800,
           pieceFilter: 'queen',
         },
+        // Module Review
+        {
+          id: '1.5.R',
+          name: 'Module 5 Review: Best Move',
+          description: 'Find the fork - any piece',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['fork'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -375,6 +466,19 @@ export const level1: Level = {
           ratingMin: 550,
           ratingMax: 750,
         },
+        // Module Review
+        {
+          id: '1.6.R',
+          name: 'Module 6 Review: Best Move',
+          description: 'Find the pin or discovery',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['pin', 'discoveredAttack'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -413,6 +517,19 @@ export const level1: Level = {
           ratingMin: 700,
           ratingMax: 800,
         },
+        // Module Review
+        {
+          id: '1.7.R',
+          name: 'Module 7 Review: Best Move',
+          description: 'Find the skewer',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['skewer'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -450,6 +567,19 @@ export const level1: Level = {
           excludeTags: ['mateIn1', 'mateIn2'],
           ratingMin: 700,
           ratingMax: 800,
+        },
+        // Module Review
+        {
+          id: '1.8.R',
+          name: 'Module 8 Review: Best Move',
+          description: 'Find the discovery',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['discoveredAttack'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -497,6 +627,19 @@ export const level1: Level = {
           excludeTags: ['backRankMate'],
           ratingMin: 700,
           ratingMax: 800,
+        },
+        // Module Review
+        {
+          id: '1.9.R',
+          name: 'Module 9 Review: Best Move',
+          description: 'Find the mate in 2',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['mateIn2'],
+          excludeTags: ['backRankMate'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -557,6 +700,18 @@ export const level1: Level = {
           ratingMin: 400,
           ratingMax: 800,
         },
+        // Module Review
+        {
+          id: '1.10.R',
+          name: 'Module 10 Review: Best Move',
+          description: 'Find the famous checkmate pattern',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['operaMate', 'pillsburysMate', 'smotheredMate', 'arabianMate', 'doubleBishopMate', 'hookMate'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -595,6 +750,19 @@ export const level1: Level = {
           ratingMin: 600,
           ratingMax: 800,
         },
+        // Module Review
+        {
+          id: '1.11.R',
+          name: 'Module 11 Review: Best Move',
+          description: 'Find the promotion tactic',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['promotion'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -621,6 +789,18 @@ export const level1: Level = {
           requiredTags: ['attraction'],
           ratingMin: 400,
           ratingMax: 800,
+        },
+        // Module Review
+        {
+          id: '1.12.R',
+          name: 'Module 12 Review: Best Move',
+          description: 'Find the deflection or attraction',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['deflection', 'attraction'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -668,6 +848,19 @@ export const level1: Level = {
           excludeTags: ['mateIn1', 'mateIn2'],
           ratingMin: 400,
           ratingMax: 800,
+        },
+        // Module Review
+        {
+          id: '1.13.R',
+          name: 'Module 13 Review: Best Move',
+          description: 'Find the winning endgame move',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['rookEndgame', 'pawnEndgame', 'queenEndgame'],
+          excludeTags: ['mateIn1', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
@@ -721,6 +914,18 @@ export const level1: Level = {
           ratingMax: 800,
           pieceFilter: 'queen',
         },
+        // Module Review
+        {
+          id: '1.14.R',
+          name: 'Module 14 Review: Best Move',
+          description: 'Find the combination',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['backRankMate', 'sacrifice', 'fork', 'mateIn2'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
+        },
       ],
     },
 
@@ -747,6 +952,18 @@ export const level1: Level = {
           requiredTags: ['mateIn3'],
           ratingMin: 650,
           ratingMax: 800,
+        },
+        // Module Review
+        {
+          id: '1.15.R',
+          name: 'Module 15 Review: Best Move',
+          description: 'Find the mate in 3',
+          requiredTags: [],
+          isMixedPractice: true,
+          mixedThemes: ['mateIn3'],
+          ratingMin: 400,
+          ratingMax: 800,
+          minPlays: 5000,
         },
       ],
     },
