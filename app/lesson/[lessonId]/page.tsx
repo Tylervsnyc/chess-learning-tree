@@ -574,7 +574,7 @@ export default function LessonPage() {
 
               {/* Continue button */}
               <button
-                onClick={() => router.push(`/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`)}
+                onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
                 className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
                 style={{ backgroundColor: COLORS.green }}
               >
@@ -636,7 +636,7 @@ export default function LessonPage() {
             </div>
 
             <button
-              onClick={() => router.push(`/learn?level=${getLevelKeyFromLessonId(lessonId)}`)}
+              onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
               className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
               style={{ backgroundColor: COLORS.green }}
             >
