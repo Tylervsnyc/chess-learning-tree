@@ -47,7 +47,12 @@ export function NavHeader() {
   }, []);
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+    // Always redirect to home, even if signOut has issues
     window.location.href = '/';
   };
 
@@ -107,7 +112,7 @@ export function NavHeader() {
               </div>
               <button
                 onClick={handleSignOut}
-                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-sm text-white bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 rounded-lg transition-colors"
               >
                 Log out
               </button>
