@@ -474,7 +474,7 @@ export default function LessonPage() {
               ✕
             </button>
             <div className="flex-1 mx-4">
-              <div className="h-3 bg-[#131F24] rounded-full overflow-hidden">
+              <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
                 <div className="h-full w-0 bg-[#58CC02]" />
               </div>
             </div>
@@ -671,7 +671,7 @@ export default function LessonPage() {
 
           {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
-            <div className="h-3 bg-[#131F24] rounded-full overflow-hidden">
+            <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
               <div
                 className="h-full transition-all duration-300"
                 style={{

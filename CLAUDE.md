@@ -139,6 +139,70 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 3. PuzzleBoard validates moves against solution
 4. Results saved to `puzzle_attempts` table
 
+## Puzzle Page Standards
+
+**IMPORTANT:** All puzzle pages (lessons, diagnostic, daily challenge, workout) MUST follow these standards for consistency.
+
+### Required Layout Structure
+```tsx
+<div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+  {/* Header with progress bar - ALWAYS visible */}
+  <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+    <div className="max-w-4xl mx-auto flex items-center justify-between">
+      <button>✕</button>
+      {/* Progress bar */}
+      <div className="flex-1 mx-4">
+        <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
+          <div className="h-full" style={{ width: `${progress}%`, background: '#58CC02' }} />
+        </div>
+      </div>
+      <div>1/6</div>
+    </div>
+  </div>
+
+  {/* Main content - NO vertical centering, fixed top padding */}
+  <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
+    <div className="w-full max-w-lg">
+      {/* Fixed height sections to prevent layout shift */}
+      <div className="h-12">Title area</div>
+      <div className="h-8">Turn indicator</div>
+
+      {/* Chessboard with popup overlay */}
+      <div className="relative">
+        <Chessboard ... />
+        {showPopup && <PuzzleResultPopup ... />}
+      </div>
+
+      {/* Fixed height status area */}
+      <div className="h-6">Status text</div>
+    </div>
+  </div>
+</div>
+```
+
+### Key Requirements
+
+1. **No Scrolling**: Use `h-screen overflow-hidden` on container
+2. **Progress Bar Always Visible**: Header with progress bar at top
+3. **Static Board Position**:
+   - Use `pt-2` (fixed padding) NOT `justify-center`
+   - Fixed height sections (`h-12`, `h-8`, `h-6`) prevent layout shift
+4. **Popup Over Board**: Use `PuzzleResultPopup` component with `position: relative` wrapper
+5. **Sounds**: Import from `@/lib/sounds`:
+   - `playCorrectSound(index)` - chromatic scale on correct
+   - `playErrorSound()` - error buzz on wrong
+   - `playMoveSound()` / `playCaptureSound()` - move feedback
+6. **Loading State**: Must match exact same layout structure to prevent shift
+
+### Puzzle Pages Using These Standards
+- `/app/lesson/[lessonId]/page.tsx` - Chess path lessons
+- `/app/onboarding/diagnostic/page.tsx` - Diagnostic puzzles
+- `/components/onboarding/OnboardingPuzzleBoard.tsx` - Shared puzzle board
+
+### Shared Components
+- `PuzzleResultPopup` (`components/puzzle/PuzzleResultPopup.tsx`) - Correct/incorrect overlay
+- Streak progress bar styles with rainbow animation
+
 ---
 
 ## Notes & Learnings

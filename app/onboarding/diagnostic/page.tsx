@@ -224,7 +224,7 @@ export default function DiagnosticPage() {
 
           {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
-            <div className="h-3 bg-[#131F24] rounded-full overflow-hidden">
+            <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
               <div
                 className="h-full transition-all duration-300 rounded-full"
                 style={{
@@ -241,12 +241,20 @@ export default function DiagnosticPage() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 overflow-hidden">
+      {/* Main content - fixed layout to prevent board movement */}
+      <div className="flex-1 flex flex-col items-center px-4 pt-4 overflow-hidden">
         <div className="w-full max-w-lg">
           {/* Loading state */}
           {loading && !currentPuzzle && (
-            <div className="text-center text-gray-400">Loading puzzle...</div>
+            <div className="space-y-4">
+              <div className="text-center h-8">
+                <div className="h-6 w-36 mx-auto bg-gray-700 rounded animate-pulse" />
+              </div>
+              <div className="aspect-square bg-gray-800 rounded-lg animate-pulse" />
+              <div className="text-center h-6">
+                <span className="text-gray-500">Loading puzzle...</span>
+              </div>
+            </div>
           )}
 
           {/* Puzzle board */}
