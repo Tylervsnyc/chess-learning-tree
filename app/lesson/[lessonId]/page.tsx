@@ -83,6 +83,13 @@ const COLORS = {
   card: '#1A2C35',
 };
 
+// Map level number to level key for navigation
+const LEVEL_KEYS = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'expert'];
+function getLevelKeyFromLessonId(lessonId: string): string {
+  const levelNum = parseInt(lessonId.split('.')[0], 10);
+  return LEVEL_KEYS[levelNum - 1] || 'beginner';
+}
+
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
@@ -567,7 +574,7 @@ export default function LessonPage() {
 
               {/* Continue button */}
               <button
-                onClick={() => router.push('/learn?guest=true')}
+                onClick={() => router.push(`/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`)}
                 className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
                 style={{ backgroundColor: COLORS.green }}
               >
@@ -629,7 +636,7 @@ export default function LessonPage() {
             </div>
 
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push(`/learn?level=${getLevelKeyFromLessonId(lessonId)}`)}
               className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
               style={{ backgroundColor: COLORS.green }}
             >

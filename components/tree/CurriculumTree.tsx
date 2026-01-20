@@ -29,10 +29,10 @@ interface LessonCardProps {
   isUnlocked: boolean;
   isCompleted: boolean;
   isGuest?: boolean;
-  isFirst?: boolean;
+  isNextLesson?: boolean;
 }
 
-function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isFirst }: LessonCardProps) {
+function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isNextLesson }: LessonCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -47,7 +47,7 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isF
       onClick={handleClick}
       disabled={!isUnlocked}
       className={`w-full text-left p-3 rounded-xl transition-all border-2 ${
-        isFirst && isUnlocked && !isCompleted
+        isNextLesson
           ? 'animate-pulse-subtle'
           : ''
       } ${
@@ -56,7 +56,7 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isF
           : 'bg-[#0D1B21] cursor-not-allowed opacity-50'
       }`}
       style={{
-        borderColor: isFirst && isUnlocked && !isCompleted ? moduleColor : 'transparent',
+        borderColor: isNextLesson ? moduleColor : 'transparent',
       }}
     >
       <div className="flex items-center gap-3">
@@ -77,7 +77,7 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isF
             {lesson.description}
           </div>
         </div>
-        {isFirst && isUnlocked && !isCompleted ? (
+        {isNextLesson ? (
           <div
             className="px-2 py-1 rounded-lg text-xs font-bold"
             style={{ backgroundColor: moduleColor, color: '#000' }}
@@ -112,7 +112,7 @@ interface ModuleSectionProps {
   isLessonUnlocked: (id: string, all: string[]) => boolean;
   isLessonCompleted: (id: string) => boolean;
   isGuest?: boolean;
-  isFirstModule?: boolean;
+  nextLessonId?: string | null;
 }
 
 function ModuleSection({
@@ -124,7 +124,7 @@ function ModuleSection({
   isLessonUnlocked,
   isLessonCompleted,
   isGuest,
-  isFirstModule,
+  nextLessonId,
 }: ModuleSectionProps) {
   const color = MODULE_COLORS[colorIndex % MODULE_COLORS.length];
   const completedCount = module.lessons.filter(l => isLessonCompleted(l.id)).length;
@@ -164,7 +164,7 @@ function ModuleSection({
 
       {isExpanded && (
         <div className="mt-2 space-y-2 pl-2">
-          {module.lessons.map((lesson, idx) => (
+          {module.lessons.map((lesson) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}
@@ -172,7 +172,7 @@ function ModuleSection({
               isUnlocked={isLessonUnlocked(lesson.id, allLessonIds)}
               isCompleted={isLessonCompleted(lesson.id)}
               isGuest={isGuest}
-              isFirst={isFirstModule && idx === 0 && completedCount === 0}
+              isNextLesson={lesson.id === nextLessonId}
             />
           ))}
         </div>
@@ -197,13 +197,19 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
     return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
   }, [currentLevel]);
 
+  // Find the first incomplete lesson (next lesson to start)
+  const nextLessonId = useMemo(() => {
+    for (const lessonId of allLessonIds) {
+      if (!completedLessons.includes(lessonId)) {
+        return lessonId;
+      }
+    }
+    return null; // All lessons completed
+  }, [allLessonIds, completedLessons]);
+
   const handleToggle = (moduleId: string) => {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));
   };
-
-  const totalLessons = allLessonIds.length;
-  const completedCount = allLessonIds.filter(id => completedLessons.includes(id)).length;
-  const progressPercent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
 
   if (!loaded) {
     return (
@@ -220,23 +226,9 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
 
       {/* Level header - compact */}
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <h1 className="text-xl font-black text-white">{currentLevel.name}</h1>
           <span className="text-sm text-gray-400">{currentLevel.ratingRange}</span>
-        </div>
-
-        {/* Progress bar */}
-        <div className="h-2 bg-[#1A2C35] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progressPercent}%`,
-              background: 'linear-gradient(90deg, #58CC02, #1CB0F6)',
-            }}
-          />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">
-          {completedCount}/{totalLessons} lessons
         </div>
       </div>
 
@@ -253,7 +245,7 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
             isLessonUnlocked={isLessonUnlocked}
             isLessonCompleted={isLessonCompleted}
             isGuest={isGuest}
-            isFirstModule={index === 0}
+            nextLessonId={nextLessonId}
           />
         ))}
       </div>

@@ -13,9 +13,19 @@ CREATE TABLE public.profiles (
   subscription_status TEXT DEFAULT 'free' CHECK (subscription_status IN ('free', 'premium', 'trial')),
   subscription_expires_at TIMESTAMPTZ,
   stripe_customer_id TEXT,
+  current_streak INTEGER DEFAULT 0,
+  best_streak INTEGER DEFAULT 0,
+  last_played_date DATE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration: Add streak columns to existing profiles table
+-- Run this if the table already exists:
+-- ALTER TABLE public.profiles
+-- ADD COLUMN IF NOT EXISTS current_streak INTEGER DEFAULT 0,
+-- ADD COLUMN IF NOT EXISTS best_streak INTEGER DEFAULT 0,
+-- ADD COLUMN IF NOT EXISTS last_played_date DATE;
 
 -- Puzzle attempts - tracks every puzzle a user attempts
 CREATE TABLE public.puzzle_attempts (

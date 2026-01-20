@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useUser } from './useUser';
+import { mergeProgress, type ServerProgress } from '@/lib/progress-sync';
 
 const STORAGE_KEY = 'chess-learning-progress';
 
@@ -72,12 +74,99 @@ function saveProgress(progress: Progress) {
 export function useLessonProgress() {
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS);
   const [loaded, setLoaded] = useState(false);
+  const { user } = useUser();
+  const hasSyncedRef = useRef(false);
+  const previousUserIdRef = useRef<string | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (instant)
   useEffect(() => {
-    setProgress(getStoredProgress());
+    const localProgress = getStoredProgress();
+    setProgress(localProgress);
     setLoaded(true);
   }, []);
+
+  // Fetch and merge server data when authenticated
+  useEffect(() => {
+    if (!loaded || !user) return;
+
+    const fetchServerProgress = async () => {
+      try {
+        const response = await fetch('/api/progress');
+        if (!response.ok) return;
+
+        const serverProgress: ServerProgress = await response.json();
+
+        setProgress(prev => {
+          const merged = mergeProgress(prev, serverProgress);
+          saveProgress(merged);
+          return merged;
+        });
+      } catch (error) {
+        console.error('Failed to fetch server progress:', error);
+      }
+    };
+
+    fetchServerProgress();
+  }, [loaded, user?.id]);
+
+  // Sync localStorage data to server on login
+  useEffect(() => {
+    const currentUserId = user?.id ?? null;
+    const previousUserId = previousUserIdRef.current;
+
+    // Detect login (went from no user to having user)
+    const justLoggedIn = previousUserId === null && currentUserId !== null;
+    previousUserIdRef.current = currentUserId;
+
+    if (!justLoggedIn || !loaded || hasSyncedRef.current) return;
+
+    const localProgress = getStoredProgress();
+    const hasLocalData =
+      localProgress.completedLessons.length > 0 ||
+      Object.keys(localProgress.themePerformance).length > 0;
+
+    if (!hasLocalData) {
+      hasSyncedRef.current = true;
+      return;
+    }
+
+    const syncToServer = async () => {
+      try {
+        const response = await fetch('/api/progress/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            completedLessons: localProgress.completedLessons,
+            themePerformance: localProgress.themePerformance,
+            currentStreak: localProgress.currentStreak,
+            bestStreak: localProgress.bestStreak,
+            lastPlayedDate: localProgress.lastPlayedDate,
+          }),
+        });
+
+        if (response.ok) {
+          const mergedFromServer: ServerProgress = await response.json();
+          setProgress(prev => {
+            const merged = mergeProgress(prev, mergedFromServer);
+            saveProgress(merged);
+            return merged;
+          });
+        }
+      } catch (error) {
+        console.error('Failed to sync progress to server:', error);
+      }
+      hasSyncedRef.current = true;
+    };
+
+    syncToServer();
+  }, [user?.id, loaded]);
+
+  // Reset sync flag on logout
+  useEffect(() => {
+    if (!user) {
+      hasSyncedRef.current = false;
+    }
+  }, [user]);
 
   const completeLesson = useCallback((lessonId: string) => {
     setProgress(prev => {
@@ -89,9 +178,22 @@ export function useLessonProgress() {
         completedLessons: [...prev.completedLessons, lessonId],
       };
       saveProgress(newProgress);
+
+      // Fire-and-forget server update if authenticated
+      if (user) {
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'lesson',
+            data: { lessonId },
+          }),
+        }).catch(err => console.error('Failed to sync lesson completion:', err));
+      }
+
       return newProgress;
     });
-  }, []);
+  }, [user]);
 
   const recordPuzzleAttempt = useCallback((
     puzzleId: string,
@@ -153,9 +255,30 @@ export function useLessonProgress() {
         themePerformance: newThemePerformance,
       };
       saveProgress(newProgress);
+
+      // Fire-and-forget server update if authenticated
+      if (user) {
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'puzzle',
+            data: {
+              puzzleId,
+              correct,
+              themes: options?.themes,
+              rating: options?.rating,
+              fen: options?.fen,
+              solution: options?.solution,
+              updateStreak: true,
+            },
+          }),
+        }).catch(err => console.error('Failed to sync puzzle attempt:', err));
+      }
+
       return newProgress;
     });
-  }, []);
+  }, [user]);
 
   const isLessonCompleted = useCallback((lessonId: string) => {
     return progress.completedLessons.includes(lessonId);
