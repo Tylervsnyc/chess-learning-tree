@@ -71,7 +71,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { userId, subscriptionStatus, expiresAt } = body;
+    const { userId, subscriptionStatus, expiresAt, eloRating } = body;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -85,6 +85,10 @@ export async function PATCH(request: NextRequest) {
 
     if (expiresAt !== undefined) {
       updateData.subscription_expires_at = expiresAt;
+    }
+
+    if (eloRating !== undefined) {
+      updateData.elo_rating = eloRating;
     }
 
     if (Object.keys(updateData).length === 0) {

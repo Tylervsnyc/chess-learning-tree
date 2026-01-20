@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
     setLoading(false);
   };
 
-  const updateSubscription = async (userId: string, status: 'free' | 'premium' | 'trial', expiresAt: string | null) => {
+  const updateSubscription = async (userId: string, status: 'free' | 'premium' | 'trial', expiresAt: string | null, eloRating?: number) => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
@@ -64,6 +64,7 @@ export default function AdminUsersPage() {
           userId,
           subscriptionStatus: status,
           expiresAt,
+          eloRating,
         }),
       });
 
@@ -72,11 +73,11 @@ export default function AdminUsersPage() {
       if (!res.ok) {
         setError(data.error || 'Failed to update user');
       } else {
-        setSuccessMessage('User updated successfully!');
+        setSuccessMessage('User updated successfully! They now have premium + all levels unlocked.');
         // Update local state
         setUsers(users.map(u =>
           u.id === userId
-            ? { ...u, subscription_status: status, subscription_expires_at: expiresAt }
+            ? { ...u, subscription_status: status, subscription_expires_at: expiresAt, elo_rating: eloRating ?? u.elo_rating }
             : u
         ));
       }
@@ -88,8 +89,8 @@ export default function AdminUsersPage() {
   };
 
   const grantPremium = (userId: string) => {
-    // Set expiry far in the future (2099)
-    updateSubscription(userId, 'premium', '2099-12-31T23:59:59.000Z');
+    // Set expiry far in the future (2099) and ELO to 1700 to unlock all levels
+    updateSubscription(userId, 'premium', '2099-12-31T23:59:59.000Z', 1700);
   };
 
   const revokePremium = (userId: string) => {
