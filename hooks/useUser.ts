@@ -117,10 +117,17 @@ export function useUser() {
   }, []);
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut({ scope: 'global' });
+      setUser(null);
+      setProfile(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Force clear state even if signOut fails
+      setUser(null);
+      setProfile(null);
+    }
   };
 
   return { user, profile, loading, signOut };

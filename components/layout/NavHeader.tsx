@@ -48,8 +48,7 @@ export function NavHeader() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   };
 
   // Don't show header on auth pages
@@ -108,7 +107,7 @@ export function NavHeader() {
               </div>
               <button
                 onClick={handleSignOut}
-                className="px-2 py-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 Log out
               </button>
