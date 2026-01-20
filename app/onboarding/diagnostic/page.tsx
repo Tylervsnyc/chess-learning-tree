@@ -152,8 +152,15 @@ export default function DiagnosticPage() {
       const totalCorrect = newCorrectAnswers.filter(Boolean).length;
       const finalElo = highestCorrect + (totalCorrect * 50);
 
-      const levelName = finalElo < 800 ? 'beginner' :
-                        finalElo < 1200 ? 'intermediate' : 'advanced';
+      // Map ELO to level (0-5 index)
+      const levelIndex = finalElo < 800 ? 0 :
+                         finalElo < 1000 ? 1 :
+                         finalElo < 1200 ? 2 :
+                         finalElo < 1400 ? 3 :
+                         finalElo < 1600 ? 4 : 5;
+
+      const levelNames = ['beginner', 'intermediate', 'advanced', 'expert', 'master', 'grandmaster'];
+      const levelName = levelNames[levelIndex];
 
       const params = new URLSearchParams({
         elo: finalElo.toString(),
