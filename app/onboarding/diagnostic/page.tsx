@@ -13,13 +13,13 @@ const COLORS = {
 
 // Adaptive Elo Configuration
 const STARTING_RATING = 1200;
-const MIN_PUZZLES = 5;
-const MAX_PUZZLES = 10;
-const STABILITY_THRESHOLD = 50; // Rating stable if last 3 within ±50
-const STABILITY_COUNT = 3;
+const MIN_PUZZLES = 3; // Minimum before we can stop (need at least a few data points)
+const MAX_PUZZLES = 12;
 
 // Available rating buckets (must match diagnostic-puzzles.json keys)
 const RATING_BUCKETS = [500, 800, 1100, 1400, 1700];
+const MIN_RATING = 400;
+const MAX_RATING = 2000;
 
 // Map any rating to nearest available bucket
 function getNearestBucket(rating: number): number {
@@ -36,26 +36,22 @@ function getNearestBucket(rating: number): number {
   return nearest;
 }
 
-// Calculate expected score using Elo formula
-function getExpectedScore(playerRating: number, puzzleRating: number): number {
-  return 1 / (1 + Math.pow(10, (puzzleRating - playerRating) / 400));
-}
+// Calculate new rating after a puzzle result
+function calculateNewRating(
+  currentRating: number,
+  puzzleRating: number,
+  correct: boolean,
+  puzzleNumber: number
+): number {
+  // K-factor: aggressive early (100), decreases over time
+  const K = Math.max(40, 100 - (puzzleNumber * 6));
 
-// Get K-factor (decreases as we get more data)
-function getKFactor(puzzleNumber: number): number {
-  // Start aggressive (80), decrease to 32 by puzzle 10
-  return Math.max(32, 80 - (puzzleNumber * 5));
-}
+  // Expected score using Elo formula
+  const expected = 1 / (1 + Math.pow(10, (puzzleRating - currentRating) / 400));
+  const actual = correct ? 1 : 0;
 
-// Check if rating has stabilized
-function isRatingStable(history: number[]): boolean {
-  if (history.length < STABILITY_COUNT) return false;
-
-  const recent = history.slice(-STABILITY_COUNT);
-  const min = Math.min(...recent);
-  const max = Math.max(...recent);
-
-  return (max - min) <= STABILITY_THRESHOLD * 2;
+  const newRating = currentRating + K * (actual - expected);
+  return Math.round(Math.max(MIN_RATING, Math.min(MAX_RATING, newRating)));
 }
 
 // Streak animation styles (same as lesson page)
@@ -113,6 +109,7 @@ export default function DiagnosticPage() {
   const [estimatedRating, setEstimatedRating] = useState(STARTING_RATING);
   const [ratingHistory, setRatingHistory] = useState<number[]>([STARTING_RATING]);
   const [totalCorrect, setTotalCorrect] = useState(0);
+  const [results, setResults] = useState<boolean[]>([]); // Track correct/incorrect sequence
 
   const initialized = useRef(false);
 
@@ -165,43 +162,52 @@ export default function DiagnosticPage() {
     const newCompleted = puzzlesCompleted + 1;
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
     const newTotalCorrect = correct ? totalCorrect + 1 : totalCorrect;
+    const newResults = [...results, correct];
 
-    // Calculate new rating using Elo formula
-    const K = getKFactor(newCompleted);
-    const expected = getExpectedScore(estimatedRating, puzzleRating);
-    const actual = correct ? 1 : 0;
-    const newRating = Math.round(estimatedRating + K * (actual - expected));
-
-    // Clamp rating to reasonable bounds
-    const clampedRating = Math.max(400, Math.min(2200, newRating));
-    const newHistory = [...ratingHistory, clampedRating];
+    // Calculate new rating
+    const newRating = calculateNewRating(estimatedRating, puzzleRating, correct, newCompleted);
+    const newHistory = [...ratingHistory, newRating];
 
     // Update state
     setPuzzlesCompleted(newCompleted);
     setSeenPuzzleIds(newSeen);
-    setEstimatedRating(clampedRating);
+    setEstimatedRating(newRating);
     setRatingHistory(newHistory);
     setTotalCorrect(newTotalCorrect);
+    setResults(newResults);
     recordResult(currentPuzzle.puzzleId, correct);
 
-    // Update streak
+    // Update streak for UI
     if (correct) {
       setStreak(prev => prev + 1);
     } else {
       setStreak(0);
     }
 
-    // Check if we should stop
-    const reachedMin = newCompleted >= MIN_PUZZLES;
+    // Determine if we should stop
     const reachedMax = newCompleted >= MAX_PUZZLES;
-    const ratingStable = reachedMin && isRatingStable(newHistory);
+    const reachedMin = newCompleted >= MIN_PUZZLES;
 
-    if (reachedMax || ratingStable) {
-      // Calculate final rating (average of last few readings for stability)
-      const recentRatings = newHistory.slice(-STABILITY_COUNT);
-      const finalElo = Math.round(
-        recentRatings.reduce((a, b) => a + b, 0) / recentRatings.length
-      );
+    // Check if we've found their level:
+    // - They missed one after getting some right (found ceiling)
+    // - They got one right after missing some (found floor)
+    // - They've hit our rating bounds (can't test higher/lower)
+    const hadCorrect = newResults.slice(0, -1).some(r => r);
+    const hadWrong = newResults.slice(0, -1).some(r => !r);
+    const foundCeiling = !correct && hadCorrect; // Missed after getting some right
+    const foundFloor = correct && hadWrong; // Got one right after missing some
+    const hitRatingCeiling = newRating >= MAX_RATING - 50;
+    const hitRatingFloor = newRating <= MIN_RATING + 50;
+
+    const shouldStop = reachedMax ||
+      (reachedMin && foundCeiling) ||
+      (reachedMin && foundFloor) ||
+      (reachedMin && hitRatingCeiling) ||
+      (reachedMin && hitRatingFloor);
+
+    if (shouldStop) {
+      // Use current rating as final (it already reflects their performance)
+      const finalElo = newRating;
 
       // Map ELO to level
       const levelIndex = finalElo < 800 ? 0 :
@@ -224,9 +230,9 @@ export default function DiagnosticPage() {
     } else {
       // Load next puzzle at new estimated rating
       setCurrentPuzzle(null);
-      loadPuzzleAtRating(clampedRating, newSeen);
+      loadPuzzleAtRating(newRating, newSeen);
     }
-  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
+  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
 
   const handleBack = () => {
     router.push('/onboarding');
