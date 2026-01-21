@@ -14166,17 +14166,16 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
     "lessonName": "Trapping the Queen",
     "puzzles": [
       {
-        "id": "iFW2y",
-        "fen": "r3r1k1/ppp2ppp/2p2n2/5b2/2P5/2K1P1P1/PP3bBP/RNB2R2 b - - 2 12",
-        "moves": "f6e4 g2e4 f5e4 f1f2",
-        "rating": 1210,
+        "id": "0Cw3M",
+        "fen": "1rb1k1nr/3pppbp/p1p3p1/8/N3q3/1P5P/P1PBBPP1/1R1QK2R b Kk - 1 12",
+        "moves": "e4g2 e2f3 g2h1 f3h1",
+        "rating": 1209,
         "themes": [
-          "advantage",
-          "middlegame",
+          "opening",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/kgqPgdJw/black#24"
+        "url": "https://lichess.org/Ib4JufEv/black#24"
       },
       {
         "id": "LufYA",

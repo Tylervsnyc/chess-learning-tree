@@ -11,6 +11,56 @@ import {
 } from '@/lib/sounds';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
+// Epic diagnostic quips - every puzzle gets a banger
+const DIAGNOSTIC_CORRECT_QUIPS = [
+  "OK you're good.",
+  "Wow. Chess much?",
+  "That knight had a family!",
+  "The humanity!",
+  "The mates will continue until morale improves.",
+  "You've done this before, haven't you?",
+  "Suspicious. Very suspicious.",
+  "Are you sure you need this test?",
+  "Someone's been studying.",
+  "Hold up. That was clean.",
+  "Did you just... yeah, you did.",
+  "My algorithms are impressed.",
+  "OK Magnus, calm down.",
+  "That was rude. I love it.",
+  "Their therapist will hear about this.",
+  "Absolutely violated.",
+  "Chess Twitter is gonna love this one.",
+  "You made that look easy. Was it?",
+  "Rated E for Everyone just got wrecked.",
+  "Do you kiss your mother with that chess?",
+  "Call an ambulance. But not for you.",
+  "Stockfish is taking notes.",
+  "That's going in the highlight reel.",
+  "You didn't have to snap that hard.",
+];
+
+const DIAGNOSTIC_WRONG_QUIPS = [
+  "Oof. But we're learning here.",
+  "The board is a tricky place.",
+  "Even GMs miss sometimes. Probably.",
+  "That's what practice is for.",
+  "Noted. Moving on.",
+  "We don't talk about that one.",
+  "The puzzle fights back sometimes.",
+  "Interesting choice. Wrong, but interesting.",
+  "That's the spirit! ...wrong spirit, but spirit.",
+  "Your rating just did a little dip.",
+  "The council has reviewed your move. Denied.",
+  "Bold strategy. Didn't work though.",
+];
+
+function getDiagnosticQuip(correct: boolean, puzzleIndex: number): string {
+  const quips = correct ? DIAGNOSTIC_CORRECT_QUIPS : DIAGNOSTIC_WRONG_QUIPS;
+  // Use puzzle index to add some variety, but still random within session
+  const seed = puzzleIndex + Math.floor(Math.random() * 1000);
+  return quips[seed % quips.length];
+}
+
 export interface OnboardingPuzzle {
   puzzleId: string;
   fen: string;
@@ -42,6 +92,7 @@ export function OnboardingPuzzleBoard({
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [hasReported, setHasReported] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
 
   // Reset state when puzzle changes
   useEffect(() => {
@@ -50,6 +101,7 @@ export function OnboardingPuzzleBoard({
     setMoveStatus('playing');
     setSelectedSquare(null);
     setHasReported(false);
+    setFeedbackMessage('');
   }, [puzzle.puzzleId, puzzle.puzzleFen]);
 
   // Chess game for current position
@@ -117,6 +169,7 @@ export function OnboardingPuzzleBoard({
         if (nextMoveIndex >= puzzle.solutionMoves.length) {
           // Puzzle complete!
           setMoveStatus('correct');
+          setFeedbackMessage(getDiagnosticQuip(true, puzzleIndex));
           playCorrectSound(puzzleIndex);
           return true;
         }
@@ -139,10 +192,12 @@ export function OnboardingPuzzleBoard({
 
             if (nextMoveIndex + 1 >= puzzle.solutionMoves.length) {
               setMoveStatus('correct');
+              setFeedbackMessage(getDiagnosticQuip(true, puzzleIndex));
               playCorrectSound(puzzleIndex);
             }
           } catch {
             setMoveStatus('correct');
+            setFeedbackMessage(getDiagnosticQuip(true, puzzleIndex));
             playCorrectSound(puzzleIndex);
           }
         }, 400);
@@ -151,6 +206,7 @@ export function OnboardingPuzzleBoard({
       } else {
         // Wrong move - single attempt, mark as wrong
         setMoveStatus('wrong');
+        setFeedbackMessage(getDiagnosticQuip(false, puzzleIndex));
         setSelectedSquare(null);
         playErrorSound();
         return false;
@@ -232,6 +288,7 @@ export function OnboardingPuzzleBoard({
       {moveStatus === 'correct' && (
         <PuzzleResultPopup
           type="correct"
+          message={feedbackMessage}
           onContinue={handleContinue}
         />
       )}
@@ -239,6 +296,7 @@ export function OnboardingPuzzleBoard({
       {moveStatus === 'wrong' && (
         <PuzzleResultPopup
           type="incorrect"
+          message={feedbackMessage}
           onContinue={handleContinue}
         />
       )}
