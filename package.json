@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.90.1",
     "@types/d3-force": "^3.0.10",
     "@types/d3-selection": "^3.0.11",
+    "canvas-confetti": "^1.9.4",
     "chess.js": "^1.4.0",
     "d3-force": "^3.0.0",
     "d3-selection": "^3.0.0",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^25.0.9",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",

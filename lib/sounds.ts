@@ -75,34 +75,20 @@ export function playErrorSound() {
   osc.stop(ctx.currentTime + 0.2);
 }
 
-// Play triumphant climb celebration (for lesson complete)
-export function playCelebrationSound() {
-  const ctx = getAudioContext();
-  if (!ctx) return;
+// Play celebration sound based on performance
+// Perfect (6/6): tadaaa fanfare
+// Imperfect (<6): roblox win
+export function playCelebrationSound(correctCount: number = 6) {
+  if (typeof window === 'undefined') return;
+  // Ensure AudioContext is active for better browser compatibility
+  getAudioContext();
 
-  // Continue chromatic then burst into major
-  const buildup = [370, 392, 415]; // F#, G, G#
-  buildup.forEach((f, i) => {
-    setTimeout(() => playMellowCoin(f), i * 100);
+  const soundFile = correctCount === 6 ? '/sounds/celebration.mp3' : '/sounds/celebration-ok.mp3';
+  const audio = new Audio(soundFile);
+  audio.volume = 0.8;
+  audio.play().catch(() => {
+    // Ignore autoplay errors
   });
-
-  setTimeout(() => {
-    const celebCtx = getAudioContext();
-    if (!celebCtx) return;
-    // Explosion into C major
-    [523, 659, 784, 1047].forEach(f => {
-      const osc = celebCtx.createOscillator();
-      const gain = celebCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.value = f;
-      gain.gain.setValueAtTime(0.25, celebCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, celebCtx.currentTime + 1);
-      osc.connect(gain);
-      gain.connect(celebCtx.destination);
-      osc.start();
-      osc.stop(celebCtx.currentTime + 1);
-    });
-  }, 350);
 }
 
 // Play move sound

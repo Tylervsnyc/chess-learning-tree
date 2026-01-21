@@ -24,6 +24,7 @@ const pantryPages = [
 ]
 
 const testPages = [
+  { name: 'Celebration Effects', path: '/test-celebration', description: 'Tiered confetti & sounds by score' },
   { name: 'Color Palettes', path: '/test-color-palettes', description: '10 palettes × 5 neon intensities' },
   { name: 'Neon Buttons', path: '/test-neon-buttons', description: '10 neon button styles to compare' },
   { name: 'Animated Landing', path: '/test-animated-landing', description: '6 designs with animated puzzles by ELO' },
