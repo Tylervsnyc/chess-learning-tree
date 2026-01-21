@@ -93,6 +93,326 @@ const COLORS = {
   card: '#1A2C35',
 };
 
+// Celebration styles
+const celebrationStyles = `
+  @keyframes rainbowPulse {
+    0% { transform: scale(0); filter: hue-rotate(0deg) drop-shadow(0 0 0px gold); }
+    30% { transform: scale(1.3); filter: hue-rotate(90deg) drop-shadow(0 0 40px gold); }
+    50% { transform: scale(1); filter: hue-rotate(180deg) drop-shadow(0 0 20px gold); }
+    70% { transform: scale(1.15); filter: hue-rotate(270deg) drop-shadow(0 0 30px gold); }
+    100% { transform: scale(1); filter: hue-rotate(360deg) drop-shadow(0 0 15px gold); }
+  }
+  @keyframes continuousPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 25px gold); }
+  }
+  @keyframes gentlePop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  @keyframes sparkle {
+    0% { transform: translateY(0) scale(0); opacity: 0; }
+    20% { transform: translateY(-20px) scale(1); opacity: 1; }
+    80% { transform: translateY(-100px) scale(0.5); opacity: 0.5; }
+    100% { transform: translateY(-150px) scale(0); opacity: 0; }
+  }
+  .animate-rainbowPulse {
+    animation: rainbowPulse 1s ease-out forwards, continuousPulse 1.5s ease-in-out 1s infinite;
+  }
+  .animate-gentlePop {
+    animation: gentlePop 0.6s ease-out forwards;
+  }
+  .animate-sparkle { animation: sparkle 2s ease-out infinite; }
+`;
+
+// Sparkle particles component
+const SparkleParticles = () => {
+  const sparkles = useMemo(() =>
+    Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      size: 4 + Math.random() * 8,
+      left: 20 + Math.random() * 60,
+      delay: Math.random() * 2,
+      duration: 1 + Math.random() * 2,
+      color: ['#FFD700', '#FFFFFF', '#FFA500', '#58CC02', '#1CB0F6'][Math.floor(Math.random() * 5)],
+    })), []
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {sparkles.map((s) => (
+        <div
+          key={s.id}
+          className="absolute animate-sparkle"
+          style={{
+            width: s.size,
+            height: s.size,
+            left: `${s.left}%`,
+            top: '30%',
+            backgroundColor: s.color,
+            borderRadius: '50%',
+            boxShadow: `0 0 ${s.size * 2}px ${s.color}`,
+            animationDelay: `${s.delay}s`,
+            animationDuration: `${s.duration}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Lesson Complete Screen Component
+function LessonCompleteScreen({
+  correctCount,
+  wrongCount,
+  lessonName,
+  lessonId,
+  isGuest,
+  getLevelKeyFromLessonId,
+}: {
+  correctCount: number;
+  wrongCount: number;
+  lessonName: string;
+  lessonId: string;
+  isGuest: boolean;
+  getLevelKeyFromLessonId: (id: string) => string;
+}) {
+  const isPerfect = correctCount === 6;
+  const icon = isPerfect ? '👑' : correctCount === 5 ? '🔥' : '✓';
+  const message = isPerfect ? 'PERFECT!' : correctCount === 5 ? 'Great job!' : 'Nice work!';
+
+  // Trigger confetti on mount
+  useEffect(() => {
+    if (isPerfect) {
+      // CHAOS MODE for perfect
+      const duration = 4000;
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({
+          particleCount: 7,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: ['#FFD700', '#FFA500', '#FF6347', '#FFFFFF'],
+        });
+        confetti({
+          particleCount: 7,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: ['#FFD700', '#FFA500', '#FF6347', '#FFFFFF'],
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+      [300, 600, 1000, 1500].forEach((delay) => {
+        setTimeout(() => {
+          confetti({
+            particleCount: 100 + Math.random() * 50,
+            spread: 80 + Math.random() * 40,
+            origin: { y: 0.5 + Math.random() * 0.2, x: 0.3 + Math.random() * 0.4 },
+            colors: ['#FFD700', '#FFA500', '#58CC02', '#1CB0F6', '#FFFFFF'],
+          });
+        }, delay);
+      });
+      [400, 800, 1200].forEach((delay) => {
+        setTimeout(() => {
+          confetti({
+            particleCount: 30,
+            spread: 360,
+            ticks: 100,
+            gravity: 0.3,
+            decay: 0.94,
+            startVelocity: 20 + Math.random() * 15,
+            shapes: ['star'],
+            colors: ['#FFD700', '#FFFFFF'],
+            origin: { y: 0.4 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.6 },
+          });
+        }, delay);
+      });
+    } else if (correctCount >= 5) {
+      // Double cannon for great
+      confetti({ particleCount: 80, angle: 60, spread: 60, origin: { x: 0, y: 0.65 }, colors: ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'] });
+      confetti({ particleCount: 80, angle: 120, spread: 60, origin: { x: 1, y: 0.65 }, colors: ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'] });
+      setTimeout(() => {
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ['#58CC02', '#1CB0F6', '#FFFFFF'] });
+      }, 400);
+    } else {
+      // Simple confetti
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: ['#58CC02', '#1CB0F6', '#FF9600'], gravity: 1.2 });
+    }
+  }, [isPerfect, correctCount]);
+
+  // Guest signup prompt
+  if (isGuest) {
+    return (
+      <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative overflow-hidden">
+        <style>{celebrationStyles}</style>
+        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+
+        <div className="flex-1 flex items-center justify-center px-5 relative">
+          {isPerfect && <SparkleParticles />}
+          <div className="max-w-sm w-full text-center relative z-10">
+            <div
+              className={`text-8xl mb-4 ${isPerfect ? 'animate-rainbowPulse' : 'animate-gentlePop'}`}
+              style={{ filter: isPerfect ? 'drop-shadow(0 0 30px rgba(255, 215, 0, 0.9))' : undefined }}
+            >
+              {icon}
+            </div>
+
+            <h1
+              className="text-3xl font-black mb-1 tracking-wider"
+              style={{
+                color: isPerfect ? '#FFD700' : COLORS.green,
+                textShadow: isPerfect ? '0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)' : undefined,
+              }}
+            >
+              {message}
+            </h1>
+            <p className="text-gray-400 mb-2">{lessonName}</p>
+
+            <div className="mb-6">
+              <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10 mb-1">
+                <div
+                  className="h-full transition-all duration-500"
+                  style={{
+                    width: `${(correctCount / 6) * 100}%`,
+                    background: isPerfect ? 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)' : COLORS.green,
+                    boxShadow: isPerfect ? '0 0 20px rgba(255, 215, 0, 0.5)' : undefined,
+                  }}
+                />
+              </div>
+              <p className="text-sm text-gray-500">{Math.round((correctCount / 6) * 100)}% accuracy</p>
+            </div>
+
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="text-center">
+                <div
+                  className="text-3xl font-black"
+                  style={{
+                    color: isPerfect ? '#FFD700' : COLORS.green,
+                    textShadow: isPerfect ? '0 0 15px rgba(255, 215, 0, 0.6)' : undefined,
+                  }}
+                >
+                  {correctCount}
+                </div>
+                <div className="text-xs text-gray-500">Correct</div>
+              </div>
+              {wrongCount > 0 && (
+                <div className="text-center">
+                  <div className="text-3xl font-black text-gray-400">{wrongCount}</div>
+                  <div className="text-xs text-gray-500">Retried</div>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
+              style={{ backgroundColor: COLORS.green }}
+            >
+              Continue
+            </button>
+
+            <div className="bg-[#1A2C35] rounded-2xl p-4">
+              <p className="text-gray-400 text-sm mb-3">Create a free account to save progress</p>
+              <div className="flex gap-3">
+                <Link
+                  href="/auth/signup?from=lesson"
+                  className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                >
+                  Sign In
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Logged-in user completion
+  return (
+    <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative overflow-hidden">
+      <style>{celebrationStyles}</style>
+      <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+
+      <div className="flex-1 flex items-center justify-center px-5 relative">
+        {isPerfect && <SparkleParticles />}
+        <div className="max-w-sm w-full text-center relative z-10">
+          <div
+            className={`text-8xl mb-4 ${isPerfect ? 'animate-rainbowPulse' : 'animate-gentlePop'}`}
+            style={{ filter: isPerfect ? 'drop-shadow(0 0 30px rgba(255, 215, 0, 0.9))' : undefined }}
+          >
+            {icon}
+          </div>
+
+          <h1
+            className="text-3xl font-black mb-1 tracking-wider"
+            style={{
+              color: isPerfect ? '#FFD700' : COLORS.green,
+              textShadow: isPerfect ? '0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)' : undefined,
+            }}
+          >
+            {message}
+          </h1>
+          <p className="text-gray-400 mb-2">{lessonName}</p>
+
+          <div className="mb-6">
+            <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10 mb-1">
+              <div
+                className="h-full transition-all duration-500"
+                style={{
+                  width: `${(correctCount / 6) * 100}%`,
+                  background: isPerfect ? 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)' : COLORS.green,
+                  boxShadow: isPerfect ? '0 0 20px rgba(255, 215, 0, 0.5)' : undefined,
+                }}
+              />
+            </div>
+            <p className="text-sm text-gray-500">{Math.round((correctCount / 6) * 100)}% accuracy</p>
+          </div>
+
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div
+                className="text-3xl font-black"
+                style={{
+                  color: isPerfect ? '#FFD700' : COLORS.green,
+                  textShadow: isPerfect ? '0 0 15px rgba(255, 215, 0, 0.6)' : undefined,
+                }}
+              >
+                {correctCount}
+              </div>
+              <div className="text-xs text-gray-500">Correct</div>
+            </div>
+            {wrongCount > 0 && (
+              <div className="text-center">
+                <div className="text-3xl font-black text-gray-400">{wrongCount}</div>
+                <div className="text-xs text-gray-500">Retried</div>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
+            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+            style={{ backgroundColor: COLORS.green }}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Map level number to level key for navigation
 const LEVEL_KEYS = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'expert'];
 function getLevelKeyFromLessonId(lessonId: string): string {
@@ -547,315 +867,15 @@ export default function LessonPage() {
   }
 
   if (lessonComplete) {
-    const isPerfect = correctCount === 6;
-    const icon = isPerfect ? '👑' : correctCount === 5 ? '🔥' : '✓';
-    const message = isPerfect ? 'PERFECT!' : correctCount === 5 ? 'Great job!' : 'Nice work!';
-
-    // Sparkle particles for perfect scores
-    const SparkleParticles = () => (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 20 }).map((_, i) => {
-          const size = 4 + Math.random() * 8;
-          const colors = ['#FFD700', '#FFFFFF', '#FFA500', '#58CC02', '#1CB0F6'];
-          const color = colors[Math.floor(Math.random() * colors.length)];
-          return (
-            <div
-              key={i}
-              className="absolute animate-sparkle"
-              style={{
-                width: size,
-                height: size,
-                left: `${20 + Math.random() * 60}%`,
-                top: '30%',
-                backgroundColor: color,
-                borderRadius: '50%',
-                boxShadow: `0 0 ${size * 2}px ${color}`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random() * 2}s`,
-              }}
-            />
-          );
-        })}
-        <style>{`
-          @keyframes sparkle {
-            0% { transform: translateY(0) scale(0); opacity: 0; }
-            20% { transform: translateY(-20px) scale(1); opacity: 1; }
-            80% { transform: translateY(-100px) scale(0.5); opacity: 0.5; }
-            100% { transform: translateY(-150px) scale(0); opacity: 0; }
-          }
-          .animate-sparkle { animation: sparkle 2s ease-out infinite; }
-        `}</style>
-      </div>
-    );
-
-    // Trigger canvas-confetti on mount
-    const triggerConfetti = () => {
-      if (isPerfect) {
-        // CHAOS MODE for perfect
-        const duration = 4000;
-        const end = Date.now() + duration;
-        const frame = () => {
-          confetti({
-            particleCount: 7,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0, y: 0.7 },
-            colors: ['#FFD700', '#FFA500', '#FF6347', '#FFFFFF'],
-          });
-          confetti({
-            particleCount: 7,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1, y: 0.7 },
-            colors: ['#FFD700', '#FFA500', '#FF6347', '#FFFFFF'],
-          });
-          if (Date.now() < end) requestAnimationFrame(frame);
-        };
-        frame();
-        [300, 600, 1000, 1500].forEach((delay) => {
-          setTimeout(() => {
-            confetti({
-              particleCount: 100 + Math.random() * 50,
-              spread: 80 + Math.random() * 40,
-              origin: { y: 0.5 + Math.random() * 0.2, x: 0.3 + Math.random() * 0.4 },
-              colors: ['#FFD700', '#FFA500', '#58CC02', '#1CB0F6', '#FFFFFF'],
-            });
-          }, delay);
-        });
-        [400, 800, 1200].forEach((delay) => {
-          setTimeout(() => {
-            confetti({
-              particleCount: 30,
-              spread: 360,
-              ticks: 100,
-              gravity: 0.3,
-              decay: 0.94,
-              startVelocity: 20 + Math.random() * 15,
-              shapes: ['star'],
-              colors: ['#FFD700', '#FFFFFF'],
-              origin: { y: 0.4 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.6 },
-            });
-          }, delay);
-        });
-      } else if (correctCount >= 5) {
-        // Double cannon for great
-        confetti({ particleCount: 80, angle: 60, spread: 60, origin: { x: 0, y: 0.65 }, colors: ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'] });
-        confetti({ particleCount: 80, angle: 120, spread: 60, origin: { x: 1, y: 0.65 }, colors: ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'] });
-        setTimeout(() => {
-          confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ['#58CC02', '#1CB0F6', '#FFFFFF'] });
-        }, 400);
-      } else {
-        // Simple confetti
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: ['#58CC02', '#1CB0F6', '#FF9600'], gravity: 1.2 });
-      }
-    };
-
-    // Trigger confetti once on render
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      triggerConfetti();
-    }, []);
-
-    // Animation styles
-    const celebrationStyles = `
-      @keyframes rainbowPulse {
-        0% { transform: scale(0); filter: hue-rotate(0deg) drop-shadow(0 0 0px gold); }
-        30% { transform: scale(1.3); filter: hue-rotate(90deg) drop-shadow(0 0 40px gold); }
-        50% { transform: scale(1); filter: hue-rotate(180deg) drop-shadow(0 0 20px gold); }
-        70% { transform: scale(1.15); filter: hue-rotate(270deg) drop-shadow(0 0 30px gold); }
-        100% { transform: scale(1); filter: hue-rotate(360deg) drop-shadow(0 0 15px gold); }
-      }
-      @keyframes continuousPulse {
-        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px gold); }
-        50% { transform: scale(1.08); filter: drop-shadow(0 0 25px gold); }
-      }
-      @keyframes gentlePop {
-        0% { transform: scale(0); opacity: 0; }
-        50% { transform: scale(1.2); opacity: 1; }
-        100% { transform: scale(1); }
-      }
-      .animate-rainbowPulse {
-        animation: rainbowPulse 1s ease-out forwards, continuousPulse 1.5s ease-in-out 1s infinite;
-      }
-      .animate-gentlePop {
-        animation: gentlePop 0.6s ease-out forwards;
-      }
-    `;
-
-    // Guest signup prompt
-    if (isGuest) {
-      return (
-        <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative overflow-hidden">
-          <style>{celebrationStyles}</style>
-          <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
-
-          <div className="flex-1 flex items-center justify-center px-5 relative">
-            {isPerfect && <SparkleParticles />}
-            <div className="max-w-sm w-full text-center relative z-10">
-              {/* Icon with animation */}
-              <div
-                className={`text-8xl mb-4 ${isPerfect ? 'animate-rainbowPulse' : 'animate-gentlePop'}`}
-                style={{ filter: isPerfect ? 'drop-shadow(0 0 30px rgba(255, 215, 0, 0.9))' : undefined }}
-              >
-                {icon}
-              </div>
-
-              <h1
-                className="text-3xl font-black mb-1 tracking-wider"
-                style={{
-                  color: isPerfect ? '#FFD700' : COLORS.green,
-                  textShadow: isPerfect ? '0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)' : undefined,
-                }}
-              >
-                {message}
-              </h1>
-              <p className="text-gray-400 mb-2">{lessonName}</p>
-
-              {/* Accuracy bar */}
-              <div className="mb-6">
-                <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10 mb-1">
-                  <div
-                    className="h-full transition-all duration-500"
-                    style={{
-                      width: `${(correctCount / 6) * 100}%`,
-                      background: isPerfect ? 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)' : COLORS.green,
-                      boxShadow: isPerfect ? '0 0 20px rgba(255, 215, 0, 0.5)' : undefined,
-                    }}
-                  />
-                </div>
-                <p className="text-sm text-gray-500">{Math.round((correctCount / 6) * 100)}% accuracy</p>
-              </div>
-
-              {/* Stats */}
-              <div className="flex justify-center gap-8 mb-8">
-                <div className="text-center">
-                  <div
-                    className="text-3xl font-black"
-                    style={{
-                      color: isPerfect ? '#FFD700' : COLORS.green,
-                      textShadow: isPerfect ? '0 0 15px rgba(255, 215, 0, 0.6)' : undefined,
-                    }}
-                  >
-                    {correctCount}
-                  </div>
-                  <div className="text-xs text-gray-500">Correct</div>
-                </div>
-                {wrongCount > 0 && (
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-gray-400">{wrongCount}</div>
-                    <div className="text-xs text-gray-500">Retried</div>
-                  </div>
-                )}
-              </div>
-
-              {/* Continue button */}
-              <button
-                onClick={() => window.location.href = `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`}
-                className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] mb-4"
-                style={{ backgroundColor: COLORS.green }}
-              >
-                Continue
-              </button>
-
-              {/* Signup prompt */}
-              <div className="bg-[#1A2C35] rounded-2xl p-4">
-                <p className="text-gray-400 text-sm mb-3">Create a free account to save progress</p>
-                <div className="flex gap-3">
-                  <Link
-                    href="/auth/signup?from=lesson"
-                    className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
-                  >
-                    Sign Up
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="flex-1 py-2 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Logged-in user completion
     return (
-      <div className="min-h-screen bg-[#131F24] text-white flex flex-col relative overflow-hidden">
-        <style>{celebrationStyles}</style>
-        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
-
-        <div className="flex-1 flex items-center justify-center px-5 relative">
-          {isPerfect && <SparkleParticles />}
-          <div className="max-w-sm w-full text-center relative z-10">
-            {/* Icon with animation */}
-            <div
-              className={`text-8xl mb-4 ${isPerfect ? 'animate-rainbowPulse' : 'animate-gentlePop'}`}
-              style={{ filter: isPerfect ? 'drop-shadow(0 0 30px rgba(255, 215, 0, 0.9))' : undefined }}
-            >
-              {icon}
-            </div>
-
-            <h1
-              className="text-3xl font-black mb-1 tracking-wider"
-              style={{
-                color: isPerfect ? '#FFD700' : COLORS.green,
-                textShadow: isPerfect ? '0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)' : undefined,
-              }}
-            >
-              {message}
-            </h1>
-            <p className="text-gray-400 mb-2">{lessonName}</p>
-
-            {/* Accuracy bar */}
-            <div className="mb-6">
-              <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10 mb-1">
-                <div
-                  className="h-full transition-all duration-500"
-                  style={{
-                    width: `${(correctCount / 6) * 100}%`,
-                    background: isPerfect ? 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)' : COLORS.green,
-                    boxShadow: isPerfect ? '0 0 20px rgba(255, 215, 0, 0.5)' : undefined,
-                  }}
-                />
-              </div>
-              <p className="text-sm text-gray-500">{Math.round((correctCount / 6) * 100)}% accuracy</p>
-            </div>
-
-            {/* Stats */}
-            <div className="flex justify-center gap-8 mb-8">
-              <div className="text-center">
-                <div
-                  className="text-3xl font-black"
-                  style={{
-                    color: isPerfect ? '#FFD700' : COLORS.green,
-                    textShadow: isPerfect ? '0 0 15px rgba(255, 215, 0, 0.6)' : undefined,
-                  }}
-                >
-                  {correctCount}
-                </div>
-                <div className="text-xs text-gray-500">Correct</div>
-              </div>
-              {wrongCount > 0 && (
-                <div className="text-center">
-                  <div className="text-3xl font-black text-gray-400">{wrongCount}</div>
-                  <div className="text-xs text-gray-500">Retried</div>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={() => window.location.href = `/learn?level=${getLevelKeyFromLessonId(lessonId)}`}
-              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-              style={{ backgroundColor: COLORS.green }}
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      </div>
+      <LessonCompleteScreen
+        correctCount={correctCount}
+        wrongCount={wrongCount}
+        lessonName={lessonName}
+        lessonId={lessonId}
+        isGuest={isGuest}
+        getLevelKeyFromLessonId={getLevelKeyFromLessonId}
+      />
     );
   }
 
