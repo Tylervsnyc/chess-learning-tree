@@ -11,16 +11,52 @@ const COLORS = {
   orange: '#FF9600',
 };
 
-// Fixed progression: 500 → 800 → 1100 → 1400 → 1700
-const PUZZLE_CONFIG = [
-  { rating: 500, theme: 'fork' },
-  { rating: 800, theme: 'pin' },
-  { rating: 1100, theme: 'discoveredAttack' },
-  { rating: 1400, theme: 'sacrifice' },
-  { rating: 1700, theme: 'mateIn2' },
-];
+// Adaptive Elo Configuration
+const STARTING_RATING = 1200;
+const MIN_PUZZLES = 5;
+const MAX_PUZZLES = 10;
+const STABILITY_THRESHOLD = 50; // Rating stable if last 3 within ±50
+const STABILITY_COUNT = 3;
 
-const DIAGNOSTIC_COUNT = PUZZLE_CONFIG.length;
+// Available rating buckets (must match diagnostic-puzzles.json keys)
+const RATING_BUCKETS = [500, 800, 1100, 1400, 1700];
+
+// Map any rating to nearest available bucket
+function getNearestBucket(rating: number): number {
+  let nearest = RATING_BUCKETS[0];
+  let minDiff = Math.abs(rating - nearest);
+
+  for (const bucket of RATING_BUCKETS) {
+    const diff = Math.abs(rating - bucket);
+    if (diff < minDiff) {
+      minDiff = diff;
+      nearest = bucket;
+    }
+  }
+  return nearest;
+}
+
+// Calculate expected score using Elo formula
+function getExpectedScore(playerRating: number, puzzleRating: number): number {
+  return 1 / (1 + Math.pow(10, (puzzleRating - playerRating) / 400));
+}
+
+// Get K-factor (decreases as we get more data)
+function getKFactor(puzzleNumber: number): number {
+  // Start aggressive (80), decrease to 32 by puzzle 10
+  return Math.max(32, 80 - (puzzleNumber * 5));
+}
+
+// Check if rating has stabilized
+function isRatingStable(history: number[]): boolean {
+  if (history.length < STABILITY_COUNT) return false;
+
+  const recent = history.slice(-STABILITY_COUNT);
+  const min = Math.min(...recent);
+  const max = Math.max(...recent);
+
+  return (max - min) <= STABILITY_THRESHOLD * 2;
+}
 
 // Streak animation styles (same as lesson page)
 const streakStyles = `
@@ -68,11 +104,15 @@ export default function DiagnosticPage() {
 
   const [currentPuzzle, setCurrentPuzzle] = useState<OnboardingPuzzle | null>(null);
   const [puzzlesCompleted, setPuzzlesCompleted] = useState(0);
-  const [correctAnswers, setCorrectAnswers] = useState<boolean[]>([]); // Track each puzzle result
   const [seenPuzzleIds, setSeenPuzzleIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
+
+  // Adaptive Elo state
+  const [estimatedRating, setEstimatedRating] = useState(STARTING_RATING);
+  const [ratingHistory, setRatingHistory] = useState<number[]>([STARTING_RATING]);
+  const [totalCorrect, setTotalCorrect] = useState(0);
 
   const initialized = useRef(false);
 
@@ -83,18 +123,17 @@ export default function DiagnosticPage() {
     }
   }, [isLoaded, reset]);
 
-  // Load puzzle based on current index in PUZZLE_CONFIG
-  const loadPuzzleAtIndex = useCallback(async (index: number, exclude: string[]) => {
-    if (index >= PUZZLE_CONFIG.length) return;
-
+  // Load puzzle at the current estimated rating
+  const loadPuzzleAtRating = useCallback(async (targetRating: number, exclude: string[]) => {
     setLoading(true);
     setError(null);
 
-    const config = PUZZLE_CONFIG[index];
+    // Map to nearest available bucket
+    const bucket = getNearestBucket(targetRating);
 
     try {
       const excludeParam = exclude.length > 0 ? `&exclude=${exclude.join(',')}` : '';
-      const res = await fetch(`/api/onboarding-puzzles?rating=${config.rating}&theme=${config.theme}&count=1${excludeParam}`);
+      const res = await fetch(`/api/onboarding-puzzles?rating=${bucket}&count=1${excludeParam}`);
       const data = await res.json();
 
       if (data.error) {
@@ -115,20 +154,34 @@ export default function DiagnosticPage() {
   // Load first puzzle on mount
   useEffect(() => {
     if (isLoaded && initialized.current && puzzlesCompleted === 0 && !currentPuzzle) {
-      loadPuzzleAtIndex(0, []);
+      loadPuzzleAtRating(STARTING_RATING, []);
     }
-  }, [isLoaded, puzzlesCompleted, currentPuzzle, loadPuzzleAtIndex]);
+  }, [isLoaded, puzzlesCompleted, currentPuzzle, loadPuzzleAtRating]);
 
   const handleResult = useCallback((correct: boolean) => {
     if (!currentPuzzle) return;
 
+    const puzzleRating = currentPuzzle.rating;
     const newCompleted = puzzlesCompleted + 1;
-    const newCorrectAnswers = [...correctAnswers, correct];
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
+    const newTotalCorrect = correct ? totalCorrect + 1 : totalCorrect;
 
+    // Calculate new rating using Elo formula
+    const K = getKFactor(newCompleted);
+    const expected = getExpectedScore(estimatedRating, puzzleRating);
+    const actual = correct ? 1 : 0;
+    const newRating = Math.round(estimatedRating + K * (actual - expected));
+
+    // Clamp rating to reasonable bounds
+    const clampedRating = Math.max(400, Math.min(2200, newRating));
+    const newHistory = [...ratingHistory, clampedRating];
+
+    // Update state
     setPuzzlesCompleted(newCompleted);
-    setCorrectAnswers(newCorrectAnswers);
     setSeenPuzzleIds(newSeen);
+    setEstimatedRating(clampedRating);
+    setRatingHistory(newHistory);
+    setTotalCorrect(newTotalCorrect);
     recordResult(currentPuzzle.puzzleId, correct);
 
     // Update streak
@@ -138,21 +191,19 @@ export default function DiagnosticPage() {
       setStreak(0);
     }
 
-    if (newCompleted >= DIAGNOSTIC_COUNT) {
-      // Calculate ELO based on highest puzzle solved correctly
-      // Find the highest rating puzzle they got right
-      let highestCorrect = 400; // Base ELO
-      for (let i = 0; i < newCorrectAnswers.length; i++) {
-        if (newCorrectAnswers[i]) {
-          highestCorrect = PUZZLE_CONFIG[i].rating;
-        }
-      }
+    // Check if we should stop
+    const reachedMin = newCompleted >= MIN_PUZZLES;
+    const reachedMax = newCompleted >= MAX_PUZZLES;
+    const ratingStable = reachedMin && isRatingStable(newHistory);
 
-      // Add bonus for getting multiple correct
-      const totalCorrect = newCorrectAnswers.filter(Boolean).length;
-      const finalElo = highestCorrect + (totalCorrect * 50);
+    if (reachedMax || ratingStable) {
+      // Calculate final rating (average of last few readings for stability)
+      const recentRatings = newHistory.slice(-STABILITY_COUNT);
+      const finalElo = Math.round(
+        recentRatings.reduce((a, b) => a + b, 0) / recentRatings.length
+      );
 
-      // Map ELO to level (0-5 index)
+      // Map ELO to level
       const levelIndex = finalElo < 800 ? 0 :
                          finalElo < 1000 ? 1 :
                          finalElo < 1200 ? 2 :
@@ -165,15 +216,17 @@ export default function DiagnosticPage() {
       const params = new URLSearchParams({
         elo: finalElo.toString(),
         level: levelName,
-        correct: totalCorrect.toString(),
+        correct: newTotalCorrect.toString(),
+        total: newCompleted.toString(),
       });
 
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
+      // Load next puzzle at new estimated rating
       setCurrentPuzzle(null);
-      loadPuzzleAtIndex(newCompleted, newSeen);
+      loadPuzzleAtRating(clampedRating, newSeen);
     }
-  }, [currentPuzzle, puzzlesCompleted, correctAnswers, seenPuzzleIds, recordResult, router, loadPuzzleAtIndex]);
+  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
 
   const handleBack = () => {
     router.push('/onboarding');
@@ -205,8 +258,9 @@ export default function DiagnosticPage() {
     );
   }
 
-  // Calculate progress
-  const progressPercent = (puzzlesCompleted / DIAGNOSTIC_COUNT) * 100;
+  // Calculate progress (show progress toward MIN_PUZZLES, then extend if needed)
+  const displayMax = Math.max(MIN_PUZZLES, puzzlesCompleted + 1);
+  const progressPercent = (puzzlesCompleted / displayMax) * 100;
 
   return (
     <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
@@ -236,10 +290,19 @@ export default function DiagnosticPage() {
           </div>
 
           <div className="text-gray-400 font-medium">
-            {puzzlesCompleted + 1}/{DIAGNOSTIC_COUNT}
+            {puzzlesCompleted + 1}/{displayMax}
           </div>
         </div>
       </div>
+
+      {/* Current rating indicator */}
+      {puzzlesCompleted > 0 && (
+        <div className="text-center py-2 bg-[#0D1A1F]">
+          <span className="text-gray-500 text-sm">
+            Estimated rating: <span className="text-[#1CB0F6] font-medium">{estimatedRating}</span>
+          </span>
+        </div>
+      )}
 
       {/* Main content - fixed layout to prevent board movement */}
       <div className="flex-1 flex flex-col items-center px-4 pt-4 overflow-hidden">

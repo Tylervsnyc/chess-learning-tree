@@ -64,6 +64,8 @@ function OnboardingCompleteContent() {
 
   const elo = parseInt(searchParams.get('elo') || '800', 10);
   const level = (searchParams.get('level') || 'beginner') as keyof typeof LEVEL_CONFIG;
+  const correct = parseInt(searchParams.get('correct') || '0', 10);
+  const total = parseInt(searchParams.get('total') || '5', 10);
   const config = LEVEL_CONFIG[level] || LEVEL_CONFIG.beginner;
 
   useEffect(() => {
@@ -109,10 +111,22 @@ function OnboardingCompleteContent() {
 
         {/* Level badge */}
         <div
-          className="inline-block px-5 py-2 rounded-full font-bold text-lg mt-3 mb-6"
+          className="inline-block px-5 py-2 rounded-full font-bold text-lg mt-3 mb-4"
           style={{ backgroundColor: config.color, color: '#000' }}
         >
           {config.label}
+        </div>
+
+        {/* Stats */}
+        <div className="flex justify-center gap-6 mb-6 text-sm">
+          <div className="text-center">
+            <div className="text-[#1CB0F6] font-bold text-xl">{elo}</div>
+            <div className="text-gray-400">Rating</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[#58CC02] font-bold text-xl">{correct}/{total}</div>
+            <div className="text-gray-400">Correct</div>
+          </div>
         </div>
 
         {/* CTA */}
