@@ -195,6 +195,7 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
   const nextLessonRef = useRef<HTMLButtonElement | null>(null);
   const hasScrolledRef = useRef(false);
+  const hasInitializedRef = useRef(false);
 
   const currentLevel = LEVELS[initialLevel];
 
@@ -223,22 +224,33 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
     return 'mod-1';
   }, [nextLessonId, currentLevel.modules]);
 
-  const [expandedModule, setExpandedModule] = useState<string | null>(moduleContainingNextLesson);
+  // Start with null - will be set after data loads
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
 
-  // Update expanded module when level changes or next lesson changes
+  // Set expanded module ONLY after data has loaded
   useEffect(() => {
-    setExpandedModule(moduleContainingNextLesson);
-    hasScrolledRef.current = false; // Reset scroll flag when module changes
-  }, [initialLevel, moduleContainingNextLesson]);
+    if (loaded && !hasInitializedRef.current) {
+      setExpandedModule(moduleContainingNextLesson);
+      hasInitializedRef.current = true;
+    }
+  }, [loaded, moduleContainingNextLesson]);
 
-  // Scroll to next lesson after render
+  // Update expanded module when level changes
   useEffect(() => {
-    if (loaded && nextLessonRef.current && !hasScrolledRef.current) {
-      // Small delay to ensure DOM is ready after module expansion
+    if (loaded) {
+      setExpandedModule(moduleContainingNextLesson);
+      hasScrolledRef.current = false;
+      hasInitializedRef.current = true;
+    }
+  }, [initialLevel]);
+
+  // Scroll to next lesson after module expands
+  useEffect(() => {
+    if (loaded && expandedModule && nextLessonRef.current && !hasScrolledRef.current) {
       const timer = setTimeout(() => {
         nextLessonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         hasScrolledRef.current = true;
-      }, 100);
+      }, 150);
       return () => clearTimeout(timer);
     }
   }, [loaded, expandedModule, nextLessonId]);
