@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { level1, Module, LessonCriteria, Level } from '@/data/level1-curriculum';
 import { level2 } from '@/data/level2-curriculum';
@@ -30,9 +30,10 @@ interface LessonCardProps {
   isCompleted: boolean;
   isGuest?: boolean;
   isNextLesson?: boolean;
+  nextLessonRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
-function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isNextLesson }: LessonCardProps) {
+function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isNextLesson, nextLessonRef }: LessonCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -44,6 +45,7 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isN
 
   return (
     <button
+      ref={isNextLesson ? nextLessonRef : undefined}
       onClick={handleClick}
       disabled={!isUnlocked}
       className={`w-full text-left p-3 rounded-xl transition-all border-2 ${
@@ -113,6 +115,7 @@ interface ModuleSectionProps {
   isLessonCompleted: (id: string) => boolean;
   isGuest?: boolean;
   nextLessonId?: string | null;
+  nextLessonRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
 function ModuleSection({
@@ -125,6 +128,7 @@ function ModuleSection({
   isLessonCompleted,
   isGuest,
   nextLessonId,
+  nextLessonRef,
 }: ModuleSectionProps) {
   const color = MODULE_COLORS[colorIndex % MODULE_COLORS.length];
   const completedCount = module.lessons.filter(l => isLessonCompleted(l.id)).length;
@@ -173,6 +177,7 @@ function ModuleSection({
               isCompleted={isLessonCompleted(lesson.id)}
               isGuest={isGuest}
               isNextLesson={lesson.id === nextLessonId}
+              nextLessonRef={nextLessonRef}
             />
           ))}
         </div>
@@ -187,15 +192,11 @@ interface CurriculumTreeProps {
 }
 
 export function CurriculumTree({ isGuest = false, initialLevel = 0 }: CurriculumTreeProps) {
-  const [expandedModule, setExpandedModule] = useState<string | null>('mod-1');
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
+  const nextLessonRef = useRef<HTMLButtonElement | null>(null);
+  const hasScrolledRef = useRef(false);
 
   const currentLevel = LEVELS[initialLevel];
-
-  // Reset expanded module when level changes
-  useEffect(() => {
-    setExpandedModule('mod-1');
-  }, [initialLevel]);
 
   const allLessonIds = useMemo(() => {
     return currentLevel.modules.flatMap(m => m.lessons.map(l => l.id));
@@ -210,6 +211,37 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
     }
     return null; // All lessons completed
   }, [allLessonIds, completedLessons]);
+
+  // Find which module contains the next lesson
+  const moduleContainingNextLesson = useMemo(() => {
+    if (!nextLessonId) return 'mod-1';
+    for (const module of currentLevel.modules) {
+      if (module.lessons.some(l => l.id === nextLessonId)) {
+        return module.id;
+      }
+    }
+    return 'mod-1';
+  }, [nextLessonId, currentLevel.modules]);
+
+  const [expandedModule, setExpandedModule] = useState<string | null>(moduleContainingNextLesson);
+
+  // Update expanded module when level changes or next lesson changes
+  useEffect(() => {
+    setExpandedModule(moduleContainingNextLesson);
+    hasScrolledRef.current = false; // Reset scroll flag when module changes
+  }, [initialLevel, moduleContainingNextLesson]);
+
+  // Scroll to next lesson after render
+  useEffect(() => {
+    if (loaded && nextLessonRef.current && !hasScrolledRef.current) {
+      // Small delay to ensure DOM is ready after module expansion
+      const timer = setTimeout(() => {
+        nextLessonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        hasScrolledRef.current = true;
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loaded, expandedModule, nextLessonId]);
 
   const handleToggle = (moduleId: string) => {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));
@@ -250,6 +282,7 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
             isLessonCompleted={isLessonCompleted}
             isGuest={isGuest}
             nextLessonId={nextLessonId}
+            nextLessonRef={nextLessonRef}
           />
         ))}
       </div>
