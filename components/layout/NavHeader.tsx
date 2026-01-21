@@ -15,17 +15,14 @@ const LEVELS = [
   { key: 'expert', label: 'Level 6', minElo: 1700, ratingRange: '1600-1800' },
 ];
 
-function getUnlockedLevels(elo: number) {
+function getMaxUnlockedIndex(elo: number) {
   // Find the highest level unlocked based on ELO
-  let maxUnlockedIndex = 0;
   for (let i = LEVELS.length - 1; i >= 0; i--) {
     if (elo >= LEVELS[i].minElo) {
-      maxUnlockedIndex = i;
-      break;
+      return i;
     }
   }
-  // Return all levels from 1 up to and including the unlocked level
-  return LEVELS.slice(0, maxUnlockedIndex + 1);
+  return 0;
 }
 
 export function NavHeader() {
@@ -92,20 +89,36 @@ export function NavHeader() {
                 </button>
                 {learnDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[180px] z-50">
-                    {getUnlockedLevels(profile?.elo_rating || 800).map((level) => (
-                      <button
-                        key={level.key}
-                        className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors"
-                        onClick={() => {
-                          setLearnDropdownOpen(false);
-                          router.push(`/learn?level=${level.key}`);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        <span className="text-gray-300 hover:text-white">{level.label}</span>
-                        <span className="text-gray-500 ml-2 text-xs">{level.ratingRange}</span>
-                      </button>
-                    ))}
+                    {LEVELS.map((level, index) => {
+                      const maxUnlocked = getMaxUnlockedIndex(profile?.elo_rating || 800);
+                      const isLocked = index > maxUnlocked;
+
+                      if (isLocked) {
+                        return (
+                          <div
+                            key={level.key}
+                            className="block w-full text-left px-4 py-2 text-sm cursor-not-allowed"
+                          >
+                            <span className="text-gray-500">{level.label}: Locked</span>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={level.key}
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors"
+                          onClick={() => {
+                            setLearnDropdownOpen(false);
+                            router.push(`/learn?level=${level.key}`);
+                            window.scrollTo(0, 0);
+                          }}
+                        >
+                          <span className="text-gray-300 hover:text-white">{level.label}</span>
+                          <span className="text-gray-500 ml-2 text-xs">{level.ratingRange}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
