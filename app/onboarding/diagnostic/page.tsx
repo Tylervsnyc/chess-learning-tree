@@ -11,15 +11,26 @@ const COLORS = {
   orange: '#FF9600',
 };
 
-// Adaptive Elo Configuration
-const STARTING_RATING = 1200;
-const MIN_PUZZLES = 3; // Minimum before we can stop (need at least a few data points)
-const MAX_PUZZLES = 12;
+// Adaptive Testing Configuration - Binary Search Style
+// Big jumps early to quickly bracket ability, smaller jumps to refine
+const STARTING_RATING = 600;  // Start very easy - first puzzle from 500 bucket
+const MIN_PUZZLES = 5; // Always do at least 5 puzzles
+const MAX_PUZZLES = 8; // Cap at 8 to keep it quick
 
 // Available rating buckets (must match diagnostic-puzzles.json keys)
 const RATING_BUCKETS = [500, 800, 1100, 1400, 1700, 2000];
 const MIN_RATING = 400;
 const MAX_RATING = 2200;
+
+// Step sizes decrease as we hone in on their level
+// Puzzle 1-2: Big jumps (±400) - quickly find the ballpark
+// Puzzle 3-4: Medium jumps (±250) - narrow it down
+// Puzzle 5+: Small jumps (±150) - fine tune
+function getStepSize(puzzleNumber: number): number {
+  if (puzzleNumber <= 2) return 400;
+  if (puzzleNumber <= 4) return 250;
+  return 150;
+}
 
 // Map any rating to nearest available bucket
 function getNearestBucket(rating: number): number {
@@ -36,49 +47,18 @@ function getNearestBucket(rating: number): number {
   return nearest;
 }
 
-// Calculate new rating after a puzzle result
+// Simple binary search style rating update
+// Correct = jump UP by step size, Wrong = jump DOWN by step size
 function calculateNewRating(
   currentRating: number,
-  puzzleRating: number,
   correct: boolean,
-  puzzleNumber: number,
-  currentStreak: number
+  puzzleNumber: number
 ): number {
-  // K-factor: stays high (100) for first 5, then aggressive climb if on a streak
-  // If they're crushing it (streak 3+), keep K high to let rating climb faster
-  const baseK = puzzleNumber <= 5 ? 100 : Math.max(50, 100 - ((puzzleNumber - 5) * 10));
-  const streakBonus = correct && currentStreak >= 2 ? 20 : 0;
-  const K = baseK + streakBonus;
-
-  // Expected score using Elo formula
-  const expected = 1 / (1 + Math.pow(10, (puzzleRating - currentRating) / 400));
-  const actual = correct ? 1 : 0;
-
-  const newRating = currentRating + K * (actual - expected);
+  const step = getStepSize(puzzleNumber);
+  const newRating = correct
+    ? currentRating + step
+    : currentRating - step;
   return Math.round(Math.max(MIN_RATING, Math.min(MAX_RATING, newRating)));
-}
-
-// Get target rating for next puzzle - stretches ahead if player is doing well
-function getTargetRating(
-  currentRating: number,
-  puzzleNumber: number,
-  streak: number,
-  accuracy: number
-): number {
-  // After puzzle 5, if they're doing well, start testing them HARD
-  if (puzzleNumber >= 5) {
-    // On a hot streak (3+) - jump way ahead
-    if (streak >= 3) {
-      const stretchAmount = 200 + (streak - 3) * 100; // 200, 300, 400...
-      return Math.min(MAX_RATING, currentRating + stretchAmount);
-    }
-    // High accuracy (80%+) - jump ahead moderately
-    if (accuracy >= 0.8) {
-      return Math.min(MAX_RATING, currentRating + 150);
-    }
-  }
-  // Default: test at current level
-  return currentRating;
 }
 
 // Streak animation styles (same as lesson page)
@@ -185,15 +165,13 @@ export default function DiagnosticPage() {
   const handleResult = useCallback((correct: boolean) => {
     if (!currentPuzzle) return;
 
-    const puzzleRating = currentPuzzle.rating;
     const newCompleted = puzzlesCompleted + 1;
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
     const newTotalCorrect = correct ? totalCorrect + 1 : totalCorrect;
     const newResults = [...results, correct];
-    const newStreak = correct ? streak + 1 : 0;
 
-    // Calculate new rating (pass current streak for K-factor boost)
-    const newRating = calculateNewRating(estimatedRating, puzzleRating, correct, newCompleted, streak);
+    // Simple binary search: correct = go harder, wrong = go easier
+    const newRating = calculateNewRating(estimatedRating, correct, newCompleted);
     const newHistory = [...ratingHistory, newRating];
 
     // Update state
@@ -212,29 +190,22 @@ export default function DiagnosticPage() {
       setStreak(0);
     }
 
-    // Determine if we should stop
+    // Stop conditions:
+    // 1. Always do at least MIN_PUZZLES (5)
+    // 2. Stop at MAX_PUZZLES (8)
+    // 3. After min, stop if we've found both a ceiling AND floor (got one wrong after right, or right after wrong)
     const reachedMax = newCompleted >= MAX_PUZZLES;
     const reachedMin = newCompleted >= MIN_PUZZLES;
+    const hitRatingBounds = newRating >= MAX_RATING - 50 || newRating <= MIN_RATING + 50;
 
-    // Check if we've found their level:
-    // - They missed one after getting some right (found ceiling)
-    // - They got one right after missing some (found floor)
-    // - They've hit our rating bounds (can't test higher/lower)
-    const hadCorrect = newResults.slice(0, -1).some(r => r);
-    const hadWrong = newResults.slice(0, -1).some(r => !r);
-    const foundCeiling = !correct && hadCorrect; // Missed after getting some right
-    const foundFloor = correct && hadWrong; // Got one right after missing some
-    const hitRatingCeiling = newRating >= MAX_RATING - 50;
-    const hitRatingFloor = newRating <= MIN_RATING + 50;
+    // Check if we've bracketed their level (found both ceiling and floor)
+    const hadCorrect = newResults.some(r => r);
+    const hadWrong = newResults.some(r => !r);
+    const foundBracket = hadCorrect && hadWrong;
 
-    const shouldStop = reachedMax ||
-      (reachedMin && foundCeiling) ||
-      (reachedMin && foundFloor) ||
-      (reachedMin && hitRatingCeiling) ||
-      (reachedMin && hitRatingFloor);
+    const shouldStop = reachedMax || (reachedMin && foundBracket) || (reachedMin && hitRatingBounds);
 
     if (shouldStop) {
-      // Use current rating as final (it already reflects their performance)
       const finalElo = newRating;
 
       // Map ELO to level
@@ -256,13 +227,11 @@ export default function DiagnosticPage() {
 
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
-      // Load next puzzle - stretch ahead if they're doing well
-      const accuracy = newTotalCorrect / newCompleted;
-      const targetRating = getTargetRating(newRating, newCompleted, newStreak, accuracy);
+      // Load next puzzle at the new rating level
       setCurrentPuzzle(null);
-      loadPuzzleAtRating(targetRating, newSeen);
+      loadPuzzleAtRating(newRating, newSeen);
     }
-  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, streak, recordResult, router, loadPuzzleAtRating]);
+  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
 
   const handleBack = () => {
     router.push('/onboarding');
@@ -362,6 +331,7 @@ export default function DiagnosticPage() {
               puzzle={currentPuzzle}
               puzzleIndex={puzzlesCompleted}
               onResult={handleResult}
+              showSkip={true}
             />
           )}
         </div>

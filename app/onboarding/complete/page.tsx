@@ -44,7 +44,7 @@ function EpicConfetti() {
     // Play celebration sound
     try {
       const audio = new Audio('/sounds/celebration.mp3');
-      audio.volume = 0.8;
+      audio.volume = 0.4;
       audio.play().catch(() => {});
     } catch {}
   }, []);

@@ -80,12 +80,14 @@ interface OnboardingPuzzleBoardProps {
   puzzle: OnboardingPuzzle;
   puzzleIndex: number;
   onResult: (correct: boolean) => void;
+  showSkip?: boolean; // Show skip button for diagnostic
 }
 
 export function OnboardingPuzzleBoard({
   puzzle,
   puzzleIndex,
   onResult,
+  showSkip = false,
 }: OnboardingPuzzleBoardProps) {
   const [currentFen, setCurrentFen] = useState<string>(puzzle.puzzleFen);
   const [moveIndex, setMoveIndex] = useState(0);
@@ -279,6 +281,14 @@ export function OnboardingPuzzleBoard({
     onResult(moveStatus === 'correct');
   }, [moveStatus, onResult, hasReported]);
 
+  // Handle skip (treat as wrong, move on quickly)
+  const handleSkip = useCallback(() => {
+    if (moveStatus !== 'playing') return;
+    setMoveStatus('wrong');
+    setFeedbackMessage("No worries, let's try an easier one!");
+    playErrorSound();
+  }, [moveStatus]);
+
   return (
     <div className="flex flex-col">
       {/* Turn indicator */}
@@ -325,10 +335,18 @@ export function OnboardingPuzzleBoard({
         />
       )}
 
-      {/* Status text when playing */}
+      {/* Status text and skip button when playing */}
       {moveStatus === 'playing' && (
-        <div className="text-center text-gray-400 mt-3">
-          Find the best move
+        <div className="text-center mt-3">
+          <div className="text-gray-400">Find the best move</div>
+          {showSkip && (
+            <button
+              onClick={handleSkip}
+              className="mt-3 text-gray-500 hover:text-gray-300 text-sm underline transition-colors"
+            >
+              I don&apos;t know, skip this one
+            </button>
+          )}
         </div>
       )}
     </div>
