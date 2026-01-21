@@ -52,7 +52,7 @@ export default function OnboardingChoicePage() {
               </div>
               <div className="flex-1 text-left">
                 <div className="font-bold text-black text-lg">Find my level</div>
-                <div className="text-black/70 text-sm">5 quick puzzles to place you</div>
+                <div className="text-black/70 text-sm">A few puzzles to find your ELO</div>
               </div>
             </div>
           </Link>

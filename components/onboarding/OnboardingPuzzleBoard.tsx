@@ -151,7 +151,10 @@ export function OnboardingPuzzleBoard({
 
       const expectedMove = puzzle.solutionMoves[moveIndex];
 
-      if (move.san === expectedMove) {
+      // Normalize both moves by stripping check/checkmate symbols for comparison
+      // This handles cases where puzzle says Qe6+ but actual position is Qe6# (mate)
+      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+      if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move
         setCurrentFen(gameCopy.fen());
         setSelectedSquare(null);
@@ -204,6 +207,27 @@ export function OnboardingPuzzleBoard({
 
         return true;
       } else {
+        // Check if this is an alternate checkmate - if so, accept it!
+        // Many puzzles have multiple mating moves, we should accept any checkmate
+        const isMatingPuzzle = puzzle.themes.some(t =>
+          t.toLowerCase().includes('mate')
+        );
+
+        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+          // They found an alternate checkmate - that's correct!
+          setCurrentFen(gameCopy.fen());
+          setSelectedSquare(null);
+          if (move.captured) {
+            playCaptureSound();
+          } else {
+            playMoveSound();
+          }
+          setMoveStatus('correct');
+          setFeedbackMessage(getDiagnosticQuip(true, puzzleIndex));
+          playCorrectSound(puzzleIndex);
+          return true;
+        }
+
         // Wrong move - single attempt, mark as wrong
         setMoveStatus('wrong');
         setFeedbackMessage(getDiagnosticQuip(false, puzzleIndex));

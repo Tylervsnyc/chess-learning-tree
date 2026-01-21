@@ -41,10 +41,14 @@ function calculateNewRating(
   currentRating: number,
   puzzleRating: number,
   correct: boolean,
-  puzzleNumber: number
+  puzzleNumber: number,
+  currentStreak: number
 ): number {
-  // K-factor: aggressive early (100), decreases over time
-  const K = Math.max(40, 100 - (puzzleNumber * 6));
+  // K-factor: stays high (100) for first 5, then aggressive climb if on a streak
+  // If they're crushing it (streak 3+), keep K high to let rating climb faster
+  const baseK = puzzleNumber <= 5 ? 100 : Math.max(50, 100 - ((puzzleNumber - 5) * 10));
+  const streakBonus = correct && currentStreak >= 2 ? 20 : 0;
+  const K = baseK + streakBonus;
 
   // Expected score using Elo formula
   const expected = 1 / (1 + Math.pow(10, (puzzleRating - currentRating) / 400));
@@ -52,6 +56,29 @@ function calculateNewRating(
 
   const newRating = currentRating + K * (actual - expected);
   return Math.round(Math.max(MIN_RATING, Math.min(MAX_RATING, newRating)));
+}
+
+// Get target rating for next puzzle - stretches ahead if player is doing well
+function getTargetRating(
+  currentRating: number,
+  puzzleNumber: number,
+  streak: number,
+  accuracy: number
+): number {
+  // After puzzle 5, if they're doing well, start testing them HARD
+  if (puzzleNumber >= 5) {
+    // On a hot streak (3+) - jump way ahead
+    if (streak >= 3) {
+      const stretchAmount = 200 + (streak - 3) * 100; // 200, 300, 400...
+      return Math.min(MAX_RATING, currentRating + stretchAmount);
+    }
+    // High accuracy (80%+) - jump ahead moderately
+    if (accuracy >= 0.8) {
+      return Math.min(MAX_RATING, currentRating + 150);
+    }
+  }
+  // Default: test at current level
+  return currentRating;
 }
 
 // Streak animation styles (same as lesson page)
@@ -163,9 +190,10 @@ export default function DiagnosticPage() {
     const newSeen = [...seenPuzzleIds, currentPuzzle.puzzleId];
     const newTotalCorrect = correct ? totalCorrect + 1 : totalCorrect;
     const newResults = [...results, correct];
+    const newStreak = correct ? streak + 1 : 0;
 
-    // Calculate new rating
-    const newRating = calculateNewRating(estimatedRating, puzzleRating, correct, newCompleted);
+    // Calculate new rating (pass current streak for K-factor boost)
+    const newRating = calculateNewRating(estimatedRating, puzzleRating, correct, newCompleted, streak);
     const newHistory = [...ratingHistory, newRating];
 
     // Update state
@@ -228,11 +256,13 @@ export default function DiagnosticPage() {
 
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
-      // Load next puzzle at new estimated rating
+      // Load next puzzle - stretch ahead if they're doing well
+      const accuracy = newTotalCorrect / newCompleted;
+      const targetRating = getTargetRating(newRating, newCompleted, newStreak, accuracy);
       setCurrentPuzzle(null);
-      loadPuzzleAtRating(newRating, newSeen);
+      loadPuzzleAtRating(targetRating, newSeen);
     }
-  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
+  }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, streak, recordResult, router, loadPuzzleAtRating]);
 
   const handleBack = () => {
     router.push('/onboarding');

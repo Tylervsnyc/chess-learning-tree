@@ -613,7 +613,10 @@ export default function LessonPage() {
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
 
-      if (move.san === expectedMove) {
+      // Normalize both moves by stripping check/checkmate symbols for comparison
+      // This handles cases where puzzle says Qe6+ but actual position is Qe6# (mate)
+      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+      if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move
         setCurrentFen(gameCopy.fen());
         setSelectedSquare(null);
@@ -678,6 +681,30 @@ export default function LessonPage() {
 
         return true;
       } else {
+        // Check if this is an alternate checkmate - if so, accept it!
+        const isMatingPuzzle = currentPuzzle.themes.some((t: string) =>
+          t.toLowerCase().includes('mate')
+        );
+
+        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+          // They found an alternate checkmate - that's correct!
+          setCurrentFen(gameCopy.fen());
+          setSelectedSquare(null);
+          if (move.captured) {
+            playCaptureSound();
+          } else {
+            playMoveSound();
+          }
+          const newStreak = streak + 1;
+          const puzzleNum = completedPuzzleCount + 1;
+          setMoveStatus('correct');
+          setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
+          playCorrectSound(completedPuzzleCount);
+          setStreak(newStreak);
+          setCompletedPuzzleCount(c => c + 1);
+          return true;
+        }
+
         // Wrong move
         const puzzleNum = completedPuzzleCount + 1;
         setMoveStatus('wrong');
