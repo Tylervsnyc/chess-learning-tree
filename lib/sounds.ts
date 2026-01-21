@@ -1,7 +1,22 @@
 // Sound utilities for the chess learning app
 
-// Chromatic scale frequencies (C, C#, D, D#, E, F)
-export const CHROMATIC_SCALE = [262, 277, 294, 311, 330, 349];
+// Chromatic scale frequencies - full octave for building tension
+// C4 to C5 (262Hz to 523Hz) - 13 notes
+export const CHROMATIC_SCALE = [
+  262,  // C4
+  277,  // C#4
+  294,  // D4
+  311,  // D#4
+  330,  // E4
+  349,  // F4
+  370,  // F#4
+  392,  // G4
+  415,  // G#4
+  440,  // A4
+  466,  // A#4
+  494,  // B4
+  523,  // C5 (octave up - climax!)
+];
 
 // Shared AudioContext for better browser compatibility
 let sharedAudioContext: AudioContext | null = null;
