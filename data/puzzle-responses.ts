@@ -1,5 +1,24 @@
 // Fun, edgy responses for puzzle feedback
 // Trash talk energy, action movie vibes, personality
+//
+// ===========================================
+// QUIP COUNT GUIDELINES
+// ===========================================
+// Scale quips based on how many lessons use that theme:
+//
+// TIER 1 (20+ lessons): 15-20 quips
+//   - mateIn1, mateIn2, mateIn3, fork, knight fork, pin
+//
+// TIER 2 (10-19 lessons): 10-15 quips
+//   - skewer, discovered, back rank, quiet move, deflection, endgame
+//
+// TIER 3 (5-9 lessons): 6-10 quips
+//   - sacrifice, trapped piece, hanging, promotion, double check
+//
+// TIER 4 (1-4 lessons): 4-6 quips
+//   - smothered, arabian, anastasia, hook mate, opera mate
+//
+// When adding new lessons, check if themed quips need expanding!
 
 // ===========================================
 // GENERIC CORRECT RESPONSES (fallback)
@@ -43,6 +62,14 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Greedy. I respect it.",
     "Why take one when you can take two?",
     "The audacity.",
+    "Two for one special.",
+    "Decisions, decisions. Both bad.",
+    "Split their defense in half.",
+    "They're seeing double. And losing double.",
+    "One move. Two problems. Zero solutions.",
+    "Forked and can't get up.",
+    "Choose your loss.",
+    "The ultimate multitasker.",
   ],
   "knight fork": [
     "That knight just ate. No crumbs.",
@@ -55,6 +82,14 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Neigh means neigh. Wait—",
     "The knight said 'and I took that personally.'",
     "Bounced in, caused problems, left.",
+    "The tricky pony strikes again.",
+    "They never see the horse coming.",
+    "Hop, skip, and a take.",
+    "Knight vision: activated.",
+    "The knight don't care about your plans.",
+    "Giddyup and get wrecked.",
+    "Jumped in. Jumped out. Left chaos.",
+    "The knight moves in mysterious ways.",
   ],
   "pawn fork": [
     "Little guy woke up violent.",
@@ -85,6 +120,14 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Don't. Even. Think about it.",
     "Stuck between a rock and checkmate.",
     "That piece just became furniture.",
+    "Paralyzed by fear. And geometry.",
+    "Move and lose more. Stay and suffer.",
+    "You're not going anywhere.",
+    "The invisible leash.",
+    "Frozen in place. Frozen in time.",
+    "That's called being stuck.",
+    "The pin is mightier than the sword.",
+    "Glued to the board.",
   ],
   "absolute pin": [
     "Absolutely pinned. Absolutely cooked.",
@@ -105,6 +148,11 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Step aside. I wasn't asking.",
     "Thanks for moving. I'll take what's behind you.",
     "Coward runs, piece falls.",
+    "The big piece flees. The small piece pays.",
+    "Escape is just delayed loss.",
+    "Through and through.",
+    "One line. Two victims.",
+    "The skewer special: lose now or lose later.",
   ],
 
   // DISCOVERED ATTACKS
@@ -119,6 +167,11 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Unmasked and unhinged.",
     "Two threats enter. One survives.",
     "The real danger was behind me.",
+    "Revealed! And it's bad news for them.",
+    "The curtain drops. So does their piece.",
+    "What's behind door number one? Pain.",
+    "Discovery: not just for science.",
+    "You moved one. Revealed another. Chaos.",
   ],
   "double check": [
     "DOUBLE CHECK. Run, coward.",
@@ -140,6 +193,11 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Flawless victory.",
     "The end. Roll credits.",
     "You just ended a whole dynasty.",
+    "Pack it up. It's over.",
+    "The final blow.",
+    "No coming back from that.",
+    "Checkmate. Chef's kiss.",
+    "And that's the game.",
   ],
   "mateIn1": [
     "One move. One W.",
@@ -147,6 +205,18 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Didn't even need a second move.",
     "Blink and it's over.",
     "Express delivery: checkmate.",
+    "One and done.",
+    "Single move supremacy.",
+    "That was fast.",
+    "Instant checkmate. No assembly required.",
+    "They never stood a chance.",
+    "Quick math. Quicker checkmate.",
+    "Speed chess. Emphasis on speed.",
+    "Efficiency at its finest.",
+    "In and out. Twenty seconds.",
+    "No warm-up needed.",
+    "First try. Only try.",
+    "Lightning strike.",
   ],
   "mateIn2": [
     "Calculated. Twice.",
@@ -154,6 +224,17 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "They had one move to survive. They wasted it.",
     "Setup, knockout.",
     "The one-two punch.",
+    "Saw it coming. Both moves.",
+    "Move one: trap. Move two: finish.",
+    "A quick two-step.",
+    "Short and sweet.",
+    "Two moves is all it takes.",
+    "Planned. Executed. Done.",
+    "The sequel was even better.",
+    "One move to set up. One move to end.",
+    "Double tap.",
+    "They blinked. You struck twice.",
+    "Checkmate in two. As advertised.",
   ],
   "mateIn3": [
     "Three moves ahead. Three moves to victory.",
@@ -161,6 +242,16 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Planned their demise in advance.",
     "Long-term chaos.",
     "Patience. Then checkmate.",
+    "Three-move masterpiece.",
+    "You saw all of that? Impressive.",
+    "The long con. Not that long though.",
+    "Setup, development, checkmate.",
+    "Calculated three deep.",
+    "The trilogy is complete.",
+    "Beginning, middle, end. All checkmate.",
+    "Triple threat executed.",
+    "Three steps to victory.",
+    "Deep calculation pays off.",
   ],
   "back rank": [
     "Back rank? Back to the lobby.",
@@ -169,6 +260,14 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "The corridor of doom.",
     "Suffocated at home.",
     "Their own wall became their prison.",
+    "Classic back rank. Never gets old.",
+    "Should've made a window.",
+    "Home is where the checkmate is.",
+    "Pawns: great for defense. Until they're not.",
+    "Locked in their own house.",
+    "The most embarrassing way to lose.",
+    "No luft? No luck.",
+    "First row problems.",
   ],
   "smothered": [
     "Smothered by friends. Tragic.",
@@ -215,6 +314,15 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "Defender had one job. Failed.",
     "Pulled away. Punished.",
     "Misdirection complete.",
+    "Hey! Look at this! Too late.",
+    "The bait worked. It always works.",
+    "Deflected from duty.",
+    "Out of position. Out of luck.",
+    "The decoy drew them out.",
+    "Focus here... oops, it was there.",
+    "The oldest trick in the book. Still works.",
+    "Attention redirected. Damage delivered.",
+    "They fell for it.",
   ],
   decoy: [
     "Walked right into it.",
@@ -298,6 +406,15 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "The conversion begins.",
     "From here, it's just cleanup.",
     "Technical knockout incoming.",
+    "Endgame? More like end game.",
+    "Textbook technique.",
+    "This is what practice looks like.",
+    "Grinding it out. Beautifully.",
+    "The final chapter. Written by you.",
+    "No tricks needed. Just skill.",
+    "Precision wins endgames.",
+    "Closing time.",
+    "The home stretch. Looking good.",
   ],
   promotion: [
     "Pawn glow-up.",
@@ -377,6 +494,16 @@ export const themedCorrectResponses: Record<string, string[]> = {
     "The calm before the storm.",
     "Subtle chaos is still chaos.",
     "They won't see this one until it's too late.",
+    "Silence is golden. And lethal.",
+    "The loudest moves make no noise.",
+    "Not flashy. Just effective.",
+    "Whisper it: checkmate incoming.",
+    "The slow build. The fast finish.",
+    "Patience is a virtue. And a weapon.",
+    "No check. No capture. Just winning.",
+    "Sometimes the best move is the quiet one.",
+    "Stealth mode: engaged.",
+    "Soft footsteps. Heavy consequences.",
   ],
 };
 
@@ -505,38 +632,90 @@ export const themedWrongResponses: Record<string, string[]> = {
     "Something attacks two things...",
     "Fork's hiding. Find it.",
     "Two victims await.",
+    "What piece can hit two at once?",
+    "Think: double attack.",
+    "Find the fork. It's there.",
+  ],
+  "knight fork": [
+    "Where can the horse jump?",
+    "L-shape. Two targets.",
+    "The knight sees something...",
   ],
   pin: [
     "Something's stuck...",
     "What can't move?",
     "Find the frozen piece.",
     "The pin is there. See it.",
+    "Look for pieces in a line.",
+    "What's protecting the king?",
+    "Line them up.",
   ],
   skewer: [
     "Force them to move. Take what's behind.",
     "X-ray through...",
     "Big piece hides a little one.",
+    "Attack the big piece. Take the small one.",
+    "Think: reverse pin.",
   ],
   mate: [
     "The checkmate is there. Find it.",
     "Checkmate exists. See it.",
     "End them. Where's the finish?",
     "The king can fall here.",
+    "Trap the king. How?",
   ],
   mateIn1: [
     "One move wins. Which one?",
     "Checkmate in one. It's there.",
     "Finish them. One shot.",
+    "Where can you trap the king?",
+    "One move. Make it count.",
+  ],
+  mateIn2: [
+    "Two moves to win. Start with what?",
+    "Force them, then finish.",
+    "Setup first. Checkmate second.",
+    "What forces their response?",
+  ],
+  mateIn3: [
+    "Three moves deep. Calculate.",
+    "Visualize all three.",
+    "What's the first forcing move?",
+    "Patient calculation wins.",
   ],
   sacrifice: [
     "Sometimes you gotta give to get.",
     "What if you... sacrificed something?",
     "Material isn't everything.",
+    "Give up something. Get more.",
   ],
   discovered: [
     "What's hiding behind?",
     "Move one, reveal another.",
     "The real threat is behind.",
+    "Uncover the attack.",
+    "What can you unmask?",
+  ],
+  "quiet move": [
+    "No check. No capture. Just better.",
+    "Sometimes quiet is best.",
+    "Improve your position first.",
+    "Not every move needs to attack.",
+  ],
+  "back rank": [
+    "Check the back rank...",
+    "Is there an escape square?",
+    "Can you trap them at home?",
+  ],
+  deflection: [
+    "Distract the defender.",
+    "Pull something away.",
+    "What's guarding what?",
+  ],
+  endgame: [
+    "Think technique.",
+    "Slow and steady.",
+    "What's the winning plan?",
   ],
 };
 
