@@ -441,18 +441,41 @@ interface LessonPuzzleSet {
 }
 
 async function main() {
+  // Check for --only-level argument
+  const onlyLevelArg = process.argv.find(arg => arg.startsWith('--only-level='));
+  const onlyLevel = onlyLevelArg ? parseInt(onlyLevelArg.split('=')[1]) : null;
+
+  // Filter configs if only generating specific level
+  const configsToProcess = onlyLevel
+    ? LEVEL_CONFIGS.filter((_, i) => i + 1 === onlyLevel)
+    : LEVEL_CONFIGS;
+
+  const levelNames = configsToProcess.map(c => c.level.name.match(/Level (\d+)/)?.[1]).join(', ');
+
   console.log('='.repeat(60));
-  console.log('GENERATING PUZZLE SETS FOR LEVELS 1-5');
+  console.log(`GENERATING PUZZLE SETS FOR LEVEL${configsToProcess.length > 1 ? 'S' : ''} ${levelNames}`);
   console.log('='.repeat(60));
   console.log('\nUsing 6-puzzle lesson arc with difficulty analysis:');
   console.log('  Slot 1-2: Warmup  (obvious patterns, confidence builders)');
   console.log('  Slot 3-4: Core    (at-level challenges)');
   console.log('  Slot 5-6: Stretch (harder puzzles, boss level finish)\n');
 
-  const lessonPuzzleSets: LessonPuzzleSet[] = [];
+  // Load existing data if only generating specific level
+  let lessonPuzzleSets: LessonPuzzleSet[] = [];
+  if (onlyLevel) {
+    try {
+      const existingPath = join(process.cwd(), 'data', 'lesson-puzzle-sets.json');
+      const existingData = JSON.parse(readFileSync(existingPath, 'utf-8'));
+      // Keep entries that don't start with the level we're regenerating
+      lessonPuzzleSets = existingData.filter((s: LessonPuzzleSet) => !s.lessonId.startsWith(`${onlyLevel}.`));
+      console.log(`Loaded ${existingData.length} existing entries, keeping ${lessonPuzzleSets.length} (excluding level ${onlyLevel})\n`);
+    } catch {
+      console.log('No existing data found, starting fresh\n');
+    }
+  }
 
   // Process each level
-  for (const config of LEVEL_CONFIGS) {
+  for (const config of configsToProcess) {
     const { level, puzzleBracket } = config;
     console.log('\n' + '='.repeat(60));
     console.log(`LEVEL: ${level.name} (${level.ratingRange})`);
