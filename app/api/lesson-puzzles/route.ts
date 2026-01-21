@@ -1,6 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Chess } from 'chess.js';
-import { getPuzzlesForLesson, getLessonInfo, EmbeddedPuzzle } from '@/data/lesson-puzzle-sets';
+import { getPuzzlesForLesson, getLessonInfo, EmbeddedPuzzle, PuzzleSlot } from '@/data/lesson-puzzle-sets';
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+
+// Load puzzle by ID from CSV files
+function loadPuzzleById(puzzleId: string): EmbeddedPuzzle | null {
+  try {
+    const brackets = readdirSync(PUZZLES_DIR);
+    for (const bracket of brackets) {
+      const bracketDir = join(PUZZLES_DIR, bracket);
+      const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
+      for (const file of files) {
+        const content = readFileSync(join(bracketDir, file), 'utf-8');
+        const lines = content.split('\n');
+        for (const line of lines) {
+          if (line.startsWith(puzzleId + ',')) {
+            const parts = line.split(',');
+            if (parts.length >= 9) {
+              return {
+                id: parts[0],
+                fen: parts[1],
+                moves: parts[2],
+                rating: parseInt(parts[3], 10),
+                themes: parts[7].split(' '),
+                url: parts[8],
+              };
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // File not found or parse error
+  }
+  return null;
+}
 
 interface LessonPuzzle {
   puzzleId: string;
@@ -108,10 +145,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
-  // Get puzzles directly from embedded data
-  const embeddedPuzzles = getPuzzlesForLesson(lessonId);
+  // Get puzzle slots from embedded data (slim format with puzzleId, slot, trueDifficulty)
+  const puzzleSlots = getPuzzlesForLesson(lessonId);
 
-  if (embeddedPuzzles.length === 0) {
+  if (puzzleSlots.length === 0) {
     return NextResponse.json({
       error: 'No puzzles available for this lesson',
       lessonId,
@@ -120,6 +157,23 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Load full puzzle data for each slot
+    const embeddedPuzzles: EmbeddedPuzzle[] = [];
+    for (const slot of puzzleSlots) {
+      const puzzle = loadPuzzleById(slot.puzzleId);
+      if (puzzle) {
+        embeddedPuzzles.push(puzzle);
+      }
+    }
+
+    if (embeddedPuzzles.length === 0) {
+      return NextResponse.json({
+        error: 'Could not load puzzle data',
+        lessonId,
+        lessonName: lessonInfo.name,
+      }, { status: 500 });
+    }
+
     // Process into lesson format
     const puzzles = embeddedPuzzles.map(processPuzzle);
 

@@ -35,6 +35,7 @@ interface LessonCardProps {
 
 function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isNextLesson, nextLessonRef }: LessonCardProps) {
   const router = useRouter();
+  const isLocked = !isUnlocked;
 
   const handleClick = () => {
     if (isUnlocked) {
@@ -44,64 +45,71 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isN
   };
 
   return (
-    <button
-      ref={isNextLesson ? nextLessonRef : undefined}
-      onClick={handleClick}
-      disabled={!isUnlocked}
-      className={`w-full text-left p-3 rounded-xl transition-all border-2 ${
-        isNextLesson
-          ? 'animate-pulse-subtle'
-          : ''
-      } ${
-        isUnlocked
-          ? 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
-          : 'bg-[#0D1B21] cursor-not-allowed opacity-50'
-      }`}
-      style={{
-        borderColor: isNextLesson ? moduleColor : 'transparent',
-      }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
-          style={{
-            backgroundColor: isCompleted ? '#58CC02' : isUnlocked ? moduleColor : '#1A2C35',
-            color: '#fff',
-          }}
-        >
-          {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className={`font-semibold truncate ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
-            {lesson.name}
-          </div>
-          <div className={`text-xs truncate ${isUnlocked ? 'text-gray-400' : 'text-gray-600'}`}>
-            {lesson.description}
-          </div>
-        </div>
-        {isNextLesson ? (
+    <div className="relative">
+      <button
+        ref={isNextLesson ? nextLessonRef : undefined}
+        onClick={handleClick}
+        disabled={isLocked}
+        className={`w-full text-left p-3 rounded-xl transition-all border-2 ${
+          isNextLesson ? 'animate-pulse-subtle' : ''
+        } ${
+          isLocked
+            ? 'bg-[#1A2C35] cursor-not-allowed blur-[2px]'
+            : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+        }`}
+        style={{
+          borderColor: isNextLesson ? moduleColor : 'transparent',
+        }}
+      >
+        <div className="flex items-center gap-3">
           <div
-            className="px-2 py-1 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: moduleColor, color: '#000' }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
+            style={{
+              backgroundColor: isCompleted ? '#58CC02' : moduleColor,
+              color: '#fff',
+            }}
           >
-            START
+            {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
           </div>
-        ) : (
-          <div className={isUnlocked ? 'text-gray-500' : 'text-gray-700'}>
-            {isUnlocked ? '→' : '🔒'}
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold truncate text-white">
+              {lesson.name}
+            </div>
+            <div className="text-xs truncate text-gray-400">
+              {lesson.description}
+            </div>
           </div>
-        )}
-      </div>
-      <style jsx>{`
-        @keyframes pulse-subtle {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.85; }
-        }
-        .animate-pulse-subtle {
-          animation: pulse-subtle 2s ease-in-out infinite;
-        }
-      `}</style>
-    </button>
+          {isNextLesson && (
+            <div
+              className="px-2 py-1 rounded-lg text-xs font-bold"
+              style={{ backgroundColor: moduleColor, color: '#000' }}
+            >
+              START
+            </div>
+          )}
+          {!isLocked && !isNextLesson && (
+            <div className="text-gray-500">→</div>
+          )}
+        </div>
+        <style jsx>{`
+          @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+          }
+          .animate-pulse-subtle {
+            animation: pulse-subtle 2s ease-in-out infinite;
+          }
+        `}</style>
+      </button>
+      {isLocked && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl">
+          <div className="bg-black/60 px-3 py-1.5 rounded-lg flex items-center gap-2">
+            <span className="text-base">🔒</span>
+            <span className="text-white text-xs font-medium">Complete previous lesson</span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

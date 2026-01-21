@@ -5131,3 +5131,20 @@ export function getPuzzlesForLesson(lessonId: string): PuzzleSlot[] {
 export function getPuzzleIdsForLesson(lessonId: string): string[] {
   return getPuzzlesForLesson(lessonId).map(p => p.puzzleId);
 }
+
+// Type for embedded puzzle data (used by lesson-puzzles API)
+export interface EmbeddedPuzzle {
+  id: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  themes: string[];
+  url: string;
+}
+
+// Get lesson info by ID
+export function getLessonInfo(lessonId: string): { name: string; targetElo: number } | null {
+  const set = lessonPuzzleSets.find(s => s.lessonId === lessonId);
+  if (!set) return null;
+  return { name: set.lessonName, targetElo: set.targetElo };
+}
