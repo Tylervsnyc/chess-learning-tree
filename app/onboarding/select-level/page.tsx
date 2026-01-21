@@ -71,7 +71,7 @@ export default function SelectLevelPage() {
           {selected && selected !== 'beginner' && (
             <div className="mb-6 p-3 rounded-lg bg-[#1A2C35] border border-white/10">
               <p className="text-gray-400 text-sm text-center">
-                We&apos;ll have you solve 5 puzzles to confirm your level
+                Take a short diagnostic to find your level
               </p>
             </div>
           )}

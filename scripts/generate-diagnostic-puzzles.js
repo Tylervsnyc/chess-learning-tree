@@ -12,6 +12,7 @@ const BUCKETS = [
   { key: '1100', dir: '0800-1200', targetRating: 1100, range: 150 },
   { key: '1400', dir: '1200-1600', targetRating: 1400, range: 200 },
   { key: '1700', dir: '1600-2000', targetRating: 1750, range: 200 },
+  { key: '2000', dir: '2000-plus', targetRating: 2100, range: 250 },
 ];
 
 // Themes to pull from (variety)

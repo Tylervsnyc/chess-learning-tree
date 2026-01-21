@@ -28,7 +28,7 @@ const DIAGNOSTIC_CORRECT_QUIPS = [
   "OK Magnus, calm down.",
   "That was rude. I love it.",
   "Their therapist will hear about this.",
-  "Absolutely violated.",
+  "Absolutely clinical.",
   "Chess Twitter is gonna love this one.",
   "You made that look easy. Was it?",
   "Rated E for Everyone just got wrecked.",

@@ -17,9 +17,9 @@ const MIN_PUZZLES = 3; // Minimum before we can stop (need at least a few data p
 const MAX_PUZZLES = 12;
 
 // Available rating buckets (must match diagnostic-puzzles.json keys)
-const RATING_BUCKETS = [500, 800, 1100, 1400, 1700];
+const RATING_BUCKETS = [500, 800, 1100, 1400, 1700, 2000];
 const MIN_RATING = 400;
-const MAX_RATING = 2000;
+const MAX_RATING = 2200;
 
 // Map any rating to nearest available bucket
 function getNearestBucket(rating: number): number {
@@ -264,9 +264,9 @@ export default function DiagnosticPage() {
     );
   }
 
-  // Calculate progress (show progress toward MIN_PUZZLES, then extend if needed)
-  const displayMax = Math.max(MIN_PUZZLES, puzzlesCompleted + 1);
-  const progressPercent = (puzzlesCompleted / displayMax) * 100;
+  // Progress bar fills gradually (no fixed endpoint since diagnostic is adaptive)
+  // Use a smooth fill based on puzzles completed, capping visual at ~80% until done
+  const progressPercent = Math.min(80, puzzlesCompleted * 10);
 
   return (
     <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
@@ -296,7 +296,7 @@ export default function DiagnosticPage() {
           </div>
 
           <div className="text-gray-400 font-medium">
-            {puzzlesCompleted + 1}/{displayMax}
+            Puzzle {puzzlesCompleted + 1}
           </div>
         </div>
       </div>

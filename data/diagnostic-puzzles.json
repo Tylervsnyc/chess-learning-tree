@@ -1,182 +1,227 @@
 {
   "500": [
     {
-      "puzzleId": "00mvr",
-      "fen": "7r/ppp1Nk1p/2n5/8/8/2P2pP1/P6P/R1Br1BK1 b - - 0 20",
-      "puzzleFen": "7r/ppp1k2p/2n5/8/8/2P2pP1/P6P/R1Br1BK1 w - - 0 21",
-      "moves": "f7e7 c1g5 e7e6 a1d1",
-      "rating": 726,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "endgame",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/R3FdESiy/black#40",
-      "setupMove": "Kxe7",
-      "lastMoveFrom": "f7",
-      "lastMoveTo": "e7",
-      "solution": "1.Bg5+ Ke6 2.Rxd1",
-      "solutionMoves": [
-        "Bg5+",
-        "Ke6",
-        "Rxd1"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0JnUQ",
-      "fen": "r1bk3r/ppp2pp1/4pR1p/6B1/4P3/8/PPP3PP/RN4K1 b - - 0 12",
-      "puzzleFen": "r1bk3r/ppp2p2/4pp1p/6B1/4P3/8/PPP3PP/RN4K1 w - - 0 13",
-      "moves": "g7f6 g5f6 d8d7 f6h8",
-      "rating": 693,
-      "themes": [
-        "advantage",
-        "endgame",
-        "fork",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/CqGnSOOd/black#24",
-      "setupMove": "gxf6",
-      "lastMoveFrom": "g7",
-      "lastMoveTo": "f6",
-      "solution": "1.Bxf6+ Kd7 2.Bxh8",
-      "solutionMoves": [
-        "Bxf6+",
-        "Kd7",
-        "Bxh8"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0zGgE",
-      "fen": "3R1rk1/p1p2ppp/8/2p1q3/8/4PQ2/2P3PP/5RK1 b - - 0 22",
-      "puzzleFen": "3r2k1/p1p2ppp/8/2p1q3/8/4PQ2/2P3PP/5RK1 w - - 0 23",
-      "moves": "f8d8 f3f7 g8h8 f7f8 d8f8 f1f8",
-      "rating": 688,
+      "puzzleId": "05lQW",
+      "fen": "3rk2r/p1p1b1pp/8/4p3/8/4Q3/PP1qNPPP/R4RK1 w k - 0 20",
+      "puzzleFen": "3rk2r/p1p1b1pp/8/4p3/8/4Q3/PP1qNPPP/R2R2K1 b k - 1 20",
+      "moves": "f1d1 d2d1 a1d1 d8d1",
+      "rating": 522,
       "themes": [
         "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "url": "https://lichess.org/EMH8jf7O/black#44",
-      "setupMove": "Rxd8",
-      "lastMoveFrom": "f8",
-      "lastMoveTo": "d8",
-      "solution": "1.Qxf7+ Kh8 2.Qf8+ Rxf8 3.Rxf8#",
-      "solutionMoves": [
-        "Qxf7+",
-        "Kh8",
-        "Qf8+",
-        "Rxf8",
-        "Rxf8#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0LfyF",
-      "fen": "2r5/3N2kp/4R1pb/3bp3/PQ6/5P2/1Pq2BPP/K6R w - - 3 30",
-      "puzzleFen": "2r5/3N2kp/6pb/3bR3/PQ6/5P2/1Pq2BPP/K6R b - - 0 30",
-      "moves": "e6e5 c2c1 h1c1 c8c1",
-      "rating": 659,
-      "themes": [
         "mate",
         "mateIn2",
         "middlegame",
-        "pillsburysMate",
-        "sacrifice",
         "short"
       ],
-      "url": "https://lichess.org/oubeC4QB#59",
-      "setupMove": "Rxe5",
-      "lastMoveFrom": "e6",
-      "lastMoveTo": "e5",
-      "solution": "1...Qc1+ 2.Rxc1 Rxc1#",
+      "url": "https://lichess.org/06hJJLu0#39",
+      "setupMove": "Rfd1",
+      "lastMoveFrom": "f1",
+      "lastMoveTo": "d1",
+      "solution": "1...Qxd1+ 2.Rxd1 Rxd1#",
       "solutionMoves": [
-        "Qc1+",
-        "Rxc1",
-        "Rxc1#"
+        "Qxd1+",
+        "Rxd1",
+        "Rxd1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "00Ui0",
-      "fen": "r5k1/5pp1/2p5/P1N4p/2Pp1n2/1P3P2/5P1P/3R2K1 w - - 1 26",
-      "puzzleFen": "r5k1/5pp1/2p5/P1N4p/2PR1n2/1P3P2/5P1P/6K1 b - - 0 26",
-      "moves": "d1d4 f4e2 g1f1 e2d4",
-      "rating": 687,
+      "puzzleId": "GA3zB",
+      "fen": "2k5/ppp5/8/5np1/5P2/8/PPP1B3/3K4 b - - 0 28",
+      "puzzleFen": "2k5/ppp5/8/5n2/5p2/8/PPP1B3/3K4 w - - 0 29",
+      "moves": "g5f4 e2g4 c8d7 g4f5",
+      "rating": 708,
       "themes": [
         "crushing",
         "endgame",
-        "fork",
+        "pin",
         "short"
       ],
-      "url": "https://lichess.org/R2pJ0rIG#51",
-      "setupMove": "Rxd4",
-      "lastMoveFrom": "d1",
-      "lastMoveTo": "d4",
-      "solution": "1...Ne2+ 2.Kf1 Nxd4",
+      "url": "https://lichess.org/txCxxqt6/black#56",
+      "setupMove": "gxf4",
+      "lastMoveFrom": "g5",
+      "lastMoveTo": "f4",
+      "solution": "1.Bg4 Kd7 2.Bxf5+",
       "solutionMoves": [
-        "Ne2+",
-        "Kf1",
-        "Nxd4"
+        "Bg4",
+        "Kd7",
+        "Bxf5+"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "2t8W8",
+      "fen": "4Rb1k/6qp/p6r/4p3/2B1PpbQ/P1P2N2/1P4P1/3R3K w - - 1 35",
+      "puzzleFen": "5R1k/6qp/p6r/4p3/2B1PpbQ/P1P2N2/1P4P1/3R3K b - - 0 35",
+      "moves": "e8f8 g7f8 h4h6 f8h6",
+      "rating": 493,
+      "themes": [
+        "advantage",
+        "hangingPiece",
+        "master",
+        "middlegame",
+        "pin",
+        "short"
+      ],
+      "url": "https://lichess.org/hQ0W2UXz#69",
+      "setupMove": "Rxf8+",
+      "lastMoveFrom": "e8",
+      "lastMoveTo": "f8",
+      "solution": "1...Qxf8 2.Qxh6 Qxh6+",
+      "solutionMoves": [
+        "Qxf8",
+        "Qxh6",
+        "Qxh6+"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "0MA2h",
-      "fen": "8/8/8/1r2Pk2/8/1p1K4/8/6R1 b - - 4 64",
-      "puzzleFen": "8/8/8/1r2k3/8/1p1K4/8/6R1 w - - 0 65",
-      "moves": "f5e5 g1g5 e5d6 g5b5",
-      "rating": 715,
+      "puzzleId": "57vDh",
+      "fen": "r4k2/1p3q2/6r1/2pP4/1pP2Rp1/8/PP4PP/5Q1K b - - 1 28",
+      "puzzleFen": "r4k2/1p3q2/5r2/2pP4/1pP2Rp1/8/PP4PP/5Q1K w - - 2 29",
+      "moves": "g6f6 f4f6 f7f6 f1f6",
+      "rating": 485,
+      "themes": [
+        "crushing",
+        "endgame",
+        "pin",
+        "short"
+      ],
+      "url": "https://lichess.org/B9rQOSOn/black#56",
+      "setupMove": "Rf6",
+      "lastMoveFrom": "g6",
+      "lastMoveTo": "f6",
+      "solution": "1.Rxf6 Qxf6 2.Qxf6+",
+      "solutionMoves": [
+        "Rxf6",
+        "Qxf6",
+        "Qxf6+"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "BZfys",
+      "fen": "1k5r/1qp5/p7/Pp5r/3p1R2/2P3Q1/1P4PP/4R2K w - - 0 34",
+      "puzzleFen": "1k5r/1qp5/p7/Pp5r/3p1R2/2P3QP/1P4P1/4R2K b - - 0 34",
+      "moves": "h2h3 h5h3 g3h3 h8h3",
+      "rating": 741,
       "themes": [
         "crushing",
         "endgame",
         "master",
-        "rookEndgame",
-        "short",
-        "skewer"
+        "pin",
+        "short"
       ],
-      "url": "https://lichess.org/KBoGApgT/black#128",
-      "setupMove": "Kxe5",
-      "lastMoveFrom": "f5",
-      "lastMoveTo": "e5",
-      "solution": "1.Rg5+ Kd6 2.Rxb5",
+      "url": "https://lichess.org/dzQsnqN1#67",
+      "setupMove": "h3",
+      "lastMoveFrom": "h2",
+      "lastMoveTo": "h3",
+      "solution": "1...Rxh3+ 2.Qxh3 Rxh3+",
       "solutionMoves": [
-        "Rg5+",
-        "Kd6",
-        "Rxb5"
+        "Rxh3+",
+        "Qxh3",
+        "Rxh3+"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "AgXz9",
+      "fen": "6k1/2r2P1p/p5p1/2p5/1n3PB1/1P2P1K1/p6P/R7 b - - 0 35",
+      "puzzleFen": "6k1/5r1p/p5p1/2p5/1n3PB1/1P2P1K1/p6P/R7 w - - 0 36",
+      "moves": "c7f7 g4e6 g8g7 e6f7",
+      "rating": 710,
+      "themes": [
+        "advantage",
+        "endgame",
+        "pin",
+        "short"
+      ],
+      "url": "https://lichess.org/h6n41tVy/black#70",
+      "setupMove": "Rxf7",
+      "lastMoveFrom": "c7",
+      "lastMoveTo": "f7",
+      "solution": "1.Be6 Kg7 2.Bxf7",
+      "solutionMoves": [
+        "Be6",
+        "Kg7",
+        "Bxf7"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "1FEi6",
-      "fen": "3k3r/2p5/3p1n2/3Pp1K1/2P4p/R4BpP/6P1/8 b - - 12 45",
-      "puzzleFen": "3k3r/2pn4/3p4/3Pp1K1/2P4p/R4BpP/6P1/8 w - - 13 46",
-      "moves": "f6d7 a3a8 d8e7 a8h8",
-      "rating": 669,
+      "puzzleId": "01P8L",
+      "fen": "3r3r/4bk2/1RQ1p3/3pP2p/P2n4/5p1P/6P1/R5K1 w - - 0 31",
+      "puzzleFen": "3r3r/4bk2/1R2p3/3pP2p/P2n4/2Q2p1P/6P1/R5K1 b - - 1 31",
+      "moves": "c6c3 d4e2 g1h2 e2c3",
+      "rating": 644,
+      "themes": [
+        "crushing",
+        "fork",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/rkvIhbCW#61",
+      "setupMove": "Qc3",
+      "lastMoveFrom": "c6",
+      "lastMoveTo": "c3",
+      "solution": "1...Ne2+ 2.Kh2 Nxc3",
+      "solutionMoves": [
+        "Ne2+",
+        "Kh2",
+        "Nxc3"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "8aP4x",
+      "fen": "7k/8/5KbP/5B2/8/p1P5/8/8 w - - 0 51",
+      "puzzleFen": "7k/8/5KBP/8/8/p1P5/8/8 b - - 0 51",
+      "moves": "f5g6 a3a2 g6f5 a2a1q",
+      "rating": 699,
+      "themes": [
+        "advancedPawn",
+        "bishopEndgame",
+        "crushing",
+        "endgame",
+        "pin",
+        "promotion",
+        "short"
+      ],
+      "url": "https://lichess.org/zg9YkyeU#101",
+      "setupMove": "Bxg6",
+      "lastMoveFrom": "f5",
+      "lastMoveTo": "g6",
+      "solution": "1...a2 2.Bf5 a1=Q",
+      "solutionMoves": [
+        "a2",
+        "Bf5",
+        "a1=Q"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "IlLoH",
+      "fen": "3b2k1/1p4p1/p4p1p/3P4/1p3P2/1P1P1N1P/P7/6K1 w - - 0 34",
+      "puzzleFen": "3b2k1/1p4p1/p4p1p/3P4/1p1N1P2/1P1P3P/P7/6K1 b - - 1 34",
+      "moves": "f3d4 d8b6 g1g2 b6d4",
+      "rating": 653,
       "themes": [
         "crushing",
         "endgame",
-        "short",
-        "skewer"
+        "pin",
+        "short"
       ],
-      "url": "https://lichess.org/GdSmDq5Q/black#90",
-      "setupMove": "Nd7",
-      "lastMoveFrom": "f6",
-      "lastMoveTo": "d7",
-      "solution": "1.Ra8+ Ke7 2.Rxh8",
+      "url": "https://lichess.org/EaeXOHey#67",
+      "setupMove": "Nd4",
+      "lastMoveFrom": "f3",
+      "lastMoveTo": "d4",
+      "solution": "1...Bb6 2.Kg2 Bxd4",
       "solutionMoves": [
-        "Ra8+",
-        "Ke7",
-        "Rxh8"
+        "Bb6",
+        "Kg2",
+        "Bxd4"
       ],
-      "playerColor": "white"
+      "playerColor": "black"
     },
     {
       "puzzleId": "2Kl1j",
@@ -204,125 +249,103 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "0GS1u",
-      "fen": "8/7p/2k3p1/pp3p2/1b1K4/P1p2PP1/2R4P/8 b - - 0 36",
-      "puzzleFen": "8/7p/2k3p1/pp3p2/3K4/b1p2PP1/2R4P/8 w - - 0 37",
-      "moves": "b4a3 c2c3 c6b7 c3a3",
-      "rating": 730,
+      "puzzleId": "2CPVq",
+      "fen": "4r3/2pb2bk/1p1p2pp/pP2r3/P1P1B3/4RP1P/3N1KP1/4R3 b - - 2 34",
+      "puzzleFen": "4r3/2pbr1bk/1p1p2pp/pP6/P1P1B3/4RP1P/3N1KP1/4R3 w - - 3 35",
+      "moves": "e5e7 e4g6 h7g6 e3e7",
+      "rating": 719,
       "themes": [
         "crushing",
-        "endgame",
-        "fork",
+        "discoveredAttack",
+        "middlegame",
         "short"
       ],
-      "url": "https://lichess.org/HFOdWZZO/black#72",
-      "setupMove": "Bxa3",
-      "lastMoveFrom": "b4",
-      "lastMoveTo": "a3",
-      "solution": "1.Rxc3+ Kb7 2.Rxa3",
+      "url": "https://lichess.org/uHIgG0WB/black#68",
+      "setupMove": "R5e7",
+      "lastMoveFrom": "e5",
+      "lastMoveTo": "e7",
+      "solution": "1.Bxg6+ Kxg6 2.Rxe7",
       "solutionMoves": [
-        "Rxc3+",
-        "Kb7",
-        "Rxa3"
+        "Bxg6+",
+        "Kxg6",
+        "Rxe7"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "1ClIv",
-      "fen": "8/2R3pk/7p/5p2/2p1b3/r6N/2P5/2K2B2 w - - 0 40",
-      "puzzleFen": "8/6pk/7p/5p2/2R1b3/r6N/2P5/2K2B2 b - - 0 40",
-      "moves": "c7c4 a3a1 c1d2 a1f1",
-      "rating": 639,
+      "puzzleId": "9G5wQ",
+      "fen": "5rk1/2r2p2/6pp/8/B2Q4/b1p5/6PP/4R1K1 w - - 1 39",
+      "puzzleFen": "5rk1/2r2p2/6pp/8/3Q4/b1p5/2B3PP/4R1K1 b - - 2 39",
+      "moves": "a4c2 a3c5 d4c5 c7c5",
+      "rating": 745,
       "themes": [
         "crushing",
         "endgame",
-        "short",
-        "skewer"
-      ],
-      "url": "https://lichess.org/dHuiXA6r#79",
-      "setupMove": "Rxc4",
-      "lastMoveFrom": "c7",
-      "lastMoveTo": "c4",
-      "solution": "1...Ra1+ 2.Kd2 Rxf1",
-      "solutionMoves": [
-        "Ra1+",
-        "Kd2",
-        "Rxf1"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0Kygw",
-      "fen": "6r1/1p3k2/pPp1p2p/P1Pp1pP1/3P1P1b/4B2P/R3K3/8 w - - 2 42",
-      "puzzleFen": "6r1/1p3k2/pPp1p2P/P1Pp1p2/3P1P1b/4B2P/R3K3/8 b - - 0 42",
-      "moves": "g5h6 g8g2 e2d3 g2a2",
-      "rating": 671,
-      "themes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "url": "https://lichess.org/bLHuFcaK#83",
-      "setupMove": "gxh6",
-      "lastMoveFrom": "g5",
-      "lastMoveTo": "h6",
-      "solution": "1...Rg2+ 2.Kd3 Rxa2",
-      "solutionMoves": [
-        "Rg2+",
-        "Kd3",
-        "Rxa2"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "175NB",
-      "fen": "3r4/ppp1kpQ1/2n5/4p1NP/2P5/3q4/PP3P2/1K4R1 w - - 3 28",
-      "puzzleFen": "3r4/ppp1kpQ1/2n5/4p1NP/2P5/3q4/PP3P2/K5R1 b - - 4 28",
-      "moves": "b1a1 d3d1 g1d1 d8d1",
-      "rating": 565,
-      "themes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
+        "pin",
         "short"
       ],
-      "url": "https://lichess.org/MA5NWcbN#55",
-      "setupMove": "Ka1",
-      "lastMoveFrom": "b1",
-      "lastMoveTo": "a1",
-      "solution": "1...Qd1+ 2.Rxd1 Rxd1#",
+      "url": "https://lichess.org/UwP5ccex#77",
+      "setupMove": "Bc2",
+      "lastMoveFrom": "a4",
+      "lastMoveTo": "c2",
+      "solution": "1...Bc5 2.Qxc5 Rxc5",
       "solutionMoves": [
-        "Qd1+",
-        "Rxd1",
-        "Rxd1#"
+        "Bc5",
+        "Qxc5",
+        "Rxc5"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "0OXbn",
-      "fen": "2br1rk1/6p1/7p/4Pp2/qppP1Q1N/2P3R1/1P4PP/1B5K w - - 2 32",
-      "puzzleFen": "2br1rk1/6p1/7Q/4Pp2/qppP3N/2P3R1/1P4PP/1B5K b - - 0 32",
-      "moves": "f4h6 a4d1",
-      "rating": 570,
+      "puzzleId": "0CyzE",
+      "fen": "6k1/1R1p3p/5p2/p1P5/2PK2P1/4P3/7P/r7 w - - 0 38",
+      "puzzleFen": "6k1/3R3p/5p2/p1P5/2PK2P1/4P3/7P/r7 b - - 0 38",
+      "moves": "b7d7 a1d1 d4c3 d1d7",
+      "rating": 702,
       "themes": [
-        "backRankMate",
-        "mate",
-        "mateIn1",
-        "middlegame",
-        "oneMove"
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
       ],
-      "url": "https://lichess.org/Lqrowi42#63",
-      "setupMove": "Qxh6",
-      "lastMoveFrom": "f4",
-      "lastMoveTo": "h6",
-      "solution": "1...Qd1#",
+      "url": "https://lichess.org/SgnyxH6o#75",
+      "setupMove": "Rxd7",
+      "lastMoveFrom": "b7",
+      "lastMoveTo": "d7",
+      "solution": "1...Rd1+ 2.Kc3 Rxd7",
       "solutionMoves": [
-        "Qd1#"
+        "Rd1+",
+        "Kc3",
+        "Rxd7"
       ],
       "playerColor": "black"
+    },
+    {
+      "puzzleId": "14Nem",
+      "fen": "8/3b1p1p/3k2p1/1P1p1pP1/B2P3P/2pP4/4KP2/8 b - - 1 37",
+      "puzzleFen": "8/2kb1p1p/6p1/1P1p1pP1/B2P3P/2pP4/4KP2/8 w - - 2 38",
+      "moves": "d6c7 b5b6 c7b6 a4d7",
+      "rating": 642,
+      "themes": [
+        "bishopEndgame",
+        "crushing",
+        "deflection",
+        "discoveredAttack",
+        "endgame",
+        "short"
+      ],
+      "url": "https://lichess.org/dWMYAXhq/black#74",
+      "setupMove": "Kc7",
+      "lastMoveFrom": "d6",
+      "lastMoveTo": "c7",
+      "solution": "1.b6+ Kxb6 2.Bxd7",
+      "solutionMoves": [
+        "b6+",
+        "Kxb6",
+        "Bxd7"
+      ],
+      "playerColor": "white"
     },
     {
       "puzzleId": "0UmER",
@@ -346,106 +369,6 @@
         "Ne6+",
         "Kd7",
         "Nxc5+"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "1b3UG",
-      "fen": "7k/p4Q2/1p6/6p1/3b4/P5PP/6K1/6r1 w - - 3 48",
-      "puzzleFen": "7k/p4Q2/1p6/6p1/3b4/P4KPP/8/6r1 b - - 4 48",
-      "moves": "g2f3 g1f1 f3e4 f1f7",
-      "rating": 736,
-      "themes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "url": "https://lichess.org/5XlD5wXy#95",
-      "setupMove": "Kf3",
-      "lastMoveFrom": "g2",
-      "lastMoveTo": "f3",
-      "solution": "1...Rf1+ 2.Ke4 Rxf7",
-      "solutionMoves": [
-        "Rf1+",
-        "Ke4",
-        "Rxf7"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0E0md",
-      "fen": "3r4/5pkp/6p1/1pNPp3/2n5/2P3P1/5P1P/3R2K1 b - - 2 33",
-      "puzzleFen": "3r4/6kp/6p1/1pNPpp2/2n5/2P3P1/5P1P/3R2K1 w - - 0 34",
-      "moves": "f7f5 c5e6 g7f6 e6d8",
-      "rating": 600,
-      "themes": [
-        "advantage",
-        "endgame",
-        "fork",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/tpVcnjVj/black#66",
-      "setupMove": "f5",
-      "lastMoveFrom": "f7",
-      "lastMoveTo": "f5",
-      "solution": "1.Ne6+ Kf6 2.Nxd8",
-      "solutionMoves": [
-        "Ne6+",
-        "Kf6",
-        "Nxd8"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "09p8L",
-      "fen": "8/R7/5p2/P5p1/4r3/4r1k1/6P1/3R2K1 w - - 16 42",
-      "puzzleFen": "8/5R2/5p2/P5p1/4r3/4r1k1/6P1/3R2K1 b - - 17 42",
-      "moves": "a7f7 e3e1 d1e1 e4e1",
-      "rating": 558,
-      "themes": [
-        "endgame",
-        "mate",
-        "mateIn2",
-        "rookEndgame",
-        "short"
-      ],
-      "url": "https://lichess.org/R8ECSwRC#83",
-      "setupMove": "Rf7",
-      "lastMoveFrom": "a7",
-      "lastMoveTo": "f7",
-      "solution": "1...Re1+ 2.Rxe1 Rxe1#",
-      "solutionMoves": [
-        "Re1+",
-        "Rxe1",
-        "Rxe1#"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "2ayLI",
-      "fen": "1r3rk1/4b1pp/p4p1n/2p2P2/3pN3/Pq1P1Q1P/1P3PK1/1RR5 b - - 1 26",
-      "puzzleFen": "1r3rk1/4b1pp/p4p1n/2pq1P2/3pN3/P2P1Q1P/1P3PK1/1RR5 w - - 2 27",
-      "moves": "b3d5 e4f6 f8f6 f3d5",
-      "rating": 745,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "kingsideAttack",
-        "master",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/TR3KFnch/black#52",
-      "setupMove": "Qd5",
-      "lastMoveFrom": "b3",
-      "lastMoveTo": "d5",
-      "solution": "1.Nxf6+ Rxf6 2.Qxd5+",
-      "solutionMoves": [
-        "Nxf6+",
-        "Rxf6",
-        "Qxd5+"
       ],
       "playerColor": "white"
     },
@@ -474,58 +397,415 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "GA3zB",
-      "fen": "2k5/ppp5/8/5np1/5P2/8/PPP1B3/3K4 b - - 0 28",
-      "puzzleFen": "2k5/ppp5/8/5n2/5p2/8/PPP1B3/3K4 w - - 0 29",
-      "moves": "g5f4 e2g4 c8d7 g4f5",
-      "rating": 708,
+      "puzzleId": "01194",
+      "fen": "5qk1/p1pb2p1/5p2/r2N1P1p/2Pp3Q/2n5/P5PP/R4RK1 w - - 0 25",
+      "puzzleFen": "5qk1/p1pb2p1/5p2/r2N1P1p/2PQ4/2n5/P5PP/R4RK1 b - - 0 25",
+      "moves": "h4d4 c3e2 g1h1 e2d4",
+      "rating": 748,
+      "themes": [
+        "crushing",
+        "fork",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/KqOvYIB5#49",
+      "setupMove": "Qxd4",
+      "lastMoveFrom": "h4",
+      "lastMoveTo": "d4",
+      "solution": "1...Ne2+ 2.Kh1 Nxd4",
+      "solutionMoves": [
+        "Ne2+",
+        "Kh1",
+        "Nxd4"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "0GS1u",
+      "fen": "8/7p/2k3p1/pp3p2/1b1K4/P1p2PP1/2R4P/8 b - - 0 36",
+      "puzzleFen": "8/7p/2k3p1/pp3p2/3K4/b1p2PP1/2R4P/8 w - - 0 37",
+      "moves": "b4a3 c2c3 c6b7 c3a3",
+      "rating": 730,
       "themes": [
         "crushing",
         "endgame",
-        "pin",
+        "fork",
         "short"
       ],
-      "url": "https://lichess.org/txCxxqt6/black#56",
-      "setupMove": "gxf4",
-      "lastMoveFrom": "g5",
-      "lastMoveTo": "f4",
-      "solution": "1.Bg4 Kd7 2.Bxf5+",
+      "url": "https://lichess.org/HFOdWZZO/black#72",
+      "setupMove": "Bxa3",
+      "lastMoveFrom": "b4",
+      "lastMoveTo": "a3",
+      "solution": "1.Rxc3+ Kb7 2.Rxa3",
       "solutionMoves": [
-        "Bg4",
-        "Kd7",
-        "Bxf5+"
+        "Rxc3+",
+        "Kb7",
+        "Rxa3"
       ],
       "playerColor": "white"
+    },
+    {
+      "puzzleId": "0NRCJ",
+      "fen": "1k6/1pp5/p2b1N2/P4p1p/8/2P4R/1P2KPr1/8 b - - 5 34",
+      "puzzleFen": "1k6/1pp5/p4N2/P1b2p1p/8/2P4R/1P2KPr1/8 w - - 6 35",
+      "moves": "d6c5 f6d7 b8a7 d7c5",
+      "rating": 713,
+      "themes": [
+        "advantage",
+        "endgame",
+        "fork",
+        "master",
+        "short"
+      ],
+      "url": "https://lichess.org/SVa1e7i3/black#68",
+      "setupMove": "Bc5",
+      "lastMoveFrom": "d6",
+      "lastMoveTo": "c5",
+      "solution": "1.Nd7+ Ka7 2.Nxc5",
+      "solutionMoves": [
+        "Nd7+",
+        "Ka7",
+        "Nxc5"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "06xX4",
+      "fen": "7r/4p2p/3p1bp1/4n3/6k1/3B2PR/PP1Q3P/6K1 w - - 5 40",
+      "puzzleFen": "7r/4p2p/3p1bp1/4n3/6k1/6PR/PP1Q3P/5BK1 b - - 6 40",
+      "moves": "d3f1 e5f3 g1g2 f3d2",
+      "rating": 656,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "short"
+      ],
+      "url": "https://lichess.org/hFIxJ4KM#79",
+      "setupMove": "Bf1",
+      "lastMoveFrom": "d3",
+      "lastMoveTo": "f1",
+      "solution": "1...Nf3+ 2.Kg2 Nxd2",
+      "solutionMoves": [
+        "Nf3+",
+        "Kg2",
+        "Nxd2"
+      ],
+      "playerColor": "black"
     }
   ],
   "800": [
     {
-      "puzzleId": "06BNA",
-      "fen": "3Q1b1k/1p2Br1p/p5p1/2P2q2/1P2R3/P7/5PPP/R5K1 w - - 3 24",
-      "puzzleFen": "3Q1B1k/1p3r1p/p5p1/2P2q2/1P2R3/P7/5PPP/R5K1 b - - 0 24",
-      "moves": "e7f8 f5f2 g1h1 f2f1 a1f1 f7f1",
-      "rating": 1090,
+      "puzzleId": "0BmOp",
+      "fen": "1r4k1/1p3ppp/3Q4/p2p4/3P4/Kb2P3/2q2PPP/8 b - - 1 27",
+      "puzzleFen": "1r4k1/1p3ppp/3Q4/p2p4/2qP4/Kb2P3/5PPP/8 w - - 2 28",
+      "moves": "c2c4 d6b8 c4c8 b8c8",
+      "rating": 809,
       "themes": [
         "backRankMate",
+        "endgame",
+        "hangingPiece",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/c7FQVvAZ/black#54",
+      "setupMove": "Qc4",
+      "lastMoveFrom": "c2",
+      "lastMoveTo": "c4",
+      "solution": "1.Qxb8+ Qc8 2.Qxc8#",
+      "solutionMoves": [
+        "Qxb8+",
+        "Qc8",
+        "Qxc8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "04Y1s",
+      "fen": "r3r3/6p1/pp3pkp/2pP4/2B2PnP/1P2P3/P3K1P1/R6R w - - 3 25",
+      "puzzleFen": "r3r3/6p1/pp3pkp/2pP4/2B2PnP/1P2PK2/P5P1/R6R b - - 4 25",
+      "moves": "e2f3 e8e3 f3g4 f6f5",
+      "rating": 1048,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/PuKI58jx#49",
+      "setupMove": "Kf3",
+      "lastMoveFrom": "e2",
+      "lastMoveTo": "f3",
+      "solution": "1...Rxe3+ 2.Kxg4 f5#",
+      "solutionMoves": [
+        "Rxe3+",
+        "Kxg4",
+        "f5#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "02FEp",
+      "fen": "2kr4/Qp1n1pp1/p1p5/3p4/Nq1RP2r/8/PPP2P2/1K5R w - - 0 23",
+      "puzzleFen": "2kr4/Qp1n1pp1/p1p5/3p4/Nq1RP2R/8/PPP2P2/1K6 b - - 0 23",
+      "moves": "h1h4 b4e1 d4d1 e1d1",
+      "rating": 824,
+      "themes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short"
+      ],
+      "url": "https://lichess.org/P45oguds#45",
+      "setupMove": "Rxh4",
+      "lastMoveFrom": "h1",
+      "lastMoveTo": "h4",
+      "solution": "1...Qe1+ 2.Rd1 Qxd1#",
+      "solutionMoves": [
+        "Qe1+",
+        "Rd1",
+        "Qxd1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00ZPK",
+      "fen": "5r2/R2R1pk1/P7/5pp1/8/1KP5/5r2/8 b - - 0 44",
+      "puzzleFen": "5r2/R2R1pk1/P7/5p2/6p1/1KP5/5r2/8 w - - 0 45",
+      "moves": "g5g4 d7f7 f8f7 a7f7 g7f7 a6a7",
+      "rating": 933,
+      "themes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/Y6yYxIcG/black#88",
+      "setupMove": "g4",
+      "lastMoveFrom": "g5",
+      "lastMoveTo": "g4",
+      "solution": "1.Rxf7+ Rxf7 2.Rxf7+ Kxf7 3.a7",
+      "solutionMoves": [
+        "Rxf7+",
+        "Rxf7",
+        "Rxf7+",
+        "Kxf7",
+        "a7"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01BRf",
+      "fen": "8/p7/1p3Nnp/1B4p1/1P4P1/P3p1bP/2k1K3/8 b - - 1 42",
+      "puzzleFen": "8/p7/1p3Nnp/1B4p1/1P3bP1/P3p2P/2k1K3/8 w - - 2 43",
+      "moves": "g3f4 b5d3 c2b3 d3g6",
+      "rating": 1076,
+      "themes": [
+        "advantage",
+        "endgame",
+        "fork",
+        "short"
+      ],
+      "url": "https://lichess.org/3av5uIrJ/black#84",
+      "setupMove": "Bf4",
+      "lastMoveFrom": "g3",
+      "lastMoveTo": "f4",
+      "solution": "1.Bd3+ Kb3 2.Bxg6",
+      "solutionMoves": [
+        "Bd3+",
+        "Kb3",
+        "Bxg6"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "09qMn",
+      "fen": "r4rk1/p2b1p2/1qp2n1p/3p2p1/3N4/3B2PP/PPP3P1/R2Q1R1K b - - 2 17",
+      "puzzleFen": "r4rk1/p2b1p2/2p2n1p/3p2p1/3q4/3B2PP/PPP3P1/R2Q1R1K w - - 0 18",
+      "moves": "b6d4 d3h7 g8h7 d1d4",
+      "rating": 844,
+      "themes": [
+        "crushing",
+        "discoveredAttack",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/8QaqG7Ed/black#34",
+      "setupMove": "Qxd4",
+      "lastMoveFrom": "b6",
+      "lastMoveTo": "d4",
+      "solution": "1.Bh7+ Kxh7 2.Qxd4",
+      "solutionMoves": [
+        "Bh7+",
+        "Kxh7",
+        "Qxd4"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "08UuA",
+      "fen": "3r4/p3kpp1/1p5p/2n1PPN1/2P4P/4K3/P7/7R w - - 0 26",
+      "puzzleFen": "3r4/p3kpp1/1p5p/2n1PP2/2P1N2P/4K3/P7/7R b - - 1 26",
+      "moves": "g5e4 d8d3 e3e2 c5e4 e2d3 e4f2 d3e3 f2h1",
+      "rating": 1071,
+      "themes": [
+        "crushing",
+        "deflection",
+        "endgame",
+        "exposedKing",
+        "fork",
+        "sacrifice",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/o6gzcNIr#51",
+      "setupMove": "Ne4",
+      "lastMoveFrom": "g5",
+      "lastMoveTo": "e4",
+      "solution": "1...Rd3+ 2.Ke2 Nxe4 3.Kxd3 Nf2+ 4.Ke3 Nxh1",
+      "solutionMoves": [
+        "Rd3+",
+        "Ke2",
+        "Nxe4",
+        "Kxd3",
+        "Nf2+",
+        "Ke3",
+        "Nxh1"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "01vPy",
+      "fen": "8/4k3/4n3/8/2P3PP/P2Q4/6K1/r7 w - - 17 55",
+      "puzzleFen": "8/4k3/4n3/6P1/2P4P/P2Q4/6K1/r7 b - - 0 55",
+      "moves": "g4g5 e6f4 g2f3 f4d3",
+      "rating": 879,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "short"
+      ],
+      "url": "https://lichess.org/igbxGmO9#109",
+      "setupMove": "g5",
+      "lastMoveFrom": "g4",
+      "lastMoveTo": "g5",
+      "solution": "1...Nf4+ 2.Kf3 Nxd3",
+      "solutionMoves": [
+        "Nf4+",
+        "Kf3",
+        "Nxd3"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00tsE",
+      "fen": "2rq1k2/5ppp/p7/1p6/5Q2/2P5/P1P2PPP/4RK2 b - - 7 22",
+      "puzzleFen": "3q1k2/5ppp/p7/1p6/5Q2/2r5/P1P2PPP/4RK2 w - - 0 23",
+      "moves": "c8c3 f4b4 f8g8 b4c3",
+      "rating": 1083,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "short"
+      ],
+      "url": "https://lichess.org/I2FQvxn0/black#44",
+      "setupMove": "Rxc3",
+      "lastMoveFrom": "c8",
+      "lastMoveTo": "c3",
+      "solution": "1.Qb4+ Kg8 2.Qxc3",
+      "solutionMoves": [
+        "Qb4+",
+        "Kg8",
+        "Qxc3"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "06SzP",
+      "fen": "8/p3B2p/k7/8/1R2n3/PNP5/KP5r/8 w - - 2 39",
+      "puzzleFen": "3B4/p6p/k7/8/1R2n3/PNP5/KP5r/8 b - - 3 39",
+      "moves": "e7d8 e4c3 a2a1 h2h1 b3c1 h1c1",
+      "rating": 903,
+      "themes": [
         "endgame",
         "long",
         "mate",
         "mateIn3",
-        "sacrifice"
+        "pin"
       ],
-      "url": "https://lichess.org/kelvfT7y#47",
-      "setupMove": "Bxf8",
+      "url": "https://lichess.org/OWZuRZUv#77",
+      "setupMove": "Bd8",
       "lastMoveFrom": "e7",
-      "lastMoveTo": "f8",
-      "solution": "1...Qxf2+ 2.Kh1 Qf1+ 3.Rxf1 Rxf1#",
+      "lastMoveTo": "d8",
+      "solution": "1...Nxc3+ 2.Ka1 Rh1+ 3.Nc1 Rxc1#",
       "solutionMoves": [
-        "Qxf2+",
-        "Kh1",
-        "Qf1+",
-        "Rxf1",
-        "Rxf1#"
+        "Nxc3+",
+        "Ka1",
+        "Rh1+",
+        "Nc1",
+        "Rxc1#"
       ],
       "playerColor": "black"
+    },
+    {
+      "puzzleId": "01wdX",
+      "fen": "5qk1/p2nN1pp/5r2/1p1p2N1/2pP4/2P5/PPQ3PP/5RK1 b - - 0 24",
+      "puzzleFen": "6k1/p2nq1pp/5r2/1p1p2N1/2pP4/2P5/PPQ3PP/5RK1 w - - 0 25",
+      "moves": "f8e7 c2h7 g8f8 h7h8",
+      "rating": 859,
+      "themes": [
+        "endgame",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/8iV5yCBV/black#48",
+      "setupMove": "Qxe7",
+      "lastMoveFrom": "f8",
+      "lastMoveTo": "e7",
+      "solution": "1.Qxh7+ Kf8 2.Qh8#",
+      "solutionMoves": [
+        "Qxh7+",
+        "Kf8",
+        "Qh8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "0EXPs",
+      "fen": "1k1r4/ppp3Qp/5n2/q4r2/4p3/P3P2P/P2P1PR1/2R2K2 b - - 0 20",
+      "puzzleFen": "1k1r4/ppp3Qp/5n2/5r2/4p3/P3P2P/P2q1PR1/2R2K2 w - - 0 21",
+      "moves": "a5d2 g7c7 b8a8 c7c8 d8c8 c1c8",
+      "rating": 1060,
+      "themes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/SOWhz9p3/black#40",
+      "setupMove": "Qxd2",
+      "lastMoveFrom": "a5",
+      "lastMoveTo": "d2",
+      "solution": "1.Qxc7+ Ka8 2.Qc8+ Rxc8 3.Rxc8#",
+      "solutionMoves": [
+        "Qxc7+",
+        "Ka8",
+        "Qc8+",
+        "Rxc8",
+        "Rxc8#"
+      ],
+      "playerColor": "white"
     },
     {
       "puzzleId": "001wr",
@@ -554,610 +834,100 @@
       "playerColor": "black"
     },
     {
-      "puzzleId": "0CtZu",
-      "fen": "5bk1/4pp1p/6p1/8/8/2Q4P/q4PP1/2B3K1 b - - 1 27",
-      "puzzleFen": "6k1/4ppbp/6p1/8/8/2Q4P/q4PP1/2B3K1 w - - 2 28",
-      "moves": "f8g7 c3c8 g7f8 c1h6 a2a1 g1h2 a1g7 h6g7",
-      "rating": 1029,
-      "themes": [
-        "crushing",
-        "endgame",
-        "pin",
-        "veryLong"
-      ],
-      "url": "https://lichess.org/mtuaYm5M/black#54",
-      "setupMove": "Bg7",
-      "lastMoveFrom": "f8",
-      "lastMoveTo": "g7",
-      "solution": "1.Qc8+ Bf8 2.Bh6 Qa1+ 3.Kh2 Qg7 4.Bxg7",
-      "solutionMoves": [
-        "Qc8+",
-        "Bf8",
-        "Bh6",
-        "Qa1+",
-        "Kh2",
-        "Qg7",
-        "Bxg7"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00Evs",
-      "fen": "5qk1/pQ3pp1/7p/b2N1b2/P3r3/5K2/7P/R4B2 b - - 1 24",
-      "puzzleFen": "5qk1/pQ3p2/7p/b2N1bp1/P3r3/5K2/7P/R4B2 w - - 0 25",
-      "moves": "g7g5 d5f6 g8h8 f6e4",
-      "rating": 1077,
-      "themes": [
-        "advantage",
-        "fork",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/ZuufvD5S/black#48",
-      "setupMove": "g5",
-      "lastMoveFrom": "g7",
-      "lastMoveTo": "g5",
-      "solution": "1.Nf6+ Kh8 2.Nxe4",
-      "solutionMoves": [
-        "Nf6+",
-        "Kh8",
-        "Nxe4"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0162G",
-      "fen": "2r1kb1r/1p3ppp/p7/3ppP2/8/1P1PBP2/P4RPP/R5K1 w k - 1 21",
-      "puzzleFen": "2r1kb1r/1p3ppp/p7/3ppP2/8/1P1PBP2/P4RPP/2R3K1 b k - 2 21",
-      "moves": "a1c1 c8c1 e3c1 f8c5",
-      "rating": 829,
-      "themes": [
-        "crushing",
-        "endgame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/cwvenor8#41",
-      "setupMove": "Rc1",
-      "lastMoveFrom": "a1",
-      "lastMoveTo": "c1",
-      "solution": "1...Rxc1+ 2.Bxc1 Bc5",
-      "solutionMoves": [
-        "Rxc1+",
-        "Bxc1",
-        "Bc5"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "01Hgu",
-      "fen": "2k5/p1p5/r6q/3b4/8/3P4/PPP2P1P/R1B2RK1 w - - 0 31",
-      "puzzleFen": "2k5/p1p5/r6B/3b4/8/3P4/PPP2P1P/R4RK1 b - - 0 31",
-      "moves": "c1h6 a6g6 h6g5 g6g5",
-      "rating": 1029,
+      "puzzleId": "01OgB",
+      "fen": "r3r1k1/1ppQ1pp1/1p5p/1P6/3P4/2P5/3B1PPP/5qK1 w - - 0 22",
+      "puzzleFen": "r3r1k1/1ppQ1pp1/1p5p/1P6/3P4/2P5/3B1PPP/5K2 b - - 0 22",
+      "moves": "g1f1 a8a1 d2c1 a1c1",
+      "rating": 923,
       "themes": [
         "endgame",
-        "fork",
         "mate",
         "mateIn2",
-        "pillsburysMate",
         "short"
       ],
-      "url": "https://lichess.org/9laF2Tml#61",
-      "setupMove": "Bxh6",
-      "lastMoveFrom": "c1",
-      "lastMoveTo": "h6",
-      "solution": "1...Rg6+ 2.Bg5 Rxg5#",
+      "url": "https://lichess.org/3ASaJgPf#43",
+      "setupMove": "Kxf1",
+      "lastMoveFrom": "g1",
+      "lastMoveTo": "f1",
+      "solution": "1...Ra1+ 2.Bc1 Rxc1#",
       "solutionMoves": [
-        "Rg6+",
-        "Bg5",
-        "Rxg5#"
+        "Ra1+",
+        "Bc1",
+        "Rxc1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "02eE7",
-      "fen": "r3k2r/p1p1bpp1/2q1p3/4P1p1/P3N3/1Rp1P2P/2Q2PP1/4K2R b Kkq - 3 22",
-      "puzzleFen": "r3k2r/p1p1bpp1/4p3/4P1p1/q3N3/1Rp1P2P/2Q2PP1/4K2R w Kkq - 0 23",
-      "moves": "c6a4 b3b8 a8b8 c2a4",
-      "rating": 986,
+      "puzzleId": "01bzW",
+      "fen": "5r1k/6p1/2BR3p/1Nn5/p7/P4PPn/1P2r2P/3R2K1 w - - 1 33",
+      "puzzleFen": "5r1k/6p1/2BR3p/1Nn5/p7/P4PPn/1P2r2P/3R3K b - - 2 33",
+      "moves": "g1h1 h3f2 h1g1 f2d1",
+      "rating": 912,
       "themes": [
         "advantage",
-        "discoveredAttack",
+        "fork",
+        "master",
         "middlegame",
         "short"
       ],
-      "url": "https://lichess.org/BTTyTQji/black#44",
-      "setupMove": "Qxa4",
+      "url": "https://lichess.org/sOzJkv67#65",
+      "setupMove": "Kh1",
+      "lastMoveFrom": "g1",
+      "lastMoveTo": "h1",
+      "solution": "1...Nf2+ 2.Kg1 Nxd1",
+      "solutionMoves": [
+        "Nf2+",
+        "Kg1",
+        "Nxd1"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "09HIz",
+      "fen": "R7/8/2k5/8/5PK1/p5PP/2b5/2r5 b - - 1 53",
+      "puzzleFen": "R7/8/2k5/8/5PK1/p5PP/2b5/r7 w - - 2 54",
+      "moves": "c1a1 a8c8 c6b5 c8c2",
+      "rating": 882,
+      "themes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "url": "https://lichess.org/CcqZ90od/black#106",
+      "setupMove": "Ra1",
+      "lastMoveFrom": "c1",
+      "lastMoveTo": "a1",
+      "solution": "1.Rc8+ Kb5 2.Rxc2",
+      "solutionMoves": [
+        "Rc8+",
+        "Kb5",
+        "Rxc2"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "003jb",
+      "fen": "r3kb1r/p4ppp/b1p1p3/3q4/3Q4/4BN2/PPP2PPP/R3K2R b KQkq - 0 11",
+      "puzzleFen": "r3kb1r/p4ppp/b3p3/2pq4/3Q4/4BN2/PPP2PPP/R3K2R w KQkq - 0 12",
+      "moves": "c6c5 d4a4 a6b5 a4b5",
+      "rating": 983,
+      "themes": [
+        "crushing",
+        "fork",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/960EzUS0/black#22",
+      "setupMove": "c5",
       "lastMoveFrom": "c6",
-      "lastMoveTo": "a4",
-      "solution": "1.Rb8+ Rxb8 2.Qxa4+",
+      "lastMoveTo": "c5",
+      "solution": "1.Qa4+ Bb5 2.Qxb5+",
       "solutionMoves": [
-        "Rb8+",
-        "Rxb8",
-        "Qxa4+"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0C6Em",
-      "fen": "3r2k1/1pb2bp1/p6p/2P1p3/1P2n3/P3B1PP/2Q2P2/6K1 w - - 0 31",
-      "puzzleFen": "3r2k1/1pb2bp1/p6p/2P1p3/1P2Q3/P3B1PP/5P2/6K1 b - - 0 31",
-      "moves": "c2e4 d8d1 g1g2 f7d5 e4d5 d1d5",
-      "rating": 1081,
-      "themes": [
-        "crushing",
-        "endgame",
-        "long",
-        "master",
-        "pin"
-      ],
-      "url": "https://lichess.org/H1y1Y6tu#61",
-      "setupMove": "Qxe4",
-      "lastMoveFrom": "c2",
-      "lastMoveTo": "e4",
-      "solution": "1...Rd1+ 2.Kg2 Bd5 3.Qxd5+ Rxd5",
-      "solutionMoves": [
-        "Rd1+",
-        "Kg2",
-        "Bd5",
-        "Qxd5+",
-        "Rxd5"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "09F6W",
-      "fen": "r5rk/pb3p2/1p2p3/4n3/3p4/4PN2/PP2B1P1/R4RK1 w - - 0 24",
-      "puzzleFen": "r5rk/pb3p2/1p2p3/4N3/3p4/4P3/PP2B1P1/R4RK1 b - - 0 24",
-      "moves": "f3e5 g8g2 g1h1 g2e2",
-      "rating": 1099,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "discoveredCheck",
-        "fork",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/rPtmG5Tr#47",
-      "setupMove": "Nxe5",
-      "lastMoveFrom": "f3",
-      "lastMoveTo": "e5",
-      "solution": "1...Rxg2+ 2.Kh1 Rxe2+",
-      "solutionMoves": [
-        "Rxg2+",
-        "Kh1",
-        "Rxe2+"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "01BRf",
-      "fen": "8/p7/1p3Nnp/1B4p1/1P4P1/P3p1bP/2k1K3/8 b - - 1 42",
-      "puzzleFen": "8/p7/1p3Nnp/1B4p1/1P3bP1/P3p2P/2k1K3/8 w - - 2 43",
-      "moves": "g3f4 b5d3 c2b3 d3g6",
-      "rating": 1076,
-      "themes": [
-        "advantage",
-        "endgame",
-        "fork",
-        "short"
-      ],
-      "url": "https://lichess.org/3av5uIrJ/black#84",
-      "setupMove": "Bf4",
-      "lastMoveFrom": "g3",
-      "lastMoveTo": "f4",
-      "solution": "1.Bd3+ Kb3 2.Bxg6",
-      "solutionMoves": [
-        "Bd3+",
-        "Kb3",
-        "Bxg6"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00bTs",
-      "fen": "2r4k/6bP/8/3p4/pp1qn3/3N1Q2/PPP3R1/1K5R w - - 5 35",
-      "puzzleFen": "2r4k/6RP/8/3p4/pp1qn3/3N1Q2/PPP5/1K5R b - - 0 35",
-      "moves": "g2g7 e4d2 b1a1 d2f3",
-      "rating": 1072,
-      "themes": [
-        "advantage",
-        "fork",
-        "master",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/PDAfQk7l#69",
-      "setupMove": "Rxg7",
-      "lastMoveFrom": "g2",
-      "lastMoveTo": "g7",
-      "solution": "1...Nd2+ 2.Ka1 Nxf3",
-      "solutionMoves": [
-        "Nd2+",
-        "Ka1",
-        "Nxf3"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "086ae",
-      "fen": "r2q3r/p3kppp/3bb3/1B6/8/4N3/PP1Q1PPP/R4RK1 w - - 2 19",
-      "puzzleFen": "r2q3r/p3kppp/3bb3/1B6/8/4N3/PP1Q1PPP/R3R1K1 b - - 3 19",
-      "moves": "f1e1 d6h2 g1h2 d8d2",
-      "rating": 947,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/cjkX57ah#37",
-      "setupMove": "Rfe1",
-      "lastMoveFrom": "f1",
-      "lastMoveTo": "e1",
-      "solution": "1...Bxh2+ 2.Kxh2 Qxd2",
-      "solutionMoves": [
-        "Bxh2+",
-        "Kxh2",
-        "Qxd2"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "017c1",
-      "fen": "8/8/8/1p6/4k3/2p4P/rP2RK2/8 b - - 1 49",
-      "puzzleFen": "8/8/8/1p6/3k4/2p4P/rP2RK2/8 w - - 2 50",
-      "moves": "e4d4 b2c3 d4c3 e2a2",
-      "rating": 1040,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "endgame",
-        "rookEndgame",
-        "short"
-      ],
-      "url": "https://lichess.org/xat94cnU/black#98",
-      "setupMove": "Kd4",
-      "lastMoveFrom": "e4",
-      "lastMoveTo": "d4",
-      "solution": "1.bxc3+ Kxc3 2.Rxa2",
-      "solutionMoves": [
-        "bxc3+",
-        "Kxc3",
-        "Rxa2"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0JCvT",
-      "fen": "3R1bk1/5pp1/7p/p4N2/8/1brB2PP/5P2/6K1 b - - 13 42",
-      "puzzleFen": "3R1bk1/5pp1/7p/5N2/p7/1brB2PP/5P2/6K1 w - - 0 43",
-      "moves": "a5a4 f5e7 g8h8 d8f8",
-      "rating": 1025,
-      "themes": [
-        "deflection",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "pillsburysMate",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/toIZizdq/black#84",
-      "setupMove": "a4",
-      "lastMoveFrom": "a5",
-      "lastMoveTo": "a4",
-      "solution": "1.Ne7+ Kh8 2.Rxf8#",
-      "solutionMoves": [
-        "Ne7+",
-        "Kh8",
-        "Rxf8#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00cud",
-      "fen": "8/5p2/6p1/1p1N1k2/1PbK4/2P3P1/8/8 b - - 0 48",
-      "puzzleFen": "8/5p2/6p1/1p1N1k2/1P1K4/2P3P1/8/5b2 w - - 1 49",
-      "moves": "c4f1 d5e3 f5e6 e3f1",
-      "rating": 955,
-      "themes": [
-        "crushing",
-        "endgame",
-        "fork",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/XdT6vR6T/black#96",
-      "setupMove": "Bf1",
-      "lastMoveFrom": "c4",
-      "lastMoveTo": "f1",
-      "solution": "1.Ne3+ Ke6 2.Nxf1",
-      "solutionMoves": [
-        "Ne3+",
-        "Ke6",
-        "Nxf1"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0BRsf",
-      "fen": "8/1k3pb1/3p4/Pb1p3p/1N1P1P2/4B1P1/6K1/8 w - - 0 48",
-      "puzzleFen": "8/1k3pb1/3p4/Pb1N3p/3P1P2/4B1P1/6K1/8 b - - 0 48",
-      "moves": "b4d5 b5c6 g2h3 c6d5",
-      "rating": 1081,
-      "themes": [
-        "crushing",
-        "endgame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/xpLg4iyh#95",
-      "setupMove": "Nxd5",
-      "lastMoveFrom": "b4",
-      "lastMoveTo": "d5",
-      "solution": "1...Bc6 2.Kh3 Bxd5",
-      "solutionMoves": [
-        "Bc6",
-        "Kh3",
-        "Bxd5"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "07Q5H",
-      "fen": "r1b1k2r/ppp2pp1/2pq4/2b1n2p/4P3/3P1N1P/PPP1BPP1/R1BQ1RK1 w kq - 7 11",
-      "puzzleFen": "r1b1k2r/ppp2pp1/2pq4/2b1n2p/4PB2/3P1N1P/PPP1BPP1/R2Q1RK1 b kq - 8 11",
-      "moves": "c1f4 e5f3 e2f3 d6f4",
-      "rating": 1040,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "kingsideAttack",
-        "opening",
-        "short"
-      ],
-      "url": "https://lichess.org/FY8BquJ5#21",
-      "setupMove": "Bf4",
-      "lastMoveFrom": "c1",
-      "lastMoveTo": "f4",
-      "solution": "1...Nxf3+ 2.Bxf3 Qxf4",
-      "solutionMoves": [
-        "Nxf3+",
-        "Bxf3",
-        "Qxf4"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0JTxv",
-      "fen": "8/1R3p2/3Npk2/4n1p1/P6p/2P4P/1P3rPK/8 w - - 0 39",
-      "puzzleFen": "8/1R3p2/3Npk2/P3n1p1/7p/2P4P/1P3rPK/8 b - - 0 39",
-      "moves": "a4a5 e5f3 h2h1 f2f1",
-      "rating": 960,
-      "themes": [
-        "endgame",
-        "mate",
-        "mateIn2",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/6i64eU6d#77",
-      "setupMove": "a5",
-      "lastMoveFrom": "a4",
-      "lastMoveTo": "a5",
-      "solution": "1...Nf3+ 2.Kh1 Rf1#",
-      "solutionMoves": [
-        "Nf3+",
-        "Kh1",
-        "Rf1#"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "07djI",
-      "fen": "r2q1rk1/pp4p1/1bp4p/3pPPn1/3P4/3Q1NBP/PP3P2/R3R1K1 w - - 5 25",
-      "puzzleFen": "r2q1rk1/pp4p1/1bp4p/3pPPn1/3P3B/3Q1N1P/PP3P2/R3R1K1 b - - 6 25",
-      "moves": "g3h4 g5f3 d3f3 d8h4",
-      "rating": 1060,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/lDkra2Re#49",
-      "setupMove": "Bh4",
-      "lastMoveFrom": "g3",
-      "lastMoveTo": "h4",
-      "solution": "1...Nxf3+ 2.Qxf3 Qxh4",
-      "solutionMoves": [
-        "Nxf3+",
-        "Qxf3",
-        "Qxh4"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "02yoc",
-      "fen": "4k3/7R/1pp3r1/8/P3r2p/1B3K2/1PP5/8 b - - 2 50",
-      "puzzleFen": "4k3/7R/1pp3r1/8/Pr5p/1B3K2/1PP5/8 w - - 3 51",
-      "moves": "e4b4 b3f7 e8e7 f7g6",
-      "rating": 1059,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "discoveredCheck",
-        "endgame",
-        "fork",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/jnOiltKW/black#100",
-      "setupMove": "Rb4",
-      "lastMoveFrom": "e4",
-      "lastMoveTo": "b4",
-      "solution": "1.Bf7+ Ke7 2.Bxg6+",
-      "solutionMoves": [
-        "Bf7+",
-        "Ke7",
-        "Bxg6+"
-      ],
-      "playerColor": "white"
-    }
-  ],
-  "1100": [
-    {
-      "puzzleId": "06Unf",
-      "fen": "r2q1rk1/3bbpp1/p1p3n1/3Pp1p1/2p1Q3/2N2P2/PP2B2R/2K4R b - - 0 23",
-      "puzzleFen": "r2q1rk1/3bbpp1/p1p3n1/3Pp3/2p1Q1p1/2N2P2/PP2B2R/2K4R w - - 0 24",
-      "moves": "g5g4 h2h8 g6h8 e4h7",
-      "rating": 1063,
-      "themes": [
-        "kingsideAttack",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "url": "https://lichess.org/eOuGNch3/black#46",
-      "setupMove": "g4",
-      "lastMoveFrom": "g5",
-      "lastMoveTo": "g4",
-      "solution": "1.Rh8+ Nxh8 2.Qh7#",
-      "solutionMoves": [
-        "Rh8+",
-        "Nxh8",
-        "Qh7#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00cud",
-      "fen": "8/5p2/6p1/1p1N1k2/1PbK4/2P3P1/8/8 b - - 0 48",
-      "puzzleFen": "8/5p2/6p1/1p1N1k2/1P1K4/2P3P1/8/5b2 w - - 1 49",
-      "moves": "c4f1 d5e3 f5e6 e3f1",
-      "rating": 955,
-      "themes": [
-        "crushing",
-        "endgame",
-        "fork",
-        "master",
-        "short"
-      ],
-      "url": "https://lichess.org/XdT6vR6T/black#96",
-      "setupMove": "Bf1",
-      "lastMoveFrom": "c4",
-      "lastMoveTo": "f1",
-      "solution": "1.Ne3+ Ke6 2.Nxf1",
-      "solutionMoves": [
-        "Ne3+",
-        "Ke6",
-        "Nxf1"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "06APo",
-      "fen": "2b2rk1/p3p1bp/2pp2p1/1q6/3BQ3/1P6/PP3PPP/1K1R3R w - - 0 20",
-      "puzzleFen": "2b2rk1/p3p1Bp/2pp2p1/1q6/4Q3/1P6/PP3PPP/1K1R3R b - - 0 20",
-      "moves": "d4g7 c8f5 g7f8 f5e4",
-      "rating": 1126,
-      "themes": [
-        "crushing",
-        "middlegame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/NPq7r7Lv#39",
-      "setupMove": "Bxg7",
-      "lastMoveFrom": "d4",
-      "lastMoveTo": "g7",
-      "solution": "1...Bf5 2.Bxf8 Bxe4+",
-      "solutionMoves": [
-        "Bf5",
-        "Bxf8",
-        "Bxe4+"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "07AwJ",
-      "fen": "2q5/pp3pk1/6pr/bP2P3/P2P4/4QPP1/6BP/R5K1 w - - 0 36",
-      "puzzleFen": "2q5/pp3pk1/6pr/bP1PP3/P7/4QPP1/6BP/R5K1 b - - 0 36",
-      "moves": "d4d5 a5b6 e3b6 a7b6",
-      "rating": 1132,
-      "themes": [
-        "advantage",
-        "endgame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/fzGXftuU#71",
-      "setupMove": "d5",
-      "lastMoveFrom": "d4",
-      "lastMoveTo": "d5",
-      "solution": "1...Bb6 2.Qxb6 axb6",
-      "solutionMoves": [
-        "Bb6",
-        "Qxb6",
-        "axb6"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "08VyN",
-      "fen": "r7/1p2kn1R/p3p3/3p4/5q2/1PN5/P1P1Q3/1K6 b - - 2 29",
-      "puzzleFen": "6r1/1p2kn1R/p3p3/3p4/5q2/1PN5/P1P1Q3/1K6 w - - 3 30",
-      "moves": "a8g8 c3d5 e7f8 d5f4 g8g1 b1b2",
-      "rating": 1182,
-      "themes": [
-        "crushing",
-        "defensiveMove",
-        "endgame",
-        "long",
-        "pin"
-      ],
-      "url": "https://lichess.org/9MfxfZ1t/black#58",
-      "setupMove": "Rg8",
-      "lastMoveFrom": "a8",
-      "lastMoveTo": "g8",
-      "solution": "1.Nxd5+ Kf8 2.Nxf4 Rg1+ 3.Kb2",
-      "solutionMoves": [
-        "Nxd5+",
-        "Kf8",
-        "Nxf4",
-        "Rg1+",
-        "Kb2"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "052Ai",
-      "fen": "5r2/p5p1/2Rpk2p/3n4/1P1PN3/1b5P/3B1P1K/8 b - - 2 36",
-      "puzzleFen": "3r4/p5p1/2Rpk2p/3n4/1P1PN3/1b5P/3B1P1K/8 w - - 3 37",
-      "moves": "f8d8 e4c5 e6f5 c5b3",
-      "rating": 1193,
-      "themes": [
-        "crushing",
-        "endgame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/3PMB0BJQ/black#72",
-      "setupMove": "Rd8",
-      "lastMoveFrom": "f8",
-      "lastMoveTo": "d8",
-      "solution": "1.Nc5+ Kf5 2.Nxb3",
-      "solutionMoves": [
-        "Nc5+",
-        "Kf5",
-        "Nxb3"
+        "Qa4+",
+        "Bb5",
+        "Qxb5+"
       ],
       "playerColor": "white"
     },
@@ -1186,129 +956,384 @@
       "playerColor": "black"
     },
     {
-      "puzzleId": "08F97",
-      "fen": "5nrk/p5r1/2R1p3/3pP2B/Q5Pq/5P2/2R5/6K1 b - - 1 41",
-      "puzzleFen": "5nrk/p5r1/2R1p3/3pP2q/Q5P1/5P2/2R5/6K1 w - - 0 42",
-      "moves": "h4h5 c2h2 h5h2 g1h2",
-      "rating": 1193,
-      "themes": [
-        "advantage",
-        "middlegame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/tIHDLxH5/black#82",
-      "setupMove": "Qxh5",
-      "lastMoveFrom": "h4",
-      "lastMoveTo": "h5",
-      "solution": "1.Rh2 Qxh2+ 2.Kxh2",
-      "solutionMoves": [
-        "Rh2",
-        "Qxh2+",
-        "Kxh2"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "05FNp",
-      "fen": "8/p5pk/1p3r1p/3B1bq1/2P5/5QP1/P4P1P/4R1K1 w - - 1 26",
-      "puzzleFen": "8/p5pk/1p3r1p/3BRbq1/2P5/5QP1/P4P1P/6K1 b - - 2 26",
-      "moves": "e1e5 g5c1 g1g2 f5h3 g2h3 f6f3",
-      "rating": 1178,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "endgame",
-        "long"
-      ],
-      "url": "https://lichess.org/PCcgmLtb#51",
-      "setupMove": "Re5",
-      "lastMoveFrom": "e1",
-      "lastMoveTo": "e5",
-      "solution": "1...Qc1+ 2.Kg2 Bh3+ 3.Kxh3 Rxf3",
-      "solutionMoves": [
-        "Qc1+",
-        "Kg2",
-        "Bh3+",
-        "Kxh3",
-        "Rxf3"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "06fqR",
-      "fen": "6rk/pp4pp/5Q2/1P6/8/4PPPK/PB3q2/2R5 b - - 1 30",
-      "puzzleFen": "6rk/pp5p/5p2/1P6/8/4PPPK/PB3q2/2R5 w - - 0 31",
-      "moves": "g7f6 b2f6 g8g7 c1c8",
-      "rating": 1062,
+      "puzzleId": "00Keu",
+      "fen": "R7/1p3kp1/2pK3p/3p1PP1/1r1B2nP/8/1P6/8 b - - 2 39",
+      "puzzleFen": "R7/1p3kp1/2pK3p/3p1PP1/3r2nP/8/1P6/8 w - - 0 40",
+      "moves": "b4d4 g5g6 f7f6 a8f8",
+      "rating": 894,
       "themes": [
         "endgame",
         "mate",
         "mateIn2",
-        "pin",
         "short"
       ],
-      "url": "https://lichess.org/FtOFFbdd/black#60",
-      "setupMove": "gxf6",
-      "lastMoveFrom": "g7",
-      "lastMoveTo": "f6",
-      "solution": "1.Bxf6+ Rg7 2.Rc8#",
+      "url": "https://lichess.org/hCWa2OUn/black#78",
+      "setupMove": "Rxd4",
+      "lastMoveFrom": "b4",
+      "lastMoveTo": "d4",
+      "solution": "1.g6+ Kf6 2.Rf8#",
       "solutionMoves": [
-        "Bxf6+",
-        "Rg7",
-        "Rc8#"
+        "g6+",
+        "Kf6",
+        "Rf8#"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "04I5l",
-      "fen": "5k2/5bp1/7p/p2r4/2KB4/1PP1R1P1/P6P/8 w - - 5 36",
-      "puzzleFen": "5k2/5bp1/7p/p2r4/2KB4/1PP2RP1/P6P/8 b - - 6 36",
-      "moves": "e3f3 d5f5 c4d3 f5f3",
-      "rating": 1158,
+      "puzzleId": "0BFNX",
+      "fen": "5k2/4bp2/8/5P2/4Q1K1/1r6/8/8 w - - 9 54",
+      "puzzleFen": "5k2/4bp2/8/5P1K/4Q3/1r6/8/8 b - - 10 54",
+      "moves": "g4h5 b3h3 h5g4 h3h4 g4f3 h4e4",
+      "rating": 854,
       "themes": [
         "crushing",
-        "discoveredAttack",
-        "discoveredCheck",
         "endgame",
+        "long",
+        "master",
+        "skewer"
+      ],
+      "url": "https://lichess.org/cV6g9Grf#107",
+      "setupMove": "Kh5",
+      "lastMoveFrom": "g4",
+      "lastMoveTo": "h5",
+      "solution": "1...Rh3+ 2.Kg4 Rh4+ 3.Kf3 Rxe4",
+      "solutionMoves": [
+        "Rh3+",
+        "Kg4",
+        "Rh4+",
+        "Kf3",
+        "Rxe4"
+      ],
+      "playerColor": "black"
+    }
+  ],
+  "1100": [
+    {
+      "puzzleId": "02Oc8",
+      "fen": "8/Q5p1/4pk2/p2q4/P1pn4/8/5PPP/R5K1 w - - 2 29",
+      "puzzleFen": "8/Q5p1/4pk2/p2q4/P1pn4/8/5PPP/3R2K1 b - - 3 29",
+      "moves": "a1d1 d4e2 g1f1 d5d1",
+      "rating": 1080,
+      "themes": [
+        "discoveredAttack",
+        "endgame",
+        "mate",
+        "mateIn2",
         "short"
       ],
-      "url": "https://lichess.org/uBo3xWMr#71",
-      "setupMove": "Rf3",
-      "lastMoveFrom": "e3",
-      "lastMoveTo": "f3",
-      "solution": "1...Rf5+ 2.Kd3 Rxf3+",
+      "url": "https://lichess.org/AmB0sTp9#57",
+      "setupMove": "Rd1",
+      "lastMoveFrom": "a1",
+      "lastMoveTo": "d1",
+      "solution": "1...Ne2+ 2.Kf1 Qxd1#",
       "solutionMoves": [
-        "Rf5+",
-        "Kd3",
-        "Rxf3+"
+        "Ne2+",
+        "Kf1",
+        "Qxd1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "001xl",
-      "fen": "8/4R1k1/p5pp/3B4/5q2/8/5P1P/6K1 b - - 5 40",
-      "puzzleFen": "8/4R3/p4kpp/3B4/5q2/8/5P1P/6K1 w - - 6 41",
-      "moves": "g7f6 e7f7 f6e5 f7f4",
-      "rating": 1126,
+      "puzzleId": "09gK3",
+      "fen": "3r1rk1/p1Qn1ppp/1p1R4/8/8/Pq2P3/5PPP/3R2K1 w - - 2 22",
+      "puzzleFen": "3r1rk1/p1QR1ppp/1p6/8/8/Pq2P3/5PPP/3R2K1 b - - 0 22",
+      "moves": "d6d7 b3d1 d7d1 d8d1",
+      "rating": 1162,
       "themes": [
-        "advantage",
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "url": "https://lichess.org/eYPdsqEL#43",
+      "setupMove": "Rxd7",
+      "lastMoveFrom": "d6",
+      "lastMoveTo": "d7",
+      "solution": "1...Qxd1+ 2.Rxd1 Rxd1#",
+      "solutionMoves": [
+        "Qxd1+",
+        "Rxd1",
+        "Rxd1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "03eh3",
+      "fen": "r5rk/1bq2pp1/p4n1p/2p2BQ1/1p3p2/3p3R/PPP3PP/R5K1 b - - 1 24",
+      "puzzleFen": "r5rk/1bq2pp1/p6p/2p2BQ1/1p2np2/3p3R/PPP3PP/R5K1 w - - 2 25",
+      "moves": "f6e4 h3h6 g7h6 g5h6",
+      "rating": 1064,
+      "themes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/YZ7Q9Bvv/black#48",
+      "setupMove": "Ne4",
+      "lastMoveFrom": "f6",
+      "lastMoveTo": "e4",
+      "solution": "1.Rxh6+ gxh6 2.Qxh6#",
+      "solutionMoves": [
+        "Rxh6+",
+        "gxh6",
+        "Qxh6#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "006HV",
+      "fen": "1r6/5k2/2p1pNp1/p5Pp/1pQ1P2P/2P4R/KP3P2/3q4 w - - 4 31",
+      "puzzleFen": "1r6/5k2/2Q1pNp1/p5Pp/1p2P2P/2P4R/KP3P2/3q4 b - - 0 31",
+      "moves": "c4c6 b4b3 a2a3 d1a1",
+      "rating": 1135,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/ibb2c72C#61",
+      "setupMove": "Qxc6",
+      "lastMoveFrom": "c4",
+      "lastMoveTo": "c6",
+      "solution": "1...b3+ 2.Ka3 Qa1#",
+      "solutionMoves": [
+        "b3+",
+        "Ka3",
+        "Qa1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "05bPj",
+      "fen": "r7/1p2b2k/pq4p1/4pr1n/2P2p2/PN1Q1P2/1P1B2PP/3R1R1K w - - 3 22",
+      "puzzleFen": "r7/1p2b2k/pq4p1/B3pr1n/2P2p2/PN1Q1P2/1P4PP/3R1R1K b - - 4 22",
+      "moves": "d2a5 h5g3 h2g3 f5h5",
+      "rating": 1087,
+      "themes": [
+        "clearance",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/A8IxcPqI#43",
+      "setupMove": "Ba5",
+      "lastMoveFrom": "d2",
+      "lastMoveTo": "a5",
+      "solution": "1...Ng3+ 2.hxg3 Rh5#",
+      "solutionMoves": [
+        "Ng3+",
+        "hxg3",
+        "Rh5#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "0CuNM",
+      "fen": "4r1k1/1p3Qpp/1p1p4/2p5/3Pr3/q1P1P3/P5PP/4RRK1 b - - 0 21",
+      "puzzleFen": "4r2k/1p3Qpp/1p1p4/2p5/3Pr3/q1P1P3/P5PP/4RRK1 w - - 1 22",
+      "moves": "g8h8 f7f8 e8f8 f1f8",
+      "rating": 988,
+      "themes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/CCvhZAX6/black#42",
+      "setupMove": "Kh8",
+      "lastMoveFrom": "g8",
+      "lastMoveTo": "h8",
+      "solution": "1.Qf8+ Rxf8 2.Rxf8#",
+      "solutionMoves": [
+        "Qf8+",
+        "Rxf8",
+        "Rxf8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01Kz0",
+      "fen": "4rr2/RQ4pk/2p2q1p/8/8/1P1P4/2P2PPP/5RK1 w - - 3 29",
+      "puzzleFen": "4rr2/1Q4pk/R1p2q1p/8/8/1P1P4/2P2PPP/5RK1 b - - 4 29",
+      "moves": "a7a6 f6f2 f1f2 e8e1 f2f1 e1f1",
+      "rating": 1156,
+      "themes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/Q262mNXq#57",
+      "setupMove": "Ra6",
+      "lastMoveFrom": "a7",
+      "lastMoveTo": "a6",
+      "solution": "1...Qxf2+ 2.Rxf2 Re1+ 3.Rf1 Rexf1#",
+      "solutionMoves": [
+        "Qxf2+",
+        "Rxf2",
+        "Re1+",
+        "Rf1",
+        "Rexf1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00TQf",
+      "fen": "4r1k1/p1R1n2p/4N3/5rK1/8/6PP/P3R3/8 w - - 3 46",
+      "puzzleFen": "4r1k1/p1R1n2p/4N3/5r2/6K1/6PP/P3R3/8 b - - 4 46",
+      "moves": "g5g4 h7h5 g4h4 e7g6",
+      "rating": 1195,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/aPLWBAFg#91",
+      "setupMove": "Kg4",
+      "lastMoveFrom": "g5",
+      "lastMoveTo": "g4",
+      "solution": "1...h5+ 2.Kh4 Ng6#",
+      "solutionMoves": [
+        "h5+",
+        "Kh4",
+        "Ng6#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00KYU",
+      "fen": "3r4/p2n2kp/1p2Bpp1/2r2N2/4q3/6QP/P5P1/5R1K b - - 1 40",
+      "puzzleFen": "3r1k2/p2n3p/1p2Bpp1/2r2N2/4q3/6QP/P5P1/5R1K w - - 2 41",
+      "moves": "g7f8 g3d6 f8e8 d6e7",
+      "rating": 1198,
+      "themes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/UlNVmHbT/black#80",
+      "setupMove": "Kf8",
+      "lastMoveFrom": "g7",
+      "lastMoveTo": "f8",
+      "solution": "1.Qd6+ Ke8 2.Qe7#",
+      "solutionMoves": [
+        "Qd6+",
+        "Ke8",
+        "Qe7#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00KOz",
+      "fen": "8/r4k2/7R/5PK1/1n6/8/8/8 b - - 3 56",
+      "puzzleFen": "8/r4k2/7R/3n1PK1/8/8/8/8 w - - 4 57",
+      "moves": "b4d5 h6h7 f7f8 h7a7",
+      "rating": 968,
+      "themes": [
+        "crushing",
         "endgame",
         "master",
-        "masterVsMaster",
         "short",
-        "skewer",
-        "superGM"
+        "skewer"
       ],
-      "url": "https://lichess.org/bEQkfPQD/black#80",
-      "setupMove": "Kf6",
-      "lastMoveFrom": "g7",
-      "lastMoveTo": "f6",
-      "solution": "1.Rf7+ Ke5 2.Rxf4",
+      "url": "https://lichess.org/QVprMNzR/black#112",
+      "setupMove": "Nd5",
+      "lastMoveFrom": "b4",
+      "lastMoveTo": "d5",
+      "solution": "1.Rh7+ Kf8 2.Rxa7",
       "solutionMoves": [
-        "Rf7+",
-        "Ke5",
-        "Rxf4"
+        "Rh7+",
+        "Kf8",
+        "Rxa7"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01IFU",
+      "fen": "r1b2rk1/pp3pp1/3b3p/3Bn3/P2N1q2/2P4P/1P3PP1/RN1Q1RK1 w - - 1 17",
+      "puzzleFen": "r1b2rk1/pp3pp1/3b3p/3Bn3/P4q2/2P4P/1P2NPP1/RN1Q1RK1 b - - 2 17",
+      "moves": "d4e2 e5f3 g2f3 f4h2",
+      "rating": 1097,
+      "themes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "opening",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/0kHqIPwO#33",
+      "setupMove": "Ne2",
+      "lastMoveFrom": "d4",
+      "lastMoveTo": "e2",
+      "solution": "1...Nf3+ 2.gxf3 Qh2#",
+      "solutionMoves": [
+        "Nf3+",
+        "gxf3",
+        "Qh2#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00cud",
+      "fen": "8/5p2/6p1/1p1N1k2/1PbK4/2P3P1/8/8 b - - 0 48",
+      "puzzleFen": "8/5p2/6p1/1p1N1k2/1P1K4/2P3P1/8/5b2 w - - 1 49",
+      "moves": "c4f1 d5e3 f5e6 e3f1",
+      "rating": 955,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "master",
+        "short"
+      ],
+      "url": "https://lichess.org/XdT6vR6T/black#96",
+      "setupMove": "Bf1",
+      "lastMoveFrom": "c4",
+      "lastMoveTo": "f1",
+      "solution": "1.Ne3+ Ke6 2.Nxf1",
+      "solutionMoves": [
+        "Ne3+",
+        "Ke6",
+        "Nxf1"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00tsE",
+      "fen": "2rq1k2/5ppp/p7/1p6/5Q2/2P5/P1P2PPP/4RK2 b - - 7 22",
+      "puzzleFen": "3q1k2/5ppp/p7/1p6/5Q2/2r5/P1P2PPP/4RK2 w - - 0 23",
+      "moves": "c8c3 f4b4 f8g8 b4c3",
+      "rating": 1083,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "short"
+      ],
+      "url": "https://lichess.org/I2FQvxn0/black#44",
+      "setupMove": "Rxc3",
+      "lastMoveFrom": "c8",
+      "lastMoveTo": "c3",
+      "solution": "1.Qb4+ Kg8 2.Qxc3",
+      "solutionMoves": [
+        "Qb4+",
+        "Kg8",
+        "Qxc3"
       ],
       "playerColor": "white"
     },
@@ -1337,234 +1362,319 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "005nD",
-      "fen": "3rk2r/2qn1pp1/p1Q1R3/3n3p/8/8/PP4PP/5R1K b k - 0 23",
-      "puzzleFen": "3rk2r/2qn2p1/p1Q1p3/3n3p/8/8/PP4PP/5R1K w k - 0 24",
-      "moves": "f7e6 c6e6 d5e7 e6f7",
-      "rating": 1128,
+      "puzzleId": "06Uu3",
+      "fen": "8/2Qbrkp1/2p1qpp1/1p2p3/4P3/2P2N2/5RP1/6K1 b - - 3 36",
+      "puzzleFen": "4b3/2Q1rkp1/2p1qpp1/1p2p3/4P3/2P2N2/5RP1/6K1 w - - 4 37",
+      "moves": "d7e8 f3g5 f7g8 g5e6 e7c7 e6c7",
+      "rating": 1126,
       "themes": [
-        "fork",
+        "advantage",
+        "endgame",
+        "long",
+        "pin"
+      ],
+      "url": "https://lichess.org/xpJxcvSm/black#72",
+      "setupMove": "Be8",
+      "lastMoveFrom": "d7",
+      "lastMoveTo": "e8",
+      "solution": "1.Ng5+ Kg8 2.Nxe6 Rxc7 3.Nxc7",
+      "solutionMoves": [
+        "Ng5+",
+        "Kg8",
+        "Nxe6",
+        "Rxc7",
+        "Nxc7"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00zNz",
+      "fen": "r1bqk2r/pp1np1bp/2p3p1/3pNB2/3P1B2/4P3/PPP2PPP/R2QK2R b KQkq - 0 10",
+      "puzzleFen": "r1bqk2r/pp1np1bp/2p5/3pNp2/3P1B2/4P3/PPP2PPP/R2QK2R w KQkq - 0 11",
+      "moves": "g6f5 d1h5 e8f8 h5f7",
+      "rating": 1103,
+      "themes": [
         "mate",
         "mateIn2",
-        "middlegame",
+        "opening",
         "short"
       ],
-      "url": "https://lichess.org/hlgaj6lV/black#46",
-      "setupMove": "fxe6",
-      "lastMoveFrom": "f7",
-      "lastMoveTo": "e6",
-      "solution": "1.Qxe6+ Ne7 2.Qf7#",
+      "url": "https://lichess.org/kZTBqbqj/black#20",
+      "setupMove": "gxf5",
+      "lastMoveFrom": "g6",
+      "lastMoveTo": "f5",
+      "solution": "1.Qh5+ Kf8 2.Qf7#",
       "solutionMoves": [
-        "Qxe6+",
-        "Ne7",
+        "Qh5+",
+        "Kf8",
         "Qf7#"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "01GXf",
-      "fen": "r3k2r/pR2bppp/4p3/3N4/8/8/P4PPP/4R1K1 b kq - 0 20",
-      "puzzleFen": "r3k2r/pR3ppp/4pb2/3N4/8/8/P4PPP/4R1K1 w kq - 1 21",
-      "moves": "e7f6 d5c7 e8f8 c7a8",
-      "rating": 1126,
+      "puzzleId": "04Az3",
+      "fen": "4r1k1/1p3pp1/p5r1/2P4p/4P3/P2PQNq1/8/R3RK2 w - - 2 32",
+      "puzzleFen": "4r1k1/1p3pp1/p5r1/2P4p/4P3/P2P1Nq1/5Q2/R3RK2 b - - 3 32",
+      "moves": "e3f2 g3h3 f1e2 g6g2 e2e3 g2f2",
+      "rating": 1198,
       "themes": [
+        "clearance",
         "crushing",
-        "endgame",
-        "fork",
-        "short"
-      ],
-      "url": "https://lichess.org/iduwCdmp/black#40",
-      "setupMove": "Bf6",
-      "lastMoveFrom": "e7",
-      "lastMoveTo": "f6",
-      "solution": "1.Nc7+ Kf8 2.Nxa8",
-      "solutionMoves": [
-        "Nc7+",
-        "Kf8",
-        "Nxa8"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "08Zja",
-      "fen": "6rk/1b3p1Q/p1q2Pp1/1p1r4/3p1R2/P2B4/1PPR2PP/7K b - - 0 31",
-      "puzzleFen": "6r1/1b3p1k/p1q2Pp1/1p1r4/3p1R2/P2B4/1PPR2PP/7K w - - 0 32",
-      "moves": "h8h7 f4h4 d5h5 h4h5",
-      "rating": 1167,
-      "themes": [
-        "mate",
-        "mateIn2",
+        "long",
         "middlegame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/5gUaZ32g/black#62",
-      "setupMove": "Kxh7",
-      "lastMoveFrom": "h8",
-      "lastMoveTo": "h7",
-      "solution": "1.Rh4+ Rh5 2.Rxh5#",
-      "solutionMoves": [
-        "Rh4+",
-        "Rh5",
-        "Rxh5#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "02X70",
-      "fen": "5rk1/5ppp/rn6/2Q3P1/1p5P/qP6/P3R3/1K1R4 b - - 2 27",
-      "puzzleFen": "5rk1/5ppp/rn6/q1Q3P1/1p5P/1P6/P3R3/1K1R4 w - - 3 28",
-      "moves": "a3a5 c5f8 g8f8 d1d8",
-      "rating": 1116,
-      "themes": [
-        "attraction",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "url": "https://lichess.org/ZSZSv3ld/black#54",
-      "setupMove": "Qa5",
-      "lastMoveFrom": "a3",
-      "lastMoveTo": "a5",
-      "solution": "1.Qxf8+ Kxf8 2.Rd8#",
-      "solutionMoves": [
-        "Qxf8+",
-        "Kxf8",
-        "Rd8#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00jPw",
-      "fen": "r3r1k1/ppp2p2/1b5Q/3PP2n/2B3bq/2N5/PP4PP/R4R1K w - - 1 18",
-      "puzzleFen": "r3r1k1/ppp2R2/1b5Q/3PP2n/2B3bq/2N5/PP4PP/R6K b - - 0 18",
-      "moves": "f1f7 h5g3",
-      "rating": 1082,
-      "themes": [
-        "mate",
-        "mateIn1",
-        "middlegame",
-        "oneMove",
         "pin"
       ],
-      "url": "https://lichess.org/rMGqxihy#35",
-      "setupMove": "Rxf7",
-      "lastMoveFrom": "f1",
-      "lastMoveTo": "f7",
-      "solution": "1...Ng3#",
+      "url": "https://lichess.org/qpm1voJ6#63",
+      "setupMove": "Qf2",
+      "lastMoveFrom": "e3",
+      "lastMoveTo": "f2",
+      "solution": "1...Qh3+ 2.Ke2 Rg2 3.Ke3 Rxf2",
       "solutionMoves": [
-        "Ng3#"
+        "Qh3+",
+        "Ke2",
+        "Rg2",
+        "Ke3",
+        "Rxf2"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "003eP",
-      "fen": "8/r1b1q2k/2p3p1/2Pp4/1P2p1n1/2B1P3/NQ6/2K4R b - - 1 36",
-      "puzzleFen": "6k1/r1b1q3/2p3p1/2Pp4/1P2p1n1/2B1P3/NQ6/2K4R w - - 2 37",
-      "moves": "h7g8 h1h8 g8f7 h8h7 f7e8 h7e7",
-      "rating": 1156,
+      "puzzleId": "01U4x",
+      "fen": "r3k2r/ppp2ppp/n3b3/1N1p1q2/3P4/1BP5/PP4PP/R1BQ3K b kq - 0 14",
+      "puzzleFen": "r3k2r/pp3ppp/n1p1b3/1N1p1q2/3P4/1BP5/PP4PP/R1BQ3K w kq - 0 15",
+      "moves": "c7c6 b5d6 e8d7 d6f5",
+      "rating": 1166,
       "themes": [
-        "crushing",
-        "exposedKing",
-        "long",
+        "advantage",
+        "fork",
         "middlegame",
-        "skewer"
+        "short"
       ],
-      "url": "https://lichess.org/n9vCFmKh/black#72",
-      "setupMove": "Kg8",
-      "lastMoveFrom": "h7",
-      "lastMoveTo": "g8",
-      "solution": "1.Rh8+ Kf7 2.Rh7+ Ke8 3.Rxe7+",
+      "url": "https://lichess.org/FCqaqSp8/black#28",
+      "setupMove": "c6",
+      "lastMoveFrom": "c7",
+      "lastMoveTo": "c6",
+      "solution": "1.Nd6+ Kd7 2.Nxf5",
       "solutionMoves": [
-        "Rh8+",
-        "Kf7",
-        "Rh7+",
-        "Ke8",
-        "Rxe7+"
+        "Nd6+",
+        "Kd7",
+        "Nxf5"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "00qX2",
-      "fen": "1r2r2k/Q1R4p/4q1p1/4Bb2/8/8/PP3PPP/3R2K1 b - - 0 28",
-      "puzzleFen": "1r2r2k/Q1R4p/6p1/4qb2/8/8/PP3PPP/3R2K1 w - - 0 29",
-      "moves": "e6e5 c7h7 h8g8 a7f7",
-      "rating": 1193,
+      "puzzleId": "06fqR",
+      "fen": "6rk/pp4pp/5Q2/1P6/8/4PPPK/PB3q2/2R5 b - - 1 30",
+      "puzzleFen": "6rk/pp5p/5p2/1P6/8/4PPPK/PB3q2/2R5 w - - 0 31",
+      "moves": "g7f6 b2f6 g8g7 c1c8",
+      "rating": 1062,
       "themes": [
+        "endgame",
         "mate",
         "mateIn2",
-        "middlegame",
-        "short",
-        "triangleMate"
+        "pin",
+        "short"
       ],
-      "url": "https://lichess.org/aDxQAOeN/black#56",
-      "setupMove": "Qxe5",
-      "lastMoveFrom": "e6",
-      "lastMoveTo": "e5",
-      "solution": "1.Rxh7+ Kg8 2.Qf7#",
+      "url": "https://lichess.org/FtOFFbdd/black#60",
+      "setupMove": "gxf6",
+      "lastMoveFrom": "g7",
+      "lastMoveTo": "f6",
+      "solution": "1.Bxf6+ Rg7 2.Rc8#",
       "solutionMoves": [
-        "Rxh7+",
+        "Bxf6+",
+        "Rg7",
+        "Rc8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "074BS",
+      "fen": "3r1r1k/1b2npR1/p3pq2/1p1p2Rp/4P3/8/PPPQB2P/7K b - - 3 27",
+      "puzzleFen": "3r1r1k/1b3pR1/p3pqn1/1p1p2Rp/4P3/8/PPPQB2P/7K w - - 4 28",
+      "moves": "e7g6 g5h5 h8g7 d2h6 g7g8 h6h7",
+      "rating": 1174,
+      "themes": [
+        "exposedKing",
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/6IG0jOXT/black#54",
+      "setupMove": "Ng6",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "g6",
+      "solution": "1.Rxh5+ Kxg7 2.Qh6+ Kg8 3.Qh7#",
+      "solutionMoves": [
+        "Rxh5+",
+        "Kxg7",
+        "Qh6+",
         "Kg8",
-        "Qf7#"
+        "Qh7#"
       ],
       "playerColor": "white"
     }
   ],
   "1400": [
     {
-      "puzzleId": "0263h",
-      "fen": "1r3r1k/ppp2pp1/8/8/1nP5/1P5R/PbBq1PPP/1Q4K1 b - - 1 20",
-      "puzzleFen": "1r3rk1/ppp2pp1/8/8/1nP5/1P5R/PbBq1PPP/1Q4K1 w - - 2 21",
-      "moves": "h8g8 c2h7 g8h8 h7g8 d2h6 h3h6 g7h6 b1h7",
-      "rating": 1311,
+      "puzzleId": "029wQ",
+      "fen": "r7/pp1q2bk/3p2p1/2pN3p/2Pn1Q2/3P3P/PP4PN/R5K1 b - - 0 22",
+      "puzzleFen": "r7/pp1q3k/3p2p1/2pNb2p/2Pn1Q2/3P3P/PP4PN/R5K1 w - - 1 23",
+      "moves": "g7e5 f4e5 d6e5 d5f6 h7h6 f6d7",
+      "rating": 1561,
       "themes": [
-        "discoveredAttack",
-        "discoveredCheck",
-        "kingsideAttack",
+        "advantage",
+        "fork",
+        "long",
+        "middlegame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/xciNJzzi/black#44",
+      "setupMove": "Be5",
+      "lastMoveFrom": "g7",
+      "lastMoveTo": "e5",
+      "solution": "1.Qxe5 dxe5 2.Nf6+ Kh6 3.Nxd7",
+      "solutionMoves": [
+        "Qxe5",
+        "dxe5",
+        "Nf6+",
+        "Kh6",
+        "Nxd7"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "09xRv",
+      "fen": "6k1/6pp/Q3pp2/3p3q/2pP1P2/2P2NP1/Pr6/4R1K1 b - - 2 33",
+      "puzzleFen": "6k1/6pp/Q3pp2/3p4/2pP1P2/2P2qP1/Pr6/4R1K1 w - - 0 34",
+      "moves": "h5f3 a6e6 g8h8 e6c8",
+      "rating": 1418,
+      "themes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/pi3IVHZt/black#66",
+      "setupMove": "Qxf3",
+      "lastMoveFrom": "h5",
+      "lastMoveTo": "f3",
+      "solution": "1.Qxe6+ Kh8 2.Qc8#",
+      "solutionMoves": [
+        "Qxe6+",
+        "Kh8",
+        "Qc8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00761",
+      "fen": "3r2k1/1b3pbR/p2P2P1/3p2N1/2p5/2P2N2/PP6/2K5 b - - 0 28",
+      "puzzleFen": "3r2k1/1b4bR/p2P2p1/3p2N1/2p5/2P2N2/PP6/2K5 w - - 0 29",
+      "moves": "f7g6 h7g7 g8g7 g5e6 g7g8 e6d8",
+      "rating": 1524,
+      "themes": [
+        "attraction",
+        "crushing",
+        "endgame",
+        "exposedKing",
+        "fork",
+        "long",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/vu70Maig/black#56",
+      "setupMove": "fxg6",
+      "lastMoveFrom": "f7",
+      "lastMoveTo": "g6",
+      "solution": "1.Rxg7+ Kxg7 2.Ne6+ Kg8 3.Nxd8",
+      "solutionMoves": [
+        "Rxg7+",
+        "Kxg7",
+        "Ne6+",
+        "Kg8",
+        "Nxd8"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01PBg",
+      "fen": "5r2/2p2pbk/4p1p1/5n1p/1q3P1P/pP3Q2/P5P1/1BBR3K b - - 1 28",
+      "puzzleFen": "5r2/2p2pbk/4p1p1/7p/1q3P1n/pP3Q2/P5P1/1BBR3K w - - 0 29",
+      "moves": "f5h4 f3h5 h7g8 h5h4",
+      "rating": 1365,
+      "themes": [
+        "advantage",
+        "middlegame",
+        "pin",
+        "short"
+      ],
+      "url": "https://lichess.org/1LECkn6C/black#56",
+      "setupMove": "Nxh4",
+      "lastMoveFrom": "f5",
+      "lastMoveTo": "h4",
+      "solution": "1.Qxh5+ Kg8 2.Qxh4",
+      "solutionMoves": [
+        "Qxh5+",
+        "Kg8",
+        "Qxh4"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01CQ7",
+      "fen": "1n3r1k/p5pp/8/7Q/4P3/2NP4/PPPB2qP/R2KRr2 w - - 3 21",
+      "puzzleFen": "1n3r1k/p5pp/8/7Q/4P3/2NPB3/PPP3qP/R2KRr2 b - - 4 21",
+      "moves": "d2e3 f1e1 d1e1 f8f1",
+      "rating": 1440,
+      "themes": [
+        "attraction",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/yu8CZvqe#41",
+      "setupMove": "Be3",
+      "lastMoveFrom": "d2",
+      "lastMoveTo": "e3",
+      "solution": "1...Rxe1+ 2.Kxe1 Rf1#",
+      "solutionMoves": [
+        "Rxe1+",
+        "Kxe1",
+        "Rf1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "0RHWa",
+      "fen": "5rk1/pb5p/1p6/1QppN3/4nr1q/2P5/PP2B1PP/R4RK1 w - - 0 27",
+      "puzzleFen": "5rk1/pb1Q3p/1p6/2ppN3/4nr1q/2P5/PP2B1PP/R4RK1 b - - 1 27",
+      "moves": "b5d7 f4f1 e2f1 h4f2 g1h1 f2f1 a1f1 f8f1",
+      "rating": 1413,
+      "themes": [
+        "backRankMate",
+        "deflection",
         "mate",
         "mateIn4",
         "middlegame",
         "veryLong"
       ],
-      "url": "https://lichess.org/dyWVsY5L/black#40",
-      "setupMove": "Kg8",
-      "lastMoveFrom": "h8",
-      "lastMoveTo": "g8",
-      "solution": "1.Bh7+ Kh8 2.Bg8+ Qh6 3.Rxh6+ gxh6 4.Qh7#",
+      "url": "https://lichess.org/i5zvWMfj#53",
+      "setupMove": "Qd7",
+      "lastMoveFrom": "b5",
+      "lastMoveTo": "d7",
+      "solution": "1...Rxf1+ 2.Bxf1 Qf2+ 3.Kh1 Qxf1+ 4.Rxf1 Rxf1#",
       "solutionMoves": [
-        "Bh7+",
-        "Kh8",
-        "Bg8+",
-        "Qh6",
-        "Rxh6+",
-        "gxh6",
-        "Qh7#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "02z15",
-      "fen": "r6k/qb3Q1p/p4p2/2p5/1P6/2P2N2/P4PrP/R3R1K1 w - - 0 21",
-      "puzzleFen": "r6k/qb3Q1p/p4p2/2p5/1P6/2P2N2/P4PKP/R3R3 b - - 0 21",
-      "moves": "g1g2 b7f3 g2f3 a7f7",
-      "rating": 1342,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/lTdfU4st#41",
-      "setupMove": "Kxg2",
-      "lastMoveFrom": "g1",
-      "lastMoveTo": "g2",
-      "solution": "1...Bxf3+ 2.Kxf3 Qxf7",
-      "solutionMoves": [
-        "Bxf3+",
-        "Kxf3",
-        "Qxf7"
+        "Rxf1+",
+        "Bxf1",
+        "Qf2+",
+        "Kh1",
+        "Qxf1+",
+        "Rxf1",
+        "Rxf1#"
       ],
       "playerColor": "black"
     },
@@ -1597,30 +1707,29 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "0017R",
-      "fen": "r2qk2r/pp2ppbp/1n1p2p1/3Pn3/2P5/2NBBP1P/PP3P2/R2QK2R b KQkq - 0 12",
-      "puzzleFen": "r2qk2r/pp2ppbp/1n1p2p1/3P4/2n5/2NBBP1P/PP3P2/R2QK2R w KQkq - 0 13",
-      "moves": "e5c4 d3c4 b6c4 d1a4 d8d7 a4c4",
-      "rating": 1548,
+      "puzzleId": "021GH",
+      "fen": "6Q1/pp4p1/3R3p/7k/2P4n/4P2P/5qPK/8 w - - 6 37",
+      "puzzleFen": "8/pp4Q1/3R3p/7k/2P4n/4P2P/5qPK/8 b - - 0 37",
+      "moves": "g8g7 h4f3 h2h1 f2e1",
+      "rating": 1287,
       "themes": [
-        "advantage",
-        "fork",
-        "long",
-        "middlegame"
+        "endgame",
+        "mate",
+        "mateIn2",
+        "pin",
+        "short"
       ],
-      "url": "https://lichess.org/ol84k0z4/black#24",
-      "setupMove": "Nexc4",
-      "lastMoveFrom": "e5",
-      "lastMoveTo": "c4",
-      "solution": "1.Bxc4 Nxc4 2.Qa4+ Qd7 3.Qxc4",
+      "url": "https://lichess.org/ZLiap2Hf#73",
+      "setupMove": "Qxg7",
+      "lastMoveFrom": "g8",
+      "lastMoveTo": "g7",
+      "solution": "1...Nf3+ 2.Kh1 Qe1#",
       "solutionMoves": [
-        "Bxc4",
-        "Nxc4",
-        "Qa4+",
-        "Qd7",
-        "Qxc4"
+        "Nf3+",
+        "Kh1",
+        "Qe1#"
       ],
-      "playerColor": "white"
+      "playerColor": "black"
     },
     {
       "puzzleId": "02cdm",
@@ -1650,457 +1759,11 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "00Aas",
-      "fen": "3r1rk1/1p2q1pp/5p2/8/1P1n4/6Q1/PPbB1PPP/R2B1RK1 w - - 9 20",
-      "puzzleFen": "3r1rk1/1p2q1pp/5p2/8/1P1n4/6Q1/PPBB1PPP/R4RK1 b - - 0 20",
-      "moves": "d1c2 d4e2 g1h1 e2g3 f2g3 d8d2",
-      "rating": 1235,
-      "themes": [
-        "crushing",
-        "fork",
-        "long",
-        "middlegame"
-      ],
-      "url": "https://lichess.org/wYjuq3zz#39",
-      "setupMove": "Bxc2",
-      "lastMoveFrom": "d1",
-      "lastMoveTo": "c2",
-      "solution": "1...Ne2+ 2.Kh1 Nxg3+ 3.fxg3 Rxd2",
-      "solutionMoves": [
-        "Ne2+",
-        "Kh1",
-        "Nxg3+",
-        "fxg3",
-        "Rxd2"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "00WqT",
-      "fen": "r4r2/1ppb1p2/p2p2pk/5P2/4P3/2PBB1R1/PKP2P1q/8 b - - 4 26",
-      "puzzleFen": "r4r2/1ppb1p2/p2p2p1/5P1k/4P3/2PBB1R1/PKP2P1q/8 w - - 5 27",
-      "moves": "h6h5 d3e2 h5h4 e3g5",
-      "rating": 1537,
-      "themes": [
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/HcfiWViE/black#52",
-      "setupMove": "Kh5",
-      "lastMoveFrom": "h6",
-      "lastMoveTo": "h5",
-      "solution": "1.Be2+ Kh4 2.Bg5#",
-      "solutionMoves": [
-        "Be2+",
-        "Kh4",
-        "Bg5#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "02Ojk",
-      "fen": "r1bq2k1/pp1nbrpp/2p1pn1B/2Pp1pN1/3P4/2N4P/PPQ1PP2/R3KBR1 b Q - 4 12",
-      "puzzleFen": "r1bq2k1/pp1nbr1p/2p1pn1p/2Pp1pN1/3P4/2N4P/PPQ1PP2/R3KBR1 w Q - 0 13",
-      "moves": "g7h6 g5e6 g8h8 e6d8",
-      "rating": 1332,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "discoveredCheck",
-        "kingsideAttack",
-        "opening",
-        "short"
-      ],
-      "url": "https://lichess.org/TfYqGtEp/black#24",
-      "setupMove": "gxh6",
-      "lastMoveFrom": "g7",
-      "lastMoveTo": "h6",
-      "solution": "1.Nxe6+ Kh8 2.Nxd8",
-      "solutionMoves": [
-        "Nxe6+",
-        "Kh8",
-        "Nxd8"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "02TFJ",
-      "fen": "8/p5p1/4p2p/3p1k2/1n3P2/1B3KP1/P6P/8 b - - 4 42",
-      "puzzleFen": "8/p5p1/4p2p/3p1k2/5P2/1B1n1KP1/P6P/8 w - - 5 43",
-      "moves": "b4d3 b3c2 f5f6 c2d3",
-      "rating": 1457,
-      "themes": [
-        "crushing",
-        "endgame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/HUTx6f3z/black#84",
-      "setupMove": "Nd3",
-      "lastMoveFrom": "b4",
-      "lastMoveTo": "d3",
-      "solution": "1.Bc2 Kf6 2.Bxd3",
-      "solutionMoves": [
-        "Bc2",
-        "Kf6",
-        "Bxd3"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "013hi",
-      "fen": "2k5/bpp2B2/p1np4/4pR2/PP2P1q1/1NPP2P1/5RK1/8 b - - 6 30",
-      "puzzleFen": "2k5/1pp2B2/p1np4/4pR2/PP2P1q1/1NPP2P1/5bK1/8 w - - 0 31",
-      "moves": "a7f2 f7e6 c8d8 f5f8 d8e7 e6g4",
-      "rating": 1254,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "endgame",
-        "fork",
-        "long"
-      ],
-      "url": "https://lichess.org/Ckj1gHe9/black#60",
-      "setupMove": "Bxf2",
-      "lastMoveFrom": "a7",
-      "lastMoveTo": "f2",
-      "solution": "1.Be6+ Kd8 2.Rf8+ Ke7 3.Bxg4",
-      "solutionMoves": [
-        "Be6+",
-        "Kd8",
-        "Rf8+",
-        "Ke7",
-        "Bxg4"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "08SqC",
-      "fen": "8/5pkp/2p3p1/2p5/4PQ2/2Pq4/5PPP/1rR3K1 w - - 1 35",
-      "puzzleFen": "8/5pkp/2p3p1/2p1P3/5Q2/2Pq4/5PPP/1rR3K1 b - - 0 35",
-      "moves": "e4e5 d3d1 c1d1 b1d1",
-      "rating": 1421,
-      "themes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
-        "short",
-        "xRayAttack"
-      ],
-      "url": "https://lichess.org/WlZyqrBs#69",
-      "setupMove": "e5",
-      "lastMoveFrom": "e4",
-      "lastMoveTo": "e5",
-      "solution": "1...Qd1+ 2.Rxd1 Rxd1#",
-      "solutionMoves": [
-        "Qd1+",
-        "Rxd1",
-        "Rxd1#"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0QPvf",
-      "fen": "2Q4k/p5pp/2p5/3q4/8/7P/5rP1/1R5K b - - 2 32",
-      "puzzleFen": "2Q3qk/p5pp/2p5/8/8/7P/5rP1/1R5K w - - 3 33",
-      "moves": "d5g8 b1b8 f2f1 h1h2 g8c8 b8c8 f1f8 c8f8",
-      "rating": 1440,
-      "themes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn4",
-        "quietMove",
-        "veryLong"
-      ],
-      "url": "https://lichess.org/oD1ADLSC/black#64",
-      "setupMove": "Qg8",
-      "lastMoveFrom": "d5",
-      "lastMoveTo": "g8",
-      "solution": "1.Rb8 Rf1+ 2.Kh2 Qxc8 3.Rxc8+ Rf8 4.Rxf8#",
-      "solutionMoves": [
-        "Rb8",
-        "Rf1+",
-        "Kh2",
-        "Qxc8",
-        "Rxc8+",
-        "Rf8",
-        "Rxf8#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "04HVI",
-      "fen": "5R2/4k3/p3p2r/1pp3P1/5R2/8/PP1r4/6K1 b - - 1 39",
-      "puzzleFen": "5R2/4k3/p3p1r1/1pp3P1/5R2/8/PP1r4/6K1 w - - 2 40",
-      "moves": "h6g6 f4f7 e7d6 f8d8 d6c6 d8d2",
-      "rating": 1209,
-      "themes": [
-        "advantage",
-        "endgame",
-        "long",
-        "rookEndgame",
-        "skewer"
-      ],
-      "url": "https://lichess.org/Vyc76Cnd/black#78",
-      "setupMove": "Rg6",
-      "lastMoveFrom": "h6",
-      "lastMoveTo": "g6",
-      "solution": "1.R4f7+ Kd6 2.Rd8+ Kc6 3.Rxd2",
-      "solutionMoves": [
-        "R4f7+",
-        "Kd6",
-        "Rd8+",
-        "Kc6",
-        "Rxd2"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "01eyQ",
-      "fen": "r2qk2r/3pppb1/p5pp/1p1n4/3p3B/3P1Q2/PPP2PPP/R3RBK1 b kq - 1 14",
-      "puzzleFen": "r2qk2r/3pppb1/p4npp/1p6/3p3B/3P1Q2/PPP2PPP/R3RBK1 w kq - 2 15",
-      "moves": "d5f6 h4f6 g7f6 f3f6",
-      "rating": 1389,
-      "themes": [
-        "advantage",
-        "master",
-        "middlegame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/o185y1l3/black#28",
-      "setupMove": "Nf6",
-      "lastMoveFrom": "d5",
-      "lastMoveTo": "f6",
-      "solution": "1.Bxf6 Bxf6 2.Qxf6",
-      "solutionMoves": [
-        "Bxf6",
-        "Bxf6",
-        "Qxf6"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00eix",
-      "fen": "2r1r1k1/pb2qpbp/1p1p1np1/4P3/3B1P2/1P3BP1/PQ1N3P/1R2R1K1 b - - 0 21",
-      "puzzleFen": "2r1r1k1/p3qpbp/1p1p1np1/4P3/3B1P2/1P3bP1/PQ1N3P/1R2R1K1 w - - 0 22",
-      "moves": "b7f3 e5f6 e7e1 b1e1 e8e1 g1f2",
-      "rating": 1437,
-      "themes": [
-        "crushing",
-        "fork",
-        "long",
-        "middlegame"
-      ],
-      "url": "https://lichess.org/g5Z6vAB2/black#42",
-      "setupMove": "Bxf3",
-      "lastMoveFrom": "b7",
-      "lastMoveTo": "f3",
-      "solution": "1.exf6 Qxe1+ 2.Rxe1 Rxe1+ 3.Kf2",
-      "solutionMoves": [
-        "exf6",
-        "Qxe1+",
-        "Rxe1",
-        "Rxe1+",
-        "Kf2"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "08xqh",
-      "fen": "4rrk1/pppbQp1p/5npB/3P4/8/2N3R1/P1q2PPP/1R4K1 w - - 2 20",
-      "puzzleFen": "4rrk1/pppb1p1p/5QpB/3P4/8/2N3R1/P1q2PPP/1R4K1 b - - 0 20",
-      "moves": "e7f6 c2b1 c3b1 e8e1",
-      "rating": 1337,
-      "themes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "url": "https://lichess.org/hyTB4IL1#39",
-      "setupMove": "Qxf6",
-      "lastMoveFrom": "e7",
-      "lastMoveTo": "f6",
-      "solution": "1...Qxb1+ 2.Nxb1 Re1#",
-      "solutionMoves": [
-        "Qxb1+",
-        "Nxb1",
-        "Re1#"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "022HT",
-      "fen": "r3k2r/ppp1qppp/2np4/2b1p3/2P1P1b1/3P1N2/PP2BPPP/R1BQK2R b KQkq - 2 8",
-      "puzzleFen": "r3k2r/ppp1qppp/3p4/2b1p3/2PnP1b1/3P1N2/PP2BPPP/R1BQK2R w KQkq - 3 9",
-      "moves": "c6d4 f3d4 c5d4 e2g4",
-      "rating": 1352,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "middlegame",
-        "short"
-      ],
-      "url": "https://lichess.org/DxRz4P05/black#16",
-      "setupMove": "Nd4",
-      "lastMoveFrom": "c6",
-      "lastMoveTo": "d4",
-      "solution": "1.Nxd4 Bxd4 2.Bxg4",
-      "solutionMoves": [
-        "Nxd4",
-        "Bxd4",
-        "Bxg4"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "021GH",
-      "fen": "6Q1/pp4p1/3R3p/7k/2P4n/4P2P/5qPK/8 w - - 6 37",
-      "puzzleFen": "8/pp4Q1/3R3p/7k/2P4n/4P2P/5qPK/8 b - - 0 37",
-      "moves": "g8g7 h4f3 h2h1 f2e1",
-      "rating": 1287,
-      "themes": [
-        "endgame",
-        "mate",
-        "mateIn2",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/ZLiap2Hf#73",
-      "setupMove": "Qxg7",
-      "lastMoveFrom": "g8",
-      "lastMoveTo": "g7",
-      "solution": "1...Nf3+ 2.Kh1 Qe1#",
-      "solutionMoves": [
-        "Nf3+",
-        "Kh1",
-        "Qe1#"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "02dUE",
-      "fen": "2k1r2r/ppq2p2/2pb4/2p2P1p/4P2P/1PQ1RpP1/P1P2P2/R1B3K1 w - - 0 23",
-      "puzzleFen": "2k1r2r/ppq2p2/2pb4/2p2P1p/4P2P/1PQ2RP1/P1P2P2/R1B3K1 b - - 0 23",
-      "moves": "e3f3 d6e5 c3e1 e5a1",
-      "rating": 1588,
-      "themes": [
-        "advantage",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "url": "https://lichess.org/5ClxWaaz#45",
-      "setupMove": "Rxf3",
-      "lastMoveFrom": "e3",
-      "lastMoveTo": "f3",
-      "solution": "1...Be5 2.Qe1 Bxa1",
-      "solutionMoves": [
-        "Be5",
-        "Qe1",
-        "Bxa1"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0LybU",
-      "fen": "Rr4k1/5ppp/4p3/3p4/2qPn2Q/4P1PP/R4P1K/2r5 b - - 2 29",
-      "puzzleFen": "Rr4k1/5ppp/4p3/3p4/2qPn2Q/4P1PP/R4P1K/1r6 w - - 3 30",
-      "moves": "c1b1 h4d8 b8d8 a8d8",
-      "rating": 1345,
-      "themes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short",
-        "xRayAttack"
-      ],
-      "url": "https://lichess.org/ImUbC4w3/black#58",
-      "setupMove": "Rb1",
-      "lastMoveFrom": "c1",
-      "lastMoveTo": "b1",
-      "solution": "1.Qd8+ Rxd8 2.Rxd8#",
-      "solutionMoves": [
-        "Qd8+",
-        "Rxd8",
-        "Rxd8#"
-      ],
-      "playerColor": "white"
-    }
-  ],
-  "1700": [
-    {
-      "puzzleId": "03iTQ",
-      "fen": "r1bq2k1/pp1n1pb1/5npp/3N4/1PP5/P3r2N/1B2B1PP/R2Q1RK1 b - - 1 16",
-      "puzzleFen": "r1bqr1k1/pp1n1pb1/5npp/3N4/1PP5/P6N/1B2B1PP/R2Q1RK1 w - - 2 17",
-      "moves": "e3e8 d5f6 d7f6 d1d8 e8d8 b2f6 g7f6 f1f6",
-      "rating": 1736,
-      "themes": [
-        "crushing",
-        "discoveredAttack",
-        "fork",
-        "opening",
-        "pin",
-        "veryLong"
-      ],
-      "url": "https://lichess.org/qR7lDoBt/black#32",
-      "setupMove": "Re8",
-      "lastMoveFrom": "e3",
-      "lastMoveTo": "e8",
-      "solution": "1.Nxf6+ Nxf6 2.Qxd8 Rxd8 3.Bxf6 Bxf6 4.Rxf6",
-      "solutionMoves": [
-        "Nxf6+",
-        "Nxf6",
-        "Qxd8",
-        "Rxd8",
-        "Bxf6",
-        "Bxf6",
-        "Rxf6"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "015Di",
-      "fen": "r2k1bnr/p1pp1Bpp/1p3q2/4N1B1/3p4/2P5/PP2QPbP/RN2K2R b KQ - 2 10",
-      "puzzleFen": "r2k1bnr/p1pp1Bpp/1p6/4N1q1/3p4/2P5/PP2QPbP/RN2K2R w KQ - 0 11",
-      "moves": "f6g5 e5c6 g2c6 e2e8",
-      "rating": 1678,
-      "themes": [
-        "clearance",
-        "mate",
-        "mateIn2",
-        "opening",
-        "sacrifice",
-        "short"
-      ],
-      "url": "https://lichess.org/T3BCr5TM/black#20",
-      "setupMove": "Qxg5",
-      "lastMoveFrom": "f6",
-      "lastMoveTo": "g5",
-      "solution": "1.Nc6+ Bxc6 2.Qe8#",
-      "solutionMoves": [
-        "Nc6+",
-        "Bxc6",
-        "Qe8#"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "0kRIT",
-      "fen": "3r2k1/1p3p2/5p1B/5Q2/3r4/8/Pq3PPP/R1R3K1 w - - 1 27",
-      "puzzleFen": "3r2k1/1p3p2/5Q1B/8/3r4/8/Pq3PPP/R1R3K1 b - - 0 27",
-      "moves": "f5f6 b2c1 a1c1 d4d1 c1d1 d8d1",
-      "rating": 1920,
+      "puzzleId": "0DG5n",
+      "fen": "4rr2/ppk3p1/4bqQ1/4R1N1/8/8/P4PPP/3R2K1 w - - 1 23",
+      "puzzleFen": "4rr2/ppk3p1/4RqQ1/6N1/8/8/P4PPP/3R2K1 b - - 0 23",
+      "moves": "e5e6 f6f2 g1h1 f2f1 d1f1 f8f1",
+      "rating": 1257,
       "themes": [
         "backRankMate",
         "long",
@@ -2109,69 +1772,601 @@
         "middlegame",
         "sacrifice"
       ],
-      "url": "https://lichess.org/3PY12bTg#53",
-      "setupMove": "Qxf6",
-      "lastMoveFrom": "f5",
-      "lastMoveTo": "f6",
-      "solution": "1...Qxc1+ 2.Rxc1 Rd1+ 3.Rxd1 Rxd1#",
+      "url": "https://lichess.org/HNakRsCv#45",
+      "setupMove": "Rxe6",
+      "lastMoveFrom": "e5",
+      "lastMoveTo": "e6",
+      "solution": "1...Qxf2+ 2.Kh1 Qf1+ 3.Rxf1 Rxf1#",
       "solutionMoves": [
-        "Qxc1+",
-        "Rxc1",
-        "Rd1+",
-        "Rxd1",
-        "Rxd1#"
+        "Qxf2+",
+        "Kh1",
+        "Qf1+",
+        "Rxf1",
+        "Rxf1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "0Bl71",
-      "fen": "r5k1/5pp1/5b1p/2B5/1P3P2/P4P2/7r/R2R1K2 w - - 2 31",
-      "puzzleFen": "r5k1/5pp1/5b1p/8/1P1B1P2/P4P2/7r/R2R1K2 b - - 3 31",
-      "moves": "c5d4 f6d4 d1d4 h2h1 f1g2 h1a1",
-      "rating": 1779,
+      "puzzleId": "0156a",
+      "fen": "2k4r/ppp1q1p1/3b2p1/3Q4/1P2NPn1/P1P3N1/6P1/R1B2RKr w - - 5 21",
+      "puzzleFen": "2k4r/ppp1q1p1/3b2p1/3Q4/1P2NPn1/P1P5/6P1/R1B2RKN b - - 0 21",
+      "moves": "g3h1 h8h1 g1h1 e7h4 h1g1 h4h2",
+      "rating": 1561,
       "themes": [
-        "crushing",
-        "endgame",
-        "exposedKing",
+        "attraction",
+        "kingsideAttack",
         "long",
-        "skewer"
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
       ],
-      "url": "https://lichess.org/sCppQXDt#61",
-      "setupMove": "Bd4",
-      "lastMoveFrom": "c5",
-      "lastMoveTo": "d4",
-      "solution": "1...Bxd4 2.Rxd4 Rh1+ 3.Kg2 Rxa1",
+      "url": "https://lichess.org/oux7jARd#41",
+      "setupMove": "Nxh1",
+      "lastMoveFrom": "g3",
+      "lastMoveTo": "h1",
+      "solution": "1...Rxh1+ 2.Kxh1 Qh4+ 3.Kg1 Qh2#",
       "solutionMoves": [
-        "Bxd4",
-        "Rxd4",
-        "Rh1+",
-        "Kg2",
-        "Rxa1"
+        "Rxh1+",
+        "Kxh1",
+        "Qh4+",
+        "Kg1",
+        "Qh2#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "0ECIN",
-      "fen": "1R4nk/8/5p1B/1p1p4/4q1PQ/5K1P/8/8 w - - 1 51",
-      "puzzleFen": "1R4nk/8/5p1B/1p1p4/4q1PQ/6KP/8/8 b - - 2 51",
-      "moves": "f3g3 e4e1 g3g2 e1h4",
-      "rating": 1690,
+      "puzzleId": "00mFI",
+      "fen": "4r2k/2q1r3/2p4Q/p5P1/1p1Pp1P1/2P1N2P/PP6/4bRK1 b - - 0 28",
+      "puzzleFen": "4r2k/2q4r/2p4Q/p5P1/1p1Pp1P1/2P1N2P/PP6/4bRK1 w - - 1 29",
+      "moves": "e7h7 f1f8 e8f8 h6f8",
+      "rating": 1281,
+      "themes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/kiOTTNFh/black#56",
+      "setupMove": "Rh7",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "h7",
+      "solution": "1.Rf8+ Rxf8 2.Qxf8#",
+      "solutionMoves": [
+        "Rf8+",
+        "Rxf8",
+        "Qxf8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "05N2y",
+      "fen": "8/8/3k4/4p1RP/8/4ppK1/2r2P2/8 w - - 0 42",
+      "puzzleFen": "8/8/3k4/4p1RP/8/4PpK1/2r5/8 b - - 0 42",
+      "moves": "f2e3 c2g2 g3f3 g2g5",
+      "rating": 1538,
       "themes": [
         "crushing",
-        "deflection",
         "endgame",
+        "rookEndgame",
         "short",
         "skewer"
       ],
-      "url": "https://lichess.org/ohU0xHo4#101",
-      "setupMove": "Kg3",
-      "lastMoveFrom": "f3",
-      "lastMoveTo": "g3",
-      "solution": "1...Qe1+ 2.Kg2 Qxh4",
+      "url": "https://lichess.org/3lujro8O#83",
+      "setupMove": "fxe3",
+      "lastMoveFrom": "f2",
+      "lastMoveTo": "e3",
+      "solution": "1...Rg2+ 2.Kxf3 Rxg5",
       "solutionMoves": [
+        "Rg2+",
+        "Kxf3",
+        "Rxg5"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "011J1",
+      "fen": "4R3/5ppk/7p/2p2q2/1n6/2Br2P1/5P1P/1Q4K1 w - - 0 35",
+      "puzzleFen": "4R3/5ppk/7p/2p2q2/1B6/3r2P1/5P1P/1Q4K1 b - - 0 35",
+      "moves": "c3b4 d3g3 f2g3 f5b1",
+      "rating": 1225,
+      "themes": [
+        "advantage",
+        "discoveredAttack",
+        "endgame",
+        "short"
+      ],
+      "url": "https://lichess.org/xl6zG0ZK#69",
+      "setupMove": "Bxb4",
+      "lastMoveFrom": "c3",
+      "lastMoveTo": "b4",
+      "solution": "1...Rxg3+ 2.fxg3 Qxb1+",
+      "solutionMoves": [
+        "Rxg3+",
+        "fxg3",
+        "Qxb1+"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "021Dc",
+      "fen": "r2q1rk1/pbp2pbn/1p1pp1p1/n5P1/3BP3/P1NP3Q/BPP2PP1/R3K2R b KQ - 2 14",
+      "puzzleFen": "r2q1rk1/pbp2pb1/1p1pp1p1/n5n1/3BP3/P1NP3Q/BPP2PP1/R3K2R w KQ - 0 15",
+      "moves": "h7g5 h3h8 g7h8 h1h8",
+      "rating": 1537,
+      "themes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "operaMate",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/qS4iIfTa/black#28",
+      "setupMove": "Nxg5",
+      "lastMoveFrom": "h7",
+      "lastMoveTo": "g5",
+      "solution": "1.Qh8+ Bxh8 2.Rxh8#",
+      "solutionMoves": [
+        "Qh8+",
+        "Bxh8",
+        "Rxh8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "03HtZ",
+      "fen": "8/8/3k1p2/p1pBpKp1/1pP3P1/1P3P2/Pb6/8 w - - 17 52",
+      "puzzleFen": "8/8/3k1K2/p1pBp1p1/1pP3P1/1P3P2/Pb6/8 b - - 0 52",
+      "moves": "f5f6 e5e4 f6f7 e4e3",
+      "rating": 1415,
+      "themes": [
+        "bishopEndgame",
+        "crushing",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "short"
+      ],
+      "url": "https://lichess.org/wIHK2AaO#103",
+      "setupMove": "Kxf6",
+      "lastMoveFrom": "f5",
+      "lastMoveTo": "f6",
+      "solution": "1...e4+ 2.Kf7 e3",
+      "solutionMoves": [
+        "e4+",
+        "Kf7",
+        "e3"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00sw5",
+      "fen": "3r2k1/1p3pp1/pq1b3p/3P4/P7/3Q1N2/1r3PPP/R2R2K1 w - - 0 23",
+      "puzzleFen": "3r2k1/1p3pp1/pq1b3p/3P4/P7/3Q1N2/1r3PPP/1R1R2K1 b - - 1 23",
+      "moves": "a1b1 b6f2 g1h1 f2g2",
+      "rating": 1285,
+      "themes": [
+        "kingsideAttack",
+        "master",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/TMsj324P#45",
+      "setupMove": "Rab1",
+      "lastMoveFrom": "a1",
+      "lastMoveTo": "b1",
+      "solution": "1...Qxf2+ 2.Kh1 Qxg2#",
+      "solutionMoves": [
+        "Qxf2+",
+        "Kh1",
+        "Qxg2#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "01m5k",
+      "fen": "4r1k1/pp2rp1p/5Rp1/1q6/8/1P4Q1/P4PPP/5RK1 w - - 1 22",
+      "puzzleFen": "4r1k1/pp2rp1p/5Rp1/1q6/P7/1P4Q1/5PPP/5RK1 b - - 0 22",
+      "moves": "a2a4 b5f1 g1f1 e7e1",
+      "rating": 1315,
+      "themes": [
+        "attraction",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/JiGbkYf4#43",
+      "setupMove": "a4",
+      "lastMoveFrom": "a2",
+      "lastMoveTo": "a4",
+      "solution": "1...Qxf1+ 2.Kxf1 Re1#",
+      "solutionMoves": [
+        "Qxf1+",
+        "Kxf1",
+        "Re1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "097wk",
+      "fen": "2r3k1/p3Qp1p/1p2p1p1/4P3/q4P2/6P1/PP5P/1K1R4 w - - 8 30",
+      "puzzleFen": "2r3k1/p2Q1p1p/1p2p1p1/4P3/q4P2/6P1/PP5P/1K1R4 b - - 9 30",
+      "moves": "e7d7 a4c2 b1a1 c2c1 d1c1 c8c1",
+      "rating": 1589,
+      "themes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/jWBqWVx1#59",
+      "setupMove": "Qd7",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "d7",
+      "solution": "1...Qc2+ 2.Ka1 Qc1+ 3.Rxc1 Rxc1#",
+      "solutionMoves": [
+        "Qc2+",
+        "Ka1",
+        "Qc1+",
+        "Rxc1",
+        "Rxc1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "01LA9",
+      "fen": "2r3k1/p4q2/4N1pQ/1p1nP3/3P4/8/5PP1/6KR b - - 0 32",
+      "puzzleFen": "2r3k1/p7/4q1pQ/1p1nP3/3P4/8/5PP1/6KR w - - 0 33",
+      "moves": "f7e6 h6h8 g8f7 h1h7",
+      "rating": 1456,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/mFqNeSJb/black#64",
+      "setupMove": "Qxe6",
+      "lastMoveFrom": "f7",
+      "lastMoveTo": "e6",
+      "solution": "1.Qh8+ Kf7 2.Rh7#",
+      "solutionMoves": [
+        "Qh8+",
+        "Kf7",
+        "Rh7#"
+      ],
+      "playerColor": "white"
+    }
+  ],
+  "1700": [
+    {
+      "puzzleId": "01t6f",
+      "fen": "r4rk1/2qb2pp/p2bp3/1p1nnN2/1P2Q3/P1P3N1/2B2PPP/R1B2RK1 b - - 0 21",
+      "puzzleFen": "r4rk1/2qb2pp/p2bp3/1p2nN2/1P2Q3/P1n3N1/2B2PPP/R1B2RK1 w - - 0 22",
+      "moves": "d5c3 f5h6 g7h6 e4h7",
+      "rating": 1879,
+      "themes": [
+        "discoveredAttack",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/zgaMr6Zr/black#42",
+      "setupMove": "Nxc3",
+      "lastMoveFrom": "d5",
+      "lastMoveTo": "c3",
+      "solution": "1.Nh6+ gxh6 2.Qxh7#",
+      "solutionMoves": [
+        "Nh6+",
+        "gxh6",
+        "Qxh7#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00ZEc",
+      "fen": "1r3bk1/5p2/3P1qRP/r1n1p3/ppB5/P2Q1P2/1PP5/1K6 b - - 0 35",
+      "puzzleFen": "1r3b2/5p1k/3P1qRP/r1n1p3/ppB5/P2Q1P2/1PP5/1K6 w - - 1 36",
+      "moves": "g8h7 g6g7 h7h6 d3h7",
+      "rating": 1870,
+      "themes": [
+        "discoveredCheck",
+        "doubleCheck",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/7IfLNNVB/black#70",
+      "setupMove": "Kh7",
+      "lastMoveFrom": "g8",
+      "lastMoveTo": "h7",
+      "solution": "1.Rg7+ Kxh6 2.Qh7#",
+      "solutionMoves": [
+        "Rg7+",
+        "Kxh6",
+        "Qh7#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02viV",
+      "fen": "r4rk1/1p3ppp/p1n1b3/2NpP3/3P4/P1qB3P/5PP1/2RQ1RK1 b - - 6 18",
+      "puzzleFen": "r4rk1/1p3ppp/p1n1b3/2NpP3/3q4/P2B3P/5PP1/2RQ1RK1 w - - 0 19",
+      "moves": "c3d4 c5e6 f7e6 c1c6 d4d3 d1d3",
+      "rating": 1697,
+      "themes": [
+        "crushing",
+        "discoveredAttack",
+        "long",
+        "middlegame"
+      ],
+      "url": "https://lichess.org/9tfb2Jv3/black#36",
+      "setupMove": "Qxd4",
+      "lastMoveFrom": "c3",
+      "lastMoveTo": "d4",
+      "solution": "1.Nxe6 fxe6 2.Rxc6 Qxd3 3.Qxd3",
+      "solutionMoves": [
+        "Nxe6",
+        "fxe6",
+        "Rxc6",
+        "Qxd3",
+        "Qxd3"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02rnR",
+      "fen": "2r5/3k2p1/p2p4/1pqR2b1/2n1Bp2/P7/1PP1Q1PP/2K4R b - - 9 26",
+      "puzzleFen": "2r5/3k2p1/p2p4/1p1q2b1/2n1Bp2/P7/1PP1Q1PP/2K4R w - - 0 27",
+      "moves": "c5d5 e2g4 d5e6 e4f5 c8c5 f5e6",
+      "rating": 1760,
+      "themes": [
+        "crushing",
+        "long",
+        "middlegame",
+        "pin"
+      ],
+      "url": "https://lichess.org/pihAzJje/black#52",
+      "setupMove": "Qxd5",
+      "lastMoveFrom": "c5",
+      "lastMoveTo": "d5",
+      "solution": "1.Qg4+ Qe6 2.Bf5 Rc5 3.Bxe6+",
+      "solutionMoves": [
+        "Qg4+",
+        "Qe6",
+        "Bf5",
+        "Rc5",
+        "Bxe6+"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "03HYt",
+      "fen": "3k4/3r4/6R1/4R2p/1p2P2P/pP1bPK2/r4NP1/8 w - - 0 42",
+      "puzzleFen": "3k4/3r4/6R1/7R/1p2P2P/pP1bPK2/r4NP1/8 b - - 0 42",
+      "moves": "e5h5 d3e2 f3g3 e2h5",
+      "rating": 1746,
+      "themes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "url": "https://lichess.org/dOcMLROR#83",
+      "setupMove": "Rxh5",
+      "lastMoveFrom": "e5",
+      "lastMoveTo": "h5",
+      "solution": "1...Be2+ 2.Kg3 Bxh5",
+      "solutionMoves": [
+        "Be2+",
+        "Kg3",
+        "Bxh5"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "03RRS",
+      "fen": "5rk1/p4ppp/2N2n2/2p5/3q1P2/1P1B1Q1P/2P3P1/7K b - - 1 24",
+      "puzzleFen": "5rk1/p4ppp/2N2n2/2p5/5P2/1PqB1Q1P/2P3P1/7K w - - 2 25",
+      "moves": "d4c3 d3h7 g8h7 f3c3",
+      "rating": 1658,
+      "themes": [
+        "crushing",
+        "discoveredAttack",
+        "endgame",
+        "short"
+      ],
+      "url": "https://lichess.org/kU6ZFVqM/black#48",
+      "setupMove": "Qc3",
+      "lastMoveFrom": "d4",
+      "lastMoveTo": "c3",
+      "solution": "1.Bxh7+ Kxh7 2.Qxc3",
+      "solutionMoves": [
+        "Bxh7+",
+        "Kxh7",
+        "Qxc3"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02gI7",
+      "fen": "r4rk1/2p2pp1/1q2p2p/8/1P4RP/5Q2/P4PP1/3R2K1 b - - 0 23",
+      "puzzleFen": "5rk1/2p2pp1/1q2p2p/8/1P4RP/5Q2/r4PP1/3R2K1 w - - 0 24",
+      "moves": "a8a2 f3f6 b6f2 f6f2 a2f2 g1f2",
+      "rating": 1899,
+      "themes": [
+        "crushing",
+        "endgame",
+        "long",
+        "pin"
+      ],
+      "url": "https://lichess.org/OtWUxNbC/black#46",
+      "setupMove": "Rxa2",
+      "lastMoveFrom": "a8",
+      "lastMoveTo": "a2",
+      "solution": "1.Qf6 Qxf2+ 2.Qxf2 Rxf2 3.Kxf2",
+      "solutionMoves": [
+        "Qf6",
+        "Qxf2+",
+        "Qxf2",
+        "Rxf2",
+        "Kxf2"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02EM7",
+      "fen": "2q5/4Q3/4p1k1/3p2P1/p2Pp3/4P3/5PK1/8 b - - 0 52",
+      "puzzleFen": "2q5/4Q3/4p1k1/3p2P1/3Pp3/p3P3/5PK1/8 w - - 0 53",
+      "moves": "a4a3 e7f6 g6h7 g5g6 h7h6 g6g7 h6h7 f6f8",
+      "rating": 1824,
+      "themes": [
+        "advancedPawn",
+        "crushing",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "exposedKing",
+        "queenEndgame",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/HgMPoAiy/black#104",
+      "setupMove": "a3",
+      "lastMoveFrom": "a4",
+      "lastMoveTo": "a3",
+      "solution": "1.Qf6+ Kh7 2.g6+ Kh6 3.g7+ Kh7 4.Qf8",
+      "solutionMoves": [
+        "Qf6+",
+        "Kh7",
+        "g6+",
+        "Kh6",
+        "g7+",
+        "Kh7",
+        "Qf8"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "03ELV",
+      "fen": "r3r3/pp3pbk/2p3pB/3b4/8/2qB2QP/P1P3P1/3R1R1K b - - 0 22",
+      "puzzleFen": "r3r3/pp3p1k/2p3pb/3b4/8/2qB2QP/P1P3P1/3R1R1K w - - 0 23",
+      "moves": "g7h6 d3g6 f7g6 g3c3",
+      "rating": 1800,
+      "themes": [
+        "advantage",
+        "discoveredAttack",
+        "middlegame",
+        "short"
+      ],
+      "url": "https://lichess.org/8gU1GvAe/black#44",
+      "setupMove": "Bxh6",
+      "lastMoveFrom": "g7",
+      "lastMoveTo": "h6",
+      "solution": "1.Bxg6+ fxg6 2.Qxc3",
+      "solutionMoves": [
+        "Bxg6+",
+        "fxg6",
+        "Qxc3"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "03Sxg",
+      "fen": "8/8/4p2p/2R1P2P/3pK1P1/2pP4/1b1k4/8 w - - 2 58",
+      "puzzleFen": "8/8/4p2p/2R1P2P/3K2P1/2pP4/1b1k4/8 b - - 0 58",
+      "moves": "e4d4 c3c2 d4e4 b2c3 c5c6 c2c1q",
+      "rating": 1670,
+      "themes": [
+        "advancedPawn",
+        "clearance",
+        "crushing",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "long",
+        "master",
+        "promotion"
+      ],
+      "url": "https://lichess.org/WcvgQB1e#115",
+      "setupMove": "Kxd4",
+      "lastMoveFrom": "e4",
+      "lastMoveTo": "d4",
+      "solution": "1...c2+ 2.Ke4 Bc3 3.Rc6 c1=Q",
+      "solutionMoves": [
+        "c2+",
+        "Ke4",
+        "Bc3",
+        "Rc6",
+        "c1=Q"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "03FqH",
+      "fen": "2r2rk1/3p3p/4p1pP/1p1b1q2/3R3Q/6B1/1P3PP1/4R1K1 b - - 1 26",
+      "puzzleFen": "2r2rk1/3p3p/4p2P/1p1b1qp1/3R3Q/6B1/1P3PP1/4R1K1 w - - 0 27",
+      "moves": "g6g5 d4g4 f8f6 g4g5",
+      "rating": 1701,
+      "themes": [
+        "crushing",
+        "middlegame",
+        "pin",
+        "short"
+      ],
+      "url": "https://lichess.org/AqpLfsu3/black#52",
+      "setupMove": "g5",
+      "lastMoveFrom": "g6",
+      "lastMoveTo": "g5",
+      "solution": "1.Rg4 Rf6 2.Rxg5+",
+      "solutionMoves": [
+        "Rg4",
+        "Rf6",
+        "Rxg5+"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "0WFad",
+      "fen": "4r2k/p6p/1pQ3p1/1P3pq1/3Pr3/1B6/6PP/2RR2K1 w - - 5 29",
+      "puzzleFen": "4r2k/p6p/1pQ3p1/1P1P1pq1/4r3/1B6/6PP/2RR2K1 b - - 0 29",
+      "moves": "d4d5 g5e3 g1h1 e3e1 d1e1 e4e1 c1e1 e8e1",
+      "rating": 1683,
+      "themes": [
+        "backRankMate",
+        "fork",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/ZxLiKoMK#57",
+      "setupMove": "d5",
+      "lastMoveFrom": "d4",
+      "lastMoveTo": "d5",
+      "solution": "1...Qe3+ 2.Kh1 Qe1+ 3.Rxe1 Rxe1+ 4.Rxe1 Rxe1#",
+      "solutionMoves": [
+        "Qe3+",
+        "Kh1",
         "Qe1+",
-        "Kg2",
-        "Qxh4"
+        "Rxe1",
+        "Rxe1+",
+        "Rxe1",
+        "Rxe1#"
       ],
       "playerColor": "black"
     },
@@ -2205,33 +2400,6 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "0Dcy3",
-      "fen": "1k2r2r/ppp4q/8/n2p4/3P2B1/1PP2PP1/P2Q1K2/R4R2 w - - 3 29",
-      "puzzleFen": "1k2r2r/ppp4q/8/n2p4/3P2B1/1PP2PP1/P2Q1K2/R6R b - - 4 29",
-      "moves": "f1h1 h7h2 h1h2 h8h2 f2f1 h2d2",
-      "rating": 1723,
-      "themes": [
-        "advantage",
-        "long",
-        "middlegame",
-        "sacrifice",
-        "skewer"
-      ],
-      "url": "https://lichess.org/S1MP6l57#57",
-      "setupMove": "Rh1",
-      "lastMoveFrom": "f1",
-      "lastMoveTo": "h1",
-      "solution": "1...Qh2+ 2.Rxh2 Rxh2+ 3.Kf1 Rxd2",
-      "solutionMoves": [
-        "Qh2+",
-        "Rxh2",
-        "Rxh2+",
-        "Kf1",
-        "Rxd2"
-      ],
-      "playerColor": "black"
-    },
-    {
       "puzzleId": "03fUR",
       "fen": "2r3k1/p2pqpp1/1p6/2r5/5Q2/P2P3R/1P4PP/5R1K b - - 0 27",
       "puzzleFen": "2r3k1/p2pqpp1/1p6/6r1/5Q2/P2P3R/1P4PP/5R1K w - - 1 28",
@@ -2258,328 +2426,735 @@
       "playerColor": "white"
     },
     {
-      "puzzleId": "05eZx",
-      "fen": "8/6pk/1pqr2bp/8/2P2Q2/7P/5RPK/5R2 w - - 0 40",
-      "puzzleFen": "8/6pk/1pqr2bp/8/2P2Q2/7P/3R2PK/5R2 b - - 1 40",
-      "moves": "f2d2 d6f6 f4b8 f6f1",
-      "rating": 1741,
+      "puzzleId": "02cv1",
+      "fen": "r1q1kb1r/5pp1/3p3p/3Ppb2/2N4P/1nP2N2/1P2QPP1/R1B1K2R w KQkq - 3 20",
+      "puzzleFen": "r1q1kb1r/5pp1/1N1p3p/3Ppb2/7P/1nP2N2/1P2QPP1/R1B1K2R b KQkq - 4 20",
+      "moves": "c4b6 a8a1 e2b5 f5d7",
+      "rating": 1632,
       "themes": [
         "advantage",
-        "endgame",
-        "short",
-        "skewer"
+        "hangingPiece",
+        "middlegame",
+        "pin",
+        "short"
       ],
-      "url": "https://lichess.org/IeaXinWX#79",
-      "setupMove": "Rd2",
-      "lastMoveFrom": "f2",
-      "lastMoveTo": "d2",
-      "solution": "1...Rf6 2.Qb8 Rxf1",
+      "url": "https://lichess.org/vGInJUIS#39",
+      "setupMove": "Nb6",
+      "lastMoveFrom": "c4",
+      "lastMoveTo": "b6",
+      "solution": "1...Rxa1 2.Qb5+ Bd7",
       "solutionMoves": [
-        "Rf6",
-        "Qb8",
-        "Rxf1"
+        "Rxa1",
+        "Qb5+",
+        "Bd7"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "0Mvwc",
-      "fen": "rn2Q1k1/ppp2ppp/8/2b5/2P3b1/3P1qP1/P2B1P1P/R3R1K1 b - - 1 18",
-      "puzzleFen": "rn2Qbk1/ppp2ppp/8/8/2P3b1/3P1qP1/P2B1P1P/R3R1K1 w - - 2 19",
-      "moves": "c5f8 e8f8 g8f8 d2b4 c7c5 b4c5 f8g8 e1e8",
-      "rating": 1904,
+      "puzzleId": "0e7en",
+      "fen": "4r3/2p2k2/p3q3/1pB2r2/6Q1/P4p2/1PPN1R2/3K4 w - - 1 36",
+      "puzzleFen": "4r3/2p2k2/p3q3/1pB2r2/6Q1/P4p2/1PPN4/3K1R2 b - - 2 36",
+      "moves": "f2f1 e6e2 d1c1 e2e1 f1e1 e8e1",
+      "rating": 1623,
       "themes": [
-        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/Uh0l2dUR#71",
+      "setupMove": "Rf1",
+      "lastMoveFrom": "f2",
+      "lastMoveTo": "f1",
+      "solution": "1...Qe2+ 2.Kc1 Qe1+ 3.Rxe1 Rxe1#",
+      "solutionMoves": [
+        "Qe2+",
+        "Kc1",
+        "Qe1+",
+        "Rxe1",
+        "Rxe1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "0h3d9",
+      "fen": "Rr5k/6pp/3pB2r/3Pp1Q1/4Pp2/1q2bPP1/2p3KP/R7 b - - 4 38",
+      "puzzleFen": "Rr5k/6pp/3pB2r/3Pp1Q1/4Pp2/1q2bPP1/6KP/R1q5 w - - 0 39",
+      "moves": "c2c1q g5d8 b8d8 a8d8",
+      "rating": 1610,
+      "themes": [
         "backRankMate",
         "mate",
-        "mateIn4",
+        "mateIn2",
         "middlegame",
         "sacrifice",
-        "veryLong"
+        "short",
+        "xRayAttack"
       ],
-      "url": "https://lichess.org/5FHXs8O1/black#36",
-      "setupMove": "Bf8",
-      "lastMoveFrom": "c5",
-      "lastMoveTo": "f8",
-      "solution": "1.Qxf8+ Kxf8 2.Bb4+ c5 3.Bxc5+ Kg8 4.Re8#",
+      "url": "https://lichess.org/nXfn0nO0/black#76",
+      "setupMove": "c1=Q",
+      "lastMoveFrom": "c2",
+      "lastMoveTo": "c1",
+      "solution": "1.Qd8+ Rxd8 2.Rxd8#",
       "solutionMoves": [
-        "Qxf8+",
-        "Kxf8",
-        "Bb4+",
-        "c5",
-        "Bxc5+",
-        "Kg8",
-        "Re8#"
+        "Qd8+",
+        "Rxd8",
+        "Rxd8#"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "083xB",
-      "fen": "7k/6p1/5q2/4p2p/2P1R2P/1P4r1/P7/5RKQ w - - 0 38",
-      "puzzleFen": "7k/6p1/5q2/4p2p/2P1R2P/1P4r1/P5Q1/5RK1 b - - 1 38",
-      "moves": "h1g2 g3g2 g1g2 f6g6 g2f3 g6f5 f3e3 f5f1",
-      "rating": 1926,
+      "puzzleId": "0X4tF",
+      "fen": "1r6/p6R/3pk3/3N4/4P1n1/2P5/P3n1PP/5R1K w - - 3 28",
+      "puzzleFen": "1r6/R7/3pk3/3N4/4P1n1/2P5/P3n1PP/5R1K b - - 0 28",
+      "moves": "h7a7 g4f2 f1f2 b8b1 f2f1 b1f1",
+      "rating": 1741,
       "themes": [
-        "advantage",
-        "attraction",
+        "backRankMate",
         "endgame",
-        "exposedKing",
-        "fork",
-        "skewer",
-        "veryLong"
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
       ],
-      "url": "https://lichess.org/GSDSkDZA#75",
-      "setupMove": "Qg2",
-      "lastMoveFrom": "h1",
-      "lastMoveTo": "g2",
-      "solution": "1...Rxg2+ 2.Kxg2 Qg6+ 3.Kf3 Qf5+ 4.Ke3 Qxf1",
+      "url": "https://lichess.org/t9G6h20V#55",
+      "setupMove": "Rxa7",
+      "lastMoveFrom": "h7",
+      "lastMoveTo": "a7",
+      "solution": "1...Nf2+ 2.Rxf2 Rb1+ 3.Rf1 Rxf1#",
       "solutionMoves": [
-        "Rxg2+",
-        "Kxg2",
-        "Qg6+",
-        "Kf3",
-        "Qf5+",
-        "Ke3",
-        "Qxf1"
+        "Nf2+",
+        "Rxf2",
+        "Rb1+",
+        "Rf1",
+        "Rxf1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "03zfX",
-      "fen": "1rb2rk1/p1q2pnp/2pp1Q2/1p4P1/4P3/1P3NNP/P7/1K1R3R w - - 5 27",
-      "puzzleFen": "1rb2rk1/p1q2pnp/2pR1Q2/1p4P1/4P3/1P3NNP/P7/1K5R b - - 0 27",
-      "moves": "d1d6 g7e8 d6c6 c7g3",
-      "rating": 1926,
+      "puzzleId": "029k3",
+      "fen": "r2q2k1/1p2b1pp/2pp4/p3p3/2P1P1b1/P1N2N2/QP4PP/5RK1 b - - 4 23",
+      "puzzleFen": "r5k1/1p2b1pp/1qpp4/p3p3/2P1P1b1/P1N2N2/QP4PP/5RK1 w - - 5 24",
+      "moves": "d8b6 c4c5 g8h8 c5b6",
+      "rating": 1691,
       "themes": [
         "crushing",
-        "fork",
+        "discoveredAttack",
+        "discoveredCheck",
         "middlegame",
-        "short",
+        "short"
+      ],
+      "url": "https://lichess.org/Ws92TRq9/black#46",
+      "setupMove": "Qb6+",
+      "lastMoveFrom": "d8",
+      "lastMoveTo": "b6",
+      "solution": "1.c5+ Kh8 2.cxb6",
+      "solutionMoves": [
+        "c5+",
+        "Kh8",
+        "cxb6"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02SQK",
+      "fen": "1r2r1k1/3nbppp/p1q1p3/3pR2Q/3B4/3B4/PPP2PPP/R5K1 b - - 9 19",
+      "puzzleFen": "1r2r1k1/3nbp1p/p1q1p1p1/3pR2Q/3B4/3B4/PPP2PPP/R5K1 w - - 0 20",
+      "moves": "g7g6 h5h7 g8h7 e5h5 h7g8 h5h8",
+      "rating": 1918,
+      "themes": [
+        "attraction",
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "operaMate",
+        "pin",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/cFnIZHq6/black#38",
+      "setupMove": "g6",
+      "lastMoveFrom": "g7",
+      "lastMoveTo": "g6",
+      "solution": "1.Qxh7+ Kxh7 2.Rh5+ Kg8 3.Rh8#",
+      "solutionMoves": [
+        "Qxh7+",
+        "Kxh7",
+        "Rh5+",
+        "Kg8",
+        "Rh8#"
+      ],
+      "playerColor": "white"
+    }
+  ],
+  "2000": [
+    {
+      "puzzleId": "52F1l",
+      "fen": "6k1/3n1ppp/1p1n2q1/p2QN3/8/6P1/PBr2PKP/3R4 b - - 3 25",
+      "puzzleFen": "6k1/5ppp/1p1n2q1/p2Qn3/8/6P1/PBr2PKP/3R4 w - - 0 26",
+      "moves": "d7e5 d5a8 c2c8 a8c8 d6c8 d1d8",
+      "rating": 2066,
+      "themes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/UYyXW2Aa/black#50",
+      "setupMove": "Nxe5",
+      "lastMoveFrom": "d7",
+      "lastMoveTo": "e5",
+      "solution": "1.Qa8+ Rc8 2.Qxc8+ Nxc8 3.Rd8#",
+      "solutionMoves": [
+        "Qa8+",
+        "Rc8",
+        "Qxc8+",
+        "Nxc8",
+        "Rd8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "0JykD",
+      "fen": "rn1q1k1r/pp4p1/2p1Rn1p/8/3P1B2/8/PPP2PPP/R2Q2K1 b - - 0 16",
+      "puzzleFen": "rn3k1r/pp4p1/2p1Rn1p/3q4/3P1B2/8/PPP2PPP/R2Q2K1 w - - 1 17",
+      "moves": "d8d5 e6d6 d5e4 d6d8 f8f7 d8h8",
+      "rating": 2156,
+      "themes": [
+        "crushing",
+        "long",
+        "middlegame",
         "skewer"
       ],
-      "url": "https://lichess.org/y17Djyue#53",
-      "setupMove": "Rxd6",
-      "lastMoveFrom": "d1",
-      "lastMoveTo": "d6",
-      "solution": "1...Ne8 2.Rxc6 Qxg3",
+      "url": "https://lichess.org/TnW4MLB0/black#32",
+      "setupMove": "Qd5",
+      "lastMoveFrom": "d8",
+      "lastMoveTo": "d5",
+      "solution": "1.Rd6 Qe4 2.Rd8+ Kf7 3.Rxh8",
       "solutionMoves": [
-        "Ne8",
-        "Rxc6",
-        "Qxg3"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "0Ek0I",
-      "fen": "6k1/4Qp2/4p1p1/6Kp/4Pr2/2r4P/6P1/8 b - - 1 43",
-      "puzzleFen": "6k1/4Qp2/4p1p1/6Kp/4r3/2r4P/6P1/8 w - - 0 44",
-      "moves": "f4e4 g5h6 c3c8 e7f6 g8f8 f6h8 f8e7 h8c8",
-      "rating": 1889,
-      "themes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "skewer",
-        "veryLong"
-      ],
-      "url": "https://lichess.org/4Tt0wSw3/black#86",
-      "setupMove": "Rxe4",
-      "lastMoveFrom": "f4",
-      "lastMoveTo": "e4",
-      "solution": "1.Kh6 Rc8 2.Qf6 Kf8 3.Qh8+ Ke7 4.Qxc8",
-      "solutionMoves": [
-        "Kh6",
-        "Rc8",
-        "Qf6",
-        "Kf8",
-        "Qh8+",
-        "Ke7",
-        "Qxc8"
+        "Rd6",
+        "Qe4",
+        "Rd8+",
+        "Kf7",
+        "Rxh8"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "00qk4",
-      "fen": "3r4/ppN1kppp/5n2/8/1n3Nb1/4P3/1B3PPP/R3KB1R w KQ - 0 18",
-      "puzzleFen": "3r4/ppN1kppp/5n2/8/1n3Nb1/4P3/1B3PPP/2R1KB1R b K - 1 18",
-      "moves": "a1c1 b4c2 c1c2 d8d1",
-      "rating": 1668,
+      "puzzleId": "0Qu6P",
+      "fen": "r7/2BPkp2/5n1p/5Bp1/2P5/2q4P/5PP1/3R2K1 b - - 2 34",
+      "puzzleFen": "r7/2BPkp2/5n1p/5Bp1/2q5/7P/5PP1/3R2K1 w - - 0 35",
+      "moves": "c3c4 d7d8q a8d8 c7d8 e7e8 d8f6",
+      "rating": 2035,
+      "themes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "long",
+        "promotion",
+        "skewer"
+      ],
+      "url": "https://lichess.org/0RrHZmBv/black#68",
+      "setupMove": "Qxc4",
+      "lastMoveFrom": "c3",
+      "lastMoveTo": "c4",
+      "solution": "1.d8=Q+ Rxd8 2.Bxd8+ Ke8 3.Bxf6",
+      "solutionMoves": [
+        "d8=Q+",
+        "Rxd8",
+        "Bxd8+",
+        "Ke8",
+        "Bxf6"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "1nx31",
+      "fen": "1n1r1r1k/p5pp/3RQb2/1qp1N3/8/8/P4PPP/3R2K1 b - - 0 28",
+      "puzzleFen": "1n3r1k/p5pp/3rQb2/1qp1N3/8/8/P4PPP/3R2K1 w - - 0 29",
+      "moves": "d8d6 e5f7 f8f7 e6c8 f6d8 c8d8 d6d8 d1d8 b5e8 d8e8 f7f8 e8f8",
+      "rating": 2123,
+      "themes": [
+        "backRankMate",
+        "fork",
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "sacrifice",
+        "veryLong",
+        "xRayAttack"
+      ],
+      "url": "https://lichess.org/ACOo7Hq9/black#56",
+      "setupMove": "Rxd6",
+      "lastMoveFrom": "d8",
+      "lastMoveTo": "d6",
+      "solution": "1.Nf7+ Rxf7 2.Qc8+ Bd8 3.Qxd8+ Rxd8 4.Rxd8+ Qe8 5.Rxe8+ Rf8 6.Rxf8#",
+      "solutionMoves": [
+        "Nf7+",
+        "Rxf7",
+        "Qc8+",
+        "Bd8",
+        "Qxd8+",
+        "Rxd8",
+        "Rxd8+",
+        "Qe8",
+        "Rxe8+",
+        "Rf8",
+        "Rxf8#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01aGQ",
+      "fen": "1Q4k1/p7/2q4p/1p4p1/4R3/2P3P1/r6P/6K1 b - - 1 36",
+      "puzzleFen": "1Q6/p5k1/2q4p/1p4p1/4R3/2P3P1/r6P/6K1 w - - 2 37",
+      "moves": "g8g7 e4e7 g7g6 b8g8 g6h5 g8f7 h5g4 h2h3 g4g3 e7e3 g3h4 f7a2",
+      "rating": 2263,
+      "themes": [
+        "crushing",
+        "endgame",
+        "fork",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/nT9AptbY/black#72",
+      "setupMove": "Kg7",
+      "lastMoveFrom": "g8",
+      "lastMoveTo": "g7",
+      "solution": "1.Re7+ Kg6 2.Qg8+ Kh5 3.Qf7+ Kg4 4.h3+ Kxg3 5.Re3+ Kh4 6.Qxa2",
+      "solutionMoves": [
+        "Re7+",
+        "Kg6",
+        "Qg8+",
+        "Kh5",
+        "Qf7+",
+        "Kg4",
+        "h3+",
+        "Kxg3",
+        "Re3+",
+        "Kh4",
+        "Qxa2"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "012LI",
+      "fen": "6k1/p4p1p/4bp2/1p2p3/3r4/KP1nQPN1/P5B1/8 w - - 0 33",
+      "puzzleFen": "6k1/p4p1p/4bp2/1p2p3/3r4/KP1nQPN1/P7/5B2 b - - 1 33",
+      "moves": "g2f1 d4a4 b3a4 b5b4",
+      "rating": 2232,
+      "themes": [
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/ITMhkGpD#65",
+      "setupMove": "Bf1",
+      "lastMoveFrom": "g2",
+      "lastMoveTo": "f1",
+      "solution": "1...Ra4+ 2.bxa4 b4#",
+      "solutionMoves": [
+        "Ra4+",
+        "bxa4",
+        "b4#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "00Wyh",
+      "fen": "2r5/8/8/pNp1r2p/3kNppP/1P1P4/2R2K2/8 b - - 2 42",
+      "puzzleFen": "2r5/8/8/pNp1r2p/4NppP/1P1k4/2R2K2/8 w - - 0 43",
+      "moves": "d4d3 c2d2 d3e4 b5d6",
+      "rating": 2035,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "url": "https://lichess.org/2mLJufzX/black#84",
+      "setupMove": "Kxd3",
+      "lastMoveFrom": "d4",
+      "lastMoveTo": "d3",
+      "solution": "1.Rd2+ Kxe4 2.Nd6#",
+      "solutionMoves": [
+        "Rd2+",
+        "Kxe4",
+        "Nd6#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "02nDq",
+      "fen": "r3k2r/ppnqn1pp/2pb1p2/3p4/3P4/P2Q1N2/1PPBNPPP/R3R1K1 b kq - 2 13",
+      "puzzleFen": "r3k2r/ppnq2pp/2pb1p2/3p1n2/3P4/P2Q1N2/1PPBNPPP/R3R1K1 w kq - 3 14",
+      "moves": "e7f5 e2g3 f5e7 g3f5 e8g8 f5d6",
+      "rating": 2245,
+      "themes": [
+        "advantage",
+        "discoveredAttack",
+        "discoveredCheck",
+        "long",
+        "middlegame"
+      ],
+      "url": "https://lichess.org/kDykMG0i/black#26",
+      "setupMove": "Nf5",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "f5",
+      "solution": "1.Ng3+ Ne7 2.Nf5 O-O 3.Nxd6",
+      "solutionMoves": [
+        "Ng3+",
+        "Ne7",
+        "Nf5",
+        "O-O",
+        "Nxd6"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "03M6W",
+      "fen": "7k/ppp3rr/1b1p1Q2/4p3/4P1q1/P2P2B1/1PP1RP1P/R5K1 w - - 0 24",
+      "puzzleFen": "7k/ppp3rr/1b1p4/4pQ2/4P1q1/P2P2B1/1PP1RP1P/R5K1 b - - 1 24",
+      "moves": "f6f5 g4g3 h2g3 g7g3 g1f1 h7h1",
+      "rating": 2121,
+      "themes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "pin",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/UHx9O7Tk#47",
+      "setupMove": "Qf5",
+      "lastMoveFrom": "f6",
+      "lastMoveTo": "f5",
+      "solution": "1...Qxg3+ 2.hxg3 Rxg3+ 3.Kf1 Rh1#",
+      "solutionMoves": [
+        "Qxg3+",
+        "hxg3",
+        "Rxg3+",
+        "Kf1",
+        "Rh1#"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "02j44",
+      "fen": "rn3knr/pbppq3/1p4Bp/4P1pQ/2p5/2P3N1/P4PPP/R3R1K1 b - - 1 17",
+      "puzzleFen": "r4knr/pbppq3/1pn3Bp/4P1pQ/2p5/2P3N1/P4PPP/R3R1K1 w - - 2 18",
+      "moves": "b8c6 h5f3 f8g7 g3f5 g7g6 f5e7 c6e7 f3b7",
+      "rating": 2094,
+      "themes": [
+        "crushing",
+        "exposedKing",
+        "fork",
+        "middlegame",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/kjngVApx/black#34",
+      "setupMove": "Nc6",
+      "lastMoveFrom": "b8",
+      "lastMoveTo": "c6",
+      "solution": "1.Qf3+ Kg7 2.Nf5+ Kxg6 3.Nxe7+ Ncxe7 4.Qxb7",
+      "solutionMoves": [
+        "Qf3+",
+        "Kg7",
+        "Nf5+",
+        "Kxg6",
+        "Nxe7+",
+        "Ncxe7",
+        "Qxb7"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "0NzFZ",
+      "fen": "rnb2r2/pp3pk1/3p2p1/q2Np3/4n3/2P2N2/PP2BPP1/R2QK2R b KQ - 1 13",
+      "puzzleFen": "rn3r2/pp3pk1/3pb1p1/q2Np3/4n3/2P2N2/PP2BPP1/R2QK2R w KQ - 2 14",
+      "moves": "c8e6 d1c1 e6d5 c1h6 g7f6 h6f8",
+      "rating": 2333,
+      "themes": [
+        "advantage",
+        "deflection",
+        "long",
+        "middlegame",
+        "quietMove",
+        "sacrifice",
+        "skewer"
+      ],
+      "url": "https://lichess.org/30BqRwrK/black#26",
+      "setupMove": "Be6",
+      "lastMoveFrom": "c8",
+      "lastMoveTo": "e6",
+      "solution": "1.Qc1 Bxd5 2.Qh6+ Kf6 3.Qxf8",
+      "solutionMoves": [
+        "Qc1",
+        "Bxd5",
+        "Qh6+",
+        "Kf6",
+        "Qxf8"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "01B5q",
+      "fen": "r4rk1/1pp1np1p/p4Qp1/3P3P/P2Nq3/8/1B4R1/5B1K b - - 0 36",
+      "puzzleFen": "r4rk1/1pp2p1p/p4Qp1/3n3P/P2Nq3/8/1B4R1/5B1K w - - 0 37",
+      "moves": "e7d5 f6g7 g8g7 d4f5 g7g8 f5h6",
+      "rating": 2071,
+      "themes": [
+        "attraction",
+        "discoveredCheck",
+        "doubleCheck",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "pin",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/seEUcuvw/black#72",
+      "setupMove": "Nxd5",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "d5",
+      "solution": "1.Qg7+ Kxg7 2.Nf5+ Kg8 3.Nh6#",
+      "solutionMoves": [
+        "Qg7+",
+        "Kxg7",
+        "Nf5+",
+        "Kg8",
+        "Nh6#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "062e9",
+      "fen": "8/4R1pp/5pk1/1ppb4/5PPP/8/2r2B2/6K1 b - - 0 37",
+      "puzzleFen": "8/4R1pp/5pk1/1p1b4/2p2PPP/8/2r2B2/6K1 w - - 0 38",
+      "moves": "c5c4 f4f5 g6h6 f2e3 g7g5 f5g6 h6g6 h4h5",
+      "rating": 2058,
+      "themes": [
+        "attraction",
+        "discoveredAttack",
+        "discoveredCheck",
+        "enPassant",
+        "endgame",
+        "mate",
+        "mateIn4",
+        "veryLong"
+      ],
+      "url": "https://lichess.org/osvRxufn/black#74",
+      "setupMove": "c4",
+      "lastMoveFrom": "c5",
+      "lastMoveTo": "c4",
+      "solution": "1.f5+ Kh6 2.Be3+ g5 3.fxg6+ Kxg6 4.h5#",
+      "solutionMoves": [
+        "f5+",
+        "Kh6",
+        "Be3+",
+        "g5",
+        "fxg6+",
+        "Kxg6",
+        "h5#"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "0LDZp",
+      "fen": "6k1/2p1Qqpp/p7/1pN5/P1b2P2/4R3/1B4PP/3r2K1 w - - 1 29",
+      "puzzleFen": "6k1/2p1Qqpp/p7/1pN5/P1b2P2/4R3/1B3KPP/3r4 b - - 2 29",
+      "moves": "g1f2 f7f4 e3f3 d1f1",
+      "rating": 2185,
       "themes": [
         "mate",
         "mateIn2",
         "middlegame",
         "operaMate",
-        "sacrifice",
         "short"
       ],
-      "url": "https://lichess.org/DqqRKbEM#35",
-      "setupMove": "Rc1",
-      "lastMoveFrom": "a1",
-      "lastMoveTo": "c1",
-      "solution": "1...Nc2+ 2.Rxc2 Rd1#",
+      "url": "https://lichess.org/R0Kk1joX#57",
+      "setupMove": "Kf2",
+      "lastMoveFrom": "g1",
+      "lastMoveTo": "f2",
+      "solution": "1...Qxf4+ 2.Rf3 Rf1#",
       "solutionMoves": [
-        "Nc2+",
-        "Rxc2",
-        "Rd1#"
+        "Qxf4+",
+        "Rf3",
+        "Rf1#"
       ],
       "playerColor": "black"
     },
     {
-      "puzzleId": "01Vce",
-      "fen": "2r4r/6b1/8/1b1pPQ1k/2p2P2/4P3/PP1B3q/2K5 b - - 7 33",
-      "puzzleFen": "2r4r/6b1/8/1b1pPQ2/2p2P1k/4P3/PP1B3q/2K5 w - - 8 34",
-      "moves": "h5h4 d2e1 h2g3 f5g5 h4h3 g5g3",
-      "rating": 1949,
+      "puzzleId": "0FZC7",
+      "fen": "6r1/1kb2p2/1p6/2p2R2/2P2p1p/5P2/1PR2KPP/2N4r w - - 11 42",
+      "puzzleFen": "6r1/1kb2R2/1p6/2p5/2P2p1p/5P2/1PR2KPP/2N4r b - - 0 42",
+      "moves": "f5f7 h4h3 g2h3 h1h2 f2f1 h2c2",
+      "rating": 2135,
       "themes": [
+        "crushing",
+        "endgame",
         "long",
-        "mate",
-        "mateIn3",
+        "skewer"
+      ],
+      "url": "https://lichess.org/zD4Jegy9#83",
+      "setupMove": "Rxf7",
+      "lastMoveFrom": "f5",
+      "lastMoveTo": "f7",
+      "solution": "1...h3 2.gxh3 Rxh2+ 3.Kf1 Rxc2",
+      "solutionMoves": [
+        "h3",
+        "gxh3",
+        "Rxh2+",
+        "Kf1",
+        "Rxc2"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "03JVD",
+      "fen": "r7/6P1/8/8/5p2/5P1p/3RK3/2k5 w - - 1 51",
+      "puzzleFen": "r7/6P1/8/8/5p2/5P1p/3R4/2k1K3 b - - 2 51",
+      "moves": "e2e1 a8e8 d2e2 h3h2 e2e8 h2h1q",
+      "rating": 2109,
+      "themes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "long",
+        "pin",
+        "promotion",
+        "rookEndgame"
+      ],
+      "url": "https://lichess.org/WGbrUnZF#101",
+      "setupMove": "Ke1",
+      "lastMoveFrom": "e2",
+      "lastMoveTo": "e1",
+      "solution": "1...Re8+ 2.Re2 h2 3.Rxe8 h1=Q+",
+      "solutionMoves": [
+        "Re8+",
+        "Re2",
+        "h2",
+        "Rxe8",
+        "h1=Q+"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "008lc",
+      "fen": "7k/pb1qn2n/1p2R2Q/2p2p2/2Pp4/3B4/PP3PrP/4RK2 b - - 1 27",
+      "puzzleFen": "7k/pb1qn1rn/1p2R2Q/2p2p2/2Pp4/3B4/PP3P1P/4RK2 w - - 2 28",
+      "moves": "g2g7 h6g7 h8g7 e6e7 d7e7 e1e7",
+      "rating": 2035,
+      "themes": [
+        "attraction",
+        "crushing",
+        "exposedKing",
+        "fork",
+        "long",
+        "middlegame"
+      ],
+      "url": "https://lichess.org/UdZXrVA5/black#54",
+      "setupMove": "Rg7",
+      "lastMoveFrom": "g2",
+      "lastMoveTo": "g7",
+      "solution": "1.Qxg7+ Kxg7 2.Rxe7+ Qxe7 3.Rxe7+",
+      "solutionMoves": [
+        "Qxg7+",
+        "Kxg7",
+        "Rxe7+",
+        "Qxe7",
+        "Rxe7+"
+      ],
+      "playerColor": "white"
+    },
+    {
+      "puzzleId": "00Rue",
+      "fen": "r2qkb1r/pp1nppp1/2p2n1p/3p1b2/3P4/BP2PN2/P1P2PPP/RN1QKB1R w KQkq - 2 7",
+      "puzzleFen": "r2qkb1r/pp1nppp1/2p2n1p/3p1b2/2PP4/BP2PN2/P4PPP/RN1QKB1R b KQkq - 0 7",
+      "moves": "c2c4 f5b1 a1b1 d8a5 b3b4 a5a3",
+      "rating": 2030,
+      "themes": [
+        "advantage",
+        "fork",
+        "long",
+        "opening"
+      ],
+      "url": "https://lichess.org/tgFzBrLu#13",
+      "setupMove": "c4",
+      "lastMoveFrom": "c2",
+      "lastMoveTo": "c4",
+      "solution": "1...Bxb1 2.Rxb1 Qa5+ 3.b4 Qxa3",
+      "solutionMoves": [
+        "Bxb1",
+        "Rxb1",
+        "Qa5+",
+        "b4",
+        "Qxa3"
+      ],
+      "playerColor": "black"
+    },
+    {
+      "puzzleId": "01HQ8",
+      "fen": "r4rk1/pp2qppp/2pp4/4p1B1/2BnP3/P2P1b2/1PP2P2/R1Q2RK1 b - - 1 15",
+      "puzzleFen": "r4rk1/pp3ppp/2pp1q2/4p1B1/2BnP3/P2P1b2/1PP2P2/R1Q2RK1 w - - 2 16",
+      "moves": "e7f6 g5f6 d4e2 g1h2 e2c1 f1g1",
+      "rating": 2075,
+      "themes": [
+        "advantage",
+        "clearance",
+        "long",
         "middlegame",
         "pin"
       ],
-      "url": "https://lichess.org/90JQSZJo/black#66",
-      "setupMove": "Kh4",
-      "lastMoveFrom": "h5",
-      "lastMoveTo": "h4",
-      "solution": "1.Be1+ Qg3 2.Qg5+ Kh3 3.Qxg3#",
+      "url": "https://lichess.org/5WPd9cpZ/black#30",
+      "setupMove": "Qf6",
+      "lastMoveFrom": "e7",
+      "lastMoveTo": "f6",
+      "solution": "1.Bxf6 Ne2+ 2.Kh2 Nxc1 3.Rg1",
       "solutionMoves": [
-        "Be1+",
-        "Qg3",
-        "Qg5+",
-        "Kh3",
-        "Qxg3#"
+        "Bxf6",
+        "Ne2+",
+        "Kh2",
+        "Nxc1",
+        "Rg1"
       ],
       "playerColor": "white"
     },
     {
-      "puzzleId": "04Kar",
-      "fen": "2r3k1/5p1p/1qP1p1p1/3pP3/Pr3P2/R1Q4P/6P1/2R3K1 w - - 3 27",
-      "puzzleFen": "2r3k1/5p1p/1qP1p1p1/2QpP3/Pr3P2/R6P/6P1/2R3K1 b - - 4 27",
-      "moves": "c3c5 c8c6 c5b6 c6c1",
-      "rating": 1818,
+      "puzzleId": "09IzA",
+      "fen": "r1r5/3Q1Rp1/1p3bkp/p7/PnP1P3/6P1/5PP1/6K1 b - - 2 30",
+      "puzzleFen": "r2r4/3Q1Rp1/1p3bkp/p7/PnP1P3/6P1/5PP1/6K1 w - - 3 31",
+      "moves": "c8d8 f7g7 f6g7 d7f5",
+      "rating": 2005,
       "themes": [
-        "crushing",
-        "endgame",
-        "master",
-        "sacrifice",
-        "short",
-        "skewer"
-      ],
-      "url": "https://lichess.org/U97ofx5d#53",
-      "setupMove": "Qc5",
-      "lastMoveFrom": "c3",
-      "lastMoveTo": "c5",
-      "solution": "1...Rxc6 2.Qxb6 Rxc1+",
-      "solutionMoves": [
-        "Rxc6",
-        "Qxb6",
-        "Rxc1+"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "006om",
-      "fen": "1r3k2/5p1p/2p1pp2/P2n4/2r1N3/P4PK1/2R2P1P/2R5 b - - 9 29",
-      "puzzleFen": "1r3k2/5p1p/2p1pp2/P2n4/r3N3/P4PK1/2R2P1P/2R5 w - - 10 30",
-      "moves": "c4a4 e4c5 a4a5 c5d7 f8g7 d7b8",
-      "rating": 1775,
-      "themes": [
-        "crushing",
-        "endgame",
-        "fork",
-        "long",
-        "master"
-      ],
-      "url": "https://lichess.org/BMIgw1OR/black#58",
-      "setupMove": "Ra4",
-      "lastMoveFrom": "c4",
-      "lastMoveTo": "a4",
-      "solution": "1.Nc5 Rxa5 2.Nd7+ Kg7 3.Nxb8",
-      "solutionMoves": [
-        "Nc5",
-        "Rxa5",
-        "Nd7+",
-        "Kg7",
-        "Nxb8"
-      ],
-      "playerColor": "white"
-    },
-    {
-      "puzzleId": "00FND",
-      "fen": "8/1P6/8/7p/3P4/3k1p1P/4p3/3K4 w - - 0 49",
-      "puzzleFen": "8/1P6/8/7p/3P4/3k1p1P/4p3/4K3 b - - 1 49",
-      "moves": "d1e1 d3e3 h3h4 f3f2",
-      "rating": 1892,
-      "themes": [
-        "advancedPawn",
+        "dovetailMate",
         "endgame",
         "mate",
         "mateIn2",
-        "pawnEndgame",
+        "sacrifice",
         "short"
       ],
-      "url": "https://lichess.org/C4mOV5Og#97",
-      "setupMove": "Ke1",
-      "lastMoveFrom": "d1",
-      "lastMoveTo": "e1",
-      "solution": "1...Ke3 2.h4 f2#",
+      "url": "https://lichess.org/G7HZNXRm/black#60",
+      "setupMove": "Rd8",
+      "lastMoveFrom": "c8",
+      "lastMoveTo": "d8",
+      "solution": "1.Rxg7+ Bxg7 2.Qf5#",
       "solutionMoves": [
-        "Ke3",
-        "h4",
-        "f2#"
+        "Rxg7+",
+        "Bxg7",
+        "Qf5#"
       ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "02MA3",
-      "fen": "1r4k1/p1p3p1/2p5/2Pp4/3P1N1q/3B1Prb/PP1R3Q/1R5K w - - 3 29",
-      "puzzleFen": "1r4k1/p1p3p1/2p5/2Pp4/3P3q/3B1Prb/PP1R2NQ/1R5K b - - 4 29",
-      "moves": "f4g2 h3g2 d2g2 g3h3 d3f5 h3h2",
-      "rating": 1670,
-      "themes": [
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "middlegame",
-        "pin"
-      ],
-      "url": "https://lichess.org/9VkfvsKi#57",
-      "setupMove": "Ng2",
-      "lastMoveFrom": "f4",
-      "lastMoveTo": "g2",
-      "solution": "1...Bxg2+ 2.Rxg2 Rh3 3.Bf5 Rxh2+",
-      "solutionMoves": [
-        "Bxg2+",
-        "Rxg2",
-        "Rh3",
-        "Bf5",
-        "Rxh2+"
-      ],
-      "playerColor": "black"
-    },
-    {
-      "puzzleId": "003wQ",
-      "fen": "2r2rk1/6pp/3Q1q2/8/3N1B2/6P1/PP1K3P/R4b2 w - - 0 24",
-      "puzzleFen": "2r2rk1/6pp/3Q1q2/8/3N1B2/6P1/PP1K3P/5R2 b - - 0 24",
-      "moves": "a1f1 f6d6 f4d6 f8f1",
-      "rating": 1896,
-      "themes": [
-        "advantage",
-        "discoveredAttack",
-        "middlegame",
-        "pin",
-        "short"
-      ],
-      "url": "https://lichess.org/W3wvnzlo#47",
-      "setupMove": "Rxf1",
-      "lastMoveFrom": "a1",
-      "lastMoveTo": "f1",
-      "solution": "1...Qxd6 2.Bxd6 Rxf1",
-      "solutionMoves": [
-        "Qxd6",
-        "Bxd6",
-        "Rxf1"
-      ],
-      "playerColor": "black"
+      "playerColor": "white"
     }
   ]
 }

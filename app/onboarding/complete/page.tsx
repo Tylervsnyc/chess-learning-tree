@@ -12,45 +12,113 @@ const LEVEL_CONFIG = {
   expert: { label: 'Expert', color: '#FFC800', emoji: '👑', firstLesson: '6.1.1' },
 };
 
-function Confetti() {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; delay: number; size: number }>>([]);
+function EpicConfetti() {
+  const [particles, setParticles] = useState<Array<{
+    id: number;
+    x: number;
+    color: string;
+    delay: number;
+    size: number;
+    type: 'confetti' | 'star' | 'circle';
+    duration: number;
+    wobble: number;
+  }>>([]);
 
   useEffect(() => {
-    const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#FFC800', '#FF4B4B', '#A560E8'];
-    const newParticles = Array.from({ length: 40 }, (_, i) => ({
+    const colors = ['#58CC02', '#1CB0F6', '#FF9600', '#FFC800', '#FF4B4B', '#A560E8', '#fff'];
+    const types: Array<'confetti' | 'star' | 'circle'> = ['confetti', 'confetti', 'confetti', 'star', 'circle'];
+
+    // Create massive confetti explosion - 200 particles in waves
+    const newParticles = Array.from({ length: 200 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       color: colors[Math.floor(Math.random() * colors.length)],
-      delay: Math.random() * 0.5,
-      size: 6 + Math.random() * 6,
+      delay: Math.random() * 2, // Stagger over 2 seconds for waves
+      size: 4 + Math.random() * 12,
+      type: types[Math.floor(Math.random() * types.length)],
+      duration: 2.5 + Math.random() * 2, // Varied fall speeds
+      wobble: Math.random() * 30 - 15, // Random wobble
     }));
     setParticles(newParticles);
+
+    // Play celebration sound
+    try {
+      const audio = new Audio('/sounds/celebration.mp3');
+      audio.volume = 0.8;
+      audio.play().catch(() => {});
+    } catch {}
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
       {particles.map((p) => (
         <div
           key={p.id}
-          className="absolute animate-confetti-fall"
+          className="absolute confetti-particle"
           style={{
             left: `${p.x}%`,
-            top: -20,
+            top: -30,
             width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            height: p.type === 'confetti' ? p.size * 0.6 : p.size,
+            backgroundColor: p.type !== 'star' ? p.color : 'transparent',
+            borderRadius: p.type === 'circle' ? '50%' : p.type === 'confetti' ? '2px' : '0',
             animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+            boxShadow: p.type === 'star' ? `0 0 ${p.size}px ${p.color}` : 'none',
+            ['--wobble' as string]: `${p.wobble}deg`,
           }}
-        />
+        >
+          {p.type === 'star' && (
+            <span style={{ color: p.color, fontSize: p.size * 1.5 }}>✦</span>
+          )}
+        </div>
       ))}
       <style jsx>{`
-        @keyframes confetti-fall {
-          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        @keyframes confetti-fall-epic {
+          0% {
+            transform: translateY(0) rotate(0deg) translateX(0);
+            opacity: 1;
+          }
+          25% {
+            transform: translateY(25vh) rotate(180deg) translateX(20px);
+          }
+          50% {
+            transform: translateY(50vh) rotate(360deg) translateX(-20px);
+          }
+          75% {
+            transform: translateY(75vh) rotate(540deg) translateX(10px);
+          }
+          100% {
+            transform: translateY(110vh) rotate(720deg) translateX(0);
+            opacity: 0;
+          }
         }
-        .animate-confetti-fall {
-          animation: confetti-fall 3s ease-out forwards;
+        .confetti-particle {
+          animation: confetti-fall-epic 3s ease-out forwards;
+        }
+      `}</style>
+
+      {/* Burst effect from center */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="burst-ring" />
+        <div className="burst-ring burst-ring-2" />
+      </div>
+      <style jsx>{`
+        @keyframes burst {
+          0% { transform: scale(0); opacity: 0.8; }
+          100% { transform: scale(3); opacity: 0; }
+        }
+        .burst-ring {
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          border: 4px solid #FFC800;
+          border-radius: 50%;
+          animation: burst 1s ease-out forwards;
+        }
+        .burst-ring-2 {
+          border-color: #58CC02;
+          animation-delay: 0.2s;
         }
       `}</style>
     </div>
@@ -80,7 +148,7 @@ function OnboardingCompleteContent() {
       // Ignore
     }
 
-    const timer = setTimeout(() => setShowConfetti(false), 3000);
+    const timer = setTimeout(() => setShowConfetti(false), 5000); // Longer celebration!
     return () => clearTimeout(timer);
   }, [elo, level]);
 
@@ -90,7 +158,7 @@ function OnboardingCompleteContent() {
 
   return (
     <div className="min-h-screen bg-[#131F24] flex flex-col items-center justify-center px-5 relative">
-      {showConfetti && <Confetti />}
+      {showConfetti && <EpicConfetti />}
 
       {/* Decorative gradient accent */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />

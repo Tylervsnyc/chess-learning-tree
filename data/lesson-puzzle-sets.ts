@@ -14178,46 +14178,45 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
         "url": "https://lichess.org/Ib4JufEv/black#24"
       },
       {
-        "id": "LufYA",
-        "fen": "r1bqk1nr/pppp1ppp/8/1nb1N3/4P3/5Q2/PPPP1PPP/RNB2RK1 b kq - 1 6",
-        "moves": "f7f6 f3h5 g7g6 e5g6 h7g6 h5h8",
-        "rating": 1211,
+        "id": "01V4g",
+        "fen": "3r1rk1/p2nppbp/2p2np1/qpPp4/N2P1B2/PP1BP2P/5PP1/R2Q1RK1 b - - 0 15",
+        "moves": "b5a4 b3b4 a5b5 d3b5",
+        "rating": 1252,
         "themes": [
           "advantage",
-          "long",
-          "opening",
-          "pin",
+          "middlegame",
+          "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/20SxViio/black#12"
+        "url": "https://lichess.org/ezL0g2ue/black#30"
       },
       {
-        "id": "EAoPC",
-        "fen": "r4rk1/p1p3pp/1p2N3/2pqp3/6P1/3PQ3/PPP2PbP/R3K2R w KQ - 2 16",
-        "moves": "e6f8 g2h1 f8h7 g8h7",
-        "rating": 1223,
+        "id": "00AhO",
+        "fen": "r1b2rk1/2q2p1p/1p2pbp1/pP6/2P1Q3/P2B1N2/5PPP/3R1RK1 w - - 0 20",
+        "moves": "e4a8 c8b7 a8a7 f8a8 a7a8 b7a8",
+        "rating": 1243,
         "themes": [
-          "crushing",
-          "hangingPiece",
+          "advantage",
+          "clearance",
+          "long",
           "master",
           "middlegame",
-          "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/cAnkT6Vb#31"
+        "url": "https://lichess.org/9PjjgfVE#39"
       },
       {
-        "id": "u6em9",
-        "fen": "r1b2rk1/ppp3b1/6pp/4ppq1/2P5/2NBP2P/PPQ2PPK/R4R2 w - - 0 15",
-        "moves": "c3e2 e5e4 d3e4 f5e4",
-        "rating": 1278,
+        "id": "0ShMw",
+        "fen": "r1b2rk1/pp3ppp/2pb4/3p4/1PPPN3/P3P3/1B2NKPq/R2Q1R2 b - - 1 15",
+        "moves": "d5e4 f1h1 h2h1 d1h1",
+        "rating": 1274,
         "themes": [
-          "crushing",
+          "advantage",
           "middlegame",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/ZO7xBNxL#29"
+        "url": "https://lichess.org/pgTm7meJ/black#30"
       },
       {
         "id": "1phCQ",
@@ -14233,17 +14232,17 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
         "url": "https://lichess.org/ReGW2pT9/black#26"
       },
       {
-        "id": "EF8Xd",
-        "fen": "r3k1nr/1pp2ppp/p1p5/7b/3qP3/1P1N1P2/PBPP2PP/3QK2R b Kkq - 1 12",
-        "moves": "d4d7 b2g7 f7f6 g7h8",
-        "rating": 1285,
+        "id": "0UkMz",
+        "fen": "3r1rk1/pp3ppp/2bbp3/8/4PP2/P1NBR3/1PQ3Pq/3R1K2 b - - 0 19",
+        "moves": "d6f4 e3h3 h2h3 g2h3",
+        "rating": 1277,
         "themes": [
           "advantage",
           "middlegame",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/tk77U4Yx/black#24"
+        "url": "https://lichess.org/LSYvXxSw/black#38"
       }
     ]
   },
@@ -14252,30 +14251,31 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
     "lessonName": "Trapping Minor Pieces",
     "puzzles": [
       {
-        "id": "W38rl",
-        "fen": "r3kb1r/1pp2ppp/p1np1qn1/4p3/PPB1P3/2PP1NPb/3N1P1P/R1BQK2R w KQkq - 1 10",
-        "moves": "f3g1 h3g2 h2h4 g2h1",
-        "rating": 1239,
+        "id": "01zU8",
+        "fen": "6k1/3bnppp/p4n2/1pp5/8/1BNP1N2/PPP2PPP/6K1 w - - 0 19",
+        "moves": "c3e4 f6e4 d3e4 c5c4 b3c4 b5c4",
+        "rating": 1224,
         "themes": [
           "advantage",
-          "middlegame",
-          "short",
+          "endgame",
+          "long",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/R0WXE9DK#19"
+        "url": "https://lichess.org/O9lWuwI8#37"
       },
       {
-        "id": "hZEGZ",
-        "fen": "1n1r1r2/ppn2kbQ/1q2p1p1/2pp2P1/2P2PB1/2N1P3/PP6/R1B2RK1 w - - 2 25",
-        "moves": "b2b3 f8h8 h7g7 f7g7",
-        "rating": 1245,
+        "id": "07CuT",
+        "fen": "8/5b2/6p1/p1p2p1p/P6P/2k3P1/5K2/3B2N1 w - - 0 44",
+        "moves": "g1e2 c3d2 e2f4 d2d1",
+        "rating": 1226,
         "themes": [
           "crushing",
-          "middlegame",
+          "defensiveMove",
+          "endgame",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/RqdFNQDs#49"
+        "url": "https://lichess.org/84uzkFDn#87"
       },
       {
         "id": "ie7aw",
@@ -14291,17 +14291,17 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
         "url": "https://lichess.org/zxpa6jT9/black#24"
       },
       {
-        "id": "yH03D",
-        "fen": "2r3k1/1p1n1rbp/p1npp1p1/1qp2p2/RP2PP2/1PPPBRNP/3Q2PN/6K1 b - - 0 20",
-        "moves": "c5b4 c3c4 b5a4 b3a4",
-        "rating": 1285,
+        "id": "093xe",
+        "fen": "r1bqk1nr/3nppbp/p2p2p1/1p1N4/B2NP3/4B3/PPP2PPP/R2QK2R b KQkq - 1 9",
+        "moves": "b5a4 d4c6 c8b7 c6d8",
+        "rating": 1274,
         "themes": [
           "advantage",
-          "middlegame",
+          "opening",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/wVNEldq1/black#40"
+        "url": "https://lichess.org/gyVuKN5E/black#18"
       },
       {
         "id": "rxoXr",
@@ -14317,18 +14317,18 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
         "url": "https://lichess.org/43jLGWB1#21"
       },
       {
-        "id": "DUu2r",
-        "fen": "5rk1/2p3pp/1pp1b1r1/P2pPp2/1P1Q1P2/R5N1/2P2KPq/5R2 b - - 3 26",
-        "moves": "g6g4 f1h1 g4g3 h1h2",
-        "rating": 1318,
+        "id": "0Svmd",
+        "fen": "8/3b4/kBpK2p1/P2p4/6p1/2P3P1/7P/8 b - - 12 43",
+        "moves": "d7e8 d6e7 e8f7 e7f7",
+        "rating": 1321,
         "themes": [
+          "bishopEndgame",
           "crushing",
-          "master",
-          "middlegame",
+          "endgame",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/ddYEmj8o/black#52"
+        "url": "https://lichess.org/NLBizgU8/black#86"
       }
     ]
   },
@@ -14337,84 +14337,86 @@ export const lessonPuzzleSets: LessonPuzzleSet[] = [
     "lessonName": "Trapping Rooks",
     "puzzles": [
       {
-        "id": "7B8vG",
-        "fen": "r2qr1k1/1Q1bbppp/3p4/1p6/8/P3BN2/1P3PPP/R3R1K1 b - - 4 17",
-        "moves": "a8c8 e3b6 c8b8 b6d8 b8b7 d8e7",
-        "rating": 1281,
+        "id": "04QKP",
+        "fen": "r2qk1nr/1p1bbppp/p3p3/3pN3/3P4/2N2Q2/PPP2PPP/R1B1K2R b KQkq - 1 9",
+        "moves": "f7f6 f3h5 g7g6 e5g6 h7g6 h5h8",
+        "rating": 1289,
         "themes": [
           "crushing",
           "long",
-          "middlegame",
+          "opening",
+          "pin",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/EYgpSsd8/black#34"
+        "url": "https://lichess.org/bxUOkqCq/black#18"
       },
       {
-        "id": "mTcRu",
-        "fen": "r4r1k/p1p3pp/1p6/5p2/4pP2/1QPqR3/P2P1PPP/R5K1 b - - 3 21",
-        "moves": "d3d2 a1d1 d2d1 b3d1",
-        "rating": 1310,
+        "id": "0I0ds",
+        "fen": "r2qkbnr/pp3ppp/2b1p3/3pN3/3P4/2N5/PPP2PPP/R1BQK2R b KQkq - 1 8",
+        "moves": "f7f6 d1h5 g7g6 e5g6 h7g6 h5h8",
+        "rating": 1294,
         "themes": [
           "advantage",
-          "endgame",
+          "long",
+          "opening",
+          "trappedPiece"
+        ],
+        "url": "https://lichess.org/yQlhkwnn/black#16"
+      },
+      {
+        "id": "0mFjH",
+        "fen": "r1bq4/5kbQ/1n2p1r1/pp1pPpp1/2pP3p/2P1P1P1/PPB2N1P/R1B2RK1 w - - 4 21",
+        "moves": "g3g4 g6h6 h7h6 g7h6",
+        "rating": 1295,
+        "themes": [
+          "advantage",
+          "middlegame",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/hBk3vm5Z/black#42"
+        "url": "https://lichess.org/pPlTuqSv#41"
       },
       {
-        "id": "oTQaP",
-        "fen": "r1bq1rk1/1pp1bppp/8/3p4/6n1/pP1P2P1/PBPNPPBP/R2Q1RK1 w - - 0 12",
-        "moves": "b2c3 d5d4 c3d4 d8d4",
-        "rating": 1311,
+        "id": "0RxH4",
+        "fen": "r1b2rk1/p4pp1/1q3b2/8/4Q3/4PN2/P4PPP/2R2RK1 w - - 1 20",
+        "moves": "e4a8 c8b7 a8f8 g8f8",
+        "rating": 1317,
         "themes": [
           "advantage",
           "master",
+          "middlegame",
+          "short",
+          "trappedPiece"
+        ],
+        "url": "https://lichess.org/FCCgMf3H#39"
+      },
+      {
+        "id": "0ZTIq",
+        "fen": "rnbqk1nr/1p3ppp/p3p3/2ppN3/1b1P4/2N1P3/PPPB1PPP/R2QKB1R b KQkq - 1 6",
+        "moves": "f7f6 d1h5 g7g6 e5g6 h7g6 h5h8",
+        "rating": 1322,
+        "themes": [
+          "crushing",
+          "long",
           "opening",
-          "short",
+          "pin",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/8RQbQGtE#23"
+        "url": "https://lichess.org/UbPZ1auh/black#12"
       },
       {
-        "id": "5Dq24",
-        "fen": "8/8/7p/6p1/1p2K1Bk/5P1P/2Pb4/8 w - - 12 40",
-        "moves": "e4f5 h6h5 g4h5 h4h5",
-        "rating": 1347,
+        "id": "0QtIf",
+        "fen": "5k2/1p2p1bQ/5r2/p2Pq3/4N2P/8/P4PP1/4R1K1 w - - 1 34",
+        "moves": "g2g3 f6h6 h7h6 g7h6",
+        "rating": 1340,
         "themes": [
-          "bishopEndgame",
-          "crushing",
+          "advantage",
           "endgame",
+          "master",
           "short",
           "trappedPiece"
         ],
-        "url": "https://lichess.org/tIH65RBe#79"
-      },
-      {
-        "id": "rcyt3",
-        "fen": "r1b2rk1/p1q1p1bp/1nnp2p1/1p3p2/2p1P2P/1QPP1NP1/PP3PBN/R1B1R1K1 w - - 0 14",
-        "moves": "b3b5 a7a6 b5c6 c7c6",
-        "rating": 1372,
-        "themes": [
-          "crushing",
-          "middlegame",
-          "short",
-          "trappedPiece"
-        ],
-        "url": "https://lichess.org/qDaJWcEF#27"
-      },
-      {
-        "id": "7yHHF",
-        "fen": "2r4k/5qpp/p1rp1p2/Qp1Np3/PP1nP3/3R1P1P/1P4P1/3R3K w - - 0 30",
-        "moves": "d5c3 d4b3 a4b5 b3a5",
-        "rating": 1390,
-        "themes": [
-          "crushing",
-          "middlegame",
-          "short",
-          "trappedPiece"
-        ],
-        "url": "https://lichess.org/tWBz0HPa#59"
+        "url": "https://lichess.org/FUcoH5rf#67"
       }
     ]
   },
