@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
+import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
+import { getThemeExplanation } from '@/data/theme-explanations';
 
 const COLORS = {
   green: '#58CC02',
@@ -132,7 +134,19 @@ export default function DiagnosticPage() {
   const [totalCorrect, setTotalCorrect] = useState(0);
   const [results, setResults] = useState<boolean[]>([]); // Track correct/incorrect sequence
 
+  // Help modal state
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
   const initialized = useRef(false);
+
+  // Find primary theme from current puzzle for help modal
+  const primaryTheme = useMemo(() => {
+    if (!currentPuzzle?.themes) return null;
+    for (const theme of currentPuzzle.themes) {
+      if (getThemeExplanation(theme)) return theme;
+    }
+    return null;
+  }, [currentPuzzle]);
 
   useEffect(() => {
     if (isLoaded && !initialized.current) {
@@ -376,8 +390,11 @@ export default function DiagnosticPage() {
             </div>
           </div>
 
-          <div className="text-gray-400 font-medium">
-            Puzzle {puzzlesCompleted + 1}
+          <div className="flex items-center gap-2 text-gray-400 font-medium">
+            <span>Puzzle {puzzlesCompleted + 1}</span>
+            {primaryTheme && (
+              <HelpIconButton onClick={() => setShowHelpModal(true)} />
+            )}
           </div>
         </div>
       </div>
@@ -418,6 +435,15 @@ export default function DiagnosticPage() {
           )}
         </div>
       </div>
+
+      {/* Theme help modal */}
+      {primaryTheme && (
+        <ThemeHelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+          themeId={primaryTheme}
+        />
+      )}
     </div>
   );
 }

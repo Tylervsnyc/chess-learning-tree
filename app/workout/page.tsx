@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
@@ -8,6 +8,8 @@ import { useUser } from '@/hooks/useUser';
 import { createClient } from '@/lib/supabase/client';
 import { UpgradeModal } from '@/components/subscription/UpgradeModal';
 import { DailyPuzzleCounter } from '@/components/subscription/DailyPuzzleCounter';
+import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
+import { getThemeExplanation } from '@/data/theme-explanations';
 
 interface Puzzle {
   puzzleId: string;
@@ -85,8 +87,20 @@ function WorkoutContent() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [dailyPuzzlesUsed, setDailyPuzzlesUsed] = useState(0);
 
+  // Help modal state
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
   // User rating (from profile or default)
   const userRating = profile?.elo_rating || 800;
+
+  // Find primary theme from current puzzle for help modal
+  const primaryTheme = useMemo(() => {
+    if (!puzzle?.themes) return null;
+    for (const theme of puzzle.themes) {
+      if (getThemeExplanation(theme)) return theme;
+    }
+    return null;
+  }, [puzzle]);
 
   // Fetch available themes
   useEffect(() => {
@@ -297,10 +311,13 @@ function WorkoutContent() {
                 <div className="text-gray-400">Loading puzzle...</div>
               )}
               {status === 'playing' && puzzle && (
-                <div className="text-gray-300">
-                  <span className="text-gray-500">Puzzle rating:</span> {puzzle.rating}
-                  <span className="mx-2">|</span>
-                  <span className="text-gray-500">Theme:</span> {THEME_NAMES[puzzle.themes[0]] || puzzle.themes[0]}
+                <div className="flex items-center justify-center gap-2 text-gray-300">
+                  <span><span className="text-gray-500">Puzzle rating:</span> {puzzle.rating}</span>
+                  <span className="text-gray-500">|</span>
+                  <span><span className="text-gray-500">Theme:</span> {THEME_NAMES[puzzle.themes[0]] || puzzle.themes[0]}</span>
+                  {primaryTheme && (
+                    <HelpIconButton onClick={() => setShowHelpModal(true)} />
+                  )}
                 </div>
               )}
               {status === 'correct' && (
@@ -431,6 +448,15 @@ function WorkoutContent() {
         onClose={() => setShowUpgradeModal(false)}
         dailyPuzzlesUsed={dailyPuzzlesUsed}
       />
+
+      {/* Theme help modal */}
+      {primaryTheme && (
+        <ThemeHelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+          themeId={primaryTheme}
+        />
+      )}
     </div>
   );
 }

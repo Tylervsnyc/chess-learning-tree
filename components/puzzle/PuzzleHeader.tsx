@@ -2,14 +2,16 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { HelpIconButton } from './ThemeHelpModal';
 
 interface PuzzleHeaderProps {
   themeName: string;
   currentPuzzle: number;
   totalPuzzles: number;
+  onHelpClick?: () => void;
 }
 
-export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles }: PuzzleHeaderProps) {
+export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles, onHelpClick }: PuzzleHeaderProps) {
   const router = useRouter();
 
   return (
@@ -32,8 +34,11 @@ export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles }: PuzzleH
         </div>
       </div>
 
-      {/* Theme name */}
-      <h1 className="text-xl font-bold text-white mb-2">{themeName}</h1>
+      {/* Theme name with help icon */}
+      <div className="flex items-center gap-2 mb-2">
+        <h1 className="text-xl font-bold text-white">{themeName}</h1>
+        {onHelpClick && <HelpIconButton onClick={onHelpClick} />}
+      </div>
 
       {/* Progress bar */}
       <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-6">

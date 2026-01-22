@@ -1,16 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/streak-check",
-      "schedule": "0 20 * * *"
-    },
-    {
-      "path": "/api/cron/weekly-digest",
-      "schedule": "0 18 * * 0"
-    },
-    {
-      "path": "/api/cron/re-engagement",
-      "schedule": "0 14 * * 1,4"
-    }
-  ]
+  "crons": []
 }

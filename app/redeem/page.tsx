@@ -16,11 +16,26 @@ export default function RedeemPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
+      } catch (e) {
+        // If auth check fails, assume not logged in
+        setIsLoggedIn(false);
+      }
     };
+
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (isLoggedIn === null) {
+        setIsLoggedIn(false);
+      }
+    }, 5000);
+
     checkAuth();
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const handleRedeem = async (e: React.FormEvent) => {

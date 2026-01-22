@@ -184,16 +184,15 @@ export const THEME_EXPLANATIONS: Record<string, ThemeExplanation> = {
       'Force it away with a bigger threat',
       'Often involves a sacrifice the opponent must accept',
     ],
-    // Queen deflects rook, allowing back rank mate
-    exampleFen: '1kr5/pppB4/8/8/8/8/8/R2Q2K1 w - - 0 1',
-    exampleDescription: 'The rook on c8 guards the back rank. White plays Qa8+!! The king can\'t escape (pawns block b7/c7, bishop covers c8), so Rxa8 is forced. Then Rxa8# is checkmate!',
+    // Rook defends queen, deflect it with check, win the queen
+    exampleFen: '3r2k1/5ppp/8/8/3q4/7P/5PP1/3RR1K1 w - - 0 1',
+    exampleDescription: 'Black\'s rook on d8 is defending the queen on d4. White plays Re8+! The rook MUST take (Rxe8) to escape check. Now the queen on d4 is undefended - Rxd4 wins it!',
     toMove: 'White to move',
     arrows: [],
     highlights: {
-      'd1': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // Deflecting queen (sacrifice!)
-      'c8': { backgroundColor: 'rgba(255, 170, 0, 0.5)' }, // Defender being deflected
-      'a1': { backgroundColor: 'rgba(255, 255, 0, 0.5)' }, // Rook ready to mate
-      'b8': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // King
+      'e1': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // White rook gives check
+      'd8': { backgroundColor: 'rgba(255, 170, 0, 0.5)' }, // Rook is deflected from defending
+      'd4': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Queen will be won
     },
   },
   sacrifice: {
@@ -204,18 +203,16 @@ export const THEME_EXPLANATIONS: Record<string, ThemeExplanation> = {
       'Common goals: open lines, deflect defenders, expose king',
       'Calculate to make sure you get compensation',
     ],
-    // Classic Bxf7+ sacrifice
-    exampleFen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1',
-    exampleDescription: 'The classic Bxf7+ sacrifice! After Kxf7, Ng5+ forks the king and queen. White gives up a bishop but wins the queen!',
+    // Queen sacrifice for back rank mate
+    exampleFen: 'r5k1/5ppp/8/8/3Q4/8/8/3R2K1 w - - 0 1',
+    exampleDescription: 'White sacrifices the queen! Qd8+! is check. Rxd8 is forced. Then Rxd8# is checkmate - the king is trapped by its own pawns! Giving up the queen to force mate is worth it.',
     toMove: 'White to move',
-    arrows: [
-      ['c4', 'f7', 'rgba(255, 0, 0, 0.8)'],  // Bishop sac
-      ['f3', 'g5', 'rgba(255, 170, 0, 0.6)'], // Follow-up knight
-    ],
+    arrows: [],
     highlights: {
-      'c4': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // Sacrificing bishop
-      'f7': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Target square
-      'f3': { backgroundColor: 'rgba(255, 255, 0, 0.4)' }, // Knight follows up
+      'd4': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // Queen sacrifices on d8
+      'a8': { backgroundColor: 'rgba(255, 170, 0, 0.5)' }, // Rook must take
+      'd1': { backgroundColor: 'rgba(255, 255, 0, 0.5)' }, // Rook delivers mate
+      'g8': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Trapped king
     },
   },
   hangingPiece: {
@@ -226,16 +223,14 @@ export const THEME_EXPLANATIONS: Record<string, ThemeExplanation> = {
       'After opponent moves: "Did they leave anything hanging?"',
       'Free material is free material - take it!',
     ],
-    // Undefended knight
-    exampleFen: 'r1bqkb1r/pppp1ppp/2n5/4p3/3nP3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1',
-    exampleDescription: 'The knight on d4 is hanging! It\'s not defended by anything. White plays Nxd4 winning a free knight.',
+    // Knight on e5 with no defenders, white bishop can take it
+    exampleFen: '4k3/8/8/4n3/8/2B5/8/4K3 w - - 0 1',
+    exampleDescription: 'The black knight on e5 is hanging - nothing defends it! White plays Bxe5 and wins a free knight. Always look for undefended pieces!',
     toMove: 'White to move',
-    arrows: [
-      ['f3', 'd4', 'rgba(0, 255, 0, 0.8)'],  // Capture the hanging piece
-    ],
+    arrows: [],
     highlights: {
-      'd4': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Hanging piece!
-      'f3': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // Capturing piece
+      'e5': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Hanging knight!
+      'c3': { backgroundColor: 'rgba(0, 255, 0, 0.5)' },  // Bishop can capture
     },
   },
   trappedPiece: {
@@ -246,17 +241,15 @@ export const THEME_EXPLANATIONS: Record<string, ThemeExplanation> = {
       'Bishops can get trapped by pawns',
       'Queens hunting pawns early often get trapped',
     ],
-    // Trapped bishop
-    exampleFen: 'rnbqk1nr/pppp1ppp/8/4p3/1bPP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 1',
-    exampleDescription: 'Black\'s bishop on b4 is in trouble! After a3, the bishop has no good squares. If Ba5, then b4 traps it completely.',
-    toMove: 'White to move',
-    arrows: [
-      ['a2', 'a3', 'rgba(0, 255, 0, 0.8)'],  // Pawn attacks bishop
-      ['b2', 'b4', 'rgba(255, 170, 0, 0.6)'], // Future trap
-    ],
+    // Knight trapped in corner - nowhere to go
+    exampleFen: '7k/8/8/8/8/6P1/5P2/6Kn w - - 0 1',
+    exampleDescription: 'Black\'s knight on h1 is completely trapped! A knight can only go to f2 or g3, but White\'s pawns control both squares. The knight has no escape and will be captured.',
+    toMove: 'Black\'s knight is trapped',
+    arrows: [],
     highlights: {
-      'b4': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Trapped piece
-      'a3': { backgroundColor: 'rgba(0, 255, 0, 0.4)' },  // Attacking square
+      'h1': { backgroundColor: 'rgba(255, 0, 0, 0.5)' },  // Trapped knight
+      'f2': { backgroundColor: 'rgba(255, 170, 0, 0.4)' }, // Blocked by pawn
+      'g3': { backgroundColor: 'rgba(255, 170, 0, 0.4)' }, // Blocked by pawn
     },
   },
   promotion: {

@@ -6,6 +6,8 @@ import { PuzzleBoard } from '@/components/puzzle/PuzzleBoard';
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
 import { PuzzleFeedback } from '@/components/puzzle/PuzzleFeedback';
 import { PuzzleComplete } from '@/components/puzzle/PuzzleComplete';
+import { ThemeHelpModal } from '@/components/puzzle/ThemeHelpModal';
+import { getThemeExplanation } from '@/data/theme-explanations';
 import { getPuzzlesByTheme } from '@/data/puzzles';
 import { getThemeById } from '@/data/curriculum';
 
@@ -21,9 +23,11 @@ export default function PuzzlePage({ params }: PageProps) {
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [isComplete, setIsComplete] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const currentPuzzle = puzzles[currentPuzzleIndex];
   const themeName = theme?.name || 'Unknown Theme';
+  const hasHelpExplanation = !!getThemeExplanation(themeId);
 
   const handleCorrectMove = useCallback(() => {
     setFeedback('correct');
@@ -80,6 +84,7 @@ export default function PuzzlePage({ params }: PageProps) {
           themeName={themeName}
           currentPuzzle={currentPuzzleIndex + 1}
           totalPuzzles={puzzles.length}
+          onHelpClick={hasHelpExplanation ? () => setShowHelpModal(true) : undefined}
         />
 
         {/* Puzzle instruction */}
@@ -101,6 +106,13 @@ export default function PuzzlePage({ params }: PageProps) {
 
         {/* Feedback overlay */}
         <PuzzleFeedback type={feedback} onAnimationComplete={handleFeedbackComplete} />
+
+        {/* Theme help modal */}
+        <ThemeHelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+          themeId={themeId}
+        />
       </div>
     </MobileContainer>
   );

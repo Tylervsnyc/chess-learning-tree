@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 import { createClient } from '@/lib/supabase/client';
 import { UpgradeModal } from '@/components/subscription/UpgradeModal';
+import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
+import { getThemeExplanation } from '@/data/theme-explanations';
 
 interface Puzzle {
   puzzleId: string;
@@ -41,6 +43,9 @@ export default function DailyChallengePage() {
   // Subscription state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [dailyPuzzlesUsed, setDailyPuzzlesUsed] = useState(0);
+
+  // Help modal state
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -255,6 +260,15 @@ export default function DailyChallengePage() {
   // Board orientation
   const boardOrientation = game ? (game.turn() === 'w' ? 'white' : 'black') : 'white';
 
+  // Find primary theme from current puzzle for help modal
+  const primaryTheme = useMemo(() => {
+    if (!puzzle?.themes) return null;
+    for (const theme of puzzle.themes) {
+      if (getThemeExplanation(theme)) return theme;
+    }
+    return null;
+  }, [puzzle]);
+
   // Ready screen
   if (gameState === 'ready') {
     return (
@@ -418,8 +432,11 @@ export default function DailyChallengePage() {
             <div className="text-gray-400">Loading puzzle...</div>
           )}
           {status === 'playing' && puzzle && (
-            <div className="text-gray-400">
-              Find the best move
+            <div className="flex items-center justify-center gap-2 text-gray-400">
+              <span>Find the best move</span>
+              {primaryTheme && (
+                <HelpIconButton onClick={() => setShowHelpModal(true)} />
+              )}
             </div>
           )}
           {status === 'correct' && (
@@ -441,6 +458,15 @@ export default function DailyChallengePage() {
         onClose={() => setShowUpgradeModal(false)}
         dailyPuzzlesUsed={dailyPuzzlesUsed}
       />
+
+      {/* Theme help modal */}
+      {primaryTheme && (
+        <ThemeHelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+          themeId={primaryTheme}
+        />
+      )}
     </div>
   );
 }

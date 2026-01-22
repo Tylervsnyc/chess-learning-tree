@@ -17,19 +17,34 @@ export function initPostHog() {
 // Identify user after login/signup
 export function identifyUser(userId: string, traits?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
-  posthog.identify(userId, traits);
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    posthog.identify(userId, traits);
+  } catch (e) {
+    // Silently fail
+  }
 }
 
 // Reset user on logout
 export function resetUser() {
   if (typeof window === 'undefined') return;
-  posthog.reset();
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    posthog.reset();
+  } catch (e) {
+    // Silently fail
+  }
 }
 
 // Track custom events
 export function trackEvent(event: string, properties?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
-  posthog.capture(event, properties);
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    posthog.capture(event, properties);
+  } catch (e) {
+    // Silently fail if PostHog isn't ready
+  }
 }
 
 // ============================================
