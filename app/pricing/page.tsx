@@ -19,23 +19,27 @@ function PricingContent() {
 
   useEffect(() => {
     async function checkAuth() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
 
-      if (user) {
-        try {
-          const response = await fetch('/api/stripe/subscription');
-          const data = await response.json();
-          if (data.subscription) {
-            setIsPremium(data.isPremium);
+        if (user) {
+          try {
+            const response = await fetch('/api/stripe/subscription');
+            const data = await response.json();
+            if (data.subscription) {
+              setIsPremium(data.isPremium);
+            }
+          } catch (error) {
+            console.error('Failed to fetch subscription:', error);
           }
-        } catch (error) {
-          console.error('Failed to fetch subscription:', error);
         }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     }
 
     checkAuth();
