@@ -4,13 +4,21 @@ import { stripe, PRICES } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured (missing STRIPE_SECRET_KEY)' },
+        { status: 500 }
+      );
+    }
+
     const supabase = await createClient();
 
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - please log in' },
         { status: 401 }
       );
     }
@@ -26,6 +34,14 @@ export async function POST(request: NextRequest) {
     }
 
     const stripePriceId = priceId === 'monthly' ? PRICES.MONTHLY : PRICES.YEARLY;
+
+    // Check if price ID is set
+    if (!stripePriceId) {
+      return NextResponse.json(
+        { error: `Price ID not configured for ${priceId} plan` },
+        { status: 500 }
+      );
+    }
 
     // Get or create Stripe customer
     const { data: profile } = await supabase
@@ -79,8 +95,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Checkout error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: `Checkout failed: ${message}` },
       { status: 500 }
     );
   }
