@@ -77,6 +77,7 @@ export function mergeProgress(
     bestStreak,
     lastPlayedDate,
     themePerformance,
+    startingLessonId: local.startingLessonId, // Keep local starting lesson
   };
 }
 

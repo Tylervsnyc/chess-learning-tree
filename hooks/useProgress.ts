@@ -32,6 +32,8 @@ export interface Progress {
   bestStreak: number;
   lastPlayedDate: string | null;
   themePerformance: Record<string, ThemeStats>;
+  // Starting lesson from diagnostic placement (all lessons before this are unlocked)
+  startingLessonId: string | null;
 }
 
 const DEFAULT_PROGRESS: Progress = {
@@ -43,6 +45,7 @@ const DEFAULT_PROGRESS: Progress = {
   bestStreak: 0,
   lastPlayedDate: null,
   themePerformance: {},
+  startingLessonId: null,
 };
 
 function getStoredProgress(): Progress {
@@ -285,23 +288,45 @@ export function useLessonProgress() {
   }, [progress.completedLessons]);
 
   // Check if a lesson is unlocked
-  // Lesson is unlocked if:
-  // - It's the first lesson in the first module (1.1.1)
-  // - The previous lesson is completed
-  // - DEV MODE: All lessons unlocked for testing
+  // Unlock rules:
+  // - First lesson is always unlocked
+  // - If user has a startingLessonId (from diagnostic): all lessons before it are unlocked
+  // - Lessons after starting point require completing the previous lesson
   const isLessonUnlocked = useCallback((lessonId: string, allLessonIds: string[]) => {
-    // TODO: Remove this line to re-enable sequential unlocking
-    return true; // DEV MODE: All lessons unlocked for testing
-
     const index = allLessonIds.indexOf(lessonId);
 
     // First lesson is always unlocked
     if (index === 0) return true;
 
-    // Otherwise, previous lesson must be completed
+    // If lesson is already completed, it's unlocked
+    if (progress.completedLessons.includes(lessonId)) return true;
+
+    // If user has a starting lesson from diagnostic
+    if (progress.startingLessonId) {
+      const startingIndex = allLessonIds.indexOf(progress.startingLessonId);
+
+      // All lessons before and including the starting lesson are unlocked
+      if (startingIndex >= 0 && index <= startingIndex) {
+        return true;
+      }
+    }
+
+    // For lessons after the starting point: require previous lesson completed
     const previousLessonId = allLessonIds[index - 1];
     return progress.completedLessons.includes(previousLessonId);
-  }, [progress.completedLessons]);
+  }, [progress.completedLessons, progress.startingLessonId]);
+
+  // Set the starting lesson (called after diagnostic placement)
+  const setStartingLesson = useCallback((lessonId: string) => {
+    setProgress(prev => {
+      const newProgress = {
+        ...prev,
+        startingLessonId: lessonId,
+      };
+      saveProgress(newProgress);
+      return newProgress;
+    });
+  }, []);
 
   const resetProgress = useCallback(() => {
     setProgress(DEFAULT_PROGRESS);
@@ -321,6 +346,8 @@ export function useLessonProgress() {
     recordPuzzleAttempt,
     isLessonCompleted,
     isLessonUnlocked,
+    setStartingLesson,
+    startingLessonId: progress.startingLessonId,
     resetProgress,
     loaded,
   };

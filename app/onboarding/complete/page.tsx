@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useLessonProgress } from '@/hooks/useProgress';
 
 const LEVEL_CONFIG = {
   beginner: { label: 'Beginner', color: '#58CC02', emoji: '🌱', firstLesson: '1.1.1' },
@@ -128,6 +129,7 @@ function EpicConfetti() {
 function OnboardingCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setStartingLesson } = useLessonProgress();
   const [showConfetti, setShowConfetti] = useState(true);
 
   const elo = parseInt(searchParams.get('elo') || '800', 10);
@@ -140,6 +142,10 @@ function OnboardingCompleteContent() {
   const fromAccountImport = !!source;
 
   useEffect(() => {
+    // Set the starting lesson based on diagnostic placement
+    // This unlocks all lessons before this point
+    setStartingLesson(config.firstLesson);
+
     try {
       localStorage.setItem('chess-guest-progress', JSON.stringify({
         elo,
@@ -153,7 +159,7 @@ function OnboardingCompleteContent() {
 
     const timer = setTimeout(() => setShowConfetti(false), 5000); // Longer celebration!
     return () => clearTimeout(timer);
-  }, [elo, level]);
+  }, [elo, level, config.firstLesson, setStartingLesson]);
 
   const handleContinue = () => {
     router.push(`/learn?guest=true&level=${level}`);
