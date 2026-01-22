@@ -56,6 +56,23 @@ export default function OnboardingChoicePage() {
               </div>
             </div>
           </Link>
+
+          {/* Connect existing account */}
+          <Link
+            href="/onboarding/connect-account"
+            className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4]"
+            style={{ backgroundColor: '#1CB0F6' }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
+                🔗
+              </div>
+              <div className="flex-1 text-left">
+                <div className="font-bold text-white text-lg">I play on Lichess or Chess.com</div>
+                <div className="text-white/70 text-sm">Import your rating automatically</div>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

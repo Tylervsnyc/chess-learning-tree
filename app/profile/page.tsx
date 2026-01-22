@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useProfileData } from '@/hooks/useProfileData';
 import { useSubscription } from '@/hooks/useSubscription';
 import { UpgradeModal } from '@/components/subscription/UpgradeModal';
+import { createClient } from '@/lib/supabase/client';
 import { forceSimulation, forceCollide, forceX, forceY, forceManyBody, SimulationNodeDatum } from 'd3-force';
 
 // Theme display names
@@ -443,12 +444,23 @@ export default function ProfilePage() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeData | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/');
+    router.refresh();
+  };
 
   // Check if we have real data from Supabase
   const hasRealData = themeData.length > 0;
 
-  // Use sample data when not logged in or no real data yet
-  const showingSampleData = !isAuthenticated || !hasRealData;
+  // Only show sample data for unauthenticated users (demo mode)
+  // Authenticated users see their real data or an empty state
+  const showingSampleData = !isAuthenticated;
+  const showEmptyState = isAuthenticated && !hasRealData;
 
   // Calculate stats
   const displayPuzzlesAttempted = showingSampleData ? 2076 : stats.totalAttempts;
@@ -458,12 +470,16 @@ export default function ProfilePage() {
   // Process theme data
   const { strengths, weaknesses, allThemes } = useMemo(() => {
     if (showingSampleData) {
-      // Use sample data
+      // Use sample data for demo (unauthenticated users)
       const sorted = [...SAMPLE_THEME_DATA].sort((a, b) => b.accuracy - a.accuracy);
       const avgAccuracy = 63; // Sample average
       const strengths = sorted.filter(t => t.accuracy >= avgAccuracy);
       const weaknesses = sorted.filter(t => t.accuracy < avgAccuracy).reverse();
       return { strengths, weaknesses, allThemes: sorted };
+    }
+
+    if (showEmptyState) {
+      return { strengths: [], weaknesses: [], allThemes: [] };
     }
 
     // Convert Supabase theme data to ThemeData format
@@ -580,7 +596,17 @@ export default function ProfilePage() {
               </span>
             )}
           </div>
-          <div className="w-16" />
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="text-gray-400 hover:text-white text-sm disabled:opacity-50"
+            >
+              {loggingOut ? 'Logging out...' : 'Log out'}
+            </button>
+          ) : (
+            <div className="w-16" />
+          )}
         </div>
       </div>
 
@@ -648,19 +674,34 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Sample data notice */}
+        {/* Sample data notice (unauthenticated demo) */}
         {showingSampleData && (
           <div className="max-w-6xl mx-auto mt-2 text-center">
             <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-1 rounded">
-              {!isAuthenticated
-                ? 'Sign in to track your progress'
-                : 'Showing sample data - start solving puzzles to see your stats!'}
+              Sign in to track your progress
             </span>
           </div>
         )}
       </div>
 
-      {(
+      {/* Empty state for authenticated users with no data */}
+      {showEmptyState && (
+        <div className="max-w-md mx-auto px-4 py-12 text-center">
+          <div className="text-6xl mb-4">&#9823;</div>
+          <h2 className="text-xl font-bold text-white mb-2">No puzzles solved yet</h2>
+          <p className="text-gray-400 mb-6">
+            Start solving puzzles to see your strengths and weaknesses here.
+          </p>
+          <button
+            onClick={() => router.push('/learn')}
+            className="px-6 py-3 bg-[#58CC02] hover:bg-[#4CAF00] text-white font-semibold rounded-xl transition-colors shadow-[0_4px_0_#3d8c01]"
+          >
+            Start Learning
+          </button>
+        </div>
+      )}
+
+      {!showEmptyState && (
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex gap-4">
             {/* Left panel - Strengths list */}

@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Chess } from 'chess.js';
-import { getPuzzlesForLesson, getLessonInfo, EmbeddedPuzzle } from '@/data/lesson-puzzle-sets';
+import lessonData from '@/data/lesson-puzzle-sets.json';
+import diagnosticPuzzles from '@/data/diagnostic-puzzles.json';
+
+interface LessonInfo {
+  lessonId: string;
+  lessonName: string;
+  puzzleIds: string[];
+  puzzleCount: number;
+}
+
+interface RawPuzzle {
+  puzzleId: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  themes: string[];
+  url: string;
+}
 
 interface LessonPuzzle {
   puzzleId: string;
@@ -18,8 +35,22 @@ interface LessonPuzzle {
   playerColor: 'white' | 'black';
 }
 
+// Get lesson info from the JSON data
+function getLessonInfo(lessonId: string): LessonInfo | null {
+  const lesson = (lessonData as LessonInfo[]).find(l => l.lessonId === lessonId);
+  return lesson || null;
+}
+
+// Build a map of all diagnostic puzzles for quick lookup
+const puzzleMap: Map<string, RawPuzzle> = new Map();
+for (const [, puzzles] of Object.entries(diagnosticPuzzles)) {
+  for (const puzzle of puzzles as RawPuzzle[]) {
+    puzzleMap.set(puzzle.puzzleId, puzzle);
+  }
+}
+
 // Process embedded puzzle into lesson format
-function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
+function processPuzzle(raw: RawPuzzle): LessonPuzzle {
   const chess = new Chess(raw.fen);
   const moveList = raw.moves.split(' ');
 
@@ -31,7 +62,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
   const setupResult = chess.move({
     from: lastMoveFrom,
     to: lastMoveTo,
-    promotion: setupUci[4] as any
+    promotion: setupUci[4] as 'q' | 'r' | 'b' | 'n' | undefined
   });
 
   const setupMove = setupResult?.san || setupUci;
@@ -45,7 +76,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
     const result = chess.move({
       from: uci.slice(0, 2),
       to: uci.slice(2, 4),
-      promotion: uci[4] as any
+      promotion: uci[4] as 'q' | 'r' | 'b' | 'n' | undefined
     });
     if (result) {
       solutionMoves.push(result.san);
@@ -56,7 +87,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
   const solution = formatSolution(solutionMoves, playerColor === 'black');
 
   return {
-    puzzleId: raw.id,
+    puzzleId: raw.puzzleId,
     fen: raw.fen,
     puzzleFen,
     moves: raw.moves,
@@ -108,24 +139,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
-  // Get puzzles directly from embedded data
-  const embeddedPuzzles = getPuzzlesForLesson(lessonId);
+  // Get puzzles by ID from the diagnostic puzzles (temporary fallback)
+  // In production, this should load from a dedicated lesson puzzles JSON
+  const rawPuzzles: RawPuzzle[] = [];
+  for (const puzzleId of lessonInfo.puzzleIds) {
+    const puzzle = puzzleMap.get(puzzleId);
+    if (puzzle) {
+      rawPuzzles.push(puzzle);
+    }
+  }
 
-  if (embeddedPuzzles.length === 0) {
+  if (rawPuzzles.length === 0) {
+    // Puzzles not found in diagnostic set - return placeholder
     return NextResponse.json({
-      error: 'No puzzles available for this lesson',
+      error: 'Puzzles not yet generated for this lesson',
       lessonId,
-      lessonName: lessonInfo.name,
+      lessonName: lessonInfo.lessonName,
+      needsGeneration: true,
     }, { status: 404 });
   }
 
   try {
     // Process into lesson format
-    const puzzles = embeddedPuzzles.map(processPuzzle);
+    const puzzles = rawPuzzles.map(processPuzzle);
 
     return NextResponse.json({
       lessonId,
-      lessonName: lessonInfo.name,
+      lessonName: lessonInfo.lessonName,
       lessonDescription: '',
       puzzles,
       puzzleCount: puzzles.length,
