@@ -9,6 +9,7 @@ function PricingContent() {
   const searchParams = useSearchParams();
   const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
 
@@ -21,6 +22,8 @@ function PricingContent() {
   };
 
   const handleGetPremium = async () => {
+    setCheckoutError(null);
+
     if (!isAuthenticated) {
       // Guest checkout flow
       if (!email) {
@@ -35,7 +38,8 @@ function PricingContent() {
       setCheckoutLoading(true);
       try {
         await startGuestCheckout('monthly', email);
-      } catch {
+      } catch (err) {
+        setCheckoutError(err instanceof Error ? err.message : 'Checkout failed');
         setCheckoutLoading(false);
       }
       return;
@@ -44,7 +48,8 @@ function PricingContent() {
     setCheckoutLoading(true);
     try {
       await startCheckout('monthly');
-    } catch {
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : 'Checkout failed');
       setCheckoutLoading(false);
     }
   };
@@ -182,6 +187,12 @@ function PricingContent() {
                   </div>
                 </li>
               </ul>
+
+              {checkoutError && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                  {checkoutError}
+                </div>
+              )}
 
               {!isAuthenticated && (
                 <div className="mb-4">

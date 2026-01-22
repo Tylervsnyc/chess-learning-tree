@@ -25,9 +25,10 @@ export const stripe = {
 };
 
 // Price IDs from Stripe Dashboard
+// Use NEXT_PUBLIC_ versions as fallback since those are what's set in Vercel
 export const PRICES = {
-  MONTHLY: process.env.STRIPE_PRICE_MONTHLY!,
-  YEARLY: process.env.STRIPE_PRICE_YEARLY!,
+  MONTHLY: process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
+  YEARLY: process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
 };
 
 // Price details for display
