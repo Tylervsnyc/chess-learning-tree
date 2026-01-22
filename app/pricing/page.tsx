@@ -7,15 +7,37 @@ import { useSubscription } from '@/hooks/useSubscription';
 function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { startCheckout, isAuthenticated, isPremium, loading } = useSubscription();
+  const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleGetPremium = async () => {
     if (!isAuthenticated) {
-      router.push('/auth/signup?redirect=/pricing');
+      // Guest checkout flow
+      if (!email) {
+        setEmailError('Please enter your email');
+        return;
+      }
+      if (!validateEmail(email)) {
+        setEmailError('Please enter a valid email');
+        return;
+      }
+      setEmailError(null);
+      setCheckoutLoading(true);
+      try {
+        await startGuestCheckout('monthly', email);
+      } catch {
+        setCheckoutLoading(false);
+      }
       return;
     }
 

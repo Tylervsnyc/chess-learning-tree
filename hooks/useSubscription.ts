@@ -68,17 +68,42 @@ export function useSubscription() {
         body: JSON.stringify({ priceId }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Failed to start checkout');
+        throw new Error(data.error || 'Failed to start checkout');
       }
 
-      const { url } = await res.json();
+      const { url } = data;
       if (url) {
         window.location.href = url;
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      throw error;
+    }
+  };
+
+  const startGuestCheckout = async (priceId: 'monthly' | 'yearly', email: string) => {
+    try {
+      const res = await fetch('/api/stripe/guest-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId, email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to start checkout');
+      }
+
+      const { url } = data;
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Guest checkout error:', error);
       throw error;
     }
   };
@@ -108,6 +133,7 @@ export function useSubscription() {
     ...state,
     refresh: fetchStatus,
     startCheckout,
+    startGuestCheckout,
     openPortal,
   };
 }

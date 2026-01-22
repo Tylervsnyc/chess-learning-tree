@@ -105,13 +105,13 @@ export default function RedeemPage() {
             </p>
             <div className="space-y-3">
               <Link
-                href="/auth/signup"
+                href="/auth/signup?redirect=/redeem"
                 className="block w-full py-3 bg-[#58CC02] hover:bg-[#4CAD02] text-white font-semibold rounded-lg transition-colors text-center"
               >
                 Create Account
               </Link>
               <Link
-                href="/auth/login"
+                href="/auth/login?redirect=/redeem"
                 className="block w-full py-3 bg-[#131F24] border border-gray-600 hover:border-gray-500 text-white font-semibold rounded-lg transition-colors text-center"
               >
                 Sign In

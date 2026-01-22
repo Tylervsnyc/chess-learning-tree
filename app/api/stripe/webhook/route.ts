@@ -71,9 +71,64 @@ async function handleCheckoutComplete(
   supabase: ReturnType<typeof createServiceClient>,
   session: Stripe.Checkout.Session
 ) {
-  const userId = session.metadata?.supabase_user_id;
+  // Check if this is a guest checkout
+  const isGuestCheckout = session.metadata?.is_guest_checkout === 'true';
+  const guestEmail = session.metadata?.guest_email || session.customer_email;
+
+  let userId = session.metadata?.supabase_user_id;
+
+  // Handle guest checkout - create account
+  if (isGuestCheckout && guestEmail && !userId) {
+    try {
+      // Check if user already exists with this email
+      const { data: existingUsers } = await supabase.auth.admin.listUsers();
+      const existingUser = existingUsers?.users?.find(u => u.email === guestEmail);
+
+      if (existingUser) {
+        // User already exists, use their ID
+        userId = existingUser.id;
+      } else {
+        // Create new user with a random password (they'll set it via magic link)
+        const tempPassword = crypto.randomUUID() + crypto.randomUUID();
+        const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+          email: guestEmail,
+          password: tempPassword,
+          email_confirm: true, // Auto-confirm since they paid
+          user_metadata: {
+            created_via: 'guest_checkout',
+          },
+        });
+
+        if (createError) {
+          console.error('Error creating user for guest checkout:', createError);
+          return;
+        }
+
+        userId = newUser.user.id;
+
+        // Create their profile
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            email: guestEmail,
+            subscription_status: 'premium',
+            stripe_customer_id: session.customer as string,
+          });
+
+        if (profileError) {
+          // Profile might already exist from trigger, try update instead
+          console.log('Profile insert failed, trying update:', profileError.message);
+        }
+      }
+    } catch (err) {
+      console.error('Error handling guest checkout account creation:', err);
+      return;
+    }
+  }
+
   if (!userId) {
-    console.error('No user ID in checkout session metadata');
+    console.error('No user ID available for checkout session');
     return;
   }
 
@@ -86,7 +141,7 @@ async function handleCheckoutComplete(
     const currentPeriodEnd = (subscription as any).current_period_end as number;
     const expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
 
-    // Update profile
+    // Update profile with premium status
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -99,6 +154,13 @@ async function handleCheckoutComplete(
     if (error) {
       console.error('Error updating profile after checkout:', error);
     }
+
+    // Update subscription metadata with user ID for future webhook events
+    await stripe.subscriptions.update(session.subscription as string, {
+      metadata: {
+        supabase_user_id: userId,
+      },
+    });
   }
 }
 
