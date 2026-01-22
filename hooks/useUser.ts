@@ -24,6 +24,29 @@ export function useUser() {
     let mounted = true;
     const supabase = createClient();
 
+    // Verify subscription with Stripe if user has customer ID but is marked free
+    const verifySubscription = async (profileData: Profile) => {
+      if (profileData.stripe_customer_id && profileData.subscription_status === 'free') {
+        try {
+          const res = await fetch('/api/stripe/verify-subscription', { method: 'POST' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.synced && data.status === 'premium') {
+              // Subscription was out of sync - update local state
+              return {
+                ...profileData,
+                subscription_status: 'premium' as const,
+                subscription_expires_at: data.expires_at,
+              };
+            }
+          }
+        } catch (err) {
+          console.error('Error verifying subscription:', err);
+        }
+      }
+      return profileData;
+    };
+
     // Fetch profile (don't try to create - that should happen via trigger)
     const fetchProfile = async (userId: string, email: string) => {
       try {
@@ -35,7 +58,9 @@ export function useUser() {
 
         if (mounted) {
           if (data) {
-            setProfile(data);
+            // Verify subscription status if they have a Stripe customer ID
+            const verifiedProfile = await verifySubscription(data);
+            setProfile(verifiedProfile);
           } else if (error) {
             // No profile found - create a fake one for display purposes
             // The real one should be created by the DB trigger

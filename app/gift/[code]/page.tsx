@@ -69,6 +69,9 @@ export default function GiftPage() {
         }
       }
 
+      // Wait a moment for the profile to be created by the database trigger
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // User is signed in - apply promo code
       const promoResponse = await fetch('/api/promo/redeem', {
         method: 'POST',
@@ -76,10 +79,11 @@ export default function GiftPage() {
         body: JSON.stringify({ code }),
       });
 
+      const promoData = await promoResponse.json();
+
       if (!promoResponse.ok) {
-        const promoData = await promoResponse.json();
-        // Don't block on promo errors - user is already signed up
         console.error('Promo error:', promoData.error);
+        // Still continue - user can redeem later
       }
 
       // Success! Go to onboarding

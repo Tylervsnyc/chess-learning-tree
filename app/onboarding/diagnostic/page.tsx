@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
@@ -316,19 +315,7 @@ export default function DiagnosticPage() {
   if (!selfAssessmentComplete) {
     return (
       <div className="min-h-screen bg-[#131F24] flex flex-col">
-        <div className="flex items-center px-4 pt-3 gap-4">
-          <div className="h-1 flex-1 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600] rounded-full" />
-          <Link
-            href="/premium-signup"
-            className="px-3 py-1.5 rounded-lg font-bold text-sm transition-all active:translate-y-[1px] flex-shrink-0"
-            style={{
-              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-              color: '#000',
-            }}
-          >
-            Buy Premium
-          </Link>
-        </div>
+        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
 
         <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
           <div className="text-center mb-6">
@@ -403,23 +390,11 @@ export default function DiagnosticPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/premium-signup"
-              className="px-3 py-1.5 rounded-lg font-bold text-xs transition-all active:translate-y-[1px]"
-              style={{
-                background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                color: '#000',
-              }}
-            >
-              Buy Premium
-            </Link>
-            <div className="flex items-center gap-2 text-gray-400 font-medium">
-              <span>Puzzle {puzzlesCompleted + 1}</span>
-              {primaryTheme && (
-                <HelpIconButton onClick={() => setShowHelpModal(true)} />
-              )}
-            </div>
+          <div className="flex items-center gap-2 text-gray-400 font-medium">
+            <span>Puzzle {puzzlesCompleted + 1}</span>
+            {primaryTheme && (
+              <HelpIconButton onClick={() => setShowHelpModal(true)} />
+            )}
           </div>
         </div>
       </div>

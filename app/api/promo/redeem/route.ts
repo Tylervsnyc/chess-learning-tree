@@ -94,19 +94,35 @@ export async function POST(request: Request) {
       }
     }
 
-    // Update or create user's profile with premium status using admin client (bypasses RLS)
-    const adminClient = createAdminClient();
-    const { error: updateError } = await adminClient
+    // Try to update with regular client first (works if profile exists)
+    let updateError = null;
+    const { error: regularUpdateError, count } = await supabase
       .from('profiles')
-      .upsert({
-        id: user.id,
-        email: user.email,
+      .update({
         subscription_status: 'premium',
         subscription_expires_at: newExpiresAt.toISOString(),
-      }, {
-        onConflict: 'id',
-        ignoreDuplicates: false,
-      });
+      })
+      .eq('id', user.id);
+
+    if (regularUpdateError) {
+      console.error('Regular update failed:', regularUpdateError);
+      // Try with admin client as fallback
+      try {
+        const adminClient = createAdminClient();
+        const { error: adminError } = await adminClient
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            email: user.email,
+            subscription_status: 'premium',
+            subscription_expires_at: newExpiresAt.toISOString(),
+          });
+        updateError = adminError;
+      } catch (adminErr) {
+        console.error('Admin client failed:', adminErr);
+        updateError = regularUpdateError;
+      }
+    }
 
     if (updateError) {
       console.error('Error updating profile:', updateError);
