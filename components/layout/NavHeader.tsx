@@ -13,6 +13,8 @@ const LEVELS = [
   { key: 'tournament', label: 'Level 4', minElo: 1100, ratingRange: '1200-1400' },
   { key: 'advanced', label: 'Level 5', minElo: 1400, ratingRange: '1400-1600' },
   { key: 'expert', label: 'Level 6', minElo: 1700, ratingRange: '1600-1800' },
+  { key: 'master', label: 'Level 7', minElo: 1900, ratingRange: '1800-2000' },
+  { key: 'grandmaster', label: 'Level 8', minElo: 2100, ratingRange: '2000-2200' },
 ];
 
 function getMaxUnlockedIndex(elo: number) {

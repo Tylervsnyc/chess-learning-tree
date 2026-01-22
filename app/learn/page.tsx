@@ -10,7 +10,7 @@ function LearnContent() {
   const isGuest = searchParams.get('guest') === 'true';
   const level = searchParams.get('level');
 
-  // Map level name to index (6 levels total)
+  // Map level name to index (8 levels total)
   const levelMap: Record<string, number> = {
     beginner: 0,
     casual: 1,
@@ -18,6 +18,8 @@ function LearnContent() {
     tournament: 3,
     advanced: 4,
     expert: 5,
+    master: 6,
+    grandmaster: 7,
   };
   const levelIndex = level ? (levelMap[level] ?? 0) : 0;
 

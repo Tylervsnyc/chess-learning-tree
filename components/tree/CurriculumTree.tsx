@@ -8,9 +8,11 @@ import { level3 } from '@/data/level3-curriculum';
 import { level4 } from '@/data/level4-curriculum';
 import { level5 } from '@/data/level5-curriculum';
 import { level6 } from '@/data/level6-curriculum';
+import { level7 } from '@/data/level7-curriculum';
+import { level8 } from '@/data/level8-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
 
-const LEVELS: Level[] = [level1, level2, level3, level4, level5, level6];
+const LEVELS: Level[] = [level1, level2, level3, level4, level5, level6, level7, level8];
 
 const MODULE_COLORS = [
   '#58CC02', // Green

@@ -25,10 +25,12 @@ import { level3 } from '@/data/level3-curriculum';
 import { level4 } from '@/data/level4-curriculum';
 import { level5 } from '@/data/level5-curriculum';
 import { level6 } from '@/data/level6-curriculum';
+import { level7 } from '@/data/level7-curriculum';
+import { level8 } from '@/data/level8-curriculum';
 import { getPuzzleResponse } from '@/data/puzzle-responses';
 import { LearningEvents } from '@/lib/analytics/posthog';
 
-const LEVELS = [level1, level2, level3, level4, level5, level6];
+const LEVELS = [level1, level2, level3, level4, level5, level6, level7, level8];
 
 // CSS for streak animations
 const streakStyles = `
