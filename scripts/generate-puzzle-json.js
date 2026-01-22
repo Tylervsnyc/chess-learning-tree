@@ -8,21 +8,12 @@ const OUTPUT_FILE = path.join(__dirname, '..', 'data', 'lesson-puzzles-full.json
 // Load lesson data
 const lessons = JSON.parse(fs.readFileSync(LESSONS_FILE, 'utf-8'));
 
-// Collect all unique puzzle IDs (handles both formats)
+// Collect all unique puzzle IDs
 const allPuzzleIds = new Set();
 for (const lesson of lessons) {
-  // Format 1: puzzleIds array (levels 1-5)
   if (lesson.puzzleIds && Array.isArray(lesson.puzzleIds)) {
     for (const id of lesson.puzzleIds) {
       allPuzzleIds.add(id);
-    }
-  }
-  // Format 2: puzzles array with objects (levels 6-8)
-  if (lesson.puzzles && Array.isArray(lesson.puzzles)) {
-    for (const puzzle of lesson.puzzles) {
-      if (puzzle.puzzleId) {
-        allPuzzleIds.add(puzzle.puzzleId);
-      }
     }
   }
 }

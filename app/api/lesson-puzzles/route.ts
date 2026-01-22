@@ -3,18 +3,11 @@ import { Chess } from 'chess.js';
 import lessonData from '@/data/lesson-puzzle-sets.json';
 import puzzleData from '@/data/lesson-puzzles-full.json';
 
-interface PuzzleSlot {
-  puzzleId: string;
-  slot: number;
-  trueDifficulty: number;
-}
-
 interface LessonInfo {
   lessonId: string;
   lessonName: string;
-  puzzleIds?: string[];
-  puzzles?: PuzzleSlot[];
-  puzzleCount?: number;
+  puzzleIds: string[];
+  puzzleCount: number;
 }
 
 interface RawPuzzle {
@@ -141,25 +134,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
-  // Load puzzles from the embedded JSON data (handles both formats)
+  // Load puzzles from the embedded JSON data
   const rawPuzzles: RawPuzzle[] = [];
-
-  // Format 1: puzzleIds array (levels 1-5)
-  if (lessonInfo.puzzleIds && lessonInfo.puzzleIds.length > 0) {
-    for (const puzzleId of lessonInfo.puzzleIds) {
-      const puzzle = puzzleMap[puzzleId];
-      if (puzzle) {
-        rawPuzzles.push(puzzle);
-      }
-    }
-  }
-  // Format 2: puzzles array with objects (levels 6-8)
-  else if (lessonInfo.puzzles && lessonInfo.puzzles.length > 0) {
-    for (const slot of lessonInfo.puzzles) {
-      const puzzle = puzzleMap[slot.puzzleId];
-      if (puzzle) {
-        rawPuzzles.push(puzzle);
-      }
+  for (const puzzleId of lessonInfo.puzzleIds || []) {
+    const puzzle = puzzleMap[puzzleId];
+    if (puzzle) {
+      rawPuzzles.push(puzzle);
     }
   }
 

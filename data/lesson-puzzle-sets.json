@@ -4213,38 +4213,13 @@
   {
     "lessonId": "6.1.1",
     "lessonName": "Mate in 5: Introduction",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "UwSl4",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "MdBH8",
-        "slot": 2,
-        "trueDifficulty": 1619
-      },
-      {
-        "puzzleId": "Q3o1i",
-        "slot": 3,
-        "trueDifficulty": 1633
-      },
-      {
-        "puzzleId": "a98ph",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "pF1QR",
-        "slot": 5,
-        "trueDifficulty": 1664
-      },
-      {
-        "puzzleId": "64I7t",
-        "slot": 6,
-        "trueDifficulty": 1676
-      }
+    "puzzleIds": [
+      "UwSl4",
+      "MdBH8",
+      "Q3o1i",
+      "a98ph",
+      "pF1QR",
+      "64I7t"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4257,38 +4232,13 @@
   {
     "lessonId": "6.1.2",
     "lessonName": "Mate in 5: Forcing Lines",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "STAAF",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "QFl0e",
-        "slot": 2,
-        "trueDifficulty": 1667
-      },
-      {
-        "puzzleId": "S241p",
-        "slot": 3,
-        "trueDifficulty": 1680
-      },
-      {
-        "puzzleId": "v7ZTF",
-        "slot": 4,
-        "trueDifficulty": 1708
-      },
-      {
-        "puzzleId": "MM5pL",
-        "slot": 5,
-        "trueDifficulty": 1727
-      },
-      {
-        "puzzleId": "eYWbS",
-        "slot": 6,
-        "trueDifficulty": 1743
-      }
+    "puzzleIds": [
+      "STAAF",
+      "QFl0e",
+      "S241p",
+      "v7ZTF",
+      "MM5pL",
+      "eYWbS"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4301,38 +4251,13 @@
   {
     "lessonId": "6.1.3",
     "lessonName": "Mate in 5: Expert",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "pNw33",
-        "slot": 1,
-        "trueDifficulty": 1702
-      },
-      {
-        "puzzleId": "htQUL",
-        "slot": 2,
-        "trueDifficulty": 1723
-      },
-      {
-        "puzzleId": "ZHXwQ",
-        "slot": 3,
-        "trueDifficulty": 1743
-      },
-      {
-        "puzzleId": "Qm7vz",
-        "slot": 4,
-        "trueDifficulty": 1753
-      },
-      {
-        "puzzleId": "jlpPW",
-        "slot": 5,
-        "trueDifficulty": 1768
-      },
-      {
-        "puzzleId": "94cUK",
-        "slot": 6,
-        "trueDifficulty": 1781
-      }
+    "puzzleIds": [
+      "pNw33",
+      "htQUL",
+      "ZHXwQ",
+      "Qm7vz",
+      "jlpPW",
+      "94cUK"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4345,38 +4270,13 @@
   {
     "lessonId": "6.1.R",
     "lessonName": "Module 1 Review: Mate in 5",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "UwSl4",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "NFCrm",
-        "slot": 2,
-        "trueDifficulty": 1634
-      },
-      {
-        "puzzleId": "gIIAi",
-        "slot": 3,
-        "trueDifficulty": 1668
-      },
-      {
-        "puzzleId": "vXzzq",
-        "slot": 4,
-        "trueDifficulty": 1711
-      },
-      {
-        "puzzleId": "dV1iN",
-        "slot": 5,
-        "trueDifficulty": 1744
-      },
-      {
-        "puzzleId": "K0gue",
-        "slot": 6,
-        "trueDifficulty": 1769
-      }
+    "puzzleIds": [
+      "UwSl4",
+      "NFCrm",
+      "gIIAi",
+      "vXzzq",
+      "dV1iN",
+      "K0gue"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4387,38 +4287,13 @@
   {
     "lessonId": "6.2.1",
     "lessonName": "Mate in 4: Hidden Patterns",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "AqkdG",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "vauXh",
-        "slot": 2,
-        "trueDifficulty": 1614
-      },
-      {
-        "puzzleId": "hTq7U",
-        "slot": 3,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "Txgr5",
-        "slot": 4,
-        "trueDifficulty": 1649
-      },
-      {
-        "puzzleId": "KcOIm",
-        "slot": 5,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "cPWFi",
-        "slot": 6,
-        "trueDifficulty": 1684
-      }
+    "puzzleIds": [
+      "AqkdG",
+      "vauXh",
+      "hTq7U",
+      "Txgr5",
+      "KcOIm",
+      "cPWFi"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4431,38 +4306,13 @@
   {
     "lessonId": "6.2.2",
     "lessonName": "Mate in 4: Quiet First Move",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "i0k90",
-        "slot": 1,
-        "trueDifficulty": 1651
-      },
-      {
-        "puzzleId": "fOZm4",
-        "slot": 2,
-        "trueDifficulty": 1660
-      },
-      {
-        "puzzleId": "Ref3S",
-        "slot": 3,
-        "trueDifficulty": 1672
-      },
-      {
-        "puzzleId": "8yqEW",
-        "slot": 4,
-        "trueDifficulty": 1682
-      },
-      {
-        "puzzleId": "rn97J",
-        "slot": 5,
-        "trueDifficulty": 1718
-      },
-      {
-        "puzzleId": "L58nB",
-        "slot": 6,
-        "trueDifficulty": 1738
-      }
+    "puzzleIds": [
+      "i0k90",
+      "fOZm4",
+      "Ref3S",
+      "8yqEW",
+      "rn97J",
+      "L58nB"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4476,38 +4326,13 @@
   {
     "lessonId": "6.2.3",
     "lessonName": "Mate in 4: Mastery",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "NcYtG",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "RniqR",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "KpmvY",
-        "slot": 3,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "atEha",
-        "slot": 4,
-        "trueDifficulty": 1748
-      },
-      {
-        "puzzleId": "zhiqo",
-        "slot": 5,
-        "trueDifficulty": 1766
-      },
-      {
-        "puzzleId": "TZneV",
-        "slot": 6,
-        "trueDifficulty": 1782
-      }
+    "puzzleIds": [
+      "NcYtG",
+      "RniqR",
+      "KpmvY",
+      "atEha",
+      "zhiqo",
+      "TZneV"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4520,38 +4345,13 @@
   {
     "lessonId": "6.2.R",
     "lessonName": "Module 2 Review: Mate in 4",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "AqkdG",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "oCM0R",
-        "slot": 2,
-        "trueDifficulty": 1628
-      },
-      {
-        "puzzleId": "K4tUa",
-        "slot": 3,
-        "trueDifficulty": 1661
-      },
-      {
-        "puzzleId": "bBGRc",
-        "slot": 4,
-        "trueDifficulty": 1693
-      },
-      {
-        "puzzleId": "hJjhY",
-        "slot": 5,
-        "trueDifficulty": 1726
-      },
-      {
-        "puzzleId": "2xraw",
-        "slot": 6,
-        "trueDifficulty": 1764
-      }
+    "puzzleIds": [
+      "AqkdG",
+      "oCM0R",
+      "K4tUa",
+      "bBGRc",
+      "hJjhY",
+      "2xraw"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4562,38 +4362,13 @@
   {
     "lessonId": "6.3.1",
     "lessonName": "Quiet Move: Prophylaxis",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "0WkRf",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "pQwEf",
-        "slot": 2,
-        "trueDifficulty": 1616
-      },
-      {
-        "puzzleId": "WU24y",
-        "slot": 3,
-        "trueDifficulty": 1634
-      },
-      {
-        "puzzleId": "9LB6m",
-        "slot": 4,
-        "trueDifficulty": 1651
-      },
-      {
-        "puzzleId": "BhyPD",
-        "slot": 5,
-        "trueDifficulty": 1667
-      },
-      {
-        "puzzleId": "kGfra",
-        "slot": 6,
-        "trueDifficulty": 1683
-      }
+    "puzzleIds": [
+      "0WkRf",
+      "pQwEf",
+      "WU24y",
+      "9LB6m",
+      "BhyPD",
+      "kGfra"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4606,38 +4381,13 @@
   {
     "lessonId": "6.3.2",
     "lessonName": "Quiet Move: Waiting",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "1M7IB",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "3BVpf",
-        "slot": 2,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "2X1nh",
-        "slot": 3,
-        "trueDifficulty": 1682
-      },
-      {
-        "puzzleId": "s1JDZ",
-        "slot": 4,
-        "trueDifficulty": 1698
-      },
-      {
-        "puzzleId": "9fCxy",
-        "slot": 5,
-        "trueDifficulty": 1716
-      },
-      {
-        "puzzleId": "wHOfI",
-        "slot": 6,
-        "trueDifficulty": 1733
-      }
+    "puzzleIds": [
+      "1M7IB",
+      "3BVpf",
+      "2X1nh",
+      "s1JDZ",
+      "9fCxy",
+      "wHOfI"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4650,38 +4400,13 @@
   {
     "lessonId": "6.3.3",
     "lessonName": "Quiet Move: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "07wdS",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "O9mnY",
-        "slot": 2,
-        "trueDifficulty": 1716
-      },
-      {
-        "puzzleId": "NaS3R",
-        "slot": 3,
-        "trueDifficulty": 1733
-      },
-      {
-        "puzzleId": "Z227t",
-        "slot": 4,
-        "trueDifficulty": 1749
-      },
-      {
-        "puzzleId": "Ju31K",
-        "slot": 5,
-        "trueDifficulty": 1765
-      },
-      {
-        "puzzleId": "8F2OP",
-        "slot": 6,
-        "trueDifficulty": 1783
-      }
+    "puzzleIds": [
+      "07wdS",
+      "O9mnY",
+      "NaS3R",
+      "Z227t",
+      "Ju31K",
+      "8F2OP"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4694,38 +4419,13 @@
   {
     "lessonId": "6.3.R",
     "lessonName": "Module 3 Review: Quiet Moves",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "0WkRf",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "FvEwM",
-        "slot": 2,
-        "trueDifficulty": 1633
-      },
-      {
-        "puzzleId": "45UQt",
-        "slot": 3,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "wU045",
-        "slot": 4,
-        "trueDifficulty": 1696
-      },
-      {
-        "puzzleId": "P0EBv",
-        "slot": 5,
-        "trueDifficulty": 1731
-      },
-      {
-        "puzzleId": "WPdtn",
-        "slot": 6,
-        "trueDifficulty": 1764
-      }
+    "puzzleIds": [
+      "0WkRf",
+      "FvEwM",
+      "45UQt",
+      "wU045",
+      "P0EBv",
+      "WPdtn"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4736,38 +4436,13 @@
   {
     "lessonId": "6.4.1",
     "lessonName": "Defensive: Counterplay",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "2HJjI",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "rm0pP",
-        "slot": 2,
-        "trueDifficulty": 1616
-      },
-      {
-        "puzzleId": "ZHcOQ",
-        "slot": 3,
-        "trueDifficulty": 1633
-      },
-      {
-        "puzzleId": "abqFK",
-        "slot": 4,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "rPMgL",
-        "slot": 5,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "BQQss",
-        "slot": 6,
-        "trueDifficulty": 1684
-      }
+    "puzzleIds": [
+      "2HJjI",
+      "rm0pP",
+      "ZHcOQ",
+      "abqFK",
+      "rPMgL",
+      "BQQss"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4780,38 +4455,13 @@
   {
     "lessonId": "6.4.2",
     "lessonName": "Defensive: Fortress",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "0yuqU",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "AoIMj",
-        "slot": 2,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "2BShv",
-        "slot": 3,
-        "trueDifficulty": 1683
-      },
-      {
-        "puzzleId": "im5VS",
-        "slot": 4,
-        "trueDifficulty": 1699
-      },
-      {
-        "puzzleId": "946Mw",
-        "slot": 5,
-        "trueDifficulty": 1717
-      },
-      {
-        "puzzleId": "6LKdi",
-        "slot": 6,
-        "trueDifficulty": 1734
-      }
+    "puzzleIds": [
+      "0yuqU",
+      "AoIMj",
+      "2BShv",
+      "im5VS",
+      "946Mw",
+      "6LKdi"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4824,38 +4474,13 @@
   {
     "lessonId": "6.4.3",
     "lessonName": "Defensive: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "0AqMz",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "sZ5m0",
-        "slot": 2,
-        "trueDifficulty": 1716
-      },
-      {
-        "puzzleId": "PluMf",
-        "slot": 3,
-        "trueDifficulty": 1733
-      },
-      {
-        "puzzleId": "r23kG",
-        "slot": 4,
-        "trueDifficulty": 1749
-      },
-      {
-        "puzzleId": "MNibT",
-        "slot": 5,
-        "trueDifficulty": 1766
-      },
-      {
-        "puzzleId": "UMdI4",
-        "slot": 6,
-        "trueDifficulty": 1783
-      }
+    "puzzleIds": [
+      "0AqMz",
+      "sZ5m0",
+      "PluMf",
+      "r23kG",
+      "MNibT",
+      "UMdI4"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4868,38 +4493,13 @@
   {
     "lessonId": "6.4.R",
     "lessonName": "Module 4 Review: Defense",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "2HJjI",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "kPbd9",
-        "slot": 2,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "yRuA7",
-        "slot": 3,
-        "trueDifficulty": 1664
-      },
-      {
-        "puzzleId": "quTc4",
-        "slot": 4,
-        "trueDifficulty": 1697
-      },
-      {
-        "puzzleId": "9h2jR",
-        "slot": 5,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "jexSU",
-        "slot": 6,
-        "trueDifficulty": 1765
-      }
+    "puzzleIds": [
+      "2HJjI",
+      "kPbd9",
+      "yRuA7",
+      "quTc4",
+      "9h2jR",
+      "jexSU"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4910,38 +4510,13 @@
   {
     "lessonId": "6.5.1",
     "lessonName": "Deep Calculation: Set 1",
-    "targetElo": 1663,
-    "puzzles": [
-      {
-        "puzzleId": "001XA",
-        "slot": 1,
-        "trueDifficulty": 1656
-      },
-      {
-        "puzzleId": "001xO",
-        "slot": 2,
-        "trueDifficulty": 1710
-      },
-      {
-        "puzzleId": "00IUW",
-        "slot": 3,
-        "trueDifficulty": 1647
-      },
-      {
-        "puzzleId": "00NHK",
-        "slot": 4,
-        "trueDifficulty": 1800
-      },
-      {
-        "puzzleId": "00eWz",
-        "slot": 5,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "00ldC",
-        "slot": 6,
-        "trueDifficulty": 1685
-      }
+    "puzzleIds": [
+      "001XA",
+      "001xO",
+      "00IUW",
+      "00NHK",
+      "00eWz",
+      "00ldC"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4952,38 +4527,13 @@
   {
     "lessonId": "6.5.2",
     "lessonName": "Deep Calculation: Set 2",
-    "targetElo": 1738,
-    "puzzles": [
-      {
-        "puzzleId": "001XA",
-        "slot": 1,
-        "trueDifficulty": 1656
-      },
-      {
-        "puzzleId": "001xO",
-        "slot": 2,
-        "trueDifficulty": 1710
-      },
-      {
-        "puzzleId": "00IUW",
-        "slot": 3,
-        "trueDifficulty": 1647
-      },
-      {
-        "puzzleId": "00NHK",
-        "slot": 4,
-        "trueDifficulty": 1800
-      },
-      {
-        "puzzleId": "00eWz",
-        "slot": 5,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "00ldC",
-        "slot": 6,
-        "trueDifficulty": 1685
-      }
+    "puzzleIds": [
+      "001XA",
+      "001xO",
+      "00IUW",
+      "00NHK",
+      "00eWz",
+      "00ldC"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -4994,38 +4544,13 @@
   {
     "lessonId": "6.6.1",
     "lessonName": "Intermezzo: Multiple",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "2rSzx",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "iBxTK",
-        "slot": 2,
-        "trueDifficulty": 1617
-      },
-      {
-        "puzzleId": "E48vf",
-        "slot": 3,
-        "trueDifficulty": 1633
-      },
-      {
-        "puzzleId": "k8INI",
-        "slot": 4,
-        "trueDifficulty": 1651
-      },
-      {
-        "puzzleId": "ms7M7",
-        "slot": 5,
-        "trueDifficulty": 1668
-      },
-      {
-        "puzzleId": "byOit",
-        "slot": 6,
-        "trueDifficulty": 1684
-      }
+    "puzzleIds": [
+      "2rSzx",
+      "iBxTK",
+      "E48vf",
+      "k8INI",
+      "ms7M7",
+      "byOit"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5038,38 +4563,13 @@
   {
     "lessonId": "6.6.2",
     "lessonName": "Intermezzo: Quiet",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "EhkBX",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "d3Y6s",
-        "slot": 2,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "LHVLA",
-        "slot": 3,
-        "trueDifficulty": 1678
-      },
-      {
-        "puzzleId": "81sp7",
-        "slot": 4,
-        "trueDifficulty": 1697
-      },
-      {
-        "puzzleId": "peLaL",
-        "slot": 5,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "8YUKx",
-        "slot": 6,
-        "trueDifficulty": 1732
-      }
+    "puzzleIds": [
+      "EhkBX",
+      "d3Y6s",
+      "LHVLA",
+      "81sp7",
+      "peLaL",
+      "8YUKx"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5082,38 +4582,13 @@
   {
     "lessonId": "6.6.3",
     "lessonName": "Intermezzo: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "vAm1Q",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "e2NJf",
-        "slot": 2,
-        "trueDifficulty": 1718
-      },
-      {
-        "puzzleId": "RYH1g",
-        "slot": 3,
-        "trueDifficulty": 1735
-      },
-      {
-        "puzzleId": "QAgSn",
-        "slot": 4,
-        "trueDifficulty": 1751
-      },
-      {
-        "puzzleId": "PfAyK",
-        "slot": 5,
-        "trueDifficulty": 1765
-      },
-      {
-        "puzzleId": "1VQWw",
-        "slot": 6,
-        "trueDifficulty": 1783
-      }
+    "puzzleIds": [
+      "vAm1Q",
+      "e2NJf",
+      "RYH1g",
+      "QAgSn",
+      "PfAyK",
+      "1VQWw"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5126,38 +4601,13 @@
   {
     "lessonId": "6.6.R",
     "lessonName": "Module 6 Review: Intermezzo",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "2rSzx",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "GyVfy",
-        "slot": 2,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "rGZJz",
-        "slot": 3,
-        "trueDifficulty": 1667
-      },
-      {
-        "puzzleId": "6INAw",
-        "slot": 4,
-        "trueDifficulty": 1698
-      },
-      {
-        "puzzleId": "nJDjJ",
-        "slot": 5,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "EjaT9",
-        "slot": 6,
-        "trueDifficulty": 1764
-      }
+    "puzzleIds": [
+      "2rSzx",
+      "GyVfy",
+      "rGZJz",
+      "6INAw",
+      "nJDjJ",
+      "EjaT9"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5168,38 +4618,13 @@
   {
     "lessonId": "6.7.1",
     "lessonName": "Exposed King: Long Attack",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "0fqum",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "kbnN6",
-        "slot": 2,
-        "trueDifficulty": 1615
-      },
-      {
-        "puzzleId": "2tLm2",
-        "slot": 3,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "zJIuN",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "U5DVB",
-        "slot": 5,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "AF0s5",
-        "slot": 6,
-        "trueDifficulty": 1683
-      }
+    "puzzleIds": [
+      "0fqum",
+      "kbnN6",
+      "2tLm2",
+      "zJIuN",
+      "U5DVB",
+      "AF0s5"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5212,38 +4637,13 @@
   {
     "lessonId": "6.7.2",
     "lessonName": "Exposed King: Opening Lines",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "2A1KR",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "a07il",
-        "slot": 2,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "FNlNg",
-        "slot": 3,
-        "trueDifficulty": 1684
-      },
-      {
-        "puzzleId": "vAm1Q",
-        "slot": 4,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "ri6Pa",
-        "slot": 5,
-        "trueDifficulty": 1717
-      },
-      {
-        "puzzleId": "OAHzB",
-        "slot": 6,
-        "trueDifficulty": 1735
-      }
+    "puzzleIds": [
+      "2A1KR",
+      "a07il",
+      "FNlNg",
+      "vAm1Q",
+      "ri6Pa",
+      "OAHzB"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5257,38 +4657,13 @@
   {
     "lessonId": "6.7.3",
     "lessonName": "Exposed King: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "1JKYb",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "djSFU",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "qjPKT",
-        "slot": 3,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "WldwK",
-        "slot": 4,
-        "trueDifficulty": 1748
-      },
-      {
-        "puzzleId": "MZxXY",
-        "slot": 5,
-        "trueDifficulty": 1765
-      },
-      {
-        "puzzleId": "sQLbm",
-        "slot": 6,
-        "trueDifficulty": 1782
-      }
+    "puzzleIds": [
+      "1JKYb",
+      "djSFU",
+      "qjPKT",
+      "WldwK",
+      "MZxXY",
+      "sQLbm"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5301,38 +4676,13 @@
   {
     "lessonId": "6.7.R",
     "lessonName": "Module 7 Review: Exposed King",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "0fqum",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "MnrVS",
-        "slot": 2,
-        "trueDifficulty": 1630
-      },
-      {
-        "puzzleId": "UcbPV",
-        "slot": 3,
-        "trueDifficulty": 1661
-      },
-      {
-        "puzzleId": "Ardq3",
-        "slot": 4,
-        "trueDifficulty": 1695
-      },
-      {
-        "puzzleId": "YbE5w",
-        "slot": 5,
-        "trueDifficulty": 1729
-      },
-      {
-        "puzzleId": "dqROF",
-        "slot": 6,
-        "trueDifficulty": 1763
-      }
+    "puzzleIds": [
+      "0fqum",
+      "MnrVS",
+      "UcbPV",
+      "Ardq3",
+      "YbE5w",
+      "dqROF"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5343,38 +4693,13 @@
   {
     "lessonId": "6.8.1",
     "lessonName": "Advanced Pawn: Complex Races",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "06CF2",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "Gj3Pf",
-        "slot": 2,
-        "trueDifficulty": 1616
-      },
-      {
-        "puzzleId": "SFRcL",
-        "slot": 3,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "7sYcM",
-        "slot": 4,
-        "trueDifficulty": 1649
-      },
-      {
-        "puzzleId": "lM5dN",
-        "slot": 5,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "8mNkh",
-        "slot": 6,
-        "trueDifficulty": 1683
-      }
+    "puzzleIds": [
+      "06CF2",
+      "Gj3Pf",
+      "SFRcL",
+      "7sYcM",
+      "lM5dN",
+      "8mNkh"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5387,38 +4712,13 @@
   {
     "lessonId": "6.8.2",
     "lessonName": "Advanced Pawn: Underpromotion",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "2eFBj",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "oVN2r",
-        "slot": 2,
-        "trueDifficulty": 1664
-      },
-      {
-        "puzzleId": "gncdX",
-        "slot": 3,
-        "trueDifficulty": 1680
-      },
-      {
-        "puzzleId": "q02wi",
-        "slot": 4,
-        "trueDifficulty": 1696
-      },
-      {
-        "puzzleId": "4Q2LY",
-        "slot": 5,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "SAXor",
-        "slot": 6,
-        "trueDifficulty": 1733
-      }
+    "puzzleIds": [
+      "2eFBj",
+      "oVN2r",
+      "gncdX",
+      "q02wi",
+      "4Q2LY",
+      "SAXor"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5432,38 +4732,13 @@
   {
     "lessonId": "6.8.3",
     "lessonName": "Advanced Pawn: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "021wj",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "nlPp9",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "vjfX7",
-        "slot": 3,
-        "trueDifficulty": 1731
-      },
-      {
-        "puzzleId": "QW3yL",
-        "slot": 4,
-        "trueDifficulty": 1747
-      },
-      {
-        "puzzleId": "y32AG",
-        "slot": 5,
-        "trueDifficulty": 1763
-      },
-      {
-        "puzzleId": "zeb9w",
-        "slot": 6,
-        "trueDifficulty": 1781
-      }
+    "puzzleIds": [
+      "021wj",
+      "nlPp9",
+      "vjfX7",
+      "QW3yL",
+      "y32AG",
+      "zeb9w"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5476,38 +4751,13 @@
   {
     "lessonId": "6.8.R",
     "lessonName": "Module 8 Review: Pawn Play",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "1Ome1",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "noc26",
-        "slot": 2,
-        "trueDifficulty": 1628
-      },
-      {
-        "puzzleId": "CI2te",
-        "slot": 3,
-        "trueDifficulty": 1658
-      },
-      {
-        "puzzleId": "Hf72h",
-        "slot": 4,
-        "trueDifficulty": 1689
-      },
-      {
-        "puzzleId": "4HEld",
-        "slot": 5,
-        "trueDifficulty": 1725
-      },
-      {
-        "puzzleId": "aVqSO",
-        "slot": 6,
-        "trueDifficulty": 1761
-      }
+    "puzzleIds": [
+      "1Ome1",
+      "noc26",
+      "CI2te",
+      "Hf72h",
+      "4HEld",
+      "aVqSO"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5518,38 +4768,13 @@
   {
     "lessonId": "6.9.1",
     "lessonName": "Attack & Defense: Mixed",
-    "targetElo": 1663,
-    "puzzles": [
-      {
-        "puzzleId": "IAWFD",
-        "slot": 1,
-        "trueDifficulty": 1610
-      },
-      {
-        "puzzleId": "r6bdB",
-        "slot": 2,
-        "trueDifficulty": 1620
-      },
-      {
-        "puzzleId": "6z14i",
-        "slot": 3,
-        "trueDifficulty": 1655
-      },
-      {
-        "puzzleId": "YbQut",
-        "slot": 4,
-        "trueDifficulty": 1659
-      },
-      {
-        "puzzleId": "6RxHF",
-        "slot": 5,
-        "trueDifficulty": 1661
-      },
-      {
-        "puzzleId": "JKyQy",
-        "slot": 6,
-        "trueDifficulty": 1684
-      }
+    "puzzleIds": [
+      "IAWFD",
+      "r6bdB",
+      "6z14i",
+      "YbQut",
+      "6RxHF",
+      "JKyQy"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5560,38 +4785,13 @@
   {
     "lessonId": "6.9.2",
     "lessonName": "Attack & Defense: Challenge",
-    "targetElo": 1738,
-    "puzzles": [
-      {
-        "puzzleId": "JKyQy",
-        "slot": 1,
-        "trueDifficulty": 1684
-      },
-      {
-        "puzzleId": "VyOU9",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "tZd7f",
-        "slot": 3,
-        "trueDifficulty": 1723
-      },
-      {
-        "puzzleId": "6eZIS",
-        "slot": 4,
-        "trueDifficulty": 1739
-      },
-      {
-        "puzzleId": "ZTxfb",
-        "slot": 5,
-        "trueDifficulty": 1741
-      },
-      {
-        "puzzleId": "U72rE",
-        "slot": 6,
-        "trueDifficulty": 1752
-      }
+    "puzzleIds": [
+      "JKyQy",
+      "VyOU9",
+      "tZd7f",
+      "6eZIS",
+      "ZTxfb",
+      "U72rE"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5602,38 +4802,13 @@
   {
     "lessonId": "6.10.1",
     "lessonName": "Pin Excellence",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "08o2h",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "dmyAj",
-        "slot": 2,
-        "trueDifficulty": 1615
-      },
-      {
-        "puzzleId": "hkD4Z",
-        "slot": 3,
-        "trueDifficulty": 1631
-      },
-      {
-        "puzzleId": "ikQK7",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "g4iTw",
-        "slot": 5,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "COldK",
-        "slot": 6,
-        "trueDifficulty": 1683
-      }
+    "puzzleIds": [
+      "08o2h",
+      "dmyAj",
+      "hkD4Z",
+      "ikQK7",
+      "g4iTw",
+      "COldK"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5646,38 +4821,13 @@
   {
     "lessonId": "6.10.2",
     "lessonName": "Skewer Excellence",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "1oDYK",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "QOhZv",
-        "slot": 2,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "f4Ptx",
-        "slot": 3,
-        "trueDifficulty": 1680
-      },
-      {
-        "puzzleId": "ahqOM",
-        "slot": 4,
-        "trueDifficulty": 1696
-      },
-      {
-        "puzzleId": "S7Kwo",
-        "slot": 5,
-        "trueDifficulty": 1714
-      },
-      {
-        "puzzleId": "k57UU",
-        "slot": 6,
-        "trueDifficulty": 1731
-      }
+    "puzzleIds": [
+      "1oDYK",
+      "QOhZv",
+      "f4Ptx",
+      "ahqOM",
+      "S7Kwo",
+      "k57UU"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5690,38 +4840,13 @@
   {
     "lessonId": "6.10.3",
     "lessonName": "X-Ray Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "vyTdf",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "v61vI",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "yS74J",
-        "slot": 3,
-        "trueDifficulty": 1731
-      },
-      {
-        "puzzleId": "hwy40",
-        "slot": 4,
-        "trueDifficulty": 1743
-      },
-      {
-        "puzzleId": "Q9CVa",
-        "slot": 5,
-        "trueDifficulty": 1758
-      },
-      {
-        "puzzleId": "DajqR",
-        "slot": 6,
-        "trueDifficulty": 1777
-      }
+    "puzzleIds": [
+      "vyTdf",
+      "v61vI",
+      "yS74J",
+      "hwy40",
+      "Q9CVa",
+      "DajqR"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5734,38 +4859,13 @@
   {
     "lessonId": "6.10.R",
     "lessonName": "Module 10 Review: Line Tactics",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "00XXM",
-        "slot": 1,
-        "trueDifficulty": 1755
-      },
-      {
-        "puzzleId": "00XZR",
-        "slot": 2,
-        "trueDifficulty": 1641
-      },
-      {
-        "puzzleId": "00eWz",
-        "slot": 3,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "00l7Y",
-        "slot": 4,
-        "trueDifficulty": 1612
-      },
-      {
-        "puzzleId": "00umX",
-        "slot": 5,
-        "trueDifficulty": 1758
-      },
-      {
-        "puzzleId": "01FmQ",
-        "slot": 6,
-        "trueDifficulty": 1753
-      }
+    "puzzleIds": [
+      "00XXM",
+      "00XZR",
+      "00eWz",
+      "00l7Y",
+      "00umX",
+      "01FmQ"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5776,38 +4876,13 @@
   {
     "lessonId": "6.11.1",
     "lessonName": "Multi-Phase: Setup + Execute",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "06CF2",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "WpAV9",
-        "slot": 2,
-        "trueDifficulty": 1616
-      },
-      {
-        "puzzleId": "jJiNK",
-        "slot": 3,
-        "trueDifficulty": 1632
-      },
-      {
-        "puzzleId": "XRBr4",
-        "slot": 4,
-        "trueDifficulty": 1649
-      },
-      {
-        "puzzleId": "DTBLr",
-        "slot": 5,
-        "trueDifficulty": 1666
-      },
-      {
-        "puzzleId": "gidlo",
-        "slot": 6,
-        "trueDifficulty": 1683
-      }
+    "puzzleIds": [
+      "06CF2",
+      "WpAV9",
+      "jJiNK",
+      "XRBr4",
+      "DTBLr",
+      "gidlo"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5820,38 +4895,13 @@
   {
     "lessonId": "6.11.2",
     "lessonName": "Multi-Phase: Transform",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "MaRsR",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "NJ6X3",
-        "slot": 2,
-        "trueDifficulty": 1662
-      },
-      {
-        "puzzleId": "St1F4",
-        "slot": 3,
-        "trueDifficulty": 1678
-      },
-      {
-        "puzzleId": "mv9DW",
-        "slot": 4,
-        "trueDifficulty": 1694
-      },
-      {
-        "puzzleId": "trzKw",
-        "slot": 5,
-        "trueDifficulty": 1709
-      },
-      {
-        "puzzleId": "e1xzd",
-        "slot": 6,
-        "trueDifficulty": 1731
-      }
+    "puzzleIds": [
+      "MaRsR",
+      "NJ6X3",
+      "St1F4",
+      "mv9DW",
+      "trzKw",
+      "e1xzd"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5862,38 +4912,13 @@
   {
     "lessonId": "6.11.3",
     "lessonName": "Multi-Phase: Excellence",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "0WCuA",
-        "slot": 1,
-        "trueDifficulty": 1700
-      },
-      {
-        "puzzleId": "q8eRl",
-        "slot": 2,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "KxzD7",
-        "slot": 3,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "XmyMh",
-        "slot": 4,
-        "trueDifficulty": 1748
-      },
-      {
-        "puzzleId": "3jkw1",
-        "slot": 5,
-        "trueDifficulty": 1765
-      },
-      {
-        "puzzleId": "NQyDP",
-        "slot": 6,
-        "trueDifficulty": 1782
-      }
+    "puzzleIds": [
+      "0WCuA",
+      "q8eRl",
+      "KxzD7",
+      "XmyMh",
+      "3jkw1",
+      "NQyDP"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5906,38 +4931,13 @@
   {
     "lessonId": "6.11.R",
     "lessonName": "Module 11 Review: Combinations",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "B42WN",
-        "slot": 1,
-        "trueDifficulty": 1662
-      },
-      {
-        "puzzleId": "sFksk",
-        "slot": 2,
-        "trueDifficulty": 1689
-      },
-      {
-        "puzzleId": "NyX5r",
-        "slot": 3,
-        "trueDifficulty": 1705
-      },
-      {
-        "puzzleId": "bZsNR",
-        "slot": 4,
-        "trueDifficulty": 1734
-      },
-      {
-        "puzzleId": "cptLt",
-        "slot": 5,
-        "trueDifficulty": 1782
-      },
-      {
-        "puzzleId": "mw0X3",
-        "slot": 6,
-        "trueDifficulty": 1794
-      }
+    "puzzleIds": [
+      "B42WN",
+      "sFksk",
+      "NyX5r",
+      "bZsNR",
+      "cptLt",
+      "mw0X3"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5948,38 +4948,13 @@
   {
     "lessonId": "6.12.1",
     "lessonName": "Interference Excellence",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "4hhpX",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "eSelp",
-        "slot": 2,
-        "trueDifficulty": 1615
-      },
-      {
-        "puzzleId": "yAHVX",
-        "slot": 3,
-        "trueDifficulty": 1631
-      },
-      {
-        "puzzleId": "uzqkR",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "g6o8D",
-        "slot": 5,
-        "trueDifficulty": 1664
-      },
-      {
-        "puzzleId": "ReNAf",
-        "slot": 6,
-        "trueDifficulty": 1682
-      }
+    "puzzleIds": [
+      "4hhpX",
+      "eSelp",
+      "yAHVX",
+      "uzqkR",
+      "g6o8D",
+      "ReNAf"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -5992,38 +4967,13 @@
   {
     "lessonId": "6.12.2",
     "lessonName": "Clearance Excellence",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "0H9bx",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "cLNkV",
-        "slot": 2,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "BBEC7",
-        "slot": 3,
-        "trueDifficulty": 1681
-      },
-      {
-        "puzzleId": "3qRQs",
-        "slot": 4,
-        "trueDifficulty": 1698
-      },
-      {
-        "puzzleId": "K4xIp",
-        "slot": 5,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "B6ml2",
-        "slot": 6,
-        "trueDifficulty": 1732
-      }
+    "puzzleIds": [
+      "0H9bx",
+      "cLNkV",
+      "BBEC7",
+      "3qRQs",
+      "K4xIp",
+      "B6ml2"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6036,38 +4986,13 @@
   {
     "lessonId": "6.12.3",
     "lessonName": "Line Control: Mastery",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "ZcQXj",
-        "slot": 1,
-        "trueDifficulty": 1724
-      },
-      {
-        "puzzleId": "yjC35",
-        "slot": 2,
-        "trueDifficulty": 1766
-      },
-      {
-        "puzzleId": "doxT9",
-        "slot": 3,
-        "trueDifficulty": 1788
-      },
-      {
-        "puzzleId": "FAZ8t",
-        "slot": 4,
-        "trueDifficulty": 1795
-      },
-      {
-        "puzzleId": "BgUgC",
-        "slot": 5,
-        "trueDifficulty": 1798
-      },
-      {
-        "puzzleId": "vy0D7",
-        "slot": 6,
-        "trueDifficulty": 1799
-      }
+    "puzzleIds": [
+      "ZcQXj",
+      "yjC35",
+      "doxT9",
+      "FAZ8t",
+      "BgUgC",
+      "vy0D7"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6078,38 +5003,13 @@
   {
     "lessonId": "6.12.R",
     "lessonName": "Module 12 Review: Line Control",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "QrgQk",
-        "slot": 1,
-        "trueDifficulty": 1619
-      },
-      {
-        "puzzleId": "Qtc0c",
-        "slot": 2,
-        "trueDifficulty": 1620
-      },
-      {
-        "puzzleId": "KnsZc",
-        "slot": 3,
-        "trueDifficulty": 1635
-      },
-      {
-        "puzzleId": "MFAAv",
-        "slot": 4,
-        "trueDifficulty": 1656
-      },
-      {
-        "puzzleId": "yjC35",
-        "slot": 5,
-        "trueDifficulty": 1766
-      },
-      {
-        "puzzleId": "FAZ8t",
-        "slot": 6,
-        "trueDifficulty": 1795
-      }
+    "puzzleIds": [
+      "QrgQk",
+      "Qtc0c",
+      "KnsZc",
+      "MFAAv",
+      "yjC35",
+      "FAZ8t"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6120,38 +5020,13 @@
   {
     "lessonId": "6.13.1",
     "lessonName": "Rook Endgames: Excellence",
-    "targetElo": 1675,
-    "puzzles": [
-      {
-        "puzzleId": "0WkRf",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "Cy4L9",
-        "slot": 2,
-        "trueDifficulty": 1624
-      },
-      {
-        "puzzleId": "8Qp2E",
-        "slot": 3,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "grlOe",
-        "slot": 4,
-        "trueDifficulty": 1672
-      },
-      {
-        "puzzleId": "po7yY",
-        "slot": 5,
-        "trueDifficulty": 1697
-      },
-      {
-        "puzzleId": "bRqAt",
-        "slot": 6,
-        "trueDifficulty": 1724
-      }
+    "puzzleIds": [
+      "0WkRf",
+      "Cy4L9",
+      "8Qp2E",
+      "grlOe",
+      "po7yY",
+      "bRqAt"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6164,38 +5039,13 @@
   {
     "lessonId": "6.13.2",
     "lessonName": "Pawn Endgames: Excellence",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "1R2iv",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "0aOgB",
-        "slot": 2,
-        "trueDifficulty": 1631
-      },
-      {
-        "puzzleId": "UQGAb",
-        "slot": 3,
-        "trueDifficulty": 1662
-      },
-      {
-        "puzzleId": "ZhlRr",
-        "slot": 4,
-        "trueDifficulty": 1694
-      },
-      {
-        "puzzleId": "QLCEt",
-        "slot": 5,
-        "trueDifficulty": 1729
-      },
-      {
-        "puzzleId": "HIcoH",
-        "slot": 6,
-        "trueDifficulty": 1764
-      }
+    "puzzleIds": [
+      "1R2iv",
+      "0aOgB",
+      "UQGAb",
+      "ZhlRr",
+      "QLCEt",
+      "HIcoH"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6208,38 +5058,13 @@
   {
     "lessonId": "6.13.3",
     "lessonName": "Minor Piece Endgames",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "001cr",
-        "slot": 1,
-        "trueDifficulty": 1601
-      },
-      {
-        "puzzleId": "00ME0",
-        "slot": 2,
-        "trueDifficulty": 1626
-      },
-      {
-        "puzzleId": "01hHF",
-        "slot": 3,
-        "trueDifficulty": 1634
-      },
-      {
-        "puzzleId": "02SGK",
-        "slot": 4,
-        "trueDifficulty": 1687
-      },
-      {
-        "puzzleId": "03R5U",
-        "slot": 5,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "03ion",
-        "slot": 6,
-        "trueDifficulty": 1783
-      }
+    "puzzleIds": [
+      "001cr",
+      "00ME0",
+      "01hHF",
+      "02SGK",
+      "03R5U",
+      "03ion"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6250,38 +5075,13 @@
   {
     "lessonId": "6.13.4",
     "lessonName": "Queen Endgames: Excellence",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "1Ome1",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "4nyfA",
-        "slot": 2,
-        "trueDifficulty": 1631
-      },
-      {
-        "puzzleId": "JD08I",
-        "slot": 3,
-        "trueDifficulty": 1661
-      },
-      {
-        "puzzleId": "do7jD",
-        "slot": 4,
-        "trueDifficulty": 1691
-      },
-      {
-        "puzzleId": "IbcZj",
-        "slot": 5,
-        "trueDifficulty": 1725
-      },
-      {
-        "puzzleId": "nX0wr",
-        "slot": 6,
-        "trueDifficulty": 1761
-      }
+    "puzzleIds": [
+      "1Ome1",
+      "4nyfA",
+      "JD08I",
+      "do7jD",
+      "IbcZj",
+      "nX0wr"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6294,38 +5094,13 @@
   {
     "lessonId": "6.13.R",
     "lessonName": "Module 13 Review: Endgames",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "002Uy",
-        "slot": 1,
-        "trueDifficulty": 1602
-      },
-      {
-        "puzzleId": "00lHu",
-        "slot": 2,
-        "trueDifficulty": 1795
-      },
-      {
-        "puzzleId": "015pp",
-        "slot": 3,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "01NZA",
-        "slot": 4,
-        "trueDifficulty": 1653
-      },
-      {
-        "puzzleId": "01yYo",
-        "slot": 5,
-        "trueDifficulty": 1745
-      },
-      {
-        "puzzleId": "02A8s",
-        "slot": 6,
-        "trueDifficulty": 1714
-      }
+    "puzzleIds": [
+      "002Uy",
+      "00lHu",
+      "015pp",
+      "01NZA",
+      "01yYo",
+      "02A8s"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6336,38 +5111,13 @@
   {
     "lessonId": "6.14.1",
     "lessonName": "Hanging Pieces: Expert",
-    "targetElo": 1650,
-    "puzzles": [
-      {
-        "puzzleId": "1ULSc",
-        "slot": 1,
-        "trueDifficulty": 1600
-      },
-      {
-        "puzzleId": "rLRne",
-        "slot": 2,
-        "trueDifficulty": 1615
-      },
-      {
-        "puzzleId": "yk0jP",
-        "slot": 3,
-        "trueDifficulty": 1630
-      },
-      {
-        "puzzleId": "YG8dC",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "WXCZl",
-        "slot": 5,
-        "trueDifficulty": 1665
-      },
-      {
-        "puzzleId": "Zgd0R",
-        "slot": 6,
-        "trueDifficulty": 1682
-      }
+    "puzzleIds": [
+      "1ULSc",
+      "rLRne",
+      "yk0jP",
+      "YG8dC",
+      "WXCZl",
+      "Zgd0R"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6380,38 +5130,13 @@
   {
     "lessonId": "6.14.2",
     "lessonName": "Trapped Pieces: Expert",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "0BCEU",
-        "slot": 1,
-        "trueDifficulty": 1650
-      },
-      {
-        "puzzleId": "vi08P",
-        "slot": 2,
-        "trueDifficulty": 1664
-      },
-      {
-        "puzzleId": "ir9fZ",
-        "slot": 3,
-        "trueDifficulty": 1680
-      },
-      {
-        "puzzleId": "QTM8A",
-        "slot": 4,
-        "trueDifficulty": 1696
-      },
-      {
-        "puzzleId": "JnAdd",
-        "slot": 5,
-        "trueDifficulty": 1715
-      },
-      {
-        "puzzleId": "HH4sZ",
-        "slot": 6,
-        "trueDifficulty": 1733
-      }
+    "puzzleIds": [
+      "0BCEU",
+      "vi08P",
+      "ir9fZ",
+      "QTM8A",
+      "JnAdd",
+      "HH4sZ"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6424,38 +5149,13 @@
   {
     "lessonId": "6.14.3",
     "lessonName": "Tactical Alertness: Mastery",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "p9J9t",
-        "slot": 1,
-        "trueDifficulty": 1701
-      },
-      {
-        "puzzleId": "I20OV",
-        "slot": 2,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "PzdSE",
-        "slot": 3,
-        "trueDifficulty": 1742
-      },
-      {
-        "puzzleId": "35m9S",
-        "slot": 4,
-        "trueDifficulty": 1759
-      },
-      {
-        "puzzleId": "EvTkk",
-        "slot": 5,
-        "trueDifficulty": 1770
-      },
-      {
-        "puzzleId": "6M9fE",
-        "slot": 6,
-        "trueDifficulty": 1778
-      }
+    "puzzleIds": [
+      "p9J9t",
+      "I20OV",
+      "PzdSE",
+      "35m9S",
+      "EvTkk",
+      "6M9fE"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6466,38 +5166,13 @@
   {
     "lessonId": "6.14.R",
     "lessonName": "Module 14 Review: Alertness",
-    "targetElo": 1700,
-    "puzzles": [
-      {
-        "puzzleId": "XUbna",
-        "slot": 1,
-        "trueDifficulty": 1605
-      },
-      {
-        "puzzleId": "dwV6j",
-        "slot": 2,
-        "trueDifficulty": 1630
-      },
-      {
-        "puzzleId": "mZ1Re",
-        "slot": 3,
-        "trueDifficulty": 1649
-      },
-      {
-        "puzzleId": "q0ms8",
-        "slot": 4,
-        "trueDifficulty": 1688
-      },
-      {
-        "puzzleId": "I20OV",
-        "slot": 5,
-        "trueDifficulty": 1732
-      },
-      {
-        "puzzleId": "35m9S",
-        "slot": 6,
-        "trueDifficulty": 1759
-      }
+    "puzzleIds": [
+      "XUbna",
+      "dwV6j",
+      "mZ1Re",
+      "q0ms8",
+      "I20OV",
+      "35m9S"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6508,38 +5183,13 @@
   {
     "lessonId": "6.15.1",
     "lessonName": "Final Review: Medium",
-    "targetElo": 1663,
-    "puzzles": [
-      {
-        "puzzleId": "001XA",
-        "slot": 1,
-        "trueDifficulty": 1656
-      },
-      {
-        "puzzleId": "001xO",
-        "slot": 2,
-        "trueDifficulty": 1710
-      },
-      {
-        "puzzleId": "00IUW",
-        "slot": 3,
-        "trueDifficulty": 1647
-      },
-      {
-        "puzzleId": "00eWz",
-        "slot": 4,
-        "trueDifficulty": 1648
-      },
-      {
-        "puzzleId": "00ldC",
-        "slot": 5,
-        "trueDifficulty": 1685
-      },
-      {
-        "puzzleId": "00qk4",
-        "slot": 6,
-        "trueDifficulty": 1668
-      }
+    "puzzleIds": [
+      "001XA",
+      "001xO",
+      "00IUW",
+      "00eWz",
+      "00ldC",
+      "00qk4"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6550,38 +5200,13 @@
   {
     "lessonId": "6.15.2",
     "lessonName": "Final Review: Hard",
-    "targetElo": 1750,
-    "puzzles": [
-      {
-        "puzzleId": "001xO",
-        "slot": 1,
-        "trueDifficulty": 1710
-      },
-      {
-        "puzzleId": "00NHK",
-        "slot": 2,
-        "trueDifficulty": 1800
-      },
-      {
-        "puzzleId": "01FmQ",
-        "slot": 3,
-        "trueDifficulty": 1753
-      },
-      {
-        "puzzleId": "01bxA",
-        "slot": 4,
-        "trueDifficulty": 1754
-      },
-      {
-        "puzzleId": "01h56",
-        "slot": 5,
-        "trueDifficulty": 1756
-      },
-      {
-        "puzzleId": "01xkD",
-        "slot": 6,
-        "trueDifficulty": 1754
-      }
+    "puzzleIds": [
+      "001xO",
+      "00NHK",
+      "01FmQ",
+      "01bxA",
+      "01h56",
+      "01xkD"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6592,38 +5217,13 @@
   {
     "lessonId": "6.15.3",
     "lessonName": "Grand Master Challenge",
-    "targetElo": 1775,
-    "puzzles": [
-      {
-        "puzzleId": "00NHK",
-        "slot": 1,
-        "trueDifficulty": 1800
-      },
-      {
-        "puzzleId": "01FmQ",
-        "slot": 2,
-        "trueDifficulty": 1753
-      },
-      {
-        "puzzleId": "01bxA",
-        "slot": 3,
-        "trueDifficulty": 1754
-      },
-      {
-        "puzzleId": "01h56",
-        "slot": 4,
-        "trueDifficulty": 1756
-      },
-      {
-        "puzzleId": "01xkD",
-        "slot": 5,
-        "trueDifficulty": 1754
-      },
-      {
-        "puzzleId": "02Fwp",
-        "slot": 6,
-        "trueDifficulty": 1771
-      }
+    "puzzleIds": [
+      "00NHK",
+      "01FmQ",
+      "01bxA",
+      "01h56",
+      "01xkD",
+      "02Fwp"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6634,38 +5234,13 @@
   {
     "lessonId": "7.1.1",
     "lessonName": "Sacrifice: Exchange Sac",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6678,38 +5253,13 @@
   {
     "lessonId": "7.1.2",
     "lessonName": "Sacrifice: Queen Sac",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6722,38 +5272,13 @@
   {
     "lessonId": "7.1.3",
     "lessonName": "Sacrifice: Positional",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "127sU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "BGpF4",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "JWlBB",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "UCX4G",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "iWDB9",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "sNaMy",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "127sU",
+      "BGpF4",
+      "JWlBB",
+      "UCX4G",
+      "iWDB9",
+      "sNaMy"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6766,38 +5291,13 @@
   {
     "lessonId": "7.1.R",
     "lessonName": "Module 1 Review: Sacrifices",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "BWRFI",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "JWlBB",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "UNB3g",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "iWDB9",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "sNaMy",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "BWRFI",
+      "JWlBB",
+      "UNB3g",
+      "iWDB9",
+      "sNaMy"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6808,38 +5308,13 @@
   {
     "lessonId": "7.2.1",
     "lessonName": "Mate in 4: Complex",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6852,38 +5327,13 @@
   {
     "lessonId": "7.2.2",
     "lessonName": "Mate in 5: Advanced",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6896,38 +5346,13 @@
   {
     "lessonId": "7.2.3",
     "lessonName": "Long Mates: Expert",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6938,38 +5363,13 @@
   {
     "lessonId": "7.2.R",
     "lessonName": "Module 2 Review: Checkmates",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -6980,38 +5380,13 @@
   {
     "lessonId": "7.3.1",
     "lessonName": "Quiet Move: Zugzwang",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0bo3I",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1D9GU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1X7Q3",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1j8Cp",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2HJsK",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2b4oJ",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0bo3I",
+      "1D9GU",
+      "1X7Q3",
+      "1j8Cp",
+      "2HJsK",
+      "2b4oJ"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7024,38 +5399,13 @@
   {
     "lessonId": "7.3.2",
     "lessonName": "Quiet Move: Improvement",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0bo3I",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1D9GU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1X7Q3",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1j8Cp",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2HJsK",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2b4oJ",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0bo3I",
+      "1D9GU",
+      "1X7Q3",
+      "1j8Cp",
+      "2HJsK",
+      "2b4oJ"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7068,38 +5418,13 @@
   {
     "lessonId": "7.3.3",
     "lessonName": "Quiet Move: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0bo3I",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5q2VU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "HGHoj",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "RH7aI",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "gaH5s",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "qGSjq",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0bo3I",
+      "5q2VU",
+      "HGHoj",
+      "RH7aI",
+      "gaH5s",
+      "qGSjq"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7112,38 +5437,13 @@
   {
     "lessonId": "7.3.R",
     "lessonName": "Module 3 Review: Quiet Moves",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0bo3I",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5q2VU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "HGHoj",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "RH7aI",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "gaH5s",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "qGSjq",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0bo3I",
+      "5q2VU",
+      "HGHoj",
+      "RH7aI",
+      "gaH5s",
+      "qGSjq"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7154,38 +5454,13 @@
   {
     "lessonId": "7.4.1",
     "lessonName": "Defense: Counterattack",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1ETvi",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "23Kds",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2IrF4",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2XwDl",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2Y6E7",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "12qu9",
+      "1ETvi",
+      "23Kds",
+      "2IrF4",
+      "2XwDl",
+      "2Y6E7"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7198,38 +5473,13 @@
   {
     "lessonId": "7.4.2",
     "lessonName": "Defense: Resource",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1ETvi",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "23Kds",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2IrF4",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2XwDl",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2Y6E7",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "12qu9",
+      "1ETvi",
+      "23Kds",
+      "2IrF4",
+      "2XwDl",
+      "2Y6E7"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7242,38 +5492,13 @@
   {
     "lessonId": "7.4.3",
     "lessonName": "Defense: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "7ylgF",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Gl01B",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "R2Tis",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "aoGJG",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "nTKhe",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "12qu9",
+      "7ylgF",
+      "Gl01B",
+      "R2Tis",
+      "aoGJG",
+      "nTKhe"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7286,38 +5511,13 @@
   {
     "lessonId": "7.4.R",
     "lessonName": "Module 4 Review: Defense",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "7ylgF",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Gl01B",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "R2Tis",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "aoGJG",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "nTKhe",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "12qu9",
+      "7ylgF",
+      "Gl01B",
+      "R2Tis",
+      "aoGJG",
+      "nTKhe"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7328,38 +5528,13 @@
   {
     "lessonId": "7.5.1",
     "lessonName": "Calculation: Set 1",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7370,38 +5545,13 @@
   {
     "lessonId": "7.5.2",
     "lessonName": "Calculation: Set 2",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7412,38 +5562,13 @@
   {
     "lessonId": "7.6.1",
     "lessonName": "Intermezzo: Double",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7456,38 +5581,13 @@
   {
     "lessonId": "7.6.2",
     "lessonName": "Intermezzo: Defensive",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7500,38 +5600,13 @@
   {
     "lessonId": "7.6.3",
     "lessonName": "Intermezzo: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7544,38 +5619,13 @@
   {
     "lessonId": "7.6.R",
     "lessonName": "Module 6 Review: Intermezzo",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7586,38 +5636,13 @@
   {
     "lessonId": "7.7.1",
     "lessonName": "Attack: Exposed King",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "1D9GU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1Eiyd",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1HepU",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4TK1C",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4WfVs",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "1D9GU",
+      "1Eiyd",
+      "1HepU",
+      "1VUlY",
+      "4TK1C",
+      "4WfVs"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7630,38 +5655,13 @@
   {
     "lessonId": "7.7.2",
     "lessonName": "Attack: Kingside Storm",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7674,38 +5674,13 @@
   {
     "lessonId": "7.7.3",
     "lessonName": "Attack: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "1D9GU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1Eiyd",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1HepU",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4TK1C",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4WfVs",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "1D9GU",
+      "1Eiyd",
+      "1HepU",
+      "1VUlY",
+      "4TK1C",
+      "4WfVs"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7716,38 +5691,13 @@
   {
     "lessonId": "7.7.R",
     "lessonName": "Module 7 Review: Attack",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "1D9GU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1Eiyd",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1HepU",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4TK1C",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4WfVs",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "1D9GU",
+      "1Eiyd",
+      "1HepU",
+      "1VUlY",
+      "4TK1C",
+      "4WfVs"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7758,38 +5708,13 @@
   {
     "lessonId": "7.8.1",
     "lessonName": "Rook Endgame: Mastery",
-    "targetElo": 1875,
-    "puzzles": [
-      {
-        "puzzleId": "2ufs2",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "3tAYz",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4O6jN",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5BZZz",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6EUZE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "8fcSg",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "2ufs2",
+      "3tAYz",
+      "4O6jN",
+      "5BZZz",
+      "6EUZE",
+      "8fcSg"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7802,38 +5727,13 @@
   {
     "lessonId": "7.8.2",
     "lessonName": "Pawn Endgame: Mastery",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0FxfI",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6yzdZ",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "G9x12",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Qiv8r",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "aFqz8",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "jgN7D",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0FxfI",
+      "6yzdZ",
+      "G9x12",
+      "Qiv8r",
+      "aFqz8",
+      "jgN7D"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7846,38 +5746,13 @@
   {
     "lessonId": "7.8.3",
     "lessonName": "Queen Endgame: Mastery",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "2b4oJ",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Bp9Sc",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Inb7j",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Sa3Lw",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "TBBDM",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "appY0",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "2b4oJ",
+      "Bp9Sc",
+      "Inb7j",
+      "Sa3Lw",
+      "TBBDM",
+      "appY0"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7890,38 +5765,13 @@
   {
     "lessonId": "7.8.R",
     "lessonName": "Module 8 Review: Endgames",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "2ufs2",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "3tAYz",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4O6jN",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5BZZz",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6EUZE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "8fcSg",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "2ufs2",
+      "3tAYz",
+      "4O6jN",
+      "5BZZz",
+      "6EUZE",
+      "8fcSg"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7932,38 +5782,13 @@
   {
     "lessonId": "7.9.1",
     "lessonName": "Pin: Mastery",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "24xOR",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2GAvP",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2QiUA",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "3QBLx",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "1DLVE",
+      "24xOR",
+      "2GAvP",
+      "2QiUA",
+      "3QBLx"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -7976,38 +5801,13 @@
   {
     "lessonId": "7.9.2",
     "lessonName": "Skewer: Mastery",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "1Eiyd",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4TTzE",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5X1Nm",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5iKug",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6gVCT",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "GaEti",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "1Eiyd",
+      "4TTzE",
+      "5X1Nm",
+      "5iKug",
+      "6gVCT",
+      "GaEti"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8020,38 +5820,13 @@
   {
     "lessonId": "7.9.3",
     "lessonName": "X-Ray: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8064,38 +5839,13 @@
   {
     "lessonId": "7.9.R",
     "lessonName": "Module 9 Review: Line Tactics",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "24xOR",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2GAvP",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2QiUA",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "3QBLx",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "1DLVE",
+      "24xOR",
+      "2GAvP",
+      "2QiUA",
+      "3QBLx"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8106,38 +5856,13 @@
   {
     "lessonId": "7.10.1",
     "lessonName": "Deflection: Mastery",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0NDBE",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2Gric",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5dlE9",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5gEmh",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "63GnF",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6I0yl",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0NDBE",
+      "2Gric",
+      "5dlE9",
+      "5gEmh",
+      "63GnF",
+      "6I0yl"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8150,38 +5875,13 @@
   {
     "lessonId": "7.10.2",
     "lessonName": "Attraction: Mastery",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "21Tty",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2Gric",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "8nYJe",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "8qTbG",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "DeIH3",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "Ee9Ul",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "21Tty",
+      "2Gric",
+      "8nYJe",
+      "8qTbG",
+      "DeIH3",
+      "Ee9Ul"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8194,38 +5894,13 @@
   {
     "lessonId": "7.10.3",
     "lessonName": "Combined: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "2Gric",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "ZIdzn",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "apWVD",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "r9zvH",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "st4ZU",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "tnJ2s",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "2Gric",
+      "ZIdzn",
+      "apWVD",
+      "r9zvH",
+      "st4ZU",
+      "tnJ2s"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8236,38 +5911,13 @@
   {
     "lessonId": "7.10.R",
     "lessonName": "Module 10 Review",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "2Gric",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "ZIdzn",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "apWVD",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "r9zvH",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "st4ZU",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "tnJ2s",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "2Gric",
+      "ZIdzn",
+      "apWVD",
+      "r9zvH",
+      "st4ZU",
+      "tnJ2s"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8278,38 +5928,13 @@
   {
     "lessonId": "7.11.1",
     "lessonName": "Discovered: Check",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1D9GU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2CdWl",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4cBln",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5YCx8",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6GTLL",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "1D9GU",
+      "2CdWl",
+      "4cBln",
+      "5YCx8",
+      "6GTLL"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8322,38 +5947,13 @@
   {
     "lessonId": "7.11.2",
     "lessonName": "Discovered: Double Attack",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1D9GU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2CdWl",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "4cBln",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5YCx8",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "6GTLL",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "1D9GU",
+      "2CdWl",
+      "4cBln",
+      "5YCx8",
+      "6GTLL"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8366,38 +5966,13 @@
   {
     "lessonId": "7.11.3",
     "lessonName": "Discovered: Mastery",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "BbDeL",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "QhfSe",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "YtBls",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "kcvkd",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "sgor5",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "BbDeL",
+      "QhfSe",
+      "YtBls",
+      "kcvkd",
+      "sgor5"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8410,38 +5985,13 @@
   {
     "lessonId": "7.11.R",
     "lessonName": "Module 11 Review",
-    "targetElo": 1900,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "BbDeL",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "QhfSe",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "YtBls",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "kcvkd",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "sgor5",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0qClz",
+      "BbDeL",
+      "QhfSe",
+      "YtBls",
+      "kcvkd",
+      "sgor5"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8452,38 +6002,13 @@
   {
     "lessonId": "7.12.1",
     "lessonName": "Final Review: Set 1",
-    "targetElo": 1850,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8494,38 +6019,13 @@
   {
     "lessonId": "7.12.2",
     "lessonName": "Final Review: Set 2",
-    "targetElo": 1950,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8536,38 +6036,13 @@
   {
     "lessonId": "7.12.3",
     "lessonName": "Master Challenge",
-    "targetElo": 1975,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "127sU",
-        "slot": 2,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "15Pdb",
-        "slot": 3,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "179Su",
-        "slot": 4,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1DLVE",
-        "slot": 5,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1VUlY",
-        "slot": 6,
-        "trueDifficulty": 2000
-      }
+    "puzzleIds": [
+      "0p75i",
+      "127sU",
+      "15Pdb",
+      "179Su",
+      "1DLVE",
+      "1VUlY"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8578,38 +6053,13 @@
   {
     "lessonId": "8.1.1",
     "lessonName": "Sacrifice: Piece Sac",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "127sU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "9LpJL",
-        "slot": 2,
-        "trueDifficulty": 2016
-      },
-      {
-        "puzzleId": "cMKod",
-        "slot": 3,
-        "trueDifficulty": 2033
-      },
-      {
-        "puzzleId": "7OMcj",
-        "slot": 4,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "uAuqK",
-        "slot": 5,
-        "trueDifficulty": 2066
-      },
-      {
-        "puzzleId": "iIWwI",
-        "slot": 6,
-        "trueDifficulty": 2083
-      }
+    "puzzleIds": [
+      "127sU",
+      "9LpJL",
+      "cMKod",
+      "7OMcj",
+      "uAuqK",
+      "iIWwI"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8622,38 +6072,13 @@
   {
     "lessonId": "8.1.2",
     "lessonName": "Sacrifice: Multiple",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0fJGN",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "rsr24",
-        "slot": 2,
-        "trueDifficulty": 2064
-      },
-      {
-        "puzzleId": "IDgJI",
-        "slot": 3,
-        "trueDifficulty": 2079
-      },
-      {
-        "puzzleId": "meuZs",
-        "slot": 4,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "hLOnx",
-        "slot": 5,
-        "trueDifficulty": 2111
-      },
-      {
-        "puzzleId": "tkxd9",
-        "slot": 6,
-        "trueDifficulty": 2130
-      }
+    "puzzleIds": [
+      "0fJGN",
+      "rsr24",
+      "IDgJI",
+      "meuZs",
+      "hLOnx",
+      "tkxd9"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8666,38 +6091,13 @@
   {
     "lessonId": "8.1.3",
     "lessonName": "Sacrifice: Expert",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "1AuTi",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "XEmZJ",
-        "slot": 2,
-        "trueDifficulty": 2115
-      },
-      {
-        "puzzleId": "fisSh",
-        "slot": 3,
-        "trueDifficulty": 2132
-      },
-      {
-        "puzzleId": "C9jDJ",
-        "slot": 4,
-        "trueDifficulty": 2150
-      },
-      {
-        "puzzleId": "O11zz",
-        "slot": 5,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "XQMTj",
-        "slot": 6,
-        "trueDifficulty": 2184
-      }
+    "puzzleIds": [
+      "1AuTi",
+      "XEmZJ",
+      "fisSh",
+      "C9jDJ",
+      "O11zz",
+      "XQMTj"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8710,38 +6110,13 @@
   {
     "lessonId": "8.1.R",
     "lessonName": "Module 1 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0p75i",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "2kkxK",
-        "slot": 2,
-        "trueDifficulty": 2029
-      },
-      {
-        "puzzleId": "Uz2iM",
-        "slot": 3,
-        "trueDifficulty": 2058
-      },
-      {
-        "puzzleId": "6FMPA",
-        "slot": 4,
-        "trueDifficulty": 2088
-      },
-      {
-        "puzzleId": "fbqpg",
-        "slot": 5,
-        "trueDifficulty": 2122
-      },
-      {
-        "puzzleId": "UvIVE",
-        "slot": 6,
-        "trueDifficulty": 2162
-      }
+    "puzzleIds": [
+      "0p75i",
+      "2kkxK",
+      "Uz2iM",
+      "6FMPA",
+      "fbqpg",
+      "UvIVE"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8752,38 +6127,13 @@
   {
     "lessonId": "8.2.1",
     "lessonName": "Long Mates: Set 1",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00LRq",
-        "slot": 3,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "00QjF",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "00UJP",
-        "slot": 5,
-        "trueDifficulty": 2146
-      },
-      {
-        "puzzleId": "00WoW",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00LRq",
+      "00QjF",
+      "00UJP",
+      "00WoW"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8794,38 +6144,13 @@
   {
     "lessonId": "8.2.2",
     "lessonName": "Long Mates: Set 2",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00LRq",
-        "slot": 3,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "00QjF",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "00UJP",
-        "slot": 5,
-        "trueDifficulty": 2146
-      },
-      {
-        "puzzleId": "00WoW",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00LRq",
+      "00QjF",
+      "00UJP",
+      "00WoW"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8836,38 +6161,13 @@
   {
     "lessonId": "8.2.3",
     "lessonName": "Long Mates: Expert",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00LRq",
-        "slot": 3,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "00QjF",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "00UJP",
-        "slot": 5,
-        "trueDifficulty": 2146
-      },
-      {
-        "puzzleId": "00WoW",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00LRq",
+      "00QjF",
+      "00UJP",
+      "00WoW"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8878,38 +6178,13 @@
   {
     "lessonId": "8.2.R",
     "lessonName": "Module 2 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00LRq",
-        "slot": 3,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "00QjF",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "00UJP",
-        "slot": 5,
-        "trueDifficulty": 2146
-      },
-      {
-        "puzzleId": "00WoW",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00LRq",
+      "00QjF",
+      "00UJP",
+      "00WoW"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8920,38 +6195,13 @@
   {
     "lessonId": "8.3.1",
     "lessonName": "Quiet Move: Expert 1",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "0bORc",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "MRhb3",
-        "slot": 2,
-        "trueDifficulty": 2017
-      },
-      {
-        "puzzleId": "P9prc",
-        "slot": 3,
-        "trueDifficulty": 2034
-      },
-      {
-        "puzzleId": "pUlfr",
-        "slot": 4,
-        "trueDifficulty": 2051
-      },
-      {
-        "puzzleId": "8EXtl",
-        "slot": 5,
-        "trueDifficulty": 2068
-      },
-      {
-        "puzzleId": "e4jhd",
-        "slot": 6,
-        "trueDifficulty": 2084
-      }
+    "puzzleIds": [
+      "0bORc",
+      "MRhb3",
+      "P9prc",
+      "pUlfr",
+      "8EXtl",
+      "e4jhd"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -8964,38 +6214,13 @@
   {
     "lessonId": "8.3.2",
     "lessonName": "Quiet Move: Expert 2",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0AUTR",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "dZU0i",
-        "slot": 2,
-        "trueDifficulty": 2065
-      },
-      {
-        "puzzleId": "IPDcZ",
-        "slot": 3,
-        "trueDifficulty": 2081
-      },
-      {
-        "puzzleId": "a3OI8",
-        "slot": 4,
-        "trueDifficulty": 2096
-      },
-      {
-        "puzzleId": "d1BoH",
-        "slot": 5,
-        "trueDifficulty": 2113
-      },
-      {
-        "puzzleId": "afUyx",
-        "slot": 6,
-        "trueDifficulty": 2132
-      }
+    "puzzleIds": [
+      "0AUTR",
+      "dZU0i",
+      "IPDcZ",
+      "a3OI8",
+      "d1BoH",
+      "afUyx"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9008,38 +6233,13 @@
   {
     "lessonId": "8.3.3",
     "lessonName": "Quiet Move: Master",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "2H9fh",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "nsVwF",
-        "slot": 2,
-        "trueDifficulty": 2117
-      },
-      {
-        "puzzleId": "AVjR5",
-        "slot": 3,
-        "trueDifficulty": 2135
-      },
-      {
-        "puzzleId": "v9WFh",
-        "slot": 4,
-        "trueDifficulty": 2152
-      },
-      {
-        "puzzleId": "TcZR9",
-        "slot": 5,
-        "trueDifficulty": 2169
-      },
-      {
-        "puzzleId": "nyt4U",
-        "slot": 6,
-        "trueDifficulty": 2185
-      }
+    "puzzleIds": [
+      "2H9fh",
+      "nsVwF",
+      "AVjR5",
+      "v9WFh",
+      "TcZR9",
+      "nyt4U"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9052,38 +6252,13 @@
   {
     "lessonId": "8.3.R",
     "lessonName": "Module 3 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0bORc",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "iU9En",
-        "slot": 2,
-        "trueDifficulty": 2032
-      },
-      {
-        "puzzleId": "nhitN",
-        "slot": 3,
-        "trueDifficulty": 2064
-      },
-      {
-        "puzzleId": "zXRGh",
-        "slot": 4,
-        "trueDifficulty": 2095
-      },
-      {
-        "puzzleId": "wyZ5a",
-        "slot": 5,
-        "trueDifficulty": 2131
-      },
-      {
-        "puzzleId": "wVUMl",
-        "slot": 6,
-        "trueDifficulty": 2167
-      }
+    "puzzleIds": [
+      "0bORc",
+      "iU9En",
+      "nhitN",
+      "zXRGh",
+      "wyZ5a",
+      "wVUMl"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9094,38 +6269,13 @@
   {
     "lessonId": "8.4.1",
     "lessonName": "Defense: Expert 1",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "1w1Fr",
-        "slot": 2,
-        "trueDifficulty": 2017
-      },
-      {
-        "puzzleId": "D5m5G",
-        "slot": 3,
-        "trueDifficulty": 2034
-      },
-      {
-        "puzzleId": "HkmGD",
-        "slot": 4,
-        "trueDifficulty": 2051
-      },
-      {
-        "puzzleId": "2m8cF",
-        "slot": 5,
-        "trueDifficulty": 2068
-      },
-      {
-        "puzzleId": "ZB47V",
-        "slot": 6,
-        "trueDifficulty": 2084
-      }
+    "puzzleIds": [
+      "12qu9",
+      "1w1Fr",
+      "D5m5G",
+      "HkmGD",
+      "2m8cF",
+      "ZB47V"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9138,38 +6288,13 @@
   {
     "lessonId": "8.4.2",
     "lessonName": "Defense: Expert 2",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0AfTQ",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "t2Xq3",
-        "slot": 2,
-        "trueDifficulty": 2065
-      },
-      {
-        "puzzleId": "8Jgci",
-        "slot": 3,
-        "trueDifficulty": 2081
-      },
-      {
-        "puzzleId": "uQ17M",
-        "slot": 4,
-        "trueDifficulty": 2096
-      },
-      {
-        "puzzleId": "o3754",
-        "slot": 5,
-        "trueDifficulty": 2113
-      },
-      {
-        "puzzleId": "YnZEq",
-        "slot": 6,
-        "trueDifficulty": 2132
-      }
+    "puzzleIds": [
+      "0AfTQ",
+      "t2Xq3",
+      "8Jgci",
+      "uQ17M",
+      "o3754",
+      "YnZEq"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9182,38 +6307,13 @@
   {
     "lessonId": "8.4.3",
     "lessonName": "Defense: Master",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "0lF62",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "5Svjt",
-        "slot": 2,
-        "trueDifficulty": 2117
-      },
-      {
-        "puzzleId": "9E9YA",
-        "slot": 3,
-        "trueDifficulty": 2135
-      },
-      {
-        "puzzleId": "58VaA",
-        "slot": 4,
-        "trueDifficulty": 2153
-      },
-      {
-        "puzzleId": "Ex69d",
-        "slot": 5,
-        "trueDifficulty": 2170
-      },
-      {
-        "puzzleId": "aPsp6",
-        "slot": 6,
-        "trueDifficulty": 2186
-      }
+    "puzzleIds": [
+      "0lF62",
+      "5Svjt",
+      "9E9YA",
+      "58VaA",
+      "Ex69d",
+      "aPsp6"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9226,38 +6326,13 @@
   {
     "lessonId": "8.4.R",
     "lessonName": "Module 4 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "12qu9",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "bLJ3G",
-        "slot": 2,
-        "trueDifficulty": 2032
-      },
-      {
-        "puzzleId": "0nXHi",
-        "slot": 3,
-        "trueDifficulty": 2065
-      },
-      {
-        "puzzleId": "JCih0",
-        "slot": 4,
-        "trueDifficulty": 2096
-      },
-      {
-        "puzzleId": "PhKme",
-        "slot": 5,
-        "trueDifficulty": 2132
-      },
-      {
-        "puzzleId": "wSWFa",
-        "slot": 6,
-        "trueDifficulty": 2168
-      }
+    "puzzleIds": [
+      "12qu9",
+      "bLJ3G",
+      "0nXHi",
+      "JCih0",
+      "PhKme",
+      "wSWFa"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9268,38 +6343,13 @@
   {
     "lessonId": "8.5.1",
     "lessonName": "Calculation: Mixed 1",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "MydXz",
-        "slot": 1,
-        "trueDifficulty": 2001
-      },
-      {
-        "puzzleId": "MAbIy",
-        "slot": 2,
-        "trueDifficulty": 2017
-      },
-      {
-        "puzzleId": "2fVyr",
-        "slot": 3,
-        "trueDifficulty": 2029
-      },
-      {
-        "puzzleId": "o8Esa",
-        "slot": 4,
-        "trueDifficulty": 2041
-      },
-      {
-        "puzzleId": "xYQRz",
-        "slot": 5,
-        "trueDifficulty": 2056
-      },
-      {
-        "puzzleId": "UxYkM",
-        "slot": 6,
-        "trueDifficulty": 2087
-      }
+    "puzzleIds": [
+      "MydXz",
+      "MAbIy",
+      "2fVyr",
+      "o8Esa",
+      "xYQRz",
+      "UxYkM"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9310,38 +6360,13 @@
   {
     "lessonId": "8.5.2",
     "lessonName": "Calculation: Mixed 2",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00LRq",
-        "slot": 3,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "00QjF",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "00UJP",
-        "slot": 5,
-        "trueDifficulty": 2146
-      },
-      {
-        "puzzleId": "00WoW",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00LRq",
+      "00QjF",
+      "00UJP",
+      "00WoW"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9352,38 +6377,13 @@
   {
     "lessonId": "8.6.1",
     "lessonName": "Intermezzo: Expert",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "DNrCz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "gWgfK",
-        "slot": 2,
-        "trueDifficulty": 2015
-      },
-      {
-        "puzzleId": "q0MLy",
-        "slot": 3,
-        "trueDifficulty": 2034
-      },
-      {
-        "puzzleId": "VWEGe",
-        "slot": 4,
-        "trueDifficulty": 2052
-      },
-      {
-        "puzzleId": "7mTtz",
-        "slot": 5,
-        "trueDifficulty": 2069
-      },
-      {
-        "puzzleId": "eXRuM",
-        "slot": 6,
-        "trueDifficulty": 2084
-      }
+    "puzzleIds": [
+      "DNrCz",
+      "gWgfK",
+      "q0MLy",
+      "VWEGe",
+      "7mTtz",
+      "eXRuM"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9396,38 +6396,13 @@
   {
     "lessonId": "8.6.2",
     "lessonName": "Deflection: Expert",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0bRyY",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "zguJ7",
-        "slot": 2,
-        "trueDifficulty": 2063
-      },
-      {
-        "puzzleId": "p8w4p",
-        "slot": 3,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "gNWnv",
-        "slot": 4,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "MjXqE",
-        "slot": 5,
-        "trueDifficulty": 2111
-      },
-      {
-        "puzzleId": "62Fbp",
-        "slot": 6,
-        "trueDifficulty": 2131
-      }
+    "puzzleIds": [
+      "0bRyY",
+      "zguJ7",
+      "p8w4p",
+      "gNWnv",
+      "MjXqE",
+      "62Fbp"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9440,38 +6415,13 @@
   {
     "lessonId": "8.6.3",
     "lessonName": "Attraction: Expert",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "30QqZ",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "k4UqG",
-        "slot": 2,
-        "trueDifficulty": 2115
-      },
-      {
-        "puzzleId": "XqK6R",
-        "slot": 3,
-        "trueDifficulty": 2132
-      },
-      {
-        "puzzleId": "fQ9eV",
-        "slot": 4,
-        "trueDifficulty": 2149
-      },
-      {
-        "puzzleId": "xsSgI",
-        "slot": 5,
-        "trueDifficulty": 2166
-      },
-      {
-        "puzzleId": "IWYd9",
-        "slot": 6,
-        "trueDifficulty": 2184
-      }
+    "puzzleIds": [
+      "30QqZ",
+      "k4UqG",
+      "XqK6R",
+      "fQ9eV",
+      "xsSgI",
+      "IWYd9"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9484,38 +6434,13 @@
   {
     "lessonId": "8.6.R",
     "lessonName": "Module 6 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "77UKT",
-        "slot": 1,
-        "trueDifficulty": 2002
-      },
-      {
-        "puzzleId": "DlmE4",
-        "slot": 2,
-        "trueDifficulty": 2014
-      },
-      {
-        "puzzleId": "dt4hI",
-        "slot": 3,
-        "trueDifficulty": 2039
-      },
-      {
-        "puzzleId": "19b6a",
-        "slot": 4,
-        "trueDifficulty": 2056
-      },
-      {
-        "puzzleId": "rh0K3",
-        "slot": 5,
-        "trueDifficulty": 2075
-      },
-      {
-        "puzzleId": "UOmWS",
-        "slot": 6,
-        "trueDifficulty": 2084
-      }
+    "puzzleIds": [
+      "77UKT",
+      "DlmE4",
+      "dt4hI",
+      "19b6a",
+      "rh0K3",
+      "UOmWS"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9526,38 +6451,13 @@
   {
     "lessonId": "8.7.1",
     "lessonName": "Attack: Exposed King",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "1D9GU",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "SKdU9",
-        "slot": 2,
-        "trueDifficulty": 2016
-      },
-      {
-        "puzzleId": "BrYQK",
-        "slot": 3,
-        "trueDifficulty": 2033
-      },
-      {
-        "puzzleId": "qmhCM",
-        "slot": 4,
-        "trueDifficulty": 2049
-      },
-      {
-        "puzzleId": "RYIL8",
-        "slot": 5,
-        "trueDifficulty": 2066
-      },
-      {
-        "puzzleId": "jOxxo",
-        "slot": 6,
-        "trueDifficulty": 2083
-      }
+    "puzzleIds": [
+      "1D9GU",
+      "SKdU9",
+      "BrYQK",
+      "qmhCM",
+      "RYIL8",
+      "jOxxo"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9570,38 +6470,13 @@
   {
     "lessonId": "8.7.2",
     "lessonName": "Attack: Kingside",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0fJGN",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "qDYFR",
-        "slot": 2,
-        "trueDifficulty": 2064
-      },
-      {
-        "puzzleId": "ze62V",
-        "slot": 3,
-        "trueDifficulty": 2079
-      },
-      {
-        "puzzleId": "8dwgR",
-        "slot": 4,
-        "trueDifficulty": 2095
-      },
-      {
-        "puzzleId": "vv2e6",
-        "slot": 5,
-        "trueDifficulty": 2111
-      },
-      {
-        "puzzleId": "eAIlI",
-        "slot": 6,
-        "trueDifficulty": 2130
-      }
+    "puzzleIds": [
+      "0fJGN",
+      "qDYFR",
+      "ze62V",
+      "8dwgR",
+      "vv2e6",
+      "eAIlI"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9614,38 +6489,13 @@
   {
     "lessonId": "8.7.3",
     "lessonName": "Attack: Combined",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "SXiO1",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "psssR",
-        "slot": 2,
-        "trueDifficulty": 2111
-      },
-      {
-        "puzzleId": "RG6Kr",
-        "slot": 3,
-        "trueDifficulty": 2128
-      },
-      {
-        "puzzleId": "y3L8t",
-        "slot": 4,
-        "trueDifficulty": 2143
-      },
-      {
-        "puzzleId": "AW8Wz",
-        "slot": 5,
-        "trueDifficulty": 2158
-      },
-      {
-        "puzzleId": "KkWk5",
-        "slot": 6,
-        "trueDifficulty": 2175
-      }
+    "puzzleIds": [
+      "SXiO1",
+      "psssR",
+      "RG6Kr",
+      "y3L8t",
+      "AW8Wz",
+      "KkWk5"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9656,38 +6506,13 @@
   {
     "lessonId": "8.7.R",
     "lessonName": "Module 7 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "6psa8",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "HLhwh",
-        "slot": 2,
-        "trueDifficulty": 2030
-      },
-      {
-        "puzzleId": "Ur8Nd",
-        "slot": 3,
-        "trueDifficulty": 2057
-      },
-      {
-        "puzzleId": "pCvF7",
-        "slot": 4,
-        "trueDifficulty": 2088
-      },
-      {
-        "puzzleId": "G5VSR",
-        "slot": 5,
-        "trueDifficulty": 2123
-      },
-      {
-        "puzzleId": "Ix1CR",
-        "slot": 6,
-        "trueDifficulty": 2158
-      }
+    "puzzleIds": [
+      "6psa8",
+      "HLhwh",
+      "Ur8Nd",
+      "pCvF7",
+      "G5VSR",
+      "Ix1CR"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9698,38 +6523,13 @@
   {
     "lessonId": "8.8.1",
     "lessonName": "Rook Endgame: Expert",
-    "targetElo": 2075,
-    "puzzles": [
-      {
-        "puzzleId": "1nSZH",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "GhJiR",
-        "slot": 2,
-        "trueDifficulty": 2022
-      },
-      {
-        "puzzleId": "CeLPX",
-        "slot": 3,
-        "trueDifficulty": 2046
-      },
-      {
-        "puzzleId": "qTsx6",
-        "slot": 4,
-        "trueDifficulty": 2069
-      },
-      {
-        "puzzleId": "gzPDV",
-        "slot": 5,
-        "trueDifficulty": 2094
-      },
-      {
-        "puzzleId": "jo0nF",
-        "slot": 6,
-        "trueDifficulty": 2122
-      }
+    "puzzleIds": [
+      "1nSZH",
+      "GhJiR",
+      "CeLPX",
+      "qTsx6",
+      "gzPDV",
+      "jo0nF"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9742,38 +6542,13 @@
   {
     "lessonId": "8.8.2",
     "lessonName": "Pawn Endgame: Expert",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0FxfI",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "psGkj",
-        "slot": 2,
-        "trueDifficulty": 2032
-      },
-      {
-        "puzzleId": "BJ119",
-        "slot": 3,
-        "trueDifficulty": 2065
-      },
-      {
-        "puzzleId": "Vwy9I",
-        "slot": 4,
-        "trueDifficulty": 2097
-      },
-      {
-        "puzzleId": "18eFo",
-        "slot": 5,
-        "trueDifficulty": 2135
-      },
-      {
-        "puzzleId": "T2zUb",
-        "slot": 6,
-        "trueDifficulty": 2170
-      }
+    "puzzleIds": [
+      "0FxfI",
+      "psGkj",
+      "BJ119",
+      "Vwy9I",
+      "18eFo",
+      "T2zUb"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9786,38 +6561,13 @@
   {
     "lessonId": "8.8.3",
     "lessonName": "Queen Endgame: Expert",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "2b4oJ",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "woGYA",
-        "slot": 2,
-        "trueDifficulty": 2028
-      },
-      {
-        "puzzleId": "RX37u",
-        "slot": 3,
-        "trueDifficulty": 2058
-      },
-      {
-        "puzzleId": "2HBFp",
-        "slot": 4,
-        "trueDifficulty": 2089
-      },
-      {
-        "puzzleId": "gWnsg",
-        "slot": 5,
-        "trueDifficulty": 2126
-      },
-      {
-        "puzzleId": "WvJS8",
-        "slot": 6,
-        "trueDifficulty": 2164
-      }
+    "puzzleIds": [
+      "2b4oJ",
+      "woGYA",
+      "RX37u",
+      "2HBFp",
+      "gWnsg",
+      "WvJS8"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9830,38 +6580,13 @@
   {
     "lessonId": "8.8.R",
     "lessonName": "Module 8 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "004Ax",
-        "slot": 1,
-        "trueDifficulty": 2107
-      },
-      {
-        "puzzleId": "00slx",
-        "slot": 2,
-        "trueDifficulty": 2152
-      },
-      {
-        "puzzleId": "0125B",
-        "slot": 3,
-        "trueDifficulty": 2005
-      },
-      {
-        "puzzleId": "01H6V",
-        "slot": 4,
-        "trueDifficulty": 2027
-      },
-      {
-        "puzzleId": "01RKd",
-        "slot": 5,
-        "trueDifficulty": 2177
-      },
-      {
-        "puzzleId": "01gpx",
-        "slot": 6,
-        "trueDifficulty": 2193
-      }
+    "puzzleIds": [
+      "004Ax",
+      "00slx",
+      "0125B",
+      "01H6V",
+      "01RKd",
+      "01gpx"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9872,38 +6597,13 @@
   {
     "lessonId": "8.9.1",
     "lessonName": "Pin: Expert",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "0qClz",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "5aFu2",
-        "slot": 2,
-        "trueDifficulty": 2016
-      },
-      {
-        "puzzleId": "EKKU9",
-        "slot": 3,
-        "trueDifficulty": 2033
-      },
-      {
-        "puzzleId": "5rGIq",
-        "slot": 4,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "sGsYp",
-        "slot": 5,
-        "trueDifficulty": 2066
-      },
-      {
-        "puzzleId": "T2Lvs",
-        "slot": 6,
-        "trueDifficulty": 2083
-      }
+    "puzzleIds": [
+      "0qClz",
+      "5aFu2",
+      "EKKU9",
+      "5rGIq",
+      "sGsYp",
+      "T2Lvs"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9916,38 +6616,13 @@
   {
     "lessonId": "8.9.2",
     "lessonName": "Skewer: Expert",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "0bRyY",
-        "slot": 1,
-        "trueDifficulty": 2050
-      },
-      {
-        "puzzleId": "6ltvy",
-        "slot": 2,
-        "trueDifficulty": 2063
-      },
-      {
-        "puzzleId": "2hHIL",
-        "slot": 3,
-        "trueDifficulty": 2077
-      },
-      {
-        "puzzleId": "K4UsG",
-        "slot": 4,
-        "trueDifficulty": 2092
-      },
-      {
-        "puzzleId": "yJHtp",
-        "slot": 5,
-        "trueDifficulty": 2107
-      },
-      {
-        "puzzleId": "da05E",
-        "slot": 6,
-        "trueDifficulty": 2128
-      }
+    "puzzleIds": [
+      "0bRyY",
+      "6ltvy",
+      "2hHIL",
+      "K4UsG",
+      "yJHtp",
+      "da05E"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -9960,38 +6635,13 @@
   {
     "lessonId": "8.9.3",
     "lessonName": "X-Ray: Expert",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "6X9UN",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "f61pc",
-        "slot": 2,
-        "trueDifficulty": 2117
-      },
-      {
-        "puzzleId": "qe0GJ",
-        "slot": 3,
-        "trueDifficulty": 2129
-      },
-      {
-        "puzzleId": "jTeNF",
-        "slot": 4,
-        "trueDifficulty": 2143
-      },
-      {
-        "puzzleId": "apBRm",
-        "slot": 5,
-        "trueDifficulty": 2166
-      },
-      {
-        "puzzleId": "in2fr",
-        "slot": 6,
-        "trueDifficulty": 2180
-      }
+    "puzzleIds": [
+      "6X9UN",
+      "f61pc",
+      "qe0GJ",
+      "jTeNF",
+      "apBRm",
+      "in2fr"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -10004,38 +6654,13 @@
   {
     "lessonId": "8.9.R",
     "lessonName": "Module 9 Review",
-    "targetElo": 2100,
-    "puzzles": [
-      {
-        "puzzleId": "004Op",
-        "slot": 1,
-        "trueDifficulty": 2167
-      },
-      {
-        "puzzleId": "008LT",
-        "slot": 2,
-        "trueDifficulty": 2078
-      },
-      {
-        "puzzleId": "00p5I",
-        "slot": 3,
-        "trueDifficulty": 2068
-      },
-      {
-        "puzzleId": "00p93",
-        "slot": 4,
-        "trueDifficulty": 2016
-      },
-      {
-        "puzzleId": "00x5X",
-        "slot": 5,
-        "trueDifficulty": 2024
-      },
-      {
-        "puzzleId": "00xOm",
-        "slot": 6,
-        "trueDifficulty": 2125
-      }
+    "puzzleIds": [
+      "004Op",
+      "008LT",
+      "00p5I",
+      "00p93",
+      "00x5X",
+      "00xOm"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -10046,38 +6671,13 @@
   {
     "lessonId": "8.10.1",
     "lessonName": "Final: Set 1",
-    "targetElo": 2050,
-    "puzzles": [
-      {
-        "puzzleId": "4NKca",
-        "slot": 1,
-        "trueDifficulty": 2000
-      },
-      {
-        "puzzleId": "R38DV",
-        "slot": 2,
-        "trueDifficulty": 2014
-      },
-      {
-        "puzzleId": "TWFzx",
-        "slot": 3,
-        "trueDifficulty": 2029
-      },
-      {
-        "puzzleId": "FfOgj",
-        "slot": 4,
-        "trueDifficulty": 2047
-      },
-      {
-        "puzzleId": "kRtbf",
-        "slot": 5,
-        "trueDifficulty": 2061
-      },
-      {
-        "puzzleId": "eXsct",
-        "slot": 6,
-        "trueDifficulty": 2076
-      }
+    "puzzleIds": [
+      "4NKca",
+      "R38DV",
+      "TWFzx",
+      "FfOgj",
+      "kRtbf",
+      "eXsct"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -10088,38 +6688,13 @@
   {
     "lessonId": "8.10.2",
     "lessonName": "Final: Set 2",
-    "targetElo": 2150,
-    "puzzles": [
-      {
-        "puzzleId": "6XKkC",
-        "slot": 1,
-        "trueDifficulty": 2100
-      },
-      {
-        "puzzleId": "vX0VK",
-        "slot": 2,
-        "trueDifficulty": 2114
-      },
-      {
-        "puzzleId": "3Qesp",
-        "slot": 3,
-        "trueDifficulty": 2135
-      },
-      {
-        "puzzleId": "1bvRa",
-        "slot": 4,
-        "trueDifficulty": 2150
-      },
-      {
-        "puzzleId": "IlRUY",
-        "slot": 5,
-        "trueDifficulty": 2165
-      },
-      {
-        "puzzleId": "6gd4v",
-        "slot": 6,
-        "trueDifficulty": 2181
-      }
+    "puzzleIds": [
+      "6XKkC",
+      "vX0VK",
+      "3Qesp",
+      "1bvRa",
+      "IlRUY",
+      "6gd4v"
     ],
     "puzzleCount": 6,
     "criteria": {
@@ -10130,38 +6705,13 @@
   {
     "lessonId": "8.10.3",
     "lessonName": "Expert Challenge",
-    "targetElo": 2175,
-    "puzzles": [
-      {
-        "puzzleId": "UY5t1",
-        "slot": 1,
-        "trueDifficulty": 2150
-      },
-      {
-        "puzzleId": "q8kWF",
-        "slot": 2,
-        "trueDifficulty": 2156
-      },
-      {
-        "puzzleId": "7lOeS",
-        "slot": 3,
-        "trueDifficulty": 2165
-      },
-      {
-        "puzzleId": "MxCWB",
-        "slot": 4,
-        "trueDifficulty": 2176
-      },
-      {
-        "puzzleId": "jOqzv",
-        "slot": 5,
-        "trueDifficulty": 2186
-      },
-      {
-        "puzzleId": "cLwbO",
-        "slot": 6,
-        "trueDifficulty": 2193
-      }
+    "puzzleIds": [
+      "UY5t1",
+      "q8kWF",
+      "7lOeS",
+      "MxCWB",
+      "jOqzv",
+      "cLwbO"
     ],
     "puzzleCount": 6,
     "criteria": {
