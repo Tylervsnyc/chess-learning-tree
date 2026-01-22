@@ -1,52 +1,20 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 
 function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { startCheckout, isAuthenticated } = useSubscription();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { startCheckout, isAuthenticated, isPremium, loading } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
 
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        setIsLoggedIn(!!user);
-
-        if (user) {
-          try {
-            const response = await fetch('/api/stripe/subscription');
-            const data = await response.json();
-            if (data.subscription) {
-              setIsPremium(data.isPremium);
-            }
-          } catch (error) {
-            console.error('Failed to fetch subscription:', error);
-          }
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    checkAuth();
-  }, []);
-
   const handleGetPremium = async () => {
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       router.push('/auth/signup?redirect=/pricing');
       return;
     }
@@ -95,7 +63,7 @@ function PricingContent() {
         </div>
       )}
 
-      {isLoading ? (
+      {loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
         </div>
@@ -202,7 +170,7 @@ function PricingContent() {
                   color: '#000',
                 }}
               >
-                {checkoutLoading ? 'Loading...' : isLoggedIn ? 'Get Premium' : 'Sign Up & Get Premium'}
+                {checkoutLoading ? 'Loading...' : isAuthenticated ? 'Get Premium' : 'Sign Up & Get Premium'}
               </button>
             </div>
           </div>
