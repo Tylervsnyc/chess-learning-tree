@@ -12,15 +12,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      );
-    }
-
     if (!priceId || (priceId !== 'monthly' && priceId !== 'yearly')) {
       return NextResponse.json(
         { error: 'Invalid price ID' },
@@ -31,26 +22,23 @@ export async function POST(request: NextRequest) {
     const stripePriceId = priceId === 'monthly' ? PRICES.MONTHLY : PRICES.YEARLY;
 
     // Create checkout session for guest (no existing customer)
-    // Stripe will create a customer automatically
     const session = await stripe.checkout.sessions.create({
+      customer_email: email,
       mode: 'subscription',
       payment_method_types: ['card'],
-      customer_email: email,
       line_items: [
         {
           price: stripePriceId,
           quantity: 1,
         },
       ],
-      success_url: `${request.nextUrl.origin}/subscription/setup?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.nextUrl.origin}/subscription/cancelled`,
+      success_url: `${request.nextUrl.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${request.nextUrl.origin}/pricing?canceled=true`,
       metadata: {
-        is_guest_checkout: 'true',
         guest_email: email,
       },
       subscription_data: {
         metadata: {
-          is_guest_checkout: 'true',
           guest_email: email,
         },
       },

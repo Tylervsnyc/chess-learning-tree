@@ -183,6 +183,26 @@ function PricingContent() {
                 </li>
               </ul>
 
+              {!isAuthenticated && (
+                <div className="mb-4">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailError(null);
+                    }}
+                    placeholder="Enter your email"
+                    className={`w-full px-4 py-3 bg-[#1A2C35] border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-colors ${
+                      emailError ? 'border-[#FF4B4B]' : 'border-transparent focus:border-[#FFD700]'
+                    }`}
+                  />
+                  {emailError && (
+                    <p className="text-[#FF4B4B] text-sm mt-1">{emailError}</p>
+                  )}
+                </div>
+              )}
+
               <button
                 onClick={handleGetPremium}
                 disabled={checkoutLoading}
@@ -192,7 +212,7 @@ function PricingContent() {
                   color: '#000',
                 }}
               >
-                {checkoutLoading ? 'Loading...' : isAuthenticated ? 'Get Premium' : 'Sign Up & Get Premium'}
+                {checkoutLoading ? 'Loading...' : 'Get Premium'}
               </button>
             </div>
           </div>
