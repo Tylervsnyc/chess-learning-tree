@@ -13,9 +13,18 @@ const COLORS = {
 
 // Adaptive Testing Configuration - Binary Search Style
 // Big jumps early to quickly bracket ability, smaller jumps to refine
-const STARTING_RATING = 600;  // Start very easy - first puzzle from 500 bucket
-const MIN_PUZZLES = 5; // Always do at least 5 puzzles
-const MAX_PUZZLES = 8; // Cap at 8 to keep it quick
+const DEFAULT_STARTING_RATING = 600;  // Fallback if no self-assessment
+const MIN_PUZZLES = 4; // Reduced from 5 since we now have self-assessment
+const MAX_PUZZLES = 6; // Reduced from 8 since we start at a better point
+
+// Self-assessment options with starting ratings
+const SELF_ASSESSMENT_OPTIONS = [
+  { label: "I'm new to chess", emoji: '🌱', rating: 500, description: "Just learning the rules" },
+  { label: "I know the basics", emoji: '♟️', rating: 700, description: "Can play but still learning" },
+  { label: "I play casually online", emoji: '🎮', rating: 1000, description: "Some experience on apps" },
+  { label: "I'm a club player", emoji: '🏆', rating: 1300, description: "Play regularly, know tactics" },
+  { label: "I'm experienced", emoji: '⚔️', rating: 1600, description: "Tournament or serious online player" },
+];
 
 // Available rating buckets (must match diagnostic-puzzles.json keys)
 const RATING_BUCKETS = [500, 800, 1100, 1400, 1700, 2000];
@@ -105,6 +114,10 @@ export default function DiagnosticPage() {
   const router = useRouter();
   const { recordResult, isLoaded, reset } = useOnboarding();
 
+  // Self-assessment state
+  const [selfAssessmentComplete, setSelfAssessmentComplete] = useState(false);
+  const [startingRating, setStartingRating] = useState(DEFAULT_STARTING_RATING);
+
   const [currentPuzzle, setCurrentPuzzle] = useState<OnboardingPuzzle | null>(null);
   const [puzzlesCompleted, setPuzzlesCompleted] = useState(0);
   const [seenPuzzleIds, setSeenPuzzleIds] = useState<string[]>([]);
@@ -113,8 +126,8 @@ export default function DiagnosticPage() {
   const [streak, setStreak] = useState(0);
 
   // Adaptive Elo state
-  const [estimatedRating, setEstimatedRating] = useState(STARTING_RATING);
-  const [ratingHistory, setRatingHistory] = useState<number[]>([STARTING_RATING]);
+  const [estimatedRating, setEstimatedRating] = useState(DEFAULT_STARTING_RATING);
+  const [ratingHistory, setRatingHistory] = useState<number[]>([DEFAULT_STARTING_RATING]);
   const [totalCorrect, setTotalCorrect] = useState(0);
   const [results, setResults] = useState<boolean[]>([]); // Track correct/incorrect sequence
 
@@ -126,6 +139,14 @@ export default function DiagnosticPage() {
       reset();
     }
   }, [isLoaded, reset]);
+
+  // Handle self-assessment selection
+  const handleSelfAssessment = (rating: number) => {
+    setStartingRating(rating);
+    setEstimatedRating(rating);
+    setRatingHistory([rating]);
+    setSelfAssessmentComplete(true);
+  };
 
   // Load puzzle at the current estimated rating
   const loadPuzzleAtRating = useCallback(async (targetRating: number, exclude: string[]) => {
@@ -155,12 +176,12 @@ export default function DiagnosticPage() {
     setLoading(false);
   }, []);
 
-  // Load first puzzle on mount
+  // Load first puzzle after self-assessment
   useEffect(() => {
-    if (isLoaded && initialized.current && puzzlesCompleted === 0 && !currentPuzzle) {
-      loadPuzzleAtRating(STARTING_RATING, []);
+    if (isLoaded && initialized.current && selfAssessmentComplete && puzzlesCompleted === 0 && !currentPuzzle) {
+      loadPuzzleAtRating(startingRating, []);
     }
-  }, [isLoaded, puzzlesCompleted, currentPuzzle, loadPuzzleAtRating]);
+  }, [isLoaded, selfAssessmentComplete, startingRating, puzzlesCompleted, currentPuzzle, loadPuzzleAtRating]);
 
   const handleResult = useCallback((correct: boolean) => {
     if (!currentPuzzle) return;
@@ -263,9 +284,57 @@ export default function DiagnosticPage() {
     );
   }
 
+  // Self-assessment screen
+  if (!selfAssessmentComplete) {
+    return (
+      <div className="min-h-screen bg-[#131F24] flex flex-col">
+        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+
+        <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
+          <div className="text-center mb-6">
+            <div className="text-4xl mb-2">🎯</div>
+            <h1 className="text-xl font-black text-white mb-1">
+              How would you describe your level?
+            </h1>
+            <p className="text-gray-400 text-sm">
+              This helps us start the test at the right difficulty
+            </p>
+          </div>
+
+          <div className="w-full max-w-[340px] space-y-3">
+            {SELF_ASSESSMENT_OPTIONS.map((option) => (
+              <button
+                key={option.rating}
+                onClick={() => handleSelfAssessment(option.rating)}
+                className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] bg-[#1A2C35] border-2 border-gray-600 hover:border-white/30 text-left"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                    {option.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-white">{option.label}</div>
+                    <div className="text-gray-400 text-sm">{option.description}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+
+            <button
+              onClick={handleBack}
+              className="w-full text-gray-400 hover:text-white text-sm py-3 mt-2"
+            >
+              ← Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Progress bar fills gradually (no fixed endpoint since diagnostic is adaptive)
   // Use a smooth fill based on puzzles completed, capping visual at ~80% until done
-  const progressPercent = Math.min(80, puzzlesCompleted * 10);
+  const progressPercent = Math.min(80, puzzlesCompleted * 12); // Faster fill since fewer puzzles
 
   return (
     <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">

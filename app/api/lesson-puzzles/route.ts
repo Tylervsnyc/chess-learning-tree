@@ -1,42 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Chess } from 'chess.js';
-import { getPuzzlesForLesson, getLessonInfo, EmbeddedPuzzle, PuzzleSlot } from '@/data/lesson-puzzle-sets';
-import { readFileSync, readdirSync } from 'fs';
+import lessonData from '@/data/lesson-puzzle-sets.json';
+import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
 
-// Load puzzle by ID from CSV files
-function loadPuzzleById(puzzleId: string): EmbeddedPuzzle | null {
-  try {
-    const brackets = readdirSync(PUZZLES_DIR);
-    for (const bracket of brackets) {
-      const bracketDir = join(PUZZLES_DIR, bracket);
-      const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
-      for (const file of files) {
-        const content = readFileSync(join(bracketDir, file), 'utf-8');
-        const lines = content.split('\n');
-        for (const line of lines) {
-          if (line.startsWith(puzzleId + ',')) {
-            const parts = line.split(',');
-            if (parts.length >= 9) {
-              return {
-                id: parts[0],
-                fen: parts[1],
-                moves: parts[2],
-                rating: parseInt(parts[3], 10),
-                themes: parts[7].split(' '),
-                url: parts[8],
-              };
-            }
-          }
-        }
-      }
-    }
-  } catch {
-    // File not found or parse error
-  }
-  return null;
+interface LessonInfo {
+  lessonId: string;
+  lessonName: string;
+  puzzleIds: string[];
+  puzzleCount: number;
+}
+
+interface RawPuzzle {
+  puzzleId: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  themes: string[];
+  url: string;
 }
 
 interface LessonPuzzle {
@@ -55,8 +38,51 @@ interface LessonPuzzle {
   playerColor: 'white' | 'black';
 }
 
-// Process embedded puzzle into lesson format
-function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
+// Get lesson info from the JSON data
+function getLessonInfo(lessonId: string): LessonInfo | null {
+  const lesson = (lessonData as LessonInfo[]).find(l => l.lessonId === lessonId);
+  return lesson || null;
+}
+
+// Load puzzle by ID from CSV files
+function loadPuzzleById(puzzleId: string): RawPuzzle | null {
+  try {
+    if (!existsSync(PUZZLES_DIR)) {
+      return null;
+    }
+    const brackets = readdirSync(PUZZLES_DIR).filter(d => !d.endsWith('.csv'));
+    for (const bracket of brackets) {
+      const bracketDir = join(PUZZLES_DIR, bracket);
+      if (!existsSync(bracketDir)) continue;
+      const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
+      for (const file of files) {
+        const content = readFileSync(join(bracketDir, file), 'utf-8');
+        const lines = content.split('\n');
+        for (const line of lines) {
+          if (line.startsWith(puzzleId + ',')) {
+            const parts = line.split(',');
+            if (parts.length >= 9) {
+              return {
+                puzzleId: parts[0],
+                fen: parts[1],
+                moves: parts[2],
+                rating: parseInt(parts[3], 10),
+                themes: parts[7].split(' '),
+                url: parts[8],
+              };
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error loading puzzle:', e);
+  }
+  return null;
+}
+
+// Process raw puzzle into lesson format
+function processPuzzle(raw: RawPuzzle): LessonPuzzle {
   const chess = new Chess(raw.fen);
   const moveList = raw.moves.split(' ');
 
@@ -68,7 +94,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
   const setupResult = chess.move({
     from: lastMoveFrom,
     to: lastMoveTo,
-    promotion: setupUci[4] as any
+    promotion: setupUci[4] as 'q' | 'r' | 'b' | 'n' | undefined
   });
 
   const setupMove = setupResult?.san || setupUci;
@@ -82,7 +108,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
     const result = chess.move({
       from: uci.slice(0, 2),
       to: uci.slice(2, 4),
-      promotion: uci[4] as any
+      promotion: uci[4] as 'q' | 'r' | 'b' | 'n' | undefined
     });
     if (result) {
       solutionMoves.push(result.san);
@@ -93,7 +119,7 @@ function processPuzzle(raw: EmbeddedPuzzle): LessonPuzzle {
   const solution = formatSolution(solutionMoves, playerColor === 'black');
 
   return {
-    puzzleId: raw.id,
+    puzzleId: raw.puzzleId,
     fen: raw.fen,
     puzzleFen,
     moves: raw.moves,
@@ -145,41 +171,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
-  // Get puzzle slots from embedded data (slim format with puzzleId, slot, trueDifficulty)
-  const puzzleSlots = getPuzzlesForLesson(lessonId);
+  // Load puzzles from CSV files using the puzzle IDs
+  const rawPuzzles: RawPuzzle[] = [];
+  for (const puzzleId of lessonInfo.puzzleIds) {
+    const puzzle = loadPuzzleById(puzzleId);
+    if (puzzle) {
+      rawPuzzles.push(puzzle);
+    }
+  }
 
-  if (puzzleSlots.length === 0) {
+  if (rawPuzzles.length === 0) {
     return NextResponse.json({
-      error: 'No puzzles available for this lesson',
+      error: 'Puzzles not yet generated for this lesson',
       lessonId,
-      lessonName: lessonInfo.name,
+      lessonName: lessonInfo.lessonName,
+      needsGeneration: true,
     }, { status: 404 });
   }
 
   try {
-    // Load full puzzle data for each slot
-    const embeddedPuzzles: EmbeddedPuzzle[] = [];
-    for (const slot of puzzleSlots) {
-      const puzzle = loadPuzzleById(slot.puzzleId);
-      if (puzzle) {
-        embeddedPuzzles.push(puzzle);
-      }
-    }
-
-    if (embeddedPuzzles.length === 0) {
-      return NextResponse.json({
-        error: 'Could not load puzzle data',
-        lessonId,
-        lessonName: lessonInfo.name,
-      }, { status: 500 });
-    }
-
     // Process into lesson format
-    const puzzles = embeddedPuzzles.map(processPuzzle);
+    const puzzles = rawPuzzles.map(processPuzzle);
 
     return NextResponse.json({
       lessonId,
-      lessonName: lessonInfo.name,
+      lessonName: lessonInfo.lessonName,
       lessonDescription: '',
       puzzles,
       puzzleCount: puzzles.length,
