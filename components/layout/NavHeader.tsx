@@ -148,6 +148,16 @@ export function NavHeader() {
           ) : (
             <>
               <Link
+                href="/premium-signup"
+                className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:opacity-90"
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  color: '#000',
+                }}
+              >
+                Buy Premium
+              </Link>
+              <Link
                 href="/auth/login"
                 className="text-gray-300 hover:text-white transition-colors text-sm"
               >

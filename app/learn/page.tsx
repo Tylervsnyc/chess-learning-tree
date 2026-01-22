@@ -26,7 +26,7 @@ function LearnContent() {
   };
   const levelIndex = level ? (levelMap[level] ?? 0) : 0;
 
-  // Show Buy Premium for guest users (not signed in)
+  // Show Buy Premium for non-logged-in users
   const showBuyPremium = !loading && !user;
 
   return (
@@ -35,7 +35,7 @@ function LearnContent() {
         <div className="flex justify-end px-4 pt-2 pb-1">
           <Link
             href="/premium-signup"
-            className="px-4 py-2 rounded-xl font-bold text-sm transition-all active:translate-y-[1px]"
+            className="px-3 py-1.5 rounded-lg font-bold text-sm transition-all active:translate-y-[1px]"
             style={{
               background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
               color: '#000',

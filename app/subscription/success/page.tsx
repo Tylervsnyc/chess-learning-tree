@@ -8,10 +8,46 @@ function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState(5);
+  const [syncing, setSyncing] = useState(true);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const sessionId = searchParams.get('session_id');
 
+  // Sync subscription status on mount (fallback if webhook was slow/failed)
   useEffect(() => {
+    async function syncSubscription() {
+      if (!sessionId) {
+        setSyncing(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/stripe/sync-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          console.error('Sync failed:', data.error);
+          setSyncError(data.error);
+        }
+      } catch (err) {
+        console.error('Sync error:', err);
+        setSyncError('Failed to sync subscription');
+      } finally {
+        setSyncing(false);
+      }
+    }
+
+    syncSubscription();
+  }, [sessionId]);
+
+  useEffect(() => {
+    // Don't start countdown until sync is complete
+    if (syncing) return;
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -24,7 +60,7 @@ function SuccessContent() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router]);
+  }, [router, syncing]);
 
   return (
     <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
@@ -69,12 +105,12 @@ function SuccessContent() {
         </button>
 
         <p className="text-gray-500 text-sm">
-          Redirecting in {countdown} seconds...
+          {syncing ? 'Activating your subscription...' : `Redirecting in ${countdown} seconds...`}
         </p>
 
-        {sessionId && (
-          <p className="text-gray-600 text-xs mt-4">
-            Session: {sessionId.slice(0, 20)}...
+        {syncError && (
+          <p className="text-amber-500 text-xs mt-4">
+            Note: {syncError}. Contact support if your subscription doesn&apos;t activate.
           </p>
         )}
       </div>

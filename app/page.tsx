@@ -112,22 +112,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#131F24] flex flex-col">
-      {/* Top bar with Buy Premium */}
-      <div className="flex justify-end px-4 pt-3">
-        <Link
-          href="/premium-signup"
-          className="px-4 py-2 rounded-xl font-bold text-sm transition-all active:translate-y-[1px]"
-          style={{
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-            color: '#000',
-          }}
-        >
-          Buy Premium
-        </Link>
-      </div>
-
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-5 pt-6 pb-4">
+      <div className="flex-1 flex flex-col items-center px-5 pt-12 pb-4">
         {/* Title with gradient */}
         <div className="mb-4 text-center">
           <h1 className="text-3xl sm:text-4xl font-black">

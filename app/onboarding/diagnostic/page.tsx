@@ -316,11 +316,11 @@ export default function DiagnosticPage() {
   if (!selfAssessmentComplete) {
     return (
       <div className="min-h-screen bg-[#131F24] flex flex-col">
-        <div className="flex justify-between items-center px-4 pt-3">
+        <div className="flex items-center px-4 pt-3 gap-4">
           <div className="h-1 flex-1 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600] rounded-full" />
           <Link
             href="/premium-signup"
-            className="ml-4 px-4 py-2 rounded-xl font-bold text-sm transition-all active:translate-y-[1px]"
+            className="px-3 py-1.5 rounded-lg font-bold text-sm transition-all active:translate-y-[1px] flex-shrink-0"
             style={{
               background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
               color: '#000',

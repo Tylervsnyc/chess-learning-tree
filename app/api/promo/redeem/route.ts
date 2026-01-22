@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -93,14 +94,18 @@ export async function POST(request: Request) {
       }
     }
 
-    // Update user's subscription
+    // Update or create user's profile with premium status
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: user.id,
+        email: user.email,
         subscription_status: 'premium',
         subscription_expires_at: newExpiresAt.toISOString(),
-      })
-      .eq('id', user.id);
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: false,
+      });
 
     if (updateError) {
       console.error('Error updating profile:', updateError);
