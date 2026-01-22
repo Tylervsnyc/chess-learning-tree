@@ -94,8 +94,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // Update or create user's profile with premium status
-    const { error: updateError } = await supabase
+    // Update or create user's profile with premium status using admin client (bypasses RLS)
+    const adminClient = createAdminClient();
+    const { error: updateError } = await adminClient
       .from('profiles')
       .upsert({
         id: user.id,
