@@ -20,29 +20,51 @@ export default function GiftPage() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    // Sign up with redirect to apply promo code
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: displayName,
-          promo_code: code, // Store the promo code to apply after confirmation
+      // Sign up with redirect to apply promo code
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName,
+            promo_code: code,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/gift/welcome?code=${code}`,
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/gift/welcome?code=${code}`,
-      },
-    });
+      });
 
-    if (error) {
-      setError(error.message);
+      console.log('Signup response:', { data, error });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      // Check if user was actually created
+      if (!data.user) {
+        setError('Failed to create account. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Check if email confirmation is disabled (user is already confirmed)
+      if (data.user.identities?.length === 0) {
+        setError('An account with this email already exists. Please log in instead.');
+        setLoading(false);
+        return;
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSuccess(true);
-    setLoading(false);
   };
 
   if (success) {
