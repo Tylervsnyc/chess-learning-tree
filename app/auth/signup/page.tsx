@@ -10,6 +10,7 @@ function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromLesson = searchParams.get('from') === 'lesson';
+  const redirectTo = searchParams.get('redirect');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +31,12 @@ function SignupContent() {
 
     const supabase = createClient();
 
+    // Build the callback URL with redirect
+    const callbackUrl = new URL('/auth/callback', window.location.origin);
+    if (redirectTo) {
+      callbackUrl.searchParams.set('next', redirectTo);
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -37,6 +44,7 @@ function SignupContent() {
         data: {
           display_name: displayName,
         },
+        emailRedirectTo: callbackUrl.toString(),
       },
     });
 
@@ -176,7 +184,10 @@ function SignupContent() {
 
             <p className="text-center text-gray-400 text-sm pt-2">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-[#1CB0F6] hover:underline font-medium">
+              <Link
+                href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'}
+                className="text-[#1CB0F6] hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </p>

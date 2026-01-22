@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +45,7 @@ export default function LoginPage() {
     }
     AuthEvents.loginCompleted();
 
-    router.push('/');
+    router.push(redirectTo || '/');
     router.refresh();
   };
 
@@ -100,8 +103,11 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-gray-400 text-sm">
-            Don't have an account?{' '}
-            <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300">
+            Don&apos;t have an account?{' '}
+            <Link
+              href={redirectTo ? `/auth/signup?redirect=${encodeURIComponent(redirectTo)}` : '/auth/signup'}
+              className="text-blue-400 hover:text-blue-300"
+            >
               Sign up
             </Link>
           </p>

@@ -46,7 +46,7 @@ function PricingContent() {
   }, []);
 
   const handleGetPremium = async () => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       router.push('/auth/signup?redirect=/pricing');
       return;
     }
