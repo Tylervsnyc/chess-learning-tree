@@ -1185,6 +1185,3032 @@
     }
   },
   {
+    "lessonId": "2.1.1",
+    "lessonName": "Knight Forks: Intermediate",
+    "puzzleIds": [
+      "CEANt",
+      "f4O5A",
+      "R0jY6",
+      "MyqkL",
+      "rgJxl",
+      "8gSg1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.1.2",
+    "lessonName": "Knight Forks: Advanced",
+    "puzzleIds": [
+      "lOX0B",
+      "eudoW",
+      "01lB9",
+      "CFNBr",
+      "HaHf6",
+      "AUWDb"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.1.3",
+    "lessonName": "Knight Forks: Expert",
+    "puzzleIds": [
+      "0GIYq",
+      "Txihr",
+      "JylWZ",
+      "brNKn",
+      "KPQvm",
+      "baq9k"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.1.4",
+    "lessonName": "Queen & Rook Forks",
+    "puzzleIds": [
+      "CfQjD",
+      "eVSZJ",
+      "qtoRf",
+      "mQ3QU",
+      "XA18U",
+      "v1W6z"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.2.1",
+    "lessonName": "Pins: Introduction",
+    "puzzleIds": [
+      "jaiSt",
+      "Ulzxk",
+      "8UcJB",
+      "0cZkt",
+      "woZLl",
+      "fbpXg"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.2.2",
+    "lessonName": "Pins: Exploiting",
+    "puzzleIds": [
+      "rCl8u",
+      "i1o4D",
+      "Kc1cv",
+      "mSQFN",
+      "rprMO",
+      "dxbN6"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.2.3",
+    "lessonName": "Pins: Advanced",
+    "puzzleIds": [
+      "mchEJ",
+      "InV4v",
+      "awQPG",
+      "XDB9s",
+      "GCR83",
+      "raw0g"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.3.1",
+    "lessonName": "Review Set 1",
+    "puzzleIds": [
+      "MCcq0",
+      "xPWaF",
+      "0flna",
+      "XgQIn",
+      "TsfNn",
+      "RoTgS"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.4.1",
+    "lessonName": "Discovered Attacks: Intermediate",
+    "puzzleIds": [
+      "0UKq8",
+      "cBsne",
+      "P82Px",
+      "hispU",
+      "rBPGG",
+      "Qt8B2"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.4.2",
+    "lessonName": "Discovered Attacks: Advanced",
+    "puzzleIds": [
+      "Hd63A",
+      "KWACC",
+      "2wxQC",
+      "Xy8wL",
+      "XtuKe",
+      "ZT9zN"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.4.3",
+    "lessonName": "Discovered Check",
+    "puzzleIds": [
+      "yuwig",
+      "seVCW",
+      "nvx6f",
+      "T4Yol",
+      "56bYg",
+      "0ozFX"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.5.1",
+    "lessonName": "Deflection: Introduction",
+    "puzzleIds": [
+      "Wg7Sw",
+      "csu4G",
+      "1uSQk",
+      "oY4Fw",
+      "C7zEV",
+      "W7haT"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.5.2",
+    "lessonName": "Deflection: Practice",
+    "puzzleIds": [
+      "rCnAz",
+      "zSl97",
+      "6vNuy",
+      "3mpdE",
+      "JnnKt",
+      "DbpZD"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.6.1",
+    "lessonName": "Skewers: Intermediate",
+    "puzzleIds": [
+      "BXuAt",
+      "kDAla",
+      "NKtAX",
+      "QyiWE",
+      "YL9M5",
+      "n6uz0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.6.2",
+    "lessonName": "Skewers: Advanced",
+    "puzzleIds": [
+      "ve5VZ",
+      "8c7SF",
+      "G8ZRq",
+      "WPn0r",
+      "N4UCU",
+      "89QpP"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.7.1",
+    "lessonName": "Review Set 2",
+    "puzzleIds": [
+      "jrAU6",
+      "C8DF7",
+      "Ai1CC",
+      "1rd1i",
+      "jqcoS",
+      "JnOdP"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.7.2",
+    "lessonName": "Review Set 3",
+    "puzzleIds": [
+      "LDwJl",
+      "Db7Xp",
+      "DuhMi",
+      "vXmql",
+      "0eptB",
+      "AZllR"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.8.1",
+    "lessonName": "Mate in 2: Intermediate",
+    "puzzleIds": [
+      "QGmVN",
+      "SUfo7",
+      "PNUmx",
+      "DcveC",
+      "jvgAi",
+      "9ahQX"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.8.2",
+    "lessonName": "Mate in 2: Hard",
+    "puzzleIds": [
+      "PrjWF",
+      "oXDHM",
+      "MmAec",
+      "5dqWY",
+      "wuKxl",
+      "4zr0X"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.8.3",
+    "lessonName": "Mate in 2 with Sacrifice",
+    "puzzleIds": [
+      "mIfNJ",
+      "2zGzA",
+      "LJJQy",
+      "824qt",
+      "8fMn7",
+      "pelqu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.9.1",
+    "lessonName": "Mate in 3: Practice",
+    "puzzleIds": [
+      "3p38z",
+      "p2SRI",
+      "6VGeT",
+      "VmvBD",
+      "0xmNm",
+      "P65C4"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.9.2",
+    "lessonName": "Mate in 3: Advanced",
+    "puzzleIds": [
+      "nq6Wl",
+      "ls7wR",
+      "SlgIz",
+      "mZysh",
+      "dMO44",
+      "SLCnF"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.10.1",
+    "lessonName": "Back Rank: Advanced",
+    "puzzleIds": [
+      "4onlM",
+      "jIKfA",
+      "5h4uS",
+      "eI9xP",
+      "6zjYj",
+      "IDqL1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.10.2",
+    "lessonName": "Smothered Mate: Advanced",
+    "puzzleIds": [
+      "a7o5X",
+      "eMvCh",
+      "2R8lV",
+      "Sh4PO",
+      "hOJZn",
+      "Ki0s2"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.10.3",
+    "lessonName": "Opera & Arabian Mate",
+    "puzzleIds": [
+      "JqT3c",
+      "n2PWy",
+      "Ru0gj",
+      "MbiAT",
+      "mIvvO",
+      "m5Sgt"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.11.1",
+    "lessonName": "Hanging Piece Tactics",
+    "puzzleIds": [
+      "iwH4t",
+      "BXNBF",
+      "4A4jw",
+      "wyEJ2",
+      "9hoSE",
+      "7zGmM"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.11.2",
+    "lessonName": "Capturing Defenders",
+    "puzzleIds": [
+      "iDDxW",
+      "YG4DA",
+      "Z4cbj",
+      "81bUA",
+      "GYUTW",
+      "tsSDH"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.12.1",
+    "lessonName": "Rook Endgame Tactics",
+    "puzzleIds": [
+      "ZnvGs",
+      "xUE03",
+      "BIH5C",
+      "3C3BJ",
+      "kbu1p",
+      "1yg9f"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.12.2",
+    "lessonName": "Pawn Endgame Tactics",
+    "puzzleIds": [
+      "YQeKV",
+      "22EH8",
+      "h20kv",
+      "8jPF0",
+      "exUaS",
+      "k0daB"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.13.1",
+    "lessonName": "Final Review: Medium",
+    "puzzleIds": [
+      "95IPK",
+      "PnZEq",
+      "90251",
+      "L6opT",
+      "kiS7m",
+      "BRVIK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "2.13.2",
+    "lessonName": "Final Review: Hard",
+    "puzzleIds": [
+      "tBNOL",
+      "C6Iw7",
+      "id7Ef",
+      "3j0nP",
+      "QGYZU",
+      "13yvo"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.1.1",
+    "lessonName": "Pins: Advanced Patterns",
+    "puzzleIds": [
+      "0fVN0",
+      "5V3cJ",
+      "vHAN5",
+      "yZpWj",
+      "y7Zg4",
+      "E55s2"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.1.2",
+    "lessonName": "Pins: Expert",
+    "puzzleIds": [
+      "Rk6fw",
+      "CPzeo",
+      "3DU7V",
+      "ACIb4",
+      "merdK",
+      "XqrZD"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.1.3",
+    "lessonName": "Pins: Mastery",
+    "puzzleIds": [
+      "ZbC7R",
+      "gQ37D",
+      "rqNXA",
+      "PLpJb",
+      "DWKB3",
+      "vYkfE"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.2.1",
+    "lessonName": "Deflection: Advanced",
+    "puzzleIds": [
+      "pfCXj",
+      "99w2S",
+      "2YFXC",
+      "WPNEB",
+      "tSHcq",
+      "twOGN"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.2.2",
+    "lessonName": "Deflection: Expert",
+    "puzzleIds": [
+      "N2jfL",
+      "oRMBT",
+      "eVPoC",
+      "Y7AHu",
+      "us1xH",
+      "10mgZ"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.2.3",
+    "lessonName": "Deflection: Mastery",
+    "puzzleIds": [
+      "ln0gi",
+      "U58Ed",
+      "lfnAW",
+      "NoFE8",
+      "vNgEd",
+      "lCgfv"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.3.1",
+    "lessonName": "Attraction: Introduction",
+    "puzzleIds": [
+      "TppKw",
+      "9aHSZ",
+      "dZGCA",
+      "tyNHQ",
+      "7FwfU",
+      "Mz6T2"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.3.2",
+    "lessonName": "Attraction: Practice",
+    "puzzleIds": [
+      "bOI8n",
+      "ZAiTo",
+      "XjLni",
+      "ywJXJ",
+      "cSyuG",
+      "5xqJL"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.3.3",
+    "lessonName": "Attraction: Advanced",
+    "puzzleIds": [
+      "LSpYr",
+      "O4Cms",
+      "8pFQ5",
+      "a3bDV",
+      "hQnKf",
+      "pWpbB"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.4.1",
+    "lessonName": "Review Set 1",
+    "puzzleIds": [
+      "VAmp1",
+      "YZ9B3",
+      "QwTD2",
+      "mNhhz",
+      "36xhZ",
+      "veO71"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.5.1",
+    "lessonName": "Knight Forks: Expert",
+    "puzzleIds": [
+      "EA76N",
+      "Egi2J",
+      "nLEA1",
+      "zgNN3",
+      "tEmY1",
+      "6WkUp"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.5.2",
+    "lessonName": "Knight Forks: Master",
+    "puzzleIds": [
+      "65F6s",
+      "XSx3P",
+      "r88ZW",
+      "sZH6k",
+      "ebBTP",
+      "dM7rY"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.5.3",
+    "lessonName": "Complex Forks",
+    "puzzleIds": [
+      "PGt27",
+      "BADMN",
+      "qdk3T",
+      "MCSog",
+      "FllRn",
+      "Zvkxc"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.6.1",
+    "lessonName": "Discovered Attacks: Expert",
+    "puzzleIds": [
+      "Ax58D",
+      "VWP5n",
+      "TgHfM",
+      "PcYwL",
+      "7ww7W",
+      "emnD8"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.6.2",
+    "lessonName": "Discovered Check: Expert",
+    "puzzleIds": [
+      "E1OZH",
+      "C82H7",
+      "n0hG4",
+      "9AH9o",
+      "VgDX1",
+      "tuouE"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.6.3",
+    "lessonName": "Double Check",
+    "puzzleIds": [
+      "6pfA8",
+      "Za6Xl",
+      "Cki1C",
+      "uhftu",
+      "xkQsi",
+      "tXf3r"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.7.1",
+    "lessonName": "Defensive Move: Introduction",
+    "puzzleIds": [
+      "CFXh8",
+      "5X7Fu",
+      "i74L8",
+      "LRthD",
+      "oUgJ1",
+      "6sy7P"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.7.2",
+    "lessonName": "Defensive Move: Practice",
+    "puzzleIds": [
+      "4VEXJ",
+      "5eoNZ",
+      "BYWkR",
+      "NTOEj",
+      "vuGp6",
+      "Pa6vK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.7.3",
+    "lessonName": "Defensive Move: Advanced",
+    "puzzleIds": [
+      "Si0AN",
+      "KmyXe",
+      "VlYR1",
+      "NdJWg",
+      "X6jiP",
+      "UZwYK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.8.1",
+    "lessonName": "Review Set 2",
+    "puzzleIds": [
+      "C9eRj",
+      "1u6Ly",
+      "dmHT2",
+      "GIsW2",
+      "WPEAS",
+      "XcBTe"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.8.2",
+    "lessonName": "Review Set 3",
+    "puzzleIds": [
+      "OWRWn",
+      "8uBYa",
+      "khTUc",
+      "VzBWO",
+      "Jrmcu",
+      "QDSnC"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.9.1",
+    "lessonName": "Mate in 2: Expert",
+    "puzzleIds": [
+      "QCBIZ",
+      "1cB2C",
+      "5HR80",
+      "WNNo6",
+      "4iHWO",
+      "dInge"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.9.2",
+    "lessonName": "Mate in 2: Master",
+    "puzzleIds": [
+      "uytx3",
+      "ezIew",
+      "LxC3f",
+      "84ZBh",
+      "OskTY",
+      "UzAPS"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.9.3",
+    "lessonName": "Mate in 3: Expert",
+    "puzzleIds": [
+      "Cz052",
+      "beCAP",
+      "rerOB",
+      "G48yf",
+      "KH73z",
+      "TwcEu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.9.4",
+    "lessonName": "Mate in 3: Master",
+    "puzzleIds": [
+      "n9kfn",
+      "2wc6B",
+      "4ULxD",
+      "8HQB1",
+      "A0rkJ",
+      "RvT0I"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.10.1",
+    "lessonName": "Interference",
+    "puzzleIds": [
+      "Mirxa",
+      "HZhgb",
+      "3xKNS",
+      "6X2pu",
+      "2VtFO",
+      "ReF4D"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.10.2",
+    "lessonName": "Clearance",
+    "puzzleIds": [
+      "Z8xan",
+      "0rTEn",
+      "6HJKz",
+      "V6clr",
+      "VqTVO",
+      "uVJLB"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.10.3",
+    "lessonName": "X-Ray Attacks",
+    "puzzleIds": [
+      "YaCLY",
+      "UFAiz",
+      "NfqUX",
+      "4ckEu",
+      "ArH0U",
+      "4iEXk"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.11.1",
+    "lessonName": "Intermezzo: Introduction",
+    "puzzleIds": [
+      "AxDn9",
+      "GeZWh",
+      "tBqlQ",
+      "jmZcn",
+      "2Wk61",
+      "ozB1X"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.11.2",
+    "lessonName": "Intermezzo: Practice",
+    "puzzleIds": [
+      "SO0vJ",
+      "yAP6I",
+      "RDsiz",
+      "sqeNC",
+      "FhJhf",
+      "RwVIL"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.12.1",
+    "lessonName": "Rook Endgames: Advanced",
+    "puzzleIds": [
+      "11Fuz",
+      "WqMao",
+      "7GBym",
+      "GNd9a",
+      "bgo9N",
+      "vnV8l"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.12.2",
+    "lessonName": "Pawn Endgames: Advanced",
+    "puzzleIds": [
+      "VP1Iv",
+      "s7KaU",
+      "vsjY3",
+      "MENTo",
+      "FKCwI",
+      "UKN9O"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.12.3",
+    "lessonName": "Queen Endgames",
+    "puzzleIds": [
+      "k2px8",
+      "DVbTR",
+      "KlDuR",
+      "rQTeE",
+      "FE1fI",
+      "lCxtB"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.13.1",
+    "lessonName": "Quiet Move: Introduction",
+    "puzzleIds": [
+      "D5iM0",
+      "EwoxG",
+      "AsZsi",
+      "220Pn",
+      "lBZT9",
+      "uTaCo"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.13.2",
+    "lessonName": "Quiet Move: Practice",
+    "puzzleIds": [
+      "3hKvj",
+      "PHENu",
+      "VPFjV",
+      "pbi3d",
+      "g1GDM",
+      "4LSgF"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.14.1",
+    "lessonName": "Final Review: Medium",
+    "puzzleIds": [
+      "UsFsB",
+      "UI8dk",
+      "no821",
+      "JcfHE",
+      "5rLED",
+      "i2KNN"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "3.14.2",
+    "lessonName": "Final Review: Hard",
+    "puzzleIds": [
+      "nud5b",
+      "NJoAd",
+      "6X9NX",
+      "Nmbpo",
+      "1VGrS",
+      "99FwN"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.1.1",
+    "lessonName": "Exploiting Pins: Advanced",
+    "puzzleIds": [
+      "lzi0X",
+      "2VMwz",
+      "Lwxwy",
+      "kujsp",
+      "tXxdw",
+      "ikKON"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.1.2",
+    "lessonName": "Pin Combinations",
+    "puzzleIds": [
+      "5QHav",
+      "OZx79",
+      "BEkFk",
+      "SyGcD",
+      "Kgkq9",
+      "F8v85"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.1.3",
+    "lessonName": "Pins: Expert Level",
+    "puzzleIds": [
+      "cUEej",
+      "VX1w9",
+      "YSLe2",
+      "hgdYk",
+      "JGG7K",
+      "mY5wI"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.1.R",
+    "lessonName": "Module 1 Review: Pins",
+    "puzzleIds": [
+      "wFSaG",
+      "BDd5D",
+      "gmK3V",
+      "lm4wP",
+      "hFpXe",
+      "VhPDK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.2.1",
+    "lessonName": "Deflection: Complex Patterns",
+    "puzzleIds": [
+      "WQV1Y",
+      "FYi21",
+      "ioKtt",
+      "eFyZn",
+      "7hesZ",
+      "5itaF"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.2.2",
+    "lessonName": "Deflection with Sacrifice",
+    "puzzleIds": [
+      "br7BM",
+      "5yBfq",
+      "8qGjo",
+      "RqRUX",
+      "fN5jG",
+      "ug5Gj"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.2.3",
+    "lessonName": "Deflection: Expert",
+    "puzzleIds": [
+      "wjlei",
+      "24D0d",
+      "NH0mE",
+      "UULkm",
+      "5bGMy",
+      "RziJU"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.2.R",
+    "lessonName": "Module 2 Review: Deflection",
+    "puzzleIds": [
+      "TNPc7",
+      "W3TLv",
+      "LTLgi",
+      "upIRm",
+      "iAmbr",
+      "fhYYG"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.3.1",
+    "lessonName": "Attraction: Advanced Patterns",
+    "puzzleIds": [
+      "Ax3JQ",
+      "rFvjb",
+      "67d0k",
+      "AFCSP",
+      "7FjTL",
+      "NUvkS"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.3.2",
+    "lessonName": "Attraction to Fork",
+    "puzzleIds": [
+      "stbT7",
+      "hYPFJ",
+      "bg3lS",
+      "uMjiw",
+      "aDUqS",
+      "jIKZV"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.3.3",
+    "lessonName": "Attraction: Expert",
+    "puzzleIds": [
+      "qQneB",
+      "IXIIj",
+      "tHD3w",
+      "HqIoR",
+      "mTMZH",
+      "ka0gz"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.3.R",
+    "lessonName": "Module 3 Review: Attraction",
+    "puzzleIds": [
+      "1qH1J",
+      "434cE",
+      "Ye9JT",
+      "R5bUY",
+      "SsZtJ",
+      "BPpm1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.4.1",
+    "lessonName": "Exposed King: Introduction",
+    "puzzleIds": [
+      "nmsNb",
+      "qLkoF",
+      "DDb6P",
+      "ufbro",
+      "P4Yer",
+      "PR938"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.4.2",
+    "lessonName": "Exposed King: Attack Patterns",
+    "puzzleIds": [
+      "x1M1b",
+      "evvMU",
+      "q9xts",
+      "p20vS",
+      "lEfFT",
+      "ewbDN"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.4.3",
+    "lessonName": "Exposed King: Advanced",
+    "puzzleIds": [
+      "vyuQ0",
+      "cgEw3",
+      "vpg5h",
+      "I1paC",
+      "pRBek",
+      "O3vbd"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.4.R",
+    "lessonName": "Module 4 Review: Exposed King",
+    "puzzleIds": [
+      "qwMyD",
+      "feObu",
+      "ciTTm",
+      "BrPLE",
+      "EVlnI",
+      "q7m6Z"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.5.1",
+    "lessonName": "Mixed Forcing Moves: Set 1",
+    "puzzleIds": [
+      "gL3Sm",
+      "jQlLv",
+      "r8aCa",
+      "gai4E",
+      "zFfvy",
+      "Tt4it"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.5.2",
+    "lessonName": "Mixed Forcing Moves: Set 2",
+    "puzzleIds": [
+      "PZGy6",
+      "4FVp9",
+      "zWgER",
+      "aNlgR",
+      "QvCYq",
+      "11imr"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.6.1",
+    "lessonName": "Trapping the Queen",
+    "puzzleIds": [
+      "m4omK",
+      "6EEvM",
+      "IpARN",
+      "i3NDH",
+      "cNyrC",
+      "ZYZMl"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.6.2",
+    "lessonName": "Trapping Minor Pieces",
+    "puzzleIds": [
+      "Jh7Ny",
+      "5OPL5",
+      "JhOcM",
+      "H3HMS",
+      "qwuMV",
+      "0nomw"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.6.3",
+    "lessonName": "Trapping Rooks",
+    "puzzleIds": [
+      "HJzwL",
+      "2yfA6",
+      "2dsZv",
+      "95AFN",
+      "YS1qC",
+      "meo8w"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.6.R",
+    "lessonName": "Module 6 Review: Trapped Pieces",
+    "puzzleIds": [
+      "hLaFy",
+      "M99Qy",
+      "Ca3TA",
+      "HJuQn",
+      "4fiFn",
+      "3JonQ"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.7.1",
+    "lessonName": "Quiet Move: Threats",
+    "puzzleIds": [
+      "i7JIM",
+      "gzQU0",
+      "gIQHs",
+      "ix4we",
+      "hrJhv",
+      "qbjiT"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.7.2",
+    "lessonName": "Quiet Move: Multiple Threats",
+    "puzzleIds": [
+      "n91E1",
+      "bDDNk",
+      "6vkEg",
+      "8qrgi",
+      "F8a2Y",
+      "0jWTn"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.7.3",
+    "lessonName": "Quiet Move: Expert",
+    "puzzleIds": [
+      "XcRbl",
+      "8w2cB",
+      "afGXE",
+      "FnVJ8",
+      "4iYQK",
+      "0GABO"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.7.R",
+    "lessonName": "Module 7 Review: Quiet Moves",
+    "puzzleIds": [
+      "3uFaK",
+      "1TUYb",
+      "ghl4D",
+      "AK2K2",
+      "O7mLM",
+      "jqKIx"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.8.1",
+    "lessonName": "Mate in 3: Intermediate",
+    "puzzleIds": [
+      "v99Xj",
+      "RZ6iO",
+      "W1yS0",
+      "aonRa",
+      "rDF9z",
+      "fzfvO"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.8.2",
+    "lessonName": "Mate in 3: With Sacrifice",
+    "puzzleIds": [
+      "a9e7d",
+      "swQ15",
+      "khxEa",
+      "NYtdJ",
+      "9jFWj",
+      "gFcGz"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.8.3",
+    "lessonName": "Mate in 3: Expert",
+    "puzzleIds": [
+      "Zcpkr",
+      "NvjG2",
+      "o3xEF",
+      "1p9Zm",
+      "WoLal",
+      "eN6Zq"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.8.R",
+    "lessonName": "Module 8 Review: Mate in 3",
+    "puzzleIds": [
+      "ph3M0",
+      "eyVwL",
+      "FgxFo",
+      "fStM1",
+      "EbgHG",
+      "CcUj1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.9.1",
+    "lessonName": "Mate in 2: Hidden Patterns",
+    "puzzleIds": [
+      "HdvS9",
+      "UwQqZ",
+      "CwYIB",
+      "RRQbr",
+      "kXxO1",
+      "q1QyD"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.9.2",
+    "lessonName": "Mate in 2: Quiet First Move",
+    "puzzleIds": [
+      "Ynk0Y",
+      "OOU8p",
+      "LxhDX",
+      "zqTNL",
+      "MVDnF",
+      "tqY6v"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.9.3",
+    "lessonName": "Mate in 2: Expert",
+    "puzzleIds": [
+      "9ZvCQ",
+      "UopjR",
+      "GYHCe",
+      "MQdXc",
+      "XJKMf",
+      "wYaO0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.9.R",
+    "lessonName": "Module 9 Review: Mate in 2",
+    "puzzleIds": [
+      "80cZc",
+      "Zk9Ef",
+      "H8Z9V",
+      "KFEUW",
+      "jeRGr",
+      "2EMbj"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.10.1",
+    "lessonName": "Checkmate Patterns: Mixed",
+    "puzzleIds": [
+      "2FNBk",
+      "sxrUv",
+      "wchuD",
+      "ekuF0",
+      "jaWK9",
+      "618sq"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.10.2",
+    "lessonName": "Checkmate Patterns: Challenge",
+    "puzzleIds": [
+      "wRqfI",
+      "GKwgL",
+      "WwR19",
+      "DKnrM",
+      "hx8SR",
+      "FnLMu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.11.1",
+    "lessonName": "Discovered Attack: Multi-Step",
+    "puzzleIds": [
+      "WPf0w",
+      "XUfXa",
+      "REdJo",
+      "M7Ifc",
+      "7WBGL",
+      "Bxy26"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.11.2",
+    "lessonName": "Double Check: Advanced",
+    "puzzleIds": [
+      "Q8I4j",
+      "JS2u0",
+      "dQe6V",
+      "cU9vj",
+      "EME5D",
+      "Ge6mZ"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.11.3",
+    "lessonName": "Discovered Attack: Expert",
+    "puzzleIds": [
+      "gNjU5",
+      "zJKHJ",
+      "kDPP9",
+      "NgJky",
+      "HaC2n",
+      "VlaKn"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.11.R",
+    "lessonName": "Module 11 Review: Discoveries",
+    "puzzleIds": [
+      "avUwZ",
+      "WtQw5",
+      "FQQLd",
+      "Zo1vQ",
+      "x4VHS",
+      "XQNDS"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.12.1",
+    "lessonName": "Defensive Move: Counterattack",
+    "puzzleIds": [
+      "5kQ0E",
+      "AXkhc",
+      "0xRlp",
+      "D7EHc",
+      "wE3xF",
+      "3oYDk"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.12.2",
+    "lessonName": "Defensive Move: Resource",
+    "puzzleIds": [
+      "O5Nnw",
+      "WiIQh",
+      "aH4LQ",
+      "yBfuh",
+      "Qg528",
+      "1N95h"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.12.3",
+    "lessonName": "Defensive Move: Expert",
+    "puzzleIds": [
+      "6X3TK",
+      "w4Z9y",
+      "XJbIW",
+      "rvChc",
+      "T9sNv",
+      "3TFqK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.12.R",
+    "lessonName": "Module 12 Review: Defense",
+    "puzzleIds": [
+      "ojgSL",
+      "G2R0v",
+      "Hzc9y",
+      "TQeqw",
+      "GHVWB",
+      "jipIc"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.13.1",
+    "lessonName": "Rook Endgames: Expert",
+    "puzzleIds": [
+      "Tsiiy",
+      "zzsPq",
+      "HYlQP",
+      "RCBRz",
+      "iHA6d",
+      "VJUsI"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.13.2",
+    "lessonName": "Pawn Endgames: Expert",
+    "puzzleIds": [
+      "MnnGb",
+      "QT9MI",
+      "cxXGT",
+      "nYGP1",
+      "mh5Pg",
+      "3z1w1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.13.3",
+    "lessonName": "Queen Endgames: Expert",
+    "puzzleIds": [
+      "sgXDf",
+      "S6WlR",
+      "w0TSn",
+      "JEa5W",
+      "4OKbx",
+      "ePq6R"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.13.4",
+    "lessonName": "Bishop Endgames",
+    "puzzleIds": [
+      "hmF7r",
+      "9JDEg",
+      "xIO4c",
+      "ZKoPR",
+      "yxgSt",
+      "iaRI0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.13.R",
+    "lessonName": "Module 13 Review: Endgames",
+    "puzzleIds": [
+      "7O4oe",
+      "hV9fC",
+      "ItuPo",
+      "7KJRc",
+      "QTJFF",
+      "iBdNT"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.14.1",
+    "lessonName": "Sacrifice for Attack",
+    "puzzleIds": [
+      "QIh20",
+      "wo5NJ",
+      "NH8qK",
+      "A3uyy",
+      "9BYOP",
+      "ymNN6"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.14.2",
+    "lessonName": "Clearance Sacrifice",
+    "puzzleIds": [
+      "RrbMx",
+      "zF7QN",
+      "muJOq",
+      "OIMnL",
+      "eo7yW",
+      "IUIp8"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.14.3",
+    "lessonName": "Interference: Advanced",
+    "puzzleIds": [
+      "z9LBI",
+      "gbS6H",
+      "6g0eU",
+      "EFXqk",
+      "B9jy1",
+      "APyDe"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.14.R",
+    "lessonName": "Module 14 Review: Combinations",
+    "puzzleIds": [
+      "kgY0B",
+      "j0aST",
+      "hXOfF",
+      "zNVOr",
+      "PboBn",
+      "w1GKg"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.15.1",
+    "lessonName": "Final Review: Medium",
+    "puzzleIds": [
+      "j3pgr",
+      "wez4z",
+      "yMgon",
+      "F1nxy",
+      "FIOWT",
+      "S4dVT"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "4.15.2",
+    "lessonName": "Final Review: Hard",
+    "puzzleIds": [
+      "DhJuv",
+      "ipJty",
+      "WkCvp",
+      "gP0Jy",
+      "Hwxqx",
+      "eZK8k"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.1.1",
+    "lessonName": "Intermezzo: Patterns",
+    "puzzleIds": [
+      "rfU1M",
+      "B87as",
+      "YLC5P",
+      "nKycb",
+      "4X8X5",
+      "V3Fjw"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.1.2",
+    "lessonName": "Intermezzo: With Check",
+    "puzzleIds": [
+      "SiUnt",
+      "mYj8g",
+      "MmMI8",
+      "3SStm",
+      "vyBHY",
+      "3Wq9m"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.1.3",
+    "lessonName": "Intermezzo: Expert",
+    "puzzleIds": [
+      "vdr7E",
+      "Trcmd",
+      "3SStm",
+      "Fc4ND",
+      "HiHxo",
+      "I0hNe"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.1.R",
+    "lessonName": "Module 1 Review: Intermezzo",
+    "puzzleIds": [
+      "GrmzP",
+      "r7QnK",
+      "CZlog",
+      "P9evV",
+      "7GCCb",
+      "ItIlq"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.2.1",
+    "lessonName": "Quiet Move: Zugzwang",
+    "puzzleIds": [
+      "kELRz",
+      "TgUbS",
+      "RrZMk",
+      "TDPXB",
+      "Ax5Xl",
+      "cQUTh"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.2.2",
+    "lessonName": "Quiet Move: Domination",
+    "puzzleIds": [
+      "BhZoG",
+      "8t7Fe",
+      "AVrai",
+      "8Jr3j",
+      "negG9",
+      "Y3zTB"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.2.3",
+    "lessonName": "Quiet Move: Mastery",
+    "puzzleIds": [
+      "AbngW",
+      "iUn6r",
+      "e7z8k",
+      "s8huV",
+      "AeILW",
+      "O9aQM"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.2.R",
+    "lessonName": "Module 2 Review: Quiet Moves",
+    "puzzleIds": [
+      "TXIMg",
+      "uinv6",
+      "v31rR",
+      "30Bps",
+      "CUbK6",
+      "cR1u5"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.3.1",
+    "lessonName": "Advanced Pawn: Promotion Race",
+    "puzzleIds": [
+      "aC4Ad",
+      "4akeu",
+      "OxObd",
+      "KN7x1",
+      "0dxzK",
+      "2IXQU"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.3.2",
+    "lessonName": "Advanced Pawn: Breakthrough",
+    "puzzleIds": [
+      "sMsFw",
+      "y3Ie4",
+      "VDmwj",
+      "T124D",
+      "3TT15",
+      "GIFIM"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.3.3",
+    "lessonName": "Advanced Pawn: Expert",
+    "puzzleIds": [
+      "y20tD",
+      "iqNpD",
+      "msxJI",
+      "ttsii",
+      "8Vble",
+      "Rb1B4"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.3.R",
+    "lessonName": "Module 3 Review: Pawn Play",
+    "puzzleIds": [
+      "W2iDe",
+      "TEpgl",
+      "RM83w",
+      "Hhhe0",
+      "eVDcn",
+      "QjTPF"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.4.1",
+    "lessonName": "X-Ray: Introduction",
+    "puzzleIds": [
+      "v44st",
+      "kL4tl",
+      "tJkPL",
+      "gRQAw",
+      "TccuG",
+      "25CYW"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.4.2",
+    "lessonName": "X-Ray: Defense",
+    "puzzleIds": [
+      "e13S2",
+      "JgwzP",
+      "cKwdb",
+      "B6c0b",
+      "bUGJH",
+      "tIwji"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.4.3",
+    "lessonName": "X-Ray: Expert",
+    "puzzleIds": [
+      "AtAPw",
+      "JNhqU",
+      "R4Aza",
+      "np7km",
+      "wlDm5",
+      "7TPAp"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.4.R",
+    "lessonName": "Module 4 Review: X-Ray",
+    "puzzleIds": [
+      "cdm40",
+      "hrEU6",
+      "ZzS3U",
+      "uPg9j",
+      "50MOY",
+      "Rm0JE"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.5.1",
+    "lessonName": "Subtle Tactics: Set 1",
+    "puzzleIds": [
+      "WOJfg",
+      "qkl9k",
+      "vKgPJ",
+      "LTKpi",
+      "edVEB",
+      "8MgZA"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.5.2",
+    "lessonName": "Subtle Tactics: Set 2",
+    "puzzleIds": [
+      "Kw4n2",
+      "be2kS",
+      "4Cvo1",
+      "LedsB",
+      "6A57X",
+      "gQIkU"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.6.1",
+    "lessonName": "Mate in 4: Introduction",
+    "puzzleIds": [
+      "mOWL6",
+      "O91Y5",
+      "VPrPu",
+      "YIZO5",
+      "0aUL8",
+      "KmqHu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.6.2",
+    "lessonName": "Mate in 4: With Sacrifice",
+    "puzzleIds": [
+      "XFPHh",
+      "7ZljY",
+      "5kDoJ",
+      "PqWyx",
+      "SwLhV",
+      "Jp3jb"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.6.3",
+    "lessonName": "Mate in 4: Expert",
+    "puzzleIds": [
+      "XSYby",
+      "bmk2l",
+      "LTdta",
+      "eFD4p",
+      "br87f",
+      "jGeQi"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.6.R",
+    "lessonName": "Module 6 Review: Mate in 4",
+    "puzzleIds": [
+      "HP3u0",
+      "bYF24",
+      "mfOq1",
+      "pay86",
+      "FpcsW",
+      "Fr2gu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.7.1",
+    "lessonName": "Mate in 3: Quiet Moves",
+    "puzzleIds": [
+      "lz24h",
+      "Mt1OQ",
+      "3RnPj",
+      "Q9iUm",
+      "85v0p",
+      "x7Qbl"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.7.2",
+    "lessonName": "Mate in 3: Multiple Defenses",
+    "puzzleIds": [
+      "cF4GA",
+      "0tHf4",
+      "iE1S7",
+      "8psXD",
+      "9sdjt",
+      "WTGrI"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.7.3",
+    "lessonName": "Mate in 3: Mastery",
+    "puzzleIds": [
+      "2l8kg",
+      "yrSZg",
+      "ZC1Be",
+      "3CzLe",
+      "AloLv",
+      "RLSyv"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.7.R",
+    "lessonName": "Module 7 Review: Mate in 3",
+    "puzzleIds": [
+      "LGGxs",
+      "K381y",
+      "918tY",
+      "CaGFU",
+      "OgHNO",
+      "M3EjU"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.8.1",
+    "lessonName": "Exposed King: Piece Coordination",
+    "puzzleIds": [
+      "YoXrL",
+      "nNMMv",
+      "LRjVL",
+      "VQEdh",
+      "rt87J",
+      "mvqR9"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.8.2",
+    "lessonName": "Exposed King: Sacrifice",
+    "puzzleIds": [
+      "dBDUG",
+      "O0GJM",
+      "6LDnc",
+      "gqpyi",
+      "jKXtT",
+      "gkyUk"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.8.3",
+    "lessonName": "Exposed King: Mastery",
+    "puzzleIds": [
+      "LN0pK",
+      "9rnTu",
+      "PcbQc",
+      "RCxNi",
+      "kbwIQ",
+      "LMFio"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.8.R",
+    "lessonName": "Module 8 Review: Exposed King",
+    "puzzleIds": [
+      "0GZBJ",
+      "JcOQ9",
+      "P8Hss",
+      "Cg1MS",
+      "OL1cQ",
+      "2mKdu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.9.1",
+    "lessonName": "Checkmate Calculation: Mixed",
+    "puzzleIds": [
+      "3gJw2",
+      "o7UuO",
+      "dIMEC",
+      "1GqLV",
+      "yTUBh",
+      "SCIVy"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.9.2",
+    "lessonName": "Checkmate Calculation: Challenge",
+    "puzzleIds": [
+      "g31yl",
+      "JMGgF",
+      "tc7iz",
+      "GR5Lc",
+      "xlA2i",
+      "5dSEl"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.10.1",
+    "lessonName": "Pin Mastery: Setup",
+    "puzzleIds": [
+      "jxyIe",
+      "9E6mD",
+      "e542z",
+      "akxKI",
+      "9hIL3",
+      "syrEa"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.10.2",
+    "lessonName": "Skewer Mastery",
+    "puzzleIds": [
+      "lRZzj",
+      "oI3JI",
+      "ovkWl",
+      "MKN1o",
+      "duL9O",
+      "vXsvF"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.10.3",
+    "lessonName": "Pin & Skewer: Expert",
+    "puzzleIds": [
+      "y560a",
+      "jMuwW",
+      "mG31r",
+      "NT6vp",
+      "Hh01V",
+      "HSggu"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.10.R",
+    "lessonName": "Module 10 Review: Line Tactics",
+    "puzzleIds": [
+      "hn5Gp",
+      "7KmHN",
+      "nlyvK",
+      "bllUb",
+      "LuTCv",
+      "DaOLm"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.11.1",
+    "lessonName": "Deflection + Fork",
+    "puzzleIds": [
+      "TyMdd",
+      "y5zKA",
+      "dk2gG",
+      "L71de",
+      "LH8gV",
+      "PcSx1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.11.2",
+    "lessonName": "Attraction + Discovery",
+    "puzzleIds": [
+      "vbcea",
+      "3Y26q",
+      "uJ9QF",
+      "AikIn",
+      "qYbZr",
+      "XDT3H"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.11.3",
+    "lessonName": "Complex Multi-Tactic",
+    "puzzleIds": [
+      "eOsOu",
+      "FK6F1",
+      "9SqDq",
+      "U47xN",
+      "fea9n",
+      "zdiJD"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.11.R",
+    "lessonName": "Module 11 Review: Combinations",
+    "puzzleIds": [
+      "GHe73",
+      "uNwfk",
+      "nHs3v",
+      "XbZyi",
+      "XB3rq",
+      "jKeJ8"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.12.1",
+    "lessonName": "Defensive: Perpetual Check",
+    "puzzleIds": [
+      "uBWbR",
+      "a9hjg",
+      "N8se9",
+      "6CCDW",
+      "B0LG3",
+      "vlnG7"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.12.2",
+    "lessonName": "Defensive: Stalemate Trick",
+    "puzzleIds": [
+      "3yUnm",
+      "Oa95q",
+      "DzAqz",
+      "6Z6AY",
+      "F84G6",
+      "Bu7M0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.12.3",
+    "lessonName": "Defensive: Only Move",
+    "puzzleIds": [
+      "xtCa2",
+      "qXd7M",
+      "5wcMF",
+      "QJF0t",
+      "ABn29",
+      "LEsh0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.12.R",
+    "lessonName": "Module 12 Review: Defense",
+    "puzzleIds": [
+      "4FGCZ",
+      "uUvHY",
+      "FUnZv",
+      "Mt2Gg",
+      "y2fcJ",
+      "wPo2E"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.13.1",
+    "lessonName": "Rook Endgames: Mastery",
+    "puzzleIds": [
+      "brGVB",
+      "PY1nH",
+      "wWH2j",
+      "Cx0qV",
+      "jCytb",
+      "t7X5N"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.13.2",
+    "lessonName": "Pawn Endgames: Mastery",
+    "puzzleIds": [
+      "UZByZ",
+      "ihJWM",
+      "EAlBV",
+      "uRDG2",
+      "x7DpG",
+      "0LUEA"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.13.3",
+    "lessonName": "Knight Endgames",
+    "puzzleIds": [
+      "5Wtzf",
+      "MXFL2",
+      "15LKt",
+      "LO8SK",
+      "zntsS",
+      "D5B9t"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.13.4",
+    "lessonName": "Queen Endgames: Mastery",
+    "puzzleIds": [
+      "5LdQJ",
+      "JGEKS",
+      "oZa7n",
+      "fRdEr",
+      "fnet5",
+      "ukGnh"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.13.R",
+    "lessonName": "Module 13 Review: Endgames",
+    "puzzleIds": [
+      "ZPt0d",
+      "ZFs12",
+      "7BxCa",
+      "lqQ4y",
+      "BAybm",
+      "rx5wS"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.14.1",
+    "lessonName": "Interference: Expert",
+    "puzzleIds": [
+      "dtK2E",
+      "TMuc3",
+      "Aj5Fn",
+      "807ML",
+      "mjCwJ",
+      "RxUBc"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.14.2",
+    "lessonName": "Clearance: Expert",
+    "puzzleIds": [
+      "uypkf",
+      "b3bJu",
+      "3hIOO",
+      "Fcpqe",
+      "s4mo8",
+      "5QHFK"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.14.3",
+    "lessonName": "Line Control: Mastery",
+    "puzzleIds": [
+      "iGwox",
+      "aJFHK",
+      "mMlkb",
+      "5fuM7",
+      "nFZVT",
+      "tVJz1"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.14.R",
+    "lessonName": "Module 14 Review: Line Control",
+    "puzzleIds": [
+      "vyLMw",
+      "8b2Dy",
+      "0Q49F",
+      "Fy32z",
+      "C9UXA",
+      "JisCE"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.15.1",
+    "lessonName": "Final Review: Medium",
+    "puzzleIds": [
+      "UAyJv",
+      "Jugsm",
+      "xyh9k",
+      "UhCY1",
+      "dYXck",
+      "S7h5O"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
+    "lessonId": "5.15.2",
+    "lessonName": "Final Review: Hard",
+    "puzzleIds": [
+      "YkF80",
+      "lHd8q",
+      "OMcpp",
+      "ToHWV",
+      "xELQC",
+      "zldKZ"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "ratingRange": "varies"
+    }
+  },
+  {
     "lessonId": "6.1.1",
     "lessonName": "Mate in 5: Introduction",
     "targetElo": 1650,
