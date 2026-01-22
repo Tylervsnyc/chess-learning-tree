@@ -5,7 +5,7 @@ import { FREE_TIER } from '@/lib/stripe';
 
 // TEST MODE: Give all users premium access
 // Set to false before production launch with real payments
-const TEST_MODE_ALL_PREMIUM = true;
+const TEST_MODE_ALL_PREMIUM = false;
 
 export async function GET() {
   try {

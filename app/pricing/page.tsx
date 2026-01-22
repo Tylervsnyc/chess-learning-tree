@@ -2,25 +2,17 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PricingCard } from '@/components/pricing/PricingCard';
 import { createClient } from '@/lib/supabase/client';
-
-const FEATURES = [
-  'All chess lessons and puzzles',
-  'Personalized learning path',
-  'Progress tracking & analytics',
-  'Daily challenges',
-  'Skills profile insights',
-  'Ad-free experience',
-];
+import { useSubscription } from '@/hooks/useSubscription';
 
 function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { startCheckout, isAuthenticated } = useSubscription();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
@@ -32,14 +24,11 @@ function PricingContent() {
       setIsLoggedIn(!!user);
 
       if (user) {
-        // Check subscription status
         try {
           const response = await fetch('/api/stripe/subscription');
           const data = await response.json();
-
           if (data.subscription) {
             setIsPremium(data.isPremium);
-            setCurrentPlan(data.subscription.plan);
           }
         } catch (error) {
           console.error('Failed to fetch subscription:', error);
@@ -52,24 +41,36 @@ function PricingContent() {
     checkAuth();
   }, []);
 
+  const handleGetPremium = async () => {
+    if (!isAuthenticated) {
+      router.push('/auth/signup?redirect=/pricing');
+      return;
+    }
+
+    setCheckoutLoading(true);
+    try {
+      await startCheckout('monthly');
+    } catch {
+      setCheckoutLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-10">
         <button
-          onClick={() => router.push('/')}
-          className="mb-8 text-gray-400 hover:text-white transition-colors"
+          onClick={() => router.back()}
+          className="mb-6 text-gray-400 hover:text-white transition-colors"
         >
-          ← Back to Home
+          ← Back
         </button>
 
-        <h1 className="text-4xl font-bold mb-4">
-          The Chess Path{' '}
-          <span className="text-[#58CC02]">Premium</span>
+        <h1 className="text-3xl font-bold mb-3">
+          Unlock Your Full Potential
         </h1>
-        <p className="text-gray-400 text-lg max-w-md mx-auto">
-          Unlock your full chess potential with unlimited access to all lessons,
-          puzzles, and personalized insights.
+        <p className="text-gray-400 max-w-md mx-auto">
+          Choose how you want to learn chess
         </p>
       </div>
 
@@ -90,75 +91,124 @@ function PricingContent() {
         </div>
       )}
 
-      {/* Pricing Cards */}
       {isLoading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
         </div>
+      ) : isPremium ? (
+        <div className="text-center py-12">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+            <span className="text-4xl">👑</span>
+          </div>
+          <h2 className="text-2xl font-bold mb-2">You&apos;re Premium!</h2>
+          <p className="text-gray-400 mb-6">You have unlimited access to all features.</p>
+          <button
+            onClick={() => router.push('/learn')}
+            className="px-6 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+          >
+            Continue Learning
+          </button>
+        </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-          <PricingCard
-            name="Monthly"
-            price={9.99}
-            interval="month"
-            priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!}
-            plan="monthly"
-            features={FEATURES}
-            isLoggedIn={isLoggedIn}
-            isPremium={isPremium}
-            currentPlan={currentPlan}
-          />
+        <>
+          {/* Comparison Cards */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+            {/* Free Tier */}
+            <div className="bg-[#1A2C35] rounded-2xl p-6 border border-white/10">
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-gray-300 mb-1">Free</h2>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-black text-white">$0</span>
+                </div>
+              </div>
 
-          <PricingCard
-            name="Yearly"
-            price={79.99}
-            interval="year"
-            priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!}
-            plan="yearly"
-            features={FEATURES}
-            popular
-            savings="Save 33%"
-            isLoggedIn={isLoggedIn}
-            isPremium={isPremium}
-            currentPlan={currentPlan}
-          />
-        </div>
+              <ul className="space-y-4 mb-6">
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-500 mt-0.5">✕</span>
+                  <div>
+                    <p className="text-gray-300">2 lessons per day</p>
+                    <p className="text-gray-500 text-sm">Limited daily practice</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-500 mt-0.5">✕</span>
+                  <div>
+                    <p className="text-gray-300">Current level only</p>
+                    <p className="text-gray-500 text-sm">Can&apos;t skip ahead or review</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-500 mt-0.5">✕</span>
+                  <div>
+                    <p className="text-gray-300">15 puzzles per day</p>
+                    <p className="text-gray-500 text-sm">Daily limit on practice</p>
+                  </div>
+                </li>
+              </ul>
+
+              <div className="text-center">
+                <span className="text-gray-500 text-sm">Your current plan</span>
+              </div>
+            </div>
+
+            {/* Premium Tier */}
+            <div className="bg-gradient-to-b from-[#2A3F4D] to-[#1A2C35] rounded-2xl p-6 border-2 border-[#FFD700] relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-full">
+                RECOMMENDED
+              </div>
+
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-white mb-1">Premium</h2>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-black text-[#FFD700]">$4.99</span>
+                  <span className="text-gray-400">/month</span>
+                </div>
+              </div>
+
+              <ul className="space-y-4 mb-6">
+                <li className="flex items-start gap-3">
+                  <span className="text-[#58CC02] mt-0.5">✓</span>
+                  <div>
+                    <p className="text-white font-medium">Unlimited lessons</p>
+                    <p className="text-gray-400 text-sm">Learn as much as you want</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#58CC02] mt-0.5">✓</span>
+                  <div>
+                    <p className="text-white font-medium">All 6 levels unlocked</p>
+                    <p className="text-gray-400 text-sm">From beginner to expert</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#58CC02] mt-0.5">✓</span>
+                  <div>
+                    <p className="text-white font-medium">Unlimited puzzles</p>
+                    <p className="text-gray-400 text-sm">Practice without limits</p>
+                  </div>
+                </li>
+              </ul>
+
+              <button
+                onClick={handleGetPremium}
+                disabled={checkoutLoading}
+                className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 disabled:opacity-50"
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  color: '#000',
+                }}
+              >
+                {checkoutLoading ? 'Loading...' : isLoggedIn ? 'Get Premium' : 'Sign Up & Get Premium'}
+              </button>
+            </div>
+          </div>
+
+          {/* Trust badge */}
+          <div className="text-center text-gray-500 text-sm">
+            <p>Cancel anytime. No questions asked.</p>
+          </div>
+        </>
       )}
-
-      {/* FAQ or Benefits */}
-      <div className="mt-16 text-center">
-        <h2 className="text-2xl font-bold mb-6">Why Go Premium?</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="p-6 bg-[#1A2C35] rounded-xl">
-            <div className="text-3xl mb-3">📚</div>
-            <h3 className="font-bold mb-2">Full Curriculum</h3>
-            <p className="text-gray-400 text-sm">
-              Access all lessons from beginner to advanced levels
-            </p>
-          </div>
-          <div className="p-6 bg-[#1A2C35] rounded-xl">
-            <div className="text-3xl mb-3">📊</div>
-            <h3 className="font-bold mb-2">Track Progress</h3>
-            <p className="text-gray-400 text-sm">
-              See your strengths and weaknesses with detailed analytics
-            </p>
-          </div>
-          <div className="p-6 bg-[#1A2C35] rounded-xl">
-            <div className="text-3xl mb-3">🎯</div>
-            <h3 className="font-bold mb-2">Daily Challenges</h3>
-            <p className="text-gray-400 text-sm">
-              Keep your skills sharp with new puzzles every day
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Guarantee */}
-      <div className="mt-12 text-center text-gray-400">
-        <p className="text-sm">
-          Cancel anytime. No questions asked.
-        </p>
-      </div>
     </div>
   );
 }

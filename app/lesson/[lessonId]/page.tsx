@@ -6,6 +6,8 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import Link from 'next/link';
 import { useLessonProgress } from '@/hooks/useProgress';
+import { useUser } from '@/hooks/useUser';
+import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import {
   playCorrectSound,
   playErrorSound,
@@ -15,6 +17,8 @@ import {
 } from '@/lib/sounds';
 import confetti from 'canvas-confetti';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
+import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
+import { getThemeExplanation } from '@/data/theme-explanations';
 import { level1 } from '@/data/level1-curriculum';
 import { level2 } from '@/data/level2-curriculum';
 import { level3 } from '@/data/level3-curriculum';
@@ -22,6 +26,7 @@ import { level4 } from '@/data/level4-curriculum';
 import { level5 } from '@/data/level5-curriculum';
 import { level6 } from '@/data/level6-curriculum';
 import { getPuzzleResponse } from '@/data/puzzle-responses';
+import { LearningEvents } from '@/lib/analytics/posthog';
 
 const LEVELS = [level1, level2, level3, level4, level5, level6];
 
@@ -443,7 +448,17 @@ export default function LessonPage() {
   const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
   const isGuest = searchParams.get('guest') === 'true';
-  const { completeLesson, recordPuzzleAttempt } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt, lessonsCompletedToday } = useLessonProgress();
+  const { user, profile } = useUser();
+
+  // Check if user is premium (has active subscription)
+  const isPremium = profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial';
+
+  // State for lesson limit modal
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  // State for theme help modal
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Lesson state
   const [lessonName, setLessonName] = useState('');
@@ -489,6 +504,26 @@ export default function LessonPage() {
     }
   }, []);
 
+  // Show lesson limit modal after completing 2 lessons (for non-premium users)
+  useEffect(() => {
+    if (lessonComplete && !isPremium && lessonsCompletedToday >= 2) {
+      // Delay slightly so user sees the celebration first
+      const timer = setTimeout(() => {
+        setShowLimitModal(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lessonComplete, isPremium, lessonsCompletedToday]);
+
+  // Track lesson completion in analytics
+  useEffect(() => {
+    if (lessonComplete && puzzles.length > 0) {
+      const correctCount = Object.values(results).filter(r => r === 'correct').length;
+      const accuracy = Math.round((correctCount / puzzles.length) * 100);
+      LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+    }
+  }, [lessonComplete, lessonId, puzzles.length, results]);
+
   // Flag/unflag a puzzle
   const toggleFlag = useCallback((puzzleId: string) => {
     setFlaggedPuzzles(prev => {
@@ -510,6 +545,31 @@ export default function LessonPage() {
 
   const totalPuzzles = inRetryMode ? retryQueue.length : puzzles.length;
 
+  // Find primary theme from puzzles (for help modal)
+  const primaryTheme = useMemo(() => {
+    if (puzzles.length === 0) return null;
+    // Count theme occurrences across puzzles
+    const themeCounts: Record<string, number> = {};
+    for (const puzzle of puzzles) {
+      for (const theme of puzzle.themes) {
+        // Only count themes we have explanations for
+        if (getThemeExplanation(theme)) {
+          themeCounts[theme] = (themeCounts[theme] || 0) + 1;
+        }
+      }
+    }
+    // Return the most common theme we have an explanation for
+    let maxTheme: string | null = null;
+    let maxCount = 0;
+    for (const [theme, count] of Object.entries(themeCounts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        maxTheme = theme;
+      }
+    }
+    return maxTheme;
+  }, [puzzles]);
+
   // Load lesson puzzles
   useEffect(() => {
     async function loadLesson() {
@@ -527,6 +587,9 @@ export default function LessonPage() {
             initialResults[p.puzzleId] = 'pending';
           });
           setResults(initialResults);
+
+          // Track lesson started
+          LearningEvents.lessonStarted(lessonId, data.lessonName);
         }
       } catch (error) {
         console.error('Failed to load lesson:', error);
@@ -767,6 +830,9 @@ export default function LessonPage() {
       solution: currentPuzzle.solution,
     });
 
+    // Track puzzle attempt in analytics
+    LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, result === 'correct', currentPuzzle.rating);
+
     // Check if this is end of current set
     if (currentIndex >= totalPuzzles - 1) {
       if (inRetryMode) {
@@ -895,14 +961,22 @@ export default function LessonPage() {
 
   if (lessonComplete) {
     return (
-      <LessonCompleteScreen
-        correctCount={correctCount}
-        wrongCount={wrongCount}
-        lessonName={lessonName}
-        lessonId={lessonId}
-        isGuest={isGuest}
-        getLevelKeyFromLessonId={getLevelKeyFromLessonId}
-      />
+      <>
+        <LessonCompleteScreen
+          correctCount={correctCount}
+          wrongCount={wrongCount}
+          lessonName={lessonName}
+          lessonId={lessonId}
+          isGuest={isGuest}
+          getLevelKeyFromLessonId={getLevelKeyFromLessonId}
+        />
+        <LessonLimitModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          lessonsCompleted={lessonsCompletedToday}
+          isLoggedIn={!!user}
+        />
+      </>
     );
   }
 
@@ -977,6 +1051,9 @@ export default function LessonPage() {
               {inRetryMode && (
                 <span className="text-yellow-400 text-xs">(retry)</span>
               )}
+              {primaryTheme && (
+                <HelpIconButton onClick={() => setShowHelpModal(true)} />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-base font-bold ${
@@ -1039,6 +1116,15 @@ export default function LessonPage() {
 
         </div>
       </div>
+
+      {/* Theme help modal */}
+      {primaryTheme && (
+        <ThemeHelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+          themeId={primaryTheme}
+        />
+      )}
     </div>
   );
 }

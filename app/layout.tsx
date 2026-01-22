@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
+import { PostHogProvider } from '@/components/providers/PostHogProvider';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
@@ -23,8 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <NavHeader />
-        {children}
+        <Suspense fallback={null}>
+          <PostHogProvider>
+            <NavHeader />
+            {children}
+          </PostHogProvider>
+        </Suspense>
       </body>
     </html>
   );

@@ -34,6 +34,9 @@ export interface Progress {
   themePerformance: Record<string, ThemeStats>;
   // Starting lesson from diagnostic placement (all lessons before this are unlocked)
   startingLessonId: string | null;
+  // Daily lesson tracking for free user limits
+  lessonsCompletedToday: number;
+  lastLessonDate: string | null;
 }
 
 const DEFAULT_PROGRESS: Progress = {
@@ -46,6 +49,8 @@ const DEFAULT_PROGRESS: Progress = {
   lastPlayedDate: null,
   themePerformance: {},
   startingLessonId: null,
+  lessonsCompletedToday: 0,
+  lastLessonDate: null,
 };
 
 function getStoredProgress(): Progress {
@@ -176,9 +181,17 @@ export function useLessonProgress() {
       if (prev.completedLessons.includes(lessonId)) {
         return prev;
       }
+
+      // Track daily lesson count
+      const today = new Date().toISOString().split('T')[0];
+      const isNewDay = prev.lastLessonDate !== today;
+      const newLessonsCompletedToday = isNewDay ? 1 : prev.lessonsCompletedToday + 1;
+
       const newProgress = {
         ...prev,
         completedLessons: [...prev.completedLessons, lessonId],
+        lessonsCompletedToday: newLessonsCompletedToday,
+        lastLessonDate: today,
       };
       saveProgress(newProgress);
 
@@ -342,6 +355,8 @@ export function useLessonProgress() {
     bestStreak: progress.bestStreak,
     lastPlayedDate: progress.lastPlayedDate,
     themePerformance: progress.themePerformance,
+    lessonsCompletedToday: progress.lessonsCompletedToday,
+    lastLessonDate: progress.lastLessonDate,
     completeLesson,
     recordPuzzleAttempt,
     isLessonCompleted,

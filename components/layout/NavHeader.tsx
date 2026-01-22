@@ -122,6 +122,18 @@ export function NavHeader() {
                   </div>
                 )}
               </div>
+              {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+                <Link
+                  href="/pricing"
+                  className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:opacity-90"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                    color: '#000',
+                  }}
+                >
+                  Go Premium
+                </Link>
+              )}
               <button
                 onClick={handleSignOut}
                 className="px-3 py-1.5 text-sm text-white bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 rounded-lg transition-colors"

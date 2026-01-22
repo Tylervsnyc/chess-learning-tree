@@ -78,6 +78,8 @@ export function mergeProgress(
     lastPlayedDate,
     themePerformance,
     startingLessonId: local.startingLessonId, // Keep local starting lesson
+    lessonsCompletedToday: local.lessonsCompletedToday, // Keep local daily count
+    lastLessonDate: local.lastLessonDate,
   };
 }
 

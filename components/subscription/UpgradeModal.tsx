@@ -11,7 +11,6 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ isOpen, onClose, dailyPuzzlesUsed = 15 }: UpgradeModalProps) {
   const { startCheckout, isAuthenticated } = useSubscription();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +18,7 @@ export function UpgradeModal({ isOpen, onClose, dailyPuzzlesUsed = 15 }: Upgrade
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) {
-      window.location.href = '/auth/login?redirect=/subscription';
+      window.location.href = '/auth/login?redirect=/pricing';
       return;
     }
 
@@ -27,7 +26,7 @@ export function UpgradeModal({ isOpen, onClose, dailyPuzzlesUsed = 15 }: Upgrade
     setError(null);
 
     try {
-      await startCheckout(selectedPlan);
+      await startCheckout('monthly');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
       setLoading(false);
@@ -67,54 +66,13 @@ export function UpgradeModal({ isOpen, onClose, dailyPuzzlesUsed = 15 }: Upgrade
           </p>
         </div>
 
-        {/* Plan selection */}
-        <div className="space-y-3 mb-6">
-          {/* Yearly (recommended) */}
-          <button
-            onClick={() => setSelectedPlan('yearly')}
-            className={`w-full p-4 rounded-xl border-2 transition-all ${
-              selectedPlan === 'yearly'
-                ? 'border-[#58CC02] bg-[#58CC02]/10'
-                : 'border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="text-left">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-white">Yearly</span>
-                  <span className="px-2 py-0.5 bg-[#58CC02] text-white text-xs font-bold rounded">
-                    SAVE 33%
-                  </span>
-                </div>
-                <div className="text-gray-400 text-sm">$79.99/year</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-white">$6.67</div>
-                <div className="text-gray-500 text-xs">/month</div>
-              </div>
-            </div>
-          </button>
-
-          {/* Monthly */}
-          <button
-            onClick={() => setSelectedPlan('monthly')}
-            className={`w-full p-4 rounded-xl border-2 transition-all ${
-              selectedPlan === 'monthly'
-                ? 'border-[#58CC02] bg-[#58CC02]/10'
-                : 'border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="text-left">
-                <span className="font-semibold text-white">Monthly</span>
-                <div className="text-gray-400 text-sm">Billed monthly</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-white">$9.99</div>
-                <div className="text-gray-500 text-xs">/month</div>
-              </div>
-            </div>
-          </button>
+        {/* Pricing */}
+        <div className="bg-[#0D1A1F] rounded-xl p-4 mb-6 text-center">
+          <div className="flex items-baseline justify-center gap-1">
+            <span className="text-4xl font-black text-[#58CC02]">$4.99</span>
+            <span className="text-gray-400">/month</span>
+          </div>
+          <p className="text-gray-500 text-sm mt-1">Billed monthly</p>
         </div>
 
         {/* Features */}

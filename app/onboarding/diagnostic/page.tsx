@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
+import { OnboardingEvents } from '@/lib/analytics/posthog';
 
 const COLORS = {
   green: '#58CC02',
@@ -146,6 +147,7 @@ export default function DiagnosticPage() {
     setEstimatedRating(rating);
     setRatingHistory([rating]);
     setSelfAssessmentComplete(true);
+    OnboardingEvents.diagnosticStarted();
   };
 
   // Load puzzle at the current estimated rating
@@ -211,6 +213,9 @@ export default function DiagnosticPage() {
       setStreak(0);
     }
 
+    // Track puzzle completion
+    OnboardingEvents.diagnosticPuzzleCompleted(newCompleted, correct, estimatedRating);
+
     // Stop conditions:
     // 1. Always do at least MIN_PUZZLES (5)
     // 2. Stop at MAX_PUZZLES (8)
@@ -246,6 +251,10 @@ export default function DiagnosticPage() {
         total: newCompleted.toString(),
       });
 
+      // Track diagnostic completion
+      OnboardingEvents.diagnosticCompleted(finalElo);
+      OnboardingEvents.onboardingCompleted(finalElo);
+
       router.push(`/onboarding/complete?${params.toString()}`);
     } else {
       // Load next puzzle at the new rating level
@@ -255,6 +264,10 @@ export default function DiagnosticPage() {
   }, [currentPuzzle, puzzlesCompleted, seenPuzzleIds, totalCorrect, results, estimatedRating, ratingHistory, recordResult, router, loadPuzzleAtRating]);
 
   const handleBack = () => {
+    // Track abandonment if they started the diagnostic
+    if (selfAssessmentComplete && puzzlesCompleted > 0) {
+      OnboardingEvents.diagnosticAbandoned(puzzlesCompleted);
+    }
     router.push('/onboarding');
   };
 

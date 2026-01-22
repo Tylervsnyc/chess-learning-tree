@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +13,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    AuthEvents.loginPageViewed();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -19,16 +24,23 @@ export default function LoginPage() {
 
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
+      AuthEvents.loginFailed(error.message);
       setError(error.message);
       setLoading(false);
       return;
     }
+
+    // Identify the user in PostHog
+    if (data.user) {
+      identifyUser(data.user.id, { email: data.user.email });
+    }
+    AuthEvents.loginCompleted();
 
     router.push('/');
     router.refresh();

@@ -1,8 +1,18 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { OnboardingEvents } from '@/lib/analytics/posthog';
 
 export default function OnboardingChoicePage() {
+  useEffect(() => {
+    OnboardingEvents.onboardingStarted();
+  }, []);
+
+  const handlePathClick = (path: 'beginner' | 'diagnostic' | 'connect') => {
+    OnboardingEvents.pathChosen(path);
+  };
+
   return (
     <div className="min-h-screen bg-[#131F24] flex flex-col">
       {/* Gradient accent */}
@@ -26,6 +36,7 @@ export default function OnboardingChoicePage() {
           {/* Start from beginning */}
           <Link
             href="/learn?guest=true&level=beginner"
+            onClick={() => handlePathClick('beginner')}
             className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
             style={{ backgroundColor: '#58CC02' }}
           >
@@ -43,6 +54,7 @@ export default function OnboardingChoicePage() {
           {/* Find my level */}
           <Link
             href="/onboarding/diagnostic"
+            onClick={() => handlePathClick('diagnostic')}
             className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] shadow-[0_4px_0_#b36b00]"
             style={{ backgroundColor: '#FF9600' }}
           >
@@ -60,6 +72,7 @@ export default function OnboardingChoicePage() {
           {/* Connect existing account */}
           <Link
             href="/onboarding/connect-account"
+            onClick={() => handlePathClick('connect')}
             className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4]"
             style={{ backgroundColor: '#1CB0F6' }}
           >

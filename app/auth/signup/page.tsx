@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 
 function SignupContent() {
   const router = useRouter();
@@ -17,14 +18,19 @@ function SignupContent() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    AuthEvents.signupPageViewed();
+  }, []);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    AuthEvents.signupStarted();
 
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -35,10 +41,17 @@ function SignupContent() {
     });
 
     if (error) {
+      AuthEvents.signupFailed(error.message);
       setError(error.message);
       setLoading(false);
       return;
     }
+
+    // Identify the user in PostHog
+    if (data.user) {
+      identifyUser(data.user.id, { email, displayName });
+    }
+    AuthEvents.signupCompleted('email');
 
     setSuccess(true);
     setLoading(false);
