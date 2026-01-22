@@ -134,7 +134,10 @@ function OnboardingCompleteContent() {
   const level = (searchParams.get('level') || 'beginner') as keyof typeof LEVEL_CONFIG;
   const correct = parseInt(searchParams.get('correct') || '0', 10);
   const total = parseInt(searchParams.get('total') || '5', 10);
+  const source = searchParams.get('source'); // 'lichess' or 'chesscom' if from account import
+  const username = searchParams.get('username');
   const config = LEVEL_CONFIG[level] || LEVEL_CONFIG.beginner;
+  const fromAccountImport = !!source;
 
   useEffect(() => {
     try {
@@ -191,10 +194,17 @@ function OnboardingCompleteContent() {
             <div className="text-[#1CB0F6] font-bold text-xl">{elo}</div>
             <div className="text-gray-400">Rating</div>
           </div>
-          <div className="text-center">
-            <div className="text-[#58CC02] font-bold text-xl">{correct}/{total}</div>
-            <div className="text-gray-400">Correct</div>
-          </div>
+          {fromAccountImport ? (
+            <div className="text-center">
+              <div className="text-white font-bold text-xl truncate max-w-[120px]">{username}</div>
+              <div className="text-gray-400">{source === 'lichess' ? 'Lichess' : 'Chess.com'}</div>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="text-[#58CC02] font-bold text-xl">{correct}/{total}</div>
+              <div className="text-gray-400">Correct</div>
+            </div>
+          )}
         </div>
 
         {/* CTA */}
