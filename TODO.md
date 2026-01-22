@@ -1,137 +1,119 @@
 # Chess Learning Tree - Launch Plan
 
-## Goal: Live, Marketed & Monetized by End of Week
+## Goal: Get Users In, Collect Feedback by Friday
+
+**Priority: Real users testing the app > Monetization**
 
 ---
 
-## TOMORROW (Day 1) - Deployment & Stripe Setup
+## TOMORROW MORNING - Talk About User Feedback Strategy
+
+### Questions to Discuss:
+1. **Who are your first testers?** (Friends, chess Discord, Reddit?)
+2. **How will you collect feedback?** (Form, DMs, in-app?)
+3. **What do you most want to learn?** (Onboarding friction? Puzzle difficulty? UI confusion?)
+4. **How many testers do you want by Friday?** (5? 20? 50?)
+
+---
+
+## TOMORROW (Day 1) - Deploy & Open Access
 
 ### Morning: Get Site Live
-- [ ] Set up Vercel account (if not done)
-- [ ] Connect GitHub repo to Vercel
-- [ ] Configure environment variables
-- [ ] Deploy to production
-- [ ] Set up custom domain (optional but recommended)
+- [ ] Deploy to Vercel (connect GitHub repo)
+- [ ] Configure any needed env vars
 - [ ] Test all pages work on production
+- [ ] Get shareable URL ready
 
-### Afternoon: Stripe Integration
-- [ ] Create Stripe account at stripe.com
-- [ ] Get API keys (publishable + secret)
-- [ ] Install Stripe packages: `npm install stripe @stripe/stripe-js`
-- [ ] Create `/api/stripe/checkout` route for payment sessions
-- [ ] Create `/api/stripe/webhook` route for handling events
-- [ ] Add STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY to Vercel env vars
-- [ ] Create pricing page component
-- [ ] Test checkout flow with Stripe test mode
+### Afternoon: Remove All Barriers
+- [ ] Make ALL lessons accessible (no gating)
+- [ ] Ensure progress saves work for everyone
+- [ ] Test the full user flow start-to-finish
+- [ ] Fix any obvious bugs that block usage
 
 ---
 
-## Day 2 - Monetization Features
+## Day 2 - Add Feedback Collection
 
-### Pricing Tiers to Create
-- [ ] **Free Tier**: First 2 lessons, daily challenge, limited puzzles
-- [ ] **Premium ($9.99/month)**: All lessons, unlimited puzzles, full profile analytics
-- [ ] **Lifetime ($79)**: Everything forever
+### Simple Feedback Options (pick one):
+- [ ] **Tally.so form** - free, embedded, simple
+- [ ] **Google Form** - link in app footer or profile
+- [ ] **In-app feedback button** - "Found a bug? Tell us"
+- [ ] **Discord server** - real-time chat with testers
 
-### Implementation
-- [ ] Add `isPremium` flag to user state/localStorage
-- [ ] Create paywall component for locked content
-- [ ] Gate lessons 1.3+ behind premium
-- [ ] Add "Upgrade" buttons throughout app
-- [ ] Create success/cancel pages for Stripe redirect
-- [ ] Test full payment flow end-to-end
+### Key Questions to Ask Users:
+1. What's your chess rating/experience level?
+2. Where did you get confused or stuck?
+3. What did you enjoy most?
+4. Would you use this regularly? Why/why not?
+5. What feature would make this 10x better?
 
----
-
-## Day 3 - Marketing Setup
-
-### Landing Page Improvements
-- [ ] Add hero section with value proposition
-- [ ] Add features section (puzzle trainer, skill tracking, curriculum)
-- [ ] Add pricing section
-- [ ] Add testimonials section (can use placeholder initially)
-- [ ] Add FAQ section
-- [ ] Add call-to-action buttons
-
-### Social Media Prep
-- [ ] Create Twitter/X account for the app
-- [ ] Write 5 launch tweets
-- [ ] Create Reddit post for r/chess and r/chessbeginners
-- [ ] Prepare Product Hunt launch (optional)
+### Add Basic Analytics
+- [ ] Add Plausible or Vercel Analytics (privacy-friendly)
+- [ ] Track: page views, lesson starts, puzzle completions
+- [ ] See where users drop off
 
 ---
 
-## Day 4 - Polish & Pre-Launch
+## Day 3 - Get Testers In
 
-### Bug Fixes & Testing
-- [ ] Test on mobile devices
-- [ ] Test payment flow multiple times
-- [ ] Check all puzzle themes load correctly
-- [ ] Verify progress saves properly
-- [ ] Test profile page with real data
+### Places to Share:
+- [ ] Chess friends/contacts (direct message)
+- [ ] r/chess or r/chessbeginners (be genuine, ask for feedback)
+- [ ] Chess Discord servers
+- [ ] Twitter/X chess community
+- [ ] Local chess club if you have one
 
-### Analytics & Tracking
-- [ ] Add Google Analytics or Plausible
-- [ ] Set up conversion tracking for purchases
-- [ ] Add error tracking (Sentry optional)
+### What to Say:
+> "I built a chess learning app and I'd love your feedback. Everything is free right now - just looking to improve it. Takes 5 min to try a few puzzles. [LINK]"
 
 ---
 
-## Day 5 - Launch Day
+## Day 4 - Respond to Feedback
 
-### Go Live
-- [ ] Remove sample data flag from profile page
-- [ ] Final production deploy
-- [ ] Switch Stripe to live mode
-- [ ] Announce on social media
-- [ ] Share with chess communities
-- [ ] Monitor for issues
+- [ ] Review all feedback received
+- [ ] Identify top 3 friction points
+- [ ] Fix critical bugs same-day if possible
+- [ ] Thank every tester personally
+- [ ] Note features people ask for most
 
 ---
 
-## Quick Stripe Setup Commands
+## Day 5 (Friday) - Assess & Plan
+
+### End of Week Review:
+- [ ] How many people tried the app?
+- [ ] Where did they get stuck?
+- [ ] What do they love?
+- [ ] What's missing?
+- [ ] Is this worth monetizing? What would people pay for?
+
+---
+
+## Stripe & Monetization (Later - After Feedback)
+
+Save this for AFTER you understand:
+- What features people actually use
+- What they'd pay for
+- Whether the core experience works
+
+Stripe setup is quick (1-2 hours) once you know what to charge for.
+
+---
+
+## Quick Deploy Commands
 
 ```bash
-# Install Stripe
-npm install stripe @stripe/stripe-js
+# If using Vercel CLI
+npm i -g vercel
+vercel
 
-# Environment variables needed in Vercel:
-STRIPE_SECRET_KEY=sk_live_xxx
-STRIPE_PUBLISHABLE_KEY=pk_live_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
-```
-
----
-
-## Stripe Checkout Code Template
-
-Create `app/api/stripe/checkout/route.ts`:
-```typescript
-import Stripe from 'stripe';
-import { NextResponse } from 'next/server';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-export async function POST(req: Request) {
-  const { priceId } = await req.json();
-
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription', // or 'payment' for one-time
-    payment_method_types: ['card'],
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_URL}/pricing`,
-  });
-
-  return NextResponse.json({ url: session.url });
-}
+# Or just connect GitHub repo at vercel.com/new
 ```
 
 ---
 
 ## Notes
-- Start with test mode in Stripe, switch to live when ready
-- Keep free tier valuable enough to attract users
-- Focus on chess beginners (400-800 ELO) as target market
-- The skill bubble visualization is a great differentiator - highlight it!
+- Full access = more feedback = better product
+- 10 engaged testers > 100 visitors who bounce
+- Fix what's broken before adding new features
+- Personal outreach works better than posting cold
