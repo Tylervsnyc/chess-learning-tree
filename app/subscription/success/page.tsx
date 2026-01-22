@@ -16,7 +16,7 @@ function SuccessContent() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push('/profile');
+          router.push('/learn');
           return 0;
         }
         return prev - 1;
@@ -62,14 +62,14 @@ function SuccessContent() {
         </div>
 
         <button
-          onClick={() => router.push('/workout')}
+          onClick={() => router.push('/learn')}
           className="w-full py-4 rounded-xl bg-gradient-to-r from-[#58CC02] to-[#4CAF00] text-white font-bold text-lg transition-all hover:opacity-90 mb-4"
         >
-          Start Practicing
+          Start Learning
         </button>
 
         <p className="text-gray-500 text-sm">
-          Redirecting to profile in {countdown} seconds...
+          Redirecting in {countdown} seconds...
         </p>
 
         {sessionId && (
