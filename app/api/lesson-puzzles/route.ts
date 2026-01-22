@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Chess } from 'chess.js';
 import lessonData from '@/data/lesson-puzzle-sets.json';
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+import puzzleData from '@/data/lesson-puzzles-full.json';
 
 interface LessonInfo {
   lessonId: string;
@@ -38,47 +35,13 @@ interface LessonPuzzle {
   playerColor: 'white' | 'black';
 }
 
+// Type the puzzle data
+const puzzleMap = puzzleData as Record<string, RawPuzzle>;
+
 // Get lesson info from the JSON data
 function getLessonInfo(lessonId: string): LessonInfo | null {
   const lesson = (lessonData as LessonInfo[]).find(l => l.lessonId === lessonId);
   return lesson || null;
-}
-
-// Load puzzle by ID from CSV files
-function loadPuzzleById(puzzleId: string): RawPuzzle | null {
-  try {
-    if (!existsSync(PUZZLES_DIR)) {
-      return null;
-    }
-    const brackets = readdirSync(PUZZLES_DIR).filter(d => !d.endsWith('.csv'));
-    for (const bracket of brackets) {
-      const bracketDir = join(PUZZLES_DIR, bracket);
-      if (!existsSync(bracketDir)) continue;
-      const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
-      for (const file of files) {
-        const content = readFileSync(join(bracketDir, file), 'utf-8');
-        const lines = content.split('\n');
-        for (const line of lines) {
-          if (line.startsWith(puzzleId + ',')) {
-            const parts = line.split(',');
-            if (parts.length >= 9) {
-              return {
-                puzzleId: parts[0],
-                fen: parts[1],
-                moves: parts[2],
-                rating: parseInt(parts[3], 10),
-                themes: parts[7].split(' '),
-                url: parts[8],
-              };
-            }
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.error('Error loading puzzle:', e);
-  }
-  return null;
 }
 
 // Process raw puzzle into lesson format
@@ -171,10 +134,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
-  // Load puzzles from CSV files using the puzzle IDs
+  // Load puzzles from the embedded JSON data
   const rawPuzzles: RawPuzzle[] = [];
-  for (const puzzleId of lessonInfo.puzzleIds) {
-    const puzzle = loadPuzzleById(puzzleId);
+  for (const puzzleId of lessonInfo.puzzleIds || []) {
+    const puzzle = puzzleMap[puzzleId];
     if (puzzle) {
       rawPuzzles.push(puzzle);
     }
