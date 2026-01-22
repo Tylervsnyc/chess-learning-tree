@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function GiftPage() {
   const params = useParams();
+  const router = useRouter();
   const code = (params.code as string)?.toUpperCase();
 
   const [email, setEmail] = useState('');
@@ -13,7 +14,6 @@ export default function GiftPage() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,67 +23,74 @@ export default function GiftPage() {
     try {
       const supabase = createClient();
 
-      // Sign up with redirect to apply promo code
-      const { data, error } = await supabase.auth.signUp({
+      // Sign up the user
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             display_name: displayName,
-            promo_code: code,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/gift/welcome?code=${code}`,
         },
       });
 
-      console.log('Signup response:', { data, error });
-
-      if (error) {
-        setError(error.message);
+      if (signUpError) {
+        setError(signUpError.message);
         setLoading(false);
         return;
       }
 
-      // Check if user was actually created
       if (!data.user) {
         setError('Failed to create account. Please try again.');
         setLoading(false);
         return;
       }
 
-      // Check if email confirmation is disabled (user is already confirmed)
+      // If user already exists
       if (data.user.identities?.length === 0) {
         setError('An account with this email already exists. Please log in instead.');
         setLoading(false);
         return;
       }
 
-      setSuccess(true);
+      // If email confirmation is required, user won't have a session yet
+      // Try to sign in immediately (works if email confirmation is disabled)
+      if (!data.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          // Email confirmation is required - show message
+          setError(null);
+          router.push(`/gift/check-email?email=${encodeURIComponent(email)}&code=${code}`);
+          return;
+        }
+      }
+
+      // User is signed in - apply promo code
+      const promoResponse = await fetch('/api/promo/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!promoResponse.ok) {
+        const promoData = await promoResponse.json();
+        // Don't block on promo errors - user is already signed up
+        console.error('Promo error:', promoData.error);
+      }
+
+      // Success! Go to onboarding
+      router.push('/onboarding');
+
     } catch (err) {
       console.error('Signup error:', err);
       setError('Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="text-6xl mb-6">✉️</div>
-          <h1 className="text-2xl font-bold text-white mb-3">Check your email!</h1>
-          <p className="text-gray-400 mb-2">
-            We sent a confirmation link to
-          </p>
-          <p className="text-white font-medium text-lg mb-6">{email}</p>
-          <p className="text-gray-500 text-sm">
-            Click the link in your email to activate your free premium membership.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
@@ -156,7 +163,7 @@ export default function GiftPage() {
             disabled={loading}
             className="w-full py-4 bg-[#58CC02] hover:bg-[#4CAD02] disabled:bg-[#58CC02]/50 text-white font-bold text-lg rounded-xl transition-colors"
           >
-            {loading ? 'Creating account...' : 'Claim My Free Month'}
+            {loading ? 'Setting up your account...' : 'Claim My Free Month'}
           </button>
 
           <p className="text-center text-gray-500 text-xs">
