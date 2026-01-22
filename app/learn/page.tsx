@@ -18,8 +18,8 @@ function LearnContent() {
     tournament: 3,
     advanced: 4,
     expert: 5,
-    master: 6,
-    grandmaster: 7,
+    elite: 6,
+    legend: 7,
   };
   const levelIndex = level ? (levelMap[level] ?? 0) : 0;
 

@@ -13,8 +13,8 @@ const LEVELS = [
   { key: 'tournament', label: 'Level 4', minElo: 1100, ratingRange: '1200-1400' },
   { key: 'advanced', label: 'Level 5', minElo: 1400, ratingRange: '1400-1600' },
   { key: 'expert', label: 'Level 6', minElo: 1700, ratingRange: '1600-1800' },
-  { key: 'master', label: 'Level 7', minElo: 1900, ratingRange: '1800-2000' },
-  { key: 'grandmaster', label: 'Level 8', minElo: 2100, ratingRange: '2000-2200' },
+  { key: 'elite', label: 'Level 7', minElo: 1900, ratingRange: '1800-2000' },
+  { key: 'legend', label: 'Level 8', minElo: 2100, ratingRange: '2000-2200' },
 ];
 
 function getMaxUnlockedIndex(elo: number) {
@@ -92,8 +92,10 @@ export function NavHeader() {
                 {learnDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[180px] z-50">
                     {LEVELS.map((level, index) => {
+                      const isPremium = profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial';
                       const maxUnlocked = getMaxUnlockedIndex(profile?.elo_rating || 800);
-                      const isLocked = index > maxUnlocked;
+                      // Premium users have all levels unlocked
+                      const isLocked = !isPremium && index > maxUnlocked;
 
                       if (isLocked) {
                         return (

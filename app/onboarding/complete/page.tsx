@@ -11,8 +11,8 @@ const LEVEL_CONFIG = {
   tournament: { label: 'Tournament', color: '#FF4B4B', emoji: '💪', firstLesson: '4.1.1' },
   advanced: { label: 'Advanced', color: '#A560E8', emoji: '🎯', firstLesson: '5.1.1' },
   expert: { label: 'Expert', color: '#FFC800', emoji: '👑', firstLesson: '6.1.1' },
-  master: { label: 'Master', color: '#E91E63', emoji: '🏆', firstLesson: '7.1.1' },
-  grandmaster: { label: 'Grandmaster', color: '#9C27B0', emoji: '♔', firstLesson: '8.1.1' },
+  elite: { label: 'Elite', color: '#E91E63', emoji: '🏆', firstLesson: '7.1.1' },
+  legend: { label: 'Legend', color: '#9C27B0', emoji: '♔', firstLesson: '8.1.1' },
 };
 
 function EpicConfetti() {
