@@ -138,9 +138,14 @@ async function handleCheckoutComplete(
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
+
+    // Safely get expiration date
+    let expiresAt: string | null = null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentPeriodEnd = (subscription as any).current_period_end as number;
-    const expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+    const currentPeriodEnd = (subscription as any).current_period_end;
+    if (currentPeriodEnd && typeof currentPeriodEnd === 'number') {
+      expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+    }
 
     // Update profile with premium status
     const { error } = await supabase
@@ -200,11 +205,14 @@ async function updateSubscriptionStatus(
     ? 'premium'
     : 'free';
 
+  // Safely get expiration date
+  let expiresAt: string | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currentPeriodEnd = (subscription as any).current_period_end as number;
-  const expiresAt = subscription.status === 'active' || subscription.status === 'trialing'
-    ? new Date(currentPeriodEnd * 1000).toISOString()
-    : null;
+  const currentPeriodEnd = (subscription as any).current_period_end;
+  if ((subscription.status === 'active' || subscription.status === 'trialing') &&
+      currentPeriodEnd && typeof currentPeriodEnd === 'number') {
+    expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+  }
 
   const { error } = await supabase
     .from('profiles')

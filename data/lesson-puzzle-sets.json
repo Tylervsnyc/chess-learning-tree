@@ -57,6 +57,29 @@
     }
   },
   {
+    "lessonId": "1.1.R",
+    "lessonName": "Module 1 Review: Best Move",
+    "puzzleIds": [
+      "WzveJ",
+      "HzPON",
+      "thOL6",
+      "Vwbuo",
+      "Zw1gK",
+      "da1nm"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "fork",
+        "discoveredAttack",
+        "skewer"
+      ],
+      "ratingRange": "400-700"
+    }
+  },
+  {
     "lessonId": "1.2.1",
     "lessonName": "Queen Mate in 1: Easy",
     "puzzleIds": [
@@ -114,6 +137,27 @@
       ],
       "ratingRange": "600-750",
       "pieceFilter": "queen"
+    }
+  },
+  {
+    "lessonId": "1.2.M",
+    "lessonName": "Mixed Practice: Mate in 1",
+    "puzzleIds": [
+      "NTAOo",
+      "4ipLV",
+      "yl6To",
+      "i4Omf",
+      "5CAmF",
+      "ve8zm"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "mateIn1"
+      ],
+      "ratingRange": "400-600"
     }
   },
   {
@@ -217,6 +261,27 @@
     }
   },
   {
+    "lessonId": "1.2.R",
+    "lessonName": "Module 2 Review: Best Move",
+    "puzzleIds": [
+      "NTAOo",
+      "8zIJq",
+      "x8o6s",
+      "2nseN",
+      "7HM0X",
+      "s9vew"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "mateIn1"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.3.1",
     "lessonName": "Back Rank Mate in 1: Easy",
     "puzzleIds": [
@@ -317,6 +382,27 @@
     }
   },
   {
+    "lessonId": "1.3.R",
+    "lessonName": "Module 3 Review: Best Move",
+    "puzzleIds": [
+      "6mLAP",
+      "ptxMC",
+      "gAjCf",
+      "rUDeG",
+      "HfmoH",
+      "A1Hex"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "backRankMate"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.4.1",
     "lessonName": "Knight Forks: Very Easy",
     "puzzleIds": [
@@ -377,6 +463,27 @@
     }
   },
   {
+    "lessonId": "1.4.M",
+    "lessonName": "Mixed Practice: Knight Forks",
+    "puzzleIds": [
+      "WzveJ",
+      "JCbll",
+      "uIs5W",
+      "ZF6ue",
+      "0fIB2",
+      "lRA9j"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "fork"
+      ],
+      "ratingRange": "400-750"
+    }
+  },
+  {
     "lessonId": "1.4.4",
     "lessonName": "Knight Forks: Medium-Hard",
     "puzzleIds": [
@@ -414,6 +521,27 @@
       ],
       "ratingRange": "700-800",
       "pieceFilter": "knight"
+    }
+  },
+  {
+    "lessonId": "1.4.R",
+    "lessonName": "Module 4 Review: Best Move",
+    "puzzleIds": [
+      "WzveJ",
+      "HzPON",
+      "ZF6ue",
+      "86i60",
+      "aWwMR",
+      "0XxuO"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "fork"
+      ],
+      "ratingRange": "400-800"
     }
   },
   {
@@ -500,6 +628,27 @@
     }
   },
   {
+    "lessonId": "1.5.R",
+    "lessonName": "Module 5 Review: Best Move",
+    "puzzleIds": [
+      "eHiYd",
+      "eF3KA",
+      "vLIBW",
+      "9t4lt",
+      "3w41E",
+      "vzRwA"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "fork"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.6.1",
     "lessonName": "Pin Wins Material: Easy",
     "puzzleIds": [
@@ -574,6 +723,28 @@
     }
   },
   {
+    "lessonId": "1.6.R",
+    "lessonName": "Module 6 Review: Best Move",
+    "puzzleIds": [
+      "Z2eh3",
+      "g89Yx",
+      "s8oxH",
+      "TDcUE",
+      "XtJo3",
+      "I9HfG"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "pin",
+        "discoveredAttack"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.7.1",
     "lessonName": "Skewers: Easy",
     "puzzleIds": [
@@ -631,6 +802,27 @@
     }
   },
   {
+    "lessonId": "1.7.R",
+    "lessonName": "Module 7 Review: Best Move",
+    "puzzleIds": [
+      "Zw1gK",
+      "yDNwO",
+      "jezLN",
+      "Vttn3",
+      "Ppc48",
+      "iqmdr"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "skewer"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.8.1",
     "lessonName": "Discovered Attacks: Easy",
     "puzzleIds": [
@@ -685,6 +877,27 @@
         "discoveredAttack"
       ],
       "ratingRange": "700-800"
+    }
+  },
+  {
+    "lessonId": "1.8.R",
+    "lessonName": "Module 8 Review: Best Move",
+    "puzzleIds": [
+      "thOL6",
+      "bxdIq",
+      "I9HfG",
+      "fvqUn",
+      "ibIMf",
+      "QhBjz"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "discoveredAttack"
+      ],
+      "ratingRange": "400-800"
     }
   },
   {
@@ -761,6 +974,27 @@
         "mateIn2"
       ],
       "ratingRange": "700-800"
+    }
+  },
+  {
+    "lessonId": "1.9.R",
+    "lessonName": "Module 9 Review: Best Move",
+    "puzzleIds": [
+      "phaXH",
+      "OVS7g",
+      "QcsJM",
+      "FWt8l",
+      "H1aTp",
+      "qEaUV"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "mateIn2"
+      ],
+      "ratingRange": "400-800"
     }
   },
   {
@@ -878,6 +1112,32 @@
     }
   },
   {
+    "lessonId": "1.10.R",
+    "lessonName": "Module 10 Review: Best Move",
+    "puzzleIds": [
+      "aEUvC",
+      "OVS7g",
+      "IPcMx",
+      "fxOq0",
+      "XMN1j",
+      "jKR2A"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "operaMate",
+        "pillsburysMate",
+        "smotheredMate",
+        "arabianMate",
+        "doubleBishopMate",
+        "hookMate"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.11.1",
     "lessonName": "Simple Promotion",
     "puzzleIds": [
@@ -935,6 +1195,27 @@
     }
   },
   {
+    "lessonId": "1.11.R",
+    "lessonName": "Module 11 Review: Best Move",
+    "puzzleIds": [
+      "nuR5i",
+      "zKL3T",
+      "hF1H9",
+      "D7m44",
+      "Dljjo",
+      "soB9l"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "promotion"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.12.1",
     "lessonName": "Deflection",
     "puzzleIds": [
@@ -966,6 +1247,28 @@
     "puzzleCount": 5,
     "criteria": {
       "requiredTags": [
+        "attraction"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
+    "lessonId": "1.12.R",
+    "lessonName": "Module 12 Review: Best Move",
+    "puzzleIds": [
+      "eGoqZ",
+      "0BtUA",
+      "EQS8I",
+      "Ij8j9",
+      "fStBF",
+      "W0i1z"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "deflection",
         "attraction"
       ],
       "ratingRange": "400-800"
@@ -1041,6 +1344,29 @@
     "puzzleCount": 6,
     "criteria": {
       "requiredTags": [
+        "queenEndgame"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
+    "lessonId": "1.13.R",
+    "lessonName": "Module 13 Review: Best Move",
+    "puzzleIds": [
+      "Ns2oK",
+      "LUwsb",
+      "sBi3D",
+      "C9CdU",
+      "Wz9lK",
+      "wzOeA"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "rookEndgame",
+        "pawnEndgame",
         "queenEndgame"
       ],
       "ratingRange": "400-800"
@@ -1147,6 +1473,30 @@
     }
   },
   {
+    "lessonId": "1.14.R",
+    "lessonName": "Module 14 Review: Best Move",
+    "puzzleIds": [
+      "USfAZ",
+      "UJtya",
+      "Z8lnn",
+      "A1Hex",
+      "QBEZY",
+      "YLrf0"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "backRankMate",
+        "sacrifice",
+        "fork",
+        "mateIn2"
+      ],
+      "ratingRange": "400-800"
+    }
+  },
+  {
     "lessonId": "1.15.1",
     "lessonName": "Mate in 3: Easy",
     "puzzleIds": [
@@ -1182,6 +1532,27 @@
         "mateIn3"
       ],
       "ratingRange": "650-800"
+    }
+  },
+  {
+    "lessonId": "1.15.R",
+    "lessonName": "Module 15 Review: Best Move",
+    "puzzleIds": [
+      "A0QmR",
+      "W0pHh",
+      "FIlx2",
+      "mSjqH",
+      "TiZTP",
+      "xfTSh"
+    ],
+    "puzzleCount": 6,
+    "criteria": {
+      "requiredTags": [],
+      "isMixedPractice": true,
+      "mixedThemes": [
+        "mateIn3"
+      ],
+      "ratingRange": "400-800"
     }
   },
   {
