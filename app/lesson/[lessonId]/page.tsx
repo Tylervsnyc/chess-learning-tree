@@ -649,13 +649,12 @@ export default function LessonPage() {
     }
   }, [moveStatus, recordAndAdvance, puzzleHadWrongAttempt]);
 
-  // Duolingo-style: Let user try again (reset position)
+  // Duolingo-style: Let user try again from current position (don't reset)
   const handleTryAgain = useCallback(() => {
     if (!currentPuzzle) return;
 
-    // Reset position to puzzle start
-    setCurrentFen(currentPuzzle.puzzleFen);
-    setMoveIndex(0);
+    // Just return to playing mode - don't reset position or moveIndex
+    // User stays at the current move they're working on
     setMoveStatus('playing');
     setSelectedSquare(null);
   }, [currentPuzzle]);
