@@ -61,12 +61,12 @@ export function NavHeader() {
           The Chess Path
         </Link>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1.5">
           {loading ? (
             <>
               {/* Skeleton buttons to prevent layout shift */}
-              <div className="px-3 py-1.5 w-16 h-8 bg-gray-700/50 rounded-lg animate-pulse" />
-              <div className="px-3 py-1.5 w-16 h-8 bg-gray-700/50 rounded-lg animate-pulse" />
+              <div className="w-14 h-6 bg-gray-700/50 rounded-md animate-pulse" />
+              <div className="w-12 h-6 bg-gray-700/50 rounded-md animate-pulse" />
             </>
           ) : user ? (
             <>
@@ -129,18 +129,18 @@ export function NavHeader() {
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
-                  className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:opacity-90"
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
                   style={{
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                     color: '#000',
                   }}
                 >
-                  Go Premium
+                  Premium
                 </Link>
               )}
               <button
                 onClick={handleSignOut}
-                className="px-3 py-1.5 text-sm text-white bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 rounded-lg transition-colors"
+                className="px-2.5 py-1 text-xs text-white bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 rounded-md transition-colors"
               >
                 Log out
               </button>
@@ -149,24 +149,24 @@ export function NavHeader() {
             <>
               <Link
                 href="/premium-signup"
-                className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all hover:opacity-90"
+                className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
                 style={{
                   background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                   color: '#000',
                 }}
               >
-                Buy Premium
+                Premium
               </Link>
               <Link
                 href="/auth/login"
-                className="px-3 py-1.5 text-sm text-white rounded-lg transition-opacity hover:opacity-90"
+                className="px-2.5 py-1 text-xs text-white rounded-md transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#1CB0F6' }}
               >
                 Login
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-4 py-1.5 text-sm text-white rounded-lg transition-colors"
+                className="px-2.5 py-1 text-xs text-white rounded-md transition-colors"
                 style={{
                   background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                 }}
