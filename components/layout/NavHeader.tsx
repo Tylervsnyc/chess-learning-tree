@@ -159,7 +159,8 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/auth/login"
-                className="text-gray-300 hover:text-white transition-colors text-sm"
+                className="px-3 py-1.5 text-sm text-white rounded-lg transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#1CB0F6' }}
               >
                 Login
               </Link>
