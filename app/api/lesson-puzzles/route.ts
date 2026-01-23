@@ -340,6 +340,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Check for level1Ends curriculum first (Block → Section → Lesson)
+  // Try dynamic loading, but fall through to static data if it fails
   if (lessonId.startsWith('1.')) {
     const endsInfo = getEndsLessonInfo(lessonId);
     if (endsInfo) {
@@ -357,41 +358,32 @@ export async function GET(request: NextRequest) {
           count
         );
 
-        if (rawPuzzles.length === 0) {
+        // Only return if we actually found puzzles, otherwise fall through to static data
+        if (rawPuzzles.length > 0) {
+          const puzzles = rawPuzzles.map(processPuzzle);
+
           return NextResponse.json({
-            error: 'No puzzles found matching criteria',
             lessonId,
             lessonName: lesson.name,
-            criteria: {
-              requiredTags: lesson.requiredTags,
-              excludeTags: lesson.excludeTags,
-              rating: `${lesson.ratingMin}-${lesson.ratingMax}`,
-              pieceFilter: lesson.pieceFilter,
-            },
-          }, { status: 404 });
+            lessonDescription: lesson.description,
+            sectionName: section.name,
+            blockName: block.name,
+            isReview: section.isReview || false,
+            puzzles,
+            puzzleCount: puzzles.length,
+            isDynamic: true,
+          });
         }
-
-        const puzzles = rawPuzzles.map(processPuzzle);
-
-        return NextResponse.json({
-          lessonId,
-          lessonName: lesson.name,
-          lessonDescription: lesson.description,
-          sectionName: section.name,
-          blockName: block.name,
-          isReview: section.isReview || false,
-          puzzles,
-          puzzleCount: puzzles.length,
-          isDynamic: true,
-        });
+        // If no puzzles found, fall through to static data below
       } catch (error) {
-        return NextResponse.json({ error: `Failed to load ends puzzles: ${error}` }, { status: 500 });
+        // Log error but don't fail - fall through to static data
+        console.log(`Dynamic puzzle loading failed for ${lessonId}, falling back to static data:`, error);
       }
     }
   }
 
-  // Check for v2 curriculum (Module structure)
-  if (curriculumVersion === 'v2' || lessonId.startsWith('1.')) {
+  // Check for v2 curriculum (Module structure) - only if not already handled above
+  if (curriculumVersion === 'v2') {
     const v2Info = getV2LessonInfo(lessonId);
     if (v2Info) {
       const { lesson, module } = v2Info;
@@ -408,34 +400,24 @@ export async function GET(request: NextRequest) {
           count
         );
 
-        if (rawPuzzles.length === 0) {
+        // Only return if we actually found puzzles
+        if (rawPuzzles.length > 0) {
+          const puzzles = rawPuzzles.map(processPuzzle);
+
           return NextResponse.json({
-            error: 'No puzzles found matching criteria',
             lessonId,
             lessonName: lesson.name,
-            criteria: {
-              requiredTags: lesson.requiredTags,
-              excludeTags: lesson.excludeTags,
-              rating: `${lesson.ratingMin}-${lesson.ratingMax}`,
-              pieceFilter: lesson.pieceFilter,
-            },
-          }, { status: 404 });
+            lessonDescription: lesson.description,
+            moduleName: module.name,
+            moduleType: module.themeType,
+            puzzles,
+            puzzleCount: puzzles.length,
+            isDynamic: true,
+          });
         }
-
-        const puzzles = rawPuzzles.map(processPuzzle);
-
-        return NextResponse.json({
-          lessonId,
-          lessonName: lesson.name,
-          lessonDescription: lesson.description,
-          moduleName: module.name,
-          moduleType: module.themeType,
-          puzzles,
-          puzzleCount: puzzles.length,
-          isDynamic: true,
-        });
+        // Fall through to static data
       } catch (error) {
-        return NextResponse.json({ error: `Failed to load v2 puzzles: ${error}` }, { status: 500 });
+        console.log(`V2 puzzle loading failed for ${lessonId}, falling back to static data:`, error);
       }
     }
   }
