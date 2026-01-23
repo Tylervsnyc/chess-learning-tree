@@ -80,11 +80,8 @@ export function NavHeader() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setLearnDropdownOpen(!learnDropdownOpen)}
-                  className={`px-2.5 py-1 text-xs rounded-md transition-colors flex items-center gap-1 ${
-                    pathname === '/learn' || pathname?.startsWith('/lesson')
-                      ? 'bg-[#58CC02]/20 text-[#58CC02] font-semibold'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
+                  className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 flex items-center gap-1"
+                  style={{ background: 'linear-gradient(135deg, #58CC02 0%, #45a001 100%)' }}
                 >
                   Learn
                   <svg
@@ -147,8 +144,8 @@ export function NavHeader() {
               )}
               <button
                 onClick={handleSignOut}
-                className="px-2.5 py-1 text-xs text-white rounded-md transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#ef4444' }}
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
               >
                 Log out
               </button>
@@ -167,14 +164,14 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/auth/login"
-                className="px-2.5 py-1 text-xs text-white rounded-md transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#1CB0F6' }}
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)' }}
               >
                 Login
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-2.5 py-1 text-xs text-white rounded-md transition-colors"
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
                 style={{
                   background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                 }}
