@@ -80,15 +80,15 @@ export function NavHeader() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setLearnDropdownOpen(!learnDropdownOpen)}
-                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center gap-1 ${
+                  className={`px-2.5 py-1 text-xs rounded-md transition-colors flex items-center gap-1 ${
                     pathname === '/learn' || pathname?.startsWith('/lesson')
-                      ? 'bg-[#58CC02]/20 text-[#58CC02]'
+                      ? 'bg-[#58CC02]/20 text-[#58CC02] font-semibold'
                       : 'text-gray-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   Learn
                   <svg
-                    className={`w-3 h-3 transition-transform ${learnDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`w-2.5 h-2.5 transition-transform ${learnDropdownOpen ? 'rotate-180' : ''}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -147,7 +147,8 @@ export function NavHeader() {
               )}
               <button
                 onClick={handleSignOut}
-                className="px-2.5 py-1 text-xs text-white bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 rounded-md transition-colors"
+                className="px-2.5 py-1 text-xs text-white rounded-md transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#ef4444' }}
               >
                 Log out
               </button>
