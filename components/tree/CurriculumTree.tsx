@@ -25,9 +25,48 @@ const MODULE_COLORS = [
   '#FF6B6B', // Coral
 ];
 
+// Helper to convert hex to HSL
+function hexToHSL(hex: string): { h: number; s: number; l: number } {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+
+  return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+// Generate light-to-dark shades for a module color
+function getLessonColor(baseColor: string, lessonIndex: number, totalLessons: number): string {
+  const hsl = hexToHSL(baseColor);
+  // Start lighter (+20), end darker (-25) based on position
+  const lightnessRange = 45; // Total range of lightness variation (more apparent)
+  const lightnessOffset = totalLessons > 1
+    ? 20 - (lessonIndex / (totalLessons - 1)) * lightnessRange
+    : 0;
+  const newLightness = Math.max(15, Math.min(75, hsl.l + lightnessOffset));
+  return `hsl(${hsl.h}, ${hsl.s}%, ${newLightness}%)`;
+}
+
 interface LessonCardProps {
   lesson: LessonCriteria;
   moduleColor: string;
+  lessonIndex: number;
+  totalLessons: number;
   isUnlocked: boolean;
   isCompleted: boolean;
   isGuest?: boolean;
@@ -35,15 +74,47 @@ interface LessonCardProps {
   nextLessonRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
-function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isNextLesson, nextLessonRef }: LessonCardProps) {
+function LessonCard({ lesson, moduleColor, lessonIndex, totalLessons, isUnlocked, isCompleted, isGuest, isNextLesson, nextLessonRef }: LessonCardProps) {
   const router = useRouter();
   const isLocked = !isUnlocked;
+
+  // Get light-to-dark shade based on lesson position
+  const lessonColor = getLessonColor(moduleColor, lessonIndex, totalLessons);
 
   const handleClick = () => {
     if (isUnlocked) {
       const url = isGuest ? `/lesson/${lesson.id}?guest=true` : `/lesson/${lesson.id}`;
       router.push(url);
     }
+  };
+
+  // Render the lesson square with white badge for completed lessons
+  const renderLessonSquare = () => {
+    if (isCompleted) {
+      // White badge completion indicator
+      return (
+        <div className="relative">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm opacity-60"
+            style={{ backgroundColor: lessonColor, color: '#fff' }}
+          >
+            {lesson.id.split('.').slice(-1)[0]}
+          </div>
+          <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
+            <span className="text-[#58CC02] text-xs font-bold">✓</span>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
+        style={{ backgroundColor: lessonColor, color: '#fff' }}
+      >
+        {lesson.id.split('.').slice(-1)[0]}
+      </div>
+    );
   };
 
   return (
@@ -60,19 +131,11 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isN
             : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
         }`}
         style={{
-          borderColor: isNextLesson ? moduleColor : 'transparent',
+          borderColor: isNextLesson ? lessonColor : 'transparent',
         }}
       >
         <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
-            style={{
-              backgroundColor: isCompleted ? '#58CC02' : moduleColor,
-              color: '#fff',
-            }}
-          >
-            {isCompleted ? '✓' : lesson.id.split('.').slice(-1)[0]}
-          </div>
+          {renderLessonSquare()}
           <div className="flex-1 min-w-0">
             <div className="font-semibold truncate text-white">
               {lesson.name}
@@ -84,7 +147,7 @@ function LessonCard({ lesson, moduleColor, isUnlocked, isCompleted, isGuest, isN
           {isNextLesson && (
             <div
               className="px-2 py-1 rounded-lg text-xs font-bold"
-              style={{ backgroundColor: moduleColor, color: '#000' }}
+              style={{ backgroundColor: lessonColor, color: '#000' }}
             >
               START
             </div>
@@ -178,11 +241,13 @@ function ModuleSection({
 
       {isExpanded && (
         <div className="mt-2 space-y-2 pl-2">
-          {module.lessons.map((lesson) => (
+          {module.lessons.map((lesson, index) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}
               moduleColor={color}
+              lessonIndex={index}
+              totalLessons={module.lessons.length}
               isUnlocked={isLessonUnlocked(lesson.id, allLessonIds)}
               isCompleted={isLessonCompleted(lesson.id)}
               isGuest={isGuest}
