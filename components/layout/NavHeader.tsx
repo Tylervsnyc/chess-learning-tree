@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -57,8 +58,14 @@ export function NavHeader() {
   return (
     <header className="bg-[#1A2C35] border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-        <Link href={user ? '/learn' : '/'} className="text-lg font-bold text-white">
-          The Chess Path
+        <Link href={user ? '/learn' : '/'} className="flex items-center">
+          <Image
+            src="/brand/logo-horizontal-dark.svg"
+            alt="Chess Path"
+            width={140}
+            height={24}
+            className="flex-shrink-0"
+          />
         </Link>
 
         <nav className="flex items-center gap-1.5">

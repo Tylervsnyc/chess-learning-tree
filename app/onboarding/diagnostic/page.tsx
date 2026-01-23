@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding/OnboardingPuzzleBoard';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
@@ -20,13 +21,11 @@ const DEFAULT_STARTING_RATING = 600;  // Fallback if no self-assessment
 const MIN_PUZZLES = 4; // Reduced from 5 since we now have self-assessment
 const MAX_PUZZLES = 6; // Reduced from 8 since we start at a better point
 
-// Self-assessment options with starting ratings
+// Self-assessment options with starting ratings (simplified to 3)
 const SELF_ASSESSMENT_OPTIONS = [
-  { label: "I'm new to chess", emoji: '🌱', rating: 500, description: "Just learning the rules" },
-  { label: "I know the basics", emoji: '♟️', rating: 700, description: "Can play but still learning" },
-  { label: "I play casually online", emoji: '🎮', rating: 1000, description: "Some experience on apps" },
-  { label: "I'm a club player", emoji: '🏆', rating: 1300, description: "Play regularly, know tactics" },
-  { label: "I'm experienced", emoji: '⚔️', rating: 1600, description: "Tournament or serious online player" },
+  { label: "I'm a beginner", emoji: '🌱', rating: 500, description: "New to chess or just learning" },
+  { label: "I'm intermediate", emoji: '♟️', rating: 900, description: "Know tactics, play online" },
+  { label: "I'm advanced", emoji: '⚔️', rating: 1400, description: "Club or tournament player" },
 ];
 
 // Available rating buckets (must match diagnostic-puzzles.json keys)
@@ -311,45 +310,77 @@ export default function DiagnosticPage() {
     );
   }
 
-  // Self-assessment screen
+  // Self-assessment screen - matches onboarding page design
   if (!selfAssessmentComplete) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex flex-col">
-        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+      <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+        {/* Gradient top bar */}
+        <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
-        <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-2">🎯</div>
-            <h1 className="text-xl font-black text-white mb-1">
-              How would you describe your level?
+        {/* Content area - same layout rules as onboarding */}
+        <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+          {/* Title first, then logo */}
+          <div className="mb-4 text-center">
+            <h1 className="font-bold mb-3" style={{ fontSize: 'clamp(1.25rem, 4vh, 1.75rem)' }}>
+              <span className="text-white">Let&apos;s get you on the</span>
             </h1>
-            <p className="text-gray-400 text-sm">
-              This helps us start the test at the right difficulty
-            </p>
+            <Image
+              src="/brand/icon-96.svg"
+              alt="Chess Path"
+              width={72}
+              height={72}
+              className="mx-auto mb-2"
+              style={{ width: 'clamp(56px, 10vh, 72px)', height: 'clamp(56px, 10vh, 72px)' }}
+            />
+            <div className="font-bold" style={{ fontSize: 'clamp(1.75rem, 5vh, 2.5rem)' }}>
+              <span className="text-white">chess</span>
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
+            </div>
           </div>
 
-          <div className="w-full max-w-[340px] space-y-3">
+          {/* Skill level buttons - all same height */}
+          <div className="w-full max-w-[320px] space-y-3">
             {SELF_ASSESSMENT_OPTIONS.map((option) => (
               <button
                 key={option.rating}
                 onClick={() => handleSelfAssessment(option.rating)}
-                className="block w-full p-4 rounded-2xl transition-all active:translate-y-[2px] bg-[#1A2C35] border-2 border-gray-600 hover:border-white/30 text-left"
+                className="block w-full h-20 p-4 rounded-2xl transition-all active:translate-y-[2px] bg-[#1A2C35] border-2 border-gray-600 hover:border-white/30 text-left shadow-[0_4px_0_#0d1a1f]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                <div className="flex items-center gap-4 h-full">
+                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl flex-shrink-0">
                     {option.emoji}
                   </div>
                   <div className="flex-1">
-                    <div className="font-bold text-white">{option.label}</div>
+                    <div className="font-bold text-white text-lg">{option.label}</div>
                     <div className="text-gray-400 text-sm">{option.description}</div>
                   </div>
                 </div>
               </button>
             ))}
 
+            {/* Import ELO button - same height as others */}
+            <button
+              onClick={() => {
+                // TODO: Implement ELO import modal
+                alert('Coming soon! Import from Lichess or Chess.com');
+              }}
+              className="block w-full h-20 p-4 rounded-2xl transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4]"
+              style={{ backgroundColor: '#1CB0F6' }}
+            >
+              <div className="flex items-center gap-4 h-full">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">
+                  🔗
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-bold text-white text-lg">Import my ELO</div>
+                  <div className="text-white/70 text-sm">From Lichess or Chess.com</div>
+                </div>
+              </div>
+            </button>
+
             <button
               onClick={handleBack}
-              className="w-full text-gray-400 hover:text-white text-sm py-3 mt-2"
+              className="w-full text-gray-500 hover:text-white text-sm py-2 mt-2 transition-colors"
             >
               ← Back
             </button>

@@ -99,20 +99,107 @@ export function playErrorSound() {
   osc2.stop(ctx.currentTime + 0.3);
 }
 
+// Perfect score - triumphant fanfare (C-E-G-C arpeggio)
+function playPerfectCelebration() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+  const durations = [0.15, 0.15, 0.15, 0.4];
+  let time = ctx.currentTime;
+
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.3, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + durations[i]);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + durations[i]);
+    time += durations[i] * 0.7;
+  });
+
+  // Add a shimmer
+  setTimeout(() => {
+    const newCtx = getAudioContext();
+    if (!newCtx) return;
+    const osc = newCtx.createOscillator();
+    const gain = newCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 1568; // G6
+    gain.gain.setValueAtTime(0.15, newCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, newCtx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(newCtx.destination);
+    osc.start();
+    osc.stop(newCtx.currentTime + 0.5);
+  }, 400);
+}
+
+// Great score - happy two-note success (like Duolingo correct)
+function playGreatCelebration() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  // First note
+  const osc1 = ctx.createOscillator();
+  const gain1 = ctx.createGain();
+  osc1.type = 'triangle';
+  osc1.frequency.value = 440; // A4
+  gain1.gain.setValueAtTime(0.25, ctx.currentTime);
+  gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+  osc1.connect(gain1);
+  gain1.connect(ctx.destination);
+  osc1.start();
+  osc1.stop(ctx.currentTime + 0.15);
+
+  // Second note (higher)
+  const osc2 = ctx.createOscillator();
+  const gain2 = ctx.createGain();
+  osc2.type = 'triangle';
+  osc2.frequency.value = 659; // E5
+  gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.12);
+  gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+  osc2.connect(gain2);
+  gain2.connect(ctx.destination);
+  osc2.start(ctx.currentTime + 0.12);
+  osc2.stop(ctx.currentTime + 0.4);
+}
+
+// Complete score - gentle single chime
+function playCompleteCelebration() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.value = 392; // G4
+  gain.gain.setValueAtTime(0.2, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.4);
+}
+
 // Play celebration sound based on performance
-// Perfect (6/6): tadaaa fanfare
-// Imperfect (<6): roblox win
+// Perfect (6/6): triumphant fanfare
+// Great (5/6): happy success
+// Complete (0-4/6): gentle chime
 export function playCelebrationSound(correctCount: number = 6) {
   if (typeof window === 'undefined') return;
-  // Ensure AudioContext is active for better browser compatibility
-  getAudioContext();
 
-  const soundFile = correctCount === 6 ? '/sounds/celebration.mp3' : '/sounds/celebration-ok.mp3';
-  const audio = new Audio(soundFile);
-  audio.volume = 0.8;
-  audio.play().catch(() => {
-    // Ignore autoplay errors
-  });
+  if (correctCount === 6) {
+    playPerfectCelebration();
+  } else if (correctCount >= 5) {
+    playGreatCelebration();
+  } else {
+    playCompleteCelebration();
+  }
 }
 
 // Play move sound

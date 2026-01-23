@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
@@ -13,6 +14,29 @@ const PUZZLE = {
   moves: ['g8h8', 'd1h5', 'h8g8', 'h5h7', 'g8f8', 'h7h8', 'f8e7', 'h8g7'],
   orientation: 'white' as const,
 };
+
+function useResponsiveBoardSize() {
+  const [size, setSize] = useState(280);
+
+  useEffect(() => {
+    function calculateSize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      // Use more width (only 24px total padding), cap at 85% of available height minus other content
+      const maxFromWidth = width - 24;
+      const maxFromHeight = height * 0.42; // 42% of viewport height for board
+      return Math.min(320, maxFromWidth, maxFromHeight);
+    }
+
+    setSize(calculateSize());
+
+    const handleResize = () => setSize(calculateSize());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}
 
 function AnimatedBoard({ size }: { size: number }) {
   const [game, setGame] = useState(() => new Chess(PUZZLE.fen));
@@ -93,6 +117,7 @@ function AnimatedBoard({ size }: { size: number }) {
 export default function LandingPage() {
   const router = useRouter();
   const { user, profile, loading } = useUser();
+  const boardSize = useResponsiveBoardSize();
 
   useEffect(() => {
     if (!loading && user && profile) {
@@ -111,47 +136,54 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col">
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-5 pt-12 pb-4">
-        {/* Title with gradient */}
-        <div className="mb-4 text-center">
-          <h1 className="text-3xl sm:text-4xl font-black">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-400">
-              THE CHESS PATH
-            </span>
+    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+      {/* Flexible content area - no justify-center, starts from top */}
+      <div className="flex-1 flex flex-col items-center px-3 pt-4 min-h-0">
+        {/* Logo and Title - scales with viewport */}
+        <div className="mb-[1vh] text-center">
+          <Image
+            src="/brand/icon-96.svg"
+            alt="Chess Path"
+            width={96}
+            height={96}
+            className="mx-auto mb-[1vh]"
+            style={{ width: 'clamp(64px, 12vh, 96px)', height: 'clamp(64px, 12vh, 96px)' }}
+          />
+          <h1 className="font-bold" style={{ fontSize: 'clamp(2rem, 6vh, 3rem)' }}>
+            <span className="text-white">chess</span>
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
           </h1>
-          <p className="text-gray-400 text-sm sm:text-base mt-3 max-w-[280px] mx-auto">
+          <p className="text-gray-400 text-xs mt-1 max-w-[260px] mx-auto">
             Curated puzzles to help you improve in the shortest time possible
           </p>
         </div>
 
         {/* Founder badge */}
-        <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-700 bg-gray-900/50">
+        <div className="mb-[1.5vh] inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gray-700 bg-gray-900/50">
           <span className="text-cyan-400 text-xs">★</span>
           <span className="text-gray-300 text-xs">
             From the founder of <span className="text-white font-medium">Storytime Chess</span>
           </span>
         </div>
 
-        {/* Board with neon border */}
+        {/* Board with brand gradient border - scales with viewport */}
         <div
-          className="p-1 rounded-xl mb-5"
+          className="p-1 rounded-xl"
           style={{
-            background: 'linear-gradient(135deg, #00FFFF, #FF00FF, #FFFF00)',
-            boxShadow: '0 0 30px rgba(0,255,255,0.3), 0 0 60px rgba(255,0,255,0.2)',
+            background: 'linear-gradient(135deg, #4ade80, #38bdf8, #a78bfa)',
+            boxShadow: '0 0 30px rgba(74,222,128,0.3), 0 0 60px rgba(56,189,248,0.2)',
           }}
         >
           <div className="bg-[#131F24] rounded-lg p-1">
-            <AnimatedBoard size={Math.min(280, typeof window !== 'undefined' ? window.innerWidth - 60 : 280)} />
+            <AnimatedBoard size={boardSize} />
           </div>
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button - matches board width */}
         <Link
           href="/onboarding"
-          className="w-full max-w-[300px] py-4 text-center font-bold text-lg rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-          style={{ backgroundColor: '#58CC02' }}
+          className="py-3 mt-3 text-center font-bold text-base rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          style={{ backgroundColor: '#58CC02', width: boardSize }}
         >
           Start Learning
         </Link>
@@ -159,7 +191,7 @@ export default function LandingPage() {
         {/* Small login link */}
         <Link
           href="/auth/login"
-          className="mt-4 text-gray-500 text-sm hover:text-gray-300 transition-colors"
+          className="mt-2 text-gray-500 text-xs hover:text-gray-300 transition-colors"
         >
           Already have an account? Sign in
         </Link>
