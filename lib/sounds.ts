@@ -69,25 +69,34 @@ export function playCorrectSound(puzzleIndex: number) {
   playMellowCoin(CHROMATIC_SCALE[noteIndex]);
 }
 
-// Play error sound
+// Play error sound - Duolingo-style gentle "womp womp"
 export function playErrorSound() {
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
+  // First note
+  const osc1 = ctx.createOscillator();
+  const gain1 = ctx.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.value = 350;
+  gain1.gain.setValueAtTime(0.18, ctx.currentTime);
+  gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+  osc1.connect(gain1);
+  gain1.connect(ctx.destination);
+  osc1.start(ctx.currentTime);
+  osc1.stop(ctx.currentTime + 0.12);
 
-  osc.type = 'sawtooth';
-  osc.frequency.value = 150;
-
-  gain.gain.setValueAtTime(0.25, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start();
-  osc.stop(ctx.currentTime + 0.2);
+  // Second note (lower, slightly delayed)
+  const osc2 = ctx.createOscillator();
+  const gain2 = ctx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.value = 280;
+  gain2.gain.setValueAtTime(0.18, ctx.currentTime + 0.12);
+  gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+  osc2.connect(gain2);
+  gain2.connect(ctx.destination);
+  osc2.start(ctx.currentTime + 0.12);
+  osc2.stop(ctx.currentTime + 0.3);
 }
 
 // Play celebration sound based on performance
