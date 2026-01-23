@@ -501,20 +501,21 @@ export default function LessonPage() {
           setMoveStatus('wrong');
           setFeedbackMessage(`Oops, that's not correct. ${3 - newWrongAttempts} ${3 - newWrongAttempts === 1 ? 'attempt' : 'attempts'} remaining.`);
         } else {
-          // After 3 wrong attempts, show hint squares
+          // After 3 wrong attempts, show hint squares for current move
           try {
-            const chess = new Chess(currentPuzzle.puzzleFen);
-            const firstMove = currentPuzzle.solutionMoves[moveIndex];
-            if (firstMove) {
-              const hintMove = chess.move(firstMove);
-              if (hintMove) {
-                setHintSquares({ from: hintMove.from as Square, to: hintMove.to as Square });
-                setShowMoveHint(true);
-                // Reset position so they can make the move with the hint
-                setCurrentFen(currentPuzzle.puzzleFen);
-                setMoveIndex(0);
-                // Stay in playing mode - no popup needed
-                return false;
+            // Use currentFen (current position), not puzzleFen (starting position)
+            if (currentFen) {
+              const chess = new Chess(currentFen);
+              const currentMove = currentPuzzle.solutionMoves[moveIndex];
+              if (currentMove) {
+                const hintMove = chess.move(currentMove);
+                if (hintMove) {
+                  setHintSquares({ from: hintMove.from as Square, to: hintMove.to as Square });
+                  setShowMoveHint(true);
+                  // Don't reset position or moveIndex - stay at current move
+                  // Stay in playing mode - no popup needed
+                  return false;
+                }
               }
             }
           } catch {
@@ -529,7 +530,7 @@ export default function LessonPage() {
     } catch {
       return false;
     }
-  }, [game, currentPuzzle, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint]);
+  }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint]);
 
   // Handle square click
   const onSquareClick = useCallback(
