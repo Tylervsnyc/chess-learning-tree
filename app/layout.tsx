@@ -6,7 +6,28 @@ import { PostHogProvider } from '@/components/providers/PostHogProvider';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
-  description: 'Master chess tactics through a structured learning journey',
+  description: 'The shortest path to chess improvement',
+  openGraph: {
+    title: 'The Chess Path',
+    description: 'The shortest path to chess improvement',
+    url: 'https://chesspath.app',
+    siteName: 'The Chess Path',
+    images: [
+      {
+        url: 'https://chesspath.app/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'The Chess Path - The shortest path to chess improvement',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Chess Path',
+    description: 'The shortest path to chess improvement',
+    images: ['https://chesspath.app/og-image.png'],
+  },
 };
 
 export const viewport: Viewport = {
