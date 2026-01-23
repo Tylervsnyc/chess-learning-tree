@@ -177,6 +177,8 @@ export default function LessonPage() {
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showMoveHint, setShowMoveHint] = useState(false);
   const [hintSquares, setHintSquares] = useState<{ from: Square; to: Square } | null>(null);
+  // Track if user made ANY wrong attempt on current puzzle (for final scoring)
+  const [puzzleHadWrongAttempt, setPuzzleHadWrongAttempt] = useState(false);
 
   // Load flagged puzzles from localStorage
   useEffect(() => {
@@ -298,6 +300,7 @@ export default function LessonPage() {
       setWrongAttempts(0);
       setShowMoveHint(false);
       setHintSquares(null);
+      setPuzzleHadWrongAttempt(false);
     }
   }, [currentPuzzle, inRetryMode, currentIndex]);
 
@@ -384,6 +387,10 @@ export default function LessonPage() {
         setCurrentFen(gameCopy.fen());
         setSelectedSquare(null);
 
+        // Clear hint highlights when correct move is made
+        setShowMoveHint(false);
+        setHintSquares(null);
+
         // Play move or capture sound based on whether piece was captured
         if (move.captured) {
           playCaptureSound();
@@ -453,6 +460,9 @@ export default function LessonPage() {
           // They found an alternate checkmate - that's correct!
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
+          // Clear hint highlights
+          setShowMoveHint(false);
+          setHintSquares(null);
           if (move.captured) {
             playCaptureSound();
           } else {
@@ -473,6 +483,7 @@ export default function LessonPage() {
         playErrorSound();
         setStreak(0);
         setHadWrongAnswer(true);
+        setPuzzleHadWrongAttempt(true); // Mark this puzzle as having a wrong attempt for final scoring
 
         // If hint is already showing, just let them keep trying (no popup)
         if (showMoveHint) {
@@ -624,13 +635,16 @@ export default function LessonPage() {
   }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, completeLesson, recordPuzzleAttempt, lessonId]);
 
   // Handle continue after correct/wrong
+  // Note: If user had ANY wrong attempt on this puzzle, it counts as wrong for scoring
+  // even if they eventually solved it (Duolingo-style first-try scoring)
   const handleContinue = useCallback(() => {
     if (moveStatus === 'correct') {
-      recordAndAdvance('correct');
+      // If they had a wrong attempt earlier, still count as wrong for final score
+      recordAndAdvance(puzzleHadWrongAttempt ? 'wrong' : 'correct');
     } else if (moveStatus === 'wrong') {
       recordAndAdvance('wrong');
     }
-  }, [moveStatus, recordAndAdvance]);
+  }, [moveStatus, recordAndAdvance, puzzleHadWrongAttempt]);
 
   // Duolingo-style: Let user try again (reset position)
   const handleTryAgain = useCallback(() => {
