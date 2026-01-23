@@ -387,9 +387,10 @@ export default function LessonPage() {
         setCurrentFen(gameCopy.fen());
         setSelectedSquare(null);
 
-        // Clear hint highlights when correct move is made
+        // Clear hint highlights and reset attempts for next move in solution
         setShowMoveHint(false);
         setHintSquares(null);
+        setWrongAttempts(0);
 
         // Play move or capture sound based on whether piece was captured
         if (move.captured) {
@@ -460,9 +461,10 @@ export default function LessonPage() {
           // They found an alternate checkmate - that's correct!
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
-          // Clear hint highlights
+          // Clear hint highlights and reset attempts
           setShowMoveHint(false);
           setHintSquares(null);
+          setWrongAttempts(0);
           if (move.captured) {
             playCaptureSound();
           } else {
