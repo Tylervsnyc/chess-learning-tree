@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
-import { level1Ends, Block, Section, LessonCriteria } from '@/data/staging/level1-ends-only';
+import { level1v2, Module, LessonCriteria } from '@/data/staging/level1-curriculum-v2';
 import {
   playCorrectSound,
   playErrorSound,
@@ -22,7 +22,7 @@ const rotatingBorderStyles = `
 
   .rotating-border {
     position: relative;
-    background: linear-gradient(90deg, #10b981, #3b82f6, #f59e0b, #10b981);
+    background: linear-gradient(90deg, #10b981, #3b82f6, #a855f7, #10b981);
     background-size: 300% 100%;
     animation: rotateBorder 3s linear infinite;
     padding: 2px;
@@ -54,21 +54,20 @@ interface LessonPuzzle {
   playerColor: 'white' | 'black';
 }
 
-// Block colors
-const BLOCK_COLORS = [
-  { bg: 'bg-red-500/20', border: 'border-red-500/50', text: 'text-red-400', accent: '#ef4444' },
-  { bg: 'bg-amber-500/20', border: 'border-amber-500/50', text: 'text-amber-400', accent: '#f59e0b' },
-  { bg: 'bg-emerald-500/20', border: 'border-emerald-500/50', text: 'text-emerald-400', accent: '#10b981' },
-  { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400', accent: '#3b82f6' },
-];
+// Theme type colors
+const TYPE_COLORS = {
+  end: { bg: 'bg-emerald-500/20', border: 'border-emerald-500/50', text: 'text-emerald-400', label: 'GOAL', accent: '#10b981' },
+  means: { bg: 'bg-purple-500/20', border: 'border-purple-500/50', text: 'text-purple-400', label: 'TOOL', accent: '#a855f7' },
+  mixed: { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400', label: 'REVIEW', accent: '#3b82f6' },
+};
 
-export default function TestLevel1EndsPage() {
+export default function TestEndsMeansPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const lessonId = searchParams.get('lesson');
 
   if (lessonId) {
-    return <LessonPuzzleView lessonId={lessonId} onBack={() => router.push('/test-level1-ends')} />;
+    return <LessonPuzzleView lessonId={lessonId} onBack={() => router.push('/test-ends-means')} />;
   }
 
   return <CurriculumOverview />;
@@ -77,228 +76,233 @@ export default function TestLevel1EndsPage() {
 // Curriculum Overview
 function CurriculumOverview() {
   const router = useRouter();
-  const [expandedBlock, setExpandedBlock] = useState<string | null>('block-1');
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [currentLesson, setCurrentLesson] = useState<string>('1.1.1');
 
   // Load current lesson from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('test-level1-ends-current');
+    const saved = localStorage.getItem('test-curriculum-current-lesson');
     if (saved) setCurrentLesson(saved);
   }, []);
 
   // Get all lesson IDs in order
   const allLessonIds = useMemo(() => {
-    return level1Ends.blocks.flatMap(b => b.sections.flatMap(s => s.lessons.map(l => l.id)));
+    return level1v2.modules.flatMap(m => m.lessons.map(l => l.id));
   }, []);
 
   const currentLessonIndex = allLessonIds.indexOf(currentLesson);
 
-  const handleSelectLesson = (lessonId: string) => {
-    localStorage.setItem('test-level1-ends-current', lessonId);
-    setCurrentLesson(lessonId);
-    router.push(`/test-level1-ends?lesson=${lessonId}`);
-  };
+  const endModules = level1v2.modules.filter(m => m.themeType === 'end');
+  const meansModules = level1v2.modules.filter(m => m.themeType === 'means');
+  const mixedModules = level1v2.modules.filter(m => m.themeType === 'mixed');
+  const totalLessons = level1v2.modules.reduce((sum, m) => sum + m.lessons.length, 0);
 
-  const stats = useMemo(() => {
-    const sections = level1Ends.blocks.flatMap(b => b.sections);
-    const lessons = sections.flatMap(s => s.lessons);
-    return {
-      blocks: level1Ends.blocks.length,
-      sections: sections.length,
-      lessons: lessons.length,
-      puzzles: lessons.length * 6,
-    };
-  }, []);
+  const handleSelectLesson = (lessonId: string) => {
+    localStorage.setItem('test-curriculum-current-lesson', lessonId);
+    setCurrentLesson(lessonId);
+    router.push(`/test-ends-means?lesson=${lessonId}`);
+  };
 
   return (
     <div className="min-h-screen bg-[#0A1214] text-white">
       <style>{rotatingBorderStyles}</style>
-
       {/* Header */}
       <header className="border-b border-white/10 bg-[#0D1A1F]">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Level 1: Pattern Spotter</h1>
+              <h1 className="text-2xl font-bold">Level 1: ENDS → MEANS Framework</h1>
               <p className="text-white/50 text-sm mt-1">
-                {stats.blocks} blocks, {stats.sections} sections, {stats.lessons} lessons ({stats.puzzles} puzzles)
+                {level1v2.modules.length} modules, {totalLessons} lessons • All unlocked for testing
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/50 rounded-full text-emerald-400 text-sm font-medium">
-                ENDS ONLY
-              </span>
-            </div>
+            <button
+              onClick={() => router.push('/test-theme-connections')}
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors"
+            >
+              Theme Constellation →
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Philosophy banner */}
-      <div className="max-w-4xl mx-auto px-6 py-4">
-        <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-xl border border-white/10">
-          <p className="text-white/70 text-sm">
-            <span className="font-bold text-white">Level 1 Philosophy:</span> Learn to RECOGNIZE tactical patterns.
-            See the checkmate. Spot the fork. Find the pin. Pure pattern recognition - no fancy setup moves yet.
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Framework explanation */}
+        <div className="mb-8 p-4 bg-[#1A2C35] rounded-xl border border-white/10">
+          <h2 className="font-bold text-lg mb-2">The Teaching Order</h2>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/30">
+              <div className="font-bold text-emerald-400 mb-1">Phase 1: GOALS (Ends)</div>
+              <p className="text-white/60">"Here's WHAT you're trying to achieve" — checkmates, forks, skewers</p>
+            </div>
+            <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+              <div className="font-bold text-purple-400 mb-1">Phase 2: TOOLS (Means)</div>
+              <p className="text-white/60">"Here's HOW to achieve it" — sacrifice, deflection, attraction</p>
+            </div>
+          </div>
+          <p className="mt-3 text-white/40 text-sm">
+            Students learn ENDS first, so when they see MEANS, they think: "OH, that's how I GET the fork I already know!"
           </p>
         </div>
-      </div>
 
-      {/* Blocks */}
-      <div className="max-w-4xl mx-auto px-6 pb-8">
-        <div className="space-y-4">
-          {level1Ends.blocks.map((block, blockIndex) => (
-            <BlockCard
-              key={block.id}
-              block={block}
-              blockIndex={blockIndex}
-              expanded={expandedBlock === block.id}
-              onToggle={() => setExpandedBlock(expandedBlock === block.id ? null : block.id)}
-              onSelectLesson={handleSelectLesson}
-              currentLesson={currentLesson}
-              allLessonIds={allLessonIds}
-            />
+        {/* Legend */}
+        <div className="flex gap-4 mb-6">
+          {Object.entries(TYPE_COLORS).map(([type, style]) => (
+            <div key={type} className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded ${style.bg} ${style.border} border`} />
+              <span className="text-sm text-white/60">{style.label}</span>
+            </div>
           ))}
         </div>
+
+        {/* Phase 1: ENDS */}
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-1 bg-emerald-500 rounded-full" />
+            <h2 className="text-xl font-bold text-emerald-400">Phase 1: Learn the GOALS</h2>
+          </div>
+          <div className="space-y-3">
+            {endModules.map(mod => (
+              <ModuleCard
+                key={mod.id}
+                module={mod}
+                expanded={expandedModule === mod.id}
+                onToggle={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
+                onSelectLesson={handleSelectLesson}
+                currentLesson={currentLesson}
+                allLessonIds={allLessonIds}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Checkpoint */}
+        {mixedModules.filter(m => m.id.includes('checkpoint')).length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-8 w-1 bg-blue-500 rounded-full" />
+              <h2 className="text-xl font-bold text-blue-400">Checkpoint</h2>
+            </div>
+            <div className="space-y-3">
+              {mixedModules.filter(m => m.id.includes('checkpoint')).map(mod => (
+                <ModuleCard
+                  key={mod.id}
+                  module={mod}
+                  expanded={expandedModule === mod.id}
+                  onToggle={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
+                  onSelectLesson={handleSelectLesson}
+                  currentLesson={currentLesson}
+                  allLessonIds={allLessonIds}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Phase 2: MEANS */}
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-1 bg-purple-500 rounded-full" />
+            <h2 className="text-xl font-bold text-purple-400">Phase 2: Learn the TOOLS</h2>
+          </div>
+          <div className="space-y-3">
+            {meansModules.map(mod => (
+              <ModuleCard
+                key={mod.id}
+                module={mod}
+                expanded={expandedModule === mod.id}
+                onToggle={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
+                onSelectLesson={handleSelectLesson}
+                currentLesson={currentLesson}
+                allLessonIds={allLessonIds}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Final */}
+        {mixedModules.filter(m => m.id.includes('final')).length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-8 w-1 bg-blue-500 rounded-full" />
+              <h2 className="text-xl font-bold text-blue-400">Final Review</h2>
+            </div>
+            <div className="space-y-3">
+              {mixedModules.filter(m => m.id.includes('final')).map(mod => (
+                <ModuleCard
+                  key={mod.id}
+                  module={mod}
+                  expanded={expandedModule === mod.id}
+                  onToggle={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
+                  onSelectLesson={handleSelectLesson}
+                  currentLesson={currentLesson}
+                  allLessonIds={allLessonIds}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
 }
 
-// Block Card
-function BlockCard({
-  block,
-  blockIndex,
+// Module Card
+function ModuleCard({
+  module,
   expanded,
   onToggle,
   onSelectLesson,
   currentLesson,
   allLessonIds,
 }: {
-  block: Block;
-  blockIndex: number;
+  module: Module;
   expanded: boolean;
   onToggle: () => void;
   onSelectLesson: (lessonId: string) => void;
   currentLesson: string;
   allLessonIds: string[];
 }) {
-  const colors = BLOCK_COLORS[blockIndex % BLOCK_COLORS.length];
+  const typeStyle = TYPE_COLORS[module.themeType];
   const currentLessonIndex = allLessonIds.indexOf(currentLesson);
-  const lessonCount = block.sections.reduce((sum, s) => sum + s.lessons.length, 0);
-
-  // Check if block contains current lesson
-  const blockContainsCurrent = block.sections.some(s => s.lessons.some(l => l.id === currentLesson));
+  const moduleContainsCurrent = module.lessons.some(l => l.id === currentLesson);
 
   return (
-    <div className={`rounded-xl border ${colors.border} overflow-hidden transition-all ${expanded ? colors.bg : 'bg-[#1A2C35]/50'}`}>
-      {/* Block Header */}
+    <div className={`rounded-xl border ${typeStyle.border} overflow-hidden transition-all ${expanded ? typeStyle.bg : 'bg-[#1A2C35]/50'}`}>
       <button
         onClick={onToggle}
-        className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
-        <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-lg ${colors.bg} ${colors.border} border flex items-center justify-center`}>
-            <span className={`font-bold ${colors.text}`}>{blockIndex + 1}</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-xs font-bold px-2 py-0.5 rounded ${typeStyle.text} border ${typeStyle.border}`} style={{ backgroundColor: `${typeStyle.accent}20` }}>
+            {typeStyle.label}
+          </span>
           <div className="text-left">
-            <h2 className="font-bold text-lg">{block.name}</h2>
-            <p className="text-sm text-white/50">{block.description}</p>
+            <h3 className="font-semibold">{module.name}</h3>
+            <p className="text-sm text-white/40">{module.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-white/30">{lessonCount} lessons</span>
+          <span className="text-sm text-white/30">{module.lessons.length}</span>
           <svg className={`w-5 h-5 text-white/30 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </button>
 
-      {/* Sections */}
       {expanded && (
         <div className="border-t border-white/10">
-          {block.sections.map((section, sectionIndex) => (
-            <SectionCard
-              key={section.id}
-              section={section}
-              sectionIndex={sectionIndex}
-              blockColors={colors}
-              onSelectLesson={onSelectLesson}
-              currentLesson={currentLesson}
-              allLessonIds={allLessonIds}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Section Card
-function SectionCard({
-  section,
-  sectionIndex,
-  blockColors,
-  onSelectLesson,
-  currentLesson,
-  allLessonIds,
-}: {
-  section: Section;
-  sectionIndex: number;
-  blockColors: typeof BLOCK_COLORS[0];
-  onSelectLesson: (lessonId: string) => void;
-  currentLesson: string;
-  allLessonIds: string[];
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const currentLessonIndex = allLessonIds.indexOf(currentLesson);
-  const sectionContainsCurrent = section.lessons.some(l => l.id === currentLesson);
-
-  // Auto-expand if contains current lesson
-  useEffect(() => {
-    if (sectionContainsCurrent) setExpanded(true);
-  }, [sectionContainsCurrent]);
-
-  return (
-    <div className={`border-b border-white/5 last:border-b-0 ${section.isReview ? 'bg-white/5' : ''}`}>
-      {/* Section Header */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full px-5 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          {section.isReview ? (
-            <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/50">
-              REVIEW
-            </span>
-          ) : (
-            <span className="text-xs font-medium px-2 py-0.5 rounded bg-white/10 text-white/60">
-              {sectionIndex + 1}
-            </span>
-          )}
-          <span className="font-medium">{section.name}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-white/30">{section.lessons.length}</span>
-          <svg className={`w-4 h-4 text-white/30 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </button>
-
-      {/* Lessons */}
-      {expanded && (
-        <div className="px-5 pb-3">
-          {section.lessons.map((lesson) => {
+          {module.lessons.map((lesson) => {
             const lessonIndex = allLessonIds.indexOf(lesson.id);
             const isCurrent = lesson.id === currentLesson;
             const isCompleted = lessonIndex < currentLessonIndex;
             const isUpcoming = lessonIndex > currentLessonIndex;
 
             return (
-              <div key={lesson.id} className={isCurrent ? 'rotating-border my-1' : 'my-1'}>
+              <div key={lesson.id} className={isCurrent ? 'rotating-border m-1' : ''}>
                 <button
                   onClick={() => onSelectLesson(lesson.id)}
-                  className={`w-full px-4 py-2.5 rounded-lg flex items-center justify-between transition-colors text-left ${
+                  className={`w-full px-4 py-3 flex items-center justify-between transition-colors text-left ${
                     isCurrent
                       ? 'rotating-border-inner'
                       : isCompleted
@@ -314,6 +318,22 @@ function SectionCard({
                     </div>
                     <div className={`text-xs mt-0.5 ${isUpcoming ? 'text-white/30' : 'text-white/50'}`}>
                       {lesson.description}
+                    </div>
+                    <div className="flex gap-1 mt-1.5 flex-wrap">
+                      {lesson.requiredTags.length > 0 ? (
+                        lesson.requiredTags.map(tag => (
+                          <span key={tag} className={`text-xs px-1.5 py-0.5 rounded ${isUpcoming ? 'bg-white/5 text-white/40' : 'bg-white/10 text-white/60'}`}>
+                            {tag}
+                          </span>
+                        ))
+                      ) : (
+                        <span className={`text-xs px-1.5 py-0.5 rounded ${isUpcoming ? 'bg-blue-500/10 text-blue-400/60' : 'bg-blue-500/20 text-blue-400'}`}>
+                          mixed practice
+                        </span>
+                      )}
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${isUpcoming ? 'bg-white/5 text-white/30' : 'bg-white/5 text-white/40'}`}>
+                        {lesson.ratingMin}-{lesson.ratingMax}
+                      </span>
                     </div>
                   </div>
                   <svg className={`w-4 h-4 ${isUpcoming ? 'text-white/20' : 'text-white/40'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,13 +360,11 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
 
-  // Find lesson info
+  // Find lesson
   const lessonData = useMemo(() => {
-    for (const block of level1Ends.blocks) {
-      for (const section of block.sections) {
-        const found = section.lessons.find(l => l.id === lessonId);
-        if (found) return { lesson: found, section, block };
-      }
+    for (const mod of level1v2.modules) {
+      const found = mod.lessons.find(l => l.id === lessonId);
+      if (found) return { lesson: found, module: mod };
     }
     return null;
   }, [lessonId]);
@@ -364,26 +382,6 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
       }
 
       try {
-        // Build query params from lesson criteria
-        const params = new URLSearchParams({
-          count: '6',
-          ratingMin: lessonData.lesson.ratingMin.toString(),
-          ratingMax: lessonData.lesson.ratingMax.toString(),
-        });
-
-        if (lessonData.lesson.requiredTags.length > 0) {
-          params.set('themes', lessonData.lesson.requiredTags.join(','));
-        }
-        if (lessonData.lesson.excludeTags && lessonData.lesson.excludeTags.length > 0) {
-          params.set('excludeThemes', lessonData.lesson.excludeTags.join(','));
-        }
-        if (lessonData.lesson.pieceFilter) {
-          params.set('pieceFilter', lessonData.lesson.pieceFilter);
-        }
-        if (lessonData.lesson.isMixedPractice && lessonData.lesson.mixedThemes) {
-          params.set('mixedThemes', lessonData.lesson.mixedThemes.join(','));
-        }
-
         const res = await fetch(`/api/lesson-puzzles?lessonId=${lessonId}&count=6&curriculumVersion=v2`);
         const data = await res.json();
 
@@ -560,8 +558,7 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
     }
   };
 
-  const blockIndex = lessonData ? level1Ends.blocks.indexOf(lessonData.block) : 0;
-  const colors = BLOCK_COLORS[blockIndex % BLOCK_COLORS.length];
+  const typeStyle = lessonData ? TYPE_COLORS[lessonData.module.themeType] : TYPE_COLORS.mixed;
 
   if (loading) {
     return (
@@ -605,11 +602,11 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
           <button onClick={onBack} className="text-white/60 hover:text-white text-sm">← Back</button>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
-              <span className={`text-xs font-bold px-2 py-0.5 rounded ${colors.text} border ${colors.border}`} style={{ backgroundColor: `${colors.accent}20` }}>
-                {lessonData?.block.name}
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${typeStyle.text} border ${typeStyle.border}`} style={{ backgroundColor: `${typeStyle.accent}20` }}>
+                {typeStyle.label}
               </span>
+              <span className="font-medium text-sm">{lessonData?.lesson.name}</span>
             </div>
-            <span className="font-medium text-sm">{lessonData?.lesson.name}</span>
           </div>
           <div className="text-white/40 text-sm">{currentIndex + 1}/{puzzles.length}</div>
         </div>
@@ -652,7 +649,10 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
               <div className="p-4 bg-green-500/20 border border-green-500/50 rounded-lg">
                 <p className="text-green-400 font-bold">Correct!</p>
                 <p className="text-white/50 text-sm mt-1">
-                  <strong>Pattern:</strong> {currentPuzzle.themes.join(', ')}
+                  <strong>What you achieved (END):</strong> {currentPuzzle.themes.filter(t => ['mateIn1', 'mateIn2', 'mateIn3', 'fork', 'skewer', 'promotion', 'hangingPiece'].includes(t)).join(', ') || 'Checkmate/Material'}
+                </p>
+                <p className="text-white/40 text-sm">
+                  <strong>How (MEANS):</strong> {currentPuzzle.themes.filter(t => ['sacrifice', 'deflection', 'attraction', 'clearance', 'quietMove'].includes(t)).join(', ') || 'Direct play'}
                 </p>
               </div>
             )}
@@ -665,7 +665,10 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
             {moveStatus === 'playing' && (
               <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
                 <p className="text-white/50 text-sm">
-                  <strong>Find the pattern:</strong> {currentPuzzle.themes.join(', ')}
+                  <strong>Themes:</strong> {currentPuzzle.themes.join(', ')}
+                </p>
+                <p className="text-white/30 text-xs mt-1">
+                  Setup: {currentPuzzle.setupMove} • Solution: {currentPuzzle.solutionMoves.join(' ')}
                 </p>
               </div>
             )}
@@ -681,10 +684,10 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
           {/* Quick rating */}
           <div className="flex gap-3 mt-3">
             <button onClick={() => { console.log('GOOD:', currentPuzzle.puzzleId, currentPuzzle.themes); goToNext(); }} className="flex-1 py-3 bg-green-500/20 hover:bg-green-500/30 text-green-400 font-bold rounded-lg transition-colors">
-              Good Puzzle
+              ✓ Good
             </button>
             <button onClick={() => { console.log('BAD:', currentPuzzle.puzzleId, currentPuzzle.themes); goToNext(); }} className="flex-1 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold rounded-lg transition-colors">
-              Bad Puzzle
+              ✗ Bad
             </button>
           </div>
         </div>

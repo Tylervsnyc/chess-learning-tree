@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Chess } from 'chess.js';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { join } from 'path';
 import lessonData from '@/data/lesson-puzzle-sets.json';
 import puzzleData from '@/data/lesson-puzzles-full.json';
+import { level1v2 } from '@/data/staging/level1-curriculum-v2';
+import { level1Ends } from '@/data/staging/level1-ends-only';
 
 interface LessonInfo {
   lessonId: string;
@@ -121,14 +125,322 @@ function formatSolution(moves: string[], startsAsBlack: boolean): string {
   return parts.join(' ');
 }
 
+// Dynamic puzzle loading for v2 curriculum
+const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating', '0400-0800');
+
+interface PuzzleWithMeta extends RawPuzzle {
+  sacrificePiece?: string;
+  gamePhase?: string;
+  matePattern?: string;
+}
+
+function loadDynamicPuzzles(
+  requiredTags: string[],
+  excludeTags: string[],
+  ratingMin: number,
+  ratingMax: number,
+  isMixedPractice: boolean,
+  mixedThemes: string[],
+  pieceFilter: string | undefined,
+  count: number
+): RawPuzzle[] {
+  const puzzles: PuzzleWithMeta[] = [];
+  const seenIds = new Set<string>();
+  const filterMap: Record<string, string> = { queen: 'q', rook: 'r', bishop: 'b', knight: 'n', pawn: 'p' };
+  const pieceNames: Record<string, string> = { q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
+
+  if (!existsSync(PUZZLES_DIR)) return [];
+
+  const files = readdirSync(PUZZLES_DIR).filter(f => f.endsWith('.csv'));
+  const shuffledFiles = files.sort(() => Math.random() - 0.5);
+
+  // Collect more puzzles for diversity selection
+  const targetCount = Math.max(count * 10, 60);
+
+  for (const file of shuffledFiles) {
+    if (puzzles.length >= targetCount) break;
+
+    const content = readFileSync(join(PUZZLES_DIR, file), 'utf-8');
+    const lines = content.trim().split('\n');
+    const dataLines = lines.slice(1);
+    const sampleSize = Math.min(dataLines.length, 5000);
+    const sampledLines = dataLines.sort(() => Math.random() - 0.5).slice(0, sampleSize);
+
+    for (const line of sampledLines) {
+      if (puzzles.length >= targetCount) break;
+
+      const parts = line.split(',');
+      if (parts.length < 9) continue;
+
+      const puzzleId = parts[0];
+      if (seenIds.has(puzzleId)) continue;
+
+      const themes = parts[7].split(' ');
+      const rating = parseInt(parts[3], 10);
+
+      if (rating < ratingMin || rating > ratingMax) continue;
+
+      if (isMixedPractice && mixedThemes.length > 0) {
+        if (!mixedThemes.some(t => themes.includes(t))) continue;
+      } else if (requiredTags.length > 0) {
+        if (!requiredTags.every(t => themes.includes(t))) continue;
+      }
+
+      if (excludeTags.length > 0 && excludeTags.some(t => themes.includes(t))) continue;
+
+      // Determine metadata for diversity
+      let sacrificePiece: string | undefined;
+      let gamePhase: string | undefined;
+      let matePattern: string | undefined;
+
+      // Game phase
+      if (themes.includes('endgame')) gamePhase = 'endgame';
+      else if (themes.includes('middlegame')) gamePhase = 'middlegame';
+      else if (themes.includes('opening')) gamePhase = 'opening';
+
+      // Mate pattern
+      if (themes.includes('backRankMate')) matePattern = 'backRank';
+      else if (themes.includes('smotheredMate')) matePattern = 'smothered';
+      else if (themes.includes('arabianMate')) matePattern = 'arabian';
+      else matePattern = 'other';
+
+      // Get the piece making the first move (for sacrifice diversity)
+      try {
+        const chess = new Chess(parts[1]);
+        const moveList = parts[2].split(' ');
+        chess.move({
+          from: moveList[0].slice(0, 2),
+          to: moveList[0].slice(2, 4),
+          promotion: moveList[0][4] as 'q' | 'r' | 'b' | 'n' | undefined,
+        });
+        if (moveList[1]) {
+          const from = moveList[1].slice(0, 2);
+          const piece = chess.get(from as any);
+          if (piece) {
+            sacrificePiece = pieceNames[piece.type];
+
+            // Apply piece filter if specified
+            if (pieceFilter && piece.type !== filterMap[pieceFilter]) continue;
+          }
+        }
+      } catch {
+        continue;
+      }
+
+      seenIds.add(puzzleId);
+
+      puzzles.push({
+        puzzleId,
+        fen: parts[1],
+        moves: parts[2],
+        rating,
+        themes,
+        url: `https://lichess.org/training/${puzzleId}`,
+        sacrificePiece,
+        gamePhase,
+        matePattern,
+      });
+    }
+  }
+
+  // Apply diversity selection
+  const selected = selectDiversePuzzles(puzzles, count);
+
+  // Strip metadata before returning
+  return selected.map(({ sacrificePiece, gamePhase, matePattern, ...puzzle }) => puzzle);
+}
+
+// Select puzzles with maximum diversity across different dimensions
+function selectDiversePuzzles(puzzles: PuzzleWithMeta[], count: number): PuzzleWithMeta[] {
+  if (puzzles.length <= count) return puzzles;
+
+  const selected: PuzzleWithMeta[] = [];
+  const usedPatterns = new Set<string>();
+  const usedPieces = new Set<string>();
+  const usedPhases = new Set<string>();
+
+  // Shuffle first
+  const shuffled = puzzles.sort(() => Math.random() - 0.5);
+
+  // First pass: try to get maximum diversity
+  for (const puzzle of shuffled) {
+    if (selected.length >= count) break;
+
+    const patternKey = puzzle.matePattern || 'unknown';
+    const pieceKey = puzzle.sacrificePiece || 'unknown';
+    const phaseKey = puzzle.gamePhase || 'unknown';
+
+    // Calculate diversity score (prefer puzzles that add new dimensions)
+    const isNewPattern = !usedPatterns.has(patternKey);
+    const isNewPiece = !usedPieces.has(pieceKey);
+    const isNewPhase = !usedPhases.has(phaseKey);
+
+    // In first pass, prioritize puzzles that add new variety
+    if (selected.length < count / 2) {
+      // First half: strongly prefer diversity
+      if (isNewPattern || isNewPiece || isNewPhase) {
+        selected.push(puzzle);
+        usedPatterns.add(patternKey);
+        usedPieces.add(pieceKey);
+        usedPhases.add(phaseKey);
+      }
+    } else {
+      // Second half: accept any that aren't exact duplicates
+      const diversityKey = `${patternKey}-${pieceKey}`;
+      if (!selected.some(p => `${p.matePattern}-${p.sacrificePiece}` === diversityKey)) {
+        selected.push(puzzle);
+        usedPatterns.add(patternKey);
+        usedPieces.add(pieceKey);
+        usedPhases.add(phaseKey);
+      }
+    }
+  }
+
+  // If we still need more, just add remaining
+  if (selected.length < count) {
+    for (const puzzle of shuffled) {
+      if (selected.length >= count) break;
+      if (!selected.includes(puzzle)) {
+        selected.push(puzzle);
+      }
+    }
+  }
+
+  return selected.sort(() => Math.random() - 0.5);
+}
+
+// Find lesson in v2 curriculum (Module structure)
+function getV2LessonInfo(lessonId: string) {
+  for (const mod of level1v2.modules) {
+    const lesson = mod.lessons.find(l => l.id === lessonId);
+    if (lesson) return { lesson, module: mod };
+  }
+  return null;
+}
+
+// Find lesson in level1Ends curriculum (Block → Section → Lesson structure)
+function getEndsLessonInfo(lessonId: string) {
+  for (const block of level1Ends.blocks) {
+    for (const section of block.sections) {
+      const lesson = section.lessons.find(l => l.id === lessonId);
+      if (lesson) return { lesson, section, block };
+    }
+  }
+  return null;
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const lessonId = searchParams.get('lessonId');
+  const count = parseInt(searchParams.get('count') || '6', 10);
+  const curriculumVersion = searchParams.get('curriculumVersion');
 
   if (!lessonId) {
     return NextResponse.json({ error: 'lessonId required' }, { status: 400 });
   }
 
+  // Check for level1Ends curriculum first (Block → Section → Lesson)
+  if (lessonId.startsWith('1.')) {
+    const endsInfo = getEndsLessonInfo(lessonId);
+    if (endsInfo) {
+      const { lesson, section, block } = endsInfo;
+
+      try {
+        const rawPuzzles = loadDynamicPuzzles(
+          lesson.requiredTags || [],
+          lesson.excludeTags || [],
+          lesson.ratingMin,
+          lesson.ratingMax,
+          lesson.isMixedPractice || false,
+          lesson.mixedThemes || [],
+          lesson.pieceFilter,
+          count
+        );
+
+        if (rawPuzzles.length === 0) {
+          return NextResponse.json({
+            error: 'No puzzles found matching criteria',
+            lessonId,
+            lessonName: lesson.name,
+            criteria: {
+              requiredTags: lesson.requiredTags,
+              excludeTags: lesson.excludeTags,
+              rating: `${lesson.ratingMin}-${lesson.ratingMax}`,
+              pieceFilter: lesson.pieceFilter,
+            },
+          }, { status: 404 });
+        }
+
+        const puzzles = rawPuzzles.map(processPuzzle);
+
+        return NextResponse.json({
+          lessonId,
+          lessonName: lesson.name,
+          lessonDescription: lesson.description,
+          sectionName: section.name,
+          blockName: block.name,
+          isReview: section.isReview || false,
+          puzzles,
+          puzzleCount: puzzles.length,
+          isDynamic: true,
+        });
+      } catch (error) {
+        return NextResponse.json({ error: `Failed to load ends puzzles: ${error}` }, { status: 500 });
+      }
+    }
+  }
+
+  // Check for v2 curriculum (Module structure)
+  if (curriculumVersion === 'v2' || lessonId.startsWith('1.')) {
+    const v2Info = getV2LessonInfo(lessonId);
+    if (v2Info) {
+      const { lesson, module } = v2Info;
+
+      try {
+        const rawPuzzles = loadDynamicPuzzles(
+          lesson.requiredTags || [],
+          lesson.excludeTags || [],
+          lesson.ratingMin,
+          lesson.ratingMax,
+          lesson.isMixedPractice || false,
+          lesson.mixedThemes || [],
+          lesson.pieceFilter,
+          count
+        );
+
+        if (rawPuzzles.length === 0) {
+          return NextResponse.json({
+            error: 'No puzzles found matching criteria',
+            lessonId,
+            lessonName: lesson.name,
+            criteria: {
+              requiredTags: lesson.requiredTags,
+              excludeTags: lesson.excludeTags,
+              rating: `${lesson.ratingMin}-${lesson.ratingMax}`,
+              pieceFilter: lesson.pieceFilter,
+            },
+          }, { status: 404 });
+        }
+
+        const puzzles = rawPuzzles.map(processPuzzle);
+
+        return NextResponse.json({
+          lessonId,
+          lessonName: lesson.name,
+          lessonDescription: lesson.description,
+          moduleName: module.name,
+          moduleType: module.themeType,
+          puzzles,
+          puzzleCount: puzzles.length,
+          isDynamic: true,
+        });
+      } catch (error) {
+        return NextResponse.json({ error: `Failed to load v2 puzzles: ${error}` }, { status: 500 });
+      }
+    }
+  }
+
+  // Fall back to original v1 curriculum
   const lessonInfo = getLessonInfo(lessonId);
   if (!lessonInfo) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });

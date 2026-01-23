@@ -1,0 +1,4934 @@
+[
+  {
+    "bracket": "0400-0800",
+    "ratingRange": "400-800 (Beginner)",
+    "totalPuzzles": 492496,
+    "themes": [
+      {
+        "theme": "mateIn1",
+        "totalPuzzles": 266490,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 24042,
+            "percentage": 9
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 23426,
+            "percentage": 9
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1675,
+            "percentage": 1
+          },
+          {
+            "theme": "smotheredMate",
+            "count": 2234,
+            "percentage": 1
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 606,
+            "percentage": 0
+          },
+          {
+            "theme": "promotion",
+            "count": 925,
+            "percentage": 0
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 52,
+            "percentage": 0
+          },
+          {
+            "theme": "deflection",
+            "count": 1,
+            "percentage": 0
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1,
+            "percentage": 0
+          },
+          {
+            "theme": "pin",
+            "count": 671,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "mateIn2",
+        "totalPuzzles": 146720,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 62703,
+            "percentage": 43
+          },
+          {
+            "theme": "sacrifice",
+            "count": 12674,
+            "percentage": 9
+          },
+          {
+            "theme": "fork",
+            "count": 4005,
+            "percentage": 3
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 3879,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1542,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 1293,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 216,
+            "percentage": 0
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 110,
+            "percentage": 0
+          },
+          {
+            "theme": "deflection",
+            "count": 324,
+            "percentage": 0
+          },
+          {
+            "theme": "attraction",
+            "count": 256,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "backRankMate",
+        "totalPuzzles": 93444,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 62703,
+            "percentage": 67
+          },
+          {
+            "theme": "mateIn1",
+            "count": 24042,
+            "percentage": 26
+          },
+          {
+            "theme": "sacrifice",
+            "count": 10252,
+            "percentage": 11
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 6657,
+            "percentage": 7
+          },
+          {
+            "theme": "mateIn3",
+            "count": 6618,
+            "percentage": 7
+          },
+          {
+            "theme": "fork",
+            "count": 2201,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 384,
+            "percentage": 0
+          },
+          {
+            "theme": "promotion",
+            "count": 384,
+            "percentage": 0
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 22,
+            "percentage": 0
+          },
+          {
+            "theme": "deflection",
+            "count": 51,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "fork",
+        "totalPuzzles": 40774,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 4005,
+            "percentage": 10
+          },
+          {
+            "theme": "backRankMate",
+            "count": 2201,
+            "percentage": 5
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 642,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 257,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 387,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 81,
+            "percentage": 0
+          },
+          {
+            "theme": "attraction",
+            "count": 37,
+            "percentage": 0
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 44,
+            "percentage": 0
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 161,
+            "percentage": 0
+          },
+          {
+            "theme": "clearance",
+            "count": 9,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "hangingPiece",
+        "totalPuzzles": 30566,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 23426,
+            "percentage": 77
+          },
+          {
+            "theme": "backRankMate",
+            "count": 6657,
+            "percentage": 22
+          },
+          {
+            "theme": "mateIn2",
+            "count": 3879,
+            "percentage": 13
+          },
+          {
+            "theme": "fork",
+            "count": 642,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 206,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 154,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 148,
+            "percentage": 0
+          },
+          {
+            "theme": "exposedKing",
+            "count": 8,
+            "percentage": 0
+          },
+          {
+            "theme": "quietMove",
+            "count": 27,
+            "percentage": 0
+          },
+          {
+            "theme": "pin",
+            "count": 96,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "advancedPawn",
+        "totalPuzzles": 17543,
+        "connections": [
+          {
+            "theme": "promotion",
+            "count": 11346,
+            "percentage": 65
+          },
+          {
+            "theme": "quietMove",
+            "count": 4325,
+            "percentage": 25
+          },
+          {
+            "theme": "mateIn1",
+            "count": 1675,
+            "percentage": 10
+          },
+          {
+            "theme": "mateIn2",
+            "count": 1542,
+            "percentage": 9
+          },
+          {
+            "theme": "backRankMate",
+            "count": 384,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 164,
+            "percentage": 1
+          },
+          {
+            "theme": "fork",
+            "count": 257,
+            "percentage": 1
+          },
+          {
+            "theme": "deflection",
+            "count": 144,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 206,
+            "percentage": 1
+          },
+          {
+            "theme": "sacrifice",
+            "count": 99,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "sacrifice",
+        "totalPuzzles": 15307,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 12674,
+            "percentage": 83
+          },
+          {
+            "theme": "backRankMate",
+            "count": 10252,
+            "percentage": 67
+          },
+          {
+            "theme": "mateIn3",
+            "count": 2332,
+            "percentage": 15
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 99,
+            "percentage": 1
+          },
+          {
+            "theme": "clearance",
+            "count": 89,
+            "percentage": 1
+          },
+          {
+            "theme": "attraction",
+            "count": 145,
+            "percentage": 1
+          },
+          {
+            "theme": "fork",
+            "count": 78,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 32,
+            "percentage": 0
+          },
+          {
+            "theme": "quietMove",
+            "count": 18,
+            "percentage": 0
+          },
+          {
+            "theme": "exposedKing",
+            "count": 68,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "promotion",
+        "totalPuzzles": 11346,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 11346,
+            "percentage": 100
+          },
+          {
+            "theme": "quietMove",
+            "count": 2815,
+            "percentage": 25
+          },
+          {
+            "theme": "mateIn2",
+            "count": 1293,
+            "percentage": 11
+          },
+          {
+            "theme": "mateIn1",
+            "count": 925,
+            "percentage": 8
+          },
+          {
+            "theme": "backRankMate",
+            "count": 384,
+            "percentage": 3
+          },
+          {
+            "theme": "deflection",
+            "count": 128,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 148,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 64,
+            "percentage": 1
+          },
+          {
+            "theme": "fork",
+            "count": 81,
+            "percentage": 1
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 54,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "mateIn3",
+        "totalPuzzles": 10038,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 6618,
+            "percentage": 66
+          },
+          {
+            "theme": "sacrifice",
+            "count": 2332,
+            "percentage": 23
+          },
+          {
+            "theme": "fork",
+            "count": 387,
+            "percentage": 4
+          },
+          {
+            "theme": "exposedKing",
+            "count": 164,
+            "percentage": 2
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 154,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 54,
+            "percentage": 1
+          },
+          {
+            "theme": "attraction",
+            "count": 65,
+            "percentage": 1
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "promotion",
+            "count": 24,
+            "percentage": 0
+          },
+          {
+            "theme": "quietMove",
+            "count": 21,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "skewer",
+        "totalPuzzles": 7026,
+        "connections": [
+          {
+            "theme": "deflection",
+            "count": 203,
+            "percentage": 3
+          },
+          {
+            "theme": "sacrifice",
+            "count": 36,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 79,
+            "percentage": 1
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 5,
+            "percentage": 0
+          },
+          {
+            "theme": "promotion",
+            "count": 4,
+            "percentage": 0
+          },
+          {
+            "theme": "attraction",
+            "count": 9,
+            "percentage": 0
+          },
+          {
+            "theme": "exposedKing",
+            "count": 31,
+            "percentage": 0
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 9,
+            "percentage": 0
+          },
+          {
+            "theme": "fork",
+            "count": 3,
+            "percentage": 0
+          },
+          {
+            "theme": "pin",
+            "count": 1,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "discoveredAttack",
+        "totalPuzzles": 6135,
+        "connections": [
+          {
+            "theme": "deflection",
+            "count": 280,
+            "percentage": 5
+          },
+          {
+            "theme": "mateIn2",
+            "count": 216,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 164,
+            "percentage": 3
+          },
+          {
+            "theme": "fork",
+            "count": 161,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 64,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn1",
+            "count": 52,
+            "percentage": 1
+          },
+          {
+            "theme": "pin",
+            "count": 34,
+            "percentage": 1
+          },
+          {
+            "theme": "capturingDefender",
+            "count": 38,
+            "percentage": 1
+          },
+          {
+            "theme": "backRankMate",
+            "count": 22,
+            "percentage": 0
+          },
+          {
+            "theme": "mateIn3",
+            "count": 23,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "quietMove",
+        "totalPuzzles": 5314,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 4325,
+            "percentage": 81
+          },
+          {
+            "theme": "promotion",
+            "count": 2815,
+            "percentage": 53
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 99,
+            "percentage": 2
+          },
+          {
+            "theme": "exposedKing",
+            "count": 31,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 27,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 21,
+            "percentage": 0
+          },
+          {
+            "theme": "sacrifice",
+            "count": 18,
+            "percentage": 0
+          },
+          {
+            "theme": "fork",
+            "count": 4,
+            "percentage": 0
+          },
+          {
+            "theme": "deflection",
+            "count": 4,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "smotheredMate",
+        "totalPuzzles": 2234,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 2234,
+            "percentage": 100
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 73,
+            "percentage": 3
+          },
+          {
+            "theme": "pin",
+            "count": 16,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "pin",
+        "totalPuzzles": 2162,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 671,
+            "percentage": 31
+          },
+          {
+            "theme": "mateIn2",
+            "count": 227,
+            "percentage": 10
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 192,
+            "percentage": 9
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 96,
+            "percentage": 4
+          },
+          {
+            "theme": "clearance",
+            "count": 44,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 34,
+            "percentage": 2
+          },
+          {
+            "theme": "fork",
+            "count": 36,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 30,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 21,
+            "percentage": 1
+          },
+          {
+            "theme": "attraction",
+            "count": 20,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "deflection",
+        "totalPuzzles": 1341,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 324,
+            "percentage": 24
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 280,
+            "percentage": 21
+          },
+          {
+            "theme": "skewer",
+            "count": 203,
+            "percentage": 15
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 144,
+            "percentage": 11
+          },
+          {
+            "theme": "promotion",
+            "count": 128,
+            "percentage": 10
+          },
+          {
+            "theme": "backRankMate",
+            "count": 51,
+            "percentage": 4
+          },
+          {
+            "theme": "mateIn3",
+            "count": 34,
+            "percentage": 3
+          },
+          {
+            "theme": "exposedKing",
+            "count": 11,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 12,
+            "percentage": 1
+          },
+          {
+            "theme": "quietMove",
+            "count": 4,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "defensiveMove",
+        "totalPuzzles": 1155,
+        "connections": [
+          {
+            "theme": "pin",
+            "count": 192,
+            "percentage": 17
+          },
+          {
+            "theme": "quietMove",
+            "count": 99,
+            "percentage": 9
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 44,
+            "percentage": 4
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 29,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 15,
+            "percentage": 1
+          },
+          {
+            "theme": "fork",
+            "count": 14,
+            "percentage": 1
+          },
+          {
+            "theme": "trappedPiece",
+            "count": 14,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1,
+            "percentage": 0
+          },
+          {
+            "theme": "sacrifice",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "doubleCheck",
+        "totalPuzzles": 763,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 606,
+            "percentage": 79
+          },
+          {
+            "theme": "mateIn2",
+            "count": 110,
+            "percentage": 14
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 75,
+            "percentage": 10
+          },
+          {
+            "theme": "promotion",
+            "count": 54,
+            "percentage": 7
+          },
+          {
+            "theme": "fork",
+            "count": 44,
+            "percentage": 6
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 8,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "mateIn3",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1,
+            "percentage": 0
+          },
+          {
+            "theme": "backRankMate",
+            "count": 2,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "attraction",
+        "totalPuzzles": 480,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 256,
+            "percentage": 53
+          },
+          {
+            "theme": "sacrifice",
+            "count": 145,
+            "percentage": 30
+          },
+          {
+            "theme": "mateIn3",
+            "count": 65,
+            "percentage": 14
+          },
+          {
+            "theme": "backRankMate",
+            "count": 57,
+            "percentage": 12
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 43,
+            "percentage": 9
+          },
+          {
+            "theme": "fork",
+            "count": 37,
+            "percentage": 8
+          },
+          {
+            "theme": "promotion",
+            "count": 40,
+            "percentage": 8
+          },
+          {
+            "theme": "exposedKing",
+            "count": 26,
+            "percentage": 5
+          },
+          {
+            "theme": "clearance",
+            "count": 19,
+            "percentage": 4
+          },
+          {
+            "theme": "pin",
+            "count": 20,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "xRayAttack",
+        "totalPuzzles": 409,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 308,
+            "percentage": 75
+          },
+          {
+            "theme": "backRankMate",
+            "count": 271,
+            "percentage": 66
+          },
+          {
+            "theme": "mateIn3",
+            "count": 26,
+            "percentage": 6
+          },
+          {
+            "theme": "sacrifice",
+            "count": 8,
+            "percentage": 2
+          },
+          {
+            "theme": "fork",
+            "count": 5,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "pin",
+            "count": 1,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "exposedKing",
+        "totalPuzzles": 395,
+        "connections": [
+          {
+            "theme": "mateIn3",
+            "count": 164,
+            "percentage": 42
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 76,
+            "percentage": 19
+          },
+          {
+            "theme": "sacrifice",
+            "count": 68,
+            "percentage": 17
+          },
+          {
+            "theme": "fork",
+            "count": 55,
+            "percentage": 14
+          },
+          {
+            "theme": "promotion",
+            "count": 35,
+            "percentage": 9
+          },
+          {
+            "theme": "quietMove",
+            "count": 31,
+            "percentage": 8
+          },
+          {
+            "theme": "skewer",
+            "count": 31,
+            "percentage": 8
+          },
+          {
+            "theme": "attraction",
+            "count": 26,
+            "percentage": 7
+          },
+          {
+            "theme": "deflection",
+            "count": 11,
+            "percentage": 3
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 8,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "clearance",
+        "totalPuzzles": 248,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 152,
+            "percentage": 61
+          },
+          {
+            "theme": "sacrifice",
+            "count": 89,
+            "percentage": 36
+          },
+          {
+            "theme": "pin",
+            "count": 44,
+            "percentage": 18
+          },
+          {
+            "theme": "attraction",
+            "count": 19,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn3",
+            "count": 13,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 9,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 7,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 5,
+            "percentage": 2
+          },
+          {
+            "theme": "exposedKing",
+            "count": 2,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "trappedPiece",
+        "totalPuzzles": 129,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 29,
+            "percentage": 22
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 15,
+            "percentage": 12
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 14,
+            "percentage": 11
+          },
+          {
+            "theme": "promotion",
+            "count": 5,
+            "percentage": 4
+          },
+          {
+            "theme": "fork",
+            "count": 3,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "capturingDefender",
+        "totalPuzzles": 50,
+        "connections": [
+          {
+            "theme": "discoveredAttack",
+            "count": 38,
+            "percentage": 76
+          },
+          {
+            "theme": "pin",
+            "count": 5,
+            "percentage": 10
+          },
+          {
+            "theme": "attraction",
+            "count": 1,
+            "percentage": 2
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 1,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "interference",
+        "totalPuzzles": 39,
+        "connections": [
+          {
+            "theme": "fork",
+            "count": 12,
+            "percentage": 31
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 1,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 1,
+            "percentage": 3
+          },
+          {
+            "theme": "mateIn2",
+            "count": 1,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "intermezzo",
+        "totalPuzzles": 6,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 1,
+            "percentage": 17
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 1,
+            "percentage": 17
+          }
+        ]
+      }
+    ],
+    "topConnections": [
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn2",
+        "count": 62703,
+        "percentage": 67
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn1",
+        "count": 24042,
+        "percentage": 26
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn1",
+        "count": 23426,
+        "percentage": 77
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "sacrifice",
+        "count": 12674,
+        "percentage": 83
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "promotion",
+        "count": 11346,
+        "percentage": 100
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "sacrifice",
+        "count": 10252,
+        "percentage": 67
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "hangingPiece",
+        "count": 6657,
+        "percentage": 22
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn3",
+        "count": 6618,
+        "percentage": 66
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "quietMove",
+        "count": 4325,
+        "percentage": 81
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn2",
+        "count": 4005,
+        "percentage": 10
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn2",
+        "count": 3879,
+        "percentage": 13
+      },
+      {
+        "theme1": "promotion",
+        "theme2": "quietMove",
+        "count": 2815,
+        "percentage": 53
+      },
+      {
+        "theme1": "mateIn3",
+        "theme2": "sacrifice",
+        "count": 2332,
+        "percentage": 23
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "smotheredMate",
+        "count": 2234,
+        "percentage": 100
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "fork",
+        "count": 2201,
+        "percentage": 5
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "mateIn1",
+        "count": 1675,
+        "percentage": 10
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "mateIn2",
+        "count": 1542,
+        "percentage": 9
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "promotion",
+        "count": 1293,
+        "percentage": 11
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "promotion",
+        "count": 925,
+        "percentage": 8
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "pin",
+        "count": 671,
+        "percentage": 31
+      },
+      {
+        "theme1": "fork",
+        "theme2": "hangingPiece",
+        "count": 642,
+        "percentage": 2
+      },
+      {
+        "theme1": "doubleCheck",
+        "theme2": "mateIn1",
+        "count": 606,
+        "percentage": 79
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn3",
+        "count": 387,
+        "percentage": 4
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "backRankMate",
+        "count": 384,
+        "percentage": 2
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "promotion",
+        "count": 384,
+        "percentage": 3
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "mateIn2",
+        "count": 324,
+        "percentage": 24
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "xRayAttack",
+        "count": 308,
+        "percentage": 75
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "discoveredAttack",
+        "count": 280,
+        "percentage": 21
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "xRayAttack",
+        "count": 271,
+        "percentage": 66
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "fork",
+        "count": 257,
+        "percentage": 1
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "mateIn2",
+        "count": 256,
+        "percentage": 53
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "pin",
+        "count": 227,
+        "percentage": 10
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "mateIn2",
+        "count": 216,
+        "percentage": 4
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "hangingPiece",
+        "count": 206,
+        "percentage": 1
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "skewer",
+        "count": 203,
+        "percentage": 15
+      },
+      {
+        "theme1": "defensiveMove",
+        "theme2": "pin",
+        "count": 192,
+        "percentage": 17
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "discoveredAttack",
+        "count": 164,
+        "percentage": 3
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "mateIn3",
+        "count": 164,
+        "percentage": 42
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "fork",
+        "count": 161,
+        "percentage": 3
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn3",
+        "count": 154,
+        "percentage": 2
+      },
+      {
+        "theme1": "clearance",
+        "theme2": "mateIn2",
+        "count": 152,
+        "percentage": 61
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "promotion",
+        "count": 148,
+        "percentage": 1
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "sacrifice",
+        "count": 145,
+        "percentage": 30
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "deflection",
+        "count": 144,
+        "percentage": 11
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "promotion",
+        "count": 128,
+        "percentage": 10
+      },
+      {
+        "theme1": "doubleCheck",
+        "theme2": "mateIn2",
+        "count": 110,
+        "percentage": 14
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "sacrifice",
+        "count": 99,
+        "percentage": 1
+      },
+      {
+        "theme1": "defensiveMove",
+        "theme2": "quietMove",
+        "count": 99,
+        "percentage": 9
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "pin",
+        "count": 96,
+        "percentage": 4
+      },
+      {
+        "theme1": "clearance",
+        "theme2": "sacrifice",
+        "count": 89,
+        "percentage": 36
+      }
+    ]
+  },
+  {
+    "bracket": "0800-1200",
+    "ratingRange": "800-1200 (Casual)",
+    "totalPuzzles": 1286530,
+    "themes": [
+      {
+        "theme": "mateIn1",
+        "totalPuzzles": 386363,
+        "connections": [
+          {
+            "theme": "hangingPiece",
+            "count": 16141,
+            "percentage": 4
+          },
+          {
+            "theme": "smotheredMate",
+            "count": 12442,
+            "percentage": 3
+          },
+          {
+            "theme": "backRankMate",
+            "count": 8027,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 6086,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 3500,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 2156,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 643,
+            "percentage": 0
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 1394,
+            "percentage": 0
+          },
+          {
+            "theme": "mateIn2",
+            "count": 2,
+            "percentage": 0
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 1,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "mateIn2",
+        "totalPuzzles": 318066,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 36268,
+            "percentage": 11
+          },
+          {
+            "theme": "sacrifice",
+            "count": 28502,
+            "percentage": 9
+          },
+          {
+            "theme": "deflection",
+            "count": 15233,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 13032,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 7894,
+            "percentage": 2
+          },
+          {
+            "theme": "promotion",
+            "count": 5848,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 5717,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 5231,
+            "percentage": 2
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 6576,
+            "percentage": 2
+          },
+          {
+            "theme": "attraction",
+            "count": 4458,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "fork",
+        "totalPuzzles": 264610,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 13032,
+            "percentage": 5
+          },
+          {
+            "theme": "attraction",
+            "count": 4730,
+            "percentage": 2
+          },
+          {
+            "theme": "exposedKing",
+            "count": 4302,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2771,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 3554,
+            "percentage": 1
+          },
+          {
+            "theme": "backRankMate",
+            "count": 3821,
+            "percentage": 1
+          },
+          {
+            "theme": "sacrifice",
+            "count": 3610,
+            "percentage": 1
+          },
+          {
+            "theme": "deflection",
+            "count": 1579,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 3742,
+            "percentage": 1
+          },
+          {
+            "theme": "pin",
+            "count": 2402,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "discoveredAttack",
+        "totalPuzzles": 76967,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 5717,
+            "percentage": 7
+          },
+          {
+            "theme": "fork",
+            "count": 3554,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 3502,
+            "percentage": 5
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 3136,
+            "percentage": 4
+          },
+          {
+            "theme": "pin",
+            "count": 2013,
+            "percentage": 3
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1663,
+            "percentage": 2
+          },
+          {
+            "theme": "mateIn1",
+            "count": 643,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 530,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 624,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 887,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "backRankMate",
+        "totalPuzzles": 70494,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 36268,
+            "percentage": 51
+          },
+          {
+            "theme": "sacrifice",
+            "count": 25857,
+            "percentage": 37
+          },
+          {
+            "theme": "mateIn3",
+            "count": 25845,
+            "percentage": 37
+          },
+          {
+            "theme": "mateIn1",
+            "count": 8027,
+            "percentage": 11
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 4507,
+            "percentage": 6
+          },
+          {
+            "theme": "fork",
+            "count": 3821,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 3100,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1566,
+            "percentage": 2
+          },
+          {
+            "theme": "promotion",
+            "count": 1563,
+            "percentage": 2
+          },
+          {
+            "theme": "xRayAttack",
+            "count": 1631,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "advancedPawn",
+        "totalPuzzles": 64391,
+        "connections": [
+          {
+            "theme": "promotion",
+            "count": 31754,
+            "percentage": 49
+          },
+          {
+            "theme": "mateIn2",
+            "count": 7894,
+            "percentage": 12
+          },
+          {
+            "theme": "quietMove",
+            "count": 5450,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn1",
+            "count": 3500,
+            "percentage": 5
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 3136,
+            "percentage": 5
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 2513,
+            "percentage": 4
+          },
+          {
+            "theme": "fork",
+            "count": 2771,
+            "percentage": 4
+          },
+          {
+            "theme": "deflection",
+            "count": 2245,
+            "percentage": 3
+          },
+          {
+            "theme": "exposedKing",
+            "count": 2146,
+            "percentage": 3
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1920,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "sacrifice",
+        "totalPuzzles": 61444,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 28502,
+            "percentage": 46
+          },
+          {
+            "theme": "backRankMate",
+            "count": 25857,
+            "percentage": 42
+          },
+          {
+            "theme": "mateIn3",
+            "count": 25116,
+            "percentage": 41
+          },
+          {
+            "theme": "attraction",
+            "count": 6159,
+            "percentage": 10
+          },
+          {
+            "theme": "fork",
+            "count": 3610,
+            "percentage": 6
+          },
+          {
+            "theme": "clearance",
+            "count": 3598,
+            "percentage": 6
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1920,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 1663,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 693,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 907,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "pin",
+        "totalPuzzles": 56529,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 6086,
+            "percentage": 11
+          },
+          {
+            "theme": "mateIn2",
+            "count": 5231,
+            "percentage": 9
+          },
+          {
+            "theme": "deflection",
+            "count": 2020,
+            "percentage": 4
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 2013,
+            "percentage": 4
+          },
+          {
+            "theme": "fork",
+            "count": 2402,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1307,
+            "percentage": 2
+          },
+          {
+            "theme": "sacrifice",
+            "count": 897,
+            "percentage": 2
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 1010,
+            "percentage": 2
+          },
+          {
+            "theme": "attraction",
+            "count": 999,
+            "percentage": 2
+          },
+          {
+            "theme": "mateIn3",
+            "count": 850,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "deflection",
+        "totalPuzzles": 53794,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 15233,
+            "percentage": 28
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 3502,
+            "percentage": 7
+          },
+          {
+            "theme": "mateIn3",
+            "count": 3395,
+            "percentage": 6
+          },
+          {
+            "theme": "backRankMate",
+            "count": 3100,
+            "percentage": 6
+          },
+          {
+            "theme": "skewer",
+            "count": 2948,
+            "percentage": 5
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2245,
+            "percentage": 4
+          },
+          {
+            "theme": "pin",
+            "count": 2020,
+            "percentage": 4
+          },
+          {
+            "theme": "attraction",
+            "count": 1947,
+            "percentage": 4
+          },
+          {
+            "theme": "promotion",
+            "count": 1693,
+            "percentage": 3
+          },
+          {
+            "theme": "fork",
+            "count": 1579,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "mateIn3",
+        "totalPuzzles": 52975,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 25845,
+            "percentage": 49
+          },
+          {
+            "theme": "sacrifice",
+            "count": 25116,
+            "percentage": 47
+          },
+          {
+            "theme": "exposedKing",
+            "count": 4563,
+            "percentage": 9
+          },
+          {
+            "theme": "fork",
+            "count": 3742,
+            "percentage": 7
+          },
+          {
+            "theme": "deflection",
+            "count": 3395,
+            "percentage": 6
+          },
+          {
+            "theme": "attraction",
+            "count": 1792,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1142,
+            "percentage": 2
+          },
+          {
+            "theme": "promotion",
+            "count": 841,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 887,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 850,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "hangingPiece",
+        "totalPuzzles": 51955,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 16141,
+            "percentage": 31
+          },
+          {
+            "theme": "mateIn2",
+            "count": 6576,
+            "percentage": 13
+          },
+          {
+            "theme": "backRankMate",
+            "count": 4507,
+            "percentage": 9
+          },
+          {
+            "theme": "fork",
+            "count": 3414,
+            "percentage": 7
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1347,
+            "percentage": 3
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 1565,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 942,
+            "percentage": 2
+          },
+          {
+            "theme": "intermezzo",
+            "count": 1189,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 587,
+            "percentage": 1
+          },
+          {
+            "theme": "mateIn3",
+            "count": 487,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "skewer",
+        "totalPuzzles": 45818,
+        "connections": [
+          {
+            "theme": "deflection",
+            "count": 2948,
+            "percentage": 6
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1946,
+            "percentage": 4
+          },
+          {
+            "theme": "attraction",
+            "count": 736,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 249,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 437,
+            "percentage": 1
+          },
+          {
+            "theme": "fork",
+            "count": 439,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 633,
+            "percentage": 1
+          },
+          {
+            "theme": "sacrifice",
+            "count": 452,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 158,
+            "percentage": 0
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 41,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "promotion",
+        "totalPuzzles": 31754,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 31754,
+            "percentage": 100
+          },
+          {
+            "theme": "mateIn2",
+            "count": 5848,
+            "percentage": 18
+          },
+          {
+            "theme": "quietMove",
+            "count": 3085,
+            "percentage": 10
+          },
+          {
+            "theme": "mateIn1",
+            "count": 2156,
+            "percentage": 7
+          },
+          {
+            "theme": "deflection",
+            "count": 1693,
+            "percentage": 5
+          },
+          {
+            "theme": "backRankMate",
+            "count": 1563,
+            "percentage": 5
+          },
+          {
+            "theme": "attraction",
+            "count": 1167,
+            "percentage": 4
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1365,
+            "percentage": 4
+          },
+          {
+            "theme": "mateIn3",
+            "count": 841,
+            "percentage": 3
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 942,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "defensiveMove",
+        "totalPuzzles": 21381,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 2513,
+            "percentage": 12
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 1565,
+            "percentage": 7
+          },
+          {
+            "theme": "pin",
+            "count": 1010,
+            "percentage": 5
+          },
+          {
+            "theme": "quietMove",
+            "count": 899,
+            "percentage": 4
+          },
+          {
+            "theme": "fork",
+            "count": 946,
+            "percentage": 4
+          },
+          {
+            "theme": "promotion",
+            "count": 661,
+            "percentage": 3
+          },
+          {
+            "theme": "deflection",
+            "count": 109,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 190,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 107,
+            "percentage": 1
+          },
+          {
+            "theme": "skewer",
+            "count": 146,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "attraction",
+        "totalPuzzles": 17367,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 6159,
+            "percentage": 35
+          },
+          {
+            "theme": "fork",
+            "count": 4730,
+            "percentage": 27
+          },
+          {
+            "theme": "mateIn2",
+            "count": 4458,
+            "percentage": 26
+          },
+          {
+            "theme": "deflection",
+            "count": 1947,
+            "percentage": 11
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1736,
+            "percentage": 10
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1792,
+            "percentage": 10
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1481,
+            "percentage": 9
+          },
+          {
+            "theme": "promotion",
+            "count": 1167,
+            "percentage": 7
+          },
+          {
+            "theme": "pin",
+            "count": 999,
+            "percentage": 6
+          },
+          {
+            "theme": "skewer",
+            "count": 736,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "exposedKing",
+        "totalPuzzles": 16228,
+        "connections": [
+          {
+            "theme": "mateIn3",
+            "count": 4563,
+            "percentage": 28
+          },
+          {
+            "theme": "fork",
+            "count": 4302,
+            "percentage": 27
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2146,
+            "percentage": 13
+          },
+          {
+            "theme": "skewer",
+            "count": 1946,
+            "percentage": 12
+          },
+          {
+            "theme": "attraction",
+            "count": 1736,
+            "percentage": 11
+          },
+          {
+            "theme": "deflection",
+            "count": 1602,
+            "percentage": 10
+          },
+          {
+            "theme": "promotion",
+            "count": 1365,
+            "percentage": 8
+          },
+          {
+            "theme": "sacrifice",
+            "count": 907,
+            "percentage": 6
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 624,
+            "percentage": 4
+          },
+          {
+            "theme": "pin",
+            "count": 256,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "smotheredMate",
+        "totalPuzzles": 12857,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 12442,
+            "percentage": 97
+          },
+          {
+            "theme": "pin",
+            "count": 818,
+            "percentage": 6
+          },
+          {
+            "theme": "mateIn2",
+            "count": 274,
+            "percentage": 2
+          },
+          {
+            "theme": "mateIn3",
+            "count": 141,
+            "percentage": 1
+          },
+          {
+            "theme": "sacrifice",
+            "count": 135,
+            "percentage": 1
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 105,
+            "percentage": 1
+          },
+          {
+            "theme": "deflection",
+            "count": 14,
+            "percentage": 0
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 52,
+            "percentage": 0
+          },
+          {
+            "theme": "fork",
+            "count": 11,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "quietMove",
+        "totalPuzzles": 10188,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 5450,
+            "percentage": 53
+          },
+          {
+            "theme": "promotion",
+            "count": 3085,
+            "percentage": 30
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 899,
+            "percentage": 9
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 238,
+            "percentage": 2
+          },
+          {
+            "theme": "fork",
+            "count": 56,
+            "percentage": 1
+          },
+          {
+            "theme": "sacrifice",
+            "count": 134,
+            "percentage": 1
+          },
+          {
+            "theme": "deflection",
+            "count": 56,
+            "percentage": 1
+          },
+          {
+            "theme": "skewer",
+            "count": 91,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 39,
+            "percentage": 0
+          },
+          {
+            "theme": "mateIn3",
+            "count": 23,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "clearance",
+        "totalPuzzles": 7586,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 3885,
+            "percentage": 51
+          },
+          {
+            "theme": "sacrifice",
+            "count": 3598,
+            "percentage": 47
+          },
+          {
+            "theme": "pin",
+            "count": 846,
+            "percentage": 11
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 593,
+            "percentage": 8
+          },
+          {
+            "theme": "fork",
+            "count": 598,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn3",
+            "count": 617,
+            "percentage": 8
+          },
+          {
+            "theme": "promotion",
+            "count": 360,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 252,
+            "percentage": 3
+          },
+          {
+            "theme": "attraction",
+            "count": 230,
+            "percentage": 3
+          },
+          {
+            "theme": "exposedKing",
+            "count": 176,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "doubleCheck",
+        "totalPuzzles": 4472,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 1955,
+            "percentage": 44
+          },
+          {
+            "theme": "mateIn1",
+            "count": 1394,
+            "percentage": 31
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 687,
+            "percentage": 15
+          },
+          {
+            "theme": "fork",
+            "count": 606,
+            "percentage": 14
+          },
+          {
+            "theme": "promotion",
+            "count": 298,
+            "percentage": 7
+          },
+          {
+            "theme": "attraction",
+            "count": 213,
+            "percentage": 5
+          },
+          {
+            "theme": "mateIn3",
+            "count": 195,
+            "percentage": 4
+          },
+          {
+            "theme": "sacrifice",
+            "count": 171,
+            "percentage": 4
+          },
+          {
+            "theme": "exposedKing",
+            "count": 71,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 111,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "xRayAttack",
+        "totalPuzzles": 4291,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 2153,
+            "percentage": 50
+          },
+          {
+            "theme": "backRankMate",
+            "count": 1631,
+            "percentage": 38
+          },
+          {
+            "theme": "fork",
+            "count": 496,
+            "percentage": 12
+          },
+          {
+            "theme": "mateIn3",
+            "count": 414,
+            "percentage": 10
+          },
+          {
+            "theme": "sacrifice",
+            "count": 280,
+            "percentage": 7
+          },
+          {
+            "theme": "exposedKing",
+            "count": 80,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 41,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 39,
+            "percentage": 1
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 17,
+            "percentage": 0
+          },
+          {
+            "theme": "promotion",
+            "count": 10,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "trappedPiece",
+        "totalPuzzles": 3840,
+        "connections": [
+          {
+            "theme": "defensiveMove",
+            "count": 313,
+            "percentage": 8
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 216,
+            "percentage": 6
+          },
+          {
+            "theme": "fork",
+            "count": 173,
+            "percentage": 5
+          },
+          {
+            "theme": "pin",
+            "count": 171,
+            "percentage": 4
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 106,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 25,
+            "percentage": 1
+          },
+          {
+            "theme": "clearance",
+            "count": 36,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 52,
+            "percentage": 1
+          },
+          {
+            "theme": "capturingDefender",
+            "count": 25,
+            "percentage": 1
+          },
+          {
+            "theme": "quietMove",
+            "count": 10,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "intermezzo",
+        "totalPuzzles": 3174,
+        "connections": [
+          {
+            "theme": "hangingPiece",
+            "count": 1189,
+            "percentage": 37
+          },
+          {
+            "theme": "mateIn2",
+            "count": 398,
+            "percentage": 13
+          },
+          {
+            "theme": "pin",
+            "count": 146,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 117,
+            "percentage": 4
+          },
+          {
+            "theme": "interference",
+            "count": 115,
+            "percentage": 4
+          },
+          {
+            "theme": "exposedKing",
+            "count": 77,
+            "percentage": 2
+          },
+          {
+            "theme": "capturingDefender",
+            "count": 75,
+            "percentage": 2
+          },
+          {
+            "theme": "mateIn3",
+            "count": 51,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 29,
+            "percentage": 1
+          },
+          {
+            "theme": "attraction",
+            "count": 31,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "interference",
+        "totalPuzzles": 2429,
+        "connections": [
+          {
+            "theme": "deflection",
+            "count": 338,
+            "percentage": 14
+          },
+          {
+            "theme": "fork",
+            "count": 204,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn2",
+            "count": 203,
+            "percentage": 8
+          },
+          {
+            "theme": "skewer",
+            "count": 179,
+            "percentage": 7
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 151,
+            "percentage": 6
+          },
+          {
+            "theme": "intermezzo",
+            "count": 115,
+            "percentage": 5
+          },
+          {
+            "theme": "exposedKing",
+            "count": 109,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 76,
+            "percentage": 3
+          },
+          {
+            "theme": "pin",
+            "count": 42,
+            "percentage": 2
+          },
+          {
+            "theme": "attraction",
+            "count": 17,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "capturingDefender",
+        "totalPuzzles": 1981,
+        "connections": [
+          {
+            "theme": "discoveredAttack",
+            "count": 655,
+            "percentage": 33
+          },
+          {
+            "theme": "fork",
+            "count": 275,
+            "percentage": 14
+          },
+          {
+            "theme": "pin",
+            "count": 257,
+            "percentage": 13
+          },
+          {
+            "theme": "attraction",
+            "count": 222,
+            "percentage": 11
+          },
+          {
+            "theme": "intermezzo",
+            "count": 75,
+            "percentage": 4
+          },
+          {
+            "theme": "deflection",
+            "count": 71,
+            "percentage": 4
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 54,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 47,
+            "percentage": 2
+          },
+          {
+            "theme": "exposedKing",
+            "count": 36,
+            "percentage": 2
+          },
+          {
+            "theme": "skewer",
+            "count": 33,
+            "percentage": 2
+          }
+        ]
+      }
+    ],
+    "topConnections": [
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn2",
+        "count": 36268,
+        "percentage": 51
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "promotion",
+        "count": 31754,
+        "percentage": 100
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "sacrifice",
+        "count": 28502,
+        "percentage": 46
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "sacrifice",
+        "count": 25857,
+        "percentage": 42
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn3",
+        "count": 25845,
+        "percentage": 49
+      },
+      {
+        "theme1": "mateIn3",
+        "theme2": "sacrifice",
+        "count": 25116,
+        "percentage": 47
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn1",
+        "count": 16141,
+        "percentage": 31
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "mateIn2",
+        "count": 15233,
+        "percentage": 28
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn2",
+        "count": 13032,
+        "percentage": 5
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "smotheredMate",
+        "count": 12442,
+        "percentage": 97
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn1",
+        "count": 8027,
+        "percentage": 11
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "mateIn2",
+        "count": 7894,
+        "percentage": 12
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn2",
+        "count": 6576,
+        "percentage": 13
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "sacrifice",
+        "count": 6159,
+        "percentage": 35
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "pin",
+        "count": 6086,
+        "percentage": 11
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "promotion",
+        "count": 5848,
+        "percentage": 18
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "mateIn2",
+        "count": 5717,
+        "percentage": 7
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "quietMove",
+        "count": 5450,
+        "percentage": 53
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "pin",
+        "count": 5231,
+        "percentage": 9
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "fork",
+        "count": 4730,
+        "percentage": 27
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "mateIn3",
+        "count": 4563,
+        "percentage": 28
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "hangingPiece",
+        "count": 4507,
+        "percentage": 9
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "mateIn2",
+        "count": 4458,
+        "percentage": 26
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "fork",
+        "count": 4302,
+        "percentage": 27
+      },
+      {
+        "theme1": "clearance",
+        "theme2": "mateIn2",
+        "count": 3885,
+        "percentage": 51
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "fork",
+        "count": 3821,
+        "percentage": 5
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn3",
+        "count": 3742,
+        "percentage": 7
+      },
+      {
+        "theme1": "fork",
+        "theme2": "sacrifice",
+        "count": 3610,
+        "percentage": 6
+      },
+      {
+        "theme1": "clearance",
+        "theme2": "sacrifice",
+        "count": 3598,
+        "percentage": 47
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "fork",
+        "count": 3554,
+        "percentage": 5
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "discoveredAttack",
+        "count": 3502,
+        "percentage": 7
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "mateIn1",
+        "count": 3500,
+        "percentage": 5
+      },
+      {
+        "theme1": "fork",
+        "theme2": "hangingPiece",
+        "count": 3414,
+        "percentage": 7
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "mateIn3",
+        "count": 3395,
+        "percentage": 6
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "discoveredAttack",
+        "count": 3136,
+        "percentage": 5
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "deflection",
+        "count": 3100,
+        "percentage": 6
+      },
+      {
+        "theme1": "promotion",
+        "theme2": "quietMove",
+        "count": 3085,
+        "percentage": 30
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "skewer",
+        "count": 2948,
+        "percentage": 6
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "fork",
+        "count": 2771,
+        "percentage": 4
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "defensiveMove",
+        "count": 2513,
+        "percentage": 12
+      },
+      {
+        "theme1": "fork",
+        "theme2": "pin",
+        "count": 2402,
+        "percentage": 4
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "deflection",
+        "count": 2245,
+        "percentage": 4
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "promotion",
+        "count": 2156,
+        "percentage": 7
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "xRayAttack",
+        "count": 2153,
+        "percentage": 50
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "exposedKing",
+        "count": 2146,
+        "percentage": 13
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "pin",
+        "count": 2020,
+        "percentage": 4
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "pin",
+        "count": 2013,
+        "percentage": 4
+      },
+      {
+        "theme1": "doubleCheck",
+        "theme2": "mateIn2",
+        "count": 1955,
+        "percentage": 44
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "deflection",
+        "count": 1947,
+        "percentage": 11
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "skewer",
+        "count": 1946,
+        "percentage": 12
+      }
+    ]
+  },
+  {
+    "bracket": "1200-1600",
+    "ratingRange": "1200-1600 (Club)",
+    "totalPuzzles": 979054,
+    "themes": [
+      {
+        "theme": "fork",
+        "totalPuzzles": 196120,
+        "connections": [
+          {
+            "theme": "attraction",
+            "count": 24648,
+            "percentage": 13
+          },
+          {
+            "theme": "sacrifice",
+            "count": 22257,
+            "percentage": 11
+          },
+          {
+            "theme": "exposedKing",
+            "count": 12276,
+            "percentage": 6
+          },
+          {
+            "theme": "mateIn2",
+            "count": 9373,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 5954,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 5112,
+            "percentage": 3
+          },
+          {
+            "theme": "pin",
+            "count": 5224,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 4272,
+            "percentage": 2
+          },
+          {
+            "theme": "mateIn3",
+            "count": 4897,
+            "percentage": 2
+          },
+          {
+            "theme": "clearance",
+            "count": 1635,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "mateIn2",
+        "totalPuzzles": 185703,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 33659,
+            "percentage": 18
+          },
+          {
+            "theme": "pin",
+            "count": 12301,
+            "percentage": 7
+          },
+          {
+            "theme": "attraction",
+            "count": 13074,
+            "percentage": 7
+          },
+          {
+            "theme": "backRankMate",
+            "count": 8485,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 9373,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 7949,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 5908,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 5675,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 3235,
+            "percentage": 2
+          },
+          {
+            "theme": "xRayAttack",
+            "count": 3488,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "mateIn1",
+        "totalPuzzles": 129802,
+        "connections": [
+          {
+            "theme": "pin",
+            "count": 6535,
+            "percentage": 5
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 3783,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2055,
+            "percentage": 2
+          },
+          {
+            "theme": "smotheredMate",
+            "count": 2076,
+            "percentage": 2
+          },
+          {
+            "theme": "promotion",
+            "count": 1168,
+            "percentage": 1
+          },
+          {
+            "theme": "backRankMate",
+            "count": 1153,
+            "percentage": 1
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 1017,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 596,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "sacrifice",
+        "totalPuzzles": 106489,
+        "connections": [
+          {
+            "theme": "attraction",
+            "count": 39388,
+            "percentage": 37
+          },
+          {
+            "theme": "mateIn2",
+            "count": 33659,
+            "percentage": 32
+          },
+          {
+            "theme": "mateIn3",
+            "count": 27164,
+            "percentage": 26
+          },
+          {
+            "theme": "fork",
+            "count": 22257,
+            "percentage": 21
+          },
+          {
+            "theme": "backRankMate",
+            "count": 10084,
+            "percentage": 9
+          },
+          {
+            "theme": "pin",
+            "count": 7354,
+            "percentage": 7
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 4830,
+            "percentage": 5
+          },
+          {
+            "theme": "exposedKing",
+            "count": 4865,
+            "percentage": 5
+          },
+          {
+            "theme": "clearance",
+            "count": 5805,
+            "percentage": 5
+          },
+          {
+            "theme": "deflection",
+            "count": 4229,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "pin",
+        "totalPuzzles": 99591,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 12301,
+            "percentage": 12
+          },
+          {
+            "theme": "sacrifice",
+            "count": 7354,
+            "percentage": 7
+          },
+          {
+            "theme": "mateIn1",
+            "count": 6535,
+            "percentage": 7
+          },
+          {
+            "theme": "deflection",
+            "count": 5861,
+            "percentage": 6
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 4825,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 5224,
+            "percentage": 5
+          },
+          {
+            "theme": "attraction",
+            "count": 4524,
+            "percentage": 5
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 2528,
+            "percentage": 3
+          },
+          {
+            "theme": "mateIn3",
+            "count": 2172,
+            "percentage": 2
+          },
+          {
+            "theme": "clearance",
+            "count": 2188,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "discoveredAttack",
+        "totalPuzzles": 86791,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 5675,
+            "percentage": 7
+          },
+          {
+            "theme": "fork",
+            "count": 5112,
+            "percentage": 6
+          },
+          {
+            "theme": "pin",
+            "count": 4825,
+            "percentage": 6
+          },
+          {
+            "theme": "deflection",
+            "count": 3979,
+            "percentage": 5
+          },
+          {
+            "theme": "sacrifice",
+            "count": 4355,
+            "percentage": 5
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 3397,
+            "percentage": 4
+          },
+          {
+            "theme": "attraction",
+            "count": 2572,
+            "percentage": 3
+          },
+          {
+            "theme": "exposedKing",
+            "count": 2663,
+            "percentage": 3
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1603,
+            "percentage": 2
+          },
+          {
+            "theme": "capturingDefender",
+            "count": 1192,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "advancedPawn",
+        "totalPuzzles": 83067,
+        "connections": [
+          {
+            "theme": "promotion",
+            "count": 33386,
+            "percentage": 40
+          },
+          {
+            "theme": "quietMove",
+            "count": 6269,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn2",
+            "count": 5908,
+            "percentage": 7
+          },
+          {
+            "theme": "sacrifice",
+            "count": 4830,
+            "percentage": 6
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 4751,
+            "percentage": 6
+          },
+          {
+            "theme": "deflection",
+            "count": 5208,
+            "percentage": 6
+          },
+          {
+            "theme": "exposedKing",
+            "count": 4124,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 4272,
+            "percentage": 5
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 3397,
+            "percentage": 4
+          },
+          {
+            "theme": "attraction",
+            "count": 3728,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "deflection",
+        "totalPuzzles": 76089,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 7949,
+            "percentage": 10
+          },
+          {
+            "theme": "attraction",
+            "count": 6705,
+            "percentage": 9
+          },
+          {
+            "theme": "fork",
+            "count": 5954,
+            "percentage": 8
+          },
+          {
+            "theme": "pin",
+            "count": 5861,
+            "percentage": 8
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 5208,
+            "percentage": 7
+          },
+          {
+            "theme": "exposedKing",
+            "count": 5174,
+            "percentage": 7
+          },
+          {
+            "theme": "sacrifice",
+            "count": 4229,
+            "percentage": 6
+          },
+          {
+            "theme": "mateIn3",
+            "count": 4827,
+            "percentage": 6
+          },
+          {
+            "theme": "promotion",
+            "count": 3677,
+            "percentage": 5
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 3979,
+            "percentage": 5
+          }
+        ]
+      },
+      {
+        "theme": "attraction",
+        "totalPuzzles": 67258,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 39388,
+            "percentage": 59
+          },
+          {
+            "theme": "fork",
+            "count": 24648,
+            "percentage": 37
+          },
+          {
+            "theme": "mateIn2",
+            "count": 13074,
+            "percentage": 19
+          },
+          {
+            "theme": "mateIn3",
+            "count": 8725,
+            "percentage": 13
+          },
+          {
+            "theme": "exposedKing",
+            "count": 7326,
+            "percentage": 11
+          },
+          {
+            "theme": "deflection",
+            "count": 6705,
+            "percentage": 10
+          },
+          {
+            "theme": "pin",
+            "count": 4524,
+            "percentage": 7
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 3728,
+            "percentage": 6
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 2572,
+            "percentage": 4
+          },
+          {
+            "theme": "promotion",
+            "count": 2298,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "mateIn3",
+        "totalPuzzles": 52062,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 27164,
+            "percentage": 52
+          },
+          {
+            "theme": "backRankMate",
+            "count": 9859,
+            "percentage": 19
+          },
+          {
+            "theme": "attraction",
+            "count": 8725,
+            "percentage": 17
+          },
+          {
+            "theme": "exposedKing",
+            "count": 6616,
+            "percentage": 13
+          },
+          {
+            "theme": "fork",
+            "count": 4897,
+            "percentage": 9
+          },
+          {
+            "theme": "deflection",
+            "count": 4827,
+            "percentage": 9
+          },
+          {
+            "theme": "pin",
+            "count": 2172,
+            "percentage": 4
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 2079,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1361,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 1603,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "defensiveMove",
+        "totalPuzzles": 49529,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 4751,
+            "percentage": 10
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 4100,
+            "percentage": 8
+          },
+          {
+            "theme": "quietMove",
+            "count": 2640,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 2504,
+            "percentage": 5
+          },
+          {
+            "theme": "pin",
+            "count": 2051,
+            "percentage": 4
+          },
+          {
+            "theme": "promotion",
+            "count": 1275,
+            "percentage": 3
+          },
+          {
+            "theme": "exposedKing",
+            "count": 763,
+            "percentage": 2
+          },
+          {
+            "theme": "sacrifice",
+            "count": 506,
+            "percentage": 1
+          },
+          {
+            "theme": "clearance",
+            "count": 568,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 607,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "hangingPiece",
+        "totalPuzzles": 48616,
+        "connections": [
+          {
+            "theme": "mateIn1",
+            "count": 3783,
+            "percentage": 8
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 4100,
+            "percentage": 8
+          },
+          {
+            "theme": "intermezzo",
+            "count": 3306,
+            "percentage": 7
+          },
+          {
+            "theme": "fork",
+            "count": 2506,
+            "percentage": 5
+          },
+          {
+            "theme": "mateIn2",
+            "count": 2058,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1373,
+            "percentage": 3
+          },
+          {
+            "theme": "promotion",
+            "count": 819,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 973,
+            "percentage": 2
+          },
+          {
+            "theme": "backRankMate",
+            "count": 755,
+            "percentage": 2
+          },
+          {
+            "theme": "quietMove",
+            "count": 524,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "exposedKing",
+        "totalPuzzles": 39433,
+        "connections": [
+          {
+            "theme": "fork",
+            "count": 12276,
+            "percentage": 31
+          },
+          {
+            "theme": "attraction",
+            "count": 7326,
+            "percentage": 19
+          },
+          {
+            "theme": "mateIn3",
+            "count": 6616,
+            "percentage": 17
+          },
+          {
+            "theme": "deflection",
+            "count": 5174,
+            "percentage": 13
+          },
+          {
+            "theme": "sacrifice",
+            "count": 4865,
+            "percentage": 12
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 4124,
+            "percentage": 10
+          },
+          {
+            "theme": "skewer",
+            "count": 3495,
+            "percentage": 9
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 2663,
+            "percentage": 7
+          },
+          {
+            "theme": "pin",
+            "count": 2179,
+            "percentage": 6
+          },
+          {
+            "theme": "promotion",
+            "count": 1783,
+            "percentage": 5
+          }
+        ]
+      },
+      {
+        "theme": "skewer",
+        "totalPuzzles": 33955,
+        "connections": [
+          {
+            "theme": "exposedKing",
+            "count": 3495,
+            "percentage": 10
+          },
+          {
+            "theme": "deflection",
+            "count": 2430,
+            "percentage": 7
+          },
+          {
+            "theme": "attraction",
+            "count": 1664,
+            "percentage": 5
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1637,
+            "percentage": 5
+          },
+          {
+            "theme": "fork",
+            "count": 792,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 593,
+            "percentage": 2
+          },
+          {
+            "theme": "quietMove",
+            "count": 722,
+            "percentage": 2
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 522,
+            "percentage": 2
+          },
+          {
+            "theme": "pin",
+            "count": 571,
+            "percentage": 2
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 473,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "promotion",
+        "totalPuzzles": 33389,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 33386,
+            "percentage": 100
+          },
+          {
+            "theme": "deflection",
+            "count": 3677,
+            "percentage": 11
+          },
+          {
+            "theme": "mateIn2",
+            "count": 3235,
+            "percentage": 10
+          },
+          {
+            "theme": "quietMove",
+            "count": 3132,
+            "percentage": 9
+          },
+          {
+            "theme": "attraction",
+            "count": 2298,
+            "percentage": 7
+          },
+          {
+            "theme": "exposedKing",
+            "count": 1783,
+            "percentage": 5
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1684,
+            "percentage": 5
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 1275,
+            "percentage": 4
+          },
+          {
+            "theme": "mateIn1",
+            "count": 1168,
+            "percentage": 3
+          },
+          {
+            "theme": "pin",
+            "count": 1137,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "quietMove",
+        "totalPuzzles": 25424,
+        "connections": [
+          {
+            "theme": "advancedPawn",
+            "count": 6269,
+            "percentage": 25
+          },
+          {
+            "theme": "promotion",
+            "count": 3132,
+            "percentage": 12
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 2640,
+            "percentage": 10
+          },
+          {
+            "theme": "skewer",
+            "count": 722,
+            "percentage": 3
+          },
+          {
+            "theme": "fork",
+            "count": 422,
+            "percentage": 2
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 524,
+            "percentage": 2
+          },
+          {
+            "theme": "sacrifice",
+            "count": 406,
+            "percentage": 2
+          },
+          {
+            "theme": "deflection",
+            "count": 212,
+            "percentage": 1
+          },
+          {
+            "theme": "exposedKing",
+            "count": 256,
+            "percentage": 1
+          },
+          {
+            "theme": "pin",
+            "count": 349,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "trappedPiece",
+        "totalPuzzles": 21986,
+        "connections": [
+          {
+            "theme": "pin",
+            "count": 742,
+            "percentage": 3
+          },
+          {
+            "theme": "fork",
+            "count": 669,
+            "percentage": 3
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 595,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 373,
+            "percentage": 2
+          },
+          {
+            "theme": "clearance",
+            "count": 445,
+            "percentage": 2
+          },
+          {
+            "theme": "sacrifice",
+            "count": 133,
+            "percentage": 1
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 216,
+            "percentage": 1
+          },
+          {
+            "theme": "quietMove",
+            "count": 307,
+            "percentage": 1
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 265,
+            "percentage": 1
+          },
+          {
+            "theme": "promotion",
+            "count": 29,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "backRankMate",
+        "totalPuzzles": 20312,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 10084,
+            "percentage": 50
+          },
+          {
+            "theme": "mateIn3",
+            "count": 9859,
+            "percentage": 49
+          },
+          {
+            "theme": "mateIn2",
+            "count": 8485,
+            "percentage": 42
+          },
+          {
+            "theme": "xRayAttack",
+            "count": 3551,
+            "percentage": 17
+          },
+          {
+            "theme": "fork",
+            "count": 1925,
+            "percentage": 9
+          },
+          {
+            "theme": "deflection",
+            "count": 1605,
+            "percentage": 8
+          },
+          {
+            "theme": "mateIn1",
+            "count": 1153,
+            "percentage": 6
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 755,
+            "percentage": 4
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 436,
+            "percentage": 2
+          },
+          {
+            "theme": "promotion",
+            "count": 427,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "clearance",
+        "totalPuzzles": 15073,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 5805,
+            "percentage": 39
+          },
+          {
+            "theme": "mateIn2",
+            "count": 3137,
+            "percentage": 21
+          },
+          {
+            "theme": "pin",
+            "count": 2188,
+            "percentage": 15
+          },
+          {
+            "theme": "fork",
+            "count": 1635,
+            "percentage": 11
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1336,
+            "percentage": 9
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1228,
+            "percentage": 8
+          },
+          {
+            "theme": "attraction",
+            "count": 707,
+            "percentage": 5
+          },
+          {
+            "theme": "defensiveMove",
+            "count": 568,
+            "percentage": 4
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 633,
+            "percentage": 4
+          },
+          {
+            "theme": "exposedKing",
+            "count": 619,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "intermezzo",
+        "totalPuzzles": 11138,
+        "connections": [
+          {
+            "theme": "hangingPiece",
+            "count": 3306,
+            "percentage": 30
+          },
+          {
+            "theme": "fork",
+            "count": 942,
+            "percentage": 8
+          },
+          {
+            "theme": "pin",
+            "count": 769,
+            "percentage": 7
+          },
+          {
+            "theme": "mateIn2",
+            "count": 691,
+            "percentage": 6
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 545,
+            "percentage": 5
+          },
+          {
+            "theme": "sacrifice",
+            "count": 525,
+            "percentage": 5
+          },
+          {
+            "theme": "exposedKing",
+            "count": 293,
+            "percentage": 3
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 296,
+            "percentage": 3
+          },
+          {
+            "theme": "attraction",
+            "count": 324,
+            "percentage": 3
+          },
+          {
+            "theme": "interference",
+            "count": 349,
+            "percentage": 3
+          }
+        ]
+      },
+      {
+        "theme": "doubleCheck",
+        "totalPuzzles": 7412,
+        "connections": [
+          {
+            "theme": "mateIn2",
+            "count": 2746,
+            "percentage": 37
+          },
+          {
+            "theme": "sacrifice",
+            "count": 2138,
+            "percentage": 29
+          },
+          {
+            "theme": "mateIn3",
+            "count": 2079,
+            "percentage": 28
+          },
+          {
+            "theme": "smotheredMate",
+            "count": 1647,
+            "percentage": 22
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 1293,
+            "percentage": 17
+          },
+          {
+            "theme": "mateIn1",
+            "count": 1017,
+            "percentage": 14
+          },
+          {
+            "theme": "fork",
+            "count": 757,
+            "percentage": 10
+          },
+          {
+            "theme": "attraction",
+            "count": 657,
+            "percentage": 9
+          },
+          {
+            "theme": "promotion",
+            "count": 526,
+            "percentage": 7
+          },
+          {
+            "theme": "exposedKing",
+            "count": 281,
+            "percentage": 4
+          }
+        ]
+      },
+      {
+        "theme": "xRayAttack",
+        "totalPuzzles": 6691,
+        "connections": [
+          {
+            "theme": "backRankMate",
+            "count": 3551,
+            "percentage": 53
+          },
+          {
+            "theme": "mateIn2",
+            "count": 3488,
+            "percentage": 52
+          },
+          {
+            "theme": "sacrifice",
+            "count": 1524,
+            "percentage": 23
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1269,
+            "percentage": 19
+          },
+          {
+            "theme": "fork",
+            "count": 388,
+            "percentage": 6
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 179,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 127,
+            "percentage": 2
+          },
+          {
+            "theme": "exposedKing",
+            "count": 158,
+            "percentage": 2
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 63,
+            "percentage": 1
+          },
+          {
+            "theme": "pin",
+            "count": 84,
+            "percentage": 1
+          }
+        ]
+      },
+      {
+        "theme": "capturingDefender",
+        "totalPuzzles": 6484,
+        "connections": [
+          {
+            "theme": "fork",
+            "count": 1921,
+            "percentage": 30
+          },
+          {
+            "theme": "attraction",
+            "count": 1310,
+            "percentage": 20
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 1192,
+            "percentage": 18
+          },
+          {
+            "theme": "pin",
+            "count": 1198,
+            "percentage": 18
+          },
+          {
+            "theme": "deflection",
+            "count": 619,
+            "percentage": 10
+          },
+          {
+            "theme": "intermezzo",
+            "count": 389,
+            "percentage": 6
+          },
+          {
+            "theme": "sacrifice",
+            "count": 405,
+            "percentage": 6
+          },
+          {
+            "theme": "exposedKing",
+            "count": 348,
+            "percentage": 5
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 131,
+            "percentage": 2
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 161,
+            "percentage": 2
+          }
+        ]
+      },
+      {
+        "theme": "smotheredMate",
+        "totalPuzzles": 5894,
+        "connections": [
+          {
+            "theme": "sacrifice",
+            "count": 3542,
+            "percentage": 60
+          },
+          {
+            "theme": "mateIn1",
+            "count": 2076,
+            "percentage": 35
+          },
+          {
+            "theme": "mateIn2",
+            "count": 1957,
+            "percentage": 33
+          },
+          {
+            "theme": "mateIn3",
+            "count": 1753,
+            "percentage": 30
+          },
+          {
+            "theme": "doubleCheck",
+            "count": 1647,
+            "percentage": 28
+          },
+          {
+            "theme": "pin",
+            "count": 1036,
+            "percentage": 18
+          },
+          {
+            "theme": "fork",
+            "count": 38,
+            "percentage": 1
+          },
+          {
+            "theme": "clearance",
+            "count": 4,
+            "percentage": 0
+          },
+          {
+            "theme": "deflection",
+            "count": 21,
+            "percentage": 0
+          },
+          {
+            "theme": "hangingPiece",
+            "count": 25,
+            "percentage": 0
+          }
+        ]
+      },
+      {
+        "theme": "interference",
+        "totalPuzzles": 5821,
+        "connections": [
+          {
+            "theme": "fork",
+            "count": 639,
+            "percentage": 11
+          },
+          {
+            "theme": "deflection",
+            "count": 586,
+            "percentage": 10
+          },
+          {
+            "theme": "intermezzo",
+            "count": 349,
+            "percentage": 6
+          },
+          {
+            "theme": "exposedKing",
+            "count": 354,
+            "percentage": 6
+          },
+          {
+            "theme": "mateIn2",
+            "count": 322,
+            "percentage": 6
+          },
+          {
+            "theme": "discoveredAttack",
+            "count": 277,
+            "percentage": 5
+          },
+          {
+            "theme": "skewer",
+            "count": 307,
+            "percentage": 5
+          },
+          {
+            "theme": "sacrifice",
+            "count": 172,
+            "percentage": 3
+          },
+          {
+            "theme": "pin",
+            "count": 170,
+            "percentage": 3
+          },
+          {
+            "theme": "advancedPawn",
+            "count": 109,
+            "percentage": 2
+          }
+        ]
+      }
+    ],
+    "topConnections": [
+      {
+        "theme1": "attraction",
+        "theme2": "sacrifice",
+        "count": 39388,
+        "percentage": 59
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "sacrifice",
+        "count": 33659,
+        "percentage": 32
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "promotion",
+        "count": 33386,
+        "percentage": 100
+      },
+      {
+        "theme1": "mateIn3",
+        "theme2": "sacrifice",
+        "count": 27164,
+        "percentage": 52
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "fork",
+        "count": 24648,
+        "percentage": 37
+      },
+      {
+        "theme1": "fork",
+        "theme2": "sacrifice",
+        "count": 22257,
+        "percentage": 21
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "mateIn2",
+        "count": 13074,
+        "percentage": 19
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "pin",
+        "count": 12301,
+        "percentage": 12
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "fork",
+        "count": 12276,
+        "percentage": 31
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "sacrifice",
+        "count": 10084,
+        "percentage": 50
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn3",
+        "count": 9859,
+        "percentage": 49
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn2",
+        "count": 9373,
+        "percentage": 5
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "mateIn3",
+        "count": 8725,
+        "percentage": 17
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "mateIn2",
+        "count": 8485,
+        "percentage": 42
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "mateIn2",
+        "count": 7949,
+        "percentage": 10
+      },
+      {
+        "theme1": "pin",
+        "theme2": "sacrifice",
+        "count": 7354,
+        "percentage": 7
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "exposedKing",
+        "count": 7326,
+        "percentage": 19
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "deflection",
+        "count": 6705,
+        "percentage": 10
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "mateIn3",
+        "count": 6616,
+        "percentage": 17
+      },
+      {
+        "theme1": "mateIn1",
+        "theme2": "pin",
+        "count": 6535,
+        "percentage": 7
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "quietMove",
+        "count": 6269,
+        "percentage": 25
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "fork",
+        "count": 5954,
+        "percentage": 8
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "mateIn2",
+        "count": 5908,
+        "percentage": 7
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "pin",
+        "count": 5861,
+        "percentage": 8
+      },
+      {
+        "theme1": "clearance",
+        "theme2": "sacrifice",
+        "count": 5805,
+        "percentage": 39
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "mateIn2",
+        "count": 5675,
+        "percentage": 7
+      },
+      {
+        "theme1": "fork",
+        "theme2": "pin",
+        "count": 5224,
+        "percentage": 5
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "deflection",
+        "count": 5208,
+        "percentage": 7
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "exposedKing",
+        "count": 5174,
+        "percentage": 13
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "fork",
+        "count": 5112,
+        "percentage": 6
+      },
+      {
+        "theme1": "fork",
+        "theme2": "mateIn3",
+        "count": 4897,
+        "percentage": 9
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "sacrifice",
+        "count": 4865,
+        "percentage": 12
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "sacrifice",
+        "count": 4830,
+        "percentage": 6
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "mateIn3",
+        "count": 4827,
+        "percentage": 9
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "pin",
+        "count": 4825,
+        "percentage": 6
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "defensiveMove",
+        "count": 4751,
+        "percentage": 10
+      },
+      {
+        "theme1": "attraction",
+        "theme2": "pin",
+        "count": 4524,
+        "percentage": 7
+      },
+      {
+        "theme1": "discoveredAttack",
+        "theme2": "sacrifice",
+        "count": 4355,
+        "percentage": 5
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "fork",
+        "count": 4272,
+        "percentage": 5
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "sacrifice",
+        "count": 4229,
+        "percentage": 6
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "exposedKing",
+        "count": 4124,
+        "percentage": 10
+      },
+      {
+        "theme1": "defensiveMove",
+        "theme2": "hangingPiece",
+        "count": 4100,
+        "percentage": 8
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "discoveredAttack",
+        "count": 3979,
+        "percentage": 5
+      },
+      {
+        "theme1": "hangingPiece",
+        "theme2": "mateIn1",
+        "count": 3783,
+        "percentage": 8
+      },
+      {
+        "theme1": "advancedPawn",
+        "theme2": "attraction",
+        "count": 3728,
+        "percentage": 6
+      },
+      {
+        "theme1": "deflection",
+        "theme2": "promotion",
+        "count": 3677,
+        "percentage": 11
+      },
+      {
+        "theme1": "backRankMate",
+        "theme2": "xRayAttack",
+        "count": 3551,
+        "percentage": 53
+      },
+      {
+        "theme1": "sacrifice",
+        "theme2": "smotheredMate",
+        "count": 3542,
+        "percentage": 60
+      },
+      {
+        "theme1": "exposedKing",
+        "theme2": "skewer",
+        "count": 3495,
+        "percentage": 10
+      },
+      {
+        "theme1": "mateIn2",
+        "theme2": "xRayAttack",
+        "count": 3488,
+        "percentage": 52
+      }
+    ]
+  }
+]

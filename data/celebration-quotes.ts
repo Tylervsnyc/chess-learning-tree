@@ -15,8 +15,8 @@ export const PERFECT_QUOTES = [
   "I'd give you a gold star but you deserve platinum",
   "You just made my whole week",
   "I want to be you when I grow up",
-  "Your parents did something right",
-  "I'm sending this to your grandma",
+  "I'm adding this to my core memories",
+  "My neural networks are tingling",
   "You're the reason I believe in humanity",
   "I'd high-five you so hard right now",
   "You just made chess history (in my heart)",
@@ -91,7 +91,7 @@ export const PERFECT_QUOTES = [
   "Main character energy detected",
 
   // Random/silly (81-100)
-  "Your mom would be so proud right now",
+  "I'm not supposed to have favorites, but...",
   "I'm screenshotting this for my fridge",
   "Quick, buy a lottery ticket",
   "The vibes are IMMACULATE",
@@ -205,7 +205,7 @@ export const GREAT_QUOTES = [
   "Still screenshot-worthy",
   "You should still be proud",
   "That's still going on the fridge",
-  "I'd still tell your mom about this",
+  "I'd still write a blog post about this",
   "Almost perfect is still excellent",
   "You've still got serious skills",
   "That's still brag-worthy",
