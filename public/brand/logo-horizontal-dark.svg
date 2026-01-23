@@ -15,12 +15,12 @@
   <!-- "chess" in white -->
   <text x="60" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="#ffffff">chess</text>
   
-  <!-- "path" with gradient -->
+  <!-- "path" with gradient - brighter colors for visibility -->
   <defs>
     <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4ade80"/>
-      <stop offset="50%" stop-color="#38bdf8"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
     </linearGradient>
   </defs>
   <text x="138" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="url(#grad1)">path</text>
