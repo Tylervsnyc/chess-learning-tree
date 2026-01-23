@@ -8,6 +8,7 @@ import { OnboardingPuzzleBoard, OnboardingPuzzle } from '@/components/onboarding
 import { OnboardingEvents } from '@/lib/analytics/posthog';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
 import { getThemeExplanation } from '@/data/theme-explanations';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 
 const COLORS = {
   green: '#58CC02',
@@ -70,46 +71,6 @@ function calculateNewRating(
     ? currentRating + step
     : currentRating - step;
   return Math.round(Math.max(MIN_RATING, Math.min(MAX_RATING, newRating)));
-}
-
-// Streak animation styles (same as lesson page)
-const streakStyles = `
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-    20%, 40%, 60%, 80% { transform: translateX(2px); }
-  }
-  @keyframes rainbowFlow {
-    0% { background-position: 0% 50%, 0% 50%; }
-    100% { background-position: 0% 50%, 300% 50%; }
-  }
-`;
-
-function getStreakStyle(streak: number): React.CSSProperties {
-  if (streak < 2) {
-    return {
-      background: COLORS.green,
-      backgroundSize: 'auto',
-      animation: 'none',
-      boxShadow: 'none',
-    };
-  }
-  const intensity = Math.min(streak / 5, 1);
-  return {
-    background: `
-      radial-gradient(ellipse at center,
-        rgba(255, 255, 255, ${0.3 + intensity * 0.7}) 0%,
-        rgba(255, 220, 240, ${0.2 + intensity * 0.4}) 20%,
-        transparent 50%),
-      linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))
-    `,
-    backgroundSize: '100% 100%, 300% 100%',
-    animation: `rainbowFlow ${3 - streak * 0.3}s linear infinite${streak >= 4 ? `, shake 0.4s infinite` : ''}`,
-    boxShadow: `
-      0 0 ${streak * 5}px rgba(255, 200, 220, ${0.4 + intensity * 0.4}),
-      0 0 ${streak * 10}px rgba(255, 150, 200, 0.4)
-    `,
-  };
 }
 
 export default function DiagnosticPage() {
@@ -390,13 +351,9 @@ export default function DiagnosticPage() {
     );
   }
 
-  // Progress bar fills gradually (no fixed endpoint since diagnostic is adaptive)
-  // Use a smooth fill based on puzzles completed, capping visual at ~80% until done
-  const progressPercent = Math.min(80, puzzlesCompleted * 12); // Faster fill since fewer puzzles
-
   return (
     <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
-      <style jsx>{streakStyles}</style>
+      <style>{progressBarStyles}</style>
 
       {/* Header - same style as lesson page */}
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
@@ -410,15 +367,11 @@ export default function DiagnosticPage() {
 
           {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
-            <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
-              <div
-                className="h-full transition-all duration-300 rounded-full"
-                style={{
-                  width: `${progressPercent}%`,
-                  ...getStreakStyle(streak),
-                }}
-              />
-            </div>
+            <ChessProgressBar
+              current={puzzlesCompleted}
+              total={MAX_PUZZLES}
+              streak={streak}
+            />
           </div>
 
           <div className="flex items-center gap-2 text-gray-400 font-medium">

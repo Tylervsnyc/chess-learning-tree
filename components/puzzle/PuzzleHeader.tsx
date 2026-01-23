@@ -3,19 +3,23 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { HelpIconButton } from './ThemeHelpModal';
+import { ChessProgressBar, progressBarStyles } from './ChessProgressBar';
 
 interface PuzzleHeaderProps {
   themeName: string;
   currentPuzzle: number;
   totalPuzzles: number;
+  streak?: number;
+  hadWrongAnswer?: boolean;
   onHelpClick?: () => void;
 }
 
-export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles, onHelpClick }: PuzzleHeaderProps) {
+export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles, streak = 0, hadWrongAnswer = false, onHelpClick }: PuzzleHeaderProps) {
   const router = useRouter();
 
   return (
     <div className="w-full">
+      <style>{progressBarStyles}</style>
       {/* Top bar with back button and progress */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -41,10 +45,12 @@ export function PuzzleHeader({ themeName, currentPuzzle, totalPuzzles, onHelpCli
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-6">
-        <div
-          className="h-full bg-[#58CC02] transition-all duration-500 ease-out"
-          style={{ width: `${((currentPuzzle - 1) / totalPuzzles) * 100}%` }}
+      <div className="mb-6">
+        <ChessProgressBar
+          current={currentPuzzle - 1}
+          total={totalPuzzles}
+          streak={streak}
+          hadWrongAnswer={hadWrongAnswer}
         />
       </div>
     </div>

@@ -28,49 +28,9 @@ import { level8 } from '@/data/level8-curriculum';
 import { getPuzzleResponse } from '@/data/puzzle-responses';
 import { LearningEvents } from '@/lib/analytics/posthog';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 
 const LEVELS = [level1, level2, level3, level4, level5, level6, level7, level8];
-
-// CSS for streak animations
-const streakStyles = `
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-    20%, 40%, 60%, 80% { transform: translateX(2px); }
-  }
-  @keyframes rainbowFlow {
-    0% { background-position: 0% 50%, 0% 50%; }
-    100% { background-position: 0% 50%, 300% 50%; }
-  }
-`;
-
-// Supernova Gentle streak effect
-function getStreakStyle(streak: number, hadWrongAnswer: boolean): React.CSSProperties {
-  if (hadWrongAnswer || streak < 2) {
-    return {
-      background: '#58CC02',
-      backgroundSize: 'auto',
-      animation: 'none',
-      boxShadow: 'none',
-    };
-  }
-  const intensity = Math.min(streak / 6, 1);
-  return {
-    background: `
-      radial-gradient(ellipse at center,
-        rgba(255, 255, 255, ${0.3 + intensity * 0.7}) 0%,
-        rgba(255, 220, 240, ${0.2 + intensity * 0.4}) 20%,
-        transparent 50%),
-      linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))
-    `,
-    backgroundSize: '100% 100%, 300% 100%',
-    animation: `rainbowFlow ${3 - streak * 0.2}s linear infinite${streak >= 4 ? `, shake 0.4s infinite` : ''}`,
-    boxShadow: `
-      0 0 ${streak * 5}px rgba(255, 200, 220, ${0.4 + intensity * 0.4}),
-      0 0 ${streak * 10}px rgba(255, 150, 200, 0.4)
-    `,
-  };
-}
 
 interface LessonPuzzle {
   puzzleId: string;
@@ -686,7 +646,7 @@ export default function LessonPage() {
   if (loading) {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
-        <style>{streakStyles}</style>
+        <style>{progressBarStyles}</style>
         {/* Header placeholder */}
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -700,9 +660,7 @@ export default function LessonPage() {
               ✕
             </button>
             <div className="flex-1 mx-4">
-              <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
-                <div className="h-full w-0 bg-[#58CC02]" />
-              </div>
+              <ChessProgressBar current={0} total={6} streak={0} />
             </div>
             <div className="text-gray-400">0/6</div>
           </div>
@@ -769,7 +727,7 @@ export default function LessonPage() {
 
   return (
     <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
-      <style>{streakStyles}</style>
+      <style>{progressBarStyles}</style>
       {/* Header */}
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -785,15 +743,12 @@ export default function LessonPage() {
 
           {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
-            <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
-              <div
-                className="h-full transition-all duration-300"
-                style={{
-                  width: `${((currentIndex + (moveStatus === 'correct' ? 1 : 0)) / totalPuzzles) * 100}%`,
-                  ...getStreakStyle(streak, hadWrongAnswer),
-                }}
-              />
-            </div>
+            <ChessProgressBar
+              current={currentIndex + (moveStatus === 'correct' ? 1 : 0)}
+              total={totalPuzzles}
+              streak={streak}
+              hadWrongAnswer={hadWrongAnswer}
+            />
           </div>
 
           <div className="text-gray-400">
