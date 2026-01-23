@@ -3,6 +3,7 @@
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 
@@ -67,18 +68,18 @@ function SignupContent() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex flex-col">
-        <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
-        <div className="flex-1 flex items-center justify-center px-5">
-          <div className="max-w-sm w-full text-center">
+      <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+        <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
+        <div className="flex-1 flex flex-col items-center justify-center px-3">
+          <div className="max-w-[320px] w-full text-center">
             <div className="text-5xl mb-4">✉️</div>
-            <h1 className="text-2xl font-black text-white mb-2">Check your email</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
             <p className="text-gray-400 mb-6">
               We sent a confirmation link to <strong className="text-white">{email}</strong>
             </p>
             <Link
               href="/auth/login"
-              className="inline-block px-6 py-3 rounded-xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0e7fb5]"
+              className="inline-block w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4]"
               style={{ backgroundColor: '#1CB0F6' }}
             >
               Back to Login
@@ -90,36 +91,41 @@ function SignupContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col">
-      {/* Gradient accent */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+      {/* Gradient top bar */}
+      <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
-      <div className="flex-1 flex items-center justify-center px-5 py-6">
-        <div className="max-w-sm w-full">
+      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+        {/* Brand header */}
+        <div className="mb-4 text-center">
+          <Image
+            src="/brand/icon-96.svg"
+            alt="Chess Path"
+            width={64}
+            height={64}
+            className="mx-auto mb-2"
+          />
+          <div className="font-bold text-2xl">
+            <span className="text-white">chess</span>
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
+          </div>
+        </div>
+
+        <div className="w-full max-w-[320px]">
           {/* Congratulatory header for guests who completed a lesson */}
           {fromLesson ? (
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-2">🎉</div>
-              <h1
-                className="text-2xl font-black bg-clip-text text-transparent mb-2"
-                style={{
-                  backgroundImage: 'linear-gradient(90deg, #58CC02, #1CB0F6, #FF9600)',
-                }}
-              >
-                You're on The Chess Path!
-              </h1>
-              <p className="text-gray-400 text-sm">
-                Create an account to save your progress and keep learning
-              </p>
+            <div className="text-center mb-4">
+              <h1 className="text-xl font-bold text-white mb-1">Nice work! 🎉</h1>
+              <p className="text-gray-400 text-sm">Create an account to save progress</p>
             </div>
           ) : (
-            <div className="text-center mb-6">
-              <h1 className="text-2xl font-black text-white mb-2">Create Account</h1>
-              <p className="text-gray-400 text-sm">Start your chess improvement journey</p>
+            <div className="text-center mb-4">
+              <h1 className="text-xl font-bold text-white mb-1">Create Account</h1>
+              <p className="text-gray-400 text-sm">Start your chess journey</p>
             </div>
           )}
 
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-3">
             {error && (
               <div className="bg-[#FF4B4B]/10 border border-[#FF4B4B]/50 rounded-xl p-3 text-[#FF4B4B] text-sm">
                 {error}
@@ -176,7 +182,7 @@ function SignupContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-2xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
+              className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
               style={{ backgroundColor: '#58CC02' }}
             >
               {loading ? 'Creating account...' : 'Create Account'}

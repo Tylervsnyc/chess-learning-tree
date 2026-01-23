@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function Confetti() {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; delay: number; size: number }>>([]);
@@ -57,47 +58,62 @@ export default function WelcomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col items-center pt-16 px-5 relative">
+    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
       {showConfetti && <Confetti />}
 
-      {/* Celebration emoji */}
-      <div className="text-7xl mb-6 animate-bounce" style={{ animationDuration: '0.6s' }}>
-        🎉
+      {/* Gradient top bar */}
+      <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
+
+      <div className="flex-1 flex flex-col items-center px-3 pt-8 min-h-0">
+        {/* Celebration emoji */}
+        <div className="text-6xl mb-4 animate-bounce" style={{ animationDuration: '0.6s' }}>
+          🎉
+        </div>
+
+        {/* Brand logo */}
+        <Image
+          src="/brand/icon-96.svg"
+          alt="Chess Path"
+          width={72}
+          height={72}
+          className="mx-auto mb-3"
+        />
+
+        {/* Title */}
+        <h1 className="text-2xl font-bold text-center mb-1">
+          <span className="text-white">You&apos;re on the </span>
+          <span className="text-white">chess</span>
+          <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
+          <span className="text-white">!</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-gray-400 text-center mb-6 max-w-[280px]">
+          Your account is ready. Let&apos;s continue your training.
+        </p>
+
+        {/* Stats */}
+        <div className="flex gap-6 mb-6">
+          {[
+            { value: '✓', label: 'Account Created', color: '#58CC02' },
+            { value: '✓', label: 'Progress Saved', color: '#1CB0F6' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</div>
+              <div className="text-gray-500 text-xs">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <Link
+          href="/learn"
+          className="w-full max-w-[320px] py-3 text-center font-bold text-base rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          style={{ backgroundColor: '#58CC02' }}
+        >
+          Continue Learning
+        </Link>
       </div>
-
-      {/* Title with gradient */}
-      <h1 className="text-3xl sm:text-4xl font-black text-center mb-3">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-400">
-          You're on The Chess Path!
-        </span>
-      </h1>
-
-      {/* Subtitle */}
-      <p className="text-gray-400 text-center mb-8 max-w-[280px]">
-        Your account is ready. Let's continue your training.
-      </p>
-
-      {/* Stats */}
-      <div className="flex gap-6 mb-8">
-        {[
-          { value: '✓', label: 'Account Created', color: '#58CC02' },
-          { value: '✓', label: 'Progress Saved', color: '#1CB0F6' },
-        ].map((stat) => (
-          <div key={stat.label} className="text-center">
-            <div className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</div>
-            <div className="text-gray-500 text-xs">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* CTA */}
-      <Link
-        href="/learn"
-        className="w-full max-w-[300px] py-4 text-center font-bold text-lg rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-        style={{ backgroundColor: '#58CC02' }}
-      >
-        Continue Learning
-      </Link>
     </div>
   );
 }
