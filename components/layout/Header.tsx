@@ -16,7 +16,7 @@ export function Header({ level = 1, eloRange = '400-600 ELO' }: HeaderProps) {
         {/* Logo */}
         <Link href="/learn" className="flex items-center">
           <Image
-            src="/brand/logo-horizontal-dark.svg"
+            src="/brand/logo-horizontal-dark.svg?v=2"
             alt="Chess Path"
             width={120}
             height={20}

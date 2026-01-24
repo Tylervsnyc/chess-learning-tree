@@ -60,7 +60,7 @@ export function NavHeader() {
       <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
         <Link href={user ? '/learn' : '/'} className="flex items-center">
           <Image
-            src="/brand/logo-horizontal-dark.svg"
+            src="/brand/logo-horizontal-dark.svg?v=2"
             alt="Chess Path"
             width={140}
             height={24}
