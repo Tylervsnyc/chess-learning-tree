@@ -606,16 +606,9 @@ export default function StagingLessonPage() {
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
   const wrongCount = Object.values(results).filter(r => r === 'wrong').length;
 
-  // Save completion to localStorage AND Supabase
+  // Save completion via progress hook (localStorage + Supabase for authenticated users)
   useEffect(() => {
     if (lessonComplete) {
-      // Save to localStorage (for staging-specific tracking)
-      const stored = localStorage.getItem('staging-completed-lessons');
-      const completed = stored ? new Set(JSON.parse(stored)) : new Set();
-      completed.add(lessonId);
-      localStorage.setItem('staging-completed-lessons', JSON.stringify([...completed]));
-
-      // Save to Supabase via progress hook (for authenticated users)
       completeLesson(lessonId);
     }
   }, [lessonComplete, lessonId, completeLesson]);

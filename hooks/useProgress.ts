@@ -100,9 +100,13 @@ export function useLessonProgress() {
   useEffect(() => {
     if (!loaded || !user) return;
 
+    const abortController = new AbortController();
+
     const fetchServerProgress = async () => {
       try {
-        const response = await fetch('/api/progress');
+        const response = await fetch('/api/progress', {
+          signal: abortController.signal,
+        });
         if (!response.ok) return;
 
         const serverProgress: ServerProgress = await response.json();
@@ -113,11 +117,14 @@ export function useLessonProgress() {
           return merged;
         });
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') return;
         console.error('Failed to fetch server progress:', error);
       }
     };
 
     fetchServerProgress();
+
+    return () => abortController.abort();
   }, [loaded, user?.id]);
 
   // Sync localStorage data to server on login
@@ -141,6 +148,8 @@ export function useLessonProgress() {
       return;
     }
 
+    const abortController = new AbortController();
+
     const syncToServer = async () => {
       try {
         const response = await fetch('/api/progress/sync', {
@@ -153,6 +162,7 @@ export function useLessonProgress() {
             bestStreak: localProgress.bestStreak,
             lastPlayedDate: localProgress.lastPlayedDate,
           }),
+          signal: abortController.signal,
         });
 
         if (response.ok) {
@@ -164,12 +174,15 @@ export function useLessonProgress() {
           });
         }
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') return;
         console.error('Failed to sync progress to server:', error);
       }
       hasSyncedRef.current = true;
     };
 
     syncToServer();
+
+    return () => abortController.abort();
   }, [user?.id, loaded]);
 
   // Reset sync flag on logout

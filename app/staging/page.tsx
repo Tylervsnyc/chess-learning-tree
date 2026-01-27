@@ -1,20 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useLessonProgress } from '@/hooks/useProgress';
 
 export default function StagingLanding() {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [userLevel, setUserLevel] = useState(1);
-
-  // Check if user has already completed onboarding
-  useEffect(() => {
-    const level = localStorage.getItem('staging-user-level');
-    if (level) {
-      setHasStarted(true);
-      setUserLevel(parseInt(level));
-    }
-  }, []);
+  const { completedLessons } = useLessonProgress();
+  const hasStarted = completedLessons.length > 0;
 
   return (
     <div className="min-h-screen bg-[#131F24] text-white flex flex-col">
