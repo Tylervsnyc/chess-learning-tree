@@ -13,6 +13,7 @@ interface Profile {
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
   onboarding_completed?: boolean;
+  is_admin?: boolean;
 }
 
 export function useUser() {
@@ -74,6 +75,7 @@ export function useUser() {
               subscription_expires_at: null,
               stripe_customer_id: null,
               onboarding_completed: false,
+              is_admin: false,
             });
           }
         }

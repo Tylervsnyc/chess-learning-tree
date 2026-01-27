@@ -37,6 +37,8 @@ export interface Progress {
   // Daily lesson tracking for free user limits
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
+  // Unlocked levels (level numbers user can access)
+  unlockedLevels: number[];
 }
 
 const DEFAULT_PROGRESS: Progress = {
@@ -51,6 +53,7 @@ const DEFAULT_PROGRESS: Progress = {
   startingLessonId: null,
   lessonsCompletedToday: 0,
   lastLessonDate: null,
+  unlockedLevels: [1], // Level 1 always unlocked by default
 };
 
 function getStoredProgress(): Progress {
@@ -346,6 +349,49 @@ export function useLessonProgress() {
     saveProgress(DEFAULT_PROGRESS);
   }, []);
 
+  // Check if a level is unlocked
+  const isLevelUnlocked = useCallback((level: number) => {
+    return progress.unlockedLevels.includes(level);
+  }, [progress.unlockedLevels]);
+
+  // Unlock a level (called after passing level test)
+  const unlockLevel = useCallback((level: number) => {
+    setProgress(prev => {
+      if (prev.unlockedLevels.includes(level)) {
+        return prev;
+      }
+
+      const newUnlockedLevels = [...prev.unlockedLevels, level].sort((a, b) => a - b);
+      const newProgress = {
+        ...prev,
+        unlockedLevels: newUnlockedLevels,
+      };
+      saveProgress(newProgress);
+      return newProgress;
+    });
+  }, []);
+
+  // Refresh unlocked levels from server (call after test completion)
+  const refreshUnlockedLevels = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch('/api/profile/unlocked-levels');
+      if (response.ok) {
+        const { unlockedLevels } = await response.json();
+        setProgress(prev => {
+          // Merge with local state (keep higher of both)
+          const merged = [...new Set([...prev.unlockedLevels, ...unlockedLevels])].sort((a, b) => a - b);
+          const newProgress = { ...prev, unlockedLevels: merged };
+          saveProgress(newProgress);
+          return newProgress;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to refresh unlocked levels:', error);
+    }
+  }, [user]);
+
   return {
     completedLessons: progress.completedLessons,
     puzzleAttempts: progress.puzzleAttempts,
@@ -365,5 +411,10 @@ export function useLessonProgress() {
     startingLessonId: progress.startingLessonId,
     resetProgress,
     loaded,
+    // Level unlock functions
+    unlockedLevels: progress.unlockedLevels,
+    isLevelUnlocked,
+    unlockLevel,
+    refreshUnlockedLevels,
   };
 }

@@ -11,8 +11,14 @@ import { level6 } from '@/data/level6-curriculum';
 import { level7 } from '@/data/level7-curriculum';
 import { level8 } from '@/data/level8-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
+import { usePermissions } from '@/hooks/usePermissions';
+import NextLevelCard from './NextLevelCard';
+import { getLevelTestConfig } from '@/data/level-unlock-tests';
 
 const LEVELS: Level[] = [level1, level2, level3, level4, level5, level6, level7, level8];
+
+// Level keys for navigation (must match NavHeader LEVELS)
+const LEVEL_KEYS = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'expert', 'elite', 'legend'];
 
 const MODULE_COLORS = [
   '#58CC02', // Green
@@ -261,13 +267,71 @@ function ModuleSection({
   );
 }
 
+// Skip Quiz Banner Component
+function SkipQuizBanner({ currentLevel, isGuest }: { currentLevel: number; isGuest?: boolean }) {
+  const router = useRouter();
+  const { canSkipLevels, tier } = usePermissions();
+
+  // Only show skip options if user can skip AND is on level 0 (beginner)
+  // In V2, levels are 0=400-800, 1=800-1000, 2=1000-1200
+  if (currentLevel >= 2 || isGuest) return null;
+
+  // For anonymous users, show teaser
+  if (!canSkipLevels) {
+    return (
+      <div className="mb-4 p-3 rounded-xl bg-[#1A2C35] border border-white/10">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-white/70">Ready to skip ahead?</p>
+            <p className="text-xs text-white/40">Sign up to take the level skip quiz</p>
+          </div>
+          <button
+            onClick={() => router.push('/auth/signup')}
+            className="px-4 py-2 bg-[#1CB0F6] text-white text-sm font-bold rounded-lg hover:bg-[#1A9FE0] transition-colors"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // For logged-in users, show skip quiz options
+  const skipOptions = currentLevel === 0
+    ? [
+        { level: 2, label: 'Skip to Level 2', sublabel: '800-1000 ELO' },
+        { level: 3, label: 'Skip to Level 3', sublabel: '1000-1200 ELO' },
+      ]
+    : [
+        { level: 3, label: 'Skip to Level 3', sublabel: '1000-1200 ELO' },
+      ];
+
+  return (
+    <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-[#1A2C35] to-[#1A2C35]/80 border border-[#1CB0F6]/30">
+      <p className="text-sm text-white/70 mb-2">Already know this? Take a quiz to skip ahead:</p>
+      <div className="flex gap-2">
+        {skipOptions.map(opt => (
+          <button
+            key={opt.level}
+            onClick={() => router.push(`/skip-quiz/${opt.level}`)}
+            className="flex-1 px-3 py-2 bg-[#1CB0F6]/20 hover:bg-[#1CB0F6]/30 border border-[#1CB0F6]/40 rounded-lg text-left transition-colors"
+          >
+            <div className="text-sm font-bold text-[#1CB0F6]">{opt.label}</div>
+            <div className="text-xs text-white/40">{opt.sublabel}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface CurriculumTreeProps {
   isGuest?: boolean;
   initialLevel?: number;
 }
 
 export function CurriculumTree({ isGuest = false, initialLevel = 0 }: CurriculumTreeProps) {
-  const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons } = useLessonProgress();
+  const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons, isLevelUnlocked } = useLessonProgress();
   const nextLessonRef = useRef<HTMLButtonElement | null>(null);
   const hasScrolledRef = useRef(false);
   const hasInitializedRef = useRef(false);
@@ -355,6 +419,9 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
         </div>
       </div>
 
+      {/* Skip Quiz Links - V2 */}
+      <SkipQuizBanner currentLevel={initialLevel} isGuest={isGuest} />
+
       {/* Modules */}
       <div>
         {currentLevel.modules.map((module, index) => (
@@ -373,6 +440,26 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
           />
         ))}
       </div>
+
+      {/* Next Level Card - show if there's a next level */}
+      {initialLevel < LEVELS.length - 1 && !isGuest && (() => {
+        const nextLevelIndex = initialLevel + 1;
+        const nextLevel = LEVELS[nextLevelIndex];
+        const transition = `${initialLevel + 1}-${nextLevelIndex + 1}`;
+        const testConfig = getLevelTestConfig(transition);
+
+        // Only show if test config exists for this transition
+        if (!testConfig) return null;
+
+        return (
+          <NextLevelCard
+            currentLevel={initialLevel + 1}
+            nextLevelName={nextLevel.name}
+            nextLevelKey={LEVEL_KEYS[nextLevelIndex]}
+            isUnlocked={isLevelUnlocked(nextLevelIndex + 1)}
+          />
+        );
+      })()}
     </div>
   );
 }

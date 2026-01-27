@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
 import { useRouter, usePathname } from 'next/navigation';
+import { useLessonProgress } from '@/hooks/useProgress';
+import UnlockTestModal from '@/components/modals/UnlockTestModal';
 
 // Level configuration with ELO thresholds and rating ranges
 const LEVELS = [
@@ -30,10 +32,32 @@ function getMaxUnlockedIndex(elo: number) {
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
+  const { unlockedLevels } = useLessonProgress();
   const router = useRouter();
   const pathname = usePathname();
   const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [unlockModal, setUnlockModal] = useState<{
+    isOpen: boolean;
+    targetLevel: number;
+    targetLevelName: string;
+    fromLevel: number;
+  }>({ isOpen: false, targetLevel: 0, targetLevelName: '', fromLevel: 0 });
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      if (res.ok) {
+        const { url } = await res.json();
+        if (url) window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Portal error:', error);
+    }
+    setPortalLoading(false);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -97,18 +121,32 @@ export function NavHeader() {
                   <div className="absolute top-full left-0 mt-1 bg-[#1A2C35] border border-white/10 rounded-lg shadow-lg overflow-hidden min-w-[180px] z-50">
                     {LEVELS.map((level, index) => {
                       const isPremium = profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial';
-                      const maxUnlocked = getMaxUnlockedIndex(profile?.elo_rating || 800);
-                      // Premium users have all levels unlocked
-                      const isLocked = !isPremium && index > maxUnlocked;
+                      const levelNumber = index + 1;
+                      // Check if level is unlocked via test or ELO or premium
+                      const isUnlockedByTest = unlockedLevels.includes(levelNumber);
+                      const maxUnlockedByElo = getMaxUnlockedIndex(profile?.elo_rating || 800);
+                      const isLocked = !isPremium && !isUnlockedByTest && index > maxUnlockedByElo;
 
                       if (isLocked) {
                         return (
-                          <div
+                          <button
                             key={level.key}
-                            className="block w-full text-left px-4 py-2 text-sm cursor-not-allowed"
+                            className="block w-full text-left px-4 py-2 text-sm hover:bg-white/5 transition-colors"
+                            onClick={() => {
+                              setLearnDropdownOpen(false);
+                              // Find the highest unlocked level to use as fromLevel
+                              const fromLevel = Math.max(...unlockedLevels, maxUnlockedByElo + 1);
+                              setUnlockModal({
+                                isOpen: true,
+                                targetLevel: levelNumber,
+                                targetLevelName: level.label,
+                                fromLevel: Math.min(fromLevel, levelNumber - 1),
+                              });
+                            }}
                           >
-                            <span className="text-gray-500">{level.label}: Locked</span>
-                          </div>
+                            <span className="text-gray-500">{level.label}</span>
+                            <span className="text-gray-600 ml-2 text-xs">🔒 Take Test</span>
+                          </button>
                         );
                       }
 
@@ -130,7 +168,19 @@ export function NavHeader() {
                   </div>
                 )}
               </div>
-              {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+              {profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial' ? (
+                <button
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 disabled:opacity-50"
+                  style={{
+                    background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+                    color: '#fff',
+                  }}
+                >
+                  {portalLoading ? '...' : 'Manage'}
+                </button>
+              ) : (
                 <Link
                   href="/pricing"
                   className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
@@ -182,6 +232,15 @@ export function NavHeader() {
           )}
         </nav>
       </div>
+
+      {/* Unlock Test Modal */}
+      <UnlockTestModal
+        isOpen={unlockModal.isOpen}
+        onClose={() => setUnlockModal(prev => ({ ...prev, isOpen: false }))}
+        targetLevel={unlockModal.targetLevel}
+        targetLevelName={unlockModal.targetLevelName}
+        fromLevel={unlockModal.fromLevel}
+      />
     </header>
   );
 }

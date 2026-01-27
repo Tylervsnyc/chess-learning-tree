@@ -80,6 +80,7 @@ export function mergeProgress(
     startingLessonId: local.startingLessonId, // Keep local starting lesson
     lessonsCompletedToday: local.lessonsCompletedToday, // Keep local daily count
     lastLessonDate: local.lastLessonDate,
+    unlockedLevels: local.unlockedLevels, // Keep local unlocked levels (synced separately)
   };
 }
 
