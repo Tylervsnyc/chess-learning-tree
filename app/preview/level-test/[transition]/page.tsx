@@ -1,0 +1,539 @@
+'use client';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Chessboard } from 'react-chessboard';
+import { Chess, Square } from 'chess.js';
+import { useRouter, useParams } from 'next/navigation';
+import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests';
+import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound } from '@/lib/sounds';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
+import confetti from 'canvas-confetti';
+
+interface TestPuzzle {
+  id: string;
+  fen: string;
+  moves: string[];
+  rating: number;
+  theme: string;
+}
+
+type TestState = 'loading' | 'playing' | 'passed' | 'failed';
+type MoveStatus = 'playing' | 'correct' | 'wrong';
+
+export default function PreviewLevelTestPage() {
+  const router = useRouter();
+  const params = useParams();
+  const transition = params.transition as string;
+
+  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const [testState, setTestState] = useState<TestState>('loading');
+  const [puzzles, setPuzzles] = useState<TestPuzzle[]>([]);
+  const [variantId, setVariantId] = useState<string>('');
+  const [targetLevel, setTargetLevel] = useState<{ number: number; key: string; name: string } | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [chess, setChess] = useState<Chess | null>(null);
+  const [moveIndex, setMoveIndex] = useState(0);
+  const [moveStatus, setMoveStatus] = useState<MoveStatus>('playing');
+  const [boardKey, setBoardKey] = useState(0);
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  // Streak tracking for progress bar effects
+  const [streak, setStreak] = useState(0);
+  const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
+
+  const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
+
+  // Validate transition
+  useEffect(() => {
+    const config = getLevelTestConfig(transition);
+    if (!config) {
+      setIsValid(false);
+    } else {
+      setIsValid(true);
+    }
+  }, [transition]);
+
+  // Fetch test puzzles
+  useEffect(() => {
+    if (isValid === false) return;
+
+    async function fetchPuzzles() {
+      try {
+        const res = await fetch(`/api/level-test?transition=${transition}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch test puzzles');
+        }
+
+        const data = await res.json();
+        setPuzzles(data.puzzles);
+        setVariantId(data.variantId);
+        setTargetLevel(data.targetLevel);
+        setTestState('playing');
+      } catch (error) {
+        console.error('Error fetching test puzzles:', error);
+      }
+    }
+
+    fetchPuzzles();
+  }, [transition, isValid]);
+
+  // Set up current puzzle
+  useEffect(() => {
+    if (puzzles.length === 0 || currentIndex >= puzzles.length) return;
+
+    const puzzle = puzzles[currentIndex];
+    const newChess = new Chess(puzzle.fen);
+
+    // Apply the setup move (opponent's move that creates the tactic)
+    if (puzzle.moves.length > 0) {
+      const setupMove = puzzle.moves[0];
+      try {
+        newChess.move({
+          from: setupMove.slice(0, 2) as Square,
+          to: setupMove.slice(2, 4) as Square,
+          promotion: setupMove.length > 4 ? (setupMove[4] as 'q' | 'r' | 'b' | 'n') : undefined,
+        });
+      } catch (e) {
+        console.error('Error applying setup move:', e);
+      }
+    }
+
+    setChess(newChess);
+    setMoveIndex(1); // Start at move 1 (first player move)
+    setMoveStatus('playing');
+    setSelectedSquare(null);
+    setBoardKey(prev => prev + 1);
+  }, [currentIndex, puzzles]);
+
+  const currentPuzzle = puzzles[currentIndex];
+  const playerColor = chess?.turn() === 'w' ? 'white' : 'black';
+
+  // Square styles for highlighting
+  const squareStyles = useMemo(() => {
+    const styles: Record<string, React.CSSProperties> = {};
+
+    if (selectedSquare && chess) {
+      styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
+      const moves = chess.moves({ square: selectedSquare, verbose: true });
+      for (const move of moves) {
+        styles[move.to] = {
+          background: move.captured
+            ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
+            : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
+        };
+      }
+    }
+
+    return styles;
+  }, [selectedSquare, chess]);
+
+  // Try to make a move
+  const tryMove = useCallback((from: Square, to: Square) => {
+    if (!chess || !currentPuzzle || moveStatus !== 'playing') return false;
+
+    const puzzleMoves = currentPuzzle.moves;
+    if (moveIndex >= puzzleMoves.length) return false;
+
+    const chessCopy = new Chess(chess.fen());
+
+    try {
+      const move = chessCopy.move({ from, to, promotion: 'q' });
+      if (!move) return false;
+
+      const expectedUCI = puzzleMoves[moveIndex];
+      const actualUCI = from + to + (move.promotion || '');
+
+      if (actualUCI === expectedUCI || actualUCI.slice(0, 4) === expectedUCI.slice(0, 4)) {
+        // Correct move
+        setChess(chessCopy);
+        setSelectedSquare(null);
+
+        if (move.captured) {
+          playCaptureSound();
+        } else {
+          playMoveSound();
+        }
+
+        const nextMoveIndex = moveIndex + 1;
+        setMoveIndex(nextMoveIndex);
+
+        // Check if puzzle is complete
+        if (nextMoveIndex >= puzzleMoves.length) {
+          const newStreak = streak + 1;
+          setMoveStatus('correct');
+          playCorrectSound(correctCount);
+          setStreak(newStreak);
+          return true;
+        }
+
+        // Auto-play opponent's response
+        setTimeout(() => {
+          const opponentGame = new Chess(chessCopy.fen());
+          const opponentMove = puzzleMoves[nextMoveIndex];
+          try {
+            const oppMove = opponentGame.move({
+              from: opponentMove.slice(0, 2) as Square,
+              to: opponentMove.slice(2, 4) as Square,
+              promotion: opponentMove.length > 4 ? (opponentMove[4] as 'q' | 'r' | 'b' | 'n') : undefined,
+            });
+
+            setChess(opponentGame);
+            setMoveIndex(nextMoveIndex + 1);
+
+            if (oppMove && oppMove.captured) {
+              playCaptureSound();
+            } else {
+              playMoveSound();
+            }
+
+            // Check if puzzle is complete after opponent move
+            if (nextMoveIndex + 1 >= puzzleMoves.length) {
+              const newStreak = streak + 1;
+              setMoveStatus('correct');
+              playCorrectSound(correctCount);
+              setStreak(newStreak);
+            }
+          } catch (e) {
+            // Puzzle complete
+            const newStreak = streak + 1;
+            setMoveStatus('correct');
+            playCorrectSound(correctCount);
+            setStreak(newStreak);
+          }
+        }, 400);
+
+        return true;
+      } else {
+        // Wrong move
+        setSelectedSquare(null);
+        playErrorSound();
+        setStreak(0);
+        setHadWrongAnswer(true);
+        setMoveStatus('wrong');
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }, [chess, currentPuzzle, moveIndex, moveStatus, streak, correctCount]);
+
+  // Handle square click
+  const onSquareClick = useCallback(
+    ({ square }: { piece: { pieceType: string } | null; square: string }) => {
+      if (!chess || moveStatus !== 'playing') return;
+      const clickedSquare = square as Square;
+
+      if (!selectedSquare) {
+        const piece = chess.get(clickedSquare);
+        if (piece && piece.color === chess.turn()) {
+          setSelectedSquare(clickedSquare);
+        }
+      } else if (selectedSquare === clickedSquare) {
+        setSelectedSquare(null);
+      } else {
+        const legalMoves = chess.moves({ square: selectedSquare, verbose: true });
+        const isLegalMove = legalMoves.some(m => m.to === clickedSquare);
+
+        if (isLegalMove) {
+          tryMove(selectedSquare, clickedSquare);
+        } else {
+          const piece = chess.get(clickedSquare);
+          if (piece && piece.color === chess.turn()) {
+            setSelectedSquare(clickedSquare);
+          } else {
+            setSelectedSquare(null);
+          }
+        }
+      }
+    },
+    [chess, selectedSquare, moveStatus, tryMove]
+  );
+
+  // Handle continue after puzzle result
+  const handleContinue = useCallback(() => {
+    const isCorrect = moveStatus === 'correct';
+    const newCorrectCount = isCorrect ? correctCount + 1 : correctCount;
+    const newWrongCount = isCorrect ? wrongCount : wrongCount + 1;
+
+    setCorrectCount(newCorrectCount);
+    setWrongCount(newWrongCount);
+
+    // Check for test completion
+    if (newWrongCount >= maxWrongAnswers) {
+      setTestState('failed');
+      return;
+    }
+
+    if (currentIndex + 1 >= puzzleCount) {
+      if (newCorrectCount >= passingScore) {
+        setTestState('passed');
+        playCelebrationSound(newCorrectCount);
+      } else {
+        setTestState('failed');
+      }
+      return;
+    }
+
+    setCurrentIndex(prev => prev + 1);
+  }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore]);
+
+  // Handle going back to preview
+  const handleBackToPreview = () => {
+    router.push('/preview/learn');
+  };
+
+  // Loading state while validating
+  if (isValid === null) {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Invalid transition
+  if (isValid === false) {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🤔</div>
+          <h1 className="text-2xl font-bold text-white mb-2">Invalid Test</h1>
+          <p className="text-white/60 mb-6">
+            The test &quot;{transition}&quot; doesn&apos;t exist.
+          </p>
+          <button
+            onClick={handleBackToPreview}
+            className="px-6 py-2 bg-[#1CB0F6] text-white font-bold rounded-xl hover:bg-[#1A9FE0] transition-colors"
+          >
+            Back to Preview
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (testState === 'loading') {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+        <style>{progressBarStyles}</style>
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-white/60">Loading test puzzles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Test passed
+  if (testState === 'passed') {
+    // Confetti effect
+    if (typeof window !== 'undefined') {
+      confetti({
+        particleCount: 100,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.65 },
+        colors: ['#58CC02', '#1CB0F6', '#FFC800', '#FFFFFF'],
+      });
+      confetti({
+        particleCount: 100,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.65 },
+        colors: ['#58CC02', '#1CB0F6', '#FFC800', '#FFFFFF'],
+      });
+    }
+
+    return (
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🎉</div>
+          <h1 className="text-3xl font-black text-[#58CC02] mb-2">Test Passed!</h1>
+          <p className="text-white/60 mb-2">
+            You scored {correctCount}/{puzzleCount}
+          </p>
+          <p className="text-white/80 mb-6">
+            {targetLevel ? `You would unlock ${targetLevel.name}` : 'Great job!'}
+          </p>
+          <div className="bg-[#1A2C35] rounded-xl p-4 mb-6">
+            <p className="text-xs text-[#CE82FF] font-bold mb-2">PREVIEW MODE</p>
+            <p className="text-white/60 text-sm">
+              In the real app, this would unlock the next level and save your progress.
+            </p>
+          </div>
+          <button
+            onClick={handleBackToPreview}
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
+          >
+            Continue to Preview
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Test failed
+  if (testState === 'failed') {
+    return (
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">😔</div>
+          <h1 className="text-3xl font-black text-[#FF4B4B] mb-2">Test Not Passed</h1>
+          <p className="text-white/60 mb-6">
+            You scored {correctCount}/{puzzleCount}. Need {passingScore} to pass.
+          </p>
+          <div className="bg-[#1A2C35] rounded-xl p-4 mb-6">
+            <p className="text-xs text-[#CE82FF] font-bold mb-2">PREVIEW MODE</p>
+            <p className="text-white/60 text-sm">
+              In the real app, you would practice more before retrying.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setTestState('loading');
+                setCurrentIndex(0);
+                setCorrectCount(0);
+                setWrongCount(0);
+                setStreak(0);
+                setHadWrongAnswer(false);
+                // Re-fetch puzzles
+                fetch(`/api/level-test?transition=${transition}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    setPuzzles(data.puzzles);
+                    setVariantId(data.variantId);
+                    setTestState('playing');
+                  });
+              }}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#1CB0F6] shadow-[0_4px_0_#1487c0] active:translate-y-[2px] active:shadow-[0_2px_0_#1487c0] transition-all"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={handleBackToPreview}
+              className="w-full py-3 text-white/60 hover:text-white transition-colors"
+            >
+              Back to Preview
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Playing state
+  if (!currentPuzzle || !chess) {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <style>{progressBarStyles}</style>
+
+      {/* Header */}
+      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <button
+            onClick={handleBackToPreview}
+            className="text-gray-400 hover:text-white"
+          >
+            ✕
+          </button>
+
+          <div className="flex-1 mx-4">
+            <ChessProgressBar
+              current={currentIndex + (moveStatus === 'correct' ? 1 : 0)}
+              total={puzzleCount}
+              streak={streak}
+              hadWrongAnswer={hadWrongAnswer}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="px-2 py-0.5 bg-[#CE82FF]/20 text-[#CE82FF] text-xs font-bold rounded">
+              PREVIEW
+            </div>
+            <div className="text-gray-400">
+              {currentIndex + 1}/{puzzleCount}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Test info banner */}
+      <div className="bg-[#1A2C35]/50 px-4 py-2 text-center">
+        <span className="text-sm text-white/60">
+          Level {transition.split('-')[0]} → {transition.split('-')[1]} Test
+        </span>
+        <span className="mx-3 text-white/30">•</span>
+        <span className="text-sm">
+          <span className="text-[#58CC02]">{correctCount} correct</span>
+          <span className="text-white/30 mx-2">•</span>
+          <span className="text-[#FF4B4B]">{wrongCount}/{maxWrongAnswers} wrong</span>
+        </span>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
+        <div className="w-full max-w-lg">
+          {/* Turn indicator */}
+          <div className="flex items-center justify-between mb-2 h-8">
+            <div className="text-base font-semibold text-gray-300">
+              Puzzle {currentIndex + 1}
+            </div>
+            <span className={`text-base font-bold ${
+              playerColor === 'white' ? 'text-white' : 'text-gray-300'
+            }`}>
+              {playerColor === 'white' ? 'White' : 'Black'} to move
+            </span>
+          </div>
+
+          {/* Chessboard */}
+          <div className="relative">
+            <Chessboard
+              key={boardKey}
+              options={{
+                position: chess.fen(),
+                boardOrientation: playerColor,
+                onSquareClick: onSquareClick,
+                squareStyles: squareStyles,
+                boardStyle: {
+                  borderRadius: '8px 8px 0 0',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                },
+                darkSquareStyle: { backgroundColor: '#779952' },
+                lightSquareStyle: { backgroundColor: '#edeed1' },
+              }}
+            />
+          </div>
+
+          {/* Result popup */}
+          {moveStatus === 'correct' && (
+            <PuzzleResultPopup
+              type="correct"
+              message="Great move!"
+              onContinue={handleContinue}
+            />
+          )}
+
+          {moveStatus === 'wrong' && (
+            <PuzzleResultPopup
+              type="incorrect"
+              message="Not quite right."
+              onContinue={handleContinue}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
