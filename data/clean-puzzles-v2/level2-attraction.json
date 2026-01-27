@@ -1,0 +1,833 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "attraction",
+  "count": 50,
+  "puzzles": [
+    {
+      "puzzleId": "p2X6I",
+      "fen": "rn3rk1/p3ppbp/3p1np1/qppP1b2/2P5/1PN1P3/PB1Q1PPP/R3KBNR w KQ - 0 10",
+      "moves": "c3b5 a5d2 e1d2 f6e4",
+      "rating": 804,
+      "popularity": 92,
+      "nbPlays": 637,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IMX0V4Z1#19"
+    },
+    {
+      "puzzleId": "dGZlf",
+      "fen": "1k1r4/pnq2pp1/1p2p3/6p1/1P2Q3/2P2B2/P1K2RPP/8 b - - 4 30",
+      "moves": "d8c8 e4b7 c7b7 f3b7 b8b7 f2f7",
+      "rating": 808,
+      "popularity": 88,
+      "nbPlays": 1264,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "capturingDefender",
+        "endgame",
+        "long",
+        "queensideAttack"
+      ],
+      "gameUrl": "https://lichess.org/eahOlm1w/black#60"
+    },
+    {
+      "puzzleId": "mIvos",
+      "fen": "2R2rk1/pp2n1p1/7p/3p1Rp1/3P2P1/1P1QP2q/P3B3/6K1 b - - 0 24",
+      "moves": "e7c8 f5f8 g8f8 d3f5",
+      "rating": 859,
+      "popularity": 95,
+      "nbPlays": 765,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fQbQGGEA/black#48"
+    },
+    {
+      "puzzleId": "gQBsI",
+      "fen": "r4rk1/p2Q2pp/1p2p3/n1bpq3/8/P3PN2/3N1KPP/4R2R b - - 3 23",
+      "moves": "f8f7 d7f7 g8f7 f3e5",
+      "rating": 861,
+      "popularity": 90,
+      "nbPlays": 682,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hKk6NmWp/black#46"
+    },
+    {
+      "puzzleId": "bO1xE",
+      "fen": "8/1npkppbp/3p2p1/1P6/3PK3/2B1P1P1/3N1P1P/8 b - - 4 28",
+      "moves": "c7c6 b5c6 d7c6 d4d5",
+      "rating": 864,
+      "popularity": 96,
+      "nbPlays": 1562,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/xquaJAM5/black#56"
+    },
+    {
+      "puzzleId": "7hqMA",
+      "fen": "3rk2r/ppp2ppp/5n2/4N3/4b3/2B5/PPP2PPP/3RK2R b Kk - 1 12",
+      "moves": "e4c2 d1d8 e8d8 e5f7",
+      "rating": 868,
+      "popularity": 98,
+      "nbPlays": 1792,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6U2Ud7u0/black#24"
+    },
+    {
+      "puzzleId": "HdoJ6",
+      "fen": "r2qk2r/p2b1ppp/1p2p3/nB6/Q2P4/P1P1PN2/6PP/2R2RK1 b kq - 4 15",
+      "moves": "d7b5 a4b5 d8d7 b5d7 e8d7 f3e5",
+      "rating": 874,
+      "popularity": 93,
+      "nbPlays": 637,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/FN8OSF3o/black#30"
+    },
+    {
+      "puzzleId": "snY91",
+      "fen": "3rbk2/2p3pp/p1n1p3/1p2Pp2/1P3P2/2P3Pq/P1B1Q2P/R3R1K1 w - - 1 22",
+      "moves": "e2g2 h3g2 g1g2 d8d2",
+      "rating": 890,
+      "popularity": 91,
+      "nbPlays": 671,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oclmuwtR#43"
+    },
+    {
+      "puzzleId": "vHgyj",
+      "fen": "5rk1/pp1q1rbp/3p2p1/2pP1p2/2N1P3/1PP2RP1/P4QKP/5R2 b - - 0 27",
+      "moves": "f5e4 f3f7 f8f7 f2f7 d7f7 f1f7 g8f7 c4d6",
+      "rating": 896,
+      "popularity": 91,
+      "nbPlays": 671,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/v4EXLhTe/black#54"
+    },
+    {
+      "puzzleId": "xM7Xj",
+      "fen": "3r4/ppp4p/7k/8/8/1PP2P2/1P1N2QP/q1KR4 w - - 5 30",
+      "moves": "d2b1 d8d1 c1d1 a1b1",
+      "rating": 905,
+      "popularity": 90,
+      "nbPlays": 579,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/42LjgG45#59"
+    },
+    {
+      "puzzleId": "U3Uxx",
+      "fen": "R4b2/3r1k1p/1p4p1/1N1nB3/4K3/8/P6P/8 b - - 5 42",
+      "moves": "d5f6 e5f6 f7f6 a8f8",
+      "rating": 905,
+      "popularity": 89,
+      "nbPlays": 940,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/trqHWOJt/black#84"
+    },
+    {
+      "puzzleId": "c9TOf",
+      "fen": "3r4/2p2kpp/N4p2/1p6/p7/4R2P/P4K2/8 b - - 3 35",
+      "moves": "d8e8 e3e8 f7e8 a6c7 e8d7 c7b5",
+      "rating": 910,
+      "popularity": 93,
+      "nbPlays": 778,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/o7Npd91i/black#70"
+    },
+    {
+      "puzzleId": "bIoNG",
+      "fen": "4rk2/ppp3pQ/1b1pbq1p/8/3P4/2P2N2/PP3PPP/4R1K1 b - - 6 21",
+      "moves": "e6g8 e1e8 f8e8 h7g8",
+      "rating": 910,
+      "popularity": 88,
+      "nbPlays": 851,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7yhnlQkI/black#42"
+    },
+    {
+      "puzzleId": "1cKbE",
+      "fen": "rnbqkb1r/3p3p/p1p1Bnp1/1p6/4P3/1P6/PBP2PPP/RN1QK1NR b KQkq - 0 8",
+      "moves": "d7e6 d1d8 e8d8 b2f6",
+      "rating": 918,
+      "popularity": 99,
+      "nbPlays": 2201,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bqdFwqq1/black#16"
+    },
+    {
+      "puzzleId": "IkmG5",
+      "fen": "8/p1r1krRp/1p1q1p1Q/1P1P1p2/Pbp2P2/2N1P2R/6PP/6K1 b - - 4 36",
+      "moves": "b4c3 g7f7 e7f7 h6h7",
+      "rating": 919,
+      "popularity": 98,
+      "nbPlays": 1372,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/POENoafI/black#72"
+    },
+    {
+      "puzzleId": "lzDd5",
+      "fen": "r1bq1rk1/p4pbp/2p1p1p1/2PpB3/4n3/4PN2/PP2BPPP/R2Q1RK1 b - - 2 13",
+      "moves": "e4c5 e5g7 g8g7 d1d4",
+      "rating": 920,
+      "popularity": 92,
+      "nbPlays": 1499,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/isu6kGSo/black#26"
+    },
+    {
+      "puzzleId": "A0Gg0",
+      "fen": "q6r/pb1k4/1p2pp2/3p2p1/1B1P2Q1/P3PP2/1P4PP/5BK1 b - - 0 26",
+      "moves": "a8b8 f1b5 b7c6 b5c6 d7c6 g4e6",
+      "rating": 921,
+      "popularity": 92,
+      "nbPlays": 1146,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/hAnrtZ8s/black#52"
+    },
+    {
+      "puzzleId": "0zxvI",
+      "fen": "r3r1k1/pp4p1/2p3Pp/3p1R2/3P4/3Q4/PPP3q1/1K3R2 b - - 7 29",
+      "moves": "e8f8 f5f8 a8f8 f1f8 g8f8 d3f5",
+      "rating": 922,
+      "popularity": 96,
+      "nbPlays": 503,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/VTN69HW6/black#58"
+    },
+    {
+      "puzzleId": "ZTD3m",
+      "fen": "1rk2b1r/2pb2pp/p4p2/1p1Rp3/4P3/P3BN2/1PP2PPP/3R2K1 b - - 0 18",
+      "moves": "d7c6 d5d8 c8b7 d8b8 b7b8 d1d8",
+      "rating": 922,
+      "popularity": 87,
+      "nbPlays": 560,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame",
+        "queensideAttack"
+      ],
+      "gameUrl": "https://lichess.org/pgukzomQ/black#36"
+    },
+    {
+      "puzzleId": "XUCpL",
+      "fen": "r3k2r/pppb1p1p/4p3/1P6/N4n2/P2B4/3K1PPP/R5NR w kq - 1 18",
+      "moves": "g2g3 f4d3 d2d3 d7b5",
+      "rating": 933,
+      "popularity": 97,
+      "nbPlays": 6901,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "capturingDefender",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pcuzzZpU#35"
+    },
+    {
+      "puzzleId": "dVjgB",
+      "fen": "4rk2/p2P3p/1p3Pp1/5n2/2Q5/1P6/4rKPP/8 w - - 1 40",
+      "moves": "c4e2 e8e2 f2e2 f5d4",
+      "rating": 933,
+      "popularity": 91,
+      "nbPlays": 622,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/55Hu12RH#79"
+    },
+    {
+      "puzzleId": "mfhhi",
+      "fen": "r3k2r/1b3ppp/p3pn2/4N3/2P5/B7/5PPP/1B1R2K1 b kq - 2 18",
+      "moves": "a8d8 d1d8 e8d8 e5f7",
+      "rating": 936,
+      "popularity": 92,
+      "nbPlays": 2245,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tXNf3BwA/black#36"
+    },
+    {
+      "puzzleId": "2D5Je",
+      "fen": "r4rk1/ppp3pp/3b2p1/4p1N1/6P1/2PP3P/PPn1Rq2/R1BQ3K b - - 2 17",
+      "moves": "f2f1 d1f1 f8f1 h1g2 c2a1 g2f1",
+      "rating": 939,
+      "popularity": 95,
+      "nbPlays": 1450,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "master",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/FhbgpeAZ/black#34"
+    },
+    {
+      "puzzleId": "cxoMt",
+      "fen": "2kr1r2/p1p5/1p5p/4Pbp1/2PPp3/1R2K3/P4NPP/1R6 w - - 0 24",
+      "moves": "f2e4 f5e4 e3e4 f8f4",
+      "rating": 942,
+      "popularity": 94,
+      "nbPlays": 885,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DNfXQSad#47"
+    },
+    {
+      "puzzleId": "z85Mk",
+      "fen": "r4rk1/pb1pqp1n/1pn1p3/2pP4/2P5/P1NBP3/1P3PPP/R2Q1RK1 b - - 0 14",
+      "moves": "c6e5 d3h7 g8h7 d1h5",
+      "rating": 943,
+      "popularity": 92,
+      "nbPlays": 551,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/l7M5RHkn/black#28"
+    },
+    {
+      "puzzleId": "Ujwmu",
+      "fen": "8/1R3Rkp/p2p2p1/3q3n/P1p5/7P/2P3P1/5B1K b - - 0 31",
+      "moves": "d5f7 b7f7 g7f7 f1c4",
+      "rating": 946,
+      "popularity": 96,
+      "nbPlays": 656,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jNUFS7AA/black#62"
+    },
+    {
+      "puzzleId": "oq2sY",
+      "fen": "8/2p5/3p2k1/3P2b1/1pP1Nn2/1B3R2/PK6/7r b - - 7 44",
+      "moves": "g5f6 e4f6 g6f6 f3f4",
+      "rating": 946,
+      "popularity": 93,
+      "nbPlays": 1683,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fIngZHgl/black#88"
+    },
+    {
+      "puzzleId": "8lG75",
+      "fen": "4r1k1/2p4p/ppr3p1/3N4/1P1p4/1P6/P4PPP/R4K1R w - - 2 22",
+      "moves": "a1e1 e8e1 f1e1 c6c1",
+      "rating": 947,
+      "popularity": 95,
+      "nbPlays": 668,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/A9XpxKzT#43"
+    },
+    {
+      "puzzleId": "kOjnA",
+      "fen": "N2k1bnr/pp3ppp/8/4p3/3nbBP1/7P/PP3P1R/3RKB2 w - - 0 17",
+      "moves": "f4e5 f8b4 d1d2 b4d2 e1d2 d4f3",
+      "rating": 950,
+      "popularity": 94,
+      "nbPlays": 1594,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/WgyW03kE#33"
+    },
+    {
+      "puzzleId": "vaznV",
+      "fen": "1r1qkb1r/pp1n1ppp/4p3/1B1p4/Q2P2b1/4PN2/PP1N1PPP/R3K2R b KQk - 3 10",
+      "moves": "a7a6 b5d7 d8d7 a4d7 e8d7 f3e5",
+      "rating": 953,
+      "popularity": 95,
+      "nbPlays": 615,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/NqaPdaaI/black#20"
+    },
+    {
+      "puzzleId": "qdo3U",
+      "fen": "3r2k1/p5b1/1p2r1p1/5pQp/3B4/1qPR4/1P4PP/3R2K1 b - - 0 36",
+      "moves": "d8e8 d4g7 g8g7 d3d7",
+      "rating": 956,
+      "popularity": 89,
+      "nbPlays": 1302,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Kh6rJPwB/black#72"
+    },
+    {
+      "puzzleId": "7WPvs",
+      "fen": "r1bq2k1/2p3bN/3p3r/p1pPp2n/2P2p2/8/PPB2PPP/R1BQ1RK1 b - - 0 18",
+      "moves": "h6h7 c2h7 g8h7 d1h5",
+      "rating": 962,
+      "popularity": 92,
+      "nbPlays": 673,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/J3vXexLk/black#36"
+    },
+    {
+      "puzzleId": "SkxVn",
+      "fen": "1r1qk2r/pp1nbppp/4p3/1Bpp4/Q2P2b1/2P1PN2/PP1N1PPP/R3K2R b KQk - 3 9",
+      "moves": "a7a6 b5d7 d8d7 a4d7 e8d7 f3e5",
+      "rating": 963,
+      "popularity": 93,
+      "nbPlays": 2063,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6R3MhQTh/black#18"
+    },
+    {
+      "puzzleId": "q46xY",
+      "fen": "2r3k1/5ppp/p7/q5n1/4P3/3P4/KP2Q1P1/R1R5 w - - 18 39",
+      "moves": "a2b1 c8c1 b1c1 a5a1",
+      "rating": 964,
+      "popularity": 98,
+      "nbPlays": 570,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/F2CsdXXN#77"
+    },
+    {
+      "puzzleId": "x5NuG",
+      "fen": "1r5k/6p1/5p1p/7P/P3P1P1/5P2/5KNq/R3R3 w - - 10 40",
+      "moves": "a4a5 b8b2 e1e2 b2e2 f2e2 h2g2",
+      "rating": 964,
+      "popularity": 98,
+      "nbPlays": 860,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/dVYUcWwQ#79"
+    },
+    {
+      "puzzleId": "UJBtw",
+      "fen": "r7/pp4kp/5np1/2P5/2BBr1b1/1PR2NPn/P6P/5K1R b - - 4 27",
+      "moves": "g4f3 d4f6 g7f6 c3f3",
+      "rating": 966,
+      "popularity": 91,
+      "nbPlays": 1502,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/klCdAp20/black#54"
+    },
+    {
+      "puzzleId": "EVbvS",
+      "fen": "7k/pp1n2rp/2p5/3b4/1PP1p3/P5R1/5P1P/3R2K1 b - - 0 39",
+      "moves": "d5c4 g3g7 h8g7 d1d7",
+      "rating": 969,
+      "popularity": 98,
+      "nbPlays": 989,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "capturingDefender",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gEiL3v6t/black#78"
+    },
+    {
+      "puzzleId": "95LmU",
+      "fen": "5r2/p2rk3/1pQ2p1q/2p1p3/7P/3P1PR1/P4P2/5RK1 b - - 6 36",
+      "moves": "h6h4 g3g7 f8f7 g7f7 e7f7 c6d7",
+      "rating": 971,
+      "popularity": 97,
+      "nbPlays": 1217,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/e6e4XXac/black#72"
+    },
+    {
+      "puzzleId": "HccwN",
+      "fen": "1k5b/1p3p2/4q1p1/pNp5/P1P3p1/1P1RP3/5PP1/6K1 b - - 0 32",
+      "moves": "h8a1 d3d8 e6c8 d8c8 b8c8 b5d6",
+      "rating": 976,
+      "popularity": 96,
+      "nbPlays": 1605,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long",
+        "queensideAttack"
+      ],
+      "gameUrl": "https://lichess.org/hzPd0QsL/black#64"
+    },
+    {
+      "puzzleId": "RUrYR",
+      "fen": "7r/8/p1pR2b1/5k1p/4pP2/4K1PP/PPP5/8 b - - 3 31",
+      "moves": "h8c8 g3g4 h5g4 h3g4 f5g4 d6g6",
+      "rating": 979,
+      "popularity": 98,
+      "nbPlays": 500,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/icZGJkje/black#62"
+    },
+    {
+      "puzzleId": "Gv8ZV",
+      "fen": "2r1k3/b3r3/1p2pp1p/1Pp3p1/2P1P3/5P2/1P3KPP/R2R4 b - - 2 34",
+      "moves": "e7d7 d1d7 e8d7 a1a7",
+      "rating": 983,
+      "popularity": 82,
+      "nbPlays": 1677,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "capturingDefender",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5XJy4I1Y/black#68"
+    },
+    {
+      "puzzleId": "7pI4g",
+      "fen": "4r1k1/3R1pp1/pqr1pB2/1p4p1/3Pp3/1Q2P3/PP3PPP/1KR5 w - - 0 26",
+      "moves": "f6g5 c6c1 b1c1 b6c6",
+      "rating": 985,
+      "popularity": 96,
+      "nbPlays": 694,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "middlegame",
+        "queensideAttack",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vLk1vklQ#51"
+    },
+    {
+      "puzzleId": "wrtnb",
+      "fen": "r3kb1r/pppb1ppp/2n5/3p3R/3Pp1q1/1BP1P1P1/PP3PP1/RN1QK1N1 w Qkq - 6 11",
+      "moves": "b3d5 g4d1 e1d1 d7g4",
+      "rating": 985,
+      "popularity": 95,
+      "nbPlays": 967,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tPrwlFiC#21"
+    },
+    {
+      "puzzleId": "D9CR3",
+      "fen": "8/pkp4p/1p1p4/4p1q1/4P1r1/3P3Q/PP1NKP1P/5R2 w - - 3 26",
+      "moves": "f2f3 g4g2 f1f2 g2f2 e2f2 g5d2",
+      "rating": 987,
+      "popularity": 97,
+      "nbPlays": 2523,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/tH83lytY#51"
+    },
+    {
+      "puzzleId": "ZhO9k",
+      "fen": "4n1k1/2r2pp1/4p2p/8/3P4/p1NbNB1P/Pp3PP1/1R2R2K w - - 0 33",
+      "moves": "c3e4 d3b1 e1b1 c7c1 h1h2 c1b1",
+      "rating": 987,
+      "popularity": 91,
+      "nbPlays": 533,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/q82sLNV5#65"
+    },
+    {
+      "puzzleId": "K0DEf",
+      "fen": "3k4/p3q3/2R1pp2/4P1p1/3P3r/P6r/5PQ1/5RK1 w - - 1 34",
+      "moves": "f1b1 h3h1 g2h1 h4h1 g1h1 e7h7",
+      "rating": 992,
+      "popularity": 96,
+      "nbPlays": 567,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/AxHsHyfT#67"
+    },
+    {
+      "puzzleId": "ehzhM",
+      "fen": "r4rk1/p1p2ppp/2N5/2bpP3/6b1/3QB1Pq/PPP2n1P/RN2R1K1 w - - 0 15",
+      "moves": "e3f2 c5f2 g1f2 h3h2",
+      "rating": 993,
+      "popularity": 96,
+      "nbPlays": 1758,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3xglJOcB#29"
+    },
+    {
+      "puzzleId": "eEx1v",
+      "fen": "6k1/5pp1/p2pp3/3p4/3P2Pn/1P2RP2/P2R1K2/2r5 w - - 3 36",
+      "moves": "e3e1 c1e1 f2e1 h4f3",
+      "rating": 994,
+      "popularity": 90,
+      "nbPlays": 636,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/nTGeKbpQ#71"
+    },
+    {
+      "puzzleId": "EPLE5",
+      "fen": "r2qk2r/pp1b1ppp/4pn2/3p2B1/3p4/P1P1P3/2P2PPP/R2QKB1R w KQkq - 0 10",
+      "moves": "c3d4 d8a5 d1d2 a5d2 e1d2 f6e4",
+      "rating": 996,
+      "popularity": 95,
+      "nbPlays": 1883,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/oyc1TMcw#19"
+    },
+    {
+      "puzzleId": "5scjI",
+      "fen": "4r1k1/3n1pbp/1p1BP1p1/1qpP4/1n4B1/1Q6/1P3PPP/2R3K1 b - - 0 27",
+      "moves": "d7f6 e6f7 g8f7 g4e6 e8e6 d5e6",
+      "rating": 999,
+      "popularity": 91,
+      "nbPlays": 627,
+      "theme": "attraction",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "long",
+        "master",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/gNhrhwLr/black#54"
+    }
+  ]
+}

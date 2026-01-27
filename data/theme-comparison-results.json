@@ -1,0 +1,557 @@
+{
+  "summary": {
+    "totalAnalyzed": 5235,
+    "exactMatches": 4509,
+    "categoryMatches": 5235,
+    "exactMatchRate": "86.1%",
+    "categoryMatchRate": "100.0%"
+  },
+  "topReclassifications": [
+    [
+      "mate → pillsburysMate",
+      210
+    ],
+    [
+      "sacrifice → backRankMate",
+      108
+    ],
+    [
+      "advancedPawn → promotion",
+      95
+    ],
+    [
+      "advantage → middlegame",
+      38
+    ],
+    [
+      "endgame → rookEndgame",
+      32
+    ],
+    [
+      "fork → backRankMate",
+      22
+    ],
+    [
+      "fork → mateIn2",
+      21
+    ],
+    [
+      "sacrifice → mateIn2 (sacrifice)",
+      21
+    ],
+    [
+      "sacrifice → pillsburysMate",
+      15
+    ],
+    [
+      "endgame → pawnEndgame",
+      15
+    ],
+    [
+      "endgame → hangingPiece",
+      12
+    ],
+    [
+      "crushing → middlegame",
+      12
+    ],
+    [
+      "endgame → queenEndgame",
+      10
+    ],
+    [
+      "advancedPawn → quietMove",
+      9
+    ],
+    [
+      "advantage → master",
+      9
+    ],
+    [
+      "pin → mateIn1",
+      8
+    ],
+    [
+      "endgame → quietMove",
+      7
+    ],
+    [
+      "endgame → zugzwang",
+      7
+    ],
+    [
+      "sacrifice → operaMate",
+      7
+    ],
+    [
+      "crushing → master",
+      6
+    ],
+    [
+      "doubleCheck → mateIn1",
+      6
+    ],
+    [
+      "pin → mateIn2",
+      4
+    ],
+    [
+      "deflection → mateIn2",
+      4
+    ],
+    [
+      "endgame → queenRookEndgame",
+      4
+    ],
+    [
+      "sacrifice → mateIn3",
+      4
+    ]
+  ],
+  "themeDistribution": [
+    {
+      "theme": "mate",
+      "lichess": 3147,
+      "ours": 0,
+      "diff": -3147
+    },
+    {
+      "theme": "mateIn1",
+      "lichess": 0,
+      "ours": 2160,
+      "diff": 2160
+    },
+    {
+      "theme": "mateIn2",
+      "lichess": 0,
+      "ours": 593,
+      "diff": 593
+    },
+    {
+      "theme": "pillsburysMate",
+      "lichess": 0,
+      "ours": 230,
+      "diff": 230
+    },
+    {
+      "theme": "operaMate",
+      "lichess": 0,
+      "ours": 196,
+      "diff": 196
+    },
+    {
+      "theme": "sacrifice",
+      "lichess": 160,
+      "ours": 1,
+      "diff": -159
+    },
+    {
+      "theme": "backRankMate",
+      "lichess": 808,
+      "ours": 940,
+      "diff": 132
+    },
+    {
+      "theme": "advancedPawn",
+      "lichess": 153,
+      "ours": 51,
+      "diff": -102
+    },
+    {
+      "theme": "promotion",
+      "lichess": 0,
+      "ours": 97,
+      "diff": 97
+    },
+    {
+      "theme": "endgame",
+      "lichess": 220,
+      "ours": 131,
+      "diff": -89
+    },
+    {
+      "theme": "middlegame",
+      "lichess": 3,
+      "ours": 57,
+      "diff": 54
+    },
+    {
+      "theme": "advantage",
+      "lichess": 50,
+      "ours": 0,
+      "diff": -50
+    },
+    {
+      "theme": "fork",
+      "lichess": 405,
+      "ours": 356,
+      "diff": -49
+    },
+    {
+      "theme": "rookEndgame",
+      "lichess": 0,
+      "ours": 32,
+      "diff": 32
+    },
+    {
+      "theme": "mateIn3",
+      "lichess": 0,
+      "ours": 31,
+      "diff": 31
+    },
+    {
+      "theme": "mateIn2 (sacrifice)",
+      "lichess": 0,
+      "ours": 23,
+      "diff": 23
+    },
+    {
+      "theme": "smotheredMate",
+      "lichess": 0,
+      "ours": 20,
+      "diff": 20
+    },
+    {
+      "theme": "quietMove",
+      "lichess": 0,
+      "ours": 19,
+      "diff": 19
+    },
+    {
+      "theme": "crushing",
+      "lichess": 19,
+      "ours": 0,
+      "diff": -19
+    },
+    {
+      "theme": "master",
+      "lichess": 1,
+      "ours": 16,
+      "diff": 15
+    },
+    {
+      "theme": "pawnEndgame",
+      "lichess": 0,
+      "ours": 15,
+      "diff": 15
+    },
+    {
+      "theme": "hangingPiece",
+      "lichess": 13,
+      "ours": 26,
+      "diff": 13
+    },
+    {
+      "theme": "pin",
+      "lichess": 22,
+      "ours": 10,
+      "diff": -12
+    },
+    {
+      "theme": "queenEndgame",
+      "lichess": 0,
+      "ours": 10,
+      "diff": 10
+    },
+    {
+      "theme": "doubleCheck",
+      "lichess": 9,
+      "ours": 0,
+      "diff": -9
+    },
+    {
+      "theme": "zugzwang",
+      "lichess": 0,
+      "ours": 7,
+      "diff": 7
+    },
+    {
+      "theme": "deflection",
+      "lichess": 12,
+      "ours": 6,
+      "diff": -6
+    },
+    {
+      "theme": "attraction",
+      "lichess": 5,
+      "ours": 0,
+      "diff": -5
+    },
+    {
+      "theme": "opening",
+      "lichess": 0,
+      "ours": 4,
+      "diff": 4
+    },
+    {
+      "theme": "discoveredAttack",
+      "lichess": 68,
+      "ours": 64,
+      "diff": -4
+    },
+    {
+      "theme": "queenRookEndgame",
+      "lichess": 0,
+      "ours": 4,
+      "diff": 4
+    },
+    {
+      "theme": "queensideAttack",
+      "lichess": 4,
+      "ours": 0,
+      "diff": -4
+    },
+    {
+      "theme": "bishopEndgame",
+      "lichess": 7,
+      "ours": 4,
+      "diff": -3
+    },
+    {
+      "theme": "knightEndgame",
+      "lichess": 0,
+      "ours": 2,
+      "diff": 2
+    },
+    {
+      "theme": "defensiveMove",
+      "lichess": 11,
+      "ours": 12,
+      "diff": 1
+    },
+    {
+      "theme": "exposedKing",
+      "lichess": 0,
+      "ours": 1,
+      "diff": 1
+    },
+    {
+      "theme": "clearance",
+      "lichess": 1,
+      "ours": 0,
+      "diff": -1
+    },
+    {
+      "theme": "skewer",
+      "lichess": 59,
+      "ours": 59,
+      "diff": 0
+    },
+    {
+      "theme": "doubleBishopMate",
+      "lichess": 12,
+      "ours": 12,
+      "diff": 0
+    },
+    {
+      "theme": "kingsideAttack",
+      "lichess": 29,
+      "ours": 29,
+      "diff": 0
+    },
+    {
+      "theme": "arabianMate",
+      "lichess": 9,
+      "ours": 9,
+      "diff": 0
+    },
+    {
+      "theme": "hookMate",
+      "lichess": 7,
+      "ours": 7,
+      "diff": 0
+    },
+    {
+      "theme": "capturingDefender",
+      "lichess": 1,
+      "ours": 1,
+      "diff": 0
+    }
+  ],
+  "forkAnalysis": {
+    "total": 408,
+    "keptAsFork": 356,
+    "reclassified": 52,
+    "destinations": [
+      [
+        "backRankMate",
+        22
+      ],
+      [
+        "mateIn2",
+        21
+      ],
+      [
+        "pillsburysMate",
+        3
+      ],
+      [
+        "discoveredAttack",
+        3
+      ],
+      [
+        "mateIn3",
+        2
+      ],
+      [
+        "endgame",
+        1
+      ]
+    ]
+  },
+  "sampleReclassifications": [
+    {
+      "puzzleId": "07fcc",
+      "lichessThemes": [
+        "fork",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "lichessPrimary": "fork",
+      "ourPrimary": "mateIn2",
+      "reasoning": "Mate in 2 puzzle. Player must find forcing sequence to checkmate.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "09xR1",
+      "lichessThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "long",
+        "pawnEndgame",
+        "promotion"
+      ],
+      "lichessPrimary": "advancedPawn",
+      "ourPrimary": "promotion",
+      "reasoning": "Wins material through pawn promotion. That's the key tactical idea.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0FiCr",
+      "lichessThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "pillsburysMate",
+        "short"
+      ],
+      "lichessPrimary": "mate",
+      "ourPrimary": "pillsburysMate",
+      "reasoning": "Checkmate puzzle with pillsburysMate pattern. Player is thinking about delivering this specific mate.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0OsZQ",
+      "lichessThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "promotion",
+        "queenEndgame",
+        "short"
+      ],
+      "lichessPrimary": "advancedPawn",
+      "ourPrimary": "promotion",
+      "reasoning": "Wins material through pawn promotion. That's the key tactical idea.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0R8Cg",
+      "lichessThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "lichessPrimary": "advancedPawn",
+      "ourPrimary": "promotion",
+      "reasoning": "Wins material through pawn promotion. That's the key tactical idea.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0UFNP",
+      "lichessThemes": [
+        "advantage",
+        "opening",
+        "short"
+      ],
+      "lichessPrimary": "advantage",
+      "ourPrimary": "opening",
+      "reasoning": "Primary theme appears to be opening. Full tags: advantage, opening, short",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0b6iA",
+      "lichessThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "long",
+        "master",
+        "pawnEndgame",
+        "promotion"
+      ],
+      "lichessPrimary": "advancedPawn",
+      "ourPrimary": "promotion",
+      "reasoning": "Wins material through pawn promotion. That's the key tactical idea.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0hGmm",
+      "lichessThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "pawnEndgame",
+        "promotion",
+        "quietMove",
+        "veryLong"
+      ],
+      "lichessPrimary": "advancedPawn",
+      "ourPrimary": "promotion",
+      "reasoning": "Wins material through pawn promotion. That's the key tactical idea.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0jbkF",
+      "lichessThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "pillsburysMate"
+      ],
+      "lichessPrimary": "mate",
+      "ourPrimary": "pillsburysMate",
+      "reasoning": "Checkmate puzzle with pillsburysMate pattern. Player is thinking about delivering this specific mate.",
+      "match": false,
+      "categoryMatch": true
+    },
+    {
+      "puzzleId": "0q3XY",
+      "lichessThemes": [
+        "advantage",
+        "middlegame",
+        "short"
+      ],
+      "lichessPrimary": "advantage",
+      "ourPrimary": "middlegame",
+      "reasoning": "Primary theme appears to be middlegame. Full tags: advantage, middlegame, short",
+      "match": false,
+      "categoryMatch": true
+    }
+  ]
+}

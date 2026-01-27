@@ -1,0 +1,234 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "trappedPiece",
+  "count": 13,
+  "puzzles": [
+    {
+      "puzzleId": "Kkj17",
+      "fen": "8/8/7p/5K1P/8/2k5/p7/N7 w - - 4 51",
+      "moves": "f5g6 c3b2 g6h6 b2a1",
+      "rating": 626,
+      "popularity": 87,
+      "nbPlays": 1077,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "knightEndgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/TaueKQ82#101"
+    },
+    {
+      "puzzleId": "prdqj",
+      "fen": "8/8/8/7P/6p1/5p2/5k1K/7B w - - 2 55",
+      "moves": "h5h6 g4g3 h2h3 g3g2 h1g2 f3g2",
+      "rating": 628,
+      "popularity": 93,
+      "nbPlays": 1013,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advancedPawn",
+        "bishopEndgame",
+        "crushing",
+        "endgame",
+        "long",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/jEsfy5IP#109"
+    },
+    {
+      "puzzleId": "mEG0f",
+      "fen": "8/5pk1/4p1p1/4P2p/5P1P/3RP2K/5r2/8 b - - 6 37",
+      "moves": "f2f3 h3g2 f3f1 g2f1",
+      "rating": 645,
+      "popularity": 93,
+      "nbPlays": 1206,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/tf3RjNWN/black#74"
+    },
+    {
+      "puzzleId": "xMeus",
+      "fen": "2r2k2/p4ppp/1n2p3/7b/3PP3/PB3P2/1r1N2PP/2RK3R b - - 8 21",
+      "moves": "c8c1 d1c1 b2b3 d2b3",
+      "rating": 646,
+      "popularity": 93,
+      "nbPlays": 1208,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/NqoDDvIe/black#42"
+    },
+    {
+      "puzzleId": "yGg3p",
+      "fen": "8/7N/6p1/5kP1/7P/5K2/6n1/8 b - - 2 59",
+      "moves": "g2h4 f3g3 f5e5 g3h4",
+      "rating": 660,
+      "popularity": 90,
+      "nbPlays": 1186,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/abrbIKF5/black#118"
+    },
+    {
+      "puzzleId": "2KHuM",
+      "fen": "2b3nr/2N2ppp/1pk5/1p1pp3/8/2B5/PP3PPP/3K3R b - - 1 22",
+      "moves": "c6c7 c3e5 c7d7 e5g7 g8e7 g7h8",
+      "rating": 690,
+      "popularity": 90,
+      "nbPlays": 1166,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "master",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/UDzDBpFd/black#44"
+    },
+    {
+      "puzzleId": "EyMgk",
+      "fen": "7n/7P/5K2/6p1/8/6k1/8/8 b - - 3 53",
+      "moves": "g3h4 f6g7 g5g4 g7h8",
+      "rating": 705,
+      "popularity": 95,
+      "nbPlays": 1028,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "knightEndgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/sgpJ1ErV/black#106"
+    },
+    {
+      "puzzleId": "mhb5l",
+      "fen": "6k1/1Q3ppp/pq1rp3/1pb5/8/2P2N2/PP3PPP/5RK1 w - - 4 22",
+      "moves": "b7c8 d6d8 c8d8 b6d8",
+      "rating": 719,
+      "popularity": 90,
+      "nbPlays": 1469,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/QgwuPLfp#43"
+    },
+    {
+      "puzzleId": "1giyd",
+      "fen": "8/8/2p1kp1p/p1p1r1pP/Pp1PP1P1/1PP5/3KR3/8 b - - 0 47",
+      "moves": "c5d4 c3d4 e5e4 e2e4",
+      "rating": 751,
+      "popularity": 92,
+      "nbPlays": 1029,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/rTFG2WoK/black#94"
+    },
+    {
+      "puzzleId": "V7hLS",
+      "fen": "7n/7P/8/4kPK1/8/8/8/8 b - - 2 50",
+      "moves": "h8f7 g5g6 f7h8 g6g7 e5f5 g7h8",
+      "rating": 778,
+      "popularity": 95,
+      "nbPlays": 1522,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/83mqVo7y/black#100"
+    },
+    {
+      "puzzleId": "pecmJ",
+      "fen": "8/8/6PP/8/6K1/1pb5/k7/8 b - - 0 48",
+      "moves": "c3h8 g6g7 h8g7 h6g7 b3b2 g7g8q",
+      "rating": 779,
+      "popularity": 87,
+      "nbPlays": 1481,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advancedPawn",
+        "bishopEndgame",
+        "crushing",
+        "endgame",
+        "long",
+        "master",
+        "promotion",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/q3oCQR29/black#96"
+    },
+    {
+      "puzzleId": "K8pag",
+      "fen": "8/pp1k2p1/3pr1P1/6P1/5PR1/P7/8/2K5 b - - 0 42",
+      "moves": "e6g6 f4f5 g6e6 f5e6",
+      "rating": 782,
+      "popularity": 92,
+      "nbPlays": 1224,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/jSNVFlik/black#84"
+    },
+    {
+      "puzzleId": "nuvxr",
+      "fen": "2r1qbnr/ppk3p1/4p2p/2ppP3/Q7/1PP5/P4PPP/RNB2RK1 w - - 0 16",
+      "moves": "a4a7 c8a8 a7a8 e8a8",
+      "rating": 792,
+      "popularity": 90,
+      "nbPlays": 1368,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/DaTWGMRj#31"
+    }
+  ]
+}

@@ -1,0 +1,787 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "xRayAttack",
+  "count": 44,
+  "puzzles": [
+    {
+      "puzzleId": "Sgynk",
+      "fen": "4rr1k/6pp/4R3/3p4/2p2p2/2P2P1Q/PP3qPP/R6K w - - 2 29",
+      "moves": "a1e1 f2e1 e6e1 e8e1",
+      "rating": 802,
+      "popularity": 99,
+      "nbPlays": 3052,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/dnEZq8C0#57"
+    },
+    {
+      "puzzleId": "9V0yF",
+      "fen": "r3r1k1/pp3pp1/2p2n1p/3pRB2/3P1Q2/1Pq5/P1P2PPP/R5K1 w - - 1 18",
+      "moves": "a1e1 c3e1 e5e1 e8e1",
+      "rating": 811,
+      "popularity": 96,
+      "nbPlays": 3391,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/xqGwG72h#35"
+    },
+    {
+      "puzzleId": "OhVxw",
+      "fen": "r5k1/p1p2ppp/1pQp1q2/3Pr3/8/8/PPP2PPP/3RR1K1 b - - 1 18",
+      "moves": "a8e8 c6e8 e5e8 e1e8",
+      "rating": 842,
+      "popularity": 97,
+      "nbPlays": 3461,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/aawZtpcO/black#36"
+    },
+    {
+      "puzzleId": "1vc18",
+      "fen": "4Qr1k/6pp/3p1r2/p7/8/2q2P2/2P2R1P/4R2K b - - 3 27",
+      "moves": "f6f3 e8f8 f3f8 f2f8",
+      "rating": 844,
+      "popularity": 95,
+      "nbPlays": 3349,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/uvF7sUTd/black#54"
+    },
+    {
+      "puzzleId": "EhrxA",
+      "fen": "r3r1k1/pp4pp/3Rppn1/q7/2P5/P6P/1PQ2PPB/4R1K1 w - - 4 29",
+      "moves": "d6e6 a5e1 e6e1 e8e1",
+      "rating": 847,
+      "popularity": 96,
+      "nbPlays": 3034,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/pyw7hGzm#57"
+    },
+    {
+      "puzzleId": "Dk4zQ",
+      "fen": "3r2k1/5ppp/4p2q/Qp6/3r4/1B3PP1/P1PnK2P/3R3R b - - 4 27",
+      "moves": "d2b3 a5d8 d4d8 d1d8",
+      "rating": 860,
+      "popularity": 97,
+      "nbPlays": 3637,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/TY92KJss/black#54"
+    },
+    {
+      "puzzleId": "d3IRv",
+      "fen": "2r3k1/pp3ppp/8/3p4/1P2n1Q1/2r1P2P/P1N2qPK/R1R5 b - - 12 26",
+      "moves": "c3c2 g4c8 c2c8 c1c8",
+      "rating": 879,
+      "popularity": 97,
+      "nbPlays": 3164,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/IgFMoLE5/black#52"
+    },
+    {
+      "puzzleId": "jTXCt",
+      "fen": "3r2k1/2Bn1pb1/p1Q3pp/2p5/8/1qP2N2/1P3PPP/3R2K1 w - - 3 25",
+      "moves": "d1d7 b3d1 d7d1 d8d1 f3e1 d1e1",
+      "rating": 900,
+      "popularity": 99,
+      "nbPlays": 3580,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/jhHrdMdT#49"
+    },
+    {
+      "puzzleId": "OoE6w",
+      "fen": "2r3k1/ppRb1pp1/4p2p/4N3/1n1PQ3/qB2P3/P4PPP/6K1 w - - 4 21",
+      "moves": "e4b7 a3c1 c7c1 c8c1 b3d1 c1d1",
+      "rating": 905,
+      "popularity": 97,
+      "nbPlays": 8450,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/FnOM2F2M#41"
+    },
+    {
+      "puzzleId": "ecPuI",
+      "fen": "1r6/1p3pk1/pR2r1q1/P1PQ3p/3P2p1/4P3/5PPP/1R4K1 w - - 3 27",
+      "moves": "b6b7 g6b1 b7b1 b8b1",
+      "rating": 906,
+      "popularity": 97,
+      "nbPlays": 3735,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/HibZGYa4#53"
+    },
+    {
+      "puzzleId": "aW1IZ",
+      "fen": "6k1/pp4p1/3n1r1p/5p1Q/4r3/1Pq1N3/P1P1RPPP/4R1K1 w - - 4 30",
+      "moves": "e3d5 c3e1 e2e1 e4e1",
+      "rating": 906,
+      "popularity": 96,
+      "nbPlays": 3369,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/A34yhTjP#59"
+    },
+    {
+      "puzzleId": "QB9PF",
+      "fen": "2r2r1k/6pp/pnp1Qp2/1pR5/3PPq2/P4N2/1P3PPP/2R3K1 w - - 1 26",
+      "moves": "c5c6 f4c1 c6c1 c8c1 f3e1 c1e1",
+      "rating": 919,
+      "popularity": 97,
+      "nbPlays": 3508,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/rVLb0NC5#51"
+    },
+    {
+      "puzzleId": "fIGJn",
+      "fen": "5rk1/3Q1pp1/7p/p7/8/2q5/P4RPP/4rR1K w - - 2 32",
+      "moves": "f2f7 e1f1 f7f1 f8f1",
+      "rating": 920,
+      "popularity": 97,
+      "nbPlays": 5108,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/Xdm32KBO#63"
+    },
+    {
+      "puzzleId": "T0uj4",
+      "fen": "6k1/1p3ppp/p3p3/6PP/PP1q1r2/2rP4/2RQ1P2/3K4 b - - 3 35",
+      "moves": "c3d3 c2c8 d4d8 c8d8 d3d8 d2d8",
+      "rating": 926,
+      "popularity": 98,
+      "nbPlays": 3124,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/lZXwY3QY/black#70"
+    },
+    {
+      "puzzleId": "lKagf",
+      "fen": "5r1k/1p1B2pp/p1p5/3p4/1QP1pr2/4q3/PP3RPP/5R1K b - - 1 27",
+      "moves": "f4f2 b4f8 f2f8 f1f8",
+      "rating": 927,
+      "popularity": 92,
+      "nbPlays": 3133,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/5ffCqYM3/black#54"
+    },
+    {
+      "puzzleId": "jsisq",
+      "fen": "3r1r2/2k1bRpp/p3Q1n1/1qppP3/N2P4/8/PP4PP/R1B4K w - - 3 21",
+      "moves": "a4c5 b5f1 f7f1 f8f1",
+      "rating": 939,
+      "popularity": 97,
+      "nbPlays": 10271,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/NLGVDaOe#41"
+    },
+    {
+      "puzzleId": "oNlpl",
+      "fen": "1n1r2k1/5ppp/4p3/1Q6/2PR4/5B2/5PPP/r5K1 w - - 1 24",
+      "moves": "f3d1 a1d1 d4d1 d8d1",
+      "rating": 942,
+      "popularity": 96,
+      "nbPlays": 3679,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/iCGBlmWr#47"
+    },
+    {
+      "puzzleId": "UdFFI",
+      "fen": "4r1k1/1p3ppp/p2pr1q1/8/Q2PN3/2P3P1/PP3PKP/4R3 b - - 0 24",
+      "moves": "e6e4 a4e8 e4e8 e1e8",
+      "rating": 944,
+      "popularity": 96,
+      "nbPlays": 3134,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/A2YK6YjZ/black#48"
+    },
+    {
+      "puzzleId": "38mn0",
+      "fen": "1r4k1/p1Q2ppp/4p3/1p6/1P6/P2r1P2/4q1PP/2KR3R b - - 1 27",
+      "moves": "b8d8 c7d8 d3d8 d1d8",
+      "rating": 944,
+      "popularity": 95,
+      "nbPlays": 4436,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/hGyDPBUY/black#54"
+    },
+    {
+      "puzzleId": "HalH2",
+      "fen": "r3r3/p4pk1/1p1p2n1/2pP1pQB/1qP5/1P6/P2R2PP/4R2K w - - 4 35",
+      "moves": "d2e2 b4e1 e2e1 e8e1",
+      "rating": 946,
+      "popularity": 97,
+      "nbPlays": 4367,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/J4KMWWvH#69"
+    },
+    {
+      "puzzleId": "AMvcE",
+      "fen": "r4rk1/pQ3p2/4p1pp/2p5/2P2R2/3q4/PP4PP/5R1K w - - 0 23",
+      "moves": "f4f7 d3f1 f7f1 f8f1",
+      "rating": 951,
+      "popularity": 94,
+      "nbPlays": 3053,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/OHiVx65R#45"
+    },
+    {
+      "puzzleId": "2kdsy",
+      "fen": "r2qrk2/1QR1bppp/p4n2/1p6/5B2/5N2/PP3PPP/4R1K1 w - - 5 19",
+      "moves": "e1e7 d8d1 f3e1 d1e1 e7e1 e8e1",
+      "rating": 953,
+      "popularity": 96,
+      "nbPlays": 4930,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/64gw0lln#37"
+    },
+    {
+      "puzzleId": "8PDWs",
+      "fen": "2r3k1/p1r1qppp/Qp2p3/3p4/1P6/P1P4P/5PP1/2R1R1K1 b - - 0 26",
+      "moves": "c7c3 a6c8 c3c8 c1c8",
+      "rating": 953,
+      "popularity": 95,
+      "nbPlays": 3434,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/kmCm2e9M/black#52"
+    },
+    {
+      "puzzleId": "HBLMt",
+      "fen": "3r1rk1/1R3p1p/p7/3Pp2Q/P1Pp4/3q4/6PP/5R1K w - - 0 25",
+      "moves": "b7f7 d3f1 f7f1 f8f1",
+      "rating": 954,
+      "popularity": 96,
+      "nbPlays": 5426,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/bYuKCTlJ#49"
+    },
+    {
+      "puzzleId": "POWc2",
+      "fen": "6k1/p3pp1p/1pqp1np1/8/P1r1P3/1QPR1P2/2P3PP/KR6 w - - 3 27",
+      "moves": "b3b5 c4a4 b5a4 c6a4",
+      "rating": 955,
+      "popularity": 97,
+      "nbPlays": 3680,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/wXkCNrqa#53"
+    },
+    {
+      "puzzleId": "jZ526",
+      "fen": "r3r1k1/1NnQR3/P5pp/1P1p4/8/2q5/6PP/4R2K w - - 1 35",
+      "moves": "d7c7 c3e1 e7e1 e8e1",
+      "rating": 967,
+      "popularity": 95,
+      "nbPlays": 3342,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/h6p3LLZ8#69"
+    },
+    {
+      "puzzleId": "IzOem",
+      "fen": "6k1/1r3p1p/5p2/2P5/8/5P2/rp4PP/1RR3K1 w - - 0 31",
+      "moves": "c1c2 a2a1 c2b2 a1b1 b2b1 b7b1",
+      "rating": 969,
+      "popularity": 96,
+      "nbPlays": 4162,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "rookEndgame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/cMGP0rFY#61"
+    },
+    {
+      "puzzleId": "3J378",
+      "fen": "7r/p3krpb/4p2p/2qpQ3/P6P/5P2/6P1/R1R4K b - - 3 32",
+      "moves": "c5d6 c1c7 d6c7 e5c7",
+      "rating": 970,
+      "popularity": 95,
+      "nbPlays": 3947,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/zeLi6mkY/black#64"
+    },
+    {
+      "puzzleId": "bkR5g",
+      "fen": "1r6/RPr2pkp/4p1p1/3pP3/8/6P1/1R5K/8 b - - 6 44",
+      "moves": "g7f8 a7a8 c7b7 a8b8 b7b8 b2b8",
+      "rating": 973,
+      "popularity": 96,
+      "nbPlays": 4340,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/4LD4wgpF/black#88"
+    },
+    {
+      "puzzleId": "9MaE7",
+      "fen": "2r2rk1/p4pp1/2p1p2p/1pPpPn2/3P1R1P/P1P1qQP1/6PN/1R4K1 w - - 1 28",
+      "moves": "g1h1 f5g3 f3g3 e3g3",
+      "rating": 975,
+      "popularity": 96,
+      "nbPlays": 4891,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "kingsideAttack",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/yOSzinNM#55"
+    },
+    {
+      "puzzleId": "1Ctp5",
+      "fen": "5r1k/3B2pp/8/2Q5/1P1p4/P2P2P1/3qrP1P/5RK1 b - - 6 31",
+      "moves": "e2f2 c5f8 f2f8 f1f8",
+      "rating": 980,
+      "popularity": 97,
+      "nbPlays": 7176,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/mdUKrKsW/black#62"
+    },
+    {
+      "puzzleId": "cJ0JG",
+      "fen": "3r2k1/3P1pp1/p6p/1p2r3/8/1P4K1/1P4PP/2RR4 b - - 2 32",
+      "moves": "e5e7 c1c8 e7d7 c8d8 d7d8 d1d8",
+      "rating": 982,
+      "popularity": 95,
+      "nbPlays": 3428,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "rookEndgame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/QhjzIMsA/black#64"
+    },
+    {
+      "puzzleId": "rM9Jf",
+      "fen": "r4rk1/p4ppp/R3p3/4q3/2P5/4B3/4QPPP/R5K1 w - - 0 25",
+      "moves": "a6a7 e5a1 a7a1 a8a1 e2f1 a1f1",
+      "rating": 985,
+      "popularity": 97,
+      "nbPlays": 5260,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "long",
+        "middlegame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/DYddCiCu#49"
+    },
+    {
+      "puzzleId": "tnYFW",
+      "fen": "4Q1rk/p4Rp1/6qp/3Kp3/P3p1P1/1P6/5P1P/8 w - - 0 40",
+      "moves": "f7f8 g6e8 f8e8 g8e8",
+      "rating": 985,
+      "popularity": 96,
+      "nbPlays": 3624,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/wtKH1duj#79"
+    },
+    {
+      "puzzleId": "dzztt",
+      "fen": "4r1k1/bpp1rppp/3p4/PQ1P3q/3P4/4BP2/5R1P/4R1K1 b - - 0 22",
+      "moves": "e7e3 b5e8 e3e8 e1e8",
+      "rating": 985,
+      "popularity": 93,
+      "nbPlays": 3327,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/KpXBFecY/black#44"
+    },
+    {
+      "puzzleId": "4gLxx",
+      "fen": "5r1k/1p4pp/p2Q4/8/1PP5/8/2q1rPPP/5RK1 b - - 4 27",
+      "moves": "e2f2 d6f8 f2f8 f1f8",
+      "rating": 989,
+      "popularity": 96,
+      "nbPlays": 5469,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/0XQ4PlRH/black#54"
+    },
+    {
+      "puzzleId": "RQ3IY",
+      "fen": "br2r1k1/R5p1/p1p2p1p/2Q5/5q2/1P1P1N2/P1P2PPP/4R1K1 w - - 4 29",
+      "moves": "e1e7 f4c1 f3e1 c1e1 e7e1 e8e1",
+      "rating": 990,
+      "popularity": 97,
+      "nbPlays": 3809,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/NwgCxh1n#57"
+    },
+    {
+      "puzzleId": "UYP8e",
+      "fen": "3r2k1/ppp2ppp/8/1r1P1q2/1P5Q/P6P/6P1/3R2K1 b - - 2 28",
+      "moves": "b5d5 h4d8 d5d8 d1d8",
+      "rating": 990,
+      "popularity": 96,
+      "nbPlays": 10117,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/AOqBDX2j/black#56"
+    },
+    {
+      "puzzleId": "r2sUl",
+      "fen": "5r1k/6pp/p2Q4/1p6/3P4/N1P3P1/PP1qrB1P/5RK1 b - - 0 30",
+      "moves": "e2f2 d6f8 f2f8 f1f8",
+      "rating": 992,
+      "popularity": 96,
+      "nbPlays": 7175,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/8jYi9wfz/black#60"
+    },
+    {
+      "puzzleId": "YBoud",
+      "fen": "1r4k1/r4pb1/2RP2pp/8/3pP3/3P2P1/1p3PBP/1R4K1 w - - 0 28",
+      "moves": "c6c2 a7a1 c2b2 a1b1 b2b1 b8b1",
+      "rating": 992,
+      "popularity": 95,
+      "nbPlays": 6330,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/swbNXMcf#55"
+    },
+    {
+      "puzzleId": "Wnu6e",
+      "fen": "4rrk1/1p3qp1/8/p5p1/P1P3Q1/1P4N1/2P3PP/5R1K w - - 0 27",
+      "moves": "f1f7 e8e1 g3f1 e1f1 f7f1 f8f1",
+      "rating": 993,
+      "popularity": 95,
+      "nbPlays": 4643,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/0aN7SJfo#53"
+    },
+    {
+      "puzzleId": "VOfMO",
+      "fen": "4rr1k/R5pp/4R3/8/3N4/6PP/P4p2/3n1K2 w - - 1 33",
+      "moves": "e6e7 d1e3 e7e3 e8e3",
+      "rating": 996,
+      "popularity": 97,
+      "nbPlays": 3990,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/wwKxttHy#65"
+    },
+    {
+      "puzzleId": "57d9e",
+      "fen": "1k6/pp1r3p/2p2p2/2P5/1P3P2/P5PP/2rp4/3RR1K1 w - - 0 29",
+      "moves": "e1e2 c2c1 e2d2 c1d1 d2d1 d7d1",
+      "rating": 999,
+      "popularity": 96,
+      "nbPlays": 5216,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "exposedKing",
+        "long",
+        "rookEndgame",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/um6RNxmB#57"
+    },
+    {
+      "puzzleId": "z8Y89",
+      "fen": "2Rr2k1/1B1r1ppp/p7/8/8/P4P1P/1q3P2/4R1K1 b - - 1 26",
+      "moves": "b2d2 e1e8 d8e8 c8e8",
+      "rating": 999,
+      "popularity": 96,
+      "nbPlays": 3250,
+      "theme": "xRayAttack",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "xRayAttack"
+      ],
+      "gameUrl": "https://lichess.org/VzZP7Y2b/black#52"
+    }
+  ]
+}

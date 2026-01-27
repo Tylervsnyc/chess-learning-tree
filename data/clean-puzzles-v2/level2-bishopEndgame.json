@@ -1,0 +1,1034 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "bishopEndgame",
+  "count": 60,
+  "puzzles": [
+    {
+      "puzzleId": "sRfxT",
+      "fen": "8/7k/2B3pp/B4p2/2p5/1p5P/5PP1/6K1 w - - 0 44",
+      "moves": "c6d5 b3b2 d5c4 b2b1q",
+      "rating": 803,
+      "popularity": 93,
+      "nbPlays": 1691,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/H2KevlB1#87"
+    },
+    {
+      "puzzleId": "CGNhh",
+      "fen": "3bk3/pb3pp1/1p5p/2p4P/4PB2/5BP1/PP3PK1/8 b - - 0 27",
+      "moves": "d8f6 e4e5 b7f3 g2f3",
+      "rating": 805,
+      "popularity": 92,
+      "nbPlays": 1014,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9FGo92mr/black#54"
+    },
+    {
+      "puzzleId": "asXoD",
+      "fen": "2k5/2P5/8/8/p1K2B2/1p5P/PP3PP1/8 w - - 0 42",
+      "moves": "g2g3 b3a2 f4e5 a2a1q",
+      "rating": 824,
+      "popularity": 87,
+      "nbPlays": 999,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aGBvWnnv#83"
+    },
+    {
+      "puzzleId": "gGQi6",
+      "fen": "8/6p1/2p4p/P7/4k3/2p3P1/1bK2P1P/8 b - - 0 45",
+      "moves": "e4d5 a5a6 b2a3 a6a7 a3c5 a7a8q",
+      "rating": 832,
+      "popularity": 98,
+      "nbPlays": 1209,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/hjA4qYPe/black#90"
+    },
+    {
+      "puzzleId": "YgLL2",
+      "fen": "5k2/5pp1/3p4/2pP4/pbP5/B2P3P/6P1/5K2 w - - 6 33",
+      "moves": "a3b2 a4a3 b2a3 b4a3",
+      "rating": 841,
+      "popularity": 93,
+      "nbPlays": 643,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qqLwI15H#65"
+    },
+    {
+      "puzzleId": "4MaCG",
+      "fen": "8/8/p3K2p/1p6/1P1pkPp1/P5P1/7B/8 w - - 0 43",
+      "moves": "h2g1 d4d3 f4f5 d3d2 f5f6 d2d1q",
+      "rating": 845,
+      "popularity": 94,
+      "nbPlays": 830,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/6yNvBMVh#85"
+    },
+    {
+      "puzzleId": "M1uZY",
+      "fen": "5B2/7K/2k4P/2Pp4/4p3/4Pp2/8/8 w - - 0 48",
+      "moves": "f8d6 f3f2 h7g6 f2f1q",
+      "rating": 845,
+      "popularity": 88,
+      "nbPlays": 612,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/AKeqaSuG#95"
+    },
+    {
+      "puzzleId": "7BAgX",
+      "fen": "8/p3k3/2p3r1/1p2P3/1P1P1K2/P1P2pPp/2B2P2/8 w - - 0 41",
+      "moves": "c2g6 h3h2 g6e4 h2h1q",
+      "rating": 850,
+      "popularity": 89,
+      "nbPlays": 506,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Crqm4UsV#81"
+    },
+    {
+      "puzzleId": "SLVXP",
+      "fen": "7b/8/P5p1/5pP1/2p5/2P1P2p/1P5k/1K6 b - - 0 55",
+      "moves": "h2g3 a6a7 h3h2 a7a8q",
+      "rating": 851,
+      "popularity": 92,
+      "nbPlays": 575,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/y6w1UnN3/black#110"
+    },
+    {
+      "puzzleId": "Napgo",
+      "fen": "3b4/8/1k3p2/p1p1pPp1/2P1P2p/1P3PP1/1K1B4/8 w - - 0 57",
+      "moves": "g3h4 g5h4 d2e1 h4h3",
+      "rating": 854,
+      "popularity": 98,
+      "nbPlays": 819,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/473NUcgq#113"
+    },
+    {
+      "puzzleId": "AZ12a",
+      "fen": "8/1p6/p7/3PB3/8/P2k3p/6bK/8 b - - 0 38",
+      "moves": "d3e4 d5d6 e4e5 d6d7 e5d6 d7d8q",
+      "rating": 863,
+      "popularity": 98,
+      "nbPlays": 582,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long",
+        "promotion",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/daLVPLgE/black#76"
+    },
+    {
+      "puzzleId": "ouhkE",
+      "fen": "3k4/8/2PP2p1/3B3p/8/K1Pbp3/7P/8 w - - 0 49",
+      "moves": "d5f3 e3e2 f3e2 d3e2",
+      "rating": 864,
+      "popularity": 100,
+      "nbPlays": 570,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QWvmR2L7#97"
+    },
+    {
+      "puzzleId": "E9u8D",
+      "fen": "8/5Bp1/1p4Kp/6pP/1k6/p5P1/8/8 b - - 1 44",
+      "moves": "b4c3 g6g7 b6b5 g7h6",
+      "rating": 866,
+      "popularity": 98,
+      "nbPlays": 839,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YE4ylvin/black#88"
+    },
+    {
+      "puzzleId": "7gnAb",
+      "fen": "8/5b2/p6p/1p2k1p1/4B1PP/P1pP1KP1/2P5/8 w - - 0 36",
+      "moves": "e4b7 f7d5 b7d5 e5d5 h4g5 h6g5",
+      "rating": 868,
+      "popularity": 97,
+      "nbPlays": 1319,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gitLk8bm#71"
+    },
+    {
+      "puzzleId": "L5WW5",
+      "fen": "6k1/2p1bp2/2P1p1p1/1P2P2p/5P2/6P1/6KP/8 b - - 0 40",
+      "moves": "g8f8 b5b6 c7b6 c6c7",
+      "rating": 869,
+      "popularity": 95,
+      "nbPlays": 603,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rBA9zRT0/black#80"
+    },
+    {
+      "puzzleId": "42imD",
+      "fen": "8/1p4Bp/6p1/P7/8/1p3KP1/2k4P/8 w - - 1 47",
+      "moves": "h2h4 b3b2 g7b2 c2b2",
+      "rating": 876,
+      "popularity": 94,
+      "nbPlays": 1872,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/E7gcQmZy#93"
+    },
+    {
+      "puzzleId": "woxsF",
+      "fen": "8/6p1/1KPbkp1p/p7/P2P4/8/5PPP/8 b - - 2 40",
+      "moves": "e6d5 c6c7 d6c7 b6c7",
+      "rating": 878,
+      "popularity": 93,
+      "nbPlays": 1490,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sCASA4gz/black#80"
+    },
+    {
+      "puzzleId": "EmDh1",
+      "fen": "3b4/8/1p2kpp1/p1p1p3/P1P1PPK1/4B3/2P4P/8 b - - 0 33",
+      "moves": "d8c7 f4f5 g6f5 e4f5",
+      "rating": 881,
+      "popularity": 96,
+      "nbPlays": 665,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YNJM1vTB/black#66"
+    },
+    {
+      "puzzleId": "VAywI",
+      "fen": "8/p7/3P3k/2p2ppb/5P2/2P3KP/PP6/8 b - - 0 46",
+      "moves": "g5f4 g3f4 h5e8 f4f5",
+      "rating": 884,
+      "popularity": 94,
+      "nbPlays": 797,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5NtHpAJg/black#92"
+    },
+    {
+      "puzzleId": "wlMXw",
+      "fen": "8/B3kp1p/6p1/3pb3/8/5P1P/P3KP2/8 b - - 0 30",
+      "moves": "e7d6 a7b8 d6e6 b8e5",
+      "rating": 885,
+      "popularity": 96,
+      "nbPlays": 1105,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hm7tiWF8/black#60"
+    },
+    {
+      "puzzleId": "U7f6V",
+      "fen": "5k2/8/3p4/1p1P2K1/1P3pP1/P3b3/1B5P/8 w - - 2 39",
+      "moves": "g5f5 f4f3 f5e4 f3f2 e4e3 f2f1q",
+      "rating": 888,
+      "popularity": 95,
+      "nbPlays": 1018,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/yjsY6A79#77"
+    },
+    {
+      "puzzleId": "elt7Q",
+      "fen": "8/8/4K1P1/1p6/pk6/8/1bB5/8 b - - 2 46",
+      "moves": "b4c3 g6g7 c3c2 g7g8q",
+      "rating": 895,
+      "popularity": 100,
+      "nbPlays": 743,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9CKD82oK/black#92"
+    },
+    {
+      "puzzleId": "3tkaj",
+      "fen": "8/6k1/4p2p/2p5/P1P2P1P/5KP1/1b6/8 b - - 0 40",
+      "moves": "b2f6 a4a5 f6d8 a5a6",
+      "rating": 895,
+      "popularity": 96,
+      "nbPlays": 840,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OzVVY7FU/black#80"
+    },
+    {
+      "puzzleId": "ue3yq",
+      "fen": "8/K1k5/5p2/2PB1p1p/5P1P/3b2P1/8/8 w - - 15 54",
+      "moves": "a7a8 d3e4 a8a7 e4d5",
+      "rating": 897,
+      "popularity": 94,
+      "nbPlays": 1077,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JDZT6RXj#107"
+    },
+    {
+      "puzzleId": "8XXZg",
+      "fen": "8/6bp/1Bp3p1/3k1p2/3PpP2/8/PP4PP/6K1 w - - 0 34",
+      "moves": "a2a4 g7d4 b6d4 d5d4",
+      "rating": 902,
+      "popularity": 95,
+      "nbPlays": 534,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7OIu8i6J#67"
+    },
+    {
+      "puzzleId": "DREUK",
+      "fen": "8/8/7p/5kpP/4p3/4K3/p4P2/B7 w - - 4 47",
+      "moves": "f2f3 e4f3 e3f3 g5g4",
+      "rating": 904,
+      "popularity": 97,
+      "nbPlays": 984,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7OOUyZcN#93"
+    },
+    {
+      "puzzleId": "jaGFN",
+      "fen": "8/8/nP3k2/P6p/3p3P/1K4p1/8/5B2 w - - 4 64",
+      "moves": "f1a6 g3g2 b6b7 g2g1q",
+      "rating": 915,
+      "popularity": 94,
+      "nbPlays": 1070,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yAKCfAdW#127"
+    },
+    {
+      "puzzleId": "v5NWg",
+      "fen": "8/2p5/B4ppp/PPk5/6PK/5b2/7P/8 b - - 0 46",
+      "moves": "c5b4 b5b6 c7b6 a5b6",
+      "rating": 918,
+      "popularity": 95,
+      "nbPlays": 1104,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7nCXK83Q/black#92"
+    },
+    {
+      "puzzleId": "8G5Ca",
+      "fen": "8/5pk1/1p4p1/pBp1P3/P1P2PP1/4b1K1/8/3bB3 w - - 9 43",
+      "moves": "e1f2 e3f2 g3f2 d1g4",
+      "rating": 919,
+      "popularity": 99,
+      "nbPlays": 3106,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rpyGtiO3#85"
+    },
+    {
+      "puzzleId": "ub8Le",
+      "fen": "8/7p/6p1/pp6/3Bp3/2K1P3/k5PP/8 w - - 0 38",
+      "moves": "d4b6 b5b4 c3c4 b4b3 b6a5 b3b2",
+      "rating": 919,
+      "popularity": 99,
+      "nbPlays": 1029,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/HecHEJRh#75"
+    },
+    {
+      "puzzleId": "fA5rT",
+      "fen": "8/8/2bK2p1/2P4p/2kP3P/6P1/8/8 b - - 7 54",
+      "moves": "c4b5 d4d5 c6a8 c5c6",
+      "rating": 926,
+      "popularity": 99,
+      "nbPlays": 709,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NBYHk5u1/black#108"
+    },
+    {
+      "puzzleId": "QGmPC",
+      "fen": "8/2b2k2/3B1p2/3K1P2/pp2P3/7P/P7/8 w - - 0 41",
+      "moves": "d6c7 b4b3 a2b3 a4b3",
+      "rating": 928,
+      "popularity": 94,
+      "nbPlays": 523,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/31JwGfpV#81"
+    },
+    {
+      "puzzleId": "QrITg",
+      "fen": "8/3k3p/p1p3p1/2p1K1P1/2P2P1P/1P6/PB3b2/8 w - - 1 37",
+      "moves": "e5f6 f2d4 b2d4 c5d4 f6e5 d4d3 e5d4 d3d2",
+      "rating": 929,
+      "popularity": 93,
+      "nbPlays": 758,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/Cm6tSsmR#73"
+    },
+    {
+      "puzzleId": "YmjLR",
+      "fen": "6k1/5ppp/3p4/3P4/8/bp1P3P/3BKPP1/8 w - - 0 32",
+      "moves": "d2c3 b3b2 c3b2 a3b2",
+      "rating": 931,
+      "popularity": 95,
+      "nbPlays": 2306,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qsehdf3A#63"
+    },
+    {
+      "puzzleId": "TrlrY",
+      "fen": "8/7K/6pP/5pk1/8/8/6b1/8 b - - 0 62",
+      "moves": "g5f6 h7g8 f5f4 h6h7",
+      "rating": 931,
+      "popularity": 89,
+      "nbPlays": 637,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cXEdrbVl/black#124"
+    },
+    {
+      "puzzleId": "EHRPL",
+      "fen": "3bB3/7p/1PK3p1/p7/5p2/1P2k2P/8/8 b - - 0 40",
+      "moves": "f4f3 b6b7 f3f2 b7b8q",
+      "rating": 940,
+      "popularity": 97,
+      "nbPlays": 3985,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GMt9Xjxd/black#80"
+    },
+    {
+      "puzzleId": "DfE4W",
+      "fen": "8/5k2/pb4pp/1p3p2/8/Pb3P2/1P2BBKP/8 b - - 7 47",
+      "moves": "b3c4 e2c4 b5c4 f2b6",
+      "rating": 941,
+      "popularity": 92,
+      "nbPlays": 1534,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/m6URoDMS/black#94"
+    },
+    {
+      "puzzleId": "1cQPx",
+      "fen": "8/8/pB6/Pk3p1p/1b1K1PpP/6P1/8/8 b - - 8 45",
+      "moves": "b4a5 b6a5 b5a5 d4e5 a5b5 e5f5",
+      "rating": 942,
+      "popularity": 97,
+      "nbPlays": 546,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Cev7uYMu/black#90"
+    },
+    {
+      "puzzleId": "1MMfq",
+      "fen": "8/8/p2k4/8/2P2b2/5K1p/P4B2/8 w - - 0 42",
+      "moves": "f2g1 h3h2 g1h2 f4h2",
+      "rating": 943,
+      "popularity": 96,
+      "nbPlays": 1110,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cya8OrzW#83"
+    },
+    {
+      "puzzleId": "LKpmY",
+      "fen": "8/5p2/1p1p2pp/3Pk3/P1P5/3K2PP/1b3P2/8 b - - 0 39",
+      "moves": "b2d4 f2f4 e5f5 d3d4",
+      "rating": 946,
+      "popularity": 96,
+      "nbPlays": 552,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7oCGr9KN/black#78"
+    },
+    {
+      "puzzleId": "JUA5i",
+      "fen": "8/p4k2/3P4/2K5/1pPn3p/1P1B2p1/P5P1/8 w - - 0 36",
+      "moves": "c5d4 h4h3 g2h3 g3g2",
+      "rating": 948,
+      "popularity": 96,
+      "nbPlays": 1021,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cfunv5uV#71"
+    },
+    {
+      "puzzleId": "11tIs",
+      "fen": "8/8/p1b5/P1Pp2k1/3P2P1/5KbP/8/8 b - - 8 54",
+      "moves": "g3f4 h3h4 g5h4 f3f4",
+      "rating": 956,
+      "popularity": 89,
+      "nbPlays": 739,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bxpmAxHF/black#108"
+    },
+    {
+      "puzzleId": "UDMBE",
+      "fen": "8/8/3p4/2bBp2P/8/pK2kP2/8/8 b - - 0 58",
+      "moves": "e3d4 h5h6 d4d5 h6h7",
+      "rating": 965,
+      "popularity": 96,
+      "nbPlays": 2801,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5SvDo51Z/black#116"
+    },
+    {
+      "puzzleId": "waV6M",
+      "fen": "4b3/1p6/8/3Pp3/P1P5/1P1B2p1/5kPK/8 w - - 0 43",
+      "moves": "h2h3 e8d7 h3h4 f2g2",
+      "rating": 965,
+      "popularity": 94,
+      "nbPlays": 1039,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/EEbLG2Yr#85"
+    },
+    {
+      "puzzleId": "Cys5o",
+      "fen": "8/4K3/3pb1B1/3k4/2p4P/8/8/8 b - - 0 59",
+      "moves": "c4c3 h4h5 d5e5 h5h6",
+      "rating": 969,
+      "popularity": 89,
+      "nbPlays": 539,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gjudz4HW/black#118"
+    },
+    {
+      "puzzleId": "Vi5y6",
+      "fen": "8/1p6/p1b2p2/3pk1p1/1P6/P1PBK1P1/5P2/8 b - - 1 37",
+      "moves": "f6f5 f2f4 g5f4 g3f4",
+      "rating": 973,
+      "popularity": 90,
+      "nbPlays": 610,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oRaitluJ/black#74"
+    },
+    {
+      "puzzleId": "fipOA",
+      "fen": "8/Pk3bp1/3p4/2n1p1Pp/4P3/5P2/4BB2/5K2 w - - 1 60",
+      "moves": "f2c5 d6c5 a7a8q b7a8",
+      "rating": 978,
+      "popularity": 97,
+      "nbPlays": 595,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/G7ZM8D7H#119"
+    },
+    {
+      "puzzleId": "nkpXy",
+      "fen": "8/5p2/3kp2B/p4p1P/3K1P2/P4b2/8/8 b - - 0 62",
+      "moves": "f7f6 h6f8 d6c6 h5h6",
+      "rating": 979,
+      "popularity": 94,
+      "nbPlays": 512,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JB63C1Fn/black#124"
+    },
+    {
+      "puzzleId": "JxpXd",
+      "fen": "2b5/7p/p1P3p1/1B3p2/Pk3P2/4K1P1/7P/8 w - - 0 42",
+      "moves": "e3d4 a6b5 a4b5 b4b5",
+      "rating": 980,
+      "popularity": 91,
+      "nbPlays": 507,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dQ1a6cg0#83"
+    },
+    {
+      "puzzleId": "LtAK7",
+      "fen": "7k/1p4pp/p5b1/8/1PB5/P2pbPB1/6PP/4K3 w - - 1 35",
+      "moves": "g3f2 d3d2 e1d1 e3f2",
+      "rating": 982,
+      "popularity": 95,
+      "nbPlays": 1598,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fMy3OvpC#69"
+    },
+    {
+      "puzzleId": "Qajzq",
+      "fen": "8/1pB3pp/p1p5/P2k4/5P2/2PbK2P/6P1/8 b - - 3 37",
+      "moves": "d3e4 c3c4 d5c4 e3e4",
+      "rating": 982,
+      "popularity": 91,
+      "nbPlays": 652,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5CShZXym/black#74"
+    },
+    {
+      "puzzleId": "Ygbup",
+      "fen": "8/7p/4pKpP/3b2P1/8/3k4/8/8 b - - 5 46",
+      "moves": "d3e4 f6g7 e4f5 g7h7 f5g5 h7g7",
+      "rating": 983,
+      "popularity": 98,
+      "nbPlays": 562,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3C4K3I7q/black#92"
+    },
+    {
+      "puzzleId": "yPyYO",
+      "fen": "3B4/8/1pp5/p1b1p2k/P1P1P2p/1P4K1/8/8 w - - 0 39",
+      "moves": "d8h4 c5f2 g3f2 h5h4 c4c5 b6c5",
+      "rating": 985,
+      "popularity": 99,
+      "nbPlays": 726,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/BbqNUruR#77"
+    },
+    {
+      "puzzleId": "cgPS0",
+      "fen": "8/5p2/1p2p1pp/p7/K2k4/P4B2/5P2/8 b - - 3 54",
+      "moves": "d4e5 a4b5 f7f5 b5b6 g6g5 b6a5",
+      "rating": 986,
+      "popularity": 95,
+      "nbPlays": 1651,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/S0ltwFSx/black#108"
+    },
+    {
+      "puzzleId": "seFZ6",
+      "fen": "8/2B5/8/P5p1/7P/1kpKP1P1/8/8 w - - 1 53",
+      "moves": "h4g5 c3c2 d3d2 b3b2 c7e5 b2b1 d2d3 c2c1q",
+      "rating": 988,
+      "popularity": 92,
+      "nbPlays": 748,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "defensiveMove",
+        "endgame",
+        "promotion",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/opi94SED#105"
+    },
+    {
+      "puzzleId": "ynPdz",
+      "fen": "2b5/1pP5/1k6/5ppP/8/6K1/6P1/8 b - - 0 37",
+      "moves": "c8e6 h5h6 b6c7 h6h7",
+      "rating": 988,
+      "popularity": 91,
+      "nbPlays": 757,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Sod1IibU/black#74"
+    },
+    {
+      "puzzleId": "aP77h",
+      "fen": "3b1kb1/6p1/p3p2p/1p3p2/3B4/PB3P1P/1P3KP1/8 b - - 1 31",
+      "moves": "e6e5 d4c5 f8e8 b3g8",
+      "rating": 991,
+      "popularity": 98,
+      "nbPlays": 703,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/xKky2tpU/black#62"
+    },
+    {
+      "puzzleId": "yBzNo",
+      "fen": "8/4p2p/p3P2P/Pp2kPB1/1P1p4/3K4/1b6/8 w - - 3 53",
+      "moves": "g5e7 e5f5 e7c5 f5e6",
+      "rating": 993,
+      "popularity": 97,
+      "nbPlays": 743,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/91rLo4Qv#105"
+    },
+    {
+      "puzzleId": "wRdNo",
+      "fen": "8/p7/1pBk1ppp/2b5/2K5/1P3P1P/P5P1/8 w - - 4 34",
+      "moves": "c4b5 a7a6 b5a6 d6c6",
+      "rating": 996,
+      "popularity": 91,
+      "nbPlays": 1068,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/B5LVrMVj#67"
+    },
+    {
+      "puzzleId": "7HOY0",
+      "fen": "8/b7/p1pp2k1/5p1p/2PPpK1P/1PB1P3/P7/8 b - - 1 38",
+      "moves": "a7b8 d4d5 c6d5 c4d5",
+      "rating": 997,
+      "popularity": 97,
+      "nbPlays": 675,
+      "theme": "bishopEndgame",
+      "allThemes": [
+        "advantage",
+        "bishopEndgame",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/r1EaYxbB/black#76"
+    }
+  ]
+}

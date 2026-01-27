@@ -1,0 +1,56 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "attraction",
+  "count": 3,
+  "puzzles": [
+    {
+      "puzzleId": "j653x",
+      "fen": "2n1q3/1p2r2k/p1p3pp/2Pp4/PP1QpP1N/6PP/7K/4R3 b - - 5 39",
+      "moves": "e8h8 d4h8 h7h8 h4g6",
+      "rating": 604,
+      "popularity": 96,
+      "nbPlays": 2062,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/na5i9n15/black#78"
+    },
+    {
+      "puzzleId": "HenjL",
+      "fen": "7r/k4p2/np2p3/p1p1P3/P1P2P1r/1RP5/5RP1/2B3K1 w - - 7 35",
+      "moves": "f2f1 h4h1 g1f2 h1f1 f2f1 h8h1",
+      "rating": 655,
+      "popularity": 94,
+      "nbPlays": 300,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/dPJIat6w#69"
+    },
+    {
+      "puzzleId": "I3Tcn",
+      "fen": "5k2/8/p2q1r2/1p1pN1R1/2pPp3/P1P1P2P/1P4P1/1R4K1 w - - 1 38",
+      "moves": "b1f1 f6f1 g1f1 d6f6",
+      "rating": 789,
+      "popularity": 98,
+      "nbPlays": 722,
+      "theme": "attraction",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/05gFcIqb#75"
+    }
+  ]
+}

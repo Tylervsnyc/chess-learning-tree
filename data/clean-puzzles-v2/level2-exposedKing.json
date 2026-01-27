@@ -1,0 +1,40 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "exposedKing",
+  "count": 2,
+  "puzzles": [
+    {
+      "puzzleId": "fkXmx",
+      "fen": "r3k2r/ppp2pp1/2p2b2/8/3PP3/2Pb4/PP1N1PPP/R2BK2R w KQkq - 3 16",
+      "moves": "f2f4 f6h4 g2g3 h4g3 h2g3 h8h1",
+      "rating": 951,
+      "popularity": 98,
+      "nbPlays": 3388,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/nsx3eIGw#31"
+    },
+    {
+      "puzzleId": "zZsVx",
+      "fen": "r5k1/5pbR/3p4/r3p1P1/1pB1P3/4BP1R/1P6/1K6 w - - 1 30",
+      "moves": "b2b3 a5a1 b1c2 a8a2 c2d3 a1d1",
+      "rating": 972,
+      "popularity": 97,
+      "nbPlays": 3930,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/nEWG1lWX#59"
+    }
+  ]
+}

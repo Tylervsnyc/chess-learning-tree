@@ -1,0 +1,2797 @@
+{
+  "level": 3,
+  "ratingRange": "1000-1200",
+  "theme": "arabianMate",
+  "count": 158,
+  "puzzles": [
+    {
+      "puzzleId": "uXLFl",
+      "fen": "5bk1/R5pp/3p2nB/2pNp3/4P2P/3P4/2P3PK/1r6 b - - 0 29",
+      "moves": "g7h6 d5f6 g8h8 a7h7",
+      "rating": 1002,
+      "popularity": 97,
+      "nbPlays": 3790,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ewaeaus0/black#58"
+    },
+    {
+      "puzzleId": "VIK2E",
+      "fen": "r2r3k/p3R1R1/1p3N1p/2p3p1/2P5/1P1b2P1/P6P/6K1 b - - 0 27",
+      "moves": "d8f8 g7h7 d3h7 e7h7",
+      "rating": 1002,
+      "popularity": 95,
+      "nbPlays": 8349,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yoVXOzY3/black#54"
+    },
+    {
+      "puzzleId": "ESMVl",
+      "fen": "5n1k/pppbqprB/1b1p1N1Q/4P2R/3P4/P4P2/1P1K1N2/6r1 b - - 0 27",
+      "moves": "f8h7 h6h7 g7h7 h5h7",
+      "rating": 1003,
+      "popularity": 96,
+      "nbPlays": 10182,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BsRTh9F6/black#54"
+    },
+    {
+      "puzzleId": "iWg4p",
+      "fen": "1k6/pp2p2p/4p1p1/4P1Q1/8/PPnp3N/2r2PPP/K2R4 w - - 4 30",
+      "moves": "d1d3 c2a2",
+      "rating": 1004,
+      "popularity": 96,
+      "nbPlays": 6986,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/OleiFTUh#59"
+    },
+    {
+      "puzzleId": "PgYyO",
+      "fen": "r5kr/1p3p2/p2pp1p1/2p5/P3P2q/1BNP1nP1/1PP2R1P/R4QK1 w - - 1 21",
+      "moves": "g1h1 h4h2 f2h2 h8h2",
+      "rating": 1008,
+      "popularity": 86,
+      "nbPlays": 3045,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RgPKo4KZ#41"
+    },
+    {
+      "puzzleId": "OMEMn",
+      "fen": "r6k/1pp3r1/p4N2/3Rp3/bPP2p2/7P/P4PP1/6K1 b - - 3 30",
+      "moves": "e5e4 d5h5 g7h7 h5h7",
+      "rating": 1010,
+      "popularity": 93,
+      "nbPlays": 3435,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/njUMy48S/black#60"
+    },
+    {
+      "puzzleId": "OVvZs",
+      "fen": "r5k1/pp1R4/4pNp1/7p/q4P2/4n1P1/7P/3R2K1 b - - 3 35",
+      "moves": "g8h8 d7h7",
+      "rating": 1010,
+      "popularity": 88,
+      "nbPlays": 3775,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/ibyHKOxv/black#70"
+    },
+    {
+      "puzzleId": "BNtNp",
+      "fen": "8/7k/2p4p/p2p4/P2Pb1N1/8/1Pr5/3K2R1 b - - 5 40",
+      "moves": "c2b2 g4f6 h7h8 g1g8",
+      "rating": 1012,
+      "popularity": 97,
+      "nbPlays": 5046,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Lz20HyIB/black#80"
+    },
+    {
+      "puzzleId": "WmSQO",
+      "fen": "r5k1/5pp1/4p2p/q1p5/1p1P1P1P/1PnN4/r2Q1P2/K1N3RR w - - 0 27",
+      "moves": "c1a2 a5a2 d2a2 a8a2",
+      "rating": 1014,
+      "popularity": 90,
+      "nbPlays": 4821,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OFO1LAw6#53"
+    },
+    {
+      "puzzleId": "NLE2N",
+      "fen": "4Q3/7k/p6p/1p2pN2/1P3b2/N4n1P/P2r2q1/6RK w - - 0 35",
+      "moves": "g1g2 d2d1 g2g1 d1g1",
+      "rating": 1016,
+      "popularity": 96,
+      "nbPlays": 6940,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/EqEBkEqp#69"
+    },
+    {
+      "puzzleId": "BvxFk",
+      "fen": "6rk/bp1bq1rp/p3pN2/2p1P3/P2p4/3BnP1Q/1PP1K3/6RR b - - 3 32",
+      "moves": "g7g1 h3h7 e7h7 h1h7",
+      "rating": 1017,
+      "popularity": 91,
+      "nbPlays": 5789,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "operaMate",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Ia28gQTo/black#64"
+    },
+    {
+      "puzzleId": "hzbzX",
+      "fen": "6k1/2R3p1/8/1P6/7p/PP3n1P/3r2r1/6RK w - - 0 35",
+      "moves": "g1g2 d2d1 g2g1 d1g1",
+      "rating": 1018,
+      "popularity": 97,
+      "nbPlays": 5869,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/itrUOwtk#69"
+    },
+    {
+      "puzzleId": "k2VeL",
+      "fen": "r4q1k/1b1pn1rp/p4N1Q/4p3/4P3/8/PPP5/1K1R3R b - - 7 24",
+      "moves": "e7g8 h6h7 g7h7 h1h7",
+      "rating": 1019,
+      "popularity": 94,
+      "nbPlays": 3443,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HJ3qut7e/black#48"
+    },
+    {
+      "puzzleId": "F8IPo",
+      "fen": "5k2/pR5p/2p2P1N/8/1P6/5n2/P1r4P/6K1 w - - 1 35",
+      "moves": "g1h1 c2h2",
+      "rating": 1025,
+      "popularity": 95,
+      "nbPlays": 10920,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/SERZxmrL#69"
+    },
+    {
+      "puzzleId": "XUkYa",
+      "fen": "7k/R7/5N2/2p1p3/P1r5/2b5/8/5K2 b - - 3 46",
+      "moves": "e5e4 a7h7",
+      "rating": 1025,
+      "popularity": 95,
+      "nbPlays": 4607,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/iWBtrtbP/black#92"
+    },
+    {
+      "puzzleId": "V50JT",
+      "fen": "r4r1k/pp3pR1/2p1pN1p/q3b2N/4n2P/3P4/2P2Q2/5K1R b - - 5 33",
+      "moves": "e4f2 g7h7",
+      "rating": 1026,
+      "popularity": 94,
+      "nbPlays": 6039,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "master",
+        "masterVsMaster",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/RbrNckOD/black#66"
+    },
+    {
+      "puzzleId": "SHk4A",
+      "fen": "7k/5R2/3r1N1p/6p1/3n1p2/8/5K1P/8 b - - 3 46",
+      "moves": "d4c6 f7h7",
+      "rating": 1028,
+      "popularity": 95,
+      "nbPlays": 8546,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/VXMcynJp/black#92"
+    },
+    {
+      "puzzleId": "uhkN5",
+      "fen": "7k/1p3rRb/p6p/P1pPr3/2PnP3/1PN2n2/1B4R1/5B1K w - - 0 36",
+      "moves": "g7f7 e5h5 g2h2 h5h2",
+      "rating": 1029,
+      "popularity": 91,
+      "nbPlays": 3845,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BhZ5R6H1#71"
+    },
+    {
+      "puzzleId": "PiI2m",
+      "fen": "2b4r/1p3kp1/2pB1pp1/R2p4/3P2qn/Q3PN1P/5PP1/7K w - - 3 30",
+      "moves": "h3g4 h4f3 d6h2 h8h2",
+      "rating": 1030,
+      "popularity": 96,
+      "nbPlays": 9998,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/c3UGjced#59"
+    },
+    {
+      "puzzleId": "cXxwR",
+      "fen": "7k/2bR3R/5Np1/8/2KP4/4r3/7r/8 b - - 4 44",
+      "moves": "h2h7 d7h7",
+      "rating": 1031,
+      "popularity": 94,
+      "nbPlays": 3902,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/DgTy6z2E/black#88"
+    },
+    {
+      "puzzleId": "iCigF",
+      "fen": "rn5k/ppp2r1b/5N2/4p3/1P1q2p1/3P4/P1P4Q/1K4RR b - - 5 25",
+      "moves": "b8d7 h2h7 f7h7 h1h7",
+      "rating": 1031,
+      "popularity": 93,
+      "nbPlays": 4550,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LKzWZyvP/black#50"
+    },
+    {
+      "puzzleId": "CbOkO",
+      "fen": "1r4k1/4R3/5N1p/6b1/1r6/6PK/8/5R2 b - - 8 39",
+      "moves": "g8h8 e7h7",
+      "rating": 1032,
+      "popularity": 93,
+      "nbPlays": 3997,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/OjGilkIz/black#78"
+    },
+    {
+      "puzzleId": "SJPJE",
+      "fen": "7k/4R3/5N2/2p5/7P/8/3p2K1/2b5 b - - 0 42",
+      "moves": "d2d1q e7h7",
+      "rating": 1035,
+      "popularity": 95,
+      "nbPlays": 4396,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/xxT4SI1B/black#84"
+    },
+    {
+      "puzzleId": "VpLfu",
+      "fen": "k2r1b2/p4pp1/4p3/NQ1p3r/8/5nBq/PPP2P1P/R4RK1 w - - 4 21",
+      "moves": "g1h1 h3h2 g3h2 h5h2",
+      "rating": 1040,
+      "popularity": 94,
+      "nbPlays": 8000,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "master",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VXXk02UE#41"
+    },
+    {
+      "puzzleId": "1DZfz",
+      "fen": "7k/2p2R1p/1p2pN2/p4p2/4b3/1P6/1PPK1P2/6r1 b - - 4 32",
+      "moves": "g1g2 f7h7",
+      "rating": 1043,
+      "popularity": 95,
+      "nbPlays": 16402,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/qeZOMM3q/black#64"
+    },
+    {
+      "puzzleId": "gtWxK",
+      "fen": "r4r1k/5pR1/p2pbN1P/1p2n3/2p1P3/2P5/PP2B3/1K5R b - - 2 31",
+      "moves": "e5d7 g7h7",
+      "rating": 1045,
+      "popularity": 97,
+      "nbPlays": 7618,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Hkhlmafh/black#62"
+    },
+    {
+      "puzzleId": "sT3rA",
+      "fen": "r5k1/p5qp/2pp1NnQ/1p4P1/8/5r2/PPP5/2K4R b - - 1 34",
+      "moves": "g8h8 h6h7 g7h7 h1h7",
+      "rating": 1047,
+      "popularity": 94,
+      "nbPlays": 4442,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/a2TTUeax/black#68"
+    },
+    {
+      "puzzleId": "na4Ld",
+      "fen": "2r2b2/pq1nr2k/7p/1p2p3/3pNn2/P2P1P1P/1PPQ3K/R5R1 b - - 0 27",
+      "moves": "d7c5 e4f6 h7h8 g1g8",
+      "rating": 1047,
+      "popularity": 93,
+      "nbPlays": 4935,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/eq6bB32M/black#54"
+    },
+    {
+      "puzzleId": "5Jh8O",
+      "fen": "8/3k3P/4p3/3pBp2/2bP4/1rn1PB2/2R2PP1/K7 w - - 3 60",
+      "moves": "h7h8q b3b1",
+      "rating": 1050,
+      "popularity": 95,
+      "nbPlays": 3527,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Kwgkct0h#119"
+    },
+    {
+      "puzzleId": "XguGt",
+      "fen": "3R4/p5pk/7p/5N2/P1p1n1P1/1r2P2P/K7/3R4 w - - 2 33",
+      "moves": "d1d7 e4c3 a2a1 b3b1",
+      "rating": 1050,
+      "popularity": 95,
+      "nbPlays": 4914,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TwVIjNgV#65"
+    },
+    {
+      "puzzleId": "kc9ci",
+      "fen": "5q2/7k/p6p/1p1Np3/1Q1pPn2/5PR1/PP2r3/5K2 b - - 1 27",
+      "moves": "f8b4 d5f6 h7h8 g3g8",
+      "rating": 1051,
+      "popularity": 95,
+      "nbPlays": 11581,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/U2Q5Nz23/black#54"
+    },
+    {
+      "puzzleId": "3lkBl",
+      "fen": "r2n4/1b3p1k/p6p/1p6/1P2N1R1/P3b3/1r4PP/3R3K b - - 2 34",
+      "moves": "f7f5 e4f6 h7h8 g4g8",
+      "rating": 1051,
+      "popularity": 94,
+      "nbPlays": 4816,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ODNu3fkH/black#68"
+    },
+    {
+      "puzzleId": "t9v16",
+      "fen": "2r3k1/1p3r1p/p3qNpQ/4p1P1/3p4/4nP2/PPP1N3/2K4R b - - 0 26",
+      "moves": "g8h8 h6h7 f7h7 h1h7",
+      "rating": 1051,
+      "popularity": 91,
+      "nbPlays": 3545,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BYJTYfSd/black#52"
+    },
+    {
+      "puzzleId": "fhNQQ",
+      "fen": "8/N2Rb1kp/1P3pp1/8/1P1B4/2P2n2/4r3/7K w - - 1 43",
+      "moves": "a7c6 e2h2",
+      "rating": 1053,
+      "popularity": 94,
+      "nbPlays": 13635,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/XIEIFm2g#85"
+    },
+    {
+      "puzzleId": "hdf0x",
+      "fen": "rq1r1Q1k/3p1R1p/p1b1pN2/1p6/4P3/P7/1PP1B1PP/3R3K b - - 0 24",
+      "moves": "d8f8 f7h7",
+      "rating": 1055,
+      "popularity": 92,
+      "nbPlays": 8884,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/SnaBpkmE/black#48"
+    },
+    {
+      "puzzleId": "Lz7XS",
+      "fen": "7k/5R2/q3NN2/7p/4p3/7P/5P1K/8 b - - 3 46",
+      "moves": "a6e6 f7h7",
+      "rating": 1056,
+      "popularity": 91,
+      "nbPlays": 3803,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/uqTw9PlQ/black#92"
+    },
+    {
+      "puzzleId": "qUuxu",
+      "fen": "5r1k/ppq1r2B/4pN2/nb4P1/3P4/P1P4Q/1P6/R1b1K2R b KQ - 0 24",
+      "moves": "e7h7 h3h7 c7h7 h1h7",
+      "rating": 1058,
+      "popularity": 92,
+      "nbPlays": 6429,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/kQH7ErFc/black#48"
+    },
+    {
+      "puzzleId": "bA1UO",
+      "fen": "3q1r1k/4n1Qr/3pPN2/6R1/8/1PP5/P1P3PP/4R1K1 b - - 0 31",
+      "moves": "h7g7 g5h5 g7h7 h5h7",
+      "rating": 1059,
+      "popularity": 93,
+      "nbPlays": 7753,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qMMhAvQ6/black#62"
+    },
+    {
+      "puzzleId": "Qpo69",
+      "fen": "3r2k1/R5bp/3B2p1/P3p3/4N3/5PP1/2r4P/6K1 b - - 0 34",
+      "moves": "g7f8 e4f6 g8h8 a7h7",
+      "rating": 1059,
+      "popularity": 90,
+      "nbPlays": 3827,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DthbhV1p/black#68"
+    },
+    {
+      "puzzleId": "YhLGm",
+      "fen": "1r4qk/5p1p/p2p1Nr1/1p1Pp3/2n4Q/2P4R/P4PPP/5RK1 b - - 0 25",
+      "moves": "g8g7 h4h7 g7h7 h3h7",
+      "rating": 1062,
+      "popularity": 92,
+      "nbPlays": 4904,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/SYFJUz5b/black#50"
+    },
+    {
+      "puzzleId": "lHHZR",
+      "fen": "5k2/p6p/5pp1/3Np3/3nP3/5PP1/1r3K1P/2R2B2 w - - 10 41",
+      "moves": "f2g1 d4f3 g1h1 b2h2",
+      "rating": 1069,
+      "popularity": 95,
+      "nbPlays": 4396,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vTfdQC4z#81"
+    },
+    {
+      "puzzleId": "JMMs2",
+      "fen": "r4n1k/ppb1rp2/2p2N2/8/3P2R1/3BB3/PP1K1P1P/8 b - - 0 23",
+      "moves": "e7e6 g4g8",
+      "rating": 1070,
+      "popularity": 94,
+      "nbPlays": 3363,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/5fEgw4s3/black#46"
+    },
+    {
+      "puzzleId": "8qe3J",
+      "fen": "2k4r/ppp5/4p3/4p1Q1/2N1P2r/2N2nP1/PP4RP/6K1 w - - 1 27",
+      "moves": "g1h1 h4h2 g2h2 h8h2",
+      "rating": 1072,
+      "popularity": 96,
+      "nbPlays": 8561,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7PcJSDTy#53"
+    },
+    {
+      "puzzleId": "VhKxh",
+      "fen": "6k1/1RR5/6pp/8/3n4/5PPP/r2r1K2/5B2 w - - 3 54",
+      "moves": "f2g1 d4f3 g1h1 d2h2",
+      "rating": 1072,
+      "popularity": 93,
+      "nbPlays": 4447,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7fI1bFbk#107"
+    },
+    {
+      "puzzleId": "0sUJc",
+      "fen": "r2q1rk1/ppp2p1p/5Np1/4pnP1/5n2/1b1P4/PPPQ1PP1/2KR2NR b - - 1 18",
+      "moves": "g8h8 h1h7",
+      "rating": 1074,
+      "popularity": 94,
+      "nbPlays": 4037,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/u01KuXKT/black#36"
+    },
+    {
+      "puzzleId": "JuQ3f",
+      "fen": "r6k/4qprp/p3pN1Q/2p2p2/1p2b2R/7P/PPP5/R4K2 b - - 3 26",
+      "moves": "a8g8 h6h7 g7h7 h4h7",
+      "rating": 1074,
+      "popularity": 94,
+      "nbPlays": 4781,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aOcKexK5/black#52"
+    },
+    {
+      "puzzleId": "97d02",
+      "fen": "2r5/pb3p1k/1p1qpN1p/5n2/3P2QP/P4r2/3BK3/R5R1 b - - 5 33",
+      "moves": "h7h8 g4g8 c8g8 g1g8",
+      "rating": 1075,
+      "popularity": 95,
+      "nbPlays": 6201,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "master",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wmhhqhLA/black#66"
+    },
+    {
+      "puzzleId": "2RS3j",
+      "fen": "6k1/R6p/4pNp1/8/1n6/6P1/5PKP/q1r5 b - - 1 45",
+      "moves": "g8h8 a7h7",
+      "rating": 1075,
+      "popularity": 94,
+      "nbPlays": 15834,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/gIUAt6mx/black#90"
+    },
+    {
+      "puzzleId": "6821I",
+      "fen": "5r1k/1pp2r2/4pN2/pPbpP3/P3nR2/3R2PP/6K1/8 b - - 0 39",
+      "moves": "f7g7 f4h4 g7h7 h4h7",
+      "rating": 1075,
+      "popularity": 93,
+      "nbPlays": 8136,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Arr2cL0g/black#78"
+    },
+    {
+      "puzzleId": "FEYQN",
+      "fen": "7k/1R6/5Npp/3P4/3q1p2/5K2/1b2BP1P/4r3 b - - 7 45",
+      "moves": "e1e2 b7h7",
+      "rating": 1076,
+      "popularity": 92,
+      "nbPlays": 3720,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/q9eZlmrG/black#90"
+    },
+    {
+      "puzzleId": "y36LR",
+      "fen": "r6k/pp1q1rbp/1n1p1Nb1/2pPp1B1/2P4R/5PP1/PPQN2K1/7R b - - 10 26",
+      "moves": "g6c2 h4h7 c2h7 h1h7",
+      "rating": 1076,
+      "popularity": 92,
+      "nbPlays": 3157,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dH8QxxxI/black#52"
+    },
+    {
+      "puzzleId": "PfVTd",
+      "fen": "2r4k/p3rp1p/1p3Np1/2p2n2/2q3Q1/5P1R/PP4PP/1R4K1 b - - 1 27",
+      "moves": "c4g4 h3h7",
+      "rating": 1076,
+      "popularity": 89,
+      "nbPlays": 4359,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/iJfN6jmT/black#54"
+    },
+    {
+      "puzzleId": "IqK0r",
+      "fen": "7r/5p2/5k2/2Q3pq/2P3p1/3P1nP1/P4P1P/1R2RNK1 w - - 0 31",
+      "moves": "g1h1 h5h2 f1h2 h8h2",
+      "rating": 1077,
+      "popularity": 95,
+      "nbPlays": 15650,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/e4qEP1Or#61"
+    },
+    {
+      "puzzleId": "3LwqZ",
+      "fen": "2qr3k/pp3p1p/2p2Np1/3nr3/3P2PR/1PQ1R3/P6P/6K1 b - - 4 29",
+      "moves": "d5c3 h4h7",
+      "rating": 1077,
+      "popularity": 91,
+      "nbPlays": 4387,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/WLpkMdC7/black#58"
+    },
+    {
+      "puzzleId": "Ys7Uc",
+      "fen": "N5k1/p4p1p/5b1r/2P2N1q/1P4p1/P3PnP1/1B3PQP/1R3RK1 w - - 6 31",
+      "moves": "g1h1 h5h2 g2h2 h6h2",
+      "rating": 1077,
+      "popularity": 88,
+      "nbPlays": 4451,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ctRG0Rew#61"
+    },
+    {
+      "puzzleId": "Pt4gZ",
+      "fen": "7k/1q5p/3p1NnQ/1pp5/3n1p2/3P3R/1P3K1P/8 b - - 0 35",
+      "moves": "b7g7 h6h7 g7h7 h3h7",
+      "rating": 1078,
+      "popularity": 97,
+      "nbPlays": 6572,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dZWJWKng/black#70"
+    },
+    {
+      "puzzleId": "LXQAf",
+      "fen": "3r1bk1/R6p/R2pn1p1/2pNp3/1pP1P2P/1n1P2PK/8/8 b - - 3 38",
+      "moves": "b3d4 d5f6 g8h8 a7h7",
+      "rating": 1079,
+      "popularity": 95,
+      "nbPlays": 3439,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UyN0Do9M/black#76"
+    },
+    {
+      "puzzleId": "UAdd2",
+      "fen": "5Nk1/1Rp3p1/1p5p/3p3P/6P1/5n2/1r6/2R4K w - - 4 50",
+      "moves": "c1c7 b2h2",
+      "rating": 1079,
+      "popularity": 95,
+      "nbPlays": 15698,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/hEQb8CB3#99"
+    },
+    {
+      "puzzleId": "fccNI",
+      "fen": "6rk/1p2qprp/3p1N1Q/p1b5/8/4PP2/PP2KP2/7R b - - 6 28",
+      "moves": "e7e6 h6h7 g7h7 h1h7",
+      "rating": 1080,
+      "popularity": 95,
+      "nbPlays": 9450,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HHJZHTbF/black#56"
+    },
+    {
+      "puzzleId": "2Olm1",
+      "fen": "r4b2/7k/8/p3P1Rp/2p1NBbP/P7/5K2/8 b - - 0 41",
+      "moves": "a8b8 e4f6 h7h8 g5g8",
+      "rating": 1081,
+      "popularity": 97,
+      "nbPlays": 11538,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zoYwEtU5/black#82"
+    },
+    {
+      "puzzleId": "hjoAc",
+      "fen": "7r/1kp1bp2/1pn3p1/p3P3/4NPpn/2P2N2/PP2Q1P1/R2r2BK w - - 0 23",
+      "moves": "a1d1 h4f3 g1h2 h8h2",
+      "rating": 1081,
+      "popularity": 92,
+      "nbPlays": 3661,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/XCW20Xeg#45"
+    },
+    {
+      "puzzleId": "BywDk",
+      "fen": "8/b1p1k3/p5q1/1p2p3/1PP1P3/3P1n1r/P4Q1N/4RR1K w - - 4 29",
+      "moves": "f2a7 h3h2",
+      "rating": 1082,
+      "popularity": 96,
+      "nbPlays": 3386,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/7WgOjFFj#57"
+    },
+    {
+      "puzzleId": "SoxIx",
+      "fen": "r1b1r1Rk/pp1q4/5N2/4Pp1p/2p1Q2P/8/PP3P2/2K3R1 b - - 1 28",
+      "moves": "e8g8 g1g8",
+      "rating": 1083,
+      "popularity": 93,
+      "nbPlays": 4489,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/TQY04Lqu/black#56"
+    },
+    {
+      "puzzleId": "zNHpH",
+      "fen": "4r1k1/p4ppp/1p6/n3N3/3P2P1/P1n1B2P/2r2P2/KR3R2 w - - 1 26",
+      "moves": "b1b2 a5b3 b2b3 c2a2",
+      "rating": 1084,
+      "popularity": 96,
+      "nbPlays": 14271,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/puMj4dgR#51"
+    },
+    {
+      "puzzleId": "0Jyd0",
+      "fen": "5bk1/2R4p/3p1p2/2pNpPp1/6r1/5K2/r4B2/8 b - - 1 37",
+      "moves": "g4a4 d5f6 g8h8 c7h7",
+      "rating": 1086,
+      "popularity": 96,
+      "nbPlays": 6562,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/q9xiggSo/black#74"
+    },
+    {
+      "puzzleId": "MGySx",
+      "fen": "7k/2r3p1/r3pN1p/3pP3/2b4R/p5R1/6PP/6K1 b - - 5 36",
+      "moves": "a3a2 h4h6 g7h6 g3g8",
+      "rating": 1090,
+      "popularity": 91,
+      "nbPlays": 4056,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vKq48w2L/black#72"
+    },
+    {
+      "puzzleId": "1IIyn",
+      "fen": "6k1/B4p1p/4b1p1/4P3/6Pn/1P5P/P1r5/3R1BK1 w - - 1 29",
+      "moves": "d1a1 h4f3 g1h1 c2h2",
+      "rating": 1091,
+      "popularity": 95,
+      "nbPlays": 4841,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/e7Dt5vA1#57"
+    },
+    {
+      "puzzleId": "VXCah",
+      "fen": "r5rk/pb3pRp/1p2pN2/4PN2/3p3K/6R1/PP5P/5q2 b - - 3 33",
+      "moves": "f1f5 g7g8 a8g8 g3g8",
+      "rating": 1092,
+      "popularity": 95,
+      "nbPlays": 4678,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YbHs40cK/black#66"
+    },
+    {
+      "puzzleId": "GelTY",
+      "fen": "4r1kr/5pB1/3P2p1/8/8/1P3nQ1/P6q/2RR3K w - - 0 31",
+      "moves": "g3h2 h8h2",
+      "rating": 1093,
+      "popularity": 96,
+      "nbPlays": 3712,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "master",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Zmue456l#61"
+    },
+    {
+      "puzzleId": "l0acK",
+      "fen": "6r1/1R6/8/2pNK3/4P1r1/pk1PP3/8/8 b - - 25 55",
+      "moves": "b3a2 d5c3 a2a1 b7b1",
+      "rating": 1093,
+      "popularity": 95,
+      "nbPlays": 7354,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4wpNyEHG/black#110"
+    },
+    {
+      "puzzleId": "4r8dF",
+      "fen": "7k/R7/1p1p1N1p/4r1p1/5n2/1P6/P1PK3P/8 b - - 3 32",
+      "moves": "f4d5 a7h7",
+      "rating": 1099,
+      "popularity": 94,
+      "nbPlays": 11098,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/mlsnkLwk/black#64"
+    },
+    {
+      "puzzleId": "bAjmF",
+      "fen": "N1k5/pp4pp/3b4/3P3r/3Qp3/2P1BnPq/PP3PRP/R6K w - - 3 27",
+      "moves": "d4e4 h3h2 g2h2 h5h2",
+      "rating": 1103,
+      "popularity": 96,
+      "nbPlays": 3569,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/E5EqVH7R#53"
+    },
+    {
+      "puzzleId": "FFbza",
+      "fen": "5b2/2R3k1/7p/3b2pP/4N3/2P1n1P1/1r6/6K1 b - - 2 38",
+      "moves": "g7g8 e4f6 g8h8 c7h7",
+      "rating": 1103,
+      "popularity": 94,
+      "nbPlays": 6140,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/1wzU7WeX/black#76"
+    },
+    {
+      "puzzleId": "Dqquj",
+      "fen": "k6r/1p6/p3N3/8/8/4Nn1P/PPP2rP1/6RK w - - 4 38",
+      "moves": "g1c1 h8h3 g2h3 f2h2",
+      "rating": 1105,
+      "popularity": 94,
+      "nbPlays": 3175,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gF5XFkBa#75"
+    },
+    {
+      "puzzleId": "RFnYw",
+      "fen": "R7/pp4pk/6r1/3b1pq1/8/2N2n2/PPQ4P/5R1K w - - 0 25",
+      "moves": "c3d5 g5g1 f1g1 g6g1",
+      "rating": 1105,
+      "popularity": 94,
+      "nbPlays": 16162,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iJ2fhGf8#49"
+    },
+    {
+      "puzzleId": "cssuH",
+      "fen": "7k/p2R4/1p3Np1/8/6P1/P3K3/1Pr4P/1b6 b - - 6 34",
+      "moves": "c2b2 d7h7",
+      "rating": 1106,
+      "popularity": 94,
+      "nbPlays": 3652,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/ye6WdJUE/black#68"
+    },
+    {
+      "puzzleId": "ReuMt",
+      "fen": "4N1k1/4R1bp/4p3/p3Pp2/1pK2P2/r5r1/8/8 b - - 1 39",
+      "moves": "g7f8 e8f6 g8h8 e7h7",
+      "rating": 1108,
+      "popularity": 95,
+      "nbPlays": 4366,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/V08NSXjc/black#78"
+    },
+    {
+      "puzzleId": "VTsMC",
+      "fen": "r5k1/1R4b1/p1p4p/P4p1N/3Pb3/4P3/6PP/6K1 b - - 3 39",
+      "moves": "g7f8 h5f6 g8h8 b7h7",
+      "rating": 1108,
+      "popularity": 95,
+      "nbPlays": 8256,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QrJmCfsd/black#78"
+    },
+    {
+      "puzzleId": "9LQkr",
+      "fen": "r7/4rp1k/R3p2b/p6N/1p2P2P/1P3P2/1PP5/1K4R1 b - - 1 26",
+      "moves": "a8a6 h5f6 h7h8 g1g8",
+      "rating": 1109,
+      "popularity": 98,
+      "nbPlays": 4804,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/48d1IYoc/black#52"
+    },
+    {
+      "puzzleId": "HG0U0",
+      "fen": "r4qk1/pp3r1p/5NpQ/8/3p4/3P1P2/PP6/1K5R b - - 3 26",
+      "moves": "g8h8 h6h7 f7h7 h1h7",
+      "rating": 1110,
+      "popularity": 96,
+      "nbPlays": 9079,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6hmkkyYR/black#52"
+    },
+    {
+      "puzzleId": "PG0Vc",
+      "fen": "7k/2R5/p2p1N1p/1p1Pp3/1P6/7P/r5r1/7K b - - 2 42",
+      "moves": "g2g7 c7c8 g7g8 c8g8",
+      "rating": 1110,
+      "popularity": 95,
+      "nbPlays": 7433,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/lpHrl7QA/black#84"
+    },
+    {
+      "puzzleId": "4p2QD",
+      "fen": "r6k/ppp3pp/3p3r/7q/2BQ4/2P2nR1/PP3P1P/5NRK w - - 0 24",
+      "moves": "c4e2 h5h2 f1h2 h6h2",
+      "rating": 1110,
+      "popularity": 94,
+      "nbPlays": 3337,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "master",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rbDArlrX#47"
+    },
+    {
+      "puzzleId": "L1okz",
+      "fen": "r5qk/ppp4p/4bN2/5p1Q/7R/8/1P3PPP/n5K1 b - - 0 25",
+      "moves": "g8g7 h5h7 g7h7 h4h7",
+      "rating": 1110,
+      "popularity": 92,
+      "nbPlays": 5839,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YddRoeiU/black#50"
+    },
+    {
+      "puzzleId": "QuOk3",
+      "fen": "k2r4/pR5p/PpN5/8/1pK5/7r/1P3P2/8 b - - 1 41",
+      "moves": "d8c8 b7a7",
+      "rating": 1110,
+      "popularity": 89,
+      "nbPlays": 4133,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/UZp8nEJN/black#82"
+    },
+    {
+      "puzzleId": "L9osB",
+      "fen": "6k1/pB2R1bp/6p1/6P1/3p1nNP/3r4/P7/7K b - - 0 36",
+      "moves": "g7f8 g4f6 g8h8 e7h7",
+      "rating": 1112,
+      "popularity": 96,
+      "nbPlays": 12772,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/WxYKPYwv/black#72"
+    },
+    {
+      "puzzleId": "5dD5P",
+      "fen": "7k/p3R2p/1p3Npb/8/8/7P/r5P1/6K1 b - - 1 29",
+      "moves": "h6g5 e7h7",
+      "rating": 1114,
+      "popularity": 90,
+      "nbPlays": 7415,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/tiZczeTy/black#58"
+    },
+    {
+      "puzzleId": "eNows",
+      "fen": "r2r3k/pp3p1p/2npbNp1/2nNp3/2P1P2q/4P2R/PPB2QPP/5R1K b - - 13 24",
+      "moves": "h4f2 h3h7",
+      "rating": 1115,
+      "popularity": 93,
+      "nbPlays": 8131,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "master",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Ihnbmk1M/black#48"
+    },
+    {
+      "puzzleId": "nTwym",
+      "fen": "2r5/ppr2pkp/3p2bQ/3Pp1P1/4N3/P1P2P2/qP6/2KR3R b - - 4 28",
+      "moves": "g7g8 e4f6 g8h8 h6h7 g6h7 h1h7",
+      "rating": 1116,
+      "popularity": 92,
+      "nbPlays": 3290,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/l30VkNkB/black#56"
+    },
+    {
+      "puzzleId": "dwLEv",
+      "fen": "4r1k1/5r1p/pp1p1NpQ/2pP4/2P2P1R/1P1b3P/P3p1P1/3q1NK1 b - - 1 34",
+      "moves": "g8h8 h6h7 f7h7 h4h7",
+      "rating": 1117,
+      "popularity": 95,
+      "nbPlays": 20588,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zjonG6hi/black#68"
+    },
+    {
+      "puzzleId": "hXdiX",
+      "fen": "6rk/p5qn/1p6/3Q4/8/1P2Bn1R/P7/5RrK w - - 2 32",
+      "moves": "f1g1 g7g1 e3g1 g8g1",
+      "rating": 1117,
+      "popularity": 93,
+      "nbPlays": 3115,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/44kFmbjP#63"
+    },
+    {
+      "puzzleId": "XxAvT",
+      "fen": "8/kb4p1/7p/N4p2/P3pP2/1R4P1/1P4r1/K7 b - - 4 43",
+      "moves": "b7a6 a5c6 a7a8 b3b8",
+      "rating": 1118,
+      "popularity": 94,
+      "nbPlays": 4367,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aCw9cHDy/black#86"
+    },
+    {
+      "puzzleId": "TGZg7",
+      "fen": "r2q1r1k/3pRP1p/2p1nNbQ/p7/1p6/2P4R/PP4PP/7K b - - 6 31",
+      "moves": "d8e7 h6h7 g6h7 h3h7",
+      "rating": 1120,
+      "popularity": 93,
+      "nbPlays": 4416,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Ryv2HAny/black#62"
+    },
+    {
+      "puzzleId": "yQnzL",
+      "fen": "7k/pp6/1n1b2RP/2pp4/3Pn3/1PP5/P4r2/1KBB3R w - - 3 37",
+      "moves": "h6h7 e4c3 b1a1 f2a2",
+      "rating": 1125,
+      "popularity": 95,
+      "nbPlays": 14585,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/F8tdhBQE#73"
+    },
+    {
+      "puzzleId": "8OGk9",
+      "fen": "r6k/ppp2pRp/2np1N1q/4p3/2B1P2n/3PPPRP/PPP3Q1/2K5 b - - 0 20",
+      "moves": "h4g2 g7g8 a8g8 g3g8",
+      "rating": 1126,
+      "popularity": 95,
+      "nbPlays": 5325,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/8L0c20jL/black#40"
+    },
+    {
+      "puzzleId": "xB9zV",
+      "fen": "4Nbk1/pR5p/8/4p3/8/rP4P1/6K1/8 b - - 0 30",
+      "moves": "e5e4 e8f6 g8h8 b7h7",
+      "rating": 1126,
+      "popularity": 93,
+      "nbPlays": 6042,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/S5fzMXsP/black#60"
+    },
+    {
+      "puzzleId": "CzH0M",
+      "fen": "r7/3k1pQ1/2pp2p1/8/1p1P2P1/q1n2P2/bRP4P/K1N1R3 w - - 0 30",
+      "moves": "c1a2 a3a2 b2a2 a8a2",
+      "rating": 1127,
+      "popularity": 96,
+      "nbPlays": 13677,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IhOofZsz#59"
+    },
+    {
+      "puzzleId": "GqIDW",
+      "fen": "Q1R5/1R3ppk/4p2p/8/5n2/5n1P/2P3r1/7K w - - 2 39",
+      "moves": "b7b1 g2h2",
+      "rating": 1128,
+      "popularity": 93,
+      "nbPlays": 6400,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/hmLbJRnr#77"
+    },
+    {
+      "puzzleId": "8yEoo",
+      "fen": "3R4/5ppk/7p/3P4/5P2/P5PP/4r1B1/4n1K1 w - - 5 37",
+      "moves": "g2f1 e1f3 g1h1 e2h2",
+      "rating": 1129,
+      "popularity": 94,
+      "nbPlays": 4824,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/J2E0EZmH#73"
+    },
+    {
+      "puzzleId": "AfE7h",
+      "fen": "4N3/p6k/3p3b/2rP4/4p3/PK4R1/8/8 b - - 1 37",
+      "moves": "e4e3 e8f6 h7h8 g3g8",
+      "rating": 1131,
+      "popularity": 93,
+      "nbPlays": 4233,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LsOqzKXG/black#74"
+    },
+    {
+      "puzzleId": "34Lkz",
+      "fen": "5r2/5p1k/p4N1b/1p2pP2/2p1b1QP/2P1qrR1/PP6/1R5K b - - 1 32",
+      "moves": "h7h8 g4g8 f8g8 g3g8",
+      "rating": 1131,
+      "popularity": 89,
+      "nbPlays": 3975,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/i44xmd7j/black#64"
+    },
+    {
+      "puzzleId": "DDGbr",
+      "fen": "5k2/8/p2b2Q1/1n4P1/1p1P4/1P6/PK2rP2/7R w - - 1 40",
+      "moves": "b2c1 d6f4 c1b1 b5c3 b1a1 e2a2",
+      "rating": 1133,
+      "popularity": 96,
+      "nbPlays": 10568,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "exposedKing",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/5BmSRc11#79"
+    },
+    {
+      "puzzleId": "ryHJ8",
+      "fen": "1r6/p2N3k/8/P1pp1p1P/4b3/2P1P3/r7/2R1K1R1 b - - 2 36",
+      "moves": "b8b2 d7f6 h7h8 g1g8",
+      "rating": 1138,
+      "popularity": 85,
+      "nbPlays": 3147,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tCwxoHTP/black#72"
+    },
+    {
+      "puzzleId": "fy9g1",
+      "fen": "8/1Bp5/1p1pQ3/2k1n3/4P1n1/6P1/2P1Nr2/1R3K2 w - - 0 39",
+      "moves": "f1g1 e5f3 g1h1 f2h2",
+      "rating": 1139,
+      "popularity": 98,
+      "nbPlays": 3125,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/1gCIPIZm#77"
+    },
+    {
+      "puzzleId": "fXdRd",
+      "fen": "2B2Q2/6np/P2p2rk/3Pp1q1/1P2Pp2/5n2/7P/4NRBK w - - 1 39",
+      "moves": "c8h3 g5g1 f1g1 g6g1",
+      "rating": 1139,
+      "popularity": 94,
+      "nbPlays": 14601,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/8dL9Ti2K#77"
+    },
+    {
+      "puzzleId": "j6bFJ",
+      "fen": "7k/r3qp2/4pN2/2p1P1K1/ppPp4/1P1P4/5P2/6R1 b - - 0 38",
+      "moves": "h8g7 g5h5 g7h8 g1g8",
+      "rating": 1140,
+      "popularity": 95,
+      "nbPlays": 22878,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pawCWXhF/black#76"
+    },
+    {
+      "puzzleId": "1WQfY",
+      "fen": "1r3b1k/pp4r1/3pP3/3Np1q1/P3Pp2/5n1P/1PR4K/2R1BQ2 w - - 0 34",
+      "moves": "h2h1 g5g1 f1g1 g7g1",
+      "rating": 1140,
+      "popularity": 93,
+      "nbPlays": 3121,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ojZCpJ6V#67"
+    },
+    {
+      "puzzleId": "vigPM",
+      "fen": "8/1P4kp/6p1/8/8/5n1P/r2r4/1Q5K w - - 6 49",
+      "moves": "b7b8q d2h2 b8h2 a2h2",
+      "rating": 1141,
+      "popularity": 96,
+      "nbPlays": 3267,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sndhkQVH#97"
+    },
+    {
+      "puzzleId": "fSFgi",
+      "fen": "6k1/5R2/p4Np1/1p6/6p1/1B1p4/P3q1PP/7K b - - 5 38",
+      "moves": "g8h8 f7h7",
+      "rating": 1142,
+      "popularity": 96,
+      "nbPlays": 3014,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/9X5nh7FK/black#76"
+    },
+    {
+      "puzzleId": "MLHm1",
+      "fen": "1k6/5R2/2N5/3p4/2pPb3/4K3/7r/8 b - - 5 57",
+      "moves": "b8a8 f7a7",
+      "rating": 1143,
+      "popularity": 97,
+      "nbPlays": 3006,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Pzlabcyg/black#114"
+    },
+    {
+      "puzzleId": "hA6bQ",
+      "fen": "5r2/1p5k/2p4p/3p1q2/3Np3/PPP1Qn1P/3R1Pr1/5R1K w - - 0 32",
+      "moves": "d4f5 g2h2",
+      "rating": 1145,
+      "popularity": 97,
+      "nbPlays": 3049,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/RrjG2qQw#63"
+    },
+    {
+      "puzzleId": "c2S9q",
+      "fen": "r1b1Nbk1/ppR4p/6p1/4p3/2P1Pn2/3n4/PP4PP/5R1K b - - 6 23",
+      "moves": "c8e6 e8f6 g8h8 c7h7",
+      "rating": 1145,
+      "popularity": 95,
+      "nbPlays": 6088,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TGcM2Ygf/black#46"
+    },
+    {
+      "puzzleId": "frPnx",
+      "fen": "r6k/6rn/p1n2N2/1pp1p3/2Pp3N/PP1q4/8/2K1BR1R b - - 0 36",
+      "moves": "d3b3 h4g6 g7g6 h1h7",
+      "rating": 1145,
+      "popularity": 94,
+      "nbPlays": 10220,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "deflection",
+        "discoveredAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QZ07TkAv/black#72"
+    },
+    {
+      "puzzleId": "N9Izx",
+      "fen": "2k5/R4B2/2p2p2/4p3/1p6/3P1n1p/2P2PrP/2B2R1K w - - 1 35",
+      "moves": "f7h5 g2h2",
+      "rating": 1146,
+      "popularity": 95,
+      "nbPlays": 5925,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/oIt1S331#69"
+    },
+    {
+      "puzzleId": "H8wq1",
+      "fen": "7k/pp1R4/5N2/8/5K2/r1p5/P7/6r1 b - - 1 51",
+      "moves": "c3c2 d7h7",
+      "rating": 1146,
+      "popularity": 94,
+      "nbPlays": 9001,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/UFcvFzMn/black#102"
+    },
+    {
+      "puzzleId": "cms0e",
+      "fen": "q6k/2p2prp/1b3N2/8/1P6/5PnP/2Q3PK/3R4 b - - 4 28",
+      "moves": "a8a6 d1d8 g7g8 d8g8",
+      "rating": 1147,
+      "popularity": 94,
+      "nbPlays": 3832,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rjDOEggj/black#56"
+    },
+    {
+      "puzzleId": "4AGKr",
+      "fen": "4R3/p1kp4/1p4Qp/5pn1/5p2/P4PrP/1P5K/8 w - - 2 46",
+      "moves": "g6f5 g5f3 h2h1 g3g1",
+      "rating": 1152,
+      "popularity": 97,
+      "nbPlays": 5813,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bAY61C21#91"
+    },
+    {
+      "puzzleId": "xNvUh",
+      "fen": "7k/pp6/3p3p/6n1/3R4/6Pp/r7/3R1BK1 w - - 0 33",
+      "moves": "d4d6 g5f3 g1h1 a2h2",
+      "rating": 1152,
+      "popularity": 95,
+      "nbPlays": 19558,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/17KOuzrq#65"
+    },
+    {
+      "puzzleId": "yXWOk",
+      "fen": "2k3r1/pR5Q/1p1qp3/2p1p3/2P1P3/2NP1n1P/PP4r1/5R1K w - - 2 25",
+      "moves": "c3e2 g2h2",
+      "rating": 1154,
+      "popularity": 96,
+      "nbPlays": 26602,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/8MGOoA2y#49"
+    },
+    {
+      "puzzleId": "4Wa0E",
+      "fen": "6kr/3p1pp1/b2p3q/8/1p6/1P2NnP1/P1Q2P1P/1R2R2K w - - 11 28",
+      "moves": "e3g4 h6h2 g4h2 h8h2",
+      "rating": 1154,
+      "popularity": 94,
+      "nbPlays": 4506,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2GSUa072#55"
+    },
+    {
+      "puzzleId": "ARgsR",
+      "fen": "2k4r/8/p2qpp2/1p1p4/2pB1P2/N4n1N/PPB3rP/1R2Q2K w - - 0 30",
+      "moves": "e1f1 g2h2",
+      "rating": 1155,
+      "popularity": 93,
+      "nbPlays": 3321,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/GdzAUImA#59"
+    },
+    {
+      "puzzleId": "ODVPo",
+      "fen": "r1br2k1/2R4p/5Nn1/1p4N1/4P3/p1n4P/5PP1/6K1 b - - 1 31",
+      "moves": "g8h8 c7h7",
+      "rating": 1156,
+      "popularity": 91,
+      "nbPlays": 3445,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/DOMNP26Z/black#62"
+    },
+    {
+      "puzzleId": "zwSyV",
+      "fen": "1r5k/3p1qrR/4pNp1/p2pP3/3P3Q/2P5/b4PP1/2K4R b - - 0 27",
+      "moves": "g7h7 h4h7 f7h7 h1h7",
+      "rating": 1157,
+      "popularity": 94,
+      "nbPlays": 5021,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HBQxZNnn/black#54"
+    },
+    {
+      "puzzleId": "tftni",
+      "fen": "2k4r/ppp2p2/4p3/8/2P1N3/3P1nPq/PP4QP/4R2K w - - 5 25",
+      "moves": "e1f1 h3h2 g2h2 h8h2",
+      "rating": 1159,
+      "popularity": 93,
+      "nbPlays": 11638,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JA8tRQOH#49"
+    },
+    {
+      "puzzleId": "HIYK9",
+      "fen": "8/p4k2/3B4/8/8/1Rn5/P5r1/1K6 w - - 2 51",
+      "moves": "b1a1 g2a2",
+      "rating": 1160,
+      "popularity": 96,
+      "nbPlays": 3319,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/X0gnfVLk#101"
+    },
+    {
+      "puzzleId": "KSimV",
+      "fen": "8/p7/Pr1p2pk/2pP3p/3nNN2/8/7r/2K3R1 b - - 5 69",
+      "moves": "b6a6 g1g6 h6h7 e4f6 h7h8 g6g8",
+      "rating": 1160,
+      "popularity": 96,
+      "nbPlays": 5872,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/eEwEXtsq/black#138"
+    },
+    {
+      "puzzleId": "G0nOt",
+      "fen": "2rb3k/p1p4r/2R2p2/8/8/PPQ1PnNq/1B3R1P/7K w - - 6 33",
+      "moves": "c6f6 h3h2 f2h2 h7h2",
+      "rating": 1161,
+      "popularity": 95,
+      "nbPlays": 8812,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/S4YZBVf2#65"
+    },
+    {
+      "puzzleId": "p2wXS",
+      "fen": "7k/pR6/8/8/2BPp2b/2P2nr1/PP4RK/8 w - - 1 39",
+      "moves": "h2h1 g3h3 g2h2 h3h2",
+      "rating": 1164,
+      "popularity": 97,
+      "nbPlays": 17706,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PJrKPfkW#77"
+    },
+    {
+      "puzzleId": "uKGJw",
+      "fen": "8/2pb3k/p2p3b/1p1Nn3/8/6RP/PP3PPK/4r3 b - - 3 28",
+      "moves": "c7c6 d5f6 h7h8 g3g8",
+      "rating": 1164,
+      "popularity": 95,
+      "nbPlays": 28006,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CMhOH1qg/black#56"
+    },
+    {
+      "puzzleId": "L7XUT",
+      "fen": "5b1k/r3r3/2p2N1p/1p5R/p4p2/8/1P6/1K4R1 b - - 1 41",
+      "moves": "f8g7 h5h6 g7h6 g1g8",
+      "rating": 1169,
+      "popularity": 96,
+      "nbPlays": 3414,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Pjg4UoMy/black#82"
+    },
+    {
+      "puzzleId": "fbz7p",
+      "fen": "5rk1/1p3p1b/r6R/p3p1Q1/1nPpN3/qP3P2/P7/1K1R1B2 b - - 0 25",
+      "moves": "a6g6 e4f6 g8h8 h6h7",
+      "rating": 1170,
+      "popularity": 95,
+      "nbPlays": 15165,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KeQgDNoc/black#50"
+    },
+    {
+      "puzzleId": "BMpG3",
+      "fen": "3r1rk1/pp3p1p/1n2p1p1/4q3/2P1N2Q/1P6/P3K3/7R b - - 1 34",
+      "moves": "e5g7 e4f6 g8h8 h4h7 g7h7 h1h7",
+      "rating": 1172,
+      "popularity": 95,
+      "nbPlays": 11360,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/xAnM3nUz/black#68"
+    },
+    {
+      "puzzleId": "KyIgP",
+      "fen": "rr5R/3k2p1/2p1pp2/2Q5/1pPP4/qBn5/P4PP1/K6R w - - 6 33",
+      "moves": "h8b8 a3a2 b3a2 a8a2",
+      "rating": 1172,
+      "popularity": 94,
+      "nbPlays": 19727,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dJxpRYdZ#65"
+    },
+    {
+      "puzzleId": "a8w49",
+      "fen": "r4r1k/pp1b1q1p/3p1NpQ/4n3/4P3/8/PPP3P1/R3KB1R b KQ - 7 21",
+      "moves": "f7g7 h6h7 g7h7 h1h7",
+      "rating": 1172,
+      "popularity": 91,
+      "nbPlays": 7535,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LPaw5VI1/black#42"
+    },
+    {
+      "puzzleId": "Mh754",
+      "fen": "8/k5p1/b1p1p3/N3p3/6Pp/2p4P/5r2/1R4K1 b - - 1 40",
+      "moves": "f2a2 a5c6 a7a8 b1b8",
+      "rating": 1174,
+      "popularity": 96,
+      "nbPlays": 3492,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/npVz9dlc/black#80"
+    },
+    {
+      "puzzleId": "aH448",
+      "fen": "8/PN4p1/5p2/6k1/8/5n2/5r2/7K w - - 0 42",
+      "moves": "a7a8q f2h2",
+      "rating": 1174,
+      "popularity": 95,
+      "nbPlays": 6030,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/yTqqo5kv#83"
+    },
+    {
+      "puzzleId": "ykUnp",
+      "fen": "8/8/6kp/1QN3n1/6Pb/8/PP3rK1/8 w - - 0 39",
+      "moves": "g2g1 g5f3 g1h1 f2h2",
+      "rating": 1176,
+      "popularity": 98,
+      "nbPlays": 6690,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/u1HtTDl9#77"
+    },
+    {
+      "puzzleId": "eyk1g",
+      "fen": "6k1/6pp/8/2Bb4/7r/2P1Nn1P/Pr4P1/R5RK w - - 9 30",
+      "moves": "e3d5 h4h3 g2h3 b2h2",
+      "rating": 1182,
+      "popularity": 97,
+      "nbPlays": 3773,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bjHayqNR#59"
+    },
+    {
+      "puzzleId": "qngwJ",
+      "fen": "5bk1/1R6/6n1/7N/3r4/1P6/8/1K6 b - - 0 47",
+      "moves": "d4b4 h5f6 g8h8 b7h7",
+      "rating": 1183,
+      "popularity": 96,
+      "nbPlays": 12531,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/opqmpId5/black#94"
+    },
+    {
+      "puzzleId": "Jo4PW",
+      "fen": "5b1k/5R1p/3p1Np1/1p1Pp3/7P/1P2Q1K1/1q3PP1/2r4r b - - 2 34",
+      "moves": "c1c3 f7h7",
+      "rating": 1183,
+      "popularity": 94,
+      "nbPlays": 3308,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/6WgW0juP/black#68"
+    },
+    {
+      "puzzleId": "kkxkD",
+      "fen": "7k/5KR1/5Np1/8/8/6r1/7p/8 b - - 1 61",
+      "moves": "h2h1q g7g8",
+      "rating": 1184,
+      "popularity": 98,
+      "nbPlays": 3087,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/E4Ds6bh8/black#122"
+    },
+    {
+      "puzzleId": "dSuHJ",
+      "fen": "r6k/1p2qprp/p1p2N2/3pP2R/8/P2P2RP/1P4P1/6K1 b - - 4 29",
+      "moves": "a8g8 h5h7 g7h7 g3g8",
+      "rating": 1184,
+      "popularity": 95,
+      "nbPlays": 21375,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "deflection",
+        "endgame",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fSs4eIQU/black#58"
+    },
+    {
+      "puzzleId": "gUn5d",
+      "fen": "2r5/p2k4/3Np1p1/3pP3/4q3/P4n2/1P4R1/R6K w - - 9 35",
+      "moves": "d6e4 c8h8 g2h2 h8h2",
+      "rating": 1185,
+      "popularity": 93,
+      "nbPlays": 18570,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/D4wzQfmU#69"
+    },
+    {
+      "puzzleId": "lzbl5",
+      "fen": "5bk1/5p2/4pN1p/3pP2P/1prP3P/1R6/5P2/6K1 b - - 4 42",
+      "moves": "g8g7 b3g3 g7h8 g3g8",
+      "rating": 1186,
+      "popularity": 95,
+      "nbPlays": 3611,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Ksqdaqa9/black#84"
+    },
+    {
+      "puzzleId": "nABux",
+      "fen": "1rb2r1k/5Pp1/p2p1N1p/1p1p3R/5P2/4P3/PP2K1R1/8 b - - 1 25",
+      "moves": "f8f7 h5h6 g7h6 g2g8",
+      "rating": 1186,
+      "popularity": 95,
+      "nbPlays": 14940,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NiGsQ176/black#50"
+    },
+    {
+      "puzzleId": "luY3Q",
+      "fen": "8/2k5/3pR1p1/1B5p/P4P2/5nP1/1r5P/6K1 w - - 1 38",
+      "moves": "g1h1 b2h2",
+      "rating": 1186,
+      "popularity": 94,
+      "nbPlays": 3734,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/JNAhJhY5#75"
+    },
+    {
+      "puzzleId": "rML1R",
+      "fen": "r5rk/1q4np/2bp1N2/4pP2/2BbP1Q1/6RP/PP4P1/2R4K b - - 0 30",
+      "moves": "g7f5 g4g8 a8g8 g3g8",
+      "rating": 1186,
+      "popularity": 90,
+      "nbPlays": 3652,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "operaMate",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fq6cF8Ic/black#60"
+    },
+    {
+      "puzzleId": "Vs4i8",
+      "fen": "r5k1/4bppp/Bp2b3/2p5/3p4/1Pn2P2/P1P3PP/K2RQ2R w - - 4 22",
+      "moves": "a6c4 a8a2",
+      "rating": 1186,
+      "popularity": 88,
+      "nbPlays": 5053,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Vplr0PfO#43"
+    },
+    {
+      "puzzleId": "pkWNc",
+      "fen": "k7/3R4/1pN5/2p4p/6p1/8/5PK1/2r5 b - - 4 54",
+      "moves": "c5c4 d7a7",
+      "rating": 1187,
+      "popularity": 97,
+      "nbPlays": 4815,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/7g7YZBFT/black#108"
+    },
+    {
+      "puzzleId": "iyK7s",
+      "fen": "8/pppR1Ppk/8/5N2/5b2/P4nPP/1Pr5/7K w - - 1 38",
+      "moves": "f7f8q c2h2",
+      "rating": 1187,
+      "popularity": 94,
+      "nbPlays": 15985,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/fWJenBpJ#75"
+    },
+    {
+      "puzzleId": "KzKMK",
+      "fen": "5bk1/8/1p4Rp/p2p1KpN/3N4/P1r5/1n6/8 b - - 1 44",
+      "moves": "g8h7 h5f6 h7h8 g6g8",
+      "rating": 1187,
+      "popularity": 92,
+      "nbPlays": 3075,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zYD5rDRu/black#88"
+    },
+    {
+      "puzzleId": "eQkMn",
+      "fen": "R7/P5pk/7p/8/5p1P/2N2P2/6rK/4n3 w - - 0 40",
+      "moves": "h2h3 g2g3 h3h2 e1f3 h2h1 g3g1",
+      "rating": 1188,
+      "popularity": 97,
+      "nbPlays": 11756,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/nI1Dx44f#79"
+    },
+    {
+      "puzzleId": "xUJ7d",
+      "fen": "k2b2r1/rp1q2p1/R1Np3p/2pPp1p1/4P3/1RP5/1P2QPPP/6K1 b - - 0 29",
+      "moves": "a7a6 e2a6 b7a6 b3b8",
+      "rating": 1188,
+      "popularity": 95,
+      "nbPlays": 18884,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rk6RXNbl/black#58"
+    },
+    {
+      "puzzleId": "OFuW5",
+      "fen": "3kb3/ppp1b2p/4p3/3p1p2/3q4/3B1n2/PP1QNPrP/3R1R1K w - - 2 25",
+      "moves": "e2d4 g2h2",
+      "rating": 1188,
+      "popularity": 91,
+      "nbPlays": 4800,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/3zgmHqU2#49"
+    },
+    {
+      "puzzleId": "eVRri",
+      "fen": "r4n1k/1b2q1rn/4pNpR/3pPpP1/1Bp2P2/4P2Q/1PB5/2K4R b - - 5 30",
+      "moves": "e7b4 h6h7 f8h7 h3h7 g7h7 h1h7",
+      "rating": 1190,
+      "popularity": 94,
+      "nbPlays": 7868,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "exposedKing",
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/NnJ2QCNO/black#60"
+    },
+    {
+      "puzzleId": "ojQG6",
+      "fen": "r2q3k/pp5p/2p2N1P/3ppn2/3nN3/3P4/PPP3Q1/2K3R1 b - - 1 25",
+      "moves": "d8e7 g2g8 a8g8 g1g8",
+      "rating": 1190,
+      "popularity": 94,
+      "nbPlays": 3099,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3YWlPGSn/black#50"
+    },
+    {
+      "puzzleId": "Y3GSc",
+      "fen": "r7/p4Rk1/1p1Nn1p1/2pN3p/2P5/1P4PP/q7/6K1 b - - 0 32",
+      "moves": "g7g8 d5f6 g8h8 f7h7",
+      "rating": 1191,
+      "popularity": 98,
+      "nbPlays": 5036,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/j1tE7jfS/black#64"
+    },
+    {
+      "puzzleId": "d0cld",
+      "fen": "8/p1r4k/1p2pp1p/2bp1p1N/P4P2/1PK3R1/1r5P/5B2 b - - 5 38",
+      "moves": "b2h2 h5f6 h7h8 g3g8",
+      "rating": 1196,
+      "popularity": 92,
+      "nbPlays": 3259,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zROZc3Jt/black#76"
+    },
+    {
+      "puzzleId": "p2hfZ",
+      "fen": "8/p5bk/r4p1p/q3pPpP/3pP3/2n2P2/r1RQ1N2/K1R1B3 w - - 0 38",
+      "moves": "c2a2 a5a2 d2a2 a6a2",
+      "rating": 1196,
+      "popularity": 86,
+      "nbPlays": 4918,
+      "theme": "arabianMate",
+      "allThemes": [
+        "arabianMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/mGYxUYii#75"
+    }
+  ]
+}

@@ -1,0 +1,1641 @@
+{
+  "level": "400-800",
+  "minPlays": 1000,
+  "sampleRate": 1,
+  "stats": {
+    "total": 31602,
+    "byOutcome": {
+      "checkmate": 22360,
+      "major_win": 4266,
+      "queen_win": 1458,
+      "positional": 1060,
+      "minor_win": 1911,
+      "pawn_win": 547
+    },
+    "byPrimaryTheme": {
+      "checkmate": 22360,
+      "fork": 5383,
+      "discoveredAttack": 2365,
+      "tactical": 1092,
+      "skewer": 156,
+      "pin": 238,
+      "attraction": 8
+    },
+    "byTeachAs": {
+      "backRankMate": 5744,
+      "checkmate": 13808,
+      "fork": 5379,
+      "discoveredAttack": 2362,
+      "operaMate": 929,
+      "pillsburysMate": 962,
+      "positional": 649,
+      "material": 443,
+      "smotheredMate": 395,
+      "doubleBishopMate": 194,
+      "arabianMate": 250,
+      "skewer": 154,
+      "pin": 238,
+      "hookMate": 78,
+      "attraction": 8,
+      "attraction → discoveredAttack → pawn_win": 1,
+      "attraction → skewer → queen_win": 2,
+      "attraction → discoveredAttack → queen_win": 2,
+      "fork → attraction → pin → major_win": 1,
+      "fork → attraction → queen_win": 1,
+      "fork → attraction → skewer → major_win": 1,
+      "fork → attraction → minor_win": 1
+    },
+    "combinations": {
+      "total": 10259,
+      "clean": 10259,
+      "mixed": 0,
+      "ambiguous": 0,
+      "flows": {
+        "fork → checkmate → checkmate": 3600,
+        "discoveredAttack → checkmate → checkmate": 5024,
+        "fork → discoveredAttack → checkmate → checkmate": 139,
+        "discoveredAttack → discoveredAttack → checkmate → checkmate": 479,
+        "discoveredAttack → fork → checkmate → checkmate": 30,
+        "fork → fork → checkmate → checkmate": 134,
+        "skewer → checkmate → checkmate": 572,
+        "skewer → fork → checkmate → checkmate": 242,
+        "discoveredAttack → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "skewer → discoveredAttack → checkmate → checkmate": 6,
+        "discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 6,
+        "discoveredAttack → skewer → checkmate → checkmate": 12,
+        "attraction → discoveredAttack → pawn_win": 1,
+        "attraction → skewer → queen_win": 2,
+        "attraction → discoveredAttack → queen_win": 2,
+        "fork → skewer → checkmate → checkmate": 2,
+        "discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 1,
+        "fork → attraction → pin → major_win": 1,
+        "fork → attraction → queen_win": 1,
+        "discoveredAttack → fork → discoveredAttack → checkmate → checkmate": 1,
+        "fork → fork → discoveredAttack → checkmate → checkmate": 1,
+        "fork → attraction → skewer → major_win": 1,
+        "fork → attraction → minor_win": 1
+      }
+    },
+    "confidence": {
+      "high": 30487,
+      "medium": 23,
+      "low": 1092
+    },
+    "errors": 0
+  },
+  "examples": {
+    "cleanCombinations": [
+      {
+        "puzzleId": "0042j",
+        "fen": "3r2k1/4nppp/pq1p1b2/1p2P3/2r2P2/2P1NR2/PP1Q2BP/3R2K1 b - - 0 24",
+        "puzzleFen": "3r2k1/4nppp/pq3b2/1p2p3/2r2P2/2P1NR2/PP1Q2BP/3R2K1 w - - 0 25",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 5
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qxd8+",
+            "uci": "d2d8",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 3 pieces: K, N, Q"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxd8#",
+            "uci": "d1d8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "q",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "fork → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "fork"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "005N7",
+        "fen": "r6k/2q3pp/8/2p1n3/R1Qp4/7P/2PB1PP1/6K1 b - - 0 32",
+        "puzzleFen": "r6k/2q3pp/8/2p5/R1np4/7P/2PB1PP1/6K1 w - - 0 33",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 14
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rxa8+",
+            "uci": "a4a8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxb8#",
+            "uci": "a8b8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "q",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "008GK",
+        "fen": "1k1r4/ppp3p1/8/1P5p/8/P3n2P/2P1r1P1/B3NRK1 b - - 4 31",
+        "puzzleFen": "1k6/ppp3p1/8/1P5p/8/P3n2P/2P1r1P1/B2rNRK1 w - - 5 32",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 5
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rf8+",
+            "uci": "f1f8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxd8#",
+            "uci": "f8d8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00TU2",
+        "fen": "1k1r4/1p3Qp1/p2q3p/3N4/1b6/8/PP3PPP/2R3K1 w - - 4 22",
+        "puzzleFen": "1k1r4/1p3Qp1/p2q3p/8/1N6/8/PP3PPP/2R3K1 b - - 0 22",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": -4
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qd1+",
+            "uci": "d6d1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 2 pieces: K, R"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxd1#",
+            "uci": "d8d1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "fork → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "fork"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00o7c",
+        "fen": "2r3k1/p4ppp/1pb1pq2/1P6/2Q1PP2/6P1/P5BP/2R3K1 b - - 0 24",
+        "puzzleFen": "2r3k1/pb3ppp/1p2pq2/1P6/2Q1PP2/6P1/P5BP/2R3K1 w - - 1 25",
+        "playerColor": "white",
+        "moveCount": 3,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 3,
+          "materialGained": 8
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qxc8+",
+            "uci": "c4c8",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 2 pieces: K, B"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxc8+",
+            "uci": "c1c8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "b",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Rxd8#",
+            "uci": "c8d8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "q",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "fork → discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "fork",
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "01749",
+        "fen": "2r3k1/5ppp/4p3/3n4/2QB4/1r4P1/5PKP/R2q4 b - - 1 32",
+        "puzzleFen": "6k1/5ppp/4p3/3n4/2rB4/1r4P1/5PKP/R2q4 w - - 0 33",
+        "playerColor": "white",
+        "moveCount": 3,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 3,
+          "materialGained": 10
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Ra8+",
+            "uci": "a1a8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxb8+",
+            "uci": "a8b8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Rxc8#",
+            "uci": "b8c8",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "01Dtr",
+        "fen": "b4rk1/2pn2p1/1p4q1/6N1/7Q/4B3/1P3PPP/3R2K1 w - - 6 27",
+        "puzzleFen": "b4rk1/2pR2p1/1p4q1/6N1/7Q/4B3/1P3PPP/6K1 b - - 0 27",
+        "playerColor": "black",
+        "moveCount": 3,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 3,
+          "materialGained": 8
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qb1+",
+            "uci": "g6b1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on K"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qxc1+",
+            "uci": "b1c1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "b",
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 2 pieces: K, N"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Qxd1#",
+            "uci": "c1d1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → fork → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack",
+            "fork"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "01qIp",
+        "fen": "5rk1/p5pp/2ppp3/4p2R/4N1q1/5Q2/PPP3P1/1K6 w - - 3 22",
+        "puzzleFen": "5rk1/p5pp/2ppp3/4p2R/4N1Q1/8/PPP3P1/1K6 b - - 0 22",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 9
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rf1+",
+            "uci": "f8f1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Rxd1#",
+            "uci": "f1d1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "q",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "backRankMate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "01wS5",
+        "fen": "b5rk/6p1/qNpQR2p/5p2/3P4/5P2/1P4PP/6K1 b - - 1 32",
+        "puzzleFen": "b5rk/6p1/1qpQR2p/5p2/3P4/5P2/1P4PP/6K1 w - - 0 33",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": -3
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rxh6+",
+            "uci": "e6h6",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qxh6#",
+            "uci": "d6h6",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "01xow",
+        "fen": "6k1/ppq3pp/2pNQpn1/2Pp4/8/6P1/PP4PP/3rN1K1 b - - 0 24",
+        "puzzleFen": "7k/ppq3pp/2pNQpn1/2Pp4/8/6P1/PP4PP/3rN1K1 w - - 1 25",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 3
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qe8+",
+            "uci": "e6e8",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 2 pieces: K, N"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qxf8#",
+            "uci": "e8f8",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "n",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "fork → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "fork"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      }
+    ],
+    "pureThemes": {
+      "checkmate": [
+        {
+          "puzzleId": "004iZ",
+          "fen": "r2r2k1/2q1bpp1/3p1n1p/1ppN4/1P1BP3/P5Q1/4RPPP/R5K1 b - - 1 20",
+          "puzzleFen": "r2r2k1/2q1bpp1/3p3p/1ppn4/1P1BP3/P5Q1/4RPPP/R5K1 w - - 0 21",
+          "playerColor": "white",
+          "moveCount": 1,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 1,
+            "materialGained": 1
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxg7#",
+              "uci": "g3g7",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": true,
+              "capturedPiece": "p",
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "clean"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "00GRa",
+          "fen": "1r3rk1/2p1Nppb/p2nq3/1p2p1Pp/4Qn1P/2P1N3/PPB2P1K/3R2R1 b - - 5 28",
+          "puzzleFen": "1r3rk1/2p1qppb/p2n4/1p2p1Pp/4Qn1P/2P1N3/PPB2P1K/3R2R1 w - - 0 29",
+          "playerColor": "white",
+          "moveCount": 1,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 1,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxh7#",
+              "uci": "e4h7",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": true,
+              "capturedPiece": "b",
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "clean"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "010Jc",
+          "fen": "rnb1k2r/bpqp1pp1/p3p3/7p/4P1n1/1NNB3P/PPP2PP1/R1BQ1R1K w kq - 1 11",
+          "puzzleFen": "rnb1k2r/bpqp1pp1/p3p3/7p/4P1n1/1NNB3P/PPP1QPP1/R1B2R1K b kq - 2 11",
+          "playerColor": "black",
+          "moveCount": 1,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 1,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qh2#",
+              "uci": "c7h2",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "clean"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        }
+      ],
+      "fork": [
+        {
+          "puzzleId": "008P4",
+          "fen": "8/4k3/1p1p4/rP2p1p1/P2nP1P1/3BK3/8/R7 w - - 0 35",
+          "puzzleFen": "8/4k3/1p1p4/rP2p1p1/P2nP1P1/3B4/3K4/R7 b - - 1 35",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Nb3+",
+              "uci": "d4b3",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: R, K"
+              },
+              "createdOpportunity": "Set up N for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Nxa1",
+              "uci": "b3a1",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "00Ui0",
+          "fen": "r5k1/5pp1/2p5/P1N4p/2Pp1n2/1P3P2/5P1P/3R2K1 w - - 1 26",
+          "puzzleFen": "r5k1/5pp1/2p5/P1N4p/2PR1n2/1P3P2/5P1P/6K1 b - - 0 26",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Ne2+",
+              "uci": "f4e2",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: R, K"
+              },
+              "createdOpportunity": "Set up N for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Nxd4",
+              "uci": "e2d4",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "01194",
+          "fen": "5qk1/p1pb2p1/5p2/r2N1P1p/2Pp3Q/2n5/P5PP/R4RK1 w - - 0 25",
+          "puzzleFen": "5qk1/p1pb2p1/5p2/r2N1P1p/2PQ4/2n5/P5PP/R4RK1 b - - 0 25",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "queen_win",
+            "achievedAtMove": 2,
+            "materialGained": 9
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Ne2+",
+              "uci": "c3e2",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: Q, K"
+              },
+              "createdOpportunity": "Set up N for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Nxd4",
+              "uci": "e2d4",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        }
+      ],
+      "discoveredAttack": [
+        {
+          "puzzleId": "00mvr",
+          "fen": "7r/ppp1Nk1p/2n5/8/8/2P2pP1/P6P/R1Br1BK1 b - - 0 20",
+          "puzzleFen": "7r/ppp1k2p/2n5/8/8/2P2pP1/P6P/R1Br1BK1 w - - 0 21",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Bg5+",
+              "uci": "c1g5",
+              "piece": "b",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "R discovered attack on R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxd1",
+              "uci": "a1d1",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "02LMw",
+          "fen": "6k1/7p/2P3p1/8/2K2pP1/4rP2/8/8 b - - 0 43",
+          "puzzleFen": "6k1/7p/2P3p1/8/2K2pP1/5r2/8/8 w - - 0 44",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "positional",
+            "achievedAtMove": 2,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "c7",
+              "uci": "c6c7",
+              "piece": "p",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": "Set up P for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "c8=Q+",
+              "uci": "c7c8q",
+              "piece": "p",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "Q discovered attack on K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "03EI3",
+          "fen": "3r4/6pp/2p1k3/ppP5/6P1/7P/1P6/4R1K1 b - - 1 32",
+          "puzzleFen": "3r4/6pp/2p5/ppPk4/6P1/7P/1P6/4R1K1 w - - 2 33",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 2,
+            "materialGained": 4
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rd1+",
+              "uci": "e1d1",
+              "piece": "r",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "R discovered attack on K"
+              },
+              "createdOpportunity": "Set up R for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxd8",
+              "uci": "d1d8",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        }
+      ],
+      "skewer": [
+        {
+          "puzzleId": "0QByk",
+          "fen": "8/1p3Qpk/p6p/5P2/1Kp3qP/8/PPP5/8 w - - 0 32",
+          "puzzleFen": "8/1p4pk/p5Qp/5P2/1Kp3qP/8/PPP5/8 b - - 1 32",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "pawn_win",
+            "achievedAtMove": 2,
+            "materialGained": 1
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxg6",
+              "uci": "g4g6",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Kxg6",
+              "uci": "h7g6",
+              "piece": "k",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "p",
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "1ibDp",
+          "fen": "r6k/2p2pb1/2Np2pp/2n1p3/1QP1P3/5N2/p4PPP/R5K1 w - - 0 29",
+          "puzzleFen": "r6k/2p2pb1/2Np2pp/2n1p3/2P1P3/1Q3N2/p4PPP/R5K1 b - - 1 29",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "queen_win",
+            "achievedAtMove": 2,
+            "materialGained": 13
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Nxb3",
+              "uci": "c5b3",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxa2",
+              "uci": "a8a2",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "2N32k",
+          "fen": "3r2k1/R4p2/p2p1p2/1p1Pr2p/5q2/3Q2P1/PPB2P1K/8 b - - 0 30",
+          "puzzleFen": "3r2k1/R4p2/p2p1p2/1p1Prq1p/8/3Q2P1/PPB2P1K/8 w - - 1 31",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxf5",
+              "uci": "d3f5",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Bxf5",
+              "uci": "c2f5",
+              "piece": "b",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        }
+      ],
+      "pin": [
+        {
+          "puzzleId": "0SjHi",
+          "fen": "r3r1k1/5pp1/p3q2p/1p1R4/5p2/1PP2Q1P/1P3PP1/3R2K1 b - - 0 29",
+          "puzzleFen": "3rr1k1/5pp1/p3q2p/1p1R4/5p2/1PP2Q1P/1P3PP1/3R2K1 w - - 1 30",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rxd8",
+              "uci": "d5d8",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "R pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxd8+",
+              "uci": "d1d8",
+              "piece": "r",
+              "isCheck": true,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "R discovered attack on K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "pin → discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        },
+        {
+          "puzzleId": "0dLGx",
+          "fen": "8/2N5/3Kp3/4P3/3p4/1n6/k7/8 w - - 0 58",
+          "puzzleFen": "8/8/3KN3/4P3/3p4/1n6/k7/8 b - - 0 58",
+          "playerColor": "black",
+          "moveCount": 3,
+          "outcome": {
+            "type": "positional",
+            "achievedAtMove": 3,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "d3",
+              "uci": "d4d3",
+              "piece": "p",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": "Set up P for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "d2",
+              "uci": "d3d2",
+              "piece": "p",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": "Set up P for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "d1=Q",
+              "uci": "d2d1q",
+              "piece": "p",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "N pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "pin",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        },
+        {
+          "puzzleId": "0xPF7",
+          "fen": "3r3r/4b1kp/pp4p1/3R4/1P6/P3pP1b/2P1B1NP/3R2K1 b - - 2 33",
+          "puzzleFen": "7r/3rb1kp/pp4p1/3R4/1P6/P3pP1b/2P1B1NP/3R2K1 w - - 3 34",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 2,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rxd7",
+              "uci": "d5d7",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "B pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxd7",
+              "uci": "d1d7",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "b",
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "B pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "pin",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        }
+      ]
+    }
+  }
+}

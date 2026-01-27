@@ -1,0 +1,289 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "doubleBishopMate",
+  "count": 16,
+  "puzzles": [
+    {
+      "puzzleId": "DpuZD",
+      "fen": "r6r/p1k1b1pp/1pp5/3pP3/3Pp1b1/4P3/PP1B2PP/2R1KB1R w K - 1 18",
+      "moves": "h2h3 e7h4 g2g3 h4g3",
+      "rating": 807,
+      "popularity": 97,
+      "nbPlays": 3184,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ahdUFgCu#35"
+    },
+    {
+      "puzzleId": "s8jAV",
+      "fen": "r6k/1b3B1p/8/2bR4/p6P/6P1/1p1B3K/8 b - - 0 37",
+      "moves": "b7d5 d2c3 c5d4 c3d4",
+      "rating": 834,
+      "popularity": 88,
+      "nbPlays": 3065,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UIDdHDSj/black#74"
+    },
+    {
+      "puzzleId": "4fhR6",
+      "fen": "Q4rk1/p2b1pp1/4p2p/1pb1P3/2p5/2Pp2P1/PP5P/RNB2R1K w - - 0 17",
+      "moves": "a8a7 d7c6 f1f3 c6f3",
+      "rating": 837,
+      "popularity": 81,
+      "nbPlays": 3142,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hU4oiB37#33"
+    },
+    {
+      "puzzleId": "TBgDz",
+      "fen": "3rk2r/ppp1b1p1/2n3bp/4p3/3pPp2/P2P4/1PPBP1PP/R2QKB1R w KQk - 2 14",
+      "moves": "h2h3 e7h4 g2g3 h4g3",
+      "rating": 842,
+      "popularity": 97,
+      "nbPlays": 3121,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LRWDHBRi#27"
+    },
+    {
+      "puzzleId": "2O8Lo",
+      "fen": "r4r1k/ppp2p1p/1b6/3PP1pN/2B2p2/8/PPbB2PP/R4R1K w - - 0 21",
+      "moves": "g2g3 c2e4 f1f3 e4f3",
+      "rating": 870,
+      "popularity": 97,
+      "nbPlays": 3168,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/smd7seaA#41"
+    },
+    {
+      "puzzleId": "ATW0t",
+      "fen": "r3r2k/1b1pR2p/p1nB2p1/1p4p1/8/1BP3N1/P5PP/4R1K1 b - - 0 26",
+      "moves": "c6e7 d6e5",
+      "rating": 892,
+      "popularity": 83,
+      "nbPlays": 3605,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/cr4XbmXC/black#52"
+    },
+    {
+      "puzzleId": "1XVlN",
+      "fen": "5B2/1p1B3p/k5p1/P2P1n2/1P3Pb1/8/4Nb1P/2R4K w - - 3 38",
+      "moves": "f8c5 g4f3",
+      "rating": 896,
+      "popularity": 81,
+      "nbPlays": 3005,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/LQacKvJ4#75"
+    },
+    {
+      "puzzleId": "ogb1m",
+      "fen": "2r2rk1/pp4pp/3b1p2/3P4/1nP3b1/N7/PP1N2PP/R3KB1R w KQ - 0 17",
+      "moves": "h2h3 d6g3",
+      "rating": 908,
+      "popularity": 82,
+      "nbPlays": 3039,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/NoMC1sAM#33"
+    },
+    {
+      "puzzleId": "Plh04",
+      "fen": "1k2rb1r/1ppq4/p1n2p2/7p/B2N2p1/3PB3/bPPQ1PPP/2KRR3 w - - 0 18",
+      "moves": "b2b3 f8a3",
+      "rating": 920,
+      "popularity": 95,
+      "nbPlays": 3065,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/8ICRdKlp#35"
+    },
+    {
+      "puzzleId": "ma1OW",
+      "fen": "8/kp2R1Q1/pbp2p1p/5B1P/q5P1/1P3b2/KBP5/3r4 w - - 0 34",
+      "moves": "b3a4 f3d5 c2c4 d5c4 a2a3 b6c5",
+      "rating": 938,
+      "popularity": 90,
+      "nbPlays": 5330,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "exposedKing",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/xri0xtf9#67"
+    },
+    {
+      "puzzleId": "w8KGP",
+      "fen": "5rk1/3rbppp/1p6/1Nnn4/4pPb1/1P6/PBPP2PP/R3KBNR w KQ - 3 17",
+      "moves": "h2h3 e7h4 g2g3 h4g3",
+      "rating": 954,
+      "popularity": 81,
+      "nbPlays": 4090,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HaeBkD3Q#33"
+    },
+    {
+      "puzzleId": "9JAp7",
+      "fen": "4r2k/ppp4p/6p1/8/2B2P1b/3KP3/PBnP2q1/R7 b - - 1 33",
+      "moves": "c2d4 b2d4 e8e5 d4e5 h4f6 e5f6",
+      "rating": 955,
+      "popularity": 96,
+      "nbPlays": 4112,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "hangingPiece",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/Y4enUmGu/black#66"
+    },
+    {
+      "puzzleId": "G51eT",
+      "fen": "rnb2bnr/4q3/2p1Np1k/1p4pp/pB1P4/4P3/PPB1NPPP/R1Q1K2R b KQ - 0 17",
+      "moves": "e7e6 b4f8",
+      "rating": 959,
+      "popularity": 91,
+      "nbPlays": 3670,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "hangingPiece",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/ltSBDY5x/black#34"
+    },
+    {
+      "puzzleId": "KjNDs",
+      "fen": "r4r2/b1p2pkp/p2p1p2/1p2p2b/4PPqB/1BPP4/PP4PP/R1Q2R1K w - - 1 18",
+      "moves": "g2g3 g4f3 f1f3 h5f3",
+      "rating": 961,
+      "popularity": 86,
+      "nbPlays": 3316,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LOAWoypN#35"
+    },
+    {
+      "puzzleId": "Ym8z3",
+      "fen": "4bk2/pp4p1/2pr4/7p/5P2/1B6/PB3P1P/6K1 b - - 2 25",
+      "moves": "d6d2 b2a3 c6c5 a3c5 d2d6 c5d6",
+      "rating": 980,
+      "popularity": 95,
+      "nbPlays": 3136,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/PUjqDvcF/black#50"
+    },
+    {
+      "puzzleId": "pjzow",
+      "fen": "r5k1/p1q2ppp/8/3p1N2/5P2/1Q2rNP1/PP1Bbb1P/R6K w - - 6 23",
+      "moves": "d2e3 e2f3",
+      "rating": 996,
+      "popularity": 81,
+      "nbPlays": 3658,
+      "theme": "doubleBishopMate",
+      "allThemes": [
+        "doubleBishopMate",
+        "hangingPiece",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/DvvGn6v5#45"
+    }
+  ]
+}

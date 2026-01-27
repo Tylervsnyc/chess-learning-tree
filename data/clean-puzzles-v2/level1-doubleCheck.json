@@ -1,0 +1,27 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "doubleCheck",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "6IaaQ",
+      "fen": "3R1N2/1p4pk/p6p/7P/6r1/5r2/2K5/8 b - - 5 58",
+      "moves": "h7h8 f8g6 h8h7 d8h8",
+      "rating": 798,
+      "popularity": 89,
+      "nbPlays": 1452,
+      "theme": "doubleCheck",
+      "allThemes": [
+        "discoveredCheck",
+        "doubleCheck",
+        "endgame",
+        "hookMate",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NXPJbKbk/black#116"
+    }
+  ]
+}

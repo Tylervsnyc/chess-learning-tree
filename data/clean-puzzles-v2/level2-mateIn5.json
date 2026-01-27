@@ -1,0 +1,24 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "mateIn5",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "8D3K1",
+      "fen": "7r/5p2/1N1p1pk1/2n1pN1r/2B1P3/P1P2PP1/1P1R2K1/8 w - - 3 41",
+      "moves": "d2d6 h5h2 g2f1 h2h1 f1e2 h8h2 e2e3 h1e1 c4e2 e1e2",
+      "rating": 988,
+      "popularity": 90,
+      "nbPlays": 3342,
+      "theme": "mateIn5",
+      "allThemes": [
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/dPOXMSLM#81"
+    }
+  ]
+}

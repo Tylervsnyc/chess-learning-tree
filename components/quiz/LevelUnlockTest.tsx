@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { useRouter } from 'next/navigation';
 import { LEVEL_TEST_CONFIG } from '@/data/level-unlock-tests';
-import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound } from '@/lib/sounds';
+import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound } from '@/lib/sounds';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
 interface TestPuzzle {
   id: string;
@@ -20,6 +22,7 @@ interface LevelUnlockTestProps {
 }
 
 type TestState = 'loading' | 'playing' | 'passed' | 'failed';
+type MoveStatus = 'playing' | 'correct' | 'wrong';
 
 export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   const router = useRouter();
@@ -32,8 +35,13 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   const [wrongCount, setWrongCount] = useState(0);
   const [chess, setChess] = useState<Chess | null>(null);
   const [moveIndex, setMoveIndex] = useState(0);
-  const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
+  const [moveStatus, setMoveStatus] = useState<MoveStatus>('playing');
   const [boardKey, setBoardKey] = useState(0);
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  // Streak tracking for progress bar effects
+  const [streak, setStreak] = useState(0);
+  const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
 
   const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
 
@@ -82,52 +90,76 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
 
     setChess(newChess);
     setMoveIndex(1); // Start at move 1 (first player move)
-    setFeedback(null);
+    setMoveStatus('playing');
+    setSelectedSquare(null);
     setBoardKey(prev => prev + 1);
   }, [currentIndex, puzzles]);
 
   const currentPuzzle = puzzles[currentIndex];
   const playerColor = chess?.turn() === 'w' ? 'white' : 'black';
 
+  // Square styles for selected piece and legal moves
+  const squareStyles = useMemo(() => {
+    const styles: Record<string, React.CSSProperties> = {};
+
+    if (selectedSquare && chess) {
+      styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
+      const moves = chess.moves({ square: selectedSquare, verbose: true });
+      for (const move of moves) {
+        styles[move.to] = {
+          background: move.captured
+            ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
+            : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
+        };
+      }
+    }
+
+    return styles;
+  }, [selectedSquare, chess]);
+
   const handlePuzzleComplete = useCallback((wasCorrect: boolean) => {
-    setFeedback(wasCorrect ? 'correct' : 'wrong');
+    setMoveStatus(wasCorrect ? 'correct' : 'wrong');
 
     if (wasCorrect) {
       playCorrectSound(correctCount);
+      setStreak(prev => prev + 1);
     } else {
       playErrorSound();
+      setStreak(0);
+      setHadWrongAnswer(true);
     }
 
-    const newCorrect = wasCorrect ? correctCount + 1 : correctCount;
-    const newWrong = wasCorrect ? wrongCount : wrongCount + 1;
+    setCorrectCount(prev => wasCorrect ? prev + 1 : prev);
+    setWrongCount(prev => wasCorrect ? prev : prev + 1);
+  }, [correctCount]);
 
-    setCorrectCount(newCorrect);
-    setWrongCount(newWrong);
-
+  // Handle continue button from popup
+  const handleContinue = useCallback(() => {
+    // State has already been updated in handlePuzzleComplete
     // Check for early termination
-    setTimeout(() => {
-      if (newWrong > maxWrongAnswers) {
-        // Failed - too many wrong answers
-        setTestState('failed');
-        recordResult(false, newCorrect, newWrong);
-      } else if (newCorrect >= passingScore) {
-        // Passed - enough correct answers
+    if (wrongCount > maxWrongAnswers) {
+      // Failed - too many wrong answers
+      setTestState('failed');
+      recordResult(false, correctCount, wrongCount);
+    } else if (correctCount >= passingScore) {
+      // Passed - enough correct answers
+      setTestState('passed');
+      playCelebrationSound(correctCount);
+      recordResult(true, correctCount, wrongCount);
+    } else if (currentIndex + 1 >= puzzles.length) {
+      // All puzzles done - check final score
+      if (correctCount >= passingScore) {
         setTestState('passed');
-        recordResult(true, newCorrect, newWrong);
-      } else if (currentIndex + 1 >= puzzles.length) {
-        // All puzzles done - check final score
-        if (newCorrect >= passingScore) {
-          setTestState('passed');
-          recordResult(true, newCorrect, newWrong);
-        } else {
-          setTestState('failed');
-          recordResult(false, newCorrect, newWrong);
-        }
+        playCelebrationSound(correctCount);
+        recordResult(true, correctCount, wrongCount);
       } else {
-        // Next puzzle
-        setCurrentIndex(currentIndex + 1);
+        setTestState('failed');
+        recordResult(false, correctCount, wrongCount);
       }
-    }, 1200);
+    } else {
+      // Next puzzle
+      setCurrentIndex(currentIndex + 1);
+    }
   }, [correctCount, wrongCount, currentIndex, puzzles.length, maxWrongAnswers, passingScore]);
 
   const recordResult = async (passed: boolean, correct: number, wrong: number) => {
@@ -148,13 +180,13 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
     }
   };
 
-  const handleMove = useCallback((sourceSquare: string, targetSquare: string): boolean => {
-    if (!chess || !currentPuzzle || feedback) return false;
+  const tryMove = useCallback((from: Square, to: Square): boolean => {
+    if (!chess || !currentPuzzle || moveStatus !== 'playing') return false;
 
     const expectedMove = currentPuzzle.moves[moveIndex];
     if (!expectedMove) return false;
 
-    const attemptedMove = sourceSquare + targetSquare;
+    const attemptedMove = from + to;
 
     // Check if this is the correct move (checking from/to squares)
     const isCorrect = expectedMove.startsWith(attemptedMove);
@@ -163,12 +195,13 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
       // Make the move
       try {
         const move = chess.move({
-          from: sourceSquare as Square,
-          to: targetSquare as Square,
+          from,
+          to,
           promotion: 'q', // Auto-promote to queen
         });
 
         if (move) {
+          setSelectedSquare(null);
           if (move.captured) {
             playCaptureSound();
           } else {
@@ -196,6 +229,11 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
                   }
                   setMoveIndex(moveIndex + 2);
                   setChess(new Chess(chess.fen()));
+
+                  // Check if puzzle complete after opponent move
+                  if (moveIndex + 2 >= currentPuzzle.moves.length) {
+                    handlePuzzleComplete(true);
+                  }
                 } catch (e) {
                   console.error('Error making opponent move:', e);
                 }
@@ -209,11 +247,44 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
       }
     } else {
       // Wrong move
+      setSelectedSquare(null);
       handlePuzzleComplete(false);
     }
 
     return false;
-  }, [chess, currentPuzzle, feedback, moveIndex, handlePuzzleComplete]);
+  }, [chess, currentPuzzle, moveStatus, moveIndex, handlePuzzleComplete]);
+
+  // Handle square click for tap-to-move
+  const onSquareClick = useCallback(
+    ({ square }: { piece: { pieceType: string } | null; square: string }) => {
+      if (!chess || moveStatus !== 'playing') return;
+      const clickedSquare = square as Square;
+
+      if (!selectedSquare) {
+        const piece = chess.get(clickedSquare);
+        if (piece && piece.color === chess.turn()) {
+          setSelectedSquare(clickedSquare);
+        }
+      } else if (selectedSquare === clickedSquare) {
+        setSelectedSquare(null);
+      } else {
+        const legalMoves = chess.moves({ square: selectedSquare, verbose: true });
+        const isLegalMove = legalMoves.some(m => m.to === clickedSquare);
+
+        if (isLegalMove) {
+          tryMove(selectedSquare, clickedSquare);
+        } else {
+          const piece = chess.get(clickedSquare);
+          if (piece && piece.color === chess.turn()) {
+            setSelectedSquare(clickedSquare);
+          } else {
+            setSelectedSquare(null);
+          }
+        }
+      }
+    },
+    [chess, selectedSquare, moveStatus, tryMove]
+  );
 
   const handleCancel = () => {
     router.push('/learn');
@@ -231,13 +302,35 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
     router.push('/learn');
   };
 
-  // Loading state
+  // Loading state - matches lesson page structure
   if (testState === 'loading') {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-white/60">Loading test puzzles...</p>
+      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+        <style>{progressBarStyles}</style>
+        {/* Header placeholder */}
+        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <button
+              onClick={() => router.push('/learn')}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <div className="flex-1 mx-4">
+              <ChessProgressBar current={0} total={puzzleCount} streak={0} />
+            </div>
+            <div className="text-gray-400">0/{puzzleCount}</div>
+          </div>
+        </div>
+        {/* Loading content */}
+        <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
+          <div className="w-full max-w-lg">
+            <div className="flex items-center justify-between mb-2 h-8">
+              <div className="h-5 w-32 bg-gray-700 rounded animate-pulse" />
+              <div className="h-5 w-24 bg-gray-700 rounded animate-pulse" />
+            </div>
+            <div className="aspect-square bg-gray-800 rounded-lg animate-pulse" />
+          </div>
         </div>
       </div>
     );
@@ -294,95 +387,95 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
 
   // Playing state
   return (
-    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <style>{progressBarStyles}</style>
       {/* Header */}
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={handleCancel}
-            className="text-white/60 hover:text-white text-xl w-8"
+            className="text-gray-400 hover:text-white"
           >
             ✕
           </button>
-          <div className="text-center flex-1">
-            <div className="text-sm text-white/50">
-              {targetLevel?.name || 'Level'} Unlock Test
-            </div>
-            <div className="text-xs text-white/30">
-              {correctCount} correct · {wrongCount}/{maxWrongAnswers + 1} wrong allowed
-            </div>
-          </div>
-          <div className="text-white/60 w-8 text-right">
-            {currentIndex + 1}/{puzzleCount}
-          </div>
-        </div>
 
-        {/* Progress bar */}
-        <div className="max-w-lg mx-auto mt-2">
-          <div className="h-3 bg-[#0D1A1F] rounded-full overflow-hidden border border-white/10">
-            <div
-              className="h-full transition-all duration-300"
-              style={{
-                width: `${((currentIndex) / puzzleCount) * 100}%`,
-                background: '#58CC02',
-              }}
+          {/* Progress bar with streak effect */}
+          <div className="flex-1 mx-4">
+            <ChessProgressBar
+              current={currentIndex + (moveStatus === 'correct' ? 1 : 0)}
+              total={puzzleCount}
+              streak={streak}
+              hadWrongAnswer={hadWrongAnswer}
             />
+          </div>
+
+          <div className="text-gray-400">
+            {currentIndex + 1}/{puzzleCount}
           </div>
         </div>
       </div>
 
-      {/* Puzzle area */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-4 overflow-hidden">
-        <div className="w-full max-w-md">
-          {/* Turn indicator */}
-          <div className="text-center mb-3 h-8">
-            <span
-              className={`text-sm px-3 py-1 rounded-full ${
-                playerColor === 'white'
-                  ? 'bg-white text-black'
-                  : 'bg-gray-800 text-white border border-white/20'
-              }`}
-            >
-              Play as {playerColor}
+      {/* Main content - fixed layout to prevent board movement */}
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
+        <div className="w-full max-w-lg">
+          {/* Title + Turn indicator on same line */}
+          <div className="flex items-center justify-between mb-2 h-8">
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold text-gray-300">
+                {targetLevel?.name || 'Level'} Test
+              </h1>
+              <span className="text-xs text-white/40">
+                ({correctCount}/{passingScore} to pass)
+              </span>
+            </div>
+            <span className={`text-base font-bold ${
+              playerColor === 'white' ? 'text-white' : 'text-gray-300'
+            }`}>
+              {playerColor === 'white' ? 'White' : 'Black'} to move
             </span>
           </div>
 
-          {/* Board */}
-          <div className={`relative rounded-xl overflow-hidden ${feedback ? 'pointer-events-none' : ''}`}>
+          {/* Chessboard */}
+          <div className="relative">
             {chess && (
               <Chessboard
                 key={boardKey}
                 options={{
                   position: chess.fen(),
-                  onPieceDrop: (info: { piece: unknown; sourceSquare: string; targetSquare: string | null }) => {
-                    if (!info.targetSquare) return false;
-                    return handleMove(info.sourceSquare, info.targetSquare);
-                  },
                   boardOrientation: playerColor as 'white' | 'black',
-                  boardStyle: { borderRadius: '12px' },
+                  onSquareClick: onSquareClick,
+                  squareStyles: squareStyles,
+                  boardStyle: {
+                    borderRadius: '8px 8px 0 0',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                  },
                   darkSquareStyle: { backgroundColor: '#779952' },
                   lightSquareStyle: { backgroundColor: '#edeed1' },
                 }}
               />
             )}
-
-            {/* Feedback overlay */}
-            {feedback && (
-              <div
-                className={`absolute inset-0 flex items-center justify-center ${
-                  feedback === 'correct' ? 'bg-[#58CC02]/80' : 'bg-[#FF4B4B]/80'
-                }`}
-              >
-                <div className="text-white text-6xl font-black">
-                  {feedback === 'correct' ? '✓' : '✗'}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Theme hint */}
-          {currentPuzzle && (
-            <div className="text-center mt-3 text-white/40 text-sm">
+          {/* Result popup - directly below board */}
+          {moveStatus === 'correct' && (
+            <PuzzleResultPopup
+              type="correct"
+              message="Excellent!"
+              onContinue={handleContinue}
+            />
+          )}
+
+          {moveStatus === 'wrong' && (
+            <PuzzleResultPopup
+              type="incorrect"
+              message="That's not quite right"
+              onContinue={handleContinue}
+            />
+          )}
+
+          {/* Status text when playing */}
+          {moveStatus === 'playing' && (
+            <div className="h-6 text-center mt-3 text-white/40 text-sm">
               Find the best move
             </div>
           )}

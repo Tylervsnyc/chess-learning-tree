@@ -1,0 +1,56 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "mateIn4",
+  "count": 3,
+  "puzzles": [
+    {
+      "puzzleId": "NpHXa",
+      "fen": "6k1/R4p1p/4bK1B/3r1p2/1r6/7P/p5P1/8 b - - 7 48",
+      "moves": "d5d2 a7a8 b4b8 a8b8 e6c8 b8c8 d2d8 c8d8",
+      "rating": 522,
+      "popularity": 93,
+      "nbPlays": 1066,
+      "theme": "mateIn4",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn4",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/3B0hauel/black#96"
+    },
+    {
+      "puzzleId": "ZnhqP",
+      "fen": "r1b1R3/pP3ppk/6qp/3N4/5Bn1/1Q6/PP3PP1/6K1 w - - 1 26",
+      "moves": "b7a8q g6b1 f4c1 b1c1 b3d1 c1d1 e8e1 d1e1",
+      "rating": 636,
+      "popularity": 81,
+      "nbPlays": 1567,
+      "theme": "mateIn4",
+      "allThemes": [
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/BB758eJL#51"
+    },
+    {
+      "puzzleId": "2VZxz",
+      "fen": "8/2kbr3/p1n2q1p/1pQ3p1/8/BP3B2/P1P2PPP/4R1K1 w - - 0 26",
+      "moves": "e1e7 f6a1 a3c1 a1c1 f3d1 c1d1 e7e1 d1e1",
+      "rating": 736,
+      "popularity": 87,
+      "nbPlays": 1040,
+      "theme": "mateIn4",
+      "allThemes": [
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/NjWIvN9s#51"
+    }
+  ]
+}

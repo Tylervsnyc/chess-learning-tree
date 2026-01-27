@@ -1,0 +1,1537 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "knightEndgame",
+  "count": 89,
+  "puzzles": [
+    {
+      "puzzleId": "PZ4xY",
+      "fen": "8/2k5/1p2p2p/1P1pP2P/NK1P4/4n3/8/8 w - - 29 71",
+      "moves": "a4c3 e3c2 b4a4 c2d4",
+      "rating": 804,
+      "popularity": 100,
+      "nbPlays": 655,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/L25klsnL#141"
+    },
+    {
+      "puzzleId": "4lwEW",
+      "fen": "7k/8/3N4/3P4/3pP1K1/2p5/7P/8 w - - 0 54",
+      "moves": "d6b5 c3c2 d5d6 c2c1q",
+      "rating": 807,
+      "popularity": 97,
+      "nbPlays": 566,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2M6vQlCT#107"
+    },
+    {
+      "puzzleId": "0gJND",
+      "fen": "8/p3N3/4p1p1/2P2p2/3p3P/4k3/P7/6K1 w - - 0 48",
+      "moves": "c5c6 d4d3 g1g2 d3d2 c6c7 d2d1q",
+      "rating": 810,
+      "popularity": 86,
+      "nbPlays": 627,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/WBPoWtym#95"
+    },
+    {
+      "puzzleId": "2t9Cj",
+      "fen": "8/7p/N1k3p1/1p3p2/1P2n3/2P3PP/P4PK1/8 w - - 1 41",
+      "moves": "a6c5 e4c5 b4c5 c6c5",
+      "rating": 814,
+      "popularity": 97,
+      "nbPlays": 790,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MkER67xX#81"
+    },
+    {
+      "puzzleId": "73USi",
+      "fen": "8/1P6/4k2p/P1n5/7P/6P1/7K/3n4 b - - 0 47",
+      "moves": "c5b7 a5a6 b7d6 a6a7",
+      "rating": 818,
+      "popularity": 86,
+      "nbPlays": 683,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GqZjB8xQ/black#94"
+    },
+    {
+      "puzzleId": "1QpoX",
+      "fen": "8/pp6/8/7p/1P6/2PK4/P5k1/2N5 w - - 1 43",
+      "moves": "c1b3 h5h4 b3c5 h4h3",
+      "rating": 823,
+      "popularity": 87,
+      "nbPlays": 552,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Nb96G7k9#85"
+    },
+    {
+      "puzzleId": "nZAAy",
+      "fen": "8/6pp/4k3/3pP3/1npP4/2N1K2P/6P1/8 w - - 4 41",
+      "moves": "g2g4 b4c2 e3f4 c2d4",
+      "rating": 826,
+      "popularity": 90,
+      "nbPlays": 506,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LyRTiNxy#81"
+    },
+    {
+      "puzzleId": "aihUI",
+      "fen": "8/4npp1/1k2p3/3pP1P1/1K3P2/1P6/4N3/8 w - - 3 39",
+      "moves": "e2d4 e7c6 d4c6 b6c6",
+      "rating": 827,
+      "popularity": 95,
+      "nbPlays": 502,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Sx9Wy2bb#77"
+    },
+    {
+      "puzzleId": "hbvDq",
+      "fen": "8/pp4k1/8/3NPK2/2P5/1P5p/P7/8 w - - 0 53",
+      "moves": "e5e6 h3h2 f5e5 h2h1q",
+      "rating": 830,
+      "popularity": 92,
+      "nbPlays": 1750,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/G6nePo7f#105"
+    },
+    {
+      "puzzleId": "oh3My",
+      "fen": "8/5pp1/2nkp1p1/p2p4/P2P4/2PNKPP1/7P/8 w - - 0 36",
+      "moves": "d3e5 c6e5 d4e5 d6e5",
+      "rating": 832,
+      "popularity": 96,
+      "nbPlays": 624,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/j3wYnc0d#71"
+    },
+    {
+      "puzzleId": "sCB2r",
+      "fen": "8/7n/4pPp1/p1k1P1P1/Pp2K1N1/1P6/8/8 w - - 11 49",
+      "moves": "f6f7 h7g5 e4e3 g5f7",
+      "rating": 832,
+      "popularity": 93,
+      "nbPlays": 870,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/nntwmnS8#97"
+    },
+    {
+      "puzzleId": "qMwr0",
+      "fen": "8/1p6/5N2/Ppk1p1p1/2n1PpP1/2PK1P2/8/8 b - - 5 47",
+      "moves": "c4d6 f6d7 c5c6 d7e5",
+      "rating": 838,
+      "popularity": 95,
+      "nbPlays": 1426,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short",
+        "superGM"
+      ],
+      "gameUrl": "https://lichess.org/xiUnVRQx/black#94"
+    },
+    {
+      "puzzleId": "Yl4rc",
+      "fen": "8/p7/1p5N/2p1k1p1/2P1n1P1/1P2K3/P7/8 b - - 0 47",
+      "moves": "e4f6 h6f7 e5e6 f7g5",
+      "rating": 841,
+      "popularity": 99,
+      "nbPlays": 1090,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fyo8Npc6/black#94"
+    },
+    {
+      "puzzleId": "oGktQ",
+      "fen": "8/1p6/2p4p/3pkp2/3Np3/2P4N/PP2KPn1/8 w - - 2 34",
+      "moves": "f2f4 g2f4 h3f4 e5f4",
+      "rating": 844,
+      "popularity": 94,
+      "nbPlays": 976,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/h6rC6gK5#67"
+    },
+    {
+      "puzzleId": "t9G0W",
+      "fen": "8/3n4/1k6/1p1P2N1/6P1/1p2NKP1/8/8 w - - 0 51",
+      "moves": "f3f4 b3b2 g5e4 b2b1q",
+      "rating": 849,
+      "popularity": 100,
+      "nbPlays": 594,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/U4nQD7pC#101"
+    },
+    {
+      "puzzleId": "bGbBu",
+      "fen": "3N2k1/p7/8/1p2p1pp/4P3/1K5P/P7/8 w - - 0 34",
+      "moves": "b3c2 g5g4 h3h4 g4g3 d8c6 g3g2",
+      "rating": 856,
+      "popularity": 96,
+      "nbPlays": 1301,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/289iGSgK#67"
+    },
+    {
+      "puzzleId": "49bQg",
+      "fen": "8/8/8/N3k3/P3pN1p/2Pr4/2K5/8 w - - 2 58",
+      "moves": "f4d3 e4d3 c2d3 h4h3",
+      "rating": 856,
+      "popularity": 91,
+      "nbPlays": 1184,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/8nSZ0gPj#115"
+    },
+    {
+      "puzzleId": "1kgQs",
+      "fen": "8/8/8/3K4/4Ppk1/4p3/4N3/8 w - - 1 72",
+      "moves": "e4e5 f4f3 e5e6 f3e2 e6e7 e2e1q",
+      "rating": 857,
+      "popularity": 98,
+      "nbPlays": 1123,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/ZPhuD3oW#143"
+    },
+    {
+      "puzzleId": "PotEf",
+      "fen": "8/2p4p/4k3/4P3/5P2/n6P/1p1K2P1/1N6 w - - 6 48",
+      "moves": "d2c3 a3b1 c3b2 b1d2",
+      "rating": 863,
+      "popularity": 89,
+      "nbPlays": 851,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TekvHrHm#95"
+    },
+    {
+      "puzzleId": "42hGe",
+      "fen": "4k3/2p5/3p3P/2n2K2/8/8/1n3P2/8 b - - 0 45",
+      "moves": "c5d7 h6h7 e8f7 h7h8q",
+      "rating": 868,
+      "popularity": 88,
+      "nbPlays": 637,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Ai8ws0vh/black#90"
+    },
+    {
+      "puzzleId": "bJJlT",
+      "fen": "3n1N2/pp6/3k1P2/3P1pp1/8/8/PP2K1P1/8 w - - 0 34",
+      "moves": "f8e6 d8e6 d5e6 d6e6",
+      "rating": 869,
+      "popularity": 98,
+      "nbPlays": 1440,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jFJ6flig#67"
+    },
+    {
+      "puzzleId": "uuB7H",
+      "fen": "8/8/5k2/3Kp1Np/1P2Ppp1/8/6PP/8 w - - 3 42",
+      "moves": "g5e6 f4f3 g2f3 g4f3 e6c5 f3f2",
+      "rating": 870,
+      "popularity": 95,
+      "nbPlays": 2029,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/H7wPK0Eu#83"
+    },
+    {
+      "puzzleId": "nvLRT",
+      "fen": "8/1p1k4/p3p3/3p3P/6n1/P1P1P1P1/1P6/6K1 b - - 0 39",
+      "moves": "g4e3 h5h6 e3f5 h6h7",
+      "rating": 870,
+      "popularity": 94,
+      "nbPlays": 671,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BqzgPXtF/black#78"
+    },
+    {
+      "puzzleId": "yqSoZ",
+      "fen": "6k1/6p1/p3P1Np/1p6/2p5/2P4P/Pn4P1/7K w - - 0 46",
+      "moves": "e6e7 g8f7 e7e8r f7e8",
+      "rating": 871,
+      "popularity": 94,
+      "nbPlays": 546,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PrZmsDRK#91"
+    },
+    {
+      "puzzleId": "3MZum",
+      "fen": "8/8/5ppp/pBk1p3/n7/PKP1P3/5PPP/8 b - - 0 32",
+      "moves": "c5b5 c3c4 b5b6 b3a4",
+      "rating": 871,
+      "popularity": 91,
+      "nbPlays": 654,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/xyhJ1nF8/black#64"
+    },
+    {
+      "puzzleId": "KtDHw",
+      "fen": "8/1p6/1Pp1k1np/P1K1Pp2/5P2/8/7P/8 b - - 0 37",
+      "moves": "g6f4 a5a6 b7a6 b6b7",
+      "rating": 872,
+      "popularity": 98,
+      "nbPlays": 640,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aav5pXqH/black#74"
+    },
+    {
+      "puzzleId": "9oMsT",
+      "fen": "8/7p/6p1/p5K1/1k2N2P/8/6P1/8 w - - 2 53",
+      "moves": "g5h6 a5a4 h6h7 a4a3 h7g6 a3a2 h4h5 a2a1q",
+      "rating": 874,
+      "popularity": 84,
+      "nbPlays": 2267,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "promotion",
+        "quietMove",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/lh1bVjsw#105"
+    },
+    {
+      "puzzleId": "umdGZ",
+      "fen": "8/p7/3p3p/2p3k1/2P1pp2/1PN4K/P7/8 b - - 1 42",
+      "moves": "a7a6 c3e4 g5f5 e4d6",
+      "rating": 875,
+      "popularity": 93,
+      "nbPlays": 504,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/l0ZZRJrT/black#84"
+    },
+    {
+      "puzzleId": "9x1uP",
+      "fen": "3n4/1p6/p2P1kpp/2N5/6P1/1P2K2P/8/8 w - - 3 37",
+      "moves": "e3f4 d8e6 c5e6 f6e6",
+      "rating": 883,
+      "popularity": 98,
+      "nbPlays": 867,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Gh5Cpepg#73"
+    },
+    {
+      "puzzleId": "ePaOi",
+      "fen": "8/5p2/3Np1p1/3pP2p/pk1n3P/2N5/P1K2PP1/8 w - - 0 40",
+      "moves": "c2b2 a4a3 b2b1 b4c3",
+      "rating": 883,
+      "popularity": 93,
+      "nbPlays": 590,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/44VVldxh#79"
+    },
+    {
+      "puzzleId": "WdL2H",
+      "fen": "8/3n4/2pkp3/p3p1p1/P1P1P1Pp/3N1P1P/3K4/8 b - - 0 36",
+      "moves": "d7f8 c4c5 d6c7 d3e5",
+      "rating": 884,
+      "popularity": 96,
+      "nbPlays": 2392,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HNDCbZVo/black#72"
+    },
+    {
+      "puzzleId": "zYRD2",
+      "fen": "8/1pp5/p1k5/5N2/7P/8/n5P1/6K1 b - - 0 35",
+      "moves": "c6d7 h4h5 a2c3 h5h6",
+      "rating": 886,
+      "popularity": 94,
+      "nbPlays": 1610,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9GbUVha5/black#70"
+    },
+    {
+      "puzzleId": "26SGW",
+      "fen": "8/6p1/2nkp3/p1p3P1/2P1K3/2N5/8/8 b - - 9 55",
+      "moves": "c6e5 c3b5 d6e7 e4e5",
+      "rating": 888,
+      "popularity": 96,
+      "nbPlays": 2610,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UjiGXuP6/black#110"
+    },
+    {
+      "puzzleId": "DcyAa",
+      "fen": "1n6/4k2p/1p3PpP/p1pPp3/P1P1P3/3KN3/8/8 b - - 0 41",
+      "moves": "e7f6 e3g4 f6g5 g4e5",
+      "rating": 894,
+      "popularity": 96,
+      "nbPlays": 638,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "masterVsMaster",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BkGP9pxp/black#82"
+    },
+    {
+      "puzzleId": "T0NON",
+      "fen": "8/1kn4p/6p1/2K1P3/5PP1/8/7P/8 b - - 3 65",
+      "moves": "c7e6 c5d6 e6f4 e5e6",
+      "rating": 900,
+      "popularity": 89,
+      "nbPlays": 637,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "masterVsMaster",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MtoWLurf/black#130"
+    },
+    {
+      "puzzleId": "9Q7JW",
+      "fen": "8/8/2k5/1p6/1n2N1KP/8/8/8 b - - 0 54",
+      "moves": "b4d5 h4h5 d5e7 h5h6",
+      "rating": 902,
+      "popularity": 98,
+      "nbPlays": 945,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cPYRwfKp/black#108"
+    },
+    {
+      "puzzleId": "gWyvH",
+      "fen": "8/5p2/1N3k2/3Pp2p/4P1p1/1n2K1P1/7P/8 b - - 4 35",
+      "moves": "b3d4 b6d7 f6e7 d7e5",
+      "rating": 908,
+      "popularity": 96,
+      "nbPlays": 1953,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hZzsUcgC/black#70"
+    },
+    {
+      "puzzleId": "Cw4HN",
+      "fen": "8/8/8/8/1pKN4/pP6/k1P5/8 w - - 0 48",
+      "moves": "c4b4 a2b2 b4c4 a3a2",
+      "rating": 909,
+      "popularity": 100,
+      "nbPlays": 512,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cbSgX0Wj#95"
+    },
+    {
+      "puzzleId": "0qEHc",
+      "fen": "8/5p2/3p4/2nP1PPp/1kP5/1P6/4K3/8 b - - 0 42",
+      "moves": "b4b3 g5g6 f7g6 f5g6 b3c4 g6g7",
+      "rating": 911,
+      "popularity": 97,
+      "nbPlays": 3091,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/wGhT8bcy/black#84"
+    },
+    {
+      "puzzleId": "CEno7",
+      "fen": "8/8/p5Kn/1p6/1P6/Pk6/8/5N2 w - - 0 65",
+      "moves": "g6h6 b3a3 h6g5 a3b4",
+      "rating": 912,
+      "popularity": 96,
+      "nbPlays": 1533,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/syOMaJlG#129"
+    },
+    {
+      "puzzleId": "clbnT",
+      "fen": "5k2/5pp1/7p/P1K5/4p2P/4n1P1/8/8 b - - 0 45",
+      "moves": "e3f5 a5a6 f8e7 a6a7 e4e3 a7a8q",
+      "rating": 913,
+      "popularity": 93,
+      "nbPlays": 971,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/qzq0UxNp/black#90"
+    },
+    {
+      "puzzleId": "dy9jW",
+      "fen": "8/2p2kpp/2p1p3/P7/8/6P1/5nKP/8 b - - 0 45",
+      "moves": "f2e4 a5a6 e4c3 a6a7",
+      "rating": 914,
+      "popularity": 95,
+      "nbPlays": 506,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jm0wJbUn/black#90"
+    },
+    {
+      "puzzleId": "O3vlQ",
+      "fen": "8/3k2pp/3Nnp2/1KP5/p6P/P7/2P2P2/8 w - - 1 46",
+      "moves": "b5a4 e6c5 a4b5 d7d6",
+      "rating": 917,
+      "popularity": 97,
+      "nbPlays": 2687,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HQMCuOOK#91"
+    },
+    {
+      "puzzleId": "DlUeR",
+      "fen": "8/8/p1p5/1N1P4/4P3/2Pp1p2/1P1K2k1/8 w - - 0 36",
+      "moves": "d5c6 f3f2 b5d4 f2f1q",
+      "rating": 918,
+      "popularity": 94,
+      "nbPlays": 568,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sQMjjQWm#71"
+    },
+    {
+      "puzzleId": "QqejO",
+      "fen": "8/p6p/Np1k2p1/3pp3/P5PP/3K4/8/8 b - - 0 33",
+      "moves": "e5e4 d3d4 e4e3 d4e3",
+      "rating": 919,
+      "popularity": 97,
+      "nbPlays": 985,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RZdQ1DkI/black#66"
+    },
+    {
+      "puzzleId": "bEBGr",
+      "fen": "2n5/2N4p/1p6/1P4pP/4k1P1/6K1/8/8 b - - 1 48",
+      "moves": "e4d4 c7e6 d4e5 e6g5 c8d6 g5h7",
+      "rating": 921,
+      "popularity": 100,
+      "nbPlays": 568,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/z8WhXtqy/black#96"
+    },
+    {
+      "puzzleId": "3XqWo",
+      "fen": "8/3N4/4p2p/4Pppk/4nP2/6P1/3pK2P/8 b - - 7 42",
+      "moves": "h5g4 d7f6 g4h3 f6e4",
+      "rating": 930,
+      "popularity": 93,
+      "nbPlays": 529,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/t2DFJPrQ/black#84"
+    },
+    {
+      "puzzleId": "ztci8",
+      "fen": "1K6/p6p/8/2k1N3/4Pp2/7P/8/8 w - - 1 55",
+      "moves": "e5f3 a7a5 b8c7 a5a4",
+      "rating": 931,
+      "popularity": 94,
+      "nbPlays": 961,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "quietMove",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Gp2SXaMc#109"
+    },
+    {
+      "puzzleId": "krnLp",
+      "fen": "8/1p6/6N1/3p4/p7/5P2/2kN1K1P/8 w - - 2 34",
+      "moves": "f2e2 a4a3 g6e7 a3a2 e7d5 a2a1q",
+      "rating": 932,
+      "popularity": 87,
+      "nbPlays": 627,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/8VCdCdEV#67"
+    },
+    {
+      "puzzleId": "vEbuY",
+      "fen": "8/8/3p1kp1/1p1n3p/pP2NP1P/P4K2/8/8 b - - 1 38",
+      "moves": "f6f5 e4d6 f5e6 d6b5",
+      "rating": 934,
+      "popularity": 95,
+      "nbPlays": 2599,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zxfjf0X8/black#76"
+    },
+    {
+      "puzzleId": "Y7wX3",
+      "fen": "8/8/p7/4N2p/k1pP4/P1PnK3/8/8 b - - 4 38",
+      "moves": "a4b3 e5d3 c4d3 e3d3",
+      "rating": 941,
+      "popularity": 98,
+      "nbPlays": 1062,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/T7cYU614/black#76"
+    },
+    {
+      "puzzleId": "QFt2w",
+      "fen": "8/8/p6P/1p1k1NK1/8/P1p3P1/8/1n6 b - - 0 51",
+      "moves": "c3c2 f5e3 d5e6 e3c2",
+      "rating": 944,
+      "popularity": 96,
+      "nbPlays": 517,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ecmVn1lx/black#102"
+    },
+    {
+      "puzzleId": "HLsVP",
+      "fen": "8/1p3pK1/4p2P/3pn3/8/3k2P1/5P2/8 b - - 2 48",
+      "moves": "b7b5 h6h7 d5d4 h7h8q",
+      "rating": 944,
+      "popularity": 89,
+      "nbPlays": 1313,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zwOvEiqX/black#96"
+    },
+    {
+      "puzzleId": "GYg3x",
+      "fen": "8/5pp1/7p/8/1K3k2/7P/N2n1PP1/8 w - - 3 41",
+      "moves": "b4c3 d2e4 c3d3 e4f2",
+      "rating": 945,
+      "popularity": 93,
+      "nbPlays": 1091,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wpKghP1b#81"
+    },
+    {
+      "puzzleId": "LgoVw",
+      "fen": "1N1k4/1K2p3/5p1p/1P1p1PpP/8/4n3/6P1/8 b - - 0 55",
+      "moves": "d5d4 b8c6 d8d7 c6d4",
+      "rating": 946,
+      "popularity": 94,
+      "nbPlays": 800,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DqPLvXoi/black#110"
+    },
+    {
+      "puzzleId": "KGWzK",
+      "fen": "8/pN4k1/4npp1/3P1p2/8/8/P4PP1/6K1 b - - 0 36",
+      "moves": "e6f4 d5d6 f4e6 d6d7",
+      "rating": 947,
+      "popularity": 94,
+      "nbPlays": 570,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3wEk2jQD/black#72"
+    },
+    {
+      "puzzleId": "d3tuq",
+      "fen": "8/Nn5p/1P4p1/1K1k1p2/5P1P/4P3/6P1/8 w - - 3 51",
+      "moves": "a7c6 b7d6 b5b4 d5c6",
+      "rating": 950,
+      "popularity": 96,
+      "nbPlays": 522,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5o8M1SL3#101"
+    },
+    {
+      "puzzleId": "sUAld",
+      "fen": "8/8/1p2kpp1/2p2p2/7P/1P6/P3N1p1/2K5 b - - 1 44",
+      "moves": "f5f4 e2f4 e6f5 f4g2",
+      "rating": 950,
+      "popularity": 94,
+      "nbPlays": 556,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sRKZ4Q9D/black#88"
+    },
+    {
+      "puzzleId": "uVD3I",
+      "fen": "8/8/4N3/8/1P4kp/P2K1p2/5P2/8 w - - 4 51",
+      "moves": "d3e3 h4h3 e6g5 h3h2 g5f3 h2h1q",
+      "rating": 951,
+      "popularity": 98,
+      "nbPlays": 2182,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/xUKeRyjy#101"
+    },
+    {
+      "puzzleId": "7nN4L",
+      "fen": "3N4/8/4ppk1/3n3p/3PKP2/p5P1/P7/8 w - - 0 41",
+      "moves": "d8e6 d5c3 e4d3 c3a2",
+      "rating": 957,
+      "popularity": 95,
+      "nbPlays": 1655,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aEPplQVV#81"
+    },
+    {
+      "puzzleId": "Nry1i",
+      "fen": "8/5k2/p4Pn1/1p4P1/6KP/8/1P6/8 b - - 2 48",
+      "moves": "g6e5 g4f5 e5g6 h4h5",
+      "rating": 959,
+      "popularity": 90,
+      "nbPlays": 506,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ZpMcKtQx/black#96"
+    },
+    {
+      "puzzleId": "D4MVn",
+      "fen": "8/5ppp/2p1p3/p7/P2k1P1n/1P2NK1P/2P2P2/8 w - - 1 29",
+      "moves": "f3g3 h4f5 e3f5 e6f5 b3b4 a5b4",
+      "rating": 960,
+      "popularity": 99,
+      "nbPlays": 682,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3obq0tHP#57"
+    },
+    {
+      "puzzleId": "5l45T",
+      "fen": "6b1/8/5N2/8/2p5/1k2K3/1P4PP/8 w - - 0 45",
+      "moves": "f6g8 b3b2 g8e7 c4c3 e7f5 c3c2",
+      "rating": 962,
+      "popularity": 100,
+      "nbPlays": 603,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/TepjQQ5u#89"
+    },
+    {
+      "puzzleId": "3LneK",
+      "fen": "8/4kP2/8/p2KP3/P1p5/1n3P1p/8/5N2 w - - 0 64",
+      "moves": "d5c4 b3d2 f1d2 h3h2",
+      "rating": 964,
+      "popularity": 100,
+      "nbPlays": 638,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VjEXXtT1#127"
+    },
+    {
+      "puzzleId": "K4U7a",
+      "fen": "4Nk2/1p6/6PK/2n5/8/p7/8/8 b - - 0 46",
+      "moves": "f8e8 g6g7 e8f7 h6h7 c5e6 g7g8q",
+      "rating": 966,
+      "popularity": 100,
+      "nbPlays": 745,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/pPccweeE/black#92"
+    },
+    {
+      "puzzleId": "rlN46",
+      "fen": "8/p4kpp/1N6/1P2p3/P7/7P/5PP1/2n2K2 b - - 0 30",
+      "moves": "a7b6 a4a5 b6a5 b5b6 c1d3 b6b7",
+      "rating": 969,
+      "popularity": 90,
+      "nbPlays": 1082,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5p4J5BTs/black#60"
+    },
+    {
+      "puzzleId": "b0LtK",
+      "fen": "8/2N2p1p/p4p2/8/1p5P/k4P2/6P1/4K3 w - - 0 39",
+      "moves": "c7a6 b4b3 e1d1 b3b2 d1c2 a3a2",
+      "rating": 970,
+      "popularity": 96,
+      "nbPlays": 1194,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/8hPRDHWd#77"
+    },
+    {
+      "puzzleId": "ramBq",
+      "fen": "8/n7/P2p3k/1P1N4/2P1P3/3P2p1/8/2K5 w - - 0 51",
+      "moves": "b5b6 g3g2 c1d2 g2g1q",
+      "rating": 972,
+      "popularity": 90,
+      "nbPlays": 519,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/T0f2pGN9#101"
+    },
+    {
+      "puzzleId": "qv8LB",
+      "fen": "8/p7/1pn1k1p1/2pNp1Pp/4K2P/1PPP4/P7/8 b - - 0 31",
+      "moves": "b6b5 d5c7 e6d7 c7b5",
+      "rating": 973,
+      "popularity": 94,
+      "nbPlays": 537,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0njApCeV/black#62"
+    },
+    {
+      "puzzleId": "MB4U5",
+      "fen": "2n5/P4ppp/1pk1p3/1N2P3/3p1P2/7P/6P1/6K1 b - - 0 37",
+      "moves": "c6b7 b5d6 b7a7 d6c8",
+      "rating": 974,
+      "popularity": 94,
+      "nbPlays": 678,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pT3Ux75G/black#74"
+    },
+    {
+      "puzzleId": "gm1zs",
+      "fen": "8/p5pp/1p2kp2/8/2p1PnP1/4K3/PP5P/4N3 b - - 4 33",
+      "moves": "e6e5 e1f3 e5d6 e3f4",
+      "rating": 974,
+      "popularity": 91,
+      "nbPlays": 1107,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HCiqVxvP/black#66"
+    },
+    {
+      "puzzleId": "XImue",
+      "fen": "6k1/8/7p/3N2p1/2p1p3/8/1P6/2K5 b - - 1 47",
+      "moves": "h6h5 d5f6 g8f7 f6h5",
+      "rating": 975,
+      "popularity": 96,
+      "nbPlays": 1001,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2L5KmPBy/black#94"
+    },
+    {
+      "puzzleId": "KMJGW",
+      "fen": "8/1pp5/p7/8/1K6/1P4pk/1P4N1/8 w - - 5 57",
+      "moves": "g2e3 g3g2 e3g2 h3g2",
+      "rating": 977,
+      "popularity": 98,
+      "nbPlays": 750,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vnmfhfcG#113"
+    },
+    {
+      "puzzleId": "Sg7ae",
+      "fen": "8/5nK1/2p1kP2/3p4/p3P3/2P5/2N5/8 b - - 0 41",
+      "moves": "d5e4 c2d4 e6d7 g7f7",
+      "rating": 981,
+      "popularity": 94,
+      "nbPlays": 768,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/72ZDRxeN/black#82"
+    },
+    {
+      "puzzleId": "jCK2s",
+      "fen": "8/3P1n2/8/2p1pN2/2Pk4/8/7K/8 b - - 3 66",
+      "moves": "d4c4 f5d6 f7d6 d7d8q",
+      "rating": 981,
+      "popularity": 93,
+      "nbPlays": 3218,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "deflection",
+        "endgame",
+        "knightEndgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5s2s2mvm/black#132"
+    },
+    {
+      "puzzleId": "pni4e",
+      "fen": "8/1p6/p1n3p1/6P1/1P3N2/k5K1/5P2/8 w - - 0 52",
+      "moves": "b4b5 a6b5 f4g6 b5b4",
+      "rating": 981,
+      "popularity": 93,
+      "nbPlays": 523,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LYYsSLfb#103"
+    },
+    {
+      "puzzleId": "fV5e3",
+      "fen": "5k2/5n1p/3p2p1/3P1p2/Np3P1P/1Pp1K1P1/P7/8 b - - 0 36",
+      "moves": "c3c2 e3d2 c2c1q d2c1",
+      "rating": 982,
+      "popularity": 96,
+      "nbPlays": 2871,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iIJbnZGZ/black#72"
+    },
+    {
+      "puzzleId": "MlXLH",
+      "fen": "8/p1p1N3/6kp/1p4p1/4K3/2P5/Pn4PP/8 b - - 9 33",
+      "moves": "g6f6 e7d5 f6e6 d5c7 e6d7 c7b5",
+      "rating": 982,
+      "popularity": 95,
+      "nbPlays": 1550,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/G2FpOHRW/black#66"
+    },
+    {
+      "puzzleId": "nCWIE",
+      "fen": "1N2k3/5pp1/7p/p7/1p1p4/1P1n1K1P/2P2PP1/8 w - - 0 38",
+      "moves": "c2d3 a5a4 b3a4 b4b3 f3e2 b3b2",
+      "rating": 983,
+      "popularity": 90,
+      "nbPlays": 1683,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/EUn62D2O#75"
+    },
+    {
+      "puzzleId": "x4pE5",
+      "fen": "8/p5k1/4p2p/2PpN1p1/6P1/8/Pn1K3P/8 b - - 0 36",
+      "moves": "b2a4 c5c6 a4b6 c6c7",
+      "rating": 983,
+      "popularity": 90,
+      "nbPlays": 1462,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/k5Inmy5u/black#72"
+    },
+    {
+      "puzzleId": "JppOx",
+      "fen": "7k/8/4N1P1/5K2/8/1p6/7P/8 w - - 0 43",
+      "moves": "g6g7 h8g8 f5f6 b3b2 e6d4 b2b1q",
+      "rating": 984,
+      "popularity": 95,
+      "nbPlays": 910,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/f9O1KQav#85"
+    },
+    {
+      "puzzleId": "lBesU",
+      "fen": "8/8/P1Nn1pkp/8/4p3/1KP5/8/8 b - - 0 43",
+      "moves": "d6c8 c6e7 c8e7 a6a7",
+      "rating": 985,
+      "popularity": 89,
+      "nbPlays": 509,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/th1uBaDT/black#86"
+    },
+    {
+      "puzzleId": "NDKeI",
+      "fen": "8/2pn4/1pNp1k2/p2P2p1/2P1KpP1/1P3P2/P7/8 w - - 7 47",
+      "moves": "a2a4 d7c5 e4d4 c5b3 d4c3 b3c5",
+      "rating": 987,
+      "popularity": 98,
+      "nbPlays": 1684,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Q7BLmo3u#93"
+    },
+    {
+      "puzzleId": "aGJGg",
+      "fen": "8/6pp/1P6/3B4/3knp2/4p3/6PP/5K2 b - - 0 53",
+      "moves": "d4d5 b6b7 e4d2 f1e2",
+      "rating": 990,
+      "popularity": 91,
+      "nbPlays": 1066,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PPsWebgu/black#106"
+    },
+    {
+      "puzzleId": "sHuem",
+      "fen": "8/1K6/2p1P3/2P2n2/8/6kp/8/5N2 b - - 2 50",
+      "moves": "g3g2 f1e3 f5e3 e6e7",
+      "rating": 994,
+      "popularity": 96,
+      "nbPlays": 4933,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/AtGMfn6m/black#100"
+    },
+    {
+      "puzzleId": "f4Hok",
+      "fen": "8/8/p4n2/1pppkNp1/6Pp/2PP1K1P/PP3P2/8 w - - 2 32",
+      "moves": "f3e3 d5d4 c3d4 c5d4",
+      "rating": 997,
+      "popularity": 94,
+      "nbPlays": 918,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3eBlK6a5#63"
+    },
+    {
+      "puzzleId": "esLvS",
+      "fen": "8/1p4k1/6p1/pPPN2np/P7/8/5P2/5K2 b - - 0 36",
+      "moves": "g5e6 c5c6 b7c6 b5c6",
+      "rating": 997,
+      "popularity": 93,
+      "nbPlays": 555,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9ccxU8HX/black#72"
+    },
+    {
+      "puzzleId": "jdjL4",
+      "fen": "8/8/1p4p1/2p4P/p3N3/4kn2/1K5P/8 b - - 0 46",
+      "moves": "e3e4 h5g6 f3h2 g6g7",
+      "rating": 998,
+      "popularity": 89,
+      "nbPlays": 785,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RUeBTNlM/black#92"
+    },
+    {
+      "puzzleId": "6cc8U",
+      "fen": "8/5p2/1p4p1/7p/Ppppk2P/6P1/1P1KNP2/8 w - - 0 42",
+      "moves": "f2f3 e4f3 e2d4 f3g3",
+      "rating": 999,
+      "popularity": 92,
+      "nbPlays": 761,
+      "theme": "knightEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "knightEndgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zfy2UWIF#83"
+    }
+  ]
+}

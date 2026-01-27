@@ -1,0 +1,5592 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "rookEndgame",
+  "count": 328,
+  "puzzles": [
+    {
+      "puzzleId": "cCyc2",
+      "fen": "3r4/1k6/1p1r4/p1p2p2/P7/6P1/5P1P/1RR3K1 w - - 0 36",
+      "moves": "c1c5 d6d1 g1g2 d1b1",
+      "rating": 800,
+      "popularity": 97,
+      "nbPlays": 603,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BiKx4XEn#71"
+    },
+    {
+      "puzzleId": "sJtzl",
+      "fen": "5k2/R7/6K1/7P/8/6pr/P7/8 w - - 0 48",
+      "moves": "a7a3 g3g2 a3h3 g2g1q",
+      "rating": 802,
+      "popularity": 93,
+      "nbPlays": 1147,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iEBm7DNp#95"
+    },
+    {
+      "puzzleId": "kXbfT",
+      "fen": "2R5/1r2kpp1/1P2p2p/8/8/7P/5PP1/6K1 w - - 3 32",
+      "moves": "c8c7 b7c7 b6c7 e7d7 c7c8q d7c8",
+      "rating": 804,
+      "popularity": 84,
+      "nbPlays": 587,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/P0xvAeYb#63"
+    },
+    {
+      "puzzleId": "bOUcL",
+      "fen": "8/8/8/p3p1R1/K2kP3/5r2/P7/8 w - - 1 48",
+      "moves": "a4a5 f3a3 a5b4 a3a2",
+      "rating": 805,
+      "popularity": 96,
+      "nbPlays": 568,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RIeVMJqI#95"
+    },
+    {
+      "puzzleId": "1Y7AX",
+      "fen": "2k5/1ppr1p2/1R6/4P3/P4p2/3r2P1/5P2/2R3K1 w - - 0 26",
+      "moves": "g3f4 d3d1 g1g2 d1c1",
+      "rating": 806,
+      "popularity": 100,
+      "nbPlays": 501,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/D4poAA9z#51"
+    },
+    {
+      "puzzleId": "fZ84O",
+      "fen": "6k1/pp6/6pp/8/5PP1/P2pr2P/1P1R2K1/8 b - - 1 48",
+      "moves": "e3e2 d2e2 d3e2 g2f2 e2e1r f2e1",
+      "rating": 810,
+      "popularity": 97,
+      "nbPlays": 513,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/jmx5DGwP/black#96"
+    },
+    {
+      "puzzleId": "6EPdY",
+      "fen": "8/5p2/5p2/5P1k/6R1/4PK1p/PPP2P2/7r w - - 5 35",
+      "moves": "f3g3 h1g1 g3h3 g1g4",
+      "rating": 810,
+      "popularity": 93,
+      "nbPlays": 1077,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/i6vhL7M5#69"
+    },
+    {
+      "puzzleId": "Tmfrg",
+      "fen": "r7/5p2/5kpp/8/1p1K2P1/1P5P/P1R5/8 w - - 3 35",
+      "moves": "d4c4 a8c8 c4d3 c8c2",
+      "rating": 812,
+      "popularity": 93,
+      "nbPlays": 555,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9uxsiJb9#69"
+    },
+    {
+      "puzzleId": "Fri0E",
+      "fen": "8/5pp1/P7/2R5/kP6/2P3r1/3r4/5K2 b - - 0 39",
+      "moves": "d2a2 c5a5 a4b3 a5a2",
+      "rating": 813,
+      "popularity": 100,
+      "nbPlays": 799,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/WHLjbqnH/black#78"
+    },
+    {
+      "puzzleId": "mwzln",
+      "fen": "5r1k/p6p/1p3r2/1R6/2P5/8/P2p2PP/3R2K1 w - - 0 33",
+      "moves": "h2h3 f6f1 d1f1 f8f1 g1f1 d2d1q",
+      "rating": 814,
+      "popularity": 96,
+      "nbPlays": 604,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/HD91cdZw#65"
+    },
+    {
+      "puzzleId": "mD3gr",
+      "fen": "4r3/pR6/8/2P1pp2/1PK2k2/2P5/P7/8 w - - 1 41",
+      "moves": "b7a7 e5e4 a7h7 e4e3",
+      "rating": 814,
+      "popularity": 94,
+      "nbPlays": 1454,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "quietMove",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/O28T7QGF#81"
+    },
+    {
+      "puzzleId": "vMSha",
+      "fen": "4r3/3P2pp/6p1/2PP4/3k1K2/5P1P/6P1/8 b - - 0 46",
+      "moves": "e8d8 c5c6 d4d5 c6c7 d8d7 c7c8q",
+      "rating": 819,
+      "popularity": 95,
+      "nbPlays": 907,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/6EHaFCer/black#92"
+    },
+    {
+      "puzzleId": "eygXU",
+      "fen": "8/5pkp/3P2p1/2P5/1p1r4/8/P5PP/6K1 b - - 0 34",
+      "moves": "d4c4 d6d7 c4c1 g1f2 c1c5 d7d8q",
+      "rating": 820,
+      "popularity": 95,
+      "nbPlays": 648,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/e3j05kZp/black#68"
+    },
+    {
+      "puzzleId": "Zn9mU",
+      "fen": "3r4/1p1r1pp1/pRp1k1p1/P1R1P3/3PK3/P7/6PP/8 w - - 7 40",
+      "moves": "d4d5 d7d5 c5d5 d8d5",
+      "rating": 821,
+      "popularity": 90,
+      "nbPlays": 885,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ijX5KDuE#79"
+    },
+    {
+      "puzzleId": "w6za6",
+      "fen": "8/3r2pk/p2P2Rp/1p1prp1P/8/8/PPPK2R1/8 b - - 1 39",
+      "moves": "f5f4 g6g7 d7g7 g2g7 h7g7 d6d7",
+      "rating": 823,
+      "popularity": 91,
+      "nbPlays": 533,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/Qo6toxOR/black#78"
+    },
+    {
+      "puzzleId": "7R0yv",
+      "fen": "8/4pk1p/6p1/1pP2p2/1P2r3/2R1P1P1/5K1P/8 b - - 0 44",
+      "moves": "e4b4 c5c6 b4a4 c6c7",
+      "rating": 824,
+      "popularity": 81,
+      "nbPlays": 535,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/chBL4wtz/black#88"
+    },
+    {
+      "puzzleId": "rPD4o",
+      "fen": "6k1/R7/p2r3P/2p1p1P1/6K1/1P1p4/P7/8 w - - 2 49",
+      "moves": "h6h7 g8h8 a7a8 h8h7",
+      "rating": 825,
+      "popularity": 97,
+      "nbPlays": 821,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/XCsjkXWG#97"
+    },
+    {
+      "puzzleId": "7D451",
+      "fen": "8/pp1r4/3P1pk1/2P3p1/6p1/1P4P1/P3RK1P/8 w - - 1 39",
+      "moves": "e2e7 d7e7 d6e7 g6f7 e7e8q f7e8",
+      "rating": 827,
+      "popularity": 94,
+      "nbPlays": 1318,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/PgtTT6Ng#77"
+    },
+    {
+      "puzzleId": "cUzAL",
+      "fen": "8/2r5/4pk2/4Rp1P/pp3P2/6P1/1P4K1/8 w - - 0 48",
+      "moves": "e5b5 c7c2 g2h3 c2b2",
+      "rating": 827,
+      "popularity": 94,
+      "nbPlays": 1033,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Bhd9FJZ2#95"
+    },
+    {
+      "puzzleId": "6R0uE",
+      "fen": "8/7p/6rk/pRp5/2Pp4/3P1K2/2P5/8 b - - 2 57",
+      "moves": "h6g5 b5c5 g5h4 c5a5",
+      "rating": 827,
+      "popularity": 84,
+      "nbPlays": 533,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LJcxyWLt/black#114"
+    },
+    {
+      "puzzleId": "Ueo00",
+      "fen": "6r1/1R3R2/8/P6p/2P1kp1P/1P6/6r1/5K2 w - - 3 40",
+      "moves": "b7e7 e4f3 f7f4 f3f4",
+      "rating": 828,
+      "popularity": 94,
+      "nbPlays": 2018,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/efRI6kDr#79"
+    },
+    {
+      "puzzleId": "zECnq",
+      "fen": "8/p6p/2P2Pp1/6r1/8/3k3K/7P/8 b - - 0 44",
+      "moves": "g5f5 c6c7 f5f6 c7c8q",
+      "rating": 834,
+      "popularity": 100,
+      "nbPlays": 562,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ZC8SHvF2/black#88"
+    },
+    {
+      "puzzleId": "t9XMZ",
+      "fen": "5R2/r7/7P/k5P1/1p6/p7/5P2/6K1 w - - 2 44",
+      "moves": "g5g6 a3a2 g1g2 a2a1q",
+      "rating": 834,
+      "popularity": 92,
+      "nbPlays": 733,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rWKEyRp6#87"
+    },
+    {
+      "puzzleId": "VM5sg",
+      "fen": "2r4k/1RP3p1/7p/1p6/8/p4PKP/1r4P1/2R5 b - - 0 36",
+      "moves": "h8h7 b7b8 c8c7 c1c7",
+      "rating": 836,
+      "popularity": 94,
+      "nbPlays": 874,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DEyy5RXY/black#72"
+    },
+    {
+      "puzzleId": "WrnKt",
+      "fen": "8/6p1/7k/5R1P/4r1P1/4pK2/8/8 w - - 3 57",
+      "moves": "f3e4 e3e2 f5e5 e2e1q",
+      "rating": 839,
+      "popularity": 100,
+      "nbPlays": 602,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NidGIsKO#113"
+    },
+    {
+      "puzzleId": "MYPTT",
+      "fen": "8/p5pk/3p3p/1ppr4/8/1PK5/P1P2RPP/4R3 w - - 0 32",
+      "moves": "f2d2 b5b4 c3b2 d5d2",
+      "rating": 841,
+      "popularity": 94,
+      "nbPlays": 2590,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/REVLkjPq#63"
+    },
+    {
+      "puzzleId": "JizHe",
+      "fen": "r5k1/4P3/6p1/7p/5R2/5P1P/p3r1PK/R7 w - - 1 42",
+      "moves": "f4f8 a8f8 e7f8n g8f8",
+      "rating": 843,
+      "popularity": 100,
+      "nbPlays": 1103,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bAAjKicQ#83"
+    },
+    {
+      "puzzleId": "tw3zR",
+      "fen": "8/6k1/1p1p2p1/p2P2Pp/P1P2R1P/1P3K2/8/4r3 w - - 3 42",
+      "moves": "f4f6 e1f1 f3e3 f1f6",
+      "rating": 844,
+      "popularity": 94,
+      "nbPlays": 515,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OE7bU0L5#83"
+    },
+    {
+      "puzzleId": "sX6Cs",
+      "fen": "8/6pk/4pp1p/p1P5/8/7P/2R2KP1/r7 b - - 2 41",
+      "moves": "a5a4 c5c6 a4a3 c6c7 a3a2 c7c8q a1f1 f2f1",
+      "rating": 847,
+      "popularity": 94,
+      "nbPlays": 528,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/Mc4mmG4P/black#82"
+    },
+    {
+      "puzzleId": "IEMH7",
+      "fen": "8/8/r5PR/2kpp3/8/6K1/5P2/8 b - - 2 53",
+      "moves": "d5d4 g6g7 a6h6 g7g8q",
+      "rating": 849,
+      "popularity": 91,
+      "nbPlays": 1166,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/t9pAsA3p/black#106"
+    },
+    {
+      "puzzleId": "WBT63",
+      "fen": "8/1p2kp2/2p2Rpp/1r2P3/1P1PK3/7P/6r1/5R2 b - - 3 35",
+      "moves": "b5b4 f6f7 e7e8 f7f8",
+      "rating": 850,
+      "popularity": 89,
+      "nbPlays": 769,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gxyLHheV/black#70"
+    },
+    {
+      "puzzleId": "zIl2Y",
+      "fen": "6k1/p4p1p/2r3p1/r1pR4/1P6/7P/P1R2PP1/6K1 b - - 0 27",
+      "moves": "c5b4 d5d8 g8g7 c2c6",
+      "rating": 854,
+      "popularity": 89,
+      "nbPlays": 800,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9tzZtfTy/black#54"
+    },
+    {
+      "puzzleId": "26w4T",
+      "fen": "8/3k2pp/2R5/3n1r2/1PP5/5P2/1P1K2PP/8 w - - 0 32",
+      "moves": "c4d5 f5d5 d2c3 d7c6",
+      "rating": 855,
+      "popularity": 99,
+      "nbPlays": 725,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GpYqYiV2#63"
+    },
+    {
+      "puzzleId": "DMpM9",
+      "fen": "1r6/8/3Rp1P1/2k1P3/1p6/7P/6K1/8 w - - 5 53",
+      "moves": "d6e6 b4b3 e6f6 b3b2",
+      "rating": 860,
+      "popularity": 96,
+      "nbPlays": 594,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Bf1I1NcA#105"
+    },
+    {
+      "puzzleId": "fdoSi",
+      "fen": "4r3/8/2P5/1P3p1p/P7/2K5/5k1P/8 b - - 0 47",
+      "moves": "f2e3 c6c7 e8c8 b5b6",
+      "rating": 861,
+      "popularity": 98,
+      "nbPlays": 1604,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/nJbdW4Eb/black#94"
+    },
+    {
+      "puzzleId": "Uf3xO",
+      "fen": "r5k1/6pp/2R2p2/8/3P4/p3P3/Rr2KPPP/8 w - - 2 28",
+      "moves": "c6c2 b2c2 a2c2 a3a2",
+      "rating": 862,
+      "popularity": 95,
+      "nbPlays": 2454,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Sq8YgPUL#55"
+    },
+    {
+      "puzzleId": "idZUR",
+      "fen": "6k1/5ppp/4p3/3rP3/ppprR3/P2P2P1/1P1RK2P/8 b - - 1 31",
+      "moves": "d4e4 d3e4 d5d2 e2d2 b4a3 b2a3",
+      "rating": 863,
+      "popularity": 99,
+      "nbPlays": 908,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/TQCc4RoU/black#62"
+    },
+    {
+      "puzzleId": "lwujL",
+      "fen": "r1k5/pR3ppp/4p3/2PpP3/2pP1P2/P7/6PP/6K1 w - - 4 28",
+      "moves": "b7f7 c4c3 g1f2 c3c2",
+      "rating": 863,
+      "popularity": 95,
+      "nbPlays": 996,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CWpbA3AH#55"
+    },
+    {
+      "puzzleId": "dUe4n",
+      "fen": "r5k1/2R4p/2P5/7P/8/8/pr4PK/R7 w - - 1 41",
+      "moves": "h5h6 b2b1 a1a2 a8a2",
+      "rating": 865,
+      "popularity": 94,
+      "nbPlays": 1393,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rxadwnyc#81"
+    },
+    {
+      "puzzleId": "gu6Xq",
+      "fen": "r7/1RP3pk/p2r1p1p/1p6/6P1/P6P/8/2R3K1 b - - 0 38",
+      "moves": "a8c8 b7b8 d6d1 c1d1",
+      "rating": 867,
+      "popularity": 92,
+      "nbPlays": 1900,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VqOsdSvT/black#76"
+    },
+    {
+      "puzzleId": "TDt40",
+      "fen": "r7/1p6/1p3k2/1P1R1p1p/1PK2PpP/6P1/8/8 b - - 0 41",
+      "moves": "a8a3 d5d6 f6e7 d6b6",
+      "rating": 868,
+      "popularity": 99,
+      "nbPlays": 707,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Alof0sY9/black#82"
+    },
+    {
+      "puzzleId": "wC0yu",
+      "fen": "3r4/4k3/4P1pp/1R3p2/1p3P1P/1r4PK/8/4R3 b - - 2 41",
+      "moves": "b3b2 b5b7 e7e8 e6e7",
+      "rating": 868,
+      "popularity": 90,
+      "nbPlays": 536,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/izCeMNXc/black#82"
+    },
+    {
+      "puzzleId": "BGX9j",
+      "fen": "8/pp6/2p1p2p/4Pkr1/4R3/2P3PP/PP4K1/8 w - - 1 36",
+      "moves": "g2f3 g5g3 f3g3 f5e4",
+      "rating": 869,
+      "popularity": 88,
+      "nbPlays": 633,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rTQv78bh#71"
+    },
+    {
+      "puzzleId": "vr2Ig",
+      "fen": "8/8/8/6Rp/1k5P/p4PK1/8/8 w - - 0 49",
+      "moves": "g5h5 a3a2 h5g5 a2a1q",
+      "rating": 869,
+      "popularity": 88,
+      "nbPlays": 623,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/InmF2eEN#97"
+    },
+    {
+      "puzzleId": "y3gb8",
+      "fen": "8/3k4/8/p1R5/PpP1K3/1P1p4/2P5/8 w - - 0 59",
+      "moves": "e4d4 d3c2 c5a5 c2c1q",
+      "rating": 870,
+      "popularity": 90,
+      "nbPlays": 804,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9gIQ1qUt#117"
+    },
+    {
+      "puzzleId": "AOY0C",
+      "fen": "8/8/2k5/7R/PP2p3/3pK3/6r1/8 w - - 0 47",
+      "moves": "h5h6 c6d5 h6h5 d5c4",
+      "rating": 871,
+      "popularity": 92,
+      "nbPlays": 544,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IKkNBJH4#93"
+    },
+    {
+      "puzzleId": "65bu3",
+      "fen": "8/pp3k2/2p2p2/3p3r/5PKP/7R/PP6/8 b - - 6 30",
+      "moves": "f7g6 f4f5 h5f5 h4h5 f5h5 h3h5",
+      "rating": 872,
+      "popularity": 95,
+      "nbPlays": 1449,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/Ebfdjnxj/black#60"
+    },
+    {
+      "puzzleId": "0C8HD",
+      "fen": "2r3k1/R6R/1p4p1/8/1Pr1p3/7P/1P1p1PP1/6K1 w - - 0 38",
+      "moves": "h7d7 c4c1 g1h2 d2d1q d7d1 c1d1",
+      "rating": 872,
+      "popularity": 94,
+      "nbPlays": 2467,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/You3JtHb#75"
+    },
+    {
+      "puzzleId": "qWMSw",
+      "fen": "4k3/1r4p1/2RPpp1p/1p6/1P6/1P5P/5PP1/6K1 w - - 1 44",
+      "moves": "c6c7 b7c7 d6c7 e8d7 c7c8q d7c8",
+      "rating": 873,
+      "popularity": 98,
+      "nbPlays": 2715,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/AGG35lK7#87"
+    },
+    {
+      "puzzleId": "tBuUl",
+      "fen": "8/p1p5/2p3k1/1p2P1Pp/5p2/6r1/PPP2K2/4R3 b - - 3 34",
+      "moves": "g3g5 e5e6 g6f5 e6e7",
+      "rating": 873,
+      "popularity": 98,
+      "nbPlays": 556,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LNjZZ5Wa/black#68"
+    },
+    {
+      "puzzleId": "PHAnq",
+      "fen": "8/4kp2/8/4PP2/Ppp2K2/2p5/2R5/8 w - - 0 42",
+      "moves": "f4e3 b4b3 c2c3 b3b2 c3c4 b2b1q",
+      "rating": 874,
+      "popularity": 92,
+      "nbPlays": 958,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/iyrPQTGv#83"
+    },
+    {
+      "puzzleId": "XkLpz",
+      "fen": "3k3r/R7/1p1p1p2/4pP2/1P2r2P/8/P4K2/7R b - - 0 27",
+      "moves": "e4h4 a7a8 d8d7 a8h8",
+      "rating": 876,
+      "popularity": 98,
+      "nbPlays": 1079,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7NNePGCb/black#54"
+    },
+    {
+      "puzzleId": "LKq6K",
+      "fen": "8/p6k/P1R1p3/3pPpp1/3r4/5PK1/6P1/8 b - - 1 36",
+      "moves": "h7g6 c6e6 g6f7 e6f6",
+      "rating": 876,
+      "popularity": 91,
+      "nbPlays": 747,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0zybQE5S/black#72"
+    },
+    {
+      "puzzleId": "MGUWR",
+      "fen": "3r2k1/7p/1p6/8/5R2/6P1/P1rp1PKP/3R4 w - - 6 35",
+      "moves": "a2a4 c2c1 d1d2 d8d2",
+      "rating": 877,
+      "popularity": 94,
+      "nbPlays": 864,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sIOfsGbm#69"
+    },
+    {
+      "puzzleId": "lI9XM",
+      "fen": "8/8/2k5/6K1/P4P2/3R2pr/8/8 w - - 0 57",
+      "moves": "g5g4 g3g2 d3h3 g2g1q",
+      "rating": 877,
+      "popularity": 89,
+      "nbPlays": 922,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5U3FglT4#113"
+    },
+    {
+      "puzzleId": "82vMc",
+      "fen": "8/1p4k1/3R3p/1KP3p1/1P2P3/4r3/8/8 b - - 0 45",
+      "moves": "e3e4 d6d7 g7f6 d7b7",
+      "rating": 878,
+      "popularity": 96,
+      "nbPlays": 1865,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/V3yLhROZ/black#90"
+    },
+    {
+      "puzzleId": "rjXq3",
+      "fen": "3r3k/6p1/1p5p/1P2P3/5R2/P7/4pPPP/1R5K w - - 0 41",
+      "moves": "g2g3 d8d1 b1d1 e2d1q",
+      "rating": 878,
+      "popularity": 95,
+      "nbPlays": 720,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/upA9HokX#81"
+    },
+    {
+      "puzzleId": "ouvhR",
+      "fen": "8/2RR2pk/4p2p/4Pp2/7P/8/r5r1/5K2 b - - 1 36",
+      "moves": "h7g6 d7g7 g6h5 g7g2",
+      "rating": 878,
+      "popularity": 94,
+      "nbPlays": 641,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NlksG4Ns/black#72"
+    },
+    {
+      "puzzleId": "gFhN9",
+      "fen": "1r5k/3P2p1/5p2/7p/2Pp4/1p1P2P1/P5rP/3KR3 b - - 0 31",
+      "moves": "b3b2 e1e8 b8e8 d7e8q",
+      "rating": 879,
+      "popularity": 96,
+      "nbPlays": 867,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/84i4HSti/black#62"
+    },
+    {
+      "puzzleId": "EAvk0",
+      "fen": "1r6/5p1p/4k1p1/1P1R4/3P4/5KP1/5P1P/8 w - - 5 32",
+      "moves": "f3e4 f7f5 d5f5 g6f5",
+      "rating": 879,
+      "popularity": 95,
+      "nbPlays": 595,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/8vyfDvPY#63"
+    },
+    {
+      "puzzleId": "YjKb0",
+      "fen": "8/1p1P2p1/3rPk2/2p2P2/2P5/7K/8/8 b - - 0 46",
+      "moves": "f6f5 e6e7 d6d7 e7e8q",
+      "rating": 879,
+      "popularity": 87,
+      "nbPlays": 560,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Kjdy6JBL/black#92"
+    },
+    {
+      "puzzleId": "6rPhP",
+      "fen": "r7/2P1k3/2K2p1p/3P2p1/8/8/7P/8 b - - 4 46",
+      "moves": "a8a6 c6b7 a6d6 c7c8q",
+      "rating": 880,
+      "popularity": 95,
+      "nbPlays": 1877,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PHDXbGbx/black#92"
+    },
+    {
+      "puzzleId": "S6HIR",
+      "fen": "6k1/5pp1/P1P1p3/8/1r6/5P1p/4K2P/8 b - - 0 40",
+      "moves": "b4a4 c6c7 a4c4 a6a7 c4c7 a7a8q",
+      "rating": 880,
+      "popularity": 88,
+      "nbPlays": 878,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/OckSfvEV/black#80"
+    },
+    {
+      "puzzleId": "aDYVf",
+      "fen": "8/4kpp1/4p2p/2KpPP1P/5RP1/2P5/8/3r4 b - - 12 40",
+      "moves": "d1e1 f5f6 g7f6 e5f6",
+      "rating": 881,
+      "popularity": 98,
+      "nbPlays": 843,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zPyj0gUo/black#80"
+    },
+    {
+      "puzzleId": "68ZVs",
+      "fen": "4r1k1/R4pp1/1p5p/2p5/2P5/P1P1p1PP/5P2/6K1 w - - 0 27",
+      "moves": "f2e3 e8e3 g1f2 e3c3",
+      "rating": 881,
+      "popularity": 93,
+      "nbPlays": 1072,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fg8C1vWL#53"
+    },
+    {
+      "puzzleId": "xQSAY",
+      "fen": "5r2/8/R4pkp/5R2/3P1PK1/2P3P1/7r/8 w - - 0 39",
+      "moves": "c3c4 h6h5 f5h5 h2h5",
+      "rating": 882,
+      "popularity": 93,
+      "nbPlays": 1009,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/q0z4qdAT#77"
+    },
+    {
+      "puzzleId": "6i3iT",
+      "fen": "1r6/5pk1/3P2p1/3pR3/2p2P1P/Pp4P1/1P4K1/8 w - - 0 38",
+      "moves": "e5d5 c4c3 b2c3 b3b2 d6d7 b2b1q",
+      "rating": 883,
+      "popularity": 96,
+      "nbPlays": 538,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/wiWZiTu7#75"
+    },
+    {
+      "puzzleId": "lP8SG",
+      "fen": "8/p1r2p2/1p1k3p/6p1/3PK3/4RPP1/P6P/8 w - - 10 33",
+      "moves": "e3e2 c7e7 e4d3 e7e2",
+      "rating": 883,
+      "popularity": 92,
+      "nbPlays": 722,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GHkU8ecC#65"
+    },
+    {
+      "puzzleId": "9nZKp",
+      "fen": "8/4k1p1/7p/4P3/1p2K1P1/p7/8/R7 w - - 0 54",
+      "moves": "a1b1 a3a2 b1a1 b4b3",
+      "rating": 883,
+      "popularity": 90,
+      "nbPlays": 804,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0CSGkI81#107"
+    },
+    {
+      "puzzleId": "TP2ag",
+      "fen": "8/5p1p/4k1p1/R2p4/5r2/4KP2/P4P1P/8 b - - 2 30",
+      "moves": "e6e5 a5d5 e5d5 e3f4",
+      "rating": 884,
+      "popularity": 97,
+      "nbPlays": 591,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/X2PSWwhy/black#60"
+    },
+    {
+      "puzzleId": "BlSrO",
+      "fen": "3R4/8/2k3p1/3b4/2pK4/1p3P1P/6P1/8 w - - 2 43",
+      "moves": "d8d5 b3b2 d4c4 b2b1q",
+      "rating": 885,
+      "popularity": 95,
+      "nbPlays": 2656,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GW0Axeqo#85"
+    },
+    {
+      "puzzleId": "SWJTJ",
+      "fen": "8/5p2/3k1p1p/P1R5/4P3/1K3PP1/7P/r7 w - - 1 42",
+      "moves": "b3b4 a1b1 b4c4 b1c1",
+      "rating": 886,
+      "popularity": 94,
+      "nbPlays": 1047,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/U3XnkPpR#83"
+    },
+    {
+      "puzzleId": "0V6Zv",
+      "fen": "2r4r/4kp1P/p3p3/1p3p2/5P2/1P6/P7/1K4RR b - - 0 33",
+      "moves": "c8c6 g1g8 h8h7 h1h7",
+      "rating": 888,
+      "popularity": 96,
+      "nbPlays": 1214,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pLXwXeNc/black#66"
+    },
+    {
+      "puzzleId": "p2jhS",
+      "fen": "4k3/8/p7/1p1R1PK1/3p2P1/3rp3/PP6/8 b - - 3 47",
+      "moves": "e3e2 d5e5 e8f7 e5e2",
+      "rating": 888,
+      "popularity": 94,
+      "nbPlays": 1129,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Day6C93N/black#94"
+    },
+    {
+      "puzzleId": "cSAZr",
+      "fen": "3rr2k/6pp/2pR4/3pP3/8/4R2P/6PK/8 b - - 2 31",
+      "moves": "d8d6 e5d6 e8e3 d6d7",
+      "rating": 889,
+      "popularity": 95,
+      "nbPlays": 508,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/s8ylys59/black#62"
+    },
+    {
+      "puzzleId": "o7sCQ",
+      "fen": "8/P7/1KP3r1/3k4/8/8/8/8 b - - 0 58",
+      "moves": "g6c6 b6b7 c6f6 a7a8q",
+      "rating": 889,
+      "popularity": 94,
+      "nbPlays": 1092,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TkrCAarC/black#116"
+    },
+    {
+      "puzzleId": "bodkl",
+      "fen": "7r/6P1/8/7P/4p1PK/8/2P2k2/8 b - - 0 49",
+      "moves": "h8g8 h5h6 e4e3 h6h7 g8g7 h7h8q",
+      "rating": 890,
+      "popularity": 95,
+      "nbPlays": 690,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/4UIvoWok/black#98"
+    },
+    {
+      "puzzleId": "zDitC",
+      "fen": "8/8/P7/PK2k1p1/4p3/2P2P2/r7/8 b - - 2 43",
+      "moves": "e4e3 a6a7 e3e2 a7a8q",
+      "rating": 890,
+      "popularity": 92,
+      "nbPlays": 657,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VZkeDqeI/black#86"
+    },
+    {
+      "puzzleId": "da489",
+      "fen": "3r4/3P4/2R3kp/5pp1/8/8/r5P1/3R3K b - - 0 40",
+      "moves": "g6g7 c6c8 d8d7 d1d7",
+      "rating": 891,
+      "popularity": 90,
+      "nbPlays": 598,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/16Tl8ewN/black#80"
+    },
+    {
+      "puzzleId": "04WhM",
+      "fen": "8/5p2/3p3p/8/4p1P1/2k1P3/r1P1KP2/2R5 w - - 1 39",
+      "moves": "f2f3 a2c2 c1c2 c3c2",
+      "rating": 893,
+      "popularity": 99,
+      "nbPlays": 590,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IRNhmEMZ#77"
+    },
+    {
+      "puzzleId": "bVEIe",
+      "fen": "8/8/5Kpk/7r/4RP2/8/8/8 w - - 3 51",
+      "moves": "e4e8 h5f5 f6e6 f5f4",
+      "rating": 893,
+      "popularity": 97,
+      "nbPlays": 805,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/v588wgHp#101"
+    },
+    {
+      "puzzleId": "4BjHq",
+      "fen": "4r1rk/2p5/P2p3p/1p3R2/8/2P5/4p1Q1/R5K1 b - - 0 39",
+      "moves": "g8g2 g1g2 e2e1r a1e1",
+      "rating": 894,
+      "popularity": 100,
+      "nbPlays": 797,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rbZVTPOb/black#78"
+    },
+    {
+      "puzzleId": "HR3T3",
+      "fen": "8/1ppk4/p3r1p1/5p2/4P2p/P4K1P/1PP1R1P1/8 b - - 1 32",
+      "moves": "d7e7 e4f5 e6e2 f3e2",
+      "rating": 894,
+      "popularity": 94,
+      "nbPlays": 521,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0joGxNMV/black#64"
+    },
+    {
+      "puzzleId": "ph4Bv",
+      "fen": "8/8/8/1ppk1Pp1/3pr3/1P3RK1/8/8 b - - 1 48",
+      "moves": "d5e5 f5f6 e4h4 f6f7",
+      "rating": 895,
+      "popularity": 96,
+      "nbPlays": 775,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CCjzAp9d/black#96"
+    },
+    {
+      "puzzleId": "2TE7H",
+      "fen": "3r4/p7/1p6/4ppkp/8/2P1KPP1/PP6/7R w - - 0 34",
+      "moves": "h1h4 f5f4 e3e2 f4g3",
+      "rating": 896,
+      "popularity": 89,
+      "nbPlays": 1058,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cqjptUkp#67"
+    },
+    {
+      "puzzleId": "6pMQR",
+      "fen": "8/p4k1p/1p3Pp1/2p1P3/3r4/3P2P1/5RKP/8 b - - 0 52",
+      "moves": "d4d3 e5e6 f7e6 f6f7",
+      "rating": 897,
+      "popularity": 96,
+      "nbPlays": 1755,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ZRq4Pi5k/black#104"
+    },
+    {
+      "puzzleId": "cF297",
+      "fen": "3r1k2/2pb2p1/p1P2p1p/1p6/1P3PPP/P2R4/5K2/8 w - - 0 37",
+      "moves": "d3d7 d8d7 c6d7 f8e7 d7d8r e7d8",
+      "rating": 897,
+      "popularity": 94,
+      "nbPlays": 1501,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/HKxwp2Sg#73"
+    },
+    {
+      "puzzleId": "1vjLA",
+      "fen": "8/6R1/1pr3p1/p1k2p1p/2P4P/PP1K2P1/8/8 w - - 11 45",
+      "moves": "b3b4 a5b4 a3b4 c5b4",
+      "rating": 898,
+      "popularity": 99,
+      "nbPlays": 650,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NQk4lfxp#89"
+    },
+    {
+      "puzzleId": "WYh4b",
+      "fen": "5rk1/2RR2pp/3p4/p7/Pp1P4/r6P/6P1/6K1 b - - 3 29",
+      "moves": "f8b8 d7g7 g8h8 g7h7",
+      "rating": 898,
+      "popularity": 96,
+      "nbPlays": 3841,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/36ps9X3J/black#58"
+    },
+    {
+      "puzzleId": "CoHSv",
+      "fen": "5rk1/pp4p1/4p2p/3pK3/2p5/P1P4P/1P4P1/1R6 b - - 2 27",
+      "moves": "g8f7 b1f1 f7g8 f1f8 g8f8 e5e6",
+      "rating": 899,
+      "popularity": 99,
+      "nbPlays": 932,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/hV8OEhQP/black#54"
+    },
+    {
+      "puzzleId": "yARgM",
+      "fen": "3r4/p1P5/3Pp3/4k2p/3R1p1P/6r1/5K2/8 b - - 0 55",
+      "moves": "d8c8 d6d7 c8c7 d7d8q",
+      "rating": 899,
+      "popularity": 98,
+      "nbPlays": 1136,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zIG6hyOB/black#110"
+    },
+    {
+      "puzzleId": "A5w8Z",
+      "fen": "6k1/5pp1/P3p2p/1P6/5P2/6P1/3r3P/7K b - - 0 39",
+      "moves": "d2b2 a6a7 b2b1 h1g2 b1a1 b5b6",
+      "rating": 900,
+      "popularity": 97,
+      "nbPlays": 800,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/Xuk4l1XW/black#78"
+    },
+    {
+      "puzzleId": "NnO6w",
+      "fen": "6r1/4RRp1/6kp/8/8/6KP/1r4P1/8 w - - 11 45",
+      "moves": "g3f4 b2f2 f4g3 f2f7",
+      "rating": 900,
+      "popularity": 94,
+      "nbPlays": 3588,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4acsR1wN#89"
+    },
+    {
+      "puzzleId": "wZNq9",
+      "fen": "8/1P3p2/8/4R3/8/5k1p/PKP2p2/7r b - - 0 43",
+      "moves": "h1b1 b2b1 f2f1q b1b2",
+      "rating": 901,
+      "popularity": 95,
+      "nbPlays": 697,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3ZA0otS1/black#86"
+    },
+    {
+      "puzzleId": "yApGx",
+      "fen": "8/8/R7/8/3k1P2/R4K2/p1r5/6r1 b - - 2 53",
+      "moves": "c2c3 a3c3 a2a1q a6a1",
+      "rating": 901,
+      "popularity": 91,
+      "nbPlays": 1031,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/STdYQidS/black#106"
+    },
+    {
+      "puzzleId": "8h9BG",
+      "fen": "8/2R5/p7/1p5P/1k6/8/Prp3PK/8 b - - 1 36",
+      "moves": "b2a2 h5h6 b4b3 h6h7",
+      "rating": 902,
+      "popularity": 95,
+      "nbPlays": 821,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FbGeUaTB/black#72"
+    },
+    {
+      "puzzleId": "EllQB",
+      "fen": "6k1/5pp1/p3p2p/PP6/8/6P1/r4P1P/1R4K1 b - - 0 34",
+      "moves": "a2a5 b5b6 a5d5 b6b7",
+      "rating": 903,
+      "popularity": 95,
+      "nbPlays": 2207,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Wdoj49RM/black#68"
+    },
+    {
+      "puzzleId": "h6W2F",
+      "fen": "8/8/5R1p/pp5k/4rp1r/1P3R2/PKP2P2/8 w - - 0 42",
+      "moves": "f6f5 h5g4 f3f4 e4f4",
+      "rating": 903,
+      "popularity": 95,
+      "nbPlays": 1321,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QocSdPTT#83"
+    },
+    {
+      "puzzleId": "Bbaf9",
+      "fen": "8/8/3k2P1/4R3/3P4/8/p5K1/r7 w - - 0 38",
+      "moves": "g6g7 a1g1 g2g1 a2a1q",
+      "rating": 903,
+      "popularity": 93,
+      "nbPlays": 826,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5EzVjonA#75"
+    },
+    {
+      "puzzleId": "piK2U",
+      "fen": "7r/2pk4/1p3r2/p1p4p/P4pRR/2PP1P2/2PK1P2/8 w - - 0 30",
+      "moves": "g4f4 f6f4 h4f4 h5h4",
+      "rating": 903,
+      "popularity": 90,
+      "nbPlays": 791,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GRvs2ZVU#59"
+    },
+    {
+      "puzzleId": "XnEqq",
+      "fen": "8/6p1/p7/Pk5p/1Pr4P/4K1P1/5R2/8 b - - 3 43",
+      "moves": "c4b4 f2f5 b5c6 f5h5",
+      "rating": 905,
+      "popularity": 92,
+      "nbPlays": 766,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/egoIZxDq/black#86"
+    },
+    {
+      "puzzleId": "8MHC3",
+      "fen": "8/R4Rk1/5p1p/7r/8/1r6/5PK1/8 b - - 0 35",
+      "moves": "g7g6 f7g7 g6f5 a7a5",
+      "rating": 905,
+      "popularity": 90,
+      "nbPlays": 578,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hnW5569A/black#70"
+    },
+    {
+      "puzzleId": "gXe5i",
+      "fen": "8/1pp1k3/p1p1P3/4RPpp/5r2/7K/1PP5/8 b - - 1 34",
+      "moves": "f4d4 f5f6 e7f6 e6e7",
+      "rating": 905,
+      "popularity": 90,
+      "nbPlays": 1989,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fPpVKopo/black#68"
+    },
+    {
+      "puzzleId": "jPq5E",
+      "fen": "r7/6pp/5p2/2k1p3/3p4/1R6/rPKR2PP/8 b - - 13 44",
+      "moves": "a8a3 b3a3 a2a3 b2a3",
+      "rating": 909,
+      "popularity": 89,
+      "nbPlays": 553,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CJXl1hst/black#88"
+    },
+    {
+      "puzzleId": "hDduH",
+      "fen": "8/1p2rp2/p1p5/3k4/3P4/5PP1/PP3R2/5K2 w - - 3 39",
+      "moves": "f2e2 e7e2 f1e2 d5d4",
+      "rating": 910,
+      "popularity": 99,
+      "nbPlays": 1002,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TeuGt8Dj#77"
+    },
+    {
+      "puzzleId": "kczgW",
+      "fen": "2r5/R4k2/P3p2p/3p1pp1/2r5/8/6PP/R5K1 b - - 2 31",
+      "moves": "c4c7 a7c7 c8c7 a6a7",
+      "rating": 910,
+      "popularity": 92,
+      "nbPlays": 717,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wsSuLmjJ/black#62"
+    },
+    {
+      "puzzleId": "E3qkD",
+      "fen": "1R6/p1rk1pp1/P5p1/2P5/6P1/8/6PP/6K1 w - - 5 47",
+      "moves": "b8b7 c7b7 a6b7 d7c7 b7b8r c7b8",
+      "rating": 911,
+      "popularity": 99,
+      "nbPlays": 868,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/NZW3oSzP#93"
+    },
+    {
+      "puzzleId": "5j8A1",
+      "fen": "8/8/8/4K3/8/6k1/2p4p/5R2 w - - 8 66",
+      "moves": "e5e4 g3g2 f1c1 h2h1q",
+      "rating": 911,
+      "popularity": 97,
+      "nbPlays": 3956,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QHO73yUG#131"
+    },
+    {
+      "puzzleId": "IxYgs",
+      "fen": "8/8/1p6/p2R1p2/1r1Pp1pk/1PK1P3/5P2/8 b - - 0 42",
+      "moves": "f5f4 e3f4 e4e3 f2e3",
+      "rating": 912,
+      "popularity": 96,
+      "nbPlays": 768,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/kVhG2ZHf/black#84"
+    },
+    {
+      "puzzleId": "31pVj",
+      "fen": "8/5r2/pp1Pk2p/2p1p1p1/4Kp2/3R3P/PPP3P1/8 b - - 2 30",
+      "moves": "h6h5 d6d7 f7d7 d3d7 e6d7 e4e5",
+      "rating": 913,
+      "popularity": 92,
+      "nbPlays": 1064,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/oP35TvWQ/black#60"
+    },
+    {
+      "puzzleId": "RBvpA",
+      "fen": "3r2k1/3P1pp1/7p/p3r3/1p1R4/1P5P/6P1/2R3K1 b - - 2 36",
+      "moves": "g8h7 c1c8 d8d7 d4d7",
+      "rating": 913,
+      "popularity": 90,
+      "nbPlays": 998,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tqjzibqM/black#72"
+    },
+    {
+      "puzzleId": "yan8H",
+      "fen": "8/1rk4p/4ppp1/1PK5/8/7P/3R1PP1/8 w - - 4 43",
+      "moves": "d2d6 b7b5 c5b5 c7d6",
+      "rating": 914,
+      "popularity": 99,
+      "nbPlays": 564,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Z1wSvaHN#85"
+    },
+    {
+      "puzzleId": "Q8zgj",
+      "fen": "2k5/2P5/p6P/8/P5R1/8/1p4PK/1r6 w - - 0 40",
+      "moves": "h6h7 b1h1 h2h1 b2b1q h1h2 b1h7",
+      "rating": 914,
+      "popularity": 98,
+      "nbPlays": 887,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "long",
+        "master",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/cWmTYQ1b#79"
+    },
+    {
+      "puzzleId": "n9ssn",
+      "fen": "8/ppk5/7R/8/P5P1/1P1p3K/3r3P/8 w - - 0 45",
+      "moves": "g4g5 d2h2 h3h2 d3d2 h6h3 d2d1q",
+      "rating": 914,
+      "popularity": 96,
+      "nbPlays": 576,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/w9R8pdzv#89"
+    },
+    {
+      "puzzleId": "9oQZ7",
+      "fen": "8/2r5/3p1pPk/3PpP2/pp2P1Rp/8/P7/3K4 b - - 1 55",
+      "moves": "h6h5 g6g7 h5g4 g7g8q",
+      "rating": 914,
+      "popularity": 95,
+      "nbPlays": 1553,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UlXklAQg/black#110"
+    },
+    {
+      "puzzleId": "ceAQl",
+      "fen": "3rr1k1/5p1p/p1p3p1/1p6/1P1P4/1P3P2/1P3P1P/2KRR3 w - - 3 22",
+      "moves": "c1c2 e8e1 d1e1 d8d4",
+      "rating": 915,
+      "popularity": 95,
+      "nbPlays": 516,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FHJvHucF#43"
+    },
+    {
+      "puzzleId": "8Ut3e",
+      "fen": "7R/8/7P/5p2/4p3/5kP1/r7/6K1 b - - 0 55",
+      "moves": "f3g3 h8g8 g3f3 h6h7",
+      "rating": 915,
+      "popularity": 93,
+      "nbPlays": 606,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/nq8VS1WO/black#110"
+    },
+    {
+      "puzzleId": "WFsS0",
+      "fen": "6r1/2p4K/2P5/p1pP4/2P5/PP1k4/8/8 b - - 3 52",
+      "moves": "g8g2 d5d6 c7d6 c6c7",
+      "rating": 916,
+      "popularity": 92,
+      "nbPlays": 1027,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5zKP7AQC/black#104"
+    },
+    {
+      "puzzleId": "UV4zu",
+      "fen": "2r3k1/2P1R2p/6p1/3r4/p7/6P1/8/4R2K b - - 1 42",
+      "moves": "g8f8 e7e8 c8e8 e1e8 f8e8 c7c8q",
+      "rating": 919,
+      "popularity": 99,
+      "nbPlays": 3299,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "exposedKing",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/4UpVKCdP/black#84"
+    },
+    {
+      "puzzleId": "InPrf",
+      "fen": "1r3k2/5p1p/6p1/2P2p2/3P4/p3P3/R4PPP/6K1 w - - 0 33",
+      "moves": "g1f1 b8b1 f1e2 b1b2 a2b2 a3b2",
+      "rating": 919,
+      "popularity": 97,
+      "nbPlays": 721,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/fhqvif8L#65"
+    },
+    {
+      "puzzleId": "UxBdi",
+      "fen": "4r3/R6p/2P5/4pp2/5k2/1PK4P/8/8 w - - 0 36",
+      "moves": "a7h7 e5e4 h7g7 e4e3",
+      "rating": 920,
+      "popularity": 96,
+      "nbPlays": 746,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "quietMove",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Pe7xHsH3#71"
+    },
+    {
+      "puzzleId": "cyIUH",
+      "fen": "4r1k1/7p/p3r1p1/8/8/1P1R3P/P1p2PP1/2R2K2 w - - 0 33",
+      "moves": "d3d2 e6e1 c1e1 e8e1 f1e1 c2c1q",
+      "rating": 920,
+      "popularity": 92,
+      "nbPlays": 925,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/aSYhSxSy#65"
+    },
+    {
+      "puzzleId": "Co4Fu",
+      "fen": "k3r3/p2r3p/8/5R2/8/6P1/3p1P1P/3R2K1 w - - 0 30",
+      "moves": "g1g2 e8e1 d1d2 d7d2",
+      "rating": 922,
+      "popularity": 94,
+      "nbPlays": 954,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3ZXqmFz2#59"
+    },
+    {
+      "puzzleId": "spj8C",
+      "fen": "8/6p1/3k2p1/p1pr1p2/5P2/PPR1K2P/6P1/8 b - - 0 36",
+      "moves": "d5d1 c3d3 d1d3 e3d3 g6g5 f4g5",
+      "rating": 923,
+      "popularity": 100,
+      "nbPlays": 565,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/HgmS0rQL/black#72"
+    },
+    {
+      "puzzleId": "KtMGg",
+      "fen": "6r1/6PR/1pp1pp2/4k3/1p2r3/8/PP6/1K4R1 b - - 0 35",
+      "moves": "f6f5 h7h8 g8g7 g1g7",
+      "rating": 923,
+      "popularity": 95,
+      "nbPlays": 972,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FcQ9dpuR/black#70"
+    },
+    {
+      "puzzleId": "8w12C",
+      "fen": "8/4k3/8/3Rpp2/1PP1P3/2r5/4K3/8 b - - 3 50",
+      "moves": "f5e4 d5e5 e7d6 e5e4",
+      "rating": 924,
+      "popularity": 95,
+      "nbPlays": 1904,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jYJyZVBZ/black#100"
+    },
+    {
+      "puzzleId": "lfJmJ",
+      "fen": "3k4/r4p2/PR2pKp1/7p/8/5P1P/8/8 b - - 10 52",
+      "moves": "d8c7 b6b7 a7b7 a6b7",
+      "rating": 925,
+      "popularity": 100,
+      "nbPlays": 633,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0DrTY6ht/black#104"
+    },
+    {
+      "puzzleId": "tGoZo",
+      "fen": "kr6/4R3/7P/1r2p3/8/p5P1/5P2/3R2K1 w - - 0 37",
+      "moves": "d1a1 b5b1 a1b1 b8b1 g1g2 a3a2",
+      "rating": 925,
+      "popularity": 94,
+      "nbPlays": 1445,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/VpbdHwdG#73"
+    },
+    {
+      "puzzleId": "3AB4F",
+      "fen": "5k2/8/1p1p3p/r1pP2p1/PpP5/r6P/4RPK1/R7 w - - 2 39",
+      "moves": "a1a3 b4a3 e2a2 a5a4",
+      "rating": 927,
+      "popularity": 97,
+      "nbPlays": 1162,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iSIND4cU#77"
+    },
+    {
+      "puzzleId": "wfWKK",
+      "fen": "8/1pp5/pP3k1p/5P1r/3K4/3P4/8/8 b - - 0 42",
+      "moves": "h5f5 b6c7 a6a5 c7c8q",
+      "rating": 927,
+      "popularity": 91,
+      "nbPlays": 1459,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hfwfe4g9/black#84"
+    },
+    {
+      "puzzleId": "uuGcT",
+      "fen": "3r2k1/6pp/3r4/1P6/2P1pp2/p1Rp4/P2R1PPP/5K2 w - - 2 37",
+      "moves": "c3a3 e4e3 f2e3 f4e3 f1e1 e3d2",
+      "rating": 927,
+      "popularity": 89,
+      "nbPlays": 914,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/8jZgCRpx#73"
+    },
+    {
+      "puzzleId": "7qPsM",
+      "fen": "8/7p/3p4/8/P1K1p2R/1P2kr2/7P/8 b - - 0 46",
+      "moves": "e3d2 h4e4 d6d5 c4d5",
+      "rating": 928,
+      "popularity": 98,
+      "nbPlays": 1061,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vYDCxuzB/black#92"
+    },
+    {
+      "puzzleId": "dCMKB",
+      "fen": "5r2/2RR1p1p/4pkp1/4r3/7P/6P1/5PK1/8 b - - 2 47",
+      "moves": "f6f5 d7f7 f8f7 c7f7",
+      "rating": 928,
+      "popularity": 96,
+      "nbPlays": 1260,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ZIAwQZzN/black#94"
+    },
+    {
+      "puzzleId": "W5Bpx",
+      "fen": "2r3k1/P1Nr2p1/2R4p/8/8/7P/5PK1/8 b - - 0 34",
+      "moves": "d7c7 c6c7 c8c7 a7a8q",
+      "rating": 929,
+      "popularity": 98,
+      "nbPlays": 3653,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RJH0b4Oy/black#68"
+    },
+    {
+      "puzzleId": "XRRbu",
+      "fen": "6k1/6pp/2r2p2/5P2/pK2P3/1p5P/6P1/2R5 w - - 0 43",
+      "moves": "c1c6 b3b2 b4a4 b2b1q",
+      "rating": 929,
+      "popularity": 94,
+      "nbPlays": 740,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/K58f3h88#85"
+    },
+    {
+      "puzzleId": "RWh1U",
+      "fen": "8/4K3/1R5P/p7/8/3P1prk/P7/8 w - - 0 38",
+      "moves": "h6h7 g3g7 e7e6 g7h7",
+      "rating": 930,
+      "popularity": 99,
+      "nbPlays": 512,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/nR2rQbX7#75"
+    },
+    {
+      "puzzleId": "A0UNn",
+      "fen": "8/Rp1k3r/1Pp1p3/2P1Rp2/6p1/6P1/5PK1/3r4 b - - 3 38",
+      "moves": "d1h1 a7b7 d7c8 b7h7",
+      "rating": 933,
+      "popularity": 95,
+      "nbPlays": 883,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bXZu1mt5/black#76"
+    },
+    {
+      "puzzleId": "00ZPK",
+      "fen": "5r2/R2R1pk1/P7/5pp1/8/1KP5/5r2/8 b - - 0 44",
+      "moves": "g5g4 d7f7 f8f7 a7f7 g7f7 a6a7",
+      "rating": 933,
+      "popularity": 94,
+      "nbPlays": 1109,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/Y6yYxIcG/black#88"
+    },
+    {
+      "puzzleId": "YjsuB",
+      "fen": "3r2k1/3P1p2/6p1/p7/1p1R4/4rP2/7P/2R4K b - - 2 38",
+      "moves": "g8g7 c1c8 d8d7 d4d7",
+      "rating": 933,
+      "popularity": 94,
+      "nbPlays": 2315,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Nhqwkpln/black#76"
+    },
+    {
+      "puzzleId": "MMQ4U",
+      "fen": "8/p4kp1/1pR4p/3KP1r1/8/P7/1P4P1/8 w - - 1 34",
+      "moves": "d5d6 g5g6 e5e6 g6e6",
+      "rating": 934,
+      "popularity": 98,
+      "nbPlays": 1699,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MzoI7AIG#67"
+    },
+    {
+      "puzzleId": "LYrjL",
+      "fen": "r4r2/ppp3p1/5k1p/4R3/8/7P/P4PP1/4R1K1 b - - 2 24",
+      "moves": "f8f7 e5e6 f6g5 e1e5",
+      "rating": 934,
+      "popularity": 95,
+      "nbPlays": 515,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qM2QXppB/black#48"
+    },
+    {
+      "puzzleId": "nTTp6",
+      "fen": "8/3k4/7R/3r4/5P2/2p2K2/8/8 w - - 0 48",
+      "moves": "f3e4 c3c2 e4d5 c2c1q",
+      "rating": 934,
+      "popularity": 95,
+      "nbPlays": 5926,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7vO4KTrT#95"
+    },
+    {
+      "puzzleId": "bYeeA",
+      "fen": "2r1k3/4P3/3r4/8/6P1/RP5P/1P1p3K/3R4 w - - 4 42",
+      "moves": "b3b4 c8c1 d1d2 d6d2",
+      "rating": 934,
+      "popularity": 92,
+      "nbPlays": 982,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qD7JXy1l#83"
+    },
+    {
+      "puzzleId": "IzoQm",
+      "fen": "8/4rp1p/6p1/2pk4/Pp3RP1/1P1K4/8/8 b - - 0 45",
+      "moves": "d5e5 f4e4 e5d6 e4e7",
+      "rating": 935,
+      "popularity": 93,
+      "nbPlays": 537,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sx77qfDG/black#90"
+    },
+    {
+      "puzzleId": "KO0ab",
+      "fen": "6k1/5pp1/2P1p2p/1P2P3/3r1P2/8/K5PP/8 b - - 0 46",
+      "moves": "d4b4 c6c7 b4c4 b5b6",
+      "rating": 936,
+      "popularity": 94,
+      "nbPlays": 1644,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3ClCrrtB/black#92"
+    },
+    {
+      "puzzleId": "zwcJ3",
+      "fen": "R7/6pk/7p/8/1p4PP/p4P1K/8/8 w - - 0 42",
+      "moves": "a8b8 a3a2 b8a8 b4b3",
+      "rating": 936,
+      "popularity": 91,
+      "nbPlays": 512,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OeSQTfCJ#83"
+    },
+    {
+      "puzzleId": "7yXGh",
+      "fen": "8/pp5k/4R3/P5p1/KP3rP1/8/8/8 b - - 0 48",
+      "moves": "f4g4 e6e7 h7g6 e7b7",
+      "rating": 937,
+      "popularity": 100,
+      "nbPlays": 541,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Dv6DWzYY/black#96"
+    },
+    {
+      "puzzleId": "aPofP",
+      "fen": "8/1p2r1k1/3R4/p1pP1pP1/P1P1p3/2P1K3/8/8 w - - 1 44",
+      "moves": "g5g6 f5f4 e3f4 e4e3 d6b6 e3e2",
+      "rating": 937,
+      "popularity": 96,
+      "nbPlays": 1663,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/EcIkLo1u#87"
+    },
+    {
+      "puzzleId": "yjL6U",
+      "fen": "8/1p1rkp2/1P4p1/7p/2R1PP1P/6P1/4K3/8 w - - 1 41",
+      "moves": "c4c7 d7c7 b6c7 e7d7 c7c8b d7c8",
+      "rating": 938,
+      "popularity": 97,
+      "nbPlays": 732,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/tm4MFDsE#81"
+    },
+    {
+      "puzzleId": "GvhDL",
+      "fen": "5k2/4R3/3K1pp1/2P5/8/p6P/Pr4P1/8 w - - 7 48",
+      "moves": "c5c6 b2d2 d6e6 d2e2",
+      "rating": 938,
+      "popularity": 94,
+      "nbPlays": 1841,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VylAexhC#95"
+    },
+    {
+      "puzzleId": "Zj7Vb",
+      "fen": "3r4/1p3kpp/p2r4/5p2/2Pp4/PP3P2/2PR1P1P/3R3K w - - 2 26",
+      "moves": "c2c3 d4c3 d2d6 d8d6 d1d6 c3c2",
+      "rating": 938,
+      "popularity": 87,
+      "nbPlays": 936,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/Fl89gH8j#51"
+    },
+    {
+      "puzzleId": "kY41H",
+      "fen": "8/8/7R/1P1k1ppp/8/6PP/1r3P2/6K1 b - - 4 46",
+      "moves": "b2b5 h6h5 d5e5 h5g5",
+      "rating": 939,
+      "popularity": 97,
+      "nbPlays": 734,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/SAMXsJLo/black#92"
+    },
+    {
+      "puzzleId": "6pTZZ",
+      "fen": "4rk2/ppp2p2/8/8/2P3RR/1P2PK2/1r6/8 b - - 5 34",
+      "moves": "b2b3 h4h8 f8e7 g4e4",
+      "rating": 939,
+      "popularity": 96,
+      "nbPlays": 3388,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sJQaaYGm/black#68"
+    },
+    {
+      "puzzleId": "r80pY",
+      "fen": "8/2prpk1p/pp4p1/2P1R3/KP6/P2r1P2/4R1PP/8 w - - 0 29",
+      "moves": "c5c6 b6b5 e5b5 a6b5",
+      "rating": 941,
+      "popularity": 99,
+      "nbPlays": 636,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dfh0V3Zo#57"
+    },
+    {
+      "puzzleId": "2NTbf",
+      "fen": "8/8/2p3kp/2K5/p1P2rpR/P6P/2P5/8 b - - 0 36",
+      "moves": "g6g5 h4g4 f4g4 h3g4 g5g4 c5c6",
+      "rating": 941,
+      "popularity": 97,
+      "nbPlays": 3037,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/fPAWILSu/black#72"
+    },
+    {
+      "puzzleId": "FUBNR",
+      "fen": "8/5p2/3pk1p1/5p1p/2P4P/3P1KP1/1R3P2/2r5 b - - 1 32",
+      "moves": "c1e1 b2e2 e1e2 f3e2",
+      "rating": 941,
+      "popularity": 95,
+      "nbPlays": 699,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iHNHgdzg/black#64"
+    },
+    {
+      "puzzleId": "jM3vw",
+      "fen": "4r3/8/p2Rrpk1/1p2P1p1/1Kp3P1/2P1R3/P1P5/8 b - - 1 33",
+      "moves": "e6d6 e5d6 e8e3 d6d7",
+      "rating": 941,
+      "popularity": 94,
+      "nbPlays": 758,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DXqUld2U/black#66"
+    },
+    {
+      "puzzleId": "UFbS8",
+      "fen": "8/R7/P1p2p2/7p/r2k1P2/2p2K1P/2P5/8 b - - 0 39",
+      "moves": "a4a2 a7d7 d4c5 a6a7",
+      "rating": 942,
+      "popularity": 99,
+      "nbPlays": 805,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4U7XZTTw/black#78"
+    },
+    {
+      "puzzleId": "NkdiF",
+      "fen": "8/5ppk/1P5p/P7/8/1r4PK/5P1P/8 b - - 0 36",
+      "moves": "b3a3 b6b7 a3b3 a5a6",
+      "rating": 942,
+      "popularity": 97,
+      "nbPlays": 2110,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2JIrh40B/black#72"
+    },
+    {
+      "puzzleId": "9Wfcy",
+      "fen": "8/5k2/1p2rP1p/p1p2R2/P1Pp4/1P1K4/8/8 b - - 4 49",
+      "moves": "f7g6 f6f7 g6f5 f7f8q",
+      "rating": 942,
+      "popularity": 95,
+      "nbPlays": 1661,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NsrOO9AG/black#98"
+    },
+    {
+      "puzzleId": "qb1q9",
+      "fen": "8/5p2/p1k1p3/7p/5R2/1P2K1P1/P1r2P2/8 w - - 7 36",
+      "moves": "f4c4 c2c4 b3c4 c6c5",
+      "rating": 945,
+      "popularity": 91,
+      "nbPlays": 940,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/im55G1cB#71"
+    },
+    {
+      "puzzleId": "xq4mL",
+      "fen": "3R2k1/8/6p1/8/2p2r2/8/1RP4r/4K3 b - - 1 36",
+      "moves": "g8h7 b2b7 h7h6 d8h8",
+      "rating": 946,
+      "popularity": 98,
+      "nbPlays": 695,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5dOcBGUl/black#72"
+    },
+    {
+      "puzzleId": "8kycC",
+      "fen": "8/4kpp1/4p2p/4P3/1rP2P2/1pR5/1K3P1P/8 w - - 8 39",
+      "moves": "b2a3 b3b2 a3b4 b2b1q",
+      "rating": 946,
+      "popularity": 95,
+      "nbPlays": 1483,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ML8ComEH#77"
+    },
+    {
+      "puzzleId": "Pvnkb",
+      "fen": "8/p2rp2k/1p3p1P/2p2p1R/6p1/P5P1/1P2K3/8 b - - 0 39",
+      "moves": "h7g6 h6h7 g6h5 h7h8q",
+      "rating": 946,
+      "popularity": 88,
+      "nbPlays": 554,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ExjmQ47s/black#78"
+    },
+    {
+      "puzzleId": "RMxyb",
+      "fen": "r7/p1p2k2/2p2p2/5R2/8/7r/PPP2P2/R5K1 w - - 1 25",
+      "moves": "f5c5 a8g8 g1f1 h3h1",
+      "rating": 947,
+      "popularity": 97,
+      "nbPlays": 584,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wI0P66Ir#49"
+    },
+    {
+      "puzzleId": "jhGZc",
+      "fen": "7k/8/1pR4P/8/5r2/5p2/PP1K4/8 w - - 2 47",
+      "moves": "d2e3 f3f2 e3f4 f2f1q",
+      "rating": 947,
+      "popularity": 97,
+      "nbPlays": 4195,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5q5yu5d5#93"
+    },
+    {
+      "puzzleId": "xO4gy",
+      "fen": "8/1p4k1/8/2p2rp1/3p1PK1/P6P/1P6/5R2 b - - 1 47",
+      "moves": "f5f4 f1f4 g5f4 g4f4",
+      "rating": 947,
+      "popularity": 90,
+      "nbPlays": 599,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IDfUAypl/black#94"
+    },
+    {
+      "puzzleId": "3RSf1",
+      "fen": "8/1p5p/7k/6R1/7P/1p1p2P1/5P2/6K1 w - - 0 53",
+      "moves": "g5d5 b3b2 d5b5 d3d2",
+      "rating": 948,
+      "popularity": 93,
+      "nbPlays": 2094,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/X9gnLohD#105"
+    },
+    {
+      "puzzleId": "a1P0y",
+      "fen": "8/8/1p1r3p/1r1p1kp1/1P1R1P2/4PK1P/1P6/2R5 w - - 0 36",
+      "moves": "e3e4 d5e4 d4e4 d6d3",
+      "rating": 948,
+      "popularity": 81,
+      "nbPlays": 627,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TnRU7FJD#71"
+    },
+    {
+      "puzzleId": "nnirg",
+      "fen": "4r1k1/p5p1/2p3p1/3pR3/3P4/P6P/2r3P1/6RK b - - 1 32",
+      "moves": "g8f7 g1f1 f7g8 e5e8",
+      "rating": 950,
+      "popularity": 98,
+      "nbPlays": 548,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/sxyhHzlO/black#64"
+    },
+    {
+      "puzzleId": "fiMhl",
+      "fen": "5R2/2R5/2p2ppr/3p2k1/8/4P1K1/2r2P1P/8 b - - 7 47",
+      "moves": "h6h4 f2f4 h4f4 e3f4",
+      "rating": 950,
+      "popularity": 95,
+      "nbPlays": 2350,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OZN55xoS/black#94"
+    },
+    {
+      "puzzleId": "QvujJ",
+      "fen": "8/8/8/2p1p1RP/1p3pP1/p1k2P2/K7/8 w - - 1 51",
+      "moves": "h5h6 b4b3 a2a3 b3b2 g5e5 b2b1q",
+      "rating": 951,
+      "popularity": 100,
+      "nbPlays": 777,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/0DG83jnx#101"
+    },
+    {
+      "puzzleId": "nhfUm",
+      "fen": "4r1k1/p4RP1/1pp5/3p4/1P4p1/8/1r6/5RK1 b - - 0 43",
+      "moves": "b2b4 f7f8 g8g7 f8e8",
+      "rating": 951,
+      "popularity": 94,
+      "nbPlays": 1431,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JPAmLzam/black#86"
+    },
+    {
+      "puzzleId": "e4p4U",
+      "fen": "6k1/1p5p/4p3/p1K1P1p1/3P4/1P4PP/P1r2r2/R5R1 w - - 2 29",
+      "moves": "c5d6 c2c6 d6e7 f2f7",
+      "rating": 952,
+      "popularity": 95,
+      "nbPlays": 1614,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BSWgOhmH#57"
+    },
+    {
+      "puzzleId": "OSeHL",
+      "fen": "r7/pp5p/2p3k1/4prp1/6p1/2P5/P1P4R/2K4R b - - 3 34",
+      "moves": "f5f7 h2h6 g6g7 h6h7 g7f8 h7h8",
+      "rating": 952,
+      "popularity": 91,
+      "nbPlays": 517,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/C765hhcZ/black#68"
+    },
+    {
+      "puzzleId": "5NS8U",
+      "fen": "3r4/1k3p2/1p2p3/1PP2p2/2K2P2/R4RP1/8/7r b - - 2 42",
+      "moves": "d8c8 c5c6 c8c6 b5c6",
+      "rating": 953,
+      "popularity": 98,
+      "nbPlays": 18507,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KMFX0yYa/black#84"
+    },
+    {
+      "puzzleId": "cKy5q",
+      "fen": "r5k1/5p2/8/8/7R/p5r1/R6K/8 b - - 3 37",
+      "moves": "g3b3 a2g2 g8f8 h4h8",
+      "rating": 953,
+      "popularity": 96,
+      "nbPlays": 969,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GNYCOmub/black#74"
+    },
+    {
+      "puzzleId": "GbRgB",
+      "fen": "6r1/p1r2pP1/2p1pk2/3p4/3P4/1R6/P4P1K/6R1 b - - 4 27",
+      "moves": "g8g7 b3f3 f6e7 g1g7",
+      "rating": 953,
+      "popularity": 95,
+      "nbPlays": 880,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wigYX5OE/black#54"
+    },
+    {
+      "puzzleId": "jrOJc",
+      "fen": "4rk2/p7/1p1r1pp1/2pPP3/P1R2PP1/4RK2/8/8 b - - 0 39",
+      "moves": "d6d5 e5f6 e8e3 f3e3",
+      "rating": 953,
+      "popularity": 95,
+      "nbPlays": 833,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Gx6BOm7S/black#78"
+    },
+    {
+      "puzzleId": "Xaox9",
+      "fen": "8/5pkp/6p1/8/P2P4/4P1P1/R1p2PKP/2r5 w - - 0 35",
+      "moves": "a4a5 c1g1 g2g1 c2c1q",
+      "rating": 953,
+      "popularity": 93,
+      "nbPlays": 1872,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vHNGzMhy#69"
+    },
+    {
+      "puzzleId": "RxRww",
+      "fen": "8/p3r2p/b6R/3k1pp1/P7/3p4/1P4PP/2R3K1 w - - 2 33",
+      "moves": "h6a6 d3d2 c1d1 e7e1 g1f2 e1d1",
+      "rating": 954,
+      "popularity": 100,
+      "nbPlays": 528,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/lxKUuZia#65"
+    },
+    {
+      "puzzleId": "CGlE2",
+      "fen": "6k1/4r2p/p2R2p1/2K5/1P2pp2/P7/5PPP/8 w - - 2 35",
+      "moves": "c5d4 e4e3 f2e3 f4e3 d6c6 e3e2",
+      "rating": 954,
+      "popularity": 97,
+      "nbPlays": 990,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/ZqFH3CG7#69"
+    },
+    {
+      "puzzleId": "FUiSP",
+      "fen": "1r6/p3k3/2P1p3/1K1pP2p/2P2Rp1/8/6PP/8 w - - 1 40",
+      "moves": "b5a6 b8b6 a6a7 b6c6",
+      "rating": 954,
+      "popularity": 97,
+      "nbPlays": 1061,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QaqdJFEA#79"
+    },
+    {
+      "puzzleId": "wB4Cg",
+      "fen": "4r3/5kp1/p2r2p1/8/2P2p2/1P2pP1P/R3K1P1/4R3 b - - 5 35",
+      "moves": "d6d2 a2d2 e3d2 e2d2",
+      "rating": 954,
+      "popularity": 94,
+      "nbPlays": 1759,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5qMlnn3E/black#70"
+    },
+    {
+      "puzzleId": "e2pIO",
+      "fen": "8/pp1r1kpp/6p1/2pr4/3PRP2/2PK4/PP3P1P/4R3 w - - 0 26",
+      "moves": "c3c4 d5d4 e4d4 d7d4",
+      "rating": 956,
+      "popularity": 89,
+      "nbPlays": 684,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dvWkKkWm#51"
+    },
+    {
+      "puzzleId": "6EtTS",
+      "fen": "4r3/7p/6p1/4P1k1/1p1PKp2/1P3R1P/1R4P1/2r5 w - - 6 35",
+      "moves": "f3f4 c1e1 e4f3 e1f1 f3e3 f1f4",
+      "rating": 957,
+      "popularity": 100,
+      "nbPlays": 612,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/hjeuLaem#69"
+    },
+    {
+      "puzzleId": "DFPAw",
+      "fen": "8/3p3p/2p3p1/P1k5/R7/2r5/6PP/6K1 b - - 1 37",
+      "moves": "c5b5 a5a6 b5a4 a6a7 a4b4 a7a8q",
+      "rating": 958,
+      "popularity": 97,
+      "nbPlays": 3822,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/c2LCYSLO/black#74"
+    },
+    {
+      "puzzleId": "ZXnYv",
+      "fen": "8/4r1p1/4P2p/p1PP4/8/1k1K3P/6P1/8 b - - 0 46",
+      "moves": "a5a4 d5d6 e7e6 d6d7",
+      "rating": 958,
+      "popularity": 95,
+      "nbPlays": 547,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wqrEeQvD/black#92"
+    },
+    {
+      "puzzleId": "S7aUq",
+      "fen": "2k5/ppp2p1R/8/8/8/P5P1/1P1prP1P/R5K1 w - - 0 27",
+      "moves": "h7f7 e2e1 a1e1 d2e1q",
+      "rating": 959,
+      "popularity": 96,
+      "nbPlays": 581,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gHDzhTtd#53"
+    },
+    {
+      "puzzleId": "aseME",
+      "fen": "1r6/5p1p/2pk1p2/p1R5/Pp1PPPP1/3K4/6P1/8 w - - 0 36",
+      "moves": "c5a5 b4b3 a5h5 b3b2",
+      "rating": 959,
+      "popularity": 95,
+      "nbPlays": 540,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NcpkjMxR#71"
+    },
+    {
+      "puzzleId": "nB2de",
+      "fen": "8/8/8/6K1/8/5k2/p6p/6R1 w - - 0 72",
+      "moves": "g1f1 f3g2 f1a1 h2h1q",
+      "rating": 959,
+      "popularity": 91,
+      "nbPlays": 1055,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dhJZ17PV#143"
+    },
+    {
+      "puzzleId": "2X5dD",
+      "fen": "8/R3rpk1/1p5p/8/2P5/1P5P/P3r1P1/5RK1 w - - 3 36",
+      "moves": "f1f2 e2e1 g1h2 e7a7",
+      "rating": 959,
+      "popularity": 88,
+      "nbPlays": 792,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/X6jMVi6k#71"
+    },
+    {
+      "puzzleId": "u28Ai",
+      "fen": "8/3R3p/p7/2p3p1/2p1k3/7P/P5P1/6K1 w - - 0 35",
+      "moves": "d7d1 c4c3 g1f2 c3c2 d1e1 e4d3",
+      "rating": 960,
+      "popularity": 99,
+      "nbPlays": 1259,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/dc6PVsHZ#69"
+    },
+    {
+      "puzzleId": "Sdot2",
+      "fen": "8/8/8/p3r1pp/5k2/1P1R1P1P/3K1P2/8 w - - 0 48",
+      "moves": "d2c2 e5e2 c2d1 e2f2",
+      "rating": 960,
+      "popularity": 97,
+      "nbPlays": 708,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uGvW9sqz#95"
+    },
+    {
+      "puzzleId": "YZUsm",
+      "fen": "6r1/8/1R6/4pp1k/Pp5P/4PKP1/3r4/1R6 w - - 1 41",
+      "moves": "b1b4 e5e4 b4e4 f5e4",
+      "rating": 960,
+      "popularity": 95,
+      "nbPlays": 2698,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7cvTkIeO#81"
+    },
+    {
+      "puzzleId": "lhqQW",
+      "fen": "8/8/8/5R2/p3KNp1/P4rkp/1P6/8 b - - 0 51",
+      "moves": "f3f4 f5f4 h3h2 f4f1",
+      "rating": 961,
+      "popularity": 95,
+      "nbPlays": 4958,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BU8eWrbv/black#102"
+    },
+    {
+      "puzzleId": "nx4LY",
+      "fen": "8/5p2/3r1p2/p2r1k2/R4P2/6PP/3p2K1/3R4 b - - 2 37",
+      "moves": "d6e6 g3g4 f5g6 f4f5",
+      "rating": 961,
+      "popularity": 88,
+      "nbPlays": 825,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YadY0xxR/black#74"
+    },
+    {
+      "puzzleId": "dHWvA",
+      "fen": "3r2k1/7p/8/4rpP1/PR6/8/1P1p1PKP/3R4 w - - 0 35",
+      "moves": "b4c4 e5e1 d1d2 d8d2",
+      "rating": 962,
+      "popularity": 95,
+      "nbPlays": 568,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bUzMIuAF#69"
+    },
+    {
+      "puzzleId": "2uQPS",
+      "fen": "5rk1/2p2pp1/3p4/pp1P3R/3p3R/2P1r2P/PP4P1/6K1 b - - 1 28",
+      "moves": "g7g6 h5h8 g8g7 h4h7 g7f6 h8f8",
+      "rating": 963,
+      "popularity": 99,
+      "nbPlays": 1085,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/jPLruqMd/black#56"
+    },
+    {
+      "puzzleId": "Z3anh",
+      "fen": "8/6p1/2R4p/3Pk3/4r3/5P1P/1p4PK/8 w - - 2 39",
+      "moves": "c6e6 e5d5 e6e4 b2b1q",
+      "rating": 963,
+      "popularity": 93,
+      "nbPlays": 725,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/kTuWCoKZ#77"
+    },
+    {
+      "puzzleId": "Yh9Ba",
+      "fen": "8/5k2/4R3/3pK1P1/3P4/r3P3/8/8 w - - 1 54",
+      "moves": "e5d5 a3a5 d5d6 a5a6 d6e5 a6e6",
+      "rating": 964,
+      "popularity": 96,
+      "nbPlays": 601,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/N1Gydyw2#107"
+    },
+    {
+      "puzzleId": "vXLdH",
+      "fen": "8/2P2p2/4RP2/6kp/8/6K1/2r3P1/8 b - - 0 43",
+      "moves": "f7e6 f6f7 c2c7 f7f8q",
+      "rating": 964,
+      "popularity": 93,
+      "nbPlays": 529,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/veLhmFnj/black#86"
+    },
+    {
+      "puzzleId": "o2Zb8",
+      "fen": "2r1k3/pp5R/3pp3/3pp3/8/4K3/PP3r2/7R b - - 1 32",
+      "moves": "f2f4 h7h8 e8d7 h1h7 d7c6 h8c8",
+      "rating": 964,
+      "popularity": 91,
+      "nbPlays": 1582,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "exposedKing",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/k5hgTuQJ/black#64"
+    },
+    {
+      "puzzleId": "JDYfS",
+      "fen": "8/8/4kp2/R5p1/4P1P1/6r1/3K4/8 w - - 16 50",
+      "moves": "a5a6 e6e5 a6a5 e5e4 a5a4 e4f3",
+      "rating": 965,
+      "popularity": 95,
+      "nbPlays": 1056,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/jtg71xWE#99"
+    },
+    {
+      "puzzleId": "iiyQ5",
+      "fen": "8/pr1k1p2/R2P1Pp1/PppK2P1/5P1p/3P3P/8/8 w - - 0 53",
+      "moves": "d5c5 b5b4 a6c6 b4b3",
+      "rating": 965,
+      "popularity": 87,
+      "nbPlays": 511,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "quietMove",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/r1eeJdjH#105"
+    },
+    {
+      "puzzleId": "TGOrP",
+      "fen": "8/8/6P1/5p1P/6r1/8/1k1K4/8 b - - 0 51",
+      "moves": "g4h4 g6g7 h4g4 h5h6",
+      "rating": 968,
+      "popularity": 96,
+      "nbPlays": 1917,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/AZyKCNI6/black#102"
+    },
+    {
+      "puzzleId": "QIqfq",
+      "fen": "6k1/5p2/8/8/8/R4K1P/p1r3P1/8 w - - 2 37",
+      "moves": "g2g3 c2c3 a3c3 a2a1q",
+      "rating": 968,
+      "popularity": 93,
+      "nbPlays": 2257,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "deflection",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/781z9T6O#73"
+    },
+    {
+      "puzzleId": "F4ZiG",
+      "fen": "1k5r/1p6/1P5r/pR1pP3/8/2P5/P4PP1/5RK1 w - - 3 35",
+      "moves": "g2g3 h6h1 g1g2 h8h2 g2f3 h1f1",
+      "rating": 968,
+      "popularity": 91,
+      "nbPlays": 1988,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/cX53ylYH#69"
+    },
+    {
+      "puzzleId": "592hf",
+      "fen": "5k2/8/P3p3/R7/8/3K4/1PP3p1/6r1 w - - 0 44",
+      "moves": "a5g5 g1d1 d3c4 g2g1q g5g1 d1g1",
+      "rating": 968,
+      "popularity": 87,
+      "nbPlays": 722,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "clearance",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/0NMD3iwX#87"
+    },
+    {
+      "puzzleId": "2FkwF",
+      "fen": "8/pp5r/5k2/3pR1p1/3P1p2/2P3KP/PP6/8 w - - 0 37",
+      "moves": "g3g4 h7h4 g4f3 h4h3",
+      "rating": 969,
+      "popularity": 97,
+      "nbPlays": 1501,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CHYRLyau#73"
+    },
+    {
+      "puzzleId": "8jeEM",
+      "fen": "8/3R4/6p1/8/4k3/4p1PP/6r1/3K4 w - - 8 59",
+      "moves": "d7e7 e4f3 e7f7 f3g3",
+      "rating": 969,
+      "popularity": 91,
+      "nbPlays": 630,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/XkXIxJXb#117"
+    },
+    {
+      "puzzleId": "QETZg",
+      "fen": "8/5p2/2r5/p7/1p1k4/5RP1/PP3K2/8 w - - 2 43",
+      "moves": "f3f7 c6c2 f2f3 c2b2 g3g4 b2a2",
+      "rating": 970,
+      "popularity": 96,
+      "nbPlays": 1555,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/30fd8iaP#85"
+    },
+    {
+      "puzzleId": "atXW9",
+      "fen": "8/ppr3k1/8/3p1RP1/2pP1P2/1P3P2/P4K2/8 w - - 0 40",
+      "moves": "f5d5 c4c3 d5e5 c3c2",
+      "rating": 970,
+      "popularity": 89,
+      "nbPlays": 552,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yfbDSwbl#79"
+    },
+    {
+      "puzzleId": "kibLV",
+      "fen": "1K6/1P6/8/3pk3/r7/2P5/8/8 b - - 3 59",
+      "moves": "e5d6 b8c8 a4c4 c8d8 c4c3 b7b8q",
+      "rating": 971,
+      "popularity": 98,
+      "nbPlays": 605,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/9prcJqXP/black#118"
+    },
+    {
+      "puzzleId": "6ki3u",
+      "fen": "4r1k1/1RR2pp1/8/7P/4PKP1/8/8/r7 w - - 1 33",
+      "moves": "c7f7 a1f1 f4e3 f1f7",
+      "rating": 971,
+      "popularity": 96,
+      "nbPlays": 3703,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/B1ej3YRM#65"
+    },
+    {
+      "puzzleId": "cfg8n",
+      "fen": "1r6/4P1pk/p2R2p1/7p/P6P/8/2r5/4R2K b - - 0 40",
+      "moves": "b8e8 d6d8 e8e7 e1e7",
+      "rating": 971,
+      "popularity": 96,
+      "nbPlays": 3117,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/c8AmLZrH/black#80"
+    },
+    {
+      "puzzleId": "ht4I9",
+      "fen": "rr6/3k1pp1/4p2p/p2pP3/3R4/R1p5/2P2PP1/4K3 b - - 3 29",
+      "moves": "b8b4 d4b4 a5b4 a3a8",
+      "rating": 971,
+      "popularity": 95,
+      "nbPlays": 1203,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/WU5115s2/black#58"
+    },
+    {
+      "puzzleId": "E2DnY",
+      "fen": "8/6R1/4p1p1/5pP1/1p2p2P/2k5/3r1P2/4K3 b - - 4 49",
+      "moves": "b4b3 g7c7 c3d3 c7d7",
+      "rating": 972,
+      "popularity": 96,
+      "nbPlays": 1098,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uoo7TJxS/black#98"
+    },
+    {
+      "puzzleId": "I0t7f",
+      "fen": "3R4/6pp/8/2p1p3/4k3/6P1/2r2r1P/4R1K1 b - - 3 40",
+      "moves": "e4f5 d8f8 f5e6 f8f2",
+      "rating": 972,
+      "popularity": 96,
+      "nbPlays": 3098,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/to7AQEnr/black#80"
+    },
+    {
+      "puzzleId": "3ozIK",
+      "fen": "8/r7/6p1/P3pP2/K5k1/4R1P1/8/8 b - - 0 47",
+      "moves": "g6f5 e3e5 f5f4 g3f4",
+      "rating": 973,
+      "popularity": 96,
+      "nbPlays": 11599,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hA2vpNZc/black#94"
+    },
+    {
+      "puzzleId": "3yyH9",
+      "fen": "8/8/4R1kp/6p1/8/5rPP/1r6/4R2K b - - 6 39",
+      "moves": "g6h5 g3g4 h5h4 e6h6 h4g3 e1g1 g3f4 h6f6",
+      "rating": 973,
+      "popularity": 96,
+      "nbPlays": 835,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/y0XvtSRM/black#78"
+    },
+    {
+      "puzzleId": "ZEerW",
+      "fen": "6k1/5p1p/p5p1/1pPp4/3r4/P6P/6P1/2R3K1 b - - 1 31",
+      "moves": "g8f8 c5c6 d4c4 c1c4 d5c4 c6c7",
+      "rating": 973,
+      "popularity": 95,
+      "nbPlays": 868,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/74KMwEWk/black#62"
+    },
+    {
+      "puzzleId": "4DwM0",
+      "fen": "8/6pp/p7/8/6PP/1P3K2/k1r2P2/4R3 w - - 0 38",
+      "moves": "e1e2 c2e2 f3e2 a2b3",
+      "rating": 973,
+      "popularity": 92,
+      "nbPlays": 1326,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LHlvlRK3#75"
+    },
+    {
+      "puzzleId": "VGjdY",
+      "fen": "8/5R2/8/1P6/4r3/2K1p3/P7/3k4 w - - 1 55",
+      "moves": "c3d3 e3e2 d3e4 e2e1q",
+      "rating": 974,
+      "popularity": 98,
+      "nbPlays": 3762,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/m3rD4Gdq#109"
+    },
+    {
+      "puzzleId": "f9q2O",
+      "fen": "8/6pk/PR6/7r/7r/8/1P3PP1/5RK1 w - - 1 39",
+      "moves": "g2g3 h4h1 g1g2 h5h2 g2f3 h1f1",
+      "rating": 974,
+      "popularity": 96,
+      "nbPlays": 680,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/9fXOTcA4#77"
+    },
+    {
+      "puzzleId": "mf1VE",
+      "fen": "1r3k2/5p2/8/3R4/3pP3/p2P1P2/1PR4r/3K4 w - - 0 49",
+      "moves": "b2a3 b8b1 c2c1 h2h1",
+      "rating": 974,
+      "popularity": 90,
+      "nbPlays": 1032,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wUl7YCrI#97"
+    },
+    {
+      "puzzleId": "QPOty",
+      "fen": "4k3/7R/3r1K2/5R2/5P2/8/8/4r3 w - - 3 62",
+      "moves": "f6g5 e1g1 g5h5 g1h1",
+      "rating": 975,
+      "popularity": 95,
+      "nbPlays": 3268,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TGMx97P1#123"
+    },
+    {
+      "puzzleId": "zHAgt",
+      "fen": "8/6p1/PPR1p1p1/3k4/r7/8/2P5/2K5 b - - 0 35",
+      "moves": "a4a6 b6b7 a6c6 b7b8q",
+      "rating": 975,
+      "popularity": 95,
+      "nbPlays": 2319,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QkgXOu8P/black#70"
+    },
+    {
+      "puzzleId": "Hfpv4",
+      "fen": "8/p7/3r3P/6P1/8/1k3p2/5K2/8 b - - 0 58",
+      "moves": "d6g6 h6h7 g6g5 h7h8q",
+      "rating": 976,
+      "popularity": 97,
+      "nbPlays": 673,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9Qdcz3ZB/black#116"
+    },
+    {
+      "puzzleId": "LKce3",
+      "fen": "5k2/2pRrp1p/1pP5/pP2p1p1/P3P1P1/8/2K2P1P/8 w - - 2 33",
+      "moves": "c2c3 e7d7 c6d7 f8e7 d7d8r e7d8",
+      "rating": 976,
+      "popularity": 94,
+      "nbPlays": 555,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/2rl3hgiX#65"
+    },
+    {
+      "puzzleId": "iSR3C",
+      "fen": "8/1p3pp1/2p4p/P7/KPk5/3r3P/2R2PP1/8 b - - 12 39",
+      "moves": "d3c3 c2c3 c4c3 b4b5 c6b5 a4b5",
+      "rating": 976,
+      "popularity": 92,
+      "nbPlays": 546,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/aqRSghfe/black#78"
+    },
+    {
+      "puzzleId": "tdmXw",
+      "fen": "8/3r4/1R1pkp2/3Rp1p1/4P1K1/5PPP/5r2/8 w - - 1 46",
+      "moves": "b6c6 f6f5 e4f5 e6d5",
+      "rating": 976,
+      "popularity": 87,
+      "nbPlays": 653,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/siamvfw8#91"
+    },
+    {
+      "puzzleId": "cytA2",
+      "fen": "6k1/6pp/R7/5pP1/8/1P6/P2rr2P/5R1K w - - 1 34",
+      "moves": "a6a8 g8f7 f1f5 f7g6",
+      "rating": 977,
+      "popularity": 96,
+      "nbPlays": 830,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zOhFtien#67"
+    },
+    {
+      "puzzleId": "QC60w",
+      "fen": "7r/p1pk4/8/8/3PpR2/4P1Pr/PP3P2/5RK1 w - - 3 28",
+      "moves": "f4e4 h3h1 g1g2 h8h2 g2f3 h1f1",
+      "rating": 977,
+      "popularity": 92,
+      "nbPlays": 546,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/b3iJs8dh#55"
+    },
+    {
+      "puzzleId": "8VUcP",
+      "fen": "8/p7/p3PR2/6p1/1P4kp/P7/4K3/3r4 b - - 2 46",
+      "moves": "d1d6 e6e7 d6f6 e7e8q",
+      "rating": 978,
+      "popularity": 100,
+      "nbPlays": 660,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BSI0mmzA/black#92"
+    },
+    {
+      "puzzleId": "82Om9",
+      "fen": "5K2/1p6/2p3P1/p7/8/4pk1r/1P6/6R1 b - - 4 72",
+      "moves": "e3e2 g6g7 f3f2 g7g8q",
+      "rating": 978,
+      "popularity": 96,
+      "nbPlays": 2183,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LRfxWbJM/black#144"
+    },
+    {
+      "puzzleId": "aYZTc",
+      "fen": "6r1/2p3r1/5p2/p1p3Pp/1pP2PkP/3P1R2/P6K/4R3 w - - 1 32",
+      "moves": "g5f6 g4f3 f6g7 g8g7",
+      "rating": 978,
+      "popularity": 96,
+      "nbPlays": 1556,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tj4SbKhB#63"
+    },
+    {
+      "puzzleId": "eR0Jd",
+      "fen": "8/1p2RR2/8/p5kp/4ppp1/8/1r3P1P/6K1 w - - 0 42",
+      "moves": "e7e4 b2b1 g1g2 f4f3 f7f3 g4f3",
+      "rating": 978,
+      "popularity": 95,
+      "nbPlays": 552,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/qo0BzM6X#83"
+    },
+    {
+      "puzzleId": "Lllra",
+      "fen": "8/8/8/p1kp4/P3r1p1/1P1R2P1/5K2/8 b - - 1 42",
+      "moves": "c5b4 d3d5 b4b3 d5a5",
+      "rating": 978,
+      "popularity": 94,
+      "nbPlays": 794,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/WtS7UimW/black#84"
+    },
+    {
+      "puzzleId": "p5w0B",
+      "fen": "8/rR3p2/P3p1k1/3p4/7p/2r5/R5P1/3K4 b - - 1 46",
+      "moves": "c3c7 b7c7 a7c7 a6a7",
+      "rating": 978,
+      "popularity": 94,
+      "nbPlays": 1564,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6vzeyosi/black#92"
+    },
+    {
+      "puzzleId": "zrh6a",
+      "fen": "K7/8/6k1/1P1p4/8/6pp/3R4/8 w - - 0 60",
+      "moves": "d2d3 g3g2 d3h3 g2g1q",
+      "rating": 978,
+      "popularity": 93,
+      "nbPlays": 11366,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vQN3suGS#119"
+    },
+    {
+      "puzzleId": "GBN7f",
+      "fen": "5k2/6pp/5p2/8/3P4/2R1P1P1/1p3P1P/rR4K1 w - - 1 30",
+      "moves": "b1f1 a1f1 g1f1 b2b1q",
+      "rating": 979,
+      "popularity": 91,
+      "nbPlays": 977,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DUYivEQy#59"
+    },
+    {
+      "puzzleId": "aibMB",
+      "fen": "6k1/6p1/p6p/2P5/8/4R2P/p4PPK/r7 w - - 0 37",
+      "moves": "e3e2 a1h1 h2h1 a2a1q",
+      "rating": 979,
+      "popularity": 87,
+      "nbPlays": 717,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FMbWPZEd#73"
+    },
+    {
+      "puzzleId": "sUZQz",
+      "fen": "1r4k1/p6p/5p1p/2R1p3/1rP1P1PP/5P2/2K5/7R w - - 1 32",
+      "moves": "c2d3 b4b3 d3c2 b3b2 c2c1 b2b1",
+      "rating": 980,
+      "popularity": 100,
+      "nbPlays": 646,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/v5lZbkvK#63"
+    },
+    {
+      "puzzleId": "1QGVk",
+      "fen": "2k3r1/1pp4R/2p4P/p7/6r1/8/7K/6R1 w - - 0 30",
+      "moves": "g1g4 g8g4 h7h8 c8d7 h6h7 g4h4",
+      "rating": 980,
+      "popularity": 99,
+      "nbPlays": 541,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/SAxVxphY#59"
+    },
+    {
+      "puzzleId": "SXVX1",
+      "fen": "8/p1k2p1p/7r/3RP1pr/1P1P3P/6P1/5P2/5RK1 w - - 0 29",
+      "moves": "h4g5 h5h1 g1g2 h6h2 g2f3 h1f1",
+      "rating": 980,
+      "popularity": 95,
+      "nbPlays": 2581,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/lyI6kc0b#57"
+    },
+    {
+      "puzzleId": "dtxab",
+      "fen": "3r4/1p6/p4k1p/P2r1Pp1/1P1p2P1/3R1K2/7P/3R4 b - - 0 37",
+      "moves": "f6e5 d1e1 e5f6 e1e6",
+      "rating": 980,
+      "popularity": 95,
+      "nbPlays": 5297,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/K5H8tpXb/black#74"
+    },
+    {
+      "puzzleId": "hRNR7",
+      "fen": "7r/5k1p/2R2p2/4p3/8/8/rPP2PPP/2K4R w - - 0 22",
+      "moves": "h1d1 a2a1 c1d2 h8d8",
+      "rating": 980,
+      "popularity": 94,
+      "nbPlays": 4443,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/SiLeAGxv#43"
+    },
+    {
+      "puzzleId": "v2Gyu",
+      "fen": "8/7p/2p1k1p1/2P2p2/r2K4/2R3PP/5P2/8 w - - 2 55",
+      "moves": "c3c4 a4c4 d4c4 e6e5",
+      "rating": 981,
+      "popularity": 93,
+      "nbPlays": 614,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/V5x8f7g3#109"
+    },
+    {
+      "puzzleId": "lCjqR",
+      "fen": "8/8/4rk2/pPr3p1/2P1R3/4K1R1/P7/8 b - - 0 51",
+      "moves": "e6e4 e3e4 c5c4 e4d5",
+      "rating": 981,
+      "popularity": 86,
+      "nbPlays": 513,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bURFcQlW/black#102"
+    },
+    {
+      "puzzleId": "eUtfX",
+      "fen": "7k/1r5p/pPR2p2/4p3/1P6/2P5/3P1K2/r7 b - - 2 44",
+      "moves": "h7h5 c6c8 h8h7 c8c7 b7c7 b6c7",
+      "rating": 982,
+      "popularity": 97,
+      "nbPlays": 1742,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/nEMcmcpd/black#88"
+    },
+    {
+      "puzzleId": "l8XWI",
+      "fen": "6k1/1p3p2/p2P2p1/2R1K2p/8/1r6/8/8 b - - 1 42",
+      "moves": "g8f8 c5c8 f8g7 d6d7",
+      "rating": 982,
+      "popularity": 97,
+      "nbPlays": 2055,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Nq0FnmKa/black#84"
+    },
+    {
+      "puzzleId": "QH4vW",
+      "fen": "8/3r1kpp/8/1P6/P1R1p3/8/r2p1PPP/3R2K1 w - - 4 32",
+      "moves": "c4e4 a2a1 d1a1 d2d1q",
+      "rating": 982,
+      "popularity": 95,
+      "nbPlays": 625,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oVy5gwEh#63"
+    },
+    {
+      "puzzleId": "jVNTk",
+      "fen": "r7/ppp2pk1/5p2/8/3R3R/5P2/Pr4PP/6K1 b - - 1 23",
+      "moves": "a8e8 d4g4 g7f8 h4h8 f8e7 g4e4",
+      "rating": 982,
+      "popularity": 92,
+      "nbPlays": 594,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/ljKtVb4g/black#46"
+    },
+    {
+      "puzzleId": "y0Bqy",
+      "fen": "8/2p4r/1p2Pp2/p4P2/4K3/4R3/PPPk4/8 w - - 12 47",
+      "moves": "c2c3 h7h4 e4f3 h4h3 f3f4 h3e3",
+      "rating": 983,
+      "popularity": 96,
+      "nbPlays": 602,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/ZzDc6ZI3#93"
+    },
+    {
+      "puzzleId": "tqr6R",
+      "fen": "8/R7/1p1p1P1k/3P4/2P5/2P1KP2/p1r5/8 w - - 4 50",
+      "moves": "a7a3 c2c3 a3c3 a2a1q",
+      "rating": 983,
+      "popularity": 92,
+      "nbPlays": 2085,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "deflection",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/mTMPyVwG#99"
+    },
+    {
+      "puzzleId": "MJBpV",
+      "fen": "8/8/8/5p2/4k1p1/7p/R4K1P/4r3 b - - 15 76",
+      "moves": "e1e3 a2a4 e4d3 a4a3",
+      "rating": 984,
+      "popularity": 98,
+      "nbPlays": 639,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0k3l1IvU/black#152"
+    },
+    {
+      "puzzleId": "sbpf8",
+      "fen": "8/3R4/pp5r/3k4/PP2p3/4Kp2/5P2/8 b - - 2 43",
+      "moves": "h6d6 d7d6 d5d6 e3e4",
+      "rating": 984,
+      "popularity": 97,
+      "nbPlays": 655,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RmBoCWqU/black#86"
+    },
+    {
+      "puzzleId": "uAIK2",
+      "fen": "8/8/2P5/8/p2K4/Pr6/6pk/4R3 b - - 0 49",
+      "moves": "b3a3 c6c7 g2g1q e1g1 h2g1 c7c8q",
+      "rating": 984,
+      "popularity": 97,
+      "nbPlays": 557,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/Ii5eCFnV/black#98"
+    },
+    {
+      "puzzleId": "bFaMq",
+      "fen": "6k1/5pp1/2R4p/8/8/7P/PPPr1rP1/2R3K1 w - - 0 24",
+      "moves": "a2a4 f2g2 g1h1 g2h2",
+      "rating": 984,
+      "popularity": 93,
+      "nbPlays": 1106,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LaxHpCyM#47"
+    },
+    {
+      "puzzleId": "WYWYk",
+      "fen": "5r2/8/2R3pp/5pk1/8/1r4P1/5P2/5RK1 b - - 0 39",
+      "moves": "f8f6 f2f4 g5g4 c6f6",
+      "rating": 984,
+      "popularity": 91,
+      "nbPlays": 591,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/lm5isaSu/black#78"
+    },
+    {
+      "puzzleId": "uWHCd",
+      "fen": "8/6k1/R5P1/p2r4/3p4/P2K4/1P6/8 w - - 5 45",
+      "moves": "d3c4 d4d3 c4d5 d3d2 d5c6 d2d1q",
+      "rating": 984,
+      "popularity": 90,
+      "nbPlays": 534,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/ceIFBDJB#89"
+    },
+    {
+      "puzzleId": "duq3L",
+      "fen": "7k/ppp2rR1/6K1/7p/P1r5/8/8/R7 w - - 0 37",
+      "moves": "g6f7 c4f4 f7g6 f4g4 g6h6 g4g7",
+      "rating": 984,
+      "popularity": 87,
+      "nbPlays": 516,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/vvfkuD2b#73"
+    },
+    {
+      "puzzleId": "vyMzO",
+      "fen": "k1r5/p7/8/7p/5R2/PRpr4/2P2KPP/8 w - - 0 35",
+      "moves": "c2d3 c3c2 f4c4 c8c4 d3c4 c2c1q",
+      "rating": 985,
+      "popularity": 100,
+      "nbPlays": 519,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/3v8tvvVA#69"
+    },
+    {
+      "puzzleId": "wn8nD",
+      "fen": "8/8/pp6/3pk2p/3p2rP/P2P1R2/1PP2K2/8 w - - 2 37",
+      "moves": "f3f7 g4f4 f7f4 e5f4",
+      "rating": 985,
+      "popularity": 99,
+      "nbPlays": 957,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/h6YINqWr#73"
+    },
+    {
+      "puzzleId": "DP4Na",
+      "fen": "8/6pk/8/pp1R3p/1P3P1P/r5P1/6K1/8 b - - 1 53",
+      "moves": "a5b4 d5h5 h7g8 h5b5",
+      "rating": 985,
+      "popularity": 96,
+      "nbPlays": 1030,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tCXz4WKQ/black#106"
+    },
+    {
+      "puzzleId": "4xwLE",
+      "fen": "8/6k1/p1r3p1/1p4P1/8/7P/PPP1r3/2KR1R2 w - - 1 33",
+      "moves": "h3h4 c6c2 c1b1 c2b2 b1a1 b2a2",
+      "rating": 985,
+      "popularity": 93,
+      "nbPlays": 1156,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/3hKeUhtm#65"
+    },
+    {
+      "puzzleId": "R664K",
+      "fen": "8/6p1/8/5P2/2P1P3/1r1P2P1/kpK5/1R6 w - - 1 45",
+      "moves": "g3g4 b3c3 c2c3 a2b1",
+      "rating": 985,
+      "popularity": 92,
+      "nbPlays": 798,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Epb2AdPX#89"
+    },
+    {
+      "puzzleId": "Bmkv4",
+      "fen": "7k/pr4p1/4P2p/2p5/2Pr1p2/2K3P1/7P/4R2R b - - 0 30",
+      "moves": "f4g3 e6e7 b7e7 e1e7",
+      "rating": 985,
+      "popularity": 91,
+      "nbPlays": 765,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/we42AbUh/black#60"
+    },
+    {
+      "puzzleId": "wMVXG",
+      "fen": "2R5/2p1k3/P1r2p1p/6p1/8/7P/6PK/8 b - - 3 48",
+      "moves": "e7d7 a6a7 d7c8 a7a8q",
+      "rating": 985,
+      "popularity": 88,
+      "nbPlays": 681,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/eLg8BXNP/black#96"
+    },
+    {
+      "puzzleId": "AE1bI",
+      "fen": "3r4/6r1/p1kpR1p1/3R2P1/1PP5/8/6K1/8 w - - 1 43",
+      "moves": "d5c5 c6d7 e6d6 d7d6",
+      "rating": 986,
+      "popularity": 98,
+      "nbPlays": 888,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/kRqnRJ3B#85"
+    },
+    {
+      "puzzleId": "BeMUB",
+      "fen": "8/2r5/p1pr1kp1/1pR1p2p/1P2Pp1P/P1R2P1K/7P/8 b - - 3 33",
+      "moves": "g6g5 h4g5 f6g5 c5e5",
+      "rating": 986,
+      "popularity": 94,
+      "nbPlays": 3775,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CJnhTnS0/black#66"
+    },
+    {
+      "puzzleId": "cXS00",
+      "fen": "3r4/p6R/4k3/4p3/4p3/2P3P1/PP5P/2K5 w - - 1 26",
+      "moves": "h7a7 e4e3 a7a4 e3e2 a4e4 d8d1",
+      "rating": 986,
+      "popularity": 93,
+      "nbPlays": 3362,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/yNAA7qwz#51"
+    },
+    {
+      "puzzleId": "SkNgw",
+      "fen": "8/8/4p3/8/5RKP/8/3pk3/8 w - - 0 48",
+      "moves": "f4e4 e2d3 e4e6 d2d1q",
+      "rating": 986,
+      "popularity": 91,
+      "nbPlays": 1472,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "master",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Hf44NOK5#95"
+    },
+    {
+      "puzzleId": "HYToU",
+      "fen": "8/3k1p2/1p4p1/p2pR2p/1r6/5K2/6P1/8 b - - 5 45",
+      "moves": "b4e4 e5d5 d7c7 f3e4",
+      "rating": 986,
+      "popularity": 89,
+      "nbPlays": 1105,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/8QfBQyF0/black#90"
+    },
+    {
+      "puzzleId": "GKuE8",
+      "fen": "4r2R/6p1/p4kP1/2p1pP2/1pP1P3/5K2/r7/7R b - - 1 37",
+      "moves": "a2a3 f3g4 e8h8 h1h8 a3e3 h8f8",
+      "rating": 987,
+      "popularity": 97,
+      "nbPlays": 1097,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/bzvFPYhm/black#74"
+    },
+    {
+      "puzzleId": "qV19O",
+      "fen": "8/8/p3rp1R/1p1p3p/1P1P3k/P2KP2P/8/8 b - - 1 47",
+      "moves": "h4h3 h6h5 h3g4 h5d5",
+      "rating": 987,
+      "popularity": 96,
+      "nbPlays": 1109,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vzsRYy8I/black#94"
+    },
+    {
+      "puzzleId": "uRH9d",
+      "fen": "R7/P7/7p/6p1/r6k/8/6PK/8 w - - 1 47",
+      "moves": "g2g3 h4g4 a8c8 a4a2",
+      "rating": 987,
+      "popularity": 96,
+      "nbPlays": 860,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yhUIUPAy#93"
+    },
+    {
+      "puzzleId": "2vctC",
+      "fen": "6R1/p5p1/3p1k2/3P2R1/r6P/4P3/6P1/2r3K1 w - - 5 35",
+      "moves": "g1h2 a4h4 h2g3 f6g5",
+      "rating": 987,
+      "popularity": 95,
+      "nbPlays": 1879,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gM58qfQk#69"
+    },
+    {
+      "puzzleId": "rEBlm",
+      "fen": "3r1r2/5pk1/1pp1p1pR/p7/6P1/PP1P3R/7P/7K b - - 0 36",
+      "moves": "d8d3 h6h7 g7g8 h7h8",
+      "rating": 987,
+      "popularity": 91,
+      "nbPlays": 1057,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RSUTQACB/black#72"
+    },
+    {
+      "puzzleId": "HsIG1",
+      "fen": "8/8/1p3rk1/4K3/PR3p2/1P4P1/8/8 b - - 0 45",
+      "moves": "f4g3 b4g4 g6f7 g4g3",
+      "rating": 989,
+      "popularity": 100,
+      "nbPlays": 1218,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/O7FIlmHb/black#90"
+    },
+    {
+      "puzzleId": "yZoOr",
+      "fen": "8/pp6/2p5/5k2/1P1P1p2/P1P2KPr/6R1/8 w - - 1 38",
+      "moves": "c3c4 h3g3 g2g3 f4g3",
+      "rating": 989,
+      "popularity": 96,
+      "nbPlays": 1166,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/BHTkFmUC#75"
+    },
+    {
+      "puzzleId": "u54lR",
+      "fen": "8/1p6/p3R3/3KPkp1/1P1P1p2/P6r/8/8 b - - 2 38",
+      "moves": "h3a3 e6f6 f5g4 e5e6",
+      "rating": 989,
+      "popularity": 95,
+      "nbPlays": 3875,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3AaLVCFx/black#76"
+    },
+    {
+      "puzzleId": "dptdO",
+      "fen": "7k/3R4/5P1p/p2pr3/3p2P1/4p3/PP3K1P/8 w - - 0 33",
+      "moves": "f2e2 d4d3 e2d3 e3e2",
+      "rating": 989,
+      "popularity": 94,
+      "nbPlays": 635,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hMC00bEj#65"
+    },
+    {
+      "puzzleId": "8EGRt",
+      "fen": "6k1/p1p2R2/3p2p1/3p4/2PP2P1/7r/r7/5RK1 b - - 1 37",
+      "moves": "h3h2 f7f8 g8h7 f1f7 h7h6 f8h8 h6g5 h8h2",
+      "rating": 989,
+      "popularity": 91,
+      "nbPlays": 3458,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "rookEndgame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/rYDoXiaN/black#74"
+    },
+    {
+      "puzzleId": "vze91",
+      "fen": "8/4kpp1/1R5p/p7/P3P3/4K1PP/1pr2P2/8 w - - 5 38",
+      "moves": "b6b3 c2c3 b3c3 b2b1q",
+      "rating": 989,
+      "popularity": 91,
+      "nbPlays": 854,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "deflection",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cyrSV4I2#75"
+    },
+    {
+      "puzzleId": "W0VhV",
+      "fen": "1r6/4ppkp/3p2p1/3P4/4P3/p2K3P/P1R3P1/8 b - - 1 36",
+      "moves": "b8b2 c2b2 a3b2 d3c2 b2b1r c2b1",
+      "rating": 990,
+      "popularity": 91,
+      "nbPlays": 2035,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/yVZOfcIq/black#72"
+    },
+    {
+      "puzzleId": "Dz0Bj",
+      "fen": "2R5/7p/1P4pk/5p2/3rp3/7P/5PP1/6K1 b - - 2 40",
+      "moves": "d4a4 b6b7 a4a1 g1h2",
+      "rating": 990,
+      "popularity": 90,
+      "nbPlays": 558,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fxt0ceOp/black#80"
+    },
+    {
+      "puzzleId": "v7w9Z",
+      "fen": "3R4/8/3pkp1P/4p3/4Pp2/5P2/r7/6K1 b - - 0 47",
+      "moves": "a2a7 d8e8 e6d7 h6h7",
+      "rating": 991,
+      "popularity": 96,
+      "nbPlays": 4434,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/g42QXbKk/black#94"
+    },
+    {
+      "puzzleId": "yvcWT",
+      "fen": "8/p7/6P1/5p2/P4P2/2r2KP1/2p4k/2R5 w - - 1 38",
+      "moves": "f3f2 c3g3 g6g7 g3g7",
+      "rating": 991,
+      "popularity": 96,
+      "nbPlays": 1104,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/YscbVKMR#75"
+    },
+    {
+      "puzzleId": "CpU6u",
+      "fen": "8/4k1p1/p3r2p/1p1KpR2/3p2P1/3P3P/PP6/8 b - - 11 36",
+      "moves": "a6a5 f5e5 e6e5 d5e5",
+      "rating": 991,
+      "popularity": 95,
+      "nbPlays": 587,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UQUrwfAo/black#72"
+    },
+    {
+      "puzzleId": "Xllnx",
+      "fen": "8/8/7r/1p1p4/2kP2P1/2P2R1p/2R2K1P/3r4 w - - 2 38",
+      "moves": "f2g3 d1g1 g3f4 h6f6",
+      "rating": 991,
+      "popularity": 94,
+      "nbPlays": 558,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/waWy3A2Q#75"
+    },
+    {
+      "puzzleId": "mPWef",
+      "fen": "7r/1kp5/8/8/2P1P1r1/1P6/P4R2/4R1K1 w - - 9 42",
+      "moves": "g1f1 h8h1 f1e2 g4e4",
+      "rating": 991,
+      "popularity": 92,
+      "nbPlays": 945,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "interference",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/eZeRPdiB#83"
+    },
+    {
+      "puzzleId": "GmwkZ",
+      "fen": "R7/2rr4/2p1pk2/3p1ppR/1P1P3K/2P1PP2/6PP/8 w - - 0 36",
+      "moves": "h5g5 d7h7 h4g3 f6g5",
+      "rating": 991,
+      "popularity": 91,
+      "nbPlays": 940,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KiDT0t2Q#71"
+    },
+    {
+      "puzzleId": "bIn1s",
+      "fen": "8/2r2p2/4p1pk/4P2p/5R1P/5PK1/6P1/8 b - - 4 32",
+      "moves": "g6g5 f4f6 h6g7 h4g5",
+      "rating": 991,
+      "popularity": 91,
+      "nbPlays": 1155,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JvtBUv06/black#64"
+    },
+    {
+      "puzzleId": "xxFcI",
+      "fen": "r5k1/5p2/1P4p1/6P1/rKR2P2/8/2P2R2/8 w - - 1 50",
+      "moves": "b4b5 a8a5 b5c6 a4c4",
+      "rating": 991,
+      "popularity": 91,
+      "nbPlays": 535,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/X8dDMk0W#99"
+    },
+    {
+      "puzzleId": "HoBnJ",
+      "fen": "2k5/2p2pp1/P3p2p/8/3rP3/8/5P1P/1R4K1 b - - 0 28",
+      "moves": "d4e4 a6a7 e4a4 b1b8",
+      "rating": 991,
+      "popularity": 90,
+      "nbPlays": 519,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0mHuGYIJ/black#56"
+    },
+    {
+      "puzzleId": "9Ouq9",
+      "fen": "8/R7/2k4P/7r/7r/2P5/5PP1/5RK1 w - - 3 40",
+      "moves": "g2g3 h4h1 g1g2 h5h2 g2f3 h1f1",
+      "rating": 992,
+      "popularity": 100,
+      "nbPlays": 641,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/eiyEjEc7#79"
+    },
+    {
+      "puzzleId": "dicAE",
+      "fen": "8/5k2/p2r1P2/1p3R1p/1Pp5/8/P1K5/8 b - - 1 41",
+      "moves": "f7g6 f6f7 g6f5 f7f8q",
+      "rating": 992,
+      "popularity": 100,
+      "nbPlays": 637,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rRD9PEST/black#82"
+    },
+    {
+      "puzzleId": "JuVSf",
+      "fen": "6k1/p5pp/4r3/5R2/1P6/P6P/2Prp1P1/4R2K w - - 0 36",
+      "moves": "h1h2 d2d1 e1e2 e6e2",
+      "rating": 992,
+      "popularity": 98,
+      "nbPlays": 4261,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jkaQjBnb#71"
+    },
+    {
+      "puzzleId": "eG8O7",
+      "fen": "5k2/p4p1R/8/8/3p4/5R2/r5r1/7K b - - 1 46",
+      "moves": "g2h2 h7h2 a2a1 h1g2",
+      "rating": 992,
+      "popularity": 91,
+      "nbPlays": 726,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PBPzDEkI/black#92"
+    },
+    {
+      "puzzleId": "UcLBR",
+      "fen": "8/1pk5/p5R1/P1p3p1/KPP3r1/8/8/8 w - - 1 39",
+      "moves": "b4c5 g4c4 a4a3 c4c5",
+      "rating": 993,
+      "popularity": 89,
+      "nbPlays": 1188,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PaU95aOs#77"
+    },
+    {
+      "puzzleId": "0vhk9",
+      "fen": "8/2R5/8/7P/1p1p4/4pK2/3k4/8 w - - 3 50",
+      "moves": "c7b7 e3e2 b7b4 e2e1q",
+      "rating": 994,
+      "popularity": 94,
+      "nbPlays": 1257,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iCkvYeiN#99"
+    },
+    {
+      "puzzleId": "qdTD3",
+      "fen": "5R2/8/7P/r4p2/4p3/5k2/5P2/6K1 b - - 0 53",
+      "moves": "f5f4 h6h7 a5g5 g1f1",
+      "rating": 994,
+      "popularity": 93,
+      "nbPlays": 1449,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/o7SbWSQt/black#106"
+    },
+    {
+      "puzzleId": "tCO5Q",
+      "fen": "8/5k2/7p/2pr2p1/1pRP1pP1/1P2K2P/2P5/8 w - - 0 46",
+      "moves": "e3e4 d5d4 c4d4 c5d4",
+      "rating": 994,
+      "popularity": 93,
+      "nbPlays": 1262,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/lhV2gAj4#91"
+    },
+    {
+      "puzzleId": "kdhvS",
+      "fen": "7k/p1R5/6pp/8/8/P3r2P/1Pbp2P1/2R3K1 w - - 0 32",
+      "moves": "c7c2 e3e1 c1e1 d2e1q",
+      "rating": 994,
+      "popularity": 91,
+      "nbPlays": 995,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7XOkkaJl#63"
+    },
+    {
+      "puzzleId": "kw0Ea",
+      "fen": "8/p7/5R1p/4P1p1/8/5k2/PP5r/5K2 b - - 3 41",
+      "moves": "f3e4 e5e6 e4e5 e6e7 e5f6 e7e8q",
+      "rating": 994,
+      "popularity": 88,
+      "nbPlays": 655,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/0B1elk4p/black#82"
+    },
+    {
+      "puzzleId": "KlOW3",
+      "fen": "1k6/1p5p/p2P2p1/6p1/r7/8/P5PP/4R1K1 b - - 0 33",
+      "moves": "a4a2 e1e8 b8a7 d6d7",
+      "rating": 995,
+      "popularity": 96,
+      "nbPlays": 2032,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9Ry3Hquv/black#66"
+    },
+    {
+      "puzzleId": "xOmsK",
+      "fen": "5r2/p6R/8/5p2/7P/2PRp1P1/PP3k2/3K4 w - - 0 33",
+      "moves": "h7a7 e3e2 d1c2 e2e1q",
+      "rating": 995,
+      "popularity": 90,
+      "nbPlays": 546,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "deflection",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PI35JhOM#65"
+    },
+    {
+      "puzzleId": "8Gf6M",
+      "fen": "7R/5kp1/8/8/5P1p/1p5P/1r4PK/8 w - - 0 37",
+      "moves": "h8h4 b2g2 h2g2 b3b2 h4h5 b2b1q",
+      "rating": 996,
+      "popularity": 91,
+      "nbPlays": 536,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "masterVsMaster",
+        "promotion",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/P55hNAUm#73"
+    },
+    {
+      "puzzleId": "Nr1Se",
+      "fen": "8/8/8/2kpPK1p/7P/2P2pr1/5R2/8 b - - 1 48",
+      "moves": "c5c4 e5e6 c4d3 e6e7",
+      "rating": 997,
+      "popularity": 100,
+      "nbPlays": 520,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zIRJYHIs/black#96"
+    },
+    {
+      "puzzleId": "iF6BI",
+      "fen": "8/1p6/p3pk2/2Pp4/3P1PPr/2P1R2p/1P5K/8 w - - 4 43",
+      "moves": "h2g3 h3h2 g3h4 h2h1q",
+      "rating": 997,
+      "popularity": 100,
+      "nbPlays": 570,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7l73yrjO#85"
+    },
+    {
+      "puzzleId": "0wtCH",
+      "fen": "8/8/k7/7P/pp4p1/3PK3/1r6/7R b - - 0 47",
+      "moves": "a4a3 h5h6 b2c2 h6h7",
+      "rating": 997,
+      "popularity": 96,
+      "nbPlays": 574,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9OtIhnRN/black#94"
+    },
+    {
+      "puzzleId": "lOyzD",
+      "fen": "8/1r5p/1P2k3/1R3p2/4pK2/r6P/PR6/8 w - - 14 44",
+      "moves": "b5f5 a3f3 f4e4 f3f5",
+      "rating": 997,
+      "popularity": 96,
+      "nbPlays": 6880,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Yybvda9h#87"
+    },
+    {
+      "puzzleId": "lZHzM",
+      "fen": "8/p4p2/4ppkp/8/4P3/Pp2P3/1PrRK1PP/8 b - - 4 27",
+      "moves": "a7a5 d2c2 b3c2 e2d2 c2c1r d2c1",
+      "rating": 997,
+      "popularity": 95,
+      "nbPlays": 970,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/kcfAvE75/black#54"
+    },
+    {
+      "puzzleId": "VagsL",
+      "fen": "5rk1/p4p2/1p2p1p1/7p/3P2PR/7R/PPr2PK1/8 b - - 0 28",
+      "moves": "h5g4 h4h8 g8g7 h3h7 g7f6 h8f8",
+      "rating": 997,
+      "popularity": 94,
+      "nbPlays": 3802,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/NHhaejaM/black#56"
+    },
+    {
+      "puzzleId": "fyxRq",
+      "fen": "6k1/5p2/3r3p/8/8/5PKP/PP1r2P1/1R3R2 w - - 1 30",
+      "moves": "f1f2 d6g6 g3h2 d2f2",
+      "rating": 997,
+      "popularity": 91,
+      "nbPlays": 765,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wuh7QyvR#59"
+    },
+    {
+      "puzzleId": "F3w6F",
+      "fen": "8/pp1R2pp/8/5Pk1/6P1/1Pr3PK/8/8 b - - 0 38",
+      "moves": "c3b3 d7g7 g5f6 g7h7",
+      "rating": 997,
+      "popularity": 83,
+      "nbPlays": 569,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4hbdUnZI/black#76"
+    },
+    {
+      "puzzleId": "TGt7r",
+      "fen": "7R/8/5p1k/4p2p/8/8/r5r1/4R2K b - - 6 44",
+      "moves": "h6g6 h8g8 g6f5 g8g2",
+      "rating": 998,
+      "popularity": 98,
+      "nbPlays": 2943,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0MvwanyK/black#88"
+    },
+    {
+      "puzzleId": "TlBsv",
+      "fen": "8/p4pp1/1kp5/1p2PP2/7r/5K2/P7/4R3 b - - 1 35",
+      "moves": "h4a4 e5e6 f7e6 f5e6 a4h4 e6e7",
+      "rating": 998,
+      "popularity": 95,
+      "nbPlays": 827,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/qPooxkdd/black#70"
+    },
+    {
+      "puzzleId": "PqeDl",
+      "fen": "5rk1/1p3p2/p1p3p1/P1Pr4/7R/6P1/6K1/7R b - - 2 41",
+      "moves": "d5c5 h4h8 g8g7 h1h7 g7f6 h8f8",
+      "rating": 998,
+      "popularity": 92,
+      "nbPlays": 983,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/zkl47ow8/black#82"
+    },
+    {
+      "puzzleId": "83uqO",
+      "fen": "5R2/6pk/7p/2p5/8/6PP/3p3K/8 w - - 1 47",
+      "moves": "f8f1 c5c4 f1d1 c4c3",
+      "rating": 998,
+      "popularity": 91,
+      "nbPlays": 519,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "quietMove",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2mEoK0mr#93"
+    },
+    {
+      "puzzleId": "Yb6dr",
+      "fen": "8/2p2pk1/1p6/P1p3pp/8/1P2r2P/6PK/R7 b - - 0 29",
+      "moves": "e3b3 a5a6 b3d3 a6a7",
+      "rating": 998,
+      "popularity": 91,
+      "nbPlays": 707,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NbREhTWU/black#58"
+    },
+    {
+      "puzzleId": "bPbw9",
+      "fen": "5r2/8/4p2p/pp2P3/3PKp1k/2P5/PP5P/6R1 w - - 10 41",
+      "moves": "g1g6 f4f3 g6g1 f3f2",
+      "rating": 999,
+      "popularity": 97,
+      "nbPlays": 1428,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/C2Dwid15#81"
+    },
+    {
+      "puzzleId": "dMuwC",
+      "fen": "7r/R7/p2k4/8/8/4P3/PP3PPr/5RK1 w - - 0 32",
+      "moves": "g2g3 h2h1 g1g2 h8h2 g2f3 h1f1",
+      "rating": 999,
+      "popularity": 97,
+      "nbPlays": 3655,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/ORBriFrc#63"
+    },
+    {
+      "puzzleId": "XNHoM",
+      "fen": "1r3k2/5pp1/P3p2p/3p4/1r6/7P/2R2PP1/2R3K1 b - - 4 32",
+      "moves": "b8a8 c2c8 a8c8 c1c8 f8e7 a6a7",
+      "rating": 999,
+      "popularity": 93,
+      "nbPlays": 585,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "rookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/GSHUHQOH/black#64"
+    },
+    {
+      "puzzleId": "hXmhI",
+      "fen": "8/8/4R1pk/3rpp1p/1P1p4/P2K1P2/6PP/8 w - - 4 35",
+      "moves": "d3c4 d4d3 c4d5 d3d2 d5e5 d2d1q",
+      "rating": 999,
+      "popularity": 90,
+      "nbPlays": 552,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion",
+        "rookEndgame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/dLStJwGb#69"
+    },
+    {
+      "puzzleId": "zrhXH",
+      "fen": "3r3k/r7/p2p1p2/1pp4R/8/1P1R4/PP6/1K6 b - - 0 28",
+      "moves": "h8g7 d3g3 g7f7 h5h7",
+      "rating": 999,
+      "popularity": 85,
+      "nbPlays": 1057,
+      "theme": "rookEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Fe8fOq4P/black#56"
+    }
+  ]
+}

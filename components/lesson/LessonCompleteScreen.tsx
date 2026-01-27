@@ -28,6 +28,7 @@ interface LessonCompleteScreenProps {
   lessonId: string;
   isGuest: boolean;
   getLevelKeyFromLessonId: (id: string) => string;
+  nextLessonId: string | null;
 }
 
 export function LessonCompleteScreen({
@@ -36,6 +37,7 @@ export function LessonCompleteScreen({
   lessonId,
   isGuest,
   getLevelKeyFromLessonId,
+  nextLessonId,
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
   const accuracy = Math.round((correctCount / 6) * 100);
@@ -135,12 +137,21 @@ export function LessonCompleteScreen({
             {lessonName}
           </div>
 
-          {/* Continue button */}
+          {/* Continue button - go to next lesson or back to tree */}
           <button
-            onClick={() => window.location.href = isGuest
-              ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
-              : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`
-            }
+            onClick={() => {
+              if (nextLessonId) {
+                // Go directly to the next lesson
+                window.location.href = isGuest
+                  ? `/lesson/${nextLessonId}?guest=true`
+                  : `/lesson/${nextLessonId}`;
+              } else {
+                // End of level - go back to curriculum tree
+                window.location.href = isGuest
+                  ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
+                  : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
+              }
+            }}
             className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] animate-fadeInUp"
             style={{
               backgroundColor: COLORS.green,
@@ -148,7 +159,7 @@ export function LessonCompleteScreen({
               animationFillMode: 'backwards',
             }}
           >
-            Continue
+            {nextLessonId ? 'Next Lesson' : 'Continue'}
           </button>
 
           {/* Guest signup prompt */}

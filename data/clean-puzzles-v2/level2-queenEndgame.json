@@ -1,0 +1,355 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "queenEndgame",
+  "count": 21,
+  "puzzles": [
+    {
+      "puzzleId": "h3xQ1",
+      "fen": "7k/2p3p1/p7/8/6QK/3q4/PP5P/8 b - - 10 37",
+      "moves": "d3h7 g4h5 h7h5 h4h5",
+      "rating": 854,
+      "popularity": 92,
+      "nbPlays": 733,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "master",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DRkZgmJ1/black#74"
+    },
+    {
+      "puzzleId": "mypMt",
+      "fen": "6k1/5pp1/4p2p/4P3/2pP4/pqP4P/3K1PP1/Q7 b - - 7 47",
+      "moves": "b3b2 a1b2 a3b2 d2c2 b2b1b c2b1",
+      "rating": 862,
+      "popularity": 95,
+      "nbPlays": 543,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/YU3tevsJ/black#94"
+    },
+    {
+      "puzzleId": "b5xbM",
+      "fen": "6k1/5p1p/6p1/1p6/1p1qP3/1Pp3P1/2Q2P1P/5K2 b - - 1 34",
+      "moves": "d4d2 c2d2 c3d2 f1e2 d2d1r e2d1",
+      "rating": 873,
+      "popularity": 98,
+      "nbPlays": 1102,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/SmilW64z/black#68"
+    },
+    {
+      "puzzleId": "H8Mhb",
+      "fen": "8/1pQ4p/p5p1/P5k1/1P2q3/2P4P/6P1/6K1 w - - 1 34",
+      "moves": "g1h2 e4f4 c7f4 g5f4",
+      "rating": 880,
+      "popularity": 98,
+      "nbPlays": 1378,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vk5kotTa#67"
+    },
+    {
+      "puzzleId": "UuGMd",
+      "fen": "8/5p1k/p5pp/8/8/1P1p2P1/P1q2P1P/3QK3 b - - 3 32",
+      "moves": "h7g7 d1c2 d3c2 e1d2 c2c1r d2c1",
+      "rating": 895,
+      "popularity": 88,
+      "nbPlays": 527,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/LKZzDcmh/black#64"
+    },
+    {
+      "puzzleId": "63g99",
+      "fen": "8/p5k1/1p1pPqp1/2p2p2/2P2P2/P1Q2KP1/1P6/8 w - - 0 34",
+      "moves": "e6e7 f6c3 b2c3 g7f7",
+      "rating": 897,
+      "popularity": 96,
+      "nbPlays": 1473,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pnMJ5BK4#67"
+    },
+    {
+      "puzzleId": "zymb9",
+      "fen": "6q1/3k4/p4QP1/1p2pp2/3p4/8/PPP2P2/1K6 w - - 0 38",
+      "moves": "f6f7 g8f7 g6f7 d7e7 f7f8q e7f8",
+      "rating": 897,
+      "popularity": 96,
+      "nbPlays": 572,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/cNjIJhJO#75"
+    },
+    {
+      "puzzleId": "L1cVx",
+      "fen": "4r3/3PPk1p/1p4p1/p2q1p2/P1P5/6PP/1P6/6K1 w - - 0 34",
+      "moves": "d7e8q f7e8 c4d5 e8e7",
+      "rating": 909,
+      "popularity": 77,
+      "nbPlays": 534,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/y4L57dw3#67"
+    },
+    {
+      "puzzleId": "U6BJK",
+      "fen": "8/5k2/3Pp3/5p2/1p1Q2pP/2p1P1P1/5K2/2q5 b - - 2 50",
+      "moves": "c1d2 d4d2 c3d2 f2e2",
+      "rating": 910,
+      "popularity": 95,
+      "nbPlays": 4406,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/QrsWx09b/black#100"
+    },
+    {
+      "puzzleId": "TQp0Z",
+      "fen": "4k3/3q1p2/p2P2pp/P1Q5/8/7P/5PP1/6K1 w - - 5 43",
+      "moves": "c5c7 d7c7 d6c7 e8d7 c7c8q d7c8",
+      "rating": 917,
+      "popularity": 99,
+      "nbPlays": 934,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/z4IrIvCY#85"
+    },
+    {
+      "puzzleId": "hMSeN",
+      "fen": "6k1/2p2pp1/7p/2P5/7q/6P1/5P2/3Q2K1 b - - 0 31",
+      "moves": "h4c4 d1d8 g8h7 d8c7",
+      "rating": 922,
+      "popularity": 96,
+      "nbPlays": 1150,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/f78l04Fy/black#62"
+    },
+    {
+      "puzzleId": "UlTHG",
+      "fen": "5Q2/8/2p3p1/1p3pk1/p2P3p/P1PK1P1P/1P4q1/8 w - - 3 47",
+      "moves": "f8d8 g5f4 d8h4 f4f3",
+      "rating": 924,
+      "popularity": 95,
+      "nbPlays": 710,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/37teUZWE#93"
+    },
+    {
+      "puzzleId": "3n3AS",
+      "fen": "5k2/1p2q1pp/p4p2/3Q4/P1P5/1P5P/6P1/7K w - - 2 43",
+      "moves": "c4c5 e7e1 h1h2 e1e5 d5e5 f6e5",
+      "rating": 930,
+      "popularity": 96,
+      "nbPlays": 1560,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/BzuSWAaP#85"
+    },
+    {
+      "puzzleId": "cSc9Q",
+      "fen": "3Q2k1/5p2/2p4p/P5p1/1P6/2K5/8/6q1 b - - 2 47",
+      "moves": "g8g7 d8d4 g1d4 c3d4",
+      "rating": 935,
+      "popularity": 95,
+      "nbPlays": 876,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zdMKlbGa/black#94"
+    },
+    {
+      "puzzleId": "gFBZe",
+      "fen": "4Q3/6pk/5p1p/4pP1P/1K6/P4q2/8/8 b - - 10 44",
+      "moves": "f3f5 e8g6 f5g6 h5g6 h7g6 a3a4",
+      "rating": 944,
+      "popularity": 98,
+      "nbPlays": 926,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/oTl0tLtl/black#88"
+    },
+    {
+      "puzzleId": "ndWcm",
+      "fen": "8/p3q3/1k2Pppp/2pQ4/2P2P2/6P1/PP6/6K1 w - - 0 33",
+      "moves": "d5d7 e7d7 e6d7 b6c7",
+      "rating": 957,
+      "popularity": 100,
+      "nbPlays": 697,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iTgng8TH#65"
+    },
+    {
+      "puzzleId": "OMnhc",
+      "fen": "5k2/5p1p/4p1p1/8/3q4/P1p4P/2Q2PP1/5K2 b - - 2 37",
+      "moves": "d4d2 c2d2 c3d2 f1e2 d2d1q e2d1",
+      "rating": 959,
+      "popularity": 95,
+      "nbPlays": 563,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/vSbLM8o6/black#74"
+    },
+    {
+      "puzzleId": "TT1CF",
+      "fen": "8/1p1q4/p2P1pkp/4Qp2/8/P5P1/1P5P/K7 w - - 0 37",
+      "moves": "e5e7 d7e7 d6e7 g6f7 e7e8r f7e8",
+      "rating": 964,
+      "popularity": 96,
+      "nbPlays": 577,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "queenEndgame"
+      ],
+      "gameUrl": "https://lichess.org/P0Gv4cka#73"
+    },
+    {
+      "puzzleId": "yOgG5",
+      "fen": "8/1p6/3Pk1p1/P1Q2p2/1P2p2p/7P/5PPK/3q4 w - - 1 47",
+      "moves": "b4b5 d1d6 c5d6 e6d6",
+      "rating": 972,
+      "popularity": 97,
+      "nbPlays": 631,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ezq2mcQ5#93"
+    },
+    {
+      "puzzleId": "eFPGR",
+      "fen": "8/7p/3p2pk/4p3/6q1/P7/3Q3K/8 b - - 1 52",
+      "moves": "g4g5 d2g5 h6g5 a3a4 g5f4 a4a5",
+      "rating": 986,
+      "popularity": 95,
+      "nbPlays": 531,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "queenEndgame",
+        "quietMove"
+      ],
+      "gameUrl": "https://lichess.org/wXaHIZLa/black#104"
+    },
+    {
+      "puzzleId": "XY5Fj",
+      "fen": "4Q3/2p2ppk/p6p/1pPP4/5KP1/5P2/P7/6q1 b - - 12 41",
+      "moves": "g7g5 f4f5 h7g7 e8e5",
+      "rating": 987,
+      "popularity": 94,
+      "nbPlays": 1274,
+      "theme": "queenEndgame",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "queenEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uvvPYAfH/black#82"
+    }
+  ]
+}

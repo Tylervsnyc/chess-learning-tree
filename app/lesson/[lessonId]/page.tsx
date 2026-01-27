@@ -6,6 +6,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
+import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import {
   playCorrectSound,
@@ -89,11 +90,20 @@ export default function LessonPage() {
   const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
   const isGuest = searchParams.get('guest') === 'true';
-  const { completeLesson, recordPuzzleAttempt, lessonsCompletedToday } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt } = useLessonProgress();
   const { user, profile } = useUser();
+  const {
+    canAccessLesson,
+    shouldPromptSignup,
+    shouldPromptPremium,
+    lessonsRemainingToday,
+    lessonsCompletedToday,
+    tier,
+    recordLessonComplete,
+  } = usePermissions();
 
   // Check if user is premium (has active subscription)
-  const isPremium = profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial';
+  const isPremium = tier === 'premium' || tier === 'admin';
 
   // State for lesson limit modal
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -152,16 +162,22 @@ export default function LessonPage() {
     }
   }, []);
 
-  // Show lesson limit modal after completing 2 lessons (for non-premium users)
+  // Record lesson completion and show limit modal if needed
   useEffect(() => {
-    if (lessonComplete && !isPremium && lessonsCompletedToday >= 2) {
-      // Delay slightly so user sees the celebration first
-      const timer = setTimeout(() => {
-        setShowLimitModal(true);
-      }, 2000);
-      return () => clearTimeout(timer);
+    if (lessonComplete) {
+      // Record the lesson completion for permission tracking
+      recordLessonComplete();
+
+      // Show limit modal for users who've hit their limit
+      if (shouldPromptSignup || shouldPromptPremium) {
+        // Delay slightly so user sees the celebration first
+        const timer = setTimeout(() => {
+          setShowLimitModal(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [lessonComplete, isPremium, lessonsCompletedToday]);
+  }, [lessonComplete, shouldPromptSignup, shouldPromptPremium, recordLessonComplete]);
 
   // Track lesson completion in analytics
   useEffect(() => {
@@ -643,6 +659,66 @@ export default function LessonPage() {
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
   const wrongCount = Object.values(results).filter(r => r === 'wrong').length;
 
+  // Permission gate - check if user can access lessons
+  if (!canAccessLesson && !loading) {
+    return (
+      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <button
+              onClick={() => router.push('/learn')}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <div className="flex-1" />
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center max-w-md">
+            {shouldPromptSignup ? (
+              <>
+                <div className="text-5xl mb-4">🔒</div>
+                <h1 className="text-2xl font-bold mb-2">Create an Account</h1>
+                <p className="text-white/60 mb-6">
+                  Sign up for free to continue learning! You'll get 2 lessons per day.
+                </p>
+                <button
+                  onClick={() => router.push('/auth/signup')}
+                  className="px-8 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+                >
+                  Sign Up Free
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-5xl mb-4">⏰</div>
+                <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
+                <p className="text-white/60 mb-6">
+                  You've completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
+                </p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => router.push('/pricing')}
+                    className="px-8 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+                  >
+                    Upgrade to Premium
+                  </button>
+                  <button
+                    onClick={() => router.push('/learn')}
+                    className="px-8 py-3 bg-[#1A2C35] text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
+                  >
+                    Back to Learn
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
@@ -689,6 +765,7 @@ export default function LessonPage() {
           lessonId={lessonId}
           isGuest={isGuest}
           getLevelKeyFromLessonId={getLevelKeyFromLessonId}
+          nextLessonId={getNextLessonId(lessonId)}
         />
         <LessonLimitModal
           isOpen={showLimitModal}

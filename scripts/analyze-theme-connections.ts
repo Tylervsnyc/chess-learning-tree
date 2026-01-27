@@ -1,222 +1,99 @@
 /**
- * Analyze how themes naturally connect in puzzles
- * Output data for visualization
+ * Analyze Theme Connections in Puzzle Database
+ * Run with: npx tsx scripts/analyze-theme-connections.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
-const BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+const THEME_CATEGORIES = {
+  outcomes: [
+    'mate', 'mateIn1', 'mateIn2', 'mateIn3', 'mateIn4', 'mateIn5',
+    'backRankMate', 'smotheredMate', 'hookMate', 'arabianMate', 'anastasiasMate',
+    'bodensMate', 'doubleBishopMate', 'dovetailMate',
+    'crushing', 'advantage', 'hangingPiece', 'trappedPiece',
+    'endgame', 'rookEndgame', 'pawnEndgame', 'queenEndgame', 'bishopEndgame', 'knightEndgame',
+    'promotion', 'underPromotion',
+  ],
+  mechanisms: ['fork', 'pin', 'skewer', 'discoveredAttack', 'discoveredCheck', 'doubleCheck', 'exposedKing'],
+  enablers: ['attraction', 'deflection', 'clearance', 'capturingDefender', 'interference', 'overloading', 'xRayAttack', 'intermezzo', 'zwischenzug', 'sacrifice', 'quietMove', 'advancedPawn'],
+  context: ['opening', 'middlegame', 'kingsideAttack', 'queensideAttack', 'short', 'long', 'veryLong', 'oneMove', 'master', 'masterVsMaster', 'superGM', 'defensiveMove', 'equality', 'zugzwang', 'castling', 'enPassant'],
+};
 
-interface ThemeConnection {
-  theme1: string;
-  theme2: string;
-  count: number;
-  percentage: number; // % of theme1 puzzles that also have theme2
+const CATEGORY_LOOKUP: Record<string, string> = {};
+Object.entries(THEME_CATEGORIES).forEach(([cat, themes]) => {
+  themes.forEach(t => CATEGORY_LOOKUP[t] = cat);
+});
+
+function categorizeThemes(str: string) {
+  const themes = str.split(' ').filter(Boolean);
+  const result = { outcomes: [] as string[], mechanisms: [] as string[], enablers: [] as string[], context: [] as string[], unknown: [] as string[] };
+  themes.forEach(t => {
+    const cat = CATEGORY_LOOKUP[t];
+    if (cat === 'outcomes') result.outcomes.push(t);
+    else if (cat === 'mechanisms') result.mechanisms.push(t);
+    else if (cat === 'enablers') result.enablers.push(t);
+    else if (cat === 'context') result.context.push(t);
+    else result.unknown.push(t);
+  });
+  return result;
 }
 
-interface ThemeStats {
-  theme: string;
-  totalPuzzles: number;
-  connections: { theme: string; count: number; percentage: number }[];
+function parseCsvLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  for (const char of line) {
+    if (char === '"') inQuotes = !inQuotes;
+    else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
+    else current += char;
+  }
+  result.push(current);
+  return result;
 }
 
-interface BracketAnalysis {
-  bracket: string;
-  ratingRange: string;
-  totalPuzzles: number;
-  themes: ThemeStats[];
-  topConnections: ThemeConnection[];
-}
-
-// Themes we care about (tactical themes, not meta-themes)
-const TACTICAL_THEMES = [
-  'fork', 'pin', 'skewer', 'discoveredAttack', 'doubleCheck',
-  'deflection', 'attraction', 'capturingDefender', 'interference',
-  'clearance', 'sacrifice', 'trappedPiece', 'hangingPiece',
-  'mateIn1', 'mateIn2', 'mateIn3', 'backRankMate', 'smotheredMate',
-  'promotion', 'advancedPawn', 'exposedKing', 'quietMove',
-  'defensiveMove', 'intermezzo', 'xRayAttack'
-];
-
-// Meta themes to exclude from connections (these describe outcome/phase, not tactics)
-const META_THEMES = [
-  'mate', 'crushing', 'advantage', 'equality',
-  'short', 'long', 'veryLong', 'oneMove',
-  'middlegame', 'endgame', 'opening',
-  'master', 'masterVsMaster', 'superGM'
-];
-
-function loadAllPuzzlesFromBracket(bracket: string): { themes: string[] }[] {
-  const dir = join(BASE_DIR, bracket);
-  const files = readdirSync(dir).filter(f => f.endsWith('.csv'));
-  const seenIds = new Set<string>();
-  const puzzles: { themes: string[] }[] = [];
+async function analyze() {
+  const dataDir = path.join(process.cwd(), 'data', 'puzzles-by-rating');
+  const files = ['0400-0800.csv', '0800-1200.csv', '1200-1600.csv'];
+  const coOccurrences = new Map<string, number>();
+  const themeCounts = new Map<string, number>();
+  let total = 0;
 
   for (const file of files) {
-    const content = readFileSync(join(dir, file), 'utf-8');
-    const lines = content.trim().split('\n');
-
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(',');
-      if (parts.length < 9) continue;
-
-      const puzzleId = parts[0];
-      if (seenIds.has(puzzleId)) continue;
-      seenIds.add(puzzleId);
-
-      const themes = parts[7].split(' ').filter(t =>
-        TACTICAL_THEMES.includes(t) && !META_THEMES.includes(t)
-      );
-
-      if (themes.length > 0) {
-        puzzles.push({ themes });
+    const fp = path.join(dataDir, file);
+    if (!fs.existsSync(fp)) continue;
+    console.log('Analyzing ' + file + '...');
+    const lines = fs.readFileSync(fp, 'utf-8').split('\n').slice(1);
+    for (let i = 0; i < lines.length; i += 10) {
+      const line = lines[i];
+      if (!line?.trim()) continue;
+      const fields = parseCsvLine(line);
+      const themeStr = fields[7];
+      if (!themeStr) continue;
+      const cat = categorizeThemes(themeStr);
+      total++;
+      [...cat.outcomes, ...cat.mechanisms, ...cat.enablers].forEach(t => themeCounts.set(t, (themeCounts.get(t) || 0) + 1));
+      cat.enablers.forEach(e => cat.mechanisms.forEach(m => coOccurrences.set(e + ' -> ' + m, (coOccurrences.get(e + ' -> ' + m) || 0) + 1)));
+      cat.mechanisms.forEach(m => cat.outcomes.forEach(o => coOccurrences.set(m + ' -> ' + o, (coOccurrences.get(m + ' -> ' + o) || 0) + 1)));
+      if (cat.mechanisms.length === 0 && cat.enablers.length > 0) {
+        cat.enablers.forEach(e => cat.outcomes.forEach(o => coOccurrences.set(e + ' -> ' + o + ' (direct)', (coOccurrences.get(e + ' -> ' + o + ' (direct)') || 0) + 1)));
       }
     }
   }
 
-  return puzzles;
+  console.log('\nTotal puzzles: ' + total);
+  console.log('\n--- MECHANISMS ---');
+  [...themeCounts.entries()].filter(([t]) => CATEGORY_LOOKUP[t] === 'mechanisms').sort((a,b) => b[1] - a[1]).forEach(([t, c]) => console.log('  ' + t + ': ' + c));
+  console.log('\n--- ENABLERS ---');
+  [...themeCounts.entries()].filter(([t]) => CATEGORY_LOOKUP[t] === 'enablers').sort((a,b) => b[1] - a[1]).forEach(([t, c]) => console.log('  ' + t + ': ' + c));
+  console.log('\n--- ENABLER -> MECHANISM ---');
+  [...coOccurrences.entries()].filter(([k]) => CATEGORY_LOOKUP[k.split(' -> ')[0]] === 'enablers' && CATEGORY_LOOKUP[k.split(' -> ')[1]] === 'mechanisms').sort((a,b) => b[1] - a[1]).slice(0,15).forEach(([k, c]) => console.log('  ' + k + ': ' + c));
+  console.log('\n--- MECHANISM -> OUTCOME ---');
+  [...coOccurrences.entries()].filter(([k]) => CATEGORY_LOOKUP[k.split(' -> ')[0]] === 'mechanisms' && CATEGORY_LOOKUP[k.split(' -> ')[1]] === 'outcomes').sort((a,b) => b[1] - a[1]).slice(0,20).forEach(([k, c]) => console.log('  ' + k + ': ' + c));
+
+  const outputData = { totalPuzzles: total, themeCounts: Object.fromEntries(themeCounts), coOccurrences: Object.fromEntries(coOccurrences) };
+  fs.writeFileSync(path.join(process.cwd(), 'data', 'theme-connections-analysis.json'), JSON.stringify(outputData, null, 2));
+  console.log('\nSaved to data/theme-connections-analysis.json');
 }
 
-function analyzeThemeConnections(puzzles: { themes: string[] }[]): {
-  themeStats: Map<string, ThemeStats>;
-  connections: ThemeConnection[];
-} {
-  // Count occurrences of each theme
-  const themeCounts = new Map<string, number>();
-  const coOccurrence = new Map<string, Map<string, number>>();
-
-  for (const puzzle of puzzles) {
-    const themes = puzzle.themes;
-
-    // Count each theme
-    for (const theme of themes) {
-      themeCounts.set(theme, (themeCounts.get(theme) || 0) + 1);
-    }
-
-    // Count co-occurrences
-    for (let i = 0; i < themes.length; i++) {
-      for (let j = i + 1; j < themes.length; j++) {
-        const t1 = themes[i];
-        const t2 = themes[j];
-
-        // Bidirectional counting
-        if (!coOccurrence.has(t1)) coOccurrence.set(t1, new Map());
-        if (!coOccurrence.has(t2)) coOccurrence.set(t2, new Map());
-
-        coOccurrence.get(t1)!.set(t2, (coOccurrence.get(t1)!.get(t2) || 0) + 1);
-        coOccurrence.get(t2)!.set(t1, (coOccurrence.get(t2)!.get(t1) || 0) + 1);
-      }
-    }
-  }
-
-  // Build theme stats
-  const themeStats = new Map<string, ThemeStats>();
-  const allConnections: ThemeConnection[] = [];
-
-  for (const [theme, count] of themeCounts) {
-    const connections: { theme: string; count: number; percentage: number }[] = [];
-    const themeCoOccur = coOccurrence.get(theme);
-
-    if (themeCoOccur) {
-      for (const [otherTheme, coCount] of themeCoOccur) {
-        const percentage = Math.round((coCount / count) * 100);
-        connections.push({ theme: otherTheme, count: coCount, percentage });
-
-        // Add to all connections (only once per pair)
-        if (theme < otherTheme) {
-          allConnections.push({
-            theme1: theme,
-            theme2: otherTheme,
-            count: coCount,
-            percentage: Math.round((coCount / Math.min(count, themeCounts.get(otherTheme) || 1)) * 100)
-          });
-        }
-      }
-    }
-
-    connections.sort((a, b) => b.percentage - a.percentage);
-
-    themeStats.set(theme, {
-      theme,
-      totalPuzzles: count,
-      connections: connections.slice(0, 10) // Top 10 connections
-    });
-  }
-
-  // Sort connections by count
-  allConnections.sort((a, b) => b.count - a.count);
-
-  return { themeStats, connections: allConnections };
-}
-
-function analyzeBracket(bracket: string, ratingRange: string): BracketAnalysis {
-  console.log(`\nAnalyzing ${bracket}...`);
-  const puzzles = loadAllPuzzlesFromBracket(bracket);
-  console.log(`  Loaded ${puzzles.length} puzzles`);
-
-  const { themeStats, connections } = analyzeThemeConnections(puzzles);
-
-  // Convert to array and sort by puzzle count
-  const themes = Array.from(themeStats.values())
-    .sort((a, b) => b.totalPuzzles - a.totalPuzzles);
-
-  return {
-    bracket,
-    ratingRange,
-    totalPuzzles: puzzles.length,
-    themes,
-    topConnections: connections.slice(0, 50)
-  };
-}
-
-async function main() {
-  console.log('ANALYZING THEME CONNECTIONS ACROSS RATING BRACKETS\n');
-
-  const analyses: BracketAnalysis[] = [];
-
-  // Analyze each bracket
-  const brackets = [
-    { bracket: '0400-0800', ratingRange: '400-800 (Beginner)' },
-    { bracket: '0800-1200', ratingRange: '800-1200 (Casual)' },
-    { bracket: '1200-1600', ratingRange: '1200-1600 (Club)' },
-  ];
-
-  for (const { bracket, ratingRange } of brackets) {
-    const analysis = analyzeBracket(bracket, ratingRange);
-    analyses.push(analysis);
-  }
-
-  // Output summary to console
-  for (const analysis of analyses) {
-    console.log(`\n${'='.repeat(70)}`);
-    console.log(`${analysis.ratingRange}`);
-    console.log(`Total Puzzles: ${analysis.totalPuzzles}`);
-    console.log(`${'='.repeat(70)}`);
-
-    console.log('\nTOP THEMES:');
-    for (const theme of analysis.themes.slice(0, 15)) {
-      console.log(`  ${theme.theme.padEnd(20)} ${theme.totalPuzzles} puzzles`);
-    }
-
-    console.log('\nSTRONGEST THEME CONNECTIONS:');
-    for (const conn of analysis.topConnections.slice(0, 20)) {
-      console.log(`  ${conn.theme1} + ${conn.theme2}: ${conn.count} puzzles (${conn.percentage}%)`);
-    }
-
-    console.log('\nTHEME RELATIONSHIP DETAILS:');
-    for (const theme of analysis.themes.slice(0, 8)) {
-      console.log(`\n  ${theme.theme} (${theme.totalPuzzles} puzzles):`);
-      for (const conn of theme.connections.slice(0, 5)) {
-        console.log(`    → ${conn.theme}: ${conn.count} (${conn.percentage}%)`);
-      }
-    }
-  }
-
-  // Save data for visualization
-  const outputPath = join(process.cwd(), 'data', 'staging', 'theme-connections.json');
-  writeFileSync(outputPath, JSON.stringify(analyses, null, 2));
-  console.log(`\n\nData saved to: ${outputPath}`);
-}
-
-main();
+analyze();

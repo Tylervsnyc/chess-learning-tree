@@ -1,0 +1,26 @@
+{
+  "level": 3,
+  "ratingRange": "1000-1200",
+  "theme": "underPromotion",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "K59oK",
+      "fen": "r1b1qrk1/pp5P/2nbp1p1/3p3Q/3P1P2/1PP1P3/5KP1/RNB4R b - - 0 18",
+      "moves": "g8f7 h7h8n f8h8 h5h8 e8h8 h1h8",
+      "rating": 1064,
+      "popularity": 88,
+      "nbPlays": 6900,
+      "theme": "underPromotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "long",
+        "middlegame",
+        "promotion",
+        "underPromotion"
+      ],
+      "gameUrl": "https://lichess.org/5JxrssIY/black#36"
+    }
+  ]
+}

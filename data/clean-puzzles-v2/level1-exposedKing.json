@@ -1,0 +1,25 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "exposedKing",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "wZepk",
+      "fen": "2kr4/ppqr1pp1/2p1pn2/8/P1P2NPp/5Q1P/1P3PB1/R4R1K w - - 1 21",
+      "moves": "a1d1 d7d1 f1d1 d8d1 f3d1 c7f4",
+      "rating": 784,
+      "popularity": 91,
+      "nbPlays": 1144,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "kingsideAttack",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/1XNIch6W#41"
+    }
+  ]
+}

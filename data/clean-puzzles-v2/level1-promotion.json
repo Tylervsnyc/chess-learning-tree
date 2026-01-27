@@ -1,0 +1,338 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "promotion",
+  "count": 19,
+  "puzzles": [
+    {
+      "puzzleId": "YCVNe",
+      "fen": "8/8/R5pk/8/5N2/1KP5/PP4rp/8 w - - 0 42",
+      "moves": "f4g2 h2h1q a6g6 h6g6",
+      "rating": 558,
+      "popularity": 90,
+      "nbPlays": 2026,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DwoOIg6q#83"
+    },
+    {
+      "puzzleId": "804hX",
+      "fen": "r7/8/PP4p1/2k5/2P5/2K5/6n1/4R3 b - - 0 58",
+      "moves": "g2e1 b6b7 a8a6 b7b8q",
+      "rating": 621,
+      "popularity": 100,
+      "nbPlays": 1875,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FW0IOCdi/black#116"
+    },
+    {
+      "puzzleId": "cf1co",
+      "fen": "8/8/8/6Pk/3N1P2/1pK5/5P2/3b4 w - - 5 50",
+      "moves": "c3d2 b3b2 d2d1 b2b1q",
+      "rating": 622,
+      "popularity": 97,
+      "nbPlays": 1986,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/J8kyNFdz#99"
+    },
+    {
+      "puzzleId": "3MxlV",
+      "fen": "8/5ppk/p1rRp2p/1pP5/1P6/n6P/6P1/6K1 b - - 3 37",
+      "moves": "c6d6 c5d6 a3c2 d6d7 c2b4 d7d8q",
+      "rating": 667,
+      "popularity": 92,
+      "nbPlays": 1146,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/UlKwwwZi/black#74"
+    },
+    {
+      "puzzleId": "DIZMU",
+      "fen": "5k2/2Br1ppp/1P6/8/6P1/3p4/5K2/8 b - - 2 35",
+      "moves": "f8e8 b6b7 d7c7 b7b8q",
+      "rating": 680,
+      "popularity": 93,
+      "nbPlays": 1480,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yfA2hnjV/black#70"
+    },
+    {
+      "puzzleId": "YrRMw",
+      "fen": "8/5k2/6p1/1N4P1/1b1P1P2/2p2KB1/8/8 w - - 0 50",
+      "moves": "g3e1 c3c2 e1b4 c2c1q",
+      "rating": 691,
+      "popularity": 91,
+      "nbPlays": 1042,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/czIIA2Ir#99"
+    },
+    {
+      "puzzleId": "RBIcc",
+      "fen": "1k6/6p1/R1P4p/1K5P/3b4/5p1P/8/8 w - - 1 44",
+      "moves": "b5c4 f3f2 c4d4 f2f1q",
+      "rating": 694,
+      "popularity": 96,
+      "nbPlays": 2120,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zQluEMWQ#87"
+    },
+    {
+      "puzzleId": "fStBF",
+      "fen": "5Rnr/2k1p1pp/5p2/8/B2P4/4PN2/2p2PPP/2rN1RK1 w - - 0 22",
+      "moves": "d1c3 c1f1 g1f1 c2c1q",
+      "rating": 698,
+      "popularity": 97,
+      "nbPlays": 3065,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "attraction",
+        "kingsideAttack",
+        "middlegame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IhwF5HEg#43"
+    },
+    {
+      "puzzleId": "u48KO",
+      "fen": "8/6kp/1p5p/8/4NP1K/3Bp3/1P5P/1b6 w - - 2 33",
+      "moves": "d3b1 e3e2 e4g3 e2e1q",
+      "rating": 704,
+      "popularity": 95,
+      "nbPlays": 1824,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2ggNECA8#65"
+    },
+    {
+      "puzzleId": "oLgid",
+      "fen": "7k/2b3p1/4P2p/prBB1p1P/5P2/6PK/8/8 b - - 0 70",
+      "moves": "b5c5 e6e7 c5d5 e7e8q",
+      "rating": 715,
+      "popularity": 90,
+      "nbPlays": 1768,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/voLCzEZ6/black#140"
+    },
+    {
+      "puzzleId": "1rOFB",
+      "fen": "1k6/pp5p/3p1P2/3P4/8/1qp5/6PP/5R1K b - - 0 30",
+      "moves": "c3c2 f6f7 b8c7 f7f8q",
+      "rating": 716,
+      "popularity": 99,
+      "nbPlays": 1268,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "queenRookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/HV0THT9V/black#60"
+    },
+    {
+      "puzzleId": "3tqXd",
+      "fen": "7k/1r4bp/p2B2p1/5p2/2NP4/Rp2P2P/5PP1/6K1 w - - 2 31",
+      "moves": "c4a5 b3b2 a5b7 b2b1q",
+      "rating": 741,
+      "popularity": 98,
+      "nbPlays": 2225,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CHTff7xz#61"
+    },
+    {
+      "puzzleId": "eQXoF",
+      "fen": "7Q/6K1/6P1/5P2/2k5/1p6/7q/8 b - - 0 59",
+      "moves": "h2h8 g7h8 b3b2 g6g7 b2b1q g7g8q",
+      "rating": 742,
+      "popularity": 96,
+      "nbPlays": 1071,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/k7UVgcuW/black#118"
+    },
+    {
+      "puzzleId": "CR0XO",
+      "fen": "6r1/p1k2p2/P1p1p3/2N1P3/2KP4/2P5/3r2p1/R5R1 w - - 4 45",
+      "moves": "a1d1 d2d1 g1d1 g2g1q d1g1 g8g1",
+      "rating": 752,
+      "popularity": 93,
+      "nbPlays": 1735,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/ltK6NzKG#89"
+    },
+    {
+      "puzzleId": "3Dyh3",
+      "fen": "6k1/5pp1/PB1r3p/8/8/5P1n/3pKP1P/R7 b - - 1 38",
+      "moves": "d6b6 a6a7 g8h7 a7a8q",
+      "rating": 761,
+      "popularity": 95,
+      "nbPlays": 1427,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/mTPMoeHU/black#76"
+    },
+    {
+      "puzzleId": "vBh8W",
+      "fen": "8/6R1/6p1/8/2b2PP1/3p4/2k2K1P/8 w - - 2 43",
+      "moves": "g7g6 d3d2 g6c6 d2d1q",
+      "rating": 771,
+      "popularity": 96,
+      "nbPlays": 1106,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "master",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5RtsWeRZ#85"
+    },
+    {
+      "puzzleId": "OJtns",
+      "fen": "8/2rk3B/3p3P/5p2/2p2P2/1P6/8/7K b - - 0 33",
+      "moves": "c4b3 h7f5 d7e7 h6h7 e7f6 h7h8q",
+      "rating": 774,
+      "popularity": 91,
+      "nbPlays": 1008,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/B0S3ZVhn/black#66"
+    },
+    {
+      "puzzleId": "JlLCi",
+      "fen": "8/6k1/R5p1/8/2p1KB1p/7P/1P1p2P1/8 w - - 0 50",
+      "moves": "e4d5 d2d1q",
+      "rating": 778,
+      "popularity": 95,
+      "nbPlays": 2413,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "oneMove",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/FZktOcis#99"
+    },
+    {
+      "puzzleId": "qeZ8W",
+      "fen": "1r6/5p2/2b1p1k1/3pPpPp/p1pP1P1P/bpP2RK1/1P1B3R/8 w - - 0 40",
+      "moves": "b2a3 b3b2 f3f1 b2b1q f1b1 b8b1",
+      "rating": 784,
+      "popularity": 90,
+      "nbPlays": 1053,
+      "theme": "promotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/85k0bQVd#79"
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "deflection",
+  "count": 17,
+  "puzzles": [
+    {
+      "puzzleId": "kljX8",
+      "fen": "3r4/R2P1pkp/4n1p1/2p5/8/5BPP/P2p1P2/5K2 w - - 1 32",
+      "moves": "f1e2 e6d4 e2d2 d4f3",
+      "rating": 677,
+      "popularity": 94,
+      "nbPlays": 1584,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/WHWqL61U#63"
+    },
+    {
+      "puzzleId": "vIXb7",
+      "fen": "2r3k1/1p3ppp/p7/4R3/P7/8/5PPP/2q1Q1K1 b - - 2 27",
+      "moves": "g8f8 e5e8 c8e8 e1c1",
+      "rating": 704,
+      "popularity": 95,
+      "nbPlays": 1009,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fQZsPI7m/black#54"
+    },
+    {
+      "puzzleId": "F4rpT",
+      "fen": "k7/7p/1p4p1/1qNp4/p1pP4/2P1P1P1/1PK2PP1/5R1R w - - 0 38",
+      "moves": "c5e6 b5b3 c2d2 b3b2",
+      "rating": 724,
+      "popularity": 96,
+      "nbPlays": 1583,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6fLFQ73C#75"
+    },
+    {
+      "puzzleId": "eY4pD",
+      "fen": "1N5r/5k2/3P2pp/p3b3/2B2p1P/3KP3/1PP2q2/2Q5 b - - 4 32",
+      "moves": "f7f6 b8d7 f6g7 d7e5",
+      "rating": 725,
+      "popularity": 99,
+      "nbPlays": 1022,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iXKaI1sy/black#64"
+    },
+    {
+      "puzzleId": "mFbya",
+      "fen": "8/5p1p/1pk2p2/3Nb1p1/1P1K4/P3P2P/5PP1/8 w - - 3 32",
+      "moves": "d4c4 b6b5 c4b3 c6d5",
+      "rating": 740,
+      "popularity": 95,
+      "nbPlays": 1979,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rkZoBbHk#63"
+    },
+    {
+      "puzzleId": "wF2gp",
+      "fen": "8/1B3pkp/6p1/p1p1Pn2/1bK4P/6P1/1P6/R7 w - - 6 39",
+      "moves": "b7d5 f5e3 c4d3 e3d5",
+      "rating": 751,
+      "popularity": 95,
+      "nbPlays": 1875,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uDrYXT5E#77"
+    },
+    {
+      "puzzleId": "a2IxE",
+      "fen": "r1bqkbnr/p4ppp/1pnp4/2p1p3/2B1P2N/5Q2/PPPP1PPP/RNB2RK1 b kq - 1 6",
+      "moves": "d8h4 f3f7 e8d8 f7f8",
+      "rating": 763,
+      "popularity": 95,
+      "nbPlays": 1991,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "attackingF2F7",
+        "deflection",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oV1LxqPc/black#12"
+    },
+    {
+      "puzzleId": "kIOjx",
+      "fen": "8/8/R7/1p1pk3/4n3/P7/1PP1N3/1K3r2 w - - 1 32",
+      "moves": "e2c1 e4d2 b1a2 f1c1",
+      "rating": 770,
+      "popularity": 95,
+      "nbPlays": 1106,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/C61TuuqN#63"
+    },
+    {
+      "puzzleId": "Wiv7y",
+      "fen": "6k1/5rp1/1qpBp2p/p3P3/Q1Pp3P/1P1b2P1/P2N2K1/8 b - - 1 29",
+      "moves": "c6c5 a4e8 g8h7 e8f7",
+      "rating": 772,
+      "popularity": 94,
+      "nbPlays": 2404,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "kingsideAttack",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aFw1hTBg/black#58"
+    },
+    {
+      "puzzleId": "9dcCP",
+      "fen": "r7/8/5b2/pp1R1Pk1/p5p1/6N1/KPP5/8 b - - 7 38",
+      "moves": "b5b4 g3e4 g5f4 e4f6",
+      "rating": 777,
+      "popularity": 98,
+      "nbPlays": 1115,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/64v3POd2/black#76"
+    },
+    {
+      "puzzleId": "cWjD3",
+      "fen": "r2q2nr/pp2pkbp/2npb1p1/8/4P3/5N2/PPPPQPPP/RNB1K2R b KQ - 5 8",
+      "moves": "d8b6 f3g5 f7e8 g5e6",
+      "rating": 784,
+      "popularity": 89,
+      "nbPlays": 1029,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MPAD6Xda/black#16"
+    },
+    {
+      "puzzleId": "YceR6",
+      "fen": "2r5/3q3k/Q2p2p1/3n2Pp/4R3/3P2P1/5P2/6K1 b - - 0 37",
+      "moves": "d5e7 e4e7 d7e7 a6c8",
+      "rating": 786,
+      "popularity": 97,
+      "nbPlays": 1552,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/EXRwBeAh/black#74"
+    },
+    {
+      "puzzleId": "r8TVJ",
+      "fen": "1rb1kbnr/3pq1pp/pp6/3QPpB1/2B5/8/PPP2PPP/R4RK1 b k - 2 13",
+      "moves": "e7g5 d5f7 e8d8 f7f8",
+      "rating": 789,
+      "popularity": 96,
+      "nbPlays": 2695,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qfi80ZW2/black#26"
+    },
+    {
+      "puzzleId": "WxGtn",
+      "fen": "r2Rr3/p1p2kpp/2n1b3/8/4P1n1/7N/PQ3PPP/2K4R b - - 0 16",
+      "moves": "e8d8 h3g5 f7g8 g5e6",
+      "rating": 790,
+      "popularity": 95,
+      "nbPlays": 2259,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LHhxGt1g/black#32"
+    },
+    {
+      "puzzleId": "lBlyk",
+      "fen": "8/1R3pkp/4pnp1/p3N3/r2P4/6P1/5PKP/8 b - - 1 37",
+      "moves": "a4d4 b7f7 g7g8 f7f6",
+      "rating": 790,
+      "popularity": 94,
+      "nbPlays": 1928,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/qoYVgufM/black#74"
+    },
+    {
+      "puzzleId": "CHbZs",
+      "fen": "7k/ppp5/7q/5nR1/3P1PR1/1PP2K2/P4P2/8 w - - 7 36",
+      "moves": "g5f5 h6h3 f3e4 h3g4",
+      "rating": 793,
+      "popularity": 96,
+      "nbPlays": 1652,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "queenRookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/fzM5O3Gw#71"
+    },
+    {
+      "puzzleId": "ziGPL",
+      "fen": "8/8/4p3/3n1k1p/PPNPb2P/4P3/3K4/8 b - - 2 49",
+      "moves": "d5b4 c4d6 f5g4 d6e4",
+      "rating": 799,
+      "popularity": 92,
+      "nbPlays": 1428,
+      "theme": "deflection",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ssNSkilf/black#98"
+    }
+  ]
+}

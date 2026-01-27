@@ -205,9 +205,45 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ---
 
+## Curriculum V2 Rules
+
+### Intro Popup Messages
+
+Every lesson page must show a popup message overlay (over the board) before puzzles begin:
+
+1. **Block Intro**: When starting the FIRST lesson of a new block, show the block intro message
+2. **Theme Intro**: When starting the FIRST lesson of a new theme/section, show the theme intro message
+
+If a lesson is both (first lesson of a new block AND first of a theme), show the block intro first, then the theme intro on dismiss.
+
+### Message Tone & Voice
+- Punchy, casual, slightly cheeky
+- Beginner-friendly - no jargon without explanation
+- Short paragraphs (2-3 sentences max)
+- End with something actionable ("Let's go", "Find the checkmate", etc.)
+
+### Message Content
+- **Block intros**: Set the stage for the whole block's goal (e.g., "Welcome to Chess Path! Here's how to win...")
+- **Theme intros**: Explain the specific tactic/concept they're about to practice
+
+### Storage
+- Messages should be stored in the curriculum data structure (add `blockIntroMessage` to Block type, `themeIntroMessage` to Section type)
+- Or in a separate messages file that maps to block/section IDs
+
+### UI Requirements
+- Popup appears over the chessboard (similar to PuzzleResultPopup positioning)
+- Single "Let's Go" or "Start" button to dismiss
+- Dark overlay behind the message card
+- Message card matches app styling (bg-[#1A2C35], rounded corners, etc.)
+
+---
+
 ## Notes & Learnings
 
 *Add notes here about things that worked, didn't work, or important decisions:*
+
+### TODO (This Week)
+- [ ] **Build out user permissions** - Current system only has Free vs Premium (puzzle limit). Needs: admin role, role-based access control, feature gates, content permissions. See conversation from Jan 24, 2026 for details.
 
 <!-- Example:
 - 2024-01: Tried using Zustand for state, reverted to hooks + localStorage

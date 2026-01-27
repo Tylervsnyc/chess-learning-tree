@@ -1,0 +1,41 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "quietMove",
+  "count": 2,
+  "puzzles": [
+    {
+      "puzzleId": "zZUKT",
+      "fen": "2Q4k/6b1/3p3p/2p1p3/P4p1P/8/q5PK/8 b - - 4 31",
+      "moves": "a2g8 c8g8 h8g8 a4a5 g7f6 a5a6",
+      "rating": 676,
+      "popularity": 95,
+      "nbPlays": 449,
+      "theme": "quietMove",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "quietMove"
+      ],
+      "gameUrl": "https://lichess.org/iTIuQxum/black#62"
+    },
+    {
+      "puzzleId": "dja8i",
+      "fen": "8/8/8/1ppkBK2/4n2P/8/8/8 b - - 3 72",
+      "moves": "c5c4 h4h5 b5b4 h5h6 b4b3 h6h7",
+      "rating": 710,
+      "popularity": 100,
+      "nbPlays": 318,
+      "theme": "quietMove",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "long",
+        "quietMove"
+      ],
+      "gameUrl": "https://lichess.org/by8cME0U/black#144"
+    }
+  ]
+}

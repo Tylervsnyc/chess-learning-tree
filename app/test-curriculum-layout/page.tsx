@@ -1,28 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { level1V2, Block, Section, LessonCriteria, getCurriculumStats } from '@/data/staging/level1-v2-curriculum';
+import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 
-// Module colors from the actual app - these stay the same for regular sections
-const MODULE_COLORS = [
-  '#58CC02', // Green
-  '#1CB0F6', // Blue
-  '#FF9600', // Orange
-  '#FF4B4B', // Red
-  '#A560E8', // Purple
-  '#2FCBEF', // Cyan
-  '#FFC800', // Yellow
-  '#FF6B6B', // Coral
-];
+// Types
+type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
+type LessonStatus = 'completed' | 'current' | 'locked';
 
-// Review section color options to test
-const REVIEW_COLORS = {
-  A: '#9B59B6', // Purple
-  B: '#F39C12', // Amber
-  C: '#E91E63', // Hot Pink
-  D: '#00CED1', // Teal
-  E: '#FF6B6B', // Coral
+// Clean puzzle counts from extraction (1000+ plays, single tactical theme)
+// Level 1: 400-800 ELO - Updated Jan 2026
+const CLEAN_PUZZLE_COUNTS: Record<string, number> = {
+  // Checkmates
+  mateIn1: 7742,
+  backRankMate: 5575,
+  mateIn2: 4294,
+  // Tactics
+  fork: 4361,
+  crushing: 2019,
+  hangingPiece: 185,
+  // Endgames
+  rookEndgame: 2007,
+  pawnEndgame: 538,
+  queenEndgame: 408,
+  knightEndgame: 200,
+  bishopEndgame: 201,
+  // Other (not used in L1 V2)
+  skewer: 1117,
+  discoveredAttack: 989,
+  smotheredMate: 393,
+  arabianMate: 250,
+  doubleBishopMate: 194,
+  pin: 107,
+  hookMate: 77,
+  dovetailMate: 45,
 };
+
+// Get all lesson IDs in order from curriculum
+function getAllLessonIdsInOrder(levelData: { blocks: Block[] }): string[] {
+  const lessonIds: string[] = [];
+  for (const block of levelData.blocks) {
+    for (const section of block.sections) {
+      for (const lesson of section.lessons) {
+        lessonIds.push(lesson.id);
+      }
+    }
+  }
+  return lessonIds;
+}
+
+// Demo: first 2 lessons completed, 3rd is current, rest are locked
+const DEMO_COMPLETED_COUNT = 2;
+
+// Convert lesson to status based on global index
+// This demonstrates the three visual states across the curriculum
+function getLessonStatus(globalLessonIndex: number): LessonStatus {
+  if (globalLessonIndex < DEMO_COMPLETED_COUNT) return 'completed';
+  if (globalLessonIndex === DEMO_COMPLETED_COUNT) return 'current';
+  return 'locked';
+}
+
+// Assign piece types to lessons - use pieceFilter if available, otherwise cycle
+const PIECE_CYCLE: PieceType[] = ['knight', 'queen', 'rook', 'bishop', 'pawn', 'star'];
+
+function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionIndex: number): PieceType {
+  // Use the lesson's pieceFilter if specified
+  if (lesson.pieceFilter) {
+    return lesson.pieceFilter as PieceType;
+  }
+  // Otherwise cycle through pieces
+  return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
+}
 
 function ChevronLeft() {
   return (
@@ -32,479 +81,623 @@ function ChevronLeft() {
   );
 }
 
-// Helper to convert hex to HSL for lesson shading
-function hexToHSL(hex: string): { h: number; s: number; l: number } {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
-
-  return { h: h * 360, s: s * 100, l: l * 100 };
+function darkenColor(hex: string, amount: number = 0.25): string {
+  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) * (1 - amount));
+  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) * (1 - amount));
+  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) * (1 - amount));
+  return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
 }
-
-function getLessonColor(baseColor: string, lessonIndex: number, totalLessons: number): string {
-  const hsl = hexToHSL(baseColor);
-  const lightnessRange = 45;
-  const lightnessOffset = totalLessons > 1
-    ? 20 - (lessonIndex / (totalLessons - 1)) * lightnessRange
-    : 0;
-  const newLightness = Math.max(15, Math.min(75, hsl.l + lightnessOffset));
-  return `hsl(${hsl.h}, ${hsl.s}%, ${newLightness}%)`;
-}
-
-// Sample curriculum with the proposed structure
-const proposedCurriculum = {
-  name: 'Level 1: Foundations',
-  ratingRange: '400-800',
-  sections: [
-    // Block 1
-    {
-      id: 'sec-1',
-      name: 'Mate in 1: Major Pieces',
-      isReview: false,
-      lessons: [
-        { id: '1.1.1', name: 'Queen Mate: Easy', description: 'Checkmate with the queen - easiest' },
-        { id: '1.1.2', name: 'Queen Mate: Medium', description: 'Checkmate with the queen - medium' },
-        { id: '1.1.3', name: 'Rook Mate: Easy', description: 'Checkmate with the rook - easiest' },
-        { id: '1.1.4', name: 'Rook Mate: Medium', description: 'Checkmate with the rook - medium' },
-      ],
-    },
-    {
-      id: 'sec-2',
-      name: 'Mate in 1: Minor Pieces',
-      isReview: false,
-      lessons: [
-        { id: '1.2.1', name: 'Bishop Mate', description: 'Checkmate with the bishop' },
-        { id: '1.2.2', name: 'Knight Mate', description: 'Checkmate with the knight' },
-        { id: '1.2.3', name: 'Pawn Mate', description: 'Checkmate with a pawn' },
-      ],
-    },
-    {
-      id: 'sec-3',
-      name: 'Back Rank Mate',
-      isReview: false,
-      lessons: [
-        { id: '1.3.1', name: 'Back Rank in 1: Easy', description: 'Back rank checkmate - easiest' },
-        { id: '1.3.2', name: 'Back Rank in 1: Hard', description: 'Back rank checkmate - harder' },
-        { id: '1.3.3', name: 'Back Rank in 2: Easy', description: 'Two-move back rank mate' },
-        { id: '1.3.4', name: 'Back Rank in 2: Hard', description: 'Two-move back rank - harder' },
-      ],
-    },
-    {
-      id: 'sec-4',
-      name: 'Review',
-      isReview: true,
-      lessons: [
-        { id: '1.4.1', name: 'Mixed Mate in 1', description: 'Any piece, any pattern' },
-        { id: '1.4.2', name: 'Mixed Back Rank', description: 'Back rank variations' },
-        { id: '1.4.3', name: 'Challenge Round 1', description: 'Test your skills' },
-        { id: '1.4.4', name: 'Challenge Round 2', description: 'Final challenge' },
-      ],
-    },
-    // Block 2
-    {
-      id: 'sec-5',
-      name: 'Knight Forks',
-      isReview: false,
-      lessons: [
-        { id: '1.5.1', name: 'Knight Forks: Easy', description: 'Attack two pieces - easy' },
-        { id: '1.5.2', name: 'Knight Forks: Medium', description: 'Attack two pieces - medium' },
-        { id: '1.5.3', name: 'Knight Forks: Hard', description: 'Attack two pieces - hard' },
-        { id: '1.5.4', name: 'Royal Knight Forks', description: 'Fork the king and queen' },
-      ],
-    },
-    {
-      id: 'sec-6',
-      name: 'Other Forks',
-      isReview: false,
-      lessons: [
-        { id: '1.6.1', name: 'Pawn Forks', description: 'Attack two pieces with a pawn' },
-        { id: '1.6.2', name: 'Bishop Forks', description: 'Attack two pieces with a bishop' },
-        { id: '1.6.3', name: 'Rook Forks', description: 'Attack two pieces with a rook' },
-        { id: '1.6.4', name: 'Queen Forks', description: 'Attack two pieces with the queen' },
-      ],
-    },
-    {
-      id: 'sec-7',
-      name: 'Skewers',
-      isReview: false,
-      lessons: [
-        { id: '1.7.1', name: 'Skewers: Easy', description: 'Basic skewer patterns' },
-        { id: '1.7.2', name: 'Skewers: Medium', description: 'Intermediate skewers' },
-        { id: '1.7.3', name: 'Skewers: Hard', description: 'Advanced skewers' },
-      ],
-    },
-    {
-      id: 'sec-8',
-      name: 'Review',
-      isReview: true,
-      lessons: [
-        { id: '1.8.1', name: 'Mixed Forks', description: 'Any piece, any fork' },
-        { id: '1.8.2', name: 'Mixed Skewers', description: 'Skewer practice' },
-        { id: '1.8.3', name: 'Fork or Skewer?', description: 'Identify the tactic' },
-        { id: '1.8.4', name: 'Challenge Round', description: 'Final challenge' },
-      ],
-    },
-  ],
-};
-
-// Funny block names
-const BLOCK_NAMES = [
-  "The 'Oops, You're Dead' Collection",
-  "The Fork Awakens",
-];
-
-type LabelStyle = 'none' | 'divider' | 'labeled';
-type ReviewColorOption = 'A' | 'B' | 'C' | 'D' | 'E';
-type AnimationOption = 'none' | 'pulse' | 'glow' | 'bounce';
 
 export default function TestCurriculumLayout() {
-  const [labelStyle, setLabelStyle] = useState<LabelStyle>('labeled');
-  const [reviewColor, setReviewColor] = useState<ReviewColorOption>('C');
-  const [reviewAnimation, setReviewAnimation] = useState<AnimationOption>('none');
-  const [expandedSection, setExpandedSection] = useState<string | null>('sec-1');
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    'sec-1': true, // Start with first section expanded
+  });
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
+  // Track global section index for color cycling
+  let globalSectionIndex = 0;
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
-      {/* Animation keyframes */}
+    <div className="min-h-screen bg-[#eef6fc] text-[#3c3c3c]">
       <style>{`
-        @keyframes review-pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
+        @keyframes sparkle {
+          0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1) rotate(180deg); }
         }
-        @keyframes review-glow {
-          0%, 100% { box-shadow: 0 0 8px var(--glow-color); }
-          50% { box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
+        @keyframes sparkle-2 {
+          0%, 100% { opacity: 0; transform: scale(0); }
+          50% { opacity: 0.8; transform: scale(1); }
         }
-        @keyframes review-bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-3px); }
+        @keyframes pulse-ring-scale {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.08); opacity: 0.4; }
         }
       `}</style>
 
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 sticky top-0 z-50">
+      <div className="bg-white border-b border-black/5 px-4 py-3 sticky top-0 z-50">
         <div className="max-w-lg mx-auto flex items-center gap-4">
-          <Link href="/" className="text-white/60 hover:text-white">
+          <Link href="/" className="text-[#afafaf] hover:text-[#3c3c3c]">
             <ChevronLeft />
           </Link>
-          <h1 className="text-lg font-semibold">Curriculum Layout Test</h1>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="sticky top-[57px] z-40 bg-[#0D1A1F] border-b border-white/10">
-        <div className="max-w-lg mx-auto px-4 py-3 space-y-3">
-          {/* Block label style */}
-          <div>
-            <div className="text-xs text-white/50 mb-2">BLOCK LABELS</div>
-            <div className="flex gap-2">
-              {[
-                { id: 'none', label: 'None' },
-                { id: 'divider', label: 'Divider Only' },
-                { id: 'labeled', label: 'With Names' },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setLabelStyle(opt.id as LabelStyle)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    labelStyle === opt.id
-                      ? 'bg-[#58CC02] text-black'
-                      : 'bg-[#1A2C35] text-white/70 hover:text-white'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Review color */}
-          <div>
-            <div className="text-xs text-white/50 mb-2">REVIEW SECTION COLOR</div>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { id: 'A', label: 'Purple', color: REVIEW_COLORS.A },
-                { id: 'B', label: 'Amber', color: REVIEW_COLORS.B },
-                { id: 'C', label: 'Hot Pink', color: REVIEW_COLORS.C },
-                { id: 'D', label: 'Teal', color: REVIEW_COLORS.D },
-                { id: 'E', label: 'Coral', color: REVIEW_COLORS.E },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setReviewColor(opt.id as ReviewColorOption)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                    reviewColor === opt.id
-                      ? 'ring-2 ring-white'
-                      : ''
-                  }`}
-                  style={{ backgroundColor: opt.color }}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Review animation */}
-          <div>
-            <div className="text-xs text-white/50 mb-2">REVIEW ANIMATION</div>
-            <div className="flex gap-2">
-              {[
-                { id: 'none', label: 'None' },
-                { id: 'pulse', label: 'Pulse' },
-                { id: 'glow', label: 'Glow' },
-                { id: 'bounce', label: 'Bounce' },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setReviewAnimation(opt.id as AnimationOption)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    reviewAnimation === opt.id
-                      ? 'bg-[#E91E63] text-white'
-                      : 'bg-[#1A2C35] text-white/70 hover:text-white'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold text-[#3c3c3c]">Curriculum V2 Preview</h1>
+            <p className="text-xs text-[#afafaf]">Duolingo-style path with finalized design</p>
           </div>
         </div>
       </div>
 
-      {/* Curriculum Display */}
-      <div className="max-w-lg mx-auto px-4 pb-20">
-        {/* Gradient accent */}
-        <div className="h-1 -mx-4 my-4 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
-
-        {/* Level header */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black text-white">{proposedCurriculum.name}</h1>
-            <span className="text-sm text-gray-400">{proposedCurriculum.ratingRange}</span>
+      {/* Path Preview */}
+      <div className="max-w-lg mx-auto px-4 py-6">
+        {/* V2 Summary Card */}
+        <div className="mb-6 p-4 rounded-xl bg-white border border-black/5 shadow-sm">
+          <h3 className="font-black text-lg mb-2 text-[#3c3c3c]">Chess Path V2</h3>
+          <p className="text-sm text-[#6b6b6b] mb-3">
+            "How to Lose Friends and Infuriate People"
+          </p>
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="bg-[#f5f5f5] rounded-lg p-2">
+              <div className="text-[#58CC02] font-bold text-lg">3</div>
+              <div className="text-[#afafaf]">Levels</div>
+            </div>
+            <div className="bg-[#f5f5f5] rounded-lg p-2">
+              <div className="text-[#1CB0F6] font-bold text-lg">90K+</div>
+              <div className="text-[#afafaf]">Clean Puzzles</div>
+            </div>
+            <div className="bg-[#f5f5f5] rounded-lg p-2">
+              <div className="text-[#FF9600] font-bold text-lg">95%</div>
+              <div className="text-[#afafaf]">Confidence</div>
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-[#afafaf]">
+            L1: 1000+ plays • L2/L3: 3000+ plays • Single tactical theme
           </div>
         </div>
 
-        {/* Sections grouped by blocks */}
-        <CurriculumView
-          labelStyle={labelStyle}
-          reviewColor={REVIEW_COLORS[reviewColor]}
-          reviewAnimation={reviewAnimation}
-          expandedSection={expandedSection}
-          onToggle={(id) => setExpandedSection(prev => prev === id ? null : id)}
-        />
+        {/* Level Header */}
+        <div className="mb-6 text-center">
+          <div className="h-1.5 rounded-full bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600] mb-4" />
+          <h2 className="text-2xl font-black text-[#3c3c3c]">Level 1: How to Lose Friends</h2>
+          <p className="text-[#afafaf]">400-800 ELO • ...and Infuriate People</p>
+        </div>
+
+        {/* Blocks */}
+        {level1V2.blocks.map((block, blockIndex) => (
+          <BlockView
+            key={block.id}
+            block={block}
+            blockIndex={blockIndex}
+            expandedSections={expandedSections}
+            toggleSection={toggleSection}
+            getGlobalSectionIndex={() => {
+              // Calculate the global section index based on previous blocks
+              const previousSections = level1V2.blocks
+                .slice(0, blockIndex)
+                .reduce((sum, b) => sum + b.sections.length, 0);
+              return previousSections;
+            }}
+            getGlobalLessonIndex={() => {
+              // Calculate the global lesson index based on previous blocks
+              let lessonCount = 0;
+              for (let i = 0; i < blockIndex; i++) {
+                for (const section of level1V2.blocks[i].sections) {
+                  lessonCount += section.lessons.length;
+                }
+              }
+              return lessonCount;
+            }}
+          />
+        ))}
+
+        {/* Clean Puzzle Availability */}
+        <div className="mt-12 p-4 rounded-xl bg-white border border-black/5 shadow-sm">
+          <h3 className="font-bold mb-3 text-[#3c3c3c]">Clean Puzzle Inventory (Level 1)</h3>
+          <p className="text-xs text-[#afafaf] mb-3">1000+ plays, single tactical theme, 400-800 ELO</p>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {Object.entries(CLEAN_PUZZLE_COUNTS)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 10)
+              .map(([theme, count]) => (
+                <div key={theme} className="flex justify-between">
+                  <span className="text-[#6b6b6b]">{theme}</span>
+                  <span className={count > 100 ? 'text-[#58CC02]' : 'text-[#FF9600]'}>
+                    {count.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* V2 Changes Summary */}
+        <div className="mt-4 p-4 rounded-xl bg-white border border-black/5 shadow-sm">
+          <h3 className="font-bold mb-3 text-[#3c3c3c]">V2 Changes</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-start gap-2">
+              <span className="text-[#58CC02]">✓</span>
+              <span className="text-[#4b4b4b]">Start at 1.1.1 (no diagnostic)</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#58CC02]">✓</span>
+              <span className="text-[#4b4b4b]">3 levels only (400-800, 800-1000, 1000-1200)</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#58CC02]">✓</span>
+              <span className="text-[#4b4b4b]">Optional 10-question quiz to skip levels</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#58CC02]">✓</span>
+              <span className="text-[#4b4b4b]">Clean puzzles: 1000+ plays, single theme</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#cfcfcf]">○</span>
+              <span className="text-[#afafaf]">Anonymous: 2 lessons → sign up</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#cfcfcf]">○</span>
+              <span className="text-[#afafaf]">Free: 2 lessons/day</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-[#cfcfcf]">○</span>
+              <span className="text-[#afafaf]">Premium: unlimited</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Design Choices Summary */}
+        <div className="mt-4 p-4 rounded-xl bg-white border border-black/5 shadow-sm">
+          <h3 className="font-bold mb-3 text-[#3c3c3c]">Locked-in Design Choices</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Lesson Style</span>
+              <span className="text-[#4b4b4b]">Duolingo Path</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Button Style</span>
+              <span className="text-[#4b4b4b]">Flat (3D Puck)</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Current Indicator</span>
+              <span className="text-[#4b4b4b]">Pulse Ring</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Block Labels</span>
+              <span className="text-[#4b4b4b]">With Names</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Icon Style</span>
+              <span className="text-[#4b4b4b]">Solid Classic</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Icon Shadow</span>
+              <span className="text-[#4b4b4b]">Long Shadow</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#afafaf]">Completed</span>
+              <span className="text-[#4b4b4b]">Gold + Sparkles</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function CurriculumView({
-  labelStyle,
-  reviewColor,
-  reviewAnimation,
-  expandedSection,
-  onToggle,
+// Block View - shows the block title and its sections
+function BlockView({
+  block,
+  blockIndex,
+  expandedSections,
+  toggleSection,
+  getGlobalSectionIndex,
+  getGlobalLessonIndex,
 }: {
-  labelStyle: LabelStyle;
-  reviewColor: string;
-  reviewAnimation: AnimationOption;
-  expandedSection: string | null;
-  onToggle: (id: string) => void;
+  block: Block;
+  blockIndex: number;
+  expandedSections: Record<string, boolean>;
+  toggleSection: (id: string) => void;
+  getGlobalSectionIndex: () => number;
+  getGlobalLessonIndex: () => number;
 }) {
-  const sections = proposedCurriculum.sections;
-
-  // Group into blocks of 4 (3 content + 1 review)
-  const blocks = [
-    { name: BLOCK_NAMES[0], sections: sections.slice(0, 4) },
-    { name: BLOCK_NAMES[1], sections: sections.slice(4, 8) },
-  ];
+  const baseGlobalIndex = getGlobalSectionIndex();
+  const baseGlobalLessonIndex = getGlobalLessonIndex();
 
   return (
-    <div>
-      {blocks.map((block, blockIndex) => (
-        <div key={blockIndex}>
-          {/* Block label */}
-          {labelStyle === 'labeled' && (
-            <div className="flex items-center gap-3 mb-4 mt-6">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-              <span className="text-xs font-semibold text-white/50 uppercase tracking-wider px-2">
-                {block.name}
-              </span>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            </div>
-          )}
-
-          {labelStyle === 'divider' && blockIndex > 0 && (
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              <div className="w-2 h-2 rounded-full bg-white/20" />
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            </div>
-          )}
-
-          {/* Sections in this block */}
-          {block.sections.map((section, sectionIndex) => {
-            // Regular sections use rotating MODULE_COLORS, review sections use selected review color
-            const colorIndex = blockIndex * 3 + sectionIndex; // Skip review in color rotation
-            const sectionColor = section.isReview
-              ? reviewColor
-              : MODULE_COLORS[colorIndex % MODULE_COLORS.length];
-
-            return (
-              <SectionCard
-                key={section.id}
-                section={section}
-                color={sectionColor}
-                reviewAnimation={section.isReview ? reviewAnimation : 'none'}
-                isExpanded={expandedSection === section.id}
-                onToggle={() => onToggle(section.id)}
-              />
-            );
-          })}
+    <div className="mb-8">
+      {/* Block Title - The funny name */}
+      <div className="mb-4 px-2 text-center">
+        <div className="mb-2">
+          <h2 className="text-lg font-black text-[#3c3c3c]">{block.name}</h2>
+          <p className="text-xs text-[#afafaf]">{block.description}</p>
         </div>
-      ))}
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+      </div>
+
+      {/* Sections */}
+      {block.sections.map((section, sectionIndex) => {
+        const globalIndex = baseGlobalIndex + sectionIndex;
+        // Calculate global lesson offset for this section
+        let globalLessonOffset = baseGlobalLessonIndex;
+        for (let i = 0; i < sectionIndex; i++) {
+          globalLessonOffset += block.sections[i].lessons.length;
+        }
+        return (
+          <SectionView
+            key={section.id}
+            section={section}
+            sectionIndex={globalIndex}
+            globalLessonOffset={globalLessonOffset}
+            isExpanded={expandedSections[section.id] || false}
+            onToggle={() => toggleSection(section.id)}
+          />
+        );
+      })}
     </div>
   );
 }
 
-function SectionCard({
+// Section View - collapsible section with lessons
+function SectionView({
   section,
-  color,
-  reviewAnimation,
+  sectionIndex,
+  globalLessonOffset,
   isExpanded,
   onToggle,
 }: {
-  section: typeof proposedCurriculum.sections[0];
-  color: string;
-  reviewAnimation: AnimationOption;
+  section: Section;
+  sectionIndex: number;
+  globalLessonOffset: number;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
-  // Animation style for the icon
-  const getAnimationStyle = (): React.CSSProperties => {
-    if (isExpanded || reviewAnimation === 'none') return {};
-
-    const baseStyle: React.CSSProperties = {
-      '--glow-color': color,
-    } as React.CSSProperties;
-
-    switch (reviewAnimation) {
-      case 'pulse':
-        return { ...baseStyle, animation: 'review-pulse 2s ease-in-out infinite' };
-      case 'glow':
-        return { ...baseStyle, animation: 'review-glow 2s ease-in-out infinite' };
-      case 'bounce':
-        return { ...baseStyle, animation: 'review-bounce 1s ease-in-out infinite' };
-      default:
-        return {};
-    }
-  };
+  const sectionColor = section.isReview
+    ? CURRICULUM_V2_CONFIG.reviewSectionColor
+    : CURRICULUM_V2_CONFIG.moduleColors[sectionIndex % CURRICULUM_V2_CONFIG.moduleColors.length];
 
   return (
     <div className="mb-3">
+      {/* Section Header - Rectangle button */}
       <button
         onClick={onToggle}
         className="w-full flex items-center gap-3 p-3 rounded-2xl transition-all"
         style={{
-          backgroundColor: isExpanded ? color : '#1A2C35',
+          backgroundColor: isExpanded ? sectionColor : 'white',
+          boxShadow: isExpanded ? 'none' : '0 1px 3px rgba(0,0,0,0.05)',
         }}
       >
-        {/* Section icon */}
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-black"
           style={{
-            backgroundColor: isExpanded ? 'rgba(255,255,255,0.2)' : color,
+            backgroundColor: isExpanded ? 'rgba(255,255,255,0.2)' : sectionColor,
             color: 'white',
-            ...getAnimationStyle(),
           }}
         >
-          {section.isReview ? '★' : section.id.replace('sec-', '')}
+          {section.isReview ? '★' : sectionIndex + 1}
         </div>
-
-        {/* Section info */}
         <div className="flex-1 text-left">
-          <div className="font-bold text-white">{section.name}</div>
-          <div className={`text-xs ${isExpanded ? 'text-white/70' : 'text-gray-400'}`}>
-            {section.lessons.length} lessons
+          <div className={`font-bold ${isExpanded ? 'text-white' : 'text-[#3c3c3c]'}`}>{section.name}</div>
+          <div className={`text-xs ${isExpanded ? 'text-white/70' : 'text-[#afafaf]'}`}>
+            {section.lessons.length} lessons • {section.description}
           </div>
         </div>
-
-        {/* Arrow */}
         <div
           className={`text-xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-          style={{ color: isExpanded ? 'rgba(255,255,255,0.7)' : color }}
+          style={{ color: isExpanded ? 'rgba(255,255,255,0.7)' : sectionColor }}
         >
           ▾
         </div>
       </button>
 
-      {/* Expanded lessons */}
+      {/* Lessons - shown when expanded */}
       {isExpanded && (
-        <div className="mt-2 space-y-2 pl-2">
-          {section.lessons.map((lesson, index) => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              sectionColor={color}
-              lessonIndex={index}
-              totalLessons={section.lessons.length}
-            />
-          ))}
+        <div className="mt-4 flex flex-col items-center">
+          {section.lessons.map((lesson, lessonIndex) => {
+            const globalLessonIndex = globalLessonOffset + lessonIndex;
+            const status = getLessonStatus(globalLessonIndex);
+            const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
+
+            // Zigzag pattern
+            const patternPosition = lessonIndex % 4;
+            let xOffset = 0;
+            if (patternPosition === 0) xOffset = -50;
+            else if (patternPosition === 1) xOffset = 0;
+            else if (patternPosition === 2) xOffset = 50;
+            else xOffset = 0;
+
+            return (
+              <div
+                key={lesson.id}
+                className="mb-6"
+                style={{ transform: `translateX(${xOffset}px)` }}
+              >
+                <LessonButton
+                  lesson={lesson}
+                  piece={piece}
+                  status={status}
+                  sectionColor={sectionColor}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
   );
 }
 
-function LessonCard({
+// Lesson Button Component - the 3D puck
+function LessonButton({
   lesson,
+  piece,
+  status,
   sectionColor,
-  lessonIndex,
-  totalLessons,
 }: {
-  lesson: { id: string; name: string; description: string };
+  lesson: LessonCriteria;
+  piece: PieceType;
+  status: LessonStatus;
   sectionColor: string;
-  lessonIndex: number;
-  totalLessons: number;
 }) {
-  const lessonColor = getLessonColor(sectionColor, lessonIndex, totalLessons);
+  const size = CURRICULUM_V2_CONFIG.buttonSize;
+  const depthY = CURRICULUM_V2_CONFIG.buttonDepthY;
+  const depthX = CURRICULUM_V2_CONFIG.buttonDepthX;
+
+  const isCompleted = status === 'completed';
+  const isCurrent = status === 'current';
+  const isLocked = status === 'locked';
+
+  // Determine colors
+  let topColor: string;
+  let bottomColor: string;
+  let iconColor: string;
+
+  if (isCompleted) {
+    topColor = CURRICULUM_V2_CONFIG.completedColor;
+    bottomColor = CURRICULUM_V2_CONFIG.completedDarkColor;
+    iconColor = '#B8860B';
+  } else if (isLocked) {
+    topColor = CURRICULUM_V2_CONFIG.lockedColor;
+    bottomColor = CURRICULUM_V2_CONFIG.lockedDarkColor;
+    iconColor = '#9CA3AF';
+  } else {
+    topColor = sectionColor;
+    bottomColor = darkenColor(sectionColor, 0.35);
+    iconColor = 'white';
+  }
 
   return (
-    <button className="w-full text-left p-3 rounded-xl transition-all bg-[#1A2C35] hover:bg-[#243844] cursor-pointer border-2 border-transparent">
-      <div className="flex items-center gap-3">
-        {/* Lesson number square */}
+    <div className="flex flex-col items-center">
+      <div
+        className={`relative ${isLocked ? 'opacity-60' : ''}`}
+        style={{ width: size + depthX, height: size + depthY }}
+      >
+        {/* Pulse ring for current */}
+        {isCurrent && (
+          <>
+            <div
+              className="absolute rounded-full"
+              style={{
+                width: CURRICULUM_V2_CONFIG.ringSize,
+                height: CURRICULUM_V2_CONFIG.ringSize,
+                top: (size - CURRICULUM_V2_CONFIG.ringSize) / 2 + depthY / 2,
+                left: (size - CURRICULUM_V2_CONFIG.ringSize) / 2 + depthX / 2,
+                border: `3px solid ${sectionColor}`,
+                opacity: 0.6,
+                animation: 'pulse-ring-scale 1.5s ease-in-out infinite',
+              }}
+            />
+            <div
+              className="absolute rounded-full"
+              style={{
+                width: size + 12,
+                height: size + 12,
+                top: -3 + depthY / 2,
+                left: -3 + depthX / 2,
+                border: `2px solid ${sectionColor}`,
+                opacity: 0.4,
+              }}
+            />
+          </>
+        )}
+
+        {/* Bottom edge - 3D shadow */}
         <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
-          style={{ backgroundColor: lessonColor, color: '#fff' }}
+          className="absolute rounded-full"
+          style={{
+            width: size,
+            height: size,
+            top: depthY,
+            left: depthX,
+            backgroundColor: bottomColor,
+          }}
+        />
+
+        {/* Top face */}
+        <div
+          className="absolute rounded-full flex items-center justify-center overflow-hidden"
+          style={{
+            width: size,
+            height: size,
+            top: 0,
+            left: 0,
+            backgroundColor: topColor,
+          }}
         >
-          {lesson.id.split('.').slice(-1)[0]}
+          {isCompleted && CURRICULUM_V2_CONFIG.showSparkles && <Sparkles />}
+          {isLocked ? (
+            <LockIcon size={30} color={iconColor} />
+          ) : (
+            getIconLongShadow(piece, iconColor, CURRICULUM_V2_CONFIG.iconSize)
+          )}
         </div>
-
-        {/* Lesson info */}
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold truncate text-white">{lesson.name}</div>
-          <div className="text-xs truncate text-gray-400">{lesson.description}</div>
-        </div>
-
-        {/* Arrow */}
-        <div className="text-gray-500">→</div>
       </div>
-    </button>
+
+      {/* Lesson name below button */}
+      <div
+        className={`mt-2 text-xs text-center max-w-[120px] leading-tight font-semibold ${
+          isLocked ? 'text-[#cfcfcf]' : 'text-[#4b4b4b]'
+        }`}
+      >
+        {lesson.name}
+      </div>
+    </div>
+  );
+}
+
+function Sparkles() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
+      <div
+        className="absolute w-2 h-2"
+        style={{
+          top: '15%',
+          left: '20%',
+          animation: 'sparkle 2s ease-in-out infinite',
+          animationDelay: '0s',
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-full h-full">
+          <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"/>
+        </svg>
+      </div>
+      <div
+        className="absolute w-1.5 h-1.5"
+        style={{
+          top: '60%',
+          right: '15%',
+          animation: 'sparkle 2s ease-in-out infinite',
+          animationDelay: '0.7s',
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-full h-full">
+          <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"/>
+        </svg>
+      </div>
+      <div
+        className="absolute w-1 h-1"
+        style={{
+          top: '30%',
+          right: '25%',
+          animation: 'sparkle-2 1.5s ease-in-out infinite',
+          animationDelay: '1.2s',
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-full h-full">
+          <circle cx="12" cy="12" r="12"/>
+        </svg>
+      </div>
+      <div
+        className="absolute w-1 h-1"
+        style={{
+          bottom: '25%',
+          left: '30%',
+          animation: 'sparkle-2 1.8s ease-in-out infinite',
+          animationDelay: '0.4s',
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="#FFFFFF" className="w-full h-full">
+          <circle cx="12" cy="12" r="12"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+// Chess piece icon paths
+type CircleElement = { type: 'circle'; cx: number; cy: number; r: number };
+type PathElement = { type: 'path'; d: string };
+type PolygonElement = { type: 'polygon'; points: string };
+type PieceElement = CircleElement | PathElement | PolygonElement;
+
+const PIECE_PATHS: Record<PieceType, { viewBox: string; elements: PieceElement[] }> = {
+  queen: {
+    viewBox: '0 0 45 45',
+    elements: [
+      { type: 'circle', cx: 6, cy: 12, r: 3 },
+      { type: 'circle', cx: 14, cy: 9, r: 3 },
+      { type: 'circle', cx: 22.5, cy: 8, r: 3 },
+      { type: 'circle', cx: 31, cy: 9, r: 3 },
+      { type: 'circle', cx: 39, cy: 12, r: 3 },
+      { type: 'path', d: 'M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26z' },
+      { type: 'path', d: 'M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z' },
+    ],
+  },
+  rook: {
+    viewBox: '0 0 45 45',
+    elements: [
+      { type: 'path', d: 'M9 39h27v-3H9v3zM12 36v-4h21v4H12zM14 29.5v-13h17v13H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11zM12.5 32l1.5-2.5h17l1.5 2.5z' },
+    ],
+  },
+  bishop: {
+    viewBox: '0 0 45 45',
+    elements: [
+      { type: 'path', d: 'M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z' },
+      { type: 'path', d: 'M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z' },
+      { type: 'circle', cx: 22.5, cy: 8, r: 3 },
+    ],
+  },
+  knight: {
+    viewBox: '0 0 45 45',
+    elements: [
+      { type: 'path', d: 'M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21' },
+      { type: 'path', d: 'M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3' },
+    ],
+  },
+  pawn: {
+    viewBox: '0 0 45 45',
+    elements: [
+      { type: 'path', d: 'M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z' },
+    ],
+  },
+  star: {
+    viewBox: '0 0 24 24',
+    elements: [
+      { type: 'polygon', points: '12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26' },
+    ],
+  },
+};
+
+function renderPieceElements(piece: PieceType, fill: string, transform?: string) {
+  const data = PIECE_PATHS[piece];
+  return data.elements.map((el, i) => {
+    if (el.type === 'circle') {
+      return <circle key={i} fill={fill} transform={transform} cx={el.cx} cy={el.cy} r={el.r} />;
+    } else if (el.type === 'path') {
+      return <path key={i} fill={fill} transform={transform} d={el.d} />;
+    } else if (el.type === 'polygon') {
+      return <polygon key={i} fill={fill} transform={transform} points={el.points} />;
+    }
+    return null;
+  });
+}
+
+// Long Shadow - the chosen style
+function getIconLongShadow(piece: PieceType, color: string, size: number) {
+  const data = PIECE_PATHS[piece];
+  const layers = 4;
+
+  return (
+    <svg width={size} height={size} viewBox={data.viewBox}>
+      {/* Multiple shadow layers for long shadow effect */}
+      {Array.from({ length: layers }).map((_, i) => (
+        <g key={i} opacity={0.15 - i * 0.03}>
+          {renderPieceElements(piece, '#000', `translate(${(layers - i) * 0.8}, ${(layers - i) * 0.8})`)}
+        </g>
+      ))}
+      <g>{renderPieceElements(piece, color)}</g>
+    </svg>
+  );
+}
+
+function LockIcon({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   );
 }

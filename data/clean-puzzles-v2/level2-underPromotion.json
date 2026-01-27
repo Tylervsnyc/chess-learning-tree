@@ -1,0 +1,26 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "underPromotion",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "YalR0",
+      "fen": "8/p4P2/bp2p1k1/n5p1/8/5Q1P/P4PPK/5q2 b - - 0 36",
+      "moves": "a6e2 f7f8n g6g7 f8e6",
+      "rating": 947,
+      "popularity": 86,
+      "nbPlays": 6623,
+      "theme": "underPromotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short",
+        "underPromotion"
+      ],
+      "gameUrl": "https://lichess.org/v8WUbUws/black#72"
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "trappedPiece",
+  "count": 18,
+  "puzzles": [
+    {
+      "puzzleId": "bj9Nc",
+      "fen": "rn1qkb1r/pbpppppp/1p6/4P3/2PP4/8/PP3PPP/R1BQKBNR w KQkq - 1 7",
+      "moves": "f1d3 b7g2 d1g4 g2h1",
+      "rating": 846,
+      "popularity": 93,
+      "nbPlays": 3096,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/qxIba9w7#13"
+    },
+    {
+      "puzzleId": "YyqLn",
+      "fen": "r1bqr1k1/p1pn1pbp/1p3np1/8/P2Np3/2P1P1B1/1P1NBPPP/R2Q1RK1 b - - 1 12",
+      "moves": "c7c5 d4c6 c8b7 c6d8",
+      "rating": 911,
+      "popularity": 89,
+      "nbPlays": 3413,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/3x0QJo38/black#24"
+    },
+    {
+      "puzzleId": "e6KFi",
+      "fen": "2kr3r/2p1bpp1/p3p3/1p1n3p/1P1P2P1/P2b1PR1/1P2N3/R1B1QKNq b - - 5 21",
+      "moves": "h5h4 g3h3 h1h3 g1h3",
+      "rating": 913,
+      "popularity": 97,
+      "nbPlays": 4172,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/VuEAjAA5/black#42"
+    },
+    {
+      "puzzleId": "DZM3J",
+      "fen": "rnb1k2r/1p1p1ppp/p4n2/4p3/7q/1NP1PB2/PP1K2PP/RN2Q1R1 b kq - 5 13",
+      "moves": "h4h2 g1h1 h2h1 e1h1",
+      "rating": 914,
+      "popularity": 96,
+      "nbPlays": 5674,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/OKrfCsiq/black#26"
+    },
+    {
+      "puzzleId": "obEKS",
+      "fen": "r2qk1nr/1bpn1p2/pp1p4/3Pp2p/P3P1pP/2N1B3/1PPQ1PBP/R3R1K1 b kq - 0 14",
+      "moves": "d8h4 e3g5 h4g5 d2g5",
+      "rating": 916,
+      "popularity": 94,
+      "nbPlays": 3100,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/2lb2wAWA/black#28"
+    },
+    {
+      "puzzleId": "J94py",
+      "fen": "4r1k1/ppp1rppp/2n4q/8/3P4/PP2P1P1/4PKNP/R1Q2R2 b - - 2 22",
+      "moves": "h6h2 f1h1 h2h1 c1h1",
+      "rating": 952,
+      "popularity": 95,
+      "nbPlays": 3037,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "master",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/IPlDdz9p/black#44"
+    },
+    {
+      "puzzleId": "Owg6o",
+      "fen": "8/1b3k2/pK2p2p/1p2Pp2/1P3Pp1/P2p2P1/7P/2B5 b - - 3 44",
+      "moves": "b7c8 b6c7 f7e8 c7c8",
+      "rating": 957,
+      "popularity": 94,
+      "nbPlays": 4335,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "bishopEndgame",
+        "crushing",
+        "endgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/C5vtIBbT/black#88"
+    },
+    {
+      "puzzleId": "Cg8I8",
+      "fen": "rnb1k2r/pp1p1ppp/4p3/8/2P5/2R1P3/qP3PPP/2Q1KBNR b Kkq - 1 10",
+      "moves": "b8c6 c3a3 a2a3 b2a3",
+      "rating": 960,
+      "popularity": 95,
+      "nbPlays": 5043,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/CPPkN6Pc/black#20"
+    },
+    {
+      "puzzleId": "UUJza",
+      "fen": "r1bqk1nr/2p2ppp/pbp1P3/3p4/8/1P2P3/PBP1QPPP/RN2K1NR b KQkq - 0 9",
+      "moves": "c8e6 b2g7 d8g5 g7h8",
+      "rating": 964,
+      "popularity": 94,
+      "nbPlays": 5895,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/7v9Ndx4z/black#18"
+    },
+    {
+      "puzzleId": "b6ZcD",
+      "fen": "rn3rk1/pppb1ppp/3p2n1/3Pp3/4P2q/2P2N1P/PPB2PP1/R1BQ1RK1 b - - 2 15",
+      "moves": "h4f6 c1g5 f6g5 f3g5",
+      "rating": 971,
+      "popularity": 95,
+      "nbPlays": 6259,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/AG5A8Vtw/black#30"
+    },
+    {
+      "puzzleId": "YLuIM",
+      "fen": "r2q1rk1/p2pbppp/1p3n2/2pP4/5Q2/1BN1P3/PP2KPPP/R6R b - - 0 14",
+      "moves": "a7a6 d5d6 e7d6 f4d6",
+      "rating": 973,
+      "popularity": 92,
+      "nbPlays": 4107,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/itT1kyvf/black#28"
+    },
+    {
+      "puzzleId": "JL5Ci",
+      "fen": "8/6pk/2p4p/2P5/p1P5/B3KPP1/2r5/8 b - - 3 40",
+      "moves": "c2c4 e3d3 c4c5 a3c5",
+      "rating": 979,
+      "popularity": 93,
+      "nbPlays": 4457,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/8nzcRzNp/black#80"
+    },
+    {
+      "puzzleId": "VxRFt",
+      "fen": "Q7/6kp/pq4p1/1pb5/3n4/4B3/PP4PP/RN4K1 w - - 0 29",
+      "moves": "e3d4 c5d4 g1h1 d4b2 b1d2 b2a1",
+      "rating": 983,
+      "popularity": 95,
+      "nbPlays": 3033,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/wBOcD3nd#57"
+    },
+    {
+      "puzzleId": "LQQTb",
+      "fen": "rnb1k1r1/ppp1np1Q/4p3/3p4/1q1P4/4P3/PPP2PPP/RN2KBNR w KQq - 1 8",
+      "moves": "c2c3 b4b2 b1d2 b2a1",
+      "rating": 993,
+      "popularity": 93,
+      "nbPlays": 4000,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "master",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/2MokckqQ#15"
+    },
+    {
+      "puzzleId": "RjL5p",
+      "fen": "8/8/p7/P6p/1Bn2k1P/3p1P2/5K2/8 w - - 0 43",
+      "moves": "b4e1 d3d2 e1d2 c4d2",
+      "rating": 995,
+      "popularity": 97,
+      "nbPlays": 3780,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/JdMdEUhY#85"
+    },
+    {
+      "puzzleId": "TwcpH",
+      "fen": "2k5/8/pKP5/3Pp2p/4P1p1/3n1pP1/5B1P/8 w - - 1 50",
+      "moves": "f2g1 f3f2 g1f2 d3f2",
+      "rating": 996,
+      "popularity": 96,
+      "nbPlays": 4607,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "advancedPawn",
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/xWHpS1YV#99"
+    },
+    {
+      "puzzleId": "qzXnB",
+      "fen": "r1bqkbnr/p4ppp/2p1p3/2pp4/8/1P2P3/PBPPNPPP/RN1QK2R b KQkq - 1 6",
+      "moves": "f8d6 b2g7 d8g5 g7h8",
+      "rating": 996,
+      "popularity": 93,
+      "nbPlays": 4520,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "opening",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/HLAFA8nB/black#12"
+    },
+    {
+      "puzzleId": "UDBPP",
+      "fen": "1k3bnr/1p3ppp/1p2p3/1B6/8/1P5P/1B1K1PP1/7R b - - 1 17",
+      "moves": "f8d6 b2g7 g8e7 g7h8",
+      "rating": 998,
+      "popularity": 96,
+      "nbPlays": 5069,
+      "theme": "trappedPiece",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "trappedPiece"
+      ],
+      "gameUrl": "https://lichess.org/lzyC3V2Q/black#34"
+    }
+  ]
+}

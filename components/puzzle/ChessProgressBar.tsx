@@ -885,7 +885,7 @@ export function ChessProgressBar({
     if (isOnFire) {
       // Intense molten lava - slow surging
       return {
-        background: `linear-gradient(
+        backgroundImage: `linear-gradient(
           90deg,
           #FF4500 0%,
           #FF6B35 15%,
@@ -903,7 +903,7 @@ export function ChessProgressBar({
     if (isStreaking) {
       // Warming up - yellow-green glow
       return {
-        background: `linear-gradient(
+        backgroundImage: `linear-gradient(
           90deg,
           #7CB518 0%,
           #9BD41A 20%,
@@ -920,7 +920,7 @@ export function ChessProgressBar({
 
     // Default: cool emerald
     return {
-      background: `linear-gradient(
+      backgroundImage: `linear-gradient(
         90deg,
         #2E7D0A 0%,
         #3D9E1E 30%,

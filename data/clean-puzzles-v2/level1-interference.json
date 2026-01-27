@@ -1,0 +1,58 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "interference",
+  "count": 3,
+  "puzzles": [
+    {
+      "puzzleId": "aePxa",
+      "fen": "r6r/p1q2kp1/2p2b2/1p1B1P2/8/3Q3P/PPP5/2K2R1R b - - 0 22",
+      "moves": "c6d5 d3d5 f7f8 d5a8",
+      "rating": 733,
+      "popularity": 82,
+      "nbPlays": 327,
+      "theme": "interference",
+      "allThemes": [
+        "advantage",
+        "interference",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tUDHhhod/black#44"
+    },
+    {
+      "puzzleId": "JDJAZ",
+      "fen": "r3r1k1/3bR1p1/1p1P3p/p7/8/8/PPPR1PPP/2K5 b - - 3 20",
+      "moves": "e8e7 d6e7 d7e8 d2d8 a8a7 d8e8",
+      "rating": 750,
+      "popularity": 93,
+      "nbPlays": 918,
+      "theme": "interference",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "interference",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jDrDmqmh/black#40"
+    },
+    {
+      "puzzleId": "FB7iX",
+      "fen": "r6r/1pp1k3/p2p3p/3Pp2q/4P1bb/2NB1p1N/PPPK3P/R4RQ1 b - - 3 21",
+      "moves": "g4h3 g1g7 e7e8 g7h8",
+      "rating": 755,
+      "popularity": 100,
+      "nbPlays": 205,
+      "theme": "interference",
+      "allThemes": [
+        "advantage",
+        "interference",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4cnfrQAM/black#42"
+    }
+  ]
+}

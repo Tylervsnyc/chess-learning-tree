@@ -1,0 +1,26 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "doubleCheck",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "eNeQf",
+      "fen": "r3k2r/pp1bqp2/3p4/3Pp3/4P1pp/P3Q1PP/1P3P1K/2R1R1N1 w kq - 0 28",
+      "moves": "h3g4 h4g3 h2g3 e7h4",
+      "rating": 997,
+      "popularity": 94,
+      "nbPlays": 4661,
+      "theme": "doubleCheck",
+      "allThemes": [
+        "attraction",
+        "crushing",
+        "discoveredCheck",
+        "doubleCheck",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/eI2vY8Xj#55"
+    }
+  ]
+}

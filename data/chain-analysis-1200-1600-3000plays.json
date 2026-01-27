@@ -1,0 +1,2193 @@
+{
+  "level": "1200-1600",
+  "minPlays": 3000,
+  "sampleRate": 1,
+  "stats": {
+    "total": 303288,
+    "byOutcome": {
+      "minor_win": 80286,
+      "major_win": 66747,
+      "queen_win": 20872,
+      "checkmate": 78148,
+      "pawn_win": 24453,
+      "positional": 32782
+    },
+    "byPrimaryTheme": {
+      "discoveredAttack": 65593,
+      "tactical": 33881,
+      "fork": 92649,
+      "checkmate": 78148,
+      "skewer": 9983,
+      "attraction": 937,
+      "pin": 22097
+    },
+    "byTeachAs": {
+      "discoveredAttack": 65162,
+      "material": 22896,
+      "fork": 92014,
+      "checkmate": 67470,
+      "skewer": 9794,
+      "attraction": 937,
+      "pin": 21763,
+      "operaMate": 2655,
+      "attraction → discoveredAttack → minor_win": 71,
+      "positional": 10985,
+      "smotheredMate": 908,
+      "pillsburysMate": 2695,
+      "backRankMate": 3220,
+      "hookMate": 682,
+      "fork → attraction → major_win": 72,
+      "fork → attraction → fork → queen_win": 13,
+      "pin → attraction → major_win": 24,
+      "attraction → fork → discoveredAttack → major_win": 7,
+      "attraction → pin → minor_win": 115,
+      "attraction → fork → pin → pawn_win": 10,
+      "attraction → discoveredAttack → fork → positional": 5,
+      "arabianMate": 437,
+      "attraction → fork → discoveredAttack → minor_win": 10,
+      "attraction → skewer → major_win": 43,
+      "attraction → pin → major_win": 58,
+      "doubleBishopMate": 81,
+      "pin → attraction → discoveredAttack → minor_win": 1,
+      "attraction → discoveredAttack → positional": 27,
+      "pin → attraction → minor_win": 14,
+      "attraction → skewer → minor_win": 43,
+      "discoveredAttack → attraction → major_win": 46,
+      "attraction → fork → minor_win": 55,
+      "discoveredAttack → attraction → discoveredAttack → major_win": 6,
+      "attraction → discoveredAttack → major_win": 85,
+      "fork → attraction → minor_win": 101,
+      "skewer → attraction → major_win": 16,
+      "attraction → fork → pawn_win": 34,
+      "fork → attraction → skewer → minor_win": 5,
+      "discoveredAttack → attraction → discoveredAttack → queen_win": 5,
+      "pin → attraction → pawn_win": 2,
+      "attraction → fork → major_win": 43,
+      "fork → attraction → discoveredAttack → minor_win": 7,
+      "pin → attraction → pin → major_win": 2,
+      "attraction → discoveredAttack → pawn_win": 50,
+      "discoveredAttack → attraction → pawn_win": 7,
+      "fork → attraction → pin → queen_win": 8,
+      "skewer → attraction → pawn_win": 8,
+      "fork → attraction → fork → pawn_win": 4,
+      "pin → attraction → queen_win": 3,
+      "attraction → pin → positional": 23,
+      "attraction → fork → skewer → minor_win": 4,
+      "discoveredAttack → attraction → pin → major_win": 12,
+      "attraction → pin → pawn_win": 20,
+      "skewer → attraction → discoveredAttack → major_win": 5,
+      "skewer → discoveredAttack → attraction → skewer → major_win": 1,
+      "discoveredAttack → attraction → pin → minor_win": 2,
+      "pin → discoveredAttack → discoveredAttack → attraction → minor_win": 1,
+      "attraction → skewer → queen_win": 12,
+      "attraction → pin → queen_win": 22,
+      "fork → attraction → discoveredAttack → queen_win": 13,
+      "fork → attraction → discoveredAttack → major_win": 8,
+      "attraction → fork → positional": 63,
+      "attraction → discoveredAttack → queen_win": 24,
+      "skewer → discoveredAttack → attraction → major_win": 3,
+      "fork → attraction → skewer → queen_win": 12,
+      "attraction → skewer → positional": 12,
+      "attraction → fork → fork → positional": 2,
+      "fork → attraction → skewer → pawn_win": 12,
+      "attraction → pin → pin → minor_win": 2,
+      "discoveredAttack → attraction → queen_win": 9,
+      "skewer → attraction → minor_win": 11,
+      "pin → attraction → fork → major_win": 3,
+      "fork → attraction → pawn_win": 9,
+      "attraction → fork → skewer → pawn_win": 3,
+      "pin → attraction → fork → skewer → major_win": 1,
+      "attraction → skewer → skewer → minor_win": 3,
+      "attraction → fork → pin → major_win": 3,
+      "fork → attraction → fork → major_win": 4,
+      "attraction → discoveredAttack → discoveredAttack → pin → minor_win": 1,
+      "discoveredAttack → attraction → skewer → major_win": 7,
+      "fork → attraction → fork → positional": 2,
+      "attraction → fork → pin → minor_win": 12,
+      "attraction → pin → fork → pawn_win": 2,
+      "fork → attraction → queen_win": 16,
+      "discoveredAttack → fork → attraction → discoveredAttack → major_win": 1,
+      "discoveredAttack → attraction → minor_win": 33,
+      "fork → skewer → attraction → major_win": 1,
+      "discoveredAttack → attraction → skewer → minor_win": 5,
+      "attraction → fork → fork → pawn_win": 4,
+      "skewer → attraction → discoveredAttack → positional": 1,
+      "discoveredAttack → fork → attraction → minor_win": 4,
+      "skewer → skewer → attraction → queen_win": 1,
+      "attraction → discoveredAttack → fork → pawn_win": 3,
+      "fork → attraction → fork → pin → minor_win": 1,
+      "skewer → attraction → queen_win": 4,
+      "skewer → attraction → fork → positional": 2,
+      "attraction → discoveredAttack → pin → major_win": 2,
+      "skewer → attraction → pin → major_win": 3,
+      "discoveredAttack → attraction → discoveredAttack → minor_win": 4,
+      "attraction → fork → skewer → skewer → queen_win": 1,
+      "attraction → discoveredAttack → pin → positional": 1,
+      "discoveredAttack → attraction → fork → pawn_win": 1,
+      "discoveredAttack → discoveredAttack → attraction → minor_win": 1,
+      "attraction → fork → skewer → major_win": 2,
+      "attraction → fork → fork → minor_win": 3,
+      "discoveredAttack → attraction → skewer → queen_win": 2,
+      "attraction → discoveredAttack → fork → major_win": 2,
+      "attraction → skewer → pin → minor_win": 1,
+      "attraction → discoveredAttack → discoveredAttack → major_win": 7,
+      "discoveredAttack → discoveredAttack → fork → attraction → major_win": 1,
+      "attraction → discoveredAttack → discoveredAttack → minor_win": 4,
+      "attraction → discoveredAttack → skewer → major_win": 3,
+      "discoveredAttack → discoveredAttack → attraction → major_win": 1,
+      "pin → attraction → discoveredAttack → positional": 1,
+      "attraction → fork → fork → major_win": 4,
+      "fork → attraction → skewer → major_win": 7,
+      "attraction → skewer → skewer → skewer → pawn_win": 1,
+      "skewer → attraction → skewer → positional": 2,
+      "discoveredAttack → discoveredAttack → attraction → fork → positional": 1,
+      "fork → attraction → pin → pawn_win": 1,
+      "attraction → pin → fork → major_win": 2,
+      "pin → attraction → skewer → queen_win": 1,
+      "attraction → fork → discoveredAttack → pawn_win": 5,
+      "attraction → skewer → pawn_win": 9,
+      "fork → attraction → pin → minor_win": 9,
+      "pin → attraction → fork → positional": 1,
+      "fork → discoveredAttack → attraction → major_win": 3,
+      "pin → attraction → discoveredAttack → discoveredAttack → major_win": 2,
+      "pin → attraction → pin → positional": 2,
+      "discoveredAttack → fork → attraction → fork → pawn_win": 1,
+      "fork → attraction → discoveredAttack → pawn_win": 4,
+      "discoveredAttack → attraction → fork → positional": 5,
+      "discoveredAttack → fork → attraction → major_win": 1,
+      "attraction → fork → fork → fork → minor_win": 1,
+      "attraction → pin → pin → pawn_win": 2,
+      "fork → fork → attraction → minor_win": 3,
+      "attraction → fork → queen_win": 3,
+      "fork → fork → attraction → discoveredAttack → minor_win": 1,
+      "skewer → attraction → positional": 1,
+      "discoveredAttack → attraction → pin → positional": 2,
+      "attraction → fork → discoveredAttack → positional": 2,
+      "discoveredAttack → attraction → fork → major_win": 3,
+      "fork → attraction → fork → fork → major_win": 1,
+      "fork → fork → attraction → major_win": 2,
+      "discoveredAttack → attraction → discoveredAttack → fork → major_win": 1,
+      "fork → attraction → pin → major_win": 5,
+      "attraction → discoveredAttack → discoveredAttack → pin → major_win": 1,
+      "attraction → discoveredAttack → discoveredAttack → positional": 2,
+      "attraction → skewer → fork → discoveredAttack → positional": 1,
+      "discoveredAttack → attraction → discoveredAttack → pawn_win": 2,
+      "attraction → discoveredAttack → discoveredAttack → pin → positional": 1,
+      "attraction → attraction → skewer → pawn_win": 1,
+      "discoveredAttack → attraction → discoveredAttack → positional": 2,
+      "pin → attraction → discoveredAttack → fork → major_win": 1,
+      "attraction → attraction → skewer → major_win": 2,
+      "discoveredAttack → pin → attraction → minor_win": 1,
+      "pin → attraction → pin → queen_win": 1,
+      "fork → fork → attraction → queen_win": 1,
+      "attraction → skewer → discoveredAttack → positional": 1,
+      "attraction → pin → pin → major_win": 2,
+      "attraction → skewer → fork → pawn_win": 1,
+      "fork → pin → attraction → major_win": 1,
+      "discoveredAttack → skewer → attraction → pawn_win": 1,
+      "discoveredAttack → attraction → fork → queen_win": 2,
+      "attraction → discoveredAttack → discoveredAttack → pawn_win": 1,
+      "pin → attraction → pin → skewer → major_win": 1,
+      "attraction → fork → pin → queen_win": 1,
+      "attraction → fork → discoveredAttack → pin → queen_win": 1,
+      "attraction → skewer → pin → pawn_win": 1,
+      "attraction → fork → pin → positional": 2,
+      "fork → attraction → fork → minor_win": 2,
+      "attraction → attraction → pin → minor_win": 1,
+      "attraction → fork → pin → discoveredAttack → minor_win": 1,
+      "discoveredAttack → attraction → pin → pawn_win": 1,
+      "attraction → attraction → skewer → minor_win": 1,
+      "discoveredAttack → discoveredAttack → attraction → pin → queen_win": 1,
+      "attraction → pin → discoveredAttack → minor_win": 1,
+      "attraction → skewer → fork → positional": 1,
+      "attraction → discoveredAttack → pin → minor_win": 1,
+      "fork → discoveredAttack → attraction → pin → major_win": 1,
+      "attraction → pin → discoveredAttack → major_win": 2,
+      "attraction → skewer → discoveredAttack → pawn_win": 1,
+      "discoveredAttack → discoveredAttack → attraction → queen_win": 1,
+      "attraction → discoveredAttack → skewer → minor_win": 2,
+      "attraction → discoveredAttack → pin → discoveredAttack → minor_win": 1,
+      "attraction → fork → fork → fork → pawn_win": 1,
+      "fork → skewer → attraction → fork → major_win": 1,
+      "attraction → discoveredAttack → skewer → queen_win": 1,
+      "skewer → attraction → discoveredAttack → queen_win": 1,
+      "skewer → attraction → skewer → major_win": 1,
+      "discoveredAttack → discoveredAttack → attraction → pin → major_win": 2,
+      "pin → discoveredAttack → attraction → major_win": 1,
+      "skewer → attraction → discoveredAttack → discoveredAttack → major_win": 1,
+      "discoveredAttack → attraction → fork → fork → positional": 1,
+      "fork → discoveredAttack → attraction → pawn_win": 1,
+      "skewer → attraction → pin → minor_win": 1,
+      "attraction → attraction → pin → pawn_win": 1
+    },
+    "combinations": {
+      "total": 60618,
+      "clean": 60382,
+      "mixed": 236,
+      "ambiguous": 0,
+      "flows": {
+        "discoveredAttack → checkmate → checkmate": 23952,
+        "attraction → discoveredAttack → minor_win": 71,
+        "fork → discoveredAttack → checkmate → checkmate": 2990,
+        "discoveredAttack → discoveredAttack → checkmate → checkmate": 4491,
+        "fork → checkmate → checkmate": 15383,
+        "skewer → checkmate → checkmate": 3340,
+        "discoveredAttack → fork → checkmate → checkmate": 1957,
+        "skewer → discoveredAttack → checkmate → checkmate": 670,
+        "fork → attraction → major_win": 72,
+        "fork → fork → checkmate → checkmate": 2547,
+        "fork → attraction → fork → queen_win": 13,
+        "pin → attraction → major_win": 24,
+        "fork → skewer → checkmate → checkmate": 224,
+        "attraction → fork → discoveredAttack → major_win": 7,
+        "discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 510,
+        "attraction → pin → minor_win": 115,
+        "attraction → fork → pin → pawn_win": 10,
+        "skewer → discoveredAttack → discoveredAttack → checkmate → checkmate": 56,
+        "attraction → discoveredAttack → fork → positional": 5,
+        "fork → discoveredAttack → discoveredAttack → checkmate → checkmate": 579,
+        "discoveredAttack → skewer → checkmate → checkmate": 439,
+        "discoveredAttack → fork → discoveredAttack → checkmate → checkmate": 115,
+        "discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 138,
+        "discoveredAttack → fork → fork → checkmate → checkmate": 72,
+        "attraction → fork → discoveredAttack → minor_win": 10,
+        "discoveredAttack → skewer → fork → checkmate → checkmate": 20,
+        "discoveredAttack → discoveredAttack → skewer → checkmate → checkmate": 63,
+        "attraction → skewer → major_win": 43,
+        "attraction → pin → major_win": 58,
+        "fork → fork → fork → checkmate → checkmate": 113,
+        "fork → fork → discoveredAttack → checkmate → checkmate": 73,
+        "fork → skewer → fork → checkmate → checkmate": 15,
+        "skewer → fork → checkmate → checkmate": 520,
+        "pin → attraction → discoveredAttack → minor_win": 1,
+        "attraction → discoveredAttack → positional": 27,
+        "pin → attraction → minor_win": 14,
+        "discoveredAttack → fork → skewer → checkmate → checkmate": 14,
+        "attraction → skewer → minor_win": 43,
+        "skewer → discoveredAttack → fork → checkmate → checkmate": 26,
+        "discoveredAttack → skewer → discoveredAttack → checkmate → checkmate": 45,
+        "skewer → discoveredAttack → fork → discoveredAttack → checkmate → checkmate": 2,
+        "discoveredAttack → attraction → major_win": 46,
+        "attraction → fork → minor_win": 55,
+        "skewer → skewer → fork → checkmate → checkmate": 8,
+        "discoveredAttack → attraction → discoveredAttack → major_win": 6,
+        "discoveredAttack → discoveredAttack → discoveredAttack → skewer → checkmate → checkmate": 6,
+        "attraction → discoveredAttack → major_win": 85,
+        "skewer → skewer → checkmate → checkmate": 137,
+        "discoveredAttack → skewer → skewer → skewer → checkmate → checkmate": 2,
+        "fork → attraction → minor_win": 101,
+        "fork → discoveredAttack → fork → checkmate → checkmate": 74,
+        "skewer → attraction → major_win": 16,
+        "fork → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 56,
+        "attraction → fork → pawn_win": 34,
+        "skewer → fork → discoveredAttack → checkmate → checkmate": 11,
+        "fork → attraction → skewer → minor_win": 5,
+        "discoveredAttack → attraction → discoveredAttack → queen_win": 5,
+        "pin → attraction → pawn_win": 2,
+        "attraction → fork → major_win": 43,
+        "fork → attraction → discoveredAttack → minor_win": 7,
+        "pin → attraction → pin → major_win": 2,
+        "attraction → discoveredAttack → pawn_win": 50,
+        "discoveredAttack → attraction → pawn_win": 7,
+        "fork → attraction → pin → queen_win": 8,
+        "skewer → attraction → pawn_win": 8,
+        "fork → attraction → fork → pawn_win": 4,
+        "fork → discoveredAttack → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "pin → attraction → queen_win": 3,
+        "fork → skewer → discoveredAttack → checkmate → checkmate": 23,
+        "attraction → pin → positional": 23,
+        "discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 56,
+        "attraction → fork → skewer → minor_win": 4,
+        "discoveredAttack → attraction → pin → major_win": 12,
+        "attraction → pin → pawn_win": 20,
+        "skewer → attraction → discoveredAttack → major_win": 5,
+        "skewer → discoveredAttack → attraction → skewer → major_win": 1,
+        "discoveredAttack → attraction → pin → minor_win": 2,
+        "pin → discoveredAttack → discoveredAttack → attraction → minor_win": 1,
+        "fork → fork → discoveredAttack → discoveredAttack → checkmate → checkmate": 7,
+        "discoveredAttack → fork → discoveredAttack → discoveredAttack → checkmate → checkmate": 7,
+        "attraction → skewer → queen_win": 12,
+        "fork → discoveredAttack → skewer → checkmate → checkmate": 18,
+        "attraction → pin → queen_win": 22,
+        "fork → attraction → discoveredAttack → queen_win": 13,
+        "fork → attraction → discoveredAttack → major_win": 8,
+        "attraction → fork → positional": 63,
+        "pin → checkmate → checkmate": 41,
+        "fork → discoveredAttack → skewer → discoveredAttack → checkmate → checkmate": 3,
+        "attraction → discoveredAttack → queen_win": 24,
+        "skewer → discoveredAttack → attraction → major_win": 3,
+        "fork → discoveredAttack → fork → skewer → checkmate → checkmate": 1,
+        "fork → attraction → skewer → queen_win": 12,
+        "skewer → skewer → discoveredAttack → checkmate → checkmate": 10,
+        "attraction → skewer → positional": 12,
+        "attraction → fork → fork → positional": 2,
+        "fork → attraction → skewer → pawn_win": 12,
+        "attraction → pin → pin → minor_win": 2,
+        "skewer → discoveredAttack → skewer → checkmate → checkmate": 8,
+        "discoveredAttack → attraction → queen_win": 9,
+        "skewer → attraction → minor_win": 11,
+        "pin → attraction → fork → major_win": 3,
+        "fork → attraction → pawn_win": 9,
+        "attraction → fork → skewer → pawn_win": 3,
+        "attraction → fork → fork → checkmate → checkmate": 1,
+        "pin → attraction → fork → skewer → major_win": 1,
+        "discoveredAttack → skewer → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "attraction → skewer → skewer → minor_win": 3,
+        "attraction → fork → pin → major_win": 3,
+        "fork → attraction → fork → major_win": 4,
+        "attraction → discoveredAttack → discoveredAttack → pin → minor_win": 1,
+        "discoveredAttack → attraction → skewer → major_win": 7,
+        "fork → attraction → fork → positional": 2,
+        "skewer → skewer → discoveredAttack → discoveredAttack → checkmate → checkmate": 3,
+        "attraction → fork → pin → minor_win": 12,
+        "attraction → pin → fork → pawn_win": 2,
+        "fork → attraction → queen_win": 16,
+        "discoveredAttack → fork → attraction → discoveredAttack → major_win": 1,
+        "discoveredAttack → attraction → minor_win": 33,
+        "fork → skewer → attraction → major_win": 1,
+        "discoveredAttack → skewer → discoveredAttack → discoveredAttack → checkmate → checkmate": 6,
+        "skewer → skewer → skewer → checkmate → checkmate": 2,
+        "discoveredAttack → discoveredAttack → skewer → discoveredAttack → checkmate → checkmate": 5,
+        "pin → discoveredAttack → checkmate → checkmate": 17,
+        "discoveredAttack → attraction → skewer → minor_win": 5,
+        "attraction → fork → fork → pawn_win": 4,
+        "skewer → attraction → discoveredAttack → positional": 1,
+        "discoveredAttack → fork → attraction → minor_win": 4,
+        "skewer → skewer → attraction → queen_win": 1,
+        "fork → fork → fork → discoveredAttack → checkmate → checkmate": 1,
+        "attraction → discoveredAttack → fork → pawn_win": 3,
+        "discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 11,
+        "fork → fork → discoveredAttack → fork → checkmate → checkmate": 2,
+        "discoveredAttack → fork → fork → fork → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → fork → discoveredAttack → checkmate → checkmate": 12,
+        "fork → attraction → fork → pin → minor_win": 1,
+        "skewer → attraction → queen_win": 4,
+        "skewer → attraction → fork → positional": 2,
+        "fork → fork → skewer → checkmate → checkmate": 7,
+        "attraction → discoveredAttack → pin → major_win": 2,
+        "skewer → attraction → pin → major_win": 3,
+        "discoveredAttack → attraction → discoveredAttack → minor_win": 4,
+        "discoveredAttack → discoveredAttack → skewer → skewer → checkmate → checkmate": 2,
+        "attraction → fork → skewer → skewer → queen_win": 1,
+        "attraction → discoveredAttack → pin → positional": 1,
+        "discoveredAttack → fork → discoveredAttack → fork → checkmate → checkmate": 3,
+        "discoveredAttack → attraction → fork → pawn_win": 1,
+        "pin → skewer → checkmate → checkmate": 5,
+        "attraction → checkmate → checkmate": 4,
+        "discoveredAttack → discoveredAttack → attraction → minor_win": 1,
+        "fork → skewer → discoveredAttack → discoveredAttack → checkmate → checkmate": 6,
+        "attraction → fork → skewer → major_win": 2,
+        "attraction → fork → fork → minor_win": 3,
+        "discoveredAttack → fork → fork → discoveredAttack → checkmate → checkmate": 2,
+        "discoveredAttack → attraction → skewer → queen_win": 2,
+        "attraction → discoveredAttack → fork → major_win": 2,
+        "fork → discoveredAttack → fork → fork → checkmate → checkmate": 2,
+        "attraction → skewer → pin → minor_win": 1,
+        "attraction → discoveredAttack → discoveredAttack → major_win": 7,
+        "discoveredAttack → discoveredAttack → fork → attraction → major_win": 1,
+        "attraction → discoveredAttack → discoveredAttack → minor_win": 4,
+        "attraction → discoveredAttack → skewer → major_win": 3,
+        "pin → fork → discoveredAttack → checkmate → checkmate": 3,
+        "discoveredAttack → discoveredAttack → attraction → major_win": 1,
+        "skewer → fork → fork → checkmate → checkmate": 22,
+        "fork → discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 3,
+        "pin → attraction → discoveredAttack → positional": 1,
+        "discoveredAttack → discoveredAttack → fork → skewer → checkmate → checkmate": 1,
+        "attraction → fork → fork → major_win": 4,
+        "skewer → skewer → skewer → discoveredAttack → checkmate → checkmate": 1,
+        "fork → attraction → skewer → major_win": 7,
+        "skewer → fork → skewer → checkmate → checkmate": 3,
+        "attraction → skewer → skewer → skewer → pawn_win": 1,
+        "skewer → attraction → skewer → positional": 2,
+        "discoveredAttack → discoveredAttack → attraction → fork → positional": 1,
+        "fork → attraction → pin → pawn_win": 1,
+        "skewer → discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 2,
+        "discoveredAttack → discoveredAttack → fork → fork → discoveredAttack → checkmate → checkmate": 2,
+        "attraction → pin → fork → major_win": 2,
+        "fork → skewer → skewer → checkmate → checkmate": 2,
+        "pin → attraction → skewer → queen_win": 1,
+        "pin → fork → checkmate → checkmate": 7,
+        "attraction → fork → discoveredAttack → pawn_win": 5,
+        "attraction → skewer → pawn_win": 9,
+        "fork → attraction → pin → minor_win": 9,
+        "pin → attraction → fork → positional": 1,
+        "fork → discoveredAttack → attraction → major_win": 3,
+        "skewer → pin → discoveredAttack → checkmate → checkmate": 2,
+        "discoveredAttack → fork → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "pin → attraction → discoveredAttack → discoveredAttack → major_win": 2,
+        "pin → attraction → pin → positional": 2,
+        "discoveredAttack → fork → attraction → fork → pawn_win": 1,
+        "discoveredAttack → skewer → skewer → checkmate → checkmate": 5,
+        "fork → attraction → discoveredAttack → pawn_win": 4,
+        "discoveredAttack → attraction → fork → positional": 5,
+        "discoveredAttack → pin → fork → checkmate → checkmate": 1,
+        "discoveredAttack → fork → attraction → major_win": 1,
+        "attraction → fork → fork → fork → minor_win": 1,
+        "fork → pin → fork → checkmate → checkmate": 1,
+        "attraction → fork → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → fork → fork → checkmate → checkmate": 2,
+        "attraction → pin → pin → pawn_win": 2,
+        "fork → fork → attraction → minor_win": 3,
+        "discoveredAttack → discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 8,
+        "attraction → fork → queen_win": 3,
+        "fork → fork → attraction → discoveredAttack → minor_win": 1,
+        "skewer → attraction → positional": 1,
+        "discoveredAttack → attraction → pin → positional": 2,
+        "attraction → fork → discoveredAttack → positional": 2,
+        "discoveredAttack → attraction → fork → major_win": 3,
+        "fork → attraction → fork → fork → major_win": 1,
+        "fork → fork → attraction → major_win": 2,
+        "fork → discoveredAttack → fork → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → attraction → discoveredAttack → fork → major_win": 1,
+        "fork → attraction → pin → major_win": 5,
+        "attraction → discoveredAttack → discoveredAttack → pin → major_win": 1,
+        "attraction → discoveredAttack → discoveredAttack → positional": 2,
+        "attraction → skewer → fork → discoveredAttack → positional": 1,
+        "fork → fork → fork → discoveredAttack → fork → checkmate → checkmate": 1,
+        "discoveredAttack → attraction → discoveredAttack → pawn_win": 2,
+        "pin → pin → checkmate → checkmate": 2,
+        "attraction → discoveredAttack → discoveredAttack → pin → positional": 1,
+        "attraction → attraction → skewer → pawn_win": 1,
+        "discoveredAttack → attraction → discoveredAttack → positional": 2,
+        "pin → discoveredAttack → discoveredAttack → checkmate → checkmate": 2,
+        "discoveredAttack → discoveredAttack → fork → discoveredAttack → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → fork → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → skewer → skewer → skewer → checkmate → checkmate": 1,
+        "pin → attraction → discoveredAttack → fork → major_win": 1,
+        "attraction → attraction → skewer → major_win": 2,
+        "discoveredAttack → pin → attraction → minor_win": 1,
+        "skewer → discoveredAttack → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "pin → attraction → pin → queen_win": 1,
+        "fork → fork → attraction → queen_win": 1,
+        "attraction → skewer → discoveredAttack → positional": 1,
+        "skewer → skewer → fork → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → discoveredAttack → skewer → skewer → checkmate → checkmate": 1,
+        "attraction → pin → pin → major_win": 2,
+        "attraction → skewer → fork → pawn_win": 1,
+        "skewer → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 3,
+        "fork → pin → attraction → major_win": 1,
+        "discoveredAttack → skewer → attraction → pawn_win": 1,
+        "pin → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → skewer → skewer → discoveredAttack → checkmate → checkmate": 2,
+        "pin → skewer → fork → checkmate → checkmate": 1,
+        "attraction → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → attraction → fork → queen_win": 2,
+        "discoveredAttack → pin → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → skewer → fork → checkmate → checkmate": 4,
+        "attraction → discoveredAttack → discoveredAttack → pawn_win": 1,
+        "attraction → skewer → checkmate → checkmate": 1,
+        "pin → attraction → pin → skewer → major_win": 1,
+        "discoveredAttack → discoveredAttack → discoveredAttack → skewer → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "discoveredAttack → skewer → skewer → skewer → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → skewer → discoveredAttack → fork → checkmate → checkmate": 3,
+        "skewer → skewer → skewer → skewer → discoveredAttack → checkmate → checkmate": 1,
+        "fork → skewer → discoveredAttack → fork → checkmate → checkmate": 1,
+        "attraction → fork → pin → queen_win": 1,
+        "attraction → fork → discoveredAttack → pin → queen_win": 1,
+        "attraction → skewer → pin → pawn_win": 1,
+        "attraction → fork → pin → positional": 2,
+        "fork → attraction → fork → minor_win": 2,
+        "skewer → fork → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 2,
+        "attraction → attraction → pin → minor_win": 1,
+        "attraction → fork → pin → discoveredAttack → minor_win": 1,
+        "discoveredAttack → attraction → pin → pawn_win": 1,
+        "attraction → attraction → skewer → minor_win": 1,
+        "fork → fork → fork → fork → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → attraction → pin → queen_win": 1,
+        "attraction → pin → discoveredAttack → minor_win": 1,
+        "skewer → discoveredAttack → skewer → discoveredAttack → checkmate → checkmate": 1,
+        "attraction → skewer → fork → positional": 1,
+        "attraction → discoveredAttack → pin → minor_win": 1,
+        "fork → discoveredAttack → attraction → pin → major_win": 1,
+        "attraction → pin → discoveredAttack → major_win": 2,
+        "attraction → skewer → discoveredAttack → pawn_win": 1,
+        "discoveredAttack → skewer → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → attraction → queen_win": 1,
+        "skewer → discoveredAttack → skewer → skewer → checkmate → checkmate": 1,
+        "attraction → discoveredAttack → skewer → minor_win": 2,
+        "skewer → skewer → discoveredAttack → discoveredAttack → discoveredAttack → checkmate → checkmate": 1,
+        "attraction → discoveredAttack → pin → discoveredAttack → minor_win": 1,
+        "skewer → skewer → skewer → fork → checkmate → checkmate": 1,
+        "attraction → fork → fork → fork → pawn_win": 1,
+        "attraction → discoveredAttack → discoveredAttack → checkmate → checkmate": 1,
+        "skewer → fork → fork → discoveredAttack → checkmate → checkmate": 1,
+        "fork → skewer → attraction → fork → major_win": 1,
+        "attraction → discoveredAttack → skewer → queen_win": 1,
+        "skewer → attraction → discoveredAttack → queen_win": 1,
+        "skewer → attraction → skewer → major_win": 1,
+        "discoveredAttack → pin → checkmate → checkmate": 1,
+        "discoveredAttack → discoveredAttack → attraction → pin → major_win": 2,
+        "pin → discoveredAttack → attraction → major_win": 1,
+        "skewer → attraction → discoveredAttack → discoveredAttack → major_win": 1,
+        "pin → discoveredAttack → skewer → checkmate → checkmate": 1,
+        "discoveredAttack → attraction → fork → fork → positional": 1,
+        "fork → discoveredAttack → attraction → pawn_win": 1,
+        "skewer → attraction → pin → minor_win": 1,
+        "attraction → attraction → pin → pawn_win": 1
+      }
+    },
+    "confidence": {
+      "high": 265638,
+      "medium": 3769,
+      "low": 33881
+    },
+    "errors": 0
+  },
+  "examples": {
+    "cleanCombinations": [
+      {
+        "puzzleId": "005Bm",
+        "fen": "4rk2/p1q5/1p3Q1b/8/1p5N/2P1p3/P3P3/2K5 b - - 0 43",
+        "puzzleFen": "4rk2/p4q2/1p3Q1b/8/1p5N/2P1p3/P3P3/2K5 w - - 1 44",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 0
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Ng6+",
+            "uci": "h4g6",
+            "piece": "n",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on Q"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qh8#",
+            "uci": "f6h8",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "009BH",
+        "fen": "3r2k1/6p1/4Q3/4B3/1p3P2/4PKP1/3q4/8 b - - 17 51",
+        "puzzleFen": "3r3k/6p1/4Q3/4B3/1p3P2/4PKP1/3q4/8 w - - 18 52",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 1
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qh6+",
+            "uci": "e6h6",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on K"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qxg7#",
+            "uci": "h6g7",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00Kbj",
+        "fen": "8/8/6p1/PR3p2/1P3k2/7P/r5P1/7K w - - 1 39",
+        "puzzleFen": "8/8/6p1/PR3p2/1P3k1P/8/r5P1/7K b - - 0 39",
+        "playerColor": "black",
+        "moveCount": 3,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 3,
+          "materialGained": 5
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Kg3",
+            "uci": "f4g3",
+            "piece": "k",
+            "isCheck": false,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "quiet",
+              "level": "FORCING",
+              "confidence": 0.5,
+              "evidence": "Quiet move - purpose unclear from analysis"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Ra1+",
+            "uci": "a2a1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Rxd1#",
+            "uci": "a1d1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00NUS",
+        "fen": "4rk2/pbp2pp1/1p1b4/3P1q2/QPBPN3/1KP2P2/P5r1/R3R3 w - - 0 25",
+        "puzzleFen": "4rk2/pbp2pp1/1p1N4/3P1q2/QPBP4/1KP2P2/P5r1/R3R3 b - - 0 25",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 0
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qc2+",
+            "uci": "f5c2",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on K"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qb2#",
+            "uci": "c2b2",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00WqT",
+        "fen": "r4r2/1ppb1p2/p2p2pk/5P2/4P3/2PBB1R1/PKP2P1q/8 b - - 4 26",
+        "puzzleFen": "r4r2/1ppb1p2/p2p2p1/5P1k/4P3/2PBB1R1/PKP2P1q/8 w - - 5 27",
+        "playerColor": "white",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 0
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Be2+",
+            "uci": "d3e2",
+            "piece": "b",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "B discovered attack on K"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Bg5#",
+            "uci": "e3g5",
+            "piece": "b",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00YbZ",
+        "fen": "b6k/8/6p1/4q2p/1Q3r1P/P1N3R1/1PP3PK/8 w - - 3 35",
+        "puzzleFen": "b6k/8/1Q4p1/4q2p/5r1P/P1N3R1/1PP3PK/8 b - - 4 35",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 1
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rxh4+",
+            "uci": "f4h4",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qe1#",
+            "uci": "e5e1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00aDl",
+        "fen": "r5k1/1p3p2/2p1ppp1/3p4/2nP4/1QB2B1P/rPP2PP1/qNKR3R w - - 3 22",
+        "puzzleFen": "r5k1/1p3p2/2p1ppp1/3p4/2nP4/1QB4P/rPP1BPP1/qNKR3R b - - 4 22",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": -6
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qxb1+",
+            "uci": "a1b1",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "n",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on K"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Ra1#",
+            "uci": "a2a1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00b7t",
+        "fen": "r2qr1k1/pb3pp1/1p4n1/3p4/1P2p2p/P1P1N1P1/2Q1PPBP/3R1RK1 w - - 0 20",
+        "puzzleFen": "r2qr1k1/pb3pp1/1p4n1/3p4/1P2B2p/P1P1N1P1/2Q1PP1P/3R1RK1 b - - 0 20",
+        "playerColor": "black",
+        "moveCount": 3,
+        "outcome": {
+          "type": "minor_win",
+          "achievedAtMove": 3,
+          "materialGained": 3
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Rxe4",
+            "uci": "e8e4",
+            "piece": "r",
+            "isCheck": false,
+            "isCapture": true,
+            "capturedPiece": "b",
+            "theme": {
+              "name": "attraction",
+              "level": "ENABLER",
+              "confidence": 0.7,
+              "evidence": "Sacrifice to attract piece to vulnerable square"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "dxe4",
+            "uci": "d5e4",
+            "piece": "p",
+            "isCheck": false,
+            "isCapture": true,
+            "capturedPiece": "q",
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on R"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Rxd8",
+            "uci": "a8d8",
+            "piece": "r",
+            "isCheck": false,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "capture",
+              "level": "FORCING",
+              "confidence": 0.8,
+              "evidence": "Captures R"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "attraction → discoveredAttack → minor_win",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "discoveredAttack",
+          "enablingThemes": [
+            "attraction"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "attraction → discoveredAttack → minor_win",
+          "confidence": 0.85
+        }
+      },
+      {
+        "puzzleId": "00fwM",
+        "fen": "Qn1qk2r/p4ppp/2p5/2bn4/4pPb1/2N5/PPPP2PP/R1B1KBNR w KQk - 1 9",
+        "puzzleFen": "Qn1qk2r/p4ppp/2p5/2bn4/4pPb1/2N4P/PPPP2P1/R1B1KBNR b KQk - 0 9",
+        "playerColor": "black",
+        "moveCount": 2,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 2,
+          "materialGained": 1
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qh4+",
+            "uci": "d8h4",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "Q discovered attack on K"
+            },
+            "createdOpportunity": "Set up Q for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Qxg3#",
+            "uci": "h4g3",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      },
+      {
+        "puzzleId": "00j3i",
+        "fen": "5rk1/R5p1/5q1p/8/3p4/1P4Q1/P3rPPP/5RK1 w - - 2 38",
+        "puzzleFen": "5rk1/R5p1/5q1p/8/3p2Q1/1P6/P3rPPP/5RK1 b - - 3 38",
+        "playerColor": "black",
+        "moveCount": 3,
+        "outcome": {
+          "type": "checkmate",
+          "achievedAtMove": 3,
+          "materialGained": -3
+        },
+        "moves": [
+          {
+            "moveNumber": 1,
+            "san": "Qxf2+",
+            "uci": "f6f2",
+            "piece": "q",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "p",
+            "theme": {
+              "name": "fork",
+              "level": "MECHANISM",
+              "confidence": 0.95,
+              "evidence": "Attacks 2 pieces: R, K"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 2,
+            "san": "Re1+",
+            "uci": "e2e1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": false,
+            "capturedPiece": null,
+            "theme": {
+              "name": "discoveredAttack",
+              "level": "MECHANISM",
+              "confidence": 0.85,
+              "evidence": "R discovered attack on K"
+            },
+            "createdOpportunity": "Set up R for next move",
+            "exploitedOpportunity": null
+          },
+          {
+            "moveNumber": 3,
+            "san": "Rexf1#",
+            "uci": "e1f1",
+            "piece": "r",
+            "isCheck": true,
+            "isCapture": true,
+            "capturedPiece": "r",
+            "theme": {
+              "name": "checkmate",
+              "level": "OUTCOME",
+              "confidence": 1,
+              "evidence": "Checkmate delivered"
+            },
+            "createdOpportunity": null,
+            "exploitedOpportunity": null
+          }
+        ],
+        "combination": {
+          "isTrueCombination": true,
+          "flow": "fork → discoveredAttack → checkmate → checkmate",
+          "quality": "clean"
+        },
+        "verdict": {
+          "primaryTheme": "checkmate",
+          "enablingThemes": [
+            "fork",
+            "discoveredAttack"
+          ],
+          "incidentalThemes": [],
+          "teachAs": "checkmate",
+          "confidence": 0.95
+        }
+      }
+    ],
+    "pureThemes": {
+      "discoveredAttack": [
+        {
+          "puzzleId": "0000D",
+          "fen": "5rk1/1p3ppp/pq3b2/8/8/1P1Q1N2/P4PPP/3R2K1 w - - 2 27",
+          "puzzleFen": "5rk1/1p3ppp/pq1Q1b2/8/8/1P3N2/P4PPP/3R2K1 b - - 3 27",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 2,
+            "materialGained": 4
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rd8",
+              "uci": "f8d8",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "R discovered attack on Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Bxd8",
+              "uci": "f6d8",
+              "piece": "b",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "004mT",
+          "fen": "5Q2/8/1b1kp1p1/5p2/3p4/5qPK/7P/8 b - - 1 51",
+          "puzzleFen": "5Q2/8/1bk1p1p1/5p2/3p4/5qPK/7P/8 w - - 2 52",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "queen_win",
+            "achievedAtMove": 2,
+            "materialGained": 9
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qa8+",
+              "uci": "f8a8",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "Q discovered attack on K"
+              },
+              "createdOpportunity": "Set up Q for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qxf3",
+              "uci": "a8f3",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "0054a",
+          "fen": "r1b2rk1/ppq2ppp/8/4b2Q/4R3/3B4/PP3PPP/R1B3K1 b - - 1 15",
+          "puzzleFen": "r1b2rk1/ppq2p1p/6p1/4b2Q/4R3/3B4/PP3PPP/R1B3K1 w - - 0 16",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 2,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxe5",
+              "uci": "h5e5",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "b",
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "Q discovered attack on Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxe5",
+              "uci": "e4e5",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "discoveredAttack",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "discoveredAttack",
+            "confidence": 0.85
+          }
+        }
+      ],
+      "fork": [
+        {
+          "puzzleId": "0017R",
+          "fen": "r2qk2r/pp2ppbp/1n1p2p1/3Pn3/2P5/2NBBP1P/PP3P2/R2QK2R b KQkq - 0 12",
+          "puzzleFen": "r2qk2r/pp2ppbp/1n1p2p1/3P4/2n5/2NBBP1P/PP3P2/R2QK2R w KQkq - 0 13",
+          "playerColor": "white",
+          "moveCount": 3,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 3,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Bxc4",
+              "uci": "d3c4",
+              "piece": "b",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "n",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures N"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qa4+",
+              "uci": "d1a4",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: N, K"
+              },
+              "createdOpportunity": "Set up Q for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "Qxc4",
+              "uci": "a4c4",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "n",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures N"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "003S3",
+          "fen": "r4k1r/pNqnppb1/6pn/2p3Np/7P/2P2Q2/PP3PP1/R1B1K2R b KQ - 2 15",
+          "puzzleFen": "1r3k1r/pNqnppb1/6pn/2p3Np/7P/2P2Q2/PP3PP1/R1B1K2R w KQ - 3 16",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "queen_win",
+            "achievedAtMove": 2,
+            "materialGained": 9
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Ne6+",
+              "uci": "g5e6",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 3 pieces: Q, K, B"
+              },
+              "createdOpportunity": "Set up N for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Nxc7",
+              "uci": "e6c7",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "00761",
+          "fen": "3r2k1/1b3pbR/p2P2P1/3p2N1/2p5/2P2N2/PP6/2K5 b - - 0 28",
+          "puzzleFen": "3r2k1/1b4bR/p2P2p1/3p2N1/2p5/2P2N2/PP6/2K5 w - - 0 29",
+          "playerColor": "white",
+          "moveCount": 3,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 3,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rxg7+",
+              "uci": "h7g7",
+              "piece": "r",
+              "isCheck": true,
+              "isCapture": true,
+              "capturedPiece": "b",
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: K, B"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Ne6+",
+              "uci": "g5e6",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "fork",
+                "level": "MECHANISM",
+                "confidence": 0.95,
+                "evidence": "Attacks 2 pieces: R, K"
+              },
+              "createdOpportunity": "Set up N for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "Nxd8",
+              "uci": "e6d8",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures R"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "fork",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "fork",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "fork",
+            "confidence": 0.95
+          }
+        }
+      ],
+      "checkmate": [
+        {
+          "puzzleId": "006pe",
+          "fen": "r4r2/2q1NN2/4bQpk/2n4p/pp5P/8/1PP2PP1/2KR3R b - - 0 28",
+          "puzzleFen": "r4r2/2q1Nb2/5Qpk/2n4p/pp5P/8/1PP2PP1/2KR3R w - - 0 29",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 2,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Nf5+",
+              "uci": "e7f5",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "check",
+                "level": "FORCING",
+                "confidence": 0.9,
+                "evidence": "Delivers check"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qg7#",
+              "uci": "f6g7",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "00CWE",
+          "fen": "3r4/1p4p1/2pBkbBp/p1P5/3rp3/P7/1PK2P2/4R3 b - - 1 31",
+          "puzzleFen": "3r4/1p4p1/2pB1bBp/p1Pk4/3rp3/P7/1PK2P2/4R3 w - - 2 32",
+          "playerColor": "white",
+          "moveCount": 1,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 1,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Bf7#",
+              "uci": "g6f7",
+              "piece": "b",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "clean"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        },
+        {
+          "puzzleId": "00HoG",
+          "fen": "5r1k/5r2/2b2RQp/1p1p2p1/1q4P1/8/8/1B3R1K b - - 0 36",
+          "puzzleFen": "5r1k/8/2b2rQp/1p1p2p1/1q4P1/8/8/1B3R1K w - - 0 37",
+          "playerColor": "white",
+          "moveCount": 1,
+          "outcome": {
+            "type": "checkmate",
+            "achievedAtMove": 1,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qh7#",
+              "uci": "g6h7",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "checkmate",
+                "level": "OUTCOME",
+                "confidence": 1,
+                "evidence": "Checkmate delivered"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "checkmate",
+            "quality": "clean"
+          },
+          "verdict": {
+            "primaryTheme": "checkmate",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "checkmate",
+            "confidence": 0.95
+          }
+        }
+      ],
+      "skewer": [
+        {
+          "puzzleId": "00ICz",
+          "fen": "2k2rr1/1p1q3p/1p2p3/1NbpQ3/P1p2P2/6P1/6KP/R4R2 b - - 0 31",
+          "puzzleFen": "2k3r1/1p1q3p/1p2p3/1NbpQr2/P1p2P2/6P1/6KP/R4R2 w - - 1 32",
+          "playerColor": "white",
+          "moveCount": 3,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 3,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Na7+",
+              "uci": "b5a7",
+              "piece": "n",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "check",
+                "level": "FORCING",
+                "confidence": 0.9,
+                "evidence": "Delivers check"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qb8+",
+              "uci": "e5b8",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": "Set up Q for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "Qxg8",
+              "uci": "b8g8",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "00XTV",
+          "fen": "8/2k4p/p2p2p1/2pP1p2/2P4P/3K4/P2R1PP1/4r3 w - - 0 28",
+          "puzzleFen": "8/2k4p/p2p2p1/2pP1p2/2P4P/3K4/P3RPP1/4r3 b - - 1 28",
+          "playerColor": "black",
+          "moveCount": 4,
+          "outcome": {
+            "type": "positional",
+            "achievedAtMove": 4,
+            "materialGained": 0
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Rxe2",
+              "uci": "e1e2",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Kb6",
+              "uci": "c7b6",
+              "piece": "k",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": "Set up K for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "Ka5",
+              "uci": "b6a5",
+              "piece": "k",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": "Set up K for next move",
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 4,
+              "san": "Ka4",
+              "uci": "a5a4",
+              "piece": "k",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        },
+        {
+          "puzzleId": "019Oa",
+          "fen": "3q4/5kpp/p1p5/1p1n4/2p1Q1P1/P6P/1PPB4/1K6 w - - 0 33",
+          "puzzleFen": "3q4/5kpQ/p1p5/1p1n4/2p3P1/P6P/1PPB4/1K6 b - - 0 33",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 2,
+            "materialGained": 3
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Nf6",
+              "uci": "d5f6",
+              "piece": "n",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "quiet",
+                "level": "FORCING",
+                "confidence": 0.5,
+                "evidence": "Quiet move - purpose unclear from analysis"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qxd2",
+              "uci": "d8d2",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "b",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "skewer",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "skewer",
+            "confidence": 0.85
+          }
+        }
+      ],
+      "pin": [
+        {
+          "puzzleId": "00M1q",
+          "fen": "2r3k1/2r1q1p1/p3p1Q1/1p1p4/nP1P4/2P4R/P4PPP/2R3K1 b - - 0 30",
+          "puzzleFen": "2r3k1/2r3p1/p3pqQ1/1p1p4/nP1P4/2P4R/P4PPP/2R3K1 w - - 1 31",
+          "playerColor": "white",
+          "moveCount": 3,
+          "outcome": {
+            "type": "minor_win",
+            "achievedAtMove": 3,
+            "materialGained": 4
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qh7+",
+              "uci": "g6h7",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "discoveredAttack",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "Q discovered attack on K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rf3",
+              "uci": "h3f3",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "Q pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 3,
+              "san": "gxf3",
+              "uci": "g2f3",
+              "piece": "p",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "discoveredAttack → pin",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        },
+        {
+          "puzzleId": "00ZeT",
+          "fen": "1Q1k4/4r3/2q4p/2p1pp1P/2Bb4/1P6/P6K/4R3 b - - 4 43",
+          "puzzleFen": "1Q6/3kr3/2q4p/2p1pp1P/2Bb4/1P6/P6K/4R3 w - - 5 44",
+          "playerColor": "white",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 6
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Bb5",
+              "uci": "c4b5",
+              "piece": "b",
+              "isCheck": false,
+              "isCapture": false,
+              "capturedPiece": null,
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "Q pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Qxb5+",
+              "uci": "b8b5",
+              "piece": "q",
+              "isCheck": true,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "skewer",
+                "level": "MECHANISM",
+                "confidence": 0.85,
+                "evidence": "P skewered, P behind"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "pin → skewer",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        },
+        {
+          "puzzleId": "00gsT",
+          "fen": "1r3rk1/p4pp1/4p2p/1Q2Pn2/1b1P4/4BN2/q4PPP/2R2RK1 w - - 1 19",
+          "puzzleFen": "1r3rk1/p4pp1/4p2p/1Q2Pn2/1b1P4/4BN2/q4PPP/R4RK1 b - - 2 19",
+          "playerColor": "black",
+          "moveCount": 2,
+          "outcome": {
+            "type": "major_win",
+            "achievedAtMove": 2,
+            "materialGained": 5
+          },
+          "moves": [
+            {
+              "moveNumber": 1,
+              "san": "Qxa1",
+              "uci": "a2a1",
+              "piece": "q",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "r",
+              "theme": {
+                "name": "pin",
+                "level": "MECHANISM",
+                "confidence": 0.9,
+                "evidence": "R pinned to K"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            },
+            {
+              "moveNumber": 2,
+              "san": "Rxb5",
+              "uci": "b8b5",
+              "piece": "r",
+              "isCheck": false,
+              "isCapture": true,
+              "capturedPiece": "q",
+              "theme": {
+                "name": "capture",
+                "level": "FORCING",
+                "confidence": 0.8,
+                "evidence": "Captures Q"
+              },
+              "createdOpportunity": null,
+              "exploitedOpportunity": null
+            }
+          ],
+          "combination": {
+            "isTrueCombination": false,
+            "flow": "pin",
+            "quality": "mixed"
+          },
+          "verdict": {
+            "primaryTheme": "pin",
+            "enablingThemes": [],
+            "incidentalThemes": [],
+            "teachAs": "pin",
+            "confidence": 0.9
+          }
+        }
+      ]
+    }
+  }
+}

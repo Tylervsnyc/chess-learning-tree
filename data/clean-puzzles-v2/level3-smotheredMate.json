@@ -1,0 +1,1884 @@
+{
+  "level": 3,
+  "ratingRange": "1000-1200",
+  "theme": "smotheredMate",
+  "count": 107,
+  "puzzles": [
+    {
+      "puzzleId": "kNQIQ",
+      "fen": "r3B1Qk/p1p1n1pp/bpn4N/8/8/2Bq2P1/PP3RPP/6K1 b - - 5 23",
+      "moves": "e7g8 h6f7",
+      "rating": 1008,
+      "popularity": 98,
+      "nbPlays": 3426,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/s40Qbo3t/black#46"
+    },
+    {
+      "puzzleId": "aWBRC",
+      "fen": "r1bq1rk1/pp4pp/2pp4/2n1b1Q1/4nN2/2N5/PPPB1PBP/R5RK w - - 0 16",
+      "moves": "g5d8 e4f2",
+      "rating": 1013,
+      "popularity": 97,
+      "nbPlays": 3116,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/1L8ckbF6#31"
+    },
+    {
+      "puzzleId": "RWlKz",
+      "fen": "r1bqkb1r/pp2npp1/n7/1N1p3p/Q2PpB1P/2P1P3/PP3PP1/R3K1NR b KQkq - 2 9",
+      "moves": "c8d7 b5d6",
+      "rating": 1024,
+      "popularity": 96,
+      "nbPlays": 8856,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/AY9SYFFv/black#18"
+    },
+    {
+      "puzzleId": "QBY6a",
+      "fen": "r2qkb1r/1p1nnpp1/p1p1p2p/3pPNB1/3P4/8/PPP1BPPP/RN1Q1RK1 b kq - 0 9",
+      "moves": "h6g5 f5d6",
+      "rating": 1026,
+      "popularity": 92,
+      "nbPlays": 3356,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/UgUxjtPH/black#18"
+    },
+    {
+      "puzzleId": "Pg8RH",
+      "fen": "r1bq1rk1/pp2pp1p/3p2p1/2pPb3/2P1PnP1/2N4P/PP1B1P2/R2QKB1R w KQ - 1 12",
+      "moves": "c3e2 f4d3",
+      "rating": 1032,
+      "popularity": 93,
+      "nbPlays": 4591,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/fHD6xmam#23"
+    },
+    {
+      "puzzleId": "XcYf3",
+      "fen": "2r1n1rk/ppp1Bpbp/6p1/4N3/2B3b1/8/PPP1QPPP/3RK2R b K - 0 15",
+      "moves": "g4e2 e5f7",
+      "rating": 1038,
+      "popularity": 96,
+      "nbPlays": 3194,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/loVOWnCx/black#30"
+    },
+    {
+      "puzzleId": "c2kLj",
+      "fen": "r2qkb1r/pp3ppp/3ppn2/1P6/3nP3/2N2P2/2PP1P1P/1RBQKB1R w Kkq - 0 10",
+      "moves": "c3e2 d4f3",
+      "rating": 1040,
+      "popularity": 96,
+      "nbPlays": 3774,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/6vyt6koJ#19"
+    },
+    {
+      "puzzleId": "XGAUD",
+      "fen": "r1bqkbnr/pppp1p1p/2n5/3NP1p1/3P1p2/5NP1/PPP1Q2P/R1B1KB1R b KQkq - 0 9",
+      "moves": "g8e7 d5f6",
+      "rating": 1047,
+      "popularity": 98,
+      "nbPlays": 4757,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/wMIvx7TR/black#18"
+    },
+    {
+      "puzzleId": "ktykK",
+      "fen": "1nkr1bnr/pppq1pp1/3p4/1N1Pp3/2P1P3/6Pb/PPQ1N1BP/R1B2RK1 b - - 2 13",
+      "moves": "h3g2 b5a7",
+      "rating": 1048,
+      "popularity": 92,
+      "nbPlays": 3714,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "queensideAttack",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/zAOH8VVU/black#26"
+    },
+    {
+      "puzzleId": "fwBCo",
+      "fen": "3r1r1k/p5pp/1p2Q3/5p2/6n1/2P2N2/PP3qPP/R1BR3K w - - 3 24",
+      "moves": "d1d8 f2f1 f3g1 g4f2",
+      "rating": 1050,
+      "popularity": 92,
+      "nbPlays": 7064,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/bqhOwJdF#47"
+    },
+    {
+      "puzzleId": "RYA1V",
+      "fen": "r4Q1k/ppp1n1pp/8/3Pp1N1/2q1P3/7P/PPP5/5RK1 b - - 3 22",
+      "moves": "a8f8 f1f8 e7g8 g5f7",
+      "rating": 1056,
+      "popularity": 96,
+      "nbPlays": 3047,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/pmtDUAf6/black#44"
+    },
+    {
+      "puzzleId": "j8HdX",
+      "fen": "1k1r3r/1ppqb3/n3p3/1N1p1p2/P4Ppp/2PP2P1/1P1BPQKP/R4R2 b - - 1 20",
+      "moves": "h4g3 f2a7 b8c8 a7a8 a6b8 b5a7",
+      "rating": 1057,
+      "popularity": 98,
+      "nbPlays": 3056,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "queensideAttack",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/mwfWimmE/black#40"
+    },
+    {
+      "puzzleId": "sKtLa",
+      "fen": "r1bqkb1r/pp1pnppp/2n5/2pN4/4P3/5N2/PPP2PPP/R1BQKB1R b KQkq - 0 6",
+      "moves": "g7g6 d5f6",
+      "rating": 1059,
+      "popularity": 98,
+      "nbPlays": 3829,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/g2sVYslw/black#12"
+    },
+    {
+      "puzzleId": "5iehy",
+      "fen": "r4rk1/2p2ppp/p1n1q3/4p3/1n4P1/N2P3P/1PPQ1PB1/1K1R3R w - - 0 21",
+      "moves": "g2c6 e6a2 b1c1 a2a1 a3b1 b4a2",
+      "rating": 1061,
+      "popularity": 94,
+      "nbPlays": 7412,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "queensideAttack",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/TS7HED3r#41"
+    },
+    {
+      "puzzleId": "rqDrj",
+      "fen": "2kr3r/Qppqb1pp/p2p1n2/1N2n3/2P1P3/8/PP3PPP/R1BR2K1 b - - 1 14",
+      "moves": "e5c6 a7a8 c6b8 b5a7",
+      "rating": 1065,
+      "popularity": 96,
+      "nbPlays": 6870,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/oHKPJRVg/black#28"
+    },
+    {
+      "puzzleId": "KV9iU",
+      "fen": "5rQk/p2b2bp/6pN/2P1p3/2B2p1N/q6P/5PP1/5RK1 b - - 6 28",
+      "moves": "f8g8 h6f7",
+      "rating": 1065,
+      "popularity": 94,
+      "nbPlays": 4383,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/KYgbNjd8/black#56"
+    },
+    {
+      "puzzleId": "uOt9e",
+      "fen": "r2qkb1r/3pnppp/p3p3/1p6/3PN3/PB3N2/1P3PPP/R1nQ1RK1 b kq - 0 13",
+      "moves": "c1b3 e4d6",
+      "rating": 1067,
+      "popularity": 95,
+      "nbPlays": 3549,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/KHi5eLo3/black#26"
+    },
+    {
+      "puzzleId": "wetdh",
+      "fen": "r1bqkb1r/pp2npp1/3p3p/1B1np3/4N3/5N2/PPP2PPP/R1BQ1RK1 b kq - 1 10",
+      "moves": "c8d7 e4d6",
+      "rating": 1067,
+      "popularity": 94,
+      "nbPlays": 4325,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/nDGKtxvz/black#20"
+    },
+    {
+      "puzzleId": "0ETW8",
+      "fen": "6rk/1b4pp/3NQn2/p7/Pp3q1P/3P4/1P3PP1/1K2R3 b - - 2 25",
+      "moves": "b7d5 d6f7",
+      "rating": 1067,
+      "popularity": 90,
+      "nbPlays": 3028,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "masterVsMaster",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/NCvp1A3h/black#50"
+    },
+    {
+      "puzzleId": "SULdB",
+      "fen": "r1bq1rk1/pppp1ppp/5n2/2b1p3/2PnP3/1PN5/PB1PNPPP/R2QKB1R w KQ - 3 7",
+      "moves": "g2g3 d4f3",
+      "rating": 1069,
+      "popularity": 94,
+      "nbPlays": 3723,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/niZsDiSu#13"
+    },
+    {
+      "puzzleId": "NpKLc",
+      "fen": "2krbb1r/1pq2pp1/p3p2p/4P3/1n1pNP2/3B2P1/PPPQ3P/1NKR3R w - - 2 18",
+      "moves": "a2a3 b4a2",
+      "rating": 1070,
+      "popularity": 93,
+      "nbPlays": 3680,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "masterVsMaster",
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/EcT6os8Y#35"
+    },
+    {
+      "puzzleId": "5l2jB",
+      "fen": "5r1k/1p1P2b1/6bp/p5p1/3N4/PQ1np1P1/4N1PP/3R1q1K w - - 0 28",
+      "moves": "d1f1 f8f1 e2g1 d3f2",
+      "rating": 1072,
+      "popularity": 95,
+      "nbPlays": 6917,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/wETDyVDW#55"
+    },
+    {
+      "puzzleId": "j9Gju",
+      "fen": "r4Q1k/pp1bn1pp/2pNp3/4P1q1/P2P2P1/2PB3P/8/5RK1 b - - 4 29",
+      "moves": "a8f8 f1f8 e7g8 d6f7",
+      "rating": 1074,
+      "popularity": 94,
+      "nbPlays": 3100,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/BxlZvVHf/black#58"
+    },
+    {
+      "puzzleId": "qfK7o",
+      "fen": "r1bqk2r/pp1p1ppp/5n2/b3p3/3nP3/P1N5/1PPBNPPP/R2QKB1R w KQkq - 1 9",
+      "moves": "g2g3 d4f3",
+      "rating": 1074,
+      "popularity": 94,
+      "nbPlays": 7231,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/kD9npLoZ#17"
+    },
+    {
+      "puzzleId": "MPon3",
+      "fen": "r2qkbnr/pbpp1p1p/1pn3p1/3Np3/2B1P3/3P1N2/PPP2PPP/R1BQK2R b KQkq - 1 6",
+      "moves": "g8e7 d5f6",
+      "rating": 1075,
+      "popularity": 94,
+      "nbPlays": 3299,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/6Wl0i4Fs/black#12"
+    },
+    {
+      "puzzleId": "zdikK",
+      "fen": "r1bq1rk1/pp1pnpbp/4p1p1/2p5/1nP1P3/1P3N2/PB1PNPPP/1R1QKB1R w K - 7 9",
+      "moves": "b2g7 b4d3",
+      "rating": 1077,
+      "popularity": 93,
+      "nbPlays": 3265,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/kh84M5jO#17"
+    },
+    {
+      "puzzleId": "hgEW1",
+      "fen": "1r4k1/pbpp1ppp/2pP4/8/Q5nq/2N5/PPP2PPP/R1B1N1K1 w - - 1 14",
+      "moves": "e1f3 h4f2 g1h1 f2f1 f3g1 g4f2",
+      "rating": 1080,
+      "popularity": 96,
+      "nbPlays": 3981,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/fpQ34OOa#27"
+    },
+    {
+      "puzzleId": "ZSrcv",
+      "fen": "r1bqkbnr/pp2pppp/3p4/2p5/2PnP3/2N5/PP1PNPPP/R1BQKB1R w KQkq - 0 5",
+      "moves": "g2g3 d4f3",
+      "rating": 1082,
+      "popularity": 94,
+      "nbPlays": 3290,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/2VvA9beM#9"
+    },
+    {
+      "puzzleId": "1ooiQ",
+      "fen": "r1bq1rnk/ppp2pbn/4p2p/3pN1p1/3P4/1QPBP2P/PP1N1PPB/2R2RK1 b - - 3 14",
+      "moves": "f7f6 e5g6",
+      "rating": 1083,
+      "popularity": 96,
+      "nbPlays": 3239,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/L96ax3Yj/black#28"
+    },
+    {
+      "puzzleId": "rQ6sk",
+      "fen": "r1bqkb1r/3pnppp/p1n5/1p2pN2/4P3/2N1B3/PPPQ1PPP/2KR1B1R b kq - 1 9",
+      "moves": "g7g6 f5d6",
+      "rating": 1084,
+      "popularity": 97,
+      "nbPlays": 3347,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/qVQwRjvt/black#18"
+    },
+    {
+      "puzzleId": "HsImy",
+      "fen": "5bk1/2Q2ppp/5n2/4p1N1/1pb1P3/2q4P/2r3P1/1R3R1K b - - 5 29",
+      "moves": "c4f1 c7f7 g8h8 f7f8 f6g8 g5f7",
+      "rating": 1085,
+      "popularity": 94,
+      "nbPlays": 5832,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "deflection",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/9Vwbrmws/black#58"
+    },
+    {
+      "puzzleId": "UNj72",
+      "fen": "r1bqkbnr/pppp1p1p/2n5/3NP1p1/3P1p2/5N2/PPPBQ1PP/R3KB1R b KQkq - 3 9",
+      "moves": "g8e7 d5f6",
+      "rating": 1086,
+      "popularity": 94,
+      "nbPlays": 3663,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/lF1PEVnV/black#18"
+    },
+    {
+      "puzzleId": "54mOL",
+      "fen": "r3Q1kr/3n1ppp/p2p4/2qN4/1p6/8/PPP2PPP/4RRK1 b - - 4 19",
+      "moves": "a8e8 e1e8 d7f8 d5e7",
+      "rating": 1087,
+      "popularity": 95,
+      "nbPlays": 5429,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/62P6rmqg/black#38"
+    },
+    {
+      "puzzleId": "tzgYn",
+      "fen": "r1b1k1nr/pppp1pBp/8/1Pb5/3n4/6P1/P1PPNP1P/RN1QKB1q w Qkq - 0 10",
+      "moves": "g7h8 d4f3",
+      "rating": 1088,
+      "popularity": 96,
+      "nbPlays": 3847,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/coVQ1KaJ#19"
+    },
+    {
+      "puzzleId": "OzyoJ",
+      "fen": "r1b2rQk/pp2N1pp/1n6/4Npq1/3P4/3B4/PP1n1PPP/R4RK1 b - - 4 17",
+      "moves": "f8g8 e5f7",
+      "rating": 1090,
+      "popularity": 95,
+      "nbPlays": 4473,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/LeEzYJIw/black#34"
+    },
+    {
+      "puzzleId": "bwPgu",
+      "fen": "r1bqk1nr/pp2ppb1/3p4/2p5/3nP1p1/1PNN2Pp/PBPP1P1P/R2QKB1R w KQkq - 2 11",
+      "moves": "c3e2 d4f3",
+      "rating": 1090,
+      "popularity": 89,
+      "nbPlays": 4301,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/pZPEdu69#21"
+    },
+    {
+      "puzzleId": "HcNNV",
+      "fen": "rn5k/1bqpnQpp/p7/1p4N1/3bP3/2N5/PPP3PP/5R1K b - - 1 16",
+      "moves": "b8c6 f7f8 a8f8 f1f8 e7g8 g5f7",
+      "rating": 1093,
+      "popularity": 95,
+      "nbPlays": 5881,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/THJAxkmv/black#32"
+    },
+    {
+      "puzzleId": "5AZ0d",
+      "fen": "r1bqkb1r/pp2nppp/4pn2/1B1p1N2/8/4B3/PPP2PPP/RN1QR1K1 b kq - 3 10",
+      "moves": "c8d7 f5d6",
+      "rating": 1093,
+      "popularity": 94,
+      "nbPlays": 7355,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/jHMa7PLE/black#20"
+    },
+    {
+      "puzzleId": "Mf5ud",
+      "fen": "r1b1r1Qk/pp1p2bp/nq1P2pN/2p5/2B2P2/PP6/1B4PP/RN3RK1 b - - 6 21",
+      "moves": "e8g8 h6f7",
+      "rating": 1096,
+      "popularity": 96,
+      "nbPlays": 4641,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/gPVW13CT/black#42"
+    },
+    {
+      "puzzleId": "Yimer",
+      "fen": "r6k/p3nQpp/1p1Np3/3pP3/4q1PP/4PR2/PPr5/3R3K b - - 2 26",
+      "moves": "e4g4 f7f8 a8f8 f3f8 e7g8 d6f7",
+      "rating": 1100,
+      "popularity": 92,
+      "nbPlays": 8948,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/2qQsp4g9/black#52"
+    },
+    {
+      "puzzleId": "txs6s",
+      "fen": "5rk1/rP3Bpp/2n2n2/2P2bN1/3pP2q/NQ3P2/P5P1/R1B1bK2 b - - 0 24",
+      "moves": "f8f7 b3f7 g8h8 f7f8 f6g8 g5f7",
+      "rating": 1104,
+      "popularity": 96,
+      "nbPlays": 7865,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/zktIr7zY/black#48"
+    },
+    {
+      "puzzleId": "8zHIv",
+      "fen": "r4rk1/1b3p2/p2p2p1/q4PPp/1n5P/2N5/1PPQB3/2KR3R w - - 0 21",
+      "moves": "f5g6 a5a1 c3b1 b4a2",
+      "rating": 1108,
+      "popularity": 96,
+      "nbPlays": 3043,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/8WOrMXV2#41"
+    },
+    {
+      "puzzleId": "WCB1h",
+      "fen": "rn1N2k1/pQ3ppp/5n2/3p4/3Pp3/4P1Pq/PP1B1PbP/R5K1 b - - 2 16",
+      "moves": "g2f3 b7f7 g8h8 f7f8 f6g8 d8f7",
+      "rating": 1109,
+      "popularity": 96,
+      "nbPlays": 7998,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/EkpQV9dP/black#32"
+    },
+    {
+      "puzzleId": "MNl1F",
+      "fen": "3rnrk1/1p2bp1p/p2p2pP/q3pPP1/1n2P3/1PN1B2B/1PPQ4/2KR3R w - - 1 20",
+      "moves": "f5f6 a5a1 c3b1 b4a2",
+      "rating": 1110,
+      "popularity": 96,
+      "nbPlays": 5788,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Rh5FDA6J#39"
+    },
+    {
+      "puzzleId": "mxA7h",
+      "fen": "r4rk1/1p4pp/2pP4/8/3Q2n1/P3p3/1BP1N1PP/R4q1K w - - 6 23",
+      "moves": "a1f1 f8f1 e2g1 g4f2",
+      "rating": 1113,
+      "popularity": 95,
+      "nbPlays": 4667,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/BLbG7ggP#45"
+    },
+    {
+      "puzzleId": "hbyPr",
+      "fen": "r4Q1k/pp4pp/2p1p2n/3qN3/3P4/2P5/PP4PP/5RK1 b - - 5 24",
+      "moves": "a8f8 f1f8 h6g8 e5f7",
+      "rating": 1113,
+      "popularity": 91,
+      "nbPlays": 3396,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ofcAQkOx/black#48"
+    },
+    {
+      "puzzleId": "gG5fH",
+      "fen": "5r2/3kb1Q1/p3p2p/3pB3/1p2n3/8/PP2N1PP/3R1q1K w - - 2 28",
+      "moves": "d1f1 f8f1 e2g1 e4f2",
+      "rating": 1118,
+      "popularity": 95,
+      "nbPlays": 4569,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ltQ9lAJM#55"
+    },
+    {
+      "puzzleId": "7bfLk",
+      "fen": "r6r/1b2pkN1/p2p1np1/q7/1n2P1Pp/2N1B2P/1PPQB3/2KR3R w - - 1 20",
+      "moves": "e3d4 a5a1 c3b1 b4a2",
+      "rating": 1119,
+      "popularity": 96,
+      "nbPlays": 4117,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/r0Regyjc#39"
+    },
+    {
+      "puzzleId": "EbD02",
+      "fen": "r3k1nr/1b1pppbp/p5p1/q7/1n1NP2P/2N1B3/1PPQ1PP1/2KR1B1R w kq - 0 12",
+      "moves": "f2f3 a5a1 c3b1 b4a2",
+      "rating": 1121,
+      "popularity": 96,
+      "nbPlays": 9843,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/o3o9Nr0O#23"
+    },
+    {
+      "puzzleId": "X0hL7",
+      "fen": "r4r2/4p1kp/p2ppnp1/q6P/1n2P3/2N2P2/1PPQ2P1/2KR1B1R w - - 1 19",
+      "moves": "h5g6 a5a1 c3b1 b4a2",
+      "rating": 1125,
+      "popularity": 93,
+      "nbPlays": 8295,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/x8uXZ94r#37"
+    },
+    {
+      "puzzleId": "w3cck",
+      "fen": "q5nk/5rpp/p3p3/1p2P1N1/2p2PP1/P2rBQ1P/1P6/5RK1 b - - 5 31",
+      "moves": "a8f3 g5f7",
+      "rating": 1127,
+      "popularity": 96,
+      "nbPlays": 5286,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "hangingPiece",
+        "kingsideAttack",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/avi56q9w/black#62"
+    },
+    {
+      "puzzleId": "oiUIu",
+      "fen": "r2qkbnr/1b1n1ppp/p2p4/1p2pNP1/4P3/2NBB3/PPP2P1P/R2QK1R1 b Qkq - 1 11",
+      "moves": "g8e7 f5d6",
+      "rating": 1128,
+      "popularity": 97,
+      "nbPlays": 6188,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/oabASvj6/black#22"
+    },
+    {
+      "puzzleId": "3MIbV",
+      "fen": "7k/pp4pp/3N4/2p1r1bP/6K1/1B6/PPb5/5R2 b - - 1 31",
+      "moves": "c2b3 f1f8 b3g8 d6f7",
+      "rating": 1129,
+      "popularity": 97,
+      "nbPlays": 3232,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/UmkXHg2E/black#62"
+    },
+    {
+      "puzzleId": "YSKCI",
+      "fen": "r2qkbnr/pb1n1p2/1ppp3p/3PpN2/2P1P1pP/2NBB3/PP1Q1PP1/R3K2R b KQkq - 0 12",
+      "moves": "g8e7 f5d6",
+      "rating": 1131,
+      "popularity": 95,
+      "nbPlays": 6835,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/9L7UkcQT/black#24"
+    },
+    {
+      "puzzleId": "cyfKP",
+      "fen": "3r2k1/p3nQpp/1p1N4/4q3/8/PP6/6PP/5R1K b - - 0 26",
+      "moves": "g8h8 f7f8 d8f8 f1f8 e7g8 d6f7",
+      "rating": 1132,
+      "popularity": 90,
+      "nbPlays": 3077,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/vVj2i8Qm/black#52"
+    },
+    {
+      "puzzleId": "A6vzV",
+      "fen": "5rk1/3p3p/p3p1p1/1p2P3/1P2n3/1Q1RB3/6PP/7K w - - 0 25",
+      "moves": "d3d7 f8f1 e3g1 e4f2",
+      "rating": 1133,
+      "popularity": 96,
+      "nbPlays": 8677,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/NTMiwmFW#49"
+    },
+    {
+      "puzzleId": "xbqA3",
+      "fen": "3qkbnr/p2r1ppp/2Q1p3/1N2P3/8/P6P/1P3PP1/R4RK1 b k - 4 18",
+      "moves": "g8e7 b5d6",
+      "rating": 1136,
+      "popularity": 95,
+      "nbPlays": 4250,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/pDNiwNiD/black#36"
+    },
+    {
+      "puzzleId": "TjVlG",
+      "fen": "r2qk2r/ppp1bppp/2n1p1b1/4P3/3P1n2/2P5/PP1N1BPP/R2QKBNR w KQkq - 3 11",
+      "moves": "g1e2 f4d3",
+      "rating": 1137,
+      "popularity": 93,
+      "nbPlays": 4068,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/7fd9vREN#21"
+    },
+    {
+      "puzzleId": "0Q47e",
+      "fen": "r1bqkb1r/1pppnp2/p1n3p1/3N3p/B2pP2P/5N2/PPP2PP1/R1BQK2R b KQkq - 1 8",
+      "moves": "b7b5 d5f6",
+      "rating": 1141,
+      "popularity": 94,
+      "nbPlays": 4618,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/4rL8nHB7/black#16"
+    },
+    {
+      "puzzleId": "LyTC4",
+      "fen": "r2qkbnr/3b1ppp/p2p4/1pp2N2/4P3/1P5P/1PP2PP1/RNBQ1RK1 b kq - 1 11",
+      "moves": "g8e7 f5d6",
+      "rating": 1141,
+      "popularity": 93,
+      "nbPlays": 4632,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/XVaz8FKh/black#22"
+    },
+    {
+      "puzzleId": "8RsiM",
+      "fen": "6B1/1pk5/p3R1p1/8/6n1/7N/Pr4PP/7K w - - 11 34",
+      "moves": "e6g6 b2b1 h3g1 g4f2",
+      "rating": 1141,
+      "popularity": 85,
+      "nbPlays": 3088,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/niySEDvv#67"
+    },
+    {
+      "puzzleId": "5KClq",
+      "fen": "r4rk1/1b2ppbp/p2p1Pp1/q1p5/1n1P4/2N1BN1P/1PPQBPP1/2KR3R w - - 1 14",
+      "moves": "f6g7 a5a1 c3b1 b4a2",
+      "rating": 1142,
+      "popularity": 95,
+      "nbPlays": 9729,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/27P4JQsV#27"
+    },
+    {
+      "puzzleId": "9WUUx",
+      "fen": "r2qk2r/1p2bppp/p1npb3/2p1p3/2P1Pn2/PP4N1/1B1P1PPP/R2QKBNR w KQkq - 7 11",
+      "moves": "g1e2 f4d3",
+      "rating": 1142,
+      "popularity": 95,
+      "nbPlays": 3388,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/f1SQGm9y#21"
+    },
+    {
+      "puzzleId": "7TNys",
+      "fen": "r4Q1k/ppp3pp/1q2b3/4N1r1/1P1P4/P1P3P1/7P/R4RK1 b - - 1 29",
+      "moves": "a8f8 f1f8 e6g8 e5f7",
+      "rating": 1145,
+      "popularity": 93,
+      "nbPlays": 4729,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/rH2hcRmY/black#58"
+    },
+    {
+      "puzzleId": "CNkdV",
+      "fen": "r1b2rk1/ppq2ppp/2pb4/3pnNPn/4p3/1P2P2P/PBPPNP2/R2QKB1R w KQ - 3 12",
+      "moves": "f5d6 e5f3",
+      "rating": 1147,
+      "popularity": 96,
+      "nbPlays": 3990,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/xAtD6r1i#23"
+    },
+    {
+      "puzzleId": "l28ZT",
+      "fen": "r4rk1/pp3ppp/2p2n2/8/qn4P1/3P1N2/1PPQBPP1/1NKR3R w - - 1 16",
+      "moves": "b1c3 a4a1 c3b1 b4a2",
+      "rating": 1147,
+      "popularity": 93,
+      "nbPlays": 4019,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Zfrt4bl6#31"
+    },
+    {
+      "puzzleId": "aiDKw",
+      "fen": "rnQ1kb1r/p2ppppp/1q6/1N2P3/8/8/PPPB1PbP/R3K1NR b KQkq - 5 13",
+      "moves": "b6d8 b5c7",
+      "rating": 1149,
+      "popularity": 95,
+      "nbPlays": 6223,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/DW3gnYAW/black#26"
+    },
+    {
+      "puzzleId": "Lmhzo",
+      "fen": "2r1k2r/3bbpp1/p2ppP1p/7P/1n1NP3/2N1BP2/1PPQ4/q1KR1B1R w k - 1 17",
+      "moves": "c3b1 b4a2",
+      "rating": 1150,
+      "popularity": 96,
+      "nbPlays": 3885,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ICnJ0WED#33"
+    },
+    {
+      "puzzleId": "M1lku",
+      "fen": "r1b2rk1/pp1p1ppp/2p5/1Bb5/4P1n1/5N2/PP3qPP/RNBQR2K w - - 0 12",
+      "moves": "b5f1 f2g1 f3g1 g4f2",
+      "rating": 1151,
+      "popularity": 92,
+      "nbPlays": 3975,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "opening",
+        "sacrifice",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/NKnrRasK#23"
+    },
+    {
+      "puzzleId": "nRlCK",
+      "fen": "r1bqkb1r/1p1p1ppp/p1n2n2/4pN2/4P3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 1 7",
+      "moves": "c6e7 f5d6",
+      "rating": 1154,
+      "popularity": 95,
+      "nbPlays": 8338,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/WayKHxJg/black#14"
+    },
+    {
+      "puzzleId": "8SBND",
+      "fen": "r2qkb1r/pp1bnp2/2n3pp/1B1N2N1/2pP1P2/8/PPP3PP/R1B1QRK1 b kq - 0 12",
+      "moves": "h6g5 d5f6",
+      "rating": 1154,
+      "popularity": 93,
+      "nbPlays": 7409,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Vfj65BQs/black#24"
+    },
+    {
+      "puzzleId": "i7wir",
+      "fen": "r1b1k2r/4bpp1/p2pp3/q5Pp/1n2P2P/2N1BP2/1PPQB3/2KR3R w kq - 0 17",
+      "moves": "f3f4 a5a1 c3b1 b4a2",
+      "rating": 1155,
+      "popularity": 97,
+      "nbPlays": 3610,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ilstT05C#33"
+    },
+    {
+      "puzzleId": "ETswi",
+      "fen": "r3k2r/pppq1ppp/3p1n2/4p3/1b1nP3/2NP1P1P/PPPB1P2/R2QKB1R w KQkq - 1 10",
+      "moves": "c3e2 d4f3",
+      "rating": 1156,
+      "popularity": 97,
+      "nbPlays": 3684,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/AvSKRd2G#19"
+    },
+    {
+      "puzzleId": "tgd5l",
+      "fen": "r3r1k1/ppq1bppp/2n5/2pp2B1/6n1/2NP3N/PPP1RPPP/R3Q1K1 w - - 9 16",
+      "moves": "c3d5 c7h2 g1f1 h2h1 h3g1 g4h2",
+      "rating": 1159,
+      "popularity": 94,
+      "nbPlays": 11324,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/72zJmHN0#31"
+    },
+    {
+      "puzzleId": "9SNi9",
+      "fen": "2kr1bnr/1pp3pp/4p3/3P4/2P1q2n/4B3/PP2BP1P/RN1QKR2 w Q - 0 17",
+      "moves": "b1d2 h4g2",
+      "rating": 1160,
+      "popularity": 96,
+      "nbPlays": 4309,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/qRi3zeiA#33"
+    },
+    {
+      "puzzleId": "tzjwe",
+      "fen": "2rqkb1r/1p1nnpp1/p3p2p/6P1/3PNB1P/5N2/PP3P2/R2QK2R b KQk - 0 14",
+      "moves": "h6g5 e4d6",
+      "rating": 1161,
+      "popularity": 97,
+      "nbPlays": 5116,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Ck6EgqKV/black#28"
+    },
+    {
+      "puzzleId": "cSu6C",
+      "fen": "r4rk1/3bppb1/p2p2pB/q6n/1n1NP2P/2N2P2/1PPQB3/2KR3R w - - 2 17",
+      "moves": "h6g7 a5a1 c3b1 b4a2",
+      "rating": 1166,
+      "popularity": 95,
+      "nbPlays": 17109,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/GnASn1Gg#33"
+    },
+    {
+      "puzzleId": "6MVsu",
+      "fen": "r2qkr2/p1ppnp1p/1p3p2/3N4/8/8/PPP1QP1P/R3K1NB b Qq - 2 14",
+      "moves": "c7c6 d5f6",
+      "rating": 1168,
+      "popularity": 96,
+      "nbPlays": 10153,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Xodvnj7I/black#28"
+    },
+    {
+      "puzzleId": "9u7BR",
+      "fen": "r4rnk/pp2b1pp/3p4/q3p1P1/1n2P3/1PN1BP2/1PPQB3/2KR3R w - - 1 17",
+      "moves": "g5g6 a5a1 c3b1 b4a2",
+      "rating": 1168,
+      "popularity": 96,
+      "nbPlays": 11412,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/IUFaA2zf#33"
+    },
+    {
+      "puzzleId": "nglUd",
+      "fen": "r1b1k3/3p1pb1/p1n1p1p1/q7/1n1NPP1r/2N1B3/1PPQB3/2KR3R w q - 2 17",
+      "moves": "h1h4 a5a1 c3b1 b4a2",
+      "rating": 1168,
+      "popularity": 95,
+      "nbPlays": 4627,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/H3MWZHkT#33"
+    },
+    {
+      "puzzleId": "oKQen",
+      "fen": "r5k1/1p3ppp/p3b3/8/3Q2n1/2P2B2/PP1N1qPP/R1B2r1K w - - 0 26",
+      "moves": "d2f1 f2f1 d4g1 g4f2",
+      "rating": 1169,
+      "popularity": 93,
+      "nbPlays": 3981,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/lh7UodRQ#51"
+    },
+    {
+      "puzzleId": "0wZOG",
+      "fen": "2r2bk1/Q4ppp/1p2pn2/4N3/3P4/8/1q3PPP/4R1K1 b - - 0 25",
+      "moves": "c8c1 a7f7 g8h8 f7f8 f6g8 e5f7",
+      "rating": 1170,
+      "popularity": 95,
+      "nbPlays": 10443,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "deflection",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/2Rs74TG5/black#50"
+    },
+    {
+      "puzzleId": "1ZK1x",
+      "fen": "6k1/5ppp/4pn2/1p1qN2Q/p1pr4/6PK/1P3P1P/8 b - - 5 32",
+      "moves": "d4e4 h5f7 g8h8 f7f8 f6g8 e5f7",
+      "rating": 1170,
+      "popularity": 95,
+      "nbPlays": 7026,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/9lr1UjTE/black#64"
+    },
+    {
+      "puzzleId": "bZtyz",
+      "fen": "4q1k1/1Q4pp/2p2n2/2PnB1N1/5p2/5P2/6P1/6K1 b - - 0 45",
+      "moves": "e8e5 b7f7 g8h8 f7f8 f6g8 g5f7",
+      "rating": 1170,
+      "popularity": 95,
+      "nbPlays": 11781,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/s9nbDeeM/black#90"
+    },
+    {
+      "puzzleId": "dpr4X",
+      "fen": "r1b2r1k/1p2bppP/p2pp3/q6P/1n1NP3/1PN1B3/1PPQ1P2/2KR3R w - - 1 19",
+      "moves": "h5h6 a5a1 c3b1 b4a2",
+      "rating": 1172,
+      "popularity": 96,
+      "nbPlays": 3630,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/SRf9vU2D#37"
+    },
+    {
+      "puzzleId": "ekd0n",
+      "fen": "2kr3r/1pp3p1/p7/P2qQp2/Nb1n3p/3P4/5PPP/R1B2RKN w - - 1 19",
+      "moves": "e5d5 d4e2",
+      "rating": 1173,
+      "popularity": 92,
+      "nbPlays": 6151,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/rjDMswXL#37"
+    },
+    {
+      "puzzleId": "XulSR",
+      "fen": "rnb4k/ppp3pp/4B3/4N3/3P4/2r5/P5PP/R4RK1 b - - 1 17",
+      "moves": "c8e6 f1f8 e6g8 e5f7",
+      "rating": 1174,
+      "popularity": 95,
+      "nbPlays": 6238,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ESA4SVZz/black#34"
+    },
+    {
+      "puzzleId": "0V8Fr",
+      "fen": "rnbqkb1r/1p1pnpp1/p1p1p2p/4P1B1/2PPN3/5N2/PP3PPP/R2QKB1R b KQkq - 1 8",
+      "moves": "h6g5 e4d6",
+      "rating": 1174,
+      "popularity": 92,
+      "nbPlays": 5046,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/yVxS0FT4/black#16"
+    },
+    {
+      "puzzleId": "4BsPo",
+      "fen": "r4Q1k/1p1bn1pp/p2qp3/3pN3/3p4/3B4/PPP3PP/5RK1 b - - 5 18",
+      "moves": "a8f8 f1f8 e7g8 e5f7",
+      "rating": 1175,
+      "popularity": 90,
+      "nbPlays": 5359,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "master",
+        "masterVsMaster",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/6wPHblKb/black#36"
+    },
+    {
+      "puzzleId": "BuSR0",
+      "fen": "rn5k/pp4pp/2p1b3/Q3N3/8/q2P4/P1P1B1PP/5R1K b - - 2 18",
+      "moves": "a3a5 f1f8 e6g8 e5f7",
+      "rating": 1177,
+      "popularity": 96,
+      "nbPlays": 4123,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/aIQzKDW3/black#36"
+    },
+    {
+      "puzzleId": "BmCm6",
+      "fen": "Q7/5ppk/1q5p/3p4/4n3/1P3N2/P4RPP/6K1 w - - 1 27",
+      "moves": "a8d5 b6f2 g1h1 f2f1 f3g1 e4f2",
+      "rating": 1177,
+      "popularity": 93,
+      "nbPlays": 6843,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/txChtATe#53"
+    },
+    {
+      "puzzleId": "bNqUd",
+      "fen": "r2qkb1r/1p1b1pp1/p2p1nnp/4pN2/4P3/1BN1BP2/PPP3PP/R2Q1RK1 b kq - 1 13",
+      "moves": "g6e7 f5d6",
+      "rating": 1180,
+      "popularity": 95,
+      "nbPlays": 3372,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Wo1LD8Gp/black#26"
+    },
+    {
+      "puzzleId": "dX4H4",
+      "fen": "6k1/4Qppp/p2N1n2/q2p4/2pn4/7P/P1B2PP1/4b1K1 b - - 1 30",
+      "moves": "d4c2 e7f7 g8h8 f7f8 f6g8 d6f7",
+      "rating": 1182,
+      "popularity": 97,
+      "nbPlays": 19568,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/CNjhW6hm/black#60"
+    },
+    {
+      "puzzleId": "5cncw",
+      "fen": "3r3k/1p2Q1pp/p4n2/6N1/N2R4/1P5P/P4PPK/2q5 b - - 2 32",
+      "moves": "d8d4 e7f8 f6g8 g5f7",
+      "rating": 1185,
+      "popularity": 96,
+      "nbPlays": 12384,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Yn11uhqj/black#64"
+    },
+    {
+      "puzzleId": "6GuJz",
+      "fen": "rnbqkb1r/pp1pnppp/4p3/1N6/4PB2/8/PP3PPP/R2QKBNR b KQkq - 3 6",
+      "moves": "b8a6 b5d6",
+      "rating": 1185,
+      "popularity": 95,
+      "nbPlays": 3393,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/Mvvn1lLD/black#12"
+    },
+    {
+      "puzzleId": "TCBEI",
+      "fen": "6k1/ppp3pp/4pq2/2P3N1/3nP1Q1/3n4/PB4PP/7K w - - 2 28",
+      "moves": "b2d4 f6f1 d4g1 d3f2",
+      "rating": 1187,
+      "popularity": 95,
+      "nbPlays": 4528,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/jtkVaggz#55"
+    },
+    {
+      "puzzleId": "SNcyr",
+      "fen": "r2qkb2/pbppnp2/1pn5/3NP3/7B/5Q2/PPP3P1/R3KBN1 b Qq - 2 17",
+      "moves": "c6d4 d5f6",
+      "rating": 1187,
+      "popularity": 93,
+      "nbPlays": 3185,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/6lgJEyIo/black#34"
+    },
+    {
+      "puzzleId": "mQxhv",
+      "fen": "r1b1kbnr/ppp1pppp/8/4q3/2Pn4/2N5/PP1PNPPP/R1BQKB1R w KQkq - 5 6",
+      "moves": "g2g3 d4f3",
+      "rating": 1187,
+      "popularity": 93,
+      "nbPlays": 6274,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "oneMove",
+        "opening",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/VMcnTaSy#11"
+    },
+    {
+      "puzzleId": "tEx4y",
+      "fen": "7k/1p4pp/p1pN4/3bQ3/6Pq/P6r/1PP4R/2K5 b - - 0 29",
+      "moves": "h3h2 e5e8 d5g8 d6f7",
+      "rating": 1188,
+      "popularity": 95,
+      "nbPlays": 5531,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/zONuiDJ1/black#58"
+    },
+    {
+      "puzzleId": "JlVM0",
+      "fen": "r4rk1/1p2bppp/p2p1n2/q3p1P1/1n2P3/1PN1BP2/1PPQ3P/2KR1B1R w - - 1 14",
+      "moves": "g5f6 a5a1 c3b1 b4a2",
+      "rating": 1189,
+      "popularity": 93,
+      "nbPlays": 6543,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/8SBMm0DJ#27"
+    },
+    {
+      "puzzleId": "7t2m5",
+      "fen": "r4rk1/5ppp/p2p1b2/qp2p3/1n2P3/1PN1BP2/1PPQ3P/2KR1BR1 w - - 3 16",
+      "moves": "e3h6 a5a1 c3b1 b4a2",
+      "rating": 1190,
+      "popularity": 96,
+      "nbPlays": 10762,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "queensideAttack",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/ksIYd6HJ#31"
+    },
+    {
+      "puzzleId": "uPapH",
+      "fen": "r2qkb1r/3b1pp1/p1np3p/1ppP1N2/8/2N2P2/PPPBQ1PP/2KR3R b kq - 0 13",
+      "moves": "c6e7 f5d6",
+      "rating": 1191,
+      "popularity": 93,
+      "nbPlays": 3695,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/V1Bq6uBP/black#26"
+    },
+    {
+      "puzzleId": "SBjvJ",
+      "fen": "r1b1kb2/ppp2pp1/3p1n2/7P/1q6/3PnN2/PP2BP1P/R1BQKR2 w Qq - 2 15",
+      "moves": "c1d2 e3g2",
+      "rating": 1193,
+      "popularity": 93,
+      "nbPlays": 3210,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "master",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/psPOzUIK#29"
+    },
+    {
+      "puzzleId": "vCTtV",
+      "fen": "6k1/1p4pp/1Q6/p2pB3/4n3/3q4/PP4PP/R4r1K w - - 3 26",
+      "moves": "a1f1 d3f1 b6g1 e4f2",
+      "rating": 1195,
+      "popularity": 91,
+      "nbPlays": 3185,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/W3a1b4qP#51"
+    },
+    {
+      "puzzleId": "pW1nN",
+      "fen": "2r3k1/5p2/Q2np3/2qp3p/1p4p1/1B5n/PPP3PP/2R2RK1 w - - 2 34",
+      "moves": "g1h1 c5g1 f1g1 h3f2",
+      "rating": 1195,
+      "popularity": 87,
+      "nbPlays": 4001,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/szGEGRFn#67"
+    },
+    {
+      "puzzleId": "TdAqU",
+      "fen": "r6r/p1Qp3p/7k/2bN4/2B1PNn1/3P4/PP3qPP/R6K w - - 2 20",
+      "moves": "c7d7 f2g1 a1g1 g4f2",
+      "rating": 1198,
+      "popularity": 91,
+      "nbPlays": 7169,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "kingsideAttack",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/2wrqlULW#39"
+    },
+    {
+      "puzzleId": "ZB60v",
+      "fen": "3rr1k1/1p1bqpp1/p4n2/3p1PN1/3pp2Q/7R/PPP3PP/R5K1 b - - 1 26",
+      "moves": "g8f8 h4h8 f6g8 g5h7",
+      "rating": 1199,
+      "popularity": 94,
+      "nbPlays": 4763,
+      "theme": "smotheredMate",
+      "allThemes": [
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short",
+        "smotheredMate"
+      ],
+      "gameUrl": "https://lichess.org/dWlpSClj/black#52"
+    }
+  ]
+}
