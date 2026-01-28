@@ -325,9 +325,10 @@ export default function LearnPage() {
   // Track completed lessons and unlocked levels
   const { completedLessons, unlockedLevels, unlockLevel } = useLessonProgress();
 
-  // Check if user is logged in
-  const { user } = useUser();
-  const isLoggedIn = !!user;
+  // Check if user is logged in - wait for loading to complete
+  const { user, loading: userLoading } = useUser();
+  // While loading, assume logged in to avoid flash of "sign in" text
+  const isLoggedIn = userLoading ? true : !!user;
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
