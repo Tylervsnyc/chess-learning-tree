@@ -163,5 +163,8 @@ export function useUser() {
     }
   };
 
+  // Debug - remove after fixing
+  console.log('[useUser]', { loading, hasUser: !!user, hasProfile: !!profile });
+
   return { user, profile, loading, signOut };
 }
