@@ -155,18 +155,6 @@ export default function LandingPage() {
           <p className="text-slate-600 text-sm leading-relaxed">
             Curated puzzles to help you improve in the shortest time possible
           </p>
-          <div className="flex items-center justify-center gap-3 mt-2">
-            <p className="text-slate-400 text-xs">
-              From the founder of <span className="font-medium text-slate-500">Storytime Chess</span>
-            </p>
-            <Image
-              src="/brand/storytime-chess-box.png"
-              alt="Storytime Chess"
-              width={48}
-              height={48}
-              className="rounded-md"
-            />
-          </div>
         </div>
 
         {/* Board with subtle shadow */}
