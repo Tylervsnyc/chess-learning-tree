@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
+import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <Suspense fallback={null}>
+          <AbortErrorSuppressor />
           <PostHogProvider>
             <NavHeader />
             {children}
