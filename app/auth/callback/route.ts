@@ -45,7 +45,7 @@ export async function GET(request: Request) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
       console.error('[Auth Callback] Session exchange error:', error.message, error);
@@ -54,6 +54,10 @@ export async function GET(request: Request) {
       errorUrl.searchParams.set('error_description', error.message);
       return NextResponse.redirect(errorUrl.toString());
     }
+
+    // Log success for debugging
+    console.log('[Auth Callback] Session established for user:', data.user?.email);
+    console.log('[Auth Callback] Cookies being set:', response.cookies.getAll().map(c => c.name));
 
     // Return the response with cookies attached
     return response;
