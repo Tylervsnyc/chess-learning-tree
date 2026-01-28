@@ -84,69 +84,39 @@ export function useUser() {
       }
     };
 
-    // Get initial session - use getSession first (reads from cookies, instant)
-    const init = async () => {
-      try {
-        // getSession is fast - reads from cookies/localStorage
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    // Use onAuthStateChange for initial session - it fires immediately with current state
+    // This is more reliable than getSession() which can hang
+    let initialFired = false;
 
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-        }
-
-        if (mounted) {
-          const sessionUser = session?.user ?? null;
-          setUser(sessionUser);
-          // Set loading false IMMEDIATELY - don't wait for profile
-          setLoading(false);
-
-          // Fetch profile in background (don't block UI)
-          if (sessionUser) {
-            fetchProfile(sessionUser.id, sessionUser.email || '');
-          }
-        }
-      } catch (err: unknown) {
-        // AbortError is expected when component unmounts during fetch (React Strict Mode)
-        if (err instanceof Error && err.name === 'AbortError') {
-          return;
-        }
-        console.error('Error in init:', err);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Track if init has completed to avoid timeout race condition
-    let initComplete = false;
-
-    init().finally(() => {
-      initComplete = true;
-    });
-
-    // Fallback timeout - only fires if init hasn't completed
-    // Extended to 10 seconds to handle slow connections
-    const timeout = setTimeout(() => {
-      if (mounted && !initComplete) {
-        console.warn('Auth loading timeout - continuing without auth');
-        setLoading(false);
-      }
-    }, 10000);
-
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
 
-        setUser(session?.user ?? null);
+        const sessionUser = session?.user ?? null;
+        setUser(sessionUser);
 
-        if (session?.user) {
-          await fetchProfile(session.user.id, session.user.email || '');
+        // Only set loading false on first event (INITIAL_SESSION or SIGNED_IN)
+        if (!initialFired) {
+          initialFired = true;
+          setLoading(false);
+        }
+
+        if (sessionUser) {
+          fetchProfile(sessionUser.id, sessionUser.email || '');
         } else {
           setProfile(null);
         }
       }
     );
+
+    // Fallback timeout - if onAuthStateChange doesn't fire within 3 seconds, continue without auth
+    const timeout = setTimeout(() => {
+      if (mounted && !initialFired) {
+        console.warn('Auth: onAuthStateChange timeout - continuing without auth');
+        initialFired = true;
+        setLoading(false);
+      }
+    }, 3000);
 
     return () => {
       mounted = false;
