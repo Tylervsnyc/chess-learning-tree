@@ -64,9 +64,12 @@ export function playMellowCoin(baseFreq: number) {
 }
 
 // Play correct sound based on puzzle index (chromatic scale)
-export function playCorrectSound(puzzleIndex: number) {
-  const noteIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
-  playMellowCoin(CHROMATIC_SCALE[noteIndex]);
+// Delay prevents overlap with move/capture sounds on mobile
+export function playCorrectSound(puzzleIndex: number, delay: number = 150) {
+  setTimeout(() => {
+    const noteIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
+    playMellowCoin(CHROMATIC_SCALE[noteIndex]);
+  }, delay);
 }
 
 // Play error sound - Duolingo-style gentle "womp womp"
