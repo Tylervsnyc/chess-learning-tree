@@ -111,15 +111,21 @@ export function useUser() {
       }
     };
 
-    init();
+    // Track if init has completed to avoid timeout race condition
+    let initComplete = false;
 
-    // Fallback timeout - never stay loading forever
+    init().finally(() => {
+      initComplete = true;
+    });
+
+    // Fallback timeout - only fires if init hasn't completed
+    // Extended to 10 seconds to handle slow connections
     const timeout = setTimeout(() => {
-      if (mounted) {
+      if (mounted && !initComplete) {
         console.warn('Auth loading timeout - continuing without auth');
         setLoading(false);
       }
-    }, 3000);
+    }, 10000);
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
