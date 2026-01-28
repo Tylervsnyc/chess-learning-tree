@@ -169,6 +169,7 @@ export default function LessonPage() {
     shouldPromptPremium,
     lessonsCompletedToday,
     recordLessonComplete,
+    loading: permissionsLoading,
   } = usePermissions();
 
   // State for lesson limit modal
@@ -752,7 +753,8 @@ export default function LessonPage() {
   }, [lessonComplete, firstAttemptCorrectCount, puzzles.length]);
 
   // Permission gate - check if user can access lessons
-  if (!canAccessLesson && !loading) {
+  // Only show blocked state AFTER permissions have finished loading
+  if (!permissionsLoading && !canAccessLesson) {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
@@ -811,8 +813,8 @@ export default function LessonPage() {
     );
   }
 
-  // Loading state
-  if (loading) {
+  // Loading state (either permissions or puzzle data)
+  if (loading || permissionsLoading) {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>

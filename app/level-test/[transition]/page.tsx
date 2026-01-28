@@ -9,6 +9,7 @@ import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, play
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
+import { useUser } from '@/hooks/useUser';
 import confetti from 'canvas-confetti';
 
 interface RawPuzzle {
@@ -73,6 +74,9 @@ export default function LevelTestPage() {
   const router = useRouter();
   const params = useParams();
   const transition = params.transition as string;
+
+  // Auth check
+  const { user, loading: userLoading } = useUser();
 
   // Progress hook for unlocking levels
   const { unlockLevel } = useLessonProgress();
@@ -370,7 +374,45 @@ export default function LevelTestPage() {
     }
   }, [testState]);
 
-  // Loading state while validating
+  // Loading state while checking auth
+  if (userLoading) {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Auth check - must be logged in to take level tests
+  if (!user) {
+    return (
+      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🔒</div>
+          <h1 className="text-2xl font-bold text-white mb-2">Sign In Required</h1>
+          <p className="text-white/60 mb-6">
+            Please sign in to take level tests and track your progress.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => router.push('/auth/login')}
+              className="px-6 py-3 bg-[#1CB0F6] text-white font-bold rounded-xl hover:bg-[#1A9FE0] transition-colors"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => router.push('/auth/signup')}
+              className="px-6 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+            >
+              Sign Up Free
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state while validating transition
   if (isValid === null) {
     return (
       <div className="h-screen bg-[#131F24] flex items-center justify-center">

@@ -1,13 +1,24 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useUser } from '@/hooks/useUser';
 import { Suspense } from 'react';
 
 function AdminGate({ children }: { children: React.ReactNode }) {
-  const searchParams = useSearchParams();
-  const hasAccess = searchParams.get('admin') === 'true';
+  const { user, profile, loading } = useUser();
 
-  if (!hasAccess) {
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Check if user is logged in and is admin
+  const isAdmin = user && profile?.is_admin === true;
+
+  if (!isAdmin) {
     return (
       <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
         <div className="text-gray-500">Page not found</div>

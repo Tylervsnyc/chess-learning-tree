@@ -65,9 +65,31 @@ export function usePermissions() {
   };
   const tier = determineTier();
 
+  // Combined loading state - true until both local state and user are loaded
+  const isLoading = loading || userLoading;
+
   // Calculate permissions
+  // IMPORTANT: While loading, we default to permissive values to prevent
+  // flash of "blocked" content before auth completes
   const permissions: UserPermissions = (() => {
     const data = lessonData;
+
+    // While still loading, return permissive defaults to prevent blocking UI flash
+    // The actual tier will be calculated once loading completes
+    if (isLoading) {
+      return {
+        tier: 'anonymous' as UserTier, // Will be recalculated
+        dailyLessonLimit: null,
+        lessonsCompletedToday: 0,
+        lessonsRemainingToday: null,
+        canAccessLesson: true, // Don't block while loading!
+        canSkipLevels: true,   // Don't block while loading!
+        canAccessAllPuzzles: false,
+        shouldPromptSignup: false,
+        shouldPromptPremium: false,
+        dailyResetTime: null,
+      };
+    }
 
     switch (tier) {
       case 'anonymous': {
@@ -180,7 +202,7 @@ export function usePermissions() {
 
   return {
     ...permissions,
-    loading: loading || userLoading,
+    loading: isLoading,
     recordLessonComplete,
     resetDailyCount,
     canAccessLessonById,
