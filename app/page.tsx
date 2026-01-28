@@ -116,24 +116,15 @@ function AnimatedBoard({ size }: { size: number }) {
 
 export default function LandingPage() {
   const router = useRouter();
-  const { user, profile, loading } = useUser();
+  const { user, loading } = useUser();
   const boardSize = useResponsiveBoardSize();
 
+  // Redirect logged-in users to /learn (don't block page render)
   useEffect(() => {
-    if (!loading && user && profile) {
-      // Always redirect signed-in users to the chess path
-      // They can see their next lesson and click to start
+    if (!loading && user) {
       router.push('/learn');
     }
-  }, [user, profile, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#eef6fc] flex items-center justify-center">
-        <div className="text-slate-500">Loading...</div>
-      </div>
-    );
-  }
+  }, [user, loading, router]);
 
   return (
     <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">

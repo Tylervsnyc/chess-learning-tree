@@ -1,10 +1,23 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+// Public paths that don't need auth checks - skip to avoid latency
+const PUBLIC_PATHS = ['/', '/about', '/pricing', '/auth/', '/api/'];
+
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  const supabaseResponse = NextResponse.next({
     request,
   });
+
+  const pathname = request.nextUrl.pathname;
+
+  // Skip auth check for public paths - no need to hit Supabase
+  const isPublicPath = PUBLIC_PATHS.some(path =>
+    pathname === path || pathname.startsWith(path)
+  );
+  if (isPublicPath) {
+    return supabaseResponse;
+  }
 
   // Skip if Supabase env vars not configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -14,6 +27,8 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // For protected routes, refresh the session
+  let response = supabaseResponse;
   const supabase = createServerClient(
     supabaseUrl,
     supabaseKey,
@@ -26,11 +41,11 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({
+          response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            response.cookies.set(name, value, options)
           );
         },
       },
@@ -38,11 +53,10 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh session if expired - ignore error when no session exists
-  // (AuthSessionMissingError is expected for unauthenticated users)
   const { error } = await supabase.auth.getUser();
   if (error && error.name !== 'AuthSessionMissingError') {
     console.error('Auth error:', error);
   }
 
-  return supabaseResponse;
+  return response;
 }
