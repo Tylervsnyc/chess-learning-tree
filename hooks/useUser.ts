@@ -85,7 +85,6 @@ export function useUser() {
     };
 
     // Get initial session - use getSession first (reads from cookies, instant)
-    // then optionally verify with getUser if needed
     const init = async () => {
       try {
         // getSession is fast - reads from cookies/localStorage
@@ -98,12 +97,13 @@ export function useUser() {
         if (mounted) {
           const sessionUser = session?.user ?? null;
           setUser(sessionUser);
-
-          if (sessionUser) {
-            await fetchProfile(sessionUser.id, sessionUser.email || '');
-          }
-
+          // Set loading false IMMEDIATELY - don't wait for profile
           setLoading(false);
+
+          // Fetch profile in background (don't block UI)
+          if (sessionUser) {
+            fetchProfile(sessionUser.id, sessionUser.email || '');
+          }
         }
       } catch (err) {
         console.error('Error in init:', err);
@@ -164,9 +164,6 @@ export function useUser() {
       setProfile(null);
     }
   };
-
-  // Debug - remove after fixing
-  console.log('[useUser]', { loading, hasUser: !!user, hasProfile: !!profile });
 
   return { user, profile, loading, signOut };
 }

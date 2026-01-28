@@ -78,9 +78,6 @@ export default function LevelTestPage() {
   // Auth check
   const { user, loading: userLoading } = useUser();
 
-  // Debug - remove after fixing
-  console.log('[LevelTest Auth]', { userLoading, hasUser: !!user, userId: user?.id });
-
   // Progress hook for unlocking levels
   const { unlockLevel } = useLessonProgress();
 
