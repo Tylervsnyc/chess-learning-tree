@@ -36,3 +36,9 @@ Thumbs.db
 # Large puzzle data files (too big for GitHub)
 data/puzzles-by-rating/*.csv
 data/puzzles-by-rating/*/*.csv
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
