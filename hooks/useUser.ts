@@ -84,21 +84,23 @@ export function useUser() {
       }
     };
 
-    // Get initial session
+    // Get initial session - use getSession first (reads from cookies, instant)
+    // then optionally verify with getUser if needed
     const init = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
+        // getSession is fast - reads from cookies/localStorage
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        // AuthSessionMissingError is expected when user isn't logged in
-        if (error && error.name !== 'AuthSessionMissingError') {
-          console.error('Auth error:', error);
+        if (sessionError) {
+          console.error('Session error:', sessionError);
         }
 
         if (mounted) {
-          setUser(user);
+          const sessionUser = session?.user ?? null;
+          setUser(sessionUser);
 
-          if (user) {
-            await fetchProfile(user.id, user.email || '');
+          if (sessionUser) {
+            await fetchProfile(sessionUser.id, sessionUser.email || '');
           }
 
           setLoading(false);
