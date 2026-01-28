@@ -70,7 +70,7 @@ export default function LoginPage() {
     }
     AuthEvents.loginCompleted();
 
-    router.push(redirectTo || '/');
+    router.push(redirectTo || '/learn');
     router.refresh();
   };
 

@@ -105,7 +105,11 @@ export function useUser() {
             fetchProfile(sessionUser.id, sessionUser.email || '');
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
+        // AbortError is expected when component unmounts during fetch (React Strict Mode)
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
         console.error('Error in init:', err);
         if (mounted) {
           setLoading(false);

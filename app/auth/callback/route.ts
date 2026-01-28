@@ -1,10 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
+  const next = searchParams.get('next') ?? '/learn';
 
   // Check if OAuth provider returned an error directly
   const oauthError = searchParams.get('error');
@@ -21,22 +22,41 @@ export async function GET(request: Request) {
   }
 
   if (code) {
-    const supabase = await createClient();
+    const cookieStore = await cookies();
+
+    // Create a response that we'll add cookies to
+    const response = NextResponse.redirect(`${origin}${next}`);
+
+    // Create Supabase client that writes cookies to the response
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
       console.error('[Auth Callback] Session exchange error:', error.message, error);
+      const errorUrl = new URL('/auth/error', origin);
+      errorUrl.searchParams.set('error', 'session_error');
+      errorUrl.searchParams.set('error_description', error.message);
+      return NextResponse.redirect(errorUrl.toString());
     }
 
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
-    }
-
-    // Pass the error to the error page
-    const errorUrl = new URL('/auth/error', origin);
-    errorUrl.searchParams.set('error', 'session_error');
-    errorUrl.searchParams.set('error_description', error.message);
-    return NextResponse.redirect(errorUrl.toString());
+    // Return the response with cookies attached
+    return response;
   }
 
   // No code and no error - something weird happened
