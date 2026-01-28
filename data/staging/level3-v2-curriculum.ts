@@ -33,12 +33,22 @@ export const level3V2: Level = {
       id: 'block-1',
       name: 'Deflection & Attraction',
       description: 'Control where pieces go',
+      blockIntroMessage: `Welcome to Level 3!
+
+You know the basic tactics. Now learn to SET THEM UP.
+
+Deflection forces defenders away. Attraction lures pieces to bad squares. These are the setup moves that make everything else possible.`,
       sections: [
         // Section 1: Deflection Basics
         {
           id: 'sec-1',
           name: 'Deflection',
           description: 'Force the defender away',
+          themeIntroMessage: `That knight is protecting the queen. The rook is guarding the back rank. How do we win?
+
+Force the defender away. Attack it, capture it, or threaten something it can't ignore.
+
+Once the guard is gone, the real target is helpless.`,
           lessons: [
             {
               id: '3.1.1',
@@ -87,6 +97,11 @@ export const level3V2: Level = {
           id: 'sec-2',
           name: 'Attraction',
           description: 'Lure pieces to bad squares',
+          themeIntroMessage: `Attraction is the flip side of deflection. Instead of pushing defenders away, you PULL pieces where you want them.
+
+Usually with a sacrifice. "Here, take this!" And when they do... BOOM.
+
+Lure the king out of safety. Drag the queen to a fork square.`,
           lessons: [
             {
               id: '3.2.1',
@@ -135,6 +150,11 @@ export const level3V2: Level = {
           id: 'sec-3',
           name: 'Clearance & Interference',
           description: 'Clear paths and block lines',
+          themeIntroMessage: `Your own piece is in the way? Move it with tempo. That's clearance.
+
+Their pieces coordinate too well? Put something between them. That's interference.
+
+Control the lines. Control the game.`,
           lessons: [
             {
               id: '3.3.1',
@@ -180,6 +200,11 @@ export const level3V2: Level = {
           name: 'Review: Enablers',
           description: 'Mixed deflection and attraction practice',
           isReview: true,
+          themeIntroMessage: `Deflection. Attraction. Clearance. Interference.
+
+These are the enabling moves - they make your tactical shots possible.
+
+Find the move that breaks their coordination or creates your attack.`,
           lessons: [
             {
               id: '3.4.1',
@@ -240,12 +265,22 @@ export const level3V2: Level = {
       id: 'block-2',
       name: 'The Sacrifice',
       description: 'Give up material for bigger gains',
+      blockIntroMessage: `The sacrifice. Give up material to get something better.
+
+It's not charity - it's investment. A pawn for a mating attack. A piece for a devastating combination.
+
+Learn when giving is winning.`,
       sections: [
         // Section 5: Sacrifice
         {
           id: 'sec-5',
           name: 'The Sacrifice',
           description: 'Give up material for bigger gains',
+          themeIntroMessage: `Not every sacrifice is a gamble. The best sacrifices are calculated.
+
+You give up material because you've seen the forced sequence that wins it back - with interest.
+
+Calculate first. Then sacrifice.`,
           lessons: [
             {
               id: '3.5.1',
@@ -290,6 +325,11 @@ export const level3V2: Level = {
           id: 'sec-6',
           name: 'Sacrifice for Material',
           description: 'Give to win more back',
+          themeIntroMessage: `The temporary sacrifice: give material now, win it back immediately.
+
+Exchange sacrifices give up your rook for their bishop or knight - but gain position or attack.
+
+Material isn't everything. Activity matters.`,
           lessons: [
             {
               id: '3.6.1',
@@ -334,6 +374,11 @@ export const level3V2: Level = {
           id: 'sec-7',
           name: 'Advanced Tactics',
           description: 'Level up your weapons',
+          themeIntroMessage: `Time to sharpen your Level 2 weapons.
+
+Same tactics - forks, pins, skewers, discoveries - but harder positions.
+
+The patterns are there. Find them in the noise.`,
           lessons: [
             {
               id: '3.7.1',
@@ -383,6 +428,11 @@ export const level3V2: Level = {
           name: 'Review: Sacrifice & Tactics',
           description: 'Mixed sacrifice and tactics practice',
           isReview: true,
+          themeIntroMessage: `Sacrifices and advanced tactics, all mixed together.
+
+Sometimes you need to give material. Sometimes it's a pure tactical shot.
+
+Read the position. Make the right call.`,
           lessons: [
             {
               id: '3.8.1',
@@ -443,12 +493,22 @@ export const level3V2: Level = {
       id: 'block-3',
       name: 'Combinations',
       description: 'Chain tactics together',
+      blockIntroMessage: `Combinations are where everything comes together.
+
+Multiple tactics chained. Deeper calculation. Longer sequences.
+
+This is the beautiful, forcing chess that makes your opponents say "Wait, what just happened?"`,
       sections: [
         // Section 9: Multi-Move Checkmates
         {
           id: 'sec-9',
           name: 'Multi-Move Checkmates',
           description: 'Calculate deeper mates',
+          themeIntroMessage: `Two-move mates? Easy. Now let's go deeper.
+
+Mate in 3 requires seeing three moves ahead - your move, their best response, your finisher.
+
+It's not about memorizing. It's about visualizing the board after each move.`,
           lessons: [
             {
               id: '3.9.1',
@@ -493,6 +553,11 @@ export const level3V2: Level = {
           id: 'sec-10',
           name: 'Endgame Mastery',
           description: 'Advanced endgame tactics',
+          themeIntroMessage: `Endgames are where games are won and lost.
+
+Fewer pieces means every move matters more. Pawn promotion decides everything.
+
+Master these patterns and you'll convert every winning position.`,
           lessons: [
             {
               id: '3.10.1',
@@ -537,6 +602,11 @@ export const level3V2: Level = {
           id: 'sec-11',
           name: 'Combined Tactics',
           description: 'Multiple tactics in one',
+          themeIntroMessage: `Real combinations chain multiple tactics together.
+
+Fork into pin. Discovery into skewer. Sacrifice into checkmate.
+
+See how the tactics connect. One leads to another.`,
           lessons: [
             {
               id: '3.11.1',
@@ -593,6 +663,11 @@ export const level3V2: Level = {
           name: 'Review: Combinations',
           description: 'Mixed checkmates and endgames',
           isReview: true,
+          themeIntroMessage: `Block 3 review. Checkmates, endgames, and combined tactics.
+
+Everything mixes together now. Stay focused on what the position needs.
+
+Find the winning continuation.`,
           lessons: [
             {
               id: '3.12.1',
@@ -652,6 +727,11 @@ export const level3V2: Level = {
       id: 'block-4',
       name: 'Prove Yourself',
       description: 'Final mixed practice - show your mastery',
+      blockIntroMessage: `You've learned the advanced setups. You've mastered sacrifices. You can chain tactics together.
+
+Now prove it all works under pressure.
+
+This is the final block. Every tactic. Every theme. Show me what you've got.`,
       sections: [
         // Section 13: Level 3 Review
         {
@@ -659,6 +739,11 @@ export const level3V2: Level = {
           name: 'Level 3 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
+          themeIntroMessage: `Everything from Level 3 in one section.
+
+Deflection. Attraction. Sacrifices. Multi-move mates. Endgames. Combined tactics.
+
+The full arsenal. Use it wisely.`,
           lessons: [
             {
               id: '3.13.1',
@@ -714,6 +799,11 @@ export const level3V2: Level = {
           name: 'Level 3 Final',
           description: 'The ultimate test',
           isReview: true,
+          themeIntroMessage: `This is it. The final test of Level 3.
+
+You've come so far. From basic forks to multi-move combinations.
+
+Crush these last puzzles. Prove you see what they never will.`,
           lessons: [
             {
               id: '3.14.1',
@@ -782,4 +872,81 @@ export function getLessonByIdL3(id: string): LessonCriteria | undefined {
 
 export function getLessonCountL3(): number {
   return getAllLessonsL3().length;
+}
+
+// Import IntroMessages type from level1
+import { IntroMessages } from './level1-v2-curriculum';
+
+/**
+ * Get block and section context for a lesson
+ */
+function getLessonContextL3(lessonId: string) {
+  for (const block of level3V2.blocks) {
+    for (const section of block.sections) {
+      const lesson = section.lessons.find(l => l.id === lessonId);
+      if (lesson) {
+        return { block, section, lesson };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if a lesson is the first in its block
+ */
+function isFirstLessonInBlockL3(lessonId: string): boolean {
+  const context = getLessonContextL3(lessonId);
+  if (!context) return false;
+
+  const { block } = context;
+  if (block.sections.length === 0) return false;
+
+  const firstSection = block.sections[0];
+  if (firstSection.lessons.length === 0) return false;
+
+  return firstSection.lessons[0].id === lessonId;
+}
+
+/**
+ * Check if a lesson is the first in its section
+ */
+function isFirstLessonInSectionL3(lessonId: string): boolean {
+  const context = getLessonContextL3(lessonId);
+  if (!context) return false;
+
+  const { section } = context;
+  if (section.lessons.length === 0) return false;
+
+  return section.lessons[0].id === lessonId;
+}
+
+/**
+ * Get intro messages to show for a lesson
+ * Returns block intro if first in block, theme intro if first in section
+ */
+export function getIntroMessagesL3(lessonId: string): IntroMessages {
+  const context = getLessonContextL3(lessonId);
+  if (!context) return {};
+
+  const { block, section } = context;
+  const messages: IntroMessages = {};
+
+  // Check if first lesson in block
+  if (isFirstLessonInBlockL3(lessonId) && block.blockIntroMessage) {
+    messages.blockIntro = {
+      title: block.name,
+      message: block.blockIntroMessage,
+    };
+  }
+
+  // Check if first lesson in section
+  if (isFirstLessonInSectionL3(lessonId) && section.themeIntroMessage) {
+    messages.themeIntro = {
+      title: section.name,
+      message: section.themeIntroMessage,
+    };
+  }
+
+  return messages;
 }

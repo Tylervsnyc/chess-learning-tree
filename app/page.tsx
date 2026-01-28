@@ -129,72 +129,79 @@ export default function LandingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-[#eef6fc] flex items-center justify-center">
+        <div className="text-slate-500">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
-      {/* Flexible content area - no justify-center, starts from top */}
-      <div className="flex-1 flex flex-col items-center px-3 pt-4 min-h-0">
-        {/* Logo and Title - scales with viewport */}
-        <div className="mb-[1vh] text-center">
-          <Image
-            src="/brand/icon-96.svg"
-            alt="Chess Path"
-            width={96}
-            height={96}
-            className="mx-auto mb-[1vh]"
-            style={{ width: 'clamp(64px, 12vh, 96px)', height: 'clamp(64px, 12vh, 96px)' }}
-          />
-          <h1 className="font-bold" style={{ fontSize: 'clamp(2rem, 6vh, 3rem)' }}>
-            <span className="text-white">chess</span>
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
-          </h1>
-          <p className="text-gray-400 text-xs mt-1 max-w-[260px] mx-auto">
+    <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
+      {/* Flexible content area */}
+      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+        {/* Logo */}
+        <Image
+          src="/brand/logo-stacked-light.svg"
+          alt="ChessPath"
+          width={260}
+          height={156}
+          className="mb-2"
+          style={{ width: 'clamp(200px, 55vw, 260px)', height: 'auto' }}
+          priority
+        />
+
+        {/* Tagline card */}
+        <div className="mb-4 bg-white rounded-2xl px-4 py-3 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
+          <p className="text-slate-600 text-sm leading-relaxed">
             Curated puzzles to help you improve in the shortest time possible
           </p>
-        </div>
-
-        {/* Founder badge */}
-        <div className="mb-[1.5vh] inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gray-700 bg-gray-900/50">
-          <span className="text-cyan-400 text-xs">★</span>
-          <span className="text-gray-300 text-xs">
-            From the founder of <span className="text-white font-medium">Storytime Chess</span>
-          </span>
-        </div>
-
-        {/* Board with brand gradient border - scales with viewport */}
-        <div
-          className="p-1 rounded-xl"
-          style={{
-            background: 'linear-gradient(135deg, #4ade80, #38bdf8, #a78bfa)',
-            boxShadow: '0 0 30px rgba(74,222,128,0.3), 0 0 60px rgba(56,189,248,0.2)',
-          }}
-        >
-          <div className="bg-[#131F24] rounded-lg p-1">
-            <AnimatedBoard size={boardSize} />
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <p className="text-slate-400 text-xs">
+              From the founder of <span className="font-medium text-slate-500">Storytime Chess</span>
+            </p>
+            <Image
+              src="/brand/storytime-chess-box.png"
+              alt="Storytime Chess"
+              width={48}
+              height={48}
+              className="rounded-md"
+            />
           </div>
         </div>
 
-        {/* CTA Button - matches board width */}
+        {/* Board with subtle shadow */}
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+          }}
+        >
+          <AnimatedBoard size={boardSize} />
+        </div>
+
+        {/* CTA Button */}
         <Link
-          href="/onboarding"
-          className="py-3 mt-3 text-center font-bold text-base rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          href="/learn"
+          className="py-3.5 mt-5 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
           style={{ backgroundColor: '#58CC02', width: boardSize }}
         >
           Start Learning
         </Link>
 
-        {/* Small login link */}
-        <Link
-          href="/auth/login"
-          className="mt-2 text-gray-500 text-xs hover:text-gray-300 transition-colors"
-        >
-          Already have an account? Sign in
-        </Link>
+        {/* Login link in card */}
+        <div className="mt-4 bg-white rounded-xl px-4 py-3 shadow-sm">
+          <Link
+            href="/auth/login"
+            className="text-slate-500 text-sm hover:text-slate-700 transition-colors"
+          >
+            Already have an account? <span className="font-medium text-[#58CC02]">Sign in</span>
+          </Link>
+        </div>
+
+        {/* Support email */}
+        <a href="mailto:support@chesspath.app" className="mt-auto mb-3 text-slate-400 text-[10px] hover:text-slate-500">
+          support@chesspath.app
+        </a>
       </div>
     </div>
   );

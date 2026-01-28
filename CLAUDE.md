@@ -100,6 +100,42 @@ Puzzles have:
 - Solution moves (UCI format like "e2e4")
 - Rating, themes, popularity
 
+### IMPORTANT: Lichess Puzzle Format
+
+**The first move in a Lichess puzzle is the OPPONENT'S move, not the player's!**
+
+When loading a puzzle from Lichess:
+- `fen`: Position BEFORE the opponent's last move
+- `moves[0]`: Opponent's "setup" move that creates the tactic (NOT the player's move!)
+- `moves[1+]`: Player's solution moves
+
+**Correct way to display a puzzle:**
+1. Load the FEN
+2. Apply `moves[0]` to get the actual puzzle position
+3. Show the board to the player (now it's their turn)
+4. Player's color = whoever's turn it is AFTER `moves[0]`
+5. Validate player moves against `moves[1]`, `moves[3]`, etc.
+6. Auto-play opponent responses from `moves[2]`, `moves[4]`, etc.
+
+```typescript
+// Example: Transform raw Lichess puzzle
+function processPuzzle(raw: RawPuzzle): ProcessedPuzzle {
+  const chess = new Chess(raw.fen);
+
+  // Apply the setup move (opponent's last move)
+  const setupMove = raw.moves[0];
+  chess.move({ from: setupMove.slice(0,2), to: setupMove.slice(2,4) });
+
+  return {
+    puzzleFen: chess.fen(),           // Position player sees
+    solutionMoves: raw.moves.slice(1), // Player's moves (index 1+)
+    playerColor: chess.turn() === 'w' ? 'white' : 'black',
+  };
+}
+```
+
+**Common mistake:** Showing the raw FEN without applying `moves[0]` first - this shows the wrong position!
+
 ## Current Status
 
 ### Working Features

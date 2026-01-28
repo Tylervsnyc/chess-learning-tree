@@ -106,72 +106,58 @@ export default function LandingBeatFriends() {
   const boardSize = useResponsiveBoardSize();
 
   return (
-    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col items-center px-3 pt-12 min-h-0">
-        {/* Small logo */}
-        <div className="flex items-center gap-2 mb-4">
-          <Image
-            src="/brand/icon-96.svg?v=2"
-            alt="Chess Path"
-            width={32}
-            height={32}
-          />
-          <span className="text-white/60 text-sm font-medium">chesspath</span>
+    <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+        {/* Logo */}
+        <Image
+          src="/brand/logo-stacked-light.svg"
+          alt="ChessPath"
+          width={260}
+          height={156}
+          className="mb-2"
+          style={{ width: 'clamp(200px, 55vw, 260px)', height: 'auto' }}
+          priority
+        />
+
+        {/* Tagline card */}
+        <div className="mb-3 bg-white rounded-2xl px-4 py-3 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
+          <h1 className="mb-1">
+            <span className="text-slate-800 font-bold text-xl">Want to beat your </span>
+            <span className="font-bold text-xl text-[#58CC02]">friends at chess?</span>
+          </h1>
+          <p className="text-slate-500 text-sm">
+            Learn the tactics that actually win games. 5 minutes a day is all it takes.
+          </p>
         </div>
 
-        {/* BIG TAGLINE */}
-        <h1 className="text-center mb-6">
-          <span
-            className="block text-white font-bold leading-tight"
-            style={{ fontSize: 'clamp(1.75rem, 7vw, 2.5rem)' }}
-          >
-            Want to beat your
-          </span>
-          <span
-            className="block font-bold leading-tight text-transparent bg-clip-text"
-            style={{
-              fontSize: 'clamp(2.25rem, 9vw, 3.25rem)',
-              backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)'
-            }}
-          >
-            friends at chess?
-          </span>
-        </h1>
-
-        {/* Board with brand gradient border */}
+        {/* Board with subtle shadow */}
         <div
-          className="p-1 rounded-xl"
+          className="rounded-2xl overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, #4ade80, #38bdf8, #a78bfa)',
-            boxShadow: '0 0 30px rgba(74,222,128,0.3), 0 0 60px rgba(56,189,248,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
           }}
         >
-          <div className="bg-[#131F24] rounded-lg p-1">
-            <AnimatedPuzzleBoard size={boardSize} />
-          </div>
+          <AnimatedPuzzleBoard size={boardSize} />
         </div>
-
-        {/* Subtext */}
-        <p className="text-gray-400 text-sm mt-4 text-center max-w-[280px]">
-          Learn the tactics that actually win games. 5 minutes a day is all it takes.
-        </p>
 
         {/* CTA Button */}
         <Link
-          href="/onboarding"
-          className="py-3 mt-4 text-center font-bold text-base rounded-2xl text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          href="/learn"
+          className="py-3.5 mt-4 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
           style={{ backgroundColor: '#58CC02', width: boardSize }}
         >
           Start Winning
         </Link>
 
-        {/* Small login link */}
-        <Link
-          href="/auth/login"
-          className="mt-3 text-gray-500 text-xs hover:text-gray-300 transition-colors"
-        >
-          Already have an account? Sign in
-        </Link>
+        {/* Login link in card */}
+        <div className="mt-3 bg-white rounded-xl px-4 py-3 shadow-sm">
+          <Link
+            href="/auth/login"
+            className="text-slate-500 text-sm hover:text-slate-700 transition-colors"
+          >
+            Already have an account? <span className="font-medium text-[#58CC02]">Sign in</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

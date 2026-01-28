@@ -1,13 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
-import { useLessonProgress } from '@/hooks/useProgress';
-import { useUser } from '@/hooks/useUser';
-import { usePermissions } from '@/hooks/usePermissions';
-import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import {
   playCorrectSound,
   playErrorSound,
@@ -16,22 +12,30 @@ import {
   playCaptureSound,
 } from '@/lib/sounds';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
+import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
 import { getThemeExplanation } from '@/data/theme-explanations';
-import { level1 } from '@/data/level1-curriculum';
-import { level2 } from '@/data/level2-curriculum';
-import { level3 } from '@/data/level3-curriculum';
-import { level4 } from '@/data/level4-curriculum';
-import { level5 } from '@/data/level5-curriculum';
-import { level6 } from '@/data/level6-curriculum';
-import { level7 } from '@/data/level7-curriculum';
-import { level8 } from '@/data/level8-curriculum';
-import { getPuzzleResponse } from '@/data/puzzle-responses';
-import { LearningEvents } from '@/lib/analytics/posthog';
-import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-responses';
+import { level1V2, getLessonById, getIntroMessages, IntroMessages } from '@/data/staging/level1-v2-curriculum';
+import { level2V2, getLessonByIdL2, getIntroMessagesL2 } from '@/data/staging/level2-v2-curriculum';
+import { level3V2, getLessonByIdL3, getIntroMessagesL3 } from '@/data/staging/level3-v2-curriculum';
+import { useLessonProgress } from '@/hooks/useProgress';
+import { useUser } from '@/hooks/useUser';
+import { usePermissions } from '@/hooks/usePermissions';
+import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
+import { LearningEvents } from '@/lib/analytics/posthog';
+import confetti from 'canvas-confetti';
 
-const LEVELS = [level1, level2, level3, level4, level5, level6, level7, level8];
+interface Puzzle {
+  id: string;
+  fen: string;
+  moves: string[];
+  rating: number;
+  theme: string;
+  themes: string[];
+  url: string;
+}
 
 interface LessonPuzzle {
   puzzleId: string;
@@ -51,75 +55,139 @@ interface LessonPuzzle {
 
 type PuzzleResult = 'pending' | 'correct' | 'wrong';
 
-// Duolingo colors
-const COLORS = {
-  green: '#58CC02',
-  blue: '#1CB0F6',
-  orange: '#FF9600',
-  background: '#131F24',
-  card: '#1A2C35',
-};
+// Get lesson from any level
+function getLessonFromAnyLevel(lessonId: string) {
+  let lesson = getLessonById(lessonId);
+  if (lesson) return { lesson, level: 1 };
 
-// Map level number to level key for navigation
-const LEVEL_KEYS = ['beginner', 'casual', 'club', 'tournament', 'advanced', 'expert'];
-function getLevelKeyFromLessonId(lessonId: string): string {
-  const levelNum = parseInt(lessonId.split('.')[0], 10);
-  return LEVEL_KEYS[levelNum - 1] || 'beginner';
+  lesson = getLessonByIdL2(lessonId);
+  if (lesson) return { lesson, level: 2 };
+
+  lesson = getLessonByIdL3(lessonId);
+  if (lesson) return { lesson, level: 3 };
+
+  return null;
 }
 
-// Get the next lesson ID in the curriculum
-function getNextLessonId(currentLessonId: string): string | null {
-  const levelNum = parseInt(currentLessonId.split('.')[0], 10);
-  const level = LEVELS[levelNum - 1];
-  if (!level) return null;
-
-  // Get all lesson IDs in order
-  const allLessonIds = level.modules.flatMap(m => m.lessons.map(l => l.id));
-  const currentIndex = allLessonIds.indexOf(currentLessonId);
-
-  if (currentIndex === -1 || currentIndex >= allLessonIds.length - 1) {
-    return null; // Not found or last lesson
+// Get intro messages from any level
+function getIntroMessagesFromAnyLevel(lessonId: string): IntroMessages {
+  // Try level 1 first
+  const level1Messages = getIntroMessages(lessonId);
+  if (level1Messages.blockIntro || level1Messages.themeIntro) {
+    return level1Messages;
   }
 
-  return allLessonIds[currentIndex + 1];
+  // Try level 2
+  if (typeof getIntroMessagesL2 === 'function') {
+    const level2Messages = getIntroMessagesL2(lessonId);
+    if (level2Messages.blockIntro || level2Messages.themeIntro) {
+      return level2Messages;
+    }
+  }
+
+  // Try level 3
+  if (typeof getIntroMessagesL3 === 'function') {
+    const level3Messages = getIntroMessagesL3(lessonId);
+    if (level3Messages.blockIntro || level3Messages.themeIntro) {
+      return level3Messages;
+    }
+  }
+
+  return {};
+}
+
+// Parse UCI move (e.g., "e2e4" or "e7e8q")
+function parseUciMove(uci: string): { from: string; to: string; promotion?: string } {
+  const from = uci.slice(0, 2);
+  const to = uci.slice(2, 4);
+  const promotion = uci.length > 4 ? uci[4] : undefined;
+  return { from, to, promotion };
+}
+
+// Transform API puzzle to lesson puzzle format
+function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
+  const chess = new Chess(puzzle.fen);
+
+  const setupMove = puzzle.moves[0];
+  const solutionMoves = puzzle.moves.slice(1);
+  const { from, to, promotion } = parseUciMove(setupMove);
+
+  try {
+    chess.move({ from, to, promotion });
+  } catch {
+    // Invalid setup move - ignore
+  }
+
+  const puzzleFen = chess.fen();
+  const playerColor = chess.turn() === 'w' ? 'white' : 'black';
+
+  // Convert UCI moves to SAN for solutionMoves
+  const sanMoves: string[] = [];
+  const tempChess = new Chess(puzzleFen);
+  for (const uciMove of solutionMoves) {
+    const { from: f, to: t, promotion: p } = parseUciMove(uciMove);
+    try {
+      const move = tempChess.move({ from: f, to: t, promotion: p });
+      if (move) {
+        sanMoves.push(move.san);
+      }
+    } catch {
+      sanMoves.push(uciMove);
+    }
+  }
+
+  return {
+    puzzleId: puzzle.id,
+    fen: puzzle.fen,
+    puzzleFen,
+    moves: puzzle.moves.join(' '),
+    rating: puzzle.rating,
+    themes: puzzle.themes,
+    url: puzzle.url,
+    setupMove,
+    lastMoveFrom: from,
+    lastMoveTo: to,
+    solution: solutionMoves.join(' '),
+    solutionMoves: sanMoves,
+    playerColor,
+  };
 }
 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
-  const isGuest = searchParams.get('guest') === 'true';
+
+  // Progress tracking (Supabase + localStorage)
   const { completeLesson, recordPuzzleAttempt } = useLessonProgress();
-  const { user, profile } = useUser();
+
+  // User and permissions
+  const { user } = useUser();
   const {
     canAccessLesson,
     shouldPromptSignup,
     shouldPromptPremium,
-    lessonsRemainingToday,
     lessonsCompletedToday,
-    tier,
     recordLessonComplete,
   } = usePermissions();
-
-  // Check if user is premium (has active subscription)
-  const isPremium = tier === 'premium' || tier === 'admin';
 
   // State for lesson limit modal
   const [showLimitModal, setShowLimitModal] = useState(false);
 
-  // State for theme help modal
+  // Theme help modal
   const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Lesson state
   const [lessonName, setLessonName] = useState('');
-  const [lessonDescription, setLessonDescription] = useState('');
   const [puzzles, setPuzzles] = useState<LessonPuzzle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [level, setLevel] = useState(1);
 
   // Progress state
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<Record<string, PuzzleResult>>({});
+  const [firstAttemptResults, setFirstAttemptResults] = useState<Record<string, PuzzleResult>>({});
   const [retryQueue, setRetryQueue] = useState<LessonPuzzle[]>([]);
   const [inRetryMode, setInRetryMode] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
@@ -129,80 +197,30 @@ export default function LessonPage() {
   const [moveIndex, setMoveIndex] = useState(0);
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
-  const [showingSolution, setShowingSolution] = useState(false);
-  const [solutionMoveShown, setSolutionMoveShown] = useState(false);
 
-  // Streak tracking for progress bar effect
+  // Streak tracking
   const [streak, setStreak] = useState(0);
   const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
   const [completedPuzzleCount, setCompletedPuzzleCount] = useState(0);
 
-  // Feedback message for popup
+  // Feedback
   const [feedbackMessage, setFeedbackMessage] = useState('');
-
-  // Flagged puzzles tracking
-  const [flaggedPuzzles, setFlaggedPuzzles] = useState<Set<string>>(new Set());
 
   // Duolingo-style wrong answer flow
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showMoveHint, setShowMoveHint] = useState(false);
   const [hintSquares, setHintSquares] = useState<{ from: Square; to: Square } | null>(null);
-  // Track if user made ANY wrong attempt on current puzzle (for final scoring)
   const [puzzleHadWrongAttempt, setPuzzleHadWrongAttempt] = useState(false);
 
-  // Load flagged puzzles from localStorage
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('flagged-puzzles');
-      if (stored) {
-        setFlaggedPuzzles(new Set(JSON.parse(stored)));
-      }
-    } catch {
-      // Ignore errors
-    }
-  }, []);
+  // Intro popup state
+  type IntroState = 'block' | 'theme' | 'playing';
+  const [introState, setIntroState] = useState<IntroState>('playing');
+  const [introMessages, setIntroMessages] = useState<IntroMessages>({});
 
-  // Record lesson completion and show limit modal if needed
-  useEffect(() => {
-    if (lessonComplete) {
-      // Record the lesson completion for permission tracking
-      recordLessonComplete();
+  // Confetti ref to prevent re-firing
+  const confettiFired = useRef(false);
 
-      // Show limit modal for users who've hit their limit
-      if (shouldPromptSignup || shouldPromptPremium) {
-        // Delay slightly so user sees the celebration first
-        const timer = setTimeout(() => {
-          setShowLimitModal(true);
-        }, 2000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [lessonComplete, shouldPromptSignup, shouldPromptPremium, recordLessonComplete]);
-
-  // Track lesson completion in analytics
-  useEffect(() => {
-    if (lessonComplete && puzzles.length > 0) {
-      const correctCount = Object.values(results).filter(r => r === 'correct').length;
-      const accuracy = Math.round((correctCount / puzzles.length) * 100);
-      LearningEvents.lessonCompleted(lessonId, accuracy, 0);
-    }
-  }, [lessonComplete, lessonId, puzzles.length, results]);
-
-  // Flag/unflag a puzzle
-  const toggleFlag = useCallback((puzzleId: string) => {
-    setFlaggedPuzzles(prev => {
-      const next = new Set(prev);
-      if (next.has(puzzleId)) {
-        next.delete(puzzleId);
-      } else {
-        next.add(puzzleId);
-      }
-      localStorage.setItem('flagged-puzzles', JSON.stringify([...next]));
-      return next;
-    });
-  }, []);
-
-  // Current puzzle (from main list or retry queue)
+  // Current puzzle
   const currentPuzzle = inRetryMode
     ? retryQueue[currentIndex]
     : puzzles[currentIndex];
@@ -212,17 +230,14 @@ export default function LessonPage() {
   // Find primary theme from puzzles (for help modal)
   const primaryTheme = useMemo(() => {
     if (puzzles.length === 0) return null;
-    // Count theme occurrences across puzzles
     const themeCounts: Record<string, number> = {};
     for (const puzzle of puzzles) {
       for (const theme of puzzle.themes) {
-        // Only count themes we have explanations for
         if (getThemeExplanation(theme)) {
           themeCounts[theme] = (themeCounts[theme] || 0) + 1;
         }
       }
     }
-    // Return the most common theme we have an explanation for
     let maxTheme: string | null = null;
     let maxCount = 0;
     for (const [theme, count] of Object.entries(themeCounts)) {
@@ -234,45 +249,125 @@ export default function LessonPage() {
     return maxTheme;
   }, [puzzles]);
 
-  // Load lesson puzzles
+  // Fetch lesson data and puzzles
   useEffect(() => {
     async function loadLesson() {
       setLoading(true);
-      try {
-        const res = await fetch(`/api/lesson-puzzles?lessonId=${lessonId}&count=6`);
-        const data = await res.json();
-        if (data.puzzles) {
-          setPuzzles(data.puzzles);
-          setLessonName(data.lessonName);
-          setLessonDescription(data.lessonDescription);
-          // Initialize results
-          const initialResults: Record<string, PuzzleResult> = {};
-          data.puzzles.forEach((p: LessonPuzzle) => {
-            initialResults[p.puzzleId] = 'pending';
-          });
-          setResults(initialResults);
+      setError(null);
 
-          // Track lesson started
-          LearningEvents.lessonStarted(lessonId, data.lessonName);
-        }
-      } catch (error) {
-        console.error('Failed to load lesson:', error);
+      const result = getLessonFromAnyLevel(lessonId);
+      if (!result) {
+        setError(`Lesson ${lessonId} not found`);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      const { lesson, level: lessonLevel } = result;
+      setLessonName(lesson.name);
+      setLevel(lessonLevel);
+
+      const themes = lesson.isMixedPractice
+        ? lesson.mixedThemes?.join(',') || ''
+        : lesson.requiredTags.join(',');
+
+      if (!themes) {
+        setError('No themes defined for this lesson');
+        setLoading(false);
+        return;
+      }
+
+      const queryParams = new URLSearchParams({
+        themes,
+        mixed: lesson.isMixedPractice ? 'true' : 'false',
+        ratingMin: lesson.ratingMin.toString(),
+        ratingMax: lesson.ratingMax.toString(),
+        minPlays: (lesson.minPlays || 1000).toString(),
+      });
+
+      if (lesson.pieceFilter) {
+        queryParams.set('pieceFilter', lesson.pieceFilter);
+      }
+
+      if (lesson.excludeTags?.length) {
+        queryParams.set('excludeThemes', lesson.excludeTags.join(','));
+      }
+
+      try {
+        const response = await fetch(`/api/puzzles/lesson?${queryParams}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.error || 'Failed to load puzzles');
+          setLoading(false);
+          return;
+        }
+
+        if (!data.puzzles || data.puzzles.length === 0) {
+          setError('No puzzles found for this lesson criteria');
+          setLoading(false);
+          return;
+        }
+
+        const transformedPuzzles = data.puzzles.map(transformPuzzle);
+        setPuzzles(transformedPuzzles);
+        setCurrentFen(transformedPuzzles[0].puzzleFen);
+
+        // Initialize results
+        const initialResults: Record<string, PuzzleResult> = {};
+        transformedPuzzles.forEach((p: LessonPuzzle) => {
+          initialResults[p.puzzleId] = 'pending';
+        });
+        setResults(initialResults);
+
+        // Track lesson started
+        LearningEvents.lessonStarted(lessonId, lesson.name);
+
+        setLoading(false);
+      } catch {
+        setError('Failed to load puzzles');
+        setLoading(false);
+      }
     }
+
     loadLesson();
   }, [lessonId]);
 
-  // Reset puzzle state when current puzzle changes or when entering retry mode
+  // Load intro messages from v2 curriculum
+  useEffect(() => {
+    const messages = getIntroMessagesFromAnyLevel(lessonId);
+    setIntroMessages(messages);
+
+    // Determine initial intro state
+    if (messages.blockIntro) {
+      setIntroState('block');
+    } else if (messages.themeIntro) {
+      setIntroState('theme');
+    } else {
+      setIntroState('playing');
+    }
+  }, [lessonId]);
+
+  // Handle dismissing intro popups
+  const handleIntroDismiss = useCallback(() => {
+    if (introState === 'block') {
+      // If there's a theme intro, show it next
+      if (introMessages.themeIntro) {
+        setIntroState('theme');
+      } else {
+        setIntroState('playing');
+      }
+    } else if (introState === 'theme') {
+      setIntroState('playing');
+    }
+  }, [introState, introMessages]);
+
+  // Reset puzzle state when current puzzle changes
   useEffect(() => {
     if (currentPuzzle) {
       setCurrentFen(currentPuzzle.puzzleFen);
       setMoveIndex(0);
       setMoveStatus('playing');
       setSelectedSquare(null);
-      setShowingSolution(false);
-      setSolutionMoveShown(false);
-      // Reset Duolingo-style hint state
       setWrongAttempts(0);
       setShowMoveHint(false);
       setHintSquares(null);
@@ -291,11 +386,10 @@ export default function LessonPage() {
     }
   }, [currentFen, currentPuzzle]);
 
-  // Square styles (last move highlight + selected piece + solution highlight + hint squares)
+  // Square styles
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
 
-    // Duolingo-style hint: highlight the piece to move and target square
     if (showMoveHint && hintSquares) {
       styles[hintSquares.from] = {
         backgroundColor: 'rgba(88, 204, 2, 0.7)',
@@ -305,24 +399,7 @@ export default function LessonPage() {
         backgroundColor: 'rgba(88, 204, 2, 0.5)',
         boxShadow: 'inset 0 0 0 3px #58CC02',
       };
-    } else if (solutionMoveShown && currentPuzzle) {
-      // When showing solution, highlight the move that was played
-      // Get the first move's from/to squares
-      try {
-        const chess = new Chess(currentPuzzle.puzzleFen);
-        const firstMove = currentPuzzle.solutionMoves[0];
-        if (firstMove) {
-          const move = chess.move(firstMove);
-          if (move) {
-            styles[move.from] = { backgroundColor: 'rgba(88, 204, 2, 0.5)' };
-            styles[move.to] = { backgroundColor: 'rgba(88, 204, 2, 0.6)' };
-          }
-        }
-      } catch {
-        // Ignore errors
-      }
     } else if (currentPuzzle && moveIndex === 0 && !showMoveHint) {
-      // Show last move highlight only at start (not when hint is showing)
       styles[currentPuzzle.lastMoveFrom] = { backgroundColor: 'rgba(255, 170, 0, 0.5)' };
       styles[currentPuzzle.lastMoveTo] = { backgroundColor: 'rgba(255, 170, 0, 0.6)' };
     }
@@ -340,7 +417,7 @@ export default function LessonPage() {
     }
 
     return styles;
-  }, [selectedSquare, game, currentPuzzle, moveIndex, solutionMoveShown, showMoveHint, hintSquares]);
+  }, [selectedSquare, game, currentPuzzle, moveIndex, showMoveHint, hintSquares]);
 
   // Try to make a move
   const tryMove = useCallback((from: Square, to: Square) => {
@@ -354,21 +431,16 @@ export default function LessonPage() {
       if (!move) return false;
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
-
-      // Normalize both moves by stripping check/checkmate symbols for comparison
-      // This handles cases where puzzle says Qe6+ but actual position is Qe6# (mate)
       const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move
         setCurrentFen(gameCopy.fen());
         setSelectedSquare(null);
-
-        // Clear hint highlights and reset attempts for next move in solution
         setShowMoveHint(false);
         setHintSquares(null);
         setWrongAttempts(0);
 
-        // Play move or capture sound based on whether piece was captured
         if (move.captured) {
           playCaptureSound();
         } else {
@@ -381,12 +453,15 @@ export default function LessonPage() {
         if (nextMoveIndex >= currentPuzzle.solutionMoves.length) {
           // Puzzle complete!
           const newStreak = streak + 1;
-          const puzzleNum = completedPuzzleCount + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
+          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
           playCorrectSound(completedPuzzleCount);
           setStreak(newStreak);
           setCompletedPuzzleCount(c => c + 1);
+
+          // Track puzzle attempt
+          LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, true, currentPuzzle.rating);
+
           return true;
         }
 
@@ -399,7 +474,6 @@ export default function LessonPage() {
             setCurrentFen(opponentGame.fen());
             setMoveIndex(nextMoveIndex + 1);
 
-            // Play move or capture sound for opponent
             if (oppMove && oppMove.captured) {
               playCaptureSound();
             } else {
@@ -408,36 +482,38 @@ export default function LessonPage() {
 
             if (nextMoveIndex + 1 >= currentPuzzle.solutionMoves.length) {
               const newStreak = streak + 1;
-              const puzzleNum = completedPuzzleCount + 1;
               setMoveStatus('correct');
-              setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
+              setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
               playCorrectSound(completedPuzzleCount);
               setStreak(newStreak);
               setCompletedPuzzleCount(c => c + 1);
+
+              // Track puzzle attempt
+              LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, true, currentPuzzle.rating);
             }
           } catch {
             const newStreak = streak + 1;
-            const puzzleNum = completedPuzzleCount + 1;
             setMoveStatus('correct');
-            setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
+            setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
             playCorrectSound(completedPuzzleCount);
             setStreak(newStreak);
             setCompletedPuzzleCount(c => c + 1);
+
+            // Track puzzle attempt
+            LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, true, currentPuzzle.rating);
           }
         }, 400);
 
         return true;
       } else {
-        // Check if this is an alternate checkmate - if so, accept it!
+        // Check for alternate checkmate
         const isMatingPuzzle = currentPuzzle.themes.some((t: string) =>
           t.toLowerCase().includes('mate')
         );
 
         if (isMatingPuzzle && gameCopy.isCheckmate()) {
-          // They found an alternate checkmate - that's correct!
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
-          // Clear hint highlights and reset attempts
           setShowMoveHint(false);
           setHintSquares(null);
           setWrongAttempts(0);
@@ -447,23 +523,28 @@ export default function LessonPage() {
             playMoveSound();
           }
           const newStreak = streak + 1;
-          const puzzleNum = completedPuzzleCount + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getPuzzleResponse(true, newStreak, currentPuzzle.themes, streak, puzzleNum));
+          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
           playCorrectSound(completedPuzzleCount);
           setStreak(newStreak);
           setCompletedPuzzleCount(c => c + 1);
+
+          // Track puzzle attempt
+          LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, true, currentPuzzle.rating);
+
           return true;
         }
 
-        // Wrong move - Duolingo style flow
+        // Wrong move
         setSelectedSquare(null);
         playErrorSound();
         setStreak(0);
         setHadWrongAnswer(true);
-        setPuzzleHadWrongAttempt(true); // Mark this puzzle as having a wrong attempt for final scoring
+        setPuzzleHadWrongAttempt(true);
 
-        // If hint is already showing, just let them keep trying (no popup)
+        // Track wrong attempt
+        LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, false, currentPuzzle.rating);
+
         if (showMoveHint) {
           return false;
         }
@@ -472,14 +553,11 @@ export default function LessonPage() {
         setWrongAttempts(newWrongAttempts);
 
         if (newWrongAttempts < 3) {
-          // Let them try again - reset position and show popup
-          const puzzleNum = completedPuzzleCount + 1;
           setMoveStatus('wrong');
           setFeedbackMessage(`Oops, that's not correct. ${3 - newWrongAttempts} ${3 - newWrongAttempts === 1 ? 'attempt' : 'attempts'} remaining.`);
         } else {
-          // After 3 wrong attempts, show hint squares for current move
+          // Show hint after 3 wrong attempts
           try {
-            // Use currentFen (current position), not puzzleFen (starting position)
             if (currentFen) {
               const chess = new Chess(currentFen);
               const currentMove = currentPuzzle.solutionMoves[moveIndex];
@@ -488,30 +566,27 @@ export default function LessonPage() {
                 if (hintMove) {
                   setHintSquares({ from: hintMove.from as Square, to: hintMove.to as Square });
                   setShowMoveHint(true);
-                  // Don't reset position or moveIndex - stay at current move
-                  // Stay in playing mode - no popup needed
                   return false;
                 }
               }
             }
           } catch {
-            // Fallback to old behavior if we can't parse hint
+            // Fallback
           }
-          const puzzleNum = completedPuzzleCount + 1;
           setMoveStatus('wrong');
-          setFeedbackMessage(getPuzzleResponse(false, 0, currentPuzzle.themes, streak, puzzleNum));
+          setFeedbackMessage("Not quite. Look for the pattern.");
         }
         return false;
       }
     } catch {
       return false;
     }
-  }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint]);
+  }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint, lessonId, currentIndex]);
 
   // Handle square click
   const onSquareClick = useCallback(
     ({ square }: { piece: { pieceType: string } | null; square: string }) => {
-      if (!game || moveStatus !== 'playing') return;
+      if (!game || moveStatus !== 'playing' || introState !== 'playing') return;
       const clickedSquare = square as Square;
 
       if (!selectedSquare) {
@@ -537,63 +612,57 @@ export default function LessonPage() {
         }
       }
     },
-    [game, selectedSquare, moveStatus, tryMove]
+    [game, selectedSquare, moveStatus, tryMove, introState]
   );
+
+  // Progress stats - use first attempt results for final score (declared before recordAndAdvance)
+  const firstAttemptCorrectCount = Object.values(firstAttemptResults).filter(r => r === 'correct').length;
 
   // Record result and advance
   const recordAndAdvance = useCallback((result: 'correct' | 'wrong') => {
     if (!currentPuzzle) return;
 
-    // Update results
+    // Always update results for retry logic
     setResults(prev => ({ ...prev, [currentPuzzle.puzzleId]: result }));
 
-    // Record puzzle attempt for stats (with theme data for profile)
-    recordPuzzleAttempt(currentPuzzle.puzzleId, lessonId, result === 'correct', {
-      themes: currentPuzzle.themes,
-      rating: currentPuzzle.rating,
-      fen: currentPuzzle.puzzleFen,
-      solution: currentPuzzle.solution,
-    });
+    // Only record first attempt results during the initial pass (not retry mode)
+    if (!inRetryMode) {
+      setFirstAttemptResults(prev => ({ ...prev, [currentPuzzle.puzzleId]: result }));
 
-    // Track puzzle attempt in analytics
-    LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, result === 'correct', currentPuzzle.rating);
+      // Record puzzle attempt to Supabase (only on first attempt)
+      recordPuzzleAttempt(currentPuzzle.puzzleId, lessonId, result === 'correct', {
+        themes: currentPuzzle.themes,
+        rating: currentPuzzle.rating,
+        fen: currentPuzzle.puzzleFen,
+        solution: currentPuzzle.solution,
+      });
+    }
 
-    // Check if this is end of current set
     if (currentIndex >= totalPuzzles - 1) {
       if (inRetryMode) {
-        // Check if any retries were wrong
         const stillWrong = retryQueue.filter(p =>
           results[p.puzzleId] === 'wrong' || (p.puzzleId === currentPuzzle.puzzleId && result === 'wrong')
         );
 
         if (stillWrong.length > 0 || result === 'wrong') {
-          // Need to retry the ones that are still wrong
-          const newRetryQueue = result === 'wrong'
-            ? [currentPuzzle]
-            : [];
+          const newRetryQueue = result === 'wrong' ? [currentPuzzle] : [];
           setRetryQueue(newRetryQueue);
           setCurrentIndex(0);
 
           if (newRetryQueue.length === 0) {
-            // All done!
             setLessonComplete(true);
-            completeLesson(lessonId);
-            playCelebrationSound(correctCount);
+            playCelebrationSound(firstAttemptCorrectCount);
           }
         } else {
-          // All retries passed!
           setLessonComplete(true);
-          completeLesson(lessonId);
-          playCelebrationSound(correctCount);
+          playCelebrationSound(firstAttemptCorrectCount);
         }
       } else {
-        // End of main puzzles - check for wrong answers
         const wrongPuzzles = puzzles.filter(p =>
           results[p.puzzleId] === 'wrong' || (p.puzzleId === currentPuzzle.puzzleId && result === 'wrong')
         );
 
         if (wrongPuzzles.length > 0 || result === 'wrong') {
-          // Enter retry mode
           const toRetry = result === 'wrong'
             ? [...wrongPuzzles.filter(p => p.puzzleId !== currentPuzzle.puzzleId), currentPuzzle]
             : wrongPuzzles;
@@ -601,63 +670,86 @@ export default function LessonPage() {
           setInRetryMode(true);
           setCurrentIndex(0);
         } else {
-          // Perfect score!
           setLessonComplete(true);
-          completeLesson(lessonId);
-          playCelebrationSound(correctCount);
+          playCelebrationSound(firstAttemptCorrectCount);
         }
       }
     } else {
-      // Move to next puzzle
       setCurrentIndex(prev => prev + 1);
     }
-  }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, completeLesson, recordPuzzleAttempt, lessonId]);
+  }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, firstAttemptCorrectCount, lessonId, recordPuzzleAttempt]);
 
-  // Handle continue after correct/wrong
-  // Note: If user had ANY wrong attempt on this puzzle, it counts as wrong for scoring
-  // even if they eventually solved it (Duolingo-style first-try scoring)
+  // Handle continue
   const handleContinue = useCallback(() => {
     if (moveStatus === 'correct') {
-      // If they had a wrong attempt earlier, still count as wrong for final score
       recordAndAdvance(puzzleHadWrongAttempt ? 'wrong' : 'correct');
     } else if (moveStatus === 'wrong') {
       recordAndAdvance('wrong');
     }
   }, [moveStatus, recordAndAdvance, puzzleHadWrongAttempt]);
 
-  // Duolingo-style: Let user try again from current position (don't reset)
+  // Handle try again
   const handleTryAgain = useCallback(() => {
-    if (!currentPuzzle) return;
-
-    // Just return to playing mode - don't reset position or moveIndex
-    // User stays at the current move they're working on
     setMoveStatus('playing');
     setSelectedSquare(null);
-  }, [currentPuzzle]);
+  }, []);
 
-  // Show solution by playing the first move on the board (fallback for old flow)
-  const showSolutionAndContinue = useCallback(() => {
-    if (!currentPuzzle || !currentFen) return;
-
-    setShowingSolution(true);
-
-    // Play the first solution move on the board
-    try {
-      const chess = new Chess(currentPuzzle.puzzleFen);
-      const firstMove = currentPuzzle.solutionMoves[0];
-      if (firstMove) {
-        chess.move(firstMove);
-        setCurrentFen(chess.fen());
-        setSolutionMoveShown(true);
-      }
-    } catch {
-      // If move fails, just show notation
-    }
-  }, [currentPuzzle, currentFen]);
-
-  // Progress stats
+  // Keep these for retry logic
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
-  const wrongCount = Object.values(results).filter(r => r === 'wrong').length;
+
+  // Save completion via progress hook (localStorage + Supabase for authenticated users)
+  useEffect(() => {
+    if (lessonComplete) {
+      completeLesson(lessonId);
+    }
+  }, [lessonComplete, lessonId, completeLesson]);
+
+  // Record lesson completion and show limit modal if needed
+  useEffect(() => {
+    if (lessonComplete) {
+      // Record the lesson completion for permission tracking
+      recordLessonComplete();
+
+      // Track in analytics
+      const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
+      LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+
+      // Show limit modal for users who've hit their limit
+      if (shouldPromptSignup || shouldPromptPremium) {
+        const timer = setTimeout(() => {
+          setShowLimitModal(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [lessonComplete, shouldPromptSignup, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
+
+  // Confetti effect on lesson complete - wrapped in useEffect
+  useEffect(() => {
+    if (lessonComplete && !confettiFired.current && typeof window !== 'undefined') {
+      confettiFired.current = true;
+      const isPerfect = firstAttemptCorrectCount === puzzles.length;
+
+      confetti({
+        particleCount: isPerfect ? 100 : firstAttemptCorrectCount >= 5 ? 60 : 40,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.65 },
+        colors: isPerfect
+          ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
+          : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
+      });
+      confetti({
+        particleCount: isPerfect ? 100 : firstAttemptCorrectCount >= 5 ? 60 : 40,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.65 },
+        colors: isPerfect
+          ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
+          : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
+      });
+    }
+  }, [lessonComplete, firstAttemptCorrectCount, puzzles.length]);
 
   // Permission gate - check if user can access lessons
   if (!canAccessLesson && !loading) {
@@ -681,7 +773,7 @@ export default function LessonPage() {
                 <div className="text-5xl mb-4">🔒</div>
                 <h1 className="text-2xl font-bold mb-2">Create an Account</h1>
                 <p className="text-white/60 mb-6">
-                  Sign up for free to continue learning! You'll get 2 lessons per day.
+                  Sign up for free to continue learning! You&apos;ll get 2 lessons per day.
                 </p>
                 <button
                   onClick={() => router.push('/auth/signup')}
@@ -695,7 +787,7 @@ export default function LessonPage() {
                 <div className="text-5xl mb-4">⏰</div>
                 <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
                 <p className="text-white/60 mb-6">
-                  You've completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
+                  You&apos;ve completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
                 </p>
                 <div className="flex flex-col gap-3">
                   <button
@@ -719,18 +811,15 @@ export default function LessonPage() {
     );
   }
 
+  // Loading state
   if (loading) {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
-        {/* Header placeholder */}
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => {
-                const levelKey = getLevelKeyFromLessonId(lessonId);
-                router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
-              }}
+              onClick={() => router.push(`/learn?level=${level}`)}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -738,10 +827,9 @@ export default function LessonPage() {
             <div className="flex-1 mx-4">
               <ChessProgressBar current={0} total={6} streak={0} />
             </div>
-            <div className="text-gray-400">0/6</div>
+            <div className="text-gray-400">...</div>
           </div>
         </div>
-        {/* Loading content */}
         <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
           <div className="w-full max-w-lg">
             <div className="flex items-center justify-between mb-2 h-8">
@@ -755,18 +843,79 @@ export default function LessonPage() {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+          <div className="max-w-4xl mx-auto">
+            <button
+              onClick={() => router.push(`/learn?level=${level}`)}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-md px-4">
+            <p className="text-red-400 mb-4">{error}</p>
+            <button
+              onClick={() => router.push(`/learn?level=${level}`)}
+              className="text-[#1CB0F6] hover:underline"
+            >
+              ← Back to curriculum
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Lesson complete state
   if (lessonComplete) {
+    const isPerfect = firstAttemptCorrectCount === puzzles.length;
+    const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
+
     return (
       <>
-        <LessonCompleteScreen
-          correctCount={correctCount}
-          wrongCount={wrongCount}
-          lessonName={lessonName}
-          lessonId={lessonId}
-          isGuest={isGuest}
-          getLevelKeyFromLessonId={getLevelKeyFromLessonId}
-          nextLessonId={getNextLessonId(lessonId)}
-        />
+        <div className="min-h-screen bg-[#131F24] text-white flex flex-col">
+          <div className="flex-1 flex items-center justify-center px-5 py-8">
+            <div className="max-w-sm w-full text-center">
+              <div
+                className="text-6xl font-black mb-2"
+                style={{ color: isPerfect ? '#FFC800' : '#58CC02' }}
+              >
+                {firstAttemptCorrectCount}/{puzzles.length}
+              </div>
+              <div className="text-sm text-gray-400 uppercase tracking-wider mb-6">
+                {isPerfect ? 'Perfect!' : firstAttemptCorrectCount >= 5 ? 'Great job!' : 'Good effort!'}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
+                  <div className="text-2xl font-bold text-[#58CC02]">{firstAttemptCorrectCount}</div>
+                  <div className="text-sm text-gray-400">First try</div>
+                </div>
+                <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
+                  <div className="text-2xl font-bold" style={{ color: accuracy === 100 ? '#FFC800' : '#1CB0F6' }}>
+                    {accuracy}%
+                  </div>
+                  <div className="text-sm text-gray-400">Accuracy</div>
+                </div>
+              </div>
+
+              <div className="text-gray-500 text-sm mb-6">{lessonName}</div>
+
+              <button
+                onClick={() => router.push(`/learn?level=${level}`)}
+                className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
         <LessonLimitModal
           isOpen={showLimitModal}
           onClose={() => setShowLimitModal(false)}
@@ -781,18 +930,13 @@ export default function LessonPage() {
     return (
       <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => {
-                const levelKey = getLevelKeyFromLessonId(lessonId);
-                router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
-              }}
+              onClick={() => router.push(`/learn?level=${level}`)}
               className="text-gray-400 hover:text-white"
             >
               ✕
             </button>
-            <div className="flex-1 mx-4" />
-            <div />
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
@@ -809,10 +953,7 @@ export default function LessonPage() {
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => {
-              const levelKey = getLevelKeyFromLessonId(lessonId);
-              router.push(isGuest ? `/learn?guest=true&level=${levelKey}` : `/learn?level=${levelKey}`);
-            }}
+            onClick={() => router.push(`/learn?level=${level}`)}
             className="text-gray-400 hover:text-white"
           >
             ✕
@@ -835,10 +976,10 @@ export default function LessonPage() {
         </div>
       </div>
 
-      {/* Main content - fixed layout to prevent board movement */}
+      {/* Main content */}
       <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
         <div className="w-full max-w-lg">
-          {/* Theme + Turn indicator on same line */}
+          {/* Theme + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <div className="flex items-center gap-2">
               <h1 className="text-base font-semibold text-gray-300">{lessonName}</h1>
@@ -849,29 +990,14 @@ export default function LessonPage() {
                 <HelpIconButton onClick={() => setShowHelpModal(true)} />
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-base font-bold ${
-                currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
-              }`}>
-                {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
-              </span>
-              <button
-                onClick={() => toggleFlag(currentPuzzle.puzzleId)}
-                className={`p-1 rounded transition-colors ${
-                  flaggedPuzzles.has(currentPuzzle.puzzleId)
-                    ? 'text-red-500 bg-red-500/20'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/10'
-                }`}
-                title={flaggedPuzzles.has(currentPuzzle.puzzleId) ? 'Unflag puzzle' : 'Flag puzzle as problematic'}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.725.738l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.625l-2.202.55V21a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
+            <span className={`text-base font-bold ${
+              currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
+            }`}>
+              {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
+            </span>
           </div>
 
-          {/* Chessboard */}
+          {/* Chessboard with intro popup overlay */}
           <div className="relative">
             <Chessboard
               options={{
@@ -887,10 +1013,30 @@ export default function LessonPage() {
                 lightSquareStyle: { backgroundColor: '#edeed1' },
               }}
             />
+
+            {/* Block intro popup */}
+            {introState === 'block' && introMessages.blockIntro && (
+              <IntroPopup
+                title={introMessages.blockIntro.title}
+                message={introMessages.blockIntro.message}
+                onStart={handleIntroDismiss}
+                buttonText="Let's Go"
+              />
+            )}
+
+            {/* Theme intro popup */}
+            {introState === 'theme' && introMessages.themeIntro && (
+              <IntroPopup
+                title={introMessages.themeIntro.title}
+                message={introMessages.themeIntro.message}
+                onStart={handleIntroDismiss}
+                buttonText="Start"
+              />
+            )}
           </div>
 
-          {/* Result popup - directly below board */}
-          {moveStatus === 'correct' && (
+          {/* Result popup - only show when not in intro state */}
+          {moveStatus === 'correct' && introState === 'playing' && (
             <PuzzleResultPopup
               type="correct"
               message={feedbackMessage}
@@ -898,7 +1044,7 @@ export default function LessonPage() {
             />
           )}
 
-          {moveStatus === 'wrong' && !showMoveHint && (
+          {moveStatus === 'wrong' && !showMoveHint && introState === 'playing' && (
             <PuzzleResultPopup
               type="incorrect"
               message={feedbackMessage}
@@ -907,7 +1053,6 @@ export default function LessonPage() {
               onShowSolution={handleTryAgain}
             />
           )}
-
         </div>
       </div>
 
