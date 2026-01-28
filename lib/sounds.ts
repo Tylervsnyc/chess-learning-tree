@@ -63,12 +63,43 @@ export function playMellowCoin(baseFreq: number) {
   osc2.stop(ctx.currentTime + 0.55);
 }
 
-// Play correct sound based on puzzle index (chromatic scale)
-// Delay prevents overlap with move/capture sounds on mobile
+// Play correct sound - two-tone success with chromatic progression
+// Each correct answer in a streak goes up one chromatic step
+// Delay prevents overlap with move/capture sounds
 export function playCorrectSound(puzzleIndex: number, delay: number = 150) {
+  if (typeof window === 'undefined') return;
+
   setTimeout(() => {
-    const noteIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
-    playMellowCoin(CHROMATIC_SCALE[noteIndex]);
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    // Use puzzleIndex to climb the chromatic scale (capped at scale length)
+    const scaleIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
+    const baseFreq = CHROMATIC_SCALE[scaleIndex];
+
+    // First note (base frequency)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.value = baseFreq;
+    gain1.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start();
+    osc1.stop(ctx.currentTime + 0.12);
+
+    // Second note (perfect fifth above - 1.5x frequency)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.value = baseFreq * 1.5;
+    gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(ctx.currentTime + 0.1);
+    osc2.stop(ctx.currentTime + 0.35);
   }, delay);
 }
 
