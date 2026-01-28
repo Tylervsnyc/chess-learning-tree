@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
@@ -9,21 +8,6 @@ import { usePathname } from 'next/navigation';
 export function NavHeader() {
   const { user, profile, loading } = useUser();
   const pathname = usePathname();
-  const [portalLoading, setPortalLoading] = useState(false);
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' });
-      if (res.ok) {
-        const { url } = await res.json();
-        if (url) window.location.href = url;
-      }
-    } catch (error) {
-      console.error('Portal error:', error);
-    }
-    setPortalLoading(false);
-  };
 
   const handleSignOut = () => {
     window.location.href = '/api/auth/logout';
@@ -56,19 +40,7 @@ export function NavHeader() {
             </>
           ) : user ? (
             <>
-              {profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial' ? (
-                <button
-                  onClick={handleManageSubscription}
-                  disabled={portalLoading}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 disabled:opacity-50"
-                  style={{
-                    background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-                    color: '#fff',
-                  }}
-                >
-                  {portalLoading ? '...' : 'Manage'}
-                </button>
-              ) : (
+              {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
                   className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
