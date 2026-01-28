@@ -169,7 +169,7 @@ export default function LandingPage() {
 
         {/* CTA Button */}
         <Link
-          href="/learn"
+          href="/about"
           className="py-3.5 mt-5 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
           style={{ backgroundColor: '#58CC02', width: boardSize }}
         >
