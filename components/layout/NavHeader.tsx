@@ -35,11 +35,11 @@ export function NavHeader() {
   }
 
   return (
-    <header className="bg-[#1A2C35] border-b border-white/10">
+    <header className="bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
         <Link href={user ? '/learn' : '/'} className="flex items-center">
           <Image
-            src="/brand/logo-horizontal-dark.svg?v=2"
+            src="/brand/logo-horizontal-light.svg"
             alt="Chess Path"
             width={140}
             height={24}
@@ -51,8 +51,8 @@ export function NavHeader() {
           {loading ? (
             <>
               {/* Skeleton buttons to prevent layout shift */}
-              <div className="w-14 h-6 bg-gray-700/50 rounded-md animate-pulse" />
-              <div className="w-12 h-6 bg-gray-700/50 rounded-md animate-pulse" />
+              <div className="w-14 h-6 bg-slate-200 rounded-md animate-pulse" />
+              <div className="w-12 h-6 bg-slate-200 rounded-md animate-pulse" />
             </>
           ) : user ? (
             <>
