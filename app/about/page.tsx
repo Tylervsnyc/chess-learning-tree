@@ -7,22 +7,22 @@ export default function AboutPage() {
   return (
     <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-6 pt-20 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center px-6 pt-12 overflow-hidden">
         <div className="max-w-sm w-full">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4">
             <Image
               src="/brand/logo-stacked-light.svg"
               alt="ChessPath"
-              width={200}
-              height={120}
-              style={{ width: 'clamp(160px, 45vw, 200px)', height: 'auto' }}
+              width={180}
+              height={108}
+              style={{ width: 'clamp(140px, 40vw, 180px)', height: 'auto' }}
               priority
             />
           </div>
 
           {/* Story paragraphs */}
-          <div className="space-y-4 text-center">
+          <div className="space-y-3 text-center">
             <p className="text-[#3c3c3c]/80 leading-relaxed">
               <span className="text-[#3c3c3c] font-medium">We&apos;re building the best chess education in the world</span> — and making it free for everyone.
             </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
             </p>
 
             {/* Free info */}
-            <div className="bg-white rounded-xl p-4 mt-4 shadow-sm">
+            <div className="bg-white rounded-xl p-3 mt-3 shadow-sm">
               <p className="text-[#3c3c3c]/80 text-sm leading-relaxed">
                 <span className="font-semibold text-[#58CC02]">Free forever.</span> Premium members help keep it that way.
               </p>
@@ -44,7 +44,7 @@ export default function AboutPage() {
           </div>
 
           {/* CTA - Right below content */}
-          <div className="mt-6">
+          <div className="mt-5">
             <Link
               href="/learn"
               className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
