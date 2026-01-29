@@ -8,6 +8,10 @@ interface LocalProgress {
   currentStreak: number;
   bestStreak: number;
   lastPlayedDate: string | null;
+  // Progress tracking fields
+  lessonsCompletedToday?: number;
+  lastLessonDate?: string | null;
+  unlockedLevels?: number[];
   puzzleAttempts?: Array<{
     puzzleId: string;
     lessonId: string;
@@ -48,7 +52,7 @@ export async function POST(request: NextRequest) {
     supabase.from('theme_performance').select('theme, attempts, solved').eq('user_id', user.id),
     supabase
       .from('profiles')
-      .select('current_streak, best_streak, last_played_date')
+      .select('current_streak, best_streak, last_played_date, current_lesson_id, current_level, lessons_completed_today, last_lesson_date, unlocked_levels')
       .eq('id', user.id)
       .single(),
   ]);
@@ -135,13 +139,38 @@ export async function POST(request: NextRequest) {
           ? localProgress.lastPlayedDate
           : serverProfile.last_played_date;
 
-  // Update profile with merged streaks
+  // Merge unlocked levels (union of local and server)
+  const serverUnlockedLevels = serverProfile?.unlocked_levels ?? [1];
+  const localUnlockedLevels = localProgress.unlockedLevels ?? [1];
+  const mergedUnlockedLevels = Array.from(
+    new Set([...serverUnlockedLevels, ...localUnlockedLevels])
+  ).sort((a, b) => a - b);
+
+  // Handle daily lesson count - server takes priority but reset on new day
+  const today = new Date().toISOString().split('T')[0];
+  const serverIsNewDay = serverProfile?.last_lesson_date !== today;
+  const mergedLessonsCompletedToday = serverIsNewDay
+    ? (localProgress.lastLessonDate === today ? (localProgress.lessonsCompletedToday ?? 0) : 0)
+    : (serverProfile?.lessons_completed_today ?? 0);
+  const mergedLastLessonDate =
+    !localProgress.lastLessonDate
+      ? serverProfile?.last_lesson_date
+      : !serverProfile?.last_lesson_date
+        ? localProgress.lastLessonDate
+        : localProgress.lastLessonDate > serverProfile.last_lesson_date
+          ? localProgress.lastLessonDate
+          : serverProfile.last_lesson_date;
+
+  // Update profile with merged data
   const { error: profileError } = await supabase
     .from('profiles')
     .update({
       current_streak: mergedStreak,
       best_streak: mergedBestStreak,
       last_played_date: mergedLastPlayed,
+      unlocked_levels: mergedUnlockedLevels,
+      lessons_completed_today: mergedLessonsCompletedToday,
+      last_lesson_date: mergedLastLessonDate,
     })
     .eq('id', user.id);
 
@@ -178,5 +207,11 @@ export async function POST(request: NextRequest) {
     currentStreak: mergedStreak,
     bestStreak: mergedBestStreak,
     lastPlayedDate: mergedLastPlayed,
+    // Progress tracking fields
+    currentLessonId: serverProfile?.current_lesson_id ?? null,
+    currentLevel: serverProfile?.current_level ?? 1,
+    lessonsCompletedToday: mergedLessonsCompletedToday,
+    lastLessonDate: mergedLastLessonDate,
+    unlockedLevels: mergedUnlockedLevels,
   });
 }

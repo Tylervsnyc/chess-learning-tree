@@ -34,6 +34,8 @@ export interface Progress {
   themePerformance: Record<string, ThemeStats>;
   // Starting lesson from diagnostic placement (all lessons before this are unlocked)
   startingLessonId: string | null;
+  // Current lesson ID (the next lesson user should do)
+  currentLessonId: string | null;
   // Daily lesson tracking for free user limits
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
@@ -51,6 +53,7 @@ const DEFAULT_PROGRESS: Progress = {
   lastPlayedDate: null,
   themePerformance: {},
   startingLessonId: null,
+  currentLessonId: null,
   lessonsCompletedToday: 0,
   lastLessonDate: null,
   unlockedLevels: [1], // Level 1 always unlocked by default
@@ -192,7 +195,7 @@ export function useLessonProgress() {
     }
   }, [user]);
 
-  const completeLesson = useCallback((lessonId: string) => {
+  const completeLesson = useCallback((lessonId: string, allLessonIds?: string[]) => {
     setProgress(prev => {
       if (prev.completedLessons.includes(lessonId)) {
         return prev;
@@ -203,9 +206,17 @@ export function useLessonProgress() {
       const isNewDay = prev.lastLessonDate !== today;
       const newLessonsCompletedToday = isNewDay ? 1 : prev.lessonsCompletedToday + 1;
 
+      // Calculate next lesson ID if allLessonIds provided
+      let nextLessonId: string | null = null;
+      if (allLessonIds) {
+        const currentIndex = allLessonIds.indexOf(lessonId);
+        nextLessonId = allLessonIds[currentIndex + 1] || null;
+      }
+
       const newProgress = {
         ...prev,
         completedLessons: [...prev.completedLessons, lessonId],
+        currentLessonId: nextLessonId, // Update local state immediately
         lessonsCompletedToday: newLessonsCompletedToday,
         lastLessonDate: today,
       };
@@ -218,7 +229,7 @@ export function useLessonProgress() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'lesson',
-            data: { lessonId },
+            data: { lessonId, nextLessonId },
           }),
         }).catch(err => console.error('Failed to sync lesson completion:', err));
       }
@@ -380,9 +391,22 @@ export function useLessonProgress() {
         unlockedLevels: newUnlockedLevels,
       };
       saveProgress(newProgress);
+
+      // Sync to server if authenticated
+      if (user) {
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'unlockLevel',
+            data: { level, unlockedLevels: newUnlockedLevels },
+          }),
+        }).catch(err => console.error('Failed to sync level unlock:', err));
+      }
+
       return newProgress;
     });
-  }, []);
+  }, [user]);
 
   // Refresh unlocked levels from server (call after test completion)
   const refreshUnlockedLevels = useCallback(async () => {
@@ -429,5 +453,7 @@ export function useLessonProgress() {
     isLevelUnlocked,
     unlockLevel,
     refreshUnlockedLevels,
+    // Current lesson (next lesson user should do)
+    currentLessonId: progress.currentLessonId,
   };
 }

@@ -9,6 +9,12 @@ export interface ServerProgress {
   currentStreak: number;
   bestStreak: number;
   lastPlayedDate: string | null;
+  // Progress tracking fields
+  currentLessonId: string | null;
+  currentLevel: number;
+  lessonsCompletedToday: number;
+  lastLessonDate: string | null;
+  unlockedLevels: number[];
   // Note: puzzleAttempts are stored separately and queried on demand
 }
 
@@ -68,6 +74,20 @@ export function mergeProgress(
           ? local.lastPlayedDate
           : server.lastPlayedDate;
 
+  // Merge unlocked levels (union of local and server)
+  const unlockedLevels = Array.from(
+    new Set([...local.unlockedLevels, ...(server.unlockedLevels || [1])])
+  ).sort((a, b) => a - b);
+
+  // Server wins for daily count (can't bypass by clearing localStorage)
+  // But reset if it's a new day
+  const today = new Date().toISOString().split('T')[0];
+  const serverIsNewDay = server.lastLessonDate !== today;
+  const lessonsCompletedToday = serverIsNewDay ? 0 : (server.lessonsCompletedToday ?? local.lessonsCompletedToday);
+
+  // Use server's last lesson date if available
+  const lastLessonDate = server.lastLessonDate ?? local.lastLessonDate;
+
   return {
     completedLessons,
     puzzleAttempts: local.puzzleAttempts, // Keep local attempts, server syncs separately
@@ -78,9 +98,10 @@ export function mergeProgress(
     lastPlayedDate,
     themePerformance,
     startingLessonId: local.startingLessonId, // Keep local starting lesson
-    lessonsCompletedToday: local.lessonsCompletedToday, // Keep local daily count
-    lastLessonDate: local.lastLessonDate,
-    unlockedLevels: local.unlockedLevels, // Keep local unlocked levels (synced separately)
+    currentLessonId: server.currentLessonId ?? local.currentLessonId ?? null, // Server wins for current lesson
+    lessonsCompletedToday, // Server value takes priority
+    lastLessonDate,
+    unlockedLevels, // Merged from both local and server
   };
 }
 

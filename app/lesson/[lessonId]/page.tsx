@@ -11,6 +11,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
+import { getAllLessonIds } from '@/lib/curriculum-utils';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
@@ -698,12 +699,15 @@ export default function LessonPage() {
   // Keep these for retry logic
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
 
+  // Get all lesson IDs for tracking next lesson position
+  const allLessonIds = useMemo(() => getAllLessonIds(), []);
+
   // Save completion via progress hook (localStorage + Supabase for authenticated users)
   useEffect(() => {
     if (lessonComplete) {
-      completeLesson(lessonId);
+      completeLesson(lessonId, allLessonIds);
     }
-  }, [lessonComplete, lessonId, completeLesson]);
+  }, [lessonComplete, lessonId, completeLesson, allLessonIds]);
 
   // Record lesson completion and show limit modal if needed
   useEffect(() => {

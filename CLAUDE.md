@@ -274,6 +274,56 @@ If a lesson is both (first lesson of a new block AND first of a theme), show the
 
 ---
 
+## Pre-Flight Checklist for New Features
+
+**IMPORTANT:** Before attempting to implement ANY new feature, Claude MUST verify each layer of the data flow exists. Do NOT attempt workarounds if a layer is missing—tell the user what's missing first.
+
+### The Three-Layer Check
+
+For any feature that involves user data or state, verify:
+
+| Layer | Question to Ask | Where to Look |
+|-------|-----------------|---------------|
+| **1. Database** | Does this data exist in the schema? | `supabase/schema.sql` |
+| **2. API/Sync** | Is this data fetched and returned to the frontend? | `lib/progress-sync.ts`, `app/api/` routes |
+| **3. UI Hook** | Is this data exposed to components? | `hooks/useProgress.ts`, other hooks |
+
+### Example: "Navigate to Next Lesson"
+
+❌ **What went wrong:** Spent a week trying to implement this without realizing `currentLessonId` was tracked in the database but dropped during sync.
+
+✅ **What should have happened:**
+1. Check schema → `current_lesson_id` exists in `profiles` table ✓
+2. Check sync → `mergeProgress()` returns `currentLessonId`? **NO** ← Stop here
+3. Tell user: "The database tracks this but the sync function drops it. Fix needed in `lib/progress-sync.ts` first."
+
+### Questions Claude Should Ask Before Starting
+
+1. **"Does the backend track this?"** - Check `supabase/schema.sql` for the relevant column/table
+2. **"Does the API return it?"** - Check the API route and `ServerProgress` interface
+3. **"Does the sync preserve it?"** - Check `mergeProgress()` actually includes the field
+4. **"Does the hook expose it?"** - Check the hook's return statement
+5. **"Is there UI that uses it?"** - Check if any component consumes this data
+
+### Red Flags to Watch For
+
+- Field exists in `ServerProgress` but not in `Progress` interface
+- Field is received from API but not included in `mergeProgress()` return
+- Frontend calculates something the backend should own (trust issues)
+- "Fire and forget" API calls with no error handling or confirmation
+- Data stored but never retrieved or displayed
+
+### When to Stop and Report
+
+If ANY of these are true, stop and tell the user before writing code:
+
+- "The database doesn't have a column for this—we need a schema change"
+- "The API returns this data but the sync function drops it—bug fix needed"
+- "The hook doesn't expose this field—need to add it to the return"
+- "This feature requires X, Y, Z changes across multiple files"
+
+---
+
 ## Notes & Learnings
 
 *Add notes here about things that worked, didn't work, or important decisions:*

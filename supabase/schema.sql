@@ -16,6 +16,12 @@ CREATE TABLE public.profiles (
   current_streak INTEGER DEFAULT 0,
   best_streak INTEGER DEFAULT 0,
   last_played_date DATE,
+  -- Progress tracking columns
+  current_lesson_id TEXT DEFAULT NULL,           -- Next lesson user should see
+  current_level INTEGER DEFAULT 1,               -- Current level (1, 2, or 3)
+  lessons_completed_today INTEGER DEFAULT 0,     -- Daily lesson count (for free user limits)
+  last_lesson_date DATE DEFAULT NULL,            -- Date of last lesson completion (for daily reset)
+  unlocked_levels INTEGER[] DEFAULT '{1}',       -- Array of unlocked level numbers
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -26,6 +32,18 @@ CREATE TABLE public.profiles (
 -- ADD COLUMN IF NOT EXISTS current_streak INTEGER DEFAULT 0,
 -- ADD COLUMN IF NOT EXISTS best_streak INTEGER DEFAULT 0,
 -- ADD COLUMN IF NOT EXISTS last_played_date DATE;
+
+-- Migration: Add progress tracking columns to existing profiles table
+-- Run this in Supabase SQL Editor if the table already exists:
+-- ALTER TABLE public.profiles
+-- ADD COLUMN IF NOT EXISTS current_lesson_id TEXT DEFAULT NULL,
+-- ADD COLUMN IF NOT EXISTS current_level INTEGER DEFAULT 1,
+-- ADD COLUMN IF NOT EXISTS lessons_completed_today INTEGER DEFAULT 0,
+-- ADD COLUMN IF NOT EXISTS last_lesson_date DATE DEFAULT NULL,
+-- ADD COLUMN IF NOT EXISTS unlocked_levels INTEGER[] DEFAULT '{1}';
+--
+-- CREATE INDEX IF NOT EXISTS idx_profiles_last_lesson_date
+-- ON public.profiles(last_lesson_date);
 
 -- Puzzle attempts - tracks every puzzle a user attempts
 CREATE TABLE public.puzzle_attempts (

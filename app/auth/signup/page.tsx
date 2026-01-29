@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,9 +18,12 @@ function SignupContent() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
+  const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     AuthEvents.signupPageViewed();
@@ -29,6 +32,7 @@ function SignupContent() {
   const handleResendConfirmation = async () => {
     setResending(true);
     setResendSuccess(false);
+    setError(null);
     const supabase = createClient();
 
     const { error } = await supabase.auth.resend({
@@ -37,9 +41,81 @@ function SignupContent() {
     });
 
     setResending(false);
-    if (!error) {
+    if (error) {
+      setError(error.message);
+    } else {
       setResendSuccess(true);
+      setTimeout(() => setResendSuccess(false), 3000);
     }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    // Only allow digits
+    const digit = value.replace(/\D/g, '').slice(-1);
+    const newOtp = [...otpCode];
+    newOtp[index] = digit;
+    setOtpCode(newOtp);
+
+    // Auto-advance to next input
+    if (digit && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpCode[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData) {
+      const newOtp = [...otpCode];
+      for (let i = 0; i < pastedData.length; i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtpCode(newOtp);
+      // Focus the appropriate input
+      const nextIndex = Math.min(pastedData.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const code = otpCode.join('');
+    if (code.length !== 6) {
+      setError('Please enter the complete 6-digit code');
+      return;
+    }
+
+    setVerifying(true);
+    setError(null);
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'signup',
+    });
+
+    if (error) {
+      setError(error.message);
+      setVerifying(false);
+      setOtpCode(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
+      return;
+    }
+
+    // Identify the user in PostHog
+    if (data.user) {
+      identifyUser(data.user.id, { email, displayName });
+    }
+    AuthEvents.signupCompleted('email');
+
+    router.push(redirectTo || '/learn');
+    router.refresh();
   };
 
   const handleGoogleSignup = async () => {
@@ -98,17 +174,13 @@ function SignupContent() {
       return;
     }
 
-    // Identify the user in PostHog
-    if (data.user) {
-      identifyUser(data.user.id, { email, displayName });
-    }
-    AuthEvents.signupCompleted('email');
-
-    setSuccess(true);
+    setPendingVerification(true);
     setLoading(false);
+    // Focus first OTP input after render
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
   };
 
-  if (success) {
+  if (pendingVerification) {
     return (
       <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
@@ -116,31 +188,67 @@ function SignupContent() {
           <div className="max-w-[320px] w-full">
             <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
               <div className="text-5xl mb-4">✉️</div>
-              <h1 className="text-2xl font-bold text-[#3c3c3c] mb-2">Check your email</h1>
+              <h1 className="text-2xl font-bold text-[#3c3c3c] mb-2">Enter verification code</h1>
               <p className="text-slate-500 mb-6">
-                We sent a confirmation link to <strong className="text-[#3c3c3c]">{email}</strong>
+                We sent a code to <strong className="text-[#3c3c3c]">{email}</strong>
               </p>
-              <Link
-                href="/auth/login"
-                className="inline-block w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4]"
-                style={{ backgroundColor: '#1CB0F6' }}
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm mb-4">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex justify-center gap-2 mb-6" onPaste={handleOtpPaste}>
+                {otpCode.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => { inputRefs.current[index] = el; }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    className="w-11 h-14 text-center text-xl font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-[#3c3c3c] focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleVerifyOtp}
+                disabled={verifying || otpCode.join('').length !== 6}
+                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
+                style={{ backgroundColor: '#58CC02' }}
               >
-                Back to Login
-              </Link>
+                {verifying ? 'Verifying...' : 'Verify'}
+              </button>
+
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className="text-slate-400 text-sm mb-3">Didn&apos;t receive the email?</p>
+                <p className="text-slate-400 text-sm mb-3">Didn&apos;t receive the code?</p>
                 {resendSuccess ? (
-                  <p className="text-[#58CC02] text-sm">Confirmation email sent again!</p>
+                  <p className="text-[#58CC02] text-sm">New code sent!</p>
                 ) : (
                   <button
                     onClick={handleResendConfirmation}
                     disabled={resending}
                     className="text-[#1CB0F6] hover:underline text-sm font-medium disabled:opacity-50"
                   >
-                    {resending ? 'Sending...' : 'Resend confirmation email'}
+                    {resending ? 'Sending...' : 'Resend code'}
                   </button>
                 )}
               </div>
+
+              <button
+                onClick={() => {
+                  setPendingVerification(false);
+                  setOtpCode(['', '', '', '', '', '']);
+                  setError(null);
+                }}
+                className="mt-4 text-slate-400 hover:text-slate-600 text-sm"
+              >
+                Use a different email
+              </button>
             </div>
           </div>
         </div>

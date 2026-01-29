@@ -155,6 +155,31 @@ export function usePermissions() {
     setLoading(false);
   }, []);
 
+  // Fetch server-side daily count for authenticated users
+  // This prevents bypassing limits by clearing localStorage
+  useEffect(() => {
+    if (user && !userLoading) {
+      fetch('/api/progress')
+        .then(res => res.json())
+        .then(data => {
+          if (data.lessonsCompletedToday !== undefined) {
+            setLessonData(prev => {
+              // Server value takes priority
+              const serverCount = data.lessonsCompletedToday;
+              const updated = {
+                ...prev,
+                lessonsCompletedToday: serverCount,
+                lastResetDate: data.lastLessonDate || prev.lastResetDate,
+              };
+              saveLessonData(updated);
+              return updated;
+            });
+          }
+        })
+        .catch(err => console.error('Failed to fetch server progress:', err));
+    }
+  }, [user, userLoading]);
+
   // Refresh data when user changes
   useEffect(() => {
     if (!userLoading) {

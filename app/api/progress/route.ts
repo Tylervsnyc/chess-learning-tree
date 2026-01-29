@@ -41,10 +41,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
   }
 
-  // Fetch profile for streaks
+  // Fetch profile for streaks and progress tracking
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('current_streak, best_streak, last_played_date')
+    .select('current_streak, best_streak, last_played_date, current_lesson_id, current_level, lessons_completed_today, last_lesson_date, unlocked_levels')
     .eq('id', user.id)
     .single();
 
@@ -63,12 +63,23 @@ export async function GET() {
     };
   }
 
+  // Reset daily count if it's a new day
+  const today = new Date().toISOString().split('T')[0];
+  const isNewDay = profile?.last_lesson_date !== today;
+  const lessonsCompletedToday = isNewDay ? 0 : (profile?.lessons_completed_today ?? 0);
+
   return NextResponse.json({
     completedLessons: (lessonProgress || []).map((lp) => lp.lesson_id),
     themePerformance,
     currentStreak: profile?.current_streak ?? 0,
     bestStreak: profile?.best_streak ?? 0,
     lastPlayedDate: profile?.last_played_date ?? null,
+    // Progress tracking fields
+    currentLessonId: profile?.current_lesson_id ?? null,
+    currentLevel: profile?.current_level ?? 1,
+    lessonsCompletedToday,
+    lastLessonDate: profile?.last_lesson_date ?? null,
+    unlockedLevels: profile?.unlocked_levels ?? [1],
   });
 }
 
@@ -94,7 +105,7 @@ export async function POST(request: NextRequest) {
 
   if (type === 'lesson') {
     // Record lesson completion
-    const { lessonId } = data;
+    const { lessonId, nextLessonId } = data;
     if (!lessonId) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
     }
@@ -115,6 +126,61 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error recording lesson completion:', error);
       return NextResponse.json({ error: 'Failed to record progress' }, { status: 500 });
+    }
+
+    // Update daily count and current lesson position
+    const today = new Date().toISOString().split('T')[0];
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('lessons_completed_today, last_lesson_date')
+      .eq('id', user.id)
+      .single();
+
+    const isNewDay = profile?.last_lesson_date !== today;
+    const newCount = isNewDay ? 1 : (profile?.lessons_completed_today ?? 0) + 1;
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        lessons_completed_today: newCount,
+        last_lesson_date: today,
+        current_lesson_id: nextLessonId ?? null, // Track next lesson to do
+      })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Error updating profile:', updateError);
+      // Don't fail the whole request for profile update failure
+    }
+
+    return NextResponse.json({ success: true });
+  }
+
+  if (type === 'unlockLevel') {
+    // Record level unlock (from passing a level test)
+    const { level, unlockedLevels } = data;
+    if (!level || !unlockedLevels) {
+      return NextResponse.json({ error: 'Missing level data' }, { status: 400 });
+    }
+
+    // Fetch current profile to get current_level
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('current_level')
+      .eq('id', user.id)
+      .single();
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        unlocked_levels: unlockedLevels,
+        current_level: Math.max(level, profile?.current_level ?? 1),
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Error recording level unlock:', error);
+      return NextResponse.json({ error: 'Failed to record level unlock' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
