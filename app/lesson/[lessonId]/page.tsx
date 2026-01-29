@@ -10,6 +10,7 @@ import {
   playCelebrationSound,
   playMoveSound,
   playCaptureSound,
+  warmupAudio,
 } from '@/lib/sounds';
 import { getAllLessonIds } from '@/lib/curriculum-utils';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
@@ -225,6 +226,21 @@ export default function LessonPage() {
 
   // Confetti ref to prevent re-firing
   const confettiFired = useRef(false);
+
+  // Warmup audio on first user interaction (unlocks audio on mobile)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      warmupAudio();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, []);
 
   // Current puzzle
   const currentPuzzle = inRetryMode

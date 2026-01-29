@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { useRouter, useParams } from 'next/navigation';
 import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests';
-import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound } from '@/lib/sounds';
+import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio } from '@/lib/sounds';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
@@ -103,6 +103,21 @@ export default function LevelTestPage() {
   const confettiFired = useRef(false);
 
   const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
+
+  // Warmup audio on first user interaction (unlocks audio on mobile)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      warmupAudio();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, []);
 
   // Validate transition
   useEffect(() => {

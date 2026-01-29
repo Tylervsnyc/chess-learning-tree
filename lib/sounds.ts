@@ -1,4 +1,5 @@
 // Sound utilities for the chess learning app
+// Fixed version with proper async handling, preloading, and warmup
 
 // Chromatic scale frequencies - full octave for building tension
 // D5 to D6 (587Hz to 1175Hz) - 13 notes (higher range for mobile clarity)
@@ -18,9 +19,38 @@ export const CHROMATIC_SCALE = [
   1175, // D6 (octave up - climax!)
 ];
 
-// Shared AudioContext for better browser compatibility
+// Shared AudioContext for Web Audio API sounds
 let sharedAudioContext: AudioContext | null = null;
+let isAudioWarmedUp = false;
 
+// Preloaded audio elements for move/capture sounds
+let moveAudio: HTMLAudioElement | null = null;
+let captureAudio: HTMLAudioElement | null = null;
+
+// Get or create AudioContext, properly handling suspended state
+async function ensureAudioReady(): Promise<AudioContext | null> {
+  if (typeof window === 'undefined') return null;
+
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+
+  // Properly await the resume if suspended (browser autoplay policy)
+  if (sharedAudioContext.state === 'suspended') {
+    try {
+      await sharedAudioContext.resume();
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('AudioContext resume failed:', err);
+      }
+    }
+  }
+
+  return sharedAudioContext;
+}
+
+// Synchronous version for use in non-async contexts
+// Will trigger resume but not wait for it
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
 
@@ -28,16 +58,58 @@ function getAudioContext(): AudioContext | null {
     sharedAudioContext = new AudioContext();
   }
 
-  // Resume if suspended (browser autoplay policy)
+  // Trigger resume (don't await) - for backwards compatibility
   if (sharedAudioContext.state === 'suspended') {
-    sharedAudioContext.resume();
+    sharedAudioContext.resume().catch(() => {});
   }
 
   return sharedAudioContext;
 }
 
+/**
+ * Warmup audio system - call this on first user interaction (click/touch)
+ * This unlocks audio on mobile browsers and preloads sound files
+ */
+export function warmupAudio(): void {
+  if (typeof window === 'undefined') return;
+  if (isAudioWarmedUp) return;
+
+  // Preload and cache audio elements
+  moveAudio = new Audio('/sounds/move.mp3');
+  captureAudio = new Audio('/sounds/capture.mp3');
+  moveAudio.volume = 0.7;
+  captureAudio.volume = 0.7;
+
+  // Trigger load
+  moveAudio.load();
+  captureAudio.load();
+
+  // Unlock AudioContext with a silent oscillator
+  ensureAudioReady().then(ctx => {
+    if (ctx && ctx.state === 'running') {
+      // Play a silent sound to fully unlock on iOS
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = 0; // Silent
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.001);
+    }
+  });
+
+  isAudioWarmedUp = true;
+}
+
+/**
+ * Check if audio has been warmed up
+ */
+export function isAudioReady(): boolean {
+  return isAudioWarmedUp;
+}
+
 // Mellow coin sound at a specific frequency
-export function playMellowCoin(baseFreq: number) {
+export function playMellowCoin(baseFreq: number): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -63,15 +135,26 @@ export function playMellowCoin(baseFreq: number) {
   osc2.stop(ctx.currentTime + 0.55);
 }
 
-// Play correct sound - two-tone success with chromatic progression
-// Each correct answer in a streak goes up one chromatic step
-// Delay prevents overlap with move/capture sounds
-export function playCorrectSound(puzzleIndex: number, delay: number = 150) {
+/**
+ * Play correct sound - two-tone success with chromatic progression
+ * Each correct answer in a streak goes up one chromatic step
+ * @param puzzleIndex - The puzzle index (0-based) to determine pitch
+ * @param delay - Delay in ms before playing (default 250ms to prevent overlap with move sounds)
+ */
+export function playCorrectSound(puzzleIndex: number, delay: number = 250): void {
   if (typeof window === 'undefined') return;
 
   setTimeout(() => {
     const ctx = getAudioContext();
     if (!ctx) return;
+
+    // If context is still not running, skip this sound
+    if (ctx.state !== 'running') {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('AudioContext not running, skipping correct sound');
+      }
+      return;
+    }
 
     // Use puzzleIndex to climb the chromatic scale (capped at scale length)
     const scaleIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
@@ -103,8 +186,10 @@ export function playCorrectSound(puzzleIndex: number, delay: number = 150) {
   }, delay);
 }
 
-// Play error sound - Duolingo-style gentle "womp womp"
-export function playErrorSound() {
+/**
+ * Play error sound - Duolingo-style gentle "womp womp"
+ */
+export function playErrorSound(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -134,7 +219,7 @@ export function playErrorSound() {
 }
 
 // Perfect score - triumphant fanfare (C-E-G-C arpeggio)
-function playPerfectCelebration() {
+function playPerfectCelebration(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -174,7 +259,7 @@ function playPerfectCelebration() {
 }
 
 // Great score - happy two-note success (like Duolingo correct)
-function playGreatCelebration() {
+function playGreatCelebration(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -204,7 +289,7 @@ function playGreatCelebration() {
 }
 
 // Complete score - gentle single chime
-function playCompleteCelebration() {
+function playCompleteCelebration(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -220,11 +305,13 @@ function playCompleteCelebration() {
   osc.stop(ctx.currentTime + 0.4);
 }
 
-// Play celebration sound based on performance
-// Perfect (6/6): triumphant fanfare
-// Great (5/6): happy success
-// Complete (0-4/6): gentle chime
-export function playCelebrationSound(correctCount: number = 6) {
+/**
+ * Play celebration sound based on performance
+ * Perfect (6/6): triumphant fanfare
+ * Great (5/6): happy success
+ * Complete (0-4/6): gentle chime
+ */
+export function playCelebrationSound(correctCount: number = 6): void {
   if (typeof window === 'undefined') return;
 
   if (correctCount === 6) {
@@ -236,27 +323,53 @@ export function playCelebrationSound(correctCount: number = 6) {
   }
 }
 
-// Play move sound
-export function playMoveSound() {
+/**
+ * Play move sound using preloaded audio
+ * Falls back to creating new Audio if not preloaded
+ */
+export function playMoveSound(): void {
   if (typeof window === 'undefined') return;
-  // Ensure AudioContext is active for better browser compatibility
-  getAudioContext();
-  const audio = new Audio('/sounds/move.mp3');
+
+  // Ensure audio is warmed up
+  if (!isAudioWarmedUp) {
+    warmupAudio();
+  }
+
+  // Use cloneNode for overlapping sound support
+  const audio = moveAudio
+    ? moveAudio.cloneNode() as HTMLAudioElement
+    : new Audio('/sounds/move.mp3');
+
   audio.volume = 0.7;
-  audio.play().catch(() => {
-    // Ignore autoplay errors
+  audio.play().catch(err => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Move sound failed:', err.message);
+    }
   });
 }
 
-// Play capture sound
-export function playCaptureSound() {
+/**
+ * Play capture sound using preloaded audio
+ * Falls back to creating new Audio if not preloaded
+ */
+export function playCaptureSound(): void {
   if (typeof window === 'undefined') return;
-  // Ensure AudioContext is active for better browser compatibility
-  getAudioContext();
-  const audio = new Audio('/sounds/capture.mp3');
+
+  // Ensure audio is warmed up
+  if (!isAudioWarmedUp) {
+    warmupAudio();
+  }
+
+  // Use cloneNode for overlapping sound support
+  const audio = captureAudio
+    ? captureAudio.cloneNode() as HTMLAudioElement
+    : new Audio('/sounds/capture.mp3');
+
   audio.volume = 0.7;
-  audio.play().catch(() => {
-    // Ignore autoplay errors
+  audio.play().catch(err => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Capture sound failed:', err.message);
+    }
   });
 }
 

@@ -8,6 +8,7 @@ import {
   playErrorSound,
   playMoveSound,
   playCaptureSound,
+  warmupAudio,
 } from '@/lib/sounds';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
@@ -105,6 +106,21 @@ export function OnboardingPuzzleBoard({
     setHasReported(false);
     setFeedbackMessage('');
   }, [puzzle.puzzleId, puzzle.puzzleFen]);
+
+  // Warmup audio on first user interaction (unlocks audio on mobile)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      warmupAudio();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, []);
 
   // Chess game for current position
   const game = useMemo(() => {
