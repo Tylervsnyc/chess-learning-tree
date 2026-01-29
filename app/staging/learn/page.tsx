@@ -345,6 +345,25 @@ export default function LearnPage() {
     }
   }, [completedLessons, unlockedLevels, unlockLevel]);
 
+  // Fallback: Check for diagnostic placement in localStorage
+  // This handles users who completed the diagnostic before the unlock fix was deployed
+  useEffect(() => {
+    const diagnosticComplete = localStorage.getItem('staging-diagnostic-complete');
+    const placedLevel = localStorage.getItem('staging-user-level');
+
+    if (diagnosticComplete === 'true' && placedLevel) {
+      const levelNum = parseInt(placedLevel, 10);
+      if (levelNum >= 1 && levelNum <= 3) {
+        // Unlock all levels up to and including the placed level
+        for (let level = 1; level <= levelNum; level++) {
+          if (!unlockedLevels.includes(level)) {
+            unlockLevel(level);
+          }
+        }
+      }
+    }
+  }, [unlockedLevels, unlockLevel]);
+
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
       ...prev,

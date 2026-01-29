@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useLessonProgress } from '@/hooks/useProgress';
 
 const LEVEL_CONFIG = {
   1: { label: 'Level 1', name: 'How to Lose Friends', color: '#58CC02', emoji: '🌱', eloRange: '400-800' },
@@ -81,6 +82,7 @@ function OnboardingCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showConfetti, setShowConfetti] = useState(true);
+  const { unlockLevel, loaded } = useLessonProgress();
 
   const elo = parseInt(searchParams.get('elo') || '600', 10);
   const levelNum = parseInt(searchParams.get('level') || '1', 10) as 1 | 2 | 3;
@@ -98,6 +100,16 @@ function OnboardingCompleteContent() {
     const timer = setTimeout(() => setShowConfetti(false), 4000);
     return () => clearTimeout(timer);
   }, [elo, levelNum]);
+
+  // Unlock all levels up to and including the placed level
+  useEffect(() => {
+    if (!loaded) return;
+
+    // Unlock levels 1 through levelNum
+    for (let level = 1; level <= levelNum; level++) {
+      unlockLevel(level);
+    }
+  }, [loaded, levelNum, unlockLevel]);
 
   const handleContinue = () => {
     router.push('/staging/learn');
