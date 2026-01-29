@@ -79,14 +79,6 @@ function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionI
   return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
 }
 
-function ChevronLeft() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M15 18l-6-6 6-6" />
-    </svg>
-  );
-}
-
 function darkenColor(hex: string, amount: number = 0.25): string {
   const r = Math.max(0, parseInt(hex.slice(1, 3), 16) * (1 - amount));
   const g = Math.max(0, parseInt(hex.slice(3, 5), 16) * (1 - amount));
@@ -411,9 +403,6 @@ export default function LearnPage() {
                 className="sticky top-7 z-40 bg-white/95 backdrop-blur-sm border-b border-black/5 -mx-4 px-4 py-3 mb-6"
               >
                 <div className="flex items-center gap-3">
-                  <Link href="/" className="text-[#afafaf] hover:text-[#3c3c3c]">
-                    <ChevronLeft />
-                  </Link>
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
                     style={{ backgroundColor: color }}
