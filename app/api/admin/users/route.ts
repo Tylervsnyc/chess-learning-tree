@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient as createAdminClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 
-// Lazy initialization of admin client
+// Lazy initialization of admin client (uses service role key for elevated access)
 let supabaseAdmin: SupabaseClient | null = null;
 
 function getAdminClient(): SupabaseClient | null {
@@ -14,7 +15,7 @@ function getAdminClient(): SupabaseClient | null {
     return null;
   }
 
-  supabaseAdmin = createClient(url, serviceKey, {
+  supabaseAdmin = createAdminClient(url, serviceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -24,7 +25,51 @@ function getAdminClient(): SupabaseClient | null {
   return supabaseAdmin;
 }
 
+/**
+ * Verify the requesting user is authenticated and has admin privileges
+ */
+async function verifyAdmin(): Promise<{ isAdmin: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+
+    // Get the current user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { isAdmin: false, error: 'Unauthorized - please log in' };
+    }
+
+    // Check if user has admin flag
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return { isAdmin: false, error: 'Could not verify admin status' };
+    }
+
+    if (!profile.is_admin) {
+      return { isAdmin: false, error: 'Forbidden - admin access required' };
+    }
+
+    return { isAdmin: true };
+  } catch {
+    return { isAdmin: false, error: 'Authentication error' };
+  }
+}
+
 export async function GET(request: NextRequest) {
+  // First verify the user is an admin
+  const { isAdmin, error: authError } = await verifyAdmin();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: authError },
+      { status: authError?.includes('Unauthorized') ? 401 : 403 }
+    );
+  }
+
   const admin = getAdminClient();
   if (!admin) {
     return NextResponse.json(
@@ -61,6 +106,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  // First verify the user is an admin
+  const { isAdmin, error: authError } = await verifyAdmin();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: authError },
+      { status: authError?.includes('Unauthorized') ? 401 : 403 }
+    );
+  }
+
   const admin = getAdminClient();
   if (!admin) {
     return NextResponse.json(

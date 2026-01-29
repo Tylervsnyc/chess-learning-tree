@@ -7,6 +7,75 @@ import puzzleData from '@/data/lesson-puzzles-full.json';
 import { level1v2 } from '@/data/staging/level1-curriculum-v2';
 import { level1Ends } from '@/data/staging/level1-ends-only';
 
+// ============================================================================
+// PUZZLE CACHE - Prevents re-reading large CSV files on every request
+// ============================================================================
+interface CachedPuzzle {
+  puzzleId: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  themes: string[];
+}
+
+interface PuzzleCache {
+  puzzles: CachedPuzzle[];
+  loadedAt: number;
+}
+
+// In-memory cache for parsed puzzle files (keyed by directory)
+const puzzleFileCache = new Map<string, PuzzleCache>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Load and cache all puzzles from a directory.
+ * Returns cached data if available and not expired.
+ */
+function loadPuzzlesFromDirectory(dir: string): CachedPuzzle[] {
+  const cached = puzzleFileCache.get(dir);
+  const now = Date.now();
+
+  // Return cached data if still valid
+  if (cached && (now - cached.loadedAt) < CACHE_TTL_MS) {
+    return cached.puzzles;
+  }
+
+  if (!existsSync(dir)) return [];
+
+  const puzzles: CachedPuzzle[] = [];
+  const files = readdirSync(dir).filter(f => f.endsWith('.csv'));
+
+  for (const file of files) {
+    try {
+      const content = readFileSync(join(dir, file), 'utf-8');
+      const lines = content.trim().split('\n');
+
+      // Skip header, parse each line
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(',');
+        if (parts.length < 9) continue;
+
+        puzzles.push({
+          puzzleId: parts[0],
+          fen: parts[1],
+          moves: parts[2],
+          rating: parseInt(parts[3], 10),
+          themes: parts[7].split(' '),
+        });
+      }
+    } catch (err) {
+      console.error(`Failed to parse puzzle file ${file}:`, err);
+    }
+  }
+
+  // Cache the parsed data
+  puzzleFileCache.set(dir, { puzzles, loadedAt: now });
+  console.log(`Cached ${puzzles.length} puzzles from ${dir}`);
+
+  return puzzles;
+}
+// ============================================================================
+
 interface LessonInfo {
   lessonId: string;
   lessonName: string;
@@ -144,70 +213,65 @@ function loadDynamicPuzzles(
   pieceFilter: string | undefined,
   count: number
 ): RawPuzzle[] {
-  const puzzles: PuzzleWithMeta[] = [];
-  const seenIds = new Set<string>();
   const filterMap: Record<string, string> = { queen: 'q', rook: 'r', bishop: 'b', knight: 'n', pawn: 'p' };
   const pieceNames: Record<string, string> = { q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
 
-  if (!existsSync(PUZZLES_DIR)) return [];
+  // Load puzzles from cache (fast after first request)
+  const allPuzzles = loadPuzzlesFromDirectory(PUZZLES_DIR);
+  if (allPuzzles.length === 0) return [];
 
-  const files = readdirSync(PUZZLES_DIR).filter(f => f.endsWith('.csv'));
-  const shuffledFiles = files.sort(() => Math.random() - 0.5);
-
-  // Collect more puzzles for diversity selection
+  // Filter puzzles based on criteria
+  const matchingPuzzles: PuzzleWithMeta[] = [];
   const targetCount = Math.max(count * 10, 60);
 
-  for (const file of shuffledFiles) {
-    if (puzzles.length >= targetCount) break;
+  // Shuffle indices for random selection
+  const indices = Array.from({ length: allPuzzles.length }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
 
-    const content = readFileSync(join(PUZZLES_DIR, file), 'utf-8');
-    const lines = content.trim().split('\n');
-    const dataLines = lines.slice(1);
-    const sampleSize = Math.min(dataLines.length, 5000);
-    const sampledLines = dataLines.sort(() => Math.random() - 0.5).slice(0, sampleSize);
+  for (const idx of indices) {
+    if (matchingPuzzles.length >= targetCount) break;
 
-    for (const line of sampledLines) {
-      if (puzzles.length >= targetCount) break;
+    const puzzle = allPuzzles[idx];
+    const { rating, themes, fen, moves } = puzzle;
 
-      const parts = line.split(',');
-      if (parts.length < 9) continue;
+    // Rating filter
+    if (rating < ratingMin || rating > ratingMax) continue;
 
-      const puzzleId = parts[0];
-      if (seenIds.has(puzzleId)) continue;
+    // Theme filter
+    if (isMixedPractice && mixedThemes.length > 0) {
+      if (!mixedThemes.some(t => themes.includes(t))) continue;
+    } else if (requiredTags.length > 0) {
+      if (!requiredTags.every(t => themes.includes(t))) continue;
+    }
 
-      const themes = parts[7].split(' ');
-      const rating = parseInt(parts[3], 10);
+    // Exclude tags
+    if (excludeTags.length > 0 && excludeTags.some(t => themes.includes(t))) continue;
 
-      if (rating < ratingMin || rating > ratingMax) continue;
+    // Determine metadata for diversity
+    let sacrificePiece: string | undefined;
+    let gamePhase: string | undefined;
+    let matePattern: string | undefined;
 
-      if (isMixedPractice && mixedThemes.length > 0) {
-        if (!mixedThemes.some(t => themes.includes(t))) continue;
-      } else if (requiredTags.length > 0) {
-        if (!requiredTags.every(t => themes.includes(t))) continue;
-      }
+    // Game phase
+    if (themes.includes('endgame')) gamePhase = 'endgame';
+    else if (themes.includes('middlegame')) gamePhase = 'middlegame';
+    else if (themes.includes('opening')) gamePhase = 'opening';
 
-      if (excludeTags.length > 0 && excludeTags.some(t => themes.includes(t))) continue;
+    // Mate pattern
+    if (themes.includes('backRankMate')) matePattern = 'backRank';
+    else if (themes.includes('smotheredMate')) matePattern = 'smothered';
+    else if (themes.includes('arabianMate')) matePattern = 'arabian';
+    else matePattern = 'other';
 
-      // Determine metadata for diversity
-      let sacrificePiece: string | undefined;
-      let gamePhase: string | undefined;
-      let matePattern: string | undefined;
-
-      // Game phase
-      if (themes.includes('endgame')) gamePhase = 'endgame';
-      else if (themes.includes('middlegame')) gamePhase = 'middlegame';
-      else if (themes.includes('opening')) gamePhase = 'opening';
-
-      // Mate pattern
-      if (themes.includes('backRankMate')) matePattern = 'backRank';
-      else if (themes.includes('smotheredMate')) matePattern = 'smothered';
-      else if (themes.includes('arabianMate')) matePattern = 'arabian';
-      else matePattern = 'other';
-
-      // Get the piece making the first move (for sacrifice diversity)
+    // Get the piece making the first move (for sacrifice diversity)
+    // Only do this expensive check if we need piece filtering
+    if (pieceFilter) {
       try {
-        const chess = new Chess(parts[1]);
-        const moveList = parts[2].split(' ');
+        const chess = new Chess(fen);
+        const moveList = moves.split(' ');
         chess.move({
           from: moveList[0].slice(0, 2),
           to: moveList[0].slice(2, 4),
@@ -218,33 +282,29 @@ function loadDynamicPuzzles(
           const piece = chess.get(from as any);
           if (piece) {
             sacrificePiece = pieceNames[piece.type];
-
-            // Apply piece filter if specified
-            if (pieceFilter && piece.type !== filterMap[pieceFilter]) continue;
+            if (piece.type !== filterMap[pieceFilter]) continue;
           }
         }
       } catch {
         continue;
       }
-
-      seenIds.add(puzzleId);
-
-      puzzles.push({
-        puzzleId,
-        fen: parts[1],
-        moves: parts[2],
-        rating,
-        themes,
-        url: `https://lichess.org/training/${puzzleId}`,
-        sacrificePiece,
-        gamePhase,
-        matePattern,
-      });
     }
+
+    matchingPuzzles.push({
+      puzzleId: puzzle.puzzleId,
+      fen: puzzle.fen,
+      moves: puzzle.moves,
+      rating: puzzle.rating,
+      themes: puzzle.themes,
+      url: `https://lichess.org/training/${puzzle.puzzleId}`,
+      sacrificePiece,
+      gamePhase,
+      matePattern,
+    });
   }
 
   // Apply diversity selection
-  const selected = selectDiversePuzzles(puzzles, count);
+  const selected = selectDiversePuzzles(matchingPuzzles, count);
 
   // Strip metadata before returning
   return selected.map(({ sacrificePiece, gamePhase, matePattern, ...puzzle }) => puzzle);

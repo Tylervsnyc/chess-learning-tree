@@ -17,6 +17,7 @@ import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
 import { getThemeExplanation } from '@/data/theme-explanations';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { SyncStatus } from '@/components/ui/SyncStatus';
 import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-responses';
 import { level1V2, getLessonById, getIntroMessages, IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { level2V2, getLessonByIdL2, getIntroMessagesL2 } from '@/data/staging/level2-v2-curriculum';
@@ -160,7 +161,7 @@ export default function LessonPage() {
   const lessonId = params.lessonId as string;
 
   // Progress tracking (Supabase + localStorage)
-  const { completeLesson, recordPuzzleAttempt } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs } = useLessonProgress();
 
   // User and permissions
   const { user } = useUser();
@@ -213,6 +214,9 @@ export default function LessonPage() {
   const [showMoveHint, setShowMoveHint] = useState(false);
   const [hintSquares, setHintSquares] = useState<{ from: Square; to: Square } | null>(null);
   const [puzzleHadWrongAttempt, setPuzzleHadWrongAttempt] = useState(false);
+
+  // Track time spent on puzzle (for analytics)
+  const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
 
   // Intro popup state
   type IntroState = 'block' | 'theme' | 'playing';
@@ -374,6 +378,7 @@ export default function LessonPage() {
       setShowMoveHint(false);
       setHintSquares(null);
       setPuzzleHadWrongAttempt(false);
+      setPuzzleStartTime(Date.now()); // Reset timer for new puzzle
     }
   }, [currentPuzzle, inRetryMode, currentIndex]);
 
@@ -632,11 +637,13 @@ export default function LessonPage() {
       setFirstAttemptResults(prev => ({ ...prev, [currentPuzzle.puzzleId]: result }));
 
       // Record puzzle attempt to Supabase (only on first attempt)
+      const timeSpentMs = Date.now() - puzzleStartTime;
       recordPuzzleAttempt(currentPuzzle.puzzleId, lessonId, result === 'correct', {
         themes: currentPuzzle.themes,
         rating: currentPuzzle.rating,
         fen: currentPuzzle.puzzleFen,
         solution: currentPuzzle.solution,
+        timeSpentMs,
       });
     }
 
@@ -679,7 +686,7 @@ export default function LessonPage() {
     } else {
       setCurrentIndex(prev => prev + 1);
     }
-  }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, firstAttemptCorrectCount, lessonId, recordPuzzleAttempt]);
+  }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, firstAttemptCorrectCount, lessonId, recordPuzzleAttempt, puzzleStartTime]);
 
   // Handle continue
   const handleContinue = useCallback(() => {
@@ -975,9 +982,12 @@ export default function LessonPage() {
             />
           </div>
 
-          <div className="text-gray-400">
-            {currentIndex + 1}/{totalPuzzles}
-            {inRetryMode && <span className="text-yellow-400 ml-2">(retry)</span>}
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400">
+              {currentIndex + 1}/{totalPuzzles}
+              {inRetryMode && <span className="text-yellow-400 ml-2">(retry)</span>}
+            </div>
+            <SyncStatus state={syncState} onRetry={retryPendingSyncs} />
           </div>
         </div>
       </div>

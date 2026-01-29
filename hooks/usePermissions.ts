@@ -180,6 +180,31 @@ export function usePermissions() {
     }
   }, [user, userLoading]);
 
+  // Fetch server-side lesson count for ANONYMOUS users (uses httpOnly cookie)
+  // This prevents bypassing limits by clearing localStorage
+  useEffect(() => {
+    if (!user && !userLoading) {
+      fetch('/api/anonymous-lessons')
+        .then(res => res.json())
+        .then(data => {
+          if (data.lessonsCompleted !== undefined) {
+            setLessonData(prev => {
+              // Server value (from httpOnly cookie) takes priority
+              const serverCount = data.lessonsCompleted;
+              // Take the max of local and server to prevent regression
+              const updated = {
+                ...prev,
+                totalLessonsAsAnon: Math.max(prev.totalLessonsAsAnon, serverCount),
+              };
+              saveLessonData(updated);
+              return updated;
+            });
+          }
+        })
+        .catch(err => console.error('Failed to fetch anonymous lesson count:', err));
+    }
+  }, [user, userLoading]);
+
   // Refresh data when user changes
   useEffect(() => {
     if (!userLoading) {
@@ -201,6 +226,13 @@ export function usePermissions() {
       saveLessonData(updated);
       return updated;
     });
+
+    // For anonymous users, also update the server-side httpOnly cookie
+    // This prevents bypassing limits by clearing localStorage
+    if (tier === 'anonymous') {
+      fetch('/api/anonymous-lessons', { method: 'POST' })
+        .catch(err => console.error('Failed to update anonymous lesson count:', err));
+    }
   }, [tier]);
 
   // Reset daily count (for testing or manual reset)

@@ -5,12 +5,48 @@ import { useUser } from './useUser';
 import { mergeProgress, type ServerProgress } from '@/lib/progress-sync';
 
 const STORAGE_KEY = 'chess-learning-progress';
+const PENDING_SYNC_KEY = 'chess-pending-syncs';
+
+// Sync status for UI feedback
+export type SyncState = 'idle' | 'syncing' | 'error' | 'offline';
+
+// Queue for failed syncs that need retry
+interface PendingSync {
+  type: 'lesson' | 'puzzle' | 'unlockLevel';
+  data: Record<string, unknown>;
+  timestamp: number;
+}
+
+// Persist pending syncs to localStorage
+function savePendingSyncs(syncs: PendingSync[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify(syncs));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+// Load pending syncs from localStorage
+function loadPendingSyncs(): PendingSync[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(PENDING_SYNC_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parsing errors
+  }
+  return [];
+}
 
 export interface PuzzleAttempt {
   puzzleId: string;
   lessonId: string;
   correct: boolean;
   timestamp: number;
+  timeSpentMs?: number; // Time spent solving the puzzle
   themes?: string[]; // Primary themes of the puzzle
   rating?: number; // Puzzle rating
   fen?: string; // Position for review
@@ -88,15 +124,191 @@ function saveProgress(progress: Progress) {
 export function useLessonProgress() {
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS);
   const [loaded, setLoaded] = useState(false);
+  const [syncState, setSyncState] = useState<SyncState>('idle');
+  const [pendingSyncs, setPendingSyncs] = useState<PendingSync[]>([]);
+  const [isOnline, setIsOnline] = useState(true);
   const { user } = useUser();
   const hasSyncedRef = useRef(false);
   const previousUserIdRef = useRef<string | null>(null);
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load pending syncs from localStorage on mount
+  useEffect(() => {
+    const stored = loadPendingSyncs();
+    if (stored.length > 0) {
+      setPendingSyncs(stored);
+    }
+  }, []);
+
+  // Save pending syncs to localStorage when they change
+  useEffect(() => {
+    savePendingSyncs(pendingSyncs);
+  }, [pendingSyncs]);
+
+  // Track online/offline status
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      // Sync state will be updated when we retry
+      if (syncState === 'offline') {
+        setSyncState('idle');
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setSyncState('offline');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [syncState]);
+
+  // Helper to sync data with retry tracking
+  const syncToServer = useCallback(async (
+    type: 'lesson' | 'puzzle' | 'unlockLevel',
+    data: Record<string, unknown>
+  ): Promise<boolean> => {
+    if (!user) return true; // No user, nothing to sync
+
+    // If offline, queue immediately without trying
+    if (!navigator.onLine) {
+      setSyncState('offline');
+      setPendingSyncs(prev => {
+        const exists = prev.some(p =>
+          p.type === type && JSON.stringify(p.data) === JSON.stringify(data)
+        );
+        if (exists) return prev;
+        return [...prev, { type, data, timestamp: Date.now() }];
+      });
+      return false;
+    }
+
+    setSyncState('syncing');
+
+    // Clear any existing timeout
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    try {
+      const response = await fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, data }),
+      });
+
+      if (response.ok) {
+        setSyncState('idle');
+        // Remove from pending if it was there
+        setPendingSyncs(prev => prev.filter(p =>
+          !(p.type === type && JSON.stringify(p.data) === JSON.stringify(data))
+        ));
+        return true;
+      } else {
+        throw new Error(`Server returned ${response.status}`);
+      }
+    } catch (err) {
+      console.error(`Failed to sync ${type}:`, err);
+
+      // Determine if it's an offline error
+      const isOfflineError = !navigator.onLine;
+      setSyncState(isOfflineError ? 'offline' : 'error');
+
+      // Add to pending syncs if not already there
+      setPendingSyncs(prev => {
+        const exists = prev.some(p =>
+          p.type === type && JSON.stringify(p.data) === JSON.stringify(data)
+        );
+        if (exists) return prev;
+        return [...prev, { type, data, timestamp: Date.now() }];
+      });
+
+      // Auto-clear error state after 5 seconds (not for offline)
+      if (!isOfflineError) {
+        syncTimeoutRef.current = setTimeout(() => {
+          setSyncState(prev => prev === 'error' ? 'idle' : prev);
+        }, 5000);
+      }
+
+      return false;
+    }
+  }, [user]);
+
+  // Retry all pending syncs
+  const retryPendingSyncs = useCallback(async () => {
+    if (pendingSyncs.length === 0 || !navigator.onLine) return;
+
+    for (const pending of pendingSyncs) {
+      await syncToServer(pending.type, pending.data);
+    }
+  }, [pendingSyncs, syncToServer]);
+
+  // Auto-retry pending syncs when coming back online
+  useEffect(() => {
+    if (isOnline && pendingSyncs.length > 0 && user) {
+      // Small delay to let connection stabilize
+      const timer = setTimeout(() => {
+        retryPendingSyncs();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOnline, pendingSyncs.length, user, retryPendingSyncs]);
 
   // Load from localStorage on mount (instant)
   useEffect(() => {
     const localProgress = getStoredProgress();
     setProgress(localProgress);
     setLoaded(true);
+  }, []);
+
+  // Listen for localStorage changes from OTHER tabs
+  // This prevents data loss when multiple tabs are open
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || !event.newValue) return;
+
+      try {
+        const newProgress = JSON.parse(event.newValue);
+        // Merge with current state using the same strategy as server sync
+        setProgress(prev => {
+          // Take union of completed lessons (never lose progress)
+          const completedLessons = Array.from(
+            new Set([...prev.completedLessons, ...(newProgress.completedLessons || [])])
+          );
+
+          // Take max of numeric values
+          const merged: Progress = {
+            ...prev,
+            ...newProgress,
+            completedLessons,
+            totalPuzzlesSolved: Math.max(prev.totalPuzzlesSolved, newProgress.totalPuzzlesSolved || 0),
+            totalPuzzlesAttempted: Math.max(prev.totalPuzzlesAttempted, newProgress.totalPuzzlesAttempted || 0),
+            currentStreak: Math.max(prev.currentStreak, newProgress.currentStreak || 0),
+            bestStreak: Math.max(prev.bestStreak, newProgress.bestStreak || 0),
+            lessonsCompletedToday: Math.max(prev.lessonsCompletedToday, newProgress.lessonsCompletedToday || 0),
+            // Merge unlocked levels
+            unlockedLevels: Array.from(
+              new Set([...prev.unlockedLevels, ...(newProgress.unlockedLevels || [1])])
+            ).sort((a, b) => a - b),
+          };
+
+          return merged;
+        });
+      } catch {
+        // Ignore parsing errors from other tabs
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Fetch and merge server data when authenticated
@@ -222,21 +434,14 @@ export function useLessonProgress() {
       };
       saveProgress(newProgress);
 
-      // Fire-and-forget server update if authenticated
+      // Sync to server with error tracking
       if (user) {
-        fetch('/api/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'lesson',
-            data: { lessonId, nextLessonId },
-          }),
-        }).catch(err => console.error('Failed to sync lesson completion:', err));
+        syncToServer('lesson', { lessonId, nextLessonId });
       }
 
       return newProgress;
     });
-  }, [user]);
+  }, [user, syncToServer]);
 
   const recordPuzzleAttempt = useCallback((
     puzzleId: string,
@@ -247,6 +452,7 @@ export function useLessonProgress() {
       rating?: number;
       fen?: string;
       solution?: string;
+      timeSpentMs?: number;
     }
   ) => {
     setProgress(prev => {
@@ -258,6 +464,7 @@ export function useLessonProgress() {
         lessonId,
         correct,
         timestamp: Date.now(),
+        timeSpentMs: options?.timeSpentMs,
         themes: options?.themes,
         rating: options?.rating,
         fen: options?.fen,
@@ -299,29 +506,23 @@ export function useLessonProgress() {
       };
       saveProgress(newProgress);
 
-      // Fire-and-forget server update if authenticated
+      // Sync to server with error tracking
       if (user) {
-        fetch('/api/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'puzzle',
-            data: {
-              puzzleId,
-              correct,
-              themes: options?.themes,
-              rating: options?.rating,
-              fen: options?.fen,
-              solution: options?.solution,
-              updateStreak: true,
-            },
-          }),
-        }).catch(err => console.error('Failed to sync puzzle attempt:', err));
+        syncToServer('puzzle', {
+          puzzleId,
+          correct,
+          themes: options?.themes,
+          rating: options?.rating,
+          fen: options?.fen,
+          solution: options?.solution,
+          timeSpentMs: options?.timeSpentMs,
+          updateStreak: true,
+        });
       }
 
       return newProgress;
     });
-  }, [user]);
+  }, [user, syncToServer]);
 
   const isLessonCompleted = useCallback((lessonId: string) => {
     return progress.completedLessons.includes(lessonId);
@@ -392,21 +593,14 @@ export function useLessonProgress() {
       };
       saveProgress(newProgress);
 
-      // Sync to server if authenticated
+      // Sync to server with error tracking
       if (user) {
-        fetch('/api/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'unlockLevel',
-            data: { level, unlockedLevels: newUnlockedLevels },
-          }),
-        }).catch(err => console.error('Failed to sync level unlock:', err));
+        syncToServer('unlockLevel', { level, unlockedLevels: newUnlockedLevels });
       }
 
       return newProgress;
     });
-  }, [user]);
+  }, [user, syncToServer]);
 
   // Refresh unlocked levels from server (call after test completion)
   const refreshUnlockedLevels = useCallback(async () => {
@@ -455,5 +649,10 @@ export function useLessonProgress() {
     refreshUnlockedLevels,
     // Current lesson (next lesson user should do)
     currentLessonId: progress.currentLessonId,
+    // Sync status for UI feedback
+    syncState,
+    hasPendingSyncs: pendingSyncs.length > 0,
+    retryPendingSyncs,
+    isOnline,
   };
 }

@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
 
   if (type === 'puzzle') {
     // Record puzzle attempt
-    const { puzzleId, correct, themes, rating, fen, solution, updateStreak } = data;
+    const { puzzleId, correct, themes, rating, fen, solution, timeSpentMs, updateStreak } = data;
     if (!puzzleId || typeof correct !== 'boolean') {
       return NextResponse.json({ error: 'Missing required puzzle data' }, { status: 400 });
     }
@@ -202,6 +202,7 @@ export async function POST(request: NextRequest) {
       rating,
       fen,
       solution,
+      time_spent_ms: timeSpentMs,
     });
 
     if (puzzleError) {

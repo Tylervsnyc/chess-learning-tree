@@ -22,6 +22,7 @@ CREATE TABLE public.profiles (
   lessons_completed_today INTEGER DEFAULT 0,     -- Daily lesson count (for free user limits)
   last_lesson_date DATE DEFAULT NULL,            -- Date of last lesson completion (for daily reset)
   unlocked_levels INTEGER[] DEFAULT '{1}',       -- Array of unlocked level numbers
+  is_admin BOOLEAN DEFAULT FALSE,                -- Admin flag for protected routes
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -44,6 +45,14 @@ CREATE TABLE public.profiles (
 --
 -- CREATE INDEX IF NOT EXISTS idx_profiles_last_lesson_date
 -- ON public.profiles(last_lesson_date);
+
+-- Migration: Add is_admin column to existing profiles table
+-- Run this in Supabase SQL Editor if the table already exists:
+-- ALTER TABLE public.profiles
+-- ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+--
+-- To make a user an admin, run:
+-- UPDATE public.profiles SET is_admin = TRUE WHERE email = 'your-email@example.com';
 
 -- Puzzle attempts - tracks every puzzle a user attempts
 CREATE TABLE public.puzzle_attempts (
