@@ -327,8 +327,12 @@ export default function LearnPage() {
   const { user, profile, loading: userLoading } = useUser();
   // While loading, assume logged in to avoid flash of "sign in" text
   const isLoggedIn = userLoading ? true : !!user;
+  // Wait for profile to load before checking admin status
+  // If user exists but profile is null, profile is still loading
+  const isProfileLoading = !!user && !profile;
   // Admin users have unrestricted access to all lessons and levels
-  const isAdmin = profile?.is_admin ?? false;
+  // While profile is loading, assume admin to avoid locked state flash for admins
+  const isAdmin = isProfileLoading ? true : (profile?.is_admin ?? false);
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
