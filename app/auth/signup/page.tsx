@@ -93,43 +93,11 @@ function SignupContent() {
     setError(null);
     const supabase = createClient();
 
-    console.log('Verifying OTP:', {
-      email: email.trim().toLowerCase(),
-      token: code.trim(),
-      tokenLength: code.trim().length
-    });
-
-    // Try signup type first (for email confirmation)
-    const result = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token: code.trim(),
       type: 'signup',
     });
-
-    console.log('Signup verify result:', {
-      error: result.error?.message,
-      errorCode: result.error?.code,
-      errorStatus: result.error?.status,
-      hasUser: !!result.data?.user
-    });
-
-    // If signup type fails, try email type
-    let finalResult = result;
-    if (result.error) {
-      console.log('Trying email type...');
-      finalResult = await supabase.auth.verifyOtp({
-        email: email.trim().toLowerCase(),
-        token: code.trim(),
-        type: 'email',
-      });
-      console.log('Email verify result:', {
-        error: finalResult.error?.message,
-        errorCode: finalResult.error?.code,
-        hasUser: !!finalResult.data?.user
-      });
-    }
-
-    const { data, error } = finalResult;
 
     if (error) {
       setError(error.message);
