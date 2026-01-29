@@ -2,9 +2,8 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { level1V2, Block, Section, LessonCriteria } from '@/data/staging/level1-v2-curriculum';
-import { level2V2 } from '@/data/staging/level2-v2-curriculum';
-import { level3V2 } from '@/data/staging/level3-v2-curriculum';
+import { LEVELS, getAllLessonIds, getLevelLessonIds, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
+import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
@@ -12,44 +11,6 @@ import { useUser } from '@/hooks/useUser';
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
 type LessonStatus = 'completed' | 'current' | 'locked';
-
-// Level configurations
-const LEVELS = [
-  { level: 1, data: level1V2, color: '#58CC02', darkColor: '#3d8c01' },
-  { level: 2, data: level2V2, color: '#1CB0F6', darkColor: '#1487c0' },
-  { level: 3, data: level3V2, color: '#CE82FF', darkColor: '#a855c7' },
-];
-
-// Get all lesson IDs across all levels
-function getAllLessonIds(): string[] {
-  const ids: string[] = [];
-  for (const { data } of LEVELS) {
-    for (const block of data.blocks) {
-      for (const section of block.sections) {
-        for (const lesson of section.lessons) {
-          ids.push(lesson.id);
-        }
-      }
-    }
-  }
-  return ids;
-}
-
-// Get lesson IDs for a specific level
-function getLevelLessonIds(levelNum: number): string[] {
-  const levelConfig = LEVELS.find(l => l.level === levelNum);
-  if (!levelConfig) return [];
-
-  const ids: string[] = [];
-  for (const block of levelConfig.data.blocks) {
-    for (const section of block.sections) {
-      for (const lesson of section.lessons) {
-        ids.push(lesson.id);
-      }
-    }
-  }
-  return ids;
-}
 
 // Check if a level is completed
 function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean {

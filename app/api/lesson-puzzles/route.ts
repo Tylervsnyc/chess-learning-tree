@@ -4,8 +4,7 @@ import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import lessonData from '@/data/lesson-puzzle-sets.json';
 import puzzleData from '@/data/lesson-puzzles-full.json';
-import { level1v2 } from '@/data/staging/level1-curriculum-v2';
-import { level1Ends } from '@/data/staging/level1-ends-only';
+import { getLessonWithContext, getPuzzleDirsForLesson } from '@/lib/curriculum-registry';
 
 // ============================================================================
 // PUZZLE CACHE - Prevents re-reading large CSV files on every request
@@ -195,7 +194,7 @@ function formatSolution(moves: string[], startsAsBlack: boolean): string {
 }
 
 // Dynamic puzzle loading for v2 curriculum
-const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating', '0400-0800');
+const PUZZLES_BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
 
 interface PuzzleWithMeta extends RawPuzzle {
   sacrificePiece?: string;
@@ -204,6 +203,7 @@ interface PuzzleWithMeta extends RawPuzzle {
 }
 
 function loadDynamicPuzzles(
+  puzzleDir: string,
   requiredTags: string[],
   excludeTags: string[],
   ratingMin: number,
@@ -216,8 +216,9 @@ function loadDynamicPuzzles(
   const filterMap: Record<string, string> = { queen: 'q', rook: 'r', bishop: 'b', knight: 'n', pawn: 'p' };
   const pieceNames: Record<string, string> = { q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
 
-  // Load puzzles from cache (fast after first request)
-  const allPuzzles = loadPuzzlesFromDirectory(PUZZLES_DIR);
+  // Load puzzles from the appropriate directory based on lesson level
+  const fullPuzzleDir = join(PUZZLES_BASE_DIR, puzzleDir);
+  const allPuzzles = loadPuzzlesFromDirectory(fullPuzzleDir);
   if (allPuzzles.length === 0) return [];
 
   // Filter puzzles based on criteria
@@ -369,45 +370,27 @@ function selectDiversePuzzles(puzzles: PuzzleWithMeta[], count: number): PuzzleW
   return selected.sort(() => Math.random() - 0.5);
 }
 
-// Find lesson in v2 curriculum (Module structure)
-function getV2LessonInfo(lessonId: string) {
-  for (const mod of level1v2.modules) {
-    const lesson = mod.lessons.find(l => l.id === lessonId);
-    if (lesson) return { lesson, module: mod };
-  }
-  return null;
-}
-
-// Find lesson in level1Ends curriculum (Block → Section → Lesson structure)
-function getEndsLessonInfo(lessonId: string) {
-  for (const block of level1Ends.blocks) {
-    for (const section of block.sections) {
-      const lesson = section.lessons.find(l => l.id === lessonId);
-      if (lesson) return { lesson, section, block };
-    }
-  }
-  return null;
-}
-
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const lessonId = searchParams.get('lessonId');
   const count = parseInt(searchParams.get('count') || '6', 10);
-  const curriculumVersion = searchParams.get('curriculumVersion');
 
   if (!lessonId) {
     return NextResponse.json({ error: 'lessonId required' }, { status: 400 });
   }
 
-  // Check for level1Ends curriculum first (Block → Section → Lesson)
-  // Try dynamic loading, but fall through to static data if it fails
-  if (lessonId.startsWith('1.')) {
-    const endsInfo = getEndsLessonInfo(lessonId);
-    if (endsInfo) {
-      const { lesson, section, block } = endsInfo;
+  // Try to find lesson in the curriculum registry (all levels)
+  const context = getLessonWithContext(lessonId);
 
+  if (context) {
+    const { lesson, section, block, levelConfig } = context;
+    const puzzleDirs = getPuzzleDirsForLesson(lessonId);
+
+    // Try each puzzle directory in order until we find puzzles
+    for (const puzzleDir of puzzleDirs) {
       try {
         const rawPuzzles = loadDynamicPuzzles(
+          puzzleDir,
           lesson.requiredTags || [],
           lesson.excludeTags || [],
           lesson.ratingMin,
@@ -418,7 +401,6 @@ export async function GET(request: NextRequest) {
           count
         );
 
-        // Only return if we actually found puzzles, otherwise fall through to static data
         if (rawPuzzles.length > 0) {
           const puzzles = rawPuzzles.map(processPuzzle);
 
@@ -428,61 +410,26 @@ export async function GET(request: NextRequest) {
             lessonDescription: lesson.description,
             sectionName: section.name,
             blockName: block.name,
+            levelName: levelConfig.data.name,
             isReview: section.isReview || false,
             puzzles,
             puzzleCount: puzzles.length,
             isDynamic: true,
+            puzzleDir, // Which folder the puzzles came from
           });
         }
-        // If no puzzles found, fall through to static data below
+        // No puzzles in this folder, try next one
+        console.log(`No puzzles found in ${puzzleDir} for ${lessonId}, trying next folder...`);
       } catch (error) {
-        // Log error but don't fail - fall through to static data
-        console.log(`Dynamic puzzle loading failed for ${lessonId}, falling back to static data:`, error);
+        console.log(`Puzzle loading failed from ${puzzleDir} for ${lessonId}:`, error);
       }
     }
+
+    // If we tried all folders and found nothing, log a warning
+    console.warn(`No puzzles found in any folder for lesson ${lessonId}. Tried: ${puzzleDirs.join(', ')}`);
   }
 
-  // Check for v2 curriculum (Module structure) - only if not already handled above
-  if (curriculumVersion === 'v2') {
-    const v2Info = getV2LessonInfo(lessonId);
-    if (v2Info) {
-      const { lesson, module } = v2Info;
-
-      try {
-        const rawPuzzles = loadDynamicPuzzles(
-          lesson.requiredTags || [],
-          lesson.excludeTags || [],
-          lesson.ratingMin,
-          lesson.ratingMax,
-          lesson.isMixedPractice || false,
-          lesson.mixedThemes || [],
-          lesson.pieceFilter,
-          count
-        );
-
-        // Only return if we actually found puzzles
-        if (rawPuzzles.length > 0) {
-          const puzzles = rawPuzzles.map(processPuzzle);
-
-          return NextResponse.json({
-            lessonId,
-            lessonName: lesson.name,
-            lessonDescription: lesson.description,
-            moduleName: module.name,
-            moduleType: module.themeType,
-            puzzles,
-            puzzleCount: puzzles.length,
-            isDynamic: true,
-          });
-        }
-        // Fall through to static data
-      } catch (error) {
-        console.log(`V2 puzzle loading failed for ${lessonId}, falling back to static data:`, error);
-      }
-    }
-  }
-
-  // Fall back to original v1 curriculum
+  // Fall back to original v1 curriculum (legacy static puzzles)
   const lessonInfo = getLessonInfo(lessonId);
   if (!lessonInfo) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });

@@ -1,57 +1,31 @@
-import { level1V2 } from '@/data/staging/level1-v2-curriculum';
-import { level2V2 } from '@/data/staging/level2-v2-curriculum';
-import { level3V2 } from '@/data/staging/level3-v2-curriculum';
-
-// Level configurations
-const LEVELS = [
-  { level: 1, data: level1V2 },
-  { level: 2, data: level2V2 },
-  { level: 3, data: level3V2 },
-];
-
 /**
- * Get all lesson IDs across all levels in order
+ * Curriculum Utilities
+ *
+ * Re-exports from curriculum-registry for backwards compatibility.
+ * New code should import directly from @/lib/curriculum-registry
  */
-export function getAllLessonIds(): string[] {
-  const ids: string[] = [];
-  for (const { data } of LEVELS) {
-    for (const block of data.blocks) {
-      for (const section of block.sections) {
-        for (const lesson of section.lessons) {
-          ids.push(lesson.id);
-        }
-      }
-    }
-  }
-  return ids;
-}
 
-/**
- * Get lesson IDs for a specific level
- */
-export function getLevelLessonIds(levelNum: number): string[] {
-  const levelConfig = LEVELS.find(l => l.level === levelNum);
-  if (!levelConfig) return [];
+export {
+  LEVELS,
+  getLevelConfig,
+  getLevelFromLessonId,
+  getLevelConfigForLesson,
+  getPuzzleDirForLesson,
+  getTreeIdFromLessonId,
+  getLessonById,
+  getLessonWithContext,
+  getAllLessonIds,
+  getLevelLessonIds,
+  getNextLessonId,
+  getIntroMessagesForLesson,
+} from './curriculum-registry';
 
-  const ids: string[] = [];
-  for (const block of levelConfig.data.blocks) {
-    for (const section of block.sections) {
-      for (const lesson of section.lessons) {
-        ids.push(lesson.id);
-      }
-    }
-  }
-  return ids;
-}
-
-/**
- * Get the next lesson ID after the given lessonId
- */
-export function getNextLessonId(lessonId: string): string | null {
-  const allIds = getAllLessonIds();
-  const currentIndex = allIds.indexOf(lessonId);
-  if (currentIndex === -1 || currentIndex >= allIds.length - 1) {
-    return null;
-  }
-  return allIds[currentIndex + 1];
-}
+export type {
+  LevelConfig,
+  LessonWithContext,
+  IntroMessages,
+  LessonCriteria,
+  Section,
+  Block,
+  Level,
+} from './curriculum-registry';

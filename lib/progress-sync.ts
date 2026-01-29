@@ -125,19 +125,5 @@ export function dedupePuzzleAttempts(attempts: PuzzleAttempt[]): PuzzleAttempt[]
   return result;
 }
 
-/**
- * Extract tree_id from lesson_id (e.g., "1.2" -> "400-800", "2.3" -> "800-1200")
- */
-export function getTreeIdFromLessonId(lessonId: string): string {
-  const level = parseInt(lessonId.split('.')[0], 10);
-  switch (level) {
-    case 1:
-      return '400-800';
-    case 2:
-      return '800-1200';
-    case 3:
-      return '1200+';
-    default:
-      return '400-800';
-  }
-}
+// Re-export from curriculum registry for backwards compatibility
+export { getTreeIdFromLessonId } from './curriculum-registry';
