@@ -12,7 +12,7 @@ import {
   playCaptureSound,
   warmupAudio,
 } from '@/lib/sounds';
-import { getAllLessonIds } from '@/lib/curriculum-utils';
+import { getAllLessonIds } from '@/lib/curriculum-registry';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
@@ -28,6 +28,7 @@ import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
+import { parseUciMove } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
 
 interface Puzzle {
@@ -99,14 +100,6 @@ function getIntroMessagesFromAnyLevel(lessonId: string): IntroMessages {
   return {};
 }
 
-// Parse UCI move (e.g., "e2e4" or "e7e8q")
-function parseUciMove(uci: string): { from: string; to: string; promotion?: string } {
-  const from = uci.slice(0, 2);
-  const to = uci.slice(2, 4);
-  const promotion = uci.length > 4 ? uci[4] : undefined;
-  return { from, to, promotion };
-}
-
 // Transform API puzzle to lesson puzzle format
 function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
   const chess = new Chess(puzzle.fen);
@@ -162,10 +155,10 @@ export default function LessonPage() {
   const lessonId = params.lessonId as string;
 
   // Progress tracking (Supabase + localStorage)
-  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
 
   // User and permissions
-  const { user } = useUser();
+  const { user, profile } = useUser();
   const {
     canAccessLesson,
     shouldPromptSignup,
@@ -226,6 +219,9 @@ export default function LessonPage() {
 
   // Confetti ref to prevent re-firing
   const confettiFired = useRef(false);
+
+  // Get all lesson IDs for unlock checking and tracking next lesson
+  const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
@@ -722,9 +718,6 @@ export default function LessonPage() {
   // Keep these for retry logic
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
 
-  // Get all lesson IDs for tracking next lesson position
-  const allLessonIds = useMemo(() => getAllLessonIds(), []);
-
   // Save completion via progress hook (localStorage + Supabase for authenticated users)
   useEffect(() => {
     if (lessonComplete) {
@@ -778,6 +771,23 @@ export default function LessonPage() {
       });
     }
   }, [lessonComplete, firstAttemptCorrectCount, puzzles.length]);
+
+  // Unlock check - redirect to /learn if lesson is locked
+  // Admin users bypass this check
+  const isAdmin = profile?.is_admin ?? false;
+  const lessonUnlocked = isLessonUnlocked(lessonId, allLessonIds);
+
+  useEffect(() => {
+    // Only check once progress is loaded, and skip for admins
+    if (progressLoaded && !lessonUnlocked && !isAdmin) {
+      router.replace('/learn');
+    }
+  }, [progressLoaded, lessonUnlocked, isAdmin, router]);
+
+  // Don't render if we're about to redirect (locked lesson)
+  if (progressLoaded && !lessonUnlocked && !isAdmin) {
+    return null;
+  }
 
   // Permission gate - check if user can access lessons
   // Only show blocked state AFTER permissions have finished loading

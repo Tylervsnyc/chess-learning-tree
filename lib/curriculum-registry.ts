@@ -245,6 +245,20 @@ export function getNextLessonId(lessonId: string): string | null {
 }
 
 /**
+ * Get the first lesson ID for a given level
+ */
+export function getFirstLessonIdForLevel(levelNum: number): string | null {
+  const config = getLevelConfig(levelNum);
+  if (!config) return null;
+
+  const firstBlock = config.data.blocks[0];
+  const firstSection = firstBlock?.sections[0];
+  const firstLesson = firstSection?.lessons[0];
+
+  return firstLesson?.id ?? null;
+}
+
+/**
  * Get intro messages for a lesson (block intro and/or theme intro)
  */
 export interface IntroMessages {

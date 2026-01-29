@@ -5,70 +5,17 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { useRouter, useParams } from 'next/navigation';
 import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests';
+import { getFirstLessonIdForLevel } from '@/lib/curriculum-registry';
 import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio } from '@/lib/sounds';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
+import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
-
-interface RawPuzzle {
-  id: string;
-  fen: string;
-  moves: string[];
-  rating: number;
-  theme: string;
-}
-
-// Pre-processed puzzle with setup move already applied
-interface ProcessedPuzzle {
-  id: string;
-  puzzleFen: string; // Position AFTER opponent's setup move
-  solutionMoves: string[]; // Player's moves (moves[1] onwards in UCI)
-  playerColor: 'white' | 'black';
-  rating: number;
-  lastMoveFrom: string;
-  lastMoveTo: string;
-}
 
 type TestState = 'loading' | 'playing' | 'passed' | 'failed';
 type MoveStatus = 'playing' | 'correct' | 'wrong';
-
-/**
- * Transform raw Lichess puzzle to processed format.
- *
- * IMPORTANT: Lichess puzzles have this structure:
- * - fen: Position BEFORE the opponent's last move
- * - moves[0]: Opponent's "setup" move (creates the tactic)
- * - moves[1+]: Player's solution moves
- *
- * We apply moves[0] to get the actual puzzle position the player sees.
- */
-function processPuzzle(raw: RawPuzzle): ProcessedPuzzle {
-  const chess = new Chess(raw.fen);
-
-  // Apply the setup move (opponent's last move that creates the tactic)
-  const setupMove = raw.moves[0];
-  const from = setupMove.slice(0, 2);
-  const to = setupMove.slice(2, 4);
-  const promotion = setupMove.length > 4 ? setupMove[4] : undefined;
-
-  try {
-    chess.move({ from, to, promotion });
-  } catch {
-    // If setup move fails, use original FEN
-  }
-
-  return {
-    id: raw.id,
-    puzzleFen: chess.fen(),
-    solutionMoves: raw.moves.slice(1), // Everything after setup move
-    playerColor: chess.turn() === 'w' ? 'white' : 'black',
-    rating: raw.rating,
-    lastMoveFrom: from,
-    lastMoveTo: to,
-  };
-}
 
 export default function LevelTestPage() {
   const router = useRouter();
@@ -78,8 +25,8 @@ export default function LevelTestPage() {
   // Auth check
   const { user, loading: userLoading } = useUser();
 
-  // Progress hook for unlocking levels
-  const { unlockLevel } = useLessonProgress();
+  // Progress hook for unlocking levels and setting starting lesson
+  const { unlockLevel, setStartingLesson } = useLessonProgress();
 
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [testState, setTestState] = useState<TestState>('loading');
@@ -223,9 +170,8 @@ export default function LevelTestPage() {
       if (!move) return false;
 
       const expectedUCI = solutionMoves[moveIndex];
-      const actualUCI = from + to + (move.promotion || '');
 
-      if (actualUCI === expectedUCI || actualUCI.slice(0, 4) === expectedUCI.slice(0, 4)) {
+      if (isCorrectMove(from, to, move.promotion, expectedUCI)) {
         // Correct move
         setCurrentFen(chessCopy.fen());
         setSelectedSquare(null);
@@ -251,12 +197,13 @@ export default function LevelTestPage() {
         // Auto-play opponent's response
         setTimeout(() => {
           const opponentGame = new Chess(chessCopy.fen());
-          const opponentMove = solutionMoves[nextMoveIndex];
+          const opponentMoveUci = solutionMoves[nextMoveIndex];
+          const { from: oppFrom, to: oppTo, promotion: oppPromo } = parseUciMove(opponentMoveUci);
           try {
             const oppMove = opponentGame.move({
-              from: opponentMove.slice(0, 2) as Square,
-              to: opponentMove.slice(2, 4) as Square,
-              promotion: opponentMove.length > 4 ? (opponentMove[4] as 'q' | 'r' | 'b' | 'n') : undefined,
+              from: oppFrom as Square,
+              to: oppTo as Square,
+              promotion: oppPromo as 'q' | 'r' | 'b' | 'n' | undefined,
             });
 
             setCurrentFen(opponentGame.fen());
@@ -350,9 +297,15 @@ export default function LevelTestPage() {
       if (newCorrectCount >= passingScore) {
         setTestState('passed');
         playCelebrationSound(newCorrectCount);
-        // Unlock the level!
+        // Unlock the level and set starting lesson!
         if (targetLevel) {
           unlockLevel(targetLevel.number);
+          // Set the first lesson of the new level as the starting lesson
+          // This unlocks all lessons up to and including this one
+          const firstLessonId = getFirstLessonIdForLevel(targetLevel.number);
+          if (firstLessonId) {
+            setStartingLesson(firstLessonId);
+          }
         }
       } else {
         setTestState('failed');
@@ -361,7 +314,7 @@ export default function LevelTestPage() {
     }
 
     setCurrentIndex(prev => prev + 1);
-  }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore, targetLevel, unlockLevel]);
+  }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore, targetLevel, unlockLevel, setStartingLesson]);
 
   // Handle going back to learn page
   const handleBackToLearn = () => {

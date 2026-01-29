@@ -18,15 +18,60 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
   return levelLessonIds.every(id => completedLessons.includes(id));
 }
 
-// Determine lesson status
+// Determine lesson status - respects startingLessonId from diagnostic/level tests
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
-  allLessonIds: string[]
+  allLessonIds: string[],
+  startingLessonId: string | null
 ): LessonStatus {
+  // Completed lessons are always completed
   if (completedLessons.includes(lessonId)) return 'completed';
-  const firstIncomplete = allLessonIds.find(id => !completedLessons.includes(id));
-  if (lessonId === firstIncomplete) return 'current';
+
+  const index = allLessonIds.indexOf(lessonId);
+
+  // Check if this lesson is unlocked
+  let isUnlocked = false;
+
+  // First lesson is always unlocked
+  if (index === 0) {
+    isUnlocked = true;
+  }
+  // If user has a starting lesson (from diagnostic/level test)
+  else if (startingLessonId) {
+    const startingIndex = allLessonIds.indexOf(startingLessonId);
+    // All lessons before and including the starting lesson are unlocked
+    if (startingIndex >= 0 && index <= startingIndex) {
+      isUnlocked = true;
+    }
+  }
+  // For lessons after the starting point: require previous lesson completed
+  if (!isUnlocked && index > 0) {
+    const previousLessonId = allLessonIds[index - 1];
+    if (completedLessons.includes(previousLessonId)) {
+      isUnlocked = true;
+    }
+  }
+
+  if (!isUnlocked) return 'locked';
+
+  // Find the first unlocked but incomplete lesson (current)
+  const firstCurrent = allLessonIds.find(id => {
+    if (completedLessons.includes(id)) return false;
+    const idx = allLessonIds.indexOf(id);
+    // Check if unlocked using same logic
+    if (idx === 0) return true;
+    if (startingLessonId) {
+      const startingIdx = allLessonIds.indexOf(startingLessonId);
+      if (startingIdx >= 0 && idx <= startingIdx) return true;
+    }
+    const prevId = allLessonIds[idx - 1];
+    return completedLessons.includes(prevId);
+  });
+
+  if (lessonId === firstCurrent) return 'current';
+
+  // Unlocked but not the first current - show as locked (available but not highlighted)
   return 'locked';
 }
 
@@ -276,7 +321,7 @@ export default function LearnPage() {
   });
 
   // Track completed lessons and unlocked levels
-  const { completedLessons, unlockedLevels, unlockLevel } = useLessonProgress();
+  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked } = useLessonProgress();
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
@@ -397,6 +442,7 @@ export default function LearnPage() {
                     allLessonIds={allLessonIds}
                     levelColor={color}
                     isAdmin={isAdmin}
+                    startingLessonId={startingLessonId}
                   />
                 );
               })}
@@ -419,6 +465,7 @@ function BlockView({
   allLessonIds,
   levelColor,
   isAdmin,
+  startingLessonId,
 }: {
   block: Block;
   blockIndex: number;
@@ -429,6 +476,7 @@ function BlockView({
   allLessonIds: string[];
   levelColor: string;
   isAdmin: boolean;
+  startingLessonId: string | null;
 }) {
   return (
     <div className="mb-8">
@@ -454,6 +502,7 @@ function BlockView({
             completedLessons={completedLessons}
             allLessonIds={allLessonIds}
             isAdmin={isAdmin}
+            startingLessonId={startingLessonId}
           />
         );
       })}
@@ -470,6 +519,7 @@ function SectionView({
   completedLessons,
   allLessonIds,
   isAdmin,
+  startingLessonId,
 }: {
   section: Section;
   sectionIndex: number;
@@ -478,6 +528,7 @@ function SectionView({
   completedLessons: string[];
   allLessonIds: string[];
   isAdmin: boolean;
+  startingLessonId: string | null;
 }) {
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
@@ -522,7 +573,7 @@ function SectionView({
         <div className="mt-4 flex flex-col items-center">
           {section.lessons.map((lesson, lessonIndex) => {
             // Admins see locked lessons as current (clickable) instead of locked
-            const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds);
+            const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId);
             const status = isAdmin && baseStatus === 'locked' ? 'current' : baseStatus;
             const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 

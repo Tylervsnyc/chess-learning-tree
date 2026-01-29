@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTreeIdFromLessonId } from '@/lib/progress-sync';
+import { getAllLessonIds } from '@/lib/curriculum-registry';
 
 /**
  * GET /api/progress
@@ -108,6 +109,57 @@ export async function POST(request: NextRequest) {
     const { lessonId, nextLessonId } = data;
     if (!lessonId) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
+    }
+
+    // Server-side unlock validation
+    const allLessonIds = getAllLessonIds();
+    const lessonIndex = allLessonIds.indexOf(lessonId);
+
+    if (lessonIndex === -1) {
+      return NextResponse.json({ error: 'Invalid lessonId' }, { status: 400 });
+    }
+
+    // Fetch user's completed lessons and admin status
+    const [existingProgressResult, profileResult] = await Promise.all([
+      supabase
+        .from('lesson_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('completed', true),
+      supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single(),
+    ]);
+
+    const completedLessons = (existingProgressResult.data || []).map(p => p.lesson_id);
+    const isAdmin = profileResult.data?.is_admin ?? false;
+    // Note: startingLessonId is stored in localStorage only for now
+    // Server validation uses sequential unlock logic (previous lesson must be complete)
+
+    // Check unlock status using sequential unlock logic
+    let isUnlocked = false;
+
+    // First lesson is always unlocked
+    if (lessonIndex === 0) {
+      isUnlocked = true;
+    }
+    // Already completed lessons are "unlocked" (replay)
+    else if (completedLessons.includes(lessonId)) {
+      isUnlocked = true;
+    }
+    // Check if previous lesson is completed (sequential unlock)
+    else if (lessonIndex > 0) {
+      const previousLessonId = allLessonIds[lessonIndex - 1];
+      if (completedLessons.includes(previousLessonId)) {
+        isUnlocked = true;
+      }
+    }
+
+    // Reject if locked and not admin
+    if (!isUnlocked && !isAdmin) {
+      return NextResponse.json({ error: 'Lesson is locked' }, { status: 403 });
     }
 
     const treeId = getTreeIdFromLessonId(lessonId);
