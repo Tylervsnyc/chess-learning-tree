@@ -158,7 +158,7 @@ export default function LessonPage() {
   const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
 
   // User and permissions
-  const { user, profile } = useUser();
+  const { user, profile, loading: userLoading } = useUser();
   const {
     canAccessLesson,
     shouldPromptSignup,
@@ -774,23 +774,29 @@ export default function LessonPage() {
 
   // Unlock check - redirect to /learn if lesson is locked
   // Admin users bypass this check
-  const isAdmin = profile?.is_admin ?? false;
   const lessonUnlocked = isLessonUnlocked(lessonId, allLessonIds);
 
-  // Wait for profile to load before checking admin status
-  // If user exists but profile is null, profile is still loading
+  // Wait for auth AND profile to load before checking admin status
+  // Auth is loading if userLoading is true
+  // Profile is loading if user exists but profile is null
+  const isAuthLoading = userLoading;
   const isProfileLoading = !!user && !profile;
+  const isFullyLoaded = !isAuthLoading && !isProfileLoading;
+
+  // Admin users have unrestricted access to all lessons and levels
+  // While auth/profile is loading, assume admin to avoid locked state flash for admins
+  const isAdmin = isFullyLoaded ? (profile?.is_admin ?? false) : true;
 
   useEffect(() => {
-    // Only check once progress AND profile are loaded, and skip for admins
-    if (progressLoaded && !isProfileLoading && !lessonUnlocked && !isAdmin) {
+    // Only check once progress AND auth/profile are fully loaded, and skip for admins
+    if (progressLoaded && isFullyLoaded && !lessonUnlocked && !isAdmin) {
       router.replace('/learn');
     }
-  }, [progressLoaded, isProfileLoading, lessonUnlocked, isAdmin, router]);
+  }, [progressLoaded, isFullyLoaded, lessonUnlocked, isAdmin, router]);
 
   // Don't render if we're about to redirect (locked lesson)
-  // Also don't render while profile is loading (to avoid flash)
-  if (isProfileLoading) {
+  // Also don't render while auth/profile is loading (to avoid flash)
+  if (!isFullyLoaded) {
     return null; // Will show loading state from permissions check below
   }
   if (progressLoaded && !lessonUnlocked && !isAdmin) {
