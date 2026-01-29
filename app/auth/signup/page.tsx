@@ -15,11 +15,10 @@ function SignupContent() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
+  const [otpCode, setOtpCode] = useState(['', '', '', '', '', '', '', '']);
   const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
@@ -57,7 +56,7 @@ function SignupContent() {
     setOtpCode(newOtp);
 
     // Auto-advance to next input
-    if (digit && index < 5) {
+    if (digit && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -70,7 +69,7 @@ function SignupContent() {
 
   const handleOtpPaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 8);
     if (pastedData) {
       const newOtp = [...otpCode];
       for (let i = 0; i < pastedData.length; i++) {
@@ -78,15 +77,15 @@ function SignupContent() {
       }
       setOtpCode(newOtp);
       // Focus the appropriate input
-      const nextIndex = Math.min(pastedData.length, 5);
+      const nextIndex = Math.min(pastedData.length, 7);
       inputRefs.current[nextIndex]?.focus();
     }
   };
 
   const handleVerifyOtp = async () => {
     const code = otpCode.join('');
-    if (code.length !== 6) {
-      setError('Please enter the complete 6-digit code');
+    if (code.length !== 8) {
+      setError('Please enter the complete 8-digit code');
       return;
     }
 
@@ -94,23 +93,55 @@ function SignupContent() {
     setError(null);
     const supabase = createClient();
 
-    const { data, error } = await supabase.auth.verifyOtp({
-      email,
-      token: code,
+    console.log('Verifying OTP:', {
+      email: email.trim().toLowerCase(),
+      token: code.trim(),
+      tokenLength: code.trim().length
+    });
+
+    // Try signup type first (for email confirmation)
+    const result = await supabase.auth.verifyOtp({
+      email: email.trim().toLowerCase(),
+      token: code.trim(),
       type: 'signup',
     });
+
+    console.log('Signup verify result:', {
+      error: result.error?.message,
+      errorCode: result.error?.code,
+      errorStatus: result.error?.status,
+      hasUser: !!result.data?.user
+    });
+
+    // If signup type fails, try email type
+    let finalResult = result;
+    if (result.error) {
+      console.log('Trying email type...');
+      finalResult = await supabase.auth.verifyOtp({
+        email: email.trim().toLowerCase(),
+        token: code.trim(),
+        type: 'email',
+      });
+      console.log('Email verify result:', {
+        error: finalResult.error?.message,
+        errorCode: finalResult.error?.code,
+        hasUser: !!finalResult.data?.user
+      });
+    }
+
+    const { data, error } = finalResult;
 
     if (error) {
       setError(error.message);
       setVerifying(false);
-      setOtpCode(['', '', '', '', '', '']);
+      setOtpCode(['', '', '', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
       return;
     }
 
     // Identify the user in PostHog
     if (data.user) {
-      identifyUser(data.user.id, { email, displayName });
+      identifyUser(data.user.id, { email });
     }
     AuthEvents.signupCompleted('email');
 
@@ -150,21 +181,9 @@ function SignupContent() {
 
     const supabase = createClient();
 
-    // Build the callback URL with redirect
-    const callbackUrl = new URL('/auth/callback', window.location.origin);
-    if (redirectTo) {
-      callbackUrl.searchParams.set('next', redirectTo);
-    }
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          display_name: displayName,
-        },
-        emailRedirectTo: callbackUrl.toString(),
-      },
     });
 
     if (error) {
@@ -199,7 +218,7 @@ function SignupContent() {
                 </div>
               )}
 
-              <div className="flex justify-center gap-2 mb-6" onPaste={handleOtpPaste}>
+              <div className="flex justify-center gap-1.5 mb-6" onPaste={handleOtpPaste}>
                 {otpCode.map((digit, index) => (
                   <input
                     key={index}
@@ -210,14 +229,14 @@ function SignupContent() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    className="w-11 h-14 text-center text-xl font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-[#3c3c3c] focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                    className="w-8 h-12 text-center text-lg font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-[#3c3c3c] focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
                   />
                 ))}
               </div>
 
               <button
                 onClick={handleVerifyOtp}
-                disabled={verifying || otpCode.join('').length !== 6}
+                disabled={verifying || otpCode.join('').length !== 8}
                 className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
                 style={{ backgroundColor: '#58CC02' }}
               >
@@ -242,7 +261,7 @@ function SignupContent() {
               <button
                 onClick={() => {
                   setPendingVerification(false);
-                  setOtpCode(['', '', '', '', '', '']);
+                  setOtpCode(['', '', '', '', '', '', '', '']);
                   setError(null);
                 }}
                 className="mt-4 text-slate-400 hover:text-slate-600 text-sm"
@@ -317,21 +336,6 @@ function SignupContent() {
             </div>
 
             <form onSubmit={handleSignup} className="space-y-3">
-              <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-slate-600 mb-1">
-                  Display Name
-                </label>
-                <input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-[#3c3c3c] placeholder-slate-400 focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
-                  placeholder="ChessMaster2000"
-                />
-              </div>
-
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-600 mb-1">
                   Email
