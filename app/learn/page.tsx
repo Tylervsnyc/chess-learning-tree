@@ -279,9 +279,11 @@ export default function LearnPage() {
   const { completedLessons, unlockedLevels, unlockLevel } = useLessonProgress();
 
   // Check if user is logged in - wait for loading to complete
-  const { user, loading: userLoading } = useUser();
+  const { user, profile, loading: userLoading } = useUser();
   // While loading, assume logged in to avoid flash of "sign in" text
   const isLoggedIn = userLoading ? true : !!user;
+  // Admin users have unrestricted access to all lessons and levels
+  const isAdmin = profile?.is_admin ?? false;
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
@@ -328,7 +330,8 @@ export default function LearnPage() {
       {/* Curriculum Path - All Levels */}
       <div className="max-w-lg mx-auto px-4 py-6">
         {LEVELS.map(({ level, data, color, darkColor }) => {
-          const isLevelUnlocked = unlockedLevels.includes(level);
+          // Admins have all levels unlocked
+          const isLevelUnlocked = isAdmin || unlockedLevels.includes(level);
           const prevLevelCompleted = level === 1 || isLevelCompleted(level - 1, completedLessons);
 
           // For level 1, always show. For others, show locked card if not unlocked
@@ -393,6 +396,7 @@ export default function LearnPage() {
                     completedLessons={completedLessons}
                     allLessonIds={allLessonIds}
                     levelColor={color}
+                    isAdmin={isAdmin}
                   />
                 );
               })}
@@ -414,6 +418,7 @@ function BlockView({
   completedLessons,
   allLessonIds,
   levelColor,
+  isAdmin,
 }: {
   block: Block;
   blockIndex: number;
@@ -423,6 +428,7 @@ function BlockView({
   completedLessons: string[];
   allLessonIds: string[];
   levelColor: string;
+  isAdmin: boolean;
 }) {
   return (
     <div className="mb-8">
@@ -447,6 +453,7 @@ function BlockView({
             onToggle={() => toggleSection(section.id)}
             completedLessons={completedLessons}
             allLessonIds={allLessonIds}
+            isAdmin={isAdmin}
           />
         );
       })}
@@ -462,6 +469,7 @@ function SectionView({
   onToggle,
   completedLessons,
   allLessonIds,
+  isAdmin,
 }: {
   section: Section;
   sectionIndex: number;
@@ -469,6 +477,7 @@ function SectionView({
   onToggle: () => void;
   completedLessons: string[];
   allLessonIds: string[];
+  isAdmin: boolean;
 }) {
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
@@ -512,7 +521,9 @@ function SectionView({
       {isExpanded && (
         <div className="mt-4 flex flex-col items-center">
           {section.lessons.map((lesson, lessonIndex) => {
-            const status = getLessonStatus(lesson.id, completedLessons, allLessonIds);
+            // Admins see locked lessons as current (clickable) instead of locked
+            const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds);
+            const status = isAdmin && baseStatus === 'locked' ? 'current' : baseStatus;
             const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
             // Zigzag pattern
