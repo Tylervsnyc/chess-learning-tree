@@ -223,6 +223,15 @@ export default function LessonPage() {
   // Get all lesson IDs for unlock checking and tracking next lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
+  // Calculate next lesson ID for navigation after completion
+  const nextLessonId = useMemo(() => {
+    const currentIndex = allLessonIds.indexOf(lessonId);
+    if (currentIndex >= 0 && currentIndex < allLessonIds.length - 1) {
+      return allLessonIds[currentIndex + 1];
+    }
+    return null;
+  }, [allLessonIds, lessonId]);
+
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
     const handleFirstInteraction = () => {
@@ -872,7 +881,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push(`/learn?level=${level}`)}
+              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -903,7 +912,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push(`/learn?level=${level}`)}
+              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -914,7 +923,7 @@ export default function LessonPage() {
           <div className="text-center max-w-md px-4">
             <p className="text-red-400 mb-4">{error}</p>
             <button
-              onClick={() => router.push(`/learn?level=${level}`)}
+              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
               className="text-[#1CB0F6] hover:underline"
             >
               ← Back to curriculum
@@ -961,7 +970,7 @@ export default function LessonPage() {
               <div className="text-gray-500 text-sm mb-6">{lessonName}</div>
 
               <button
-                onClick={() => router.push(`/learn?level=${level}`)}
+                onClick={() => router.push(`/learn?level=${level}&scrollTo=${nextLessonId || lessonId}`)}
                 className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
               >
                 Continue
@@ -985,7 +994,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push(`/learn?level=${level}`)}
+              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -1006,7 +1015,7 @@ export default function LessonPage() {
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push(`/learn?level=${level}`)}
+            onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
             className="text-gray-400 hover:text-white"
           >
             ✕

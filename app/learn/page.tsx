@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { LEVELS, getAllLessonIds, getLevelLessonIds, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
 import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
@@ -315,10 +316,59 @@ function LockedLevelCard({
   );
 }
 
+// Helper to find which section contains a lesson
+function findSectionForLesson(lessonId: string): string | null {
+  for (const { data } of LEVELS) {
+    for (const block of data.blocks) {
+      for (const section of block.sections) {
+        if (section.lessons.some(l => l.id === lessonId)) {
+          return section.id;
+        }
+      }
+    }
+  }
+  return null;
+}
+
 export default function LearnPage() {
+  const searchParams = useSearchParams();
+  const scrollToLessonId = searchParams.get('scrollTo');
+  const hasScrolledRef = useRef(false);
+
+  // Find which section to expand for the scrollTo lesson
+  const scrollToSectionId = useMemo(() => {
+    if (!scrollToLessonId) return null;
+    return findSectionForLesson(scrollToLessonId);
+  }, [scrollToLessonId]);
+
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     'sec-1': true,
   });
+
+  // Auto-expand section containing scrollTo lesson
+  useEffect(() => {
+    if (scrollToSectionId && !expandedSections[scrollToSectionId]) {
+      setExpandedSections(prev => ({
+        ...prev,
+        [scrollToSectionId]: true,
+      }));
+    }
+  }, [scrollToSectionId, expandedSections]);
+
+  // Scroll to target lesson after section expands
+  useEffect(() => {
+    if (scrollToLessonId && !hasScrolledRef.current) {
+      // Small delay to let section expand and render
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`lesson-${scrollToLessonId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          hasScrolledRef.current = true;
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [scrollToLessonId, expandedSections]);
 
   // Track completed lessons and unlocked levels
   const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked } = useLessonProgress();
@@ -592,6 +642,7 @@ function SectionView({
             return (
               <div
                 key={lesson.id}
+                id={`lesson-${lesson.id}`}
                 className="mb-6"
                 style={{ transform: `translateX(${xOffset}px)` }}
               >
