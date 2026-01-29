@@ -61,11 +61,18 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
-  allLessonIds: string[]
+  allLessonIds: string[],
+  unlockedLevels: number[]
 ): LessonStatus {
   if (completedLessons.includes(lessonId)) return 'completed';
-  const firstIncomplete = allLessonIds.find(id => !completedLessons.includes(id));
-  if (lessonId === firstIncomplete) return 'current';
+
+  // For each unlocked level, check if this is the first incomplete lesson in that level
+  for (const levelNum of unlockedLevels) {
+    const levelLessonIds = getLevelLessonIds(levelNum);
+    const firstIncompleteInLevel = levelLessonIds.find(id => !completedLessons.includes(id));
+    if (lessonId === firstIncompleteInLevel) return 'current';
+  }
+
   return 'locked';
 }
 
@@ -77,14 +84,6 @@ function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionI
     return lesson.pieceFilter as PieceType;
   }
   return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
-}
-
-function ChevronLeft() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M15 18l-6-6 6-6" />
-    </svg>
-  );
 }
 
 function darkenColor(hex: string, amount: number = 0.25): string {
@@ -413,9 +412,6 @@ export default function LearnPage() {
                 className="sticky top-7 z-40 bg-white/95 backdrop-blur-sm border-b border-black/5 -mx-4 px-4 py-3 mb-6"
               >
                 <div className="flex items-center gap-3">
-                  <Link href="/staging" className="text-[#afafaf] hover:text-[#3c3c3c]">
-                    <ChevronLeft />
-                  </Link>
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
                     style={{ backgroundColor: color }}
@@ -444,6 +440,7 @@ export default function LearnPage() {
                     baseGlobalIndex={baseGlobalIndex}
                     completedLessons={completedLessons}
                     allLessonIds={allLessonIds}
+                    unlockedLevels={unlockedLevels}
                     levelColor={color}
                   />
                 );
@@ -465,6 +462,7 @@ function BlockView({
   baseGlobalIndex,
   completedLessons,
   allLessonIds,
+  unlockedLevels,
   levelColor,
 }: {
   block: Block;
@@ -474,6 +472,7 @@ function BlockView({
   baseGlobalIndex: number;
   completedLessons: string[];
   allLessonIds: string[];
+  unlockedLevels: number[];
   levelColor: string;
 }) {
   return (
@@ -499,6 +498,7 @@ function BlockView({
             onToggle={() => toggleSection(section.id)}
             completedLessons={completedLessons}
             allLessonIds={allLessonIds}
+            unlockedLevels={unlockedLevels}
           />
         );
       })}
@@ -514,6 +514,7 @@ function SectionView({
   onToggle,
   completedLessons,
   allLessonIds,
+  unlockedLevels,
 }: {
   section: Section;
   sectionIndex: number;
@@ -521,6 +522,7 @@ function SectionView({
   onToggle: () => void;
   completedLessons: string[];
   allLessonIds: string[];
+  unlockedLevels: number[];
 }) {
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
@@ -564,7 +566,7 @@ function SectionView({
       {isExpanded && (
         <div className="mt-4 flex flex-col items-center">
           {section.lessons.map((lesson, lessonIndex) => {
-            const status = getLessonStatus(lesson.id, completedLessons, allLessonIds);
+            const status = getLessonStatus(lesson.id, completedLessons, allLessonIds, unlockedLevels);
             const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
             // Zigzag pattern
