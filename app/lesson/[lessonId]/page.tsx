@@ -777,14 +777,22 @@ export default function LessonPage() {
   const isAdmin = profile?.is_admin ?? false;
   const lessonUnlocked = isLessonUnlocked(lessonId, allLessonIds);
 
+  // Wait for profile to load before checking admin status
+  // If user exists but profile is null, profile is still loading
+  const isProfileLoading = !!user && !profile;
+
   useEffect(() => {
-    // Only check once progress is loaded, and skip for admins
-    if (progressLoaded && !lessonUnlocked && !isAdmin) {
+    // Only check once progress AND profile are loaded, and skip for admins
+    if (progressLoaded && !isProfileLoading && !lessonUnlocked && !isAdmin) {
       router.replace('/learn');
     }
-  }, [progressLoaded, lessonUnlocked, isAdmin, router]);
+  }, [progressLoaded, isProfileLoading, lessonUnlocked, isAdmin, router]);
 
   // Don't render if we're about to redirect (locked lesson)
+  // Also don't render while profile is loading (to avoid flash)
+  if (isProfileLoading) {
+    return null; // Will show loading state from permissions check below
+  }
   if (progressLoaded && !lessonUnlocked && !isAdmin) {
     return null;
   }
