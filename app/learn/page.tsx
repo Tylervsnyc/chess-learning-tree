@@ -538,7 +538,7 @@ export default function LearnPage() {
               )}
 
               {/* Sticky Level Header - Design 3: Floating Layered Card */}
-              <div className="sticky top-7 z-40 -mx-4 px-4 py-3 mb-6">
+              <div className="sticky top-3 z-40 -mx-4 px-4 py-3 mb-6">
                 <div className="relative level-card-hover group cursor-default">
                   {/* Back layers for 3D depth effect */}
                   <div
