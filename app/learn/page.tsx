@@ -394,15 +394,17 @@ export default function LearnPage() {
     'sec-1': true,
   });
 
-  // Auto-expand section containing target lesson
+  // Auto-expand section containing target lesson (only on initial load or target change)
+  const hasAutoExpandedRef = useRef(false);
   useEffect(() => {
-    if (targetSectionId && !expandedSections[targetSectionId]) {
+    if (targetSectionId && !hasAutoExpandedRef.current) {
       setExpandedSections(prev => ({
         ...prev,
         [targetSectionId]: true,
       }));
+      hasAutoExpandedRef.current = true;
     }
-  }, [targetSectionId, expandedSections]);
+  }, [targetSectionId]);
 
   // Scroll to target lesson after section expands
   // Use instant scroll (no animation) so page loads with lesson already visible
