@@ -330,48 +330,109 @@ function findSectionForLesson(lessonId: string): string | null {
   return null;
 }
 
+// Find the user's current lesson (first unlocked but not completed)
+function findCurrentLessonId(
+  completedLessons: string[],
+  allLessonIds: string[],
+  startingLessonId: string | null
+): string | null {
+  for (const lessonId of allLessonIds) {
+    if (completedLessons.includes(lessonId)) continue;
+
+    const index = allLessonIds.indexOf(lessonId);
+
+    // Check if unlocked
+    let isUnlocked = false;
+    if (index === 0) {
+      isUnlocked = true;
+    } else if (startingLessonId) {
+      const startingIndex = allLessonIds.indexOf(startingLessonId);
+      if (startingIndex >= 0 && index <= startingIndex) {
+        isUnlocked = true;
+      }
+    }
+    if (!isUnlocked && index > 0) {
+      const previousLessonId = allLessonIds[index - 1];
+      if (completedLessons.includes(previousLessonId)) {
+        isUnlocked = true;
+      }
+    }
+
+    if (isUnlocked) {
+      return lessonId;
+    }
+  }
+  return null;
+}
+
 export default function LearnPage() {
   const searchParams = useSearchParams();
   const scrollToLessonId = searchParams.get('scrollTo');
   const hasScrolledRef = useRef(false);
+  const initialScrollDoneRef = useRef(false);
 
-  // Find which section to expand for the scrollTo lesson
-  const scrollToSectionId = useMemo(() => {
-    if (!scrollToLessonId) return null;
-    return findSectionForLesson(scrollToLessonId);
-  }, [scrollToLessonId]);
+  // Track completed lessons and unlocked levels
+  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked } = useLessonProgress();
 
+  // Get all lesson IDs for determining current lesson
+  const allLessonIds = useMemo(() => getAllLessonIds(), []);
+
+  // Find the user's current lesson
+  const currentLessonId = useMemo(() => {
+    return findCurrentLessonId(completedLessons, allLessonIds, startingLessonId);
+  }, [completedLessons, allLessonIds, startingLessonId]);
+
+  // Find which section to expand for the scrollTo lesson or current lesson
+  const targetLessonId = scrollToLessonId || currentLessonId;
+  const targetSectionId = useMemo(() => {
+    if (!targetLessonId) return null;
+    return findSectionForLesson(targetLessonId);
+  }, [targetLessonId]);
+
+  // Initialize expanded sections with the target section
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     'sec-1': true,
   });
 
-  // Auto-expand section containing scrollTo lesson
+  // Auto-expand section containing target lesson
   useEffect(() => {
-    if (scrollToSectionId && !expandedSections[scrollToSectionId]) {
+    if (targetSectionId && !expandedSections[targetSectionId]) {
       setExpandedSections(prev => ({
         ...prev,
-        [scrollToSectionId]: true,
+        [targetSectionId]: true,
       }));
     }
-  }, [scrollToSectionId, expandedSections]);
+  }, [targetSectionId, expandedSections]);
 
   // Scroll to target lesson after section expands
+  // Use instant scroll (no animation) so page loads with lesson already visible
   useEffect(() => {
+    if (!targetLessonId) return;
+
+    // For scrollTo param (coming from completed lesson)
     if (scrollToLessonId && !hasScrolledRef.current) {
-      // Small delay to let section expand and render
       const timer = setTimeout(() => {
         const element = document.getElementById(`lesson-${scrollToLessonId}`);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.scrollIntoView({ behavior: 'instant', block: 'center' });
           hasScrolledRef.current = true;
         }
-      }, 150);
+      }, 50);
       return () => clearTimeout(timer);
     }
-  }, [scrollToLessonId, expandedSections]);
 
-  // Track completed lessons and unlocked levels
-  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked } = useLessonProgress();
+    // For initial load (no scrollTo param), scroll to current lesson
+    if (!scrollToLessonId && currentLessonId && !initialScrollDoneRef.current) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`lesson-${currentLessonId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'instant', block: 'center' });
+          initialScrollDoneRef.current = true;
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [targetLessonId, scrollToLessonId, currentLessonId, expandedSections]);
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
@@ -383,9 +444,6 @@ export default function LearnPage() {
   // Admin users have unrestricted access to all lessons and levels
   // While profile is loading, assume admin to avoid locked state flash for admins
   const isAdmin = isProfileLoading ? true : (profile?.is_admin ?? false);
-
-  // Get all lesson IDs for determining current lesson
-  const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
