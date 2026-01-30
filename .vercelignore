@@ -1,0 +1,3 @@
+# Exclude large raw puzzle data (2.6GB)
+# Production uses clean-puzzles-v2 JSON files instead
+data/puzzles-by-rating/

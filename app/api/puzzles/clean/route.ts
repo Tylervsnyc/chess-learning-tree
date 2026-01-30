@@ -9,7 +9,7 @@ import * as path from 'path';
  * from pre-extracted JSON files.
  *
  * Query params:
- *   - level: 1, 2, or 3
+ *   - level: 1-8 (curriculum level)
  *   - theme: fork, pin, skewer, checkmate, backRankMate, etc.
  *   - limit: number of puzzles to return (default 6)
  *   - offset: pagination offset (default 0)
@@ -87,10 +87,10 @@ export async function GET(request: NextRequest) {
   const minRating = searchParams.get('minRating') ? parseInt(searchParams.get('minRating')!) : undefined;
   const maxRating = searchParams.get('maxRating') ? parseInt(searchParams.get('maxRating')!) : undefined;
 
-  // Validate level
-  if (level < 1 || level > 3) {
+  // Validate level (supports curriculum levels 1-8)
+  if (level < 1 || level > 8) {
     return NextResponse.json({
-      error: 'Invalid level. Must be 1, 2, or 3.',
+      error: 'Invalid level. Must be between 1 and 8.',
     }, { status: 400 });
   }
 

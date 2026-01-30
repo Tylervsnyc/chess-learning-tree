@@ -21,7 +21,7 @@ import {
  *   - excludeIds: Comma-separated puzzle IDs to exclude (for reviews)
  *
  * Or direct criteria:
- *   - level: 1, 2, or 3
+ *   - level: 1-5 (determined from ratingMin)
  *   - themes: Comma-separated themes
  *   - mixed: "true" for mixed practice (any theme matches)
  *   - ratingMin, ratingMax: Rating range
@@ -108,7 +108,9 @@ function transformToPuzzle(p: CleanPuzzle): Puzzle {
 function getLevelFromRating(ratingMin: number): number {
   if (ratingMin < 800) return 1;
   if (ratingMin < 1000) return 2;
-  return 3;
+  if (ratingMin < 1200) return 3;
+  if (ratingMin < 1400) return 4;
+  return 5;
 }
 
 export async function GET(request: NextRequest) {
