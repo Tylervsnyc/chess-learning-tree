@@ -1,0 +1,46 @@
+{
+  "level": 5,
+  "ratingRange": "1400-1600",
+  "theme": "underPromotion",
+  "count": 2,
+  "puzzles": [
+    {
+      "puzzleId": "2sar5",
+      "fen": "2k3rr/pp6/2pp4/6Q1/3PB3/4P2p/PPP3p1/R4R1K w - - 0 27",
+      "moves": "h1h2 g2f1n a1f1 g8g5",
+      "rating": 1469,
+      "popularity": 90,
+      "nbPlays": 3471,
+      "theme": "underPromotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "promotion",
+        "short",
+        "underPromotion"
+      ],
+      "gameUrl": "https://lichess.org/tL25ZkPE#53"
+    },
+    {
+      "puzzleId": "cSwWA",
+      "fen": "6k1/p4p1p/1p4n1/3P1RQ1/4P3/P6P/2rqp1PK/5R2 w - - 0 34",
+      "moves": "g5d2 e2f1n f5f1 c2d2",
+      "rating": 1491,
+      "popularity": 90,
+      "nbPlays": 2265,
+      "theme": "underPromotion",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "master",
+        "promotion",
+        "short",
+        "underPromotion"
+      ],
+      "gameUrl": "https://lichess.org/Q8dHf1KZ#67"
+    }
+  ]
+}

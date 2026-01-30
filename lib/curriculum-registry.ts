@@ -8,6 +8,8 @@
 import { level1V2, LessonCriteria, Section, Block, Level } from '@/data/staging/level1-v2-curriculum';
 import { level2V2 } from '@/data/staging/level2-v2-curriculum';
 import { level3V2 } from '@/data/staging/level3-v2-curriculum';
+import { level4V2 } from '@/data/staging/level4-v2-curriculum';
+import { level5V2 } from '@/data/staging/level5-v2-curriculum';
 
 // Re-export types for convenience
 export type { LessonCriteria, Section, Block, Level };
@@ -49,20 +51,22 @@ export const LEVELS: LevelConfig[] = [
     color: '#CE82FF',
     darkColor: '#a855c7',
   },
-  // ============================================================
-  // TO ADD LEVEL 4:
-  // 1. Create data/staging/level4-v2-curriculum.ts
-  // 2. Import it above
-  // 3. Add entry here:
-  // {
-  //   level: 4,
-  //   data: level4V2,
-  //   puzzleDir: '1600-2000',
-  //   treeId: '1600-2000',
-  //   color: '#FF9500',
-  //   darkColor: '#cc7700',
-  // },
-  // ============================================================
+  {
+    level: 4,
+    data: level4V2,
+    puzzleDir: '1200-1600',  // Level 4 lessons are rated 1200-1450
+    treeId: '1200-1400',
+    color: '#FF9500',
+    darkColor: '#cc7700',
+  },
+  {
+    level: 5,
+    data: level5V2,
+    puzzleDir: '1200-1600',  // Level 5 lessons are rated 1400-1650
+    treeId: '1400-1600',
+    color: '#FF4B4B',
+    darkColor: '#cc3030',
+  },
 ];
 
 /**

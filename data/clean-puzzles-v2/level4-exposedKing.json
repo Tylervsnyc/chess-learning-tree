@@ -1,0 +1,5619 @@
+{
+  "level": 4,
+  "ratingRange": "1200-1400",
+  "theme": "exposedKing",
+  "count": 348,
+  "puzzles": [
+    {
+      "puzzleId": "fqrLI",
+      "fen": "2r3r1/p6k/bpp1p3/3pPq2/2P1pbR1/PP2P3/1B3P1K/5QR1 w - - 0 31",
+      "moves": "g4f4 f5h5 f1h3 h5h3 h2h3 g8g1",
+      "rating": 1200,
+      "popularity": 97,
+      "nbPlays": 3088,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/8uvCaL0F#61"
+    },
+    {
+      "puzzleId": "ZlA0K",
+      "fen": "r2q1rk1/p1p1bppp/1p2b3/4P3/3P2n1/P1NBP3/1P4PP/R1BQK2R w KQ - 1 13",
+      "moves": "h2h3 e7h4 g2g3 h4g3 e1d2 g4f2",
+      "rating": 1203,
+      "popularity": 94,
+      "nbPlays": 12128,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/anI7wsbh#25"
+    },
+    {
+      "puzzleId": "x0L0r",
+      "fen": "5rk1/ppp3b1/3p1q1p/3PpB2/6Q1/6P1/PPP4P/R1B2K2 w - - 1 23",
+      "moves": "c1h6 f6f5 g4f5 f8f5 f1g2 g7h6",
+      "rating": 1204,
+      "popularity": 99,
+      "nbPlays": 2740,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/h8yGITJY#45"
+    },
+    {
+      "puzzleId": "qkPRr",
+      "fen": "4r2k/pb3p1p/5qpQ/1p6/2pP3R/2P5/PPBN3P/4K3 w - - 1 30",
+      "moves": "e1d1 b7f3 d1c1 e8e1 c2d1 e1d1 c1c2 f6f5",
+      "rating": 1205,
+      "popularity": 96,
+      "nbPlays": 9073,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/4tb8M6Dg#59"
+    },
+    {
+      "puzzleId": "6AmvB",
+      "fen": "2kr4/pppb4/6Q1/3Pp1RP/2P1p3/P1q1P3/3N3P/R3K3 w Q - 1 25",
+      "moves": "a1b1 c3e3 e1d1 d7a4 b1b3 a4b3 d2b3 e3b3",
+      "rating": 1205,
+      "popularity": 94,
+      "nbPlays": 1624,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "master",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/pYgsbZAB#49"
+    },
+    {
+      "puzzleId": "q3ltV",
+      "fen": "2kN3r/ppp3pp/8/1q6/1b1P1n2/1BP2P2/PP1K1BnP/R2Q3R w - - 2 21",
+      "moves": "c3b4 b5d3 d2c1 f4e2 d1e2 d3e2",
+      "rating": 1205,
+      "popularity": 92,
+      "nbPlays": 6042,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DINJo05P#41"
+    },
+    {
+      "puzzleId": "NCOFQ",
+      "fen": "6rk/5pq1/p1pr3p/1p5R/7R/P4NP1/1PB2PK1/8 b - - 3 41",
+      "moves": "d6g6 c2g6 f7g6 h5h6 g7h6 h4h6",
+      "rating": 1206,
+      "popularity": 94,
+      "nbPlays": 10636,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6TjubIaa/black#82"
+    },
+    {
+      "puzzleId": "7FW00",
+      "fen": "6k1/1pp3pp/p4pq1/3P4/5B2/P1N5/1P2QKB1/1r6 w - - 0 30",
+      "moves": "g2e4 g6g1 f2f3 b1f1 e2f1 g1f1",
+      "rating": 1206,
+      "popularity": 86,
+      "nbPlays": 1164,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/uhUmzypA#59"
+    },
+    {
+      "puzzleId": "ZB1zr",
+      "fen": "3r2k1/3r2p1/6bp/2B5/1P4P1/p1R2P2/P3R1P1/2K5 w - - 21 48",
+      "moves": "c3a3 d7d1 c1b2 d1b1 b2c3 d8d3",
+      "rating": 1207,
+      "popularity": 98,
+      "nbPlays": 2843,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/LUntI8O6#95"
+    },
+    {
+      "puzzleId": "O5tmo",
+      "fen": "r1b1kbnr/pp3ppp/4p3/3pP3/3n1P2/4B1P1/Pq5P/RN1QKBNR w KQkq - 0 9",
+      "moves": "e3d4 f8b4 d4c3 b4c3 b1c3 b2c3",
+      "rating": 1207,
+      "popularity": 96,
+      "nbPlays": 29296,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/l4olw82w#17"
+    },
+    {
+      "puzzleId": "7E3r3",
+      "fen": "3r4/5p1p/2k3p1/2p1P3/ppP5/5N1P/P1K2PP1/1R6 w - - 0 40",
+      "moves": "b1d1 b4b3 a2b3 a4b3 c2b3 d8d1",
+      "rating": 1208,
+      "popularity": 88,
+      "nbPlays": 2079,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/2fWzs3r5#79"
+    },
+    {
+      "puzzleId": "QPRz8",
+      "fen": "4r1k1/6pp/1pbQ1p2/8/q1P3P1/P6P/1B6/K1R5 w - - 4 40",
+      "moves": "d6b4 a4b4 a3b4 e8a8 a1b1 c6e4",
+      "rating": 1209,
+      "popularity": 93,
+      "nbPlays": 2143,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/ToDXkxnJ#79"
+    },
+    {
+      "puzzleId": "Xs6dn",
+      "fen": "4b2r/p6P/n1p1p1k1/1p2P3/3P4/P2K4/6P1/5R1R b - - 0 33",
+      "moves": "h8h7 f1f6 g6g7 h1h7 g7h7 f6e6",
+      "rating": 1210,
+      "popularity": 94,
+      "nbPlays": 1117,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/OU7tM9KW/black#66"
+    },
+    {
+      "puzzleId": "tUK0B",
+      "fen": "r2qkb1r/pQ5p/5p2/3ppb2/3Rp3/2N2P2/PP4PP/2K2BNR b kq - 0 12",
+      "moves": "e5d4 f1b5 f5d7 b5d7 d8d7 b7a8",
+      "rating": 1211,
+      "popularity": 94,
+      "nbPlays": 1162,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/tT7fAwEd/black#24"
+    },
+    {
+      "puzzleId": "m2sO9",
+      "fen": "1q2rk2/1b3n1p/1p1p2p1/1PpP1p2/2P2P2/2N1bBPP/1B2Q3/4R2K b - - 0 32",
+      "moves": "e3f4 e2e8 b8e8 e1e8 f8e8 g3f4",
+      "rating": 1214,
+      "popularity": 88,
+      "nbPlays": 2025,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/lShpyQm5/black#64"
+    },
+    {
+      "puzzleId": "8ODrL",
+      "fen": "qk5r/2p3R1/3p3p/1p1b1Q2/1P4P1/P2P3P/7N/4R1K1 w - - 3 27",
+      "moves": "f5d7 a8a7 g1f1 h8f8 d7f5 f8f5",
+      "rating": 1215,
+      "popularity": 97,
+      "nbPlays": 3529,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/NIewonrc#53"
+    },
+    {
+      "puzzleId": "TFJLX",
+      "fen": "8/pp3pk1/4p1b1/3pP2Q/7P/1P2P3/B2q1P1K/6R1 w - - 2 35",
+      "moves": "a2b1 d2f2 g1g2 f2g2 h2g2 g6h5",
+      "rating": 1215,
+      "popularity": 94,
+      "nbPlays": 2060,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/NelFUpdl#69"
+    },
+    {
+      "puzzleId": "k1SUN",
+      "fen": "rn2kb1r/ppp1pppp/8/8/3P2n1/1PN1q3/PBP1N2P/R2QKB1R w KQkq - 1 11",
+      "moves": "d1d2 e3f2 e1d1 g4e3 d1c1 e3f1",
+      "rating": 1215,
+      "popularity": 92,
+      "nbPlays": 4112,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/RnZGexXk#21"
+    },
+    {
+      "puzzleId": "1sdEX",
+      "fen": "B7/6pk/1p6/6Pp/P2qbp1P/4r3/8/2RQ1R1K w - - 3 37",
+      "moves": "a8e4 d4e4 h1h2 e3e2 d1e2 e4e2",
+      "rating": 1216,
+      "popularity": 98,
+      "nbPlays": 1172,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/4twZhAaF#73"
+    },
+    {
+      "puzzleId": "Oy8Oe",
+      "fen": "r1b1r1k1/3n1ppp/pqp1p3/2bpP3/8/P1N1BP2/1PPQB1PP/1R2K2R w K - 3 15",
+      "moves": "c3a4 c5e3 a4b6 e3d2 e1d2 d7b6",
+      "rating": 1216,
+      "popularity": 97,
+      "nbPlays": 1654,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/MB4hJWoW#29"
+    },
+    {
+      "puzzleId": "nxLkA",
+      "fen": "1k1r4/2pb4/1p6/pP2q2P/P1P2p2/3QP3/2K2P2/2R4R w - - 0 32",
+      "moves": "d3e2 d7f5 c2b3 d8d3 e2d3 f5d3",
+      "rating": 1216,
+      "popularity": 93,
+      "nbPlays": 7075,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/cfaNpUqK#63"
+    },
+    {
+      "puzzleId": "sK33o",
+      "fen": "1k2r3/1b6/p3p2p/1p2P3/1P6/2NqB2P/6r1/R1RQ3K b - - 3 32",
+      "moves": "d3e3 d1d6 b8a8 a1a6 e3a7 a6a7",
+      "rating": 1216,
+      "popularity": 91,
+      "nbPlays": 2723,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/BdO3I20n/black#64"
+    },
+    {
+      "puzzleId": "vzRaf",
+      "fen": "2k5/1p3p2/p1p5/3rPp2/1P6/1Q2RKB1/3q2P1/8 w - - 0 34",
+      "moves": "b3c3 d2d1 f3f2 d5d2 c3d2 d1d2",
+      "rating": 1217,
+      "popularity": 94,
+      "nbPlays": 1277,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/7SMVOK0h#67"
+    },
+    {
+      "puzzleId": "OEtTO",
+      "fen": "2rk1b1r/2q2p2/2p5/3pp3/7p/1N1P3P/PPPQ1P1B/R3K3 b Q - 5 25",
+      "moves": "c8b8 d2g5 c7e7 g5e7 d8e7 h2e5",
+      "rating": 1217,
+      "popularity": 87,
+      "nbPlays": 1850,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/3gRRvW6g/black#50"
+    },
+    {
+      "puzzleId": "36Mxu",
+      "fen": "r1b1rk2/p2nq2p/2p5/8/1P1bpPp1/PQN3P1/1B4BP/R3RK2 w - - 0 23",
+      "moves": "c3e4 c8a6 b4b5 a6b5 b3b5 c6b5",
+      "rating": 1220,
+      "popularity": 98,
+      "nbPlays": 2075,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/NnOWlP54#45"
+    },
+    {
+      "puzzleId": "cW2rY",
+      "fen": "r1bqr3/1pp2pp1/p1n1p1k1/4R3/P7/B1P2N2/2PP1PPP/3Q2K1 b - - 3 16",
+      "moves": "c6e5 f3e5 g6h7 d1h5 h7g8 h5f7",
+      "rating": 1222,
+      "popularity": 93,
+      "nbPlays": 2617,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/1OefmGcp/black#32"
+    },
+    {
+      "puzzleId": "XEfX0",
+      "fen": "r6k/1p4pp/q7/4P3/1P2R3/5N2/BK3PPP/3R4 w - - 1 25",
+      "moves": "d1a1 a6a3 b2c2 a8c8 e4c4 c8c4 a2c4 a3a1",
+      "rating": 1223,
+      "popularity": 90,
+      "nbPlays": 1826,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/ZTofsMCI#49"
+    },
+    {
+      "puzzleId": "wFV7f",
+      "fen": "4r2k/3R2pp/5r2/8/P1Q2n2/6N1/1PP2PbK/8 w - - 5 29",
+      "moves": "c4d4 f6h6 g3h5 h6h5 h2g3 f4e2",
+      "rating": 1224,
+      "popularity": 95,
+      "nbPlays": 26440,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/sAab0F0y#57"
+    },
+    {
+      "puzzleId": "lf4zM",
+      "fen": "4k2r/6pp/3r1p2/pp2qn2/3ppNQ1/P6P/1PP2RP1/R5K1 b k - 3 27",
+      "moves": "g7g6 f4g6 h7g6 g4g6 e8d8 f2f5",
+      "rating": 1226,
+      "popularity": 92,
+      "nbPlays": 2161,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/B0holjCL/black#54"
+    },
+    {
+      "puzzleId": "6Q2ax",
+      "fen": "2r1k3/1p1qb1p1/p3p3/3pP1N1/PnnP2Pr/2N1BQ2/1P6/2R2RK1 b - - 1 22",
+      "moves": "c4e3 f3f7 e8d8 g5e6 d7e6 f7e6",
+      "rating": 1227,
+      "popularity": 97,
+      "nbPlays": 3010,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ImJop8Jo/black#44"
+    },
+    {
+      "puzzleId": "tLCnQ",
+      "fen": "5rk1/1pp2ppp/4q3/2p5/7P/1K6/2P1BPP1/Q3R3 w - - 4 24",
+      "moves": "e2c4 e6b6 b3c3 b6b4 c3d3 f8d8",
+      "rating": 1228,
+      "popularity": 99,
+      "nbPlays": 2029,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/smVUqw2e#47"
+    },
+    {
+      "puzzleId": "xD4Vb",
+      "fen": "bnR1k2r/p4ppp/1q6/3pP3/1B6/P5P1/4B1KP/8 b k - 1 22",
+      "moves": "e8d7 e2g4 b6e6 g4e6 d7e6 c8h8",
+      "rating": 1228,
+      "popularity": 97,
+      "nbPlays": 30092,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6WxeZcUb/black#44"
+    },
+    {
+      "puzzleId": "mKBzS",
+      "fen": "r2R2k1/2q5/1pP1p3/1Pn1Pb1p/3Q1Pp1/r3p1PP/5NB1/3R2K1 b - - 1 33",
+      "moves": "a8d8 d4d8 c7d8 d1d8 g8g7 c6c7",
+      "rating": 1228,
+      "popularity": 95,
+      "nbPlays": 3815,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/lVXbL0kS/black#66"
+    },
+    {
+      "puzzleId": "jpoYM",
+      "fen": "rn1qk2r/p1p3pp/1p1ppb2/4N2Q/2P1b3/8/PP3PPP/RN2KB1R b KQkq - 1 10",
+      "moves": "e4g6 e5g6 h7g6 h5h8 e8d7 h8d8",
+      "rating": 1228,
+      "popularity": 91,
+      "nbPlays": 1043,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/SkHRcpoJ/black#20"
+    },
+    {
+      "puzzleId": "4jtm6",
+      "fen": "rnb1qrk1/pp2p1bp/2pp2p1/5p2/1PPP1Pn1/P3PN2/1B1N2PP/R2QKB1R w KQ - 2 10",
+      "moves": "f1e2 g4e3 d1b3 e3g2 e1f1 g2f4",
+      "rating": 1228,
+      "popularity": 88,
+      "nbPlays": 2073,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/w59HjO5X#19"
+    },
+    {
+      "puzzleId": "IKU5W",
+      "fen": "5k1r/pp6/6p1/8/1q6/2r2P2/P1P1Q1PP/2K1R3 b - - 1 28",
+      "moves": "c3c6 e2e8 f8g7 e1e7 b4e7 e8e7",
+      "rating": 1229,
+      "popularity": 96,
+      "nbPlays": 2854,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/obnojNkx/black#56"
+    },
+    {
+      "puzzleId": "P8f3W",
+      "fen": "2r5/7p/3k1pp1/R7/1P1pp1P1/Pb6/3K1P1P/R7 w - - 2 32",
+      "moves": "a1c1 e4e3 f2e3 d4e3 d2e3 c8c1",
+      "rating": 1232,
+      "popularity": 98,
+      "nbPlays": 2242,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/41u6NlzM#63"
+    },
+    {
+      "puzzleId": "QqBIn",
+      "fen": "r1b1k2r/ppb2q1p/2pp3Q/4p3/8/2N2N1P/PPP2PP1/R3R1K1 b kq - 0 16",
+      "moves": "c8e6 f3g5 f7g6 h6g6 h7g6 g5e6",
+      "rating": 1232,
+      "popularity": 93,
+      "nbPlays": 3270,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/YLtcia3B/black#32"
+    },
+    {
+      "puzzleId": "33lje",
+      "fen": "8/6b1/3pB3/2p2Rk1/1p1r2P1/1P3K2/8/8 b - - 31 53",
+      "moves": "g5g6 e6f7 g6h7 f5h5 g7h6 g4g5",
+      "rating": 1233,
+      "popularity": 95,
+      "nbPlays": 1132,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/sejRsPiA/black#106"
+    },
+    {
+      "puzzleId": "CCU5O",
+      "fen": "2kr4/p1q2p1p/Pppbpn1r/5p2/1P1P4/3B1P1P/2PB1PQ1/R5RK b - - 10 25",
+      "moves": "d8g8 g2g8 f6g8 g1g8 c8d7 d2h6",
+      "rating": 1233,
+      "popularity": 92,
+      "nbPlays": 5212,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/zx7DJL4O/black#50"
+    },
+    {
+      "puzzleId": "n29Bs",
+      "fen": "r3qb1r/pp1np2k/2p2n2/4N1Q1/3P4/4R3/PPP2PPP/R5K1 b - - 2 16",
+      "moves": "d7e5 e3h3 f6h5 h3h5 e8h5 g5h5",
+      "rating": 1234,
+      "popularity": 97,
+      "nbPlays": 1575,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/XfFNT4RP/black#32"
+    },
+    {
+      "puzzleId": "RIAPR",
+      "fen": "8/6k1/4R3/5pN1/1p1p1Pp1/pP1P2P1/P2bp1K1/8 b - - 1 55",
+      "moves": "e2e1q e6e1 d2e1 g5e6 g7g8 e6d4",
+      "rating": 1235,
+      "popularity": 96,
+      "nbPlays": 2161,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/vMZMcnLQ/black#110"
+    },
+    {
+      "puzzleId": "ZzHdh",
+      "fen": "rnb1kr2/pp3p1p/1qp5/3pQ3/8/5N1P/PP2KbP1/R1B2B1R b q - 2 13",
+      "moves": "e8d8 c1g5 f7f6 g5f6 f8f6 e5f6",
+      "rating": 1235,
+      "popularity": 95,
+      "nbPlays": 10583,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/khdIcfye/black#26"
+    },
+    {
+      "puzzleId": "AJqPp",
+      "fen": "4rk2/pp6/2p2pp1/3p3n/3P4/8/PPP1N2R/1K6 b - - 3 32",
+      "moves": "h5g3 h2h8 f8e7 h8e8 e7e8 e2g3",
+      "rating": 1235,
+      "popularity": 91,
+      "nbPlays": 2527,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3TD0BwVQ/black#64"
+    },
+    {
+      "puzzleId": "FayZ8",
+      "fen": "1r1n1rk1/p1p4p/1p4B1/3P4/1P1Q2R1/P1N2q2/5K2/7R w - - 0 36",
+      "moves": "f2g1 f3f1 g1h2 f8f2 d4f2 f1f2",
+      "rating": 1236,
+      "popularity": 98,
+      "nbPlays": 1168,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DAqj6ToD#71"
+    },
+    {
+      "puzzleId": "5LMBX",
+      "fen": "1r3r1k/1b1Q4/p7/3pb2p/P6q/2P1B1P1/1P3P2/R4RK1 b - - 0 24",
+      "moves": "e5g3 e3d4 f8f6 d4f6 h4f6 f2g3",
+      "rating": 1238,
+      "popularity": 93,
+      "nbPlays": 3564,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/lLkpSAWL/black#48"
+    },
+    {
+      "puzzleId": "iXdvl",
+      "fen": "3q4/5p1k/6p1/4pP2/1n2P1Qp/3r4/6PP/5R1K b - - 4 35",
+      "moves": "g6g5 g4h5 h7g7 f5f6 d8f6 f1f6",
+      "rating": 1238,
+      "popularity": 92,
+      "nbPlays": 2328,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/BM8AQwPW/black#70"
+    },
+    {
+      "puzzleId": "naLcr",
+      "fen": "8/4qb2/2kr4/3p1Bbp/2pPP3/1pP2Q2/1P1B3P/6RK b - - 0 62",
+      "moves": "d5e4 f5e4 e7e4 f3e4 f7d5 e4d5",
+      "rating": 1239,
+      "popularity": 91,
+      "nbPlays": 1489,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/gVwhxeD5/black#124"
+    },
+    {
+      "puzzleId": "o9nAp",
+      "fen": "r3r3/p1p2k2/3q4/3P1p1Q/Pp2p3/1P1n4/3N2PP/2R1b2K b - - 2 27",
+      "moves": "d6g6 c1c7 e8e7 c7e7 f7e7 h5g6",
+      "rating": 1240,
+      "popularity": 100,
+      "nbPlays": 2059,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/2KNOkxFE/black#54"
+    },
+    {
+      "puzzleId": "eosFh",
+      "fen": "1R6/4k1p1/1p4Bp/p1p1r2P/4n3/P7/1PP5/2K5 b - - 2 37",
+      "moves": "e5e6 b8e8 e7d6 e8e6 d6e6 g6e4",
+      "rating": 1240,
+      "popularity": 88,
+      "nbPlays": 3549,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/kjkriTyd/black#74"
+    },
+    {
+      "puzzleId": "Hj1jI",
+      "fen": "r3k2r/1pR3p1/4p3/p4p2/4p1p1/P3P1P1/1q3P1P/3Q1RK1 b kq - 1 22",
+      "moves": "b2f6 d1d7 e8f8 c7c8 a8c8 d7c8",
+      "rating": 1241,
+      "popularity": 97,
+      "nbPlays": 1817,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/obYVooU6/black#44"
+    },
+    {
+      "puzzleId": "wwuHV",
+      "fen": "2n2r1R/pQp1nkr1/4p1p1/2q2pP1/5P2/P2PP1P1/4N3/R3K1N1 w Q - 2 27",
+      "moves": "d3d4 c5a5 b7b4 a5b4 a3b4 f8h8",
+      "rating": 1241,
+      "popularity": 92,
+      "nbPlays": 1384,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/3B0KXuil#53"
+    },
+    {
+      "puzzleId": "F19qD",
+      "fen": "7k/ppp2pr1/2p4p/4r3/4BR2/P1PR2P1/1P4KP/3b4 b - - 9 30",
+      "moves": "d1c2 d3d8 g7g8 d8g8 h8g8 e4c2",
+      "rating": 1242,
+      "popularity": 99,
+      "nbPlays": 2404,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/uStTnnSg/black#60"
+    },
+    {
+      "puzzleId": "zxpf0",
+      "fen": "4r1k1/6b1/2p3pp/p3r1q1/2P5/PPQ2R2/5PPP/3R2K1 b - - 0 35",
+      "moves": "e5e1 d1e1 g7c3 e1e8 g8g7 f3c3",
+      "rating": 1242,
+      "popularity": 95,
+      "nbPlays": 2262,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/nc9m66IR/black#70"
+    },
+    {
+      "puzzleId": "hcP0B",
+      "fen": "5k2/8/5N1p/2p2P1P/2P2bP1/4p3/1r6/3R1K2 w - - 0 49",
+      "moves": "d1e1 b2f2 f1g1 f4h2 g1h1 e3e2",
+      "rating": 1242,
+      "popularity": 93,
+      "nbPlays": 1005,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/wlVwtipu#97"
+    },
+    {
+      "puzzleId": "DtWbC",
+      "fen": "r2nqr2/pppb2p1/7k/3p1pNP/3P1PP1/P1PQP3/5K2/R6R b - - 0 19",
+      "moves": "d8f7 g5f7 f8f7 g4g5 h6h7 g5g6",
+      "rating": 1244,
+      "popularity": 87,
+      "nbPlays": 1057,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/wsat9yzq/black#38"
+    },
+    {
+      "puzzleId": "ksFkC",
+      "fen": "6k1/4p3/4R1pb/1N5p/P7/1P1R3P/2r2KP1/2r5 w - - 1 33",
+      "moves": "f2f3 c1f1 f3e4 c2e2 e4d5 f1f5",
+      "rating": 1245,
+      "popularity": 99,
+      "nbPlays": 1568,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/NIwvGF9x#65"
+    },
+    {
+      "puzzleId": "4BsAF",
+      "fen": "r1bq4/ppp1kB2/5bp1/4p2r/4P3/1QN5/PPP3PP/R3K2R w KQ - 0 15",
+      "moves": "f7g6 f6h4 e1f1 d8f8 b3f7 f8f7",
+      "rating": 1245,
+      "popularity": 97,
+      "nbPlays": 1546,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ElSBKosw#29"
+    },
+    {
+      "puzzleId": "auyWH",
+      "fen": "1k3b1N/ppp1p1p1/2n2n2/3r3p/2NP2q1/3BP3/PPQ2P1K/R1B2R2 w - - 3 16",
+      "moves": "f1g1 g4h4 h2g2 d5g5 g2f1 h4h3",
+      "rating": 1247,
+      "popularity": 94,
+      "nbPlays": 9168,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/WSZLxzRL#31"
+    },
+    {
+      "puzzleId": "8CLhB",
+      "fen": "r5k1/ppP2p1p/2p3pq/2P1r3/8/4pB2/PPQ2PK1/3R1R2 w - - 3 28",
+      "moves": "f2e3 e5g5 f3g4 g5g4 g2f3 h6h3",
+      "rating": 1248,
+      "popularity": 95,
+      "nbPlays": 1974,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/WNnWsQD3#55"
+    },
+    {
+      "puzzleId": "whJRj",
+      "fen": "rn3rk1/ppp2ppp/3bp3/5b2/3P3q/2N2QN1/PP4PP/R1B1KB1R w KQ - 4 11",
+      "moves": "f1d3 d6g3 f3g3 h4g3 h2g3 f5d3",
+      "rating": 1248,
+      "popularity": 93,
+      "nbPlays": 3261,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "master",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/fCuZvKj6#21"
+    },
+    {
+      "puzzleId": "QLG5V",
+      "fen": "r5k1/2q2p2/4pNp1/1n4B1/1b1p4/3R4/PP3PPP/1K5R b - - 3 21",
+      "moves": "g8h8 d3h3 h8g7 h3h7 g7f8 h7h8",
+      "rating": 1250,
+      "popularity": 97,
+      "nbPlays": 1389,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/4l1Phd0n/black#42"
+    },
+    {
+      "puzzleId": "JHMot",
+      "fen": "q3kr2/4n3/p3Q2p/4p3/2p1P3/P7/1PP3P1/2KR4 b - - 2 31",
+      "moves": "a8e4 e6d7 e8f7 d1f1 e4f4 f1f4",
+      "rating": 1250,
+      "popularity": 91,
+      "nbPlays": 6110,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/lnl1p9Cj/black#62"
+    },
+    {
+      "puzzleId": "GO1NP",
+      "fen": "r3k2r/1p1q3p/p1n2Qp1/4pb2/8/8/PPP1RPPP/4R1K1 b kq - 0 21",
+      "moves": "h8f8 e2e5 c6e5 e1e5 f5e6 e5e6 d7e6 f6e6",
+      "rating": 1251,
+      "popularity": 98,
+      "nbPlays": 6798,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/8CWNlIEL/black#42"
+    },
+    {
+      "puzzleId": "XowTq",
+      "fen": "r7/6k1/2R5/pp1N1b2/5p2/P7/1PP2qP1/2K4R b - - 0 32",
+      "moves": "f2g2 c6c7 g7f8 h1h8 g2g8 h8g8",
+      "rating": 1251,
+      "popularity": 97,
+      "nbPlays": 1528,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/keTpr9Mh/black#64"
+    },
+    {
+      "puzzleId": "BWwBo",
+      "fen": "6k1/1pp3R1/p3pPB1/7p/5q2/8/2P3KP/8 b - - 3 33",
+      "moves": "g8h8 g7h7 h8g8 f6f7 g8f8 h7h8",
+      "rating": 1251,
+      "popularity": 92,
+      "nbPlays": 1348,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gxtvebKu/black#66"
+    },
+    {
+      "puzzleId": "D74BK",
+      "fen": "5k1r/1rp1q3/1p1p1nQp/p2P4/P1n2R2/2P3P1/7P/6K1 b - - 0 29",
+      "moves": "h8g8 f4f6 e7f6 g6f6 f8e8 f6e6",
+      "rating": 1251,
+      "popularity": 91,
+      "nbPlays": 3023,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/mQa3BWVn/black#58"
+    },
+    {
+      "puzzleId": "iCLyI",
+      "fen": "5q2/p6p/2k2r2/3Q2R1/8/3p4/PP5P/7K b - - 2 43",
+      "moves": "c6b6 d5b5 b6c7 g5c5 f8c5 b5c5",
+      "rating": 1251,
+      "popularity": 91,
+      "nbPlays": 1459,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/dbuC6Rfg/black#86"
+    },
+    {
+      "puzzleId": "qYHCk",
+      "fen": "6k1/1b1r2p1/p5Rp/1p1r4/8/P2B2R1/1P1K2PP/8 w - - 11 36",
+      "moves": "g6h6 d5d3 g3d3 d7d3 d2d3 g7h6",
+      "rating": 1252,
+      "popularity": 88,
+      "nbPlays": 1192,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/BS4ZiRm3#71"
+    },
+    {
+      "puzzleId": "cjcWl",
+      "fen": "2k4r/ppp2Q2/4P1p1/2b3Np/8/2P4P/PP2K2q/R3R3 w - - 7 32",
+      "moves": "e2d1 h8d8 f7d7 d8d7 e6d7 c8d7",
+      "rating": 1253,
+      "popularity": 93,
+      "nbPlays": 13633,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/gNwo4LvW#63"
+    },
+    {
+      "puzzleId": "vyYjk",
+      "fen": "6rk/2p2pq1/4p3/Q3b3/5pP1/3R3P/PrP2N2/2R3K1 b - - 0 29",
+      "moves": "e5d4 a5h5 g7h7 h5h7 h8h7 d3d4",
+      "rating": 1253,
+      "popularity": 92,
+      "nbPlays": 1633,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/URnPuDcC/black#58"
+    },
+    {
+      "puzzleId": "l57Ok",
+      "fen": "5k2/p2r1pp1/3b4/8/8/1QP2RPP/PP1r3K/8 w - - 1 30",
+      "moves": "h2g1 d6c5 g1f1 d2d1 b3d1 d7d1",
+      "rating": 1254,
+      "popularity": 96,
+      "nbPlays": 5797,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/q9M1aOIq#59"
+    },
+    {
+      "puzzleId": "ajkWL",
+      "fen": "r5r1/pp2q2k/2p1ppp1/4Q2R/3P1P1P/2P5/P1PK4/1R6 b - - 0 29",
+      "moves": "g6h5 e5h5 h7g7 b1g1 g7f8 h5h6 e7g7 g1g7",
+      "rating": 1255,
+      "popularity": 96,
+      "nbPlays": 3253,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/0abcNtey/black#58"
+    },
+    {
+      "puzzleId": "aWyVG",
+      "fen": "7R/5kp1/1p3r2/3Pq3/1P2p2Q/P6P/5P2/7K w - - 3 46",
+      "moves": "h4h7 e5a1 h1g2 f6g6 h7g6 f7g6",
+      "rating": 1255,
+      "popularity": 94,
+      "nbPlays": 1561,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/8MbcaRVQ#91"
+    },
+    {
+      "puzzleId": "Auowz",
+      "fen": "2k2r1r/7p/pqb1pRnQ/1p4p1/8/1PNP2P1/1PP3PP/5R1K b - - 9 21",
+      "moves": "b6d4 f6f8 h8f8 f1f8 g6f8 h6f8",
+      "rating": 1256,
+      "popularity": 97,
+      "nbPlays": 1247,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/2p37NPQI/black#42"
+    },
+    {
+      "puzzleId": "s7NUs",
+      "fen": "q5kr/p1Q3p1/8/1p3PB1/2P5/8/PP6/R3b1K1 w - - 1 27",
+      "moves": "a1e1 a8h1 g1f2 h8h2 c7h2 h1h2",
+      "rating": 1256,
+      "popularity": 93,
+      "nbPlays": 10544,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/eAFVxv9y#53"
+    },
+    {
+      "puzzleId": "OIbAc",
+      "fen": "5r1k/6pp/q7/6b1/1PR2N2/P4QPP/8/5K2 w - - 0 32",
+      "moves": "f3d3 g5f4 g3f4 f8f4 c4f4 a6d3",
+      "rating": 1257,
+      "popularity": 97,
+      "nbPlays": 2723,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/pwWC78FB#63"
+    },
+    {
+      "puzzleId": "XXrVT",
+      "fen": "r1b2R2/ppp4k/3p2q1/7p/8/1B6/PPP3PP/5R1K b - - 2 24",
+      "moves": "g6g4 f1f7 h7h6 f8h8 h6g6 h8g8",
+      "rating": 1259,
+      "popularity": 92,
+      "nbPlays": 5307,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Yr74RgZx/black#48"
+    },
+    {
+      "puzzleId": "JeQmk",
+      "fen": "r2q2k1/ppp3pp/2n5/2b1pr2/6b1/2P4P/P2PNPBK/R1BQ1R2 w - - 0 14",
+      "moves": "h3g4 d8h4 g2h3 f5f2 f1f2 h4f2",
+      "rating": 1260,
+      "popularity": 94,
+      "nbPlays": 6584,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DfVlWIrR#27"
+    },
+    {
+      "puzzleId": "xyVoH",
+      "fen": "5R2/2Rbk2r/1P6/3Pp3/8/3P2P1/1PP4r/6K1 w - - 2 35",
+      "moves": "b6b7 h2h1 g1f2 h7h2 f2f3 h1f1",
+      "rating": 1260,
+      "popularity": 94,
+      "nbPlays": 1437,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/GI1H7rKY#69"
+    },
+    {
+      "puzzleId": "0woKu",
+      "fen": "r2Rk3/p7/1pp3bp/4rq2/7Q/2P1P3/P4PPP/3R2K1 b - - 3 26",
+      "moves": "a8d8 h4d8 e8f7 d1d7 f5d7 d8d7",
+      "rating": 1262,
+      "popularity": 99,
+      "nbPlays": 1267,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jyrkRUKC/black#52"
+    },
+    {
+      "puzzleId": "MZnav",
+      "fen": "5k2/p1r3p1/1p3N2/5P2/4P3/P5R1/KP4RP/3q4 b - - 4 37",
+      "moves": "g7f6 g3g8 f8e7 g2g7 e7d6 g8d8",
+      "rating": 1263,
+      "popularity": 97,
+      "nbPlays": 3521,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "queenRookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/gtbqjLLT/black#74"
+    },
+    {
+      "puzzleId": "ldlir",
+      "fen": "r1bqk2r/1p1pbpp1/p1n1p3/2p4p/P3PPn1/1PNP1N2/2P1B1PP/R1BQK2R w KQkq - 1 9",
+      "moves": "h2h3 e7h4 f3h4 d8h4 e1d2 g4f2",
+      "rating": 1263,
+      "popularity": 97,
+      "nbPlays": 7160,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/JhTG8p2Z#17"
+    },
+    {
+      "puzzleId": "FujMQ",
+      "fen": "8/1r2r2k/p4p1q/2pQ1P2/1p2PRn1/6P1/PP1R3P/6K1 b - - 6 39",
+      "moves": "b7d7 d5d7 e7d7 d2d7 h7g8 f4g4",
+      "rating": 1264,
+      "popularity": 87,
+      "nbPlays": 2562,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/k2016Cn9/black#78"
+    },
+    {
+      "puzzleId": "GbEVU",
+      "fen": "6k1/8/p5p1/7p/3p4/1p2b1PK/2q5/Q4R2 b - - 5 49",
+      "moves": "b3b2 a1a2 g8g7 a2f7 g7h6 f7f8",
+      "rating": 1265,
+      "popularity": 93,
+      "nbPlays": 1927,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/95oBQacy/black#98"
+    },
+    {
+      "puzzleId": "cAreG",
+      "fen": "3rk3/1Qp1q2p/1b2B1n1/pP6/P4r2/2N5/2K3PP/R6R w - - 0 22",
+      "moves": "a1e1 f4f2 e1e2 f2e2 c3e2 e7e6",
+      "rating": 1265,
+      "popularity": 90,
+      "nbPlays": 2547,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/kRgFn4F1#43"
+    },
+    {
+      "puzzleId": "Gw0PV",
+      "fen": "r5k1/5r2/pq2pbQp/1b6/8/6B1/PP3PPP/1B1R2K1 b - - 0 26",
+      "moves": "f6g7 g6h7 g8f8 g3d6 b6d6 d1d6",
+      "rating": 1267,
+      "popularity": 94,
+      "nbPlays": 1399,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/LjCKlve9/black#52"
+    },
+    {
+      "puzzleId": "2hq7S",
+      "fen": "5n1Q/pp3k2/2p1q3/8/8/2Pr4/PP4r1/RK3R2 b - - 3 38",
+      "moves": "f7e7 h8f8 e7d7 f1f7 e6f7 f8f7",
+      "rating": 1268,
+      "popularity": 94,
+      "nbPlays": 4877,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/JXNrtAgw/black#76"
+    },
+    {
+      "puzzleId": "TorO7",
+      "fen": "3r2k1/6p1/p2q3p/3p4/2nQ4/6P1/5R1P/5RK1 w - - 0 38",
+      "moves": "h2h4 d6g3 f2g2 g3e3 d4e3 c4e3",
+      "rating": 1268,
+      "popularity": 94,
+      "nbPlays": 1858,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/DEkTeX68#75"
+    },
+    {
+      "puzzleId": "IGtxC",
+      "fen": "3r2k1/1p3p1p/1P2p1p1/4P3/3q4/8/3NQ2P/R2KR3 w - - 0 29",
+      "moves": "a1b1 d4a4 d1c1 d8c8 e2c4 c8c4",
+      "rating": 1268,
+      "popularity": 92,
+      "nbPlays": 1447,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/MTA6hCah#57"
+    },
+    {
+      "puzzleId": "NTpmX",
+      "fen": "5r2/1p5k/p6p/3p2p1/3Nr3/1PP1P2R/1P4K1/6R1 w - - 0 43",
+      "moves": "g1f1 e4g4 h3g3 g4g3 g2g3 f8f1",
+      "rating": 1269,
+      "popularity": 98,
+      "nbPlays": 1381,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/zDlJhITm#85"
+    },
+    {
+      "puzzleId": "RVahw",
+      "fen": "7r/6k1/3p1p1q/1pp1p1n1/p3P1Q1/P2P4/BPPB2K1/5R2 w - - 1 41",
+      "moves": "d2g5 h6h2 g2f3 h8h3 g4h3 h2h3",
+      "rating": 1269,
+      "popularity": 94,
+      "nbPlays": 1270,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jNl5JVQB#81"
+    },
+    {
+      "puzzleId": "e0LIy",
+      "fen": "5k2/7p/pq1p1Qp1/1ppP1p2/5P2/1P6/P3r1PP/5R1K b - - 1 23",
+      "moves": "f8e8 f6h8 e8d7 h8h7 e2e7 h7g6",
+      "rating": 1269,
+      "popularity": 88,
+      "nbPlays": 1329,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3kTMqH4f/black#46"
+    },
+    {
+      "puzzleId": "dJQlm",
+      "fen": "8/3r1p2/5k1p/1p3P2/p1bP2PP/2P1RK2/1P6/8 b - - 2 42",
+      "moves": "d7e7 g4g5 h6g5 h4g5 f6g5 e3e7",
+      "rating": 1271,
+      "popularity": 99,
+      "nbPlays": 2535,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/2Ah2H9OK/black#84"
+    },
+    {
+      "puzzleId": "NPJV9",
+      "fen": "Q4b1r/ppp1n1pp/2k5/8/8/2PK4/PP3q1P/R1B1R3 b - - 0 24",
+      "moves": "f2e1 a8e8 c6b6 c1e3 e1e3 d3e3",
+      "rating": 1271,
+      "popularity": 87,
+      "nbPlays": 1711,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/AQZa6Keq/black#48"
+    },
+    {
+      "puzzleId": "nQIcY",
+      "fen": "5k1r/5p2/p2p1p1p/5N2/1q3P1Q/R7/1Br4P/K3R3 w - - 10 35",
+      "moves": "e1b1 c2b2 b1b2 b4a3 a1b1 a3d3",
+      "rating": 1272,
+      "popularity": 95,
+      "nbPlays": 3960,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "exposedKing",
+        "long",
+        "master",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7ujmJkx8#69"
+    },
+    {
+      "puzzleId": "yzZaC",
+      "fen": "5k2/1p2n3/p2p3p/3Bq3/1PP2r2/8/P5QP/6RK b - - 5 38",
+      "moves": "e7d5 g2g8 f8e7 g1g7 e5g7 g8g7",
+      "rating": 1273,
+      "popularity": 100,
+      "nbPlays": 1466,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/AbfTF0Vr/black#76"
+    },
+    {
+      "puzzleId": "O8ri4",
+      "fen": "2k3rr/1p3p2/p1b5/5P2/P3B1Pp/4R3/1QNq3K/4R3 w - - 3 35",
+      "moves": "e3e2 d2f4 h2h1 c6e4 e2e4 f4f3",
+      "rating": 1274,
+      "popularity": 100,
+      "nbPlays": 2599,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/57c1QTSp#69"
+    },
+    {
+      "puzzleId": "Q0AeA",
+      "fen": "r7/2p2p2/pk1p4/1pbBp3/4PnQ1/8/PPP2P2/6RK w - - 14 31",
+      "moves": "d5f7 a8h8 f7h5 h8h5 g4h5 f4h5",
+      "rating": 1274,
+      "popularity": 95,
+      "nbPlays": 6730,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/eP1YCxRG#61"
+    },
+    {
+      "puzzleId": "eHJIq",
+      "fen": "r7/ppp4k/3p4/3P4/5q2/1P1R4/P1PN1r2/2K3R1 b - - 3 26",
+      "moves": "a8g8 d3h3 f4h6 h3h6 h7h6 g1g8",
+      "rating": 1276,
+      "popularity": 98,
+      "nbPlays": 4237,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/NTUNgtko/black#52"
+    },
+    {
+      "puzzleId": "Q537S",
+      "fen": "6kr/1p6/p4r1p/4B3/7P/2P5/PP2n1P1/1K1R4 b - - 1 27",
+      "moves": "f6f7 d1d8 f7f8 d8f8 g8f8 e5h8",
+      "rating": 1276,
+      "popularity": 94,
+      "nbPlays": 12998,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5UmO0hgu/black#54"
+    },
+    {
+      "puzzleId": "EEiXB",
+      "fen": "2b2r2/5p1k/3p1q2/Q7/1p1pP2P/1Pr2P2/P1P5/2KR2R1 b - - 0 27",
+      "moves": "f8g8 a5h5 f6h6 h5h6 h7h6 g1g8",
+      "rating": 1277,
+      "popularity": 97,
+      "nbPlays": 1335,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/E6TgFWIL/black#54"
+    },
+    {
+      "puzzleId": "5AsuT",
+      "fen": "3r4/p1Q4p/8/1p4Pk/8/2Pb4/PP1K1r1P/RN6 w - - 0 24",
+      "moves": "d2e3 f2e2 e3f3 d8f8 c7f4 f8f4",
+      "rating": 1277,
+      "popularity": 95,
+      "nbPlays": 8147,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/oFNkeVkC#47"
+    },
+    {
+      "puzzleId": "RJZf4",
+      "fen": "r1b1k2r/pp1n1ppp/4p3/2bpP3/3N1P2/5N2/Pq1B2PP/R2QKB1R w KQkq - 2 13",
+      "moves": "d2e3 c5b4 f3d2 b4d2 e3d2 b2d4",
+      "rating": 1277,
+      "popularity": 95,
+      "nbPlays": 26807,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/jwCneI9j#25"
+    },
+    {
+      "puzzleId": "SgbWj",
+      "fen": "r3k2r/p1pbq3/2p5/5pp1/2Q1p3/1NN1b1Pp/PP2P2P/3R1R1K b kq - 1 21",
+      "moves": "h8h6 c4g8 e7f8 g8f8 e8f8 d1d7",
+      "rating": 1277,
+      "popularity": 93,
+      "nbPlays": 1104,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "master",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ce2FofxO/black#42"
+    },
+    {
+      "puzzleId": "dUAxc",
+      "fen": "8/5Pk1/8/2R4K/3r3p/1B4pP/P7/5r2 b - - 6 48",
+      "moves": "f1f6 c5g5 g7f8 g5g8 f8e7 g8e8",
+      "rating": 1278,
+      "popularity": 88,
+      "nbPlays": 1902,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5pIbuvYV/black#96"
+    },
+    {
+      "puzzleId": "TWWQc",
+      "fen": "5k2/p6R/6p1/5n2/8/q4P1P/4r1P1/1R5K b - - 0 28",
+      "moves": "f5e7 b1b8 e7c8 b8c8 e2e8 h7h8",
+      "rating": 1279,
+      "popularity": 98,
+      "nbPlays": 1449,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/VI2nMWfD/black#56"
+    },
+    {
+      "puzzleId": "LgHeV",
+      "fen": "r1bqk2r/p2n2pp/2p1pp2/3pP3/1b3P2/2NBB3/PPP3PP/R2QK2R b KQkq - 1 11",
+      "moves": "f6e5 d1h5 g7g6 d3g6 h7g6 h5h8",
+      "rating": 1279,
+      "popularity": 95,
+      "nbPlays": 20036,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/0ZtUdIcC/black#22"
+    },
+    {
+      "puzzleId": "blLmD",
+      "fen": "8/pp5k/2p1Nr1p/3p1P2/4r3/2P2R2/PP3KR1/8 w - - 1 39",
+      "moves": "f3g3 f6f5 g3f3 f5f3 f2f3 e4e6",
+      "rating": 1279,
+      "popularity": 93,
+      "nbPlays": 2105,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/IE4RPvxR#77"
+    },
+    {
+      "puzzleId": "WROli",
+      "fen": "5r2/1p4bk/p2R1pr1/4p3/2P1P1p1/7P/PP2BK2/5R2 w - - 0 37",
+      "moves": "e2g4 f6f5 g4f5 f8f5 e4f5 g6d6",
+      "rating": 1280,
+      "popularity": 94,
+      "nbPlays": 7399,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/MoLXp4bP#73"
+    },
+    {
+      "puzzleId": "GNQR4",
+      "fen": "r5n1/pbp2Q1k/1p1p3b/3Pp1q1/2P1P2N/2N5/PP2B1PP/6K1 b - - 0 21",
+      "moves": "g5g7 f7f5 h7h8 h4g6 g7g6 f5g6",
+      "rating": 1281,
+      "popularity": 97,
+      "nbPlays": 3850,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/BfVxY0BJ/black#42"
+    },
+    {
+      "puzzleId": "yrQ9M",
+      "fen": "7R/6k1/p2pq1P1/1n2p3/1P6/4Q3/6NK/5r2 b - - 0 42",
+      "moves": "g7h8 e3h6 h8g8 h6h7 g8f8 g6g7",
+      "rating": 1281,
+      "popularity": 97,
+      "nbPlays": 15364,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/PJgOqoGR/black#84"
+    },
+    {
+      "puzzleId": "msUvg",
+      "fen": "2r2k2/p3R2p/1p6/3NB1p1/8/7P/PP5K/5r2 b - - 0 41",
+      "moves": "c8c5 e5g7 f8g8 d5f6 f1f6 g7f6",
+      "rating": 1282,
+      "popularity": 99,
+      "nbPlays": 1686,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/6exmp12A/black#82"
+    },
+    {
+      "puzzleId": "6uoQK",
+      "fen": "4r1k1/2p1q3/4r3/R2Rb1p1/P5Q1/7P/1P3PP1/6K1 b - - 1 30",
+      "moves": "e5f4 d5g5 f4g5 a5g5 e7g5 g4g5",
+      "rating": 1283,
+      "popularity": 100,
+      "nbPlays": 1181,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DIB4iijT/black#60"
+    },
+    {
+      "puzzleId": "OTgGa",
+      "fen": "r2qk2r/ppp3pp/2n5/b2p1B2/3PnB2/2P5/PP2Q1PP/RN2K2R b KQkq - 1 12",
+      "moves": "c6d4 e2h5 g7g6 f5g6 h7g6 h5h8",
+      "rating": 1284,
+      "popularity": 94,
+      "nbPlays": 1396,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/iQR11gHJ/black#24"
+    },
+    {
+      "puzzleId": "xOXs9",
+      "fen": "1r3r2/4b1k1/3p2pp/pPpPp1n1/P1P5/6K1/2BB2N1/2R1R3 w - - 7 38",
+      "moves": "c1a1 f8f3 g3h2 f3h3 h2g1 g5f3",
+      "rating": 1286,
+      "popularity": 98,
+      "nbPlays": 1191,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/4mxCyZMo#75"
+    },
+    {
+      "puzzleId": "ekVGa",
+      "fen": "k2r4/1b1q3r/pP6/4p3/P7/2PPQ1P1/7P/R4RK1 b - - 4 29",
+      "moves": "d7d3 e3d3 d8d3 f1f8 b7c8 f8c8",
+      "rating": 1288,
+      "popularity": 94,
+      "nbPlays": 20838,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ufy80cKE/black#58"
+    },
+    {
+      "puzzleId": "6Lptr",
+      "fen": "r1bq4/5k2/2p5/3pQ2N/p1pP2p1/2P5/PP1K2P1/8 b - - 0 37",
+      "moves": "c8e6 e5g7 f7e8 h5f6 d8f6 g7f6",
+      "rating": 1288,
+      "popularity": 93,
+      "nbPlays": 14514,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/tBY5sIKS/black#74"
+    },
+    {
+      "puzzleId": "D8Qcy",
+      "fen": "5r2/1p1bnp1k/4pBnP/b2pP3/3P2P1/N4N2/5PK1/1R6 b - - 0 28",
+      "moves": "d7c6 f3g5 h7h6 b1h1 g6h4 h1h4",
+      "rating": 1288,
+      "popularity": 92,
+      "nbPlays": 3616,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/dZELPEuu/black#56"
+    },
+    {
+      "puzzleId": "hR8t7",
+      "fen": "2kn2r1/ppp1q1r1/3b4/4pPBp/3pn2P/P2P1P2/1PP1Q3/R3K1NR w KQ - 0 23",
+      "moves": "g5e7 g7g1 h1g1 g8g1 e2f1 g1f1",
+      "rating": 1288,
+      "popularity": 92,
+      "nbPlays": 1222,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7qPh20PU#45"
+    },
+    {
+      "puzzleId": "75FlE",
+      "fen": "3r4/7k/p1br4/1p5p/1P1p2R1/P2Kp3/8/7R b - - 1 55",
+      "moves": "d8g8 h1h5 d6h6 h5h6 h7h6 g4g8",
+      "rating": 1289,
+      "popularity": 99,
+      "nbPlays": 4608,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/csJ50pwn/black#110"
+    },
+    {
+      "puzzleId": "FrKun",
+      "fen": "r1bq1r2/ppppn1pp/6k1/2b1n1N1/4PP2/1Q1p4/PPP3PP/RNB2R1K b - - 1 11",
+      "moves": "e5g4 f4f5 e7f5 e4f5 f8f5 f1f5",
+      "rating": 1290,
+      "popularity": 94,
+      "nbPlays": 1877,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/S5RbMmgy/black#22"
+    },
+    {
+      "puzzleId": "N7Toe",
+      "fen": "k7/pp3p2/2p3P1/2qr4/5Q2/1P1P3r/P1P2R2/5RK1 w - - 0 31",
+      "moves": "g6f7 d5g5 f4g5 c5g5 f2g2 g5e3",
+      "rating": 1290,
+      "popularity": 93,
+      "nbPlays": 2650,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/u2P0UKTT#61"
+    },
+    {
+      "puzzleId": "dsIJO",
+      "fen": "6k1/1p3q2/p2p2rp/2pP1P2/2PnQ1P1/P6R/5K2/8 b - - 0 44",
+      "moves": "f7f6 e4e8 g8g7 e8g6 f6g6 f5g6",
+      "rating": 1290,
+      "popularity": 91,
+      "nbPlays": 3918,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/UTkSTZtI/black#88"
+    },
+    {
+      "puzzleId": "Q405i",
+      "fen": "8/5p1k/p5pp/2p5/2PnQ3/3N4/PP4N1/3qBK2 w - - 0 41",
+      "moves": "g2e3 d1e2 f1g1 d4f3 e4f3 e2f3",
+      "rating": 1291,
+      "popularity": 94,
+      "nbPlays": 1161,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/YAFNdIjN#81"
+    },
+    {
+      "puzzleId": "3IqYD",
+      "fen": "3rr1k1/8/p1q3p1/1pp3P1/2n2Q1N/2P5/P1P5/3R1RK1 b - - 1 30",
+      "moves": "d8d1 f4f7 g8h8 h4g6 c6g6 f7g6 d1f1 g1f1",
+      "rating": 1292,
+      "popularity": 98,
+      "nbPlays": 2955,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/AlRQwpGW/black#60"
+    },
+    {
+      "puzzleId": "RWbPj",
+      "fen": "8/3q1p1k/3p4/p2P1RQ1/1pp5/3n3P/PP4PK/4r3 b - - 1 37",
+      "moves": "d7e7 g5h5 h7g8 f5g5 e7g5 h5g5",
+      "rating": 1292,
+      "popularity": 98,
+      "nbPlays": 1205,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/nAIX1ZKp/black#74"
+    },
+    {
+      "puzzleId": "8rz93",
+      "fen": "5k2/7p/p2pr1p1/Qp3pP1/2pp1P2/8/7P/7K b - - 3 45",
+      "moves": "d6d5 a5d8 f8f7 d8d7 e6e7 d7d5",
+      "rating": 1292,
+      "popularity": 88,
+      "nbPlays": 1188,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "queenRookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/q7USTNU7/black#90"
+    },
+    {
+      "puzzleId": "x9IG5",
+      "fen": "5rk1/2p4p/p2p2p1/1p1Pp2q/1B2Rr2/1PN3Q1/1PP3K1/R7 w - - 0 27",
+      "moves": "a1h1 f4f2 g3f2 f8f2 g2f2 h5h1",
+      "rating": 1293,
+      "popularity": 94,
+      "nbPlays": 16147,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/NgRxHFnb#53"
+    },
+    {
+      "puzzleId": "KkiT6",
+      "fen": "2krr3/2p2qb1/2Q4p/3P4/1BP1p2R/4P1P1/P7/1R2K3 w - - 3 29",
+      "moves": "b4c5 g7c3 e1d1 f7f1 d1c2 f1d3",
+      "rating": 1293,
+      "popularity": 91,
+      "nbPlays": 4331,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/elrUf6vm#57"
+    },
+    {
+      "puzzleId": "eNVoZ",
+      "fen": "r4rk1/ppp3pp/2n1b3/4P3/6q1/2KQ2N1/PP5P/RNB2B1R w - - 3 20",
+      "moves": "f1e2 g4b4 c3c2 c6d4 d3d4 b4d4",
+      "rating": 1294,
+      "popularity": 95,
+      "nbPlays": 22881,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/QQHiH5Hr#39"
+    },
+    {
+      "puzzleId": "Coawm",
+      "fen": "r4rk1/pbp2p2/1p2p1p1/2bpP1q1/7N/2P1P1P1/PPQ2PP1/RB2K2R w KQ - 5 17",
+      "moves": "f2f4 g5g3 c2f2 g3e3 f2e3 c5e3",
+      "rating": 1294,
+      "popularity": 91,
+      "nbPlays": 1471,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/wv0RvbxD#33"
+    },
+    {
+      "puzzleId": "hKLZD",
+      "fen": "5k1r/pp6/5R2/3p1Q1p/3q3P/1B2rP2/P1P5/2K5 b - - 0 28",
+      "moves": "f8e7 f6f7 e7d6 f5d7 d6c5 d7c7",
+      "rating": 1294,
+      "popularity": 87,
+      "nbPlays": 1074,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/PhmFpqML/black#56"
+    },
+    {
+      "puzzleId": "tvUiu",
+      "fen": "6bk/ppp3p1/7p/4q3/6Pn/7P/PPP2Q1K/R4R2 w - - 5 30",
+      "moves": "h2h1 g8d5 h1g1 h4f3 f2f3 d5f3",
+      "rating": 1295,
+      "popularity": 94,
+      "nbPlays": 3400,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Jtiv4J3f#59"
+    },
+    {
+      "puzzleId": "DUBRP",
+      "fen": "3r1rk1/1p3ppp/p4n2/2p5/2P1p1P1/P3P1qP/1PQ3P1/RBB1K2R w KQ - 3 23",
+      "moves": "c2f2 d8d1 e1e2 g3f2 e2f2 d1h1",
+      "rating": 1295,
+      "popularity": 93,
+      "nbPlays": 2937,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/Rws6jwL5#45"
+    },
+    {
+      "puzzleId": "BAwNj",
+      "fen": "4rN2/ppQ3bk/2p5/7n/6q1/P7/1PP3P1/1K3R2 b - - 1 33",
+      "moves": "h7h6 c7d6 g7f6 f1f6 h5f6 d6f6",
+      "rating": 1296,
+      "popularity": 95,
+      "nbPlays": 1818,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/w6c0oiSO/black#66"
+    },
+    {
+      "puzzleId": "MPaFT",
+      "fen": "8/3R3p/6k1/1p6/4pp2/3p4/P1nK1PPP/8 w - - 4 42",
+      "moves": "d7d5 e4e3 f2e3 f4e3 d2c3 e3e2",
+      "rating": 1296,
+      "popularity": 95,
+      "nbPlays": 19817,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/ozEZCsJf#83"
+    },
+    {
+      "puzzleId": "rwP9C",
+      "fen": "r1b4k/pp1q1pb1/2p4p/2Q5/8/5N1P/PP3PP1/4R1K1 b - - 0 23",
+      "moves": "d7f5 e1e8 h8h7 c5f5 c8f5 e8a8",
+      "rating": 1296,
+      "popularity": 93,
+      "nbPlays": 3817,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/x2wqHnkz/black#46"
+    },
+    {
+      "puzzleId": "byOL2",
+      "fen": "1br1r2k/1b3Bp1/p7/1p2P1p1/8/6PP/PP6/R4QK1 w - - 1 25",
+      "moves": "f7e8 b8a7 f1f2 a7f2 g1f2 c8e8",
+      "rating": 1297,
+      "popularity": 96,
+      "nbPlays": 10013,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/4UWpkuqD#49"
+    },
+    {
+      "puzzleId": "6Tlts",
+      "fen": "8/ppp2ppk/7p/3r3P/5P2/2P1r1N1/PP4R1/6RK w - - 3 31",
+      "moves": "g3f5 e3h3 g2h2 h3h2 h1h2 d5f5",
+      "rating": 1297,
+      "popularity": 95,
+      "nbPlays": 21202,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Euc7WdEO#61"
+    },
+    {
+      "puzzleId": "pSK9i",
+      "fen": "6r1/1p2p2k/7b/p3Bp2/P4Pr1/5qPQ/1P2N3/2RR2K1 w - - 2 31",
+      "moves": "h3h2 g4g3 e2g3 g8g3 h2g3 f3g3",
+      "rating": 1297,
+      "popularity": 95,
+      "nbPlays": 12700,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/pER3wGXL#61"
+    },
+    {
+      "puzzleId": "l1wSf",
+      "fen": "8/2k1r1p1/7p/p1p1P3/6P1/1PP4P/P3RKB1/1b6 w - - 0 31",
+      "moves": "f2e3 e7e5 e3d2 e5e2 d2e2 b1a2",
+      "rating": 1297,
+      "popularity": 92,
+      "nbPlays": 1012,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gLp9dKTM#61"
+    },
+    {
+      "puzzleId": "HUo2Z",
+      "fen": "8/p1R3R1/1p2p2k/4P3/4n2K/6PP/P7/4q3 b - - 0 38",
+      "moves": "e1e3 g7h7 h6g6 c7g7 g6f5 h7h5",
+      "rating": 1297,
+      "popularity": 90,
+      "nbPlays": 1966,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/OBExUb9R/black#76"
+    },
+    {
+      "puzzleId": "jaxJS",
+      "fen": "4r3/pppb1nk1/5q1p/3p2PQ/3P1pP1/3B1P2/P1P5/2B2RK1 b - - 0 27",
+      "moves": "h6g5 h5h7 g7f8 c1a3 e8e7 a3e7",
+      "rating": 1297,
+      "popularity": 84,
+      "nbPlays": 1026,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ZpS4V5w6/black#54"
+    },
+    {
+      "puzzleId": "DHFwg",
+      "fen": "6nr/1k3ppp/pq6/1p2P3/1Q2B3/8/PP3PPP/6K1 b - - 3 23",
+      "moves": "b7b8 b4f8 b8c7 f8f7 g8e7 f7e7",
+      "rating": 1298,
+      "popularity": 96,
+      "nbPlays": 15000,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/0Fx1XpgC/black#46"
+    },
+    {
+      "puzzleId": "WJVoR",
+      "fen": "3k3r/ppR5/2R1p3/1N1p4/P4qp1/B7/4K1PP/8 b - - 3 27",
+      "moves": "b7c6 a3e7 d8e8 b5d6 f4d6 e7d6",
+      "rating": 1298,
+      "popularity": 95,
+      "nbPlays": 15928,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/bK44y2g5/black#54"
+    },
+    {
+      "puzzleId": "h0cxf",
+      "fen": "2r1k2r/6pp/b4pn1/p2Pp3/2P1Q3/3P1PR1/1qNK1P1P/6R1 b k - 0 26",
+      "moves": "a5a4 g3g6 h7g6 e4g6 e8d8 g6g7",
+      "rating": 1298,
+      "popularity": 95,
+      "nbPlays": 4668,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/HnfYfVas/black#52"
+    },
+    {
+      "puzzleId": "fkwyD",
+      "fen": "4kr2/p4R2/2p1p1p1/3p4/7q/8/PQ4K1/5R2 b - - 0 28",
+      "moves": "f8f7 b2b8 h4d8 b8d8 e8d8 f1f7",
+      "rating": 1298,
+      "popularity": 93,
+      "nbPlays": 2188,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/p2kfgoGX/black#56"
+    },
+    {
+      "puzzleId": "4YvKv",
+      "fen": "3rrk2/1pp2pbQ/p5p1/8/2qp1N2/P4N2/1PB2PP1/R2K3R w - - 2 24",
+      "moves": "a1c1 d4d3 f4d3 d8d3 c2d3 c4d3",
+      "rating": 1299,
+      "popularity": 93,
+      "nbPlays": 1949,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/skCYxXn5#47"
+    },
+    {
+      "puzzleId": "dMTU0",
+      "fen": "5rk1/pp1N2p1/2p3pp/8/2PP1nPq/PP5P/3Q4/5R1K w - - 2 31",
+      "moves": "f1f4 h4h3 d2h2 h3h2 h1h2 f8f4",
+      "rating": 1300,
+      "popularity": 96,
+      "nbPlays": 7463,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/m5ItbQo4#61"
+    },
+    {
+      "puzzleId": "MJU8t",
+      "fen": "r4q2/pp2p1bk/2n5/3Q4/3p4/6B1/PPP3PP/5RK1 b - - 4 21",
+      "moves": "f8g8 d5h5 g7h6 f1f7 g8f7 h5f7",
+      "rating": 1301,
+      "popularity": 100,
+      "nbPlays": 1320,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/pA5zHOFX/black#42"
+    },
+    {
+      "puzzleId": "JO2Ff",
+      "fen": "6k1/3q1p2/2p2R2/p2pP3/3P4/PP2Q1p1/6K1/2B4r w - - 0 47",
+      "moves": "g2h1 d7h3 h1g1 h3h2 g1f1 g3g2",
+      "rating": 1302,
+      "popularity": 99,
+      "nbPlays": 1162,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jfhGZRJq#93"
+    },
+    {
+      "puzzleId": "QdK0K",
+      "fen": "3r2k1/2bP4/p1P2r2/3RN1pp/PP2Pp2/7P/6P1/7K b - - 0 45",
+      "moves": "c7e5 d5e5 f6c6 e5e8 g8f7 e8d8",
+      "rating": 1302,
+      "popularity": 93,
+      "nbPlays": 1686,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5p9TQfBg/black#90"
+    },
+    {
+      "puzzleId": "fk6Y6",
+      "fen": "4q1k1/1pp3p1/p2b3p/4n3/3N4/1PP3PP/1P3B2/3Q1R1K w - - 3 30",
+      "moves": "d4f5 e8c6 h1g1 e5f3 d1f3 c6f3",
+      "rating": 1303,
+      "popularity": 96,
+      "nbPlays": 1179,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/zGbZUAer#59"
+    },
+    {
+      "puzzleId": "Te1VM",
+      "fen": "4r2k/p5pp/2p2q2/5p2/2NP4/2P2Q2/PP3K2/6R1 w - - 0 27",
+      "moves": "g1e1 f6h4 f3g3 h4g3 f2g3 e8e1",
+      "rating": 1304,
+      "popularity": 98,
+      "nbPlays": 2237,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Eq2KCYVy#53"
+    },
+    {
+      "puzzleId": "Kborb",
+      "fen": "6k1/pp4p1/3b3p/3P1p2/4NPn1/6Pq/PP2Q3/4R1K1 w - - 0 30",
+      "moves": "e4d6 h3g3 g1f1 g4h2 e2h2 g3h2",
+      "rating": 1304,
+      "popularity": 95,
+      "nbPlays": 7393,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/A7orBD14#59"
+    },
+    {
+      "puzzleId": "pYTue",
+      "fen": "6rk/ppN2p1p/8/5R2/4p3/1P2P2P/P1PP2r1/3R2K1 w - - 0 26",
+      "moves": "g1f1 g2g1 f1e2 g8g2 f5f2 g2f2 e2f2 g1d1",
+      "rating": 1304,
+      "popularity": 93,
+      "nbPlays": 5145,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/wuiJiAMG#51"
+    },
+    {
+      "puzzleId": "lvCpc",
+      "fen": "7r/p3k3/4p3/2p5/N1P2R2/8/PP5r/3R2K1 w - - 0 31",
+      "moves": "g1f1 h2h1 f1e2 h8h2 f4f2 h2f2 e2f2 h1d1",
+      "rating": 1305,
+      "popularity": 97,
+      "nbPlays": 30048,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/D9gR1Bwd#61"
+    },
+    {
+      "puzzleId": "mwWeH",
+      "fen": "r2q2k1/pbpn2r1/1p2Q1B1/8/3P4/2n5/PPP3PP/R5K1 b - - 0 18",
+      "moves": "g8f8 a1f1 d7f6 f1f6 d8f6 e6f6",
+      "rating": 1305,
+      "popularity": 97,
+      "nbPlays": 1149,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/VtloTGPh/black#36"
+    },
+    {
+      "puzzleId": "BFIFh",
+      "fen": "r2qkbnr/6pp/p1p1pp2/3pP3/3Q1Pb1/5N1P/PPP3P1/RNB2RK1 b kq - 0 10",
+      "moves": "c6c5 d4a4 d8d7 a4d7 e8d7 h3g4",
+      "rating": 1305,
+      "popularity": 94,
+      "nbPlays": 12162,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/QwGDjl7t/black#20"
+    },
+    {
+      "puzzleId": "LAhp5",
+      "fen": "2k5/pp5P/2p1b3/8/3P3R/1P2P3/P3q2K/2R1B3 w - - 1 39",
+      "moves": "h2h1 e6d5 e3e4 d5e4 h4e4 e2e4",
+      "rating": 1305,
+      "popularity": 93,
+      "nbPlays": 3111,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/hjQSjRZe#77"
+    },
+    {
+      "puzzleId": "zDSSJ",
+      "fen": "r3n1k1/5rb1/p1q1ppp1/1p2n1P1/7Q/1N2B2R/PPP4P/5RK1 b - - 2 25",
+      "moves": "c6c2 h4h7 g8f8 e3c5 c2c5 b3c5",
+      "rating": 1306,
+      "popularity": 99,
+      "nbPlays": 1867,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/KTq3E5fT/black#50"
+    },
+    {
+      "puzzleId": "s9qm9",
+      "fen": "4k1r1/p2R4/1p3p1p/2p2P1b/2P1P1rP/P1PR2p1/6P1/6K1 b - - 3 29",
+      "moves": "g4e4 d7d8 e8f7 d3d7 e4e7 d7e7 f7e7 d8g8",
+      "rating": 1306,
+      "popularity": 96,
+      "nbPlays": 1907,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/qvUH5wXs/black#58"
+    },
+    {
+      "puzzleId": "1B73I",
+      "fen": "8/p3R3/1p5k/2pB1p2/2P5/1P5P/P2r1qP1/4R2K b - - 2 38",
+      "moves": "d2a2 e1e6 h6g5 e7g7 g5f4 g2g3 f2g3 g7g3",
+      "rating": 1306,
+      "popularity": 92,
+      "nbPlays": 1047,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/MffNZOdU/black#76"
+    },
+    {
+      "puzzleId": "Trsy7",
+      "fen": "3R4/2p2k1p/1bp5/8/1P1B4/5pP1/6bP/3K4 b - - 2 33",
+      "moves": "b6d4 d8d4 f3f2 d4f4 f7g6 f4f2",
+      "rating": 1306,
+      "popularity": 88,
+      "nbPlays": 1154,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Z5CKMKFN/black#66"
+    },
+    {
+      "puzzleId": "ajItQ",
+      "fen": "8/3k4/3Pb3/1pP3p1/1P4P1/1r6/pB6/K6R b - - 14 47",
+      "moves": "b3b4 h1h7 d7c6 h7c7 c6d5 d6d7",
+      "rating": 1307,
+      "popularity": 96,
+      "nbPlays": 3800,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/s2V4W3YH/black#94"
+    },
+    {
+      "puzzleId": "uTbV0",
+      "fen": "2r5/2R2R1p/p3k3/1p2p3/1P5P/4K1q1/4Q3/8 w - - 12 45",
+      "moves": "f7f3 g3g1 e2f2 g1f2 f3f2 c8c7",
+      "rating": 1307,
+      "popularity": 95,
+      "nbPlays": 3667,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/ssSGOdYI#89"
+    },
+    {
+      "puzzleId": "IeV4u",
+      "fen": "8/4kp2/8/3P4/1p5R/n1p5/2K3PP/8 w - - 1 44",
+      "moves": "c2c1 b4b3 h4b4 b3b2 b4b2 c3b2",
+      "rating": 1307,
+      "popularity": 90,
+      "nbPlays": 1289,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/wdUarVq5#87"
+    },
+    {
+      "puzzleId": "rGlMF",
+      "fen": "1k1r4/6R1/1Rnp1p2/1p1b4/8/1P6/3K1P1r/3B4 b - - 5 41",
+      "moves": "b8c8 d1g4 f6f5 g4f5 d8d7 f5d7",
+      "rating": 1308,
+      "popularity": 94,
+      "nbPlays": 1033,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7gJ3Zit5/black#82"
+    },
+    {
+      "puzzleId": "6SoCm",
+      "fen": "6k1/ppp2r2/3b3p/P2p1q2/3Q1p2/2P2P2/1P3P1P/6RK b - - 1 28",
+      "moves": "g8f8 d4h8 f8e7 g1e1 f5e6 e1e6",
+      "rating": 1308,
+      "popularity": 93,
+      "nbPlays": 3106,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gJYRU3uw/black#56"
+    },
+    {
+      "puzzleId": "aWz6C",
+      "fen": "6k1/6p1/p3p3/Pb1pB3/1Pq3PP/2P5/2Q5/1K2Rr2 w - - 1 39",
+      "moves": "e1f1 c4f1 c2c1 b5d3 b1b2 f1e2",
+      "rating": 1309,
+      "popularity": 93,
+      "nbPlays": 1320,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/JfCkBfTx#77"
+    },
+    {
+      "puzzleId": "E2QJR",
+      "fen": "2k5/p4p2/Pp1p4/2pPp3/4Ppqb/R3r3/1PPNN2Q/5K2 w - - 8 30",
+      "moves": "a3e3 f4e3 h2g2 g4g2 f1g2 e3d2",
+      "rating": 1311,
+      "popularity": 95,
+      "nbPlays": 25664,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/BvkEza85#59"
+    },
+    {
+      "puzzleId": "Jq0Jg",
+      "fen": "3r2rk/pp3p1p/2p5/4P3/2PqNPb1/P1N1b1P1/6B1/1R2QK1R w - - 9 34",
+      "moves": "e4f6 d4d3 c3e2 g4e2 e1e2 d3b1",
+      "rating": 1312,
+      "popularity": 95,
+      "nbPlays": 4843,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/CAPPDmQK#67"
+    },
+    {
+      "puzzleId": "vi5Rs",
+      "fen": "5r2/p1p3k1/1p2p1q1/8/3PP2Q/2P1b1P1/P6P/4R2K b - - 6 29",
+      "moves": "f8h8 h4e7 g6f7 e7f7 g7f7 e1e3",
+      "rating": 1312,
+      "popularity": 93,
+      "nbPlays": 2199,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/sOv5hw2v/black#58"
+    },
+    {
+      "puzzleId": "vpW7c",
+      "fen": "3r2k1/p7/1p5p/2p1p1p1/2P1P1b1/P1PB1rPq/3RQP1P/4R1K1 b - - 12 29",
+      "moves": "f3d3 d2d3 g4e2 d3d8 g8f7 e1e2",
+      "rating": 1314,
+      "popularity": 93,
+      "nbPlays": 6449,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/K0g4ZXfO/black#58"
+    },
+    {
+      "puzzleId": "uGojz",
+      "fen": "r3k2r/ppp2ppp/2p1bn2/8/1q2P3/3PP2P/PPP1B1P1/RN1QK2R w KQkq - 1 10",
+      "moves": "d1d2 b4b2 d2c3 b2c1 e2d1 c1e3",
+      "rating": 1315,
+      "popularity": 97,
+      "nbPlays": 16252,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/c3UnXWVt#19"
+    },
+    {
+      "puzzleId": "ngQfI",
+      "fen": "2N2k2/R6p/3Nnpp1/8/p7/3n3P/P5PK/5r2 b - - 3 35",
+      "moves": "h7h5 a7f7 f8g8 c8e7 g8h8 e7g6",
+      "rating": 1315,
+      "popularity": 91,
+      "nbPlays": 20346,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Bel3YSde/black#70"
+    },
+    {
+      "puzzleId": "eAjNB",
+      "fen": "7k/8/5Np1/5pN1/1bn1p2P/2r1P3/5PP1/3K3R w - - 0 38",
+      "moves": "h4h5 c4b2 d1e2 c3c2 e2f1 c2c1",
+      "rating": 1316,
+      "popularity": 97,
+      "nbPlays": 2511,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/N4yMGaKQ#75"
+    },
+    {
+      "puzzleId": "fItBg",
+      "fen": "r7/2qn1p1k/p1bpp3/1pp3Qp/4P3/P2P3P/1PP1NP2/2KR4 b - - 0 22",
+      "moves": "a8g8 g5h5 h7g7 d1g1 g7f8 h5h6",
+      "rating": 1316,
+      "popularity": 96,
+      "nbPlays": 7606,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/sA4egN6Z/black#44"
+    },
+    {
+      "puzzleId": "kR0FV",
+      "fen": "7k/6bp/p5p1/5p2/1P6/P1N1q1P1/1Q4BP/2N3K1 w - - 0 30",
+      "moves": "g1f1 g7c3 b2e2 e3c1 f1f2 c3d4",
+      "rating": 1316,
+      "popularity": 95,
+      "nbPlays": 8109,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/44ZEP4XR#59"
+    },
+    {
+      "puzzleId": "TKBWz",
+      "fen": "1n3rk1/1PP1q3/1B1p1b2/3P2p1/6R1/5p1K/3Q1P2/8 w - - 1 37",
+      "moves": "c7c8q e7h7 h3g3 f6e5 d2f4 e5f4",
+      "rating": 1316,
+      "popularity": 94,
+      "nbPlays": 3123,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/Z9Zy0N45#73"
+    },
+    {
+      "puzzleId": "kzqkb",
+      "fen": "1r3bk1/R4ppp/8/4p3/2QpPqP1/8/6Q1/4B1K1 w - - 0 44",
+      "moves": "e1g3 b8b1 c4f1 b1f1 g2f1 f4g3",
+      "rating": 1316,
+      "popularity": 93,
+      "nbPlays": 5677,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/c9RtwCPN#87"
+    },
+    {
+      "puzzleId": "JYj9G",
+      "fen": "1q6/6k1/6p1/p3b1P1/8/1B3P1K/PR6/1Q6 w - - 1 45",
+      "moves": "b2e2 b8h8 h3g2 h8h2 g2f1 h2h1",
+      "rating": 1316,
+      "popularity": 92,
+      "nbPlays": 2358,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/fcFhogz5#89"
+    },
+    {
+      "puzzleId": "DUbSM",
+      "fen": "1R6/r1p1b1pp/p1k1p3/B1P5/3PP3/8/6PP/6K1 b - - 0 29",
+      "moves": "a7b7 d4d5 e6d5 e4d5 c6d5 b8b7",
+      "rating": 1317,
+      "popularity": 97,
+      "nbPlays": 4201,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/pLsjomK5/black#58"
+    },
+    {
+      "puzzleId": "HsDts",
+      "fen": "r3k3/1p1n1pp1/2p2p2/p7/2pP2b1/P1N1q1P1/1PQN4/R4K1B w q - 0 17",
+      "moves": "a1e1 g4h3 h1g2 h3g2 f1g2 e3e1",
+      "rating": 1317,
+      "popularity": 96,
+      "nbPlays": 6013,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ZYQtF7os#33"
+    },
+    {
+      "puzzleId": "u2RiE",
+      "fen": "r1k4r/p1b2Qpp/1q3p2/8/8/1R6/PP3PPP/6K1 b - - 21 32",
+      "moves": "b6c5 f7e6 c8d8 b3d3 c7d6 d3d6",
+      "rating": 1318,
+      "popularity": 96,
+      "nbPlays": 1578,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Ealy9Kkl/black#64"
+    },
+    {
+      "puzzleId": "ZerFb",
+      "fen": "3R4/pp2kr2/2p5/6p1/1P3b2/2q5/P1N3Q1/5RK1 w - - 2 34",
+      "moves": "f1d1 f4e3 c2e3 c3e3 g1h1 f7h7",
+      "rating": 1319,
+      "popularity": 93,
+      "nbPlays": 1727,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/66oBijx9#67"
+    },
+    {
+      "puzzleId": "AtbS3",
+      "fen": "3rr1k1/5pp1/7p/b1p5/P2N4/2PR1N2/4P1K1/5R2 w - - 0 32",
+      "moves": "d4c6 e8e2 f1f2 e2f2 g2f2 d8d3",
+      "rating": 1323,
+      "popularity": 96,
+      "nbPlays": 6555,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/CBS4rPxs#63"
+    },
+    {
+      "puzzleId": "MKP9h",
+      "fen": "6r1/p5rk/4p3/3pPp1p/P2P1Q1P/1P1BR1P1/3q1PK1/8 b - - 2 45",
+      "moves": "g7g4 d3f5 e6f5 f4f5 h7g7 f5f6",
+      "rating": 1325,
+      "popularity": 99,
+      "nbPlays": 2874,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/AAozrjdM/black#90"
+    },
+    {
+      "puzzleId": "vNJhC",
+      "fen": "3r1k2/pbn1qp2/1pp1p1p1/4Q2N/P1P2P2/3r4/1P4PP/R4RK1 b - - 0 25",
+      "moves": "f7f5 e5h8 f8f7 h8g7 f7e8 h5f6 e7f6 g7f6",
+      "rating": 1325,
+      "popularity": 95,
+      "nbPlays": 6209,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/toIQC79z/black#50"
+    },
+    {
+      "puzzleId": "m5Knx",
+      "fen": "4r1k1/p3r1b1/1p4p1/2q2p1p/5P2/P1PRp1P1/1P2B1P1/3QKN1R w K - 0 31",
+      "moves": "d3d5 g7c3 b2c3 c5c3 f1d2 e3d2 d5d2 e7e2",
+      "rating": 1325,
+      "popularity": 93,
+      "nbPlays": 12775,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/m3V8DKcR#61"
+    },
+    {
+      "puzzleId": "sdgco",
+      "fen": "rn3rk1/pbppq1p1/1p2p1Qp/4P3/3P4/2P1BP2/P1P3PP/R3K1NR w KQ - 1 12",
+      "moves": "e3h6 e7h4 e1d2 h4h6 g6h6 g7h6",
+      "rating": 1325,
+      "popularity": 91,
+      "nbPlays": 1305,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/Pveanybm#23"
+    },
+    {
+      "puzzleId": "uyCrD",
+      "fen": "2r1r1k1/p3pp2/3p2N1/5RQ1/4P3/8/PqPK2P1/8 b - - 0 30",
+      "moves": "f7g6 g5g6 b2g7 g6e6 g8h8 f5h5",
+      "rating": 1327,
+      "popularity": 91,
+      "nbPlays": 3002,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/muUrC1ft/black#60"
+    },
+    {
+      "puzzleId": "x3uEZ",
+      "fen": "4Q2k/pp6/1q3rpp/2bB4/8/7P/P1R2PP1/6K1 b - - 5 31",
+      "moves": "f6f8 e8e5 b6f6 e5f6 f8f6 c2c5",
+      "rating": 1328,
+      "popularity": 98,
+      "nbPlays": 1708,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/CZi9Mbai/black#62"
+    },
+    {
+      "puzzleId": "QwPmS",
+      "fen": "5r2/p1R3pk/4p3/B3P3/3pnN1p/2p3P1/P6P/5K2 w - - 0 33",
+      "moves": "f1e2 h4g3 h2g3 e4g3 e2d3 f8f4",
+      "rating": 1332,
+      "popularity": 97,
+      "nbPlays": 1794,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/WHdIA3LP#65"
+    },
+    {
+      "puzzleId": "HYDyZ",
+      "fen": "5r1k/p3Npbp/3p2p1/1p6/1P1BPq2/P2Q4/8/4K2R w K - 0 26",
+      "moves": "e7d5 f4c1 d3d1 c1d1 e1d1 g7d4",
+      "rating": 1332,
+      "popularity": 92,
+      "nbPlays": 5376,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/84BVseJ9#51"
+    },
+    {
+      "puzzleId": "9RrNW",
+      "fen": "3r4/2kn3R/p7/1p2P3/2p1p3/2PqB3/PP2K1Q1/2R5 w - - 4 42",
+      "moves": "e2f2 d8f8 e3f4 f8f4 f2g1 d3e3",
+      "rating": 1333,
+      "popularity": 99,
+      "nbPlays": 1040,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/WB13aHpE#83"
+    },
+    {
+      "puzzleId": "FoPrh",
+      "fen": "3k4/5p2/1pBp1n1b/2pP1P1p/5N2/2P4P/1P2RKP1/3r4 w - - 1 36",
+      "moves": "f2f3 d1f1 e2f2 f1f2 f3f2 h6f4",
+      "rating": 1333,
+      "popularity": 95,
+      "nbPlays": 21652,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/rO1GrL6G#71"
+    },
+    {
+      "puzzleId": "FaLMx",
+      "fen": "4r3/1pp3k1/p1p5/4P2p/1P1P2p1/P1P2pBq/5K2/R3QN2 w - - 0 33",
+      "moves": "e1e4 h3g2 f2e3 g2e2 e3f4 e8f8",
+      "rating": 1333,
+      "popularity": 93,
+      "nbPlays": 1510,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/bbjXoE07#65"
+    },
+    {
+      "puzzleId": "jmqGT",
+      "fen": "2b4r/p6k/1pp4P/3p4/3P3R/BPN1PQ2/P5KP/4q3 b - - 0 33",
+      "moves": "e1h4 f3f7 h7h6 a3f8 h8f8 f7f8",
+      "rating": 1333,
+      "popularity": 93,
+      "nbPlays": 1297,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/g8LX0cJy/black#66"
+    },
+    {
+      "puzzleId": "jqEjD",
+      "fen": "8/p1R3k1/8/3p3r/3Pp3/P3P3/2R1KPq1/8 b - - 1 33",
+      "moves": "g7f6 c2c6 f6f5 c7f7 f5g4 c6g6",
+      "rating": 1333,
+      "popularity": 92,
+      "nbPlays": 1460,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "queenRookEndgame"
+      ],
+      "gameUrl": "https://lichess.org/46Zii44y/black#66"
+    },
+    {
+      "puzzleId": "xZ1Ki",
+      "fen": "1k1nr1r1/pp3p2/3p3q/1Q3P2/4P3/2P3B1/P1P2K2/1R4R1 w - - 1 30",
+      "moves": "g1h1 h6d2 b5e2 d2e2 f2e2 g8g3",
+      "rating": 1333,
+      "popularity": 92,
+      "nbPlays": 5287,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ZFw36ZZz#59"
+    },
+    {
+      "puzzleId": "HH2d7",
+      "fen": "2k3r1/ppp1bp2/3p1pr1/7p/1P2PP2/2P1P2P/P3B3/R4R1K w - - 1 21",
+      "moves": "e2h5 g6h6 f1g1 g8g1 h1g1 h6h5",
+      "rating": 1333,
+      "popularity": 90,
+      "nbPlays": 4602,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/zmY9et1A#41"
+    },
+    {
+      "puzzleId": "Li6zT",
+      "fen": "r1k5/5Q2/2q1p3/1b1pP3/pp6/4P3/PPP5/1K5R b - - 2 32",
+      "moves": "c6c7 h1h8 c8b7 f7c7 b7c7 h8a8",
+      "rating": 1334,
+      "popularity": 97,
+      "nbPlays": 1401,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/yqNHHNw2/black#64"
+    },
+    {
+      "puzzleId": "2FixY",
+      "fen": "6k1/5b1p/R7/1p1pB1p1/3P1p2/P4BPP/1Pr2n2/6K1 b - - 2 37",
+      "moves": "h7h5 a6a8 g8h7 a8h8 h7g6 f3h5",
+      "rating": 1335,
+      "popularity": 99,
+      "nbPlays": 2596,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/fHYaazmU/black#74"
+    },
+    {
+      "puzzleId": "45dOf",
+      "fen": "r6k/7p/r4NpB/1p2p1P1/3nP3/1P6/4BR1P/3K4 w - - 1 34",
+      "moves": "e2d3 a6a1 d1d2 a8a2 d2e3 a1e1",
+      "rating": 1335,
+      "popularity": 92,
+      "nbPlays": 1540,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/gBZ5cHA3#67"
+    },
+    {
+      "puzzleId": "p7IsR",
+      "fen": "2r1q3/4k1p1/p7/3QPnN1/1p1P1P2/bP2B3/2r1n1PP/R4R1K b - - 2 32",
+      "moves": "e8d7 d5f7 e7d8 g5e6 d7e6 f7e6",
+      "rating": 1336,
+      "popularity": 94,
+      "nbPlays": 1341,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/dvDtsvFX/black#64"
+    },
+    {
+      "puzzleId": "cYK6u",
+      "fen": "7r/p4kp1/2p1p3/1pN2prP/3P4/2P2Q2/PP6/R6K w - - 0 32",
+      "moves": "c5e6 h8h5 f3h5 g5h5 h1g1 f7e6",
+      "rating": 1336,
+      "popularity": 93,
+      "nbPlays": 10750,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/79GpJ6Oz#63"
+    },
+    {
+      "puzzleId": "324Qp",
+      "fen": "3r4/2kr4/4Q1R1/p1p1P3/7P/3q4/PP3P1K/8 b - - 3 36",
+      "moves": "d3d5 e6b6 c7c8 g6c6 d5c6 b6c6",
+      "rating": 1337,
+      "popularity": 98,
+      "nbPlays": 2252,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/IKgBqQEs/black#72"
+    },
+    {
+      "puzzleId": "E4b4m",
+      "fen": "5rk1/ppp3pp/3p4/3P4/4PP1n/2PQB3/Pq6/R3KR2 w - - 4 23",
+      "moves": "a1b1 h4g2 e1d1 g2e3 d3e3 b2b1",
+      "rating": 1337,
+      "popularity": 94,
+      "nbPlays": 1120,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/nERrzKgd#45"
+    },
+    {
+      "puzzleId": "cbGHp",
+      "fen": "r4r2/pp3pk1/6p1/8/4nB2/4R3/PPP2qB1/R1Q4K w - - 12 36",
+      "moves": "e3e4 f8h8 f4h6 h8h6 c1h6 g7h6",
+      "rating": 1337,
+      "popularity": 93,
+      "nbPlays": 1121,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6OfPSs3q#71"
+    },
+    {
+      "puzzleId": "SfJYr",
+      "fen": "5rk1/1r2p3/3p1pp1/8/8/1P5R/2P3q1/Q1K4R b - - 1 29",
+      "moves": "f8c8 h3h8 g8f7 h1h7 f7e6 h8c8",
+      "rating": 1338,
+      "popularity": 93,
+      "nbPlays": 1497,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/ThOoQyvA/black#58"
+    },
+    {
+      "puzzleId": "sBhPn",
+      "fen": "3r2k1/pbp3R1/1p2pr2/8/3P3P/8/PP1N1n2/1K4R1 b - - 0 28",
+      "moves": "g8f8 g7g8 f8e7 g1g7 f6f7 g7f7 e7f7 g8d8",
+      "rating": 1338,
+      "popularity": 91,
+      "nbPlays": 1248,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/jXi5TLKb/black#56"
+    },
+    {
+      "puzzleId": "EJ2UR",
+      "fen": "4kr2/4npp1/4p3/3pN2P/8/7P/r4P2/BR4K1 b - - 12 33",
+      "moves": "f7f6 b1b8 e7c8 b8c8 e8e7 e5g6",
+      "rating": 1339,
+      "popularity": 95,
+      "nbPlays": 5306,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5BPg8bwv/black#66"
+    },
+    {
+      "puzzleId": "dPUQm",
+      "fen": "r3k2r/ppp2ppp/8/2BP1q2/8/1BP2b2/PP5P/RN1QK2R w KQkq - 0 14",
+      "moves": "b3c2 f5e5 e1f2 f3d1 h1e1 e5e1 f2e1 d1c2",
+      "rating": 1339,
+      "popularity": 94,
+      "nbPlays": 8623,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/zzHIEKDL#27"
+    },
+    {
+      "puzzleId": "jD7CP",
+      "fen": "r5k1/4R1b1/3P2Pp/p3p3/1p6/1N5P/P4P2/1n4K1 b - - 0 30",
+      "moves": "a5a4 d6d7 g7f6 e7e8 g8g7 e8a8",
+      "rating": 1340,
+      "popularity": 96,
+      "nbPlays": 2878,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/AM6o5bzY/black#60"
+    },
+    {
+      "puzzleId": "eJ6Wn",
+      "fen": "2b1kr2/4n2Q/p1p1p1N1/2p5/3pP3/P1qP4/2r2PP1/R4K1R b - - 1 21",
+      "moves": "c3d3 f1g1 e7g6 h7g6 e8d8 g6g5",
+      "rating": 1341,
+      "popularity": 98,
+      "nbPlays": 1811,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/PAg8J08s/black#42"
+    },
+    {
+      "puzzleId": "wqatk",
+      "fen": "N7/pp4k1/3p4/4n3/3qp2Q/6P1/PP4B1/7K w - - 3 31",
+      "moves": "h4e4 d4d1 h1h2 e5g4 e4g4 d1g4",
+      "rating": 1342,
+      "popularity": 94,
+      "nbPlays": 4113,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Tt5BBQrI#61"
+    },
+    {
+      "puzzleId": "LIy9m",
+      "fen": "7r/pp1k4/3Nr3/4Qp2/2q2B2/2P3P1/PP5p/R6K w - - 0 29",
+      "moves": "e5f5 c4c6 d6e4 c6e4 f5e4 e6e4",
+      "rating": 1342,
+      "popularity": 85,
+      "nbPlays": 1124,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7HUd8cj1#57"
+    },
+    {
+      "puzzleId": "TTO7R",
+      "fen": "8/8/7k/7B/6PP/pr6/R7/6K1 w - - 1 47",
+      "moves": "g1f1 b3b1 f1g2 b1b2 g2g3 b2a2",
+      "rating": 1343,
+      "popularity": 93,
+      "nbPlays": 2524,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/4JEPIOLk#93"
+    },
+    {
+      "puzzleId": "cTkgn",
+      "fen": "6k1/pp3p1p/2p5/5N1q/4P1p1/2P5/PP5K/R5R1 w - - 2 31",
+      "moves": "h2g2 h5h3 g2f2 h3f3 f2e1 f3e4",
+      "rating": 1344,
+      "popularity": 96,
+      "nbPlays": 8654,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Tnnv5j0i#61"
+    },
+    {
+      "puzzleId": "ax5fV",
+      "fen": "1q2r2N/pp3k2/2p1Rn1p/3p2p1/3P4/4QP2/PP4PP/6K1 b - - 3 29",
+      "moves": "e8h8 e6e7 f7g6 e3d3 f6e4 f3e4",
+      "rating": 1344,
+      "popularity": 93,
+      "nbPlays": 13521,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/yeDjv5DB/black#58"
+    },
+    {
+      "puzzleId": "XP4Tz",
+      "fen": "3r3r/6p1/4pk1p/5p2/2B1pNq1/P5P1/1PP4Q/R5K1 w - - 2 33",
+      "moves": "f4e6 d8d1 a1d1 g4d1 c4f1 f6e6",
+      "rating": 1345,
+      "popularity": 94,
+      "nbPlays": 19720,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/JfpB2ypF#65"
+    },
+    {
+      "puzzleId": "t4mJO",
+      "fen": "3r2rk/p1p3b1/1p6/4P1Q1/1P3pR1/P4q2/5P1P/5RK1 b - - 1 35",
+      "moves": "f3e4 g4h4 g7h6 h4h6 e4h7 h6h7",
+      "rating": 1346,
+      "popularity": 88,
+      "nbPlays": 2185,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/rrabm27F/black#70"
+    },
+    {
+      "puzzleId": "7Wx67",
+      "fen": "q5k1/2R5/4P1p1/p5p1/3B4/P4P2/6KP/1r6 b - - 0 37",
+      "moves": "g5g4 c7g7 g8f8 e6e7 f8e8 g7g8",
+      "rating": 1347,
+      "popularity": 99,
+      "nbPlays": 1592,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/Arq1GFdY/black#74"
+    },
+    {
+      "puzzleId": "ORo0w",
+      "fen": "r7/1p5k/p1b2p2/2p1nP2/P3P3/6R1/1PP2K1P/3R4 b - - 1 28",
+      "moves": "c6e4 g3h3 h7g8 d1g1 g8f7 h3h7",
+      "rating": 1347,
+      "popularity": 98,
+      "nbPlays": 5411,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/6FX1Zk9J/black#56"
+    },
+    {
+      "puzzleId": "dMmnJ",
+      "fen": "5k2/p1pr4/1p3qpr/4P2p/4Qn2/2P2PR1/PP5P/1K4R1 b - - 0 25",
+      "moves": "f6f5 e4f5 g6f5 g3g8 f8e7 g1g7 e7e6 g8e8",
+      "rating": 1347,
+      "popularity": 97,
+      "nbPlays": 5458,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/VyDzqhfj/black#50"
+    },
+    {
+      "puzzleId": "zYqjT",
+      "fen": "7r/p3P1k1/2B1R3/5Q2/5P2/1P4P1/P2q2NK/b7 w - - 3 42",
+      "moves": "h2g1 a1d4 e6e3 d4e3 g2e3 d2e3",
+      "rating": 1347,
+      "popularity": 96,
+      "nbPlays": 10020,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/FA9mbolV#83"
+    },
+    {
+      "puzzleId": "2Vxjo",
+      "fen": "5r1k/p1p2q2/5p1p/3r4/4RQ1P/2P3P1/1P4P1/6K1 b - - 4 32",
+      "moves": "d5e5 f4h6 h8g8 e4g4 e5g5 h4g5",
+      "rating": 1347,
+      "popularity": 95,
+      "nbPlays": 4666,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/NPVw8d91/black#64"
+    },
+    {
+      "puzzleId": "6nYTa",
+      "fen": "r4rk1/pp2ppbp/2p2np1/8/2PqPP2/2N2Q1P/PPPB2P1/R3K2R w KQ - 1 12",
+      "moves": "b2b3 f6e4 f3e4 d4e4 c3e4 g7a1",
+      "rating": 1347,
+      "popularity": 93,
+      "nbPlays": 5875,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "master",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/qnn0TfiB#23"
+    },
+    {
+      "puzzleId": "UT4C2",
+      "fen": "2r4k/3R1pp1/7p/p3p3/Q5P1/qB3P2/2n4P/1K5R w - - 0 27",
+      "moves": "b3c2 c8b8 a4b3 b8b3 c2b3 a3b3",
+      "rating": 1349,
+      "popularity": 94,
+      "nbPlays": 8654,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/sKAWYCe0#53"
+    },
+    {
+      "puzzleId": "1t4zt",
+      "fen": "3r3k/5Qp1/p3p2p/8/4q3/7K/7P/1R3R2 w - - 0 41",
+      "moves": "f1g1 d8d3 g1g3 d3g3 h2g3 e4b1",
+      "rating": 1349,
+      "popularity": 80,
+      "nbPlays": 1279,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/IHLyf3Q2#81"
+    },
+    {
+      "puzzleId": "iEBo4",
+      "fen": "r4rk1/6pp/8/1b1Pp3/8/Q3P3/P6P/2R1KB2 w - - 2 29",
+      "moves": "a3c5 f8f1 e1d2 a8a2 c1c2 f1f2",
+      "rating": 1350,
+      "popularity": 95,
+      "nbPlays": 3174,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/rBezpDl9#57"
+    },
+    {
+      "puzzleId": "WDodi",
+      "fen": "3rr2k/p1R4p/1p3qp1/8/3p1P2/1B3Q2/PP3K2/6R1 w - - 2 36",
+      "moves": "g1e1 f6h4 f3g3 h4g3 f2g3 e8e1",
+      "rating": 1350,
+      "popularity": 94,
+      "nbPlays": 1192,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/hFg9QKKV#71"
+    },
+    {
+      "puzzleId": "Rz8pZ",
+      "fen": "r6r/pp1nnk2/2p2p2/2Pp2p1/3P1qP1/2N2Np1/PP2QP2/R3KB1R w KQ - 0 17",
+      "moves": "f2g3 f4g3 e2f2 g3f2 e1f2 h8h1",
+      "rating": 1350,
+      "popularity": 92,
+      "nbPlays": 1340,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "attackingF2F7",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/LOjDZ31f#33"
+    },
+    {
+      "puzzleId": "kIG4c",
+      "fen": "7k/1b6/p3p2p/4Pq2/3P2r1/P1p1QNPR/7P/6K1 b - - 0 43",
+      "moves": "b7f3 e3h6 h8g8 h6h8 g8f7 h3h7 f5h7 h8h7",
+      "rating": 1351,
+      "popularity": 97,
+      "nbPlays": 5937,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/ADPwUBEA/black#86"
+    },
+    {
+      "puzzleId": "3kG3G",
+      "fen": "r1b1k2r/pp5p/6p1/4R3/5n2/1B5P/2P3P1/3R2K1 b kq - 0 30",
+      "moves": "e8f8 d1d8 f8g7 e5e7 g7f6 e7f7",
+      "rating": 1351,
+      "popularity": 94,
+      "nbPlays": 9606,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/qaHWURtc/black#60"
+    },
+    {
+      "puzzleId": "62tcI",
+      "fen": "4k3/1b6/pp2p3/2p1q3/P1Pb4/3Q2RP/1P4PK/8 b - - 5 37",
+      "moves": "d4f2 d3g6 e8d8 g6g8 d8d7 g8f7",
+      "rating": 1351,
+      "popularity": 94,
+      "nbPlays": 9933,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/u3wX5Six/black#74"
+    },
+    {
+      "puzzleId": "aZMf2",
+      "fen": "3rk2r/1pp2ppp/p1n1b3/2P1P3/5P1q/4P1N1/PP4PP/R1BQK2R w KQk - 1 15",
+      "moves": "d1e2 e6g4 e2c2 d8d1 c2d1 g4d1",
+      "rating": 1353,
+      "popularity": 92,
+      "nbPlays": 13568,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DZz8RJ5p#29"
+    },
+    {
+      "puzzleId": "tBJNM",
+      "fen": "r1bqk3/p1p1bp2/1p1p3B/3PpP2/3n2P1/3P4/PPP5/R2QKBN1 w Qq - 1 13",
+      "moves": "c2c3 e7h4 e1d2 h4g5 h6g5 d8g5",
+      "rating": 1353,
+      "popularity": 92,
+      "nbPlays": 1252,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/FR45SWLy#25"
+    },
+    {
+      "puzzleId": "4Xjbj",
+      "fen": "5qk1/p3R3/1pb1R1p1/2p2pP1/2P5/P7/1Pn3PP/6K1 b - - 3 39",
+      "moves": "c2d4 e6g6 g8h8 g6h6 f8h6 g5h6",
+      "rating": 1354,
+      "popularity": 96,
+      "nbPlays": 2165,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/7VCZ2hzk/black#78"
+    },
+    {
+      "puzzleId": "w0fdk",
+      "fen": "r3rnk1/pp1q4/2p4Q/4P3/8/5R2/PP4PP/4R2K b - - 0 27",
+      "moves": "e8e6 f3g3 f8g6 g3g6 e6g6 h6g6",
+      "rating": 1354,
+      "popularity": 96,
+      "nbPlays": 4441,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/P5NR87LH/black#54"
+    },
+    {
+      "puzzleId": "2WivQ",
+      "fen": "8/pp3k1p/2p1r2B/2Q1pp2/qP6/6P1/P4PBP/3r1RK1 b - - 1 26",
+      "moves": "d1f1 g2f1 e6h6 f1c4 f7e8 c5e5",
+      "rating": 1355,
+      "popularity": 96,
+      "nbPlays": 6482,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/LFQir7WE/black#52"
+    },
+    {
+      "puzzleId": "737wK",
+      "fen": "1k5r/p1p3R1/1p6/3nP2r/3P2p1/2P3P1/P2B4/5RK1 w - - 0 25",
+      "moves": "g7g4 h5h1 g1f2 h8h2 f2e1 h1f1 e1f1 h2d2",
+      "rating": 1355,
+      "popularity": 94,
+      "nbPlays": 12384,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/mIadg4VC#49"
+    },
+    {
+      "puzzleId": "BqTWv",
+      "fen": "3r3r/2R3q1/1k6/3PP3/8/1NQ4p/PP5P/7K b - - 1 36",
+      "moves": "g7c7 c3a5 b6b7 b3c5 c7c5 a5c5",
+      "rating": 1355,
+      "popularity": 94,
+      "nbPlays": 1954,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/XtdkzaQU/black#72"
+    },
+    {
+      "puzzleId": "rJkpl",
+      "fen": "r5k1/1bp5/4p1pB/5q2/4p3/p1P1Q2R/P1B3PP/5K2 w - - 1 27",
+      "moves": "f1e2 b7a6 c3c4 a6c4 e2e1 f5f1",
+      "rating": 1355,
+      "popularity": 93,
+      "nbPlays": 1213,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/IB28J9Yd#53"
+    },
+    {
+      "puzzleId": "i8DPG",
+      "fen": "6k1/p4q2/1p2pB2/2p3Qn/2P5/Pn2PP1P/5P2/6K1 b - - 3 30",
+      "moves": "g8f8 g5h6 f8e8 h6h8 e8d7 h8d8",
+      "rating": 1355,
+      "popularity": 86,
+      "nbPlays": 1408,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3T1h2VVe/black#60"
+    },
+    {
+      "puzzleId": "qveBa",
+      "fen": "r3kr2/1b1p1n2/pp2NQ2/7q/P3P3/2N4P/1PP3P1/R5K1 b q - 0 23",
+      "moves": "d7e6 f6e6 e8d8 a1d1 h5d1 c3d1",
+      "rating": 1356,
+      "popularity": 96,
+      "nbPlays": 1082,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/bMYBjatM/black#46"
+    },
+    {
+      "puzzleId": "jr8cZ",
+      "fen": "kq1r4/7p/p1p1p3/2Q1b3/2P1P3/1P6/P5PP/5R1K b - - 0 31",
+      "moves": "e5h2 c5c6 b8b7 c6b7 a8b7 h1h2",
+      "rating": 1356,
+      "popularity": 94,
+      "nbPlays": 2338,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/J2RzUOAI/black#62"
+    },
+    {
+      "puzzleId": "Vk6QE",
+      "fen": "7k/1q4p1/3pr2p/8/2PQ4/1P4P1/P3KP1P/4R3 w - - 3 30",
+      "moves": "e2d2 b7b4 d4c3 b4c3 d2c3 e6e1",
+      "rating": 1356,
+      "popularity": 93,
+      "nbPlays": 13441,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/noB9jvTA#59"
+    },
+    {
+      "puzzleId": "PV2Jv",
+      "fen": "4r1k1/6pp/p4R2/1pNP4/1P2p3/P3P3/6Q1/3q2K1 w - - 1 35",
+      "moves": "g2f1 d1g4 f1g2 g4g2 g1g2 g7f6",
+      "rating": 1357,
+      "popularity": 94,
+      "nbPlays": 2545,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/pDM9Mipd#69"
+    },
+    {
+      "puzzleId": "jWIoB",
+      "fen": "1k6/1pp5/p2pBp1r/4p1q1/4P1P1/2PP2Q1/PP4K1/5R2 w - - 0 30",
+      "moves": "f1h1 g5d2 g3f2 d2f2 g2f2 h6h1",
+      "rating": 1357,
+      "popularity": 94,
+      "nbPlays": 3176,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/aOJPB4YX#59"
+    },
+    {
+      "puzzleId": "MnP3O",
+      "fen": "8/p5pp/1b3p1k/8/1P4P1/P2R4/2Bp2K1/5r2 b - - 6 44",
+      "moves": "f1f4 d3h3 h6g5 h3h5 g5g4 c2d1",
+      "rating": 1358,
+      "popularity": 96,
+      "nbPlays": 3267,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/GfiiZ6X0/black#88"
+    },
+    {
+      "puzzleId": "ZMIAw",
+      "fen": "r1bq1k1r/pp1n2b1/2p1p1Qp/8/2PP3R/2N2pP1/PP3PP1/R3KB2 b Q - 3 15",
+      "moves": "d8e8 h4f4 g7f6 f4f6 d7f6 g6f6",
+      "rating": 1358,
+      "popularity": 95,
+      "nbPlays": 3758,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7uF9qo1C/black#30"
+    },
+    {
+      "puzzleId": "0ZQHL",
+      "fen": "3r4/2r2kp1/1pP1R3/pB1P1p1p/P7/3K2n1/2RN2P1/8 w - - 3 40",
+      "moves": "d2f3 d8d5 f3d4 d5d4 d3d4 f7e6",
+      "rating": 1358,
+      "popularity": 91,
+      "nbPlays": 1592,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/M1caQNA7#79"
+    },
+    {
+      "puzzleId": "6lnea",
+      "fen": "2kr4/ppp5/8/2P5/P1Q1pq2/2K2P2/4R3/5R2 w - - 0 45",
+      "moves": "e2e4 f4d2 c3b3 d8d3 c4d3 d2d3",
+      "rating": 1358,
+      "popularity": 91,
+      "nbPlays": 3004,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/e5ltIZsb#89"
+    },
+    {
+      "puzzleId": "8R3cw",
+      "fen": "r2qr2k/1p1b1p2/p6p/3N4/5Q2/P7/1P2BPPP/2R3K1 b - - 0 26",
+      "moves": "e8e2 f4h6 h8g8 d5f6 d8f6 h6f6",
+      "rating": 1359,
+      "popularity": 99,
+      "nbPlays": 2570,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/JnMCOE4T/black#52"
+    },
+    {
+      "puzzleId": "HikW4",
+      "fen": "5rk1/pp3q2/2p5/3p2p1/4R1Q1/1P2P2N/P4rP1/3R2K1 b - - 0 29",
+      "moves": "d5e4 g4g5 f7g7 g5g7 g8g7 h3f2",
+      "rating": 1359,
+      "popularity": 95,
+      "nbPlays": 2773,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/UCCkpbXg/black#58"
+    },
+    {
+      "puzzleId": "NGMtJ",
+      "fen": "r7/pp1qk1Q1/3p1p2/2bPp1B1/8/3P3r/PPP2PP1/5RK1 b - - 1 27",
+      "moves": "e7d8 g5f6 d8c7 g7d7 c7d7 g2h3",
+      "rating": 1359,
+      "popularity": 94,
+      "nbPlays": 2580,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/F8IpPhef/black#54"
+    },
+    {
+      "puzzleId": "jJcD1",
+      "fen": "6k1/5pp1/6q1/3p4/P2P1Qn1/2P2RB1/1P2r1K1/R7 w - - 2 32",
+      "moves": "g2h3 g6h5 g3h4 e2h2 f4h2 g4h2",
+      "rating": 1359,
+      "popularity": 93,
+      "nbPlays": 9181,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/P5ZQ5fGa#63"
+    },
+    {
+      "puzzleId": "EG73F",
+      "fen": "8/p4q1k/5p1p/6p1/4bB2/1P4Q1/P6K/6R1 w - - 3 42",
+      "moves": "f4e3 f7h5 g3h3 h5e2 g1g2 e4g2 h3g2 e2e3",
+      "rating": 1360,
+      "popularity": 97,
+      "nbPlays": 12627,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/I5qg2pjz#83"
+    },
+    {
+      "puzzleId": "lQsPP",
+      "fen": "3k4/8/R1Pb4/3K2p1/5pP1/7P/8/2r5 b - - 4 58",
+      "moves": "d8c7 a6a7 c7b8 a7b7 b8c8 d5d6",
+      "rating": 1360,
+      "popularity": 97,
+      "nbPlays": 1454,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/FUZSVXzy/black#116"
+    },
+    {
+      "puzzleId": "ap3ce",
+      "fen": "4r1k1/3R4/p1p1p3/1p4q1/P3P1pp/1B6/6K1/B5R1 b - - 1 43",
+      "moves": "e8e7 d7d8 g8h7 d8h8 h7g6 h8g8",
+      "rating": 1360,
+      "popularity": 92,
+      "nbPlays": 2000,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/G4O6hDn7/black#86"
+    },
+    {
+      "puzzleId": "Sq6aQ",
+      "fen": "5rk1/p4pbp/1p4p1/1R5P/P1q5/5Q1P/1P6/5R1K w - - 1 26",
+      "moves": "h5g6 f7g6 f3d5 c4d5 b5d5 f8f1",
+      "rating": 1360,
+      "popularity": 88,
+      "nbPlays": 1016,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/joh6wM2h#51"
+    },
+    {
+      "puzzleId": "fi8Tc",
+      "fen": "r1bqkbnr/ppp3pp/2n5/3pp1N1/3Pp3/2P5/PP2BPPP/RNBQK2R b KQkq - 1 6",
+      "moves": "h7h6 e2h5 g7g6 h5g6 e8e7 g5f7",
+      "rating": 1361,
+      "popularity": 97,
+      "nbPlays": 12074,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/btIyrdr0/black#12"
+    },
+    {
+      "puzzleId": "gV4Oz",
+      "fen": "r4k2/2b2p1p/5B2/2pp4/5PP1/1K1P3P/pP6/R7 w - - 0 34",
+      "moves": "a1a2 c5c4 d3c4 d5c4 b3c4 a8a2",
+      "rating": 1361,
+      "popularity": 97,
+      "nbPlays": 1655,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/vUMoOeUF#67"
+    },
+    {
+      "puzzleId": "1zuVI",
+      "fen": "r2qk2r/1ppb1pp1/p1n1pb1p/3p4/2PP1Pn1/1P2PN2/PB1NQ1PP/2R1KB1R w Kkq - 7 11",
+      "moves": "h2h3 f6h4 g2g3 h4g3 e1d1 g4f2",
+      "rating": 1361,
+      "popularity": 93,
+      "nbPlays": 5478,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/v0q0ywZo#21"
+    },
+    {
+      "puzzleId": "vpg5h",
+      "fen": "r3q3/pp1k1r2/3b1P2/4p3/2Rp3Q/P6P/1P4P1/5RK1 b - - 7 30",
+      "moves": "a8c8 h4g4 e8e6 g4e6 d7e6 c4c8",
+      "rating": 1362,
+      "popularity": 95,
+      "nbPlays": 17468,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/UBCn3aw7/black#60"
+    },
+    {
+      "puzzleId": "FZq6W",
+      "fen": "5r1k/8/1R2B1Pp/1p6/1P2p2P/6K1/3r1PP1/8 b - - 0 35",
+      "moves": "f8f2 b6b8 h8g7 b8g8 g7f6 g8f8",
+      "rating": 1362,
+      "popularity": 93,
+      "nbPlays": 3764,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/vfCEGt7t/black#70"
+    },
+    {
+      "puzzleId": "azwcA",
+      "fen": "r1bqk2r/pppp1pp1/7p/4n1n1/2P4Q/2N1P3/PP3PPP/R3KBNR w KQkq - 0 10",
+      "moves": "f2f4 g5f3 g1f3 e5f3 g2f3 d8h4",
+      "rating": 1362,
+      "popularity": 93,
+      "nbPlays": 4013,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/qaa1kZnc#19"
+    },
+    {
+      "puzzleId": "eTn7f",
+      "fen": "1k5r/ppp5/5R2/4Q3/4N3/3r4/PPq2PBp/R6K w - - 0 25",
+      "moves": "e4c5 d3d1 e5e1 d1e1 a1e1 c2c5",
+      "rating": 1362,
+      "popularity": 86,
+      "nbPlays": 1179,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/FFTde1kx#49"
+    },
+    {
+      "puzzleId": "T5M9q",
+      "fen": "3r4/pp4p1/2p2kBp/2br1P2/4R1PP/8/PP2K3/R7 b - - 0 28",
+      "moves": "d5e5 g4g5 h6g5 h4g5 f6g5 e4e5",
+      "rating": 1363,
+      "popularity": 94,
+      "nbPlays": 1074,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jStQ2y7p/black#56"
+    },
+    {
+      "puzzleId": "sUWuZ",
+      "fen": "3b2k1/pppq4/3p4/P2Pp1p1/1PP1r1Pn/2B2pQB/5K2/R6R w - - 0 36",
+      "moves": "c4c5 e4e2 f2g1 f3f2 g3f2 e2f2",
+      "rating": 1364,
+      "popularity": 97,
+      "nbPlays": 2500,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/pCkov2W5#71"
+    },
+    {
+      "puzzleId": "MY0ne",
+      "fen": "4Q1k1/ppp2rr1/3p4/3Pp3/8/P4PP1/1PP1BK2/q7 b - - 4 34",
+      "moves": "g8h7 e2d3 h7h6 e8h8 g7h7 d3h7 f7f3 f2f3",
+      "rating": 1364,
+      "popularity": 93,
+      "nbPlays": 1075,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/56rsEjU7/black#68"
+    },
+    {
+      "puzzleId": "2DmjS",
+      "fen": "3k2r1/1p4p1/r2pQp1p/4p3/Pq2P3/3R4/3R2PP/7K b - - 3 27",
+      "moves": "g8e8 d3d6 b4d6 d2d6 a6d6 e6d6",
+      "rating": 1365,
+      "popularity": 96,
+      "nbPlays": 31354,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/FYwM4YdW/black#54"
+    },
+    {
+      "puzzleId": "546vW",
+      "fen": "rn3q2/pp4k1/4b3/3B2Q1/8/3P2PP/PP5K/r7 b - - 4 29",
+      "moves": "g7h7 d5e4 e6f5 e4f5 f8f5 g5f5",
+      "rating": 1365,
+      "popularity": 86,
+      "nbPlays": 1351,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/newuFycR/black#58"
+    },
+    {
+      "puzzleId": "UYg4s",
+      "fen": "4r3/5p1p/6k1/p5P1/1p3Q2/P3r3/1P4KP/8 b - - 2 40",
+      "moves": "e8e4 f4f6 g6h5 f6h6 h5g4 h2h3 e3h3 h6h3",
+      "rating": 1366,
+      "popularity": 96,
+      "nbPlays": 5180,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "master",
+        "queenRookEndgame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/66MJmffu/black#80"
+    },
+    {
+      "puzzleId": "FggLr",
+      "fen": "r7/p1B2k2/1pn3r1/7p/3p3P/7R/P4P2/4RK2 b - - 1 25",
+      "moves": "a8e8 h3f3 g6f6 f3f6 f7f6 e1e8",
+      "rating": 1366,
+      "popularity": 95,
+      "nbPlays": 1867,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/2QuzsNK7/black#50"
+    },
+    {
+      "puzzleId": "j3O0y",
+      "fen": "r1bk1r2/pp1p4/4p3/2b1p2Q/2PqP2P/2N2P2/PP4P1/R3KB1R w KQ - 1 18",
+      "moves": "c3d1 c5b4 d1c3 b4c3 b2c3 d4c3",
+      "rating": 1366,
+      "popularity": 95,
+      "nbPlays": 17100,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/NEGbnSl0#35"
+    },
+    {
+      "puzzleId": "ve1iw",
+      "fen": "1R6/5ppk/4p2p/p3q2P/r3P1P1/2PQ4/6K1/2R5 w - - 1 40",
+      "moves": "b8b5 a4a2 c1c2 a2c2 d3c2 e5b5",
+      "rating": 1366,
+      "popularity": 95,
+      "nbPlays": 3398,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/uVKgLGzX#79"
+    },
+    {
+      "puzzleId": "M8fiA",
+      "fen": "1n3r2/2k2pNp/p1b2n2/1p1p2P1/7P/4bB2/PPP5/1K1R1R2 b - - 0 22",
+      "moves": "f6e4 f3e4 d5e4 g7e6 f7e6 f1f8",
+      "rating": 1367,
+      "popularity": 94,
+      "nbPlays": 1241,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/hOIEfMCG/black#44"
+    },
+    {
+      "puzzleId": "98zjw",
+      "fen": "6k1/p4p1p/4p3/4b1B1/2B5/5p1P/P5r1/1R5K w - - 0 30",
+      "moves": "g5h6 g2h2 h1g1 f3f2 g1f1 h2h1",
+      "rating": 1368,
+      "popularity": 93,
+      "nbPlays": 4664,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/5R4z8tf2#59"
+    },
+    {
+      "puzzleId": "360Wl",
+      "fen": "6rk/ppp2p1p/2q2p2/5R1Q/3pP3/1P1P4/1PP2K1P/R7 w - - 3 21",
+      "moves": "a1g1 c6c2 h5e2 c2e2 f2e2 g8g1",
+      "rating": 1370,
+      "popularity": 99,
+      "nbPlays": 2005,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jcUsv21D#41"
+    },
+    {
+      "puzzleId": "cO6Ib",
+      "fen": "7r/k1Q5/8/3P4/3P2p1/4B1Pq/1r3P2/6K1 b - - 1 34",
+      "moves": "b2b7 c7a5 a7b8 e3f4 b7c7 a5c7",
+      "rating": 1371,
+      "popularity": 96,
+      "nbPlays": 4740,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jPfqzG77/black#68"
+    },
+    {
+      "puzzleId": "cR2dH",
+      "fen": "6k1/p5p1/2p4r/2p3NB/P2pP3/1P1P2K1/2P4R/5r2 w - - 1 33",
+      "moves": "h5g4 f1g1 h2g2 g1g2 g3g2 h6g6",
+      "rating": 1371,
+      "popularity": 94,
+      "nbPlays": 5211,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/usFPVk6l#65"
+    },
+    {
+      "puzzleId": "8yLRV",
+      "fen": "r2qk2r/pppbb1pp/1nn1pp2/4P3/3P3N/P1NB4/1P3PPP/R1BQK2R b KQkq - 1 10",
+      "moves": "f6e5 d1h5 e8f8 h4g6 h7g6 h5h8",
+      "rating": 1371,
+      "popularity": 93,
+      "nbPlays": 3479,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/Wp7rpgQd/black#20"
+    },
+    {
+      "puzzleId": "Z7h07",
+      "fen": "rn2kb1r/pp3pp1/2p1p3/3p4/6qp/2NP1N2/PPP1PP1K/R1BQR3 w kq - 0 13",
+      "moves": "e1g1 f8d6 f3e5 d6e5 f2f4 e5f4 c1f4 g4f4",
+      "rating": 1371,
+      "popularity": 93,
+      "nbPlays": 3154,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "opening",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/px413YPT#25"
+    },
+    {
+      "puzzleId": "P6bgM",
+      "fen": "3r2nk/ppp5/4N3/4K1R1/8/2P5/P1r5/8 b - - 5 36",
+      "moves": "c2a2 g5h5 g8h6 h5h6 h8g8 e6d8",
+      "rating": 1371,
+      "popularity": 90,
+      "nbPlays": 4170,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/lc6YP4F0/black#72"
+    },
+    {
+      "puzzleId": "dce2C",
+      "fen": "r6k/6pp/p7/2p5/2P2Pb1/1P3p1q/P1Q5/3R1RK1 w - - 0 33",
+      "moves": "c2h2 f3f2 f1f2 h3h2 g1h2 g4d1",
+      "rating": 1372,
+      "popularity": 98,
+      "nbPlays": 4479,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/y97Q2o78#65"
+    },
+    {
+      "puzzleId": "a30Q5",
+      "fen": "8/R1k5/2b5/Pp5p/1P4p1/8/4K2n/8 b - - 1 42",
+      "moves": "c6b7 a5a6 c7b6 a7b7 b6a6 b7h7",
+      "rating": 1372,
+      "popularity": 96,
+      "nbPlays": 10371,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/6cAx0jWX/black#84"
+    },
+    {
+      "puzzleId": "km3lg",
+      "fen": "8/8/2Pk2K1/pB2r3/P7/4pr2/8/3R4 b - - 3 42",
+      "moves": "d6c7 d1d7 c7b6 d7b7 b6c5 c6c7 f3f8 b7b8",
+      "rating": 1372,
+      "popularity": 94,
+      "nbPlays": 1492,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "master",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/0KHrBZEz/black#84"
+    },
+    {
+      "puzzleId": "AQFD1",
+      "fen": "r2qkr2/ppp2p1Q/2nbb3/3p4/3P4/2P2P2/PP1B2PP/R3KBNR w KQq - 1 11",
+      "moves": "d2h6 d8h4 g2g3 d6g3 h2g3 h4h1",
+      "rating": 1372,
+      "popularity": 93,
+      "nbPlays": 1393,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/hXAYUpWd#21"
+    },
+    {
+      "puzzleId": "zfob5",
+      "fen": "4r1k1/1p2rp2/2p2R2/3p2p1/pP1B2P1/P3P2q/5Q2/5RK1 w - - 0 35",
+      "moves": "f6f7 h3g4 f2g2 g4g2 g1g2 e7f7",
+      "rating": 1373,
+      "popularity": 96,
+      "nbPlays": 1901,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/wobAjyrb#69"
+    },
+    {
+      "puzzleId": "lzXVb",
+      "fen": "1k2r3/1pp4p/p7/4npp1/1PP2p1q/2B2P2/P1K4P/3Q3R w - - 0 23",
+      "moves": "c3e5 h4f2 d1d2 f2d2 c2d2 e8e5",
+      "rating": 1374,
+      "popularity": 86,
+      "nbPlays": 1407,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/QolzhKCD#45"
+    },
+    {
+      "puzzleId": "HGlr9",
+      "fen": "1kr5/pp4pp/8/3N4/1P1p2n1/8/P5Bq/3RQK2 w - - 0 34",
+      "moves": "d1d4 c8f8 d4f4 f8f4 d5f4 h2f4",
+      "rating": 1375,
+      "popularity": 97,
+      "nbPlays": 6046,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ClulKg8J#67"
+    },
+    {
+      "puzzleId": "Qjb3f",
+      "fen": "6k1/4R2p/ppq3p1/2p2p2/7n/2Q3PP/PPP3K1/8 w - - 1 35",
+      "moves": "g2f1 c6g2 f1e1 h4f3 e1d1 g2f1",
+      "rating": 1375,
+      "popularity": 92,
+      "nbPlays": 2400,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/dOIo5NbF#69"
+    },
+    {
+      "puzzleId": "NDVPV",
+      "fen": "8/1R3Rbk/p7/1npB2p1/8/P1P5/1r5r/6K1 b - - 1 35",
+      "moves": "b5c3 f7g7 h7h6 g7h7 h6g6 h7h2",
+      "rating": 1375,
+      "popularity": 90,
+      "nbPlays": 1829,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/nIe4zJur/black#70"
+    },
+    {
+      "puzzleId": "hKnwH",
+      "fen": "6k1/4r1p1/pp2qp1p/8/P4P2/4rN2/1P1R1QK1/3R4 w - - 11 36",
+      "moves": "b2b4 e6g4 f2g3 e3e2 d2e2 e7e2 g2f1 g4g3",
+      "rating": 1376,
+      "popularity": 96,
+      "nbPlays": 3746,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/e1S42Efo#71"
+    },
+    {
+      "puzzleId": "wUyNh",
+      "fen": "r2q2k1/ppp3p1/2n3r1/3pP2p/3P3b/2NB1N1P/PPP2K2/R2Q1R2 w - - 3 18",
+      "moves": "f2e2 g6g2 e2e3 h4g5 f3g5 d8g5",
+      "rating": 1376,
+      "popularity": 91,
+      "nbPlays": 1384,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ytqdgrtI#35"
+    },
+    {
+      "puzzleId": "GYoRX",
+      "fen": "Q1bk3r/6pp/3Np1q1/2p5/8/5P2/5KPP/8 b - - 7 40",
+      "moves": "h8f8 a8c8 d8e7 c8c7 e7f6 d6e4 g6e4 f3e4",
+      "rating": 1377,
+      "popularity": 93,
+      "nbPlays": 1048,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/fTsI1Ovf/black#80"
+    },
+    {
+      "puzzleId": "i7KtW",
+      "fen": "r3kb1r/pppq2pp/2np1n2/3Np1N1/4Pp2/3P4/PPP3PP/R1BQ1RK1 b kq - 5 10",
+      "moves": "h7h6 d5f6 g7f6 d1h5 e8e7 h5f7",
+      "rating": 1377,
+      "popularity": 92,
+      "nbPlays": 1377,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/0Prxcvvj/black#20"
+    },
+    {
+      "puzzleId": "M9Fwf",
+      "fen": "8/4R1k1/p6r/1p5B/5Pn1/8/P7/6K1 b - - 0 51",
+      "moves": "g7f6 e7f7 f6e6 f4f5 e6e5 h5g4",
+      "rating": 1377,
+      "popularity": 90,
+      "nbPlays": 1245,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/4jFgawO7/black#102"
+    },
+    {
+      "puzzleId": "sgjTT",
+      "fen": "7k/3q2bp/2Rp2p1/1p1Pp3/4P1rP/6R1/PP1Q4/4K3 w - - 0 30",
+      "moves": "c6d6 g4e4 g3e3 e4e3 d2e3 d7d6",
+      "rating": 1378,
+      "popularity": 97,
+      "nbPlays": 2484,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/C1RcbLmz#59"
+    },
+    {
+      "puzzleId": "1xO7m",
+      "fen": "5rk1/p4ppp/2pppq2/8/3rP3/1P5P/P4P2/R1BQ1R1K w - - 0 23",
+      "moves": "c1b2 d4d1 b2f6 d1f1 a1f1 g7f6",
+      "rating": 1378,
+      "popularity": 93,
+      "nbPlays": 9562,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/7EcQRrtN#45"
+    },
+    {
+      "puzzleId": "wJWMl",
+      "fen": "7r/pbp2pk1/1p4p1/2n1P1p1/6P1/2P1Q1P1/PP6/4R1K1 w - - 5 30",
+      "moves": "e1e2 h8h1 g1f2 c5e4 e3e4 b7e4",
+      "rating": 1379,
+      "popularity": 94,
+      "nbPlays": 13206,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/pzqv73fM#59"
+    },
+    {
+      "puzzleId": "HoPyv",
+      "fen": "6k1/1p3p2/p5r1/2Pq3p/1P1B4/P5Pb/1Q3P1N/4R1K1 w - - 1 35",
+      "moves": "f2f3 g6g3 g1h1 h3g2 b2g2 g3g2 h1g2 d5d4",
+      "rating": 1380,
+      "popularity": 99,
+      "nbPlays": 1367,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/HgzX2egd#69"
+    },
+    {
+      "puzzleId": "mJIOT",
+      "fen": "r2q1r2/pp2bk2/1n6/2p2p1Q/3n4/3B3P/PPP2R2/R5K1 b - - 3 26",
+      "moves": "f7g7 f2g2 e7g5 g2g5 d8g5 h5g5",
+      "rating": 1380,
+      "popularity": 98,
+      "nbPlays": 2794,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/PQfBe22e/black#52"
+    },
+    {
+      "puzzleId": "gCKcG",
+      "fen": "8/8/2Bkrp2/1P3K2/5R2/1r6/8/8 b - - 1 51",
+      "moves": "b3b2 f4d4 d6c5 d4d5 c5b6 f5e6",
+      "rating": 1380,
+      "popularity": 96,
+      "nbPlays": 3171,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gVwB4f8l/black#102"
+    },
+    {
+      "puzzleId": "EdJPd",
+      "fen": "r5k1/p5b1/4Q3/1p3p2/2p1p3/1Pq1P3/P2RKPPP/8 b - - 0 38",
+      "moves": "g8h7 e6f5 h7h8 f5h5 h8g8 h5d5",
+      "rating": 1380,
+      "popularity": 94,
+      "nbPlays": 9689,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/J7r7MXFt/black#76"
+    },
+    {
+      "puzzleId": "5dyUe",
+      "fen": "3r1r1k/p2P1ppp/8/2QR2Pq/4p3/1P2K3/2P5/3R4 w - - 0 32",
+      "moves": "c5a7 h5f3 e3d2 e4e3 d2c1 e3e2",
+      "rating": 1380,
+      "popularity": 93,
+      "nbPlays": 1154,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/E8NR2aEq#63"
+    },
+    {
+      "puzzleId": "2r6rr",
+      "fen": "5r1k/p6p/2Bp2p1/8/3p1bq1/P2P4/2QB1K2/R4R2 w - - 0 26",
+      "moves": "d2f4 f8f4 f2e1 g4g3 c2f2 f4f2",
+      "rating": 1380,
+      "popularity": 92,
+      "nbPlays": 6206,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "attackingF2F7",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/rocIw3yT#51"
+    },
+    {
+      "puzzleId": "5tXI1",
+      "fen": "r1b1k3/ppp2qpQ/4p3/n3P1P1/P1p5/2P1PP2/6P1/3RKB2 b q - 2 17",
+      "moves": "c8d7 h7h8 f7f8 h8f8 e8f8 d1d7",
+      "rating": 1381,
+      "popularity": 95,
+      "nbPlays": 9148,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/cBaExxGD/black#34"
+    },
+    {
+      "puzzleId": "rNnWq",
+      "fen": "3q4/6pk/2P1p2p/p2rNp2/2QP1P2/6PP/PP6/5K2 w - - 1 33",
+      "moves": "a2a3 d5d4 c6c7 d4d1 f1f2 d8d2",
+      "rating": 1381,
+      "popularity": 86,
+      "nbPlays": 1536,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/4QKUTPFa#65"
+    },
+    {
+      "puzzleId": "UZRTo",
+      "fen": "4r1k1/5pbp/6p1/3Pp2q/1B2Pn2/1PN3Q1/2B2P2/5R1K w - - 6 29",
+      "moves": "g3h2 h5f3 h1g1 f4h3 h2h3 f3h3",
+      "rating": 1382,
+      "popularity": 93,
+      "nbPlays": 13203,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/0hYa90NO#57"
+    },
+    {
+      "puzzleId": "Rv3hX",
+      "fen": "2r1k2q/1p1b2p1/p3p3/3pP1br/3N2Q1/2PR4/PP3PPP/4R1K1 b - - 2 28",
+      "moves": "g5e7 g4g6 e8d8 d4e6 d7e6 g6e6",
+      "rating": 1382,
+      "popularity": 90,
+      "nbPlays": 2398,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/ixjs5uiR/black#56"
+    },
+    {
+      "puzzleId": "PecQ2",
+      "fen": "8/p2kb1p1/1r3p2/1B6/P2p4/3P4/1P2KP2/R1B4r b - - 2 30",
+      "moves": "d7c7 c1f4 e7d6 f4d6 c7d6 a1h1",
+      "rating": 1383,
+      "popularity": 94,
+      "nbPlays": 6648,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/OPsQuOlp/black#60"
+    },
+    {
+      "puzzleId": "FK6vm",
+      "fen": "3r4/k3qp2/P1Bprn1p/1P3bp1/8/2Q2P1P/6P1/R4RK1 b - - 0 30",
+      "moves": "e7c7 c3d4 c7b6 d4b6 a7b6 a6a7",
+      "rating": 1385,
+      "popularity": 98,
+      "nbPlays": 4380,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/Vkv8aadt/black#60"
+    },
+    {
+      "puzzleId": "IAbjI",
+      "fen": "r5k1/p5b1/1qp1bpB1/1p5Q/8/2P5/P5PP/5R1K b - - 0 29",
+      "moves": "b6c7 h5h7 g8f8 f1f6 g7f6 h7c7",
+      "rating": 1385,
+      "popularity": 96,
+      "nbPlays": 4145,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/cBUANVkJ/black#58"
+    },
+    {
+      "puzzleId": "22Jkl",
+      "fen": "r1b2rk1/pp1n1pp1/2p1p2p/3pP1B1/3q1P2/2N5/PPQ3PP/R3KB1R w KQ - 0 14",
+      "moves": "c3e2 d4b4 c2d2 b4d2 e1d2 h6g5",
+      "rating": 1385,
+      "popularity": 93,
+      "nbPlays": 2583,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "opening"
+      ],
+      "gameUrl": "https://lichess.org/HCLn2zI8#27"
+    },
+    {
+      "puzzleId": "txH0Y",
+      "fen": "r2q2k1/pp1n3p/2p3BP/3p4/3P2Q1/2P5/PP4P1/5K2 b - - 0 27",
+      "moves": "h7g6 g4g6 g8f8 g6g7 f8e8 h6h7",
+      "rating": 1386,
+      "popularity": 94,
+      "nbPlays": 4366,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/dZ1Q4oBi/black#54"
+    },
+    {
+      "puzzleId": "YEMQe",
+      "fen": "6k1/pp2r1p1/2p1qp2/2Pp4/3r1PP1/1R2P1Q1/P4K2/7R w - - 0 34",
+      "moves": "e3d4 e6e2 f2g1 e2d1 g1h2 e7e2",
+      "rating": 1386,
+      "popularity": 84,
+      "nbPlays": 1058,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/WgYowlAI#67"
+    },
+    {
+      "puzzleId": "M8NYd",
+      "fen": "2r3k1/p6R/6p1/1B2p3/Pp2P3/5P2/P1q3P1/K6R b - - 1 27",
+      "moves": "c2g2 h7h8 g8g7 h1h7 g7f6 h8c8",
+      "rating": 1387,
+      "popularity": 98,
+      "nbPlays": 2767,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/jy0QuNEd/black#54"
+    },
+    {
+      "puzzleId": "2XDIq",
+      "fen": "5rk1/6pp/p2Q4/2p1p3/4P3/4q2P/PPP1N3/3RK3 w - - 4 25",
+      "moves": "d6e5 e3f2 e1d2 f8d8 e5d5 d8d5",
+      "rating": 1387,
+      "popularity": 86,
+      "nbPlays": 1178,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/egae0OSt#49"
+    },
+    {
+      "puzzleId": "X7Kxp",
+      "fen": "r5k1/ppp5/3p4/3PpQ1p/4Pn1q/3B1K2/PPP5/R7 b - - 6 25",
+      "moves": "a8f8 a1g1 h4g4 g1g4 h5g4 f5g4",
+      "rating": 1388,
+      "popularity": 94,
+      "nbPlays": 2854,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/3Yu8YDTf/black#50"
+    },
+    {
+      "puzzleId": "NTNbK",
+      "fen": "2rq3k/p1p1p1b1/1p4Q1/3Pp3/2P5/3B4/PP3nP1/2KR4 b - - 1 24",
+      "moves": "f2d3 d1d3 d8d6 d3h3 h8g8 g6h7 g8f7 h3f3",
+      "rating": 1389,
+      "popularity": 94,
+      "nbPlays": 2391,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/d07Cv56k/black#48"
+    },
+    {
+      "puzzleId": "RsobH",
+      "fen": "8/1p1r1k2/6R1/3bpr2/1B3p1p/P4P1P/5P1K/6R1 b - - 7 32",
+      "moves": "d5f3 g6g7 f7e6 g1g6 f5f6 g6f6 e6f6 g7d7",
+      "rating": 1389,
+      "popularity": 94,
+      "nbPlays": 16325,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/Mi0OIXNK/black#64"
+    },
+    {
+      "puzzleId": "6REoC",
+      "fen": "r4r2/p1Q3pp/p5k1/3P4/5Bbq/2N5/PP4PP/R4K2 b - - 2 23",
+      "moves": "h4h2 c7d6 f8f6 d6f6 g7f6 f4h2",
+      "rating": 1390,
+      "popularity": 94,
+      "nbPlays": 1597,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/3aafaP22/black#46"
+    },
+    {
+      "puzzleId": "tfXfe",
+      "fen": "6k1/1p2p3/3p2P1/2P3R1/p2pbB2/P4q2/1P3b1K/2Q5 b - - 0 38",
+      "moves": "d6c5 c1c4 e4d5 c4d5 f3d5 g5d5",
+      "rating": 1390,
+      "popularity": 94,
+      "nbPlays": 6788,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/WHiTSjLN/black#76"
+    },
+    {
+      "puzzleId": "yScRw",
+      "fen": "r7/ppq4k/2p4P/3p1Q2/3Pn3/P4Pb1/1PP3K1/4R3 b - - 1 26",
+      "moves": "h7h6 e1h1 g3h2 h1h2 c7h2 g2h2",
+      "rating": 1391,
+      "popularity": 97,
+      "nbPlays": 5631,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/gPEo5SJF/black#52"
+    },
+    {
+      "puzzleId": "8riBF",
+      "fen": "4r1k1/p3qp2/1p6/5QNp/6p1/6PP/P4P1K/8 b - - 3 30",
+      "moves": "f7f6 f5g6 g8f8 g5h7 e7h7 g6h7",
+      "rating": 1391,
+      "popularity": 95,
+      "nbPlays": 19772,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/yj4Yx7cD/black#60"
+    },
+    {
+      "puzzleId": "FO9jF",
+      "fen": "1r4k1/4p1r1/3q3b/2pPR1P1/1pP2Q2/1P6/2P3K1/5R2 b - - 3 37",
+      "moves": "h6g5 e5g5 d6f4 g5g7 g8g7 f1f4",
+      "rating": 1391,
+      "popularity": 94,
+      "nbPlays": 1512,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/HIGJXquc/black#74"
+    },
+    {
+      "puzzleId": "G72Fn",
+      "fen": "1k6/p1p5/1pR4p/3P4/3Q4/4B2q/P4Kr1/2R5 w - - 6 31",
+      "moves": "f2e1 h3h1 e3g1 g2g1 d4g1 h1g1",
+      "rating": 1391,
+      "popularity": 94,
+      "nbPlays": 3728,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/sHYQXX9b#61"
+    },
+    {
+      "puzzleId": "QDFKZ",
+      "fen": "2r2k2/4r1q1/5Q2/3p4/1P6/8/1P3PP1/4R1K1 b - - 4 37",
+      "moves": "g7f7 f6h8 f7g8 h8g8 f8g8 e1e7",
+      "rating": 1391,
+      "popularity": 93,
+      "nbPlays": 1183,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/9FqWfNDm/black#74"
+    },
+    {
+      "puzzleId": "27AWg",
+      "fen": "3k1r2/1p1n4/p4r2/2q5/P1p5/4R1QP/1PP3P1/4R2K b - - 4 34",
+      "moves": "c5c7 e3e8 f8e8 e1e8 d8e8 g3c7",
+      "rating": 1392,
+      "popularity": 98,
+      "nbPlays": 3041,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/aS4cigoc/black#68"
+    },
+    {
+      "puzzleId": "jqk9Q",
+      "fen": "4rrk1/5ppp/p6q/3P4/2N5/1Q3P2/PP3R1P/2R2K2 w - - 2 30",
+      "moves": "c1e1 h6h3 f2g2 e8e1 f1e1 h3g2",
+      "rating": 1392,
+      "popularity": 97,
+      "nbPlays": 2036,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/3C3ZKNVY#59"
+    },
+    {
+      "puzzleId": "lSsxv",
+      "fen": "r7/5k1p/2q5/2Pp1p2/P2Q1P2/4P3/7K/R7 w - - 2 32",
+      "moves": "a1g1 c6h6 h2g2 a8g8 g2f1 h6h3",
+      "rating": 1393,
+      "popularity": 92,
+      "nbPlays": 5483,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/ULyoI58T#63"
+    },
+    {
+      "puzzleId": "MOrq3",
+      "fen": "2r5/1p3k2/p5p1/4q1Np/7P/PQ4n1/1P4P1/1K6 b - - 1 35",
+      "moves": "f7e8 b3f7 e8d8 g5e6 e5e6 f7e6",
+      "rating": 1394,
+      "popularity": 91,
+      "nbPlays": 1125,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/XoeEMstm/black#70"
+    },
+    {
+      "puzzleId": "Mib7Q",
+      "fen": "7k/4p1r1/1p6/p2PQ3/5Ppq/1P5P/P1r1BRK1/8 w - - 0 39",
+      "moves": "h3g4 c2e2 e5e2 g7g4 e2g4 h4g4",
+      "rating": 1394,
+      "popularity": 87,
+      "nbPlays": 1921,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/QRe1yhYP#77"
+    },
+    {
+      "puzzleId": "arT2V",
+      "fen": "5r1k/2p3pp/1p1b4/3Nn3/PPQ3P1/2P4P/8/4K3 w - - 1 41",
+      "moves": "c4a2 e5d3 e1d1 f8f1 d1c2 f1f2",
+      "rating": 1395,
+      "popularity": 94,
+      "nbPlays": 27718,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/EP1UPSCp#81"
+    },
+    {
+      "puzzleId": "guGAr",
+      "fen": "8/1B1R1ppk/4p2p/8/1b2PB2/p1r2P1N/1K4PP/8 w - - 0 34",
+      "moves": "b2a2 c3c2 a2b3 c2b2 b3a4 a3a2",
+      "rating": 1396,
+      "popularity": 99,
+      "nbPlays": 2959,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advancedPawn",
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/7oSuVBiS#67"
+    },
+    {
+      "puzzleId": "uRPMD",
+      "fen": "1rb2k1N/6pp/p1p5/1p1p4/3b4/1B4P1/PPP4P/RNB2K2 w - - 0 17",
+      "moves": "c1f4 c8h3 f1e2 b8e8 e2d2 d4b2",
+      "rating": 1396,
+      "popularity": 95,
+      "nbPlays": 14052,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6hekVHCi#33"
+    },
+    {
+      "puzzleId": "oY0ZR",
+      "fen": "5k2/6p1/2p2PQ1/1p1bq3/2n5/8/6PP/5R1K b - - 0 32",
+      "moves": "g7f6 f1f6 f8e7 g6g7 e7d8 f6f8",
+      "rating": 1397,
+      "popularity": 96,
+      "nbPlays": 2097,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/exex4bMx/black#64"
+    },
+    {
+      "puzzleId": "WH3p2",
+      "fen": "2Nk3r/1p1p1ppp/p3q1n1/4P3/4P3/5nK1/5PPP/1R1Q1B1R w - - 0 22",
+      "moves": "d1f3 e6e5 g3h3 g6f4 f3f4 e5f4",
+      "rating": 1397,
+      "popularity": 90,
+      "nbPlays": 1015,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/DxeZEAVJ#43"
+    },
+    {
+      "puzzleId": "Yax0v",
+      "fen": "4k2r/ppP2ppp/1n1bbn2/2p1N3/2PqP3/1P1B2Q1/P5PP/1RB1K2R w Kk - 7 20",
+      "moves": "c1b2 d6e5 b2d4 e5g3 h2g3 c5d4",
+      "rating": 1398,
+      "popularity": 94,
+      "nbPlays": 7727,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/t66J7hpb#39"
+    },
+    {
+      "puzzleId": "qIa7p",
+      "fen": "8/p4pk1/3p1Np1/6P1/5P1P/4Q3/P3R1K1/1r1q4 w - - 7 35",
+      "moves": "f6g4 d1h1 g2g3 b1g1 e3g1 h1g1",
+      "rating": 1398,
+      "popularity": 93,
+      "nbPlays": 4820,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/qRxHNWMi#69"
+    },
+    {
+      "puzzleId": "X5Eu7",
+      "fen": "3r3k/5p2/p3p2p/P3Pn2/3p1Q2/3P2N1/1q1P1P1K/8 b - - 1 38",
+      "moves": "b2b3 g3f5 e6f5 f4h6 h8g8 h6g5",
+      "rating": 1398,
+      "popularity": 90,
+      "nbPlays": 1342,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "endgame",
+        "exposedKing",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/l5xBEQWZ/black#76"
+    },
+    {
+      "puzzleId": "qVTva",
+      "fen": "3r2k1/p3R2p/1p1n2p1/5pN1/8/5P2/PPP4P/2K5 b - - 2 26",
+      "moves": "h7h6 g5e6 d8e8 e7g7 g8h8 g7g6",
+      "rating": 1399,
+      "popularity": 91,
+      "nbPlays": 1751,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "exposedKing",
+        "long",
+        "master"
+      ],
+      "gameUrl": "https://lichess.org/G2YsB89w/black#52"
+    },
+    {
+      "puzzleId": "8hDFe",
+      "fen": "2r3rk/p4p2/1p1pp3/3q2p1/3Pn3/3Q4/P3BPRK/6R1 b - - 5 29",
+      "moves": "f7f5 d3h3 h8g7 g2g5 e4g5 g1g5 g7f8 h3h6",
+      "rating": 1399,
+      "popularity": 88,
+      "nbPlays": 1483,
+      "theme": "exposedKing",
+      "allThemes": [
+        "advantage",
+        "exposedKing",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/gusYHDkz/black#58"
+    }
+  ]
+}

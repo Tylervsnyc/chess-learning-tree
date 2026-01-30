@@ -483,6 +483,22 @@ export default function LearnPage() {
           0%, 100% { transform: scale(1); opacity: 0.8; }
           50% { transform: scale(1.08); opacity: 0.4; }
         }
+        @keyframes shimmer {
+          0% { transform: skewX(-20deg) translateX(-150%); }
+          100% { transform: skewX(-20deg) translateX(250%); }
+        }
+        .level-card-hover:hover .level-card-main {
+          transform: translate(-2px, -2px);
+        }
+        .level-card-hover:hover .level-layer-1 {
+          transform: translate(10px, 10px);
+        }
+        .level-card-hover:hover .level-layer-2 {
+          transform: translate(5px, 5px);
+        }
+        .level-card-hover:hover .shimmer-effect {
+          animation: shimmer 1.5s ease-in-out;
+        }
       `}</style>
 
 
@@ -521,20 +537,69 @@ export default function LearnPage() {
                 </div>
               )}
 
-              {/* Sticky Level Header */}
-              <div
-                className="sticky top-7 z-40 bg-white/95 backdrop-blur-sm border-b border-black/5 -mx-4 px-4 py-3 mb-6"
-              >
-                <div className="flex items-center gap-3">
+              {/* Sticky Level Header - Design 3: Floating Layered Card */}
+              <div className="sticky top-7 z-40 -mx-4 px-4 py-3 mb-6">
+                <div className="relative level-card-hover group cursor-default">
+                  {/* Back layers for 3D depth effect */}
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
-                    style={{ backgroundColor: color }}
+                    className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-1"
+                    style={{
+                      backgroundColor: color,
+                      transform: 'translate(8px, 8px)',
+                      opacity: 0.25,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-2"
+                    style={{
+                      backgroundColor: color,
+                      transform: 'translate(4px, 4px)',
+                      opacity: 0.45,
+                    }}
+                  />
+
+                  {/* Main card */}
+                  <div
+                    className="relative rounded-2xl p-4 border-2 transition-transform duration-300 level-card-main overflow-hidden"
+                    style={{
+                      backgroundColor: '#1A2C35',
+                      borderColor: color,
+                      boxShadow: `0 12px 24px rgba(0,0,0,0.3)`,
+                    }}
                   >
-                    {level}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold" style={{ color }}>{data.name}</h2>
-                    <p className="text-xs text-[#afafaf]">{data.ratingRange} ELO</p>
+                    {/* Corner accent */}
+                    <div
+                      className="absolute top-0 right-0 w-20 h-20 pointer-events-none"
+                      style={{
+                        background: `linear-gradient(135deg, transparent 50%, ${color}25 50%)`,
+                        borderTopRightRadius: '1rem',
+                      }}
+                    />
+
+                    {/* Shimmer effect on hover */}
+                    <div
+                      className="absolute inset-0 bg-white/10 shimmer-effect pointer-events-none"
+                      style={{ transform: 'skewX(-20deg) translateX(-150%)' }}
+                    />
+
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div
+                        className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-black text-xl relative overflow-hidden"
+                        style={{
+                          backgroundColor: color,
+                          boxShadow: `4px 4px 0 ${color}50`,
+                        }}
+                      >
+                        <span className="relative z-10">L{level}</span>
+                      </div>
+                      <div>
+                        <div className="text-sm uppercase tracking-wider font-semibold" style={{ color }}>
+                          Level {level}
+                        </div>
+                        <h2 className="text-xl font-bold text-white">{data.name}</h2>
+                        <p className="text-xs text-white/50">{data.ratingRange} ELO</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

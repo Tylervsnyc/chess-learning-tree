@@ -1,0 +1,173 @@
+{
+  "level": 4,
+  "ratingRange": "1200-1400",
+  "theme": "zugzwang",
+  "count": 10,
+  "puzzles": [
+    {
+      "puzzleId": "Mq50F",
+      "fen": "8/1pb4p/1Np5/P3k1p1/5p2/1P1K1PP1/5P1P/8 w - - 0 33",
+      "moves": "b3b4 c7b6 a5b6 e5d5",
+      "rating": 1206,
+      "popularity": 83,
+      "nbPlays": 338,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/2hA26wGB#65"
+    },
+    {
+      "puzzleId": "obW2U",
+      "fen": "8/8/p2p4/P1pP2k1/1pP4p/1P2rR1K/6P1/8 b - - 2 45",
+      "moves": "e3f3 g2f3 g5f5 h3h4 f5f4 h4h5",
+      "rating": 1217,
+      "popularity": 97,
+      "nbPlays": 1562,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "master",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/oDUAXkGh/black#90"
+    },
+    {
+      "puzzleId": "VYYxq",
+      "fen": "6Br/2k4P/1p3p2/1P2p3/1K2P1P1/8/8/8 b - - 2 72",
+      "moves": "c7d6 b4c4 d6c7 c4d5",
+      "rating": 1230,
+      "popularity": 63,
+      "nbPlays": 147,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/tpkp0HCz/black#144"
+    },
+    {
+      "puzzleId": "PeMNv",
+      "fen": "8/2k3p1/1p1r1p1p/p2Rp2P/P1P3P1/3K1P2/2P5/8 w - - 3 38",
+      "moves": "d5d6 c7d6 d3e4 d6c5 e4f5 c5c4",
+      "rating": 1267,
+      "popularity": 92,
+      "nbPlays": 815,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/6jRfFNR9#75"
+    },
+    {
+      "puzzleId": "fHcu9",
+      "fen": "8/8/1p3p1p/1p1kp1p1/nP4P1/P1PK1P1P/8/B7 w - - 5 38",
+      "moves": "d3c2 d5c4 a1b2 a4b2 c2b2 c4d3",
+      "rating": 1271,
+      "popularity": 94,
+      "nbPlays": 2112,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/qh3os0I1#75"
+    },
+    {
+      "puzzleId": "lYDFA",
+      "fen": "8/5p2/4k3/3p1Np1/p2Kp1P1/P1P4P/2P5/5b2 w - - 5 43",
+      "moves": "f5e3 f1h3 c3c4 d5c4",
+      "rating": 1294,
+      "popularity": 88,
+      "nbPlays": 815,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/1WJeq40k#85"
+    },
+    {
+      "puzzleId": "T7wxc",
+      "fen": "4R3/8/2p5/1pP2k2/pP1b3p/P3pK1P/8/8 w - - 3 50",
+      "moves": "e8e3 d4e3 f3e3 f5e5",
+      "rating": 1312,
+      "popularity": 92,
+      "nbPlays": 1644,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/7vGgJzpH#99"
+    },
+    {
+      "puzzleId": "LKM1z",
+      "fen": "8/8/p1p3p1/1pPk1p1p/1P1PbP1P/P2BK1P1/8/8 w - - 4 34",
+      "moves": "d3e4 f5e4 g3g4 h5g4 f4f5 g6f5",
+      "rating": 1344,
+      "popularity": 99,
+      "nbPlays": 1054,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/djV9gEMD#67"
+    },
+    {
+      "puzzleId": "jXJoZ",
+      "fen": "3b4/8/5p2/2kNp1p1/P3P1Pp/1K3P1P/8/8 w - - 3 48",
+      "moves": "a4a5 d8a5 d5f6 c5d4",
+      "rating": 1386,
+      "popularity": 100,
+      "nbPlays": 306,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/U0LJ9rp9#95"
+    },
+    {
+      "puzzleId": "OHfWm",
+      "fen": "5r2/8/1p1p4/p1pPk2p/P1P1P1bP/1P2K1R1/5P2/8 b - - 6 39",
+      "moves": "f8f4 f2f3 f4f6 f3g4",
+      "rating": 1387,
+      "popularity": 100,
+      "nbPlays": 506,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/ZTHkkQqG/black#78"
+    }
+  ]
+}
