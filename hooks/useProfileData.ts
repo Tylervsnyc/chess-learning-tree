@@ -64,7 +64,7 @@ export function useProfileData() {
         }
 
         // Process theme data (empty array is valid for new users)
-        const processedThemes: ThemePerformanceData[] = (themes || []).map(t => ({
+        const processedThemes: ThemePerformanceData[] = (themes || []).map((t: { theme: string; attempts: number; solved: number; avg_rating: number }) => ({
           theme: t.theme,
           attempts: t.attempts,
           solved: t.solved,
