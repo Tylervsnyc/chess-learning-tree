@@ -83,6 +83,15 @@ function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionI
   if (lesson.pieceFilter) {
     return lesson.pieceFilter as PieceType;
   }
+
+  // Smothered mates are always delivered by knights
+  const hasSmotheredMate = lesson.requiredTags?.some(tag =>
+    tag.toLowerCase().includes('smother')
+  );
+  if (hasSmotheredMate) {
+    return 'knight';
+  }
+
   return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
 }
 
