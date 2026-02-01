@@ -12,7 +12,13 @@ import {
   playCaptureSound,
   warmupAudio,
 } from '@/lib/sounds';
-import { getAllLessonIds } from '@/lib/curriculum-registry';
+import {
+  getAllLessonIds,
+  getLessonById,
+  getLevelFromLessonId,
+  getIntroMessagesForLesson,
+  getLessonWithContext,
+} from '@/lib/curriculum-registry';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
@@ -20,9 +26,7 @@ import { getThemeExplanation } from '@/data/theme-explanations';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { SyncStatus } from '@/components/ui/SyncStatus';
 import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-responses';
-import { level1V2, getLessonById, getIntroMessages, IntroMessages } from '@/data/staging/level1-v2-curriculum';
-import { level2V2, getLessonByIdL2, getIntroMessagesL2 } from '@/data/staging/level2-v2-curriculum';
-import { level3V2, getLessonByIdL3, getIntroMessagesL3 } from '@/data/staging/level3-v2-curriculum';
+import { IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -59,45 +63,28 @@ interface LessonPuzzle {
 
 type PuzzleResult = 'pending' | 'correct' | 'wrong';
 
-// Get lesson from any level
-function getLessonFromAnyLevel(lessonId: string) {
-  let lesson = getLessonById(lessonId);
-  if (lesson) return { lesson, level: 1 };
-
-  lesson = getLessonByIdL2(lessonId);
-  if (lesson) return { lesson, level: 2 };
-
-  lesson = getLessonByIdL3(lessonId);
-  if (lesson) return { lesson, level: 3 };
-
-  return null;
-}
-
-// Get intro messages from any level
+// Get intro messages from any level using the curriculum registry
 function getIntroMessagesFromAnyLevel(lessonId: string): IntroMessages {
-  // Try level 1 first
-  const level1Messages = getIntroMessages(lessonId);
-  if (level1Messages.blockIntro || level1Messages.themeIntro) {
-    return level1Messages;
+  const messages = getIntroMessagesForLesson(lessonId);
+  const result: IntroMessages = {};
+
+  const context = getLessonWithContext(lessonId);
+
+  if (messages.blockIntro && context) {
+    result.blockIntro = {
+      title: context.block.name,
+      message: messages.blockIntro,
+    };
   }
 
-  // Try level 2
-  if (typeof getIntroMessagesL2 === 'function') {
-    const level2Messages = getIntroMessagesL2(lessonId);
-    if (level2Messages.blockIntro || level2Messages.themeIntro) {
-      return level2Messages;
-    }
+  if (messages.themeIntro && context) {
+    result.themeIntro = {
+      title: context.section.name,
+      message: messages.themeIntro,
+    };
   }
 
-  // Try level 3
-  if (typeof getIntroMessagesL3 === 'function') {
-    const level3Messages = getIntroMessagesL3(lessonId);
-    if (level3Messages.blockIntro || level3Messages.themeIntro) {
-      return level3Messages;
-    }
-  }
-
-  return {};
+  return result;
 }
 
 // Transform API puzzle to lesson puzzle format
@@ -232,6 +219,11 @@ export default function LessonPage() {
     return null;
   }, [allLessonIds, lessonId]);
 
+  // Scroll to top on mount (prevents inheriting scroll position from /learn)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
     const handleFirstInteraction = () => {
@@ -282,14 +274,14 @@ export default function LessonPage() {
       setLoading(true);
       setError(null);
 
-      const result = getLessonFromAnyLevel(lessonId);
-      if (!result) {
+      const lesson = getLessonById(lessonId);
+      if (!lesson) {
         setError(`Lesson ${lessonId} not found`);
         setLoading(false);
         return;
       }
 
-      const { lesson, level: lessonLevel } = result;
+      const lessonLevel = getLevelFromLessonId(lessonId);
       setLessonName(lesson.name);
       setLevel(lessonLevel);
 
