@@ -52,10 +52,22 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired - ignore error when no session exists
-  const { error } = await supabase.auth.getUser();
-  if (error && error.name !== 'AuthSessionMissingError') {
-    console.error('Auth error:', error);
+  // Refresh session if expired - gracefully handle common auth errors
+  try {
+    const { error } = await supabase.auth.getUser();
+
+    // These errors are expected when user is logged out or session expired
+    const expectedErrors = [
+      'AuthSessionMissingError',
+      'AuthApiError', // Includes "Refresh Token Not Found"
+    ];
+
+    if (error && !expectedErrors.includes(error.name)) {
+      console.error('Auth error:', error);
+    }
+  } catch (err) {
+    // Catch any unexpected errors to prevent middleware from crashing
+    console.error('Middleware auth error:', err);
   }
 
   return response;

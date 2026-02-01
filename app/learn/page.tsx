@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { LEVELS, getAllLessonIds, getLevelLessonIds, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
 import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
@@ -11,7 +11,7 @@ import { useUser } from '@/hooks/useUser';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
-type LessonStatus = 'completed' | 'current' | 'locked';
+type LessonStatus = 'completed' | 'current' | 'unlocked' | 'locked';
 
 // Check if a level is completed
 function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean {
@@ -72,8 +72,8 @@ function getLessonStatus(
 
   if (lessonId === firstCurrent) return 'current';
 
-  // Unlocked but not the first current - show as locked (available but not highlighted)
-  return 'locked';
+  // Unlocked but not the first current - show as unlocked (clickable but not highlighted)
+  return 'unlocked';
 }
 
 // Assign piece types to lessons
@@ -372,7 +372,7 @@ export default function LearnPage() {
   const initialScrollDoneRef = useRef(false);
 
   // Track completed lessons and unlocked levels
-  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked } = useLessonProgress();
+  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
@@ -434,7 +434,7 @@ export default function LearnPage() {
       }, 50);
       return () => clearTimeout(timer);
     }
-  }, [targetLessonId, scrollToLessonId, currentLessonId, expandedSections]);
+  }, [targetLessonId, scrollToLessonId, currentLessonId]); // Don't include expandedSections - causes scroll jump on toggle
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
@@ -444,13 +444,13 @@ export default function LearnPage() {
   // If user exists but profile is null, profile is still loading
   const isProfileLoading = !!user && !profile;
   // Admin users have unrestricted access to all lessons and levels
-  // While profile is loading, assume admin to avoid locked state flash for admins
-  const isAdmin = isProfileLoading ? true : (profile?.is_admin ?? false);
+  // While loading, default to false (secure default) - show loading state instead of flash
+  const isAdmin = profile?.is_admin ?? false;
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
-    // Check each level (1, 2) - Level 3 has no next level
-    for (let level = 1; level <= 2; level++) {
+    // Check all levels except the last (which has no next level)
+    for (let level = 1; level <= LEVELS.length - 1; level++) {
       const nextLevel = level + 1;
       const levelCompleted = isLevelCompleted(level, completedLessons);
       const nextLevelUnlocked = unlockedLevels.includes(nextLevel);
@@ -467,6 +467,29 @@ export default function LearnPage() {
       [sectionId]: !prev[sectionId],
     }));
   };
+
+  // Show loading skeleton while auth or progress is loading to prevent flash
+  if (userLoading || isProfileLoading || !progressLoaded) {
+    return (
+      <div className="min-h-screen bg-[#eef6fc] text-[#3c3c3c] pb-20">
+        <div className="max-w-lg mx-auto px-4 py-6">
+          {/* Skeleton level header */}
+          <div className="h-24 bg-gray-200 rounded-2xl animate-pulse mb-6" />
+          {/* Skeleton sections */}
+          {[1, 2, 3].map(i => (
+            <div key={i} className="mb-4">
+              <div className="h-16 bg-gray-200 rounded-2xl animate-pulse mb-2" />
+              <div className="flex justify-center gap-4 mt-4">
+                {[1, 2, 3].map(j => (
+                  <div key={j} className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#eef6fc] text-[#3c3c3c] pb-20">
@@ -486,6 +509,14 @@ export default function LearnPage() {
         @keyframes shimmer {
           0% { transform: skewX(-20deg) translateX(-150%); }
           100% { transform: skewX(-20deg) translateX(250%); }
+        }
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popupSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.95); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         }
         .level-card-hover:hover .level-card-main {
           transform: translate(-2px, -2px);
@@ -709,12 +740,44 @@ function SectionView({
   isAdmin: boolean;
   startingLessonId: string | null;
 }) {
+  const router = useRouter();
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
     : CURRICULUM_V2_CONFIG.moduleColors[sectionIndex % CURRICULUM_V2_CONFIG.moduleColors.length];
 
+  // Clear selection when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sectionRef.current && !sectionRef.current.contains(e.target as Node)) {
+        setSelectedLessonId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  // Clear selection when section collapses
+  useEffect(() => {
+    if (!isExpanded) {
+      setSelectedLessonId(null);
+    }
+  }, [isExpanded]);
+
+  // Toggle lesson selection (show/hide popup)
+  const handleLessonSelect = useCallback((lessonId: string) => {
+    setSelectedLessonId(prev => prev === lessonId ? null : lessonId);
+  }, []);
+
+  // Navigate to lesson when Start button is clicked
+  const handleLessonStart = useCallback((lessonId: string) => {
+    router.push(`/lesson/${lessonId}`);
+  }, [router]);
+
   return (
-    <div className="mb-3">
+    <div className="mb-3" ref={sectionRef}>
       {/* Section Header */}
       <button
         onClick={onToggle}
@@ -747,39 +810,38 @@ function SectionView({
         </div>
       </button>
 
-      {/* Lessons */}
+      {/* Lessons - Evenly Spaced Row */}
       {isExpanded && (
-        <div className="mt-4 flex flex-col items-center">
-          {section.lessons.map((lesson, lessonIndex) => {
-            // Admins see locked lessons as current (clickable) instead of locked
-            const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId);
-            const status = isAdmin && baseStatus === 'locked' ? 'current' : baseStatus;
-            const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
+        <div className="mt-4 px-2">
+          <div className="flex flex-row justify-evenly items-start">
+            {section.lessons.map((lesson, lessonIndex) => {
+              // Admins see locked lessons as unlocked (clickable) instead of locked
+              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId);
+              const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
+              const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
-            // Zigzag pattern
-            const patternPosition = lessonIndex % 4;
-            let xOffset = 0;
-            if (patternPosition === 0) xOffset = -50;
-            else if (patternPosition === 1) xOffset = 0;
-            else if (patternPosition === 2) xOffset = 50;
-            else xOffset = 0;
-
-            return (
-              <div
-                key={lesson.id}
-                id={`lesson-${lesson.id}`}
-                className="mb-6"
-                style={{ transform: `translateX(${xOffset}px)` }}
-              >
-                <LessonButton
-                  lesson={lesson}
-                  piece={piece}
-                  status={status}
-                  sectionColor={sectionColor}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={lesson.id}
+                  id={`lesson-${lesson.id}`}
+                  style={{
+                    animation: `fadeSlideIn 0.2s ease-out ${lessonIndex * 50}ms forwards`,
+                    opacity: 0,
+                  }}
+                >
+                  <LessonButton
+                    lesson={lesson}
+                    piece={piece}
+                    status={status}
+                    sectionColor={sectionColor}
+                    isSelected={selectedLessonId === lesson.id}
+                    onSelect={() => handleLessonSelect(lesson.id)}
+                    onStart={() => handleLessonStart(lesson.id)}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -792,11 +854,17 @@ function LessonButton({
   piece,
   status,
   sectionColor,
+  isSelected,
+  onSelect,
+  onStart,
 }: {
   lesson: LessonCriteria;
   piece: PieceType;
   status: LessonStatus;
   sectionColor: string;
+  isSelected: boolean;
+  onSelect: () => void;
+  onStart: () => void;
 }) {
   const size = CURRICULUM_V2_CONFIG.buttonSize;
   const depthY = CURRICULUM_V2_CONFIG.buttonDepthY;
@@ -804,6 +872,7 @@ function LessonButton({
 
   const isCompleted = status === 'completed';
   const isCurrent = status === 'current';
+  const isUnlocked = status === 'unlocked';
   const isLocked = status === 'locked';
 
   let topColor: string;
@@ -818,17 +887,35 @@ function LessonButton({
     topColor = CURRICULUM_V2_CONFIG.lockedColor;
     bottomColor = CURRICULUM_V2_CONFIG.lockedDarkColor;
     iconColor = '#9CA3AF';
+  } else if (isUnlocked) {
+    topColor = sectionColor;
+    bottomColor = darkenColor(sectionColor, 0.35);
+    iconColor = 'white';
   } else {
     topColor = sectionColor;
     bottomColor = darkenColor(sectionColor, 0.35);
     iconColor = 'white';
   }
 
-  const buttonContent = (
-    <div className="flex flex-col items-center">
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect();
+  };
+
+  const handleStartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onStart();
+  };
+
+  return (
+    <div className="flex flex-col items-center relative">
+      {/* Icon button */}
       <div
-        className={`relative ${isLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:scale-105 transition-transform'}`}
-        style={{ width: size + depthX, height: size + depthY }}
+        className={`relative ${isLocked ? 'opacity-60' : ''} cursor-pointer hover:scale-105 transition-transform`}
+        style={{ width: size + depthX, height: size + depthY, opacity: isUnlocked && !isCurrent ? 0.75 : 1 }}
+        onClick={handleClick}
       >
         {/* Pulse ring for current */}
         {isCurrent && (
@@ -882,20 +969,70 @@ function LessonButton({
         </div>
       </div>
 
-      {/* Lesson name */}
-      <div className="mt-2 text-center max-w-[100px]">
-        <div className="text-xs font-medium text-[#3c3c3c] truncate">{lesson.name}</div>
-      </div>
+      {/* Popup card below icon */}
+      {isSelected && (
+        <div
+          className="absolute top-full mt-3 left-1/2 -translate-x-1/2 z-50"
+          style={{ animation: 'popupSlideUp 0.2s ease-out' }}
+        >
+          {/* Arrow pointing up */}
+          <div
+            className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
+            style={{ backgroundColor: isLocked ? '#374151' : sectionColor }}
+          />
+
+          {/* Card content */}
+          <div
+            className="relative rounded-2xl overflow-hidden shadow-xl"
+            style={{
+              width: '200px',
+              backgroundColor: '#1A2C35',
+              border: `3px solid ${isLocked ? '#374151' : sectionColor}`,
+            }}
+          >
+            {/* Header with color */}
+            <div
+              className="px-4 py-3 text-center"
+              style={{ backgroundColor: isLocked ? '#374151' : sectionColor }}
+            >
+              <div className="text-white font-bold text-sm">
+                {lesson.name}
+              </div>
+              {isCompleted && (
+                <div className="text-white/80 text-xs mt-0.5">✓ Completed</div>
+              )}
+              {isCurrent && (
+                <div className="text-white/80 text-xs mt-0.5">Up next</div>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="p-4">
+              {isLocked ? (
+                <div className="text-center">
+                  <div className="text-gray-400 text-xs mb-3">
+                    Complete previous lessons to unlock
+                  </div>
+                  <div className="w-full py-2.5 rounded-xl font-bold text-sm bg-gray-600 text-gray-400 cursor-not-allowed">
+                    Locked
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleStartClick}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm text-white transition-all active:scale-95"
+                  style={{
+                    backgroundColor: sectionColor,
+                    boxShadow: `0 4px 0 ${darkenColor(sectionColor, 0.3)}`,
+                  }}
+                >
+                  {isCompleted ? 'Practice Again' : 'Start Lesson'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
-
-  if (isLocked) {
-    return buttonContent;
-  }
-
-  return (
-    <Link href={`/lesson/${lesson.id}`}>
-      {buttonContent}
-    </Link>
   );
 }

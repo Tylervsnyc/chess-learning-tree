@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/client';
+import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { createClient, clearAuthTokens } from '@/lib/supabase/client';
 
 interface Profile {
   id: string;
@@ -89,8 +89,21 @@ export function useUser() {
     let initialFired = false;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         if (!mounted) return;
+
+        // Handle token refresh errors (e.g., "Refresh Token Not Found")
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.warn('Auth: Token refresh failed, clearing stale tokens');
+          clearAuthTokens();
+          setUser(null);
+          setProfile(null);
+          if (!initialFired) {
+            initialFired = true;
+            setLoading(false);
+          }
+          return;
+        }
 
         const sessionUser = session?.user ?? null;
         setUser(sessionUser);
@@ -129,11 +142,11 @@ export function useUser() {
     try {
       const supabase = createClient();
       await supabase.auth.signOut({ scope: 'global' });
-      setUser(null);
-      setProfile(null);
     } catch (error) {
       console.error('Error signing out:', error);
-      // Force clear state even if signOut fails
+    } finally {
+      // Always clear state and tokens, even if signOut fails
+      clearAuthTokens();
       setUser(null);
       setProfile(null);
     }
