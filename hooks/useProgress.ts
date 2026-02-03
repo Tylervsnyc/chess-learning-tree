@@ -565,6 +565,19 @@ export function useLessonProgress() {
     // If lesson is already completed, it's unlocked
     if (progress.completedLessons.includes(lessonId)) return true;
 
+    // First lesson is always unlocked
+    const index = allLessonIds.indexOf(lessonId);
+    if (index === 0) return true;
+
+    // Check startingLessonId FIRST (from level test placement)
+    // This unlocks all lessons up to and including the starting lesson
+    if (progress.startingLessonId) {
+      const startingIndex = allLessonIds.indexOf(progress.startingLessonId);
+      if (startingIndex >= 0 && index <= startingIndex) {
+        return true;
+      }
+    }
+
     // Parse level from lessonId (format: level.section.lesson, e.g., "1.3.2")
     const lessonLevel = parseInt(lessonId.split('.')[0], 10);
 
@@ -591,18 +604,7 @@ export function useLessonProgress() {
       return progress.completedLessons.includes(previousLessonInLevel);
     }
 
-    // Fallback for startingLessonId (diagnostic placement)
-    if (progress.startingLessonId) {
-      const startingIndex = allLessonIds.indexOf(progress.startingLessonId);
-      const index = allLessonIds.indexOf(lessonId);
-      if (startingIndex >= 0 && index <= startingIndex) {
-        return true;
-      }
-    }
-
-    // Default: first lesson always unlocked, otherwise previous must be completed
-    const index = allLessonIds.indexOf(lessonId);
-    if (index === 0) return true;
+    // Default fallback: previous lesson must be completed
     const previousLessonId = allLessonIds[index - 1];
     return progress.completedLessons.includes(previousLessonId);
   }, [progress.completedLessons, progress.startingLessonId, progress.unlockedLevels, profile?.is_admin]);
