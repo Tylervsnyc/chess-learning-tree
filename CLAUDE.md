@@ -123,6 +123,10 @@ The `/api/progress/sync` endpoint merged localStorage with server data using `Ma
 The learn page had its own `getLessonStatus()` function that duplicated unlock logic from `useProgress.ts`. Also, unlocking level 5 stored `[1, 5]` instead of `[1, 2, 3, 4, 5]`, requiring complex "level < highest" derivation logic that had bugs.
 → **New rule:** Store explicit state, not implicit. When unlocking level 5, store `[1,2,3,4,5]` so the check is just "is level in array?" Also, before fixing unlock bugs, grep for `getLessonStatus`, `isLessonUnlocked`, `locked`, `unlocked` to find ALL places with unlock logic.
 
+### Lesson: 2026-02-03 - Header buttons wrapped text on mobile, logo text overlapped
+On mobile, "Log out" wrapped to two lines and the logo "chess" and "path" text appeared too close or overlapping. Multi-word button labels wrap when space is tight; SVG text positioning varies across devices/fonts.
+→ **New rule:** Header buttons must use single-word labels (Logout, Signup) and `whitespace-nowrap`. Never let "path" overlap or crowd "chess" in the logo - this looks unprofessional. Test header on mobile before shipping.
+
 <!-- Add new lessons here -->
 
 ---
