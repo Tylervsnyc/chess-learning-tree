@@ -106,7 +106,7 @@ export function ShareButton({
   };
 
   const canNativeShare = typeof navigator !== 'undefined' &&
-    navigator.share &&
+    'share' in navigator &&
     asset &&
     navigator.canShare?.({ files: [asset.imageFile] });
 
