@@ -690,9 +690,9 @@ export default function DailyChallengePage() {
     return (
       <div className="h-screen bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* Brand logo with wordmark */}
-          <div className="mb-6">
-            <svg width="120" height="120" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-2">
+          {/* Brand logo with wordmark - compact */}
+          <div className="mb-3">
+            <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
               <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
               <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
               <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
@@ -701,85 +701,73 @@ export default function DailyChallengePage() {
               <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
               <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
             </svg>
-            <div className="text-2xl font-bold">
+            <div className="text-xl font-bold">
               <span className="text-white">chess</span>
               <span className="bg-gradient-to-r from-[#4ade80] via-[#38bdf8] to-[#a78bfa] bg-clip-text text-transparent">path</span>
             </div>
           </div>
 
           <div
-            className="inline-block px-6 py-3 rounded-xl mb-6 border-2 border-[#FF9600]/50"
+            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
             style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
           >
             <h1
-              className="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
               style={{ fontFamily: 'Nunito, sans-serif' }}
             >
               DAILY CHALLENGE
             </h1>
           </div>
 
-          {/* Fun description */}
-          <div className="bg-[#131F24] rounded-xl p-4 mb-4 text-left space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#38bdf8]/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#38bdf8] font-bold">5</span>
+          {/* Fun description - compact */}
+          <div className="bg-[#131F24] rounded-xl p-3 mb-3 text-left space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#38bdf8]/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-[#38bdf8] font-bold text-xs">5</span>
               </div>
-              <div>
-                <div className="text-white font-semibold text-sm">5 Minutes on the Clock</div>
-                <div className="text-gray-400 text-xs">Race against time. Every second counts!</div>
-              </div>
+              <div className="text-white font-medium text-sm">5 minutes on the clock</div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#4ade80]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#4ade80]/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-3 h-3 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                 </svg>
               </div>
-              <div>
-                <div className="text-white font-semibold text-sm">Puzzles Get Harder</div>
-                <div className="text-gray-400 text-xs">The more you solve, the tougher they get!</div>
-              </div>
+              <div className="text-white font-medium text-sm">Puzzles get harder as you go</div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#f87171]/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#f87171] font-bold">3</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#f87171]/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-[#f87171] font-bold text-xs">3</span>
               </div>
-              <div>
-                <div className="text-white font-semibold text-sm">3 Mistakes and You&apos;re Out</div>
-                <div className="text-gray-400 text-xs">Stay sharp. No room for error!</div>
-              </div>
+              <div className="text-white font-medium text-sm">3 mistakes and you&apos;re out</div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#fbbf24]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#fbbf24]/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-3 h-3 text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-5 5h-1v2h2a2 2 0 0 1 2 2v4h-4v-2H9v2H5v-4a2 2 0 0 1 2-2h2v-2H8a5 5 0 0 1-5-5V5a2 2 0 0 1 2-2z"/>
                 </svg>
               </div>
-              <div>
-                <div className="text-white font-semibold text-sm">Compete Globally</div>
-                <div className="text-gray-400 text-xs">Same puzzles for everyone. How do you stack up?</div>
-              </div>
+              <div className="text-white font-medium text-sm">Same puzzles for everyone</div>
             </div>
           </div>
 
           <button
             onClick={startChallenge}
             disabled={gameState === 'loading'}
-            className="w-full py-3.5 rounded-xl text-white font-bold text-lg transition-transform active:scale-[0.98] disabled:opacity-70"
+            className="w-full py-3 rounded-xl text-white font-bold text-lg transition-transform active:scale-[0.98] disabled:opacity-70"
             style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
           >
             {gameState === 'loading' ? 'Loading puzzles...' : "Let's Go!"}
           </button>
 
           <button
-            onClick={() => router.push('/home')}
-            className="mt-3 text-gray-500 hover:text-gray-300 transition-colors text-sm"
+            onClick={() => router.push('/learn')}
+            className="mt-2 text-gray-500 hover:text-gray-300 transition-colors text-sm"
           >
-            Back to Home
+            Back to Path
           </button>
         </div>
       </div>
