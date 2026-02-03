@@ -20,42 +20,20 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
   return levelLessonIds.every(id => completedLessons.includes(id));
 }
 
-// Determine lesson status - respects startingLessonId from diagnostic/level tests
+// Determine lesson status - uses isLessonUnlocked from hook (ONE source of truth)
 // overrideCurrentId: When navigating from a completed lesson, show this as "current" instead of first gap
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
   allLessonIds: string[],
-  startingLessonId: string | null,
+  isUnlockedFn: (lessonId: string, allLessonIds: string[]) => boolean,
   overrideCurrentId: string | null = null
 ): LessonStatus {
   // Completed lessons are always completed
   if (completedLessons.includes(lessonId)) return 'completed';
 
-  const index = allLessonIds.indexOf(lessonId);
-
-  // Check if this lesson is unlocked
-  let isUnlocked = false;
-
-  // First lesson is always unlocked
-  if (index === 0) {
-    isUnlocked = true;
-  }
-  // If user has a starting lesson (from diagnostic/level test)
-  else if (startingLessonId) {
-    const startingIndex = allLessonIds.indexOf(startingLessonId);
-    // All lessons before and including the starting lesson are unlocked
-    if (startingIndex >= 0 && index <= startingIndex) {
-      isUnlocked = true;
-    }
-  }
-  // For lessons after the starting point: require previous lesson completed
-  if (!isUnlocked && index > 0) {
-    const previousLessonId = allLessonIds[index - 1];
-    if (completedLessons.includes(previousLessonId)) {
-      isUnlocked = true;
-    }
-  }
+  // Use the hook's unlock function (respects unlockedLevels, startingLessonId, etc.)
+  const isUnlocked = isUnlockedFn(lessonId, allLessonIds);
 
   if (!isUnlocked) return 'locked';
 
@@ -68,15 +46,7 @@ function getLessonStatus(
   if (!overrideCurrentId) {
     const firstCurrent = allLessonIds.find(id => {
       if (completedLessons.includes(id)) return false;
-      const idx = allLessonIds.indexOf(id);
-      // Check if unlocked using same logic
-      if (idx === 0) return true;
-      if (startingLessonId) {
-        const startingIdx = allLessonIds.indexOf(startingLessonId);
-        if (startingIdx >= 0 && idx <= startingIdx) return true;
-      }
-      const prevId = allLessonIds[idx - 1];
-      return completedLessons.includes(prevId);
+      return isUnlockedFn(id, allLessonIds);
     });
 
     if (lessonId === firstCurrent) return 'current';
@@ -635,7 +605,7 @@ export default function LearnPage() {
                     allLessonIds={allLessonIds}
                     levelColor={color}
                     isAdmin={isAdmin}
-                    startingLessonId={startingLessonId}
+                    isLessonUnlocked={isLessonUnlocked}
                     overrideCurrentId={scrollToLessonId}
                   />
                 );
@@ -667,7 +637,7 @@ function BlockView({
   allLessonIds,
   levelColor,
   isAdmin,
-  startingLessonId,
+  isLessonUnlocked,
   overrideCurrentId,
 }: {
   block: Block;
@@ -679,7 +649,7 @@ function BlockView({
   allLessonIds: string[];
   levelColor: string;
   isAdmin: boolean;
-  startingLessonId: string | null;
+  isLessonUnlocked: (lessonId: string, allLessonIds: string[]) => boolean;
   overrideCurrentId: string | null;
 }) {
   return (
@@ -706,7 +676,7 @@ function BlockView({
             completedLessons={completedLessons}
             allLessonIds={allLessonIds}
             isAdmin={isAdmin}
-            startingLessonId={startingLessonId}
+            isLessonUnlocked={isLessonUnlocked}
             overrideCurrentId={overrideCurrentId}
           />
         );
@@ -724,7 +694,7 @@ function SectionView({
   completedLessons,
   allLessonIds,
   isAdmin,
-  startingLessonId,
+  isLessonUnlocked,
   overrideCurrentId,
 }: {
   section: Section;
@@ -734,7 +704,7 @@ function SectionView({
   completedLessons: string[];
   allLessonIds: string[];
   isAdmin: boolean;
-  startingLessonId: string | null;
+  isLessonUnlocked: (lessonId: string, allLessonIds: string[]) => boolean;
   overrideCurrentId: string | null;
 }) {
   const router = useRouter();
@@ -813,7 +783,7 @@ function SectionView({
           <div className="flex flex-row justify-evenly items-start">
             {section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
-              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId, overrideCurrentId);
+              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, overrideCurrentId);
               const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
               const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
