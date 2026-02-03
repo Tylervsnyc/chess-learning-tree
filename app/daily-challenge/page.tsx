@@ -105,7 +105,7 @@ function processPuzzle(puzzle: Puzzle): ProcessedPuzzle {
 export default function DailyChallengePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const {
     recordDailyActivity,
     currentStreak,
@@ -240,6 +240,12 @@ export default function DailyChallengePage() {
   // Check if user already completed today's challenge
   useEffect(() => {
     const checkTodayCompletion = async () => {
+      // Wait for user loading to complete before checking
+      if (userLoading) {
+        return;
+      }
+
+      // If no user (guest), just show ready screen
       if (!user) {
         setCheckingCompletion(false);
         return;
@@ -260,6 +266,25 @@ export default function DailyChallengePage() {
           setTimeLeft(TOTAL_TIME - existingResult.timeUsedMs);
           setLeaderboard(data.leaderboard || []);
           setUserEntry(data.userEntry || userInLeaderboard);
+
+          // Also fetch today's puzzles for review
+          try {
+            const puzzleRes = await fetch('/api/daily-challenge/puzzles');
+            const puzzleData = await puzzleRes.json();
+            if (puzzleData.puzzles) {
+              const processed = puzzleData.puzzles.map((p: Puzzle) => processPuzzle(p));
+              setAllPuzzles(processed);
+              // Mark puzzles as attempted (we don't know which were correct/wrong, so mark all as reviewed)
+              const results: Record<string, 'correct' | 'wrong'> = {};
+              processed.slice(0, existingResult.puzzlesCompleted).forEach((p: ProcessedPuzzle) => {
+                results[p.puzzleId] = 'correct';
+              });
+              setPuzzleResults(results);
+            }
+          } catch (puzzleError) {
+            console.error('Failed to fetch puzzles for review:', puzzleError);
+          }
+
           setGameState('finished');
         }
       } catch (error) {
@@ -270,7 +295,7 @@ export default function DailyChallengePage() {
     };
 
     checkTodayCompletion();
-  }, [user]);
+  }, [user, userLoading]);
 
   // Warmup audio on first interaction
   useEffect(() => {
@@ -648,13 +673,13 @@ export default function DailyChallengePage() {
   }, [currentPuzzle, moveIndex, selectedSquare, game]);
 
   // Loading state while checking if user already completed today
-  if (checkingCompletion) {
+  if (checkingCompletion || userLoading) {
     return (
       <div className="h-screen bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* Same brand logo as ready screen for seamless transition */}
-          <div className="mb-6">
-            <svg width="120" height="120" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-2">
+          {/* Same compact brand logo as ready screen for seamless transition */}
+          <div className="mb-3">
+            <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
               <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
               <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
               <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
@@ -663,17 +688,17 @@ export default function DailyChallengePage() {
               <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
               <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
             </svg>
-            <div className="text-2xl font-bold">
+            <div className="text-xl font-bold">
               <span className="text-white">chess</span>
               <span className="bg-gradient-to-r from-[#4ade80] via-[#38bdf8] to-[#a78bfa] bg-clip-text text-transparent">path</span>
             </div>
           </div>
           <div
-            className="inline-block px-6 py-3 rounded-xl mb-6 border-2 border-[#FF9600]/50"
+            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
             style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
           >
             <h1
-              className="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
               style={{ fontFamily: 'Nunito, sans-serif' }}
             >
               DAILY CHALLENGE
