@@ -458,6 +458,12 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ### Scroll Behavior:
 **Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Challenge toggle without losing their place in the curriculum.
 
+### Logo Rules:
+- **"chess" and "path" must NEVER overlap or touch** - this looks unprofessional
+- SVG logos must use inline `<tspan>` elements (not separate `<text>` elements with fixed positions)
+- This ensures "path" flows directly after "chess" regardless of system font rendering
+- Logo files: `/public/brand/logo-horizontal-*.svg` and `/public/brand/logo-stacked-*.svg`
+
 ### Elements by Location:
 
 | Element | Where Shown | Links To |
