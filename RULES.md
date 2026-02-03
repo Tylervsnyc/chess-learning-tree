@@ -288,15 +288,16 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 - Rating targets: 400-550, 500-650, 600-750... up to 2300-2600
 - Goal: How many can you solve in 5 minutes?
 
-### Puzzle Selection (API):
+### Puzzle Selection (Pre-generated):
 ```
 /api/daily-challenge/puzzles
 ```
+- **Puzzles are pre-generated** in `data/daily-challenge-puzzles.json`
+- 90 days of coverage, regenerate with: `npx ts-node scripts/generate-daily-puzzles.ts`
 - Uses date-seeded random number generator (same puzzles for everyone)
 - 20 deliberate rating targets spanning 400-2600 ELO
 - Prioritizes tactical themes (forks, pins, mates) over endgames
 - Each puzzle comes from a different theme when possible
-- `?testSeed=123` for testing with different puzzle sets
 
 ### Rating Brackets Used:
 | Bracket | Puzzles | Rating Range |
