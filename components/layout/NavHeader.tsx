@@ -68,7 +68,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/daily-challenge"
-                className={`relative flex items-center justify-center px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
+                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
                   pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
                 }`}
                 style={{
@@ -76,7 +76,7 @@ export function NavHeader() {
                 }}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
-                Daily
+                <span className="relative">Daily</span>
               </Link>
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
