@@ -68,7 +68,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/daily-challenge"
-                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
+                className={`relative flex items-center justify-center px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
                   pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
                 }`}
                 style={{

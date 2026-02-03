@@ -2,29 +2,26 @@ import { NextResponse } from 'next/server';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
+// Use the clean-puzzles-v2 JSON files that are deployed to production
+const PUZZLES_DIR = join(process.cwd(), 'data', 'clean-puzzles-v2');
+
+interface CleanPuzzle {
+  puzzleId: string;
+  fen: string;
+  moves: string; // space-separated string in JSON files
+  rating: number;
+  theme: string;
+  allThemes: string[];
+  gameUrl: string;
+}
 
 interface LichessPuzzle {
   puzzleId: string;
   fen: string;
-  moves: string[];
+  moves: string[]; // API returns array
   rating: number;
   themes: string[];
   gameUrl: string;
-}
-
-function parseCSVLine(line: string): LichessPuzzle | null {
-  const parts = line.split(',');
-  if (parts.length < 9 || parts[0] === 'PuzzleId') return null;
-
-  return {
-    puzzleId: parts[0],
-    fen: parts[1],
-    moves: parts[2].split(' '),
-    rating: parseInt(parts[3], 10),
-    themes: parts[7].split(' '),
-    gameUrl: parts[8],
-  };
 }
 
 // Seeded random number generator for consistent daily puzzles
@@ -47,33 +44,32 @@ function getDateSeed(date: string): number {
 }
 
 // 20 puzzles with deliberate rating targets for smooth progression
-// Each puzzle targets a specific rating range
 const PUZZLE_TARGETS = [
-  // Easy (400-800)
-  { min: 400, max: 550, bracket: '0400-0800' },
-  { min: 500, max: 650, bracket: '0400-0800' },
-  { min: 600, max: 750, bracket: '0400-0800' },
-  { min: 700, max: 850, bracket: '0400-0800' },
-  // Medium (800-1200)
-  { min: 800, max: 950, bracket: '0800-1200' },
-  { min: 900, max: 1050, bracket: '0800-1200' },
-  { min: 1000, max: 1150, bracket: '0800-1200' },
-  { min: 1100, max: 1250, bracket: '0800-1200' },
-  // Hard (1200-1600)
-  { min: 1200, max: 1350, bracket: '1200-1600' },
-  { min: 1300, max: 1450, bracket: '1200-1600' },
-  { min: 1400, max: 1550, bracket: '1200-1600' },
-  { min: 1500, max: 1650, bracket: '1200-1600' },
-  // Very Hard (1600-2000)
-  { min: 1600, max: 1750, bracket: '1600-2000' },
-  { min: 1700, max: 1850, bracket: '1600-2000' },
-  { min: 1800, max: 1950, bracket: '1600-2000' },
-  { min: 1900, max: 2050, bracket: '1600-2000' },
-  // Expert (2000+)
-  { min: 2000, max: 2150, bracket: '2000-plus' },
-  { min: 2100, max: 2250, bracket: '2000-plus' },
-  { min: 2200, max: 2400, bracket: '2000-plus' },
-  { min: 2300, max: 2600, bracket: '2000-plus' },
+  // Easy (400-800) - level1
+  { min: 400, max: 550, level: 1 },
+  { min: 500, max: 650, level: 1 },
+  { min: 600, max: 750, level: 1 },
+  { min: 700, max: 850, level: 1 },
+  // Medium (800-1200) - level2
+  { min: 800, max: 950, level: 2 },
+  { min: 900, max: 1050, level: 2 },
+  { min: 1000, max: 1150, level: 2 },
+  { min: 1100, max: 1250, level: 2 },
+  // Hard (1200-1600) - level3
+  { min: 1200, max: 1350, level: 3 },
+  { min: 1300, max: 1450, level: 3 },
+  { min: 1400, max: 1550, level: 3 },
+  { min: 1500, max: 1650, level: 3 },
+  // Very Hard (1600-2000) - level4
+  { min: 1600, max: 1750, level: 4 },
+  { min: 1700, max: 1850, level: 4 },
+  { min: 1800, max: 1950, level: 4 },
+  { min: 1900, max: 2050, level: 4 },
+  // Expert (2000+) - level5
+  { min: 2000, max: 2150, level: 5 },
+  { min: 2100, max: 2250, level: 5 },
+  { min: 2200, max: 2400, level: 5 },
+  { min: 2300, max: 2600, level: 5 },
 ];
 
 // Prioritize tactical themes over endgame themes for variety
@@ -83,62 +79,81 @@ const TACTICAL_THEMES = [
   'attraction', 'deflection', 'interference', 'clearance',
   'hangingPiece', 'trappedPiece', 'exposedKing', 'sacrifice',
   'advancedPawn', 'promotion', 'defensiveMove', 'xRayAttack',
+  'crushing', 'kingsideAttack', 'queensideAttack',
 ];
 
-function getAllThemes(bracket: string): string[] {
-  const dir = join(PUZZLES_DIR, bracket);
+function getThemesForLevel(level: number): string[] {
   try {
-    const allThemes = readdirSync(dir)
-      .filter(f => f.endsWith('.csv'))
-      .map(f => f.replace('.csv', ''));
+    const allFiles = readdirSync(PUZZLES_DIR)
+      .filter(f => f.startsWith(`level${level}-`) && f.endsWith('.json'))
+      .map(f => f.replace(`level${level}-`, '').replace('.json', ''));
 
-    // Prioritize tactical themes, filter out pure endgame themes
-    const tactical = allThemes.filter(t => TACTICAL_THEMES.includes(t));
-    // If we have tactical themes, prefer those; otherwise use all
-    return tactical.length >= 5 ? tactical : allThemes;
+    // Prioritize tactical themes
+    const tactical = allFiles.filter(t => TACTICAL_THEMES.includes(t));
+    return tactical.length >= 5 ? tactical : allFiles;
+  } catch {
+    return [];
+  }
+}
+
+// Cache for loaded puzzle files to avoid re-reading
+const puzzleCache = new Map<string, CleanPuzzle[]>();
+
+function loadPuzzlesFromTheme(level: number, theme: string): CleanPuzzle[] {
+  const cacheKey = `${level}-${theme}`;
+  if (puzzleCache.has(cacheKey)) {
+    return puzzleCache.get(cacheKey)!;
+  }
+
+  const filePath = join(PUZZLES_DIR, `level${level}-${theme}.json`);
+  if (!existsSync(filePath)) return [];
+
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    const data = JSON.parse(content);
+    const puzzles = data.puzzles || [];
+    puzzleCache.set(cacheKey, puzzles);
+    return puzzles;
   } catch {
     return [];
   }
 }
 
 function getPuzzleFromTheme(
-  bracket: string,
+  level: number,
   theme: string,
   minRating: number,
   maxRating: number,
   random: () => number,
   usedPuzzleIds: Set<string>
 ): LichessPuzzle | null {
-  const filePath = join(PUZZLES_DIR, bracket, `${theme}.csv`);
-  if (!existsSync(filePath)) return null;
+  const puzzles = loadPuzzlesFromTheme(level, theme);
 
-  try {
-    const content = readFileSync(filePath, 'utf-8');
-    const lines = content.trim().split('\n');
+  // Filter by rating and not already used
+  const eligible = puzzles.filter(p =>
+    p.rating >= minRating &&
+    p.rating <= maxRating &&
+    !usedPuzzleIds.has(p.puzzleId)
+  );
 
-    const puzzles: LichessPuzzle[] = [];
-    for (let i = 1; i < lines.length; i++) {
-      const puzzle = parseCSVLine(lines[i]);
-      if (puzzle &&
-          puzzle.rating >= minRating &&
-          puzzle.rating <= maxRating &&
-          !usedPuzzleIds.has(puzzle.puzzleId)) {
-        puzzles.push(puzzle);
-      }
-    }
+  if (eligible.length === 0) return null;
 
-    if (puzzles.length === 0) return null;
+  // Pick a random puzzle
+  const idx = Math.floor(random() * eligible.length);
+  const puzzle = eligible[idx];
 
-    // Pick a random puzzle from this theme
-    const idx = Math.floor(random() * puzzles.length);
-    return puzzles[idx];
-  } catch {
-    return null;
-  }
+  return {
+    puzzleId: puzzle.puzzleId,
+    fen: puzzle.fen,
+    moves: puzzle.moves.split(' '), // Convert space-separated string to array
+    rating: puzzle.rating,
+    themes: puzzle.allThemes || [puzzle.theme],
+    gameUrl: puzzle.gameUrl,
+  };
 }
 
-function getPuzzlesFromBracket(
-  bracket: string,
+function getPuzzlesFromLevel(
+  level: number,
   minRating: number,
   maxRating: number,
   count: number,
@@ -146,10 +161,10 @@ function getPuzzlesFromBracket(
   usedPuzzleIds: Set<string>,
   usedThemes: Set<string>
 ): LichessPuzzle[] {
-  const themes = getAllThemes(bracket);
+  const themes = getThemesForLevel(level);
   if (themes.length === 0) return [];
 
-  // Shuffle themes to get variety
+  // Shuffle themes for variety
   const shuffledThemes = [...themes];
   for (let i = shuffledThemes.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
@@ -167,7 +182,7 @@ function getPuzzlesFromBracket(
   for (const theme of sortedThemes) {
     if (puzzles.length >= count) break;
 
-    const puzzle = getPuzzleFromTheme(bracket, theme, minRating, maxRating, random, usedPuzzleIds);
+    const puzzle = getPuzzleFromTheme(level, theme, minRating, maxRating, random, usedPuzzleIds);
     if (puzzle) {
       puzzles.push(puzzle);
       usedPuzzleIds.add(puzzle.puzzleId);
@@ -181,7 +196,7 @@ function getPuzzlesFromBracket(
 /**
  * GET /api/daily-challenge/puzzles
  * Returns today's daily challenge puzzles - same for all users
- * Puzzles progress from 400 ELO to 2000 ELO
+ * Puzzles progress from 400 ELO to 2400 ELO
  *
  * Dev mode: ?testSeed=123 to get different puzzles for testing
  */
@@ -193,14 +208,17 @@ export async function GET(request: Request) {
   const seed = testSeed ? parseInt(testSeed, 10) : getDateSeed(today);
   const random = seededRandom(seed);
 
+  // Clear cache for fresh selection each request
+  puzzleCache.clear();
+
   // Get one puzzle for each target rating range
   const allPuzzles: LichessPuzzle[] = [];
   const usedPuzzleIds = new Set<string>();
   const usedThemes = new Set<string>();
 
   for (const target of PUZZLE_TARGETS) {
-    const puzzles = getPuzzlesFromBracket(
-      target.bracket,
+    const puzzles = getPuzzlesFromLevel(
+      target.level,
       target.min,
       target.max,
       1, // Just 1 puzzle per target
@@ -213,7 +231,7 @@ export async function GET(request: Request) {
     }
   }
 
-  // Already in order by target, but sort to be safe
+  // Sort by rating to ensure progression
   allPuzzles.sort((a, b) => a.rating - b.rating);
 
   return NextResponse.json({
