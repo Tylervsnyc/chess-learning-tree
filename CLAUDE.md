@@ -115,6 +115,10 @@ After completing lesson 1.6.1, the pulsing ring showed on 1.1.4 instead of 1.6.2
 The actual Supabase database had columns (`tree_id`, `lesson_id` on puzzle_attempts) that weren't in the local `schema.sql` file. API inserts failed with NOT NULL violations.
 → **New rule:** When you see a 500 error on POST, check the server logs for the actual error message. Schema drift between `schema.sql` and the real database is a common cause.
 
+### Lesson: 2026-02-03 - Duplicate unlock logic in learn page ignored unlockedLevels
+The `/app/learn/page.tsx` file had its own `getLessonStatus` function that duplicated unlock logic from `useProgress.ts` but NEVER checked `unlockedLevels`. When a user passed a level test, the hook's `isLessonUnlocked` worked correctly but the page's duplicate function showed lessons as locked.
+→ **New rule:** Before adding unlock logic anywhere, search for `isLessonUnlocked`, `getLessonStatus`, `locked`, `unlocked` across the entire codebase. The Quick Reference table says unlock is enforced in ONE place - verify that's actually true.
+
 <!-- Add new lessons here -->
 
 ---
