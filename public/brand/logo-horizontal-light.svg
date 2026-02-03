@@ -12,10 +12,7 @@
     <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
   </g>
   
-  <!-- "chess" in dark -->
-  <text x="60" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="#0f172a">chess</text>
-  
-  <!-- "path" with gradient -->
+  <!-- Wordmark - using tspans so "path" flows after "chess" regardless of font rendering -->
   <defs>
     <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#22c55e"/>
@@ -23,5 +20,7 @@
       <stop offset="100%" stop-color="#8b5cf6"/>
     </linearGradient>
   </defs>
-  <text x="132" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="url(#grad2)">path</text>
+  <text x="60" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700">
+    <tspan fill="#0f172a">chess</tspan><tspan fill="url(#grad2)">path</tspan>
+  </text>
 </svg>
