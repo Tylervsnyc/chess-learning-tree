@@ -115,6 +115,14 @@ After completing lesson 1.6.1, the pulsing ring showed on 1.1.4 instead of 1.6.2
 The actual Supabase database had columns (`tree_id`, `lesson_id` on puzzle_attempts) that weren't in the local `schema.sql` file. API inserts failed with NOT NULL violations.
 → **New rule:** When you see a 500 error on POST, check the server logs for the actual error message. Schema drift between `schema.sql` and the real database is a common cause.
 
+### Lesson: 2026-02-03 - New account showed 146-day streak from previous user's localStorage
+The `/api/progress/sync` endpoint merged localStorage with server data using `Math.max()` for streak. When a user logged out and created a new account, their old localStorage streak (146) overwrote the new account's streak (0).
+→ **New rule:** When merging client data with server data, check if it's a "new user" (no server data) and use server defaults instead of merging. localStorage can be stale from previous sessions.
+
+### Lesson: 2026-02-03 - Unlock logic was duplicated and stored implicit data
+The learn page had its own `getLessonStatus()` function that duplicated unlock logic from `useProgress.ts`. Also, unlocking level 5 stored `[1, 5]` instead of `[1, 2, 3, 4, 5]`, requiring complex "level < highest" derivation logic that had bugs.
+→ **New rule:** Store explicit state, not implicit. When unlocking level 5, store `[1,2,3,4,5]` so the check is just "is level in array?" Also, before fixing unlock bugs, grep for `getLessonStatus`, `isLessonUnlocked`, `locked`, `unlocked` to find ALL places with unlock logic.
+
 <!-- Add new lessons here -->
 
 ---
