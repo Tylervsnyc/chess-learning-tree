@@ -333,7 +333,6 @@ interface CurriculumTreeProps {
 export function CurriculumTree({ isGuest = false, initialLevel = 0 }: CurriculumTreeProps) {
   const { isLessonUnlocked, isLessonCompleted, loaded, completedLessons, isLevelUnlocked } = useLessonProgress();
   const nextLessonRef = useRef<HTMLButtonElement | null>(null);
-  const hasScrolledRef = useRef(false);
   const hasInitializedRef = useRef(false);
 
   const currentLevel = LEVELS[initialLevel];
@@ -378,21 +377,12 @@ export function CurriculumTree({ isGuest = false, initialLevel = 0 }: Curriculum
   useEffect(() => {
     if (loaded) {
       setExpandedModule(moduleContainingNextLesson);
-      hasScrolledRef.current = false;
       hasInitializedRef.current = true;
     }
   }, [initialLevel]);
 
-  // Scroll to next lesson after module expands
-  useEffect(() => {
-    if (loaded && expandedModule && nextLessonRef.current && !hasScrolledRef.current) {
-      const timer = setTimeout(() => {
-        nextLessonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        hasScrolledRef.current = true;
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [loaded, expandedModule, nextLessonId]);
+  // NOTE: Per RULES.md Section 5, NO scrolling on section expand/collapse.
+  // Scroll behavior is handled ONLY in /app/learn/page.tsx via ?scrollTo= param.
 
   const handleToggle = (moduleId: string) => {
     setExpandedModule(prev => (prev === moduleId ? null : moduleId));

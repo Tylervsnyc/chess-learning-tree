@@ -4,6 +4,7 @@ import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
+import { ScrollToTop } from '@/components/providers/ScrollToTop';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Suspense fallback={null}>
           <AbortErrorSuppressor />
+          <ScrollToTop />
           <PostHogProvider>
             <NavHeader />
             {children}

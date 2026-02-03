@@ -2,7 +2,7 @@
   "level": 2,
   "ratingRange": "800-1000",
   "theme": "sacrifice",
-  "count": 64,
+  "count": 49,
   "puzzles": [
     {
       "puzzleId": "FDo63",
@@ -35,41 +35,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/xjY0QFzt/black#62"
-    },
-    {
-      "puzzleId": "PoCy6",
-      "fen": "5rk1/2r2pp1/p1q4p/1p3b2/5P2/Q2N2P1/PPPR3P/2K1R3 w - - 5 23",
-      "moves": "d3e5 c6c2 d2c2 c7c2",
-      "rating": 825,
-      "popularity": 91,
-      "nbPlays": 1169,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "middlegame",
-        "queensideAttack",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/mLzjOnA7#45"
-    },
-    {
-      "puzzleId": "6hxjk",
-      "fen": "1r3rk1/1b4b1/p6p/np1qNp1Q/P1pP1P2/2P3R1/1P4PP/R1B4K w - - 2 25",
-      "moves": "h5h6 d5g2 g3g2 b7g2 h1g2 g7h6",
-      "rating": 832,
-      "popularity": 96,
-      "nbPlays": 3562,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "master",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/h4a1kkGW#49"
     },
     {
       "puzzleId": "MXy21",
@@ -106,23 +71,6 @@
       "gameUrl": "https://lichess.org/Dvu32zMX#67"
     },
     {
-      "puzzleId": "OiYdk",
-      "fen": "r3r1k1/5pp1/3qpn1p/1p6/p1pP4/P1P3RP/2Q2PP1/RB4K1 b - - 3 26",
-      "moves": "g7g6 g3g6 f7g6 c2g6",
-      "rating": 843,
-      "popularity": 87,
-      "nbPlays": 578,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/5n2mE4Xj/black#52"
-    },
-    {
       "puzzleId": "dXKen",
       "fen": "rn2kb1r/ppq2ppp/2p1pn2/4R3/3B4/3B1N2/P1P1QPPP/R5K1 b kq - 5 14",
       "moves": "f8d6 e5e6 f7e6 e2e6",
@@ -156,23 +104,6 @@
       "gameUrl": "https://lichess.org/6W3zIHyY/black#46"
     },
     {
-      "puzzleId": "4PatU",
-      "fen": "3r1rk1/p1p1qp2/b1p3pp/3pp3/4P1RP/2NP4/PPPKQ3/6R1 b - - 0 20",
-      "moves": "h6h5 g4g6 f7g6 g1g6",
-      "rating": 855,
-      "popularity": 93,
-      "nbPlays": 1481,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/D4QQLYmU/black#40"
-    },
-    {
       "puzzleId": "NdOWt",
       "fen": "r6k/p5pp/1pq3b1/2p5/2B1N3/P2P1Q1P/1b6/5R1K b - - 1 27",
       "moves": "h7h6 f3f8 a8f8 f1f8 h8h7 c4g8",
@@ -187,24 +118,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/58t7yc7c/black#54"
-    },
-    {
-      "puzzleId": "snKtG",
-      "fen": "r4rk1/1b3p2/p3pPp1/6Rp/1p2q2Q/8/PP2N1PP/5R1K w - - 0 27",
-      "moves": "h4h5 e4g2 g5g2 b7g2 h1g2 g6h5",
-      "rating": 867,
-      "popularity": 100,
-      "nbPlays": 707,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "master",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/404ua9Dd#53"
     },
     {
       "puzzleId": "BX8WX",
@@ -359,23 +272,6 @@
       "gameUrl": "https://lichess.org/OiKZMKlE/black#60"
     },
     {
-      "puzzleId": "Hnb9g",
-      "fen": "2kr1r2/1pp2p2/1b1p1N1p/pP2pn1q/P1B5/1QPP2P1/7P/3R1R1K b - - 2 22",
-      "moves": "h5g6 c4e6 f7e6 b3e6",
-      "rating": 903,
-      "popularity": 99,
-      "nbPlays": 764,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "middlegame",
-        "queensideAttack",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/Q3DMCLIZ/black#44"
-    },
-    {
       "puzzleId": "9wPR3",
       "fen": "8/8/8/7k/r5p1/1R5p/2B5/1K6 w - - 0 61",
       "moves": "b3b5 h5h4 c2a4 h3h2",
@@ -409,40 +305,6 @@
       "gameUrl": "https://lichess.org/iDDue7GX/black#56"
     },
     {
-      "puzzleId": "UHhjw",
-      "fen": "1r4k1/pb3pp1/1p2p3/n1p1P2p/4q1nP/2P2NP1/PP1Q1PB1/3R2K1 b - - 2 22",
-      "moves": "a5c4 d2d8 b8d8 d1d8 g8h7 f3g5",
-      "rating": 905,
-      "popularity": 94,
-      "nbPlays": 1015,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/nVv5ckWm/black#44"
-    },
-    {
-      "puzzleId": "GemwM",
-      "fen": "3r1r1k/p4qp1/1p1p3p/4pp2/2P4R/1P4QR/P4PPP/6K1 b - - 1 29",
-      "moves": "d8d7 h4h6 g7h6 h3h6",
-      "rating": 906,
-      "popularity": 91,
-      "nbPlays": 831,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "kingsideAttack",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/72qusJ4Q/black#58"
-    },
-    {
       "puzzleId": "Wlp0F",
       "fen": "3r4/3nR1R1/pp1kp1P1/3p4/3P1K2/P5r1/1P6/8 b - - 2 41",
       "moves": "g3b3 e7d7 d8d7 g7d7 d6d7 g6g7",
@@ -474,23 +336,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/qW2uB1XP/black#28"
-    },
-    {
-      "puzzleId": "28XiR",
-      "fen": "4r1k1/pp1b3q/2p2rp1/3pRpQn/3P1P2/2P2NP1/PP5P/4R1K1 b - - 7 23",
-      "moves": "f6e6 e5e6 d7e6 e1e6 e8e6 g5d8",
-      "rating": 917,
-      "popularity": 92,
-      "nbPlays": 1082,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/2IODpbjE/black#46"
     },
     {
       "puzzleId": "TTC5l",
@@ -575,23 +420,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/nSxBemmd/black#72"
-    },
-    {
-      "puzzleId": "zhJyB",
-      "fen": "r1bq2k1/1pp3p1/pb3n1p/4R3/3p4/3P1Q2/PPPN1PPP/4R1K1 b - - 1 16",
-      "moves": "d8d6 e5e8 f6e8 e1e8",
-      "rating": 926,
-      "popularity": 90,
-      "nbPlays": 506,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/TJVd0Ukj/black#32"
     },
     {
       "puzzleId": "verrU",
@@ -745,23 +573,6 @@
       "gameUrl": "https://lichess.org/o3jO8rfR#49"
     },
     {
-      "puzzleId": "0a7ao",
-      "fen": "6r1/pp1k4/3qpp2/7p/2pP2rP/P1P1Q1P1/1P3P2/3RR1K1 w - - 4 24",
-      "moves": "e3f3 g4g3 f2g3 g8g3",
-      "rating": 960,
-      "popularity": 97,
-      "nbPlays": 3202,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "kingsideAttack",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/4nr3c5K6#47"
-    },
-    {
       "puzzleId": "TKDsj",
       "fen": "3r2k1/2b2pp1/2Pq4/p7/P1Q4p/4PN1P/5PP1/2R3K1 w - - 3 32",
       "moves": "c4f4 d6d1 c1d1 d8d1 g1h2 c7f4",
@@ -808,40 +619,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/VaWvFpZH/black#50"
-    },
-    {
-      "puzzleId": "PjZRi",
-      "fen": "k4rr1/pp1RQ3/5p2/2p1pP1p/8/5qP1/PP3P1P/5RK1 w - - 0 24",
-      "moves": "h2h4 g8g3 f2g3 f3g3",
-      "rating": 966,
-      "popularity": 92,
-      "nbPlays": 1311,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "kingsideAttack",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/mE3yXFp1#47"
-    },
-    {
-      "puzzleId": "fiFOm",
-      "fen": "2b3r1/6rp/p3pk1p/N4p2/3P3q/3B1Q2/PP3PP1/4RRK1 w - - 5 22",
-      "moves": "g2g3 g7g3 f2g3 g8g3",
-      "rating": 967,
-      "popularity": 90,
-      "nbPlays": 1355,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "kingsideAttack",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/pXHWXW4a#43"
     },
     {
       "puzzleId": "i3AB4",
@@ -893,24 +670,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/yXKsGFSt/black#46"
-    },
-    {
-      "puzzleId": "PFw64",
-      "fen": "rn3b1r/1pk2Npp/1p2pp2/1B1p1b2/1B1P4/4P3/PP3PPP/R3K2R w KQ - 4 15",
-      "moves": "a1c1 b8c6 f7h8 f8b4",
-      "rating": 977,
-      "popularity": 97,
-      "nbPlays": 2659,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advantage",
-        "defensiveMove",
-        "master",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/R28aFCaT#29"
     },
     {
       "puzzleId": "1Na1L",
@@ -1030,25 +789,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/2pikYaO9#73"
-    },
-    {
-      "puzzleId": "UaGgA",
-      "fen": "r4rk1/pp4bp/3p4/3N4/2Pp4/5p1q/PP3P1P/R2Q2RK w - - 0 20",
-      "moves": "d1d4 h3g2 g1g2 f3g2 h1g2 g7d4",
-      "rating": 988,
-      "popularity": 93,
-      "nbPlays": 1157,
-      "theme": "sacrifice",
-      "allThemes": [
-        "advancedPawn",
-        "advantage",
-        "kingsideAttack",
-        "long",
-        "master",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/m7gKEvu7#39"
     },
     {
       "puzzleId": "4itDe",

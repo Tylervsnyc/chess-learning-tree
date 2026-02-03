@@ -109,7 +109,7 @@ function renderUnsubscribePage({
   message: string;
   emailType?: EmailType | null;
 }): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.app';
 
   return `
 <!DOCTYPE html>

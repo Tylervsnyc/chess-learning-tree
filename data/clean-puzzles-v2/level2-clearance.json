@@ -2,7 +2,7 @@
   "level": 2,
   "ratingRange": "800-1000",
   "theme": "clearance",
-  "count": 29,
+  "count": 28,
   "puzzles": [
     {
       "puzzleId": "hzfDB",
@@ -150,24 +150,6 @@
         "long"
       ],
       "gameUrl": "https://lichess.org/6jneuew2/black#78"
-    },
-    {
-      "puzzleId": "ByVkX",
-      "fen": "r2q1rk1/pbpp2pp/1p2pb2/6N1/3PN2P/3Q4/PPP2PP1/2KR3R b - - 0 13",
-      "moves": "h7h6 e4f6 f8f6 d3h7",
-      "rating": 929,
-      "popularity": 87,
-      "nbPlays": 585,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "master",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/YdLjVgDk/black#26"
     },
     {
       "puzzleId": "vtwkc",

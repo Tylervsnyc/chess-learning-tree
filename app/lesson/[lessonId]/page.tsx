@@ -11,6 +11,8 @@ import {
   playMoveSound,
   playCaptureSound,
   warmupAudio,
+  vibrateOnCorrect,
+  vibrateOnError,
 } from '@/lib/sounds';
 import {
   getAllLessonIds,
@@ -199,6 +201,9 @@ export default function LessonPage() {
   // Track time spent on puzzle (for analytics)
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
 
+  // Board transition animation
+  const [isBoardTransitioning, setIsBoardTransitioning] = useState(false);
+
   // Intro popup state
   type IntroState = 'block' | 'theme' | 'playing';
   const [introState, setIntroState] = useState<IntroState>('playing');
@@ -213,16 +218,13 @@ export default function LessonPage() {
   // Calculate next lesson ID for navigation after completion
   const nextLessonId = useMemo(() => {
     const currentIndex = allLessonIds.indexOf(lessonId);
+    console.log('[DEBUG] lessonId:', lessonId, 'currentIndex:', currentIndex, 'nextLessonId:', allLessonIds[currentIndex + 1]);
     if (currentIndex >= 0 && currentIndex < allLessonIds.length - 1) {
       return allLessonIds[currentIndex + 1];
     }
     return null;
   }, [allLessonIds, lessonId]);
 
-  // Scroll to top on mount (prevents inheriting scroll position from /learn)
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
@@ -476,6 +478,7 @@ export default function LessonPage() {
           setMoveStatus('correct');
           setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
           playCorrectSound(completedPuzzleCount);
+          vibrateOnCorrect();
           setStreak(newStreak);
           setCompletedPuzzleCount(c => c + 1);
 
@@ -505,6 +508,7 @@ export default function LessonPage() {
               setMoveStatus('correct');
               setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
               playCorrectSound(completedPuzzleCount);
+              vibrateOnCorrect();
               setStreak(newStreak);
               setCompletedPuzzleCount(c => c + 1);
 
@@ -516,6 +520,7 @@ export default function LessonPage() {
             setMoveStatus('correct');
             setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
             playCorrectSound(completedPuzzleCount);
+            vibrateOnCorrect();
             setStreak(newStreak);
             setCompletedPuzzleCount(c => c + 1);
 
@@ -546,6 +551,7 @@ export default function LessonPage() {
           setMoveStatus('correct');
           setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
           playCorrectSound(completedPuzzleCount);
+          vibrateOnCorrect();
           setStreak(newStreak);
           setCompletedPuzzleCount(c => c + 1);
 
@@ -558,6 +564,7 @@ export default function LessonPage() {
         // Wrong move
         setSelectedSquare(null);
         playErrorSound();
+        vibrateOnError();
         setStreak(0);
         setHadWrongAnswer(true);
         setPuzzleHadWrongAttempt(true);
@@ -701,13 +708,24 @@ export default function LessonPage() {
     }
   }, [currentPuzzle, currentIndex, totalPuzzles, inRetryMode, retryQueue, puzzles, results, firstAttemptCorrectCount, lessonId, recordPuzzleAttempt, puzzleStartTime]);
 
-  // Handle continue
+  // Handle continue with board transition animation
   const handleContinue = useCallback(() => {
-    if (moveStatus === 'correct') {
-      recordAndAdvance(puzzleHadWrongAttempt ? 'wrong' : 'correct');
-    } else if (moveStatus === 'wrong') {
-      recordAndAdvance('wrong');
-    }
+    // Start fade out
+    setIsBoardTransitioning(true);
+
+    // After fade out, advance to next puzzle
+    setTimeout(() => {
+      if (moveStatus === 'correct') {
+        recordAndAdvance(puzzleHadWrongAttempt ? 'wrong' : 'correct');
+      } else if (moveStatus === 'wrong') {
+        recordAndAdvance('wrong');
+      }
+
+      // Fade back in after state updates
+      setTimeout(() => {
+        setIsBoardTransitioning(false);
+      }, 50);
+    }, 150);
   }, [moveStatus, recordAndAdvance, puzzleHadWrongAttempt]);
 
   // Handle try again
@@ -781,12 +799,12 @@ export default function LessonPage() {
   // Auth is loading if userLoading is true
   // Profile is loading if user exists but profile is null
   const isAuthLoading = userLoading;
-  const isProfileLoading = !!user && !profile;
-  const isFullyLoaded = !isAuthLoading && !isProfileLoading;
+  const isProfileLoadingFlag = !!user && !profile;
+  const isFullyLoaded = !isAuthLoading && !isProfileLoadingFlag;
 
   // Admin users have unrestricted access to all lessons and levels
-  // While auth/profile is loading, assume admin to avoid locked state flash for admins
-  const isAdmin = isFullyLoaded ? (profile?.is_admin ?? false) : true;
+  // While loading, default to false (secure default) to prevent flash of unlocked content
+  const isAdmin = profile?.is_admin ?? false;
 
   useEffect(() => {
     // Only check once progress AND auth/profile are fully loaded, and skip for admins
@@ -808,7 +826,7 @@ export default function LessonPage() {
   // Only show blocked state AFTER permissions have finished loading
   if (!permissionsLoading && !canAccessLesson) {
     return (
-      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
@@ -868,7 +886,7 @@ export default function LessonPage() {
   // Loading state (either permissions or puzzle data)
   if (loading || permissionsLoading) {
     return (
-      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -900,7 +918,7 @@ export default function LessonPage() {
   // Error state
   if (error) {
     return (
-      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
@@ -982,7 +1000,7 @@ export default function LessonPage() {
 
   if (!currentPuzzle) {
     return (
-      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
@@ -1001,14 +1019,14 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="bg-[#eef6fc] border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-500 hover:text-gray-700"
           >
             ✕
           </button>
@@ -1024,9 +1042,9 @@ export default function LessonPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-gray-400">
+            <div className="text-gray-500">
               {currentIndex + 1}/{totalPuzzles}
-              {inRetryMode && <span className="text-yellow-400 ml-2">(retry)</span>}
+              {inRetryMode && <span className="text-yellow-600 ml-2">(retry)</span>}
             </div>
             <SyncStatus state={syncState} onRetry={retryPendingSyncs} />
           </div>
@@ -1039,37 +1057,42 @@ export default function LessonPage() {
           {/* Theme + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-semibold text-gray-300">{lessonName}</h1>
+              <h1 className="text-base font-semibold text-[#3c3c3c]">{lessonName}</h1>
               {inRetryMode && (
-                <span className="text-yellow-400 text-xs">(retry)</span>
+                <span className="text-yellow-600 text-xs">(retry)</span>
               )}
               {primaryTheme && (
                 <HelpIconButton onClick={() => setShowHelpModal(true)} />
               )}
             </div>
-            <span className={`text-base font-bold ${
-              currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
-            }`}>
+            <span className="text-base font-bold text-[#3c3c3c]">
               {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
             </span>
           </div>
 
           {/* Chessboard with intro popup overlay */}
           <div className="relative">
-            <Chessboard
-              options={{
-                position: currentFen || currentPuzzle.puzzleFen,
-                boardOrientation: currentPuzzle.playerColor,
-                onSquareClick: onSquareClick,
-                squareStyles: squareStyles,
-                boardStyle: {
-                  borderRadius: '8px 8px 0 0',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                },
-                darkSquareStyle: { backgroundColor: '#779952' },
-                lightSquareStyle: { backgroundColor: '#edeed1' },
+            <div
+              style={{
+                opacity: isBoardTransitioning ? 0 : 1,
+                transition: 'opacity 150ms ease-in-out',
               }}
-            />
+            >
+              <Chessboard
+                options={{
+                  position: currentFen || currentPuzzle.puzzleFen,
+                  boardOrientation: currentPuzzle.playerColor,
+                  onSquareClick: onSquareClick,
+                  squareStyles: squareStyles,
+                  boardStyle: {
+                    borderRadius: '8px 8px 0 0',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                  },
+                  darkSquareStyle: { backgroundColor: '#779952' },
+                  lightSquareStyle: { backgroundColor: '#edeed1' },
+                }}
+              />
+            </div>
 
             {/* Block intro popup */}
             {introState === 'block' && introMessages.blockIntro && (
@@ -1098,6 +1121,13 @@ export default function LessonPage() {
               type="correct"
               message={feedbackMessage}
               onContinue={handleContinue}
+              puzzleShareData={currentPuzzle ? {
+                fen: currentPuzzle.puzzleFen,
+                playerColor: currentPuzzle.playerColor,
+                lastMoveFrom: currentPuzzle.lastMoveFrom,
+                lastMoveTo: currentPuzzle.lastMoveTo,
+                solutionMoves: currentPuzzle.solution.split(' '),
+              } : undefined}
             />
           )}
 

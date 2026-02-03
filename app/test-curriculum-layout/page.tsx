@@ -90,7 +90,7 @@ function darkenColor(hex: string, amount: number = 0.25): string {
 
 export default function TestCurriculumLayout() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'sec-1': true, // Start with first section expanded
+    '1.1': true, // Start with first section expanded
   });
 
   const toggleSection = (sectionId: string) => {

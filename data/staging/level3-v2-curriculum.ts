@@ -41,7 +41,7 @@ Deflection forces defenders away. Attraction lures pieces to bad squares. These 
       sections: [
         // Section 1: Deflection Basics
         {
-          id: 'sec-1',
+          id: '3.1',
           name: 'Deflection',
           description: 'Force the defender away',
           themeIntroMessage: `That knight is protecting the queen. The rook is guarding the back rank. How do we win?
@@ -94,7 +94,7 @@ Once the guard is gone, the real target is helpless.`,
         },
         // Section 2: Attraction
         {
-          id: 'sec-2',
+          id: '3.2',
           name: 'Attraction',
           description: 'Lure pieces to bad squares',
           themeIntroMessage: `Attraction is the flip side of deflection. Instead of pushing defenders away, you PULL pieces where you want them.
@@ -147,7 +147,7 @@ Lure the king out of safety. Drag the queen to a fork square.`,
         },
         // Section 3: Clearance & Interference
         {
-          id: 'sec-3',
+          id: '3.3',
           name: 'Clearance & Interference',
           description: 'Clear paths and block lines',
           themeIntroMessage: `Your own piece is in the way? Move it with tempo. That's clearance.
@@ -196,7 +196,7 @@ Control the lines. Control the game.`,
         },
         // Section 4: Block 1 Review
         {
-          id: 'sec-4',
+          id: '3.4',
           name: 'Review: Enablers',
           description: 'Mixed deflection and attraction practice',
           isReview: true,
@@ -273,7 +273,7 @@ Learn when giving is winning.`,
       sections: [
         // Section 5: Sacrifice
         {
-          id: 'sec-5',
+          id: '3.5',
           name: 'The Sacrifice',
           description: 'Give up material for bigger gains',
           themeIntroMessage: `Not every sacrifice is a gamble. The best sacrifices are calculated.
@@ -322,7 +322,7 @@ Calculate first. Then sacrifice.`,
         },
         // Section 6: Sacrifice for Material
         {
-          id: 'sec-6',
+          id: '3.6',
           name: 'Sacrifice for Material',
           description: 'Give to win more back',
           themeIntroMessage: `The temporary sacrifice: give material now, win it back immediately.
@@ -371,7 +371,7 @@ Material isn't everything. Activity matters.`,
         },
         // Section 7: Advanced Tactics
         {
-          id: 'sec-7',
+          id: '3.7',
           name: 'Advanced Tactics',
           description: 'Level up your weapons',
           themeIntroMessage: `Time to sharpen your Level 2 weapons.
@@ -424,7 +424,7 @@ The patterns are there. Find them in the noise.`,
         },
         // Section 8: Block 2 Review
         {
-          id: 'sec-8',
+          id: '3.8',
           name: 'Review: Sacrifice & Tactics',
           description: 'Mixed sacrifice and tactics practice',
           isReview: true,
@@ -501,7 +501,7 @@ This is the beautiful, forcing chess that makes your opponents say "Wait, what j
       sections: [
         // Section 9: Multi-Move Checkmates
         {
-          id: 'sec-9',
+          id: '3.9',
           name: 'Multi-Move Checkmates',
           description: 'Calculate deeper mates',
           themeIntroMessage: `Two-move mates? Easy. Now let's go deeper.
@@ -550,7 +550,7 @@ It's not about memorizing. It's about visualizing the board after each move.`,
         },
         // Section 10: Endgames Level 3
         {
-          id: 'sec-10',
+          id: '3.10',
           name: 'Endgame Mastery',
           description: 'Advanced endgame tactics',
           themeIntroMessage: `Endgames are where games are won and lost.
@@ -599,7 +599,7 @@ Master these patterns and you'll convert every winning position.`,
         },
         // Section 11: Combined Tactics
         {
-          id: 'sec-11',
+          id: '3.11',
           name: 'Combined Tactics',
           description: 'Multiple tactics in one',
           themeIntroMessage: `Real combinations chain multiple tactics together.
@@ -659,7 +659,7 @@ See how the tactics connect. One leads to another.`,
         },
         // Section 12: Block 3 Review
         {
-          id: 'sec-12',
+          id: '3.12',
           name: 'Review: Combinations',
           description: 'Mixed checkmates and endgames',
           isReview: true,
@@ -735,7 +735,7 @@ This is the final block. Every tactic. Every theme. Show me what you've got.`,
       sections: [
         // Section 13: Level 3 Review
         {
-          id: 'sec-13',
+          id: '3.13',
           name: 'Level 3 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
@@ -795,7 +795,7 @@ The full arsenal. Use it wisely.`,
         },
         // Section 14: Level 3 Final
         {
-          id: 'sec-14',
+          id: '3.14',
           name: 'Level 3 Final',
           description: 'The ultimate test',
           isReview: true,

@@ -41,6 +41,15 @@ const ENDGAME_THEMES = ['pawnEndgame', 'rookEndgame', 'queenEndgame', 'bishopEnd
 // Quiet moves (no check, no capture - Level 3)
 const QUIET_MOVE_THEMES = ['quietMove'];
 
+// Positional themes (zugzwang, etc.)
+const POSITIONAL_THEMES = ['zugzwang'];
+
+// Attack themes (king attacks)
+const ATTACK_THEMES = ['kingsideAttack', 'queensideAttack'];
+
+// Defensive themes
+const DEFENSIVE_THEMES = ['defensiveMove', 'intermezzo'];
+
 // Promotion themes
 const PROMOTION_THEMES = ['promotion', 'underPromotion'];
 
@@ -61,6 +70,9 @@ const ALL_TACTICAL_THEMES = [
   ...MATERIAL_THEMES,
   ...ENDGAME_THEMES,
   ...QUIET_MOVE_THEMES,
+  ...POSITIONAL_THEMES,
+  ...ATTACK_THEMES,
+  ...DEFENSIVE_THEMES,
   ...PROMOTION_THEMES,
 ];
 
@@ -68,6 +80,9 @@ const ALL_TACTICAL_THEMES = [
 const LOW_THRESHOLD_THEMES = [
   ...ENDGAME_THEMES,
   ...QUIET_MOVE_THEMES,
+  ...POSITIONAL_THEMES,
+  ...ATTACK_THEMES,
+  ...DEFENSIVE_THEMES,
   'attraction',
   'clearance',
   'interference',
@@ -79,6 +94,8 @@ const V2_LEVELS = [
   { level: 1, label: '400-800', file: '0400-0800.csv', minRating: 400, maxRating: 800, minPlays: 1000, lowMinPlays: 200 },
   { level: 2, label: '800-1000', file: '0800-1200.csv', minRating: 800, maxRating: 1000, minPlays: 3000, lowMinPlays: 500 },
   { level: 3, label: '1000-1200', file: '0800-1200.csv', minRating: 1000, maxRating: 1200, minPlays: 3000, lowMinPlays: 500 },
+  { level: 4, label: '1200-1400', file: '1200-1600.csv', minRating: 1200, maxRating: 1400, minPlays: 1000, lowMinPlays: 100 },
+  { level: 5, label: '1400-1600', file: '1200-1600.csv', minRating: 1400, maxRating: 1600, minPlays: 500, lowMinPlays: 50 },
 ];
 
 interface CleanPuzzle {
@@ -180,6 +197,34 @@ function determinePrimaryTheme(themes: string[]): string | null {
     const mechanisms = tacticalThemes.filter(t => MECHANISMS.includes(t));
     if (mechanisms.length === 0) {
       return 'quietMove';
+    }
+  }
+
+  // Zugzwang puzzles (positional)
+  if (tacticalThemes.includes('zugzwang')) {
+    const mechanisms = tacticalThemes.filter(t => MECHANISMS.includes(t));
+    if (mechanisms.length === 0) {
+      return 'zugzwang';
+    }
+  }
+
+  // Attack themes (kingsideAttack, queensideAttack)
+  for (const attackTheme of ATTACK_THEMES) {
+    if (tacticalThemes.includes(attackTheme)) {
+      const mechanisms = tacticalThemes.filter(t => MECHANISMS.includes(t));
+      if (mechanisms.length === 0) {
+        return attackTheme;
+      }
+    }
+  }
+
+  // Defensive themes (defensiveMove, intermezzo)
+  for (const defTheme of DEFENSIVE_THEMES) {
+    if (tacticalThemes.includes(defTheme)) {
+      const mechanisms = tacticalThemes.filter(t => MECHANISMS.includes(t));
+      if (mechanisms.length === 0) {
+        return defTheme;
+      }
     }
   }
 
@@ -370,6 +415,9 @@ const categories = {
   'Winning Material': MATERIAL_THEMES,
   'Endgames': ENDGAME_THEMES,
   'Quiet Moves': QUIET_MOVE_THEMES,
+  'Positional': POSITIONAL_THEMES,
+  'Attack': ATTACK_THEMES,
+  'Defensive': DEFENSIVE_THEMES,
   'Promotion': PROMOTION_THEMES,
 };
 

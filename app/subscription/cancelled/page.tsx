@@ -41,7 +41,7 @@ export default function SubscriptionCancelledPage() {
 
         <div className="space-y-3">
           <button
-            onClick={() => router.push('/workout')}
+            onClick={() => router.push('/learn')}
             className="w-full py-4 rounded-xl bg-[#1CB0F6] text-white font-bold text-lg transition-all hover:opacity-90"
           >
             Continue with Free
@@ -56,7 +56,7 @@ export default function SubscriptionCancelledPage() {
         </div>
 
         <p className="text-gray-500 text-sm mt-6">
-          Changed your mind? You can upgrade anytime from your profile.
+          Changed your mind? You can upgrade anytime from the pricing page.
         </p>
       </div>
     </div>

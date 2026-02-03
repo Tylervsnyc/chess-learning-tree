@@ -8,12 +8,13 @@ interface Profile {
   id: string;
   email: string;
   display_name: string;
-  elo_rating: number;
   subscription_status: 'free' | 'premium' | 'trial';
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
-  onboarding_completed?: boolean;
   is_admin?: boolean;
+  unlocked_levels?: number[];
+  current_streak?: number;
+  last_activity_date?: string | null;
 }
 
 export function useUser() {
@@ -70,12 +71,13 @@ export function useUser() {
               id: userId,
               email: email,
               display_name: email.split('@')[0],
-              elo_rating: 800,
               subscription_status: 'free',
               subscription_expires_at: null,
               stripe_customer_id: null,
-              onboarding_completed: false,
               is_admin: false,
+              unlocked_levels: [1],
+              current_streak: 0,
+              last_activity_date: null,
             });
           }
         }

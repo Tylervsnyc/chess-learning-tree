@@ -17,7 +17,7 @@
 
 export const block1Responses = {
   // Section 1: Mate in One - The Basics
-  'sec-1': {
+  '1.1': {
     general: [
       "Say good game. Try not to smirk.",
       "That's checkmate. Act surprised.",
@@ -63,7 +63,7 @@ export const block1Responses = {
   },
 
   // Section 2: Mating Patterns
-  'sec-2': {
+  '1.2': {
     general: [
       "Pattern recognized. Pattern executed.",
       "You've seen this before. They haven't.",
@@ -92,7 +92,7 @@ export const block1Responses = {
   },
 
   // Section 3: Advanced Mating Patterns
-  'sec-3': {
+  '1.3': {
     general: [
       "Big brain checkmate. Act casual.",
       "They didn't see that coming. You did.",
@@ -128,7 +128,7 @@ export const block1Responses = {
   },
 
   // Section 4: Multi-Move Checkmates
-  'sec-4': {
+  '1.4': {
     general: [
       "Plan executed. Crown collected.",
       "You saw further. They fell harder.",
@@ -159,7 +159,7 @@ export const block1Responses = {
 
 export const block2Responses = {
   // Section 5: Free Pieces
-  'sec-5': {
+  '1.5': {
     general: [
       "Finders keepers.",
       "Thanks for the donation.",
@@ -190,7 +190,7 @@ export const block2Responses = {
   },
 
   // Section 6: Knight Forks
-  'sec-6': {
+  '1.6': {
     general: [
       "The knight takes what it wants.",
       "L-shaped larceny.",
@@ -222,7 +222,7 @@ export const block2Responses = {
   },
 
   // Section 7: Pins
-  'sec-7': {
+  '1.7': {
     general: [
       "Pinned and soon to be collected.",
       "Frozen piece. Easy pickings.",
@@ -246,7 +246,7 @@ export const block2Responses = {
   },
 
   // Section 8: Skewers
-  'sec-8': {
+  '1.8': {
     general: [
       "Run and leave your friend behind.",
       "Big piece moves, little piece dies.",
@@ -277,7 +277,7 @@ export const block2Responses = {
 
 export const block3Responses = {
   // Section 9: Rook Endgames
-  'sec-9': {
+  '1.9': {
     general: [
       "The rook does what rooks do.",
       "Active rook, passive opponent, predictable outcome.",
@@ -301,7 +301,7 @@ export const block3Responses = {
   },
 
   // Section 10: Pawn Endgames
-  'sec-10': {
+  '1.10': {
     general: [
       "Every pawn dreams of this moment.",
       "March forward. Don't look back.",
@@ -331,7 +331,7 @@ export const block3Responses = {
   },
 
   // Section 11: Advanced Tactics
-  'sec-11': {
+  '1.11': {
     general: [
       "The sneaky stuff works too.",
       "Distract, deflect, dominate.",
@@ -371,7 +371,7 @@ export const block3Responses = {
   },
 
   // Section 12: Endgames Mix
-  'sec-12': {
+  '1.12': {
     general: [
       "Endgame technique wins another one.",
       "Convert, convert, convert.",
@@ -409,7 +409,7 @@ export const block3Responses = {
 
 export const block4Responses = {
   // Section 13: Review Checkmates
-  'sec-13': {
+  '1.13': {
     general: [
       "Still got it.",
       "Checkmates? Easy. Next.",
@@ -440,7 +440,7 @@ export const block4Responses = {
   },
 
   // Section 14: Review Winning Material
-  'sec-14': {
+  '1.14': {
     general: [
       "Still stealing. Still winning.",
       "The tactics remain sharp.",
@@ -471,7 +471,7 @@ export const block4Responses = {
   },
 
   // Section 15: Review Endgames
-  'sec-15': {
+  '1.15': {
     general: [
       "Endgame technique: polished.",
       "Converting advantages is what you do.",
@@ -499,7 +499,7 @@ export const block4Responses = {
   },
 
   // Section 16: Level 1 Final
-  'sec-16': {
+  '1.16': {
     general: [
       "Final boss? More like final flex.",
       "Everything you learned, all at once. Handled.",
@@ -542,15 +542,17 @@ const allBlockResponses: Record<string, Record<string, SectionResponses>> = {
 
 /**
  * Get a section-specific response for the v2 curriculum
- * @param sectionId - The section ID (e.g., 'sec-1', 'sec-5')
+ * @param sectionId - The section ID (e.g., '1.1', '1.5') using dot notation
  * @param themes - Array of puzzle themes to match against
  * @returns A themed response or general section response
  */
 export function getV2Response(sectionId: string, themes?: string[]): string {
-  // Determine which block this section belongs to
-  const sectionNum = parseInt(sectionId.replace('sec-', ''), 10);
-  let blockId: string;
+  // Extract section number from dot notation (e.g., '1.5' -> 5)
+  const parts = sectionId.split('.');
+  const sectionNum = parts.length >= 2 ? parseInt(parts[1], 10) : 1;
 
+  // Determine which block this section belongs to
+  let blockId: string;
   if (sectionNum <= 4) blockId = 'block-1';
   else if (sectionNum <= 8) blockId = 'block-2';
   else if (sectionNum <= 12) blockId = 'block-3';
@@ -599,9 +601,11 @@ export function getBlockFromLessonId(lessonId: string): string {
 
 /**
  * Get the section ID from a lesson ID
+ * Lesson ID format: {level}.{section}.{lesson} (e.g., '1.5.3')
+ * Returns section ID in dot notation: {level}.{section} (e.g., '1.5')
  */
 export function getSectionFromLessonId(lessonId: string): string {
   const parts = lessonId.split('.');
-  if (parts.length < 2) return 'sec-1';
-  return `sec-${parts[1]}`;
+  if (parts.length < 2) return '1.1';
+  return `${parts[0]}.${parts[1]}`;
 }

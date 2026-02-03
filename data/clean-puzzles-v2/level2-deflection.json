@@ -2,7 +2,7 @@
   "level": 2,
   "ratingRange": "800-1000",
   "theme": "deflection",
-  "count": 73,
+  "count": 72,
   "puzzles": [
     {
       "puzzleId": "alHoi",
@@ -808,23 +808,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/y0Vmz6ig#71"
-    },
-    {
-      "puzzleId": "DOV8b",
-      "fen": "4r1k1/p5pp/2p1p3/2q1p3/4Pr2/2P1p2Q/PP4PP/R3R2K w - - 3 21",
-      "moves": "h3e3 f4f1 e1f1 c5e3",
-      "rating": 985,
-      "popularity": 98,
-      "nbPlays": 5495,
-      "theme": "deflection",
-      "allThemes": [
-        "advantage",
-        "deflection",
-        "endgame",
-        "kingsideAttack",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/maeCZKYN#41"
     },
     {
       "puzzleId": "2it4K",

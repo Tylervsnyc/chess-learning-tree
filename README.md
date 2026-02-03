@@ -3,13 +3,16 @@
 A mobile-first chess learning app that teaches tactics through interactive puzzles organized in a skill tree curriculum. Think Duolingo for chess.
 
 **Live features:**
-- 3-level curriculum (168 lessons) from beginner to intermediate
+- 3-level curriculum (168 lessons) from beginner to advanced
 - Puzzle-based lessons with immediate feedback
-- Streak tracking and gamification
-- Daily challenges with lives and timer
-- Unlimited workout mode
-- Profile with skill bubble visualization
+- Daily challenge with adaptive ELO (400→2000) and global leaderboard
+- Streak tracking displayed in header
+- Level tests to skip ahead
 - Premium subscriptions via Stripe
+
+**Documentation:**
+- **[RULES.md](./RULES.md)** - Source of truth for all app behavior
+- **[CLAUDE.md](./CLAUDE.md)** - AI assistant instructions and coding conventions
 
 ---
 
@@ -43,10 +46,8 @@ STRIPE_SECRET_KEY=your-stripe-key           # for subscriptions
 | Auth | Supabase Auth (email + Google OAuth) |
 | Chess Logic | chess.js |
 | Board UI | react-chessboard |
-| Visualization | D3.js (force layout) |
 | Payments | Stripe |
 | Analytics | PostHog |
-| Email | Resend + React Email |
 
 ---
 
@@ -54,28 +55,27 @@ STRIPE_SECRET_KEY=your-stripe-key           # for subscriptions
 
 ```
 app/                        # Next.js pages and API routes
-├── api/                   # Backend endpoints (37 routes)
+├── api/                   # Backend endpoints
 ├── auth/                  # Login, signup, OAuth callback
 ├── learn/                 # Main curriculum tree page
 ├── lesson/[lessonId]/     # Puzzle-solving experience
 ├── level-test/[transition]/ # Level unlock tests
-├── daily-challenge/       # Timed daily puzzle mode
-├── workout/               # Unlimited practice
-├── profile/               # User stats and skills
+├── daily-challenge/       # Daily challenge mode
 ├── pricing/               # Subscription plans
 └── admin/                 # Admin tools
 
 components/                # React components by feature
 ├── puzzle/               # Chessboard, feedback, progress bar
 ├── tree/                 # Curriculum visualization
-├── onboarding/           # First-run experience
-└── subscription/         # Paywalls and limits
+├── layout/               # Header, containers
+└── prompts/              # Signup prompts
 
 data/                      # Curriculum and puzzle data
 ├── staging/              # V2 curriculum definitions
 │   ├── level1-v2-curriculum.ts
 │   ├── level2-v2-curriculum.ts
 │   └── level3-v2-curriculum.ts
+├── lesson-pools/         # Pre-computed puzzle pools (40 per lesson)
 ├── puzzles-by-rating/    # Lichess CSV files
 │   ├── 0400-0800/
 │   ├── 0800-1200/
@@ -90,16 +90,51 @@ lib/                       # Core utilities
 ├── puzzle-selector.ts     # Puzzle selection algorithm
 ├── puzzle-utils.ts        # Move parsing and transformation
 ├── progress-sync.ts       # Client-server data sync
+├── sounds.ts              # Sound effects
+├── config/
+│   └── feature-flags.ts   # Feature toggles
 └── supabase/             # Database clients
 
 hooks/                     # React hooks
-├── useProgress.ts        # Lesson completion, streaks
+├── useProgress.ts        # Lesson completion, unlocking
 ├── useUser.ts            # Auth state
-└── usePermissions.ts     # Free vs premium access
+└── usePermissions.ts     # Limits and access
 
 types/                     # TypeScript definitions
 └── curriculum.ts         # Level, Block, Section, Lesson types
 ```
+
+---
+
+## Pages
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Landing (new users) or redirect to /learn (returning) |
+| `/about` | Step 2 of new user flow |
+| `/learn` | Main curriculum tree |
+| `/lesson/[lessonId]` | Puzzle solving (6 puzzles per lesson) |
+| `/level-test/[transition]` | Level unlock tests (10 puzzles) |
+| `/daily-challenge` | Daily challenge with timer and lives |
+| `/pricing` | Subscription plans |
+| `/auth/login` | Login |
+| `/auth/signup` | Signup |
+| `/admin/*` | Admin tools |
+
+---
+
+## Naming Conventions (Dot Notation)
+
+All IDs use dot notation for consistency:
+
+| Thing | Format | Example |
+|-------|--------|---------|
+| Level | `{level}` | `1`, `2`, `5` |
+| Section ID | `{level}.{section}` | `1.3`, `5.12` |
+| Lesson ID | `{level}.{section}.{lesson}` | `1.3.2`, `5.12.4` |
+| Quip ID | `{level}.{section}.{type}.{number}` | `1.1.g.01`, `2.6.fork.03` |
+
+Quip types: `g` (general), `fork`, `pin`, `mateIn1`, `mateIn2`, `skewer`, etc.
 
 ---
 
@@ -110,7 +145,7 @@ types/                     # TypeScript definitions
 The curriculum is a **strict hierarchy**:
 
 ```
-Level (e.g., "Level 1: Beginner")
+Level (e.g., "Level 1: How to Lose Friends")
 └── Block (e.g., "End the Game")
     └── Section (e.g., "Mate in One: Queen & Rook")
         └── Lesson (e.g., "Queen Checkmate: Easy")
@@ -121,9 +156,9 @@ Each level has **4 blocks**. Each block has **4 sections**. Each section has **4
 **Current curriculum:**
 | Level | Name | Rating Range | Lessons |
 |-------|------|-------------|---------|
-| 1 | Beginner | 400-800 ELO | 56 lessons |
-| 2 | Intermediate | 800-1200 ELO | 56 lessons |
-| 3 | Advanced | 1000-1250 ELO | 56 lessons |
+| 1 | How to Lose Friends | 400-800 ELO | 56 lessons |
+| 2 | The Assassin's Toolkit | 800-1200 ELO | 56 lessons |
+| 3 | Never Apologize for Being Great | 1000-1250 ELO | 56 lessons |
 
 ## The Single Source of Truth
 
@@ -141,114 +176,41 @@ export const LEVELS: LevelConfig[] = [
     color: '#58CC02',            // UI color (green)
     darkColor: '#3d8c01',        // Shadow color
   },
-  {
-    level: 2,
-    data: level2V2,
-    puzzleDir: '0800-1200',
-    treeId: '800-1200',
-    color: '#1CB0F6',            // Blue
-    darkColor: '#1487c0',
-  },
-  {
-    level: 3,
-    data: level3V2,
-    puzzleDir: '0800-1200',      // Uses same puzzle dir as L2
-    treeId: '1200+',
-    color: '#CE82FF',            // Purple
-    darkColor: '#a855c7',
-  },
+  // ...
 ];
 ```
 
-## Lesson ID Format
+---
 
-Every lesson has a unique ID: **`X.Y.Z`**
+# The Daily Challenge
 
-- **X** = Level number (1, 2, 3, ...)
-- **Y** = Block number within level (1-4)
-- **Z** = Lesson number within block (1-4, mapping to sections)
+## Rules
 
-Examples:
-- `1.1.1` = Level 1, Block 1, Lesson 1
-- `2.3.4` = Level 2, Block 3, Lesson 4
-- `3.4.4` = Level 3, Block 4, Lesson 4 (last lesson of Level 3)
+| Rule | Value |
+|------|-------|
+| Timer | 5 minutes |
+| Lives | 3 (3 wrong = out) |
+| Starting ELO | 400 |
+| Correct answer | +200 ELO |
+| Wrong answer | Same ELO |
+| Same puzzles for all users | Yes (seeded by date) |
 
-## Type Definitions
+## Puzzle Pool Per Day
 
-**File: `types/curriculum.ts`**
+| ELO Range | Puzzles |
+|-----------|---------|
+| 400-1800 | 3 each |
+| 2000 | 10 |
 
-```typescript
-interface LessonCriteria {
-  id: string;                    // "1.2.3"
-  name: string;                  // "Knight Fork: Basics"
-  description: string;           // What to learn
-  requiredTags: string[];        // Puzzle themes (ALL must match)
-  excludeTags?: string[];        // Themes to exclude
-  ratingMin: number;             // Min puzzle difficulty
-  ratingMax: number;             // Max puzzle difficulty
-  pieceFilter?: 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn';
-  minPlays?: number;             // Quality threshold (default 1000)
-  isMixedPractice?: boolean;     // true = ANY theme matches
-  mixedThemes?: string[];        // For mixed practice lessons
-}
+## Win Conditions
+- Complete all 2000 ELO puzzles, OR
+- Timer runs out, OR
+- Lose 3 lives
 
-interface Section {
-  id: string;                    // "sec-1"
-  name: string;                  // "Fork Basics"
-  description: string;
-  themeIntroMessage?: string;    // Popup on first lesson
-  isReview?: boolean;            // Mixed practice section
-  lessons: LessonCriteria[];
-}
-
-interface Block {
-  id: string;                    // "block-1"
-  name: string;                  // "End the Game"
-  description: string;
-  blockIntroMessage?: string;    // Popup on first lesson
-  sections: Section[];
-}
-
-interface Level {
-  id: string;                    // "level-1"
-  name: string;                  // "Level 1: How to Lose Friends"
-  ratingRange: string;           // "400-800"
-  blocks: Block[];
-}
-```
-
-## Lesson Selection Rules
-
-When fetching puzzles for a lesson, the system uses these criteria:
-
-| Field | Behavior |
-|-------|----------|
-| `requiredTags` | ALL tags must be present in puzzle |
-| `excludeTags` | NO tags can be present |
-| `ratingMin/Max` | Puzzle difficulty must be in range |
-| `pieceFilter` | First solution move must use this piece |
-| `minPlays` | Puzzle must have this many Lichess plays |
-| `isMixedPractice` | If true, ANY `mixedThemes` can match |
-
-## Block and Section Pattern
-
-**Blocks 1-3** follow this structure:
-- 3 content sections (focused tactics)
-- 1 review section (mixed practice with `isMixedPractice: true`)
-
-**Block 4** is the level final:
-- 2 review sections (cumulative practice)
-
-**Progressive difficulty within sections:**
-```typescript
-// Section: Fork Basics
-lessons: [
-  { id: '1.1.1', ratingMin: 400, ratingMax: 500 },  // Easiest
-  { id: '1.1.2', ratingMin: 450, ratingMax: 550 },  // Slightly harder
-  { id: '1.1.3', ratingMin: 500, ratingMax: 600 },  // Medium
-  { id: '1.1.4', ratingMin: 550, ratingMax: 700 },  // Hardest
-]
-```
+## Leaderboard
+- Top 10 by default + toggle to see your rank
+- Today only (no history)
+- Sort: Puzzles completed (desc), then completion time (asc)
 
 ---
 
@@ -258,66 +220,20 @@ lessons: [
 
 Users can skip ahead by passing a **level test**. Tests validate readiness for the next level.
 
-## Transition Format
+## Test Rules
 
-A transition is written as **`X-Y`** where:
-- **X** = Current level (1-7)
-- **Y** = Target level to unlock (2-8)
-
-Available transitions: `1-2`, `2-3`, `3-4`, `4-5`, `5-6`, `6-7`, `7-8`
-
-## Test Rules (Hardcoded)
-
-**File: `data/level-unlock-tests.ts`**
-
-```typescript
-LEVEL_TEST_CONFIG = {
-  puzzleCount: 10,        // Exactly 10 puzzles
-  maxWrongAnswers: 3,     // Fail if 3+ wrong
-  passingScore: 7,        // Need 7/10 correct
-}
-```
-
-**Pass condition:** Complete all 10 puzzles with at least 7 correct (max 2 wrong)
-
-**Fail condition:** Either 3 wrong answers OR less than 7 correct after all 10
-
-## Test Variants (Anti-Memorization)
-
-Each transition has **5 variants** with different theme combinations:
-
-```typescript
-'1-2': {
-  fromLevel: 1,
-  toLevel: 2,
-  ratingMin: 800,
-  ratingMax: 1000,
-  variants: [
-    { id: '1-2-v1', themes: ['fork', 'pin', 'mateIn1', 'hangingPiece'] },
-    { id: '1-2-v2', themes: ['skewer', 'discoveredAttack', 'mateIn1', 'fork'] },
-    { id: '1-2-v3', themes: ['pin', 'trappedPiece', 'hangingPiece', 'backRankMate'] },
-    { id: '1-2-v4', themes: ['fork', 'discoveredAttack', 'mateIn1', 'skewer'] },
-    { id: '1-2-v5', themes: ['mateIn1', 'pin', 'fork', 'trappedPiece'] },
-  ],
-}
-```
-
-**Variant selection:** System picks the least-recently-used variant for each user.
-
-## Puzzle Selection for Tests
-
-1. Uses puzzles from the **TARGET level's** rating range
-2. For `1-2` test: Uses Level 2 puzzles (800-1000 rating)
-3. Pulls from `data/clean-puzzles-v2/level{N}-{theme}.json`
-4. Distributes evenly across variant themes
-5. Shuffles and takes exactly 10
+| Rule | Value |
+|------|-------|
+| Puzzles | 10 |
+| Pass requirement | 2 or fewer wrong |
+| Must complete | All 10 puzzles |
+| Retry | Unlimited, immediate |
 
 ## On Pass
 
-When a user passes:
-1. `unlockLevel(targetLevel)` adds level to `profiles.unlocked_levels`
-2. `setStartingLesson(firstLessonId)` unlocks the first lesson
-3. User redirected to `/learn` to start new level
+1. Level unlocks
+2. All previous lessons unlock
+3. Navigate to `/learn?scrollTo={firstLessonOfNewLevel}`
 
 ---
 
@@ -334,7 +250,9 @@ CSV Files (by rating bracket)
     ↓
 Clean Puzzles (filtered JSON by theme)
     ↓
-API Route (selection algorithm)
+Lesson Pools (40 pre-computed puzzles per lesson)
+    ↓
+API Route (selection: 2 easy, 3 medium, 1 hard)
     ↓
 Client (transformation + display)
 ```
@@ -355,11 +273,6 @@ Client (transformation + display)
 2000-plus/
 ```
 
-**CSV columns:**
-```
-PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl,OpeningTags
-```
-
 ### CRITICAL: Lichess Puzzle Format
 
 **The first move in `Moves` is the OPPONENT'S move, not the player's!**
@@ -375,195 +288,20 @@ To display a puzzle:
 2. Apply `Moves[0]` to get the actual puzzle position
 3. Player solves from `Moves[1]` onward
 
-## Step 2: Clean Puzzle Extraction
+## Step 2: Lesson Pools
 
-**Script:** `scripts/extract-clean-puzzles.ts`
+**Location:** `data/lesson-pools/{lessonId}.json` (e.g., `1.3.2.json`)
 
-**Output:** `data/clean-puzzles-v2/`
+- 40 puzzles per lesson pool
+- Verified at build time to match criteria
 
-```
-level1-fork.json      # 4361 fork puzzles, 400-800 rating
-level2-pin.json       # Pin puzzles, 800-1200 rating
-level3-mateIn2.json   # Mate in 2, 1200+ rating
-[100+ files]
-```
+## Step 3: Puzzle Selection
 
-**Quality filters:**
-- Level 1: 1000+ plays minimum
-- Level 2-3: 3000+ plays minimum
-- Single primary theme (community-vetted)
-
-## Step 3: API Selection
-
-**Route:** `GET /api/puzzles/lesson`
-
-**Parameters:**
-```
-themes=fork,pin       # Required themes
-ratingMin=400         # Min difficulty
-ratingMax=600         # Max difficulty
-mixed=true|false      # ANY vs ALL theme matching
-pieceFilter=queen     # Optional: filter by solving piece
-excludeThemes=mateIn1 # Optional: themes to exclude
-```
-
-**Selection algorithm** (`lib/puzzle-selector.ts`):
-
-1. Load candidate puzzles matching criteria
-2. Split into 3 tiers by difficulty:
-   - **Tier 1** (easy): Bottom 30%
-   - **Tier 2** (medium): Middle 40%
-   - **Tier 3** (hard): Top 30%
-3. Check diversity (no similar solutions)
-4. Select 2-2-2 pattern: 2 easy, 2 medium, 2 hard
-5. Return 6 puzzles
-
-## Step 4: Client Transformation
-
-**Function:** `transformPuzzle()` in `lib/puzzle-utils.ts`
-
-```typescript
-// Input: Raw Lichess puzzle
-{
-  fen: "original position",
-  moves: "e2e4 d7d5 e4d5"  // First move is opponent's
-}
-
-// Output: Ready for display
-{
-  fen: "original position",
-  puzzleFen: "position after opponent's move",  // What player sees
-  solutionMoves: ["d5"],  // Player's correct moves
-  playerColor: "white"
-}
-```
-
-## Available Puzzle Themes
-
-**Checkmates:** mateIn1, mateIn2, mateIn3, backRankMate, smotheredMate, arabianMate, hookMate
-
-**Tactics:** fork, skewer, pin, deflection, attraction, discoveredAttack, clearance, interference, xray
-
-**Material:** hangingPiece, trappedPiece, crushing, exposedKing
-
-**Endgames:** rookEndgame, pawnEndgame, knightEndgame, bishopEndgame, queenEndgame
-
-**Other:** quietMove, sacrifice, promotion, defensiveMove
-
----
-
-# How to Add a New Level
-
-## Step 1: Create Curriculum File
-
-Create `data/staging/level4-v2-curriculum.ts`:
-
-```typescript
-import { Level } from '@/types/curriculum';
-
-export const level4V2: Level = {
-  id: 'level-4',
-  name: 'Level 4: Club Player',
-  ratingRange: '1200-1600',
-  blocks: [
-    {
-      id: 'block-1',
-      name: 'Block 1 Name',
-      description: 'What this block teaches',
-      blockIntroMessage: `Welcome to Level 4!
-
-Your intro message here.`,
-      sections: [
-        {
-          id: 'sec-1',
-          name: 'Section Name',
-          description: 'Section description',
-          themeIntroMessage: `Section intro message.`,
-          lessons: [
-            {
-              id: '4.1.1',
-              name: 'First Lesson',
-              description: 'Description',
-              requiredTags: ['fork'],
-              ratingMin: 1200,
-              ratingMax: 1350,
-              minPlays: 1000,
-            },
-            // 3 more lessons for this section
-          ],
-        },
-        // 3 more sections for this block
-      ],
-    },
-    // 3 more blocks
-  ],
-};
-```
-
-## Step 2: Register in Curriculum Registry
-
-Edit `lib/curriculum-registry.ts`:
-
-```typescript
-// Add import
-import { level4V2 } from '@/data/staging/level4-v2-curriculum';
-
-// Add to LEVELS array
-export const LEVELS: LevelConfig[] = [
-  // ... existing levels
-  {
-    level: 4,
-    data: level4V2,
-    puzzleDir: '1200-1600',     // Must match puzzle CSV folder
-    treeId: '1200-1600',
-    color: '#FF9500',           // Choose a color
-    darkColor: '#cc7700',
-  },
-];
-```
-
-## Step 3: Ensure Puzzles Exist
-
-Verify `data/puzzles-by-rating/1200-1600/` has CSV files for your themes:
-- `fork.csv`
-- `pin.csv`
-- `mateIn2.csv`
-- etc.
-
-## Step 4: Add Level Test (Optional)
-
-Edit `data/level-unlock-tests.ts`:
-
-```typescript
-'3-4': {
-  fromLevel: 3,
-  toLevel: 4,
-  ratingMin: 1200,
-  ratingMax: 1400,
-  levelKey: 'club',
-  variants: [
-    { id: '3-4-v1', themes: ['mateIn2', 'fork', 'pin', 'discoveredAttack'] },
-    { id: '3-4-v2', themes: ['deflection', 'skewer', 'mateIn2', 'fork'] },
-    // 3 more variants
-  ],
-},
-```
-
-## Step 5: Test
-
-```typescript
-import { getLevelConfig, getLessonById } from '@/lib/curriculum-registry';
-
-// These should work
-getLevelConfig(4);           // Returns Level 4 config
-getLessonById('4.1.1');      // Returns first lesson
-```
-
-Then:
-1. Run `npm run dev`
-2. Navigate to `/learn`
-3. Verify Level 4 appears (if unlocked)
-4. Test a lesson loads puzzles correctly
+On lesson start:
+1. Load pool file
+2. Filter out recently seen (puzzle_history, last 30 days)
+3. Pick 6 random: 2 easy, 3 medium, 1 hard
+4. Record seen puzzles to puzzle_history
 
 ---
 
@@ -573,35 +311,50 @@ Then:
 
 ## Core Tables
 
-| Table | Purpose |
-|-------|---------|
-| `profiles` | User accounts, ELO, subscription, progress |
-| `lesson_progress` | Completed lessons per user |
-| `puzzle_attempts` | Every puzzle attempt (for analytics) |
-| `theme_performance` | Aggregated stats per theme |
-| `daily_challenges` | Daily puzzle completion tracking |
-| `level_test_attempts` | Level test history |
-
-## Key Columns in `profiles`
-
 ```sql
-id UUID PRIMARY KEY REFERENCES auth.users,
-email TEXT,
-display_name TEXT,
-elo_rating INTEGER DEFAULT 400,
-subscription_status TEXT DEFAULT 'free',
-current_streak INTEGER DEFAULT 0,
-best_streak INTEGER DEFAULT 0,
-current_lesson_id TEXT,
-current_level INTEGER DEFAULT 1,
-unlocked_levels INTEGER[] DEFAULT '{1}',
-lessons_completed_today INTEGER DEFAULT 0,
-is_admin BOOLEAN DEFAULT FALSE
+profiles
+  id, email, display_name, subscription_status, unlocked_levels,
+  is_admin, current_streak, last_activity_date, created_at
+
+lesson_progress
+  id, user_id, lesson_id, completed_at, score
+
+puzzle_attempts
+  id, user_id, puzzle_id, lesson_id, correct, attempts, created_at
+
+daily_challenge_results
+  id, user_id, challenge_date, puzzles_completed, completion_time, created_at
+
+level_test_attempts
+  id, user_id, transition, passed, score, variant_id, created_at
+
+puzzle_history
+  id, user_id, puzzle_id, seen_at
+  -- Cleanup: delete rows older than 90 days
+
+quip_history
+  id, user_id, quip_id, seen_at
 ```
 
 ## Row Level Security
 
 All tables have RLS enabled. Users can only access their own data via `auth.uid() = user_id`.
+
+---
+
+# How to Add a New Level
+
+See **RULES.md Section 29** for the complete checklist:
+
+1. Create curriculum file: `/data/staging/levelN-v2-curriculum.ts`
+2. Register in: `/lib/curriculum-registry.ts`
+3. Ensure puzzle CSVs exist for the rating range
+4. Generate puzzle pools to `/data/lesson-pools/`
+5. Add level test config in `/data/level-unlock-tests.ts`
+6. Add section quips and global theme quips
+7. Use unique section IDs with dot notation: `N.1`, `N.2`, etc.
+8. Follow content guidelines (no death/violence language)
+9. Test everything
 
 ---
 
@@ -620,7 +373,7 @@ All tables have RLS enabled. Users can only access their own data via `auth.uid(
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/api/puzzles/lesson` | GET | Get 6 puzzles for a lesson |
-| `/api/puzzles` | GET | Random puzzles (workout/daily) |
+| `/api/puzzles` | GET | Random puzzles (daily challenge) |
 | `/api/puzzles/by-theme` | GET | Theme-specific puzzles |
 
 ## Level Tests
@@ -653,21 +406,18 @@ All tables have RLS enabled. Users can only access their own data via `auth.uid(
 npm run dev          # Start dev server (localhost:3000)
 npm run build        # Production build
 npm run lint         # Check for code issues
-npm run test:e2e     # Run Playwright tests
-npm run email:dev    # Preview email templates
 ```
 
 ---
 
 # Contributing
 
-1. Read `CLAUDE.md` for detailed coding conventions
-2. All files use TypeScript
-3. Use `'use client'` for interactive components
-4. Styling: Tailwind CSS with dark theme
-5. Mobile-first: All pages use `MobileContainer` wrapper
-
-**Before adding features:** Check the "Pre-Flight Checklist" in `CLAUDE.md` to verify database, API, and UI layers exist.
+1. **Read `RULES.md` first** - Source of truth for all behavior
+2. **Read `CLAUDE.md`** - Coding conventions and golden rules
+3. All files use TypeScript
+4. Use `'use client'` for interactive components
+5. Styling: Tailwind CSS with dark theme
+6. Mobile-first: All pages use `MobileContainer` wrapper
 
 ---
 

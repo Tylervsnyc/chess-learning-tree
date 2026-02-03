@@ -42,7 +42,7 @@ Double attacks - especially forks - are how you win material. One piece threaten
       sections: [
         // Section 1: Fork Basics (interleaved pieces)
         {
-          id: 'sec-1',
+          id: '2.1',
           name: 'Fork Basics',
           description: 'Learn to attack two pieces at once',
           themeIntroMessage: `Forks are devastating. One piece attacks two targets simultaneously. Your opponent has to choose which piece to lose.
@@ -99,7 +99,7 @@ Look for pieces on the same color diagonal or same rank/file that can both be th
         },
         // Section 2: Fork Patterns (interleaved pieces)
         {
-          id: 'sec-2',
+          id: '2.2',
           name: 'Fork Patterns',
           description: 'Recognize common fork setups',
           themeIntroMessage: `Time to level up. Now we're looking at specific fork patterns you'll see over and over.
@@ -156,7 +156,7 @@ Train your eye to spot when two valuable pieces are a knight hop apart.`,
         },
         // Section 3: Fork + Other Tactics
         {
-          id: 'sec-3',
+          id: '2.3',
           name: 'Forks & More',
           description: 'Mix forks with other tactics',
           themeIntroMessage: `Sometimes you need to set up the fork first. Sometimes there's a hanging piece just sitting there.
@@ -211,7 +211,7 @@ Stay alert. The best move might not be what you expect.`,
         },
         // Section 4: Block 1 Review
         {
-          id: 'sec-4',
+          id: '2.4',
           name: 'Review: Double Attacks',
           description: 'Mixed fork practice',
           isReview: true,
@@ -292,7 +292,7 @@ A skewer is a pin in reverse - attack the valuable piece, and when it moves, gra
       sections: [
         // Section 5: Absolute Pins
         {
-          id: 'sec-5',
+          id: '2.5',
           name: 'Absolute Pins',
           description: 'Pin to the king - frozen solid',
           themeIntroMessage: `The absolute pin is brutal. A piece is pinned to the king - it literally CAN'T move. That's illegal.
@@ -348,7 +348,7 @@ Look for enemy pieces standing between your long-range pieces and their king.`,
         },
         // Section 6: Relative Pins & Winning Pinned Pieces
         {
-          id: 'sec-6',
+          id: '2.6',
           name: 'Exploiting Pins',
           description: 'Attack the frozen target',
           themeIntroMessage: `A pinned piece is stuck. Now exploit it.
@@ -401,7 +401,7 @@ Relative pins (to the queen) are weaker but still dangerous. The piece CAN move,
         },
         // Section 7: Skewers
         {
-          id: 'sec-7',
+          id: '2.7',
           name: 'The Skewer',
           description: 'Attack through them',
           themeIntroMessage: `The skewer is a pin in reverse. Attack the high-value piece first.
@@ -454,7 +454,7 @@ Royal skewers through the king are especially nasty - the king MUST move, so you
         },
         // Section 8: Block 2 Review
         {
-          id: 'sec-8',
+          id: '2.8',
           name: 'Review: Line Tactics',
           description: 'Mixed pin and skewer practice',
           isReview: true,
@@ -533,7 +533,7 @@ These are some of the most powerful tactics in chess. Let's master them.`,
       sections: [
         // Section 9: Basic Discoveries
         {
-          id: 'sec-9',
+          id: '2.9',
           name: 'Basic Discoveries',
           description: 'Move one piece, reveal another',
           themeIntroMessage: `A piece blocks another piece. When the blocker moves, the hidden attack is revealed.
@@ -586,7 +586,7 @@ The attacking piece "discovers" a threat that was waiting behind the scenes.`,
         },
         // Section 10: Discovery + Threat
         {
-          id: 'sec-10',
+          id: '2.10',
           name: 'Double Threats',
           description: 'Two devastating threats at once',
           themeIntroMessage: `Here's where discoveries get nasty. The moving piece ALSO attacks something.
@@ -639,7 +639,7 @@ The moving piece might capture, give check, or threaten the queen. Double troubl
         },
         // Section 11: Tactical Checkmates
         {
-          id: 'sec-11',
+          id: '2.11',
           name: 'Tactical Checkmates',
           description: 'Use your weapons to deliver mate',
           themeIntroMessage: `You've been winning material. Now let's aim for the ultimate prize - checkmate.
@@ -688,7 +688,7 @@ Force their response, then deliver the knockout.`,
         },
         // Section 12: Block 3 Review
         {
-          id: 'sec-12',
+          id: '2.12',
           name: 'Review: Discoveries & Mates',
           description: 'Mixed discovery and checkmate practice',
           isReview: true,
@@ -764,7 +764,7 @@ Show me you're ready for Level 3.`,
       sections: [
         // Section 13: Level 2 Review
         {
-          id: 'sec-13',
+          id: '2.13',
           name: 'Level 2 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
@@ -826,7 +826,7 @@ Stay flexible. Read the position. Find the winning move.`,
         },
         // Section 14: Level 2 Final
         {
-          id: 'sec-14',
+          id: '2.14',
           name: 'Level 2 Final',
           description: 'The ultimate test',
           isReview: true,

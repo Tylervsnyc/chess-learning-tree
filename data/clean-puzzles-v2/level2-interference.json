@@ -2,7 +2,7 @@
   "level": 2,
   "ratingRange": "800-1000",
   "theme": "interference",
-  "count": 30,
+  "count": 23,
   "puzzles": [
     {
       "puzzleId": "RM6z0",
@@ -35,40 +35,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/aTofxcvI/black#26"
-    },
-    {
-      "puzzleId": "KTB0a",
-      "fen": "2k1r2r/pppb1ppp/3p4/n6q/3PPBn1/2PB3P/PPQN4/5RKR w - - 0 19",
-      "moves": "h3g4 h5g4 g1f2 g4f4",
-      "rating": 855,
-      "popularity": 90,
-      "nbPlays": 638,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/6SWalQ3T#37"
-    },
-    {
-      "puzzleId": "9TV4P",
-      "fen": "r1b3k1/ppp2ppp/8/3pr1B1/PP6/2nPN3/3N2PP/R4RK1 w - - 2 17",
-      "moves": "g5f4 c3e2 g1f2 e2f4",
-      "rating": 883,
-      "popularity": 95,
-      "nbPlays": 1223,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/9yKWDDaX#33"
     },
     {
       "puzzleId": "3dEae",
@@ -267,23 +233,6 @@
       "gameUrl": "https://lichess.org/WrQLpm58#63"
     },
     {
-      "puzzleId": "gohy5",
-      "fen": "r2qkbnr/pbpp3p/1pn1pp2/6N1/2PP1B2/4P3/PP2BPPP/RN1QK2R b KQkq - 0 7",
-      "moves": "f6g5 e2h5 e8e7 f4g5",
-      "rating": 966,
-      "popularity": 89,
-      "nbPlays": 876,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "intermezzo",
-        "opening",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/DGJeh9kH/black#14"
-    },
-    {
       "puzzleId": "9Z07w",
       "fen": "r3k2r/p2n1pb1/pqpB2p1/4p2p/P3P2P/2N2P1b/1PPQ2P1/3RK2R w Kkq - 0 16",
       "moves": "h1h3 b6g1 e1e2 g1g2",
@@ -330,23 +279,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/WWoM5zxM/black#60"
-    },
-    {
-      "puzzleId": "mKrfG",
-      "fen": "r2q1r2/1p3pkp/3p1b2/pNp5/2B1PPb1/8/PP1Q2PP/1R3RK1 w - - 1 19",
-      "moves": "b5d6 f6d4 g1h1 d8d6",
-      "rating": 973,
-      "popularity": 97,
-      "nbPlays": 1380,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "intermezzo",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/L2o0Enho#37"
     },
     {
       "puzzleId": "oOuqN",
@@ -444,58 +376,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/81Z3zcLQ#49"
-    },
-    {
-      "puzzleId": "oh8Gs",
-      "fen": "1r3rk1/p4ppp/3p4/4q3/2P1P3/5P1P/PP1QB3/2KR3R w - - 4 22",
-      "moves": "b2b3 e5a1 c1c2 a1a2",
-      "rating": 996,
-      "popularity": 97,
-      "nbPlays": 823,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "middlegame",
-        "queensideAttack",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/ocVaXCzw#43"
-    },
-    {
-      "puzzleId": "5Ema5",
-      "fen": "r4rk1/pp2qpbp/3pb1p1/1Np5/2P1PP2/1P4P1/P2Q2BP/3R1RK1 w - - 1 18",
-      "moves": "b5d6 g7d4 g1h1 e7d6",
-      "rating": 996,
-      "popularity": 96,
-      "nbPlays": 4103,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "intermezzo",
-        "master",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/bjgmMNrp#35"
-    },
-    {
-      "puzzleId": "D9j2w",
-      "fen": "2kr1b2/Q1p2pp1/2q4r/1P1n1b1p/P2B4/2Pp4/3N1PPP/R4RK1 b - - 0 18",
-      "moves": "c6g6 a7a8 c8d7 a8d5",
-      "rating": 998,
-      "popularity": 87,
-      "nbPlays": 896,
-      "theme": "interference",
-      "allThemes": [
-        "advantage",
-        "interference",
-        "middlegame",
-        "queensideAttack",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/baCDu8It/black#36"
     }
   ]
 }

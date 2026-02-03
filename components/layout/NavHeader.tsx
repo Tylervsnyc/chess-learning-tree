@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
+import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
+  const { currentStreak, loaded: progressLoaded } = useLessonProgress();
   const pathname = usePathname();
 
   const handleSignOut = () => {
@@ -18,8 +20,11 @@ export function NavHeader() {
     return null;
   }
 
+  // Show streak counter only on /learn and /daily-challenge
+  const showStreakCounter = pathname === '/learn' || pathname === '/daily-challenge';
+
   return (
-    <header className="bg-white border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
         <Link href={user ? '/learn' : '/'} className="flex items-center">
           <Image
@@ -32,6 +37,19 @@ export function NavHeader() {
         </Link>
 
         <nav className="flex items-center gap-1.5">
+          {/* Streak counter - shown on /learn and /daily-challenge */}
+          {showStreakCounter && progressLoaded && currentStreak > 0 && (
+            <div
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-white text-xs font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #FF6B00 0%, #FF9500 100%)',
+                boxShadow: '0 0 8px rgba(255, 107, 0, 0.4)',
+              }}
+            >
+              <span>🔥</span>
+              <span>{currentStreak}</span>
+            </div>
+          )}
           {loading ? (
             <>
               {/* Skeleton buttons to prevent layout shift */}
@@ -40,6 +58,26 @@ export function NavHeader() {
             </>
           ) : user ? (
             <>
+              <Link
+                href="/learn"
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white ${
+                  pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
+                }`}
+              >
+                Path
+              </Link>
+              <Link
+                href="/daily-challenge"
+                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
+                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
+                }`}
+                style={{
+                  background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
+                }}
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
+                Daily
+              </Link>
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"

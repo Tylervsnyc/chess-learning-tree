@@ -9,7 +9,6 @@ interface User {
   display_name: string | null;
   subscription_status: 'free' | 'premium' | 'trial';
   subscription_expires_at: string | null;
-  elo_rating: number;
   created_at: string;
 }
 
@@ -51,7 +50,7 @@ export default function AdminUsersPage() {
     setLoading(false);
   };
 
-  const updateSubscription = async (userId: string, status: 'free' | 'premium' | 'trial', expiresAt: string | null, eloRating?: number) => {
+  const updateSubscription = async (userId: string, status: 'free' | 'premium' | 'trial', expiresAt: string | null) => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
@@ -64,7 +63,6 @@ export default function AdminUsersPage() {
           userId,
           subscriptionStatus: status,
           expiresAt,
-          eloRating,
         }),
       });
 
@@ -73,11 +71,11 @@ export default function AdminUsersPage() {
       if (!res.ok) {
         setError(data.error || 'Failed to update user');
       } else {
-        setSuccessMessage('User updated successfully! They now have premium + all levels unlocked.');
+        setSuccessMessage('User updated successfully!');
         // Update local state
         setUsers(users.map(u =>
           u.id === userId
-            ? { ...u, subscription_status: status, subscription_expires_at: expiresAt, elo_rating: eloRating ?? u.elo_rating }
+            ? { ...u, subscription_status: status, subscription_expires_at: expiresAt }
             : u
         ));
       }
@@ -89,8 +87,8 @@ export default function AdminUsersPage() {
   };
 
   const grantPremium = (userId: string) => {
-    // Set expiry far in the future (2099) and ELO to 1700 to unlock all levels
-    updateSubscription(userId, 'premium', '2099-12-31T23:59:59.000Z', 1700);
+    // Set expiry far in the future (2099)
+    updateSubscription(userId, 'premium', '2099-12-31T23:59:59.000Z');
   };
 
   const revokePremium = (userId: string) => {
@@ -193,7 +191,6 @@ export default function AdminUsersPage() {
                       </div>
                       <div className="text-gray-400 text-sm space-y-1">
                         <p><span className="text-gray-500">Email:</span> {user.email}</p>
-                        <p><span className="text-gray-500">ELO:</span> {user.elo_rating}</p>
                         <p><span className="text-gray-500">Joined:</span> {formatDate(user.created_at)}</p>
                         {user.subscription_status !== 'free' && (
                           <p><span className="text-gray-500">Expires:</span> {formatDate(user.subscription_expires_at)}</p>

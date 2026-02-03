@@ -301,6 +301,26 @@ export const progressBarStyles = `
       opacity: 0;
     }
   }
+
+  @keyframes streakLossFall {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.5);
+    }
+  }
+
+  @keyframes streakLossFlash {
+    0%, 100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba(255, 75, 75, 0.3);
+    }
+  }
 `;
 
 // ============================================
@@ -842,13 +862,26 @@ export function ChessProgressBar({
 }: ChessProgressBarProps) {
   const progress = (current / total) * 100;
   const [showMagicStreak, setShowMagicStreak] = useState(false);
+  const [showStreakLoss, setShowStreakLoss] = useState(false);
+  const [lostStreakValue, setLostStreakValue] = useState(0);
   const prevStreakRef = useRef(streak);
 
   // Trigger magic streak celebration when streak hits 5
+  // Trigger streak loss animation when streak drops to 0 from 2+
   useEffect(() => {
-    if (streak === 5 && prevStreakRef.current === 4 && !hadWrongAnswer) {
+    const prevStreak = prevStreakRef.current;
+
+    if (streak === 5 && prevStreak === 4 && !hadWrongAnswer) {
       setShowMagicStreak(true);
     }
+
+    // Detect streak loss (went from 2+ to 0)
+    if (streak === 0 && prevStreak >= 2) {
+      setLostStreakValue(prevStreak);
+      setShowStreakLoss(true);
+      setTimeout(() => setShowStreakLoss(false), 800);
+    }
+
     prevStreakRef.current = streak;
   }, [streak, hadWrongAnswer]);
 
@@ -1094,6 +1127,29 @@ export function ChessProgressBar({
           endPosition={progress}
           onComplete={handleMagicComplete}
         />
+      )}
+
+      {/* Streak loss animation */}
+      {showStreakLoss && (
+        <>
+          {/* Red flash overlay on the bar */}
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none z-20"
+            style={{
+              animation: 'streakLossFlash 0.4s ease-out',
+            }}
+          />
+          {/* Falling streak number */}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#FF4B4B] font-bold text-lg pointer-events-none z-30"
+            style={{
+              animation: 'streakLossFall 0.8s ease-out forwards',
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+            }}
+          >
+            -{lostStreakValue}
+          </div>
+        </>
       )}
     </div>
   );

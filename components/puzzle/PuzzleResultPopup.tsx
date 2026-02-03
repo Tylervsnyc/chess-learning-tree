@@ -1,6 +1,15 @@
 'use client';
 
 import React from 'react';
+import { ShareButton } from '@/components/share/ShareButton';
+
+interface PuzzleShareData {
+  fen: string;
+  playerColor: 'white' | 'black';
+  lastMoveFrom?: string;
+  lastMoveTo?: string;
+  solutionMoves: string[]; // UCI format
+}
 
 interface PuzzleResultPopupProps {
   type: 'correct' | 'incorrect';
@@ -8,6 +17,7 @@ interface PuzzleResultPopupProps {
   onContinue: () => void;
   showSolution?: boolean;
   onShowSolution?: () => void;
+  puzzleShareData?: PuzzleShareData;
 }
 
 export function PuzzleResultPopup({
@@ -16,6 +26,7 @@ export function PuzzleResultPopup({
   onContinue,
   showSolution,
   onShowSolution,
+  puzzleShareData,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
   const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
@@ -29,7 +40,7 @@ export function PuzzleResultPopup({
         ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFDFE0]'}
       `}
       style={{
-        animation: 'fadeIn 0.2s ease-out',
+        animation: isCorrect ? 'slideUpBounce 0.3s ease-out' : 'fadeIn 0.2s ease-out',
       }}
     >
       <div className="max-w-lg mx-auto">
@@ -62,23 +73,49 @@ export function PuzzleResultPopup({
             Try Again
           </button>
         ) : (
-          <button
-            onClick={onContinue}
-            className={`
-              w-full py-2.5 font-bold rounded-xl uppercase tracking-wide transition-all
-              active:translate-y-[2px]
-              ${isCorrect
-                ? 'bg-[#58CC02] text-white shadow-[0_4px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
-                : 'bg-[#FF4B4B] text-white shadow-[0_4px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
-              }
-            `}
-          >
-            Continue
-          </button>
+          <div className={`flex gap-2 ${isCorrect && puzzleShareData ? '' : ''}`}>
+            {/* Share button - only on correct answers */}
+            {isCorrect && puzzleShareData && (
+              <div className="relative flex-shrink-0">
+                <ShareButton
+                  fen={puzzleShareData.fen}
+                  playerColor={puzzleShareData.playerColor}
+                  lastMoveFrom={puzzleShareData.lastMoveFrom}
+                  lastMoveTo={puzzleShareData.lastMoveTo}
+                />
+              </div>
+            )}
+            <button
+              onClick={onContinue}
+              className={`
+                flex-1 py-2.5 font-bold rounded-xl uppercase tracking-wide transition-all
+                active:translate-y-[2px]
+                ${isCorrect
+                  ? 'bg-[#58CC02] text-white shadow-[0_4px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
+                  : 'bg-[#FF4B4B] text-white shadow-[0_4px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
+                }
+              `}
+            >
+              Continue
+            </button>
+          </div>
         )}
       </div>
 
       <style jsx>{`
+        @keyframes slideUpBounce {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          70% {
+            transform: translateY(-5px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         @keyframes fadeIn {
           0% {
             opacity: 0;

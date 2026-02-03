@@ -1,0 +1,40 @@
+{
+  "level": 1,
+  "ratingRange": "400-800",
+  "theme": "intermezzo",
+  "count": 2,
+  "puzzles": [
+    {
+      "puzzleId": "QQGPf",
+      "fen": "5r1k/1pp3p1/1p1p3p/8/2BnRr2/7P/PP2RPP1/6K1 w - - 0 24",
+      "moves": "e4f4 d4e2 c4e2 f8f4",
+      "rating": 754,
+      "popularity": 100,
+      "nbPlays": 501,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/NPTdcfZV#47"
+    },
+    {
+      "puzzleId": "HNczg",
+      "fen": "r2q1rk1/ppp2ppp/3p1n2/4n1B1/6R1/2PB1Q2/PPP2PPP/R5K1 w - - 3 15",
+      "moves": "g5f6 e5f3 g2f3 d8f6",
+      "rating": 780,
+      "popularity": 92,
+      "nbPlays": 474,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5R3OdaB0#29"
+    }
+  ]
+}

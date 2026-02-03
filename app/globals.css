@@ -17,6 +17,7 @@
   --animate-bounce-subtle: bounce-subtle 1s ease-in-out infinite;
   --animate-expand: expand 0.3s ease-out;
   --animate-scale-tap: scale-tap 0.1s ease-out;
+  --animate-shimmer: shimmer 2s infinite;
 }
 
 :root {
@@ -72,6 +73,15 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
   }
 }
 

@@ -1,184 +1,297 @@
 -- The Chess Path Database Schema
--- Run this in your Supabase SQL Editor (https://supabase.com/dashboard/project/ruseupjmldymfvpybqdl/sql)
+-- Run this in your Supabase SQL Editor
+--
+-- IMPORTANT: This schema matches RULES.md Section 23
+-- Last updated: 2026-02-02
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Profiles table (extends Supabase auth.users)
+-- ═══════════════════════════════════════════════════════════════════════════
+-- PROFILES TABLE
+-- ═══════════════════════════════════════════════════════════════════════════
+
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT,
   display_name TEXT,
-  elo_rating INTEGER DEFAULT 800,
   subscription_status TEXT DEFAULT 'free' CHECK (subscription_status IN ('free', 'premium', 'trial')),
   subscription_expires_at TIMESTAMPTZ,
   stripe_customer_id TEXT,
+  -- Unlocked levels (array of level numbers, e.g., {1, 2})
+  unlocked_levels INTEGER[] DEFAULT '{1}',
+  -- Admin flag (all lessons unlocked, admin dashboard access)
+  is_admin BOOLEAN DEFAULT FALSE,
+  -- Streak tracking
   current_streak INTEGER DEFAULT 0,
-  best_streak INTEGER DEFAULT 0,
-  last_played_date DATE,
-  -- Progress tracking columns
-  current_lesson_id TEXT DEFAULT NULL,           -- Next lesson user should see
-  current_level INTEGER DEFAULT 1,               -- Current level (1, 2, or 3)
-  lessons_completed_today INTEGER DEFAULT 0,     -- Daily lesson count (for free user limits)
-  last_lesson_date DATE DEFAULT NULL,            -- Date of last lesson completion (for daily reset)
-  unlocked_levels INTEGER[] DEFAULT '{1}',       -- Array of unlocked level numbers
-  is_admin BOOLEAN DEFAULT FALSE,                -- Admin flag for protected routes
+  last_activity_date DATE,  -- YYYY-MM-DD, for streak calculation
+  -- Lesson limits (when enabled via feature flags)
+  lessons_completed_today INTEGER DEFAULT 0,
+  last_lesson_date DATE DEFAULT NULL,
+  -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Migration: Add streak columns to existing profiles table
--- Run this if the table already exists:
--- ALTER TABLE public.profiles
--- ADD COLUMN IF NOT EXISTS current_streak INTEGER DEFAULT 0,
--- ADD COLUMN IF NOT EXISTS best_streak INTEGER DEFAULT 0,
--- ADD COLUMN IF NOT EXISTS last_played_date DATE;
+-- NOTE: Removed per RULES.md Section 23:
+-- - elo_rating (we don't track user ELO)
+-- - current_lesson_id (derived from progress, not stored)
+-- - current_level (derived from unlocked_levels)
+-- - best_streak (not needed for MVP)
 
--- Migration: Add progress tracking columns to existing profiles table
--- Run this in Supabase SQL Editor if the table already exists:
--- ALTER TABLE public.profiles
--- ADD COLUMN IF NOT EXISTS current_lesson_id TEXT DEFAULT NULL,
--- ADD COLUMN IF NOT EXISTS current_level INTEGER DEFAULT 1,
--- ADD COLUMN IF NOT EXISTS lessons_completed_today INTEGER DEFAULT 0,
--- ADD COLUMN IF NOT EXISTS last_lesson_date DATE DEFAULT NULL,
--- ADD COLUMN IF NOT EXISTS unlocked_levels INTEGER[] DEFAULT '{1}';
---
--- CREATE INDEX IF NOT EXISTS idx_profiles_last_lesson_date
--- ON public.profiles(last_lesson_date);
+-- ═══════════════════════════════════════════════════════════════════════════
+-- LESSON PROGRESS TABLE
+-- Tracks completed lessons per user
+-- ═══════════════════════════════════════════════════════════════════════════
 
--- Migration: Add is_admin column to existing profiles table
--- Run this in Supabase SQL Editor if the table already exists:
--- ALTER TABLE public.profiles
--- ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
---
--- To make a user an admin, run:
--- UPDATE public.profiles SET is_admin = TRUE WHERE email = 'your-email@example.com';
+CREATE TABLE public.lesson_progress (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  lesson_id TEXT NOT NULL,  -- e.g., '1.3.2' (dot notation)
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
+  score INTEGER,  -- Accuracy percentage (0-100)
+  UNIQUE(user_id, lesson_id)
+);
 
--- Puzzle attempts - tracks every puzzle a user attempts
+-- ═══════════════════════════════════════════════════════════════════════════
+-- PUZZLE ATTEMPTS TABLE
+-- Tracks every puzzle attempt for analytics
+-- ═══════════════════════════════════════════════════════════════════════════
+
 CREATE TABLE public.puzzle_attempts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   puzzle_id TEXT NOT NULL,
-  themes TEXT[] DEFAULT '{}',
-  rating INTEGER,
+  lesson_id TEXT,  -- Which lesson this was part of (optional)
   correct BOOLEAN NOT NULL,
-  time_spent_ms INTEGER,
-  fen TEXT,
-  solution TEXT,
-  attempted_at TIMESTAMPTZ DEFAULT NOW()
+  attempts INTEGER DEFAULT 1,  -- How many tries before getting it right
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Daily challenge tracking
-CREATE TABLE public.daily_challenges (
+-- ═══════════════════════════════════════════════════════════════════════════
+-- DAILY CHALLENGE RESULTS TABLE
+-- Tracks daily challenge completions
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.daily_challenge_results (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  challenge_date DATE NOT NULL,
-  puzzle_id TEXT NOT NULL,
-  completed BOOLEAN DEFAULT FALSE,
-  correct BOOLEAN,
-  time_spent_ms INTEGER,
-  completed_at TIMESTAMPTZ,
+  challenge_date DATE NOT NULL,  -- YYYY-MM-DD
+  score INTEGER NOT NULL DEFAULT 0,  -- Same as puzzles_completed, used for sorting
+  puzzles_completed INTEGER NOT NULL DEFAULT 0,  -- How many they solved
+  time_used_ms INTEGER,  -- Time used in milliseconds
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, challenge_date)
 );
 
--- Lesson progress - tracks progress through learning trees
-CREATE TABLE public.lesson_progress (
+-- ═══════════════════════════════════════════════════════════════════════════
+-- LEVEL TEST ATTEMPTS TABLE
+-- Tracks level test attempts and results
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.level_test_attempts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  lesson_id TEXT NOT NULL,
-  tree_id TEXT NOT NULL, -- e.g., '400-800', '800-1200'
-  puzzles_completed INTEGER DEFAULT 0,
-  puzzles_total INTEGER,
-  accuracy DECIMAL(5,2),
-  completed BOOLEAN DEFAULT FALSE,
-  started_at TIMESTAMPTZ DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
-  UNIQUE(user_id, lesson_id)
+  transition TEXT NOT NULL,  -- e.g., '1-2', '2-3'
+  passed BOOLEAN NOT NULL,
+  score INTEGER,  -- Number correct out of 10
+  variant_id TEXT,  -- Which variant was used (for anti-memorization)
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Theme performance - aggregated stats per theme
-CREATE TABLE public.theme_performance (
+-- ═══════════════════════════════════════════════════════════════════════════
+-- PUZZLE HISTORY TABLE
+-- Tracks recently seen puzzles to avoid repetition
+-- Cleanup: delete rows older than 90 days
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.puzzle_history (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  theme TEXT NOT NULL,
-  attempts INTEGER DEFAULT 0,
-  solved INTEGER DEFAULT 0,
-  last_attempted_at TIMESTAMPTZ,
-  UNIQUE(user_id, theme)
+  puzzle_id TEXT NOT NULL,
+  seen_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, puzzle_id)
 );
 
--- Indexes for performance
+-- ═══════════════════════════════════════════════════════════════════════════
+-- QUIP HISTORY TABLE
+-- Tracks recently seen quips to avoid repetition
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.quip_history (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  quip_id TEXT NOT NULL,  -- e.g., '1.1.g.01' (dot notation)
+  seen_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, quip_id)
+);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- EMAIL PREFERENCES TABLE
+-- User opt-in/out for different email types
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.email_preferences (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  streak_reminders BOOLEAN DEFAULT TRUE,  -- "You're about to lose your streak!"
+  weekly_digest BOOLEAN DEFAULT TRUE,      -- Weekly progress summary
+  marketing BOOLEAN DEFAULT TRUE,          -- New features, tips, etc.
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- EMAIL LOG TABLE
+-- Tracks sent emails to prevent spam and for analytics
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE TABLE public.email_log (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  email_type TEXT NOT NULL,  -- 'streak_reminder', 'weekly_digest', 're_engagement', etc.
+  sent_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- INDEXES
+-- ═══════════════════════════════════════════════════════════════════════════
+
 CREATE INDEX idx_puzzle_attempts_user ON public.puzzle_attempts(user_id);
-CREATE INDEX idx_puzzle_attempts_user_themes ON public.puzzle_attempts(user_id, themes);
-CREATE INDEX idx_daily_challenges_user_date ON public.daily_challenges(user_id, challenge_date);
+CREATE INDEX idx_puzzle_attempts_lesson ON public.puzzle_attempts(user_id, lesson_id);
 CREATE INDEX idx_lesson_progress_user ON public.lesson_progress(user_id);
-CREATE INDEX idx_theme_performance_user ON public.theme_performance(user_id);
+CREATE INDEX idx_daily_challenge_user_date ON public.daily_challenge_results(user_id, challenge_date);
+CREATE INDEX idx_level_test_user ON public.level_test_attempts(user_id);
+CREATE INDEX idx_puzzle_history_user ON public.puzzle_history(user_id);
+CREATE INDEX idx_puzzle_history_seen ON public.puzzle_history(seen_at);
+CREATE INDEX idx_quip_history_user ON public.quip_history(user_id);
+CREATE INDEX idx_email_preferences_user ON public.email_preferences(user_id);
+CREATE INDEX idx_email_log_user ON public.email_log(user_id);
+CREATE INDEX idx_email_log_type ON public.email_log(email_type, sent_at);
 
--- Row Level Security (RLS)
+-- ═══════════════════════════════════════════════════════════════════════════
+-- ROW LEVEL SECURITY (RLS)
+-- Users can only access their own data
+-- ═══════════════════════════════════════════════════════════════════════════
+
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.puzzle_attempts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.daily_challenges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lesson_progress ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.theme_performance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.puzzle_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.daily_challenge_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.level_test_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.puzzle_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quip_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.email_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.email_log ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies - users can only access their own data
-CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+-- Profiles policies
+CREATE POLICY "Users can view own profile" ON public.profiles
+  FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can insert own profile" ON public.profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id);
+-- Public read for display_name (for leaderboards)
+CREATE POLICY "Anyone can view display names" ON public.profiles
+  FOR SELECT USING (true);
 
-CREATE POLICY "Users can view own puzzle attempts" ON public.puzzle_attempts FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own puzzle attempts" ON public.puzzle_attempts FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Lesson progress policies
+CREATE POLICY "Users can view own lesson progress" ON public.lesson_progress
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own lesson progress" ON public.lesson_progress
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own lesson progress" ON public.lesson_progress
+  FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can view own daily challenges" ON public.daily_challenges FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own daily challenges" ON public.daily_challenges FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own daily challenges" ON public.daily_challenges FOR UPDATE USING (auth.uid() = user_id);
+-- Puzzle attempts policies
+CREATE POLICY "Users can view own puzzle attempts" ON public.puzzle_attempts
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own puzzle attempts" ON public.puzzle_attempts
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can view own lesson progress" ON public.lesson_progress FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own lesson progress" ON public.lesson_progress FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own lesson progress" ON public.lesson_progress FOR UPDATE USING (auth.uid() = user_id);
+-- Daily challenge policies
+-- Public read for leaderboard (anyone can see all scores)
+CREATE POLICY "Users can view daily results" ON public.daily_challenge_results
+  FOR SELECT USING (true);
+CREATE POLICY "Users can insert own daily results" ON public.daily_challenge_results
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own daily results" ON public.daily_challenge_results
+  FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can view own theme performance" ON public.theme_performance FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own theme performance" ON public.theme_performance FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own theme performance" ON public.theme_performance FOR UPDATE USING (auth.uid() = user_id);
+-- Level test policies
+CREATE POLICY "Users can view own level tests" ON public.level_test_attempts
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own level tests" ON public.level_test_attempts
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Function to create profile on user signup
+-- Puzzle history policies
+CREATE POLICY "Users can view own puzzle history" ON public.puzzle_history
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own puzzle history" ON public.puzzle_history
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own puzzle history" ON public.puzzle_history
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Quip history policies
+CREATE POLICY "Users can view own quip history" ON public.quip_history
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own quip history" ON public.quip_history
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own quip history" ON public.quip_history
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Email preferences policies
+CREATE POLICY "Users can view own email preferences" ON public.email_preferences
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own email preferences" ON public.email_preferences
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own email preferences" ON public.email_preferences
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Email log policies (read-only for users, system writes)
+CREATE POLICY "Users can view own email log" ON public.email_log
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FUNCTIONS & TRIGGERS
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Auto-create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (id, email, display_name)
-  VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1)));
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
+  );
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to auto-create profile on signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Function to update theme performance after puzzle attempt
-CREATE OR REPLACE FUNCTION public.update_theme_performance()
-RETURNS TRIGGER AS $$
-DECLARE
-  theme_name TEXT;
-BEGIN
-  FOREACH theme_name IN ARRAY NEW.themes
-  LOOP
-    INSERT INTO public.theme_performance (user_id, theme, attempts, solved, last_attempted_at)
-    VALUES (NEW.user_id, theme_name, 1, CASE WHEN NEW.correct THEN 1 ELSE 0 END, NOW())
-    ON CONFLICT (user_id, theme)
-    DO UPDATE SET
-      attempts = theme_performance.attempts + 1,
-      solved = theme_performance.solved + CASE WHEN NEW.correct THEN 1 ELSE 0 END,
-      last_attempted_at = NOW();
-  END LOOP;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- ═══════════════════════════════════════════════════════════════════════════
+-- MIGRATION NOTES
+-- Run these if updating from an existing database
+-- ═══════════════════════════════════════════════════════════════════════════
 
--- Trigger to auto-update theme performance
-DROP TRIGGER IF EXISTS on_puzzle_attempt ON public.puzzle_attempts;
-CREATE TRIGGER on_puzzle_attempt
-  AFTER INSERT ON public.puzzle_attempts
-  FOR EACH ROW EXECUTE FUNCTION public.update_theme_performance();
+-- To drop deprecated columns from profiles:
+-- ALTER TABLE public.profiles DROP COLUMN IF EXISTS elo_rating;
+-- ALTER TABLE public.profiles DROP COLUMN IF EXISTS current_lesson_id;
+-- ALTER TABLE public.profiles DROP COLUMN IF EXISTS current_level;
+-- ALTER TABLE public.profiles DROP COLUMN IF EXISTS best_streak;
+
+-- To drop deprecated tables:
+-- DROP TABLE IF EXISTS public.theme_performance;
+-- DROP TABLE IF EXISTS public.daily_challenges;  -- replaced by daily_challenge_results
+
+-- To add new columns to profiles:
+-- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_activity_date DATE;
+
+-- To cleanup old puzzle_history (older than 90 days):
+-- DELETE FROM public.puzzle_history WHERE seen_at < NOW() - INTERVAL '90 days';

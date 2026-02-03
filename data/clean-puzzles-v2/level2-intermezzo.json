@@ -1,0 +1,1715 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "intermezzo",
+  "count": 105,
+  "puzzles": [
+    {
+      "puzzleId": "gqgZ5",
+      "fen": "3rk1nr/ppp1ppbp/2n3p1/4P3/8/5B2/PPPN1PPP/R1BKR3 b k - 0 10",
+      "moves": "g7e5 f3c6 b7c6 e1e5",
+      "rating": 809,
+      "popularity": 90,
+      "nbPlays": 570,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/wUWX8ku5/black#20"
+    },
+    {
+      "puzzleId": "TMVXt",
+      "fen": "3r2k1/pp3pp1/5q1p/3N4/2P1r1Q1/P6P/1P3PP1/1R3K2 b - - 4 26",
+      "moves": "e4g4 d5f6 g7f6 h3g4",
+      "rating": 810,
+      "popularity": 86,
+      "nbPlays": 518,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JDvpHMPA/black#52"
+    },
+    {
+      "puzzleId": "cavns",
+      "fen": "r1bq1rk1/p4pp1/1p3b1p/3p4/3R4/2N1P3/PPQ1BPPP/4K2R w K - 0 15",
+      "moves": "d4d5 f6c3 b2c3 d8d5",
+      "rating": 842,
+      "popularity": 93,
+      "nbPlays": 1102,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ImIam4fi#29"
+    },
+    {
+      "puzzleId": "uOb2e",
+      "fen": "r3kb1r/ppp2ppp/2n1p3/3q4/3PB3/5P2/PP3PPP/R1BQK2R b KQkq - 1 9",
+      "moves": "d5d4 e4c6 b7c6 d1d4",
+      "rating": 853,
+      "popularity": 93,
+      "nbPlays": 1132,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JRXDzqEb/black#18"
+    },
+    {
+      "puzzleId": "cs7FI",
+      "fen": "r4rk1/pppN1ppp/5q2/8/3n4/3P2PP/PPP1QP2/R3K2R b KQ - 2 17",
+      "moves": "d4e2 d7f6 g7f6 e1e2",
+      "rating": 858,
+      "popularity": 92,
+      "nbPlays": 725,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/kdtftTsb/black#34"
+    },
+    {
+      "puzzleId": "UIlx6",
+      "fen": "r2qk1nr/pp2ppbp/2np2p1/8/2PP4/P1N2B2/1P3PPP/R1BQK2R b KQkq - 0 9",
+      "moves": "g7d4 f3c6 b7c6 d1d4",
+      "rating": 859,
+      "popularity": 88,
+      "nbPlays": 994,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/d9AV7Rym/black#18"
+    },
+    {
+      "puzzleId": "xYf3U",
+      "fen": "r1bqk2r/ppp1bppp/2n5/8/3PB3/6P1/PP3P1P/R1BQK1NR b KQkq - 0 9",
+      "moves": "d8d4 e4c6 b7c6 d1d4",
+      "rating": 862,
+      "popularity": 89,
+      "nbPlays": 968,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/w977quVg/black#18"
+    },
+    {
+      "puzzleId": "9xllz",
+      "fen": "4Q3/3N1ppk/p3rq1p/1r1b4/1P6/8/5PPP/R3R1K1 b - - 9 27",
+      "moves": "e6e8 d7f6 g7f6 e1e8",
+      "rating": 862,
+      "popularity": 86,
+      "nbPlays": 557,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9Ifk9ets/black#54"
+    },
+    {
+      "puzzleId": "w0nOZ",
+      "fen": "r5k1/3pq1b1/2pNp1Np/3nPp2/1rQP4/6P1/P4P1P/R4RK1 b - - 0 24",
+      "moves": "b4c4 g6e7 d5e7 d6c4",
+      "rating": 870,
+      "popularity": 100,
+      "nbPlays": 544,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7L3XrcOs/black#48"
+    },
+    {
+      "puzzleId": "mqRe9",
+      "fen": "r2qkbnr/pp2pppp/2b5/8/3p4/1P3N2/PBPP1PPP/RN1QK2R w KQkq - 0 8",
+      "moves": "b2d4 c6f3 d1f3 d8d4",
+      "rating": 872,
+      "popularity": 95,
+      "nbPlays": 518,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/rwWugQxg#15"
+    },
+    {
+      "puzzleId": "SrlhX",
+      "fen": "r4rk1/1ppqppbp/p4np1/4n3/2B5/2N1BQ1P/PPP2PP1/3R1RK1 w - - 0 13",
+      "moves": "d1d7 e5f3 g2f3 f6d7",
+      "rating": 879,
+      "popularity": 95,
+      "nbPlays": 1338,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PNv0KcFd#25"
+    },
+    {
+      "puzzleId": "60GHB",
+      "fen": "2r2rk1/p3ppbp/6p1/2pP4/3P4/5N2/PP4PP/2R2RK1 w - - 0 22",
+      "moves": "c1c5 g7d4 f3d4 c8c5",
+      "rating": 884,
+      "popularity": 98,
+      "nbPlays": 822,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oa13jYWG#43"
+    },
+    {
+      "puzzleId": "rTP3a",
+      "fen": "8/Rp2rkpp/1B1b4/2N1p3/5p2/2P5/1P4PP/6K1 w - - 4 32",
+      "moves": "a7b7 d6c5 b6c5 e7b7",
+      "rating": 885,
+      "popularity": 96,
+      "nbPlays": 709,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cLaLEcVw#63"
+    },
+    {
+      "puzzleId": "ET00z",
+      "fen": "r1bq1Bk1/pp2np1p/4p1p1/1B1p4/3P4/P1n2N2/4QPPP/R4RK1 w - - 0 14",
+      "moves": "f8e7 c3e2 b5e2 d8e7",
+      "rating": 888,
+      "popularity": 95,
+      "nbPlays": 2641,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/RZSsuUjb#27"
+    },
+    {
+      "puzzleId": "FphMZ",
+      "fen": "r2qk2r/pp3ppp/2n1p3/8/3PB3/2N3bP/PPPQ2P1/R4K1R b kq - 2 14",
+      "moves": "d8d4 e4c6 b7c6 d2d4",
+      "rating": 893,
+      "popularity": 94,
+      "nbPlays": 1303,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tZdcL0SI/black#28"
+    },
+    {
+      "puzzleId": "0mdXn",
+      "fen": "1Q6/5ppk/4rrqp/3p4/3PP3/6bP/PPB3P1/3R1N1K w - - 0 32",
+      "moves": "b8g3 f6f1 d1f1 g6g3",
+      "rating": 899,
+      "popularity": 95,
+      "nbPlays": 1680,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KTZUeYfU#63"
+    },
+    {
+      "puzzleId": "ULoJm",
+      "fen": "r7/1kpbqp1n/1p1p4/1PnP2p1/RQ2P2p/3N4/2P3PP/5RK1 b - - 0 27",
+      "moves": "a8a4 d3c5 d6c5 b4a4 d7b5 a4b5",
+      "rating": 899,
+      "popularity": 88,
+      "nbPlays": 697,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "long",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/L277UUPU/black#54"
+    },
+    {
+      "puzzleId": "mwqzx",
+      "fen": "r3k2r/ppp2ppp/2n1p3/3q4/3P4/5BP1/PP1QPP1P/R4RK1 b kq - 0 12",
+      "moves": "d5d4 f3c6 b7c6 d2d4",
+      "rating": 906,
+      "popularity": 95,
+      "nbPlays": 1330,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PEeT1ifw/black#24"
+    },
+    {
+      "puzzleId": "N88Xn",
+      "fen": "3nr2k/1p2r1Rp/4Np1P/1p1p1P2/3P4/1P6/5P2/4RK2 w - - 3 37",
+      "moves": "e6d8 e7e1 f1g2 e8d8",
+      "rating": 906,
+      "popularity": 87,
+      "nbPlays": 610,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/y4DN6rcz#73"
+    },
+    {
+      "puzzleId": "hzaxp",
+      "fen": "2r2rk1/p4p1p/1p2pqp1/6B1/8/2bB1b2/P3QPPP/1R1R2K1 w - - 0 20",
+      "moves": "g5f6 f3e2 d3e2 c3f6",
+      "rating": 908,
+      "popularity": 87,
+      "nbPlays": 592,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5Pbcq11V#39"
+    },
+    {
+      "puzzleId": "flWBm",
+      "fen": "r3k2r/ppp1pp2/2np1bpp/q7/2PP4/2N2BP1/PP3P1P/R2QK2R b KQkq - 4 14",
+      "moves": "f6d4 f3c6 b7c6 d1d4",
+      "rating": 909,
+      "popularity": 95,
+      "nbPlays": 2022,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/UfeyxUzp/black#28"
+    },
+    {
+      "puzzleId": "IXyqT",
+      "fen": "8/p1p1kp2/5q2/2b5/P3b3/1P5P/3P2QP/5R1K w - - 0 32",
+      "moves": "f1f6 e4g2 h1g2 e7f6",
+      "rating": 910,
+      "popularity": 96,
+      "nbPlays": 2855,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/1TrVarfW#63"
+    },
+    {
+      "puzzleId": "iIvZJ",
+      "fen": "r2qkb1r/ppp2pp1/2n1p1p1/8/3PB3/6P1/PPP2P1P/R1BQK2R b KQkq - 0 10",
+      "moves": "d8d4 e4c6 b7c6 d1d4",
+      "rating": 910,
+      "popularity": 93,
+      "nbPlays": 1714,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/30sswLOj/black#20"
+    },
+    {
+      "puzzleId": "RaNNB",
+      "fen": "3qr1k1/5p1p/p4Qp1/1p1P4/2p1r3/8/PP3PPP/3RR1K1 w - - 0 25",
+      "moves": "f6d8 e4e1 d1e1 e8d8",
+      "rating": 913,
+      "popularity": 94,
+      "nbPlays": 1631,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "queenRookEndgame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KIAlB1Jt#49"
+    },
+    {
+      "puzzleId": "TmrQD",
+      "fen": "1r3k1r/2Nq2p1/p2pnn2/1pb4p/3PP3/7P/PP1Q1PP1/R1B2RK1 b - - 0 20",
+      "moves": "c5d4 c7e6 d7e6 d2d4",
+      "rating": 913,
+      "popularity": 91,
+      "nbPlays": 885,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/OtM2rw4G/black#40"
+    },
+    {
+      "puzzleId": "UoS6m",
+      "fen": "r3r1k1/pp2q1p1/n1p4p/3p4/3P4/2NQ2P1/PPPB1nP1/2K1R2R w - - 3 19",
+      "moves": "e1e7 f2d3 c2d3 e8e7",
+      "rating": 915,
+      "popularity": 95,
+      "nbPlays": 996,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zUlgrsC5#37"
+    },
+    {
+      "puzzleId": "syBnk",
+      "fen": "5r2/3b1pk1/4p1p1/3pPnP1/3P3N/4P3/4BQK1/2q5 b - - 1 29",
+      "moves": "c1e3 h4f5 e6f5 f2e3",
+      "rating": 915,
+      "popularity": 93,
+      "nbPlays": 863,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3ZgTZxeY/black#58"
+    },
+    {
+      "puzzleId": "cG09M",
+      "fen": "8/1p3pk1/6pp/pB1p4/Pq1P1P2/1b4P1/1Q3KP1/8 b - - 1 35",
+      "moves": "b3a4 b2b4 a5b4 b5a4",
+      "rating": 919,
+      "popularity": 88,
+      "nbPlays": 1364,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VUfDeb9u/black#70"
+    },
+    {
+      "puzzleId": "hiqoO",
+      "fen": "r1b1k2r/pp3ppp/2n1pn2/3q4/1b1P4/2N2B2/PP3PPP/R1BQK1NR b KQkq - 1 9",
+      "moves": "d5d4 f3c6 b7c6 d1d4",
+      "rating": 920,
+      "popularity": 96,
+      "nbPlays": 887,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/v8KM8jk5/black#18"
+    },
+    {
+      "puzzleId": "ODEvD",
+      "fen": "r1bq1rk1/p3Bppp/2p1p3/3p4/8/2nB4/PPP1QPPP/R4RK1 w - - 0 12",
+      "moves": "e7d8 c3e2 d3e2 f8d8",
+      "rating": 922,
+      "popularity": 100,
+      "nbPlays": 679,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/N3N1rbbB#23"
+    },
+    {
+      "puzzleId": "Ayfp7",
+      "fen": "r1bqk1nr/p1p2pp1/5b1p/2Pp4/8/2N1B3/PP3PPP/R2QKB1R w KQkq - 0 11",
+      "moves": "d1d5 f6c3 b2c3 d8d5",
+      "rating": 924,
+      "popularity": 97,
+      "nbPlays": 1120,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ZlXtc0Wj#21"
+    },
+    {
+      "puzzleId": "jZWI7",
+      "fen": "r1bq1rk1/p3Bppp/2p1p3/3p4/8/3B1Q2/PPPn1PPP/R3R1K1 w - - 0 14",
+      "moves": "e7d8 d2f3 g2f3 f8d8",
+      "rating": 925,
+      "popularity": 97,
+      "nbPlays": 3306,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MWxWA5mB#27"
+    },
+    {
+      "puzzleId": "4XGb6",
+      "fen": "r2qkbnr/pp2pppp/2b5/8/3p4/1P3N1P/PBPP1PP1/RN1QK2R w KQkq - 0 9",
+      "moves": "b2d4 c6f3 d1f3 d8d4",
+      "rating": 928,
+      "popularity": 93,
+      "nbPlays": 3090,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dEybVagC#17"
+    },
+    {
+      "puzzleId": "ho0lM",
+      "fen": "r2qk2r/pbpp1ppp/1p2pn2/8/2P1P3/2B5/PPP1QPPP/2KR2NR b kq - 0 10",
+      "moves": "b7e4 c3f6 d8f6 e2e4",
+      "rating": 929,
+      "popularity": 85,
+      "nbPlays": 772,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/xqnjPwu2/black#20"
+    },
+    {
+      "puzzleId": "IYbnR",
+      "fen": "rnbq1rk1/p1p2ppp/1p3b2/3p4/8/2NP2P1/PP2PPBP/R2QK1NR w KQ - 0 9",
+      "moves": "g2d5 f6c3 b2c3 d8d5",
+      "rating": 930,
+      "popularity": 95,
+      "nbPlays": 2508,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/mdpi2gWN#17"
+    },
+    {
+      "puzzleId": "FeHkY",
+      "fen": "r3k2r/1ppq1ppp/p1p2n2/2b1N3/4P1b1/3P4/PPPN1PPP/R1BQR1K1 b kq - 0 10",
+      "moves": "g4d1 e5d7 f6d7 e1d1",
+      "rating": 931,
+      "popularity": 93,
+      "nbPlays": 1721,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/aS8pnH2k/black#20"
+    },
+    {
+      "puzzleId": "Fhw4C",
+      "fen": "8/8/1rp4p/6k1/3P4/4PB2/2R2PPK/4n3 w - - 7 38",
+      "moves": "c2c6 e1f3 g2f3 b6c6",
+      "rating": 932,
+      "popularity": 92,
+      "nbPlays": 2920,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3cEnWYKj#75"
+    },
+    {
+      "puzzleId": "vUZog",
+      "fen": "6k1/1b3pp1/p6p/1p6/4P3/P1r5/2BR1PPP/6K1 b - - 1 23",
+      "moves": "b7e4 d2d8 g8h7 c2e4",
+      "rating": 932,
+      "popularity": 92,
+      "nbPlays": 970,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/9nqtUoat/black#46"
+    },
+    {
+      "puzzleId": "Ry5ml",
+      "fen": "r2qk2r/pp2bppp/2n1pn2/8/3P4/2N2BPP/PP3P2/R1BQ1RK1 b kq - 0 12",
+      "moves": "d8d4 f3c6 b7c6 d1d4",
+      "rating": 933,
+      "popularity": 96,
+      "nbPlays": 1498,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GPYB6qnU/black#24"
+    },
+    {
+      "puzzleId": "3egSE",
+      "fen": "r2q3k/6pp/4Q3/1p1p2b1/3P4/2P1N1P1/P6P/4RRK1 w - - 0 30",
+      "moves": "e6d5 g5e3 e1e3 d8d5",
+      "rating": 933,
+      "popularity": 90,
+      "nbPlays": 726,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/KQMucuZL#59"
+    },
+    {
+      "puzzleId": "a7wAQ",
+      "fen": "rn1qk2r/1p3ppp/p4b2/2pp1P2/P7/2N5/1PP2PPP/R2QKB1R w KQkq - 0 11",
+      "moves": "d1d5 f6c3 b2c3 d8d5",
+      "rating": 933,
+      "popularity": 88,
+      "nbPlays": 899,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/h1Bw8UBD#21"
+    },
+    {
+      "puzzleId": "gU380",
+      "fen": "1r3rk1/2p2ppp/4p3/3p4/Nq1R4/1P2PQ1P/2Pn1PP1/5RK1 w - - 7 20",
+      "moves": "d4b4 d2f3 g2f3 b8b4",
+      "rating": 935,
+      "popularity": 85,
+      "nbPlays": 949,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dtKuf60E#39"
+    },
+    {
+      "puzzleId": "ztUvy",
+      "fen": "rnbq1rk1/pp3ppp/5b2/2pp4/8/2NP2P1/PP2PPBP/R2QK1NR w KQ - 2 9",
+      "moves": "g2d5 f6c3 b2c3 d8d5",
+      "rating": 937,
+      "popularity": 94,
+      "nbPlays": 830,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/121K2bJc#17"
+    },
+    {
+      "puzzleId": "k78ZA",
+      "fen": "4rq1k/pp6/6Rp/3N1b1B/3p3P/8/PPPK4/5R2 b - - 2 32",
+      "moves": "f5g6 f1f8 e8f8 h5g6",
+      "rating": 940,
+      "popularity": 93,
+      "nbPlays": 2766,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/onslffRu/black#64"
+    },
+    {
+      "puzzleId": "Q3AAM",
+      "fen": "6k1/ppp2pp1/7p/b7/P2P1P2/2P4P/1r1BRP2/6K1 b - - 0 28",
+      "moves": "a5c3 e2e8 g8h7 d2c3",
+      "rating": 940,
+      "popularity": 91,
+      "nbPlays": 592,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GPc0TPL8/black#56"
+    },
+    {
+      "puzzleId": "Qj5u6",
+      "fen": "1r4k1/4Bppp/8/3r4/2R5/5P2/1p4PP/1R4K1 w - - 0 33",
+      "moves": "b1b2 d5d1 g1f2 b8b2",
+      "rating": 941,
+      "popularity": 92,
+      "nbPlays": 558,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uKM4tUcQ#65"
+    },
+    {
+      "puzzleId": "SnZlA",
+      "fen": "r1bq1rk1/pp1nBpp1/2p1p2p/8/2BP4/P1n2N2/1P2QPPP/R4RK1 w - - 0 13",
+      "moves": "e7d8 c3e2 c4e2 f8d8",
+      "rating": 941,
+      "popularity": 89,
+      "nbPlays": 656,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Uy0IrYJ9#25"
+    },
+    {
+      "puzzleId": "i5iYn",
+      "fen": "r5k1/1pp2pp1/7p/1P2p3/P3PnP1/2q2P1P/3R3K/3Q1B2 b - - 0 30",
+      "moves": "a8a4 d2d8 g8h7 d1a4",
+      "rating": 943,
+      "popularity": 86,
+      "nbPlays": 560,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tknDkVa7/black#60"
+    },
+    {
+      "puzzleId": "d85fO",
+      "fen": "r1br2k1/pp2q1pp/6n1/2p5/2P2p2/5B2/PP3PPP/R2QR1K1 w - - 0 20",
+      "moves": "e1e7 d8d1 a1d1 g6e7",
+      "rating": 946,
+      "popularity": 88,
+      "nbPlays": 696,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/C4PdXhkj#39"
+    },
+    {
+      "puzzleId": "pKgDz",
+      "fen": "r3kb1r/5ppp/p2p4/1p2p3/qR6/P1nBB2P/4QPP1/R5K1 w kq - 2 22",
+      "moves": "b4a4 c3e2 d3e2 b5a4",
+      "rating": 948,
+      "popularity": 89,
+      "nbPlays": 963,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6xuZ1J9W#43"
+    },
+    {
+      "puzzleId": "WNZkh",
+      "fen": "3br1k1/pp3pp1/7p/4p3/4P3/5N2/PPP2PPP/2KR4 w - - 0 18",
+      "moves": "f3e5 d8g5 c1b1 e8e5",
+      "rating": 951,
+      "popularity": 94,
+      "nbPlays": 711,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GBmK2esT#35"
+    },
+    {
+      "puzzleId": "0Dh6K",
+      "fen": "4rr1k/pBp3p1/7p/2p1np2/2Pp3P/3P2P1/PP3P2/3RR1K1 b - - 0 23",
+      "moves": "e5d3 e1e8 f8e8 d1d3",
+      "rating": 951,
+      "popularity": 93,
+      "nbPlays": 964,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ASUHlxJ8/black#46"
+    },
+    {
+      "puzzleId": "ycWfI",
+      "fen": "r2qkbnr/1pp2ppp/p1b1p3/4P3/3p4/1P3N2/PBPP1PPP/RN1QK2R w KQkq - 0 8",
+      "moves": "b2d4 c6f3 d1f3 d8d4",
+      "rating": 952,
+      "popularity": 95,
+      "nbPlays": 1783,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/vzGWBrQf#15"
+    },
+    {
+      "puzzleId": "iyA4E",
+      "fen": "5rk1/pp1q1pp1/5n1p/1p2r3/3R4/7P/PPP1QPP1/4R1K1 w - - 0 20",
+      "moves": "d4d7 e5e2 e1e2 f6d7",
+      "rating": 952,
+      "popularity": 92,
+      "nbPlays": 1968,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/mDN5m40I#39"
+    },
+    {
+      "puzzleId": "FMOft",
+      "fen": "r3kb1r/pp1bpppp/5nn1/q2P4/3QN3/8/PP1B1PPP/R3KB1R b KQkq - 7 13",
+      "moves": "a5d5 e4f6 e7f6 d4d5",
+      "rating": 957,
+      "popularity": 92,
+      "nbPlays": 751,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cZQhtnXb/black#26"
+    },
+    {
+      "puzzleId": "KxHvf",
+      "fen": "r2q1rk1/pb3pbp/3p1np1/2pP2B1/8/5N2/PP2BPPP/1R1QR1K1 b - - 0 15",
+      "moves": "b7d5 g5f6 d8f6 d1d5",
+      "rating": 958,
+      "popularity": 84,
+      "nbPlays": 816,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ph3rF7uW/black#30"
+    },
+    {
+      "puzzleId": "I1itU",
+      "fen": "r3kb1r/pp3ppp/2n1pn2/3q4/3P4/5B1P/PP3PP1/RNBQ1RK1 b kq - 0 10",
+      "moves": "d5d4 f3c6 b7c6 d1d4",
+      "rating": 959,
+      "popularity": 93,
+      "nbPlays": 1547,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/W3O2dSU4/black#20"
+    },
+    {
+      "puzzleId": "roxO8",
+      "fen": "2r3k1/p4rp1/3bppN1/3p4/3P1PP1/1P2BQ1P/P1qn4/2R2RK1 w - - 3 23",
+      "moves": "c1c2 d2f3 f1f3 c8c2",
+      "rating": 959,
+      "popularity": 92,
+      "nbPlays": 909,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/6DY2mvlU#45"
+    },
+    {
+      "puzzleId": "QAzBx",
+      "fen": "6k1/5p1p/4p1p1/1bNpB3/1P1r4/7P/4nPP1/4R1K1 w - - 8 35",
+      "moves": "e1e2 d4d1 g1h2 b5e2",
+      "rating": 960,
+      "popularity": 91,
+      "nbPlays": 1289,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/COd6EB80#69"
+    },
+    {
+      "puzzleId": "PpTT7",
+      "fen": "r2q1rk1/1p3ppn/p6p/2ppP3/3P2b1/2PB1N2/PPQ4P/2R2RK1 b - - 1 16",
+      "moves": "g4f3 d3h7 g8h8 f1f3",
+      "rating": 960,
+      "popularity": 88,
+      "nbPlays": 580,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/EYehrybV/black#32"
+    },
+    {
+      "puzzleId": "7te39",
+      "fen": "r2qk1nr/pp2ppbp/2n3p1/3p4/8/2NP1B1P/PPP2PP1/R1BQK2R w KQkq - 2 9",
+      "moves": "f3d5 g7c3 b2c3 d8d5",
+      "rating": 960,
+      "popularity": 87,
+      "nbPlays": 656,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oj2d6m2F#17"
+    },
+    {
+      "puzzleId": "8oZbi",
+      "fen": "r1b2b1r/ppp1kBp1/5p1p/2n1p3/3q4/1Q2B3/PP3PPP/RN3RK1 w - - 4 14",
+      "moves": "e3d4 c5b3 f7b3 e5d4",
+      "rating": 961,
+      "popularity": 95,
+      "nbPlays": 977,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iLGsRGyt#27"
+    },
+    {
+      "puzzleId": "mFGDB",
+      "fen": "r2qkb1r/ppp1pp1p/2n3p1/4P3/3P4/4QB2/PP4PP/RN2K2R b KQkq - 0 12",
+      "moves": "d8d4 f3c6 b7c6 e3d4",
+      "rating": 961,
+      "popularity": 94,
+      "nbPlays": 806,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/hazpWPbm/black#24"
+    },
+    {
+      "puzzleId": "NCVeg",
+      "fen": "8/pkp2p2/3b4/1P3Np1/1n2P3/7r/P4P1P/1K5R b - - 1 26",
+      "moves": "h3h2 f5d6 c7d6 h1h2",
+      "rating": 962,
+      "popularity": 91,
+      "nbPlays": 3170,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/C6aU7F1O/black#52"
+    },
+    {
+      "puzzleId": "hO672",
+      "fen": "2kr2r1/pp1bnp2/2n1pB1p/2b5/2P3pN/4N3/PP2BPPP/R4RK1 w - - 6 16",
+      "moves": "e2g4 c5e3 f2e3 g8g4",
+      "rating": 962,
+      "popularity": 86,
+      "nbPlays": 1970,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jhQnXeO2#31"
+    },
+    {
+      "puzzleId": "SNB3V",
+      "fen": "4r1k1/pp3ppp/2p5/5P2/3r4/P3n2P/4R1P1/R1B4K w - - 0 32",
+      "moves": "e2e3 d4d1 h1h2 e8e3 c1e3 d1a1",
+      "rating": 963,
+      "popularity": 96,
+      "nbPlays": 973,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "long"
+      ],
+      "gameUrl": "https://lichess.org/vFSsMhFo#63"
+    },
+    {
+      "puzzleId": "plnxq",
+      "fen": "3rrbk1/pp3ppp/5n2/4pN2/1P6/P1B1PP1P/5P2/R2R2K1 w - - 1 21",
+      "moves": "c3e5 d8d1 a1d1 e8e5",
+      "rating": 963,
+      "popularity": 96,
+      "nbPlays": 8622,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/gjLSFFrd#41"
+    },
+    {
+      "puzzleId": "C1iDt",
+      "fen": "1r5R/2q1k1p1/2p5/1pP1pb2/pP2Qp2/P1P2N2/6P1/1K2R3 w - - 1 32",
+      "moves": "h8b8 f5e4 e1e4 c7b8",
+      "rating": 964,
+      "popularity": 94,
+      "nbPlays": 769,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/zvVWTqas#63"
+    },
+    {
+      "puzzleId": "yXpc0",
+      "fen": "r2qkb1r/pp2pppp/2bp1n2/8/3NP3/8/PPP1QPPP/RNB2RK1 b kq - 0 8",
+      "moves": "f6e4 d4c6 b7c6 e2e4",
+      "rating": 964,
+      "popularity": 93,
+      "nbPlays": 3360,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/3LgwSTj4/black#16"
+    },
+    {
+      "puzzleId": "UJBtw",
+      "fen": "r7/pp4kp/5np1/2P5/2BBr1b1/1PR2NPn/P6P/5K1R b - - 4 27",
+      "moves": "g4f3 d4f6 g7f6 c3f3",
+      "rating": 966,
+      "popularity": 91,
+      "nbPlays": 1502,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "attraction",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/klCdAp20/black#54"
+    },
+    {
+      "puzzleId": "gohy5",
+      "fen": "r2qkbnr/pbpp3p/1pn1pp2/6N1/2PP1B2/4P3/PP2BPPP/RN1QK2R b KQkq - 0 7",
+      "moves": "f6g5 e2h5 e8e7 f4g5",
+      "rating": 966,
+      "popularity": 89,
+      "nbPlays": 876,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "interference",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DGJeh9kH/black#14"
+    },
+    {
+      "puzzleId": "Chtlg",
+      "fen": "r2qk1nr/ppp1ppbp/2np2p1/8/2PP4/2N2BP1/PP2PP1P/R1BQK2R b KQkq - 0 7",
+      "moves": "g7d4 f3c6 b7c6 d1d4",
+      "rating": 966,
+      "popularity": 87,
+      "nbPlays": 994,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7ZLvn8J4/black#14"
+    },
+    {
+      "puzzleId": "LPmUJ",
+      "fen": "6n1/2pRq1kp/5pp1/2p1p3/Q3P3/8/4r1PP/6K1 b - - 1 38",
+      "moves": "e2e4 d7e7 g8e7 a4e4",
+      "rating": 968,
+      "popularity": 91,
+      "nbPlays": 1390,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/uIK3NkjB/black#76"
+    },
+    {
+      "puzzleId": "isstL",
+      "fen": "2r2rk1/p3q2p/b3pbp1/3p4/2pN1P2/2P3N1/PP4PP/1R1QR1K1 w - - 0 19",
+      "moves": "e1e6 f6d4 d1d4 e7e6",
+      "rating": 969,
+      "popularity": 99,
+      "nbPlays": 1142,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/47KgVGtN#37"
+    },
+    {
+      "puzzleId": "2Mymp",
+      "fen": "r3kb2/1p1b1p2/n1p1q2Q/p3pBP1/P7/1P2B1P1/5P2/R4RK1 b q - 0 29",
+      "moves": "f8h6 f5e6 d7e6 g5h6",
+      "rating": 969,
+      "popularity": 87,
+      "nbPlays": 616,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/dKO6fuow/black#58"
+    },
+    {
+      "puzzleId": "MgI0u",
+      "fen": "r2qk2r/pp4pp/2p1bb2/4p3/2QR3P/2N5/PPP2PP1/2K2BNR b kq - 0 14",
+      "moves": "e6c4 d4d8 a8d8 f1c4",
+      "rating": 971,
+      "popularity": 99,
+      "nbPlays": 681,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/SQUEXrxX/black#28"
+    },
+    {
+      "puzzleId": "l0uhB",
+      "fen": "r4rk1/ppp3pp/3p4/3P1b2/8/P1NP4/1P4PP/2KR1R2 b - - 1 18",
+      "moves": "f5d3 f1f8 a8f8 d1d3",
+      "rating": 972,
+      "popularity": 96,
+      "nbPlays": 2497,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cjoUousw/black#36"
+    },
+    {
+      "puzzleId": "E3Ts1",
+      "fen": "r1r5/3n4/p2kpp2/Pp1p2p1/3P1n1p/2PNRP2/1P3P2/1B2R1K1 b - - 3 34",
+      "moves": "f4d3 e3e6 d6c7 b1d3",
+      "rating": 972,
+      "popularity": 94,
+      "nbPlays": 3810,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/2KylffJj/black#68"
+    },
+    {
+      "puzzleId": "MkP0H",
+      "fen": "2r3k1/pp1b1p1p/nq4p1/1N1P4/3QPp2/P7/1P2B1PP/5RK1 b - - 0 21",
+      "moves": "d7b5 d4b6 a7b6 e2b5",
+      "rating": 972,
+      "popularity": 92,
+      "nbPlays": 2056,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "master",
+        "masterVsMaster",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/91WVJ9ng/black#42"
+    },
+    {
+      "puzzleId": "mKrfG",
+      "fen": "r2q1r2/1p3pkp/3p1b2/pNp5/2B1PPb1/8/PP1Q2PP/1R3RK1 w - - 1 19",
+      "moves": "b5d6 f6d4 g1h1 d8d6",
+      "rating": 973,
+      "popularity": 97,
+      "nbPlays": 1380,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "interference",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/L2o0Enho#37"
+    },
+    {
+      "puzzleId": "OSXRV",
+      "fen": "2k2r2/ppprp2p/3q3b/3PnQ2/4N3/2P3N1/PP5P/3RK2R b K - 4 21",
+      "moves": "f8f5 e4d6 e7d6 g3f5",
+      "rating": 973,
+      "popularity": 96,
+      "nbPlays": 2124,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ApF0Gt7V/black#42"
+    },
+    {
+      "puzzleId": "T0hTJ",
+      "fen": "r3k2r/pppq1ppp/2n1p3/8/1bPP4/2N1QB1P/PP3PP1/R4RK1 b kq - 0 13",
+      "moves": "d7d4 f3c6 b7c6 e3d4",
+      "rating": 974,
+      "popularity": 94,
+      "nbPlays": 650,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/MkCLtGyo/black#26"
+    },
+    {
+      "puzzleId": "wKCqs",
+      "fen": "r3k2r/pp1q1pp1/5b1p/3p4/3Q4/2N1P3/PP3PPP/R3K2R w KQkq - 0 14",
+      "moves": "d4d5 f6c3 b2c3 d7d5",
+      "rating": 974,
+      "popularity": 93,
+      "nbPlays": 1224,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/iRe7OiqI#27"
+    },
+    {
+      "puzzleId": "UfBbW",
+      "fen": "3rr1k1/pp3pp1/2q4p/2p5/8/1PPN2B1/P1Q2PPP/4R1K1 b - - 2 25",
+      "moves": "d8d3 e1e8 c6e8 c2d3",
+      "rating": 974,
+      "popularity": 92,
+      "nbPlays": 1326,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ClYaJQCi/black#50"
+    },
+    {
+      "puzzleId": "PEFgV",
+      "fen": "5r1k/4Npp1/p4rqp/1p6/3P3P/PPP5/5QP1/5RK1 b - - 2 38",
+      "moves": "f6f2 e7g6 f7g6 f1f2",
+      "rating": 975,
+      "popularity": 100,
+      "nbPlays": 982,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/IZAWUtON/black#76"
+    },
+    {
+      "puzzleId": "PIWAo",
+      "fen": "2krr3/ppp3pp/2p2bb1/8/8/2NP4/PPP1BPPP/R4RK1 b - - 3 15",
+      "moves": "f6c3 e2g4 c8b8 b2c3",
+      "rating": 976,
+      "popularity": 92,
+      "nbPlays": 1063,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/x02M9V1o/black#30"
+    },
+    {
+      "puzzleId": "0jZoU",
+      "fen": "6k1/1n1nq1r1/p2p1Rb1/3Pp2p/1pN1P2P/1P6/P1B1Q2K/5R2 w - - 3 41",
+      "moves": "f6g6 e7h4 h2g1 g7g6",
+      "rating": 980,
+      "popularity": 85,
+      "nbPlays": 515,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DqsTLCnw#81"
+    },
+    {
+      "puzzleId": "kTtQO",
+      "fen": "2rb2k1/p4p1p/2p1b1p1/4p3/B3P3/2N2P2/PPP3PP/3R2K1 w - - 0 18",
+      "moves": "a4c6 d8b6 g1h1 c8c6",
+      "rating": 981,
+      "popularity": 95,
+      "nbPlays": 2818,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VgFiIP9n#35"
+    },
+    {
+      "puzzleId": "0PkYe",
+      "fen": "rnbq1rk1/pp2pp1p/5bp1/3p4/8/2NP2P1/PP2PPBP/R2QK1NR w KQ - 0 9",
+      "moves": "g2d5 f6c3 b2c3 d8d5",
+      "rating": 981,
+      "popularity": 84,
+      "nbPlays": 866,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/JALdu0Jq#17"
+    },
+    {
+      "puzzleId": "q9rAC",
+      "fen": "1r1r2k1/pp1n1pp1/2pRp2p/2P5/4P3/1P2PB1P/1P4P1/2R3K1 b - - 2 25",
+      "moves": "d7c5 d6d8 b8d8 c1c5",
+      "rating": 983,
+      "popularity": 93,
+      "nbPlays": 1266,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/t5SFGULW/black#50"
+    },
+    {
+      "puzzleId": "FJK4f",
+      "fen": "2rq1r1k/5ppP/p4b2/1pnp4/3p4/1BNP4/PPP3PP/R2Q1R1K w - - 1 19",
+      "moves": "c3d5 c5b3 a2b3 d8d5",
+      "rating": 987,
+      "popularity": 87,
+      "nbPlays": 763,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7toQsAjw#37"
+    },
+    {
+      "puzzleId": "6ckCC",
+      "fen": "r2q1rk1/pp3ppp/2n2b2/2Pp4/6b1/2N1PN2/PP2BPPP/R2QK2R w KQ - 0 11",
+      "moves": "d1d5 f6c3 b2c3 d8d5",
+      "rating": 988,
+      "popularity": 95,
+      "nbPlays": 1277,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ErLpqxE9#21"
+    },
+    {
+      "puzzleId": "akjeF",
+      "fen": "rn1qk2r/ppp1bppp/5n2/7b/3p4/1P1B1N1P/PBPPQPP1/RN2K2R w KQkq - 1 9",
+      "moves": "b2d4 h5f3 e2f3 d8d4",
+      "rating": 988,
+      "popularity": 93,
+      "nbPlays": 3584,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Z3tbmg83#17"
+    },
+    {
+      "puzzleId": "doJjc",
+      "fen": "r5nr/3k1p1p/p1b2qp1/1p1p4/3Q4/1BP2P2/PP4PP/RN2R1K1 w - - 3 17",
+      "moves": "b3d5 f6d4 c3d4 c6d5",
+      "rating": 990,
+      "popularity": 91,
+      "nbPlays": 572,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ol18qy1t#33"
+    },
+    {
+      "puzzleId": "QoBdf",
+      "fen": "r2qk2r/1pp2p2/1p1p4/n3p1pp/4P1b1/1B1PBN2/PPP2PK1/R2QR3 w kq - 0 16",
+      "moves": "e3g5 g4f3 d1f3 d8g5",
+      "rating": 990,
+      "popularity": 90,
+      "nbPlays": 615,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/16HGO0rz#31"
+    },
+    {
+      "puzzleId": "gPQcd",
+      "fen": "r5k1/1p3pq1/7p/p3rQRP/8/1P6/P1P3P1/1K3R2 b - - 0 30",
+      "moves": "e5f5 g5g7 g8g7 f1f5",
+      "rating": 991,
+      "popularity": 96,
+      "nbPlays": 2592,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/cvvBe0UR/black#60"
+    },
+    {
+      "puzzleId": "5se3e",
+      "fen": "rn1qk2r/pp3ppp/5b2/2Pp4/6b1/2N2N2/PPP1BPPP/R2QK2R w KQkq - 0 10",
+      "moves": "d1d5 f6c3 b2c3 d8d5",
+      "rating": 991,
+      "popularity": 91,
+      "nbPlays": 509,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/pSUXF2Xz#19"
+    },
+    {
+      "puzzleId": "drd8C",
+      "fen": "r2qkb1r/pp2pppp/2n2n2/6B1/2pP4/5B1P/PP3PP1/RN1QK2R b KQkq - 0 9",
+      "moves": "d8d4 f3c6 b7c6 d1d4",
+      "rating": 991,
+      "popularity": 89,
+      "nbPlays": 644,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4Ot6LzlM/black#18"
+    },
+    {
+      "puzzleId": "6b8ex",
+      "fen": "r2qkb1r/ppp2ppp/2n1pn2/8/2pP4/2N2BPP/PP2PP2/R1BQ1RK1 b kq - 0 9",
+      "moves": "d8d4 f3c6 b7c6 d1d4",
+      "rating": 992,
+      "popularity": 91,
+      "nbPlays": 1718,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "opening",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/jXjLCATx/black#18"
+    },
+    {
+      "puzzleId": "jFI1z",
+      "fen": "5rk1/5ppp/1q6/pp4N1/3p1n2/P2PrPPP/1PQ5/2R1R1K1 b - - 0 31",
+      "moves": "f4d3 e1e3 d4e3 c2d3",
+      "rating": 992,
+      "popularity": 88,
+      "nbPlays": 1847,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PNetQDvG/black#62"
+    },
+    {
+      "puzzleId": "u5YPi",
+      "fen": "rn1q1rk1/pp3p1p/2p3p1/3p4/3P2bb/2NBPN2/PP3PP1/2RQK2R w K - 0 12",
+      "moves": "h1h4 g4f3 g2f3 d8h4",
+      "rating": 994,
+      "popularity": 93,
+      "nbPlays": 1335,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "capturingDefender",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Mb3jXQyj#23"
+    },
+    {
+      "puzzleId": "LC42T",
+      "fen": "3rr3/p4Qbk/6pp/8/1P6/P2p2P1/5P1P/3R2K1 w - - 1 35",
+      "moves": "d1d3 e8e1 g1g2 d8d3",
+      "rating": 996,
+      "popularity": 98,
+      "nbPlays": 1110,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/LR5yeO56#69"
+    },
+    {
+      "puzzleId": "5Ema5",
+      "fen": "r4rk1/pp2qpbp/3pb1p1/1Np5/2P1PP2/1P4P1/P2Q2BP/3R1RK1 w - - 1 18",
+      "moves": "b5d6 g7d4 g1h1 e7d6",
+      "rating": 996,
+      "popularity": 96,
+      "nbPlays": 4103,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "interference",
+        "intermezzo",
+        "master",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/bjgmMNrp#35"
+    },
+    {
+      "puzzleId": "mUX1V",
+      "fen": "3r1r1k/ppp3pp/4b3/3P1PB1/7P/bP6/P1K5/3RR3 w - - 0 32",
+      "moves": "g5d8 e6f5 c2c3 f8d8",
+      "rating": 996,
+      "popularity": 95,
+      "nbPlays": 1727,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "intermezzo",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oqgZd2ib#63"
+    },
+    {
+      "puzzleId": "Le6QC",
+      "fen": "r2q1rk1/1p3ppp/p1b1pB2/2p5/8/1P3Q2/P1PP1PPP/RN3RK1 b - - 0 13",
+      "moves": "c6f3 f6d8 f8d8 g2f3",
+      "rating": 997,
+      "popularity": 91,
+      "nbPlays": 2229,
+      "theme": "intermezzo",
+      "allThemes": [
+        "advantage",
+        "intermezzo",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/yWQdt5OW/black#26"
+    }
+  ]
+}

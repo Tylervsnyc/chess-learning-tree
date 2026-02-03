@@ -53,25 +53,19 @@ export interface PuzzleAttempt {
   solution?: string; // Solution for review
 }
 
-export interface ThemeStats {
-  attempts: number;
-  solved: number;
-  puzzleIds: string[]; // IDs of puzzles attempted for this theme
-}
-
+/**
+ * Progress interface - matches RULES.md Section 23
+ * NOTE: Removed themePerformance, bestStreak, currentLessonId (not in DB schema)
+ */
 export interface Progress {
   completedLessons: string[];
   puzzleAttempts: PuzzleAttempt[];
   totalPuzzlesSolved: number;
   totalPuzzlesAttempted: number;
   currentStreak: number;
-  bestStreak: number;
-  lastPlayedDate: string | null;
-  themePerformance: Record<string, ThemeStats>;
+  lastActivityDate: string | null;
   // Starting lesson from diagnostic placement (all lessons before this are unlocked)
   startingLessonId: string | null;
-  // Current lesson ID (the next lesson user should do)
-  currentLessonId: string | null;
   // Daily lesson tracking for free user limits
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
@@ -85,11 +79,8 @@ const DEFAULT_PROGRESS: Progress = {
   totalPuzzlesSolved: 0,
   totalPuzzlesAttempted: 0,
   currentStreak: 0,
-  bestStreak: 0,
-  lastPlayedDate: null,
-  themePerformance: {},
+  lastActivityDate: null,
   startingLessonId: null,
-  currentLessonId: null,
   lessonsCompletedToday: 0,
   lastLessonDate: null,
   unlockedLevels: [1], // Level 1 always unlocked by default
@@ -121,12 +112,58 @@ function saveProgress(progress: Progress) {
   }
 }
 
+// Helper to check if a date is yesterday
+function isYesterday(dateStr: string | null): boolean {
+  if (!dateStr) return false;
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return dateStr === yesterday.toISOString().split('T')[0];
+}
+
+// Helper to check if a date is today
+function isToday(dateStr: string | null): boolean {
+  if (!dateStr) return false;
+  const today = new Date().toISOString().split('T')[0];
+  return dateStr === today;
+}
+
+/**
+ * Calculate the new streak based on the last activity date
+ * Per RULES.md Section 11: "Complete 1 lesson OR 1 daily challenge per day"
+ *
+ * Logic:
+ * - If already played today: don't change streak
+ * - If last activity was yesterday: continue streak (increment by 1)
+ * - Otherwise: start fresh at 1
+ */
+function calculateNewStreak(currentStreak: number, lastActivityDate: string | null): {
+  newStreak: number;
+  extended: boolean;
+  previousStreak: number;
+} {
+  // If already played today, don't change streak
+  if (isToday(lastActivityDate)) {
+    return { newStreak: currentStreak, extended: false, previousStreak: currentStreak };
+  }
+
+  // If last activity was yesterday, continue the streak
+  if (isYesterday(lastActivityDate)) {
+    return { newStreak: currentStreak + 1, extended: true, previousStreak: currentStreak };
+  }
+
+  // Missed day(s) or first time - start fresh at 1
+  return { newStreak: 1, extended: currentStreak === 0, previousStreak: currentStreak };
+}
+
 export function useLessonProgress() {
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS);
   const [loaded, setLoaded] = useState(false);
   const [syncState, setSyncState] = useState<SyncState>('idle');
   const [pendingSyncs, setPendingSyncs] = useState<PendingSync[]>([]);
   const [isOnline, setIsOnline] = useState(true);
+  // Streak popup state
+  const [streakJustExtended, setStreakJustExtended] = useState(false);
+  const [previousStreak, setPreviousStreak] = useState(0);
   const { user } = useUser();
   const hasSyncedRef = useRef(false);
   const previousUserIdRef = useRef<string | null>(null);
@@ -292,7 +329,6 @@ export function useLessonProgress() {
             totalPuzzlesSolved: Math.max(prev.totalPuzzlesSolved, newProgress.totalPuzzlesSolved || 0),
             totalPuzzlesAttempted: Math.max(prev.totalPuzzlesAttempted, newProgress.totalPuzzlesAttempted || 0),
             currentStreak: Math.max(prev.currentStreak, newProgress.currentStreak || 0),
-            bestStreak: Math.max(prev.bestStreak, newProgress.bestStreak || 0),
             lessonsCompletedToday: Math.max(prev.lessonsCompletedToday, newProgress.lessonsCompletedToday || 0),
             // Merge unlocked levels
             unlockedLevels: Array.from(
@@ -354,9 +390,7 @@ export function useLessonProgress() {
     if (!justLoggedIn || !loaded || hasSyncedRef.current) return;
 
     const localProgress = getStoredProgress();
-    const hasLocalData =
-      localProgress.completedLessons.length > 0 ||
-      Object.keys(localProgress.themePerformance).length > 0;
+    const hasLocalData = localProgress.completedLessons.length > 0;
 
     if (!hasLocalData) {
       hasSyncedRef.current = true;
@@ -372,10 +406,8 @@ export function useLessonProgress() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             completedLessons: localProgress.completedLessons,
-            themePerformance: localProgress.themePerformance,
             currentStreak: localProgress.currentStreak,
-            bestStreak: localProgress.bestStreak,
-            lastPlayedDate: localProgress.lastPlayedDate,
+            lastActivityDate: localProgress.lastActivityDate,
           }),
           signal: abortController.signal,
         });
@@ -425,18 +457,29 @@ export function useLessonProgress() {
         nextLessonId = allLessonIds[currentIndex + 1] || null;
       }
 
+      // Update streak using day-based logic (per RULES.md Section 11)
+      const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
+
+      // Trigger streak popup if streak was extended
+      if (streakResult.extended) {
+        setPreviousStreak(streakResult.previousStreak);
+        setStreakJustExtended(true);
+      }
+
       const newProgress = {
         ...prev,
         completedLessons: [...prev.completedLessons, lessonId],
         currentLessonId: nextLessonId, // Update local state immediately
         lessonsCompletedToday: newLessonsCompletedToday,
         lastLessonDate: today,
+        currentStreak: streakResult.newStreak,
+        lastActivityDate: today,
       };
       saveProgress(newProgress);
 
       // Sync to server with error tracking
       if (user) {
-        syncToServer('lesson', { lessonId, nextLessonId });
+        syncToServer('lesson', { lessonId, nextLessonId, updateStreak: true });
       }
 
       return newProgress;
@@ -457,7 +500,6 @@ export function useLessonProgress() {
   ) => {
     setProgress(prev => {
       const today = new Date().toISOString().split('T')[0];
-      const isNewDay = prev.lastPlayedDate !== today;
 
       const attempt: PuzzleAttempt = {
         puzzleId,
@@ -471,42 +513,22 @@ export function useLessonProgress() {
         solution: options?.solution,
       };
 
-      // Update streak
-      let newStreak = prev.currentStreak;
-      if (correct) {
-        newStreak = isNewDay ? 1 : prev.currentStreak + 1;
-      } else {
-        newStreak = 0;
-      }
-
-      // Update theme performance
-      const newThemePerformance = { ...prev.themePerformance };
-      if (options?.themes && options.themes.length > 0) {
-        // Use the first theme as the primary theme
-        const primaryTheme = options.themes[0];
-        if (!newThemePerformance[primaryTheme]) {
-          newThemePerformance[primaryTheme] = { attempts: 0, solved: 0, puzzleIds: [] };
-        }
-        newThemePerformance[primaryTheme] = {
-          attempts: newThemePerformance[primaryTheme].attempts + 1,
-          solved: newThemePerformance[primaryTheme].solved + (correct ? 1 : 0),
-          puzzleIds: [...newThemePerformance[primaryTheme].puzzleIds, puzzleId],
-        };
-      }
+      // NOTE: Streak is NOT updated per puzzle attempt
+      // Per RULES.md Section 11, streak tracks daily activity (lessons/daily challenge)
+      // Wrong puzzles do NOT reset the streak
 
       const newProgress = {
         ...prev,
         puzzleAttempts: [...prev.puzzleAttempts, attempt],
         totalPuzzlesAttempted: prev.totalPuzzlesAttempted + 1,
         totalPuzzlesSolved: correct ? prev.totalPuzzlesSolved + 1 : prev.totalPuzzlesSolved,
-        currentStreak: newStreak,
-        bestStreak: Math.max(prev.bestStreak, newStreak),
-        lastPlayedDate: today,
-        themePerformance: newThemePerformance,
+        // Don't update streak or lastActivityDate for individual puzzle attempts
+        // Streak is managed by completeLesson() and recordDailyActivity()
       };
       saveProgress(newProgress);
 
       // Sync to server with error tracking
+      // NOTE: updateStreak is false - we don't want per-puzzle streak updates
       if (user) {
         syncToServer('puzzle', {
           puzzleId,
@@ -516,7 +538,7 @@ export function useLessonProgress() {
           fen: options?.fen,
           solution: options?.solution,
           timeSpentMs: options?.timeSpentMs,
-          updateStreak: true,
+          updateStreak: false,
         });
       }
 
@@ -623,15 +645,53 @@ export function useLessonProgress() {
     }
   }, [user]);
 
+  // Record daily activity (for daily challenge completion)
+  // This updates the streak using day-based logic
+  const recordDailyActivity = useCallback(() => {
+    setProgress(prev => {
+      const today = new Date().toISOString().split('T')[0];
+
+      // Update streak using day-based logic (per RULES.md Section 11)
+      const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
+
+      // Trigger streak popup if streak was extended
+      if (streakResult.extended) {
+        setPreviousStreak(streakResult.previousStreak);
+        setStreakJustExtended(true);
+      }
+
+      const newProgress = {
+        ...prev,
+        currentStreak: streakResult.newStreak,
+        lastActivityDate: today,
+      };
+      saveProgress(newProgress);
+
+      // Sync to server
+      if (user) {
+        syncToServer('puzzle', {
+          puzzleId: 'daily-challenge',
+          correct: true,
+          updateStreak: true,
+        });
+      }
+
+      return newProgress;
+    });
+  }, [user, syncToServer]);
+
+  // Dismiss streak celebration popup
+  const dismissStreakCelebration = useCallback(() => {
+    setStreakJustExtended(false);
+  }, []);
+
   return {
     completedLessons: progress.completedLessons,
     puzzleAttempts: progress.puzzleAttempts,
     totalPuzzlesSolved: progress.totalPuzzlesSolved,
     totalPuzzlesAttempted: progress.totalPuzzlesAttempted,
     currentStreak: progress.currentStreak,
-    bestStreak: progress.bestStreak,
-    lastPlayedDate: progress.lastPlayedDate,
-    themePerformance: progress.themePerformance,
+    lastActivityDate: progress.lastActivityDate,
     lessonsCompletedToday: progress.lessonsCompletedToday,
     lastLessonDate: progress.lastLessonDate,
     completeLesson,
@@ -647,12 +707,15 @@ export function useLessonProgress() {
     isLevelUnlocked,
     unlockLevel,
     refreshUnlockedLevels,
-    // Current lesson (next lesson user should do)
-    currentLessonId: progress.currentLessonId,
     // Sync status for UI feedback
     syncState,
     hasPendingSyncs: pendingSyncs.length > 0,
     retryPendingSyncs,
     isOnline,
+    // Streak celebration
+    streakJustExtended,
+    previousStreak,
+    dismissStreakCelebration,
+    recordDailyActivity,
   };
 }
