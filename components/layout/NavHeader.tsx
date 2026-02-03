@@ -30,8 +30,8 @@ export function NavHeader() {
           <Image
             src="/brand/logo-horizontal-light.svg"
             alt="Chess Path"
-            width={140}
-            height={24}
+            width={160}
+            height={28}
             className="flex-shrink-0"
           />
         </Link>
@@ -60,7 +60,7 @@ export function NavHeader() {
             <>
               <Link
                 href="/learn"
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white ${
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
                   pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
                 }`}
               >
@@ -68,7 +68,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/daily-challenge"
-                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden ${
+                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
                   pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
                 }`}
                 style={{
@@ -81,7 +81,7 @@ export function NavHeader() {
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
+                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                   style={{
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                     color: '#000',
@@ -92,17 +92,17 @@ export function NavHeader() {
               )}
               <button
                 onClick={handleSignOut}
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
                 style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
               >
-                Log out
+                Logout
               </button>
             </>
           ) : (
             <>
               <Link
                 href="/premium-signup"
-                className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90"
+                className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                 style={{
                   background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                   color: '#000',
@@ -112,19 +112,19 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/auth/login"
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
                 style={{ background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)' }}
               >
                 Login
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90"
+                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
                 style={{
                   background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                 }}
               >
-                Sign Up
+                Signup
               </Link>
             </>
           )}
