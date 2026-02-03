@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
@@ -38,7 +39,7 @@ export function NavHeader() {
 
         <nav className="flex items-center gap-1.5">
           {/* Streak counter - shown on /learn and /daily-challenge */}
-          {showStreakCounter && progressLoaded && currentStreak > 0 && (
+          {FEATURE_FLAGS.SHOW_STREAK_COUNTER && showStreakCounter && progressLoaded && currentStreak > 0 && (
             <div
               className="flex items-center gap-1 px-2 py-1 rounded-md text-white text-xs font-bold"
               style={{
