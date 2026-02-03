@@ -551,11 +551,10 @@ export function useLessonProgress() {
   }, [progress.completedLessons]);
 
   // Check if a lesson is unlocked
-  // Simple rules:
-  // 1. Admin → all unlocked
-  // 2. Completed → unlocked
-  // 3. Level not in unlockedLevels → locked
-  // 4. Level in unlockedLevels → first lesson unlocked, then sequential
+  // Per RULES.md Section 2:
+  // - Levels BELOW highest unlocked → ALL lessons fully open
+  // - Highest unlocked level → first lesson + sequential
+  // - Levels above highest → locked
   const isLessonUnlocked = useCallback((lessonId: string, allLessonIds: string[]) => {
     // Admin: ALL lessons unlocked always
     if (profile?.is_admin) return true;
@@ -570,21 +569,29 @@ export function useLessonProgress() {
     // Parse level from lessonId (format: level.section.lesson, e.g., "1.3.2")
     const lessonLevel = parseInt(lessonId.split('.')[0], 10);
 
-    // If level is not unlocked, lesson is locked
-    if (!progress.unlockedLevels.includes(lessonLevel)) {
-      return false;
+    // Get highest unlocked level
+    const highestUnlocked = Math.max(...progress.unlockedLevels);
+
+    // Levels BELOW highest → ALL lessons fully open
+    if (lessonLevel < highestUnlocked) {
+      return true;
     }
 
-    // Level is unlocked - check sequential within level
-    const levelLessons = allLessonIds.filter(id => parseInt(id.split('.')[0], 10) === lessonLevel);
-    const indexInLevel = levelLessons.indexOf(lessonId);
+    // Highest unlocked level → first lesson + sequential
+    if (lessonLevel === highestUnlocked) {
+      const levelLessons = allLessonIds.filter(id => parseInt(id.split('.')[0], 10) === lessonLevel);
+      const indexInLevel = levelLessons.indexOf(lessonId);
 
-    // First lesson of the level is always unlocked
-    if (indexInLevel === 0) return true;
+      // First lesson of the level is always unlocked
+      if (indexInLevel === 0) return true;
 
-    // Otherwise, previous lesson in this level must be completed
-    const previousLessonInLevel = levelLessons[indexInLevel - 1];
-    return progress.completedLessons.includes(previousLessonInLevel);
+      // Otherwise, previous lesson in this level must be completed
+      const previousLessonInLevel = levelLessons[indexInLevel - 1];
+      return progress.completedLessons.includes(previousLessonInLevel);
+    }
+
+    // Levels above highest → locked
+    return false;
   }, [progress.completedLessons, progress.unlockedLevels, profile?.is_admin]);
 
   // Set the starting lesson (called after diagnostic placement)
