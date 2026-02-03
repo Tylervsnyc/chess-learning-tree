@@ -76,7 +76,7 @@ export function NavHeader() {
                 }}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
-                Daily
+                <span className="relative">Daily</span>
               </Link>
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link

@@ -164,7 +164,7 @@ export function useLessonProgress() {
   // Streak popup state
   const [streakJustExtended, setStreakJustExtended] = useState(false);
   const [previousStreak, setPreviousStreak] = useState(0);
-  const { user } = useUser();
+  const { user, profile } = useUser();
   const hasSyncedRef = useRef(false);
   const previousUserIdRef = useRef<string | null>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -551,33 +551,61 @@ export function useLessonProgress() {
   }, [progress.completedLessons]);
 
   // Check if a lesson is unlocked
-  // Unlock rules:
-  // - First lesson is always unlocked
-  // - If user has a startingLessonId (from diagnostic): all lessons before it are unlocked
-  // - Lessons after starting point require completing the previous lesson
+  // Per RULES.md Section 2:
+  // 1. New users start with only 1.1.1 unlocked
+  // 2. Completing lesson N unlocks lesson N+1 (sequential within level)
+  // 3. Unlocking Level N via test unlocks:
+  //    - ALL lessons in Levels 1 through N-1 (fully open)
+  //    - Only N.1.1 in Level N (then sequential)
+  // 4. Admin: ALL lessons unlocked, always
   const isLessonUnlocked = useCallback((lessonId: string, allLessonIds: string[]) => {
-    const index = allLessonIds.indexOf(lessonId);
-
-    // First lesson is always unlocked
-    if (index === 0) return true;
+    // Admin: ALL lessons unlocked always
+    if (profile?.is_admin) return true;
 
     // If lesson is already completed, it's unlocked
     if (progress.completedLessons.includes(lessonId)) return true;
 
-    // If user has a starting lesson from diagnostic
+    // Parse level from lessonId (format: level.section.lesson, e.g., "1.3.2")
+    const lessonLevel = parseInt(lessonId.split('.')[0], 10);
+
+    // Get highest unlocked level
+    const highestUnlockedLevel = Math.max(...progress.unlockedLevels);
+
+    // If lesson's level < highest unlocked level → fully open
+    // (Per RULES.md: "ALL lessons in Levels 1 through N-1")
+    if (lessonLevel < highestUnlockedLevel) {
+      return true;
+    }
+
+    // If lesson's level = highest unlocked level AND level is unlocked
+    if (lessonLevel === highestUnlockedLevel && progress.unlockedLevels.includes(lessonLevel)) {
+      // Get all lessons in this level to check sequential unlock
+      const levelLessons = allLessonIds.filter(id => parseInt(id.split('.')[0], 10) === lessonLevel);
+      const indexInLevel = levelLessons.indexOf(lessonId);
+
+      // First lesson of the level is unlocked (N.1.1)
+      if (indexInLevel === 0) return true;
+
+      // Sequential: previous lesson in this level must be completed
+      const previousLessonInLevel = levelLessons[indexInLevel - 1];
+      return progress.completedLessons.includes(previousLessonInLevel);
+    }
+
+    // Fallback for startingLessonId (diagnostic placement)
     if (progress.startingLessonId) {
       const startingIndex = allLessonIds.indexOf(progress.startingLessonId);
-
-      // All lessons before and including the starting lesson are unlocked
+      const index = allLessonIds.indexOf(lessonId);
       if (startingIndex >= 0 && index <= startingIndex) {
         return true;
       }
     }
 
-    // For lessons after the starting point: require previous lesson completed
+    // Default: first lesson always unlocked, otherwise previous must be completed
+    const index = allLessonIds.indexOf(lessonId);
+    if (index === 0) return true;
     const previousLessonId = allLessonIds[index - 1];
     return progress.completedLessons.includes(previousLessonId);
-  }, [progress.completedLessons, progress.startingLessonId]);
+  }, [progress.completedLessons, progress.startingLessonId, progress.unlockedLevels, profile?.is_admin]);
 
   // Set the starting lesson (called after diagnostic placement)
   const setStartingLesson = useCallback((lessonId: string) => {
