@@ -1145,29 +1145,27 @@ export default function DailyChallengePage() {
         <span className="text-gray-500 ml-1">/ {allPuzzles.length}</span>
       </div>
 
-      {/* Board container - fixed aspect ratio */}
+      {/* Board container */}
       <div className="flex-1 flex flex-col max-w-sm mx-auto px-3 py-2 w-full">
-        <div className="bg-[#131F24] rounded-lg p-2 mb-2 aspect-square w-full max-w-[calc(100vh-200px)] mx-auto">
+        <div className="mb-2">
           {game && (
-            <div className="w-full h-full">
-              <Chessboard
-                options={{
-                  position: game.fen(),
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  onPieceDrop: (args: any) =>
-                    onDrop({ sourceSquare: args.sourceSquare, targetSquare: args.targetSquare, piece: args.piece }),
-                  onSquareClick: onSquareClick,
-                  boardOrientation: boardOrientation,
-                  squareStyles: squareStyles,
-                  boardStyle: {
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                  },
-                  darkSquareStyle: { backgroundColor: '#779952' },
-                  lightSquareStyle: { backgroundColor: '#edeed1' },
-                }}
-              />
-            </div>
+            <Chessboard
+              options={{
+                position: game.fen(),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onPieceDrop: (args: any) =>
+                  onDrop({ sourceSquare: args.sourceSquare, targetSquare: args.targetSquare, piece: args.piece }),
+                onSquareClick: onSquareClick,
+                boardOrientation: boardOrientation,
+                squareStyles: squareStyles,
+                boardStyle: {
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                },
+                darkSquareStyle: { backgroundColor: '#779952' },
+                lightSquareStyle: { backgroundColor: '#edeed1' },
+              }}
+            />
           )}
         </div>
 
