@@ -321,10 +321,17 @@ export default function LevelTestPage() {
     setCurrentIndex(prev => prev + 1);
   }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore, targetLevel, unlockLevel, setStartingLesson]);
 
-  // Handle going back to learn page
-  const handleBackToLearn = () => {
+  // Handle going back to learn page (with scrollTo if test passed)
+  const handleBackToLearn = useCallback(() => {
+    if (testState === 'passed' && targetLevel) {
+      const firstLessonId = getFirstLessonIdForLevel(targetLevel.number);
+      if (firstLessonId) {
+        router.push(`/learn?scrollTo=${firstLessonId}`);
+        return;
+      }
+    }
     router.push('/learn');
-  };
+  }, [router, testState, targetLevel]);
 
   // Confetti effect on test passed - wrapped in useEffect
   useEffect(() => {
