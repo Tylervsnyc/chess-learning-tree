@@ -2,7 +2,7 @@
   "level": 1,
   "ratingRange": "400-800",
   "theme": "clearance",
-  "count": 5,
+  "count": 4,
   "puzzles": [
     {
       "puzzleId": "MIlEh",
@@ -19,23 +19,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/yAZVqqwC#53"
-    },
-    {
-      "puzzleId": "JYKLs",
-      "fen": "rn1q1rk1/1p3pb1/p4n1p/2pPp1p1/4N1b1/3B1NB1/PP3PPP/R2Q1RK1 b - - 1 14",
-      "moves": "d8d5 e4f6 g7f6 d3h7",
-      "rating": 747,
-      "popularity": 99,
-      "nbPlays": 668,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "opening",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/qJEMsFFm/black#28"
     },
     {
       "puzzleId": "LUwor",

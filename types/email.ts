@@ -43,9 +43,7 @@ export interface EmailRecipient {
   email: string;
   display_name: string | null;
   current_streak: number;
-  best_streak: number;
-  last_played_date: string | null;
-  elo_rating: number;
+  last_activity_date: string | null;
   email_preferences: EmailPreferences | null;
 }
 

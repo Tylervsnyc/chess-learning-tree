@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-02
+Last Updated: 2026-02-03
 
 ---
 
@@ -37,6 +37,8 @@ Last Updated: 2026-02-02
 27. [Lesson/Level/Block Naming](#27-lessonlevelblock-naming)
 28. [Intro Messages](#28-intro-messages)
 29. [Adding New Levels Checklist](#29-adding-new-levels-checklist)
+30. [Work In Progress (WIP)](#30-work-in-progress-wip)
+31. [Puzzle Share Feature](#31-puzzle-share-feature)
 
 ---
 
@@ -134,6 +136,14 @@ const userType = useMemo(() => {
 ### Critical:
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
 - Enforced in ONE `useEffect` in `/app/learn/page.tsx`
+
+### Sticky Headers:
+| Element | Position | Z-Index | Behavior |
+|---------|----------|---------|----------|
+| Nav header | `sticky top-0` | `z-50` | Always visible at top |
+| Level header | `sticky top-10` | `z-40` | Tucks slightly behind nav header |
+
+The level header overlaps the nav header slightly, creating a layered effect while keeping nav buttons accessible.
 
 ### Implementation:
 ```typescript
@@ -260,31 +270,109 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 ### Header Toggle:
 `[Path] [Daily]` toggle - only shown on `/learn` and `/daily-challenge`
 
-### Rules:
+### Core Rules:
 | Rule | Value |
 |------|-------|
 | Timer | 5 minutes |
 | Lives | 3 (3 wrong = out) |
-| Starting ELO | 400 |
-| Correct answer | +200 ELO |
-| Wrong answer | Same ELO |
+| Puzzles | 20 total |
+| Difficulty | Progressive: 400 → 2600 ELO (hidden from user) |
+| Correct answer | Advance to next puzzle |
+| Wrong answer | Lose a life, advance to next puzzle |
 | Same puzzles for all users | Yes (seeded by date) |
+| **Once per day** | Users can only play once per day. Returning shows results. |
 
-### Puzzle Pool Per Day:
-| ELO Range | Puzzles |
-|-----------|---------|
-| 400-1800 | 3 each |
-| 2000 | 10 |
+### How It Works:
+- Display shows "Puzzle X / 20" (no ELO shown to users)
+- Puzzles get progressively harder behind the scenes
+- Rating targets: 400-550, 500-650, 600-750... up to 2300-2600
+- Goal: How many can you solve in 5 minutes?
 
-### Win Conditions:
-- Complete all 2000 ELO puzzles, OR
+### Puzzle Selection (API):
+```
+/api/daily-challenge/puzzles
+```
+- Uses date-seeded random number generator (same puzzles for everyone)
+- 20 deliberate rating targets spanning 400-2600 ELO
+- Prioritizes tactical themes (forks, pins, mates) over endgames
+- Each puzzle comes from a different theme when possible
+- `?testSeed=123` for testing with different puzzle sets
+
+### Rating Brackets Used:
+| Bracket | Puzzles | Rating Range |
+|---------|---------|--------------|
+| 0400-0800 | 1-4 | 400-850 |
+| 0800-1200 | 5-8 | 800-1250 |
+| 1200-1600 | 9-12 | 1200-1650 |
+| 1600-2000 | 13-16 | 1600-2050 |
+| 2000-plus | 17-20 | 2000-2600 |
+
+### End Conditions:
+- Complete all 20 puzzles, OR
 - Timer runs out, OR
 - Lose 3 lives
 
+### Once-Per-Day Enforcement:
+- On page load, check if user has a result for today (`daily_challenge_results` table)
+- If yes → skip to finished screen showing their result + leaderboard
+- If no → show ready screen, allow them to play
+- "Play Again" button hidden after completion, replaced with "Come back tomorrow!"
+- Enforced in: `app/daily-challenge/page.tsx` via `checkTodayCompletion()` useEffect
+
 ### On Completion:
-1. Show score
-2. Allow puzzle review
-3. Show global leaderboard
+1. Show puzzles solved (primary metric)
+2. Show time remaining / time taken
+3. Show mistakes made
+4. Allow puzzle review (step through solution)
+5. Show global leaderboard with Top 10 / My Standing toggle
+
+### Design:
+| Element | Style |
+|---------|-------|
+| "DAILY CHALLENGE" title | Nunito font, font-black, gradient text (orange→red), in gradient box with orange border |
+| Background | `#1A2C35` (lighter dark) |
+| Cards | `#131F24` (darker) |
+| Brand logo | chesspath logo + wordmark above title |
+| Header (playing) | Orange-red gradient bar with lives, timer, solved count |
+| Board | Fixed position, doesn't shift when UI updates |
+
+### Ready Screen:
+- 5 Minutes on the Clock
+- Puzzles Get Harder
+- 3 Mistakes and You're Out
+- Compete Globally
+
+### Playing Screen:
+- Lives (hearts) - top bar
+- Timer (countdown) - top bar
+- Puzzle counter ("Puzzle X / 20") - above board
+- "White/Black to move" indicator
+- Opponent's last move highlighted (orange)
+
+### Finished Screen:
+- Puzzles solved (big number, primary metric)
+- Time and mistakes
+- Leaderboard (Top 10 / My Standing toggle)
+- Puzzle review section
+
+### Sound:
+- Correct: Chromatic ascending scale (G3→D5, 20 notes)
+- Each puzzle solved plays the next note in the scale
+- Creates satisfying progression without getting shrill
+
+### Timer Implementation:
+Uses `Date.now()` with end time reference (not interval accumulation) for accuracy:
+```typescript
+endTimeRef.current = Date.now() + TOTAL_TIME;
+// Timer checks: remaining = endTimeRef.current - Date.now()
+```
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `app/daily-challenge/page.tsx` | Main game UI (ready/playing/finished) |
+| `app/api/daily-challenge/puzzles/route.ts` | Returns seeded puzzles for today |
+| `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
 
 ---
 
@@ -293,10 +381,10 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 ### Daily Challenge Leaderboard:
 | Column | Description |
 |--------|-------------|
-| Rank | Position |
-| Username | Display name |
-| Puzzles | Completed count |
-| Time | Completion time |
+| Rank | Position (1-indexed) |
+| Username | `profiles.display_name` (auto-set from email prefix or Google name) |
+| Puzzles | `puzzles_completed` count |
+| Time | `time_used_ms` formatted as M:SS |
 
 ### Display:
 - Top 10 by default
@@ -305,7 +393,13 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ### Sort Order:
 1. Puzzles completed (desc) - more puzzles = higher rank
-2. Completion time (asc) - faster wins ties
+2. Time used (asc) - faster wins ties
+
+### Implementation:
+- **Recording**: `app/daily-challenge/page.tsx` → `recordResult()` upserts to `daily_challenge_results`
+- **API**: `app/api/daily-challenge/leaderboard/route.ts` fetches results + profiles separately (no FK join)
+- **Display names**: Auto-generated at signup from email prefix (e.g., "tyler" from "tyler@email.com") or Google profile name
+- **RLS**: Public read for leaderboard, users can only insert their own results
 
 ---
 
@@ -360,6 +454,9 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ## 16. Header
 
+### Scroll Behavior:
+**Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Challenge toggle without losing their place in the curriculum.
+
 ### Elements by Location:
 
 | Element | Where Shown | Links To |
@@ -370,6 +467,19 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 | Login button | All pages (logged out) | `/auth/login` |
 | Avatar + dropdown | All pages (logged in) | Dropdown with 'Log out' |
 | Streak counter | `/learn`, `/daily-challenge` | Nothing |
+
+### Path/Daily Button Styling:
+
+| Button | Color | Always Visible |
+|--------|-------|----------------|
+| Path | Green (`#58CC02`) | Yes |
+| Daily | Blue gradient (`#1CB0F6` → `#0d9ee0`) + shimmer animation | Yes |
+
+**Active state indicator:**
+- Active button: solid bottom shadow (darker shade of button color)
+- Inactive button: `opacity-70` (slightly faded)
+
+Both buttons stay their color regardless of active state. The shadow + opacity difference indicates which page you're on.
 
 ### Enforced In (ONE place only):
 `/components/layout/NavHeader.tsx`
@@ -495,7 +605,10 @@ puzzle_attempts
   id, user_id, puzzle_id, lesson_id, correct, attempts, created_at
 
 daily_challenge_results
-  id, user_id, challenge_date, puzzles_completed, completion_time, created_at
+  id, user_id, challenge_date, score, puzzles_completed, time_used_ms, created_at
+  -- score = puzzles_completed (for sorting)
+  -- time_used_ms = milliseconds taken
+  -- UNIQUE(user_id, challenge_date) - one entry per user per day
 
 level_test_attempts
   id, user_id, transition, passed, score, variant_id, created_at
@@ -506,6 +619,14 @@ puzzle_history
 
 quip_history
   id, user_id, quip_id, seen_at
+
+email_preferences
+  id, user_id, streak_reminders, weekly_digest, marketing, created_at, updated_at
+  -- User opt-in/out for different email types
+
+email_log
+  id, user_id, email_type, sent_at
+  -- Tracks sent emails to prevent spam
 ```
 
 ### Columns/Tables to DELETE:
@@ -581,6 +702,7 @@ Store seen quips in `quip_history` table
 - Bullying
 - Real people
 - Swearing
+- Cheesy emojis (no 🔥💪🏆✨ etc. in UI)
 
 ### Words to REMOVE from app:
 - suffocated
@@ -656,6 +778,339 @@ When adding Level N:
    - No death/violence language
 
 9. **Test everything**
+
+---
+
+---
+
+## 30. Work In Progress (WIP)
+
+**Last updated: 2026-02-02**
+
+This section tracks features currently being tested on localhost:3000 before pushing to production.
+
+### 30.1 Share Feature
+
+**Status:** Design complete, GIF generation working, needs integration
+
+**What it does:**
+- Generates two shareable assets for any puzzle:
+  1. **Static Image** - Shows puzzle position with "I SOLVED this tricky puzzle" + "SWIPE TO SEE THE SOLUTION"
+  2. **Animated GIF** - Countdown (3,2,1) → Solution moves (pieces snap instantly) → Checkmate popup + confetti
+- Designed for Instagram/Twitter virality
+
+**User Flow:**
+```
+User solves puzzle
+    ↓
+Green "Correct!" popup appears with SHARE button
+    ↓
+Tap Share → Assets generate (~5-10 seconds for GIF)
+    ↓
+Mobile: Native share sheet (Instagram, Twitter, Messages, etc.)
+Desktop: Downloads both files
+```
+
+**Where Share Button Appears:**
+1. **Puzzle success popup** - After solving any puzzle in a lesson (primary entry point)
+2. **Daily challenge review** - User can pick their favorite puzzle to share after finishing
+
+**Design Details:**
+- Cards have 3D layered effect on chessboard (colored border + offset shadows)
+- Corner triangle accents (top-right, bottom-left) for stylized look
+- Green accent (#58CC02) for static image, Blue accent (#1CB0F6) for GIF
+- CTA buttons have 3D shadow effect
+
+**Files:**
+| File | Purpose |
+|------|---------|
+| `components/share/ShareButton.tsx` | Button component, handles generation flow |
+| `components/share/PuzzleShareCard.tsx` | Static image card design |
+| `lib/share/generate-puzzle-gif.ts` | GIF generation with chess.js + gif.js |
+| `lib/share/generate-puzzle-image.ts` | PNG generation with html-to-image |
+| `app/test-share/page.tsx` | Test page for previewing both assets |
+| `public/gif.worker.js` | Web worker for GIF encoding |
+
+**GIF Technical Notes:**
+- Uses `animationDurationInMs: 0` on react-chessboard to make pieces snap instantly (no sliding)
+- Countdown phase: 3, 2, 1 overlaid on board
+- Solution phase: Each move shows algebraic notation in header, 1.5s pause per move
+- Celebration phase: Random quip + confetti + CHECKMATE popup if applicable
+
+**To test:** Visit `/test-share`
+
+**TODO:**
+- [ ] Add ShareButton to puzzle success popup (`components/puzzle/PuzzleResultPopup.tsx`)
+- [ ] Add ShareButton to daily challenge review screen
+- [ ] Implement Web Share API for mobile
+- [ ] Implement download fallback for desktop
+- [ ] Test on real mobile devices
+
+---
+
+### 30.2 Daily Challenge
+
+**Status:** ✅ Core mechanics complete and tested
+
+**What it does:**
+- Timed puzzle sprint (5 minutes, 3 lives)
+- Progressive difficulty: 400 → 2600 ELO (hidden from user)
+- 20 puzzles total, "Puzzle X / 20" display
+- Same puzzles for everyone each day (seeded by date)
+- Accurate timer using `Date.now()` reference
+- Chromatic ascending sound (G3→D5) for correct answers
+- Leaderboard with Top 10 and "My Standing" views
+- Review mode to replay puzzles after finishing
+
+**Files:**
+| File | Purpose |
+|------|---------|
+| `app/daily-challenge/page.tsx` | Main game UI (ready/playing/finished screens) |
+| `app/api/daily-challenge/puzzles/route.ts` | Returns seeded puzzles for today |
+| `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
+
+**Puzzle Distribution:**
+- 20 puzzles with deliberate rating targets
+- Spans 5 brackets: 0400-0800, 0800-1200, 1200-1600, 1600-2000, 2000-plus
+- Prioritizes tactical themes over endgames
+
+**To test:**
+- Visit `/daily-challenge`
+- Use `?testSeed=123` to get different puzzle sets for testing
+
+**TODO:**
+- [ ] Verify leaderboard API works with real user data
+- [ ] Test score recording to `daily_challenge_results` table
+- [ ] Add share button to results screen
+- [ ] Verify same puzzles for different users on same day
+
+---
+
+### 30.3 Header Buttons
+
+**Status:** Styling finalized
+
+**What it does:**
+- Path button: always green, bottom shadow when active, faded when inactive
+- Daily button: always blue with shimmer animation, bottom shadow when active, faded when inactive
+- Premium button (gradient gold) for non-premium users
+- Login/Signup/Logout buttons
+
+**File:** `components/layout/NavHeader.tsx`
+
+**To test:** Check header on various pages while logged in/out
+
+**TODO:**
+- [ ] Verify Premium button hides for premium/admin users
+- [ ] Test button sizing on various mobile screens
+- [ ] Consider adding streak counter to header
+
+---
+
+### 30.4 Other Test Pages (Exploratory)
+
+These pages exist for design exploration but aren't production features yet:
+
+| Page | Purpose |
+|------|---------|
+| `/test-share` | Share asset preview |
+| `/test-level-designs` | Level design exploration |
+| `/test-puzzle-designs` | Puzzle UI exploration |
+| `/test-theme-sankey` | Theme visualization |
+
+---
+
+### 30.5 Tomorrow's TODOs (2026-02-03)
+
+**LET'S GO. The Chess Path is about to be UNSTOPPABLE. Money by EOM. No question.**
+
+- [ ] Increase quip effectiveness/specificity - Make quips more targeted to specific puzzle themes and situations. Time to make these quips HIT DIFFERENT.
+
+---
+
+### Quick Resume Checklist
+
+When resuming work:
+
+1. **Start dev server:** `npm run dev`
+2. **Test share feature:** `/test-share` - try generating PNG + GIF
+3. **Test daily challenge:** `/daily-challenge` - full flow: start → solve → finish
+4. **Test header:** Check logged in vs logged out states
+5. **Check console:** Look for any errors during testing
+
+---
+
+## 31. Puzzle Share Feature
+
+**Status:** Work in Progress
+
+**What it does:**
+Allows users to share a puzzle they just solved with two assets:
+1. **Static PNG** - Shareable image card with puzzle position
+2. **Animated GIF** - Shows the solution with celebration
+
+### Static Image (PNG)
+
+**Layout (top to bottom):**
+- Chess Path logo (stacked version, centered)
+- "I SOLVED this" + "tricky puzzle" header text
+- Chessboard with opponent's last move highlighted
+- "White/Black to move" indicator
+- Green CTA button: "SWIPE TO SEE THE SOLUTION" + "chesspath.app"
+
+**Size:** 1080x1080 for Instagram
+
+### Animated GIF
+
+**Sequence:**
+1. **Countdown (3, 2, 1)** - 1 second each, text above board
+2. **Solution moves** - Algebraic notation (e.g., "1. Qxf7#") replaces countdown text, board shows move with highlights
+3. **Celebration** - Funny quip replaces notation, confetti falls over board
+4. **Checkmate popup** - Red popup on board if puzzle ends in mate
+
+**Text position:** All text (countdown, notation, quip) appears in header area ABOVE the board, never overlaid on the board itself.
+
+**Quips:** Random funny celebration messages like "Too easy!", "Gottem!", "Crushed it!", etc.
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `components/share/PuzzleShareCard.tsx` | Static image card component |
+| `components/share/ShareButton.tsx` | Share button + generation trigger |
+| `lib/share/generate-puzzle-image.ts` | Converts card → PNG |
+| `lib/share/generate-puzzle-gif.ts` | Generates animated GIF |
+| `components/puzzle/PuzzleResultPopup.tsx` | Shows share button on correct answers |
+| `public/gif.worker.js` | Web worker for GIF encoding |
+
+### Test Page
+
+`/test-share` - Preview and iterate on both share assets
+
+### Generation Approach
+
+**Current: On-demand generation**
+
+Assets are generated when the user clicks the share button:
+1. Browser captures the puzzle card as PNG using html-to-image
+2. Browser animates through solution, capturing frames with gif.js
+3. Files are created client-side (~2-3 seconds)
+4. Web Share API (mobile) or download fallback (desktop)
+
+**Why not pre-generate and store?**
+
+| | On-demand (current) | Pre-generated |
+|---|---|---|
+| Speed | 2-3 sec wait | Instant |
+| Storage cost | $0 | ~1MB per puzzle |
+| Design changes | Auto-updates | Must regenerate all |
+| Complexity | Simple | More infrastructure |
+
+**Decision:** Stick with on-demand generation for now. Revisit if:
+- Sharing becomes very popular and users complain about wait time
+- We add a "puzzle gallery" feature where pre-generated thumbnails would help
+- Storage costs become negligible compared to benefits
+
+### Entry Points
+
+| Location | When it appears |
+|----------|-----------------|
+| Puzzle success popup | After solving any puzzle correctly |
+| Daily challenge review | When reviewing a completed puzzle |
+
+### TODO
+
+- [ ] Use actual app piece images in GIF (currently uses board capture)
+- [x] Add share button to puzzle success popup
+- [x] Add share button to daily challenge review
+- [ ] Test native share on mobile devices
+- [ ] Add more quip variety
+- [ ] Consider adding theme/difficulty to share card
+
+---
+
+## 32. SEO & Marketing
+
+### Target Audience
+
+**Primary:** Dads aged 25-50 who want to beat their friends/kids at chess
+**Secondary:** Kids learning through schools or parents
+
+### Brand Positioning
+
+- "The shortest path to chess improvement"
+- "Beat your friends at chess"
+- "Chess tactics that actually work"
+- NOT competing with Chess.com for serious players
+
+### SEO Keywords (Target These)
+
+**Primary:**
+- "chess tactics for beginners"
+- "learn chess fast"
+- "beat friends at chess"
+- "basic chess tactics"
+
+**Long-tail:**
+- "how to beat my friend at chess"
+- "chess tricks to win quickly"
+- "chess for dads"
+- "simple chess tactics"
+
+### Meta Tags
+
+**Global (app/layout.tsx):**
+```typescript
+title: 'The Chess Path'
+description: 'The shortest path to chess improvement'
+```
+
+**Page-Specific (override in each page.tsx):**
+
+| Page | Title | Description |
+|------|-------|-------------|
+| `/` | The Chess Path - Beat Your Friends at Chess | Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
+| `/learn` | Learn Chess Tactics \| Chess Path | Master chess tactics step by step. From beginner to beating your friends. |
+| `/daily-challenge` | Daily Chess Challenge \| Chess Path | Test your skills with 20 puzzles. Compete on the leaderboard. |
+| `/pricing` | Chess Path Premium - Unlimited Tactics Training | Unlock all lessons, remove limits, accelerate your chess improvement. |
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `app/layout.tsx` | Global meta tags, OpenGraph, Twitter cards |
+| `app/sitemap.ts` | Dynamic sitemap for Google |
+| `app/robots.ts` | Search engine crawl rules |
+| `public/og-image.png` | Default social share image (1200x630) |
+
+### OpenGraph Image
+
+- Size: 1200x630px
+- Shows: Logo + tagline + chess visual
+- Location: `/public/og-image.png`
+- Used when sharing links on social media
+
+### Tracking (PostHog)
+
+**Key Events to Track:**
+
+| Event | When | Why |
+|-------|------|-----|
+| `signup_started` | User clicks signup | Measure funnel top |
+| `signup_completed` | User finishes signup | Measure conversion |
+| `puzzle_attempted` | User tries a puzzle | Engagement |
+| `puzzle_solved` | User solves correctly | Success rate |
+| `lesson_completed` | User finishes lesson | Progress |
+| `upgrade_clicked` | User clicks premium | Revenue intent |
+| `upgrade_completed` | User pays | Revenue |
+| `share_clicked` | User shares puzzle | Virality |
+
+### Analytics Dashboard Goals
+
+- Landing → Signup: >20%
+- Signup → First Puzzle: >80%
+- Day 1 → Day 7 Retention: >30%
+- Free → Paid: >5%
 
 ---
 

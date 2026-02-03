@@ -41,7 +41,7 @@ Sacrifices. Trapped pieces. King hunts. You're not reacting anymore. You're the 
       sections: [
         // Section 1: Sacrifice Patterns
         {
-          id: 'sec-1',
+          id: '4.1',
           name: 'Sacrifice Patterns',
           description: 'Classic sacrifice motifs',
           themeIntroMessage: `The best sacrifices aren't improvised - they follow patterns.
@@ -90,7 +90,7 @@ Learn the patterns, spot them in your games.`,
         },
         // Section 2: Trapped Pieces
         {
-          id: 'sec-2',
+          id: '4.2',
           name: 'Trapped Pieces',
           description: 'Catch pieces with no escape',
           themeIntroMessage: `Your opponent's piece wandered off alone. Time to make sure it never comes back.
@@ -139,7 +139,7 @@ Knights in corners. Bishops on long diagonals. Rooks with no retreat.`,
         },
         // Section 3: Exposed King
         {
-          id: 'sec-3',
+          id: '4.3',
           name: 'Exposed King Hunt',
           description: 'Attack the vulnerable king',
           themeIntroMessage: `That king's out in the open. Let's give him a warm welcome.
@@ -188,7 +188,7 @@ No castling? No pawn shield? Their problem, your opportunity.`,
         },
         // Section 4: Block 1 Review
         {
-          id: 'sec-4',
+          id: '4.4',
           name: 'Review: Attack Training',
           description: 'Mixed sacrifice and attack practice',
           isReview: true,
@@ -263,7 +263,7 @@ Quiet moves. Zugzwang. The chemistry of winning chess.`,
       sections: [
         // Section 5: Mate in 4
         {
-          id: 'sec-5',
+          id: '4.5',
           name: 'Mate in 4',
           description: 'Four moves to checkmate',
           themeIntroMessage: `Four moves to glory. No pressure.
@@ -312,7 +312,7 @@ Take your time. See the whole line before you play.`,
         },
         // Section 6: Quiet Moves
         {
-          id: 'sec-6',
+          id: '4.6',
           name: 'The Quiet Storm',
           description: 'Non-forcing moves that win',
           themeIntroMessage: `The deadliest moves don't check or capture. They just... wait.
@@ -361,7 +361,7 @@ This is advanced chess. See what they can't defend.`,
         },
         // Section 7: Positional Play (Zugzwang + Quiet Moves)
         {
-          id: 'sec-7',
+          id: '4.7',
           name: 'Positional Pressure',
           description: 'Force them to self-destruct',
           themeIntroMessage: `Sometimes the deadliest moves don't check or capture. They just... squeeze.
@@ -414,7 +414,7 @@ Force them into a position where any move makes things worse. Then enjoy the sho
         },
         // Section 8: Block 2 Review
         {
-          id: 'sec-8',
+          id: '4.8',
           name: 'Review: Deep Calculation',
           description: 'Mixed calculation practice',
           isReview: true,
@@ -489,7 +489,7 @@ Crushing attacks. Promotion. Endgame technique. This is how empires are built.`,
       sections: [
         // Section 9: Crushing Attacks
         {
-          id: 'sec-9',
+          id: '4.9',
           name: 'Crushing Attacks',
           description: 'When winning isn\'t enough',
           themeIntroMessage: `Winning isn't enough. We want them to feel it.
@@ -538,7 +538,7 @@ Find the move that breaks them completely.`,
         },
         // Section 10: Promotion Warfare
         {
-          id: 'sec-10',
+          id: '4.10',
           name: 'Promotion Warfare',
           description: 'Race to make a queen',
           themeIntroMessage: `Queen's great, but sometimes a knight is *chef's kiss*.
@@ -587,7 +587,7 @@ Know when to make a queen and when not to.`,
         },
         // Section 11: Minor Piece Endgames
         {
-          id: 'sec-11',
+          id: '4.11',
           name: 'Minor Piece Endgames',
           description: 'Bishop and knight mastery',
           themeIntroMessage: `The "minor" pieces doing major work.
@@ -638,7 +638,7 @@ These endgames have deep theory. Learn the key patterns.`,
         },
         // Section 12: Block 3 Review
         {
-          id: 'sec-12',
+          id: '4.12',
           name: 'Review: Conversion',
           description: 'Mixed conversion practice',
           isReview: true,
@@ -713,7 +713,7 @@ Complete these puzzles. Prove you're the one who knocks.`,
       sections: [
         // Section 13: Level 4 Review
         {
-          id: 'sec-13',
+          id: '4.13',
           name: 'Level 4 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
@@ -771,7 +771,7 @@ The full Level 4 experience. Let's see what you've learned.`,
         },
         // Section 14: Level 4 Final
         {
-          id: 'sec-14',
+          id: '4.14',
           name: 'Level 4 Final',
           description: 'The ultimate test',
           isReview: true,

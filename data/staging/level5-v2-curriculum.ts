@@ -41,7 +41,7 @@ Double checks. Windmills. Mate in 5. When you see it, they're already dead.`,
       sections: [
         // Section 1: Mate in 5+
         {
-          id: 'sec-1',
+          id: '5.1',
           name: 'Mate in 5+',
           description: 'Deep mating calculations',
           themeIntroMessage: `Five moves ahead? That's just the warm-up.
@@ -90,7 +90,7 @@ This is where calculation becomes an art form.`,
         },
         // Section 2: Double Check
         {
-          id: 'sec-2',
+          id: '5.2',
           name: 'Double Check',
           description: 'The most forcing move',
           themeIntroMessage: `Double check: two pieces give check simultaneously.
@@ -139,7 +139,7 @@ The most forcing move in chess. Devastating when combined with other tactics.`,
         },
         // Section 3: Windmill
         {
-          id: 'sec-3',
+          id: '5.3',
           name: 'Windmill of Doom',
           description: 'The devastating repeated discovery',
           themeIntroMessage: `Spin cycle: attack, check, attack, check, opponent crying.
@@ -188,7 +188,7 @@ One of the most beautiful tactical patterns. And the most devastating.`,
         },
         // Section 4: Block 1 Review
         {
-          id: 'sec-4',
+          id: '5.4',
           name: 'Review: Multiple Threats',
           description: 'Mixed double threat practice',
           isReview: true,
@@ -263,7 +263,7 @@ When you can't stop what's coming, make sure it's coming for them instead.`,
       sections: [
         // Section 5: Defensive Resources
         {
-          id: 'sec-5',
+          id: '5.5',
           name: 'Defensive Resources',
           description: 'Find the saving move',
           themeIntroMessage: `You're in trouble. Find the move that saves everything.
@@ -312,7 +312,7 @@ Stop their plan before they even know they had one.`,
         },
         // Section 6: The Fortress
         {
-          id: 'sec-6',
+          id: '5.6',
           name: 'The Fortress',
           description: 'Build an impenetrable defense',
           themeIntroMessage: `The fortress: a position that can't be broken.
@@ -361,7 +361,7 @@ Know these structures. Save half points from lost positions.`,
         },
         // Section 7: Counterattack
         {
-          id: 'sec-7',
+          id: '5.7',
           name: 'Counterattack',
           description: 'The reverse uno of chess',
           themeIntroMessage: `Turn defense into counterattack. The reverse uno of chess.
@@ -410,7 +410,7 @@ Suddenly they're the ones scrambling.`,
         },
         // Section 8: Block 2 Review
         {
-          id: 'sec-8',
+          id: '5.8',
           name: 'Review: Defense & Counter',
           description: 'Mixed defensive practice',
           isReview: true,
@@ -485,7 +485,7 @@ No luck. No excuses. Just you and the board. Call it.`,
       sections: [
         // Section 9: Complex Sacrifices
         {
-          id: 'sec-9',
+          id: '5.9',
           name: 'Complex Sacrifices',
           description: 'Multi-piece sacrifices',
           themeIntroMessage: `Sacrifice three pieces, win the game. Big brain energy only.
@@ -534,7 +534,7 @@ Trust the calculation. Make the sacrifice.`,
         },
         // Section 10: Zwischenzug
         {
-          id: 'sec-10',
+          id: '5.10',
           name: 'Zwischenzug',
           description: 'The in-between move',
           themeIntroMessage: `Zwischenzug. The in-between move.
@@ -583,7 +583,7 @@ The surprise that changes everything.`,
         },
         // Section 11: Advanced Endgames
         {
-          id: 'sec-11',
+          id: '5.11',
           name: 'Theoretical Endgames',
           description: 'The boring part that wins games',
           themeIntroMessage: `The boring part of chess that wins games.
@@ -634,7 +634,7 @@ Master these, and you'll convert every winning position.`,
         },
         // Section 12: Block 3 Review
         {
-          id: 'sec-12',
+          id: '5.12',
           name: 'Review: Virtuoso Skills',
           description: 'Mixed advanced practice',
           isReview: true,
@@ -709,7 +709,7 @@ There's no more levels after this one. Just you, and everyone who wishes they we
       sections: [
         // Section 13: Level 5 Review
         {
-          id: 'sec-13',
+          id: '5.13',
           name: 'Level 5 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
@@ -767,7 +767,7 @@ The complete Level 5 experience.`,
         },
         // Section 14: Level 5 Final
         {
-          id: 'sec-14',
+          id: '5.14',
           name: 'Level 5 Final',
           description: 'The ultimate test',
           isReview: true,

@@ -35,7 +35,6 @@ export async function GET(request: NextRequest) {
         email,
         display_name,
         current_streak,
-        elo_rating,
         email_preferences (
           weekly_digest,
           unsubscribed_all

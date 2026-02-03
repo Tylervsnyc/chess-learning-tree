@@ -1,22 +1,29 @@
 // Sound utilities for the chess learning app
 // Fixed version with proper async handling, preloading, and warmup
 
-// Chromatic scale frequencies - full octave for building tension
-// D5 to D6 (587Hz to 1175Hz) - 13 notes (higher range for mobile clarity)
+// Chromatic scale frequencies - 20 notes for daily challenge progression
+// G3 to D5 (196Hz to 587Hz) - starts warm and low, builds without getting shrill
 export const CHROMATIC_SCALE = [
-  587,  // D5
-  622,  // D#5
-  659,  // E5
-  698,  // F5
-  740,  // F#5
-  784,  // G5
-  831,  // G#5
-  880,  // A5
-  932,  // A#5
-  988,  // B5
-  1047, // C6
-  1109, // C#6
-  1175, // D6 (octave up - climax!)
+  196,  // G3
+  208,  // G#3
+  220,  // A3
+  233,  // A#3
+  247,  // B3
+  262,  // C4 (middle C)
+  277,  // C#4
+  294,  // D4
+  311,  // D#4
+  330,  // E4
+  349,  // F4
+  370,  // F#4
+  392,  // G4
+  415,  // G#4
+  440,  // A4 (concert pitch)
+  466,  // A#4
+  494,  // B4
+  523,  // C5
+  554,  // C#5
+  587,  // D5 (climax - where old scale started!)
 ];
 
 // Shared AudioContext for Web Audio API sounds
@@ -165,7 +172,7 @@ export function playCorrectSound(puzzleIndex: number, delay: number = 250): void
     const gain1 = ctx.createGain();
     osc1.type = 'triangle';
     osc1.frequency.value = baseFreq;
-    gain1.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain1.gain.setValueAtTime(0.15, ctx.currentTime);
     gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
     osc1.connect(gain1);
     gain1.connect(ctx.destination);
@@ -177,7 +184,7 @@ export function playCorrectSound(puzzleIndex: number, delay: number = 250): void
     const gain2 = ctx.createGain();
     osc2.type = 'triangle';
     osc2.frequency.value = baseFreq * 1.5;
-    gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.1);
+    gain2.gain.setValueAtTime(0.15, ctx.currentTime + 0.1);
     gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
     osc2.connect(gain2);
     gain2.connect(ctx.destination);
@@ -371,6 +378,24 @@ export function playCaptureSound(): void {
       console.warn('Capture sound failed:', err.message);
     }
   });
+}
+
+/**
+ * Haptic feedback for correct answer - single short vibration
+ */
+export function vibrateOnCorrect(): void {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(100);
+  }
+}
+
+/**
+ * Haptic feedback for wrong answer - double pulse pattern
+ */
+export function vibrateOnError(): void {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate([50, 30, 50]);
+  }
 }
 
 // Supernova Gentle streak effect styles

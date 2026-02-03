@@ -103,6 +103,18 @@ The scroll-to-current-lesson feature was implemented in three different places: 
 The database had a `current_lesson_id` column, and the API returned it, but the `mergeProgress()` function didn't include it in its return value. We spent hours debugging the frontend when the problem was in the data layer.
 → **New rule:** Always trace data from DB → API → sync → hook → component. If any layer drops the data, the feature won't work.
 
+### Lesson: 2026-02-02 - Scroll failed because React hadn't re-rendered yet
+`setTimeout(100ms)` wasn't enough time for React to re-render the expanded section before `scrollIntoView` was called. The element didn't exist yet, so scroll silently failed.
+→ **New rule:** When scrolling to dynamically rendered elements, poll for the element's existence instead of using a fixed timeout. React render timing is unpredictable.
+
+### Lesson: 2026-02-02 - "Current" lesson showed wrong lesson after navigation
+After completing lesson 1.6.1, the pulsing ring showed on 1.1.4 instead of 1.6.2. The `currentLessonId` logic found the "first unlocked but not completed" lesson from the start of the curriculum, ignoring where the user actually was.
+→ **New rule:** When navigating with a URL param (scrollTo), that param should override calculated "current" values for visual indicators. The user's context matters.
+
+### Lesson: 2026-02-02 - Database schema drift caused 500 errors
+The actual Supabase database had columns (`tree_id`, `lesson_id` on puzzle_attempts) that weren't in the local `schema.sql` file. API inserts failed with NOT NULL violations.
+→ **New rule:** When you see a 500 error on POST, check the server logs for the actual error message. Schema drift between `schema.sql` and the real database is a common cause.
+
 <!-- Add new lessons here -->
 
 ---
@@ -217,6 +229,7 @@ Before implementing any feature involving data:
 - Anything inappropriate for kids
 - Real people
 - Swearing
+- Cheesy emojis in UI (no 🔥💪🏆✨ etc.)
 
 ---
 
@@ -238,6 +251,29 @@ npm run dev      # Start dev server at localhost:3000
 npm run build    # Production build
 npm run lint     # Check for code issues
 ```
+
+### MCP Tools (Claude Desktop)
+
+Three MCP servers are configured for this project:
+
+| Tool | Use For |
+|------|---------|
+| **filesystem** | Read/write/search files in the project directory |
+| **github** | Create PRs, manage issues, view repo info |
+| **supabase** | Query database, check schema, manage tables directly |
+
+**When to use each:**
+
+- **Debugging data issues?** → Use `supabase` to query the actual database and compare with what `schema.sql` says
+- **Need to check production data?** → Use `supabase` to run SELECT queries
+- **Creating a PR?** → Use `github` to create it directly
+- **Reading/editing files?** → Use `filesystem` (faster than asking user to paste)
+
+**Supabase MCP tips:**
+- Always check the LIVE database schema before assuming `schema.sql` is accurate
+- Use it to verify RLS policies are working
+- Can run migrations and check table structures
+- Project ref: `ruseupjmldymfvpybqdl`
 
 ---
 
@@ -295,6 +331,11 @@ lib/                       # Core utilities
 - Mobile-first with `MobileContainer` wrapper
 - Use `h-screen overflow-hidden` for full-height pages
 - Fixed heights to prevent layout shift
+
+### Design Rules
+- **Mobile-first**: All designs must fit a mobile screen
+- **Pages load at the top**: No scroll position persistence except where specified
+- **No scrolling**: Pages should not scroll EXCEPT `/learn`
 
 ---
 

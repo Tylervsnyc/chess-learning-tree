@@ -1,0 +1,25 @@
+{
+  "level": 2,
+  "ratingRange": "800-1000",
+  "theme": "zugzwang",
+  "count": 1,
+  "puzzles": [
+    {
+      "puzzleId": "KS2V7",
+      "fen": "8/2p5/1b4p1/1P2kp1p/2K4P/4B1P1/5P2/8 w - - 2 40",
+      "moves": "e3b6 c7b6 f2f4 e5e4",
+      "rating": 927,
+      "popularity": 96,
+      "nbPlays": 1166,
+      "theme": "zugzwang",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "zugzwang"
+      ],
+      "gameUrl": "https://lichess.org/pgWfFwLm#79"
+    }
+  ]
+}

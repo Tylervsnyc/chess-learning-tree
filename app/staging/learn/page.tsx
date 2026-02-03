@@ -318,7 +318,7 @@ function LockedLevelCard({
 
 export default function LearnPage() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'sec-1': true,
+    '1.1': true,
   });
 
   // Track completed lessons and unlocked levels

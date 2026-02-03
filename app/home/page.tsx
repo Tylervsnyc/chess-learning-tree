@@ -92,37 +92,6 @@ export default function HomePage() {
         </div>
       </button>
 
-      {/* Workout Card */}
-      <button
-        onClick={() => router.push('/workout')}
-        className="flex items-center gap-4 p-3 rounded-xl text-left transition-transform active:scale-[0.98]"
-        style={{ background: 'linear-gradient(135deg, #1CB0F6, #A560E8)' }}
-      >
-        <div className="rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-          <AnimatedBoard size={80} speed={2600} />
-        </div>
-        <div>
-          <div className="text-white/80 text-xs uppercase tracking-wide">Practice</div>
-          <div className="text-white font-bold text-lg">Workout</div>
-          <div className="text-white/70 text-xs">Unlimited puzzles</div>
-        </div>
-      </button>
-
-      {/* Profile link */}
-      <button
-        onClick={() => router.push('/profile')}
-        className="flex items-center justify-between p-3 rounded-xl bg-[#1A2C35] border border-white/10 mt-auto transition-transform active:scale-[0.98]"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#58CC02] to-[#1CB0F6] flex items-center justify-center text-white font-bold">
-            {(profile?.display_name || 'U')[0].toUpperCase()}
-          </div>
-          <span className="text-white">{profile?.display_name || 'Your Profile'}</span>
-        </div>
-        <span className="text-gray-400 bg-[#131F24] px-2 py-1 rounded text-sm">
-          {profile?.elo_rating || 800}
-        </span>
-      </button>
     </div>
   );
 }

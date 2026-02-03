@@ -75,7 +75,7 @@ We're starting with one-move checkmates. These are the easiest puzzles in chess 
       sections: [
         // Section 1: Easy Mates - Queen then Rook
         {
-          id: 'sec-1',
+          id: '1.1',
           name: 'Mate in One: Queen & Rook',
           description: 'End games with your strongest pieces',
           themeIntroMessage: `Your queen and rooks are checkmate machines.
@@ -128,7 +128,7 @@ Look for where they can attack the king while blocking all escape routes. One mo
         },
         // Section 2: Mating Patterns (famous patterns)
         {
-          id: 'sec-2',
+          id: '1.2',
           name: 'Classic Checkmate Patterns',
           description: 'Learn the patterns that win games',
           themeIntroMessage: `Now for the fun stuff - famous checkmate patterns.
@@ -177,7 +177,7 @@ Learn the patterns, spot them in your games.`,
         },
         // Section 3: Multi-Move Checkmates
         {
-          id: 'sec-3',
+          id: '1.3',
           name: 'Multi-Move Checkmates',
           description: 'Plan ahead for the kill',
           themeIntroMessage: `Think one move deeper.
@@ -226,7 +226,7 @@ Make a forcing move (usually a check), wait for their response, THEN deliver che
         },
         // Section 4: Block 1 Review
         {
-          id: 'sec-4',
+          id: '1.4',
           name: 'Review: Checkmates',
           description: 'Mixed checkmate practice',
           themeIntroMessage: `Time to prove you can find the mate.
@@ -301,7 +301,7 @@ The fork is your new best friend. One piece, two targets, maximum chaos.`,
       sections: [
         // Section 5: Hanging Pieces & Crushing
         {
-          id: 'sec-5',
+          id: '1.5',
           name: 'Free Pieces',
           description: 'Grab what they leave hanging',
           themeIntroMessage: `Some pieces are just... sitting there.
@@ -354,7 +354,7 @@ Before you calculate anything fancy, always ask: "Did they leave something hangi
         },
         // Section 6: Knight Forks
         {
-          id: 'sec-6',
+          id: '1.6',
           name: 'Forks',
           description: 'Attack two pieces at once',
           themeIntroMessage: `The fork: chess's most satisfying tactic.
@@ -409,7 +409,7 @@ Put a piece where it attacks two things at once, and watch them panic.`,
         },
         // Section 7: Skewers
         {
-          id: 'sec-7',
+          id: '1.7',
           name: 'Skewers',
           description: 'Attack through pieces',
           themeIntroMessage: `The skewer - attack a valuable piece, and when it moves, grab what's behind it.
@@ -442,7 +442,7 @@ Kings are perfect skewer targets - they MUST move, so you always get what's behi
         },
         // Section 8: Block 2 Review
         {
-          id: 'sec-8',
+          id: '1.8',
           name: 'Review: Winning Material',
           description: 'Mixed tactics practice',
           themeIntroMessage: `Time to show off your tactical vision.
@@ -521,7 +521,7 @@ Let's make sure that's not you.`,
       sections: [
         // Section 9: Rook Endgames
         {
-          id: 'sec-9',
+          id: '1.9',
           name: 'Rook Endgames',
           description: 'The most common endgame',
           themeIntroMessage: `The most common endgame. By far.
@@ -570,7 +570,7 @@ Rule #1: Keep your rook active. A passive rook is a losing rook.`,
         },
         // Section 10: Pawn Endgames & Promotion
         {
-          id: 'sec-10',
+          id: '1.10',
           name: 'Pawn Endgames',
           description: 'King and pawn battles',
           themeIntroMessage: `Every pawn dreams of becoming a queen.
@@ -619,7 +619,7 @@ The "opposition" is your secret weapon. You'll see.`,
         },
         // Section 11: Advanced Tactics & Minor Endgames
         {
-          id: 'sec-11',
+          id: '1.11',
           name: 'Advanced Tactics',
           description: 'Sneaky tactics and piece endgames',
           themeIntroMessage: `Time for the sneaky stuff.
@@ -668,7 +668,7 @@ Plus: knight, bishop, and queen endgames to finish converting your advantage.`,
         },
         // Section 12: Block 3 Review
         {
-          id: 'sec-12',
+          id: '1.12',
           name: 'Review: Endgames',
           description: 'Mixed endgame practice',
           themeIntroMessage: `Time to prove you can convert.
@@ -741,7 +741,7 @@ Prove you've been paying attention. Pass this, and you're ready for Level 2.`,
       sections: [
         // Section 13: Level 1 Review
         {
-          id: 'sec-13',
+          id: '1.13',
           name: 'Level 1 Review',
           description: 'Mixed practice from all blocks',
           themeIntroMessage: `Time to put it all together.
@@ -798,7 +798,7 @@ Checkmates, tactics, endgames - anything goes. Figure out what the position need
         },
         // Section 14: Level 1 Final
         {
-          id: 'sec-14',
+          id: '1.14',
           name: 'Level 1 Final',
           description: 'The ultimate test',
           themeIntroMessage: `The final challenge.

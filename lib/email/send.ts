@@ -145,7 +145,7 @@ export async function sendEmail(params: SendEmailParams): Promise<{
 
 // Generate unsubscribe URL
 export function getUnsubscribeUrl(userId: string, emailType?: EmailType): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.app';
   const params = new URLSearchParams({ userId });
   if (emailType) params.append('type', emailType);
   return `${appUrl}/api/email/unsubscribe?${params.toString()}`;
@@ -153,5 +153,5 @@ export function getUnsubscribeUrl(userId: string, emailType?: EmailType): string
 
 // Get app URL helper
 export function getAppUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.com';
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.app';
 }

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getTreeIdFromLessonId } from '@/lib/progress-sync';
-import { getAllLessonIds } from '@/lib/curriculum-registry';
+import { getAllLessonIds, getTreeIdFromLessonId } from '@/lib/curriculum-registry';
 
 /**
  * GET /api/progress
@@ -20,48 +19,55 @@ export async function GET() {
   }
 
   // Fetch completed lessons
+  // NOTE: In the new schema, presence in lesson_progress means completed (no 'completed' column)
   const { data: lessonProgress, error: lessonError } = await supabase
     .from('lesson_progress')
     .select('lesson_id')
-    .eq('user_id', user.id)
-    .eq('completed', true);
+    .eq('user_id', user.id);
 
   if (lessonError) {
     console.error('Error fetching lesson progress:', lessonError);
     return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
   }
 
-  // Fetch theme performance
-  const { data: themePerf, error: themeError } = await supabase
-    .from('theme_performance')
-    .select('theme, attempts, solved')
-    .eq('user_id', user.id);
-
-  if (themeError) {
-    console.error('Error fetching theme performance:', themeError);
-    return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
-  }
-
   // Fetch profile for streaks and progress tracking
+  // NOTE: Per RULES.md Section 23, we removed: elo_rating, current_lesson_id, current_level, best_streak
+  // currentLessonId is derived from completed lessons, currentLevel from unlocked_levels
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('current_streak, best_streak, last_played_date, current_lesson_id, current_level, lessons_completed_today, last_lesson_date, unlocked_levels')
+    .select('current_streak, last_activity_date, lessons_completed_today, last_lesson_date, unlocked_levels')
     .eq('id', user.id)
     .single();
 
-  if (profileError) {
+  // Handle missing profile (e.g., Google OAuth users where trigger didn't fire)
+  if (profileError && profileError.code === 'PGRST116') {
+    // No profile found - create one
+    console.log('Profile not found for user, creating one:', user.id);
+    const { error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: user.id,
+        email: user.email,
+        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
+      });
+
+    if (insertError) {
+      console.error('Error creating profile:', insertError);
+      // Return defaults even if insert fails
+    }
+
+    // Return default values for new user
+    return NextResponse.json({
+      completedLessons: (lessonProgress || []).map((lp) => lp.lesson_id),
+      currentStreak: 0,
+      lastActivityDate: null,
+      lessonsCompletedToday: 0,
+      lastLessonDate: null,
+      unlockedLevels: [1],
+    });
+  } else if (profileError) {
     console.error('Error fetching profile:', profileError);
     return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
-  }
-
-  // Transform theme performance to match local format
-  const themePerformance: Record<string, { attempts: number; solved: number; puzzleIds: string[] }> = {};
-  for (const tp of themePerf || []) {
-    themePerformance[tp.theme] = {
-      attempts: tp.attempts,
-      solved: tp.solved,
-      puzzleIds: [], // Server doesn't track individual puzzle IDs per theme
-    };
   }
 
   // Reset daily count if it's a new day
@@ -71,13 +77,8 @@ export async function GET() {
 
   return NextResponse.json({
     completedLessons: (lessonProgress || []).map((lp) => lp.lesson_id),
-    themePerformance,
     currentStreak: profile?.current_streak ?? 0,
-    bestStreak: profile?.best_streak ?? 0,
-    lastPlayedDate: profile?.last_played_date ?? null,
-    // Progress tracking fields
-    currentLessonId: profile?.current_lesson_id ?? null,
-    currentLevel: profile?.current_level ?? 1,
+    lastActivityDate: profile?.last_activity_date ?? null,
     lessonsCompletedToday,
     lastLessonDate: profile?.last_lesson_date ?? null,
     unlockedLevels: profile?.unlocked_levels ?? [1],
@@ -124,14 +125,24 @@ export async function POST(request: NextRequest) {
       supabase
         .from('lesson_progress')
         .select('lesson_id')
-        .eq('user_id', user.id)
-        .eq('completed', true),
+        .eq('user_id', user.id),
       supabase
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
-        .single(),
+        .maybeSingle(), // Use maybeSingle to handle missing profile gracefully
     ]);
+
+    // Handle missing profile (create one if needed)
+    if (!profileResult.data && !profileResult.error) {
+      // Profile doesn't exist - create one
+      console.log('Profile not found for user in POST, creating one:', user.id);
+      await supabase.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
+      });
+    }
 
     const completedLessons = (existingProgressResult.data || []).map(p => p.lesson_id);
     const isAdmin = profileResult.data?.is_admin ?? false;
@@ -162,14 +173,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Lesson is locked' }, { status: 403 });
     }
 
-    const treeId = getTreeIdFromLessonId(lessonId);
-
     const { error } = await supabase.from('lesson_progress').upsert(
       {
         user_id: user.id,
         lesson_id: lessonId,
-        tree_id: treeId,
-        completed: true,
+        tree_id: getTreeIdFromLessonId(lessonId),
         completed_at: new Date().toISOString(),
       },
       { onConflict: 'user_id,lesson_id' }
@@ -180,23 +188,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to record progress' }, { status: 500 });
     }
 
-    // Update daily count and current lesson position
+    // Update daily count, activity date, and streak
     const today = new Date().toISOString().split('T')[0];
-    const { data: profile } = await supabase
+    const { data: profileData } = await supabase
       .from('profiles')
-      .select('lessons_completed_today, last_lesson_date')
+      .select('lessons_completed_today, last_lesson_date, current_streak, last_activity_date')
       .eq('id', user.id)
       .single();
 
-    const isNewDay = profile?.last_lesson_date !== today;
-    const newCount = isNewDay ? 1 : (profile?.lessons_completed_today ?? 0) + 1;
+    const isNewLessonDay = profileData?.last_lesson_date !== today;
+    const newLessonCount = isNewLessonDay ? 1 : (profileData?.lessons_completed_today ?? 0) + 1;
+
+    // Calculate streak using day-based logic (per RULES.md Section 11)
+    const currentStreak = profileData?.current_streak ?? 0;
+    const lastActivityDate = profileData?.last_activity_date;
+
+    // Calculate yesterday's date
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    let newStreak: number;
+    if (lastActivityDate === today) {
+      // Already played today - don't change streak
+      newStreak = currentStreak;
+    } else if (lastActivityDate === yesterdayStr) {
+      // Continuing streak from yesterday - increment
+      newStreak = currentStreak + 1;
+    } else {
+      // Missed day(s) or first time - start fresh at 1
+      newStreak = 1;
+    }
 
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
-        lessons_completed_today: newCount,
+        lessons_completed_today: newLessonCount,
         last_lesson_date: today,
-        current_lesson_id: nextLessonId ?? null, // Track next lesson to do
+        last_activity_date: today,
+        current_streak: newStreak,
       })
       .eq('id', user.id);
 
@@ -210,23 +240,15 @@ export async function POST(request: NextRequest) {
 
   if (type === 'unlockLevel') {
     // Record level unlock (from passing a level test)
-    const { level, unlockedLevels } = data;
-    if (!level || !unlockedLevels) {
+    const { unlockedLevels } = data;
+    if (!unlockedLevels) {
       return NextResponse.json({ error: 'Missing level data' }, { status: 400 });
     }
-
-    // Fetch current profile to get current_level
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('current_level')
-      .eq('id', user.id)
-      .single();
 
     const { error } = await supabase
       .from('profiles')
       .update({
         unlocked_levels: unlockedLevels,
-        current_level: Math.max(level, profile?.current_level ?? 1),
       })
       .eq('id', user.id);
 
@@ -240,21 +262,34 @@ export async function POST(request: NextRequest) {
 
   if (type === 'puzzle') {
     // Record puzzle attempt
-    const { puzzleId, correct, themes, rating, fen, solution, timeSpentMs, updateStreak } = data;
+    // NOTE: Per RULES.md Section 23, puzzle_attempts only has: puzzle_id, lesson_id, correct, attempts
+    const { puzzleId, lessonId, correct, updateStreak } = data;
     if (!puzzleId || typeof correct !== 'boolean') {
       return NextResponse.json({ error: 'Missing required puzzle data' }, { status: 400 });
     }
 
-    // Insert puzzle attempt (triggers theme_performance update via DB trigger)
+    // Ensure profile exists (required for foreign key constraint)
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!existingProfile) {
+      console.log('Profile not found for puzzle sync, creating one:', user.id);
+      await supabase.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
+      });
+    }
+
+    // Insert puzzle attempt (schema has minimal columns)
     const { error: puzzleError } = await supabase.from('puzzle_attempts').insert({
       user_id: user.id,
       puzzle_id: puzzleId,
+      lesson_id: lessonId || null,
       correct,
-      themes: themes || [],
-      rating,
-      fen,
-      solution,
-      time_spent_ms: timeSpentMs,
     });
 
     if (puzzleError) {
@@ -263,29 +298,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Update streak if requested
+    // Per RULES.md Section 11: streak tracks daily activity, not per-puzzle
     if (updateStreak) {
       const today = new Date().toISOString().split('T')[0];
 
       // Fetch current profile
-      const { data: profile } = await supabase
+      const { data: streakProfile } = await supabase
         .from('profiles')
-        .select('current_streak, best_streak, last_played_date')
+        .select('current_streak, last_activity_date')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      let newStreak = 0;
-      if (correct) {
-        const isNewDay = profile?.last_played_date !== today;
-        newStreak = isNewDay ? 1 : (profile?.current_streak ?? 0) + 1;
+      const currentStreak = streakProfile?.current_streak ?? 0;
+      const lastActivityDate = streakProfile?.last_activity_date;
+
+      // Calculate yesterday's date
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      let newStreak: number;
+      if (lastActivityDate === today) {
+        // Already played today - don't change streak
+        newStreak = currentStreak;
+      } else if (lastActivityDate === yesterdayStr) {
+        // Continuing streak from yesterday - increment
+        newStreak = currentStreak + 1;
+      } else {
+        // Missed day(s) or first time - start fresh at 1
+        newStreak = 1;
       }
-      const newBestStreak = Math.max(newStreak, profile?.best_streak ?? 0);
 
       const { error: streakError } = await supabase
         .from('profiles')
         .update({
           current_streak: newStreak,
-          best_streak: newBestStreak,
-          last_played_date: today,
+          last_activity_date: today,
         })
         .eq('id', user.id);
 

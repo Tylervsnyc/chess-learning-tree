@@ -2,25 +2,8 @@
   "level": 3,
   "ratingRange": "1000-1200",
   "theme": "mateIn5",
-  "count": 2,
+  "count": 1,
   "puzzles": [
-    {
-      "puzzleId": "1pHCF",
-      "fen": "2kr4/Q1p1b3/1p4p1/4q3/6b1/3PB3/PPP2RPP/RN4K1 w - - 2 21",
-      "moves": "e3f4 e5e1 f2f1 e7c5 d3d4 c5d4 f4e3 d4e3 g1h1 e1f1",
-      "rating": 1076,
-      "popularity": 90,
-      "nbPlays": 3750,
-      "theme": "mateIn5",
-      "allThemes": [
-        "kingsideAttack",
-        "mate",
-        "mateIn5",
-        "middlegame",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/AkAzr88X#41"
-    },
     {
       "puzzleId": "dcARu",
       "fen": "6k1/5pp1/p2p4/1b1nPPPp/7Q/2R4P/1r3q2/6RK b - - 0 35",

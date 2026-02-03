@@ -1,83 +1,58 @@
-import type { Progress, PuzzleAttempt, ThemeStats } from '@/hooks/useProgress';
+import type { Progress, PuzzleAttempt } from '@/hooks/useProgress';
 
 /**
  * Server-side progress data structure (from Supabase)
+ * NOTE: Per RULES.md Section 23, we removed: themePerformance, bestStreak, currentLessonId, currentLevel
  */
 export interface ServerProgress {
   completedLessons: string[];
-  themePerformance: Record<string, ThemeStats>;
   currentStreak: number;
-  bestStreak: number;
-  lastPlayedDate: string | null;
-  // Progress tracking fields
-  currentLessonId: string | null;
-  currentLevel: number;
+  lastActivityDate: string | null;
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
   unlockedLevels: number[];
-  // Note: puzzleAttempts are stored separately and queried on demand
 }
 
 /**
  * Merge local and server progress with additive strategy:
- * - Union of completed lessons
+ * - Union of completed lessons (ONLY if server has data - prevents stale localStorage)
  * - Max of streaks
- * - Union theme stats (max of each theme's attempts/solved)
  * - Dedupe puzzle attempts by puzzleId + timestamp
+ *
+ * NOTE: Per RULES.md Section 23, we removed themePerformance, bestStreak, currentLessonId
  */
 export function mergeProgress(
   local: Progress,
   server: ServerProgress
 ): Progress {
-  // Union of completed lessons
-  const completedLessons = Array.from(
-    new Set([...local.completedLessons, ...server.completedLessons])
-  );
+  // IMPORTANT: If server has no completed lessons, this is likely a new user.
+  // Don't merge from localStorage to prevent stale data from contaminating new accounts.
+  // If server has data, union both (supports offline usage).
+  const serverHasLessons = server.completedLessons.length > 0;
+  const completedLessons = serverHasLessons
+    ? Array.from(new Set([...local.completedLessons, ...server.completedLessons]))
+    : server.completedLessons; // Use server's empty array for new users
 
-  // Merge theme performance (take max of each stat)
-  const themePerformance: Record<string, ThemeStats> = { ...local.themePerformance };
-  for (const [theme, serverStats] of Object.entries(server.themePerformance)) {
-    const localStats = themePerformance[theme];
-    if (!localStats) {
-      themePerformance[theme] = serverStats;
-    } else {
-      // Take max of attempts and solved
-      themePerformance[theme] = {
-        attempts: Math.max(localStats.attempts, serverStats.attempts),
-        solved: Math.max(localStats.solved, serverStats.solved),
-        puzzleIds: Array.from(
-          new Set([...localStats.puzzleIds, ...serverStats.puzzleIds])
-        ),
-      };
-    }
-  }
+  // Max of streaks (for new users, use server defaults)
+  const currentStreak = serverHasLessons
+    ? Math.max(local.currentStreak, server.currentStreak)
+    : server.currentStreak;
 
-  // Calculate totals from theme performance
-  let totalPuzzlesAttempted = 0;
-  let totalPuzzlesSolved = 0;
-  for (const stats of Object.values(themePerformance)) {
-    totalPuzzlesAttempted += stats.attempts;
-    totalPuzzlesSolved += stats.solved;
-  }
+  // Latest activity date (for new users, use server; otherwise compare)
+  const lastActivityDate = serverHasLessons
+    ? (!local.lastActivityDate
+        ? server.lastActivityDate
+        : !server.lastActivityDate
+          ? local.lastActivityDate
+          : local.lastActivityDate > server.lastActivityDate
+            ? local.lastActivityDate
+            : server.lastActivityDate)
+    : server.lastActivityDate;
 
-  // Max of streaks
-  const currentStreak = Math.max(local.currentStreak, server.currentStreak);
-  const bestStreak = Math.max(local.bestStreak, server.bestStreak);
-
-  // Latest played date (compare as strings since they're ISO dates)
-  const lastPlayedDate =
-    !local.lastPlayedDate
-      ? server.lastPlayedDate
-      : !server.lastPlayedDate
-        ? local.lastPlayedDate
-        : local.lastPlayedDate > server.lastPlayedDate
-          ? local.lastPlayedDate
-          : server.lastPlayedDate;
-
-  // Merge unlocked levels (union of local and server)
-  const unlockedLevels = Array.from(
-    new Set([...local.unlockedLevels, ...(server.unlockedLevels || [1])])
-  ).sort((a, b) => a - b);
+  // Merge unlocked levels (only union if server has data, else use server's defaults)
+  const unlockedLevels = serverHasLessons
+    ? Array.from(new Set([...local.unlockedLevels, ...(server.unlockedLevels || [1])])).sort((a, b) => a - b)
+    : (server.unlockedLevels || [1]);
 
   // Server wins for daily count (can't bypass by clearing localStorage)
   // But reset if it's a new day
@@ -85,20 +60,19 @@ export function mergeProgress(
   const serverIsNewDay = server.lastLessonDate !== today;
   const lessonsCompletedToday = serverIsNewDay ? 0 : (server.lessonsCompletedToday ?? local.lessonsCompletedToday);
 
-  // Use server's last lesson date if available
-  const lastLessonDate = server.lastLessonDate ?? local.lastLessonDate;
+  // Use server's last lesson date (for new users, don't inherit local date)
+  const lastLessonDate = serverHasLessons
+    ? (server.lastLessonDate ?? local.lastLessonDate)
+    : server.lastLessonDate;
 
   return {
     completedLessons,
-    puzzleAttempts: local.puzzleAttempts, // Keep local attempts, server syncs separately
-    totalPuzzlesAttempted,
-    totalPuzzlesSolved,
+    puzzleAttempts: serverHasLessons ? local.puzzleAttempts : [], // Clear for new users
+    totalPuzzlesAttempted: local.totalPuzzlesAttempted, // Keep local count
+    totalPuzzlesSolved: local.totalPuzzlesSolved, // Keep local count
     currentStreak,
-    bestStreak,
-    lastPlayedDate,
-    themePerformance,
-    startingLessonId: local.startingLessonId, // Keep local starting lesson
-    currentLessonId: server.currentLessonId ?? local.currentLessonId ?? null, // Server wins for current lesson
+    lastActivityDate,
+    startingLessonId: serverHasLessons ? local.startingLessonId : null, // Clear for new users
     lessonsCompletedToday, // Server value takes priority
     lastLessonDate,
     unlockedLevels, // Merged from both local and server

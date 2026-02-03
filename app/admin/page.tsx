@@ -69,8 +69,6 @@ const pantryPages = [
   { name: 'Landing', path: '/', description: 'Public marketing page' },
   { name: 'Home Dashboard', path: '/home', description: 'Feature card navigation' },
   { name: 'Daily Challenge', path: '/daily-challenge', description: '5-min timed mode with lives' },
-  { name: 'Workout', path: '/workout', description: 'Unlimited puzzle practice' },
-  { name: 'Profile', path: '/profile', description: 'Stats with bubble chart' },
   { name: 'Puzzle Viewer', path: '/puzzle/fork', description: 'Browse puzzles by theme' },
   { name: 'Review Tool', path: '/review', description: 'Admin: approve/reject puzzles' },
   { name: 'Flagged Puzzles', path: '/flagged', description: 'Admin: problematic puzzles' },

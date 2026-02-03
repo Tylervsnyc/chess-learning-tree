@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
     // Find users who:
     // 1. Played yesterday but not today (streak at risk)
     // 2. Played two days ago but not yesterday (streak lost)
+    // NOTE: Per RULES.md Section 23, we use last_activity_date (not last_played_date) and removed best_streak
     const { data: users, error } = await supabase
       .from('profiles')
       .select(`
@@ -51,8 +52,7 @@ export async function GET(request: NextRequest) {
         email,
         display_name,
         current_streak,
-        best_streak,
-        last_played_date,
+        last_activity_date,
         email_preferences (
           streak_warnings,
           unsubscribed_all
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     for (const user of users || []) {
       const prefs = user.email_preferences?.[0] || user.email_preferences;
-      const lastPlayed = user.last_played_date;
+      const lastPlayed = user.last_activity_date;
 
       // Skip if user has opted out
       if (prefs?.unsubscribed_all || prefs?.streak_warnings === false) {

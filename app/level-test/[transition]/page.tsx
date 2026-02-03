@@ -6,7 +6,7 @@ import { Chess, Square } from 'chess.js';
 import { useRouter, useParams } from 'next/navigation';
 import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests';
 import { getFirstLessonIdForLevel } from '@/lib/curriculum-registry';
-import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio } from '@/lib/sounds';
+import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio, vibrateOnCorrect, vibrateOnError } from '@/lib/sounds';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
@@ -14,7 +14,7 @@ import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
 
-type TestState = 'loading' | 'playing' | 'passed' | 'failed';
+type TestState = 'loading' | 'intro' | 'playing' | 'passed' | 'failed';
 type MoveStatus = 'playing' | 'correct' | 'wrong';
 
 export default function LevelTestPage() {
@@ -99,7 +99,8 @@ export default function LevelTestPage() {
           setCurrentFen(processed[0].puzzleFen);
         }
 
-        setTestState('playing');
+        // Show intro screen before starting
+        setTestState('intro');
       } catch {
         // Error fetching puzzles
       }
@@ -190,6 +191,7 @@ export default function LevelTestPage() {
           const newStreak = streak + 1;
           setMoveStatus('correct');
           playCorrectSound(correctCount);
+          vibrateOnCorrect();
           setStreak(newStreak);
           return true;
         }
@@ -220,6 +222,7 @@ export default function LevelTestPage() {
               const newStreak = streak + 1;
               setMoveStatus('correct');
               playCorrectSound(correctCount);
+              vibrateOnCorrect();
               setStreak(newStreak);
             }
           } catch {
@@ -227,6 +230,7 @@ export default function LevelTestPage() {
             const newStreak = streak + 1;
             setMoveStatus('correct');
             playCorrectSound(correctCount);
+            vibrateOnCorrect();
             setStreak(newStreak);
           }
         }, 400);
@@ -236,6 +240,7 @@ export default function LevelTestPage() {
         // Wrong move
         setSelectedSquare(null);
         playErrorSound();
+        vibrateOnError();
         setStreak(0);
         setHadWrongAnswer(true);
         setMoveStatus('wrong');
@@ -418,6 +423,59 @@ export default function LevelTestPage() {
         <div className="text-center">
           <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full mx-auto mb-4" />
           <p className="text-white/60">Loading test puzzles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Intro screen - show test parameters before starting
+  if (testState === 'intro') {
+    return (
+      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🎯</div>
+          <h1 className="text-3xl font-black text-white mb-2">
+            Level {targetLevel?.number || parseInt(transition.split('-')[1])} Test
+          </h1>
+          <p className="text-white/60 mb-6">
+            Prove your skills to unlock the next level
+          </p>
+
+          {/* Test parameters */}
+          <div className="bg-[#1A2C35] rounded-2xl p-6 mb-6 text-left">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-white/70">Puzzles</span>
+                <span className="text-white font-bold">{puzzleCount}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/70">To pass</span>
+                <span className="text-[#58CC02] font-bold">{passingScore} correct</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white/70">Max wrong</span>
+                <span className="text-[#FF4B4B] font-bold">{maxWrongAnswers}</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-white/40 text-sm mb-6">
+            Each puzzle is from the level you&apos;re testing into
+          </p>
+
+          <button
+            onClick={() => setTestState('playing')}
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
+          >
+            Start Test
+          </button>
+
+          <button
+            onClick={handleBackToLearn}
+            className="w-full py-3 mt-3 text-white/60 hover:text-white transition-colors"
+          >
+            Back to Chess Path
+          </button>
         </div>
       </div>
     );

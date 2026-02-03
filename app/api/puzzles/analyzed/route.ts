@@ -181,11 +181,21 @@ export async function GET(request: NextRequest) {
   const combinationPercent = Math.round(data.stats.combinations.total / total * 1000) / 10;
   const highConfidencePercent = Math.round(data.stats.confidence.high / total * 1000) / 10;
 
-  // Get top flows
-  const topFlows = Object.entries(data.stats.combinations.flows)
+  // Get ALL flows for Sankey visualization (sorted by count)
+  const allFlows = Object.entries(data.stats.combinations.flows)
     .sort((a, b) => (b[1] as number) - (a[1] as number))
-    .slice(0, 5)
-    .map(([flow, count]) => ({ flow, count: count as number }));
+    .map(([flow, count]) => {
+      // Clean up redundant outcome repetition (e.g., "fork → checkmate → checkmate" -> "fork → checkmate")
+      let cleanFlow = flow;
+      const parts = flow.split(' → ');
+      if (parts.length >= 2 && parts[parts.length - 1] === parts[parts.length - 2]) {
+        cleanFlow = parts.slice(0, -1).join(' → ');
+      }
+      return { flow: cleanFlow, count: count as number };
+    });
+
+  // Top 5 for backward compatibility
+  const topFlows = allFlows.slice(0, 5);
 
   return NextResponse.json({
     theme,
@@ -204,6 +214,7 @@ export async function GET(request: NextRequest) {
       combinations: {
         percent: combinationPercent,
         topFlows,
+        allFlows, // All flows for Sankey visualization
       },
       confidence: {
         highPercent: highConfidencePercent,

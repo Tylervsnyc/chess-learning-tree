@@ -8,6 +8,7 @@ import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
+import { StreakCelebrationPopup } from '@/components/streak/StreakCelebrationPopup';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
@@ -20,11 +21,13 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
 }
 
 // Determine lesson status - respects startingLessonId from diagnostic/level tests
+// overrideCurrentId: When navigating from a completed lesson, show this as "current" instead of first gap
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
   allLessonIds: string[],
-  startingLessonId: string | null
+  startingLessonId: string | null,
+  overrideCurrentId: string | null = null
 ): LessonStatus {
   // Completed lessons are always completed
   if (completedLessons.includes(lessonId)) return 'completed';
@@ -56,21 +59,28 @@ function getLessonStatus(
 
   if (!isUnlocked) return 'locked';
 
-  // Find the first unlocked but incomplete lesson (current)
-  const firstCurrent = allLessonIds.find(id => {
-    if (completedLessons.includes(id)) return false;
-    const idx = allLessonIds.indexOf(id);
-    // Check if unlocked using same logic
-    if (idx === 0) return true;
-    if (startingLessonId) {
-      const startingIdx = allLessonIds.indexOf(startingLessonId);
-      if (startingIdx >= 0 && idx <= startingIdx) return true;
-    }
-    const prevId = allLessonIds[idx - 1];
-    return completedLessons.includes(prevId);
-  });
+  // If we have an override (from URL scrollTo), use that as current
+  if (overrideCurrentId && lessonId === overrideCurrentId) {
+    return 'current';
+  }
 
-  if (lessonId === firstCurrent) return 'current';
+  // Find the first unlocked but incomplete lesson (current) - only if no override
+  if (!overrideCurrentId) {
+    const firstCurrent = allLessonIds.find(id => {
+      if (completedLessons.includes(id)) return false;
+      const idx = allLessonIds.indexOf(id);
+      // Check if unlocked using same logic
+      if (idx === 0) return true;
+      if (startingLessonId) {
+        const startingIdx = allLessonIds.indexOf(startingLessonId);
+        if (startingIdx >= 0 && idx <= startingIdx) return true;
+      }
+      const prevId = allLessonIds[idx - 1];
+      return completedLessons.includes(prevId);
+    });
+
+    if (lessonId === firstCurrent) return 'current';
+  }
 
   // Unlocked but not the first current - show as unlocked (clickable but not highlighted)
   return 'unlocked';
@@ -339,111 +349,31 @@ function findSectionForLesson(lessonId: string): string | null {
   return null;
 }
 
-// Find the user's current lesson (first unlocked but not completed)
-function findCurrentLessonId(
-  completedLessons: string[],
-  allLessonIds: string[],
-  startingLessonId: string | null
-): string | null {
-  for (const lessonId of allLessonIds) {
-    if (completedLessons.includes(lessonId)) continue;
-
-    const index = allLessonIds.indexOf(lessonId);
-
-    // Check if unlocked
-    let isUnlocked = false;
-    if (index === 0) {
-      isUnlocked = true;
-    } else if (startingLessonId) {
-      const startingIndex = allLessonIds.indexOf(startingLessonId);
-      if (startingIndex >= 0 && index <= startingIndex) {
-        isUnlocked = true;
-      }
-    }
-    if (!isUnlocked && index > 0) {
-      const previousLessonId = allLessonIds[index - 1];
-      if (completedLessons.includes(previousLessonId)) {
-        isUnlocked = true;
-      }
-    }
-
-    if (isUnlocked) {
-      return lessonId;
-    }
-  }
-  return null;
-}
-
 export default function LearnPage() {
   const searchParams = useSearchParams();
   const scrollToLessonId = searchParams.get('scrollTo');
-  const hasScrolledRef = useRef(false);
-  const initialScrollDoneRef = useRef(false);
 
   // Track completed lessons and unlocked levels
-  const { completedLessons, unlockedLevels, unlockLevel, startingLessonId, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
+  const {
+    completedLessons,
+    unlockedLevels,
+    unlockLevel,
+    startingLessonId,
+    isLessonUnlocked,
+    loaded: progressLoaded,
+    currentStreak,
+    streakJustExtended,
+    previousStreak,
+    dismissStreakCelebration,
+  } = useLessonProgress();
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
-  // Find the user's current lesson
-  const currentLessonId = useMemo(() => {
-    return findCurrentLessonId(completedLessons, allLessonIds, startingLessonId);
-  }, [completedLessons, allLessonIds, startingLessonId]);
-
-  // Find which section to expand for the scrollTo lesson or current lesson
-  const targetLessonId = scrollToLessonId || currentLessonId;
-  const targetSectionId = useMemo(() => {
-    if (!targetLessonId) return null;
-    return findSectionForLesson(targetLessonId);
-  }, [targetLessonId]);
-
   // Initialize expanded sections with the target section
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'sec-1': true,
+    '1.1': true, // First section of level 1
   });
-
-  // Auto-expand section containing target lesson (only on initial load or target change)
-  const hasAutoExpandedRef = useRef(false);
-  useEffect(() => {
-    if (targetSectionId && !hasAutoExpandedRef.current) {
-      setExpandedSections(prev => ({
-        ...prev,
-        [targetSectionId]: true,
-      }));
-      hasAutoExpandedRef.current = true;
-    }
-  }, [targetSectionId]);
-
-  // Scroll to target lesson after section expands
-  // Use instant scroll (no animation) so page loads with lesson already visible
-  useEffect(() => {
-    if (!targetLessonId) return;
-
-    // For scrollTo param (coming from completed lesson)
-    if (scrollToLessonId && !hasScrolledRef.current) {
-      const timer = setTimeout(() => {
-        const element = document.getElementById(`lesson-${scrollToLessonId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'instant', block: 'center' });
-          hasScrolledRef.current = true;
-        }
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-
-    // For initial load (no scrollTo param), scroll to current lesson
-    if (!scrollToLessonId && currentLessonId && !initialScrollDoneRef.current) {
-      const timer = setTimeout(() => {
-        const element = document.getElementById(`lesson-${currentLessonId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'instant', block: 'center' });
-          initialScrollDoneRef.current = true;
-        }
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [targetLessonId, scrollToLessonId, currentLessonId]); // Don't include expandedSections - causes scroll jump on toggle
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
@@ -455,6 +385,58 @@ export default function LearnPage() {
   // Admin users have unrestricted access to all lessons and levels
   // While loading, default to false (secure default) - show loading state instead of flash
   const isAdmin = profile?.is_admin ?? false;
+
+  // Find the current lesson (first unlocked but not completed)
+  const currentLessonId = useMemo(() => {
+    for (const lessonId of allLessonIds) {
+      if (!completedLessons.includes(lessonId)) {
+        // Check if this is the first lesson or if previous lesson is completed
+        const idx = allLessonIds.indexOf(lessonId);
+        if (idx === 0) return lessonId;
+        if (startingLessonId) {
+          const startingIdx = allLessonIds.indexOf(startingLessonId);
+          if (startingIdx >= 0 && idx <= startingIdx) return lessonId;
+        }
+        const prevId = allLessonIds[idx - 1];
+        if (completedLessons.includes(prevId)) return lessonId;
+      }
+    }
+    return allLessonIds[allLessonIds.length - 1]; // All completed, show last
+  }, [allLessonIds, completedLessons, startingLessonId]);
+
+  // SCROLL BEHAVIOR (RULES.md Section 5) - ONE useEffect, ONE place
+  // - URL has scrollTo: Expand section, scroll to that lesson
+  // - Fresh visit (no param): Expand section, scroll to current lesson
+  // - Section expand/collapse: NO scrolling (handled by toggleSection)
+  useEffect(() => {
+    if (!progressLoaded) return;
+
+    const targetLessonId = scrollToLessonId || currentLessonId;
+    console.log('[DEBUG learn] scrollToLessonId:', scrollToLessonId, 'currentLessonId:', currentLessonId, 'targetLessonId:', targetLessonId, 'startingLessonId:', startingLessonId);
+    if (!targetLessonId) return;
+
+    const sectionId = findSectionForLesson(targetLessonId);
+    if (sectionId) {
+      setExpandedSections(prev => ({ ...prev, [sectionId]: true }));
+    }
+
+    // Wait for the element to exist (section needs to expand and render)
+    // Poll every 50ms for up to 500ms
+    let attempts = 0;
+    const maxAttempts = 10;
+    const pollForElement = () => {
+      const element = document.getElementById(`lesson-${targetLessonId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'instant', block: 'center' });
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(pollForElement, 50);
+      } else {
+        console.warn('[DEBUG learn] Could not find element for lesson:', targetLessonId);
+      }
+    };
+    setTimeout(pollForElement, 50);
+  }, [scrollToLessonId, progressLoaded, currentLessonId]);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
@@ -519,14 +501,6 @@ export default function LearnPage() {
           0% { transform: skewX(-20deg) translateX(-150%); }
           100% { transform: skewX(-20deg) translateX(250%); }
         }
-        @keyframes fadeSlideIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes popupSlideUp {
-          from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.95); }
-          to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-        }
         .level-card-hover:hover .level-card-main {
           transform: translate(-2px, -2px);
         }
@@ -578,7 +552,7 @@ export default function LearnPage() {
               )}
 
               {/* Sticky Level Header - Design 3: Floating Layered Card */}
-              <div className="sticky top-3 z-40 -mx-4 px-4 py-3 mb-6">
+              <div className="sticky top-10 z-40 -mx-4 px-4 py-3 mb-6">
                 <div className="relative level-card-hover group cursor-default">
                   {/* Back layers for 3D depth effect */}
                   <div
@@ -662,6 +636,7 @@ export default function LearnPage() {
                     levelColor={color}
                     isAdmin={isAdmin}
                     startingLessonId={startingLessonId}
+                    overrideCurrentId={scrollToLessonId}
                   />
                 );
               })}
@@ -669,6 +644,14 @@ export default function LearnPage() {
           );
         })}
       </div>
+
+      {/* Streak Celebration Popup */}
+      <StreakCelebrationPopup
+        isOpen={streakJustExtended}
+        previousStreak={previousStreak}
+        newStreak={currentStreak}
+        onClose={dismissStreakCelebration}
+      />
     </div>
   );
 }
@@ -685,6 +668,7 @@ function BlockView({
   levelColor,
   isAdmin,
   startingLessonId,
+  overrideCurrentId,
 }: {
   block: Block;
   blockIndex: number;
@@ -696,6 +680,7 @@ function BlockView({
   levelColor: string;
   isAdmin: boolean;
   startingLessonId: string | null;
+  overrideCurrentId: string | null;
 }) {
   return (
     <div className="mb-8">
@@ -722,6 +707,7 @@ function BlockView({
             allLessonIds={allLessonIds}
             isAdmin={isAdmin}
             startingLessonId={startingLessonId}
+            overrideCurrentId={overrideCurrentId}
           />
         );
       })}
@@ -739,6 +725,7 @@ function SectionView({
   allLessonIds,
   isAdmin,
   startingLessonId,
+  overrideCurrentId,
 }: {
   section: Section;
   sectionIndex: number;
@@ -748,6 +735,7 @@ function SectionView({
   allLessonIds: string[];
   isAdmin: boolean;
   startingLessonId: string | null;
+  overrideCurrentId: string | null;
 }) {
   const router = useRouter();
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
@@ -825,7 +813,7 @@ function SectionView({
           <div className="flex flex-row justify-evenly items-start">
             {section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
-              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId);
+              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, startingLessonId, overrideCurrentId);
               const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
               const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
@@ -833,10 +821,6 @@ function SectionView({
                 <div
                   key={lesson.id}
                   id={`lesson-${lesson.id}`}
-                  style={{
-                    animation: `fadeSlideIn 0.2s ease-out ${lessonIndex * 50}ms forwards`,
-                    opacity: 0,
-                  }}
                 >
                   <LessonButton
                     lesson={lesson}
@@ -922,7 +906,7 @@ function LessonButton({
     <div className="flex flex-col items-center relative">
       {/* Icon button */}
       <div
-        className={`relative ${isLocked ? 'opacity-60' : ''} cursor-pointer hover:scale-105 transition-transform`}
+        className={`relative ${isLocked ? 'opacity-60' : ''} cursor-pointer`}
         style={{ width: size + depthX, height: size + depthY, opacity: isUnlocked && !isCurrent ? 0.75 : 1 }}
         onClick={handleClick}
       >
@@ -981,13 +965,24 @@ function LessonButton({
       {/* Popup card below icon */}
       {isSelected && (
         <div
-          className="absolute top-full mt-3 left-1/2 -translate-x-1/2 z-50"
-          style={{ animation: 'popupSlideUp 0.2s ease-out' }}
+          className="z-50"
+          style={{
+            position: 'absolute',
+            top: size + depthY + 12,
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
         >
           {/* Arrow pointing up */}
           <div
-            className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
-            style={{ backgroundColor: isLocked ? '#374151' : sectionColor }}
+            className="w-4 h-4"
+            style={{
+              position: 'absolute',
+              top: -8,
+              left: '50%',
+              transform: 'translateX(-50%) rotate(45deg)',
+              backgroundColor: isLocked ? '#374151' : sectionColor,
+            }}
           />
 
           {/* Card content */}

@@ -2,7 +2,7 @@
   "level": 3,
   "ratingRange": "1000-1200",
   "theme": "clearance",
-  "count": 176,
+  "count": 152,
   "puzzles": [
     {
       "puzzleId": "d4uaj",
@@ -236,23 +236,6 @@
       "gameUrl": "https://lichess.org/1fMRUEoV#25"
     },
     {
-      "puzzleId": "hF7lr",
-      "fen": "5rk1/2qn1R1p/p2Np1pb/1p1nP3/2pP4/P1P2QB1/1P4PP/6K1 b - - 5 27",
-      "moves": "d5e7 f7f8 h6f8 f3f7",
-      "rating": 1039,
-      "popularity": 95,
-      "nbPlays": 2232,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/T5VFZJoG/black#54"
-    },
-    {
       "puzzleId": "I6qJX",
       "fen": "3k3r/3P1p1p/2B3p1/pp6/2b5/8/5rPP/1K1RR3 b - - 1 23",
       "moves": "f2e2 e1e2 c4e2 d1e1 d8c7 e1e2",
@@ -302,43 +285,6 @@
       "gameUrl": "https://lichess.org/TE88UAdP/black#36"
     },
     {
-      "puzzleId": "XdVve",
-      "fen": "r4rk1/pbpnq1pp/1p1p4/3Pppn1/1PP5/P2BPN2/1BQ2PPP/R4RK1 w - - 2 15",
-      "moves": "d3f5 g5f3 g2f3 e7g5",
-      "rating": 1054,
-      "popularity": 92,
-      "nbPlays": 1825,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "master",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/dp2ILUg7#29"
-    },
-    {
-      "puzzleId": "s7SYA",
-      "fen": "2r3k1/pp3pp1/8/1P1pPPp1/P1qP3n/4Q3/2r1NR1P/5RK1 b - - 0 30",
-      "moves": "f7f6 e5f6 g7f6 e3e6",
-      "rating": 1055,
-      "popularity": 92,
-      "nbPlays": 4527,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "master",
-        "masterVsMaster",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/LA2XtCI2/black#60"
-    },
-    {
       "puzzleId": "AmxO0",
       "fen": "2rr4/pp3pkp/6p1/8/5NP1/1Pn1RP2/P2p4/3B1RK1 w - - 1 33",
       "moves": "g1g2 c3d1 f1d1 c8c1 d1d2 d8d2",
@@ -370,23 +316,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/8uwVztMz/black#46"
-    },
-    {
-      "puzzleId": "L1Xzy",
-      "fen": "r2q1rk1/pb2bpp1/1pn2n1p/4p3/4N3/P2BPN2/1BP2PPP/R2Q1RK1 b - - 1 15",
-      "moves": "d8d5 e4f6 e7f6 d3h7",
-      "rating": 1062,
-      "popularity": 95,
-      "nbPlays": 1318,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/g7x6rO66/black#30"
     },
     {
       "puzzleId": "8Yxsw",
@@ -584,23 +513,6 @@
       "gameUrl": "https://lichess.org/sWe721v1#55"
     },
     {
-      "puzzleId": "LO0qI",
-      "fen": "r4rk1/pp3p1p/2n1p1p1/3p4/3P2bq/2PB4/PPQN1P1N/R4RK1 w - - 2 16",
-      "moves": "d2f3 g4f3 h2f3 h4g4",
-      "rating": 1077,
-      "popularity": 94,
-      "nbPlays": 1535,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/m4UqnIOR#31"
-    },
-    {
       "puzzleId": "s44hl",
       "fen": "1r3rk1/pp3ppp/2pNp3/8/2PP4/4P3/n4PPP/1R2K2R w K - 0 19",
       "moves": "b1b7 b8b7 d6b7 f8b8 e1d2 b8b7",
@@ -631,23 +543,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/kGkQSFBR#23"
-    },
-    {
-      "puzzleId": "aIHB7",
-      "fen": "r2qr1k1/pb2bpp1/1p1p3B/2pP4/2P1Q1n1/3B1N2/PP3PPP/R4RK1 b - - 2 16",
-      "moves": "g4h6 e4h7 g8f8 h7h8 h6g8 d3h7",
-      "rating": 1083,
-      "popularity": 94,
-      "nbPlays": 1330,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/Wl0RlfrD/black#32"
     },
     {
       "puzzleId": "duku4",
@@ -749,23 +644,6 @@
       "gameUrl": "https://lichess.org/rqNTDsK6/black#62"
     },
     {
-      "puzzleId": "900WY",
-      "fen": "3r1rk1/ppp2ppp/3bb3/4n2q/2P1P1n1/1QN2N1P/PP1BBPP1/R4RK1 w - - 1 14",
-      "moves": "f1c1 e5f3 e2f3 d6h2",
-      "rating": 1091,
-      "popularity": 91,
-      "nbPlays": 920,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/rvhw9JBX#27"
-    },
-    {
       "puzzleId": "PKkxC",
       "fen": "r2r4/1p4R1/k3b2p/p1B5/P7/2P5/5PPP/3R2K1 w - - 1 26",
       "moves": "d1d6 d8d6 c5d6 a8d8 f2f4 d8d6",
@@ -831,24 +709,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/DzF3wr2Y/black#22"
-    },
-    {
-      "puzzleId": "URRmI",
-      "fen": "8/8/5P2/B1pk4/P2rp3/2R2r1p/2P4P/2K5 b - - 4 46",
-      "moves": "f3c3 a5c3 d4a4 f6f7 a4a8 c3g7",
-      "rating": 1096,
-      "popularity": 92,
-      "nbPlays": 569,
-      "theme": "clearance",
-      "allThemes": [
-        "advancedPawn",
-        "advantage",
-        "clearance",
-        "defensiveMove",
-        "endgame",
-        "long"
-      ],
-      "gameUrl": "https://lichess.org/k6bdWYG1/black#92"
     },
     {
       "puzzleId": "XhvRV",
@@ -996,24 +856,6 @@
       "gameUrl": "https://lichess.org/PrRbzIME#41"
     },
     {
-      "puzzleId": "KXRF8",
-      "fen": "2r1r1k1/pp3pp1/1qn2b1p/5Q2/3pB3/8/PPP2PPP/R3R1K1 b - - 7 20",
-      "moves": "c6e7 f5h7 g8f8 h7h8 e7g8 e4h7",
-      "rating": 1119,
-      "popularity": 91,
-      "nbPlays": 1766,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "master",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/aivlrzR2/black#40"
-    },
-    {
       "puzzleId": "FjIZg",
       "fen": "rn2k1nr/5pp1/2p1p2p/p3Pb2/2P1N3/P1q5/5PPP/R1BQ1RK1 b kq - 0 14",
       "moves": "c3a1 e4d6 e8f8 d6f5 b8a6 d1d6",
@@ -1076,23 +918,6 @@
         "middlegame"
       ],
       "gameUrl": "https://lichess.org/y85Q9gtD#21"
-    },
-    {
-      "puzzleId": "fo9zU",
-      "fen": "1n4k1/1pq2pp1/p1r1p1Np/3pP3/3P4/1P1P3P/P4QP1/5RK1 b - - 3 25",
-      "moves": "f7g6 f2f8 g8h7 f1f7 c7f7 f8f7",
-      "rating": 1127,
-      "popularity": 97,
-      "nbPlays": 2973,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "endgame",
-        "kingsideAttack",
-        "long"
-      ],
-      "gameUrl": "https://lichess.org/XESK7MEc/black#50"
     },
     {
       "puzzleId": "xgyJW",
@@ -1374,23 +1199,6 @@
       "gameUrl": "https://lichess.org/Ll9vuD7y/black#28"
     },
     {
-      "puzzleId": "YD7iT",
-      "fen": "2r1k2r/1p3ppp/4p3/q2pP3/bNnN1PP1/8/1PP1Q1BP/2KR3R w k - 1 24",
-      "moves": "c2c3 a4d1 h1d1 a5a1 c1c2 a1b2",
-      "rating": 1137,
-      "popularity": 96,
-      "nbPlays": 2051,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "long",
-        "middlegame",
-        "queensideAttack"
-      ],
-      "gameUrl": "https://lichess.org/NsQY1iUe#47"
-    },
-    {
       "puzzleId": "Pr2c5",
       "fen": "8/pp4kp/2pb2p1/5p2/3P1q2/P1NQ3P/1PP2PP1/6K1 w - - 5 29",
       "moves": "c3e2 f4h2 g1f1 h2h1 e2g1 d6h2",
@@ -1523,23 +1331,6 @@
       "gameUrl": "https://lichess.org/kySAwWDk/black#42"
     },
     {
-      "puzzleId": "Tghs1",
-      "fen": "2k1b3/5q2/4p2P/5pQ1/1p1P4/4P3/P4PP1/6K1 w - - 1 38",
-      "moves": "g5g7 f7g7 h6g7 e8f7",
-      "rating": 1150,
-      "popularity": 94,
-      "nbPlays": 2551,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "defensiveMove",
-        "endgame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/quA3Xayb#75"
-    },
-    {
       "puzzleId": "4FtOh",
       "fen": "2r2k2/5p2/1p2pR2/3pP3/P2P2Q1/8/1P4PP/2q3K1 w - - 1 35",
       "moves": "f6f1 c1e3 g1h1 c8c1",
@@ -1670,41 +1461,6 @@
       "gameUrl": "https://lichess.org/yxRPUT7U/black#40"
     },
     {
-      "puzzleId": "Z6xAd",
-      "fen": "6k1/pp3p1p/2p2qp1/2P4n/1P1bP3/P2NBP2/3Q2PP/6K1 w - - 1 27",
-      "moves": "d3f2 d4e3 d2e3 f6a1 f2d1 a1d1",
-      "rating": 1158,
-      "popularity": 94,
-      "nbPlays": 712,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "endgame",
-        "kingsideAttack",
-        "long",
-        "master"
-      ],
-      "gameUrl": "https://lichess.org/ePmSTLrd#53"
-    },
-    {
-      "puzzleId": "3z7jy",
-      "fen": "5rk1/p1p3pp/1np1R3/2qp4/3r1P2/1PN4Q/P1P3PP/5R1K b - - 0 20",
-      "moves": "d4f4 f1f4 f8f4 e6e8 f4f8 h3e6",
-      "rating": 1159,
-      "popularity": 94,
-      "nbPlays": 16642,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/1SSoyGAs/black#40"
-    },
-    {
       "puzzleId": "OZ71Y",
       "fen": "4rrk1/p1q3pp/1p2P3/2p1n1P1/5P1P/3B2N1/P1P3Q1/R1B1K3 w Q - 1 24",
       "moves": "f4f5 e5d3 c2d3 c7e5",
@@ -1738,23 +1494,6 @@
       "gameUrl": "https://lichess.org/DKdBAbhJ/black#52"
     },
     {
-      "puzzleId": "ttQuK",
-      "fen": "r2q1r1k/3p2pp/b1p5/p1P1R3/P2P3b/1BQ5/5PPP/R1B3K1 w - - 1 21",
-      "moves": "b3c2 h4f2 g1h1 f2d4 c3d4 f8f1",
-      "rating": 1161,
-      "popularity": 88,
-      "nbPlays": 847,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/o01UZljx#41"
-    },
-    {
       "puzzleId": "ROA4z",
       "fen": "1q3r1k/p5pp/3R4/3pP3/1P3nPb/P4B1P/1B1Q3K/8 w - - 8 36",
       "moves": "f3d5 f4d5 d2d5 f8f2",
@@ -1769,24 +1508,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/leLMtbUq#71"
-    },
-    {
-      "puzzleId": "VOJzW",
-      "fen": "7k/4p1b1/1pp1P1Qp/p1p1q1p1/P1P5/1P1P3P/6P1/5RK1 w - - 2 35",
-      "moves": "f1f3 e5e1 f3f1 g7d4",
-      "rating": 1163,
-      "popularity": 93,
-      "nbPlays": 2387,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "endgame",
-        "kingsideAttack",
-        "master",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/vakyAH94#69"
     },
     {
       "puzzleId": "BLvEC",
@@ -1819,23 +1540,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/2Mr2OjQS#65"
-    },
-    {
-      "puzzleId": "omRqA",
-      "fen": "r4rk1/p5p1/1p3q1p/3pR3/2pP4/P1P3nP/1PQ2PP1/R1B3K1 w - - 0 26",
-      "moves": "f2g3 f6f1 g1h2 f8f2 c2f2 f1f2",
-      "rating": 1165,
-      "popularity": 93,
-      "nbPlays": 2390,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/KN6i2yjL#51"
     },
     {
       "puzzleId": "QJhAD",
@@ -2066,23 +1770,6 @@
       "gameUrl": "https://lichess.org/YOAlJkmS#51"
     },
     {
-      "puzzleId": "0UakR",
-      "fen": "4r1k1/pb2n1p1/1pN2p1p/1P1pp3/P7/3Q4/2R2KPP/q2B4 b - - 5 34",
-      "moves": "a1a4 c6e7 e8e7 c2c8",
-      "rating": 1173,
-      "popularity": 88,
-      "nbPlays": 793,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/FHzMJccy/black#68"
-    },
-    {
       "puzzleId": "jT8jE",
       "fen": "2r2r1k/3q2pp/ppR1pb2/3p1p2/3P4/P3PNB1/BPQ2PPP/6K1 w - - 3 25",
       "moves": "c6c7 c8c7 g3c7 f8c8",
@@ -2097,24 +1784,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/hOxQP6jZ#49"
-    },
-    {
-      "puzzleId": "9RopG",
-      "fen": "2b2r1k/1pp3pp/3PP3/4bp2/6r1/1Q2B1Pq/PP3P1P/4RRK1 b - - 0 22",
-      "moves": "c7d6 e6e7 f8e8 b3f7 h7h6 f7e8",
-      "rating": 1174,
-      "popularity": 94,
-      "nbPlays": 2432,
-      "theme": "clearance",
-      "allThemes": [
-        "advancedPawn",
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/4SOSvJYy/black#44"
     },
     {
       "puzzleId": "lISSX",
@@ -2228,23 +1897,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/rTOg7doj/black#44"
-    },
-    {
-      "puzzleId": "2VxUb",
-      "fen": "3r2k1/pp3p1p/2p1pp2/2N2b2/5P2/6P1/PP1rR1BP/4R2K w - - 3 26",
-      "moves": "c5b7 d2e2 e1e2 d8d1",
-      "rating": 1177,
-      "popularity": 89,
-      "nbPlays": 724,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/0dsaS9HH#51"
     },
     {
       "puzzleId": "rb5i4",
@@ -2472,40 +2124,6 @@
       "gameUrl": "https://lichess.org/4e5wasLB#49"
     },
     {
-      "puzzleId": "gdoj6",
-      "fen": "r1bqr1k1/pp3pPR/2pb2p1/3p2P1/1P6/2PP1N2/P3PKB1/R2Q4 b - - 0 18",
-      "moves": "g8h7 d1h1 h7g7 h1h6 g7g8 a1h1",
-      "rating": 1188,
-      "popularity": 100,
-      "nbPlays": 852,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "defensiveMove",
-        "long",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/E6IL6KkH/black#36"
-    },
-    {
-      "puzzleId": "MwyD4",
-      "fen": "q2r2k1/p1p2ppp/6b1/1Q1nP3/6Pb/P6P/1P3P2/RNB1R1K1 w - - 1 20",
-      "moves": "c1e3 d5e3 e1e3 d8d1",
-      "rating": 1188,
-      "popularity": 96,
-      "nbPlays": 4646,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "kingsideAttack",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/JgWOgR2O#39"
-    },
-    {
       "puzzleId": "Q9Xem",
       "fen": "2rr4/p1Rb1pkp/1p4p1/4pq2/8/2Q1PB1P/PP3PP1/2R3K1 w - - 4 26",
       "moves": "b2b4 c8c7 c3c7 d8c8 c7c8 d7c8",
@@ -2620,25 +2238,6 @@
       "gameUrl": "https://lichess.org/AgApJFU7#55"
     },
     {
-      "puzzleId": "wuXAy",
-      "fen": "8/5pkp/1K1p2p1/PB6/5P1r/8/8/8 b - - 0 37",
-      "moves": "h4f4 a5a6 f4f2 a6a7 f2a2 b5a6",
-      "rating": 1191,
-      "popularity": 89,
-      "nbPlays": 5250,
-      "theme": "clearance",
-      "allThemes": [
-        "advancedPawn",
-        "advantage",
-        "clearance",
-        "defensiveMove",
-        "endgame",
-        "long",
-        "master"
-      ],
-      "gameUrl": "https://lichess.org/7VJnytmi/black#74"
-    },
-    {
       "puzzleId": "vURLw",
       "fen": "4r3/5pk1/p3p3/4P2p/3q2p1/6P1/3B1P1N/2Q3K1 b - - 1 37",
       "moves": "e8a8 d2h6 g7h8 c1g5",
@@ -2703,23 +2302,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/lAFPxjKr#47"
-    },
-    {
-      "puzzleId": "EJok1",
-      "fen": "r5k1/pbpp2p1/1p2p1Bp/4P3/2PP3P/2P1q3/P5PK/R4Q2 b - - 0 19",
-      "moves": "e3c3 f1f7 g8h8 a1f1",
-      "rating": 1193,
-      "popularity": 93,
-      "nbPlays": 11513,
-      "theme": "clearance",
-      "allThemes": [
-        "advantage",
-        "clearance",
-        "defensiveMove",
-        "endgame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/kXC701Ma/black#38"
     },
     {
       "puzzleId": "Q0NOk",

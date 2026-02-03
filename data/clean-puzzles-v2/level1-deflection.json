@@ -2,7 +2,7 @@
   "level": 1,
   "ratingRange": "400-800",
   "theme": "deflection",
-  "count": 17,
+  "count": 16,
   "puzzles": [
     {
       "puzzleId": "kljX8",
@@ -134,23 +134,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/C61TuuqN#63"
-    },
-    {
-      "puzzleId": "Wiv7y",
-      "fen": "6k1/5rp1/1qpBp2p/p3P3/Q1Pp3P/1P1b2P1/P2N2K1/8 b - - 1 29",
-      "moves": "c6c5 a4e8 g8h7 e8f7",
-      "rating": 772,
-      "popularity": 94,
-      "nbPlays": 2404,
-      "theme": "deflection",
-      "allThemes": [
-        "advantage",
-        "deflection",
-        "endgame",
-        "kingsideAttack",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/aFw1hTBg/black#58"
     },
     {
       "puzzleId": "9dcCP",

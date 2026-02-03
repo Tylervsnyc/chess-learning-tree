@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     // Search for user by email (case-insensitive partial match)
     const { data: users, error } = await admin
       .from('profiles')
-      .select('id, email, display_name, subscription_status, subscription_expires_at, elo_rating, created_at')
+      .select('id, email, display_name, subscription_status, subscription_expires_at, created_at')
       .ilike('email', `%${email}%`)
       .limit(10);
 
@@ -125,7 +125,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { userId, subscriptionStatus, expiresAt, eloRating } = body;
+    const { userId, subscriptionStatus, expiresAt } = body;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -139,10 +139,6 @@ export async function PATCH(request: NextRequest) {
 
     if (expiresAt !== undefined) {
       updateData.subscription_expires_at = expiresAt;
-    }
-
-    if (eloRating !== undefined) {
-      updateData.elo_rating = eloRating;
     }
 
     if (Object.keys(updateData).length === 0) {

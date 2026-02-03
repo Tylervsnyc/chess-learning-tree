@@ -119,4 +119,16 @@ export const SubscriptionEvents = {
     trackEvent('promo_code_failed', { code, error }),
 };
 
+// Share/Viral funnel
+export const ShareEvents = {
+  shareClicked: (source: 'lesson' | 'daily_challenge') =>
+    trackEvent('share_clicked', { source }),
+  shareGenerated: (source: 'lesson' | 'daily_challenge') =>
+    trackEvent('share_generated', { source }),
+  shareCompleted: (source: 'lesson' | 'daily_challenge', method: 'native' | 'download') =>
+    trackEvent('share_completed', { source, method }),
+  shareFailed: (source: 'lesson' | 'daily_challenge', error: string) =>
+    trackEvent('share_failed', { source, error }),
+};
+
 export default posthog;

@@ -16,12 +16,18 @@
     "@react-email/components": "^1.0.6",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@types/d3": "^7.4.3",
     "@types/d3-force": "^3.0.10",
+    "@types/d3-sankey": "^0.12.5",
     "@types/d3-selection": "^3.0.11",
     "canvas-confetti": "^1.9.4",
     "chess.js": "^1.4.0",
+    "d3": "^7.9.0",
     "d3-force": "^3.0.0",
+    "d3-sankey": "^0.12.3",
     "d3-selection": "^3.0.0",
+    "gif.js": "^0.2.0",
+    "html-to-image": "^1.11.13",
     "next": "^16.1.2",
     "posthog-js": "^1.334.1",
     "react": "^19.2.3",
@@ -44,5 +50,8 @@
     "react-email": "^5.2.5",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
+  },
+  "optionalDependencies": {
+    "@next/swc-linux-arm64-gnu": "^16.1.6"
   }
 }

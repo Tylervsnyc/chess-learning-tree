@@ -252,7 +252,7 @@ export default function PreviewLearnPage() {
   const levelColor = getLevelColor(level);
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'sec-1': true,
+    '1.1': true,
   });
 
   // Track completed lessons in localStorage only (no auth)

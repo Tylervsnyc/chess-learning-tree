@@ -38,23 +38,24 @@ export async function GET(request: NextRequest) {
     const fourteenDaysAgo = new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0];
 
     // Find inactive users
+    // NOTE: Per RULES.md Section 23, we use last_activity_date (not last_played_date) and removed best_streak
     const { data: users, error } = await supabase
       .from('profiles')
       .select(`
         id,
         email,
         display_name,
-        best_streak,
-        last_played_date,
+        current_streak,
+        last_activity_date,
         email_preferences (
           marketing,
           unsubscribed_all
         )
       `)
       .not('email', 'is', null)
-      .not('last_played_date', 'is', null)
-      .lte('last_played_date', sevenDaysAgo)
-      .gte('last_played_date', fourteenDaysAgo);
+      .not('last_activity_date', 'is', null)
+      .lte('last_activity_date', sevenDaysAgo)
+      .gte('last_activity_date', fourteenDaysAgo);
 
     if (error) {
       console.error('Database error:', error);
@@ -95,8 +96,8 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      const lastPlayedDate = new Date(user.last_played_date);
-      const daysSinceLastPlay = daysBetween(lastPlayedDate, today);
+      const lastActivityDate = new Date(user.last_activity_date);
+      const daysSinceLastPlay = daysBetween(lastActivityDate, today);
 
       const result = await sendEmail({
         to: user.email,
@@ -106,11 +107,11 @@ export async function GET(request: NextRequest) {
         react: ReEngagement({
           displayName: user.display_name || 'Chess Player',
           daysSinceLastPlay,
-          previousStreak: user.best_streak || 0,
+          previousStreak: user.current_streak || 0,
           appUrl,
           unsubscribeUrl: getUnsubscribeUrl(user.id, 're_engagement'),
         }),
-        metadata: { daysSinceLastPlay, previousStreak: user.best_streak },
+        metadata: { daysSinceLastPlay, previousStreak: user.current_streak },
       });
 
       if (result.success) {
