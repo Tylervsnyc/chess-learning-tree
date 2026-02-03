@@ -800,6 +800,8 @@ function SectionView({
                     isSelected={selectedLessonId === lesson.id}
                     onSelect={() => handleLessonSelect(lesson.id)}
                     onStart={() => handleLessonStart(lesson.id)}
+                    lessonIndex={lessonIndex}
+                    totalLessons={section.lessons.length}
                   />
                 </div>
               );
@@ -820,6 +822,8 @@ function LessonButton({
   isSelected,
   onSelect,
   onStart,
+  lessonIndex,
+  totalLessons,
 }: {
   lesson: LessonCriteria;
   piece: PieceType;
@@ -828,6 +832,8 @@ function LessonButton({
   isSelected: boolean;
   onSelect: () => void;
   onStart: () => void;
+  lessonIndex: number;
+  totalLessons: number;
 }) {
   const size = CURRICULUM_V2_CONFIG.buttonSize;
   const depthY = CURRICULUM_V2_CONFIG.buttonDepthY;
@@ -933,14 +939,28 @@ function LessonButton({
       </div>
 
       {/* Popup card below icon */}
-      {isSelected && (
+      {isSelected && (() => {
+        // Edge-aware positioning: prevent popup from going off-screen on mobile
+        // Left-edge lessons: shift popup right, Right-edge lessons: shift popup left
+        const isLeftEdge = lessonIndex === 0;
+        const isRightEdge = lessonIndex === totalLessons - 1;
+
+        // Popup transform: -50% centers it, -15% shifts right, -85% shifts left
+        const popupTransform = isLeftEdge ? 'translateX(-15%)'
+          : isRightEdge ? 'translateX(-85%)'
+          : 'translateX(-50%)';
+
+        // Arrow position matches: 15% for left, 85% for right, 50% for center
+        const arrowLeft = isLeftEdge ? '15%' : isRightEdge ? '85%' : '50%';
+
+        return (
         <div
           className="z-50"
           style={{
             position: 'absolute',
             top: size + depthY + 12,
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: popupTransform,
           }}
         >
           {/* Arrow pointing up */}
@@ -949,7 +969,7 @@ function LessonButton({
             style={{
               position: 'absolute',
               top: -8,
-              left: '50%',
+              left: arrowLeft,
               transform: 'translateX(-50%) rotate(45deg)',
               backgroundColor: isLocked ? '#374151' : sectionColor,
             }}
@@ -1006,7 +1026,8 @@ function LessonButton({
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
