@@ -108,10 +108,16 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Get actual total participant count for today
+  const { count: totalCount } = await supabase
+    .from('daily_challenge_results')
+    .select('*', { count: 'exact', head: true })
+    .eq('challenge_date', date);
+
   return NextResponse.json({
     date,
     leaderboard,
     userEntry,
-    totalParticipants: results?.length || 0,
+    totalParticipants: totalCount || 0,
   });
 }

@@ -146,6 +146,7 @@ export default function DailyChallengePage() {
   // Leaderboard state
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userEntry, setUserEntry] = useState<LeaderboardEntry | null>(null);
+  const [totalParticipants, setTotalParticipants] = useState(0);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
 
   // Track if user already completed today (prevents replay)
@@ -266,6 +267,7 @@ export default function DailyChallengePage() {
           setTimeLeft(TOTAL_TIME - existingResult.timeUsedMs);
           setLeaderboard(data.leaderboard || []);
           setUserEntry(data.userEntry || userInLeaderboard);
+          setTotalParticipants(data.totalParticipants || 0);
 
           // Also fetch today's puzzles for review
           try {
@@ -613,6 +615,7 @@ export default function DailyChallengePage() {
       if (data.leaderboard) {
         setLeaderboard(data.leaderboard);
         setUserEntry(data.userEntry);
+        setTotalParticipants(data.totalParticipants || 0);
       }
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
@@ -920,11 +923,13 @@ export default function DailyChallengePage() {
                 <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/20 border border-[#58CC02]/30">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full bg-[#58CC02]/30 flex items-center justify-center text-[#58CC02] font-bold text-sm">
-                      #{userEntry?.rank || dummyUserEntry.rank}
+                      #{userEntry?.rank || 1}
                     </span>
                     <div className="text-left">
                       <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
-                      <div className="text-gray-400 text-xs">out of 1,247 players today</div>
+                      <div className="text-gray-400 text-xs">
+                        {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
@@ -933,7 +938,7 @@ export default function DailyChallengePage() {
                   </div>
                 </div>
                 <div className="text-center text-gray-500 text-xs py-2">
-                  {puzzlesSolved > 0 ? `Beat ${Math.max(0, (userEntry?.rank || dummyUserEntry.rank) - 1)} players!` : 'Complete puzzles to rank up!'}
+                  {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
                 </div>
               </div>
             ) : (
