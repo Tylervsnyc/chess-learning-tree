@@ -154,6 +154,7 @@ Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.
 | Lesson unlocking | `/hooks/useProgress.ts` → `isLessonUnlocked()` |
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
 | Page layout/height | `/app/globals.css` + `/app/layout.tsx` → flex structure |
+| Scroll to top (pages) | `/components/providers/ScrollToTop.tsx` (except /learn) |
 | Scroll behavior (/learn) | `/app/learn/page.tsx` → ONE useEffect |
 | Navigation after lesson | `/app/lesson/[lessonId]/page.tsx` → Continue button |
 | Permissions/limits | `/hooks/usePermissions.ts` |
