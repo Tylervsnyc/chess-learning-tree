@@ -68,8 +68,12 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Merge streaks (take max)
-  const mergedStreak = Math.max(localProgress.currentStreak, serverProfile?.current_streak ?? 0);
+  // Merge streaks - but NOT for new users (prevents localStorage contamination from previous sessions)
+  // A "new user" has no completed lessons AND no activity date on server
+  const isNewUser = serverLessons.size === 0 && !serverProfile?.last_activity_date;
+  const mergedStreak = isNewUser
+    ? (serverProfile?.current_streak ?? 0)  // New user: use server default (0)
+    : Math.max(localProgress.currentStreak, serverProfile?.current_streak ?? 0);
   const mergedLastActivity =
     !localProgress.lastActivityDate
       ? serverProfile?.last_activity_date
