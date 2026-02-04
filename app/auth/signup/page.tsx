@@ -169,7 +169,7 @@ function SignupContent() {
 
   if (pendingVerification) {
     return (
-      <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
+      <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex flex-col items-center justify-center px-3">
           <div className="max-w-[320px] w-full">
@@ -244,7 +244,7 @@ function SignupContent() {
   }
 
   return (
-    <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 

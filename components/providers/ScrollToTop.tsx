@@ -1,18 +1,16 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 export function ScrollToTop() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
+  // Disable browser scroll restoration globally
+  // With the new layout structure (body overflow:hidden), body doesn't scroll
+  // Pages that need scrolling (like /learn) handle their own internal scroll
   useEffect(() => {
-    // Don't auto-scroll if there's a scrollTo param (let the page handle it)
-    if (searchParams.get('scrollTo')) return;
-
-    window.scrollTo(0, 0);
-  }, [pathname, searchParams]);
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  }, []);
 
   return null;
 }

@@ -160,13 +160,17 @@
 
 html {
   background-color: #131F24;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background-color: #131F24;
   color: white;
-  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Body itself doesn't scroll - pages control their own overflow */
 }
 
 /* ===== Landing Page Journey Path Styles ===== */

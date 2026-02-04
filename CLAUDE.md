@@ -139,6 +139,10 @@ After passing a level test, users were sent to `/learn` but not to the specific 
 The lesson info popup was positioned relative to the button but could overflow off-screen on mobile edges.
 → **New rule:** Any popup/tooltip needs boundary detection. Check if it would overflow left/right edges and flip positioning accordingly. Use `getBoundingClientRect()` to detect.
 
+### Lesson: 2026-02-04 - Pages scrolled on mobile because NavHeader + h-screen > viewport
+Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.tsx. Total height = NavHeader + 100vh = scrollable body. Using JavaScript (ScrollToTop) to fix a CSS problem is a band-aid.
+→ **New rule:** Page layout is controlled in `globals.css` (body flex) + `layout.tsx` (main wrapper). Pages use `h-full` not `h-screen`. Only `/learn` has `overflow-auto` for scrolling. Never use `h-screen` in pages - it ignores the NavHeader.
+
 <!-- Add new lessons here -->
 
 ---
@@ -149,7 +153,8 @@ The lesson info popup was positioned relative to the button but could overflow o
 |----------|-------------------------|
 | Lesson unlocking | `/hooks/useProgress.ts` → `isLessonUnlocked()` |
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
-| Scroll behavior | `/app/learn/page.tsx` → ONE useEffect |
+| Page layout/height | `/app/globals.css` + `/app/layout.tsx` → flex structure |
+| Scroll behavior (/learn) | `/app/learn/page.tsx` → ONE useEffect |
 | Navigation after lesson | `/app/lesson/[lessonId]/page.tsx` → Continue button |
 | Permissions/limits | `/hooks/usePermissions.ts` |
 | Header | `/components/layout/NavHeader.tsx` |
@@ -355,13 +360,14 @@ lib/                       # Core utilities
 
 ### Layout
 - Mobile-first with `MobileContainer` wrapper
-- Use `h-screen overflow-hidden` for full-height pages
+- Use `h-full` for pages (NOT `h-screen` - that ignores NavHeader)
 - Fixed heights to prevent layout shift
+- Layout structure: body (flex-col, overflow-hidden) → NavHeader → main (flex-1) → page (h-full)
 
 ### Design Rules
 - **Mobile-first**: All designs must fit a mobile screen
-- **Pages load at the top**: No scroll position persistence except where specified
-- **No scrolling**: Pages should not scroll EXCEPT `/learn`
+- **Pages load at the top**: Body has `overflow: hidden`, no scroll restoration
+- **No scrolling**: Pages use `h-full overflow-hidden` EXCEPT `/learn` which uses `h-full overflow-auto`
 
 ---
 

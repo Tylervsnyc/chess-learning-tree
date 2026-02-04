@@ -127,7 +127,7 @@ export default function LandingPage() {
   }, [user, loading, router]);
 
   return (
-    <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
       {/* Flexible content area */}
       <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
         {/* Logo */}

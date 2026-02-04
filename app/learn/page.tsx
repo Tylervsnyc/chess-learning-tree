@@ -427,7 +427,7 @@ export default function LearnPage() {
   // Show loading skeleton while auth or progress is loading to prevent flash
   if (userLoading || isProfileLoading || !progressLoaded) {
     return (
-      <div className="min-h-screen bg-[#eef6fc] text-[#3c3c3c] pb-20">
+      <div className="h-full overflow-auto bg-[#eef6fc] text-[#3c3c3c] pb-20">
         <div className="max-w-lg mx-auto px-4 py-6">
           {/* Skeleton level header */}
           <div className="h-24 bg-gray-200 rounded-2xl animate-pulse mb-6" />
@@ -448,7 +448,7 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef6fc] text-[#3c3c3c] pb-20">
+    <div className="h-full overflow-auto bg-[#eef6fc] text-[#3c3c3c] pb-20">
       <style>{`
         @keyframes sparkle {
           0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }

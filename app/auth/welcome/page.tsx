@@ -58,7 +58,7 @@ export default function WelcomePage() {
   }, []);
 
   return (
-    <div className="h-screen bg-[#131F24] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#131F24] flex flex-col overflow-hidden">
       {showConfetti && <Confetti />}
 
       {/* Gradient top bar */}

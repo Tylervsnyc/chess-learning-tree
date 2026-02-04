@@ -860,7 +860,7 @@ export default function LessonPage() {
   // Only show blocked state AFTER permissions have finished loading
   if (!permissionsLoading && !canAccessLesson) {
     return (
-      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
@@ -920,7 +920,7 @@ export default function LessonPage() {
   // Loading state (either permissions or puzzle data)
   if (loading || permissionsLoading) {
     return (
-      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -952,7 +952,7 @@ export default function LessonPage() {
   // Error state
   if (error) {
     return (
-      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
@@ -1034,7 +1034,7 @@ export default function LessonPage() {
 
   if (!currentPuzzle) {
     return (
-      <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
@@ -1053,7 +1053,7 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
       {/* Header */}
       <div className="bg-[#eef6fc] border-b border-gray-200 px-4 py-3 flex-shrink-0">

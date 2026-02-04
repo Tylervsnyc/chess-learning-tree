@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function AboutPage() {
   return (
-    <div className="h-screen bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+    <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-6 pt-12 overflow-hidden">
         <div className="max-w-sm w-full">

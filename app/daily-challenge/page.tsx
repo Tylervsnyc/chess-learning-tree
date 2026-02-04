@@ -728,7 +728,7 @@ export default function DailyChallengePage() {
   // Loading state while checking if user already completed today
   if (checkingCompletion || userLoading) {
     return (
-      <div className="h-screen bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           {/* Same compact brand logo as ready screen for seamless transition */}
           <div className="mb-3">
@@ -766,7 +766,7 @@ export default function DailyChallengePage() {
   // Ready screen
   if (gameState === 'ready' || gameState === 'loading') {
     return (
-      <div className="h-screen bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           {/* Brand logo with wordmark - compact */}
           <div className="mb-3">
@@ -888,7 +888,7 @@ export default function DailyChallengePage() {
       : null;
 
     return (
-      <div className="h-screen bg-[#0D1A1F] flex flex-col items-center py-4 px-4 overflow-auto">
+      <div className="h-full bg-[#0D1A1F] flex flex-col items-center py-4 px-4 overflow-auto">
         <div className="text-center max-w-sm w-full">
           {/* Shareable Results Card - Stories2 variant */}
           <div className="mb-3 flex justify-center">
@@ -1377,7 +1377,7 @@ export default function DailyChallengePage() {
 
   // Playing screen
   return (
-    <div className="h-screen bg-[#1A2C35] text-white overflow-hidden flex flex-col">
+    <div className="h-full bg-[#1A2C35] text-white overflow-hidden flex flex-col">
       {/* Header with stats */}
       <div
         className="px-4 py-2"

@@ -386,7 +386,7 @@ export default function LevelTestPage() {
   // Loading state while checking auth
   if (userLoading) {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="h-full bg-[#131F24] flex items-center justify-center">
         <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
       </div>
     );
@@ -395,7 +395,7 @@ export default function LevelTestPage() {
   // Auth check - must be logged in to take level tests
   if (!user) {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🔒</div>
           <h1 className="text-2xl font-bold text-white mb-2">Sign In Required</h1>
@@ -424,7 +424,7 @@ export default function LevelTestPage() {
   // Loading state while validating transition
   if (isValid === null) {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="h-full bg-[#131F24] flex items-center justify-center">
         <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
       </div>
     );
@@ -433,7 +433,7 @@ export default function LevelTestPage() {
   // Invalid transition
   if (isValid === false) {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🤔</div>
           <h1 className="text-2xl font-bold text-white mb-2">Invalid Test</h1>
@@ -454,7 +454,7 @@ export default function LevelTestPage() {
   // Loading state
   if (testState === 'loading') {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="h-full bg-[#131F24] flex items-center justify-center">
         <style>{progressBarStyles}</style>
         <div className="text-center">
           <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full mx-auto mb-4" />
@@ -602,14 +602,14 @@ export default function LevelTestPage() {
   // Playing state - wait for puzzle to be ready
   if (!currentPuzzle || !currentFen || !chess) {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="h-full bg-[#131F24] flex items-center justify-center">
         <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+    <div className="h-full bg-[#131F24] text-white flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
 
       {/* Header */}
