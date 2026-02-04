@@ -204,6 +204,9 @@ export default function LessonPage() {
   // Board transition animation
   const [isBoardTransitioning, setIsBoardTransitioning] = useState(false);
 
+  // Setup move animation - show opponent's last move animating
+  const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+
   // Intro popup state
   type IntroState = 'block' | 'theme' | 'playing';
   const [introState, setIntroState] = useState<IntroState>('playing');
@@ -331,7 +334,17 @@ export default function LessonPage() {
 
         const transformedPuzzles = data.puzzles.map(transformPuzzle);
         setPuzzles(transformedPuzzles);
-        setCurrentFen(transformedPuzzles[0].puzzleFen);
+
+        // Animate the opponent's setup move
+        const firstPuzzle = transformedPuzzles[0];
+        setCurrentFen(firstPuzzle.fen); // Start with position BEFORE opponent's move
+        setIsAnimatingSetup(true);
+        setTimeout(() => {
+          setCurrentFen(firstPuzzle.puzzleFen); // Animate to puzzle position
+          setTimeout(() => {
+            setIsAnimatingSetup(false); // Allow interaction after animation
+          }, 300);
+        }, 400);
 
         // Initialize results
         const initialResults: Record<string, PuzzleResult> = {};
@@ -388,7 +401,9 @@ export default function LessonPage() {
   // Reset puzzle state when current puzzle changes
   useEffect(() => {
     if (currentPuzzle) {
-      setCurrentFen(currentPuzzle.puzzleFen);
+      // Animate the opponent's setup move
+      setCurrentFen(currentPuzzle.fen); // Start with position BEFORE opponent's move
+      setIsAnimatingSetup(true);
       setMoveIndex(0);
       setMoveStatus('playing');
       setSelectedSquare(null);
@@ -397,6 +412,16 @@ export default function LessonPage() {
       setHintSquares(null);
       setPuzzleHadWrongAttempt(false);
       setPuzzleStartTime(Date.now()); // Reset timer for new puzzle
+
+      // After brief delay, animate to puzzle position
+      const timer = setTimeout(() => {
+        setCurrentFen(currentPuzzle.puzzleFen);
+        setTimeout(() => {
+          setIsAnimatingSetup(false); // Allow interaction after animation
+        }, 300);
+      }, 400);
+
+      return () => clearTimeout(timer);
     }
   }, [currentPuzzle, inRetryMode, currentIndex]);
 
@@ -1085,8 +1110,9 @@ export default function LessonPage() {
                 options={{
                   position: currentFen || currentPuzzle.puzzleFen,
                   boardOrientation: currentPuzzle.playerColor,
-                  onSquareClick: onSquareClick,
+                  onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                   squareStyles: squareStyles,
+                  animationDurationInMs: 300,
                   boardStyle: {
                     borderRadius: '8px 8px 0 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

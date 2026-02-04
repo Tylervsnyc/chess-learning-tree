@@ -42,6 +42,9 @@ export default function LevelTestPage() {
   const [moveStatus, setMoveStatus] = useState<MoveStatus>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
 
+  // Setup move animation - show opponent's last move animating
+  const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+
   // Streak tracking for progress bar effects
   const [streak, setStreak] = useState(0);
   const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
@@ -94,9 +97,16 @@ export default function LevelTestPage() {
         setPuzzles(processed);
         setTargetLevel(data.targetLevel);
 
-        // Initialize first puzzle
+        // Initialize first puzzle with setup animation
         if (processed.length > 0) {
-          setCurrentFen(processed[0].puzzleFen);
+          setCurrentFen(processed[0].originalFen); // Start with position BEFORE opponent's move
+          setIsAnimatingSetup(true);
+          setTimeout(() => {
+            setCurrentFen(processed[0].puzzleFen);
+            setTimeout(() => {
+              setIsAnimatingSetup(false);
+            }, 300);
+          }, 400);
         }
 
         // Show intro screen before starting
@@ -114,10 +124,22 @@ export default function LevelTestPage() {
     if (puzzles.length === 0 || currentIndex >= puzzles.length) return;
 
     const puzzle = puzzles[currentIndex];
-    setCurrentFen(puzzle.puzzleFen);
+    // Animate the opponent's setup move
+    setCurrentFen(puzzle.originalFen); // Start with position BEFORE opponent's move
+    setIsAnimatingSetup(true);
     setMoveIndex(0);
     setMoveStatus('playing');
     setSelectedSquare(null);
+
+    // After brief delay, animate to puzzle position
+    const timer = setTimeout(() => {
+      setCurrentFen(puzzle.puzzleFen);
+      setTimeout(() => {
+        setIsAnimatingSetup(false);
+      }, 300);
+    }, 400);
+
+    return () => clearTimeout(timer);
   }, [currentIndex, puzzles]);
 
   const currentPuzzle = puzzles[currentIndex];
@@ -642,8 +664,9 @@ export default function LevelTestPage() {
               options={{
                 position: currentFen,
                 boardOrientation: currentPuzzle.playerColor,
-                onSquareClick: onSquareClick,
+                onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 squareStyles: squareStyles,
+                animationDurationInMs: 300,
                 boardStyle: {
                   borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

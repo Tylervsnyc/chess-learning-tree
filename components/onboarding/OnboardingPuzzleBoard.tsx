@@ -90,22 +90,37 @@ export function OnboardingPuzzleBoard({
   onResult,
   showSkip = false,
 }: OnboardingPuzzleBoardProps) {
-  const [currentFen, setCurrentFen] = useState<string>(puzzle.puzzleFen);
+  const [currentFen, setCurrentFen] = useState<string>(puzzle.fen); // Start with original position
   const [moveIndex, setMoveIndex] = useState(0);
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [hasReported, setHasReported] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
-  // Reset state when puzzle changes
+  // Setup move animation - show opponent's last move animating
+  const [isAnimatingSetup, setIsAnimatingSetup] = useState(true);
+
+  // Reset state when puzzle changes and animate setup move
   useEffect(() => {
-    setCurrentFen(puzzle.puzzleFen);
+    // Start with position BEFORE opponent's move
+    setCurrentFen(puzzle.fen);
+    setIsAnimatingSetup(true);
     setMoveIndex(0);
     setMoveStatus('playing');
     setSelectedSquare(null);
     setHasReported(false);
     setFeedbackMessage('');
-  }, [puzzle.puzzleId, puzzle.puzzleFen]);
+
+    // After brief delay, animate to puzzle position
+    const timer = setTimeout(() => {
+      setCurrentFen(puzzle.puzzleFen);
+      setTimeout(() => {
+        setIsAnimatingSetup(false);
+      }, 300);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [puzzle.puzzleId, puzzle.fen, puzzle.puzzleFen]);
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
@@ -322,8 +337,9 @@ export function OnboardingPuzzleBoard({
           options={{
             position: currentFen,
             boardOrientation: puzzle.playerColor,
-            onSquareClick: onSquareClick,
+            onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
             squareStyles: squareStyles,
+            animationDurationInMs: 300,
             boardStyle: {
               borderRadius: '8px 8px 0 0',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

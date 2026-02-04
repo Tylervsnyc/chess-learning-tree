@@ -122,6 +122,9 @@ export default function DailyChallengePage() {
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'incorrect'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
 
+  // Setup move animation - show opponent's last move animating
+  const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+
   // Challenge stats
   const [lives, setLives] = useState(MAX_LIVES);
   const [streak, setStreak] = useState(0);
@@ -341,10 +344,22 @@ export default function DailyChallengePage() {
   // Initialize puzzle when currentElo or tierPuzzleIndex changes
   useEffect(() => {
     if (currentPuzzle && gameState === 'playing') {
-      setCurrentFen(currentPuzzle.puzzleFen);
+      // Animate the opponent's setup move
+      setCurrentFen(currentPuzzle.originalFen); // Start with position BEFORE opponent's move
+      setIsAnimatingSetup(true);
       setMoveIndex(0);
       setMoveStatus('playing');
       setSelectedSquare(null);
+
+      // After brief delay, animate to puzzle position
+      const timer = setTimeout(() => {
+        setCurrentFen(currentPuzzle.puzzleFen);
+        setTimeout(() => {
+          setIsAnimatingSetup(false); // Allow interaction after animation
+        }, 300);
+      }, 400);
+
+      return () => clearTimeout(timer);
     }
   }, [currentPuzzle, gameState]);
 
@@ -395,8 +410,16 @@ export default function DailyChallengePage() {
 
     // Only start the game (and timer) after puzzles are loaded
     if (puzzles.length > 0) {
-      setCurrentFen(puzzles[0].puzzleFen);
+      // Animate the first puzzle's setup move
+      setCurrentFen(puzzles[0].originalFen); // Start with position BEFORE opponent's move
+      setIsAnimatingSetup(true);
       setGameState('playing');
+      setTimeout(() => {
+        setCurrentFen(puzzles[0].puzzleFen);
+        setTimeout(() => {
+          setIsAnimatingSetup(false);
+        }, 300);
+      }, 400);
     }
   };
 
@@ -1146,11 +1169,12 @@ export default function DailyChallengePage() {
               options={{
                 position: game.fen(),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onPieceDrop: (args: any) =>
+                onPieceDrop: isAnimatingSetup ? undefined : (args: any) =>
                   onDrop({ sourceSquare: args.sourceSquare, targetSquare: args.targetSquare, piece: args.piece }),
-                onSquareClick: onSquareClick,
+                onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 boardOrientation: boardOrientation,
                 squareStyles: squareStyles,
+                animationDurationInMs: 300,
                 boardStyle: {
                   borderRadius: '8px',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

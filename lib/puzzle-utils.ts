@@ -29,6 +29,7 @@ export interface RawPuzzle {
  */
 export interface ProcessedPuzzle {
   id: string;
+  originalFen: string; // Position BEFORE opponent's setup move (for animation)
   puzzleFen: string; // Position AFTER opponent's setup move
   solutionMoves: string[]; // Player's moves (UCI format)
   playerColor: 'white' | 'black';
@@ -70,6 +71,7 @@ export function processPuzzle(raw: RawPuzzle): ProcessedPuzzle {
 
   return {
     id: raw.id,
+    originalFen: raw.fen, // Position BEFORE setup move (for animation)
     puzzleFen: chess.fen(),
     solutionMoves: raw.moves.slice(1), // Everything after setup move (UCI format)
     playerColor: chess.turn() === 'w' ? 'white' : 'black',
