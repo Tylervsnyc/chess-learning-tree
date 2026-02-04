@@ -160,6 +160,7 @@ function CardVariant({
   mistakes,
   rank,
   totalParticipants,
+  highestPuzzleFen,
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const [copied, setCopied] = useState(false);
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
@@ -196,21 +197,22 @@ function CardVariant({
           style={{ top: '6px', left: '3px', right: 0, bottom: 0, background: 'linear-gradient(135deg, #CC7700, #CC5555)' }}
         />
         <div className="relative rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}>
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <ChessPathLogo size={24} />
-                <span className="text-white font-bold text-sm">chesspath.app</span>
-              </div>
-              <span className="text-white/70 text-xs">{formatDate()}</span>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <ChessPathLogo size={24} />
+              <span className="text-white font-bold text-sm">chesspath.app</span>
             </div>
-            <div className="text-white/90 font-bold text-lg ml-8">Daily Challenge</div>
+            <span className="text-white/70 text-xs">{formatDate()}</span>
           </div>
-          {/* Chess pieces */}
-          <div className="flex justify-center items-center -space-x-2 mb-3">
-            <ChessPieceIcon piece="N" size={56} />
-            <ChessPieceIcon piece="n" size={56} />
-          </div>
+          {/* Daily Challenge - centered */}
+          <div className="text-center text-white font-bold text-xl mb-4">Daily Challenge</div>
+          {/* Chess board - matches stats width */}
+          {highestPuzzleFen && (
+            <div className="flex justify-center mb-4">
+              <MiniBoard fen={highestPuzzleFen} size={240} />
+            </div>
+          )}
           <div className="text-center mb-4">
             <div className="text-4xl font-black text-white mb-1">
               {puzzlesSolved}<span className="text-xl text-white/60"> puzzles</span>
