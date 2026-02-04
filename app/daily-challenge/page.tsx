@@ -369,6 +369,9 @@ export default function DailyChallengePage() {
 
   // Start the challenge
   const startChallenge = async () => {
+    // Warmup audio NOW - user just clicked, and we have time while puzzles load
+    warmupAudio();
+
     // Reset state
     setLives(MAX_LIVES);
     setStreak(0);

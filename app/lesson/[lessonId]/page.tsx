@@ -370,6 +370,9 @@ export default function LessonPage() {
 
   // Handle dismissing intro popups
   const handleIntroDismiss = useCallback(() => {
+    // Warmup audio NOW - user just clicked the start button
+    warmupAudio();
+
     if (introState === 'block') {
       // If there's a theme intro, show it next
       if (introMessages.themeIntro) {

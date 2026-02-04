@@ -471,7 +471,10 @@ export default function LevelTestPage() {
           </p>
 
           <button
-            onClick={() => setTestState('playing')}
+            onClick={() => {
+              warmupAudio(); // Warmup audio NOW - user just clicked
+              setTestState('playing');
+            }}
             className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
           >
             Start Test
@@ -528,6 +531,7 @@ export default function LevelTestPage() {
           <div className="space-y-3">
             <button
               onClick={() => {
+                warmupAudio(); // Warmup audio NOW - user just clicked
                 setTestState('loading');
                 setCurrentIndex(0);
                 setCorrectCount(0);

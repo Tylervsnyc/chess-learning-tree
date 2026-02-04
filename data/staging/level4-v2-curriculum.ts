@@ -487,52 +487,56 @@ You've got the advantage. Now build on it. Expand. Dominate. Leave nothing to ch
 
 Crushing attacks. Promotion. Endgame technique. This is how empires are built.`,
       sections: [
-        // Section 9: Crushing Attacks
+        // Section 9: Decisive Tactics
         {
           id: '4.9',
-          name: 'Crushing Attacks',
-          description: 'When winning isn\'t enough',
+          name: 'Decisive Tactics',
+          description: 'End games with authority',
           themeIntroMessage: `Winning isn't enough. We want them to feel it.
 
-Crushing positions have one goal: end the game decisively. No slow grind. Maximum devastation.
+Deflection removes the defender. Forks attack two things at once. Combined? Unstoppable.
 
 Find the move that breaks them completely.`,
           lessons: [
             {
               id: '4.9.1',
-              name: 'Crushing: Easy',
-              description: 'Convert your big advantage',
-              requiredTags: ['crushing'],
+              name: 'Decisive Fork',
+              description: 'Win material with double attacks',
+              requiredTags: ['fork'],
               ratingMin: 1200,
               ratingMax: 1300,
               minPlays: 1000,
             },
             {
               id: '4.9.2',
-              name: 'Crushing: Medium',
-              description: 'Find the knockout blow',
-              requiredTags: ['crushing'],
+              name: 'Decisive Deflection',
+              description: 'Remove the defender',
+              requiredTags: ['deflection'],
               ratingMin: 1250,
               ratingMax: 1350,
               minPlays: 1000,
             },
             {
               id: '4.9.3',
-              name: 'Crushing: Hard',
-              description: 'Maximum devastation',
-              requiredTags: ['crushing'],
-              ratingMin: 1300,
-              ratingMax: 1400,
-              minPlays: 1000,
+              name: 'Decisive Combination',
+              description: 'Multi-move tactical sequences',
+              requiredTags: [],
+              isMixedPractice: true,
+              mixedThemes: ['deflection', 'fork', 'skewer'],
+              ratingMin: 1200,
+              ratingMax: 1300,
+              minPlays: 500,
             },
             {
               id: '4.9.4',
-              name: 'Crushing: Challenge',
+              name: 'Decisive Finish',
               description: 'Leave no doubt',
-              requiredTags: ['crushing'],
-              ratingMin: 1325,
-              ratingMax: 1425,
-              minPlays: 1000,
+              requiredTags: [],
+              isMixedPractice: true,
+              mixedThemes: ['fork', 'deflection', 'pin'],
+              ratingMin: 1225,
+              ratingMax: 1300,
+              minPlays: 500,
             },
           ],
         },
@@ -541,11 +545,11 @@ Find the move that breaks them completely.`,
           id: '4.10',
           name: 'Promotion Warfare',
           description: 'Race to make a queen',
-          themeIntroMessage: `Queen's great, but sometimes a knight is *chef's kiss*.
+          themeIntroMessage: `That pawn's one square away from becoming a queen. Don't let anyone stop it.
 
-Underpromotion isn't just for style points. Sometimes knight gives checkmate. Sometimes bishop avoids stalemate.
+Promotion tactics are about timing, defense, and pawn races. Get your pawn to the end before they stop you.
 
-Know when to make a queen and when not to.`,
+The endgame begins. The queening race is on.`,
           lessons: [
             {
               id: '4.10.1',
@@ -558,21 +562,21 @@ Know when to make a queen and when not to.`,
             },
             {
               id: '4.10.2',
-              name: 'Underpromotion: Knight',
-              description: 'When knight beats queen',
-              requiredTags: ['underPromotion'],
+              name: 'Promotion: Defense',
+              description: 'Promote while handling threats',
+              requiredTags: ['promotion'],
               ratingMin: 1225,
-              ratingMax: 1375,
-              minPlays: 100,
+              ratingMax: 1350,
+              minPlays: 500,
             },
             {
               id: '4.10.3',
-              name: 'Underpromotion: Advanced',
-              description: 'Creative underpromotion',
-              requiredTags: ['underPromotion'],
+              name: 'Queening Race',
+              description: 'Race your pawn to glory',
+              requiredTags: ['promotion', 'advancedPawn'],
               ratingMin: 1275,
               ratingMax: 1400,
-              minPlays: 100,
+              minPlays: 500,
             },
             {
               id: '4.10.4',
@@ -642,7 +646,7 @@ These endgames have deep theory. Learn the key patterns.`,
           name: 'Review: Conversion',
           description: 'Mixed conversion practice',
           isReview: true,
-          themeIntroMessage: `Block 3 review. Crushing attacks, promotions, endgames.
+          themeIntroMessage: `Block 3 review. Decisive tactics, promotions, endgames.
 
 You've got the advantage. Now convert it cleanly.
 
@@ -650,14 +654,14 @@ No second chances.`,
           lessons: [
             {
               id: '4.12.1',
-              name: 'Review: Crushing',
-              description: 'End them decisively',
+              name: 'Review: Decisive',
+              description: 'End them with tactics',
               requiredTags: [],
               isMixedPractice: true,
-              mixedThemes: ['crushing'],
+              mixedThemes: ['fork', 'deflection'],
               ratingMin: 1225,
               ratingMax: 1350,
-              minPlays: 1000,
+              minPlays: 500,
             },
             {
               id: '4.12.2',
@@ -665,10 +669,10 @@ No second chances.`,
               description: 'Race to victory',
               requiredTags: [],
               isMixedPractice: true,
-              mixedThemes: ['promotion', 'underPromotion'],
+              mixedThemes: ['promotion', 'advancedPawn'],
               ratingMin: 1250,
               ratingMax: 1375,
-              minPlays: 100,
+              minPlays: 500,
             },
             {
               id: '4.12.3',
@@ -687,7 +691,7 @@ No second chances.`,
               description: 'Complete conversion',
               requiredTags: [],
               isMixedPractice: true,
-              mixedThemes: ['crushing', 'promotion', 'bishopEndgame', 'knightEndgame'],
+              mixedThemes: ['fork', 'deflection', 'promotion', 'bishopEndgame'],
               ratingMin: 1275,
               ratingMax: 1400,
               minPlays: 100,
