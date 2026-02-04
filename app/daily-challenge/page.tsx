@@ -151,6 +151,9 @@ export default function DailyChallengePage() {
   const [alreadyCompletedToday, setAlreadyCompletedToday] = useState(false);
   const [checkingCompletion, setCheckingCompletion] = useState(true);
 
+  // Track if guest has completed in this session (prevents replay for non-logged-in users)
+  const [guestCompletedSession, setGuestCompletedSession] = useState(false);
+
   // Help modal state
   const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -660,12 +663,17 @@ export default function DailyChallengePage() {
   // Record when finished and fetch leaderboard
   useEffect(() => {
     if (gameState === 'finished') {
-      recordResult(puzzlesSolved, timeLeft);
-      // Update global day streak (per RULES.md Section 11)
-      recordDailyActivity();
-      setTimeout(() => fetchLeaderboard(), 500);
+      if (user) {
+        recordResult(puzzlesSolved, timeLeft);
+        // Update global day streak (per RULES.md Section 11)
+        recordDailyActivity();
+        setTimeout(() => fetchLeaderboard(), 500);
+      } else {
+        // Mark guest as completed in this session (prevents replay)
+        setGuestCompletedSession(true);
+      }
     }
-  }, [gameState, puzzlesSolved, timeLeft, recordResult, fetchLeaderboard, recordDailyActivity]);
+  }, [gameState, puzzlesSolved, timeLeft, recordResult, fetchLeaderboard, recordDailyActivity, user]);
 
   // Format time display
   const formatTime = (ms: number) => {
@@ -922,86 +930,122 @@ export default function DailyChallengePage() {
             Share Results
           </button>
 
-          {/* Leaderboard */}
-          <div className="bg-[#131F24] rounded-xl p-3 mb-4">
-            {/* Toggle buttons */}
-            <div className="flex rounded-lg bg-[#0D1A1F] p-1 mb-3">
-              <button
-                onClick={() => setShowMyStanding(false)}
-                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  !showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
-                }`}
-              >
-                Top 10
-              </button>
-              <button
-                onClick={() => setShowMyStanding(true)}
-                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
-                }`}
-              >
-                My Standing
-              </button>
-            </div>
+          {/* Leaderboard for logged-in users, Login CTA for guests */}
+          {user ? (
+            <div className="bg-[#131F24] rounded-xl p-3 mb-4">
+              {/* Toggle buttons */}
+              <div className="flex rounded-lg bg-[#0D1A1F] p-1 mb-3">
+                <button
+                  onClick={() => setShowMyStanding(false)}
+                  className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    !showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
+                  }`}
+                >
+                  Top 10
+                </button>
+                <button
+                  onClick={() => setShowMyStanding(true)}
+                  className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
+                  }`}
+                >
+                  My Standing
+                </button>
+              </div>
 
-            {loadingLeaderboard ? (
-              <div className="text-gray-400 py-3 text-sm">Loading...</div>
-            ) : showMyStanding ? (
-              /* My Standing view */
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/20 border border-[#58CC02]/30">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-[#58CC02]/30 flex items-center justify-center text-[#58CC02] font-bold text-sm">
-                      #{userEntry?.rank || 1}
-                    </span>
-                    <div className="text-left">
-                      <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
-                      <div className="text-gray-400 text-xs">
-                        {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
+              {loadingLeaderboard ? (
+                <div className="text-gray-400 py-3 text-sm">Loading...</div>
+              ) : showMyStanding ? (
+                /* My Standing view */
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/20 border border-[#58CC02]/30">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-full bg-[#58CC02]/30 flex items-center justify-center text-[#58CC02] font-bold text-sm">
+                        #{userEntry?.rank || 1}
+                      </span>
+                      <div className="text-left">
+                        <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
+                        <div className="text-gray-400 text-xs">
+                          {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-white font-bold text-lg">{puzzlesSolved} puzzles</div>
-                    <div className="text-gray-500 text-xs">{formatTime(completionTimeMs)}</div>
-                  </div>
-                </div>
-                <div className="text-center text-gray-500 text-xs py-2">
-                  {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
-                </div>
-              </div>
-            ) : (
-              /* Top 10 view */
-              <div className="space-y-1">
-                {displayLeaderboard.map((entry) => (
-                  <div
-                    key={entry.rank}
-                    className={`flex items-center justify-between p-2 rounded-lg ${
-                      entry.isCurrentUser ? 'bg-[#58CC02]/20 border border-[#58CC02]/30' : 'bg-[#0D1A1F]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className={`w-5 text-center font-bold text-xs ${
-                        entry.rank === 1 ? 'text-yellow-400' :
-                        entry.rank === 2 ? 'text-gray-300' :
-                        entry.rank === 3 ? 'text-orange-400' :
-                        'text-gray-500'
-                      }`}>
-                        #{entry.rank}
-                      </span>
-                      <span className={`text-sm ${entry.isCurrentUser ? 'text-[#58CC02] font-semibold' : 'text-white'}`}>
-                        {entry.displayName}
-                      </span>
-                    </div>
                     <div className="text-right">
-                      <div className="text-white font-bold text-sm">{entry.puzzlesCompleted} puzzles</div>
-                      <div className="text-gray-500 text-[10px]">{formatTime(entry.timeMs)}</div>
+                      <div className="text-white font-bold text-lg">{puzzlesSolved} puzzles</div>
+                      <div className="text-gray-500 text-xs">{formatTime(completionTimeMs)}</div>
                     </div>
                   </div>
-                ))}
+                  <div className="text-center text-gray-500 text-xs py-2">
+                    {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
+                  </div>
+                </div>
+              ) : (
+                /* Top 10 view */
+                <div className="space-y-1">
+                  {displayLeaderboard.map((entry) => (
+                    <div
+                      key={entry.rank}
+                      className={`flex items-center justify-between p-2 rounded-lg ${
+                        entry.isCurrentUser ? 'bg-[#58CC02]/20 border border-[#58CC02]/30' : 'bg-[#0D1A1F]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-5 text-center font-bold text-xs ${
+                          entry.rank === 1 ? 'text-yellow-400' :
+                          entry.rank === 2 ? 'text-gray-300' :
+                          entry.rank === 3 ? 'text-orange-400' :
+                          'text-gray-500'
+                        }`}>
+                          #{entry.rank}
+                        </span>
+                        <span className={`text-sm ${entry.isCurrentUser ? 'text-[#58CC02] font-semibold' : 'text-white'}`}>
+                          {entry.displayName}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-white font-bold text-sm">{entry.puzzlesCompleted} puzzles</div>
+                        <div className="text-gray-500 text-[10px]">{formatTime(entry.timeMs)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Guest Login CTA - shown instead of leaderboard */
+            <div className="bg-[#131F24] rounded-xl p-5 mb-4">
+              <div className="text-center">
+                {/* Trophy icon */}
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF9600]/20 to-[#FF6B6B]/20 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-7 h-7 text-[#FF9600]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+
+                <h2 className="text-white font-bold text-lg mb-2">
+                  How did you stack up?
+                </h2>
+                <p className="text-gray-400 text-sm mb-4">
+                  Log in to see how you compare to other players and track your daily streak
+                </p>
+
+                <button
+                  onClick={() => router.push('/auth/signup')}
+                  className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] mb-2"
+                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 4px 0 #CC6600' }}
+                >
+                  Create Free Account
+                </button>
+
+                <button
+                  onClick={() => router.push('/auth/login')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Already have an account? Log in
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Puzzle Review Section */}
           {attemptedPuzzles.length > 0 && (
@@ -1093,7 +1137,23 @@ export default function DailyChallengePage() {
             </div>
           )}
 
-          {alreadyCompletedToday ? (
+          {/* Bottom action buttons - different for guests vs logged-in users */}
+          {!user ? (
+            /* Guest: No replay, just start learning */
+            <>
+              <button
+                onClick={() => router.push('/learn')}
+                className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
+                style={{ backgroundColor: '#58CC02' }}
+              >
+                Start Learning →
+              </button>
+              <div className="mt-3 text-gray-500 text-sm text-center">
+                New challenge drops at midnight!
+              </div>
+            </>
+          ) : alreadyCompletedToday ? (
+            /* Logged-in user who already completed today */
             <>
               <button
                 onClick={() => router.push('/learn')}
@@ -1107,6 +1167,7 @@ export default function DailyChallengePage() {
               </div>
             </>
           ) : (
+            /* Logged-in user who just finished (can replay) */
             <>
               <button
                 onClick={startChallenge}
