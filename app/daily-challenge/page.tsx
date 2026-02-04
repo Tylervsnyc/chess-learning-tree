@@ -18,6 +18,9 @@ import {
 } from '@/lib/sounds';
 import { ShareButton } from '@/components/share/ShareButton';
 import { DailyChallengeReport } from '@/components/daily-challenge/DailyChallengeReport';
+import { DailyChallengeShareCard } from '@/components/daily-challenge/DailyChallengeShareCard';
+import { createPortal } from 'react-dom';
+import { toPng } from 'html-to-image';
 
 interface Puzzle {
   puzzleId: string;
@@ -159,6 +162,11 @@ export default function DailyChallengePage() {
 
   // Leaderboard view toggle - default to My Standing
   const [showMyStanding, setShowMyStanding] = useState(true);
+
+  // Share image state
+  const [shareState, setShareState] = useState<'idle' | 'generating' | 'preview'>('idle');
+  const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [shareImageFile, setShareImageFile] = useState<File | null>(null);
 
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -897,37 +905,58 @@ export default function DailyChallengePage() {
             />
           </div>
 
-          {/* Share CTA - prominent */}
+          {/* Share CTA - captures card as image */}
           <button
             onClick={async () => {
-              const shareText = [
-                `Chess Path Daily Challenge`,
-                `${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-                ``,
-                `${puzzlesSolved} puzzles in ${formatTime(TOTAL_TIME - timeLeft)}`,
-                globalPct !== null ? `Beat ${globalPct}% of players` : '',
-                ``,
-                `chesspath.com/daily-challenge`,
-              ].filter(Boolean).join('\n');
+              setShareState('generating');
 
-              if (navigator.share) {
-                try {
-                  await navigator.share({ text: shareText });
-                } catch {
-                  await navigator.clipboard.writeText(shareText);
-                }
-              } else {
-                await navigator.clipboard.writeText(shareText);
-                alert('Results copied!');
+              // Wait for the share card to render
+              await new Promise((resolve) => setTimeout(resolve, 300));
+
+              const cardElement = document.getElementById('daily-challenge-share-card');
+              if (!cardElement) {
+                console.error('Share card not found');
+                setShareState('idle');
+                return;
+              }
+
+              try {
+                const dataUrl = await toPng(cardElement, {
+                  quality: 1.0,
+                  pixelRatio: 1,
+                  cacheBust: true,
+                });
+
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+                const file = new File([blob], 'daily-challenge.png', { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+
+                setShareImageUrl(imageUrl);
+                setShareImageFile(file);
+                setShareState('preview');
+              } catch (error) {
+                console.error('Failed to generate image:', error);
+                setShareState('idle');
               }
             }}
-            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-4"
+            disabled={shareState === 'generating'}
+            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-4 disabled:opacity-70"
             style={{ background: 'linear-gradient(135deg, #1CB0F6, #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-            </svg>
-            Share Results
+            {shareState === 'generating' ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Creating Image...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Share as Image
+              </>
+            )}
           </button>
 
           {/* Leaderboard for logged-in users, Login CTA for guests */}
@@ -1186,6 +1215,162 @@ export default function DailyChallengePage() {
           )}
         </div>
 
+        {/* Hidden share card for image generation */}
+        {shareState === 'generating' &&
+          createPortal(
+            <div
+              style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                zIndex: 9999,
+                background: '#131F24',
+              }}
+            >
+              <DailyChallengeShareCard
+                puzzlesSolved={puzzlesSolved}
+                timeMs={TOTAL_TIME - timeLeft}
+                globalPct={globalPct}
+                highestPuzzleFen={highestSolvedPuzzle?.puzzleFen}
+              />
+            </div>,
+            document.body
+          )}
+
+        {/* Loading overlay */}
+        {shareState === 'generating' &&
+          createPortal(
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(13, 26, 31, 0.95)',
+                zIndex: 10000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="text-white/70 text-sm">Creating image...</div>
+            </div>,
+            document.body
+          )}
+
+        {/* Preview Modal */}
+        {shareState === 'preview' && shareImageUrl &&
+          createPortal(
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+              onClick={() => {
+                if (shareImageUrl) URL.revokeObjectURL(shareImageUrl);
+                setShareImageUrl(null);
+                setShareImageFile(null);
+                setShareState('idle');
+              }}
+            >
+              <div
+                className="bg-[#1A2C35] rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-white/10">
+                  <h2 className="text-lg font-semibold text-white">Share Your Results</h2>
+                  <button
+                    onClick={() => {
+                      if (shareImageUrl) URL.revokeObjectURL(shareImageUrl);
+                      setShareImageUrl(null);
+                      setShareImageFile(null);
+                      setShareState('idle');
+                    }}
+                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Image Preview */}
+                <div className="p-4">
+                  <div className="rounded-xl overflow-hidden bg-black/20">
+                    <img
+                      src={shareImageUrl}
+                      alt="Daily challenge results"
+                      className="w-full h-auto"
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="p-4 border-t border-white/10 flex gap-3">
+                  {typeof navigator !== 'undefined' && 'share' in navigator && shareImageFile && navigator.canShare?.({ files: [shareImageFile] }) && (
+                    <button
+                      onClick={async () => {
+                        if (!shareImageFile) return;
+                        try {
+                          await navigator.share({
+                            files: [shareImageFile],
+                            title: 'Daily Challenge Results',
+                            text: 'Check out my Chess Path Daily Challenge results!',
+                          });
+                          if (shareImageUrl) URL.revokeObjectURL(shareImageUrl);
+                          setShareImageUrl(null);
+                          setShareImageFile(null);
+                          setShareState('idle');
+                        } catch (error) {
+                          if (error instanceof Error && error.name !== 'AbortError') {
+                            console.error('Share failed:', error);
+                          }
+                        }
+                      }}
+                      className="flex-1 py-3 px-4 rounded-xl font-semibold text-white flex items-center justify-center gap-2"
+                      style={{
+                        background: 'linear-gradient(135deg, #58CC02 0%, #46A302 100%)',
+                        boxShadow: '0 3px 0 0 #3D8B02',
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                        <polyline points="16 6 12 2 8 6" />
+                        <line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                      Share
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (!shareImageFile) return;
+                      const url = URL.createObjectURL(shareImageFile);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'daily-challenge.png';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-semibold text-white flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 transition-colors"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Save
+                  </button>
+                </div>
+
+                <div className="px-4 pb-4 text-center text-gray-500 text-xs">
+                  Save the image to share on Instagram Stories
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
       </div>
     );
   }
