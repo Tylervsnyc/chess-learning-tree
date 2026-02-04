@@ -733,17 +733,33 @@ export default function DailyChallengePage() {
           {/* Same compact brand logo as ready screen for seamless transition */}
           <div className="mb-3">
             <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
-              <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-              <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-              <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-              <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-              <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-              <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-              <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
+              {/* Queen Icon - 22 dots */}
+              <rect x="6" y="2" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="36" y="2" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="66" y="2" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="6" y="17" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="21" y="17" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="36" y="17" width="12" height="12" rx="2" fill="#FF9600"/>
+              <rect x="51" y="17" width="12" height="12" rx="2" fill="#FF6B6B"/>
+              <rect x="66" y="17" width="12" height="12" rx="2" fill="#FF4B4B"/>
+              <rect x="21" y="32" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="36" y="32" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="51" y="32" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="21" y="47" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="36" y="47" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="51" y="47" width="12" height="12" rx="2" fill="#FF9600"/>
+              <rect x="21" y="62" width="12" height="12" rx="2" fill="#FF6B6B"/>
+              <rect x="36" y="62" width="12" height="12" rx="2" fill="#FF4B4B"/>
+              <rect x="51" y="62" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="6" y="77" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="21" y="77" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="36" y="77" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="51" y="77" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="66" y="77" width="12" height="12" rx="2" fill="#FF9600"/>
             </svg>
             <div className="text-xl font-bold">
               <span className="text-white">chess</span>
-              <span className="bg-gradient-to-r from-[#4ade80] via-[#38bdf8] to-[#a78bfa] bg-clip-text text-transparent">path</span>
+              <span className="bg-gradient-to-r from-[#FFC800] via-[#FF6B6B] to-[#1CB0F6] bg-clip-text text-transparent">path</span>
             </div>
           </div>
           <div
@@ -771,17 +787,33 @@ export default function DailyChallengePage() {
           {/* Brand logo with wordmark - compact */}
           <div className="mb-3">
             <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
-              <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-              <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-              <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-              <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-              <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-              <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-              <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
+              {/* Queen Icon - 22 dots */}
+              <rect x="6" y="2" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="36" y="2" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="66" y="2" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="6" y="17" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="21" y="17" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="36" y="17" width="12" height="12" rx="2" fill="#FF9600"/>
+              <rect x="51" y="17" width="12" height="12" rx="2" fill="#FF6B6B"/>
+              <rect x="66" y="17" width="12" height="12" rx="2" fill="#FF4B4B"/>
+              <rect x="21" y="32" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="36" y="32" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="51" y="32" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="21" y="47" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="36" y="47" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="51" y="47" width="12" height="12" rx="2" fill="#FF9600"/>
+              <rect x="21" y="62" width="12" height="12" rx="2" fill="#FF6B6B"/>
+              <rect x="36" y="62" width="12" height="12" rx="2" fill="#FF4B4B"/>
+              <rect x="51" y="62" width="12" height="12" rx="2" fill="#1CB0F6"/>
+              <rect x="6" y="77" width="12" height="12" rx="2" fill="#2FCBEF"/>
+              <rect x="21" y="77" width="12" height="12" rx="2" fill="#A560E8"/>
+              <rect x="36" y="77" width="12" height="12" rx="2" fill="#58CC02"/>
+              <rect x="51" y="77" width="12" height="12" rx="2" fill="#FFC800"/>
+              <rect x="66" y="77" width="12" height="12" rx="2" fill="#FF9600"/>
             </svg>
             <div className="text-xl font-bold">
               <span className="text-white">chess</span>
-              <span className="bg-gradient-to-r from-[#4ade80] via-[#38bdf8] to-[#a78bfa] bg-clip-text text-transparent">path</span>
+              <span className="bg-gradient-to-r from-[#FFC800] via-[#FF6B6B] to-[#1CB0F6] bg-clip-text text-transparent">path</span>
             </div>
           </div>
 

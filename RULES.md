@@ -461,10 +461,14 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 **Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Challenge toggle without losing their place in the curriculum.
 
 ### Logo Rules:
+- **Icon**: Colorful queen made of 22 dots (5 columns × 6 rows)
+- **Text**: "chess" in white/dark + "path" with yellow→coral→blue gradient
 - **"chess" and "path" must NEVER overlap or touch** - this looks unprofessional
 - SVG logos must use inline `<tspan>` elements (not separate `<text>` elements with fixed positions)
-- This ensures "path" flows directly after "chess" regardless of system font rendering
+- Prefer horizontal logo (`logo-horizontal-*.svg`) over stacked for most uses
 - Logo files: `/public/brand/logo-horizontal-*.svg` and `/public/brand/logo-stacked-*.svg`
+- Icon colors: Blue (#1CB0F6), Cyan (#2FCBEF), Purple (#A560E8), Green (#58CC02), Yellow (#FFC800), Orange (#FF9600), Coral (#FF6B6B), Red (#FF4B4B)
+- "path" gradient: Yellow (#FFC800) → Coral (#FF6B6B) → Blue (#1CB0F6)
 
 ### Elements by Location:
 
@@ -944,7 +948,7 @@ When resuming work:
 Allows users to share a puzzle they just solved with a shareable PNG image card.
 
 ### Image Layout (top to bottom)
-- Chess Path logo (stacked version, centered)
+- Chess Path logo (horizontal version, centered)
 - "I SOLVED this" + "tricky puzzle" header text
 - Chessboard with opponent's last move highlighted
 - "White/Black to move" indicator
