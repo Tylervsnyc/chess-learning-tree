@@ -198,15 +198,15 @@ function CardVariant({
         />
         <div className="relative rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}>
           {/* Header */}
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <ChessPathLogo size={24} />
               <span className="text-white font-bold text-sm">chesspath.app</span>
             </div>
             <span className="text-white/70 text-xs">{formatDate()}</span>
           </div>
-          {/* Daily Challenge - centered */}
-          <div className="text-center text-white font-bold text-xl mb-4">Daily Challenge</div>
+          {/* Daily Challenge - centered between header and board */}
+          <div className="text-center text-white font-bold text-xl mb-3">Daily Challenge</div>
           {/* Chess board - matches stats width */}
           {highestPuzzleFen && (
             <div className="flex justify-center mb-4">
