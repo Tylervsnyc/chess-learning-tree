@@ -102,6 +102,26 @@ export function NavHeader() {
           ) : (
             <>
               <Link
+                href="/learn"
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
+                  pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
+                }`}
+              >
+                Learn
+              </Link>
+              <Link
+                href="/daily-challenge"
+                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
+                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
+                }`}
+                style={{
+                  background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
+                }}
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
+                <span className="relative">Daily</span>
+              </Link>
+              <Link
                 href="/premium-signup"
                 className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                 style={{
@@ -110,13 +130,6 @@ export function NavHeader() {
                 }}
               >
                 Premium
-              </Link>
-              <Link
-                href="/auth/login"
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)' }}
-              >
-                Login
               </Link>
               <Link
                 href="/auth/signup"

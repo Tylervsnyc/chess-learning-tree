@@ -470,18 +470,21 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 | Element | Where Shown | Links To |
 |---------|-------------|----------|
-| Logo | All pages | Nothing (no link) |
-| [Path]/[Daily] toggle | `/learn`, `/daily-challenge` | Switches between |
-| Premium button | All pages (non-premium, non-admin) | `/pricing` |
-| Login button | All pages (logged out) | `/auth/login` |
-| Avatar + dropdown | All pages (logged in) | Dropdown with 'Log out' |
-| Streak counter | `/learn`, `/daily-challenge` | Nothing |
+| Logo | All pages | `/learn` (logged in), `/` (logged out) |
+| Learn/Path button | All pages | `/learn` |
+| Daily button | All pages | `/daily-challenge` |
+| Premium button | All pages (non-premium, non-admin) | `/pricing` (logged in), `/premium-signup` (logged out) |
+| Signup button | All pages (logged out) | `/auth/signup` |
+| Logout button | All pages (logged in) | Signs out |
+| Streak counter | `/learn`, `/daily-challenge` (logged in only) | Nothing |
 
-### Path/Daily Button Styling:
+**Note:** Logged-in users see "Path", logged-out users see "Learn" - same destination, different label.
+
+### Learn/Daily Button Styling:
 
 | Button | Color | Always Visible |
 |--------|-------|----------------|
-| Path | Green (`#58CC02`) | Yes |
+| Learn/Path | Green (`#58CC02`) | Yes |
 | Daily | Blue gradient (`#1CB0F6` → `#0d9ee0`) + shimmer animation | Yes |
 
 **Active state indicator:**
@@ -884,10 +887,11 @@ Desktop: Downloads PNG file
 **Status:** Styling finalized
 
 **What it does:**
-- Path button: always green, bottom shadow when active, faded when inactive
-- Daily button: always blue with shimmer animation, bottom shadow when active, faded when inactive
+- Learn/Path button: always green, bottom shadow when active, faded when inactive (shown for ALL users)
+- Daily button: always blue with shimmer animation, bottom shadow when active, faded when inactive (shown for ALL users)
 - Premium button (gradient gold) for non-premium users
-- Login/Signup/Logout buttons
+- Signup button for logged-out users (no separate Login button - login link on signup page)
+- Logout button for logged-in users
 
 **File:** `components/layout/NavHeader.tsx`
 
@@ -896,7 +900,7 @@ Desktop: Downloads PNG file
 **TODO:**
 - [ ] Verify Premium button hides for premium/admin users
 - [ ] Test button sizing on various mobile screens
-- [ ] Consider adding streak counter to header
+- [x] Learn/Daily buttons now shown for logged-out users
 
 ---
 
@@ -990,6 +994,14 @@ Allows users to share a puzzle they just solved with a shareable PNG image card.
 - "Beat your friends at chess"
 - "Chess tactics that actually work"
 - NOT competing with Chess.com for serious players
+
+### Domain Name
+
+**Always use `chesspath.app`** - never chesspath.com or other variations.
+
+- Share links: `chesspath.app/daily-challenge`
+- Display text: `chesspath.app`
+- This is our official domain
 
 ### SEO Keywords (Target These)
 
