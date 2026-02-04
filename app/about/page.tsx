@@ -12,11 +12,11 @@ export default function AboutPage() {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <Image
-              src="/brand/logo-stacked-light.svg"
+              src="/brand/logo-horizontal-light.svg"
               alt="ChessPath"
-              width={180}
-              height={108}
-              style={{ width: 'clamp(140px, 40vw, 180px)', height: 'auto' }}
+              width={280}
+              height={65}
+              style={{ width: 'clamp(200px, 60vw, 280px)', height: 'auto' }}
               priority
             />
           </div>

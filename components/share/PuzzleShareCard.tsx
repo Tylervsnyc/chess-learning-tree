@@ -77,9 +77,9 @@ export function PuzzleShareCard({
       {/* Logo */}
       <div style={{ position: 'relative', zIndex: 10 }}>
         <img
-          src="/brand/logo-stacked-dark.svg"
+          src="/brand/logo-horizontal-dark.svg"
           alt="Chess Path"
-          style={{ height: 320 }}
+          style={{ height: 120, width: 'auto' }}
         />
       </div>
 

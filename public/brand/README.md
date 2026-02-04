@@ -2,84 +2,86 @@
 
 ## Logo Package Contents
 
-### Icons
+### Icons (Queen shape - 22 colorful dots)
 - `icon-96.svg` - Full size icon (96×96px) - Use for app icons, social media
-- `icon-48.svg` - Medium icon (48×48px) - Use for navigation, smaller displays  
+- `icon-48.svg` - Medium icon (48×48px) - Use for navigation, smaller displays
 - `icon-32-favicon.svg` - Small icon (32×32px) - Use for favicons
 
 ### Horizontal Lockups
-- `logo-horizontal-dark.svg` - For dark backgrounds
-- `logo-horizontal-light.svg` - For light backgrounds
+- `logo-horizontal-dark.svg` - For dark backgrounds (520×120px)
+- `logo-horizontal-light.svg` - For light backgrounds (520×120px)
 
 ### Stacked Lockups
-- `logo-stacked-dark.svg` - For dark backgrounds (icon above text)
-- `logo-stacked-light.svg` - For light backgrounds (icon above text)
+- `logo-stacked-dark.svg` - For dark backgrounds, icon above text (200×240px)
+- `logo-stacked-light.svg` - For light backgrounds, icon above text (200×240px)
 
 ---
 
 ## Brand Specifications
 
-### Icon Structure
-- **Grid**: 3 columns × 4 rows
-- **Squares**: 18px with 6px gap
-- **Corner radius**: 4px (rx=4)
-- **Total size**: 96×96px (centered)
+### Icon Structure (Queen Shape)
+- **Grid**: 5 columns × 6 rows
+- **Squares**: 14px with 4px gap (18px step) in horizontal logo
+- **Corner radius**: 2px (rx=2)
+- **22 total dots** forming a stylized chess queen
 
-### Icon Colors (The "P" Shape)
-| Position | Color | Hex |
-|----------|-------|-----|
-| Row 1, Col 1 | Green | #4ade80 |
-| Row 1, Col 3 | Purple (bowl) | #a78bfa |
-| Row 2, Col 2 | Blue | #38bdf8 |
-| Row 2, Col 3 | Purple (bowl) | #a78bfa |
-| Row 3, Col 1 | Orange | #fb923c |
-| Row 3, Col 2 | Coral | #f87171 |
-| Row 4, Col 1 | Yellow | #fbbf24 |
+### Icon Colors
+| Row | Dots | Colors |
+|-----|------|--------|
+| 0 (Crown points) | 3 | Blue, Cyan, Purple |
+| 1 (Crown rim) | 5 | Green, Yellow, Orange, Coral, Red |
+| 2 (Head) | 3 | Blue, Cyan, Purple |
+| 3 (Neck) | 3 | Green, Yellow, Orange |
+| 4 (Body) | 3 | Coral, Red, Blue |
+| 5 (Base) | 5 | Cyan, Purple, Green, Yellow, Orange |
+
+### Color Palette
+| Name | Hex | Usage |
+|------|-----|-------|
+| Blue | #1CB0F6 | Crown, head, body, gradient end |
+| Cyan | #2FCBEF | Crown, head, base |
+| Purple | #A560E8 | Crown, head, base |
+| Green | #58CC02 | Crown rim, neck, base |
+| Yellow | #FFC800 | Crown rim, neck, base, gradient start |
+| Orange | #FF9600 | Crown rim, neck, base |
+| Coral | #FF6B6B | Crown rim, body, gradient middle |
+| Red | #FF4B4B | Crown rim, body |
 
 ### Typography
-- **Font**: DM Sans
+- **Font**: DM Sans (fallback: Inter, system-ui)
 - **Weight**: 700 (Bold)
-- **"chess"**: White (#ffffff) on dark, Slate (#0f172a) on light
-- **"path"**: Gradient (Green → Blue → Purple)
+- **"chess"**: White (#FFFFFF) on dark, Slate (#0F172A) on light
+- **"path"**: Gradient (Yellow → Coral → Blue)
 
 ### Gradient Specifications
-**Dark mode gradient:**
-- Start: #4ade80 (green)
-- Middle: #38bdf8 (blue)  
-- End: #a78bfa (purple)
-
-**Light mode gradient (slightly darker for contrast):**
-- Start: #22c55e (green)
-- Middle: #0ea5e9 (blue)
-- End: #8b5cf6 (purple)
+**"path" text gradient:**
+```
+0%   → #FFC800 (yellow)
+55%  → #FFC800 (yellow)
+75%  → #FF6B6B (coral)
+100% → #1CB0F6 (blue)
+```
 
 ### Spacing
-- Gap between icon and wordmark: 12px
+- Gap between icon and wordmark: 16px (horizontal)
+- Gap between icon and text: 24px (stacked)
 
 ---
 
-## Full Brand Color Palette
+## Background Colors
 
-| Name | Hex | Usage |
+| Mode | Hex | Usage |
 |------|-----|-------|
-| Green | #4ade80 | Primary, success, "path" gradient start |
-| Blue | #38bdf8 | Secondary, "path" gradient middle |
-| Cyan | #22d3ee | Accent |
-| Purple | #a78bfa | "P" bowl, "path" gradient end |
-| Orange | #fb923c | Warm accent |
-| Coral | #f87171 | Warm accent |
-| Yellow | #fbbf24 | Highlight, achievement |
-
-### Background Colors
-- Dark mode: #0f172a (slate-900)
-- Light mode: #f8fafc (slate-50) or #ffffff
+| Dark | #0F172A | slate-900, brand spec dark bg |
+| App Dark | #131F24 | App primary background |
+| Light | #F8FAFC | slate-50, light backgrounds |
 
 ---
 
 ## Usage Guidelines
 
 1. **Minimum size**: Don't use the icon smaller than 24px
-2. **Clear space**: Maintain padding equal to 1 square (18px at full size) around the logo
+2. **Clear space**: Maintain padding equal to 1 square around the logo
 3. **Don't**: Rotate, skew, change colors, or add effects to the logo
 4. **Do**: Use the appropriate dark/light version for your background
 

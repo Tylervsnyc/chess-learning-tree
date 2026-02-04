@@ -1,30 +1,52 @@
-<svg width="160" height="110" viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Chess Path Stacked Lockup - Dark Mode -->
-  
-  <!-- Icon (centered, 64px) -->
-  <g transform="translate(48, 0) scale(0.667)">
-    <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-    <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-    <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-    <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-    <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-    <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-    <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
-  </g>
-  
-  <!-- Wordmark (centered below) -->
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="pathGradientStackedDark" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4ade80"/>
-      <stop offset="50%" stop-color="#38bdf8"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFC800"/>
+      <stop offset="55%" stop-color="#FFC800"/>
+      <stop offset="75%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#1CB0F6"/>
     </linearGradient>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@700');
-    </style>
   </defs>
-  
-  <text x="80" y="100" font-family="DM Sans, sans-serif" font-size="28" font-weight="700" text-anchor="middle">
-    <tspan fill="#ffffff">chess</tspan><tspan fill="url(#pathGradientStackedDark)">path</tspan>
-  </text>
+
+  <!-- Queen Icon - 22 dots, centered horizontally -->
+  <!-- Icon is 86px wide, centered in 200px = offset 57 -->
+  <!-- 14px squares, 4px gap (18px step), 2px radius -->
+
+  <!-- Row 0: Crown points (y=16) -->
+  <rect x="57" y="16" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="93" y="16" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="129" y="16" width="14" height="14" rx="2" fill="#A560E8"/>
+
+  <!-- Row 1: Crown rim (y=34) -->
+  <rect x="57" y="34" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="75" y="34" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="93" y="34" width="14" height="14" rx="2" fill="#FF9600"/>
+  <rect x="111" y="34" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="129" y="34" width="14" height="14" rx="2" fill="#FF4B4B"/>
+
+  <!-- Row 2: Head (y=52) -->
+  <rect x="75" y="52" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="93" y="52" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="111" y="52" width="14" height="14" rx="2" fill="#A560E8"/>
+
+  <!-- Row 3: Neck (y=70) -->
+  <rect x="75" y="70" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="93" y="70" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="111" y="70" width="14" height="14" rx="2" fill="#FF9600"/>
+
+  <!-- Row 4: Body (y=88) -->
+  <rect x="75" y="88" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="93" y="88" width="14" height="14" rx="2" fill="#FF4B4B"/>
+  <rect x="111" y="88" width="14" height="14" rx="2" fill="#1CB0F6"/>
+
+  <!-- Row 5: Base (y=106) -->
+  <rect x="57" y="106" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="75" y="106" width="14" height="14" rx="2" fill="#A560E8"/>
+  <rect x="93" y="106" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="111" y="106" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="129" y="106" width="14" height="14" rx="2" fill="#FF9600"/>
+
+  <!-- Wordmark: "chess" on first line, "path" on second line -->
+  <text x="100" y="170" text-anchor="middle" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF">chess</text>
+  <text x="100" y="218" text-anchor="middle" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="url(#pathGradient)">path</text>
 </svg>

@@ -83,10 +83,10 @@ export default function LoginPage() {
         {/* Brand header */}
         <div className="mb-6 text-center">
           <Image
-            src="/brand/logo-stacked-light.svg"
+            src="/brand/logo-horizontal-light.svg"
             alt="Chess Path"
-            width={180}
-            height={108}
+            width={260}
+            height={60}
             className="mx-auto mb-2"
             priority
           />

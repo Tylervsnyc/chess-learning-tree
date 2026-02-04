@@ -1,26 +1,50 @@
-<svg width="280" height="48" viewBox="0 0 280 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Chess Path Horizontal Lockup - Light Mode -->
-  
-  <!-- Icon (scaled to 48px) -->
-  <g transform="scale(0.5)">
-    <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-    <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-    <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-    <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-    <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-    <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-    <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
-  </g>
-  
-  <!-- Wordmark - using tspans so "path" flows after "chess" regardless of font rendering -->
+<svg width="520" height="120" viewBox="0 0 520 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#22c55e"/>
-      <stop offset="50%" stop-color="#0ea5e9"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
+    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFC800"/>
+      <stop offset="55%" stop-color="#FFC800"/>
+      <stop offset="75%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#1CB0F6"/>
     </linearGradient>
   </defs>
-  <text x="60" y="33" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700">
-    <tspan fill="#0f172a">chess</tspan><tspan fill="url(#grad2)">path</tspan>
+
+  <!-- Queen Icon - 22 dots -->
+  <!-- Row 0: Crown points (y=8) -->
+  <rect x="8" y="8" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="44" y="8" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="80" y="8" width="14" height="14" rx="2" fill="#A560E8"/>
+
+  <!-- Row 1: Crown rim (y=26) -->
+  <rect x="8" y="26" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="26" y="26" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="44" y="26" width="14" height="14" rx="2" fill="#FF9600"/>
+  <rect x="62" y="26" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="80" y="26" width="14" height="14" rx="2" fill="#FF4B4B"/>
+
+  <!-- Row 2: Head (y=44) -->
+  <rect x="26" y="44" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="44" y="44" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="62" y="44" width="14" height="14" rx="2" fill="#A560E8"/>
+
+  <!-- Row 3: Neck (y=62) -->
+  <rect x="26" y="62" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="44" y="62" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="62" y="62" width="14" height="14" rx="2" fill="#FF9600"/>
+
+  <!-- Row 4: Body (y=80) -->
+  <rect x="26" y="80" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="44" y="80" width="14" height="14" rx="2" fill="#FF4B4B"/>
+  <rect x="62" y="80" width="14" height="14" rx="2" fill="#1CB0F6"/>
+
+  <!-- Row 5: Base (y=98) -->
+  <rect x="8" y="98" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="26" y="98" width="14" height="14" rx="2" fill="#A560E8"/>
+  <rect x="44" y="98" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="62" y="98" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="80" y="98" width="14" height="14" rx="2" fill="#FF9600"/>
+
+  <!-- Wordmark: "chess" dark, "path" gradient -->
+  <text x="120" y="82" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="72" font-weight="700">
+    <tspan fill="#0F172A">chess</tspan><tspan fill="url(#pathGradient)">path</tspan>
   </text>
 </svg>

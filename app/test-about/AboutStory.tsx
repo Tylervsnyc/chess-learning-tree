@@ -12,11 +12,11 @@ export default function AboutStory() {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <Image
-              src="/brand/logo-stacked-light.svg"
+              src="/brand/logo-horizontal-light.svg"
               alt="ChessPath"
-              width={200}
-              height={120}
-              style={{ width: 'clamp(160px, 45vw, 200px)', height: 'auto' }}
+              width={280}
+              height={65}
+              style={{ width: 'clamp(200px, 60vw, 280px)', height: 'auto' }}
               priority
             />
           </div>

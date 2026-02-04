@@ -112,17 +112,38 @@ function MiniBoard({ fen, size = 640 }: { fen: string; size?: number }) {
   );
 }
 
-// Chess Path Logo
+// Chess Path Logo - Queen Icon (22 dots)
 function ChessPathLogo({ size = 112 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-      <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-      <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-      <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-      <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-      <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-      <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
+      {/* Row 0: Crown points */}
+      <rect x="6" y="2" width="12" height="12" rx="2" fill="#1CB0F6"/>
+      <rect x="36" y="2" width="12" height="12" rx="2" fill="#2FCBEF"/>
+      <rect x="66" y="2" width="12" height="12" rx="2" fill="#A560E8"/>
+      {/* Row 1: Crown rim */}
+      <rect x="6" y="17" width="12" height="12" rx="2" fill="#58CC02"/>
+      <rect x="21" y="17" width="12" height="12" rx="2" fill="#FFC800"/>
+      <rect x="36" y="17" width="12" height="12" rx="2" fill="#FF9600"/>
+      <rect x="51" y="17" width="12" height="12" rx="2" fill="#FF6B6B"/>
+      <rect x="66" y="17" width="12" height="12" rx="2" fill="#FF4B4B"/>
+      {/* Row 2: Head */}
+      <rect x="21" y="32" width="12" height="12" rx="2" fill="#1CB0F6"/>
+      <rect x="36" y="32" width="12" height="12" rx="2" fill="#2FCBEF"/>
+      <rect x="51" y="32" width="12" height="12" rx="2" fill="#A560E8"/>
+      {/* Row 3: Neck */}
+      <rect x="21" y="47" width="12" height="12" rx="2" fill="#58CC02"/>
+      <rect x="36" y="47" width="12" height="12" rx="2" fill="#FFC800"/>
+      <rect x="51" y="47" width="12" height="12" rx="2" fill="#FF9600"/>
+      {/* Row 4: Body */}
+      <rect x="21" y="62" width="12" height="12" rx="2" fill="#FF6B6B"/>
+      <rect x="36" y="62" width="12" height="12" rx="2" fill="#FF4B4B"/>
+      <rect x="51" y="62" width="12" height="12" rx="2" fill="#1CB0F6"/>
+      {/* Row 5: Base */}
+      <rect x="6" y="77" width="12" height="12" rx="2" fill="#2FCBEF"/>
+      <rect x="21" y="77" width="12" height="12" rx="2" fill="#A560E8"/>
+      <rect x="36" y="77" width="12" height="12" rx="2" fill="#58CC02"/>
+      <rect x="51" y="77" width="12" height="12" rx="2" fill="#FFC800"/>
+      <rect x="66" y="77" width="12" height="12" rx="2" fill="#FF9600"/>
     </svg>
   );
 }

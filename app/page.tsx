@@ -132,12 +132,12 @@ export default function LandingPage() {
       <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
         {/* Logo */}
         <Image
-          src="/brand/logo-stacked-light.svg"
+          src="/brand/logo-horizontal-light.svg"
           alt="ChessPath"
-          width={260}
-          height={156}
-          className="mb-2"
-          style={{ width: 'clamp(200px, 55vw, 260px)', height: 'auto' }}
+          width={320}
+          height={74}
+          className="mb-4"
+          style={{ width: 'clamp(240px, 70vw, 320px)', height: 'auto' }}
           priority
         />
 

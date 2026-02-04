@@ -5,29 +5,31 @@ export const brand = {
   name: 'chesspath',
   displayName: 'Chess Path',
 
-  // Icon colors (the "P" shape)
+  // Icon colors (the Queen shape - 22 dots)
   icon: {
-    green: '#4ade80',
-    blue: '#38bdf8',
-    purple: '#a78bfa',
-    orange: '#fb923c',
-    coral: '#f87171',
-    yellow: '#fbbf24',
-    cyan: '#22d3ee',
+    blue: '#1CB0F6',
+    cyan: '#2FCBEF',
+    purple: '#A560E8',
+    green: '#58CC02',
+    yellow: '#FFC800',
+    orange: '#FF9600',
+    coral: '#FF6B6B',
+    red: '#FF4B4B',
   },
 
-  // Text gradient for "path"
+  // Text gradient for "path" (Yellow → Coral → Blue)
   gradient: {
-    dark: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)',
-    light: 'linear-gradient(90deg, #22c55e, #0ea5e9, #8b5cf6)',
+    stops: ['#FFC800', '#FFC800', '#FF6B6B', '#1CB0F6'],
+    offsets: ['0%', '55%', '75%', '100%'],
+    css: 'linear-gradient(90deg, #FFC800 0%, #FFC800 55%, #FF6B6B 75%, #1CB0F6 100%)',
   },
 
   // Typography
   typography: {
     font: 'DM Sans',
     chessColor: {
-      dark: '#ffffff',
-      light: '#0f172a',
+      dark: '#FFFFFF',  // white text on dark backgrounds
+      light: '#0F172A', // slate-900 text on light backgrounds
     },
   },
 

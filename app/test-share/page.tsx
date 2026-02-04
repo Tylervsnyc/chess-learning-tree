@@ -62,7 +62,7 @@ export default function TestSharePage() {
 
             {/* Logo */}
             <div className="flex justify-center mb-4 relative z-10">
-              <img src="/brand/logo-stacked-dark.svg" alt="Chess Path" style={{ height: 70 }} />
+              <img src="/brand/logo-horizontal-dark.svg" alt="Chess Path" style={{ height: 40 }} />
             </div>
 
             {/* Header */}
