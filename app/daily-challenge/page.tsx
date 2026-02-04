@@ -730,37 +730,13 @@ export default function DailyChallengePage() {
     return (
       <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* Same compact brand logo as ready screen for seamless transition */}
+          {/* Same brand logo as ready screen for seamless transition */}
           <div className="mb-3">
-            <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
-              {/* Queen Icon - 22 dots */}
-              <rect x="6" y="2" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="36" y="2" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="66" y="2" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="6" y="17" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="21" y="17" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="36" y="17" width="12" height="12" rx="2" fill="#FF9600"/>
-              <rect x="51" y="17" width="12" height="12" rx="2" fill="#FF6B6B"/>
-              <rect x="66" y="17" width="12" height="12" rx="2" fill="#FF4B4B"/>
-              <rect x="21" y="32" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="36" y="32" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="51" y="32" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="21" y="47" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="36" y="47" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="51" y="47" width="12" height="12" rx="2" fill="#FF9600"/>
-              <rect x="21" y="62" width="12" height="12" rx="2" fill="#FF6B6B"/>
-              <rect x="36" y="62" width="12" height="12" rx="2" fill="#FF4B4B"/>
-              <rect x="51" y="62" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="6" y="77" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="21" y="77" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="36" y="77" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="51" y="77" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="66" y="77" width="12" height="12" rx="2" fill="#FF9600"/>
-            </svg>
-            <div className="text-xl font-bold">
-              <span className="text-white">chess</span>
-              <span className="bg-gradient-to-r from-[#FFC800] via-[#FF6B6B] to-[#1CB0F6] bg-clip-text text-transparent">path</span>
-            </div>
+            <img
+              src="/brand/logo-horizontal-dark.svg"
+              alt="Chess Path"
+              className="mx-auto h-14"
+            />
           </div>
           <div
             className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
@@ -784,37 +760,13 @@ export default function DailyChallengePage() {
     return (
       <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* Brand logo with wordmark - compact */}
+          {/* Brand logo - horizontal */}
           <div className="mb-3">
-            <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1">
-              {/* Queen Icon - 22 dots */}
-              <rect x="6" y="2" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="36" y="2" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="66" y="2" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="6" y="17" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="21" y="17" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="36" y="17" width="12" height="12" rx="2" fill="#FF9600"/>
-              <rect x="51" y="17" width="12" height="12" rx="2" fill="#FF6B6B"/>
-              <rect x="66" y="17" width="12" height="12" rx="2" fill="#FF4B4B"/>
-              <rect x="21" y="32" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="36" y="32" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="51" y="32" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="21" y="47" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="36" y="47" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="51" y="47" width="12" height="12" rx="2" fill="#FF9600"/>
-              <rect x="21" y="62" width="12" height="12" rx="2" fill="#FF6B6B"/>
-              <rect x="36" y="62" width="12" height="12" rx="2" fill="#FF4B4B"/>
-              <rect x="51" y="62" width="12" height="12" rx="2" fill="#1CB0F6"/>
-              <rect x="6" y="77" width="12" height="12" rx="2" fill="#2FCBEF"/>
-              <rect x="21" y="77" width="12" height="12" rx="2" fill="#A560E8"/>
-              <rect x="36" y="77" width="12" height="12" rx="2" fill="#58CC02"/>
-              <rect x="51" y="77" width="12" height="12" rx="2" fill="#FFC800"/>
-              <rect x="66" y="77" width="12" height="12" rx="2" fill="#FF9600"/>
-            </svg>
-            <div className="text-xl font-bold">
-              <span className="text-white">chess</span>
-              <span className="bg-gradient-to-r from-[#FFC800] via-[#FF6B6B] to-[#1CB0F6] bg-clip-text text-transparent">path</span>
-            </div>
+            <img
+              src="/brand/logo-horizontal-dark.svg"
+              alt="Chess Path"
+              className="mx-auto h-14"
+            />
           </div>
 
           <div
