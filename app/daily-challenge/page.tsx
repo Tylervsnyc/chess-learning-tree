@@ -124,6 +124,7 @@ export default function DailyChallengePage() {
 
   // Setup move animation - show opponent's last move animating
   const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+  const [animationDuration, setAnimationDuration] = useState(0); // Start at 0 to prevent piece flying
 
   // Challenge stats
   const [lives, setLives] = useState(MAX_LIVES);
@@ -235,6 +236,13 @@ export default function DailyChallengePage() {
       }));
   }, [allPuzzles, puzzleResults]);
 
+  // Find highest rated solved puzzle for the share card
+  const highestSolvedPuzzle = useMemo(() => {
+    const solvedPuzzles = allPuzzles.filter(p => puzzleResults[p.puzzleId] === 'correct');
+    if (solvedPuzzles.length === 0) return allPuzzles[0] || null;
+    return solvedPuzzles.reduce((highest, p) => p.rating > highest.rating ? p : highest, solvedPuzzles[0]);
+  }, [allPuzzles, puzzleResults]);
+
   // Check if user already completed today's challenge
   useEffect(() => {
     const checkTodayCompletion = async () => {
@@ -344,20 +352,22 @@ export default function DailyChallengePage() {
   // Initialize puzzle when currentElo or tierPuzzleIndex changes
   useEffect(() => {
     if (currentPuzzle && gameState === 'playing') {
-      // Animate the opponent's setup move
+      // Step 1: Instantly snap to starting position (no flying pieces)
+      setAnimationDuration(0);
       setCurrentFen(currentPuzzle.originalFen); // Start with position BEFORE opponent's move
       setIsAnimatingSetup(true);
       setMoveIndex(0);
       setMoveStatus('playing');
       setSelectedSquare(null);
 
-      // After brief delay, animate to puzzle position
+      // Step 2: Enable animation, then animate the setup move
       const timer = setTimeout(() => {
-        setCurrentFen(currentPuzzle.puzzleFen);
+        setAnimationDuration(300); // Enable animation
+        setCurrentFen(currentPuzzle.puzzleFen); // Animate setup move
         setTimeout(() => {
           setIsAnimatingSetup(false); // Allow interaction after animation
         }, 300);
-      }, 400);
+      }, 100); // Brief delay to ensure instant position is rendered first
 
       return () => clearTimeout(timer);
     }
@@ -411,15 +421,19 @@ export default function DailyChallengePage() {
     // Only start the game (and timer) after puzzles are loaded
     if (puzzles.length > 0) {
       // Animate the first puzzle's setup move
+      // Step 1: Instantly snap to starting position
+      setAnimationDuration(0);
       setCurrentFen(puzzles[0].originalFen); // Start with position BEFORE opponent's move
       setIsAnimatingSetup(true);
       setGameState('playing');
+      // Step 2: Enable animation, then animate the setup move
       setTimeout(() => {
+        setAnimationDuration(300);
         setCurrentFen(puzzles[0].puzzleFen);
         setTimeout(() => {
           setIsAnimatingSetup(false);
         }, 300);
-      }, 400);
+      }, 100);
     }
   };
 
@@ -853,41 +867,15 @@ export default function DailyChallengePage() {
 
   // Finished screen with leaderboard
   if (gameState === 'finished') {
-    return (
-      <div className="h-screen bg-[#1A2C35] flex flex-col items-center py-6 px-4 overflow-auto">
-        <div className="text-center max-w-sm w-full">
-          {/* Header */}
-          <div className="mb-4">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="15" y="3" width="18" height="18" rx="4" fill="#4ade80"/>
-                <rect x="63" y="3" width="18" height="18" rx="4" fill="#a78bfa"/>
-                <rect x="39" y="27" width="18" height="18" rx="4" fill="#38bdf8"/>
-                <rect x="63" y="27" width="18" height="18" rx="4" fill="#a78bfa"/>
-                <rect x="15" y="51" width="18" height="18" rx="4" fill="#fb923c"/>
-                <rect x="39" y="51" width="18" height="18" rx="4" fill="#f87171"/>
-                <rect x="15" y="75" width="18" height="18" rx="4" fill="#fbbf24"/>
-              </svg>
-              <div className="text-lg font-bold">
-                <span className="text-white">chess</span>
-                <span className="bg-gradient-to-r from-[#4ade80] via-[#38bdf8] to-[#a78bfa] bg-clip-text text-transparent">path</span>
-              </div>
-            </div>
-            <div
-              className="inline-block px-4 py-1.5 rounded-lg border-2 border-[#FF9600]/50 mt-1"
-              style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
-            >
-              <span
-                className="text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
-                style={{ fontFamily: 'Nunito, sans-serif' }}
-              >
-                DAILY CHALLENGE
-              </span>
-            </div>
-          </div>
+    const globalPct = userEntry && totalParticipants > 0
+      ? Math.round(((totalParticipants - userEntry.rank) / totalParticipants) * 100)
+      : null;
 
-          {/* Shareable Results Card */}
-          <div className="mb-4">
+    return (
+      <div className="h-screen bg-[#0D1A1F] flex flex-col items-center py-4 px-4 overflow-auto">
+        <div className="text-center max-w-sm w-full">
+          {/* Shareable Results Card - Stories2 variant */}
+          <div className="mb-3 flex justify-center">
             <DailyChallengeReport
               puzzlesSolved={puzzlesSolved}
               totalPuzzles={allPuzzles.length}
@@ -895,8 +883,44 @@ export default function DailyChallengePage() {
               mistakes={MAX_LIVES - lives}
               rank={userEntry?.rank}
               totalParticipants={totalParticipants}
+              highestPuzzleRating={highestSolvedPuzzle?.rating}
+              highestPuzzleFen={highestSolvedPuzzle?.puzzleFen}
+              variant="stories-2"
             />
           </div>
+
+          {/* Share CTA - prominent */}
+          <button
+            onClick={async () => {
+              const shareText = [
+                `Chess Path Daily Challenge`,
+                `${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                ``,
+                `${puzzlesSolved} puzzles in ${formatTime(TOTAL_TIME - timeLeft)}`,
+                globalPct !== null ? `Beat ${globalPct}% of players` : '',
+                ``,
+                `chesspath.com/daily-challenge`,
+              ].filter(Boolean).join('\n');
+
+              if (navigator.share) {
+                try {
+                  await navigator.share({ text: shareText });
+                } catch {
+                  await navigator.clipboard.writeText(shareText);
+                }
+              } else {
+                await navigator.clipboard.writeText(shareText);
+                alert('Results copied!');
+              }
+            }}
+            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-4"
+            style={{ background: 'linear-gradient(135deg, #1CB0F6, #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share Results
+          </button>
 
           {/* Leaderboard */}
           <div className="bg-[#131F24] rounded-xl p-3 mb-4">
@@ -1174,7 +1198,7 @@ export default function DailyChallengePage() {
                 onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 boardOrientation: boardOrientation,
                 squareStyles: squareStyles,
-                animationDurationInMs: 300,
+                animationDurationInMs: animationDuration,
                 boardStyle: {
                   borderRadius: '8px',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

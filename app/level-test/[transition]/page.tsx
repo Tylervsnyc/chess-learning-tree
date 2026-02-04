@@ -44,6 +44,7 @@ export default function LevelTestPage() {
 
   // Setup move animation - show opponent's last move animating
   const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+  const [animationDuration, setAnimationDuration] = useState(0); // Start at 0 to prevent piece flying
 
   // Streak tracking for progress bar effects
   const [streak, setStreak] = useState(0);
@@ -99,14 +100,18 @@ export default function LevelTestPage() {
 
         // Initialize first puzzle with setup animation
         if (processed.length > 0) {
+          // Step 1: Instantly snap to starting position
+          setAnimationDuration(0);
           setCurrentFen(processed[0].originalFen); // Start with position BEFORE opponent's move
           setIsAnimatingSetup(true);
+          // Step 2: Enable animation, then animate the setup move
           setTimeout(() => {
+            setAnimationDuration(300);
             setCurrentFen(processed[0].puzzleFen);
             setTimeout(() => {
               setIsAnimatingSetup(false);
             }, 300);
-          }, 400);
+          }, 100);
         }
 
         // Show intro screen before starting
@@ -124,20 +129,22 @@ export default function LevelTestPage() {
     if (puzzles.length === 0 || currentIndex >= puzzles.length) return;
 
     const puzzle = puzzles[currentIndex];
-    // Animate the opponent's setup move
+    // Step 1: Instantly snap to starting position (no flying pieces)
+    setAnimationDuration(0);
     setCurrentFen(puzzle.originalFen); // Start with position BEFORE opponent's move
     setIsAnimatingSetup(true);
     setMoveIndex(0);
     setMoveStatus('playing');
     setSelectedSquare(null);
 
-    // After brief delay, animate to puzzle position
+    // Step 2: Enable animation, then animate the setup move
     const timer = setTimeout(() => {
-      setCurrentFen(puzzle.puzzleFen);
+      setAnimationDuration(300); // Enable animation
+      setCurrentFen(puzzle.puzzleFen); // Animate setup move
       setTimeout(() => {
         setIsAnimatingSetup(false);
       }, 300);
-    }, 400);
+    }, 100); // Brief delay to ensure instant position is rendered first
 
     return () => clearTimeout(timer);
   }, [currentIndex, puzzles]);
@@ -666,7 +673,7 @@ export default function LevelTestPage() {
                 boardOrientation: currentPuzzle.playerColor,
                 onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 squareStyles: squareStyles,
-                animationDurationInMs: 300,
+                animationDurationInMs: animationDuration,
                 boardStyle: {
                   borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

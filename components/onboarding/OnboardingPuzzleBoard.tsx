@@ -99,11 +99,13 @@ export function OnboardingPuzzleBoard({
 
   // Setup move animation - show opponent's last move animating
   const [isAnimatingSetup, setIsAnimatingSetup] = useState(true);
+  const [animationDuration, setAnimationDuration] = useState(0); // Start at 0 to prevent piece flying
 
   // Reset state when puzzle changes and animate setup move
   useEffect(() => {
-    // Start with position BEFORE opponent's move
-    setCurrentFen(puzzle.fen);
+    // Step 1: Instantly snap to starting position (no flying pieces)
+    setAnimationDuration(0);
+    setCurrentFen(puzzle.fen); // Start with position BEFORE opponent's move
     setIsAnimatingSetup(true);
     setMoveIndex(0);
     setMoveStatus('playing');
@@ -111,13 +113,14 @@ export function OnboardingPuzzleBoard({
     setHasReported(false);
     setFeedbackMessage('');
 
-    // After brief delay, animate to puzzle position
+    // Step 2: Enable animation, then animate the setup move
     const timer = setTimeout(() => {
-      setCurrentFen(puzzle.puzzleFen);
+      setAnimationDuration(300); // Enable animation
+      setCurrentFen(puzzle.puzzleFen); // Animate setup move
       setTimeout(() => {
         setIsAnimatingSetup(false);
       }, 300);
-    }, 400);
+    }, 100); // Brief delay to ensure instant position is rendered first
 
     return () => clearTimeout(timer);
   }, [puzzle.puzzleId, puzzle.fen, puzzle.puzzleFen]);
@@ -339,7 +342,7 @@ export function OnboardingPuzzleBoard({
             boardOrientation: puzzle.playerColor,
             onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
             squareStyles: squareStyles,
-            animationDurationInMs: 300,
+            animationDurationInMs: animationDuration,
             boardStyle: {
               borderRadius: '8px 8px 0 0',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

@@ -116,12 +116,14 @@ export default function TestChessPage() {
   const [feedback, setFeedback] = useState('');
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showHint, setShowHint] = useState(false);
+  const [animationDuration, setAnimationDuration] = useState(0); // Start at 0 to prevent piece flying
 
   // Process current puzzle
   const puzzle = useMemo(() => processPuzzle(SAMPLE_PUZZLES[puzzleIndex]), [puzzleIndex]);
 
-  // Initialize puzzle - show original position first
+  // Initialize puzzle - show original position first (instantly, no animation)
   const initializePuzzle = useCallback(() => {
+    setAnimationDuration(0); // Instant snap, no flying pieces
     setPhase('initial');
     setDisplayFen(puzzle.originalFen);
     setGame(null);
@@ -138,7 +140,8 @@ export default function TestChessPage() {
     setPhase('animating-setup');
     setFeedback('Opponent plays...');
 
-    // Change position - react-chessboard will animate this
+    // Enable animation, then change position - react-chessboard will animate this
+    setAnimationDuration(300);
     setDisplayFen(puzzle.puzzleFen);
     setLastMove({ from: puzzle.setupMove.from, to: puzzle.setupMove.to });
 
@@ -147,7 +150,7 @@ export default function TestChessPage() {
       setPhase('playing');
       setGame(new Chess(puzzle.puzzleFen));
       setFeedback(`Your turn! Find the best ${puzzle.theme}.`);
-    }, 500); // Match animation duration
+    }, 400); // Match animation duration
   }, [puzzle]);
 
   // Get legal moves for selected piece
@@ -384,7 +387,7 @@ export default function TestChessPage() {
               onSquareClick: onSquareClick,
               onPieceDrop: onDrop,
               squareStyles: squareStyles,
-              animationDurationInMs: 300,
+              animationDurationInMs: animationDuration,
               boardStyle: {
                 borderRadius: '8px',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

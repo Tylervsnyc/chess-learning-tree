@@ -390,22 +390,31 @@ Raw Lichess puzzle:
 
 **Common mistake:** Showing the raw FEN without applying `moves[0]` first!
 
-### 2. Animate the Setup Move
+### 2. Animate the Setup Move (No Flying Pieces)
 
-When a puzzle loads, animate the opponent's setup move so the user sees the "threat" being created:
+When a puzzle loads, animate ONLY the opponent's setup move. Prevent pieces from flying across the board when switching puzzles:
 
 ```tsx
-// 1. Start with original FEN (before opponent's move)
-setDisplayFen(puzzle.originalFen);
+const [animationDuration, setAnimationDuration] = useState(0);
 
-// 2. After brief delay, change to puzzleFen
-// react-chessboard animates automatically via animationDurationInMs
+// On puzzle change:
+// Step 1: Instantly snap to starting position (animation = 0)
+setAnimationDuration(0);
+setCurrentFen(puzzle.originalFen);
+
+// Step 2: After brief delay, enable animation and show setup move
 setTimeout(() => {
-  setDisplayFen(puzzle.puzzleFen);
+  setAnimationDuration(300); // Enable animation
+  setCurrentFen(puzzle.puzzleFen); // This move animates
+  setTimeout(() => {
+    setIsAnimatingSetup(false); // Allow interaction
+  }, 300);
 }, 100);
 ```
 
-**Key prop:** `animationDurationInMs: 300` on Chessboard
+**Key pattern:** Dynamic `animationDurationInMs` - set to 0 for instant position changes, 300 for animated moves.
+
+**Why:** react-chessboard animates ALL position changes. When switching puzzles, pieces would fly from old positions to new ones. Setting duration to 0 first makes the initial position appear instantly.
 
 ### 3. Board Styling (Consistent Colors)
 

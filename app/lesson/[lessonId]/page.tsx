@@ -206,6 +206,7 @@ export default function LessonPage() {
 
   // Setup move animation - show opponent's last move animating
   const [isAnimatingSetup, setIsAnimatingSetup] = useState(false);
+  const [animationDuration, setAnimationDuration] = useState(0); // Start at 0 to prevent piece flying
 
   // Intro popup state
   type IntroState = 'block' | 'theme' | 'playing';
@@ -337,14 +338,16 @@ export default function LessonPage() {
 
         // Animate the opponent's setup move
         const firstPuzzle = transformedPuzzles[0];
+        setAnimationDuration(0); // Instant snap to starting position
         setCurrentFen(firstPuzzle.fen); // Start with position BEFORE opponent's move
         setIsAnimatingSetup(true);
         setTimeout(() => {
+          setAnimationDuration(300); // Enable animation for setup move
           setCurrentFen(firstPuzzle.puzzleFen); // Animate to puzzle position
           setTimeout(() => {
             setIsAnimatingSetup(false); // Allow interaction after animation
           }, 300);
-        }, 400);
+        }, 100);
 
         // Initialize results
         const initialResults: Record<string, PuzzleResult> = {};
@@ -402,6 +405,8 @@ export default function LessonPage() {
   useEffect(() => {
     if (currentPuzzle) {
       // Animate the opponent's setup move
+      // Step 1: Instantly snap to starting position (no flying pieces)
+      setAnimationDuration(0);
       setCurrentFen(currentPuzzle.fen); // Start with position BEFORE opponent's move
       setIsAnimatingSetup(true);
       setMoveIndex(0);
@@ -413,13 +418,14 @@ export default function LessonPage() {
       setPuzzleHadWrongAttempt(false);
       setPuzzleStartTime(Date.now()); // Reset timer for new puzzle
 
-      // After brief delay, animate to puzzle position
+      // Step 2: Enable animation, then animate the setup move
       const timer = setTimeout(() => {
-        setCurrentFen(currentPuzzle.puzzleFen);
+        setAnimationDuration(300); // Enable animation
+        setCurrentFen(currentPuzzle.puzzleFen); // Animate setup move
         setTimeout(() => {
           setIsAnimatingSetup(false); // Allow interaction after animation
         }, 300);
-      }, 400);
+      }, 100); // Brief delay to ensure instant position is rendered first
 
       return () => clearTimeout(timer);
     }
@@ -1112,7 +1118,7 @@ export default function LessonPage() {
                   boardOrientation: currentPuzzle.playerColor,
                   onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                   squareStyles: squareStyles,
-                  animationDurationInMs: 300,
+                  animationDurationInMs: animationDuration,
                   boardStyle: {
                     borderRadius: '8px 8px 0 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
