@@ -127,6 +127,18 @@ The learn page had its own `getLessonStatus()` function that duplicated unlock l
 On mobile, "Log out" wrapped to two lines and the logo "chess" and "path" text appeared too close or overlapping. Multi-word button labels wrap when space is tight; SVG text positioning varies across devices/fonts.
 → **New rule:** Header buttons must use single-word labels (Logout, Signup) and `whitespace-nowrap`. Never let "path" overlap or crowd "chess" in the logo - this looks unprofessional. Test header on mobile before shipping.
 
+### Lesson: 2026-02-03 - Pre-generate data for reliability
+The daily challenge puzzle selection was flaky when computed on-the-fly. Pre-generating 37,000+ puzzles into a JSON file made it instant and deterministic.
+→ **New rule:** If a feature computes data that should be the same for all users (daily puzzles, static content), pre-generate it into a data file rather than computing it on each request.
+
+### Lesson: 2026-02-03 - Navigation after completing flows gets forgotten
+After passing a level test, users were sent to `/learn` but not to the specific new level. The "happy path" navigation (what happens AFTER success) is often overlooked.
+→ **New rule:** When building a flow (test, quiz, challenge), explicitly design the post-success navigation. Where does the user go after they win? Test it end-to-end.
+
+### Lesson: 2026-02-03 - Popups cut off on mobile edges
+The lesson info popup was positioned relative to the button but could overflow off-screen on mobile edges.
+→ **New rule:** Any popup/tooltip needs boundary detection. Check if it would overflow left/right edges and flip positioning accordingly. Use `getBoundingClientRect()` to detect.
+
 <!-- Add new lessons here -->
 
 ---
@@ -144,6 +156,8 @@ On mobile, "Log out" wrapped to two lines and the logo "chess" and "path" text a
 | Quips | `/data/staging/v2-puzzle-responses.ts` |
 | Feature flags | `/lib/config/feature-flags.ts` |
 | Curriculum | `/lib/curriculum-registry.ts` |
+| Daily challenge puzzles | `/data/daily-challenge-puzzles.json` (pre-generated) |
+| Daily challenge leaderboard | `/app/api/daily-challenge/leaderboard/route.ts` |
 
 **If you find this logic in multiple places, consolidate it first!**
 
@@ -351,21 +365,100 @@ lib/                       # Core utilities
 
 ---
 
-## Puzzle System
+## Chess Board Rules
 
-### IMPORTANT: Lichess Puzzle Format
+**Test page:** `/test-chess` - See all these rules in action
+
+### 1. Lichess Puzzle Format (CRITICAL)
 
 **The first move in a Lichess puzzle is the OPPONENT'S move, not the player's!**
 
-When loading a puzzle:
-1. Load the FEN
-2. Apply `moves[0]` to get the actual puzzle position
-3. Show the board (now it's the player's turn)
+```
+Raw Lichess puzzle:
+├─ fen: Position BEFORE opponent's setup move
+├─ moves[0]: Opponent's "setup" move (creates the tactic)
+└─ moves[1+]: Player's solution moves
+```
+
+**Processing flow:**
+1. Load the original FEN
+2. Apply `moves[0]` to get `puzzleFen` (the actual puzzle position)
+3. **Animate the setup move** (show piece sliding from original to puzzle position)
 4. Player's color = whoever's turn it is AFTER `moves[0]`
-5. Validate player moves against `moves[1]`, `moves[3]`, etc.
-6. Auto-play opponent responses from `moves[2]`, `moves[4]`, etc.
+5. Validate player moves against `moves[1]`, `moves[3]`, etc. (odd indices)
+6. Auto-play opponent responses from `moves[2]`, `moves[4]`, etc. (even indices)
 
 **Common mistake:** Showing the raw FEN without applying `moves[0]` first!
+
+### 2. Animate the Setup Move
+
+When a puzzle loads, animate the opponent's setup move so the user sees the "threat" being created:
+
+```tsx
+// 1. Start with original FEN (before opponent's move)
+setDisplayFen(puzzle.originalFen);
+
+// 2. After brief delay, change to puzzleFen
+// react-chessboard animates automatically via animationDurationInMs
+setTimeout(() => {
+  setDisplayFen(puzzle.puzzleFen);
+}, 100);
+```
+
+**Key prop:** `animationDurationInMs: 300` on Chessboard
+
+### 3. Board Styling (Consistent Colors)
+
+| Element | Color | CSS |
+|---------|-------|-----|
+| Dark squares | Green-brown | `#779952` |
+| Light squares | Cream | `#edeed1` |
+| Selected piece | Yellow | `rgba(255, 255, 0, 0.4)` |
+| Last move (from) | Orange | `rgba(255, 170, 0, 0.5)` |
+| Last move (to) | Orange | `rgba(255, 170, 0, 0.6)` |
+| Hint squares | Green | `#58CC02` with `boxShadow: inset 0 0 0 3px` |
+| Legal move (empty) | Dot | `radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 25%)` |
+| Legal move (capture) | Ring | `radial-gradient(circle, transparent 60%, rgba(0,0,0,0.3) 60%)` |
+
+### 4. Move Validation
+
+- Store solution moves as **SAN** (e.g., "Nf3"), not UCI ("g1f3")
+- **Normalize before comparing:** Strip `+` and `#` symbols
+  ```tsx
+  const normalize = (m: string) => m.replace(/[+#]$/, '');
+  if (normalize(move.san) === normalize(expectedMove)) { /* correct */ }
+  ```
+- **Alternate checkmates:** In mate puzzles, accept ANY checkmate move
+- **Auto-queen promotion:** Always promote to queen (no UI choice)
+
+### 5. Wrong Answer Flow (Duolingo-style)
+
+```
+1st wrong → "Oops, that's not correct. 2 attempts remaining."
+2nd wrong → "Oops, that's not correct. 1 attempt remaining."
+3rd wrong → Show green hint (highlight from/to squares)
+```
+
+### 6. Key Files
+
+| Responsibility | File |
+|----------------|------|
+| Puzzle processing | `/lib/puzzle-utils.ts` |
+| Main lesson board | `/app/lesson/[lessonId]/page.tsx` |
+| Daily challenge board | `/app/daily-challenge/page.tsx` |
+| Level test board | `/app/level-test/[transition]/page.tsx` |
+| Reusable component | `/components/puzzle/PuzzleBoard.tsx` |
+| Sounds | `/lib/sounds.ts` |
+| Test page | `/app/test-chess/page.tsx` |
+
+### 7. Common Gotchas
+
+1. **Lichess first move** - MUST apply `moves[0]` before showing puzzle
+2. **SAN vs UCI** - Solution stored as SAN, not UCI coordinates
+3. **Auto-queen** - All pawn promotions default to queen
+4. **Check symbols** - "Qe6+" and "Qe6#" should match
+5. **Mobile audio** - Call `warmupAudio()` on first user interaction
+6. **Board sizing** - No explicit size; scales to container width automatically
 
 ---
 
