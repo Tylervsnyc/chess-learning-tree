@@ -671,6 +671,11 @@ export default function LevelTestPage() {
               options={{
                 position: currentFen,
                 boardOrientation: currentPuzzle.playerColor,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onPieceDrop: isAnimatingSetup ? undefined : (args: any) => {
+                  tryMove(args.sourceSquare as Square, args.targetSquare as Square);
+                  return true;
+                },
                 onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 squareStyles: squareStyles,
                 animationDurationInMs: animationDuration,
