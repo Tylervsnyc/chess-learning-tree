@@ -312,28 +312,25 @@ function Stories2({
       {/* Top accent line */}
       <div className="absolute top-0 left-0 right-0 h-1" style={{ background: 'linear-gradient(90deg, #FF9600, #FF6B6B)' }} />
 
-      <div className="relative h-full flex flex-col items-center justify-between py-7 px-5">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2">
-            <ChessPathLogo size={24} />
-            <div>
-              <span className="text-white font-bold">chess</span>
-              <span className="text-[#58CC02] font-bold">path</span>
-            </div>
-          </div>
-          <div
-            className="mt-2 px-4 py-1.5 rounded-full text-xs font-bold"
-            style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
-          >
-            <span className="text-white">DAILY CHALLENGE</span>
-          </div>
+      <div className="relative h-full flex flex-col items-center py-7 px-5">
+        {/* Header - chesspath.app */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <ChessPathLogo size={28} />
+          <span className="text-white font-bold text-lg">chesspath.app</span>
         </div>
 
-        {/* Board with subtle frame */}
+        {/* Daily Challenge - centered between header and board */}
+        <div
+          className="px-5 py-2 rounded-full text-sm font-bold mb-4"
+          style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
+        >
+          <span className="text-white">DAILY CHALLENGE</span>
+        </div>
+
+        {/* Board - same width as stats */}
         {highestPuzzleFen && (
-          <div className="p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
-            <MiniBoard fen={highestPuzzleFen} size={170} />
+          <div className="p-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.05)' }}>
+            <MiniBoard fen={highestPuzzleFen} size={206} />
           </div>
         )}
 
