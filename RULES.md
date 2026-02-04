@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-03
+Last Updated: 2026-02-04
 
 ---
 
@@ -39,6 +39,8 @@ Last Updated: 2026-02-03
 29. [Adding New Levels Checklist](#29-adding-new-levels-checklist)
 30. [Work In Progress (WIP)](#30-work-in-progress-wip)
 31. [Puzzle Share Feature](#31-puzzle-share-feature)
+32. [SEO & Marketing](#32-seo--marketing)
+33. [Daily Maintenance Check](#33-daily-maintenance-check)
 
 ---
 
@@ -1060,6 +1062,64 @@ description: 'The shortest path to chess improvement'
 
 ---
 
+## 33. Daily Maintenance Check
+
+### What It Does
+Automated health check script that validates curriculum, puzzles, quips, and database connectivity.
+
+### How to Run
+```bash
+npx ts-node scripts/maintenance-check.ts        # Report only
+npx ts-node scripts/maintenance-check.ts --fix  # Auto-fix missing puzzle files
+```
+
+### The 7 Checks
+
+| Check | What It Validates | Auto-Fix? |
+|-------|-------------------|-----------|
+| **Lesson Puzzles** | Every lesson has puzzle files with sufficient puzzles in rating range | Yes |
+| **Daily Challenge** | All 5 rating bracket files exist and have puzzles | No |
+| **Quip Coverage** | All sections have quip responses | No |
+| **Puzzle File Integrity** | JSON files parse correctly, puzzles have required fields | No |
+| **Lesson ID Uniqueness** | No duplicate lesson IDs across curriculum | No |
+| **Database Connectivity** | Can connect to Supabase and query profiles | No |
+| **Feature Flags** | All flags have valid boolean values | No |
+
+### Output Format
+```
+=== Chess Path Maintenance Check ===
+Running at: 2026-02-04T12:00:00.000Z
+
+✓ Check 1: Lesson Puzzle Availability
+  └─ 278 lessons checked, 0 issues
+
+✗ Check 2: Daily Challenge Files
+  └─ Missing: 0800-1200.json
+
+...
+
+=== Summary ===
+Passed: 6/7
+Failed: 1/7
+```
+
+### Auto-Fix Capability
+When run with `--fix`, the script can:
+- Create missing puzzle files by extracting from source CSVs
+- Adjust rating ranges to match available data
+- Generate summary reports
+
+### File Location
+`scripts/maintenance-check.ts`
+
+### When to Run
+- Before deploying new curriculum changes
+- After adding new levels or sections
+- Weekly health check
+- When puzzles seem to be missing
+
+---
+
 ## Appendix A: Quick Reference - Where Things Are Enforced
 
 | Behavior | Enforced In (ONE place) |
@@ -1073,6 +1133,8 @@ description: 'The shortest path to chess improvement'
 | Quips | `/data/staging/v2-puzzle-responses.ts` |
 | Feature flags | `/lib/config/feature-flags.ts` |
 | Curriculum | `/lib/curriculum-registry.ts` |
+| Maintenance checks | `scripts/maintenance-check.ts` |
+| Daily challenge puzzles | `/data/daily-challenge-puzzles.json` |
 
 ---
 
