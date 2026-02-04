@@ -22,7 +22,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level3V2: Level = {
   id: 'level-3',
-  name: 'Level 3: Never Apologize for Being Great',
+  name: 'Level 3: We Need to Go Deeper',
   ratingRange: '1000-1200',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -31,7 +31,7 @@ export const level3V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Deflection & Attraction',
+      name: 'The Stairs Go Nowhere',
       description: 'Control where pieces go',
       blockIntroMessage: `Welcome to Level 3!
 
@@ -263,7 +263,7 @@ Find the move that breaks their coordination or creates your attack.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'The Sacrifice',
+      name: 'Dream a Little Bigger, Darling',
       description: 'Give up material for bigger gains',
       blockIntroMessage: `The sacrifice. Give up material to get something better.
 
@@ -491,7 +491,7 @@ Read the position. Make the right call.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Combinations',
+      name: "We're Still Dreaming",
       description: 'Chain tactics together',
       blockIntroMessage: `Combinations are where everything comes together.
 
@@ -725,7 +725,7 @@ Find the winning continuation.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Prove Yourself',
+      name: 'Limbo',
       description: 'Final mixed practice - show your mastery',
       blockIntroMessage: `You've learned the advanced setups. You've mastered sacrifices. You can chain tactics together.
 

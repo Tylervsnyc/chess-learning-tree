@@ -55,7 +55,7 @@ export interface Level {
 
 export const level1V2: Level = {
   id: 'level-1',
-  name: 'Level 1: How to Lose Friends',
+  name: 'Level 1: Begin to Believe',
   ratingRange: '400-800',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -65,7 +65,7 @@ export const level1V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'End the Game',
+      name: 'Dodge This',
       description: 'Learn to deliver checkmate',
       blockIntroMessage: `Welcome to Chess Path!
 
@@ -291,7 +291,7 @@ Find the checkmate. Every time.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'Take Their Stuff',
+      name: 'Red Pawn, Blue Pawn',
       description: 'Win pieces with tactics',
       blockIntroMessage: `Time to get greedy.
 
@@ -511,7 +511,7 @@ See the tactic, win the piece.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Break Their Spirit',
+      name: 'Welcome to the Real World',
       description: 'Convert your advantage to victory',
       blockIntroMessage: `You took their stuff. Now what?
 
@@ -731,7 +731,7 @@ Rook endgames, pawn endgames, minor pieces - it's all here. Find the winning tec
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Display Your Strength',
+      name: 'I Know Kung Fu',
       description: 'Final mixed practice - prove your mastery',
       blockIntroMessage: `The final boss awaits.
 

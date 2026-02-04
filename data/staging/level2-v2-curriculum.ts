@@ -22,7 +22,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level2V2: Level = {
   id: 'level-2',
-  name: "Level 2: The Assassin's Toolkit",
+  name: 'Level 2: Your Mission, Should You Choose to Accept It',
   ratingRange: '800-1000',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -32,7 +32,7 @@ export const level2V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Double Attacks',
+      name: 'Double Agent',
       description: 'Attack two things at once',
       blockIntroMessage: `Welcome to Level 2!
 
@@ -282,7 +282,7 @@ Trust your pattern recognition. You've got this.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'Pin & Skewer',
+      name: 'Disavowed',
       description: 'Freeze and pierce your opponent',
       blockIntroMessage: `Forks attack two pieces at once. Pins and skewers? They attack THROUGH pieces.
 
@@ -523,7 +523,7 @@ Think about what's lined up, and which piece should attack.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Discovered Attacks',
+      name: 'Ghost Protocol',
       description: 'Reveal hidden threats',
       blockIntroMessage: `Discovered attacks are sneaky. Move one piece, reveal an attack from another.
 
@@ -754,7 +754,7 @@ Feel the patterns. Trust your instincts.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Prove Yourself',
+      name: 'This Message Will Self-Destruct',
       description: 'Final mixed practice - deploy your arsenal',
       blockIntroMessage: `Final block. You know forks. You know pins and skewers. You know discoveries.
 
