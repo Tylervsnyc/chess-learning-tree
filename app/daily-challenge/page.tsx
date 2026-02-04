@@ -17,7 +17,7 @@ import {
   warmupAudio,
 } from '@/lib/sounds';
 import { ShareButton } from '@/components/share/ShareButton';
-import { StreakCelebrationPopup } from '@/components/streak/StreakCelebrationPopup';
+import { DailyChallengeReport } from '@/components/daily-challenge/DailyChallengeReport';
 
 interface Puzzle {
   puzzleId: string;
@@ -106,13 +106,7 @@ export default function DailyChallengePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
-  const {
-    recordDailyActivity,
-    currentStreak,
-    streakJustExtended,
-    previousStreak,
-    dismissStreakCelebration,
-  } = useLessonProgress();
+  const { recordDailyActivity } = useLessonProgress();
 
   // Dev mode: use ?testSeed=X to get different puzzles
   const testSeed = searchParams.get('testSeed');
@@ -866,31 +860,16 @@ export default function DailyChallengePage() {
             </div>
           </div>
 
-          {/* Results card - compact */}
-          <div className="bg-gradient-to-br from-[#131F24] to-[#0D1A1F] rounded-xl p-3 mb-3 border border-white/5">
-            <div className="flex items-center justify-between">
-              {/* Left: puzzle count */}
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-black bg-gradient-to-r from-[#58CC02] to-[#4ade80] bg-clip-text text-transparent">
-                  {puzzlesSolved}
-                </span>
-                <span className="text-gray-400 text-sm">/ {allPuzzles.length}</span>
-              </div>
-
-              {/* Right: time and mistakes */}
-              <div className="flex gap-3 text-right">
-                <div>
-                  <div className="text-white font-bold text-sm">{formatTime(TOTAL_TIME - timeLeft)}</div>
-                  <div className="text-gray-500 text-[10px]">time</div>
-                </div>
-                <div>
-                  <div className={`font-bold text-sm ${MAX_LIVES - lives === 0 ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
-                    {MAX_LIVES - lives}
-                  </div>
-                  <div className="text-gray-500 text-[10px]">mistakes</div>
-                </div>
-              </div>
-            </div>
+          {/* Shareable Results Card */}
+          <div className="mb-4">
+            <DailyChallengeReport
+              puzzlesSolved={puzzlesSolved}
+              totalPuzzles={allPuzzles.length}
+              timeMs={TOTAL_TIME - timeLeft}
+              mistakes={MAX_LIVES - lives}
+              rank={userEntry?.rank}
+              totalParticipants={totalParticipants}
+            />
           </div>
 
           {/* Leaderboard */}
@@ -1096,13 +1075,6 @@ export default function DailyChallengePage() {
           )}
         </div>
 
-        {/* Streak Celebration Popup */}
-        <StreakCelebrationPopup
-          isOpen={streakJustExtended}
-          previousStreak={previousStreak}
-          newStreak={currentStreak}
-          onClose={dismissStreakCelebration}
-        />
       </div>
     );
   }

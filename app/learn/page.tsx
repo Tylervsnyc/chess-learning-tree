@@ -8,7 +8,6 @@ import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
-import { StreakCelebrationPopup } from '@/components/streak/StreakCelebrationPopup';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
@@ -331,10 +330,6 @@ export default function LearnPage() {
     startingLessonId,
     isLessonUnlocked,
     loaded: progressLoaded,
-    currentStreak,
-    streakJustExtended,
-    previousStreak,
-    dismissStreakCelebration,
   } = useLessonProgress();
 
   // Get all lesson IDs for determining current lesson
@@ -615,13 +610,6 @@ export default function LearnPage() {
         })}
       </div>
 
-      {/* Streak Celebration Popup */}
-      <StreakCelebrationPopup
-        isOpen={streakJustExtended}
-        previousStreak={previousStreak}
-        newStreak={currentStreak}
-        onClose={dismissStreakCelebration}
-      />
     </div>
   );
 }
