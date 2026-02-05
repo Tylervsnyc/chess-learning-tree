@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
+import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 
 const PUZZLE = {
   fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
@@ -108,16 +108,10 @@ export default function LandingDuolingo() {
   return (
     <div className="h-screen bg-[#eef6fc] flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
-        {/* Logo */}
-        <Image
-          src="/brand/logo-horizontal-light.svg"
-          alt="ChessPath"
-          width={320}
-          height={74}
-          className="mb-4"
-          style={{ width: 'clamp(240px, 70vw, 320px)', height: 'auto' }}
-          priority
-        />
+        {/* Animated Logo */}
+        <div className="mb-4" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>
+          <AnimatedLogo theme="light" size="md" />
+        </div>
 
         {/* Tagline card */}
         <div className="mb-3 bg-white rounded-2xl px-4 py-3 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
