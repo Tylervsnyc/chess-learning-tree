@@ -50,6 +50,9 @@ export default function LevelTestPage() {
   const [streak, setStreak] = useState(0);
   const [hadWrongAnswer, setHadWrongAnswer] = useState(false);
 
+  // Progress bar value - updated immediately when puzzle is solved (not on Continue)
+  const [solvedPuzzleCount, setSolvedPuzzleCount] = useState(0);
+
   // Confetti ref to prevent re-firing
   const confettiFired = useRef(false);
 
@@ -222,6 +225,7 @@ export default function LevelTestPage() {
           playCorrectSound(correctCount);
           vibrateOnCorrect();
           setStreak(newStreak);
+          setSolvedPuzzleCount(c => c + 1);
           return true;
         }
 
@@ -253,6 +257,7 @@ export default function LevelTestPage() {
               playCorrectSound(correctCount);
               vibrateOnCorrect();
               setStreak(newStreak);
+              setSolvedPuzzleCount(c => c + 1);
             }
           } catch {
             // Puzzle complete
@@ -261,6 +266,7 @@ export default function LevelTestPage() {
             playCorrectSound(correctCount);
             vibrateOnCorrect();
             setStreak(newStreak);
+            setSolvedPuzzleCount(c => c + 1);
           }
         }, 400);
 
@@ -612,15 +618,11 @@ export default function LevelTestPage() {
 
           <div className="flex-1 mx-4">
             <ChessProgressBar
-              current={currentIndex + (moveStatus === 'correct' ? 1 : 0)}
+              current={solvedPuzzleCount}
               total={puzzleCount}
               streak={streak}
               hadWrongAnswer={hadWrongAnswer}
             />
-          </div>
-
-          <div className="text-gray-400 tabular-nums min-w-[40px] text-right">
-            {currentIndex + 1}/{puzzleCount}
           </div>
         </div>
       </div>

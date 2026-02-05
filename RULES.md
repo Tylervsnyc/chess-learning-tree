@@ -542,6 +542,13 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 - Keep retrying until all correct
 - Only first attempt counts for score
 
+### Progress Bar:
+- Shows puzzles solved (fills when puzzle completed, not when Continue clicked)
+- Uses `completedPuzzleCount` state (single source of truth)
+- **Critical:** Don't calculate from multiple states that update at different times
+- Streak effects: 2+ = warming glow, 4+ = lava effect, 5 = lightning celebration
+- Enforced in: `/components/puzzle/ChessProgressBar.tsx`
+
 ### X Button Behavior:
 - Back to `/learn`
 - **No partial save**
