@@ -324,6 +324,7 @@ export default function LearnPage() {
     currentPosition,
     isLessonUnlocked,
     loaded: progressLoaded,
+    serverFetched,
   } = useLessonProgress();
 
   // Get all lesson IDs for determining current lesson
@@ -348,8 +349,9 @@ export default function LearnPage() {
   // SCROLL BEHAVIOR (RULES.md Section 5) - ONE useEffect, ONE place
   // currentPosition is the source of truth - no computation needed
   // Section expand/collapse: NO scrolling (handled by toggleSection)
+  // Wait for serverFetched to ensure currentPosition has merged with server data
   useEffect(() => {
-    if (!progressLoaded || !currentPosition) return;
+    if (!progressLoaded || !serverFetched || !currentPosition) return;
 
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
@@ -367,12 +369,10 @@ export default function LearnPage() {
       } else if (attempts < maxAttempts) {
         attempts++;
         setTimeout(pollForElement, 50);
-      } else {
-        console.warn('[DEBUG learn] Could not find element for lesson:', currentPosition);
       }
     };
     setTimeout(pollForElement, 50);
-  }, [progressLoaded, currentPosition]);
+  }, [progressLoaded, serverFetched, currentPosition]);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
@@ -395,8 +395,9 @@ export default function LearnPage() {
     }));
   };
 
-  // Show loading skeleton while auth or progress is loading to prevent flash
-  if (userLoading || isProfileLoading || !progressLoaded) {
+  // Show loading skeleton while auth, progress, or server fetch is loading to prevent flash
+  // serverFetched ensures currentPosition has merged with server data before render
+  if (userLoading || isProfileLoading || !progressLoaded || !serverFetched) {
     return (
       <div className="h-full overflow-auto bg-[#eef6fc] text-[#3c3c3c] pb-20">
         <div className="max-w-lg mx-auto px-4 py-6">

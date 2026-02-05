@@ -159,6 +159,7 @@ function calculateNewStreak(currentStreak: number, lastActivityDate: string | nu
 export function useLessonProgress() {
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS);
   const [loaded, setLoaded] = useState(false);
+  const [serverFetched, setServerFetched] = useState(false); // True after GET /api/progress completes
   const [syncState, setSyncState] = useState<SyncState>('idle');
   const [pendingSyncs, setPendingSyncs] = useState<PendingSync[]>([]);
   const [isOnline, setIsOnline] = useState(true);
@@ -350,7 +351,12 @@ export function useLessonProgress() {
 
   // Fetch and merge server data when authenticated
   useEffect(() => {
-    if (!loaded || !user) return;
+    // If no user, we don't fetch server data - mark as "fetched" immediately
+    if (!loaded) return;
+    if (!user) {
+      setServerFetched(true);
+      return;
+    }
 
     const abortController = new AbortController();
 
@@ -359,7 +365,10 @@ export function useLessonProgress() {
         const response = await fetch('/api/progress', {
           signal: abortController.signal,
         });
-        if (!response.ok) return;
+        if (!response.ok) {
+          setServerFetched(true); // Mark as fetched even on error
+          return;
+        }
 
         const serverProgress: ServerProgress = await response.json();
 
@@ -371,6 +380,9 @@ export function useLessonProgress() {
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') return;
         console.error('Failed to fetch server progress:', error);
+      } finally {
+        // Always mark as fetched when done (success or error)
+        setServerFetched(true);
       }
     };
 
@@ -754,6 +766,7 @@ export function useLessonProgress() {
     setCurrentPosition,
     resetProgress,
     loaded,
+    serverFetched, // True after server GET completes (or immediately if no user)
     // Level unlock functions
     unlockedLevels: progress.unlockedLevels,
     isLevelUnlocked,
