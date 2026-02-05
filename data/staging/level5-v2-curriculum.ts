@@ -22,7 +22,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level5V2: Level = {
   id: 'level-5',
-  name: 'Level 5: No Country for Beginners',
+  name: 'No Country for Beginners',
   ratingRange: '1400-1600',
   blocks: [
     // ═══════════════════════════════════════════════════════════════

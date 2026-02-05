@@ -55,7 +55,7 @@ export interface Level {
 
 export const level1V2: Level = {
   id: 'level-1',
-  name: 'Level 1: Begin to Believe',
+  name: 'Begin to Believe',
   ratingRange: '400-800',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
