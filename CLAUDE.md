@@ -171,6 +171,10 @@ After completing a lesson, the sync POST fires async while the user navigates to
 Even after fixing the merge strategy, users saw a flash to 1.1.1 before landing at the correct position. The page rendered with localStorage data (which had default currentPosition), THEN the server fetch completed and updated it. The scroll had already fired on the stale value.
 → **New rule:** When a page depends on merged server+local data, don't render until BOTH are ready. Add a `serverFetched` flag that's false until the GET completes (or true immediately if no user). Wait for this flag before rendering content or triggering scroll. Pattern: `if (!loaded || !serverFetched) return <Skeleton />`.
 
+### Lesson: 2026-02-05 - Fix looked correct locally but was never committed
+When fixing the duplicate "Level X:" prefix in level cards, the curriculum data files were modified locally but never staged/committed. Reading the local files showed clean data, so the fix appeared done. But production still had the old data because the commit only included the UI file, not the data files.
+→ **New rule:** After making a fix, always run `git diff` (unstaged) to check if ALL changed files were included in the commit. Don't trust `Read` tool output alone — it shows the working directory, not what's committed. If `git status` shows modified files related to the fix, they probably need to be committed too.
+
 <!-- Add new lessons here -->
 
 ---
