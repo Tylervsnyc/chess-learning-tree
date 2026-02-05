@@ -617,6 +617,137 @@ When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
 - Quote data: `/data/celebration-quotes.ts`
 - Rendered by: `/app/lesson/[lessonId]/page.tsx` (when `lessonComplete` is true)
 
+### Lesson Complete Screen Design Spec (DETAILED):
+
+**Container:**
+- Full height of parent (`h-full`)
+- Background: `#131F24` (dark blue-gray)
+- Flex column, centered both axes
+- Padding: 20px horizontal (`px-5`)
+- Overflow hidden
+- Max width: `max-w-sm` (384px), centered
+
+**Layout (top to bottom):**
+
+```
+┌─────────────────────────────────┐
+│                                 │
+│         [ANIMATED ROOK]         │  ← 220px fixed height container
+│            scale 1.8x           │
+│                                 │
+├─────────────────────────────────┤
+│            5/6                  │  ← Score: 48px (text-5xl), font-black
+│         Great Job!              │  ← Tier: 14px, gray-400, uppercase, tracking-wider
+├─────────────────────────────────┤
+│   "Your opponent rage-quit"     │  ← Quote: 20px (text-xl), italic, white
+├─────────────────────────────────┤
+│  ┌──────────┐  ┌──────────┐    │
+│  │    5     │  │   83%    │    │  ← Stats: 28px (text-2xl), bold
+│  │First try │  │ Accuracy │    │  ← Labels: 14px, gray-400
+│  └──────────┘  └──────────┘    │  ← Cards: bg-[#1A2C35], rounded-xl, p-4
+├─────────────────────────────────┤
+│      The Knight's L-Shape       │  ← Lesson name: 14px, gray-500
+├─────────────────────────────────┤
+│  ┌─────────────────────────┐   │
+│  │        Continue         │   │  ← Button: py-4, rounded-xl, font-bold, text-lg
+│  └─────────────────────────┘   │  ← Color: #58CC02, shadow: 0 4px 0 #3d8c01
+├─────────────────────────────────┤
+│     [Guest signup prompt]       │  ← Only if isGuest=true
+└─────────────────────────────────┘
+```
+
+**Colors:**
+| Element | Color | Hex |
+|---------|-------|-----|
+| Background | Dark blue-gray | `#131F24` |
+| Card backgrounds | Darker blue-gray | `#1A2C35` |
+| Score (normal) | ChessPath green | `#58CC02` |
+| Score (perfect 6/6) | Gold | `#FFC800` |
+| First try stat | Green | `#58CC02` |
+| Accuracy stat | Blue | `#1CB0F6` |
+| Accuracy (100%) | Gold | `#FFC800` |
+| Continue button | Green | `#58CC02` |
+| Button shadow | Dark green | `#3d8c01` |
+| Tier label | Gray | `text-gray-400` |
+| Quote text | White | `text-white` |
+| Lesson name | Gray | `text-gray-500` |
+
+**Spacing (margins/padding):**
+| Element | Spacing |
+|---------|---------|
+| Rook container | Fixed 220px height, flex centered |
+| Score section | `mb-3` (12px bottom) |
+| Tier label | `mb-1` (4px) below score |
+| Quote | `mb-5` (20px bottom) |
+| Stats grid | `gap-3` (12px), `mb-5` (20px bottom) |
+| Lesson name | `mb-4` (16px bottom) |
+| Guest prompt | `mt-4` (16px top) |
+
+**Animation Timing (staggered fadeInUp):**
+| Element | Delay |
+|---------|-------|
+| Score | 0s |
+| Tier label | 0.1s |
+| Quote | 0.2s |
+| Stats cards | 0.3s |
+| Lesson name | 0.35s |
+| Continue button | 0.4s |
+| Guest prompt | 0.5s |
+
+**fadeInUp Animation:**
+```css
+@keyframes fadeInUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+```
+
+**Continue Button Behavior:**
+- Text: "Continue" (always)
+- On click: Navigate to `/learn?level={levelKey}` (or with `?guest=true` prefix for guests)
+- Active state: `translateY(2px)` + reduced shadow
+- Does NOT go to next lesson — always returns to curriculum tree
+
+**Rook Celebration Animation:**
+- Component: `<RookCelebrationAnimation />`
+- Props: `style={randomStyle}`, `scale={1.8}`, `autoPlay={true}`
+- Container: `height: 220px`, flex centered
+- Style randomly chosen from: `sparkleBurst`, `wave`, `radiate`, `ripple`, `cascade`, `bloom`
+
+**Confetti (fires on mount):**
+```typescript
+confetti({
+  particleCount: isPerfect ? 100 : correctCount >= 5 ? 60 : 40,
+  angle: 60,  // Left side
+  spread: 55,
+  origin: { x: 0, y: 0.65 },
+  colors: isPerfect
+    ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']  // Gold
+    : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'], // Green/Blue
+  gravity: 1.2,
+  ticks: 200,
+});
+// Mirror burst from right side (angle: 120, origin.x: 1)
+```
+
+**Sound (fires on mount):**
+```typescript
+playCelebrationSound(correctCount);
+```
+
+**Tier Labels (from `/data/celebration-quotes.ts`):**
+| Score | Tier Label |
+|-------|------------|
+| 6/6 | "Perfect!" |
+| 5/6 | "Great Job!" |
+| 4/6 | "Good Work!" |
+| 3/6 | "Nice Try!" |
+| 2/6 | "Keep Going!" |
+| 1/6 | "You Got One!" |
+| 0/6 | "Complete!" |
+
+**Preview File:** `/lesson-complete-preview.html` — standalone HTML demo of the screen
+
 **Preview File:** `/lesson-complete-preview.html`
 
 ---
