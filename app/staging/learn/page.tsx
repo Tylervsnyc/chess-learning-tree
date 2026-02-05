@@ -11,7 +11,8 @@ import { useUser } from '@/hooks/useUser';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
-type LessonStatus = 'completed' | 'current' | 'locked';
+// completed-current = completed lesson that is also currentPosition (shows gold + checkmark + ring)
+type LessonStatus = 'completed' | 'completed-current' | 'current' | 'locked';
 
 // Level configurations
 const LEVELS = [
@@ -57,21 +58,24 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
   return levelLessonIds.every(id => completedLessons.includes(id));
 }
 
-// Determine lesson status
+// Determine lesson status - currentPosition is the source of truth for which lesson is "current"
+// Per RULES.md: Ring shows on currentPosition even if that lesson is completed
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
-  allLessonIds: string[],
-  unlockedLevels: number[]
+  currentPosition: string
 ): LessonStatus {
-  if (completedLessons.includes(lessonId)) return 'completed';
+  const isCompleted = completedLessons.includes(lessonId);
+  const isCurrent = lessonId === currentPosition;
 
-  // For each unlocked level, check if this is the first incomplete lesson in that level
-  for (const levelNum of unlockedLevels) {
-    const levelLessonIds = getLevelLessonIds(levelNum);
-    const firstIncompleteInLevel = levelLessonIds.find(id => !completedLessons.includes(id));
-    if (lessonId === firstIncompleteInLevel) return 'current';
-  }
+  // Completed AND current = gold + checkmark + pulsing ring
+  if (isCompleted && isCurrent) return 'completed-current';
+
+  // Completed but not current = gold + checkmark, no ring
+  if (isCompleted) return 'completed';
+
+  // Current lesson (not completed) = colored + pulsing ring
+  if (isCurrent) return 'current';
 
   return 'locked';
 }
@@ -321,8 +325,8 @@ export default function LearnPage() {
     '1.1': true,
   });
 
-  // Track completed lessons and unlocked levels
-  const { completedLessons, unlockedLevels, unlockLevel } = useLessonProgress();
+  // Track completed lessons, unlocked levels, and current position
+  const { completedLessons, unlockedLevels, unlockLevel, currentPosition } = useLessonProgress();
 
   // Check if user is logged in
   const { user } = useUser();
@@ -461,6 +465,7 @@ export default function LearnPage() {
                     allLessonIds={allLessonIds}
                     unlockedLevels={unlockedLevels}
                     levelColor={color}
+                    currentPosition={currentPosition}
                   />
                 );
               })}
@@ -483,6 +488,7 @@ function BlockView({
   allLessonIds,
   unlockedLevels,
   levelColor,
+  currentPosition,
 }: {
   block: Block;
   blockIndex: number;
@@ -493,6 +499,7 @@ function BlockView({
   allLessonIds: string[];
   unlockedLevels: number[];
   levelColor: string;
+  currentPosition: string;
 }) {
   return (
     <div className="mb-8">
@@ -518,6 +525,7 @@ function BlockView({
             completedLessons={completedLessons}
             allLessonIds={allLessonIds}
             unlockedLevels={unlockedLevels}
+            currentPosition={currentPosition}
           />
         );
       })}
@@ -534,6 +542,7 @@ function SectionView({
   completedLessons,
   allLessonIds,
   unlockedLevels,
+  currentPosition,
 }: {
   section: Section;
   sectionIndex: number;
@@ -542,6 +551,7 @@ function SectionView({
   completedLessons: string[];
   allLessonIds: string[];
   unlockedLevels: number[];
+  currentPosition: string;
 }) {
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
@@ -585,7 +595,7 @@ function SectionView({
       {isExpanded && (
         <div className="mt-4 flex flex-col items-center">
           {section.lessons.map((lesson, lessonIndex) => {
-            const status = getLessonStatus(lesson.id, completedLessons, allLessonIds, unlockedLevels);
+            const status = getLessonStatus(lesson.id, completedLessons, currentPosition);
             const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
             // Zigzag pattern
@@ -633,8 +643,9 @@ function LessonButton({
   const depthY = CURRICULUM_V2_CONFIG.buttonDepthY;
   const depthX = CURRICULUM_V2_CONFIG.buttonDepthX;
 
-  const isCompleted = status === 'completed';
-  const isCurrent = status === 'current';
+  // completed-current shows both completed styling AND the pulsing ring
+  const isCompleted = status === 'completed' || status === 'completed-current';
+  const isCurrent = status === 'current' || status === 'completed-current';
   const isLocked = status === 'locked';
 
   let topColor: string;

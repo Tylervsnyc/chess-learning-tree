@@ -55,7 +55,7 @@ export interface PuzzleAttempt {
 
 /**
  * Progress interface - matches RULES.md Section 23
- * NOTE: Removed themePerformance, bestStreak, currentLessonId (not in DB schema)
+ * currentPosition tracks where the user is in their journey
  */
 export interface Progress {
   completedLessons: string[];
@@ -64,8 +64,9 @@ export interface Progress {
   totalPuzzlesAttempted: number;
   currentStreak: number;
   lastActivityDate: string | null;
-  // Starting lesson from diagnostic placement (all lessons before this are unlocked)
-  startingLessonId: string | null;
+  // Current position in the curriculum (where user lands on /learn)
+  // Updated on lesson complete or level test pass
+  currentPosition: string;
   // Daily lesson tracking for free user limits
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
@@ -80,7 +81,7 @@ const DEFAULT_PROGRESS: Progress = {
   totalPuzzlesAttempted: 0,
   currentStreak: 0,
   lastActivityDate: null,
-  startingLessonId: null,
+  currentPosition: '1.1.1', // First lesson by default
   lessonsCompletedToday: 0,
   lastLessonDate: null,
   unlockedLevels: [1], // Level 1 always unlocked by default
@@ -441,14 +442,7 @@ export function useLessonProgress() {
 
   const completeLesson = useCallback((lessonId: string, allLessonIds?: string[]) => {
     setProgress(prev => {
-      if (prev.completedLessons.includes(lessonId)) {
-        return prev;
-      }
-
-      // Track daily lesson count
-      const today = new Date().toISOString().split('T')[0];
-      const isNewDay = prev.lastLessonDate !== today;
-      const newLessonsCompletedToday = isNewDay ? 1 : prev.lessonsCompletedToday + 1;
+      const alreadyCompleted = prev.completedLessons.includes(lessonId);
 
       // Calculate next lesson ID if allLessonIds provided
       let nextLessonId: string | null = null;
@@ -456,6 +450,30 @@ export function useLessonProgress() {
         const currentIndex = allLessonIds.indexOf(lessonId);
         nextLessonId = allLessonIds[currentIndex + 1] || null;
       }
+
+      // Update currentPosition even for replays (user might have navigated here)
+      const newCurrentPosition = nextLessonId || lessonId;
+
+      // If already completed, just update currentPosition (no other changes)
+      if (alreadyCompleted) {
+        const updatedProgress = {
+          ...prev,
+          currentPosition: newCurrentPosition,
+        };
+        saveProgress(updatedProgress);
+
+        // Sync currentPosition to server even for replays
+        if (user) {
+          syncToServer('lesson', { lessonId, nextLessonId, currentPosition: newCurrentPosition, updateStreak: false });
+        }
+
+        return updatedProgress;
+      }
+
+      // Track daily lesson count
+      const today = new Date().toISOString().split('T')[0];
+      const isNewDay = prev.lastLessonDate !== today;
+      const newLessonsCompletedToday = isNewDay ? 1 : prev.lessonsCompletedToday + 1;
 
       // Update streak using day-based logic (per RULES.md Section 11)
       const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
@@ -466,10 +484,12 @@ export function useLessonProgress() {
         setStreakJustExtended(true);
       }
 
+      // Note: nextLessonId and newCurrentPosition already calculated above
+
       const newProgress = {
         ...prev,
         completedLessons: [...prev.completedLessons, lessonId],
-        currentLessonId: nextLessonId, // Update local state immediately
+        currentPosition: newCurrentPosition,
         lessonsCompletedToday: newLessonsCompletedToday,
         lastLessonDate: today,
         currentStreak: streakResult.newStreak,
@@ -477,9 +497,9 @@ export function useLessonProgress() {
       };
       saveProgress(newProgress);
 
-      // Sync to server with error tracking
+      // Sync to server with error tracking - include currentPosition
       if (user) {
-        syncToServer('lesson', { lessonId, nextLessonId, updateStreak: true });
+        syncToServer('lesson', { lessonId, nextLessonId, currentPosition: newCurrentPosition, updateStreak: true });
       }
 
       return newProgress;
@@ -594,17 +614,23 @@ export function useLessonProgress() {
     return false;
   }, [progress.completedLessons, progress.unlockedLevels, profile?.is_admin]);
 
-  // Set the starting lesson (called after diagnostic placement)
-  const setStartingLesson = useCallback((lessonId: string) => {
+  // Set the current position (called when navigating to a lesson or after level test)
+  const setCurrentPosition = useCallback((lessonId: string) => {
     setProgress(prev => {
       const newProgress = {
         ...prev,
-        startingLessonId: lessonId,
+        currentPosition: lessonId,
       };
       saveProgress(newProgress);
       return newProgress;
     });
-  }, []);
+
+    // Sync to server if logged in
+    if (user) {
+      // Use lesson type sync with just the currentPosition update
+      syncToServer('lesson', { lessonId: '', currentPosition: lessonId, updateStreak: false });
+    }
+  }, [user, syncToServer]);
 
   const resetProgress = useCallback(() => {
     setProgress(DEFAULT_PROGRESS);
@@ -618,7 +644,8 @@ export function useLessonProgress() {
 
   // Unlock a level (called after passing level test)
   // When unlocking level N, automatically unlock ALL levels 1 through N
-  const unlockLevel = useCallback((level: number) => {
+  // Also sets currentPosition to first lesson of new level
+  const unlockLevel = useCallback((level: number, firstLessonOfLevel?: string) => {
     setProgress(prev => {
       // Create array of all levels from 1 to target level [1, 2, 3, ..., level]
       const allLevelsUpTo = Array.from({ length: level }, (_, i) => i + 1);
@@ -629,15 +656,19 @@ export function useLessonProgress() {
         return prev;
       }
 
+      // Default first lesson is level.1.1 (e.g., "3.1.1" for level 3)
+      const newCurrentPosition = firstLessonOfLevel || `${level}.1.1`;
+
       const newProgress = {
         ...prev,
         unlockedLevels: newUnlockedLevels,
+        currentPosition: newCurrentPosition,
       };
       saveProgress(newProgress);
 
-      // Sync to server with error tracking
+      // Sync to server with error tracking - include currentPosition
       if (user) {
-        syncToServer('unlockLevel', { level, unlockedLevels: newUnlockedLevels });
+        syncToServer('unlockLevel', { level, unlockedLevels: newUnlockedLevels, currentPosition: newCurrentPosition });
       }
 
       return newProgress;
@@ -718,8 +749,9 @@ export function useLessonProgress() {
     recordPuzzleAttempt,
     isLessonCompleted,
     isLessonUnlocked,
-    setStartingLesson,
-    startingLessonId: progress.startingLessonId,
+    // Current position in curriculum
+    currentPosition: progress.currentPosition,
+    setCurrentPosition,
     resetProgress,
     loaded,
     // Level unlock functions

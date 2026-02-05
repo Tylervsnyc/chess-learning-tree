@@ -2,7 +2,7 @@ import type { Progress, PuzzleAttempt } from '@/hooks/useProgress';
 
 /**
  * Server-side progress data structure (from Supabase)
- * NOTE: Per RULES.md Section 23, we removed: themePerformance, bestStreak, currentLessonId, currentLevel
+ * currentPosition tracks where user is in their journey (updated on lesson complete / level test pass)
  */
 export interface ServerProgress {
   completedLessons: string[];
@@ -11,15 +11,15 @@ export interface ServerProgress {
   lessonsCompletedToday: number;
   lastLessonDate: string | null;
   unlockedLevels: number[];
+  currentPosition: string;
 }
 
 /**
  * Merge local and server progress with additive strategy:
  * - Union of completed lessons (ONLY if server has data - prevents stale localStorage)
  * - Max of streaks
+ * - Server wins for currentPosition (explicit stored position)
  * - Dedupe puzzle attempts by puzzleId + timestamp
- *
- * NOTE: Per RULES.md Section 23, we removed themePerformance, bestStreak, currentLessonId
  */
 export function mergeProgress(
   local: Progress,
@@ -65,6 +65,9 @@ export function mergeProgress(
     ? (server.lastLessonDate ?? local.lastLessonDate)
     : server.lastLessonDate;
 
+  // Server wins for currentPosition - it's the authoritative source
+  const currentPosition = server.currentPosition || '1.1.1';
+
   return {
     completedLessons,
     puzzleAttempts: serverHasLessons ? local.puzzleAttempts : [], // Clear for new users
@@ -72,7 +75,7 @@ export function mergeProgress(
     totalPuzzlesSolved: local.totalPuzzlesSolved, // Keep local count
     currentStreak,
     lastActivityDate,
-    startingLessonId: serverHasLessons ? local.startingLessonId : null, // Clear for new users
+    currentPosition, // Server is source of truth
     lessonsCompletedToday, // Server value takes priority
     lastLessonDate,
     unlockedLevels, // Merged from both local and server

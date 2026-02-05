@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { LEVELS, getAllLessonIds, getLevelLessonIds, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
 import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
@@ -11,7 +11,8 @@ import { useUser } from '@/hooks/useUser';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
-type LessonStatus = 'completed' | 'current' | 'unlocked' | 'locked';
+// completed-current = completed lesson that is also currentPosition (shows gold + checkmark + ring)
+type LessonStatus = 'completed' | 'completed-current' | 'current' | 'unlocked' | 'locked';
 
 // Check if a level is completed
 function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean {
@@ -20,38 +21,33 @@ function isLevelCompleted(levelNum: number, completedLessons: string[]): boolean
 }
 
 // Determine lesson status - uses isLessonUnlocked from hook (ONE source of truth)
-// overrideCurrentId: When navigating from a completed lesson, show this as "current" instead of first gap
+// currentPosition is the source of truth for which lesson shows the pulsing ring
+// Per RULES.md: Ring shows on currentPosition even if that lesson is completed
 function getLessonStatus(
   lessonId: string,
   completedLessons: string[],
   allLessonIds: string[],
   isUnlockedFn: (lessonId: string, allLessonIds: string[]) => boolean,
-  overrideCurrentId: string | null = null
+  currentPosition: string
 ): LessonStatus {
-  // Completed lessons are always completed
-  if (completedLessons.includes(lessonId)) return 'completed';
+  const isCompleted = completedLessons.includes(lessonId);
+  const isCurrent = lessonId === currentPosition;
 
-  // Use the hook's unlock function (respects unlockedLevels, startingLessonId, etc.)
+  // Completed AND current = gold + checkmark + pulsing ring
+  if (isCompleted && isCurrent) return 'completed-current';
+
+  // Completed but not current = gold + checkmark, no ring
+  if (isCompleted) return 'completed';
+
+  // Use the hook's unlock function (respects unlockedLevels, etc.)
   const isUnlocked = isUnlockedFn(lessonId, allLessonIds);
 
   if (!isUnlocked) return 'locked';
 
-  // If we have an override (from URL scrollTo), use that as current
-  if (overrideCurrentId && lessonId === overrideCurrentId) {
-    return 'current';
-  }
+  // Current lesson (not completed) = colored + pulsing ring
+  if (isCurrent) return 'current';
 
-  // Find the first unlocked but incomplete lesson (current) - only if no override
-  if (!overrideCurrentId) {
-    const firstCurrent = allLessonIds.find(id => {
-      if (completedLessons.includes(id)) return false;
-      return isUnlockedFn(id, allLessonIds);
-    });
-
-    if (lessonId === firstCurrent) return 'current';
-  }
-
-  // Unlocked but not the first current - show as unlocked (clickable but not highlighted)
+  // Unlocked but not current - show as unlocked (clickable but not highlighted)
   return 'unlocked';
 }
 
@@ -319,15 +315,13 @@ function findSectionForLesson(lessonId: string): string | null {
 }
 
 export default function LearnPage() {
-  const searchParams = useSearchParams();
-  const scrollToLessonId = searchParams.get('scrollTo');
-
   // Track completed lessons and unlocked levels
+  // currentPosition is the source of truth for where the user is in the curriculum
   const {
     completedLessons,
     unlockedLevels,
     unlockLevel,
-    startingLessonId,
+    currentPosition,
     isLessonUnlocked,
     loaded: progressLoaded,
   } = useLessonProgress();
@@ -351,36 +345,13 @@ export default function LearnPage() {
   // While loading, default to false (secure default) - show loading state instead of flash
   const isAdmin = profile?.is_admin ?? false;
 
-  // Find the current lesson (first unlocked but not completed)
-  const currentLessonId = useMemo(() => {
-    for (const lessonId of allLessonIds) {
-      if (!completedLessons.includes(lessonId)) {
-        // Check if this is the first lesson or if previous lesson is completed
-        const idx = allLessonIds.indexOf(lessonId);
-        if (idx === 0) return lessonId;
-        if (startingLessonId) {
-          const startingIdx = allLessonIds.indexOf(startingLessonId);
-          if (startingIdx >= 0 && idx <= startingIdx) return lessonId;
-        }
-        const prevId = allLessonIds[idx - 1];
-        if (completedLessons.includes(prevId)) return lessonId;
-      }
-    }
-    return allLessonIds[allLessonIds.length - 1]; // All completed, show last
-  }, [allLessonIds, completedLessons, startingLessonId]);
-
   // SCROLL BEHAVIOR (RULES.md Section 5) - ONE useEffect, ONE place
-  // - URL has scrollTo: Expand section, scroll to that lesson
-  // - Fresh visit (no param): Expand section, scroll to current lesson
-  // - Section expand/collapse: NO scrolling (handled by toggleSection)
+  // currentPosition is the source of truth - no computation needed
+  // Section expand/collapse: NO scrolling (handled by toggleSection)
   useEffect(() => {
-    if (!progressLoaded) return;
+    if (!progressLoaded || !currentPosition) return;
 
-    const targetLessonId = scrollToLessonId || currentLessonId;
-    console.log('[DEBUG learn] scrollToLessonId:', scrollToLessonId, 'currentLessonId:', currentLessonId, 'targetLessonId:', targetLessonId, 'startingLessonId:', startingLessonId);
-    if (!targetLessonId) return;
-
-    const sectionId = findSectionForLesson(targetLessonId);
+    const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
       setExpandedSections(prev => ({ ...prev, [sectionId]: true }));
     }
@@ -390,18 +361,18 @@ export default function LearnPage() {
     let attempts = 0;
     const maxAttempts = 10;
     const pollForElement = () => {
-      const element = document.getElementById(`lesson-${targetLessonId}`);
+      const element = document.getElementById(`lesson-${currentPosition}`);
       if (element) {
         element.scrollIntoView({ behavior: 'instant', block: 'center' });
       } else if (attempts < maxAttempts) {
         attempts++;
         setTimeout(pollForElement, 50);
       } else {
-        console.warn('[DEBUG learn] Could not find element for lesson:', targetLessonId);
+        console.warn('[DEBUG learn] Could not find element for lesson:', currentPosition);
       }
     };
     setTimeout(pollForElement, 50);
-  }, [scrollToLessonId, progressLoaded, currentLessonId]);
+  }, [progressLoaded, currentPosition]);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
@@ -601,7 +572,7 @@ export default function LearnPage() {
                     levelColor={color}
                     isAdmin={isAdmin}
                     isLessonUnlocked={isLessonUnlocked}
-                    overrideCurrentId={scrollToLessonId}
+                    currentPosition={currentPosition}
                   />
                 );
               })}
@@ -626,7 +597,7 @@ function BlockView({
   levelColor,
   isAdmin,
   isLessonUnlocked,
-  overrideCurrentId,
+  currentPosition,
 }: {
   block: Block;
   blockIndex: number;
@@ -638,7 +609,7 @@ function BlockView({
   levelColor: string;
   isAdmin: boolean;
   isLessonUnlocked: (lessonId: string, allLessonIds: string[]) => boolean;
-  overrideCurrentId: string | null;
+  currentPosition: string;
 }) {
   return (
     <div className="mb-8">
@@ -665,7 +636,7 @@ function BlockView({
             allLessonIds={allLessonIds}
             isAdmin={isAdmin}
             isLessonUnlocked={isLessonUnlocked}
-            overrideCurrentId={overrideCurrentId}
+            currentPosition={currentPosition}
           />
         );
       })}
@@ -683,7 +654,7 @@ function SectionView({
   allLessonIds,
   isAdmin,
   isLessonUnlocked,
-  overrideCurrentId,
+  currentPosition,
 }: {
   section: Section;
   sectionIndex: number;
@@ -693,7 +664,7 @@ function SectionView({
   allLessonIds: string[];
   isAdmin: boolean;
   isLessonUnlocked: (lessonId: string, allLessonIds: string[]) => boolean;
-  overrideCurrentId: string | null;
+  currentPosition: string;
 }) {
   const router = useRouter();
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
@@ -771,7 +742,7 @@ function SectionView({
           <div className="flex flex-row justify-evenly items-start">
             {section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
-              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, overrideCurrentId);
+              const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, currentPosition);
               const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
               const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
 
@@ -827,8 +798,9 @@ function LessonButton({
   const depthY = CURRICULUM_V2_CONFIG.buttonDepthY;
   const depthX = CURRICULUM_V2_CONFIG.buttonDepthX;
 
-  const isCompleted = status === 'completed';
-  const isCurrent = status === 'current';
+  // completed-current shows both completed styling AND the pulsing ring
+  const isCompleted = status === 'completed' || status === 'completed-current';
+  const isCurrent = status === 'current' || status === 'completed-current';
   const isUnlocked = status === 'unlocked';
   const isLocked = status === 'locked';
 

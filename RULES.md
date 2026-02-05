@@ -89,9 +89,12 @@ const userType = useMemo(() => {
 | State | Appearance | Click Action |
 |-------|------------|--------------|
 | Locked | Gray, lock icon | Show "Complete previous lesson" toast |
-| Unlocked | Colored, no icon | Navigate to lesson |
-| Completed | Colored, checkmark | Navigate to lesson (replay) |
-| Current | Colored, pulsing | Navigate to lesson |
+| Unlocked | Colored (faded), no ring | Navigate to lesson |
+| Completed | Gold, checkmark sparkles | Navigate to lesson (replay) |
+| Current | Colored, pulsing ring | Navigate to lesson |
+| Completed + Current | Gold, checkmark sparkles, pulsing ring | Navigate to lesson (replay) |
+
+**Note:** The pulsing ring always shows on `currentPosition`, even if that lesson is completed. This indicates "you are here" in the curriculum.
 
 ---
 
@@ -467,7 +470,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 **Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Challenge toggle without losing their place in the curriculum.
 
 ### Logo Rules:
-- **Icon**: Colorful queen made of 22 dots (5 columns × 6 rows)
+- **Icon**: Colorful rook made of 22 dots (5 columns × 6 rows)
 - **Text**: "chess" in white/dark + "path" with yellow→coral→blue gradient
 - **"chess" and "path" must NEVER overlap or touch** - this looks unprofessional
 - SVG logos must use inline `<tspan>` elements (not separate `<text>` elements with fixed positions)
@@ -475,6 +478,13 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 - Logo files: `/public/brand/logo-horizontal-*.svg` and `/public/brand/logo-stacked-*.svg`
 - Icon colors: Blue (#1CB0F6), Cyan (#2FCBEF), Purple (#A560E8), Green (#58CC02), Yellow (#FFC800), Orange (#FF9600), Coral (#FF6B6B), Red (#FF4B4B)
 - "path" gradient: Yellow (#FFC800) → Coral (#FF6B6B) → Blue (#1CB0F6)
+
+### Animated Logo:
+- **Component**: `/components/brand/AnimatedLogo.tsx`
+- **Animation**: Blocks fade in from center outward (~850ms ripple), then wordmark fades in
+- **Landing page (`/`) MUST use animated logo** - not the static SVG
+- Props: `theme="light"|"dark"`, `size="sm"|"md"|"lg"`, `iconOnly`, `autoPlay`
+- Test page: `/test-animated-logo`
 
 ### Layout Centering Rules:
 - **Logos and modals should be vertically centered** between the header and the bottom of the viewport (or bottom action button)

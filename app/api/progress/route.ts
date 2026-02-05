@@ -30,12 +30,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
   }
 
-  // Fetch profile for streaks and progress tracking
-  // NOTE: Per RULES.md Section 23, we removed: elo_rating, current_lesson_id, current_level, best_streak
-  // currentLessonId is derived from completed lessons, currentLevel from unlocked_levels
+  // Fetch profile for streaks, progress tracking, and current position
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('current_streak, last_activity_date, lessons_completed_today, last_lesson_date, unlocked_levels')
+    .select('current_streak, last_activity_date, lessons_completed_today, last_lesson_date, unlocked_levels, current_position')
     .eq('id', user.id)
     .single();
 
@@ -64,6 +62,7 @@ export async function GET() {
       lessonsCompletedToday: 0,
       lastLessonDate: null,
       unlockedLevels: [1],
+      currentPosition: '1.1.1',
     });
   } else if (profileError) {
     console.error('Error fetching profile:', profileError);
@@ -82,6 +81,7 @@ export async function GET() {
     lessonsCompletedToday,
     lastLessonDate: profile?.last_lesson_date ?? null,
     unlockedLevels: profile?.unlocked_levels ?? [1],
+    currentPosition: profile?.current_position ?? '1.1.1',
   });
 }
 
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
 
   if (type === 'lesson') {
     // Record lesson completion
-    const { lessonId, nextLessonId } = data;
+    const { lessonId, nextLessonId, currentPosition } = data;
     if (!lessonId) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
     }
@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
 
     const completedLessons = (existingProgressResult.data || []).map(p => p.lesson_id);
     const isAdmin = profileResult.data?.is_admin ?? false;
-    // Note: startingLessonId is stored in localStorage only for now
     // Server validation uses sequential unlock logic (previous lesson must be complete)
+    // currentPosition is updated separately after validation passes
 
     // Check unlock status using sequential unlock logic
     let isUnlocked = false;
@@ -220,14 +220,21 @@ export async function POST(request: NextRequest) {
       newStreak = 1;
     }
 
+    // Build update object - include currentPosition if provided
+    const updateData: Record<string, unknown> = {
+      lessons_completed_today: newLessonCount,
+      last_lesson_date: today,
+      last_activity_date: today,
+      current_streak: newStreak,
+    };
+
+    if (currentPosition) {
+      updateData.current_position = currentPosition;
+    }
+
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({
-        lessons_completed_today: newLessonCount,
-        last_lesson_date: today,
-        last_activity_date: today,
-        current_streak: newStreak,
-      })
+      .update(updateData)
       .eq('id', user.id);
 
     if (updateError) {
@@ -240,16 +247,23 @@ export async function POST(request: NextRequest) {
 
   if (type === 'unlockLevel') {
     // Record level unlock (from passing a level test)
-    const { unlockedLevels } = data;
+    const { unlockedLevels, currentPosition } = data;
     if (!unlockedLevels) {
       return NextResponse.json({ error: 'Missing level data' }, { status: 400 });
     }
 
+    // Build update object - include currentPosition if provided
+    const updateData: Record<string, unknown> = {
+      unlocked_levels: unlockedLevels,
+    };
+
+    if (currentPosition) {
+      updateData.current_position = currentPosition;
+    }
+
     const { error } = await supabase
       .from('profiles')
-      .update({
-        unlocked_levels: unlockedLevels,
-      })
+      .update(updateData)
       .eq('id', user.id);
 
     if (error) {

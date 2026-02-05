@@ -28,6 +28,8 @@ CREATE TABLE public.profiles (
   -- Lesson limits (when enabled via feature flags)
   lessons_completed_today INTEGER DEFAULT 0,
   last_lesson_date DATE DEFAULT NULL,
+  -- Current position in the curriculum (where user lands on /learn)
+  current_position TEXT DEFAULT '1.1.1',
   -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -35,9 +37,10 @@ CREATE TABLE public.profiles (
 
 -- NOTE: Removed per RULES.md Section 23:
 -- - elo_rating (we don't track user ELO)
--- - current_lesson_id (derived from progress, not stored)
 -- - current_level (derived from unlocked_levels)
 -- - best_streak (not needed for MVP)
+-- NOTE: current_position replaces the old current_lesson_id concept
+-- It stores where the user is in their journey (updated on lesson complete / level test pass)
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- LESSON PROGRESS TABLE
@@ -292,6 +295,10 @@ CREATE TRIGGER on_auth_user_created
 
 -- To add new columns to profiles:
 -- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_activity_date DATE;
+-- ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_position TEXT DEFAULT '1.1.1';
+
+-- To migrate existing users' current_position (set to lesson after their last completed):
+-- See scripts/migrate-current-position.sql for the full migration
 
 -- To cleanup old puzzle_history (older than 90 days):
 -- DELETE FROM public.puzzle_history WHERE seen_at < NOW() - INTERVAL '90 days';
