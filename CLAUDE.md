@@ -151,6 +151,10 @@ The `completeLesson` function returned early for already-completed lessons, whic
 The progress bar used `transition-all` on the fill element, which meant when the streak state changed (causing gradient colors to change), the entire gradient would animate between states, causing visual glitching and size flickering.
 → **New rule:** Never use `transition-all` on elements with dynamic backgrounds/gradients. Only transition specific properties that should animate (e.g., `transition: 'width 500ms ease-out'`). CSS background gradients don't interpolate smoothly.
 
+### Lesson: 2026-02-05 - Progress bar container resized because siblings had variable width
+The progress bar was in a `flex-1` container, meaning its width depended on sibling elements. The counter text ("1/6" vs "10/6") and SyncStatus component (null vs "Saving...") had different widths, causing the progress bar to resize when these changed.
+→ **New rule:** When using `flex-1` for a container that should have stable width, ensure all sibling elements have fixed/minimum widths. Use `tabular-nums` for number displays so all digits have equal width. Use `min-w-[...]` on variable-content containers.
+
 <!-- Add new lessons here -->
 
 ---
@@ -173,6 +177,7 @@ The progress bar used `transition-all` on the fill element, which meant when the
 | Curriculum | `/lib/curriculum-registry.ts` |
 | Daily challenge puzzles | `/data/daily-challenge-puzzles.json` (pre-generated) |
 | Daily challenge leaderboard | `/app/api/daily-challenge/leaderboard/route.ts` |
+| Animated logo | `/components/brand/AnimatedLogo.tsx` |
 
 **If you find this logic in multiple places, consolidate it first!**
 

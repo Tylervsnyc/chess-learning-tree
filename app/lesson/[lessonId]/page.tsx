@@ -925,7 +925,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
+              onClick={() => router.push('/learn')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -933,7 +933,7 @@ export default function LessonPage() {
             <div className="flex-1 mx-4">
               <ChessProgressBar current={0} total={6} streak={0} />
             </div>
-            <div className="text-gray-400">...</div>
+            <div className="text-gray-400 tabular-nums min-w-[60px] text-right">...</div>
           </div>
         </div>
         <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
@@ -956,7 +956,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
+              onClick={() => router.push('/learn')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -967,7 +967,7 @@ export default function LessonPage() {
           <div className="text-center max-w-md px-4">
             <p className="text-red-400 mb-4">{error}</p>
             <button
-              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
+              onClick={() => router.push('/learn')}
               className="text-[#1CB0F6] hover:underline"
             >
               ← Back to curriculum
@@ -1014,7 +1014,7 @@ export default function LessonPage() {
               <div className="text-gray-500 text-sm mb-6">{lessonName}</div>
 
               <button
-                onClick={() => router.push(`/learn?level=${level}&scrollTo=${nextLessonId || lessonId}`)}
+                onClick={() => router.push('/learn')}
                 className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
               >
                 Continue
@@ -1038,7 +1038,7 @@ export default function LessonPage() {
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
+              onClick={() => router.push('/learn')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -1059,7 +1059,7 @@ export default function LessonPage() {
       <div className="bg-[#eef6fc] border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push(`/learn?level=${level}&scrollTo=${lessonId}`)}
+            onClick={() => router.push('/learn')}
             className="text-gray-500 hover:text-gray-700"
           >
             ✕
@@ -1075,12 +1075,11 @@ export default function LessonPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="text-gray-500">
+          <div className="flex items-center gap-3 min-w-[60px] justify-end">
+            <div className="text-gray-500 tabular-nums">
               {currentIndex + 1}/{totalPuzzles}
               {inRetryMode && <span className="text-yellow-600 ml-2">(retry)</span>}
             </div>
-            <SyncStatus state={syncState} onRetry={retryPendingSyncs} />
           </div>
         </div>
       </div>

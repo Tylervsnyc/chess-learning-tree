@@ -25,8 +25,8 @@ export default function LevelTestPage() {
   // Auth check
   const { user, loading: userLoading } = useUser();
 
-  // Progress hook for unlocking levels and setting starting lesson
-  const { unlockLevel, setStartingLesson } = useLessonProgress();
+  // Progress hook for unlocking levels (which also sets currentPosition)
+  const { unlockLevel } = useLessonProgress();
 
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [testState, setTestState] = useState<TestState>('loading');
@@ -331,15 +331,10 @@ export default function LevelTestPage() {
       if (newCorrectCount >= passingScore) {
         setTestState('passed');
         playCelebrationSound(newCorrectCount);
-        // Unlock the level and set starting lesson!
+        // Unlock the level (which also sets currentPosition to first lesson)
         if (targetLevel) {
-          unlockLevel(targetLevel.number);
-          // Set the first lesson of the new level as the starting lesson
-          // This unlocks all lessons up to and including this one
           const firstLessonId = getFirstLessonIdForLevel(targetLevel.number);
-          if (firstLessonId) {
-            setStartingLesson(firstLessonId);
-          }
+          unlockLevel(targetLevel.number, firstLessonId || undefined);
         }
       } else {
         setTestState('failed');
@@ -348,19 +343,12 @@ export default function LevelTestPage() {
     }
 
     setCurrentIndex(prev => prev + 1);
-  }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore, targetLevel, unlockLevel, setStartingLesson]);
+  }, [moveStatus, correctCount, wrongCount, currentIndex, puzzleCount, maxWrongAnswers, passingScore, targetLevel, unlockLevel]);
 
-  // Handle going back to learn page (with scrollTo if test passed)
+  // Handle going back to learn page (currentPosition is already set by unlockLevel)
   const handleBackToLearn = useCallback(() => {
-    if (testState === 'passed' && targetLevel) {
-      const firstLessonId = getFirstLessonIdForLevel(targetLevel.number);
-      if (firstLessonId) {
-        router.push(`/learn?scrollTo=${firstLessonId}`);
-        return;
-      }
-    }
     router.push('/learn');
-  }, [router, testState, targetLevel]);
+  }, [router]);
 
   // Confetti effect on test passed - wrapped in useEffect
   useEffect(() => {
@@ -631,7 +619,7 @@ export default function LevelTestPage() {
             />
           </div>
 
-          <div className="text-gray-400">
+          <div className="text-gray-400 tabular-nums min-w-[40px] text-right">
             {currentIndex + 1}/{puzzleCount}
           </div>
         </div>
