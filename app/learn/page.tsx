@@ -454,7 +454,7 @@ export default function LearnPage() {
 
 
       {/* Curriculum Path - All Levels */}
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <div className="max-w-lg mx-auto px-4 pt-2 pb-6">
         {LEVELS.map(({ level, data, color, darkColor }) => {
           // Admins have all levels unlocked
           const isLevelUnlocked = isAdmin || unlockedLevels.includes(level);
@@ -489,7 +489,7 @@ export default function LearnPage() {
               )}
 
               {/* Sticky Level Header - Design 3: Floating Layered Card */}
-              <div className="sticky top-10 z-40 -mx-4 px-4 py-3 mb-6">
+              <div className="sticky top-2 z-40 -mx-4 px-4 py-3 mb-6">
                 <div className="relative level-card-hover group cursor-default">
                   {/* Back layers for 3D depth effect */}
                   <div

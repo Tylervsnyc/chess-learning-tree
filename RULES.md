@@ -155,9 +155,9 @@ No URL params needed. The `currentPosition` field stored in the database determi
 | Element | Position | Z-Index | Behavior |
 |---------|----------|---------|----------|
 | Nav header | `sticky top-0` | `z-50` | Always visible at top |
-| Level header | `sticky top-10` | `z-40` | Tucks slightly behind nav header |
+| Level header | `sticky top-2` | `z-40` | Sits just below nav header with small gap |
 
-The level header overlaps the nav header slightly, creating a layered effect while keeping nav buttons accessible.
+The level header sits just below the nav header with a small gap, keeping both visible and accessible.
 
 ### Implementation:
 ```typescript
