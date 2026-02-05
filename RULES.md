@@ -974,7 +974,8 @@ Current names are good - keep them
 
 ### Level Card Display Rule:
 - The `name` field in curriculum data is the movie spoof name ONLY (e.g., `"Begin to Believe"`, NOT `"Level 1: Begin to Believe"`)
-- The level header card already shows `L{number}` in a badge — do NOT add a separate "Level X" text line
+- The sticky level header has a colored badge that says "Level {number}" — the name next to it is ONLY the movie spoof title
+- The locked level card shows the movie spoof name as its heading — no separate "Level X" text
 - Never display the level number twice in the same card
 
 ### Block Names:

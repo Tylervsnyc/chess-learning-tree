@@ -241,11 +241,8 @@ function LockedLevelCard({
 
           {/* Level name */}
           <h3 className="text-xl font-black text-gray-500 mb-1">
-            Level {levelNum}
-          </h3>
-          <p className="text-sm text-gray-400 mb-1">
             {levelData.name}
-          </p>
+          </h3>
           <p className="text-xs text-gray-400 mb-4">
             {levelData.ratingRange} ELO
           </p>
@@ -535,13 +532,13 @@ export default function LearnPage() {
 
                     <div className="flex items-center gap-3 relative z-10">
                       <div
-                        className="w-14 h-14 shrink-0 rounded-xl flex items-center justify-center text-white font-black text-xl relative overflow-hidden"
+                        className="shrink-0 rounded-xl px-3 py-2 flex items-center justify-center text-white font-black text-sm relative overflow-hidden"
                         style={{
                           backgroundColor: color,
                           boxShadow: `4px 4px 0 ${color}50`,
                         }}
                       >
-                        <span className="relative z-10">L{level}</span>
+                        <span className="relative z-10">Level {level}</span>
                       </div>
                       <div>
                         <h2 className="text-xl font-bold text-white">{data.name}</h2>
