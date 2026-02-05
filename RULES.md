@@ -148,6 +148,7 @@ No URL params needed. The `currentPosition` field stored in the database determi
 ### Critical:
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
 - **NO URL PARAMS** - Use `currentPosition` from hook, not URL params
+- **WAIT FOR SERVER DATA** - Don't render/scroll until `serverFetched` is true (prevents flash to default position)
 - Enforced in ONE `useEffect` in `/app/learn/page.tsx`
 
 ### Sticky Headers:
@@ -162,11 +163,12 @@ The level header overlaps the nav header slightly, creating a layered effect whi
 ```typescript
 // In /app/learn/page.tsx - the ONLY place this happens
 useEffect(() => {
-  if (currentPosition) {
-    // Expand the section containing currentPosition
-    // Scroll to the lesson element
-  }
-}, [currentPosition]);
+  // Wait for BOTH local AND server data before scrolling
+  if (!progressLoaded || !serverFetched || !currentPosition) return;
+
+  // Expand the section containing currentPosition
+  // Poll for element existence, then scroll
+}, [progressLoaded, serverFetched, currentPosition]);
 ```
 
 ---
@@ -492,6 +494,12 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 - For landing/welcome screens: logo + content should feel balanced in the available space
 - Don't let content hug the top - add `flex-1` containers to push content to vertical center
 - Pattern: `flex flex-col h-full` → `flex-1 flex items-center justify-center` → content
+
+### Page Scrolling Rules:
+- Most pages use `h-full overflow-hidden` (no scrolling)
+- **Exceptions that CAN scroll** (use `h-full overflow-auto`):
+  - `/learn` - curriculum tree needs to scroll
+  - `/test-*` pages - test pages often have lots of content
 
 ### Elements by Location:
 

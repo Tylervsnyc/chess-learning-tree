@@ -167,6 +167,10 @@ User reported progress bar was "glitchy and changing size." I jumped to the firs
 After completing a lesson, the sync POST fires async while the user navigates to /learn. The GET fetch can return before POST completes, causing old server data to overwrite the fresh local data. User completed 4.5.1 but landed at 1.1.1 because server won the merge.
 → **New rule:** For data that represents "most recent user action" (like currentPosition), LOCAL should win in mergeProgress, not server. Only use server if local is at default. This prevents race conditions where GET returns stale data.
 
+### Lesson: 2026-02-05 - Page rendered before async data settled, causing flash to wrong position
+Even after fixing the merge strategy, users saw a flash to 1.1.1 before landing at the correct position. The page rendered with localStorage data (which had default currentPosition), THEN the server fetch completed and updated it. The scroll had already fired on the stale value.
+→ **New rule:** When a page depends on merged server+local data, don't render until BOTH are ready. Add a `serverFetched` flag that's false until the GET completes (or true immediately if no user). Wait for this flag before rendering content or triggering scroll. Pattern: `if (!loaded || !serverFetched) return <Skeleton />`.
+
 <!-- Add new lessons here -->
 
 ---
