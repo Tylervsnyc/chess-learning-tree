@@ -116,8 +116,8 @@ export function isAudioReady(): boolean {
 }
 
 // Mellow coin sound at a specific frequency
-export function playMellowCoin(baseFreq: number): void {
-  const ctx = getAudioContext();
+export async function playMellowCoin(baseFreq: number): Promise<void> {
+  const ctx = await ensureAudioReady();
   if (!ctx) return;
 
   const osc1 = ctx.createOscillator();
@@ -151,17 +151,10 @@ export function playMellowCoin(baseFreq: number): void {
 export function playCorrectSound(puzzleIndex: number, delay: number = 250): void {
   if (typeof window === 'undefined') return;
 
-  setTimeout(() => {
-    const ctx = getAudioContext();
+  setTimeout(async () => {
+    // Wait for AudioContext to be ready instead of giving up
+    const ctx = await ensureAudioReady();
     if (!ctx) return;
-
-    // If context is still not running, skip this sound
-    if (ctx.state !== 'running') {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('AudioContext not running, skipping correct sound');
-      }
-      return;
-    }
 
     // Use puzzleIndex to climb the chromatic scale (capped at scale length)
     const scaleIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
@@ -196,8 +189,9 @@ export function playCorrectSound(puzzleIndex: number, delay: number = 250): void
 /**
  * Play error sound - Duolingo-style gentle "womp womp"
  */
-export function playErrorSound(): void {
-  const ctx = getAudioContext();
+export async function playErrorSound(): Promise<void> {
+  // Wait for AudioContext to be ready instead of giving up
+  const ctx = await ensureAudioReady();
   if (!ctx) return;
 
   // First note
@@ -226,8 +220,8 @@ export function playErrorSound(): void {
 }
 
 // Perfect score - triumphant fanfare (C-E-G-C arpeggio)
-function playPerfectCelebration(): void {
-  const ctx = getAudioContext();
+async function playPerfectCelebration(): Promise<void> {
+  const ctx = await ensureAudioReady();
   if (!ctx) return;
 
   const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
@@ -266,8 +260,8 @@ function playPerfectCelebration(): void {
 }
 
 // Great score - happy two-note success (like Duolingo correct)
-function playGreatCelebration(): void {
-  const ctx = getAudioContext();
+async function playGreatCelebration(): Promise<void> {
+  const ctx = await ensureAudioReady();
   if (!ctx) return;
 
   // First note
@@ -296,8 +290,8 @@ function playGreatCelebration(): void {
 }
 
 // Complete score - gentle single chime
-function playCompleteCelebration(): void {
-  const ctx = getAudioContext();
+async function playCompleteCelebration(): Promise<void> {
+  const ctx = await ensureAudioReady();
   if (!ctx) return;
 
   const osc = ctx.createOscillator();
