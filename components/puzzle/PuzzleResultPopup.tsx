@@ -31,8 +31,8 @@ interface PuzzleResultPopupProps {
   // Optional rook animation props - if not provided, no animation shown
   rookAnimationStyle?: AnimationStyle;
   rookWrongStyle?: WrongAnimationStyle;
-  rookProgressRef?: React.RefObject<RookProgressAnimationRef>;
-  rookWrongRef?: React.RefObject<RookWrongAnimationRef>;
+  rookProgressRef?: React.RefObject<RookProgressAnimationRef | null>;
+  rookWrongRef?: React.RefObject<RookWrongAnimationRef | null>;
   rookCurrentStage?: number; // Pass current stage to maintain progress across popup mounts
 }
 
