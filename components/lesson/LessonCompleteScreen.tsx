@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes';
 import { playCelebrationSound } from '@/lib/sounds';
+import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnimationStyle } from './RookCelebrationAnimation';
 
 const COLORS = {
   green: '#58CC02',
@@ -41,6 +42,13 @@ export function LessonCompleteScreen({
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
   const accuracy = Math.round((correctCount / 6) * 100);
+  const rookRef = useRef<RookCelebrationAnimationRef>(null);
+
+  // Pick a random celebration animation style - always celebrate!
+  const celebrationStyle: CelebrationAnimationStyle = useMemo(() => {
+    const styles: CelebrationAnimationStyle[] = ['sparkleBurst', 'wave', 'radiate', 'ripple', 'cascade', 'bloom'];
+    return styles[Math.floor(Math.random() * styles.length)];
+  }, []);
 
   // Get a random quote (memoized so it doesn't change on re-render)
   const quote = useMemo(() => getRandomQuote(correctCount), [correctCount]);
@@ -81,6 +89,16 @@ export function LessonCompleteScreen({
       <style>{celebrationStyles}</style>
       <div className="flex-1 flex items-center justify-center px-5 py-8">
         <div className="max-w-sm w-full">
+          {/* Animated Rook - always celebrate big! */}
+          <div className="flex justify-center mb-8">
+            <RookCelebrationAnimation
+              ref={rookRef}
+              style={celebrationStyle}
+              scale={1.8}
+              autoPlay={true}
+            />
+          </div>
+
           {/* Score display */}
           <div className="text-center mb-6">
             <div

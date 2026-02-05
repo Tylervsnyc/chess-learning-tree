@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-04
+Last Updated: 2026-02-05
 
 ---
 
@@ -588,6 +588,30 @@ Animated pixel-art rook appears in the result popup for lessons.
 - Lesson state: `/app/lesson/[lessonId]/page.tsx`
 
 **Test Page:** `/test-rook-animations`
+
+### Lesson Complete Celebration Animations:
+When a user completes a lesson (any score), the lesson complete screen shows an animated rook celebration.
+
+**Behavior:**
+- One animation style randomly selected from 6 styles per lesson completion
+- Animation plays automatically on screen load at scale 1.8x
+- Always celebrates regardless of score (no performance-based gating)
+
+**Animation Styles (6 total):**
+| Style | Name | Description |
+|-------|------|-------------|
+| `sparkleBurst` | Sparkle Burst | Solid particles burst from each block |
+| `wave` | Wave | Blocks pop up in sequence (3 waves) |
+| `radiate` | Radiate | Colored rays shoot outward from center |
+| `ripple` | Ripple | Blocks ripple outward from center |
+| `cascade` | Cascade | Blocks light up diagonally with sparks |
+| `bloom` | Bloom | Blocks expand outward then snap back |
+
+**Enforced In:**
+- Animation component: `/components/lesson/RookCelebrationAnimation.tsx`
+- Lesson complete screen: `/components/lesson/LessonCompleteScreen.tsx`
+
+**Preview File:** `/lesson-complete-preview.html`
 
 ---
 
