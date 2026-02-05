@@ -83,7 +83,20 @@
       "Bash(vercel --prod --force:*)",
       "Bash(vercel domains:*)",
       "Bash(git rm:*)",
-      "Bash(npx supabase login)"
+      "Bash(npx supabase login)",
+      "Bash(gh pr create:*)",
+      "Bash(gh auth login:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(fi)",
+      "Bash(for f in level4-*.json level5-*.json)",
+      "Bash(for f in *.csv)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(git check-ignore:*)",
+      "Bash(git restore:*)",
+      "Bash(git reset:*)",
+      "WebFetch(domain:pixabay.com)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }

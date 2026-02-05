@@ -30,9 +30,11 @@ export const CHROMATIC_SCALE = [
 let sharedAudioContext: AudioContext | null = null;
 let isAudioWarmedUp = false;
 
-// Preloaded audio elements for move/capture sounds
-let moveAudio: HTMLAudioElement | null = null;
-let captureAudio: HTMLAudioElement | null = null;
+// Preloaded audio buffers for move/capture sounds
+let moveBuffer: AudioBuffer | null = null;
+let captureBuffer: AudioBuffer | null = null;
+let buffersLoading = false;
+let buffersLoaded = false;
 
 // Get or create AudioContext, properly handling suspended state
 async function ensureAudioReady(): Promise<AudioContext | null> {
@@ -56,40 +58,47 @@ async function ensureAudioReady(): Promise<AudioContext | null> {
   return sharedAudioContext;
 }
 
-// Synchronous version for use in non-async contexts
-// Will trigger resume but not wait for it
-function getAudioContext(): AudioContext | null {
-  if (typeof window === 'undefined') return null;
+// Load audio buffer from URL
+async function loadBuffer(url: string): Promise<AudioBuffer | null> {
+  const ctx = await ensureAudioReady();
+  if (!ctx) return null;
 
-  if (!sharedAudioContext) {
-    sharedAudioContext = new AudioContext();
+  try {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    return await ctx.decodeAudioData(arrayBuffer);
+  } catch (err) {
+    console.warn('Failed to load sound:', url, err);
+    return null;
   }
+}
 
-  // Trigger resume (don't await) - for backwards compatibility
-  if (sharedAudioContext.state === 'suspended') {
-    sharedAudioContext.resume().catch(() => {});
-  }
+// Preload move and capture sounds
+async function preloadSounds(): Promise<void> {
+  if (buffersLoaded || buffersLoading) return;
+  buffersLoading = true;
 
-  return sharedAudioContext;
+  const [move, capture] = await Promise.all([
+    loadBuffer('/sounds/move.mp3'),
+    loadBuffer('/sounds/capture.mp3'),
+  ]);
+
+  moveBuffer = move;
+  captureBuffer = capture;
+  buffersLoaded = true;
+  buffersLoading = false;
 }
 
 /**
  * Warmup audio system - call this on first user interaction (click/touch)
- * This unlocks audio on mobile browsers and preloads sound files
+ * This unlocks AudioContext on mobile browsers and preloads sounds
  */
 export function warmupAudio(): void {
   if (typeof window === 'undefined') return;
   if (isAudioWarmedUp) return;
 
-  // Preload and cache audio elements
-  moveAudio = new Audio('/sounds/move.mp3');
-  captureAudio = new Audio('/sounds/capture.mp3');
-  moveAudio.volume = 0.7;
-  captureAudio.volume = 0.7;
-
-  // Trigger load
-  moveAudio.load();
-  captureAudio.load();
+  // Start preloading sounds
+  preloadSounds();
 
   // Unlock AudioContext with a silent oscillator
   ensureAudioReady().then(ctx => {
@@ -219,159 +228,74 @@ export async function playErrorSound(): Promise<void> {
   osc2.stop(ctx.currentTime + 0.3);
 }
 
-// Perfect score - triumphant fanfare (C-E-G-C arpeggio)
-async function playPerfectCelebration(): Promise<void> {
+// Celebration sound - warm C Major arpeggio with reverb-like decay
+async function playCelebration(): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
 
-  const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
-  const durations = [0.15, 0.15, 0.15, 0.4];
-  let time = ctx.currentTime;
-
+  const notes = [262, 330, 392, 523]; // C4, E4, G4, C5
   notes.forEach((freq, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'triangle';
+    osc.type = 'sine';
     osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.3, time);
-    gain.gain.exponentialRampToValueAtTime(0.01, time + durations[i]);
+    const t = ctx.currentTime + i * 0.09;
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(time);
-    osc.stop(time + durations[i]);
-    time += durations[i] * 0.7;
+    osc.start(t);
+    osc.stop(t + 0.6);
   });
-
-  // Add a shimmer
-  setTimeout(() => {
-    const newCtx = getAudioContext();
-    if (!newCtx) return;
-    const osc = newCtx.createOscillator();
-    const gain = newCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 1568; // G6
-    gain.gain.setValueAtTime(0.15, newCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, newCtx.currentTime + 0.5);
-    osc.connect(gain);
-    gain.connect(newCtx.destination);
-    osc.start();
-    osc.stop(newCtx.currentTime + 0.5);
-  }, 400);
 }
 
-// Great score - happy two-note success (like Duolingo correct)
-async function playGreatCelebration(): Promise<void> {
+/**
+ * Play celebration sound - warm ascending C Major chord
+ * @param _correctCount - unused, kept for backwards compatibility
+ */
+export function playCelebrationSound(_correctCount?: number): void {
+  if (typeof window === 'undefined') return;
+  playCelebration();
+}
+
+/**
+ * Play move sound - uses preloaded mp3 file
+ */
+export async function playMoveSound(): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
 
-  // First note
-  const osc1 = ctx.createOscillator();
-  const gain1 = ctx.createGain();
-  osc1.type = 'triangle';
-  osc1.frequency.value = 440; // A4
-  gain1.gain.setValueAtTime(0.25, ctx.currentTime);
-  gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-  osc1.connect(gain1);
-  gain1.connect(ctx.destination);
-  osc1.start();
-  osc1.stop(ctx.currentTime + 0.15);
+  // Ensure sounds are preloaded
+  if (!buffersLoaded) {
+    await preloadSounds();
+  }
 
-  // Second note (higher)
-  const osc2 = ctx.createOscillator();
-  const gain2 = ctx.createGain();
-  osc2.type = 'triangle';
-  osc2.frequency.value = 659; // E5
-  gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.12);
-  gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-  osc2.connect(gain2);
-  gain2.connect(ctx.destination);
-  osc2.start(ctx.currentTime + 0.12);
-  osc2.stop(ctx.currentTime + 0.4);
+  if (!moveBuffer) return;
+
+  const source = ctx.createBufferSource();
+  source.buffer = moveBuffer;
+  source.connect(ctx.destination);
+  source.start();
 }
 
-// Complete score - gentle single chime
-async function playCompleteCelebration(): Promise<void> {
+/**
+ * Play capture sound - uses preloaded mp3 file
+ */
+export async function playCaptureSound(): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
 
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.value = 392; // G4
-  gain.gain.setValueAtTime(0.2, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.4);
-}
-
-/**
- * Play celebration sound based on performance
- * Perfect (6/6): triumphant fanfare
- * Great (5/6): happy success
- * Complete (0-4/6): gentle chime
- */
-export function playCelebrationSound(correctCount: number = 6): void {
-  if (typeof window === 'undefined') return;
-
-  if (correctCount === 6) {
-    playPerfectCelebration();
-  } else if (correctCount >= 5) {
-    playGreatCelebration();
-  } else {
-    playCompleteCelebration();
-  }
-}
-
-/**
- * Play move sound using preloaded audio
- * Falls back to creating new Audio if not preloaded
- */
-export function playMoveSound(): void {
-  if (typeof window === 'undefined') return;
-
-  // Ensure audio is warmed up
-  if (!isAudioWarmedUp) {
-    warmupAudio();
+  // Ensure sounds are preloaded
+  if (!buffersLoaded) {
+    await preloadSounds();
   }
 
-  // Use cloneNode for overlapping sound support
-  const audio = moveAudio
-    ? moveAudio.cloneNode() as HTMLAudioElement
-    : new Audio('/sounds/move.mp3');
+  if (!captureBuffer) return;
 
-  audio.volume = 0.7;
-  audio.play().catch(err => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Move sound failed:', err.message);
-    }
-  });
-}
-
-/**
- * Play capture sound using preloaded audio
- * Falls back to creating new Audio if not preloaded
- */
-export function playCaptureSound(): void {
-  if (typeof window === 'undefined') return;
-
-  // Ensure audio is warmed up
-  if (!isAudioWarmedUp) {
-    warmupAudio();
-  }
-
-  // Use cloneNode for overlapping sound support
-  const audio = captureAudio
-    ? captureAudio.cloneNode() as HTMLAudioElement
-    : new Audio('/sounds/capture.mp3');
-
-  audio.volume = 0.7;
-  audio.play().catch(err => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Capture sound failed:', err.message);
-    }
-  });
+  const source = ctx.createBufferSource();
+  source.buffer = captureBuffer;
+  source.connect(ctx.destination);
+  source.start();
 }
 
 /**

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { DailyChallengeReport } from '@/components/daily-challenge/DailyChallengeReport';
 
 // Sample puzzle positions (interesting tactical positions)
@@ -21,16 +22,40 @@ export default function TestDailyReportPage() {
   const [totalParticipants, setTotalParticipants] = useState(234);
   const [highestPuzzleRating, setHighestPuzzleRating] = useState(1850);
   const [fenIndex, setFenIndex] = useState(0);
+  const [saving, setSaving] = useState(false);
+
+  const stories2Ref = useRef<HTMLDivElement>(null);
 
   const highestPuzzleFen = SAMPLE_FENS[fenIndex];
 
   const variants = [
-    { id: 'stories-1', name: 'Board Top', desc: 'Board prominent, stats below' },
-    { id: 'stories-2', name: 'Centered', desc: 'Board centered with badge' },
-    { id: 'stories-3', name: 'Big Number', desc: 'Large score, board below' },
-    { id: 'stories-4', name: 'Board Focus', desc: 'Minimal, large board' },
-    { id: 'stories-5', name: 'Card Stack', desc: 'Stacked card layout' },
+    { id: 'stories-1', name: 'Clean Minimal', desc: 'White text, simple layout' },
+    { id: 'stories-2', name: 'Orange Accent', desc: 'Gradient pill, framed board' },
+    { id: 'stories-3', name: 'Bold Stacked', desc: 'Big typography, green CTA' },
+    { id: 'stories-4', name: 'Glassmorphism', desc: 'Frosted glass cards' },
+    { id: 'stories-5', name: 'Vibrant Split', desc: 'Colored sections' },
   ] as const;
+
+  const saveStories2Image = async () => {
+    if (!stories2Ref.current) return;
+    setSaving(true);
+
+    try {
+      const canvas = await html2canvas(stories2Ref.current, {
+        backgroundColor: null,
+        scale: 2, // Higher resolution
+      });
+
+      const link = document.createElement('a');
+      link.download = `daily-challenge-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Failed to save image:', err);
+    }
+
+    setSaving(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#0D1A1F] py-8 px-4">
@@ -128,20 +153,31 @@ export default function TestDailyReportPage() {
         <div className="flex flex-wrap justify-center gap-6">
           {variants.map((v) => (
             <div key={v.id} className="flex flex-col items-center">
-              <DailyChallengeReport
-                puzzlesSolved={puzzlesSolved}
-                totalPuzzles={totalPuzzles}
-                timeMs={timeMs}
-                mistakes={mistakes}
-                rank={rank}
-                totalParticipants={totalParticipants}
-                highestPuzzleRating={highestPuzzleRating}
-                highestPuzzleFen={highestPuzzleFen}
-                variant={v.id}
-              />
+              <div ref={v.id === 'stories-2' ? stories2Ref : undefined}>
+                <DailyChallengeReport
+                  puzzlesSolved={puzzlesSolved}
+                  totalPuzzles={totalPuzzles}
+                  timeMs={timeMs}
+                  mistakes={mistakes}
+                  rank={rank}
+                  totalParticipants={totalParticipants}
+                  highestPuzzleRating={highestPuzzleRating}
+                  highestPuzzleFen={highestPuzzleFen}
+                  variant={v.id}
+                />
+              </div>
               <div className="mt-3 text-center">
                 <div className="text-white font-bold text-sm">{v.name}</div>
                 <div className="text-gray-500 text-xs">{v.desc}</div>
+                {v.id === 'stories-2' && (
+                  <button
+                    onClick={saveStories2Image}
+                    disabled={saving}
+                    className="mt-2 px-4 py-2 bg-[#1CB0F6] text-white text-sm font-bold rounded-lg hover:bg-[#0A9FE0] transition-colors disabled:opacity-50"
+                  >
+                    {saving ? 'Saving...' : 'Save Image'}
+                  </button>
+                )}
               </div>
             </div>
           ))}

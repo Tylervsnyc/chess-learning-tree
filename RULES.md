@@ -590,14 +590,21 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 
 ## 19. Sounds
 
-| Event | Status |
-|-------|--------|
-| Correct move | KEEP (chromatic ascending) |
-| Wrong move | CHECK/ADD |
-| Capture | KEEP |
-| Move | KEEP |
-| Lesson complete | REDO |
-| Daily challenge sounds | ADD |
+| Event | Sound | Source |
+|-------|-------|--------|
+| Move | Lichess mp3 | `/public/sounds/move.mp3` |
+| Capture | Lichess mp3 | `/public/sounds/capture.mp3` |
+| Correct answer | Chromatic ascending two-tone | Synthesized |
+| Wrong answer | Gentle "womp womp" | Synthesized |
+| Celebration | Warm C Major arpeggio (C4→E4→G4→C5) | Synthesized |
+
+### Architecture:
+- Move/capture: Preloaded as AudioBuffers for instant playback
+- `warmupAudio()`: Call on first user interaction to unlock audio + preload sounds
+- All other sounds: Web Audio API synthesized
+
+### Test page:
+`/test-sounds` - Compare celebration sound variations
 
 ### Enforced In (ONE place only):
 `/lib/sounds.ts`
