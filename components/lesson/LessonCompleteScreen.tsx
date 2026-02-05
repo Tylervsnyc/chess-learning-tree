@@ -87,18 +87,19 @@ export function LessonCompleteScreen({
   return (
     <div className="min-h-screen bg-[#131F24] text-white flex flex-col">
       <style>{celebrationStyles}</style>
-      <div className="flex-1 flex items-center justify-center px-5 py-8">
-        <div className="max-w-sm w-full">
-          {/* Animated Rook - always celebrate big! */}
-          <div className="flex justify-center mb-8">
-            <RookCelebrationAnimation
-              ref={rookRef}
-              style={celebrationStyle}
-              scale={1.8}
-              autoPlay={true}
-            />
-          </div>
+      {/* Animated Rook - centered between top of page and score */}
+      <div className="flex-1 flex items-center justify-center">
+        <RookCelebrationAnimation
+          ref={rookRef}
+          style={celebrationStyle}
+          scale={1.8}
+          autoPlay={true}
+        />
+      </div>
 
+      {/* Content - bottom portion */}
+      <div className="px-5 pb-8">
+        <div className="max-w-sm w-full mx-auto">
           {/* Score display */}
           <div className="text-center mb-6">
             <div
