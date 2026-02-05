@@ -273,6 +273,11 @@ Before implementing any feature involving data:
 - Checkers: `is{Condition}` or `can{Action}` (e.g., `isLessonUnlocked`)
 - Updates: `update{Thing}` (e.g., `updateProgress`)
 
+### Level Names
+- Level `name` in curriculum data must be the subtitle ONLY (e.g., `"Begin to Believe"`)
+- Never include "Level X:" prefix in the name — the cards already display "Level {number}" separately
+- The card template handles the "Level X" label; `data.name` is just the tagline
+
 ---
 
 ## Content Guidelines

@@ -535,7 +535,7 @@ export default function LearnPage() {
 
                     <div className="flex items-center gap-3 relative z-10">
                       <div
-                        className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-black text-xl relative overflow-hidden"
+                        className="w-14 h-14 shrink-0 rounded-xl flex items-center justify-center text-white font-black text-xl relative overflow-hidden"
                         style={{
                           backgroundColor: color,
                           boxShadow: `4px 4px 0 ${color}50`,
