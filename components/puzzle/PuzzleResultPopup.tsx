@@ -1,7 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ShareButton } from '@/components/share/ShareButton';
+import {
+  RookProgressAnimation,
+  RookProgressAnimationRef,
+  AnimationStyle,
+} from '@/components/lesson/RookProgressAnimation';
+import {
+  RookWrongAnimation,
+  RookWrongAnimationRef,
+  WrongAnimationStyle,
+} from '@/components/lesson/RookWrongAnimation';
 
 interface PuzzleShareData {
   fen: string;
@@ -18,6 +28,12 @@ interface PuzzleResultPopupProps {
   showSolution?: boolean;
   onShowSolution?: () => void;
   puzzleShareData?: PuzzleShareData;
+  // Optional rook animation props - if not provided, no animation shown
+  rookAnimationStyle?: AnimationStyle;
+  rookWrongStyle?: WrongAnimationStyle;
+  rookProgressRef?: React.RefObject<RookProgressAnimationRef>;
+  rookWrongRef?: React.RefObject<RookWrongAnimationRef>;
+  rookCurrentStage?: number; // Pass current stage to maintain progress across popup mounts
 }
 
 export function PuzzleResultPopup({
@@ -27,79 +43,123 @@ export function PuzzleResultPopup({
   showSolution,
   onShowSolution,
   puzzleShareData,
+  rookAnimationStyle,
+  rookWrongStyle,
+  rookProgressRef,
+  rookWrongRef,
+  rookCurrentStage = 0,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
   const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
+
+  // Local refs if external ones not provided
+  const localCorrectRef = useRef<RookProgressAnimationRef>(null);
+  const localWrongRef = useRef<RookWrongAnimationRef>(null);
+  const correctRef = rookProgressRef || localCorrectRef;
+  const wrongRef = rookWrongRef || localWrongRef;
+
+  // Trigger animation when popup mounts
+  useEffect(() => {
+    if (isCorrect && rookAnimationStyle) {
+      setTimeout(() => correctRef.current?.triggerNextStage(), 150);
+    } else if (!isCorrect && rookWrongStyle) {
+      setTimeout(() => wrongRef.current?.triggerAnimation(), 250);
+    }
+  }, [isCorrect, rookAnimationStyle, rookWrongStyle, correctRef, wrongRef]);
+
+  const showRook = (isCorrect && rookAnimationStyle) || (!isCorrect && rookWrongStyle);
 
   return (
     <div
       className={`
         w-full z-50
-        px-4 py-2.5
+        py-2.5 pr-4
         rounded-b-2xl
         ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFDFE0]'}
       `}
       style={{
         animation: isCorrect ? 'slideUpBounce 0.3s ease-out' : 'fadeIn 0.2s ease-out',
+        paddingLeft: isCorrect ? 16 : 6,
       }}
     >
-      <div className="max-w-lg mx-auto">
-        {/* Icon + Text row */}
-        <div className="flex items-center gap-2 mb-2">
-          {isCorrect ? (
-            <div className="w-7 h-7 rounded-full bg-[#58CC02] flex items-center justify-center flex-shrink-0">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-            </div>
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-[#FF4B4B] flex items-center justify-center flex-shrink-0">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-              </svg>
-            </div>
-          )}
-          <span className={`text-lg font-bold ${isCorrect ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}`}>
-            {displayMessage}
-          </span>
-        </div>
-
-        {/* Button */}
-        {!isCorrect && !showSolution && onShowSolution ? (
-          <button
-            onClick={onShowSolution}
-            className="w-full py-2.5 bg-[#FF4B4B] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#CC3939] active:translate-y-[2px] active:shadow-[0_2px_0_#CC3939] transition-all"
+      <div
+        className="max-w-lg mx-auto flex items-center"
+        style={{ gap: showRook ? (isCorrect ? 12 : 22) : 0 }}
+      >
+        {/* Rook animation slot */}
+        {showRook && (
+          <div
+            className="flex-shrink-0 flex items-center justify-center"
+            style={{ width: 66, height: 80 }}
           >
-            Try Again
-          </button>
-        ) : (
-          <div className={`flex gap-2 ${isCorrect && puzzleShareData ? '' : ''}`}>
-            {/* Share button - only on correct answers */}
-            {isCorrect && puzzleShareData && (
-              <div className="relative flex-shrink-0">
-                <ShareButton
-                  fen={puzzleShareData.fen}
-                  playerColor={puzzleShareData.playerColor}
-                  lastMoveFrom={puzzleShareData.lastMoveFrom}
-                  lastMoveTo={puzzleShareData.lastMoveTo}
-                />
-              </div>
-            )}
-            <button
-              onClick={onContinue}
-              className={`
-                flex-1 py-2.5 font-bold rounded-xl uppercase tracking-wide transition-all
-                active:translate-y-[2px]
-                ${isCorrect
-                  ? 'bg-[#58CC02] text-white shadow-[0_4px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
-                  : 'bg-[#FF4B4B] text-white shadow-[0_4px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
-                }
-              `}
-            >
-              Continue
-            </button>
+            {isCorrect && rookAnimationStyle ? (
+              <RookProgressAnimation
+                ref={correctRef}
+                style={rookAnimationStyle}
+                currentStage={rookCurrentStage}
+                scale={0.7}
+                showProgress={false}
+                showLabel={false}
+                compact
+              />
+            ) : rookWrongStyle ? (
+              <RookWrongAnimation
+                ref={wrongRef}
+                style={rookWrongStyle}
+                scale={0.7}
+                visibleStages={6}
+                compact
+              />
+            ) : null}
           </div>
         )}
+
+        {/* Content area */}
+        <div className="flex-1 min-w-0">
+          {/* Message */}
+          <p
+            className={`font-bold leading-tight mb-1.5 ${isCorrect ? 'text-[#458500]' : 'text-[#cd2929]'}`}
+            style={{ fontSize: 15 }}
+          >
+            {displayMessage}
+          </p>
+
+          {/* Button row */}
+          {!isCorrect && !showSolution && onShowSolution ? (
+            <button
+              onClick={onShowSolution}
+              className="w-full py-1.5 bg-[#FF4B4B] text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#CC3939] active:translate-y-[1px] active:shadow-[0_2px_0_#CC3939] transition-all"
+            >
+              Try Again
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              {isCorrect && puzzleShareData && (
+                <div className="relative flex-shrink-0">
+                  <ShareButton
+                    fen={puzzleShareData.fen}
+                    playerColor={puzzleShareData.playerColor}
+                    lastMoveFrom={puzzleShareData.lastMoveFrom}
+                    lastMoveTo={puzzleShareData.lastMoveTo}
+                  />
+                </div>
+              )}
+              <button
+                onClick={onContinue}
+                className={`
+                  flex-1 py-1.5 font-bold rounded-xl uppercase tracking-wide text-[13px] transition-all
+                  active:translate-y-[1px]
+                  ${isCorrect
+                    ? 'bg-[#58CC02] text-white shadow-[0_3px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
+                    : 'bg-[#FF4B4B] text-white shadow-[0_3px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
+                  }
+                `}
+              >
+                Continue
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <style jsx>{`

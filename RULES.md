@@ -566,6 +566,29 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 2. Show score popup
 3. Continue button → `/learn` (auto-scrolls to currentPosition)
 
+### Rook Animations (Lessons Only):
+Animated pixel-art rook appears in the result popup for lessons.
+
+**Correct Answers:**
+- Rook assembles one stage per correct answer (6 puzzles = 6 stages: Foundation → Body → Neck → Head → Crown Rim → Crown Points)
+- One animation style randomly selected per lesson (10 styles: lightning, neon, emp, hologram, grid, hack, fusion, tesla, voltage, ion)
+- Previous stages stay visible, new stage animates in
+
+**Wrong Answers:**
+- Full rook disassembles with animation
+- Different animation style cycles each wrong answer (5 styles: powerDown, shortCircuit, pixelFade, shrink, signalLoss)
+
+**Not Used In:**
+- Daily Challenge (separate feature)
+- Level Tests (separate feature)
+
+**Enforced In:**
+- Animation components: `/components/lesson/RookProgressAnimation.tsx`, `/components/lesson/RookWrongAnimation.tsx`
+- Popup integration: `/components/puzzle/PuzzleResultPopup.tsx`
+- Lesson state: `/app/lesson/[lessonId]/page.tsx`
+
+**Test Page:** `/test-rook-animations`
+
 ---
 
 ## 18. Puzzle Interaction

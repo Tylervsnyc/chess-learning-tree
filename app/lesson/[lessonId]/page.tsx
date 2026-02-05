@@ -23,6 +23,16 @@ import {
 } from '@/lib/curriculum-registry';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
+import {
+  RookProgressAnimationRef,
+  ANIMATION_STYLES,
+  AnimationStyle,
+} from '@/components/lesson/RookProgressAnimation';
+import {
+  RookWrongAnimationRef,
+  WRONG_ANIMATION_STYLES,
+  WrongAnimationStyle,
+} from '@/components/lesson/RookWrongAnimation';
 import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
 import { getThemeExplanation } from '@/data/theme-explanations';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
@@ -215,6 +225,16 @@ export default function LessonPage() {
 
   // Confetti ref to prevent re-firing
   const confettiFired = useRef(false);
+
+  // Rook animation state - one style per lesson (cycles through), wrong styles cycle each wrong
+  const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[];
+  const wrongAnimStyles = Object.keys(WRONG_ANIMATION_STYLES) as WrongAnimationStyle[];
+  const [lessonAnimIndex] = useState(() => Math.floor(Math.random() * correctAnimStyles.length));
+  const [wrongAnimCount, setWrongAnimCount] = useState(0);
+  const rookCorrectStyle = correctAnimStyles[lessonAnimIndex % correctAnimStyles.length];
+  const rookWrongStyle = wrongAnimStyles[wrongAnimCount % wrongAnimStyles.length];
+  const rookProgressRef = useRef<RookProgressAnimationRef>(null);
+  const rookWrongRef = useRef<RookWrongAnimationRef>(null);
 
   // Get all lesson IDs for unlock checking and tracking next lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
@@ -602,6 +622,7 @@ export default function LessonPage() {
         setStreak(0);
         setHadWrongAnswer(true);
         setPuzzleHadWrongAttempt(true);
+        setWrongAnimCount(prev => prev + 1); // Cycle to next wrong animation style
 
         // Track wrong attempt
         LearningEvents.puzzleAttempted(lessonId, currentIndex + 1, false, currentPuzzle.rating);
@@ -1151,6 +1172,7 @@ export default function LessonPage() {
           {/* Result popup - only show when not in intro state */}
           {moveStatus === 'correct' && introState === 'playing' && (
             <PuzzleResultPopup
+              key={`correct-${completedPuzzleCount}`}
               type="correct"
               message={feedbackMessage}
               onContinue={handleContinue}
@@ -1161,16 +1183,22 @@ export default function LessonPage() {
                 lastMoveTo: currentPuzzle.lastMoveTo,
                 solutionMoves: currentPuzzle.solution.split(' '),
               } : undefined}
+              rookAnimationStyle={rookCorrectStyle}
+              rookProgressRef={rookProgressRef}
+              rookCurrentStage={completedPuzzleCount - 1}
             />
           )}
 
           {moveStatus === 'wrong' && !showMoveHint && introState === 'playing' && (
             <PuzzleResultPopup
+              key={`wrong-${wrongAnimCount}`}
               type="incorrect"
               message={feedbackMessage}
               onContinue={handleContinue}
               showSolution={false}
               onShowSolution={handleTryAgain}
+              rookWrongStyle={rookWrongStyle}
+              rookWrongRef={rookWrongRef}
             />
           )}
         </div>
