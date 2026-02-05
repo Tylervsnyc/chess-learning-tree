@@ -155,6 +155,10 @@ The progress bar used `transition-all` on the fill element, which meant when the
 The progress bar was in a `flex-1` container, meaning its width depended on sibling elements. The counter text ("1/6" vs "10/6") and SyncStatus component (null vs "Saving...") had different widths, causing the progress bar to resize when these changed.
 → **New rule:** When using `flex-1` for a container that should have stable width, ensure all sibling elements have fixed/minimum widths. Use `tabular-nums` for number displays so all digits have equal width. Use `min-w-[...]` on variable-content containers.
 
+### Lesson: 2026-02-05 - Progress bar jumped because value was calculated from two states that update at different times
+The progress value was `currentIndex + (moveStatus === 'correct' ? 1 : 0)`. When clicking Continue: (1) currentIndex updates, (2) re-render shows wrong value, (3) useEffect resets moveStatus, (4) re-render shows correct value. The intermediate render caused the bar to jump forward then shrink.
+→ **New rule:** Don't calculate UI values from multiple pieces of state that update at different times. Use a single source of truth (like `completedPuzzleCount`) that updates atomically at the right moment.
+
 <!-- Add new lessons here -->
 
 ---

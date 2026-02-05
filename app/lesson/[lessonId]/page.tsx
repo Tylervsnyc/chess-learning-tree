@@ -933,7 +933,6 @@ export default function LessonPage() {
             <div className="flex-1 mx-4">
               <ChessProgressBar current={0} total={6} streak={0} />
             </div>
-            <div className="text-gray-400 tabular-nums min-w-[60px] text-right">...</div>
           </div>
         </div>
         <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
@@ -1068,18 +1067,13 @@ export default function LessonPage() {
           {/* Progress bar with streak effect */}
           <div className="flex-1 mx-4">
             <ChessProgressBar
-              current={currentIndex + (moveStatus === 'correct' ? 1 : 0)}
+              current={inRetryMode
+                ? currentIndex + (moveStatus === 'correct' ? 1 : 0)
+                : completedPuzzleCount}
               total={totalPuzzles}
               streak={streak}
               hadWrongAnswer={hadWrongAnswer}
             />
-          </div>
-
-          <div className="flex items-center gap-3 min-w-[60px] justify-end">
-            <div className="text-gray-500 tabular-nums">
-              {currentIndex + 1}/{totalPuzzles}
-              {inRetryMode && <span className="text-yellow-600 ml-2">(retry)</span>}
-            </div>
           </div>
         </div>
       </div>
