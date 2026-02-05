@@ -731,11 +731,11 @@ export default function DailyChallengePage() {
       <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           {/* Same brand logo as ready screen for seamless transition */}
-          <div className="mb-3">
+          <div className="mb-4">
             <img
-              src="/brand/logo-horizontal-dark.svg"
+              src="/brand/logo-stacked-dark.svg"
               alt="Chess Path"
-              className="mx-auto h-14"
+              className="mx-auto h-40"
             />
           </div>
           <div
@@ -760,12 +760,12 @@ export default function DailyChallengePage() {
     return (
       <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* Brand logo - horizontal */}
-          <div className="mb-3">
+          {/* Brand logo - stacked */}
+          <div className="mb-4">
             <img
-              src="/brand/logo-horizontal-dark.svg"
+              src="/brand/logo-stacked-dark.svg"
               alt="Chess Path"
-              className="mx-auto h-14"
+              className="mx-auto h-40"
             />
           </div>
 

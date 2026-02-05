@@ -1,4 +1,4 @@
-<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="220" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#FFC800"/>
@@ -9,44 +9,45 @@
   </defs>
 
   <!-- Queen Icon - 22 dots, centered horizontally -->
-  <!-- Icon is 86px wide, centered in 200px = offset 57 -->
-  <!-- 14px squares, 4px gap (18px step), 2px radius -->
+  <!-- Icon content: 5 cols × 6 rows, 14px squares, 4px gap = 86px wide × 104px tall -->
+  <!-- Centered in 200px: (200-86)/2 = 57 -->
 
-  <!-- Row 0: Crown points (y=16) -->
-  <rect x="57" y="16" width="14" height="14" rx="2" fill="#1CB0F6"/>
-  <rect x="93" y="16" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="129" y="16" width="14" height="14" rx="2" fill="#A560E8"/>
+  <!-- Row 0: Crown points (y=8) -->
+  <rect x="57" y="8" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="93" y="8" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="129" y="8" width="14" height="14" rx="2" fill="#A560E8"/>
 
-  <!-- Row 1: Crown rim (y=34) -->
-  <rect x="57" y="34" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="75" y="34" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="93" y="34" width="14" height="14" rx="2" fill="#FF9600"/>
-  <rect x="111" y="34" width="14" height="14" rx="2" fill="#FF6B6B"/>
-  <rect x="129" y="34" width="14" height="14" rx="2" fill="#FF4B4B"/>
+  <!-- Row 1: Crown rim (y=26) -->
+  <rect x="57" y="26" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="75" y="26" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="93" y="26" width="14" height="14" rx="2" fill="#FF9600"/>
+  <rect x="111" y="26" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="129" y="26" width="14" height="14" rx="2" fill="#FF4B4B"/>
 
-  <!-- Row 2: Head (y=52) -->
-  <rect x="75" y="52" width="14" height="14" rx="2" fill="#1CB0F6"/>
-  <rect x="93" y="52" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="111" y="52" width="14" height="14" rx="2" fill="#A560E8"/>
+  <!-- Row 2: Head (y=44) -->
+  <rect x="75" y="44" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="93" y="44" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="111" y="44" width="14" height="14" rx="2" fill="#A560E8"/>
 
-  <!-- Row 3: Neck (y=70) -->
-  <rect x="75" y="70" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="93" y="70" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="111" y="70" width="14" height="14" rx="2" fill="#FF9600"/>
+  <!-- Row 3: Neck (y=62) -->
+  <rect x="75" y="62" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="93" y="62" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="111" y="62" width="14" height="14" rx="2" fill="#FF9600"/>
 
-  <!-- Row 4: Body (y=88) -->
-  <rect x="75" y="88" width="14" height="14" rx="2" fill="#FF6B6B"/>
-  <rect x="93" y="88" width="14" height="14" rx="2" fill="#FF4B4B"/>
-  <rect x="111" y="88" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <!-- Row 4: Body (y=80) -->
+  <rect x="75" y="80" width="14" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="93" y="80" width="14" height="14" rx="2" fill="#FF4B4B"/>
+  <rect x="111" y="80" width="14" height="14" rx="2" fill="#1CB0F6"/>
 
-  <!-- Row 5: Base (y=106) -->
-  <rect x="57" y="106" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="75" y="106" width="14" height="14" rx="2" fill="#A560E8"/>
-  <rect x="93" y="106" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="111" y="106" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="129" y="106" width="14" height="14" rx="2" fill="#FF9600"/>
+  <!-- Row 5: Base (y=98) -->
+  <rect x="57" y="98" width="14" height="14" rx="2" fill="#2FCBEF"/>
+  <rect x="75" y="98" width="14" height="14" rx="2" fill="#A560E8"/>
+  <rect x="93" y="98" width="14" height="14" rx="2" fill="#58CC02"/>
+  <rect x="111" y="98" width="14" height="14" rx="2" fill="#FFC800"/>
+  <rect x="129" y="98" width="14" height="14" rx="2" fill="#FF9600"/>
 
-  <!-- Wordmark: "chess" on first line, "path" on second line -->
-  <text x="100" y="170" text-anchor="middle" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="#0F172A">chess</text>
-  <text x="100" y="218" text-anchor="middle" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="url(#pathGradient)">path</text>
+  <!-- Wordmark: "chesspath" on one line -->
+  <text x="100" y="175" text-anchor="middle" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="36" font-weight="700">
+    <tspan fill="#0F172A">chess</tspan><tspan fill="url(#pathGradient)">path</tspan>
+  </text>
 </svg>
