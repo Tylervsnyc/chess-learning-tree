@@ -185,7 +185,8 @@ Even after fixing the merge strategy, users saw a flash to 1.1.1 before landing 
 | Page layout/height | `/app/globals.css` + `/app/layout.tsx` → flex structure |
 | Scroll to top (pages) | `/components/providers/ScrollToTop.tsx` (except /learn) |
 | Scroll behavior (/learn) | `/app/learn/page.tsx` → ONE useEffect |
-| Navigation after lesson | `/app/lesson/[lessonId]/page.tsx` → Continue button |
+| Navigation after lesson | `/components/lesson/LessonCompleteScreen.tsx` → Continue button |
+| Lesson completion celebration | `/components/lesson/LessonCompleteScreen.tsx` (rook animation, confetti, sound, quotes) |
 | Permissions/limits | `/hooks/usePermissions.ts` |
 | Header | `/components/layout/NavHeader.tsx` |
 | Quips | `/data/staging/v2-puzzle-responses.ts` |
@@ -274,9 +275,8 @@ Before implementing any feature involving data:
 - Updates: `update{Thing}` (e.g., `updateProgress`)
 
 ### Level Names
-- Level `name` in curriculum data must be the subtitle ONLY (e.g., `"Begin to Believe"`)
-- Never include "Level X:" prefix in the name — the cards already display "Level {number}" separately
-- The card template handles the "Level X" label; `data.name` is just the tagline
+- Level `name` in curriculum data includes the full prefix (e.g., `"Level 1: Begin to Believe"`)
+- Do NOT strip the "Level X:" prefix from the name field
 
 ---
 

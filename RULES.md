@@ -563,8 +563,8 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 
 ### Completion:
 1. `currentPosition` updates to next lesson
-2. Show score popup
-3. Continue button → `/learn` (auto-scrolls to currentPosition)
+2. `LessonCompleteScreen` renders with animated rook celebration, confetti, sound, score, quote
+3. Continue button → next lesson (or `/learn` if end of level)
 
 ### Rook Animations (Lessons Only):
 Animated pixel-art rook appears in the result popup for lessons.
@@ -589,28 +589,33 @@ Animated pixel-art rook appears in the result popup for lessons.
 
 **Test Page:** `/test-rook-animations`
 
-### Lesson Complete Celebration Animations:
-When a user completes a lesson (any score), the lesson complete screen shows an animated rook celebration.
+### Lesson Complete Screen:
+When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
 
-**Behavior:**
-- One animation style randomly selected from 6 styles per lesson completion
-- Animation plays automatically on screen load at scale 1.8x
-- Always celebrates regardless of score (no performance-based gating)
+1. **Animated rook** — random celebration animation at 1.8x scale
+2. **Confetti** — two bursts from left and right corners (gold for perfect, green/blue otherwise)
+3. **Celebration sound** — C Major arpeggio via `playCelebrationSound()`
+4. **Score** — `correctCount/6` with tier label (Perfect / Great / Complete)
+5. **Quote** — random funny quote from `/data/celebration-quotes.ts` (300 total, tiered by score)
+6. **Stats cards** — first-try correct count + accuracy percentage
+7. **Continue button** — goes to next lesson, or back to `/learn` if end of level
+8. **Guest signup prompt** — shown if user is not logged in
 
-**Animation Styles (6 total):**
-| Style | Name | Description |
-|-------|------|-------------|
-| `sparkleBurst` | Sparkle Burst | Solid particles burst from each block |
-| `wave` | Wave | Blocks pop up in sequence (3 waves) |
-| `radiate` | Radiate | Colored rays shoot outward from center |
-| `ripple` | Ripple | Blocks ripple outward from center |
-| `cascade` | Cascade | Blocks light up diagonally with sparks |
-| `bloom` | Bloom | Blocks expand outward then snap back |
+**Animation Styles (6 used randomly):**
+| Style | Description |
+|-------|-------------|
+| `sparkleBurst` | Solid particles burst from each block |
+| `wave` | Blocks pop up in sequence (3 waves) |
+| `radiate` | Colored rays shoot outward from center |
+| `ripple` | Blocks ripple outward from center |
+| `cascade` | Blocks light up diagonally with sparks |
+| `bloom` | Blocks expand outward then snap back |
 
-**Enforced In:**
+**Enforced In (ONE place each):**
 - Animation component: `/components/lesson/RookCelebrationAnimation.tsx`
 - Lesson complete screen: `/components/lesson/LessonCompleteScreen.tsx`
-- Used by: `/app/lesson/[lessonId]/page.tsx` (renders `LessonCompleteScreen` when `lessonComplete` is true)
+- Quote data: `/data/celebration-quotes.ts`
+- Rendered by: `/app/lesson/[lessonId]/page.tsx` (when `lessonComplete` is true)
 
 **Preview File:** `/lesson-complete-preview.html`
 
