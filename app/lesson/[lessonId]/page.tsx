@@ -45,7 +45,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
 import { parseUciMove } from '@/lib/puzzle-utils';
-import confetti from 'canvas-confetti';
+import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 
 interface Puzzle {
   id: string;
@@ -223,8 +223,6 @@ export default function LessonPage() {
   const [introState, setIntroState] = useState<IntroState>('playing');
   const [introMessages, setIntroMessages] = useState<IntroMessages>({});
 
-  // Confetti ref to prevent re-firing
-  const confettiFired = useRef(false);
 
   // Rook animation state - one style per lesson (cycles through), wrong styles cycle each wrong
   const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[];
@@ -819,32 +817,7 @@ export default function LessonPage() {
     }
   }, [lessonComplete, shouldPromptSignup, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
 
-  // Confetti effect on lesson complete - wrapped in useEffect
-  useEffect(() => {
-    if (lessonComplete && !confettiFired.current && typeof window !== 'undefined') {
-      confettiFired.current = true;
-      const isPerfect = firstAttemptCorrectCount === puzzles.length;
-
-      confetti({
-        particleCount: isPerfect ? 100 : firstAttemptCorrectCount >= 5 ? 60 : 40,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.65 },
-        colors: isPerfect
-          ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
-          : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
-      });
-      confetti({
-        particleCount: isPerfect ? 100 : firstAttemptCorrectCount >= 5 ? 60 : 40,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.65 },
-        colors: isPerfect
-          ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
-          : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
-      });
-    }
-  }, [lessonComplete, firstAttemptCorrectCount, puzzles.length]);
+  // Confetti + celebration sound now handled by LessonCompleteScreen component
 
   // Unlock check - redirect to /learn if lesson is locked
   // Admin users bypass this check
@@ -1000,48 +973,17 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
-    const isPerfect = firstAttemptCorrectCount === puzzles.length;
-    const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
-
     return (
       <>
-        <div className="min-h-screen bg-[#131F24] text-white flex flex-col">
-          <div className="flex-1 flex items-center justify-center px-5 py-8">
-            <div className="max-w-sm w-full text-center">
-              <div
-                className="text-6xl font-black mb-2"
-                style={{ color: isPerfect ? '#FFC800' : '#58CC02' }}
-              >
-                {firstAttemptCorrectCount}/{puzzles.length}
-              </div>
-              <div className="text-sm text-gray-400 uppercase tracking-wider mb-6">
-                {isPerfect ? 'Perfect!' : firstAttemptCorrectCount >= 5 ? 'Great job!' : 'Good effort!'}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#58CC02]">{firstAttemptCorrectCount}</div>
-                  <div className="text-sm text-gray-400">First try</div>
-                </div>
-                <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold" style={{ color: accuracy === 100 ? '#FFC800' : '#1CB0F6' }}>
-                    {accuracy}%
-                  </div>
-                  <div className="text-sm text-gray-400">Accuracy</div>
-                </div>
-              </div>
-
-              <div className="text-gray-500 text-sm mb-6">{lessonName}</div>
-
-              <button
-                onClick={() => router.push('/learn')}
-                className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
+        <LessonCompleteScreen
+          correctCount={firstAttemptCorrectCount}
+          wrongCount={puzzles.length - firstAttemptCorrectCount}
+          lessonName={lessonName}
+          lessonId={lessonId}
+          isGuest={!user}
+          getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+          nextLessonId={nextLessonId}
+        />
         <LessonLimitModal
           isOpen={showLimitModal}
           onClose={() => setShowLimitModal(false)}

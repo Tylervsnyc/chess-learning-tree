@@ -610,6 +610,7 @@ When a user completes a lesson (any score), the lesson complete screen shows an 
 **Enforced In:**
 - Animation component: `/components/lesson/RookCelebrationAnimation.tsx`
 - Lesson complete screen: `/components/lesson/LessonCompleteScreen.tsx`
+- Used by: `/app/lesson/[lessonId]/page.tsx` (renders `LessonCompleteScreen` when `lessonComplete` is true)
 
 **Preview File:** `/lesson-complete-preview.html`
 
