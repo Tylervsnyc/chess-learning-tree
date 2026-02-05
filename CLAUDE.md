@@ -163,6 +163,10 @@ The progress value was `currentIndex + (moveStatus === 'correct' ? 1 : 0)`. When
 User reported progress bar was "glitchy and changing size." I jumped to the first plausible cause (transition-all on gradients) without doing a full audit. The fix didn't work. Only after user pushed back and I used the Explore agent to audit ALL code touching the component did I find: (1) container width instability from siblings, (2) state coupling causing shrink-then-grow, (3) same bug in level-test page, (4) unused dead code. There were 4 issues, not 1.
 → **New rule:** For visual glitches in shared components, ALWAYS use Task tool with Explore agent to audit ALL usages before attempting any fix. Don't guess at the cause - trace the data flow from state → props → render in every file that uses the component.
 
+### Lesson: 2026-02-05 - Race condition between POST sync and GET fetch
+After completing a lesson, the sync POST fires async while the user navigates to /learn. The GET fetch can return before POST completes, causing old server data to overwrite the fresh local data. User completed 4.5.1 but landed at 1.1.1 because server won the merge.
+→ **New rule:** For data that represents "most recent user action" (like currentPosition), LOCAL should win in mergeProgress, not server. Only use server if local is at default. This prevents race conditions where GET returns stale data.
+
 <!-- Add new lessons here -->
 
 ---

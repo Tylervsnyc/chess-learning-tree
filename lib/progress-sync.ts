@@ -65,8 +65,14 @@ export function mergeProgress(
     ? (server.lastLessonDate ?? local.lastLessonDate)
     : server.lastLessonDate;
 
-  // Server wins for currentPosition - it's the authoritative source
-  const currentPosition = server.currentPosition || '1.1.1';
+  // currentPosition merge strategy:
+  // - If local is at default '1.1.1' and server has real progress, use server (returning user)
+  // - Otherwise, local wins (prevents race condition where GET returns before POST completes)
+  const localIsDefault = !local.currentPosition || local.currentPosition === '1.1.1';
+  const serverHasProgress = server.currentPosition && server.currentPosition !== '1.1.1';
+  const currentPosition = (localIsDefault && serverHasProgress)
+    ? server.currentPosition
+    : (local.currentPosition || server.currentPosition || '1.1.1');
 
   return {
     completedLessons,
