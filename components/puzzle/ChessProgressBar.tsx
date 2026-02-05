@@ -1017,9 +1017,10 @@ export function ChessProgressBar({
 
             {/* Lava fill */}
             <div
-              className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out"
+              className="absolute inset-y-0 left-0 rounded-full"
               style={{
                 width: `${Math.max(progress, 0)}%`,
+                transition: 'width 500ms ease-out',
                 ...getFillStyle(),
               }}
             >

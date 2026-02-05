@@ -143,6 +143,14 @@ The lesson info popup was positioned relative to the button but could overflow o
 Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.tsx. Total height = NavHeader + 100vh = scrollable body. Using JavaScript (ScrollToTop) to fix a CSS problem is a band-aid.
 → **New rule:** Page layout is controlled in `globals.css` (body flex) + `layout.tsx` (main wrapper). Pages use `h-full` not `h-screen`. Only `/learn` has `overflow-auto` for scrolling. Never use `h-screen` in pages - it ignores the NavHeader.
 
+### Lesson: 2026-02-05 - Early returns in state updates skipped side effects
+The `completeLesson` function returned early for already-completed lessons, which meant `currentPosition` never got updated when replaying a lesson. The user's position appeared stuck at an old value because the server had stale data and server wins on merge.
+→ **New rule:** When a function updates state AND has side effects (like syncing to server), the early return for "already done" cases must still handle any side effects that should happen regardless. In this case, `currentPosition` should update even for replays.
+
+### Lesson: 2026-02-05 - Progress bar glitched when updating because transition-all animated gradients
+The progress bar used `transition-all` on the fill element, which meant when the streak state changed (causing gradient colors to change), the entire gradient would animate between states, causing visual glitching and size flickering.
+→ **New rule:** Never use `transition-all` on elements with dynamic backgrounds/gradients. Only transition specific properties that should animate (e.g., `transition: 'width 500ms ease-out'`). CSS background gradients don't interpolate smoothly.
+
 <!-- Add new lessons here -->
 
 ---
@@ -152,6 +160,7 @@ Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.
 | Behavior | Enforced In (ONE place) |
 |----------|-------------------------|
 | Lesson unlocking | `/hooks/useProgress.ts` → `isLessonUnlocked()` |
+| Current position (scroll target) | `/hooks/useProgress.ts` → `currentPosition` (server is source of truth) |
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
 | Page layout/height | `/app/globals.css` + `/app/layout.tsx` → flex structure |
 | Scroll to top (pages) | `/components/providers/ScrollToTop.tsx` (except /learn) |

@@ -115,11 +115,13 @@ const userType = useMemo(() => {
 
 ### The Flow:
 1. User completes lesson
-2. Show completion popup with stats
-3. On "Continue" button click:
-   - If next lesson exists AND is unlocked → `/learn?scrollTo={nextLessonId}`
-   - If last lesson of level → Next level unlocks → `/learn?scrollTo={firstLessonOfNextLevel}`
-   - If last lesson of app → `/learn?scrollTo={lastLessonId}`
+2. `currentPosition` updates to next lesson (stored in DB)
+3. Show completion popup with stats
+4. On "Continue" button click → `/learn`
+5. `/learn` page reads `currentPosition` and auto-scrolls to that lesson
+
+### Key Point:
+No URL params needed. The `currentPosition` field stored in the database determines where the user lands on `/learn`.
 
 ### Enforced In (ONE place only):
 `/app/lesson/[lessonId]/page.tsx` → Continue button onClick handler
@@ -132,11 +134,17 @@ const userType = useMemo(() => {
 | Scenario | Behavior |
 |----------|----------|
 | Section expand/collapse | **NO scrolling. Ever.** Just toggle. |
-| Returning from lesson (URL has `scrollTo`) | Expand section, scroll to lesson |
-| Opening /learn fresh (no URL param) | Scroll to last completed lesson |
+| Opening /learn | Expand section containing `currentPosition`, scroll to it |
+
+### The `currentPosition` Field:
+- Stored in `profiles.current_position` (database)
+- Represents where the user IS in their journey
+- Updated when: lesson completes (→ next lesson), level test passes (→ first lesson of new level)
+- Server is source of truth
 
 ### Critical:
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
+- **NO URL PARAMS** - Use `currentPosition` from hook, not URL params
 - Enforced in ONE `useEffect` in `/app/learn/page.tsx`
 
 ### Sticky Headers:
@@ -151,14 +159,11 @@ The level header overlaps the nav header slightly, creating a layered effect whi
 ```typescript
 // In /app/learn/page.tsx - the ONLY place this happens
 useEffect(() => {
-  const scrollTo = searchParams.get('scrollTo');
-  if (scrollTo) {
-    // Expand the section containing this lesson
+  if (currentPosition) {
+    // Expand the section containing currentPosition
     // Scroll to the lesson element
-  } else if (lastCompletedLessonId) {
-    // Scroll to last completed
   }
-}, [searchParams, lastCompletedLessonId]);
+}, [currentPosition]);
 ```
 
 ---
@@ -422,7 +427,8 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ### On Pass:
 1. Level unlocks
 2. All previous lessons unlock
-3. Navigate to `/learn?scrollTo={firstLessonOfNewLevel}`
+3. `currentPosition` set to first lesson of new level
+4. Navigate to `/learn` (auto-scrolls to currentPosition)
 
 ### Enforced In:
 `/app/level-test/[transition]/page.tsx`
@@ -469,6 +475,13 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 - Logo files: `/public/brand/logo-horizontal-*.svg` and `/public/brand/logo-stacked-*.svg`
 - Icon colors: Blue (#1CB0F6), Cyan (#2FCBEF), Purple (#A560E8), Green (#58CC02), Yellow (#FFC800), Orange (#FF9600), Coral (#FF6B6B), Red (#FF4B4B)
 - "path" gradient: Yellow (#FFC800) → Coral (#FF6B6B) → Blue (#1CB0F6)
+
+### Layout Centering Rules:
+- **Logos and modals should be vertically centered** between the header and the bottom of the viewport (or bottom action button)
+- Use flexbox with `justify-center` to center content between fixed elements
+- For landing/welcome screens: logo + content should feel balanced in the available space
+- Don't let content hug the top - add `flex-1` containers to push content to vertical center
+- Pattern: `flex flex-col h-full` → `flex-1 flex items-center justify-center` → content
 
 ### Elements by Location:
 
@@ -520,13 +533,13 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 - Only first attempt counts for score
 
 ### X Button Behavior:
-- Back to `/learn?scrollTo={currentLessonId}`
+- Back to `/learn`
 - **No partial save**
 
 ### Completion:
-1. Show score popup
-2. Continue button
-3. Navigate to `/learn?scrollTo={nextLessonId}`
+1. `currentPosition` updates to next lesson
+2. Show score popup
+3. Continue button → `/learn` (auto-scrolls to currentPosition)
 
 ---
 
@@ -612,7 +625,7 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 ```sql
 profiles
   id, email, display_name, subscription_status, unlocked_levels,
-  is_admin, current_streak, last_activity_date, created_at
+  is_admin, current_streak, last_activity_date, current_position, created_at
 
 lesson_progress
   id, user_id, lesson_id, completed_at, score
@@ -648,7 +661,6 @@ email_log
 ### Columns/Tables to DELETE:
 - `theme_performance` table
 - `profiles.elo_rating`
-- `profiles.current_lesson_id`
 - `profiles.current_level`
 
 ---
@@ -1142,6 +1154,7 @@ When run with `--fix`, the script can:
 |----------|-------------------------|
 | Lesson unlocking | `/hooks/useProgress.ts` → `isLessonUnlocked()` |
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
+| Current position tracking | `/hooks/useProgress.ts` → `currentPosition` + `setCurrentPosition()` |
 | Scroll behavior | `/app/learn/page.tsx` → ONE useEffect |
 | Navigation after lesson | `/app/lesson/[lessonId]/page.tsx` → Continue button |
 | Permissions/limits | `/hooks/usePermissions.ts` |
@@ -1151,6 +1164,7 @@ When run with `--fix`, the script can:
 | Curriculum | `/lib/curriculum-registry.ts` |
 | Maintenance checks | `scripts/maintenance-check.ts` |
 | Daily challenge puzzles | `/data/daily-challenge-puzzles.json` |
+| Progress bar (lessons/tests) | `/components/puzzle/ChessProgressBar.tsx` |
 
 ---
 
