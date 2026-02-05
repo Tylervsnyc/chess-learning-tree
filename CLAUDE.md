@@ -159,6 +159,10 @@ The progress bar was in a `flex-1` container, meaning its width depended on sibl
 The progress value was `currentIndex + (moveStatus === 'correct' ? 1 : 0)`. When clicking Continue: (1) currentIndex updates, (2) re-render shows wrong value, (3) useEffect resets moveStatus, (4) re-render shows correct value. The intermediate render caused the bar to jump forward then shrink.
 → **New rule:** Don't calculate UI values from multiple pieces of state that update at different times. Use a single source of truth (like `completedPuzzleCount`) that updates atomically at the right moment.
 
+### Lesson: 2026-02-05 - First fix attempt failed because I didn't audit properly
+User reported progress bar was "glitchy and changing size." I jumped to the first plausible cause (transition-all on gradients) without doing a full audit. The fix didn't work. Only after user pushed back and I used the Explore agent to audit ALL code touching the component did I find: (1) container width instability from siblings, (2) state coupling causing shrink-then-grow, (3) same bug in level-test page, (4) unused dead code. There were 4 issues, not 1.
+→ **New rule:** For visual glitches in shared components, ALWAYS use Task tool with Explore agent to audit ALL usages before attempting any fix. Don't guess at the cause - trace the data flow from state → props → render in every file that uses the component.
+
 <!-- Add new lessons here -->
 
 ---
@@ -386,7 +390,7 @@ lib/                       # Core utilities
 ### Design Rules
 - **Mobile-first**: All designs must fit a mobile screen
 - **Pages load at the top**: Body has `overflow: hidden`, no scroll restoration
-- **No scrolling**: Pages use `h-full overflow-hidden` EXCEPT `/learn` which uses `h-full overflow-auto`
+- **No scrolling**: Pages use `h-full overflow-hidden` EXCEPT `/learn` and `/test-*` pages which use `h-full overflow-auto`
 
 ---
 
