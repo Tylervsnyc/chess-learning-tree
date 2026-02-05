@@ -237,17 +237,6 @@ export default function LessonPage() {
   // Get all lesson IDs for unlock checking and tracking next lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
-  // Calculate next lesson ID for navigation after completion
-  const nextLessonId = useMemo(() => {
-    const currentIndex = allLessonIds.indexOf(lessonId);
-    console.log('[DEBUG] lessonId:', lessonId, 'currentIndex:', currentIndex, 'nextLessonId:', allLessonIds[currentIndex + 1]);
-    if (currentIndex >= 0 && currentIndex < allLessonIds.length - 1) {
-      return allLessonIds[currentIndex + 1];
-    }
-    return null;
-  }, [allLessonIds, lessonId]);
-
-
   // Warmup audio on first user interaction (unlocks audio on mobile)
   useEffect(() => {
     const handleFirstInteraction = () => {
@@ -982,7 +971,6 @@ export default function LessonPage() {
           lessonId={lessonId}
           isGuest={!user}
           getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
-          nextLessonId={nextLessonId}
         />
         <LessonLimitModal
           isOpen={showLimitModal}

@@ -29,7 +29,6 @@ interface LessonCompleteScreenProps {
   lessonId: string;
   isGuest: boolean;
   getLevelKeyFromLessonId: (id: string) => string;
-  nextLessonId: string | null;
 }
 
 export function LessonCompleteScreen({
@@ -38,7 +37,6 @@ export function LessonCompleteScreen({
   lessonId,
   isGuest,
   getLevelKeyFromLessonId,
-  nextLessonId,
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
   const accuracy = Math.round((correctCount / 6) * 100);
@@ -85,126 +83,115 @@ export function LessonCompleteScreen({
   }, [isPerfect, correctCount]);
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white flex flex-col">
+    <div className="h-full bg-[#131F24] text-white flex flex-col items-center justify-center overflow-hidden px-5">
       <style>{celebrationStyles}</style>
-      {/* Animated Rook - centered between top of page and score */}
-      <div className="flex-1 flex items-center justify-center">
-        <RookCelebrationAnimation
-          ref={rookRef}
-          style={celebrationStyle}
-          scale={1.8}
-          autoPlay={true}
-        />
-      </div>
+      <div className="max-w-sm w-full">
+        {/* Animated Rook */}
+        <div className="flex items-center justify-center" style={{ height: '220px' }}>
+          <RookCelebrationAnimation
+            ref={rookRef}
+            style={celebrationStyle}
+            scale={1.8}
+            autoPlay={true}
+          />
+        </div>
 
-      {/* Content - bottom portion */}
-      <div className="px-5 pb-8">
-        <div className="max-w-sm w-full mx-auto">
-          {/* Score display */}
-          <div className="text-center mb-6">
-            <div
-              className="text-6xl font-black mb-2 animate-fadeInUp"
-              style={{
-                color: isPerfect ? '#FFC800' : COLORS.green,
-                animationFillMode: 'backwards',
-              }}
-            >
-              {correctCount}/6
-            </div>
-            <div
-              className="text-sm text-gray-400 uppercase tracking-wider animate-fadeInUp"
-              style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
-            >
-              {tierLabel}
-            </div>
-          </div>
-
-          {/* Funny quote */}
+        {/* Score display */}
+        <div className="text-center mb-3">
           <div
-            className="text-center mb-8 animate-fadeInUp"
-            style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
-          >
-            <p className="text-xl text-white font-medium italic">
-              "{quote}"
-            </p>
-          </div>
-
-          {/* Stats cards */}
-          <div
-            className="grid grid-cols-2 gap-3 mb-8 animate-fadeInUp"
-            style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
-          >
-            <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold" style={{ color: COLORS.green }}>
-                {correctCount}
-              </div>
-              <div className="text-sm text-gray-400">First try</div>
-            </div>
-            <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold" style={{ color: accuracy === 100 ? '#FFC800' : COLORS.blue }}>
-                {accuracy}%
-              </div>
-              <div className="text-sm text-gray-400">Accuracy</div>
-            </div>
-          </div>
-
-          {/* Lesson name */}
-          <div
-            className="text-center text-gray-500 text-sm mb-6 animate-fadeInUp"
-            style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}
-          >
-            {lessonName}
-          </div>
-
-          {/* Continue button - go to next lesson or back to tree */}
-          <button
-            onClick={() => {
-              if (nextLessonId) {
-                // Go directly to the next lesson
-                window.location.href = isGuest
-                  ? `/lesson/${nextLessonId}?guest=true`
-                  : `/lesson/${nextLessonId}`;
-              } else {
-                // End of level - go back to curriculum tree
-                window.location.href = isGuest
-                  ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
-                  : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
-              }
-            }}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] animate-fadeInUp"
+            className="text-5xl font-black mb-1 animate-fadeInUp"
             style={{
-              backgroundColor: COLORS.green,
-              animationDelay: '0.4s',
+              color: isPerfect ? '#FFC800' : COLORS.green,
               animationFillMode: 'backwards',
             }}
           >
-            {nextLessonId ? 'Next Lesson' : 'Continue'}
-          </button>
-
-          {/* Guest signup prompt */}
-          {isGuest && (
-            <div
-              className="mt-4 bg-[#1A2C35] rounded-xl p-4 animate-fadeInUp"
-              style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
-            >
-              <p className="text-gray-400 text-sm mb-3 text-center">Create a free account to save progress</p>
-              <div className="flex gap-3">
-                <Link
-                  href="/auth/signup?from=lesson"
-                  className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
-                >
-                  Sign Up
-                </Link>
-                <Link
-                  href="/auth/login"
-                  className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
-                >
-                  Sign In
-                </Link>
-              </div>
-            </div>
-          )}
+            {correctCount}/6
+          </div>
+          <div
+            className="text-sm text-gray-400 uppercase tracking-wider animate-fadeInUp"
+            style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
+          >
+            {tierLabel}
+          </div>
         </div>
+
+        {/* Funny quote */}
+        <div
+          className="text-center mb-5 animate-fadeInUp"
+          style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
+        >
+          <p className="text-xl text-white font-medium italic">
+            &ldquo;{quote}&rdquo;
+          </p>
+        </div>
+
+        {/* Stats cards */}
+        <div
+          className="grid grid-cols-2 gap-3 mb-5 animate-fadeInUp"
+          style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
+        >
+          <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold" style={{ color: COLORS.green }}>
+              {correctCount}
+            </div>
+            <div className="text-sm text-gray-400">First try</div>
+          </div>
+          <div className="bg-[#1A2C35] rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold" style={{ color: accuracy === 100 ? '#FFC800' : COLORS.blue }}>
+              {accuracy}%
+            </div>
+            <div className="text-sm text-gray-400">Accuracy</div>
+          </div>
+        </div>
+
+        {/* Lesson name */}
+        <div
+          className="text-center text-gray-500 text-sm mb-4 animate-fadeInUp"
+          style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}
+        >
+          {lessonName}
+        </div>
+
+        {/* Continue button */}
+        <button
+          onClick={() => {
+            window.location.href = isGuest
+              ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
+              : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
+          }}
+          className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] animate-fadeInUp"
+          style={{
+            backgroundColor: COLORS.green,
+            animationDelay: '0.4s',
+            animationFillMode: 'backwards',
+          }}
+        >
+          Continue
+        </button>
+
+        {/* Guest signup prompt */}
+        {isGuest && (
+          <div
+            className="mt-4 bg-[#1A2C35] rounded-xl p-4 animate-fadeInUp"
+            style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
+          >
+            <p className="text-gray-400 text-sm mb-3 text-center">Create a free account to save progress</p>
+            <div className="flex gap-3">
+              <Link
+                href="/auth/signup?from=lesson"
+                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+              >
+                Sign Up
+              </Link>
+              <Link
+                href="/auth/login"
+                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
