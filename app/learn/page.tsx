@@ -544,9 +544,6 @@ export default function LearnPage() {
                         <span className="relative z-10">L{level}</span>
                       </div>
                       <div>
-                        <div className="text-sm uppercase tracking-wider font-semibold" style={{ color }}>
-                          Level {level}
-                        </div>
                         <h2 className="text-xl font-bold text-white">{data.name}</h2>
                         <p className="text-xs text-white/50">{data.ratingRange} ELO</p>
                       </div>

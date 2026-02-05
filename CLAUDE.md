@@ -275,8 +275,9 @@ Before implementing any feature involving data:
 - Updates: `update{Thing}` (e.g., `updateProgress`)
 
 ### Level Names
-- Level `name` in curriculum data includes the full prefix (e.g., `"Level 1: Begin to Believe"`)
-- Do NOT strip the "Level X:" prefix from the name field
+- Level `name` in curriculum data is the movie spoof name ONLY (e.g., `"Begin to Believe"`, NOT `"Level 1: Begin to Believe"`)
+- The level header card shows `L{number}` in a badge — do NOT add a separate "Level X" text line
+- Never display the level number twice in the same card
 
 ---
 

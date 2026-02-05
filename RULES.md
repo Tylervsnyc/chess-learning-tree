@@ -127,7 +127,7 @@ const userType = useMemo(() => {
 No URL params needed. The `currentPosition` field stored in the database determines where the user lands on `/learn`.
 
 ### Enforced In (ONE place only):
-`/app/lesson/[lessonId]/page.tsx` → Continue button onClick handler
+`/components/lesson/LessonCompleteScreen.tsx` → Continue button onClick handler
 
 ---
 
@@ -564,7 +564,7 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 ### Completion:
 1. `currentPosition` updates to next lesson
 2. `LessonCompleteScreen` renders with animated rook celebration, confetti, sound, score, quote
-3. Continue button → next lesson (or `/learn` if end of level)
+3. Continue button → `/learn` (always returns to curriculum tree)
 
 ### Rook Animations (Lessons Only):
 Animated pixel-art rook appears in the result popup for lessons.
@@ -598,7 +598,7 @@ When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
 4. **Score** — `correctCount/6` with tier label (Perfect / Great / Complete)
 5. **Quote** — random funny quote from `/data/celebration-quotes.ts` (300 total, tiered by score)
 6. **Stats cards** — first-try correct count + accuracy percentage
-7. **Continue button** — goes to next lesson, or back to `/learn` if end of level
+7. **Continue button** — always returns to `/learn` (curriculum tree)
 8. **Guest signup prompt** — shown if user is not logged in
 
 **Animation Styles (6 used randomly):**
@@ -966,11 +966,16 @@ Current names are good - keep them
 ### Level Names (Movie Spoofs):
 | Level | Name |
 |-------|------|
-| 1 | How to Lose Friends |
-| 2 | The Assassin's Toolkit |
-| 3 | Never Apologize for Being Great |
+| 1 | Begin to Believe |
+| 2 | One Does Not Simply Win at Chess |
+| 3 | We Need to Go Deeper |
 | 4 | I Am the One Who Knocks |
 | 5 | No Country for Beginners |
+
+### Level Card Display Rule:
+- The `name` field in curriculum data is the movie spoof name ONLY (e.g., `"Begin to Believe"`, NOT `"Level 1: Begin to Believe"`)
+- The level header card already shows `L{number}` in a badge — do NOT add a separate "Level X" text line
+- Never display the level number twice in the same card
 
 ### Block Names:
 Already defined - keep them
@@ -1372,7 +1377,7 @@ When run with `--fix`, the script can:
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
 | Current position tracking | `/hooks/useProgress.ts` → `currentPosition` + `setCurrentPosition()` |
 | Scroll behavior | `/app/learn/page.tsx` → ONE useEffect |
-| Navigation after lesson | `/app/lesson/[lessonId]/page.tsx` → Continue button |
+| Navigation after lesson | `/components/lesson/LessonCompleteScreen.tsx` → Continue button |
 | Permissions/limits | `/hooks/usePermissions.ts` |
 | Header | `/components/layout/NavHeader.tsx` |
 | Quips | `/data/staging/v2-puzzle-responses.ts` |
