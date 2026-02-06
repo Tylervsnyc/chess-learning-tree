@@ -44,7 +44,10 @@ You may create or modify:
 4. Check: is the logic in ONE place? (no duplication)
 5. Check: are IDs following dot notation?
 6. Check: is data flow complete? (DB → API → sync → hook → component)
-7. List any discrepancies
+7. **Chess check:** No page file has inline `processPuzzle`, `normalizeMove`, or `isCorrectMove` — these must be imported from `lib/puzzle-utils.ts`
+8. **Chess check:** Puzzle animation uses the 3-step timing pattern (0ms snap, 100ms delay, 300ms animate)
+9. **Sync check:** For progress-related changes, verify field exists in all 6 layers (schema → API → ServerProgress → mergeProgress → Progress → hook return)
+10. List any discrepancies
 
 ### Bug Fix Verification
 1. Read the bug report and the fix
@@ -104,3 +107,5 @@ STOP and report when:
 - **localStorage bleed** — Clear localStorage between tests. Old state from previous runs leaks.
 - **Commit completeness** — After a fix, check `git status` for uncommitted related files. The fix may "work" locally but not in production (Lesson: 2026-02-05).
 - **Testing the symptom, not the cause** — If a visual bug has 4 causes, testing one fix doesn't verify the others (Lesson: 2026-02-05).
+- **Inline chess logic in pages** — Grep for `processPuzzle`, `normalizeMove`, `isCorrectMove` in `app/` files. If found inline (not imported from `lib/puzzle-utils.ts`), flag it.
+- **Sync pipeline gaps** — When a new field is added to progress, trace it through all 6 layers. Missing any one = silent bug.

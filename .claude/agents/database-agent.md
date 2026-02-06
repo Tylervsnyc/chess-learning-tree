@@ -22,7 +22,8 @@ Read these files before starting any task:
 You may create or modify:
 - `supabase/` — Schema files, migrations, seed data
 - `scripts/migrations/` — Migration scripts
-- `lib/progress-sync.ts` — Client-server sync logic
+
+**Note:** `lib/progress-sync.ts` is now Sync Agent territory. If a schema change adds/removes a column used in progress sync, flag for Sync Agent to update the pipeline above the database layer.
 
 ---
 
@@ -92,3 +93,4 @@ STOP and ask when:
 - **Implicit state storage** — Store `[1,2,3,4,5]` not `[1,5]`. Explicit is debuggable, implicit requires derivation logic that has bugs (Lesson: 2026-02-03).
 - **New user localStorage bleed** — Math.max() merge gives new users the previous user's streak. Check for "new user" state (Lesson: 2026-02-03).
 - **Race condition in sync** — POST and GET can race. For "most recent action" fields, local wins (Lesson: 2026-02-05).
+- **Schema change affecting sync** — If you add/remove a column used in progress sync, the Sync Agent must update the full pipeline: API response → ServerProgress → mergeProgress → Progress → hook return. Flag this in your report.

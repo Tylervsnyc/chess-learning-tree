@@ -20,9 +20,9 @@ Read these files before starting any task:
 ## Write Scope
 
 You may create or modify:
-- `app/api/` — All API route handlers
-- `lib/` — Server-side utilities (not client-only hooks)
-- `hooks/` — React hooks (coordinate with Frontend agent if UI depends on changes)
+- `app/api/` — API route handlers **except** `app/api/progress/` (Sync Agent territory)
+- `lib/` — Server-side utilities **except** `lib/progress-sync.ts` (Sync Agent), `lib/puzzle-utils.ts`, `lib/chess-utils.ts`, `lib/sounds.ts`, `lib/puzzle-selector.ts` (Chess Agent)
+- `hooks/` — React hooks **except** `hooks/useProgress.ts` (Sync Agent territory)
 - `middleware.ts` — Request middleware
 
 ---
@@ -91,3 +91,4 @@ STOP and ask when:
 - **New user merge bug** — When merging client+server data, check if it's a new user (no server data) and use server defaults instead of Math.max() (Lesson: 2026-02-03).
 - **Early returns skipping side effects** — `completeLesson` returning early for "already done" still needs to update `currentPosition` (Lesson: 2026-02-05).
 - **Page flash before data settles** — Don't render until both local and server data are ready. Use `serverFetched` flag (Lesson: 2026-02-05).
+- **Progress API changes** — If your API change touches progress data, coordinate with Sync Agent. The progress sync pipeline (`app/api/progress/`, `hooks/useProgress.ts`, `lib/progress-sync.ts`) is Sync Agent territory.

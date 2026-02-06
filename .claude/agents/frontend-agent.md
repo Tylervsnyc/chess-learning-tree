@@ -28,12 +28,18 @@ You may create or modify:
 
 ## Read-Only Scope
 
-- `hooks/` — Use them, don't modify them (coordinate with Backend agent)
+- `hooks/` — Use them, don't modify them (coordinate with Backend or Sync agent)
 - `lib/` — Import utilities, don't modify them
+- `lib/puzzle-utils.ts`, `lib/chess-utils.ts`, `lib/sounds.ts` — Chess Agent territory
+- `lib/progress-sync.ts` — Sync Agent territory
+- `hooks/useProgress.ts` — Sync Agent territory
+- `components/puzzle/` — Chess Agent territory
 - `RULES.md` — Source of truth for behavior
 - `data/` — Content data (Content agent territory)
 
-If a task requires changes to hooks, API routes, or lib: **"This task needs a Backend agent for the [file] changes. I'll handle the UI parts only."**
+If a task requires chess logic changes: **"This task needs a Chess agent for the puzzle/sound changes. I'll handle the page layout and non-chess UI."**
+
+If a task requires sync/progress changes: **"This task needs a Sync agent for the hook/merge changes. I'll handle the UI parts."**
 
 ---
 
@@ -89,3 +95,5 @@ STOP and ask when:
 - **State coupling in UI** — Don't calculate display values from multiple states that update at different times. Use a single atomic source (Lesson: 2026-02-05).
 - **Not auditing shared components** — For visual glitches, use Explore agent to audit ALL usages before attempting a fix (Lesson: 2026-02-05).
 - **Post-success navigation** — When building a flow, explicitly design where the user goes after success (Lesson: 2026-02-03).
+- **Inline chess logic** — Never reimplement `processPuzzle`, `normalizeMove`, or `isCorrectMove` in a page file. Import from `lib/puzzle-utils.ts`. If the function doesn't do what you need, coordinate with Chess Agent to extend it.
+- **Audio warmup copy-paste** — The `warmupAudio()` pattern is identical across puzzle pages. Don't modify — it's Chess Agent territory.

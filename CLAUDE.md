@@ -15,9 +15,11 @@ Tasks are auto-dispatched to specialized agents. Just describe what you want in 
 | Request mentions... | Agent | File |
 |---|---|---|
 | Components, pages, styling, a11y, CSS | **Frontend** | `.claude/agents/frontend-agent.md` |
-| API routes, hooks, server logic, auth | **Backend** | `.claude/agents/backend-agent.md` |
-| Schema, migrations, sync, queries | **Database** | `.claude/agents/database-agent.md` |
-| Puzzles, quips, curriculum, lessons | **Content** | `.claude/agents/content-agent.md` |
+| API routes, server logic, auth (not progress) | **Backend** | `.claude/agents/backend-agent.md` |
+| Schema, migrations, queries | **Database** | `.claude/agents/database-agent.md` |
+| Chess board, puzzles, moves, sounds, animation | **Chess** | `.claude/agents/chess-agent.md` |
+| Progress sync, merge, data flow, race conditions | **Sync** | `.claude/agents/sync-agent.md` |
+| Puzzle content, quips, curriculum, lessons | **Content** | `.claude/agents/content-agent.md` |
 | Tests, verify, check, QA, audit | **QA** | `.claude/agents/qa-agent.md` |
 | Architecture, dependencies, design | **Architect** | `.claude/agents/architect-agent.md` |
 | CI/CD, deployment, monitoring, env | **DevOps** | `.claude/agents/devops-agent.md` |
