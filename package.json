@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check": "next lint && npx tsc --noEmit",
+    "validate": "next lint && npx tsc --noEmit && next build",
     "email:dev": "email dev -d lib/email/templates",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
