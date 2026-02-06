@@ -168,9 +168,15 @@ export default function DailyChallengePage() {
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
   const [shareImageFile, setShareImageFile] = useState<File | null>(null);
 
+  // Share link state
+  const [linkCopied, setLinkCopied] = useState(false);
+
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasRecordedRef = useRef(false);
+
+  // Capture the final elapsed time at the moment the game ends (avoids stale timeLeft in effects)
+  const finalElapsedMsRef = useRef<number>(0);
 
   // Current puzzle - simple array index
   const currentPuzzle = allPuzzles[puzzleIndex] || null;
@@ -281,6 +287,8 @@ export default function DailyChallengePage() {
           setAlreadyCompletedToday(true);
           setPuzzlesSolved(existingResult.puzzlesCompleted);
           setTimeLeft(TOTAL_TIME - existingResult.timeMs);
+          finalElapsedMsRef.current = existingResult.timeMs;
+          hasRecordedRef.current = true; // Don't re-record on revisit
           setLeaderboard(data.leaderboard || []);
           setUserEntry(data.userEntry || userInLeaderboard);
           setTotalParticipants(data.totalParticipants || 0);
@@ -343,9 +351,10 @@ export default function DailyChallengePage() {
       timerRef.current = setInterval(() => {
         const remaining = endTimeRef.current - Date.now();
         if (remaining <= 0) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          finalElapsedMsRef.current = TOTAL_TIME; // Full time used
           setTimeLeft(0);
           setGameState('finished');
-          if (timerRef.current) clearInterval(timerRef.current);
         } else {
           setTimeLeft(remaining);
         }
@@ -422,6 +431,7 @@ export default function DailyChallengePage() {
     setSelectedSquare(null);
     setReviewingPuzzle(null);
     hasRecordedRef.current = false;
+    finalElapsedMsRef.current = 0;
 
     // Show loading state
     setGameState('loading');
@@ -464,9 +474,12 @@ export default function DailyChallengePage() {
     setTimeout(() => {
       const nextIndex = puzzleIndex + 1;
       if (nextIndex >= allPuzzles.length) {
-        // Completed all puzzles!
-        setGameState('finished');
+        // Completed all puzzles! Capture elapsed time NOW before state changes
         if (timerRef.current) clearInterval(timerRef.current);
+        finalElapsedMsRef.current = endTimeRef.current > 0
+          ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
+          : TOTAL_TIME - timeLeft;
+        setGameState('finished');
       } else {
         setPuzzleIndex(nextIndex);
         setMoveIndex(0);
@@ -491,15 +504,23 @@ export default function DailyChallengePage() {
     }
 
     if (newLives <= 0) {
-      setGameState('finished');
+      // Capture elapsed time NOW before state changes
       if (timerRef.current) clearInterval(timerRef.current);
+      finalElapsedMsRef.current = endTimeRef.current > 0
+        ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
+        : TOTAL_TIME - timeLeft;
+      setGameState('finished');
     } else {
       // Advance to next puzzle
       setTimeout(() => {
         const nextIndex = puzzleIndex + 1;
         if (nextIndex >= allPuzzles.length) {
-          setGameState('finished');
+          // Capture elapsed time NOW before state changes
           if (timerRef.current) clearInterval(timerRef.current);
+          finalElapsedMsRef.current = endTimeRef.current > 0
+            ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
+            : TOTAL_TIME - timeLeft;
+          setGameState('finished');
         } else {
           setPuzzleIndex(nextIndex);
           setMoveIndex(0);
@@ -672,7 +693,9 @@ export default function DailyChallengePage() {
   useEffect(() => {
     if (gameState === 'finished') {
       if (user) {
-        recordResult(puzzlesSolved, timeLeft);
+        // Use finalElapsedMsRef which was captured at the exact moment the game ended
+        const finalTimeLeft = TOTAL_TIME - finalElapsedMsRef.current;
+        recordResult(puzzlesSolved, finalTimeLeft);
         // Update global day streak (per RULES.md Section 11)
         recordDailyActivity();
         setTimeout(() => fetchLeaderboard(), 500);
@@ -681,7 +704,8 @@ export default function DailyChallengePage() {
         setGuestCompletedSession(true);
       }
     }
-  }, [gameState, puzzlesSolved, timeLeft, recordResult, fetchLeaderboard, recordDailyActivity, user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, recordDailyActivity, user]);
 
   // Format time display
   const formatTime = (ms: number) => {
@@ -853,8 +877,8 @@ export default function DailyChallengePage() {
   // Use dummy data if no real leaderboard
   const displayLeaderboard = leaderboard.length > 0 ? leaderboard : dummyLeaderboard;
 
-  // Completion time (time used)
-  const completionTimeMs = TOTAL_TIME - timeLeft;
+  // Completion time (time used) — use ref for accuracy, fall back to state calculation
+  const completionTimeMs = finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft;
 
   // Dummy user standing
   const dummyUserEntry: LeaderboardEntry = {
@@ -879,7 +903,7 @@ export default function DailyChallengePage() {
             <DailyChallengeReport
               puzzlesSolved={puzzlesSolved}
               totalPuzzles={allPuzzles.length}
-              timeMs={TOTAL_TIME - timeLeft}
+              timeMs={completionTimeMs}
               mistakes={MAX_LIVES - lives}
               rank={userEntry?.rank}
               totalParticipants={totalParticipants}
@@ -940,6 +964,62 @@ export default function DailyChallengePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Share as Image
+              </>
+            )}
+          </button>
+
+          {/* Share Link Button - copies a URL with dynamic OG preview */}
+          <button
+            onClick={async () => {
+              const params = new URLSearchParams({
+                score: String(puzzlesSolved),
+                time: String(completionTimeMs),
+              });
+              if (userEntry?.rank) params.set('rank', String(userEntry.rank));
+              if (totalParticipants > 0) params.set('total', String(totalParticipants));
+
+              const shareUrl = `https://chesspath.app/daily-challenge?${params.toString()}`;
+
+              // Try native share first (mobile), fall back to clipboard
+              if (typeof navigator !== 'undefined' && 'share' in navigator) {
+                try {
+                  await navigator.share({
+                    title: 'Chess Path Daily Challenge',
+                    text: `I solved ${puzzlesSolved} puzzles on today's Chess Path Daily Challenge!`,
+                    url: shareUrl,
+                  });
+                  return;
+                } catch (err) {
+                  // User cancelled or share failed - fall through to clipboard
+                  if (err instanceof Error && err.name === 'AbortError') return;
+                }
+              }
+
+              // Clipboard fallback
+              try {
+                await navigator.clipboard.writeText(shareUrl);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              } catch {
+                // Silent fail
+              }
+            }}
+            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-2"
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+          >
+            {linkCopied ? (
+              <>
+                <svg className="w-5 h-5 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-[#58CC02]">Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                Share Link
               </>
             )}
           </button>
@@ -1214,7 +1294,7 @@ export default function DailyChallengePage() {
             >
               <DailyChallengeShareCard
                 puzzlesSolved={puzzlesSolved}
-                timeMs={TOTAL_TIME - timeLeft}
+                timeMs={completionTimeMs}
                 globalPct={globalPct}
                 highestPuzzleFen={highestSolvedPuzzle?.puzzleFen}
                 boardOrientation={highestSolvedPuzzle?.playerColor}
