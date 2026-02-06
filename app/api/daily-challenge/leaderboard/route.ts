@@ -6,7 +6,7 @@ interface LeaderboardEntry {
   displayName: string;
   score: number;
   puzzlesCompleted: number;
-  timeUsedMs: number;
+  timeMs: number;
   isCurrentUser: boolean;
 }
 
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       displayName: displayNameMap.get(result.user_id) || 'Anonymous',
       score: result.puzzles_completed,
       puzzlesCompleted: result.puzzles_completed,
-      timeUsedMs: result.time_used_ms || 0,
+      timeMs: result.time_used_ms || 0,
       isCurrentUser: user?.id === result.user_id,
     };
   });
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
         displayName: profile?.display_name || 'You',
         score: userResult.puzzles_completed,
         puzzlesCompleted: userResult.puzzles_completed,
-        timeUsedMs: userResult.time_used_ms || 0,
+        timeMs: userResult.time_used_ms || 0,
         isCurrentUser: true,
       };
     }
