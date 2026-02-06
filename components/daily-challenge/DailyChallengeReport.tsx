@@ -11,6 +11,7 @@ interface DailyChallengeReportProps {
   totalParticipants?: number;
   highestPuzzleRating?: number;
   highestPuzzleFen?: string;
+  boardOrientation?: 'white' | 'black';
   variant?: 'card' | 'stories-1' | 'stories-2' | 'stories-3' | 'stories-4' | 'stories-5';
 }
 
@@ -52,7 +53,7 @@ const PIECE_SVGS: Record<string, string> = {
 };
 
 // Mini chessboard component - renders a FEN position with SVG pieces
-function MiniBoard({ fen, size = 160 }: { fen: string; size?: number }) {
+function MiniBoard({ fen, size = 160, orientation = 'white' }: { fen: string; size?: number; orientation?: 'white' | 'black' }) {
   const squareSize = size / 8;
 
   // Parse FEN to get piece positions
@@ -76,7 +77,11 @@ function MiniBoard({ fen, size = 160 }: { fen: string; size?: number }) {
     return board;
   };
 
-  const board = parseFen(fen);
+  const rawBoard = parseFen(fen);
+  // Flip board for black orientation: reverse ranks and files
+  const board = orientation === 'black'
+    ? rawBoard.map(row => [...row].reverse()).reverse()
+    : rawBoard;
   const lightSquare = '#edeed1';
   const darkSquare = '#779952';
 
@@ -94,7 +99,10 @@ function MiniBoard({ fen, size = 160 }: { fen: string; size?: number }) {
     >
       {board.map((row, rankIdx) =>
         row.map((piece, fileIdx) => {
-          const isLight = (rankIdx + fileIdx) % 2 === 0;
+          // Use original coordinates for square color (a1 is always dark)
+          const origRank = orientation === 'black' ? 7 - rankIdx : rankIdx;
+          const origFile = orientation === 'black' ? 7 - fileIdx : fileIdx;
+          const isLight = (origRank + origFile) % 2 === 0;
           return (
             <div
               key={`${rankIdx}-${fileIdx}`}
@@ -182,6 +190,7 @@ function CardVariant({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const [copied, setCopied] = useState(false);
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
@@ -231,7 +240,7 @@ function CardVariant({
           {/* Chess board - matches stats width */}
           {highestPuzzleFen && (
             <div className="flex justify-center mb-4">
-              <MiniBoard fen={highestPuzzleFen} size={240} />
+              <MiniBoard fen={highestPuzzleFen} size={240} orientation={boardOrientation} />
             </div>
           )}
           <div className="text-center mb-4">
@@ -263,6 +272,7 @@ function Stories1({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
 
@@ -289,7 +299,7 @@ function Stories1({
         </div>
 
         {/* Board */}
-        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={180} />}
+        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={180} orientation={boardOrientation} />}
 
         {/* Stats */}
         <div className="text-center">
@@ -316,6 +326,7 @@ function Stories2({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
 
@@ -351,7 +362,7 @@ function Stories2({
         {/* Board - same width as stats */}
         {highestPuzzleFen && (
           <div className="p-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.05)' }}>
-            <MiniBoard fen={highestPuzzleFen} size={206} />
+            <MiniBoard fen={highestPuzzleFen} size={206} orientation={boardOrientation} />
           </div>
         )}
 
@@ -389,6 +400,7 @@ function Stories3({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
 
@@ -419,7 +431,7 @@ function Stories3({
         </div>
 
         {/* Board */}
-        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={175} />}
+        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={175} orientation={boardOrientation} />}
 
         {/* Stats - big and bold */}
         <div className="text-center">
@@ -455,6 +467,7 @@ function Stories4({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
 
@@ -483,7 +496,7 @@ function Stories4({
         </div>
 
         {/* Board */}
-        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={168} />}
+        {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={168} orientation={boardOrientation} />}
 
         {/* Stats card */}
         <div
@@ -512,6 +525,7 @@ function Stories5({
   rank,
   totalParticipants,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: Omit<DailyChallengeReportProps, 'variant'>) {
   const globalPct = rank && totalParticipants ? getGlobalPercentage(rank, totalParticipants) : null;
 
@@ -543,7 +557,7 @@ function Stories5({
 
         {/* Board centered */}
         <div className="flex-1 flex items-center justify-center px-5">
-          {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={185} />}
+          {highestPuzzleFen && <MiniBoard fen={highestPuzzleFen} size={185} orientation={boardOrientation} />}
         </div>
 
         {/* Bottom stats section */}

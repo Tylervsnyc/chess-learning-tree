@@ -7,6 +7,7 @@ interface DailyChallengeShareCardProps {
   timeMs: number;
   globalPct?: number | null;
   highestPuzzleFen?: string;
+  boardOrientation?: 'white' | 'black';
 }
 
 function formatTime(ms: number): string {
@@ -40,7 +41,7 @@ const PIECE_SVGS: Record<string, string> = {
 };
 
 // Mini chessboard for the share card
-function MiniBoard({ fen, size = 640 }: { fen: string; size?: number }) {
+function MiniBoard({ fen, size = 640, orientation = 'white' }: { fen: string; size?: number; orientation?: 'white' | 'black' }) {
   const squareSize = size / 8;
 
   const parseFen = (fen: string): (string | null)[][] => {
@@ -63,7 +64,10 @@ function MiniBoard({ fen, size = 640 }: { fen: string; size?: number }) {
     return board;
   };
 
-  const board = parseFen(fen);
+  const rawBoard = parseFen(fen);
+  const board = orientation === 'black'
+    ? rawBoard.map(row => [...row].reverse()).reverse()
+    : rawBoard;
   const lightSquare = '#edeed1';
   const darkSquare = '#779952';
 
@@ -81,7 +85,9 @@ function MiniBoard({ fen, size = 640 }: { fen: string; size?: number }) {
     >
       {board.map((row, rankIdx) =>
         row.map((piece, fileIdx) => {
-          const isLight = (rankIdx + fileIdx) % 2 === 0;
+          const origRank = orientation === 'black' ? 7 - rankIdx : rankIdx;
+          const origFile = orientation === 'black' ? 7 - fileIdx : fileIdx;
+          const isLight = (origRank + origFile) % 2 === 0;
           return (
             <div
               key={`${rankIdx}-${fileIdx}`}
@@ -157,6 +163,7 @@ export function DailyChallengeShareCard({
   timeMs,
   globalPct,
   highestPuzzleFen,
+  boardOrientation = 'white',
 }: DailyChallengeShareCardProps) {
   return (
     <div
@@ -244,7 +251,7 @@ export function DailyChallengeShareCard({
             background: 'rgba(255,255,255,0.05)',
           }}
         >
-          <MiniBoard fen={highestPuzzleFen} size={824} />
+          <MiniBoard fen={highestPuzzleFen} size={824} orientation={boardOrientation} />
         </div>
       )}
 

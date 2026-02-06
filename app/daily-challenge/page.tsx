@@ -280,7 +280,7 @@ export default function DailyChallengePage() {
           // User already completed today - show finished screen
           setAlreadyCompletedToday(true);
           setPuzzlesSolved(existingResult.puzzlesCompleted);
-          setTimeLeft(TOTAL_TIME - existingResult.timeUsedMs);
+          setTimeLeft(TOTAL_TIME - existingResult.timeMs);
           setLeaderboard(data.leaderboard || []);
           setUserEntry(data.userEntry || userInLeaderboard);
           setTotalParticipants(data.totalParticipants || 0);
@@ -885,6 +885,7 @@ export default function DailyChallengePage() {
               totalParticipants={totalParticipants}
               highestPuzzleRating={highestSolvedPuzzle?.rating}
               highestPuzzleFen={highestSolvedPuzzle?.puzzleFen}
+              boardOrientation={highestSolvedPuzzle?.playerColor}
               variant="stories-2"
             />
           </div>
@@ -1216,6 +1217,7 @@ export default function DailyChallengePage() {
                 timeMs={TOTAL_TIME - timeLeft}
                 globalPct={globalPct}
                 highestPuzzleFen={highestSolvedPuzzle?.puzzleFen}
+                boardOrientation={highestSolvedPuzzle?.playerColor}
               />
             </div>,
             document.body
