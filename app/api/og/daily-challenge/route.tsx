@@ -395,6 +395,135 @@ function renderLayout5({ results, score, timeFormatted, globalPct, name }: Layou
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// STORY LAYOUT: 9:16 (1080×1920) — Instagram Stories / texting
+// V3 "Score + Divider" format per RULES.md Section 31
+// ═══════════════════════════════════════════════════════════════════════════
+function renderStoryLayout({ results, score, timeFormatted, globalPct, name }: LayoutProps) {
+  const lives = results.filter(r => !r).length;
+  const heartsRemaining = Math.max(0, 3 - lives);
+
+  return (
+    <div style={{
+      width: 1080,
+      height: 1920,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      background: '#eef6fc',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      position: 'relative',
+    }}>
+      {/* Top gradient bar */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: 1080, height: 8, background: 'linear-gradient(90deg, #FF9600, #FF6B6B, #A560E8, #1CB0F6)', display: 'flex' }} />
+
+      {/* Content */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 72px 0' }}>
+        {/* Logo */}
+        {renderSmallLogo(12, 28)}
+
+        {/* Title pill */}
+        <div style={{
+          marginTop: 40,
+          padding: '18px 64px',
+          borderRadius: 16,
+          border: '2px solid rgba(255,150,0,0.3)',
+          background: 'linear-gradient(135deg, rgba(255,150,0,0.1), rgba(255,107,107,0.1))',
+          display: 'flex',
+        }}>
+          <span style={{
+            fontSize: 36,
+            fontWeight: 900,
+            letterSpacing: 4,
+            backgroundImage: 'linear-gradient(90deg, #FF9600, #FF6B6B, #FF9600)',
+            backgroundClip: 'text',
+            color: 'transparent',
+          }}>THE DAILY ROOK</span>
+        </div>
+
+        {/* Tagline */}
+        <span style={{ fontSize: 22, fontWeight: 600, color: '#6b7c8a', fontStyle: 'italic', marginTop: 12 }}>
+          Build the Rook. Improve at Chess.
+        </span>
+
+        {/* Date */}
+        <span style={{ fontSize: 20, color: '#6b7c8a', marginTop: 16 }}>
+          {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
+
+        {/* Rule pills */}
+        <div style={{ display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {[
+            { label: '22 puzzles', color: '#1CB0F6' },
+            { label: '5 min', color: '#FF9600' },
+            { label: '3 lives', color: '#FF6B6B' },
+            { label: 'Easy → Hard', color: '#A560E8' },
+          ].map(pill => (
+            <div key={pill.label} style={{ padding: '10px 24px', borderRadius: 24, background: `${pill.color}18`, display: 'flex' }}>
+              <span style={{ fontSize: 22, fontWeight: 800, color: pill.color }}>{pill.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Score + Divider card */}
+        <div style={{
+          marginTop: 40,
+          width: '100%',
+          maxWidth: 900,
+          padding: '36px 40px',
+          borderRadius: 24,
+          background: '#ffffff',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 32,
+        }}>
+          {/* Left: score */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: 72, fontWeight: 900, color: '#FF9600', lineHeight: 1 }}>{score}</span>
+            <span style={{ fontSize: 18, fontWeight: 800, color: 'rgba(42,60,69,0.5)', marginTop: 4 }}>SOLVED</span>
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: 2, alignSelf: 'stretch', background: '#dce8f0', display: 'flex' }} />
+
+          {/* Right: info */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 26, fontWeight: 700, color: '#2A3C45' }}>{name}</span>
+              {/* Hearts */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                {[0, 1, 2].map(i => (
+                  <svg key={i} width="24" height="24" viewBox="0 0 24 24" fill={i < heartsRemaining ? '#FF4B4B' : '#c5d4de'}>
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 22, fontWeight: 600, color: '#6b7c8a' }}>{timeFormatted}</span>
+              {globalPct !== null && globalPct > 0 && (
+                <span style={{ fontSize: 20, fontWeight: 800, color: '#46A302' }}>Beat {globalPct}%</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Rook grid — centered in remaining space */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {renderLogoGrid(results, 100, 110)}
+      </div>
+
+      {/* Footer */}
+      <div style={{ padding: '24px 0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: 'rgba(0,0,0,0.15)', fontSize: 18, letterSpacing: 1 }}>chesspath.app</span>
+      </div>
+    </div>
+  );
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
@@ -403,7 +532,8 @@ export async function GET(request: NextRequest) {
   const rank = searchParams.get('rank');
   const total = searchParams.get('total');
   const resultsParam = searchParams.get('results');
-  const variantParam = searchParams.get('variant') || '1';
+  const variantParam = searchParams.get('variant') || '3';
+  const format = searchParams.get('format') || 'og';
   const name = searchParams.get('name') || 'Player';
 
   const results = parseResults(resultsParam);
@@ -426,6 +556,12 @@ export async function GET(request: NextRequest) {
 
   const props: LayoutProps = { results, score, timeFormatted, globalPct, name };
 
+  // Story format: 9:16 (1080×1920) for Instagram/texting
+  if (format === 'story') {
+    return new ImageResponse(renderStoryLayout(props), { width: 1080, height: 1920 });
+  }
+
+  // OG format: landscape (1200×630) for link previews
   let content;
   switch (variant) {
     case 2: content = renderLayout2(props); break;

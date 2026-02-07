@@ -686,7 +686,7 @@ export default function DailyChallengePage() {
     const ogParams = new URLSearchParams({
       score: String(puzzlesSolved),
       time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
-      variant: '3',
+      format: 'story',
     });
     if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
     if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
@@ -713,7 +713,7 @@ export default function DailyChallengePage() {
     const ogParams = new URLSearchParams({
       score: String(puzzlesSolved),
       time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
-      variant: '3',
+      format: 'story',
     });
     ogParams.set('rank', String(userEntry.rank));
     if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
@@ -1009,7 +1009,7 @@ export default function DailyChallengePage() {
                       const ogParams = new URLSearchParams({
                         score: String(puzzlesSolved),
                         time: String(completionTimeMs),
-                        variant: '3',
+                        format: 'story',
                       });
                       if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
                       if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));

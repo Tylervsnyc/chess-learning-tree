@@ -1233,17 +1233,28 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 
 ### Generation
 
-1. OG route renders server-side at 1080×1920
-2. Client fetches as blob → File
-3. Web Share API (mobile) or download fallback (desktop)
+1. OG route renders server-side at 1080×1920 via `format=story` param
+2. Image is **pre-fetched** when game finishes (cached in ref for instant sharing)
+3. Re-fetched when leaderboard data arrives (to include rank/percentage)
+4. On "Share Results" tap → Web Share API (mobile share sheet) or download fallback (desktop)
+
+### API Parameters
+
+| Param | Values | Description |
+|-------|--------|-------------|
+| `format` | `story` (9:16) or `og` (16:9, default) | Image dimensions |
+| `score` | Number | Puzzles solved |
+| `time` | Number (ms) | Time used |
+| `rank` | Number | Leaderboard rank |
+| `total` | Number | Total participants |
+| `name` | String | Display name |
+| `results` | Comma-separated 1/0 | Puzzle results |
 
 ### Entry Points
 
 | Location | When it appears |
 |----------|-----------------|
-| Daily Rook finished screen | "Share Card" button |
-| Daily Rook finished screen | "Copy Rook" button (emoji text) |
-| Daily Rook finished screen | Link icon (clipboard URL) |
+| Daily Rook finished screen | "Share Results" button (single button, uses story format) |
 
 ---
 

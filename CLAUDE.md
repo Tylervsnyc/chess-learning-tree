@@ -73,7 +73,7 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | Permissions | `hooks/usePermissions.ts` |
 | Header | `components/layout/NavHeader.tsx` |
 | Animated logo | `components/brand/AnimatedLogo.tsx` |
-| Share card design | `app/test-story-cards/page.tsx` (V3 "Score + Divider" is THE format) |
+| Share card design | `app/api/og/daily-challenge/route.tsx` (`format=story` = 9:16 "Score + Divider") |
 
 **If you find logic in multiple places, consolidate it first!**
 
