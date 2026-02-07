@@ -8,8 +8,8 @@ import dailyPuzzles from '@/data/daily-challenge-puzzles.json';
  * Puzzles are pre-generated and stored in data/daily-challenge-puzzles.json.
  *
  * The pre-generated file contains 90 days of puzzles, each with:
- * - 20 puzzles per day
- * - Progressive difficulty (400 → 2600 ELO)
+ * - 22 puzzles per day
+ * - Progressive difficulty (400 → 2300 ELO, first 3 are ~400 for confidence)
  * - Variety of tactical themes
  *
  * To regenerate: npx ts-node scripts/generate-daily-puzzles.ts

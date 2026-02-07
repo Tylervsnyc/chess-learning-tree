@@ -2,7 +2,8 @@
  * Generate Daily Challenge Puzzles
  *
  * Creates a JSON file with pre-selected puzzles for the next 90 days.
- * Each day gets 20 puzzles with linear difficulty (400 → 2300 ELO, ~100 per step).
+ * Each day gets 22 puzzles with linear difficulty (400 → 2300 ELO).
+ * First 3 puzzles are all ~400 rating to build confidence.
  * Same seed = same puzzles, so all users get identical puzzles on a given day.
  *
  * Data sources:
@@ -57,29 +58,31 @@ function getDateSeed(date: string): number {
   return Math.abs(hash);
 }
 
-// 20 puzzle targets with linear difficulty: 400 → 2300 (~100 ELO per step)
+// 22 puzzle targets: first 3 at ~400 (confidence), then 500 → 2300 in 100-step increments
 // Each target maps to the appropriate bracket folder in puzzles-by-rating
 const PUZZLE_TARGETS = [
-  { min: 350, max: 475, bracket: '0400-0800' },   // center 400
-  { min: 425, max: 575, bracket: '0400-0800' },   // center 500
-  { min: 525, max: 675, bracket: '0400-0800' },   // center 600
-  { min: 625, max: 775, bracket: '0400-0800' },   // center 700
-  { min: 725, max: 875, bracket: '0800-1200' },   // center 800
-  { min: 825, max: 975, bracket: '0800-1200' },   // center 900
-  { min: 925, max: 1075, bracket: '0800-1200' },  // center 1000
-  { min: 1025, max: 1175, bracket: '0800-1200' }, // center 1100
-  { min: 1125, max: 1275, bracket: '1200-1600' }, // center 1200
-  { min: 1225, max: 1375, bracket: '1200-1600' }, // center 1300
-  { min: 1325, max: 1475, bracket: '1200-1600' }, // center 1400
-  { min: 1425, max: 1575, bracket: '1200-1600' }, // center 1500
-  { min: 1525, max: 1675, bracket: '1600-2000' }, // center 1600
-  { min: 1625, max: 1775, bracket: '1600-2000' }, // center 1700
-  { min: 1725, max: 1875, bracket: '1600-2000' }, // center 1800
-  { min: 1825, max: 1975, bracket: '1600-2000' }, // center 1900
-  { min: 1925, max: 2075, bracket: '2000-plus' }, // center 2000
-  { min: 2025, max: 2175, bracket: '2000-plus' }, // center 2100
-  { min: 2100, max: 2300, bracket: '2000-plus' }, // center 2200
-  { min: 2200, max: 2500, bracket: '2000-plus' }, // center 2300
+  { min: 350, max: 475, bracket: '0400-0800' },   // #1  - 400 (confidence)
+  { min: 350, max: 475, bracket: '0400-0800' },   // #2  - 400 (confidence)
+  { min: 350, max: 475, bracket: '0400-0800' },   // #3  - 400 (confidence)
+  { min: 425, max: 575, bracket: '0400-0800' },   // #4  - 500
+  { min: 525, max: 675, bracket: '0400-0800' },   // #5  - 600
+  { min: 625, max: 775, bracket: '0400-0800' },   // #6  - 700
+  { min: 725, max: 875, bracket: '0800-1200' },   // #7  - 800
+  { min: 825, max: 975, bracket: '0800-1200' },   // #8  - 900
+  { min: 925, max: 1075, bracket: '0800-1200' },  // #9  - 1000
+  { min: 1025, max: 1175, bracket: '0800-1200' }, // #10 - 1100
+  { min: 1125, max: 1275, bracket: '1200-1600' }, // #11 - 1200
+  { min: 1225, max: 1375, bracket: '1200-1600' }, // #12 - 1300
+  { min: 1325, max: 1475, bracket: '1200-1600' }, // #13 - 1400
+  { min: 1425, max: 1575, bracket: '1200-1600' }, // #14 - 1500
+  { min: 1525, max: 1675, bracket: '1600-2000' }, // #15 - 1600
+  { min: 1625, max: 1775, bracket: '1600-2000' }, // #16 - 1700
+  { min: 1725, max: 1875, bracket: '1600-2000' }, // #17 - 1800
+  { min: 1825, max: 1975, bracket: '1600-2000' }, // #18 - 1900
+  { min: 1925, max: 2075, bracket: '2000-plus' }, // #19 - 2000
+  { min: 2025, max: 2175, bracket: '2000-plus' }, // #20 - 2100
+  { min: 2100, max: 2300, bracket: '2000-plus' }, // #21 - 2200
+  { min: 2200, max: 2500, bracket: '2000-plus' }, // #22 - 2300
 ];
 
 // Tactical themes to prioritize
@@ -323,7 +326,7 @@ function main() {
 
   console.log(`\nGenerating puzzles for ${DAYS_TO_GENERATE} days...`);
 
-  let minPuzzles = 20;
+  let minPuzzles = 22;
   let maxPuzzles = 0;
 
   for (let i = 0; i < DAYS_TO_GENERATE; i++) {

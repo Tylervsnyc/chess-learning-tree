@@ -308,22 +308,22 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 - **Puzzles are pre-generated** in `data/daily-challenge-puzzles.json`
 - 90 days of coverage, regenerate with: `npx ts-node scripts/generate-daily-puzzles.ts`
 - Uses date-seeded random number generator (same puzzles for everyone)
-- 20 linear rating targets: 400, 500, 600, ..., 2300 (~100 ELO per step)
+- 22 rating targets: first 3 are ~400 (confidence builders), then 500 → 2300 in 100-step increments
 - Prioritizes tactical themes (forks, pins, mates) over endgames
 - Each puzzle comes from a different theme when possible
 
 ### Rating Progression:
-Linear 400 → 2300 in 20 steps (~100 ELO per puzzle). Sources:
+22 puzzles: first 3 at ~400 (confidence), then 500 → 2300 in 100-step increments. Sources:
 | Bracket Folder | Puzzle Centers |
 |----------------|---------------|
-| 0400-0800 | 400, 500, 600, 700 |
+| 0400-0800 | 400, 400, 400, 500, 600, 700 |
 | 0800-1200 | 800, 900, 1000, 1100 |
 | 1200-1600 | 1200, 1300, 1400, 1500 |
 | 1600-2000 | 1600, 1700, 1800, 1900 |
 | 2000-plus | 2000, 2100, 2200, 2300 |
 
 ### End Conditions:
-- Complete all 20 puzzles, OR
+- Complete all 22 puzzles, OR
 - Timer runs out, OR
 - Lose 3 lives
 
@@ -1090,8 +1090,8 @@ Desktop: Downloads PNG file
 
 **What it does:**
 - Timed puzzle sprint (5 minutes, 3 lives)
-- Progressive difficulty: 400 → 2600 ELO (hidden from user)
-- 20 puzzles total, "Puzzle X / 20" display
+- Progressive difficulty: 400 → 2300 ELO (hidden from user)
+- 22 puzzles total, first 3 at ~400 for confidence, "Puzzle X / 22" display
 - Same puzzles for everyone each day (seeded by date)
 - Accurate timer using `Date.now()` reference
 - Chromatic ascending sound (G3→D5) for correct answers
@@ -1106,7 +1106,7 @@ Desktop: Downloads PNG file
 | `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
 
 **Puzzle Distribution:**
-- 20 puzzles with deliberate rating targets
+- 22 puzzles with deliberate rating targets (first 3 at ~400 for confidence)
 - Spans 5 brackets: 0400-0800, 0800-1200, 1200-1600, 1600-2000, 2000-plus
 - Prioritizes tactical themes over endgames
 
@@ -1271,7 +1271,7 @@ description: 'The shortest path to chess improvement'
 |------|-------|-------------|
 | `/` | The Chess Path - Beat Your Friends at Chess | Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
 | `/learn` | Learn Chess Tactics \| Chess Path | Master chess tactics step by step. From beginner to beating your friends. |
-| `/daily-challenge` | Daily Chess Challenge \| Chess Path | Test your skills with 20 puzzles. Compete on the leaderboard. |
+| `/daily-challenge` | Daily Chess Challenge \| Chess Path | Test your skills with 22 puzzles. Compete on the leaderboard. |
 | `/pricing` | Chess Path Premium - Unlimited Tactics Training | Unlock all lessons, remove limits, accelerate your chess improvement. |
 
 ### Files

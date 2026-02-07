@@ -729,7 +729,7 @@ export default function DailyChallengePage() {
   // Loading state while checking if user already completed today
   if (checkingCompletion || userLoading) {
     return (
-      <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-full bg-[#131F24] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           {/* Same brand logo as ready screen for seamless transition */}
           <div className="mb-6">
@@ -759,7 +759,7 @@ export default function DailyChallengePage() {
   // Ready screen
   if (gameState === 'ready' || gameState === 'loading') {
     return (
-      <div className="h-full bg-[#1A2C35] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-full bg-[#131F24] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           {/* Brand logo - stacked, bigger */}
           <div className="mb-6">
@@ -783,7 +783,7 @@ export default function DailyChallengePage() {
           </div>
 
           {/* Fun description - compact */}
-          <div className="bg-[#131F24] rounded-xl p-3 mb-3 text-left space-y-2">
+          <div className="bg-[#1A2C35] rounded-xl p-3 mb-3 text-left space-y-2">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-[#38bdf8]/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-[#38bdf8] font-bold text-xs">5</span>
@@ -873,7 +873,7 @@ export default function DailyChallengePage() {
       : null;
 
     return (
-      <div className="h-full bg-[#0D1A1F] flex flex-col items-center py-4 px-4 overflow-auto">
+      <div className="h-full bg-[#131F24] flex flex-col items-center py-4 px-4 overflow-auto">
         <div className="text-center max-w-sm w-full">
           {/* OG Share Card - same image used for social previews */}
           {(() => {
@@ -1007,9 +1007,9 @@ export default function DailyChallengePage() {
 
           {/* Leaderboard for logged-in users, Login CTA for guests */}
           {user ? (
-            <div className="bg-[#131F24] rounded-xl p-3 mb-4">
+            <div className="bg-[#1A2C35] rounded-xl p-3 mb-4">
               {/* Toggle buttons */}
-              <div className="flex rounded-lg bg-[#0D1A1F] p-1 mb-3">
+              <div className="flex rounded-lg bg-[#131F24] p-1 mb-3">
                 <button
                   onClick={() => setShowMyStanding(false)}
                   className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
@@ -1061,7 +1061,7 @@ export default function DailyChallengePage() {
                     <div
                       key={entry.rank}
                       className={`flex items-center justify-between p-2 rounded-lg ${
-                        entry.isCurrentUser ? 'bg-[#58CC02]/20 border border-[#58CC02]/30' : 'bg-[#0D1A1F]'
+                        entry.isCurrentUser ? 'bg-[#58CC02]/20 border border-[#58CC02]/30' : 'bg-[#131F24]'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1088,7 +1088,7 @@ export default function DailyChallengePage() {
             </div>
           ) : (
             /* Guest Login CTA - shown instead of leaderboard */
-            <div className="bg-[#131F24] rounded-xl p-5 mb-4">
+            <div className="bg-[#1A2C35] rounded-xl p-5 mb-4">
               <div className="text-center">
                 {/* Trophy icon */}
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF9600]/20 to-[#FF6B6B]/20 flex items-center justify-center mx-auto mb-3">
@@ -1124,7 +1124,7 @@ export default function DailyChallengePage() {
 
           {/* Puzzle Review Section */}
           {attemptedPuzzles.length > 0 && (
-            <div className="bg-[#131F24] rounded-xl p-3 mb-4">
+            <div className="bg-[#1A2C35] rounded-xl p-3 mb-4">
               <h2 className="text-sm font-bold text-white mb-2">Review Puzzles</h2>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {attemptedPuzzles.map((puzzle, idx) => (
@@ -1134,7 +1134,7 @@ export default function DailyChallengePage() {
                     className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors ${
                       reviewingPuzzle?.puzzleId === puzzle.puzzleId
                         ? 'bg-[#38bdf8]/20 border border-[#38bdf8]/30'
-                        : 'bg-[#0D1A1F] hover:bg-[#1A2C35]'
+                        : 'bg-[#131F24] hover:bg-[#1A2C35]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -1155,7 +1155,7 @@ export default function DailyChallengePage() {
               {/* Review Board */}
               {reviewingPuzzle && reviewGame && (
                 <div className="mt-3">
-                  <div className="bg-[#0D1A1F] rounded-lg p-2 mb-2">
+                  <div className="bg-[#131F24] rounded-lg p-2 mb-2">
                     <Chessboard
                       options={{
                         position: reviewGame.fen(),
@@ -1171,7 +1171,7 @@ export default function DailyChallengePage() {
                   <div className="flex items-center justify-between gap-2">
                     <button
                       onClick={resetReview}
-                      className="flex-1 py-2 rounded-lg bg-[#0D1A1F] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
+                      className="flex-1 py-2 rounded-lg bg-[#131F24] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
                     >
                       Reset
                     </button>
@@ -1199,7 +1199,7 @@ export default function DailyChallengePage() {
                     </div>
                     <button
                       onClick={closeReview}
-                      className="flex-1 py-2 rounded-lg bg-[#0D1A1F] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
+                      className="flex-1 py-2 rounded-lg bg-[#131F24] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
                     >
                       Close
                     </button>
@@ -1267,7 +1267,7 @@ export default function DailyChallengePage() {
 
   // Playing screen
   return (
-    <div className="h-full bg-[#1A2C35] text-white overflow-hidden flex flex-col">
+    <div className="h-full bg-[#131F24] text-white overflow-hidden flex flex-col">
       {/* Header with stats */}
       <div
         className="px-4 py-2"
@@ -1290,7 +1290,7 @@ export default function DailyChallengePage() {
       </div>
 
       {/* Stats bar - fixed height to prevent layout shift */}
-      <div className="bg-[#131F24] h-10 flex items-center justify-center gap-4">
+      <div className="bg-[#1A2C35] h-10 flex items-center justify-center gap-4">
         {/* Correct counter */}
         <div className="flex items-center gap-1">
           <div className="w-6 h-6 rounded border-2 border-[#58CC02] bg-[#58CC02]/20 flex items-center justify-center">
@@ -1316,7 +1316,7 @@ export default function DailyChallengePage() {
       </div>
 
       {/* Simple puzzle counter */}
-      <div className="bg-[#131F24] h-8 flex items-center justify-center text-sm">
+      <div className="bg-[#1A2C35] h-8 flex items-center justify-center text-sm">
         <span className="text-white font-bold">Puzzle {puzzleIndex + 1}</span>
         <span className="text-gray-500 ml-1">/ {allPuzzles.length}</span>
       </div>
