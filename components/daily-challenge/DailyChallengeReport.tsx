@@ -198,7 +198,7 @@ function CardVariant({
 
   const generateShareText = () => {
     const lines = [
-      `The Chess Path - Daily Challenge`,
+      `The Chess Path - The Daily Rook`,
       formatDate(),
       ``,
       `Solved ${puzzlesSolved} puzzles in ${formatTime(timeMs)}`,
@@ -236,8 +236,8 @@ function CardVariant({
             </div>
             <span className="text-white/70 text-xs">{formatDate()}</span>
           </div>
-          {/* Daily Challenge - centered between header and board */}
-          <div className="text-center text-white font-bold text-xl mb-3">Daily Challenge</div>
+          {/* The Daily Rook - centered between header and board */}
+          <div className="text-center text-white font-bold text-xl mb-3">The Daily Rook</div>
           {/* Chess board - matches stats width */}
           {highestPuzzleFen && (
             <div className="flex justify-center mb-4">
@@ -289,13 +289,13 @@ function Stories1({
       }}
     >
       <div className="relative h-full flex flex-col items-center justify-between py-8 px-5">
-        {/* Header: Logo + Daily Challenge */}
+        {/* Header: Logo + The Daily Rook */}
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
             <ChessPathLogo size={28} />
             <span className="text-white font-bold text-lg">Chess Path</span>
           </div>
-          <div className="text-[#FF9600] font-semibold text-sm tracking-wide">Daily Challenge</div>
+          <div className="text-[#FF9600] font-semibold text-sm tracking-wide">The Daily Rook</div>
           <div className="text-gray-600 text-xs mt-1">{formatDate()}</div>
         </div>
 
@@ -352,12 +352,12 @@ function Stories2({
           <span className="text-white font-bold text-lg">chesspath.app</span>
         </div>
 
-        {/* Daily Challenge - centered between header and board */}
+        {/* The Daily Rook - centered between header and board */}
         <div
           className="px-5 py-2 rounded-full text-sm font-bold mb-4"
           style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
         >
-          <span className="text-white">DAILY CHALLENGE</span>
+          <span className="text-white">THE DAILY ROOK</span>
         </div>
 
         {/* Board - same width as stats */}
@@ -427,7 +427,7 @@ function Stories3({
             className="text-sm font-bold tracking-widest"
             style={{ background: 'linear-gradient(90deg, #FF9600, #FF6B6B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
-            DAILY CHALLENGE
+            THE DAILY ROOK
           </div>
         </div>
 
@@ -493,7 +493,7 @@ function Stories4({
             <ChessPathLogo size={24} />
             <span className="text-white font-bold">Chess Path</span>
           </div>
-          <div className="text-[#FF9600] text-xs font-semibold tracking-wider">DAILY CHALLENGE</div>
+          <div className="text-[#FF9600] text-xs font-semibold tracking-wider">THE DAILY ROOK</div>
         </div>
 
         {/* Board */}
@@ -551,7 +551,7 @@ function Stories5({
             <ChessPathLogo size={28} />
             <div className="text-left">
               <div className="text-white font-bold text-sm leading-tight">Chess Path</div>
-              <div className="text-[#FF9600] text-xs font-semibold">Daily Challenge</div>
+              <div className="text-[#FF9600] text-xs font-semibold">The Daily Rook</div>
             </div>
           </div>
         </div>

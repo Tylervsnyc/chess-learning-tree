@@ -83,7 +83,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-[calc(100vh-56px)] bg-[#131F24] p-4 flex flex-col gap-3">
-      {/* Daily Challenge Card */}
+      {/* The Daily Rook Card */}
       <button
         onClick={() => router.push('/daily-challenge')}
         className="flex items-center gap-5 p-4 rounded-xl text-left transition-transform active:scale-[0.98]"
@@ -94,8 +94,8 @@ export default function HomePage() {
           <ChessPieceIcon piece="n" size={64} />
         </div>
         <div className="flex-1">
-          <div className="text-white/80 text-sm uppercase tracking-wide font-medium">Daily</div>
-          <div className="text-white font-bold text-2xl">Challenge</div>
+          <div className="text-white/80 text-sm uppercase tracking-wide font-medium">The Daily</div>
+          <div className="text-white font-bold text-2xl">Rook</div>
           <div className="text-white/80 text-sm mt-1">5 min • 3 lives</div>
         </div>
       </button>

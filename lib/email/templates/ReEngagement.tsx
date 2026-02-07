@@ -52,7 +52,7 @@ export function ReEngagement({
 
       <Section style={featureList}>
         <Text style={featureItem}>
-          ✓ Fresh daily challenges ready to solve
+          ✓ Fresh Daily Rook puzzles ready to solve
         </Text>
         <Text style={featureItem}>
           ✓ New puzzles based on your skill level

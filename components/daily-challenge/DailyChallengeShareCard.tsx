@@ -156,7 +156,7 @@ function ChessPathLogo({ size = 112 }: { size?: number }) {
 }
 
 /**
- * Share card for Daily Challenge results - sized for Instagram stories (1080x1920)
+ * Share card for Daily Rook results - sized for Instagram stories (1080x1920)
  * Based on Stories2 variant design, scaled up 4x
  */
 export function DailyChallengeShareCard({
@@ -216,7 +216,7 @@ export function DailyChallengeShareCard({
         </span>
       </div>
 
-      {/* Daily Challenge pill */}
+      {/* The Daily Rook pill */}
       <div
         style={{
           padding: '20px 80px',
@@ -228,7 +228,7 @@ export function DailyChallengeShareCard({
           background: 'linear-gradient(135deg, #FF9600, #FF6B6B)',
         }}
       >
-        <span style={{ color: '#ffffff' }}>DAILY CHALLENGE</span>
+        <span style={{ color: '#ffffff' }}>THE DAILY ROOK</span>
       </div>
 
       {/* Date */}

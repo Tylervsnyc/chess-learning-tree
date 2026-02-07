@@ -1,5 +1,5 @@
 /**
- * Generate Daily Challenge Puzzles
+ * Generate Daily Rook Puzzles
  *
  * Creates a JSON file with pre-selected puzzles for the next 90 days.
  * Each day gets 22 puzzles with linear difficulty (400 → 2300 ELO).

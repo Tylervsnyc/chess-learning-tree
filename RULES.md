@@ -19,7 +19,7 @@ Last Updated: 2026-02-05
 9. [Admin Users](#9-admin-users)
 10. [Data Storage](#10-data-storage)
 11. [Streaks](#11-streaks)
-12. [Daily Challenge](#12-daily-challenge)
+12. [The Daily Rook](#12-the-daily-rook)
 13. [Leaderboard](#13-leaderboard)
 14. [Level Tests](#14-level-tests)
 15. [Pages](#15-pages)
@@ -261,7 +261,7 @@ const isAdmin = profile?.is_admin === true;
 ## 11. Streaks
 
 ### How to Maintain Streak:
-Complete **1 lesson OR 1 daily challenge** per day
+Complete **1 lesson OR 1 Daily Rook** per day
 
 ### How Streak Resets:
 Miss a full calendar day (UTC) → streak resets to 0
@@ -277,7 +277,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ---
 
-## 12. Daily Challenge
+## 12. The Daily Rook
 
 ### Header Toggle:
 `[Path] [Daily]` toggle - only shown on `/learn` and `/daily-challenge`
@@ -344,7 +344,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 ### Design:
 | Element | Style |
 |---------|-------|
-| "DAILY CHALLENGE" title | Nunito font, font-black, gradient text (orange→red), in gradient box with orange border |
+| "THE DAILY ROOK" title | Nunito font, font-black, gradient text (orange→red), in gradient box with orange border |
 | Background | `#1A2C35` (lighter dark) |
 | Cards | `#131F24` (darker) |
 | Brand logo | chesspath logo + wordmark above title |
@@ -393,7 +393,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 ## 13. Leaderboard
 
-### Daily Challenge Leaderboard:
+### Daily Rook Leaderboard:
 | Column | Description |
 |--------|-------------|
 | Rank | Position (1-indexed) |
@@ -454,7 +454,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | `/learn` | KEEP | Main curriculum tree |
 | `/lesson/[lessonId]` | KEEP | Puzzle solving |
 | `/level-test/[transition]` | KEEP | Level unlock tests |
-| `/daily-challenge` | KEEP | Daily challenge mode |
+| `/daily-challenge` | KEEP | The Daily Rook mode |
 | `/pricing` | KEEP | Subscription (always accessible) |
 | `/auth/login` | KEEP | Login |
 | `/auth/signup` | KEEP | Signup |
@@ -471,7 +471,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ## 16. Header
 
 ### Scroll Behavior:
-**Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Challenge toggle without losing their place in the curriculum.
+**Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Rook toggle without losing their place in the curriculum.
 
 ### Logo Rules:
 - **Icon**: Colorful rook made of 22 dots (5 columns × 6 rows)
@@ -581,7 +581,7 @@ Animated pixel-art rook appears in the result popup for lessons.
 - Different animation style cycles each wrong answer (5 styles: powerDown, shortCircuit, pixelFade, shrink, signalLoss)
 
 **Not Used In:**
-- Daily Challenge (separate feature)
+- The Daily Rook (separate feature)
 - Level Tests (separate feature)
 
 **Enforced In:**
@@ -1084,7 +1084,7 @@ Desktop: Downloads PNG file
 
 ---
 
-### 30.2 Daily Challenge
+### 30.2 The Daily Rook
 
 **Status:** ✅ Core mechanics complete and tested
 
@@ -1271,7 +1271,7 @@ description: 'The shortest path to chess improvement'
 |------|-------|-------------|
 | `/` | The Chess Path - Beat Your Friends at Chess | Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
 | `/learn` | Learn Chess Tactics \| Chess Path | Master chess tactics step by step. From beginner to beating your friends. |
-| `/daily-challenge` | Daily Chess Challenge \| Chess Path | Test your skills with 22 puzzles. Compete on the leaderboard. |
+| `/daily-challenge` | The Daily Rook \| The Chess Path | Test your skills with 22 puzzles. Compete on the leaderboard. |
 | `/pricing` | Chess Path Premium - Unlimited Tactics Training | Unlock all lessons, remove limits, accelerate your chess improvement. |
 
 ### Files
@@ -1330,7 +1330,7 @@ npx ts-node scripts/maintenance-check.ts --fix  # Auto-fix missing puzzle files
 | Check | What It Validates | Auto-Fix? |
 |-------|-------------------|-----------|
 | **Lesson Puzzles** | Every lesson has puzzle files with sufficient puzzles in rating range | Yes |
-| **Daily Challenge** | All 5 rating bracket files exist and have puzzles | No |
+| **Daily Rook** | All 5 rating bracket files exist and have puzzles | No |
 | **Quip Coverage** | All sections have quip responses | No |
 | **Puzzle File Integrity** | JSON files parse correctly, puzzles have required fields | No |
 | **Lesson ID Uniqueness** | No duplicate lesson IDs across curriculum | No |
@@ -1345,7 +1345,7 @@ Running at: 2026-02-04T12:00:00.000Z
 ✓ Check 1: Lesson Puzzle Availability
   └─ 278 lessons checked, 0 issues
 
-✗ Check 2: Daily Challenge Files
+✗ Check 2: Daily Rook Files
   └─ Missing: 0800-1200.json
 
 ...

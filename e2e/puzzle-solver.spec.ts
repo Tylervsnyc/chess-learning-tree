@@ -218,8 +218,8 @@ test.describe('Puzzle Pages Load Correctly', () => {
   }
 });
 
-test.describe('Daily Challenge', () => {
-  test('daily challenge page loads and can start', async ({ page }) => {
+test.describe('The Daily Rook', () => {
+  test('daily rook page loads and can start', async ({ page }) => {
     await page.goto('/daily-challenge');
 
     // Daily challenge has a start screen first

@@ -68,7 +68,7 @@ const mvpPages = [
 const pantryPages = [
   { name: 'Landing', path: '/', description: 'Public marketing page' },
   { name: 'Home Dashboard', path: '/home', description: 'Feature card navigation' },
-  { name: 'Daily Challenge', path: '/daily-challenge', description: '5-min timed mode with lives' },
+  { name: 'The Daily Rook', path: '/daily-challenge', description: '5-min timed mode with lives' },
   { name: 'Puzzle Viewer', path: '/puzzle/fork', description: 'Browse puzzles by theme' },
   { name: 'Review Tool', path: '/review', description: 'Admin: approve/reject puzzles' },
   { name: 'Flagged Puzzles', path: '/flagged', description: 'Admin: problematic puzzles' },
@@ -126,6 +126,12 @@ function AdminPageContent() {
                 className="text-sm text-gray-400 hover:text-[#58CC02] transition-colors"
               >
                 Difficulty Analyzer
+              </Link>
+              <Link
+                href="/admin/agents"
+                className="text-sm text-gray-400 hover:text-[#CE82FF] transition-colors"
+              >
+                Agent Dashboard
               </Link>
             </div>
 

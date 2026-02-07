@@ -45,12 +45,12 @@ export default function TestGuestDailyPage() {
         <button
           onClick={async () => {
             const shareText = [
-              `Chess Path Daily Challenge`,
+              `The Chess Path - The Daily Rook`,
               `${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
               ``,
               `${puzzlesSolved} puzzles in ${formatTime(timeMs)}`,
               ``,
-              `chesspath.com/daily-challenge`,
+              `chesspath.app/daily-challenge`,
             ].filter(Boolean).join('\n');
 
             if (navigator.share) {

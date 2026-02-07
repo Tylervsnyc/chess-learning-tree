@@ -291,7 +291,7 @@ function FeatureAccessGrid() {
     { name: 'Skip Lessons', free: false, premium: false, admin: true },
     { name: 'Reset Progress', free: false, premium: false, admin: true },
     { name: 'Dev Tools', free: false, premium: false, admin: true },
-    { name: 'Daily Challenge', free: true, premium: true, admin: true },
+    { name: 'The Daily Rook', free: true, premium: true, admin: true },
     { name: 'Workout Mode', free: '15 puzzles', premium: 'Unlimited', admin: 'Unlimited' },
   ];
 

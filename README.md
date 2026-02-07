@@ -60,7 +60,7 @@ app/                        # Next.js pages and API routes
 ├── learn/                 # Main curriculum tree page
 ├── lesson/[lessonId]/     # Puzzle-solving experience
 ├── level-test/[transition]/ # Level unlock tests
-├── daily-challenge/       # Daily challenge mode
+├── daily-challenge/       # The Daily Rook mode
 ├── pricing/               # Subscription plans
 └── admin/                 # Admin tools
 
@@ -115,7 +115,7 @@ types/                     # TypeScript definitions
 | `/learn` | Main curriculum tree |
 | `/lesson/[lessonId]` | Puzzle solving (6 puzzles per lesson) |
 | `/level-test/[transition]` | Level unlock tests (10 puzzles) |
-| `/daily-challenge` | Daily challenge with timer and lives |
+| `/daily-challenge` | The Daily Rook - timed puzzles with lives |
 | `/pricing` | Subscription plans |
 | `/auth/login` | Login |
 | `/auth/signup` | Signup |
@@ -182,7 +182,7 @@ export const LEVELS: LevelConfig[] = [
 
 ---
 
-# The Daily Challenge
+# The Daily Rook
 
 ## Rules
 

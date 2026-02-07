@@ -16,7 +16,7 @@ test.describe('Smoke Tests', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('daily challenge page loads', async ({ page }) => {
+  test('daily rook page loads', async ({ page }) => {
     await page.goto('/daily-challenge');
     await expect(page.locator('body')).toBeVisible();
   });

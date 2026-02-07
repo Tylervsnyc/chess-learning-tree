@@ -22,6 +22,7 @@ Tasks are auto-dispatched to specialized agents. Just describe what you want in 
 | Puzzle content, quips, curriculum, lessons | **Content** | `.claude/agents/content-agent.md` |
 | Tests, verify, check, QA, audit | **QA** | `.claude/agents/qa-agent.md` |
 | Architecture, dependencies, design | **Architect** | `.claude/agents/architect-agent.md` |
+| Sharing, OG images, share cards, viral loops | **Growth** | `.claude/agents/growth-agent.md` |
 | CI/CD, deployment, monitoring, env | **DevOps** | `.claude/agents/devops-agent.md` |
 
 Spawn agents via Task tool with `subagent_type: "general-purpose"`. Prompt: `Read .claude/agents/{type}-agent.md, then execute: TASK: {description}`.
@@ -192,7 +193,7 @@ app/                        # Pages and API routes
 ├── learn/                 # Main curriculum tree
 ├── lesson/[lessonId]/     # Puzzle solving
 ├── level-test/[transition]/ # Level unlock tests
-├── daily-challenge/       # Daily challenge mode
+├── daily-challenge/       # The Daily Rook mode
 components/                 # UI components
 data/                       # Curriculum data, puzzle pools
 hooks/                      # React hooks (progress, user, permissions)

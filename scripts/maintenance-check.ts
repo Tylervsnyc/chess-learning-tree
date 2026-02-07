@@ -308,13 +308,13 @@ function countAvailablePuzzles(lesson: LessonCriteria, levelNum: number): {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHECK 2: DAILY CHALLENGE COVERAGE
+// CHECK 2: DAILY ROOK COVERAGE
 // ═══════════════════════════════════════════════════════════════════════════
 
 function checkDailyChallenge(): CheckResult {
   if (!fs.existsSync(DAILY_CHALLENGE_FILE)) {
     return {
-      name: 'Daily Challenge Coverage',
+      name: 'Daily Rook Coverage',
       passed: false,
       message: 'Daily challenge puzzles file not found',
       details: [`Expected: ${DAILY_CHALLENGE_FILE}`],
@@ -347,7 +347,7 @@ function checkDailyChallenge(): CheckResult {
 
     if (!todayCovered) {
       return {
-        name: 'Daily Challenge Coverage',
+        name: 'Daily Rook Coverage',
         passed: false,
         message: `Today (${today}) has no puzzles!`,
         details,
@@ -356,7 +356,7 @@ function checkDailyChallenge(): CheckResult {
 
     if (daysRemaining < 7) {
       return {
-        name: 'Daily Challenge Coverage',
+        name: 'Daily Rook Coverage',
         passed: false,
         message: `Only ${daysRemaining} days of coverage remaining - regenerate soon!`,
         details,
@@ -365,7 +365,7 @@ function checkDailyChallenge(): CheckResult {
 
     if (todayPuzzles < 7) {
       return {
-        name: 'Daily Challenge Coverage',
+        name: 'Daily Rook Coverage',
         passed: false,
         message: `Today only has ${todayPuzzles} puzzles (need 7+)`,
         details,
@@ -373,14 +373,14 @@ function checkDailyChallenge(): CheckResult {
     }
 
     return {
-      name: 'Daily Challenge Coverage',
+      name: 'Daily Rook Coverage',
       passed: true,
       message: `${daysRemaining} days of coverage, ${todayPuzzles} puzzles for today`,
       details,
     };
   } catch (e) {
     return {
-      name: 'Daily Challenge Coverage',
+      name: 'Daily Rook Coverage',
       passed: false,
       message: `Failed to parse daily challenge file: ${e}`,
     };
@@ -851,7 +851,7 @@ async function main() {
     generateMissingPuzzleFiles(lessonCheck.issues);
   }
 
-  printHeader('2. DAILY CHALLENGE COVERAGE');
+  printHeader('2. DAILY ROOK COVERAGE');
   const dailyResult = checkDailyChallenge();
   results.push(dailyResult);
   printResult(dailyResult);
