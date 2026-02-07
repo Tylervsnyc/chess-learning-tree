@@ -18,7 +18,6 @@ import {
 } from '@/lib/sounds';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { generateDailyChallengeShareText } from '@/lib/share/generate-share-text';
 import { ShareEvents } from '@/lib/analytics/posthog';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 
@@ -139,8 +138,6 @@ export default function DailyChallengePage() {
   const [showMyStanding, setShowMyStanding] = useState(true);
 
   // Share state
-  const [textCopied, setTextCopied] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [cardSharing, setCardSharing] = useState(false);
 
   // Timer ref
@@ -920,159 +917,94 @@ export default function DailyChallengePage() {
         {gameState === 'finished' && (
           <div className="px-4 py-2">
             <div className="max-w-sm mx-auto w-full">
-              {/* Score summary */}
-              <div className="text-center mb-2">
-                <h2 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]">
+              {/* Score card — matches share card design */}
+              <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
+                <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600] mb-2">
                   {puzzlesSolved === allPuzzles.length ? 'Perfect Run!' : lives <= 0 ? 'Game Over' : 'Time\'s Up!'}
                 </h2>
-                <div className="flex items-baseline justify-center gap-1 mt-1">
-                  <span className="text-3xl font-black text-[#FF9600]">{puzzlesSolved}</span>
-                  <span className="text-sm font-bold text-[#6b7c8a]">/ {allPuzzles.length || 22} puzzles</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-5xl font-black text-[#FF9600]">{puzzlesSolved}</span>
+                    <span className="text-lg font-bold text-[#FF9600]/35">/{allPuzzles.length || 22}</span>
+                  </div>
+                  {globalPct !== null && globalPct > 0 && (
+                    <div className="px-3 py-1 rounded-full" style={{ background: 'rgba(88,204,2,0.12)' }}>
+                      <span className="text-sm font-extrabold text-[#46A302]">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  {userEntry?.displayName && (
+                    <>
+                      <span className="text-base font-bold text-[#2A3C45]">{userEntry.displayName}</span>
+                      <span className="w-1 h-1 rounded-full bg-black/15 inline-block" />
+                    </>
+                  )}
+                  <span className="text-base font-semibold text-[#2A3C45]/40">in {formatTime(completionTimeMs)}</span>
                 </div>
               </div>
 
-              {/* Share buttons */}
-              <div className="flex gap-2 mb-2">
-                {/* Share Card — shares the V3 OG image */}
-                <button
-                  onClick={async () => {
-                    if (cardSharing) return;
-                    setCardSharing(true);
-                    ShareEvents.shareClicked('daily_challenge', 'image');
-                    try {
-                      const ogParams = new URLSearchParams({
-                        score: String(puzzlesSolved),
-                        time: String(completionTimeMs),
-                        variant: '3',
-                      });
-                      if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
-                      if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-                      if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
-                      const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
-                      ogParams.set('results', resultsStr);
-
-                      const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
-                      const blob = await res.blob();
-                      const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
-
-                      if (typeof navigator !== 'undefined' && 'share' in navigator && navigator.canShare?.({ files: [file] })) {
-                        await navigator.share({
-                          files: [file],
-                          title: 'The Daily Rook',
-                          text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
-                        });
-                        ShareEvents.shareCompleted('daily_challenge', 'native_image');
-                      } else {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'daily-rook.png';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        ShareEvents.shareCompleted('daily_challenge', 'download');
-                      }
-                    } catch (err) {
-                      if (err instanceof Error && err.name === 'AbortError') { /* user cancelled */ }
-                    } finally {
-                      setCardSharing(false);
-                    }
-                  }}
-                  disabled={cardSharing}
-                  className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98] disabled:opacity-70"
-                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
-                >
-                  {cardSharing ? (
-                    <span className="animate-pulse">Sharing...</span>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Share Card
-                    </>
-                  )}
-                </button>
-
-                {/* Copy Rook — emoji rook text */}
-                <button
-                  onClick={async () => {
-                    ShareEvents.shareClicked('daily_challenge', 'text');
-                    const shareText = generateDailyChallengeShareText({
-                      puzzleResults,
-                      allPuzzleIds: allPuzzles.map(p => p.puzzleId),
-                      puzzlesSolved,
-                      totalPuzzles: allPuzzles.length,
-                      timeMs: completionTimeMs,
-                      beatPct: globalPct,
-                    });
-                    try {
-                      await navigator.clipboard.writeText(shareText);
-                      setTextCopied(true);
-                      ShareEvents.shareCompleted('daily_challenge', 'clipboard');
-                      setTimeout(() => setTextCopied(false), 2000);
-                    } catch {
-                      // Silent fail
-                    }
-                  }}
-                  className="flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98]"
-                  style={{ background: 'white', border: '1px solid #c5d4de', color: '#2A3C45' }}
-                >
-                  {textCopied ? (
-                    <>
-                      <svg className="w-4 h-4 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-[#58CC02]">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4 text-[#6b7c8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                      </svg>
-                      Copy Rook
-                    </>
-                  )}
-                </button>
-
-                {/* Link icon */}
-                <button
-                  onClick={async () => {
-                    ShareEvents.shareClicked('daily_challenge', 'link');
-                    const params = new URLSearchParams({
+              {/* Share Results button */}
+              <button
+                onClick={async () => {
+                  if (cardSharing) return;
+                  setCardSharing(true);
+                  ShareEvents.shareClicked('daily_challenge', 'image');
+                  try {
+                    const ogParams = new URLSearchParams({
                       score: String(puzzlesSolved),
                       time: String(completionTimeMs),
+                      variant: '3',
                     });
-                    if (userEntry?.rank) params.set('rank', String(userEntry.rank));
-                    if (totalParticipants > 0) params.set('total', String(totalParticipants));
-                    if (userEntry?.displayName) params.set('name', userEntry.displayName);
+                    if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
+                    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
+                    if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
                     const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
-                    params.set('results', resultsStr);
-                    if (currentStreak > 0) params.set('streak', String(currentStreak));
+                    ogParams.set('results', resultsStr);
 
-                    const shareUrl = `https://chesspath.app/daily-challenge?${params.toString()}`;
-                    try {
-                      await navigator.clipboard.writeText(shareUrl);
-                      setLinkCopied(true);
-                      ShareEvents.shareCompleted('daily_challenge', 'clipboard_link');
-                      setTimeout(() => setLinkCopied(false), 2000);
-                    } catch {
-                      // Silent fail
+                    const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
+                    if (!res.ok) throw new Error('Failed to generate share card');
+                    const blob = await res.blob();
+                    const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
+
+                    if (typeof navigator !== 'undefined' && 'share' in navigator && navigator.canShare?.({ files: [file] })) {
+                      await navigator.share({
+                        files: [file],
+                        title: 'The Daily Rook',
+                        text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
+                      });
+                      ShareEvents.shareCompleted('daily_challenge', 'native_image');
+                    } else {
+                      // Fallback: download the image
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'daily-rook.png';
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      ShareEvents.shareCompleted('daily_challenge', 'download');
                     }
-                  }}
-                  className="py-2.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98]"
-                  style={{ background: 'white', border: '1px solid #c5d4de' }}
-                >
-                  {linkCopied ? (
-                    <svg className="w-4 h-4 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  } catch (err) {
+                    if (err instanceof Error && err.name === 'AbortError') { /* user cancelled */ }
+                  } finally {
+                    setCardSharing(false);
+                  }
+                }}
+                disabled={cardSharing}
+                className="w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-70 mb-2"
+                style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+              >
+                {cardSharing ? (
+                  <span className="animate-pulse">Generating...</span>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-[#6b7c8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  )}
-                </button>
-              </div>
+                    Share Results
+                  </>
+                )}
+              </button>
 
               {/* Leaderboard for logged-in users, Login CTA for guests */}
               {user ? (
