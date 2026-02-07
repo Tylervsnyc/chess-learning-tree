@@ -48,13 +48,14 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | Permissions/limits | `hooks/usePermissions.ts` |
 | Lesson unlocking | `hooks/useProgress.ts` → `isLessonUnlocked()` |
 | Current position | `hooks/useProgress.ts` → `currentPosition` |
+| Puzzle utilities | `lib/puzzle-utils.ts` |
 | Puzzle selection | `lib/puzzle-selector.ts` |
 | Sound effects | `lib/sounds.ts` |
 | Curriculum data | `lib/curriculum-registry.ts` |
 | Feature flags | `lib/config/feature-flags.ts` |
 | Database schema | `supabase/schema.sql` |
 | Daily puzzles | `data/daily-challenge-puzzles.json` |
-| Share card (story) | `app/api/og/daily-challenge/route.tsx`, `app/test-story-cards/page.tsx` |
+| Share card (story) | `app/api/og/daily-challenge/route.tsx` → `renderStoryLayout()` **LOCKED DESIGN** |
 | Rook blocks | `lib/daily-rook-blocks.ts` |
 | Quips | `data/staging/v2-puzzle-responses.ts` |
 

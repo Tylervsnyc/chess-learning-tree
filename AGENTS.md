@@ -1,6 +1,6 @@
 # AGENTS.md - Parallel Development with Claude Code
 
-Nine specialized agents handle different parts of the codebase. They're dispatched automatically — just describe what you want in plain English.
+Ten specialized agents handle different parts of the codebase. They're dispatched automatically — just describe what you want in plain English.
 
 ---
 
@@ -27,10 +27,11 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 | **Frontend** | Components, pages, styling, a11y | `components/` (except `puzzle/`), `app/` (pages only), `app/globals.css`, `public/` | `.claude/agents/frontend-agent.md` |
 | **Backend** | API routes (except progress), hooks (except useProgress), server logic | `app/api/` (except `progress/`), `lib/` (except chess/sync files), `hooks/` (except `useProgress.ts`), `middleware.ts` | `.claude/agents/backend-agent.md` |
 | **Database** | Schema, migrations, seed data | `supabase/`, `scripts/migrations/` | `.claude/agents/database-agent.md` |
-| **Chess** | Puzzle processing, board interaction, move validation, sounds | `lib/puzzle-utils.ts`, `lib/chess-utils.ts`, `lib/sounds.ts`, `lib/puzzle-selector.ts`, `components/puzzle/` | `.claude/agents/chess-agent.md` |
+| **Chess** | Puzzle processing, board interaction, move validation, sounds | `lib/puzzle-utils.ts`, `lib/sounds.ts`, `lib/puzzle-selector.ts`, `components/puzzle/` | `.claude/agents/chess-agent.md` |
 | **Sync** | Progress data flow, merge logic, race conditions | `lib/progress-sync.ts`, `hooks/useProgress.ts`, `app/api/progress/` | `.claude/agents/sync-agent.md` |
 | **QA** | Tests, verification, coverage analysis | `e2e/`, `__tests__/`, `scripts/test-*` | `.claude/agents/qa-agent.md` |
 | **Content** | Curriculum, puzzles, quips, lesson definitions | `data/`, `lib/curriculum-registry.ts` | `.claude/agents/content-agent.md` |
+| **Growth** | Sharing flows, OG images, share cards, viral loops | `lib/share/`, `components/share/`, `components/daily-challenge/DailyChallengeShareCard.tsx`, `app/api/og/`, `app/test-share*/` | `.claude/agents/growth-agent.md` |
 | **DevOps** | CI/CD, deployment, monitoring, hooks | `.github/`, `.claude/hooks/`, `vercel.json`, `.env.example` | `.claude/agents/devops-agent.md` |
 
 ---
@@ -42,6 +43,7 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 ├── app/
 │   ├── api/
 │   │   ├── progress/        → Sync Agent
+│   │   ├── og/              → Growth Agent
 │   │   └── everything else  → Backend Agent
 │   ├── */page.tsx           → Frontend Agent
 │   ├── globals.css          → Frontend Agent
@@ -49,6 +51,8 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 │
 ├── components/
 │   ├── puzzle/              → Chess Agent
+│   ├── share/               → Growth Agent
+│   ├── daily-challenge/DailyChallengeShareCard.tsx → Growth Agent
 │   └── everything else      → Frontend Agent
 │
 ├── data/                    → Content Agent
@@ -59,11 +63,11 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 │
 ├── lib/
 │   ├── puzzle-utils.ts      → Chess Agent
-│   ├── chess-utils.ts       → Chess Agent
 │   ├── sounds.ts            → Chess Agent
 │   ├── puzzle-selector.ts   → Chess Agent
 │   ├── progress-sync.ts     → Sync Agent
 │   ├── curriculum-registry.ts → Content Agent
+│   ├── share/               → Growth Agent
 │   └── everything else      → Backend Agent
 │
 ├── supabase/                → Database Agent
@@ -79,16 +83,17 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 ## Parallel Safety Matrix
 
 ```
-            Architect  Frontend  Backend  Database  Chess  Sync   QA    Content  DevOps
-Architect      --       SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE
-Frontend      SAFE        --      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE
-Backend       SAFE      SAFE        --     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE
-Database      SAFE      SAFE      SAFE       --    SAFE   WARN   SAFE    SAFE    SAFE
-Chess         SAFE      SAFE      SAFE     SAFE      --   SAFE   SAFE    SAFE    SAFE
-Sync          SAFE      SAFE      SAFE     WARN    SAFE     --   SAFE    SAFE    SAFE
-QA            SAFE      SAFE      SAFE     SAFE    SAFE   SAFE     --    SAFE    SAFE
-Content       SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE      --    SAFE
-DevOps        SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE      --
+            Architect  Frontend  Backend  Database  Chess  Sync   QA    Content  Growth  DevOps
+Architect      --       SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE    SAFE
+Frontend      SAFE        --      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE    SAFE
+Backend       SAFE      SAFE        --     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE    SAFE
+Database      SAFE      SAFE      SAFE       --    SAFE   WARN   SAFE    SAFE    SAFE    SAFE
+Chess         SAFE      SAFE      SAFE     SAFE      --   SAFE   SAFE    SAFE    SAFE    SAFE
+Sync          SAFE      SAFE      SAFE     WARN    SAFE     --   SAFE    SAFE    SAFE    SAFE
+QA            SAFE      SAFE      SAFE     SAFE    SAFE   SAFE     --    SAFE    SAFE    SAFE
+Content       SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE      --    SAFE    SAFE
+Growth        SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE      --    SAFE
+DevOps        SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE    SAFE      --
 ```
 
 **Only Database + Sync is WARN** (schema changes need sync pipeline updates). Everything else is safe for parallel execution.
@@ -102,6 +107,8 @@ DevOps        SAFE      SAFE      SAFE     SAFE    SAFE   SAFE   SAFE    SAFE   
 - Chess + Content (Chess processes puzzles, Content defines them)
 - Chess + Sync (completely different domains)
 - Content + Database (clear boundary)
+- Growth + Frontend (Growth builds share components, Frontend integrates them into pages)
+- Growth + Content (Growth handles share copy, Content handles curriculum copy)
 
 ### When You See WARN
 Run agents **sequentially**, or split the task so each agent modifies distinct files.
@@ -129,10 +136,11 @@ Examples:
 3. **Backend** next (server logic that uses schema)
 4. **Chess** next (puzzle logic that API routes call)
 5. **Content** next (data that features depend on)
-6. **Frontend** next (UI on top of everything)
-7. **DevOps** anytime (infrastructure is independent)
-8. **QA** doesn't merge (test files only)
-9. **Architect** doesn't merge (plans/ADRs only)
+6. **Growth** next (share components that pages reference)
+7. **Frontend** next (UI on top of everything)
+8. **DevOps** anytime (infrastructure is independent)
+9. **QA** doesn't merge (test files only)
+10. **Architect** doesn't merge (plans/ADRs only)
 
 ---
 

@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-05
+Last Updated: 2026-02-07
 
 ---
 
@@ -287,7 +287,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 |------|-------|
 | Timer | 5 minutes |
 | Lives | 3 (3 wrong = out) |
-| Puzzles | 20 total |
+| Puzzles | 22 total |
 | Difficulty | Linear: 400 → 2300 ELO, ~100 per step (hidden from user) |
 | Correct answer | Advance to next puzzle |
 | Wrong answer | Lose a life, advance to next puzzle |
@@ -295,7 +295,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 | **Once per day** | Users can only play once per day. Returning shows results. |
 
 ### How It Works:
-- Display shows "Puzzle X / 20" (no ELO shown to users)
+- Display shows "Puzzle X / 22" (no ELO shown to users)
 - Puzzles get linearly harder behind the scenes
 - Each puzzle targets ~100 ELO higher than the last (400, 500, 600, ..., 2300)
 - No two consecutive puzzles share the same primary theme
@@ -1037,110 +1037,71 @@ When adding Level N:
 
 ## 30. Work In Progress (WIP)
 
-**Last updated: 2026-02-02**
+**Last updated: 2026-02-07**
 
 This section tracks features currently being tested on localhost:3000 before pushing to production.
 
-### 30.1 Share Feature
+### 30.1 Share System
 
-**Status:** ✅ Complete - PNG generation working
+**Status:** ✅ Complete — server-side OG image generation
 
-**What it does:**
-- Generates a shareable PNG image for any puzzle
+**Two sharing systems:**
+
+**A. Daily Rook Story Card** (9:16, 1080×1920 — see Section 31 for full spec)
+- Server-side OG route renders card → client fetches as blob → Web Share API or download
+- Pre-fetched on game finish for instant sharing when user taps button
+- Entry points: "Share Card" button, "Copy Rook" (emoji text), link icon (clipboard URL)
+
+**B. Puzzle Share Card** (1:1, 1080×1080)
+- Client-side html-to-image generation
 - Shows puzzle position with "I SOLVED this tricky puzzle" + "SWIPE TO SEE THE SOLUTION"
-- Designed for Instagram/Twitter virality
-
-**User Flow:**
-```
-User solves puzzle
-    ↓
-Green "Correct!" popup appears with SHARE button
-    ↓
-Tap Share → Image generates (~2-3 seconds)
-    ↓
-Mobile: Native share sheet (Instagram, Twitter, Messages, etc.)
-Desktop: Downloads PNG file
-```
-
-**Where Share Button Appears:**
-1. **Puzzle success popup** - After solving any puzzle in a lesson (primary entry point)
-2. **Daily challenge review** - User can pick their favorite puzzle to share after finishing
-
-**Design Details:**
-- Cards have 3D layered effect on chessboard (colored border + offset shadows)
-- Corner triangle accents (top-right, bottom-left) for stylized look
-- Green accent (#58CC02)
-- CTA buttons have 3D shadow effect
+- Entry point: Puzzle success popup share button
 
 **Files:**
 | File | Purpose |
 |------|---------|
-| `components/share/ShareButton.tsx` | Button component, handles generation flow |
-| `components/share/PuzzleShareCard.tsx` | Static image card design |
-| `lib/share/generate-puzzle-image.ts` | PNG generation with html-to-image |
-| `app/test-share/page.tsx` | Test page for previewing share card |
+| `app/api/og/daily-challenge/route.tsx` | Daily Rook story card (server-side) |
+| `app/api/og/lesson/route.tsx` | Lesson share card (server-side) |
+| `components/share/ShareButton.tsx` | Puzzle share button + generation trigger |
+| `components/share/PuzzleShareCard.tsx` | Puzzle image card design |
+| `lib/share/generate-puzzle-image.ts` | Puzzle card → PNG (client-side) |
+| `lib/share/generate-share-text.ts` | Emoji rook text for clipboard |
+| `lib/share/piece-svgs.ts` | SVG chess pieces for OG images |
 
-**To test:** Visit `/test-share`
+**Test pages:** `/test-share` (puzzles), `/test-story-cards` (Daily Rook)
 
 ---
 
 ### 30.2 The Daily Rook
 
-**Status:** ✅ Core mechanics complete and tested
+**Status:** ✅ Complete — full flow with sharing, leaderboard, rook visualization
 
-**What it does:**
-- Timed puzzle sprint (5 minutes, 3 lives)
-- Progressive difficulty: 400 → 2300 ELO (hidden from user)
-- 22 puzzles total, first 3 at ~400 for confidence, "Puzzle X / 22" display
-- Same puzzles for everyone each day (seeded by date)
-- Accurate timer using `Date.now()` reference
-- Chromatic ascending sound (G3→D5) for correct answers
-- Leaderboard with Top 10 and "My Standing" views
-- Review mode to replay puzzles after finishing
+All features implemented and tested:
+- [x] Leaderboard API works with real user data
+- [x] Score recording to `daily_challenge_results` table
+- [x] Share button on results screen (3 share options)
+- [x] Same puzzles for different users on same day (date-seeded)
+- [x] Split-screen rook visualization (DailyRookDisplay component)
+- [x] Pre-fetched share image for instant sharing
 
-**Files:**
-| File | Purpose |
-|------|---------|
-| `app/daily-challenge/page.tsx` | Main game UI (ready/playing/finished screens) |
-| `app/api/daily-challenge/puzzles/route.ts` | Returns seeded puzzles for today |
-| `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
-
-**Puzzle Distribution:**
-- 22 puzzles with deliberate rating targets (first 3 at ~400 for confidence)
-- Spans 5 brackets: 0400-0800, 0800-1200, 1200-1600, 1600-2000, 2000-plus
-- Prioritizes tactical themes over endgames
+**Files:** See Section 12 for full spec.
 
 **To test:**
-- Visit `/daily-challenge`
+- Visit `/daily-challenge` — full flow: start → solve → finish → share
 - Use `?testSeed=123` to get different puzzle sets for testing
-
-**TODO:**
-- [ ] Verify leaderboard API works with real user data
-- [ ] Test score recording to `daily_challenge_results` table
-- [ ] Add share button to results screen
-- [ ] Verify same puzzles for different users on same day
 
 ---
 
 ### 30.3 Header Buttons
 
-**Status:** Styling finalized
+**Status:** ✅ Complete
 
-**What it does:**
-- Learn/Path button: always green, bottom shadow when active, faded when inactive (shown for ALL users)
-- Daily button: always blue with shimmer animation, bottom shadow when active, faded when inactive (shown for ALL users)
-- Premium button (gradient gold) for non-premium users
-- Signup button for logged-out users (no separate Login button - login link on signup page)
-- Logout button for logged-in users
+All features implemented:
+- [x] Learn/Daily buttons shown for ALL users (logged in + logged out)
+- [x] Premium button hides for premium/admin users
+- [x] Single-word labels, no text wrapping on mobile
 
 **File:** `components/layout/NavHeader.tsx`
-
-**To test:** Check header on various pages while logged in/out
-
-**TODO:**
-- [ ] Verify Premium button hides for premium/admin users
-- [ ] Test button sizing on various mobile screens
-- [x] Learn/Daily buttons now shown for logged-out users
 
 ---
 
@@ -1150,17 +1111,10 @@ These pages exist for design exploration but aren't production features yet:
 
 | Page | Purpose |
 |------|---------|
-| `/test-share` | Share asset preview |
+| `/test-share` | Puzzle share card preview |
+| `/test-story-cards` | Daily Rook story card preview |
 | `/test-level-designs` | Level design exploration |
-| `/test-theme-sankey` | Theme visualization |
-
----
-
-### 30.5 Tomorrow's TODOs (2026-02-03)
-
-**LET'S GO. The Chess Path is about to be UNSTOPPABLE. Money by EOM. No question.**
-
-- [ ] Increase quip effectiveness/specificity - Make quips more targeted to specific puzzle themes and situations. Time to make these quips HIT DIFFERENT.
+| `/test-share-cards` | Share card variations |
 
 ---
 
@@ -1169,38 +1123,38 @@ These pages exist for design exploration but aren't production features yet:
 When resuming work:
 
 1. **Start dev server:** `npm run dev`
-2. **Test share feature:** `/test-share` - try generating PNG
-3. **Test daily challenge:** `/daily-challenge` - full flow: start → solve → finish
-4. **Test header:** Check logged in vs logged out states
+2. **Test Daily Rook:** `/daily-challenge` — full flow: start → solve → finish → share
+3. **Test share cards:** `/test-story-cards` — verify OG image renders
+4. **Test puzzle sharing:** `/test-share` — try generating PNG
 5. **Check console:** Look for any errors during testing
 
 ---
 
 ## 31. Share Card — "The Daily Rook" Story Card
 
-**Status:** ✅ Complete
+**Status:** ✅ Complete — LOCKED DESIGN (approved 2026-02-07)
 
-**This is THE ONLY share card format for Chess Path results.** All sharing (Daily Rook, lessons, puzzles) uses this layout.
+**This is THE ONLY share card format for Daily Rook results. DO NOT CHANGE this layout without explicit approval.**
 
 ### Format
 
-**Size:** 9:16 (1080×1920) — Instagram Stories / Reels
+**Size:** 9:16 (1080×1920) — Instagram Stories / texting / Reels
 
-### Layout (top to bottom)
+### Layout (top to bottom, all content 936px wide)
 
-1. **Gradient bar** — `linear-gradient(90deg, #FF9600, #FF6B6B, #A560E8, #1CB0F6)` — 4px
-2. **chesspath logo** — tiny rook icon + "chesspath" wordmark
-3. **"THE DAILY ROOK" title** — gradient badge (`#FF9600` → `#FF6B6B`), tracking-widest
-4. **Tagline** — *"Build the Rook. Improve at Chess."* — italic, `#6b7c8a`
-5. **Date** — e.g. "Feb 7, 2026" — `#6b7c8a`, 10px
-6. **Rule pills** — 4 colored pills: "22 puzzles" (`#1CB0F6`), "5 min" (`#FF9600`), "3 lives" (`#FF6B6B`), "Easy→Hard" (`#A560E8`)
-7. **Results card** — white rounded card, "Score + Divider" layout (see below)
-8. **Rook grid** — 22-block rook shape, colored blocks for correct, gray for wrong, fills remaining space
-9. **Footer** — "chesspath.app" subtle text
+1. **Gradient bar** — `linear-gradient(90deg, #FF9600, #FF6B6B, #A560E8, #1CB0F6)` — 8px
+2. **chesspath logo** — rook icon (12px blocks) + "chesspath" wordmark (28px)
+3. **"THE DAILY ROOK" title** — gradient pill (`#FF9600` → `#FF6B6B` → `#FF9600`), 42px, font-black, letterSpacing 6, border `rgba(255,150,0,0.3)`, compact padding (14px vertical)
+4. **Tagline** — *"Build the Rook. Improve at Chess."* — 26px, font-black (900), italic, `#6b7c8a`
+5. **Date** — e.g. "Feb 7, 2026" — 20px, `#6b7c8a`
+6. **Rule pills** — 4 equal-width pills in a row: "22 puzzles" (`#1CB0F6`), "5 min" (`#FF9600`), "3 lives" (`#FF6B6B`), "Easy → Hard" (`#A560E8`) — text centered both axes, 22px font-black
+7. **Results card** — white rounded card (24px radius), "Score + Divider" layout (see below)
+8. **Rook grid** — 22-block rook shape (130px blocks, 143px spacing), tight below card (32px gap), colored for correct, gray for wrong
+9. **Footer** — "chesspath.app" subtle text, pushed to bottom
 
 ### Results Card Layout: "Score + Divider"
 
-White card with `border-radius: 12px`, subtle shadow. Three columns:
+White card, full 936px width, `border-radius: 24px`, subtle shadow + border.
 
 ```
 ┌────────────────────────────────────────┐
@@ -1209,34 +1163,48 @@ White card with `border-radius: 12px`, subtle shadow. Three columns:
 └────────────────────────────────────────┘
 ```
 
-- **Left:** Score number (3xl, `#FF9600`, font-black) + "SOLVED" label (9px, `#2A3C45/50`)
-- **Divider:** 1px vertical line (`#dce8f0`)
-- **Right:** Two rows — name + hearts top, time + beat% bottom
+- **Left:** Score number (72px, `#FF9600`, font-black) + "SOLVED" label (18px, `#2A3C45/50`)
+- **Divider:** 2px vertical line (`#dce8f0`)
+- **Right:** Two rows:
+  - Row 1: Name (32px, font-800, `#2A3C45`) + hearts (28px, gap 6)
+  - Row 2: Time (24px, `#6b7c8a`) + "Beat X%" (26px, font-900, `#46A302`)
 
 ### Background
 
 Light theme: `#eef6fc` (matches Daily Rook page)
 
+### Exact Sizes (DO NOT CHANGE)
+
+| Element | Size | Weight |
+|---------|------|--------|
+| Title text | 42px | 900 |
+| Tagline | 26px | 900 |
+| Rule pills | 22px | 800 |
+| Score number | 72px | 900 |
+| Player name | 32px | 800 |
+| Beat % | 26px | 900 |
+| Rook blocks | 130px | — |
+| Content width | 936px | — |
+
 ### Files
 
 | File | Purpose |
 |------|---------|
-| `app/api/og/daily-challenge/route.tsx` | Server-side OG image generation |
-| `app/test-story-cards/page.tsx` | Test page with mockups |
-| `lib/share/generate-share-text.ts` | Emoji rook text for clipboard |
+| `app/api/og/daily-challenge/route.tsx` | **THE** server-side story card generation (`renderStoryLayout`) |
+| `app/test-share-preview/page.tsx` | Preview page — generate and view the exact share image |
+| `app/test-story-cards/page.tsx` | Original mockups (reference only, not used for generation) |
 | `lib/daily-rook-blocks.ts` | Rook block positions + colors |
-| `components/daily-challenge/DailyRookDisplay.tsx` | Interactive rook display |
 
 ### Test Page
 
-`/test-story-cards` — Preview story card design
+`/test-share-preview` — Generate and preview the exact OG story image
 
 ### Generation
 
-1. OG route renders server-side at 1080×1920 via `format=story` param
+1. `renderStoryLayout()` in OG route renders server-side at 1080×1920 via `format=story` param
 2. Image is **pre-fetched** when game finishes (cached in ref for instant sharing)
 3. Re-fetched when leaderboard data arrives (to include rank/percentage)
-4. On "Share Results" tap → Web Share API (mobile share sheet) or download fallback (desktop)
+4. On "Share Results" tap → `navigator.share()` (mobile share sheet) or download fallback (desktop)
 
 ### API Parameters
 

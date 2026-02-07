@@ -86,6 +86,18 @@ Even after fixing the merge strategy, users saw a flash to 1.1.1 before landing 
 When fixing the duplicate "Level X:" prefix in level cards, the curriculum data files were modified locally but never staged/committed. Reading the local files showed clean data, but production still had the old data.
 → **New rule:** After making a fix, always run `git diff` (unstaged) to check if ALL changed files were included in the commit. Don't trust `Read` tool output alone.
 
+### Lesson: 2026-02-07 - Duplicated puzzle processing logic across 7+ files diverged silently
+Seven API routes and page components each had their own inline `processPuzzle` / `normalizeMove` / `isCorrectMove` logic. Over time these copies drifted — some handled edge cases (checkmate acceptance, promotion) while others didn't. Consolidating into `lib/puzzle-utils.ts` removed ~370 lines and fixed 3 hidden bugs.
+→ **New rule:** When you find the same logic inlined in multiple files, consolidate it into a shared utility FIRST before adding features. Duplicated logic will always drift.
+
+### Lesson: 2026-02-07 - Share button felt slow because image was generated on tap
+The original share flow generated the image when the user tapped "Share" (~2-3 seconds). Users would tap, wait, wonder if it worked. Pre-fetching the share image when the game finishes (in the background) makes the share button feel instant.
+→ **New rule:** For share/export features, start generating the asset as soon as the data is final (e.g., game over), not when the user taps the share button. Use a ref to cache the result.
+
+### Lesson: 2026-02-07 - Security audit found 5 API routes missing input validation
+API routes trusted client data without validation — unsanitized strings in SQL-adjacent contexts, missing auth checks on admin routes, no CRON_SECRET verification on cron endpoints. None had been exploited, but all were exploitable.
+→ **New rule:** Every API route must validate inputs at the boundary: check auth, sanitize strings, verify secrets on cron routes, and use parameterized queries. Don't trust client data even for "internal" routes.
+
 ---
 
 *Add new lessons at the bottom. Follow the format above.*

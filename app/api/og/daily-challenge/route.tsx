@@ -402,6 +402,8 @@ function renderLayout5({ results, score, timeFormatted, globalPct, name }: Layou
 function renderStoryLayout({ results, score, timeFormatted, globalPct, name }: LayoutProps) {
   const lives = results.filter(r => !r).length;
   const heartsRemaining = Math.max(0, 3 - lives);
+  // Content width — pills, title, and results card all share this width
+  const contentWidth = 936;
 
   return (
     <div style={{
@@ -418,23 +420,26 @@ function renderStoryLayout({ results, score, timeFormatted, globalPct, name }: L
       <div style={{ position: 'absolute', top: 0, left: 0, width: 1080, height: 8, background: 'linear-gradient(90deg, #FF9600, #FF6B6B, #A560E8, #1CB0F6)', display: 'flex' }} />
 
       {/* Content */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 72px 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 72px 0', width: '100%' }}>
         {/* Logo */}
         {renderSmallLogo(12, 28)}
 
-        {/* Title pill */}
+        {/* Title pill — compact, flush with content width */}
         <div style={{
           marginTop: 40,
-          padding: '18px 64px',
+          width: contentWidth,
+          padding: '14px 0',
           borderRadius: 16,
           border: '2px solid rgba(255,150,0,0.3)',
           background: 'linear-gradient(135deg, rgba(255,150,0,0.1), rgba(255,107,107,0.1))',
           display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
           <span style={{
-            fontSize: 36,
+            fontSize: 42,
             fontWeight: 900,
-            letterSpacing: 4,
+            letterSpacing: 6,
             backgroundImage: 'linear-gradient(90deg, #FF9600, #FF6B6B, #FF9600)',
             backgroundClip: 'text',
             color: 'transparent',
@@ -442,34 +447,41 @@ function renderStoryLayout({ results, score, timeFormatted, globalPct, name }: L
         </div>
 
         {/* Tagline */}
-        <span style={{ fontSize: 22, fontWeight: 600, color: '#6b7c8a', fontStyle: 'italic', marginTop: 12 }}>
+        <span style={{ fontSize: 26, fontWeight: 900, color: '#6b7c8a', fontStyle: 'italic', marginTop: 14 }}>
           Build the Rook. Improve at Chess.
         </span>
 
         {/* Date */}
-        <span style={{ fontSize: 20, color: '#6b7c8a', marginTop: 16 }}>
+        <span style={{ fontSize: 20, color: '#6b7c8a', marginTop: 14 }}>
           {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>
 
-        {/* Rule pills */}
-        <div style={{ display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {/* Rule pills — flush row filling content width */}
+        <div style={{ display: 'flex', gap: 12, marginTop: 28, width: contentWidth }}>
           {[
             { label: '22 puzzles', color: '#1CB0F6' },
             { label: '5 min', color: '#FF9600' },
             { label: '3 lives', color: '#FF6B6B' },
             { label: 'Easy → Hard', color: '#A560E8' },
           ].map(pill => (
-            <div key={pill.label} style={{ padding: '10px 24px', borderRadius: 24, background: `${pill.color}18`, display: 'flex' }}>
+            <div key={pill.label} style={{
+              flex: 1,
+              padding: '12px 0',
+              borderRadius: 24,
+              background: `${pill.color}18`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
               <span style={{ fontSize: 22, fontWeight: 800, color: pill.color }}>{pill.label}</span>
             </div>
           ))}
         </div>
 
-        {/* Score + Divider card */}
+        {/* Score + Divider card — flush with pills */}
         <div style={{
-          marginTop: 40,
-          width: '100%',
-          maxWidth: 900,
+          marginTop: 16,
+          width: contentWidth,
           padding: '36px 40px',
           borderRadius: 24,
           background: '#ffffff',
@@ -491,30 +503,33 @@ function renderStoryLayout({ results, score, timeFormatted, globalPct, name }: L
           {/* Right: info */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 26, fontWeight: 700, color: '#2A3C45' }}>{name}</span>
+              <span style={{ fontSize: 32, fontWeight: 800, color: '#2A3C45' }}>{name}</span>
               {/* Hearts */}
-              <div style={{ display: 'flex', gap: 4 }}>
+              <div style={{ display: 'flex', gap: 6 }}>
                 {[0, 1, 2].map(i => (
-                  <svg key={i} width="24" height="24" viewBox="0 0 24 24" fill={i < heartsRemaining ? '#FF4B4B' : '#c5d4de'}>
+                  <svg key={i} width="28" height="28" viewBox="0 0 24 24" fill={i < heartsRemaining ? '#FF4B4B' : '#c5d4de'}>
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                 ))}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 22, fontWeight: 600, color: '#6b7c8a' }}>{timeFormatted}</span>
+              <span style={{ fontSize: 24, fontWeight: 600, color: '#6b7c8a' }}>{timeFormatted}</span>
               {globalPct !== null && globalPct > 0 && (
-                <span style={{ fontSize: 20, fontWeight: 800, color: '#46A302' }}>Beat {globalPct}%</span>
+                <span style={{ fontSize: 26, fontWeight: 900, color: '#46A302' }}>Beat {globalPct}%</span>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Rook grid — centered in remaining space */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {renderLogoGrid(results, 100, 110)}
+      {/* Rook grid — tight to results card, bigger to fill space */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 36 }}>
+        {renderLogoGrid(results, 130, 143)}
       </div>
+
+      {/* Spacer pushes footer down */}
+      <div style={{ flex: 1, display: 'flex' }} />
 
       {/* Footer */}
       <div style={{ padding: '24px 0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
