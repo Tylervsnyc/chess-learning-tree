@@ -938,7 +938,7 @@ export default function DailyChallengePage() {
                   onClick={async () => {
                     if (cardSharing) return;
                     setCardSharing(true);
-                    ShareEvents.shareClicked('daily_challenge', 'card');
+                    ShareEvents.shareClicked('daily_challenge', 'image');
                     try {
                       const ogParams = new URLSearchParams({
                         score: String(puzzlesSolved),
