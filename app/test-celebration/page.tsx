@@ -60,6 +60,8 @@ export default function TestCelebrationPage() {
           lessonId="1.1.1"
           isGuest={false}
           getLevelKeyFromLessonId={() => '1'}
+          streak={5}
+          puzzleResults={Array.from({ length: 6 }, (_, i) => i < correctCount ? 'correct' as const : 'wrong' as const)}
         />
       )}
     </>
