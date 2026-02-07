@@ -967,25 +967,44 @@ export default function DailyChallengePage() {
                     const blob = await res.blob();
                     const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
 
-                    if (typeof navigator !== 'undefined' && 'share' in navigator && navigator.canShare?.({ files: [file] })) {
-                      await navigator.share({
-                        files: [file],
-                        title: 'The Daily Rook',
-                        text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
-                      });
-                      ShareEvents.shareCompleted('daily_challenge', 'native_image');
-                    } else {
+                    let shared = false;
+                    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+                      try {
+                        if (navigator.canShare?.({ files: [file] })) {
+                          await navigator.share({
+                            files: [file],
+                            title: 'The Daily Rook',
+                            text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
+                          });
+                          shared = true;
+                          ShareEvents.shareCompleted('daily_challenge', 'native_image');
+                        }
+                      } catch (shareErr) {
+                        if (shareErr instanceof Error && shareErr.name === 'AbortError') {
+                          shared = true; // User cancelled — don't fall through to download
+                        }
+                        // Other share errors → fall through to download
+                      }
+                    }
+
+                    if (!shared) {
                       // Fallback: download the image
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement('a');
                       a.href = url;
                       a.download = 'daily-rook.png';
+                      a.style.display = 'none';
+                      document.body.appendChild(a);
                       a.click();
-                      URL.revokeObjectURL(url);
+                      // Delay cleanup so the download can start
+                      setTimeout(() => {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }, 1000);
                       ShareEvents.shareCompleted('daily_challenge', 'download');
                     }
                   } catch (err) {
-                    if (err instanceof Error && err.name === 'AbortError') { /* user cancelled */ }
+                    console.error('Share failed:', err);
                   } finally {
                     setCardSharing(false);
                   }
