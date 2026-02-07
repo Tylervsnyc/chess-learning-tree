@@ -9,7 +9,6 @@ interface DailyChallengeShareInput {
   puzzlesSolved: number;
   totalPuzzles: number;
   timeMs: number;
-  streak: number;
   beatPct: number | null;
 }
 
@@ -34,20 +33,35 @@ function formatDate(): string {
   return `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
 
-export function generateDailyChallengeShareText(input: DailyChallengeShareInput): string {
-  const { puzzleResults, allPuzzleIds, puzzlesSolved, totalPuzzles, timeMs, streak, beatPct } = input;
+// Rook shape: 6 rows top-to-bottom, 5 columns.
+// Each cell: { idx: puzzleIndex, emoji: colored square } or null (empty space).
+// Puzzle indices match GRID_POSITIONS order (bottom-to-top in the OG route).
+const ROOK_GRID: (({ idx: number; emoji: string }) | null)[][] = [
+  [{ idx: 19, emoji: '🟦' }, null, { idx: 20, emoji: '🟦' }, null, { idx: 21, emoji: '🟪' }],
+  [{ idx: 14, emoji: '🟩' }, { idx: 15, emoji: '🟨' }, { idx: 16, emoji: '🟧' }, { idx: 17, emoji: '🟥' }, { idx: 18, emoji: '🟥' }],
+  [null, { idx: 11, emoji: '🟦' }, { idx: 12, emoji: '🟦' }, { idx: 13, emoji: '🟪' }, null],
+  [null, { idx: 8, emoji: '🟩' }, { idx: 9, emoji: '🟨' }, { idx: 10, emoji: '🟧' }, null],
+  [null, { idx: 5, emoji: '🟥' }, { idx: 6, emoji: '🟥' }, { idx: 7, emoji: '🟦' }, null],
+  [{ idx: 0, emoji: '🟦' }, { idx: 1, emoji: '🟪' }, { idx: 2, emoji: '🟩' }, { idx: 3, emoji: '🟨' }, { idx: 4, emoji: '🟧' }],
+];
 
-  // Build emoji grid from puzzle order
-  const grid = allPuzzleIds
-    .map(id => {
-      const result = puzzleResults[id];
-      if (result === 'correct') return '🟩';
-      return '🟥'; // wrong or unattempted
-    })
-    .join('');
+function buildRookGrid(results: Record<string, 'correct' | 'wrong'>, allPuzzleIds: string[]): string {
+  return ROOK_GRID.map(row =>
+    row.map(cell => {
+      if (!cell) return '  ';
+      const id = allPuzzleIds[cell.idx];
+      return id && results[id] === 'correct' ? cell.emoji : '⬜';
+    }).join('')
+  ).join('\n');
+}
+
+export function generateDailyChallengeShareText(input: DailyChallengeShareInput): string {
+  const { puzzleResults, allPuzzleIds, puzzlesSolved, totalPuzzles, timeMs, beatPct } = input;
+
+  const grid = buildRookGrid(puzzleResults, allPuzzleIds);
 
   const lines: string[] = [
-    `♚ Chess Path · Daily Challenge`,
+    `♚ The Daily Rook`,
     formatDate(),
     '',
     grid,
@@ -57,10 +71,6 @@ export function generateDailyChallengeShareText(input: DailyChallengeShareInput)
 
   if (beatPct !== null && beatPct > 0) {
     lines.push(`Beat ${beatPct}% of players`);
-  }
-
-  if (streak > 0) {
-    lines.push(`🔥 ${streak} day streak`);
   }
 
   lines.push('');

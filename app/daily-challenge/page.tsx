@@ -18,9 +18,9 @@ import {
 } from '@/lib/sounds';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { ShareButton } from '@/components/share/ShareButton';
 import { generateDailyChallengeShareText } from '@/lib/share/generate-share-text';
 import { ShareEvents } from '@/lib/analytics/posthog';
+import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 
 interface Puzzle {
   puzzleId: string;
@@ -141,6 +141,7 @@ export default function DailyChallengePage() {
   // Share state
   const [textCopied, setTextCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [cardSharing, setCardSharing] = useState(false);
 
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -222,13 +223,6 @@ export default function DailyChallengePage() {
         ...p,
         result: puzzleResults[p.puzzleId],
       }));
-  }, [allPuzzles, puzzleResults]);
-
-  // Find highest rated solved puzzle for the share card
-  const highestSolvedPuzzle = useMemo(() => {
-    const solvedPuzzles = allPuzzles.filter(p => puzzleResults[p.puzzleId] === 'correct');
-    if (solvedPuzzles.length === 0) return allPuzzles[0] || null;
-    return solvedPuzzles.reduce((highest, p) => p.rating > highest.rating ? p : highest, solvedPuzzles[0]);
   }, [allPuzzles, puzzleResults]);
 
   // Check if user already completed today's challenge
@@ -726,116 +720,20 @@ export default function DailyChallengePage() {
     return styles;
   }, [currentPuzzle, moveIndex, selectedSquare, game]);
 
-  // Loading state while checking if user already completed today
-  if (checkingCompletion || userLoading) {
-    return (
-      <div className="h-full bg-[#131F24] flex flex-col items-center justify-center px-4 overflow-hidden">
-        <div className="text-center max-w-sm w-full">
-          {/* Same brand logo as ready screen for seamless transition */}
-          <div className="mb-6">
-            <img
-              src="/brand/logo-stacked-dark.svg"
-              alt="Chess Path"
-              className="mx-auto h-48"
-            />
-          </div>
-          <div
-            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
-            style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
-          >
-            <h1
-              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
-            >
-              DAILY CHALLENGE
-            </h1>
-          </div>
-          <div className="text-gray-400 animate-pulse">Loading...</div>
-        </div>
-      </div>
-    );
-  }
+  // Build results array for DailyRookDisplay (22 entries in fill order)
+  const buildResultsArray = useCallback((): BlockResult[] => {
+    if (allPuzzles.length === 0) return Array(22).fill('pending');
+    return allPuzzles.map((p, i) => {
+      if (i > puzzleIndex && gameState === 'playing') return 'pending';
+      if (i === puzzleIndex && gameState === 'playing') return 'pending';
+      const result = puzzleResults[p.puzzleId];
+      if (!result) return 'pending';
+      return result;
+    });
+  }, [allPuzzles, puzzleIndex, puzzleResults, gameState]);
 
-  // Ready screen
-  if (gameState === 'ready' || gameState === 'loading') {
-    return (
-      <div className="h-full bg-[#131F24] flex flex-col items-center justify-center px-4 overflow-hidden">
-        <div className="text-center max-w-sm w-full">
-          {/* Brand logo - stacked, bigger */}
-          <div className="mb-6">
-            <img
-              src="/brand/logo-stacked-dark.svg"
-              alt="Chess Path"
-              className="mx-auto h-48"
-            />
-          </div>
-
-          <div
-            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
-            style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
-          >
-            <h1
-              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
-            >
-              DAILY CHALLENGE
-            </h1>
-          </div>
-
-          {/* Fun description - compact */}
-          <div className="bg-[#1A2C35] rounded-xl p-3 mb-3 text-left space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-[#38bdf8]/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#38bdf8] font-bold text-xs">5</span>
-              </div>
-              <div className="text-white font-medium text-sm">5 minutes on the clock</div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-[#4ade80]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-3 h-3 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-              </div>
-              <div className="text-white font-medium text-sm">Puzzles get harder as you go</div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-[#f87171]/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#f87171] font-bold text-xs">3</span>
-              </div>
-              <div className="text-white font-medium text-sm">3 mistakes and you&apos;re out</div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-[#fbbf24]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-3 h-3 text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-5 5h-1v2h2a2 2 0 0 1 2 2v4h-4v-2H9v2H5v-4a2 2 0 0 1 2-2h2v-2H8a5 5 0 0 1-5-5V5a2 2 0 0 1 2-2z"/>
-                </svg>
-              </div>
-              <div className="text-white font-medium text-sm">Same puzzles for everyone</div>
-            </div>
-          </div>
-
-          <button
-            onClick={startChallenge}
-            disabled={gameState === 'loading'}
-            className="w-full py-3 rounded-xl text-white font-bold text-lg transition-transform active:scale-[0.98] disabled:opacity-70"
-            style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
-          >
-            {gameState === 'loading' ? 'Loading puzzles...' : "Let's Go!"}
-          </button>
-
-          <button
-            onClick={() => router.push('/learn')}
-            className="mt-2 text-gray-500 hover:text-gray-300 transition-colors text-sm"
-          >
-            Back to Path
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Completion time (time used) — use ref for accuracy, fall back to state calculation
+  const completionTimeMs = finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft;
 
   // Dummy leaderboard data (sorted by puzzles desc, then time asc)
   const dummyLeaderboard: LeaderboardEntry[] = [
@@ -854,525 +752,573 @@ export default function DailyChallengePage() {
   // Use dummy data if no real leaderboard
   const displayLeaderboard = leaderboard.length > 0 ? leaderboard : dummyLeaderboard;
 
-  // Completion time (time used) — use ref for accuracy, fall back to state calculation
-  const completionTimeMs = finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft;
+  const globalPct = userEntry && totalParticipants > 0
+    ? Math.round(((totalParticipants - userEntry.rank) / totalParticipants) * 100)
+    : null;
 
-  // Dummy user standing
-  const dummyUserEntry: LeaderboardEntry = {
-    rank: 47,
-    displayName: 'You',
-    puzzlesCompleted: puzzlesSolved,
-    timeMs: completionTimeMs,
-    isCurrentUser: true,
-  };
-
-  // Finished screen with leaderboard
-  if (gameState === 'finished') {
-    const globalPct = userEntry && totalParticipants > 0
-      ? Math.round(((totalParticipants - userEntry.rank) / totalParticipants) * 100)
-      : null;
-
+  // Loading state while checking if user already completed today
+  if (checkingCompletion || userLoading) {
     return (
-      <div className="h-full bg-[#131F24] flex flex-col items-center py-4 px-4 overflow-auto">
+      <div className="h-full bg-[#eef6fc] flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
-          {/* OG Share Card - same image used for social previews */}
-          {(() => {
-            const ogParams = new URLSearchParams({
-              score: String(puzzlesSolved),
-              time: String(completionTimeMs),
-            });
-            if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
-            if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-            if (highestSolvedPuzzle?.puzzleFen) ogParams.set('fen', highestSolvedPuzzle.puzzleFen);
-            if (highestSolvedPuzzle?.lastMoveFrom && highestSolvedPuzzle?.lastMoveTo) {
-              ogParams.set('lastMove', highestSolvedPuzzle.lastMoveFrom + highestSolvedPuzzle.lastMoveTo);
-            }
-            if (highestSolvedPuzzle?.playerColor) ogParams.set('side', highestSolvedPuzzle.playerColor);
-            if (currentStreak > 0) ogParams.set('streak', String(currentStreak));
-            return (
-              <div className="mb-4 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                <img
-                  src={`/api/og/daily-challenge?${ogParams.toString()}`}
-                  alt={`Daily Challenge - ${puzzlesSolved} puzzles solved`}
-                  className="w-full h-auto"
-                />
-              </div>
-            );
-          })()}
-
-          {/* Share Results - Wordle-style text share */}
-          <button
-            onClick={async () => {
-              ShareEvents.shareClicked('daily_challenge', 'text');
-              const shareText = generateDailyChallengeShareText({
-                puzzleResults,
-                allPuzzleIds: allPuzzles.map(p => p.puzzleId),
-                puzzlesSolved,
-                totalPuzzles: allPuzzles.length,
-                timeMs: completionTimeMs,
-                streak: currentStreak,
-                beatPct: globalPct,
-              });
-              try {
-                await navigator.clipboard.writeText(shareText);
-                setTextCopied(true);
-                ShareEvents.shareCompleted('daily_challenge', 'clipboard');
-                setTimeout(() => setTextCopied(false), 2000);
-              } catch {
-                // Silent fail
-              }
-            }}
-            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-4"
-            style={{ background: 'linear-gradient(135deg, #1CB0F6, #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
+          <div
+            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
+            style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
           >
-            {textCopied ? (
-              <>
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Copied!
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                </svg>
-                Share Results
-              </>
-            )}
-          </button>
-
-          {/* Share Link Button - copies a URL with dynamic OG preview */}
-          <button
-            onClick={async () => {
-              ShareEvents.shareClicked('daily_challenge', 'link');
-              const params = new URLSearchParams({
-                score: String(puzzlesSolved),
-                time: String(completionTimeMs),
-              });
-              if (userEntry?.rank) params.set('rank', String(userEntry.rank));
-              if (totalParticipants > 0) params.set('total', String(totalParticipants));
-              if (highestSolvedPuzzle?.puzzleFen) params.set('fen', highestSolvedPuzzle.puzzleFen);
-              if (highestSolvedPuzzle?.lastMoveFrom && highestSolvedPuzzle?.lastMoveTo) {
-                params.set('lastMove', highestSolvedPuzzle.lastMoveFrom + highestSolvedPuzzle.lastMoveTo);
-              }
-              if (highestSolvedPuzzle?.playerColor) params.set('side', highestSolvedPuzzle.playerColor);
-              if (currentStreak > 0) params.set('streak', String(currentStreak));
-
-              const shareUrl = `https://chesspath.app/daily-challenge?${params.toString()}`;
-
-              // Try native share first (mobile), fall back to clipboard
-              if (typeof navigator !== 'undefined' && 'share' in navigator) {
-                try {
-                  await navigator.share({
-                    title: 'Chess Path Daily Challenge',
-                    text: `I solved ${puzzlesSolved} puzzles on today's Chess Path Daily Challenge!`,
-                    url: shareUrl,
-                  });
-                  return;
-                } catch (err) {
-                  // User cancelled or share failed - fall through to clipboard
-                  if (err instanceof Error && err.name === 'AbortError') return;
-                }
-              }
-
-              // Clipboard fallback
-              try {
-                await navigator.clipboard.writeText(shareUrl);
-                setLinkCopied(true);
-                setTimeout(() => setLinkCopied(false), 2000);
-              } catch {
-                // Silent fail
-              }
-            }}
-            className="w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-transform active:scale-[0.98] mb-2"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
-          >
-            {linkCopied ? (
-              <>
-                <svg className="w-5 h-5 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-[#58CC02]">Link Copied!</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                Share Link
-              </>
-            )}
-          </button>
-
-          {/* Leaderboard for logged-in users, Login CTA for guests */}
-          {user ? (
-            <div className="bg-[#1A2C35] rounded-xl p-3 mb-4">
-              {/* Toggle buttons */}
-              <div className="flex rounded-lg bg-[#131F24] p-1 mb-3">
-                <button
-                  onClick={() => setShowMyStanding(false)}
-                  className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    !showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
-                  }`}
-                >
-                  Top 10
-                </button>
-                <button
-                  onClick={() => setShowMyStanding(true)}
-                  className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    showMyStanding ? 'bg-[#1A2C35] text-white' : 'text-gray-400'
-                  }`}
-                >
-                  My Standing
-                </button>
-              </div>
-
-              {loadingLeaderboard ? (
-                <div className="text-gray-400 py-3 text-sm">Loading...</div>
-              ) : showMyStanding ? (
-                /* My Standing view */
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/20 border border-[#58CC02]/30">
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-[#58CC02]/30 flex items-center justify-center text-[#58CC02] font-bold text-sm">
-                        #{userEntry?.rank || 1}
-                      </span>
-                      <div className="text-left">
-                        <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
-                        <div className="text-gray-400 text-xs">
-                          {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-white font-bold text-lg">{puzzlesSolved} puzzles</div>
-                      <div className="text-gray-500 text-xs">{formatTime(completionTimeMs)}</div>
-                    </div>
-                  </div>
-                  <div className="text-center text-gray-500 text-xs py-2">
-                    {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
-                  </div>
-                </div>
-              ) : (
-                /* Top 10 view */
-                <div className="space-y-1">
-                  {displayLeaderboard.map((entry) => (
-                    <div
-                      key={entry.rank}
-                      className={`flex items-center justify-between p-2 rounded-lg ${
-                        entry.isCurrentUser ? 'bg-[#58CC02]/20 border border-[#58CC02]/30' : 'bg-[#131F24]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className={`w-5 text-center font-bold text-xs ${
-                          entry.rank === 1 ? 'text-yellow-400' :
-                          entry.rank === 2 ? 'text-gray-300' :
-                          entry.rank === 3 ? 'text-orange-400' :
-                          'text-gray-500'
-                        }`}>
-                          #{entry.rank}
-                        </span>
-                        <span className={`text-sm ${entry.isCurrentUser ? 'text-[#58CC02] font-semibold' : 'text-white'}`}>
-                          {entry.displayName}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-white font-bold text-sm">{entry.puzzlesCompleted} puzzles</div>
-                        <div className="text-gray-500 text-[10px]">{formatTime(entry.timeMs)}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Guest Login CTA - shown instead of leaderboard */
-            <div className="bg-[#1A2C35] rounded-xl p-5 mb-4">
-              <div className="text-center">
-                {/* Trophy icon */}
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF9600]/20 to-[#FF6B6B]/20 flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-7 h-7 text-[#FF9600]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                </div>
-
-                <h2 className="text-white font-bold text-lg mb-2">
-                  How did you stack up?
-                </h2>
-                <p className="text-gray-400 text-sm mb-4">
-                  Log in to see how you compare to other players and track your daily streak
-                </p>
-
-                <button
-                  onClick={() => router.push('/auth/signup')}
-                  className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] mb-2"
-                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 4px 0 #CC6600' }}
-                >
-                  Create Free Account
-                </button>
-
-                <button
-                  onClick={() => router.push('/auth/login')}
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  Already have an account? Log in
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Puzzle Review Section */}
-          {attemptedPuzzles.length > 0 && (
-            <div className="bg-[#1A2C35] rounded-xl p-3 mb-4">
-              <h2 className="text-sm font-bold text-white mb-2">Review Puzzles</h2>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {attemptedPuzzles.map((puzzle, idx) => (
-                  <button
-                    key={puzzle.puzzleId}
-                    onClick={() => startReview(puzzle)}
-                    className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors ${
-                      reviewingPuzzle?.puzzleId === puzzle.puzzleId
-                        ? 'bg-[#38bdf8]/20 border border-[#38bdf8]/30'
-                        : 'bg-[#131F24] hover:bg-[#1A2C35]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-bold ${
-                        puzzle.result === 'correct'
-                          ? 'bg-[#58CC02]/20 text-[#58CC02]'
-                          : 'bg-[#FF4B4B]/20 text-[#FF4B4B]'
-                      }`}>
-                        {idx + 1}
-                      </div>
-                      <span className="text-white text-sm">Puzzle {idx + 1}</span>
-                    </div>
-                    <span className="text-gray-500 text-xs">{puzzle.rating}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Review Board */}
-              {reviewingPuzzle && reviewGame && (
-                <div className="mt-3">
-                  <div className="bg-[#131F24] rounded-lg p-2 mb-2">
-                    <Chessboard
-                      options={{
-                        position: reviewGame.fen(),
-                        boardOrientation: reviewingPuzzle.playerColor,
-                        boardStyle: {
-                          borderRadius: '6px',
-                        },
-                        darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
-                        lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <button
-                      onClick={resetReview}
-                      className="flex-1 py-2 rounded-lg bg-[#131F24] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
-                    >
-                      Reset
-                    </button>
-                    <button
-                      onClick={playNextReviewMove}
-                      disabled={reviewMoveIndex >= reviewingPuzzle.solutionMoves.length}
-                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
-                        reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
-                          ? 'bg-gray-700 text-gray-500'
-                          : 'bg-[#58CC02] text-white hover:bg-[#4CAF00]'
-                      }`}
-                    >
-                      {reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
-                        ? 'Done'
-                        : `Play ${reviewingPuzzle.solutionMoves[reviewMoveIndex]}`}
-                    </button>
-                    <div className="relative">
-                      <ShareButton
-                        fen={reviewingPuzzle.puzzleFen}
-                        playerColor={reviewingPuzzle.playerColor}
-                        lastMoveFrom={reviewingPuzzle.lastMoveFrom}
-                        lastMoveTo={reviewingPuzzle.lastMoveTo}
-                        source="daily_challenge"
-                      />
-                    </div>
-                    <button
-                      onClick={closeReview}
-                      className="flex-1 py-2 rounded-lg bg-[#131F24] text-gray-400 text-xs font-medium hover:bg-[#1A2C35] transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                  <div className="text-center text-gray-500 text-[10px] mt-1">
-                    Move {reviewMoveIndex}/{reviewingPuzzle.solutionMoves.length}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Bottom action buttons - different for guests vs logged-in users */}
-          {!user ? (
-            /* Guest: No replay, just start learning */
-            <>
-              <button
-                onClick={() => router.push('/learn')}
-                className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
-                style={{ backgroundColor: '#58CC02' }}
-              >
-                Start Learning →
-              </button>
-              <div className="mt-3 text-gray-500 text-sm text-center">
-                New challenge drops at midnight!
-              </div>
-            </>
-          ) : alreadyCompletedToday ? (
-            /* Logged-in user who already completed today */
-            <>
-              <button
-                onClick={() => router.push('/learn')}
-                className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
-                style={{ backgroundColor: '#58CC02' }}
-              >
-                Keep Training →
-              </button>
-              <div className="mt-3 text-gray-500 text-sm text-center">
-                New challenge drops at midnight!
-              </div>
-            </>
-          ) : (
-            /* Logged-in user who just finished (can replay) */
-            <>
-              <button
-                onClick={startChallenge}
-                className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
-              >
-                Play Again
-              </button>
-              <button
-                onClick={() => router.push('/learn')}
-                className="mt-2 text-gray-500 hover:text-gray-300 transition-colors block w-full text-sm"
-              >
-                Back to Path
-              </button>
-            </>
-          )}
+            <h1
+              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+              style={{ fontFamily: 'Nunito, sans-serif' }}
+            >
+              THE DAILY ROOK
+            </h1>
+          </div>
+          <div className="text-[#6b7c8a] animate-pulse">Loading...</div>
         </div>
-
       </div>
     );
   }
 
-  // Playing screen
+  // Determine the rook display mode
+  const rookMode = gameState === 'ready' || gameState === 'loading'
+    ? 'demo'
+    : gameState === 'playing'
+      ? 'playing'
+      : 'finished';
+
+  // ─── SPLIT SCREEN LAYOUT (all 3 states) ───────────────────────────────
   return (
-    <div className="h-full bg-[#131F24] text-white overflow-hidden flex flex-col">
-      {/* Header with stats */}
-      <div
-        className="px-4 py-2"
-        style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
-      >
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            {Array.from({ length: MAX_LIVES }).map((_, i) => (
-              <svg key={i} className={`w-5 h-5 ${i < lives ? 'text-white' : 'text-white/30'}`} fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-            ))}
-          </div>
-          <div className="text-xl font-bold">{formatTime(timeLeft)}</div>
-          <div className="text-right">
-            <div className="text-[10px] opacity-80">Solved</div>
-            <div className="font-bold text-sm">{puzzlesSolved}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats bar - fixed height to prevent layout shift */}
-      <div className="bg-[#1A2C35] h-10 flex items-center justify-center gap-4">
-        {/* Correct counter */}
-        <div className="flex items-center gap-1">
-          <div className="w-6 h-6 rounded border-2 border-[#58CC02] bg-[#58CC02]/20 flex items-center justify-center">
-            <span className="text-[#58CC02] font-bold text-sm">{puzzlesSolved}</span>
-          </div>
-          <span className="text-gray-500 text-[10px]">correct</span>
-        </div>
-
-        {/* Streak indicator - always takes space */}
-        <div className={`px-2 py-0.5 rounded text-xs font-medium ${
-          streak > 0 ? 'bg-yellow-500/20 text-yellow-400' : 'text-transparent'
-        }`}>
-          {streak > 0 ? `${streak} streak${streak >= 3 ? ` +${Math.floor(streak / 3) * 10}` : ''}` : '-'}
-        </div>
-
-        {/* Wrong counter */}
-        <div className="flex items-center gap-1">
-          <div className="w-6 h-6 rounded border-2 border-[#FF4B4B] bg-[#FF4B4B]/20 flex items-center justify-center">
-            <span className="text-[#FF4B4B] font-bold text-sm">{puzzlesWrong}</span>
-          </div>
-          <span className="text-gray-500 text-[10px]">wrong</span>
-        </div>
-      </div>
-
-      {/* Simple puzzle counter */}
-      <div className="bg-[#1A2C35] h-8 flex items-center justify-center text-sm">
-        <span className="text-white font-bold">Puzzle {puzzleIndex + 1}</span>
-        <span className="text-gray-500 ml-1">/ {allPuzzles.length}</span>
-      </div>
-
-      {/* Board container */}
-      <div className="flex-1 flex flex-col max-w-sm mx-auto px-3 py-2 w-full">
-        <div className="mb-2">
-          {game && (
-            <Chessboard
-              options={{
-                position: game.fen(),
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onPieceDrop: isAnimatingSetup ? undefined : (args: any) =>
-                  onDrop({ sourceSquare: args.sourceSquare, targetSquare: args.targetSquare, piece: args.piece }),
-                onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
-                boardOrientation: boardOrientation,
-                squareStyles: squareStyles,
-                animationDurationInMs: animationDuration,
-                boardStyle: {
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                },
-                darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
-                lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
-              }}
-            />
-          )}
-        </div>
-
-        {/* Status */}
-        <div className="text-center text-sm">
-          {moveStatus === 'playing' && currentPuzzle && game && (
-            <div className="flex flex-col items-center gap-1">
-              <div className={`font-bold ${game.turn() === 'w' ? 'text-white' : 'text-gray-300'}`}>
-                {game.turn() === 'w' ? 'White' : 'Black'} to move
+    <div className="h-full bg-[#eef6fc] text-[#3c3c3c] overflow-hidden flex flex-col">
+      {/* Top section — changes per state */}
+      <div className="overflow-auto">
+        {/* ── READY / LOADING ── */}
+        {(gameState === 'ready' || gameState === 'loading') && (
+          <div className="flex flex-col items-center px-4 pt-2 pb-2">
+            <div className="text-center max-w-sm w-full">
+              <div
+                className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
+                style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
+              >
+                <h1
+                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+                  style={{ fontFamily: 'Nunito, sans-serif' }}
+                >
+                  THE DAILY ROOK
+                </h1>
               </div>
-              <div className="flex items-center gap-2 text-gray-400 text-xs">
-                <span>Find the best move</span>
-                {primaryTheme && (
-                  <HelpIconButton onClick={() => setShowHelpModal(true)} />
+
+              {/* Rules */}
+              <div className="bg-white rounded-xl p-3 mb-3 text-left space-y-2 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-[#38bdf8]/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#38bdf8] font-bold text-xs">5</span>
+                  </div>
+                  <div className="text-[#2A3C45] font-medium text-sm">5 minutes on the clock</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-[#4ade80]/15 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                  </div>
+                  <div className="text-[#2A3C45] font-medium text-sm">Puzzles get harder as you go</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-[#f87171]/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#f87171] font-bold text-xs">3</span>
+                  </div>
+                  <div className="text-[#2A3C45] font-medium text-sm">3 mistakes and you&apos;re out</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-[#fbbf24]/15 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-5 5h-1v2h2a2 2 0 0 1 2 2v4h-4v-2H9v2H5v-4a2 2 0 0 1 2-2h2v-2H8a5 5 0 0 1-5-5V5a2 2 0 0 1 2-2z"/>
+                    </svg>
+                  </div>
+                  <div className="text-[#2A3C45] font-medium text-sm">Same puzzles for everyone</div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={startChallenge}
+                  disabled={gameState === 'loading'}
+                  className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] disabled:opacity-70"
+                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                >
+                  {gameState === 'loading' ? 'Loading...' : 'Begin the Challenge'}
+                </button>
+                <button
+                  onClick={() => router.push('/learn')}
+                  className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
+                  style={{ backgroundColor: '#58CC02', boxShadow: '0 3px 0 #3d8c01' }}
+                >
+                  Back to Path
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PLAYING ── */}
+        {gameState === 'playing' && (
+          <div className="flex flex-col max-w-sm mx-auto px-3 pt-1 pb-1 w-full">
+            <div className="flex flex-col">
+              <div className="mb-1">
+                {game && (
+                  <Chessboard
+                    options={{
+                      position: game.fen(),
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      onPieceDrop: isAnimatingSetup ? undefined : (args: any) =>
+                        onDrop({ sourceSquare: args.sourceSquare, targetSquare: args.targetSquare, piece: args.piece }),
+                      onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
+                      boardOrientation: boardOrientation,
+                      squareStyles: squareStyles,
+                      animationDurationInMs: animationDuration,
+                      boardStyle: {
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                      },
+                      darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                      lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Status */}
+              <div className="text-center text-sm">
+                {moveStatus === 'playing' && currentPuzzle && game && (
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                      {game.turn() === 'w' ? 'White' : 'Black'} to move
+                    </div>
+                    <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
+                      <span>Find the best move</span>
+                      {primaryTheme && (
+                        <HelpIconButton onClick={() => setShowHelpModal(true)} />
+                      )}
+                    </div>
+                  </div>
+                )}
+                {moveStatus === 'correct' && (
+                  <div className="text-green-400 font-semibold animate-pulse">
+                    Correct!
+                  </div>
+                )}
+                {moveStatus === 'incorrect' && (
+                  <div className="text-red-400 font-semibold">
+                    Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
+                  </div>
                 )}
               </div>
             </div>
-          )}
-          {moveStatus === 'correct' && (
-            <div className="text-green-400 font-semibold animate-pulse">
-              Correct!
+          </div>
+        )}
+
+        {/* ── FINISHED ── */}
+        {gameState === 'finished' && (
+          <div className="px-4 py-2">
+            <div className="max-w-sm mx-auto w-full">
+              {/* Score summary */}
+              <div className="text-center mb-2">
+                <h2 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]">
+                  {puzzlesSolved === allPuzzles.length ? 'Perfect Run!' : lives <= 0 ? 'Game Over' : 'Time\'s Up!'}
+                </h2>
+                <div className="flex items-baseline justify-center gap-1 mt-1">
+                  <span className="text-3xl font-black text-[#FF9600]">{puzzlesSolved}</span>
+                  <span className="text-sm font-bold text-[#6b7c8a]">/ {allPuzzles.length || 22} puzzles</span>
+                </div>
+              </div>
+
+              {/* Share buttons */}
+              <div className="flex gap-2 mb-2">
+                {/* Share Card — shares the V3 OG image */}
+                <button
+                  onClick={async () => {
+                    if (cardSharing) return;
+                    setCardSharing(true);
+                    ShareEvents.shareClicked('daily_challenge', 'card');
+                    try {
+                      const ogParams = new URLSearchParams({
+                        score: String(puzzlesSolved),
+                        time: String(completionTimeMs),
+                        variant: '3',
+                      });
+                      if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
+                      if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
+                      if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
+                      const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
+                      ogParams.set('results', resultsStr);
+
+                      const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
+                      const blob = await res.blob();
+                      const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
+
+                      if (typeof navigator !== 'undefined' && 'share' in navigator && navigator.canShare?.({ files: [file] })) {
+                        await navigator.share({
+                          files: [file],
+                          title: 'The Daily Rook',
+                          text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
+                        });
+                        ShareEvents.shareCompleted('daily_challenge', 'native_image');
+                      } else {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'daily-rook.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        ShareEvents.shareCompleted('daily_challenge', 'download');
+                      }
+                    } catch (err) {
+                      if (err instanceof Error && err.name === 'AbortError') { /* user cancelled */ }
+                    } finally {
+                      setCardSharing(false);
+                    }
+                  }}
+                  disabled={cardSharing}
+                  className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98] disabled:opacity-70"
+                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                >
+                  {cardSharing ? (
+                    <span className="animate-pulse">Sharing...</span>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Share Card
+                    </>
+                  )}
+                </button>
+
+                {/* Copy Rook — emoji rook text */}
+                <button
+                  onClick={async () => {
+                    ShareEvents.shareClicked('daily_challenge', 'text');
+                    const shareText = generateDailyChallengeShareText({
+                      puzzleResults,
+                      allPuzzleIds: allPuzzles.map(p => p.puzzleId),
+                      puzzlesSolved,
+                      totalPuzzles: allPuzzles.length,
+                      timeMs: completionTimeMs,
+                      beatPct: globalPct,
+                    });
+                    try {
+                      await navigator.clipboard.writeText(shareText);
+                      setTextCopied(true);
+                      ShareEvents.shareCompleted('daily_challenge', 'clipboard');
+                      setTimeout(() => setTextCopied(false), 2000);
+                    } catch {
+                      // Silent fail
+                    }
+                  }}
+                  className="flex-1 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98]"
+                  style={{ background: 'white', border: '1px solid #c5d4de', color: '#2A3C45' }}
+                >
+                  {textCopied ? (
+                    <>
+                      <svg className="w-4 h-4 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-[#58CC02]">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 text-[#6b7c8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                      </svg>
+                      Copy Rook
+                    </>
+                  )}
+                </button>
+
+                {/* Link icon */}
+                <button
+                  onClick={async () => {
+                    ShareEvents.shareClicked('daily_challenge', 'link');
+                    const params = new URLSearchParams({
+                      score: String(puzzlesSolved),
+                      time: String(completionTimeMs),
+                    });
+                    if (userEntry?.rank) params.set('rank', String(userEntry.rank));
+                    if (totalParticipants > 0) params.set('total', String(totalParticipants));
+                    if (userEntry?.displayName) params.set('name', userEntry.displayName);
+                    const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
+                    params.set('results', resultsStr);
+                    if (currentStreak > 0) params.set('streak', String(currentStreak));
+
+                    const shareUrl = `https://chesspath.app/daily-challenge?${params.toString()}`;
+                    try {
+                      await navigator.clipboard.writeText(shareUrl);
+                      setLinkCopied(true);
+                      ShareEvents.shareCompleted('daily_challenge', 'clipboard_link');
+                      setTimeout(() => setLinkCopied(false), 2000);
+                    } catch {
+                      // Silent fail
+                    }
+                  }}
+                  className="py-2.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98]"
+                  style={{ background: 'white', border: '1px solid #c5d4de' }}
+                >
+                  {linkCopied ? (
+                    <svg className="w-4 h-4 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 text-[#6b7c8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+
+              {/* Leaderboard for logged-in users, Login CTA for guests */}
+              {user ? (
+                <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
+                  {/* Toggle buttons */}
+                  <div className="flex rounded-lg bg-[#eef6fc] p-1 mb-3">
+                    <button
+                      onClick={() => setShowMyStanding(false)}
+                      className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        !showMyStanding ? 'bg-white text-[#2A3C45] shadow-sm' : 'text-[#6b7c8a]'
+                      }`}
+                    >
+                      Top 10
+                    </button>
+                    <button
+                      onClick={() => setShowMyStanding(true)}
+                      className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        showMyStanding ? 'bg-white text-[#2A3C45] shadow-sm' : 'text-[#6b7c8a]'
+                      }`}
+                    >
+                      My Standing
+                    </button>
+                  </div>
+
+                  {loadingLeaderboard ? (
+                    <div className="text-[#6b7c8a] py-3 text-sm">Loading...</div>
+                  ) : showMyStanding ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/10 border border-[#58CC02]/30">
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 rounded-full bg-[#58CC02]/20 flex items-center justify-center text-[#58CC02] font-bold text-sm">
+                            #{userEntry?.rank || 1}
+                          </span>
+                          <div className="text-left">
+                            <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
+                            <div className="text-[#6b7c8a] text-xs">
+                              {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[#2A3C45] font-bold text-lg">{puzzlesSolved}</div>
+                          <div className="text-[#6b7c8a] text-xs">{formatTime(completionTimeMs)}</div>
+                        </div>
+                      </div>
+                      <div className="text-center text-[#6b7c8a] text-xs py-1">
+                        {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {displayLeaderboard.map((entry) => (
+                        <div
+                          key={entry.rank}
+                          className={`flex items-center justify-between p-2 rounded-lg ${
+                            entry.isCurrentUser ? 'bg-[#58CC02]/10 border border-[#58CC02]/30' : 'bg-[#eef6fc]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className={`w-5 text-center font-bold text-xs ${
+                              entry.rank === 1 ? 'text-yellow-500' :
+                              entry.rank === 2 ? 'text-gray-400' :
+                              entry.rank === 3 ? 'text-orange-400' :
+                              'text-[#6b7c8a]'
+                            }`}>
+                              #{entry.rank}
+                            </span>
+                            <span className={`text-sm ${entry.isCurrentUser ? 'text-[#58CC02] font-semibold' : 'text-[#2A3C45]'}`}>
+                              {entry.displayName}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-[#2A3C45] font-bold text-sm">{entry.puzzlesCompleted}</div>
+                            <div className="text-[#6b7c8a] text-[10px]">{formatTime(entry.timeMs)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl p-4 mb-2 shadow-sm">
+                  <div className="text-center">
+                    <h2 className="text-[#2A3C45] font-bold text-base mb-1">How did you stack up?</h2>
+                    <p className="text-[#6b7c8a] text-xs mb-3">
+                      Log in to compare with other players and track your streak
+                    </p>
+                    <button
+                      onClick={() => router.push('/auth/signup')}
+                      className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mb-2"
+                      style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                    >
+                      Create Free Account
+                    </button>
+                    <button
+                      onClick={() => router.push('/auth/login')}
+                      className="text-[#6b7c8a] hover:text-[#2A3C45] transition-colors text-xs"
+                    >
+                      Already have an account? Log in
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Puzzle Review Section */}
+              {attemptedPuzzles.length > 0 && (
+                <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
+                  <h2 className="text-sm font-bold text-[#2A3C45] mb-2">Review Puzzles</h2>
+                  <div className="space-y-1 max-h-28 overflow-y-auto">
+                    {attemptedPuzzles.map((puzzle, idx) => (
+                      <button
+                        key={puzzle.puzzleId}
+                        onClick={() => startReview(puzzle)}
+                        className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors ${
+                          reviewingPuzzle?.puzzleId === puzzle.puzzleId
+                            ? 'bg-[#38bdf8]/15 border border-[#38bdf8]/30'
+                            : 'bg-[#eef6fc] hover:bg-[#dce8f0]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-bold ${
+                            puzzle.result === 'correct'
+                              ? 'bg-[#58CC02]/15 text-[#58CC02]'
+                              : 'bg-[#FF4B4B]/15 text-[#FF4B4B]'
+                          }`}>
+                            {idx + 1}
+                          </div>
+                          <span className="text-[#2A3C45] text-sm">Puzzle {idx + 1}</span>
+                        </div>
+                        <span className="text-[#6b7c8a] text-xs">{puzzle.rating}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                </div>
+              )}
+
+              {/* Bottom action buttons */}
+              {!user ? (
+                <>
+                  <button
+                    onClick={() => router.push('/learn')}
+                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
+                    style={{ backgroundColor: '#58CC02' }}
+                  >
+                    Start Learning
+                  </button>
+                  <div className="mt-2 text-[#6b7c8a] text-xs text-center">
+                    New challenge drops at midnight!
+                  </div>
+                </>
+              ) : alreadyCompletedToday ? (
+                <>
+                  <button
+                    onClick={() => router.push('/learn')}
+                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
+                    style={{ backgroundColor: '#58CC02' }}
+                  >
+                    Back to Path
+                  </button>
+                  <div className="mt-2 text-[#6b7c8a] text-xs text-center">
+                    New challenge drops at midnight!
+                  </div>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={startChallenge}
+                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
+                  >
+                    Play Again
+                  </button>
+                  <button
+                    onClick={() => router.push('/learn')}
+                    className="mt-2 text-[#6b7c8a] hover:text-[#2A3C45] transition-colors block w-full text-sm"
+                  >
+                    Back to Path
+                  </button>
+                </>
+              )}
             </div>
-          )}
-          {moveStatus === 'incorrect' && (
-            <div className="text-red-400 font-semibold">
-              Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Bottom section — rook or review board */}
+      {reviewingPuzzle && reviewGame ? (
+        <div className="flex-shrink-0 px-4 pb-2 pt-1">
+          <div className="max-w-sm mx-auto w-full">
+            <div className="rounded-lg overflow-hidden mb-2">
+              <Chessboard
+                options={{
+                  position: reviewGame.fen(),
+                  boardOrientation: reviewingPuzzle.playerColor,
+                  boardStyle: {
+                    borderRadius: '8px',
+                  },
+                  darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                  lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
+                }}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={resetReview}
+                className="py-2 px-3 rounded-lg bg-[#1CB0F6] text-white text-xs font-bold shadow-[0_3px_0_#1899D6] active:scale-[0.98] transition-all"
+              >
+                Reset
+              </button>
+              <button
+                onClick={playNextReviewMove}
+                disabled={reviewMoveIndex >= reviewingPuzzle.solutionMoves.length}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] ${
+                  reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
+                    ? 'bg-[#dce8f0] text-[#6b7c8a]'
+                    : 'bg-[#58CC02] text-white shadow-[0_3px_0_#3d8c01]'
+                }`}
+              >
+                {reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
+                  ? 'Done'
+                  : `Play ${reviewingPuzzle.solutionMoves[reviewMoveIndex]}`}
+              </button>
+              <button
+                onClick={closeReview}
+                className="flex-[2] py-2 rounded-lg text-xs font-bold text-white active:scale-[0.98] transition-all"
+                style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="text-center text-[#6b7c8a] text-[10px] mt-1">
+              Move {reviewMoveIndex}/{reviewingPuzzle.solutionMoves.length}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <DailyRookDisplay
+          results={buildResultsArray()}
+          lives={lives}
+          maxLives={MAX_LIVES}
+          timeLeft={timeLeft}
+          mode={rookMode}
+          totalTime={gameState === 'finished' ? completionTimeMs : undefined}
+        />
+      )}
 
       {/* Theme help modal */}
       {primaryTheme && (
