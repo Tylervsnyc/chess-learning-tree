@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Chessboard } from 'react-chessboard';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 interface PuzzleShareCardProps {
   fen: string;
@@ -148,8 +149,8 @@ export function PuzzleShareCard({
               position: fen,
               boardOrientation: playerColor,
               squareStyles: getSquareStyles(),
-              darkSquareStyle: { backgroundColor: '#779952' },
-              lightSquareStyle: { backgroundColor: '#edeed1' },
+              darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+              lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
             }}
           />
         </div>

@@ -16,6 +16,8 @@ import {
   playCaptureSound,
   warmupAudio,
 } from '@/lib/sounds';
+import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { ShareButton } from '@/components/share/ShareButton';
 import { DailyChallengeReport } from '@/components/daily-challenge/DailyChallengeReport';
 import { DailyChallengeShareCard } from '@/components/daily-challenge/DailyChallengeShareCard';
@@ -56,52 +58,27 @@ interface LeaderboardEntry {
 const TOTAL_TIME = 5 * 60 * 1000; // 5 minutes in ms
 const MAX_LIVES = 3;
 
-// Transform raw puzzle to processed format (like lesson page)
+// Transform raw puzzle to processed format using shared processPuzzleWithSAN
 function processPuzzle(puzzle: Puzzle): ProcessedPuzzle {
-  const chess = new Chess(puzzle.fen);
-
-  // First move is opponent's setup move
-  const setupMove = puzzle.moves[0];
-  const from = setupMove.slice(0, 2);
-  const to = setupMove.slice(2, 4);
-  const promotion = setupMove.length > 4 ? setupMove[4] : undefined;
-
-  chess.move({ from, to, promotion });
-
-  const puzzleFen = chess.fen();
-  const playerColor = chess.turn() === 'w' ? 'white' : 'black';
-
-  // Convert remaining UCI moves to SAN (player's solution moves)
-  const solutionMoves: string[] = [];
-  const tempChess = new Chess(puzzleFen);
-
-  for (let i = 1; i < puzzle.moves.length; i++) {
-    const uciMove = puzzle.moves[i];
-    const moveFrom = uciMove.slice(0, 2);
-    const moveTo = uciMove.slice(2, 4);
-    const movePromo = uciMove.length > 4 ? uciMove[4] : undefined;
-
-    try {
-      const move = tempChess.move({ from: moveFrom, to: moveTo, promotion: movePromo });
-      if (move) {
-        solutionMoves.push(move.san);
-      }
-    } catch {
-      solutionMoves.push(uciMove);
-    }
-  }
+  const processed = processPuzzleWithSAN({
+    id: puzzle.puzzleId,
+    fen: puzzle.fen,
+    moves: puzzle.moves,
+    rating: puzzle.rating,
+    themes: puzzle.themes,
+  });
 
   return {
     puzzleId: puzzle.puzzleId,
-    originalFen: puzzle.fen,
-    puzzleFen,
-    rating: puzzle.rating,
-    themes: puzzle.themes,
-    solutionMoves,
-    uciSolutionMoves: puzzle.moves.slice(1), // Original UCI moves (skip setup move)
-    playerColor,
-    lastMoveFrom: from,
-    lastMoveTo: to,
+    originalFen: processed.originalFen,
+    puzzleFen: processed.puzzleFen,
+    rating: processed.rating,
+    themes: processed.themes || [],
+    solutionMoves: processed.solutionMovesSAN,
+    uciSolutionMoves: processed.solutionMoves,
+    playerColor: processed.playerColor,
+    lastMoveFrom: processed.lastMoveFrom,
+    lastMoveTo: processed.lastMoveTo,
   };
 }
 
@@ -324,19 +301,7 @@ export default function DailyChallengePage() {
   }, [user, userLoading]);
 
   // Warmup audio on first interaction
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      warmupAudio();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, []);
+  useAudioWarmup();
 
   // Timer effect - use end time ref for accuracy
   const endTimeRef = useRef<number>(0);
@@ -542,7 +507,7 @@ export default function DailyChallengePage() {
       if (!move) return false;
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
-      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
 
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move!
@@ -1182,8 +1147,8 @@ export default function DailyChallengePage() {
                         boardStyle: {
                           borderRadius: '6px',
                         },
-                        darkSquareStyle: { backgroundColor: '#779952' },
-                        lightSquareStyle: { backgroundColor: '#edeed1' },
+                        darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                        lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
                       }}
                     />
                   </div>
@@ -1515,8 +1480,8 @@ export default function DailyChallengePage() {
                   borderRadius: '8px',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 },
-                darkSquareStyle: { backgroundColor: '#779952' },
-                lightSquareStyle: { backgroundColor: '#edeed1' },
+                darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
               }}
             />
           )}

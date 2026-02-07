@@ -18,6 +18,7 @@ import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-
 import { getLessonById, getIntroMessages, IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { getLessonByIdL2 } from '@/data/staging/level2-v2-curriculum';
 import { getLessonByIdL3 } from '@/data/staging/level3-v2-curriculum';
+import { normalizeMove, processPuzzleWithSAN } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
 
 const PREVIEW_STORAGE_KEY = 'preview-completed-lessons';
@@ -64,60 +65,31 @@ function getLessonFromAnyLevel(lessonId: string) {
   return null;
 }
 
-// Parse UCI move (e.g., "e2e4" or "e7e8q")
-function parseUciMove(uci: string): { from: string; to: string; promotion?: string } {
-  const from = uci.slice(0, 2);
-  const to = uci.slice(2, 4);
-  const promotion = uci.length > 4 ? uci[4] : undefined;
-  return { from, to, promotion };
-}
-
-// Transform API puzzle to lesson puzzle format
+// Transform API puzzle to lesson puzzle format using shared processPuzzleWithSAN
 function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
-  const chess = new Chess(puzzle.fen);
-
-  const setupMove = puzzle.moves[0];
-  const solutionMoves = puzzle.moves.slice(1);
-  const { from, to, promotion } = parseUciMove(setupMove);
-
-  try {
-    chess.move({ from, to, promotion });
-  } catch (e) {
-    console.error('Invalid setup move:', setupMove, 'for FEN:', puzzle.fen);
-  }
-
-  const puzzleFen = chess.fen();
-  const playerColor = chess.turn() === 'w' ? 'white' : 'black';
-
-  // Convert UCI moves to SAN for solutionMoves
-  const sanMoves: string[] = [];
-  const tempChess = new Chess(puzzleFen);
-  for (const uciMove of solutionMoves) {
-    const { from: f, to: t, promotion: p } = parseUciMove(uciMove);
-    try {
-      const move = tempChess.move({ from: f, to: t, promotion: p });
-      if (move) {
-        sanMoves.push(move.san);
-      }
-    } catch {
-      sanMoves.push(uciMove);
-    }
-  }
-
-  return {
-    puzzleId: puzzle.id,
+  const processed = processPuzzleWithSAN({
+    id: puzzle.id,
     fen: puzzle.fen,
-    puzzleFen,
-    moves: puzzle.moves.join(' '),
+    moves: puzzle.moves,
     rating: puzzle.rating,
     themes: puzzle.themes,
     url: puzzle.url,
-    setupMove,
-    lastMoveFrom: from,
-    lastMoveTo: to,
-    solution: solutionMoves.join(' '),
-    solutionMoves: sanMoves,
-    playerColor,
+  });
+
+  return {
+    puzzleId: processed.id,
+    fen: processed.originalFen,
+    puzzleFen: processed.puzzleFen,
+    moves: [puzzle.moves[0], ...processed.solutionMoves].join(' '),
+    rating: processed.rating,
+    themes: processed.themes || [],
+    url: processed.url || '',
+    setupMove: puzzle.moves[0],
+    lastMoveFrom: processed.lastMoveFrom,
+    lastMoveTo: processed.lastMoveTo,
+    solution: processed.solutionMoves.join(' '),
+    solutionMoves: processed.solutionMovesSAN,
+    playerColor: processed.playerColor,
   };
 }
 
@@ -353,7 +325,7 @@ export default function PreviewLessonPage() {
       if (!move) return false;
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
-      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
 
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move

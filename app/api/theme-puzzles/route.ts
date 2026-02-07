@@ -1,92 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { Chess } from 'chess.js';
-
-interface RawPuzzle {
-  puzzleId: string;
-  fen: string;
-  moves: string;
-  rating: number;
-  themes: string[];
-}
-
-interface ProcessedPuzzle {
-  puzzleId: string;
-  fen: string;           // Original FEN before setup move
-  puzzleFen: string;     // FEN after setup move (where player starts)
-  moves: string;         // Raw UCI moves
-  rating: number;
-  themes: string[];
-  playerColor: 'white' | 'black';
-  setupMove: string;     // The opponent's setup move in SAN
-  solutionMoves: string[]; // Solution moves in SAN
-  lastMoveFrom: string;  // Setup move from square
-  lastMoveTo: string;    // Setup move to square
-}
+import { processPuzzleFromCSV, RawPuzzleCSV, ServerProcessedPuzzle } from '@/lib/puzzle-utils';
 
 const BASE_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
 
-function processPuzzle(raw: RawPuzzle): ProcessedPuzzle | null {
-  try {
-    const chess = new Chess(raw.fen);
-    const moveList = raw.moves.split(' ');
-
-    // First move is the setup (opponent's move)
-    const setupUci = moveList[0];
-    const from = setupUci.slice(0, 2);
-    const to = setupUci.slice(2, 4);
-    const promotion = setupUci[4];
-
-    const setupResult = chess.move({ from, to, promotion });
-    if (!setupResult) return null;
-
-    const setupMove = setupResult.san;
-    const puzzleFen = chess.fen();
-    const playerColor = chess.turn() === 'w' ? 'white' : 'black';
-
-    // Get solution moves in SAN
-    const solutionMoves: string[] = [];
-    for (let i = 1; i < moveList.length; i++) {
-      const uci = moveList[i];
-      const moveFrom = uci.slice(0, 2);
-      const moveTo = uci.slice(2, 4);
-      const movePromo = uci[4];
-
-      const result = chess.move({ from: moveFrom, to: moveTo, promotion: movePromo });
-      if (result) {
-        solutionMoves.push(result.san);
-      } else {
-        break;
-      }
-    }
-
-    return {
-      puzzleId: raw.puzzleId,
-      fen: raw.fen,
-      puzzleFen,
-      moves: raw.moves,
-      rating: raw.rating,
-      themes: raw.themes,
-      playerColor,
-      setupMove,
-      solutionMoves,
-      lastMoveFrom: from,
-      lastMoveTo: to,
-    };
-  } catch {
-    return null;
-  }
-}
-
-function loadPuzzlesWithThemes(bracket: string, theme1: string, theme2: string, limit: number = 20, exclude: string[] = []): ProcessedPuzzle[] {
+function loadPuzzlesWithThemes(bracket: string, theme1: string, theme2: string, limit: number = 20, exclude: string[] = []): ServerProcessedPuzzle[] {
   // Sanitize bracket to prevent path traversal
   const safeBracket = bracket.replace(/[^a-zA-Z0-9_-]/g, '');
   const bracketDir = join(BASE_DIR, safeBracket);
   if (!existsSync(bracketDir)) return [];
 
   const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
-  const puzzles: ProcessedPuzzle[] = [];
+  const puzzles: ServerProcessedPuzzle[] = [];
   const seenIds = new Set<string>();
 
   // Shuffle files for variety
@@ -120,7 +46,7 @@ function loadPuzzlesWithThemes(bracket: string, theme1: string, theme2: string, 
 
       seenIds.add(puzzleId);
 
-      const raw: RawPuzzle = {
+      const raw: RawPuzzleCSV = {
         puzzleId,
         fen: parts[1],
         moves: parts[2],
@@ -128,7 +54,7 @@ function loadPuzzlesWithThemes(bracket: string, theme1: string, theme2: string, 
         themes,
       };
 
-      const processed = processPuzzle(raw);
+      const processed = processPuzzleFromCSV(raw);
       if (processed) {
         puzzles.push(processed);
       }

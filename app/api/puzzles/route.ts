@@ -3,6 +3,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { createClient } from '@/lib/supabase/server';
 import { canUserSolvePuzzle } from '@/lib/subscription';
+import { getRatingBracket } from '@/lib/puzzle-utils';
 
 const PUZZLES_DIR = join(process.cwd(), 'data', 'puzzles-by-rating');
 
@@ -34,14 +35,6 @@ function parseCSVLine(line: string): LichessPuzzle | null {
   };
 }
 
-// Get rating bracket from user rating
-function getRatingBracket(rating: number): string {
-  if (rating < 800) return '0400-0800';
-  if (rating < 1200) return '0800-1200';
-  if (rating < 1600) return '1200-1600';
-  if (rating < 2000) return '1600-2000';
-  return '2000-plus';
-}
 
 // Get available themes for a rating bracket
 function getAvailableThemes(ratingBracket: string): string[] {

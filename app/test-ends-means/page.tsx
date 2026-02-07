@@ -11,6 +11,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
+import { normalizeMove } from '@/lib/puzzle-utils';
 
 // CSS for rotating border animation
 const rotatingBorderStyles = `
@@ -459,7 +460,7 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
       if (!move) return false;
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
-      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
 
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         setCurrentFen(gameCopy.fen());

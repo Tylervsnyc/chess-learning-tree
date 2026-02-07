@@ -8,8 +8,9 @@ import {
   playErrorSound,
   playMoveSound,
   playCaptureSound,
-  warmupAudio,
 } from '@/lib/sounds';
+import { normalizeMove, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
 // Epic diagnostic quips - every puzzle gets a banger
@@ -126,19 +127,7 @@ export function OnboardingPuzzleBoard({
   }, [puzzle.puzzleId, puzzle.fen, puzzle.puzzleFen]);
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      warmupAudio();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, []);
+  useAudioWarmup();
 
   // Chess game for current position
   const game = useMemo(() => {
@@ -189,7 +178,7 @@ export function OnboardingPuzzleBoard({
 
       // Normalize both moves by stripping check/checkmate symbols for comparison
       // This handles cases where puzzle says Qe6+ but actual position is Qe6# (mate)
-      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move
         setCurrentFen(gameCopy.fen());
@@ -347,8 +336,8 @@ export function OnboardingPuzzleBoard({
               borderRadius: '8px 8px 0 0',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             },
-            darkSquareStyle: { backgroundColor: '#779952' },
-            lightSquareStyle: { backgroundColor: '#edeed1' },
+            darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+            lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
           }}
         />
       </div>

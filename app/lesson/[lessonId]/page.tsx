@@ -44,7 +44,8 @@ import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
-import { parseUciMove } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 
 interface Puzzle {
@@ -99,52 +100,31 @@ function getIntroMessagesFromAnyLevel(lessonId: string): IntroMessages {
   return result;
 }
 
-// Transform API puzzle to lesson puzzle format
+// Transform API puzzle to lesson puzzle format using shared processPuzzleWithSAN
 function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
-  const chess = new Chess(puzzle.fen);
-
-  const setupMove = puzzle.moves[0];
-  const solutionMoves = puzzle.moves.slice(1);
-  const { from, to, promotion } = parseUciMove(setupMove);
-
-  try {
-    chess.move({ from, to, promotion });
-  } catch {
-    // Invalid setup move - ignore
-  }
-
-  const puzzleFen = chess.fen();
-  const playerColor = chess.turn() === 'w' ? 'white' : 'black';
-
-  // Convert UCI moves to SAN for solutionMoves
-  const sanMoves: string[] = [];
-  const tempChess = new Chess(puzzleFen);
-  for (const uciMove of solutionMoves) {
-    const { from: f, to: t, promotion: p } = parseUciMove(uciMove);
-    try {
-      const move = tempChess.move({ from: f, to: t, promotion: p });
-      if (move) {
-        sanMoves.push(move.san);
-      }
-    } catch {
-      sanMoves.push(uciMove);
-    }
-  }
-
-  return {
-    puzzleId: puzzle.id,
+  const processed = processPuzzleWithSAN({
+    id: puzzle.id,
     fen: puzzle.fen,
-    puzzleFen,
-    moves: puzzle.moves.join(' '),
+    moves: puzzle.moves,
     rating: puzzle.rating,
     themes: puzzle.themes,
     url: puzzle.url,
-    setupMove,
-    lastMoveFrom: from,
-    lastMoveTo: to,
-    solution: solutionMoves.join(' '),
-    solutionMoves: sanMoves,
-    playerColor,
+  });
+
+  return {
+    puzzleId: processed.id,
+    fen: processed.originalFen,
+    puzzleFen: processed.puzzleFen,
+    moves: [puzzle.moves[0], ...processed.solutionMoves].join(' '),
+    rating: processed.rating,
+    themes: processed.themes || [],
+    url: processed.url || '',
+    setupMove: puzzle.moves[0],
+    lastMoveFrom: processed.lastMoveFrom,
+    lastMoveTo: processed.lastMoveTo,
+    solution: processed.solutionMoves.join(' '),
+    solutionMoves: processed.solutionMovesSAN,
+    playerColor: processed.playerColor,
   };
 }
 
@@ -238,19 +218,7 @@ export default function LessonPage() {
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      warmupAudio();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, []);
+  useAudioWarmup();
 
   // Current puzzle
   const currentPuzzle = inRetryMode
@@ -494,7 +462,7 @@ export default function LessonPage() {
       if (!move) return false;
 
       const expectedMove = currentPuzzle.solutionMoves[moveIndex];
-      const normalizeMove = (m: string) => m.replace(/[+#]$/, '');
+
 
       if (normalizeMove(move.san) === normalizeMove(expectedMove)) {
         // Correct move
@@ -1072,8 +1040,8 @@ export default function LessonPage() {
                     borderRadius: '8px 8px 0 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                   },
-                  darkSquareStyle: { backgroundColor: '#779952' },
-                  lightSquareStyle: { backgroundColor: '#edeed1' },
+                  darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                  lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
                 }}
               />
             </div>

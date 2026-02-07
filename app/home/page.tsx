@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 // SVG chess pieces - same style as chess rules / DailyChallengeReport
 const PIECE_SVGS = {
@@ -54,8 +55,8 @@ function AnimatedBoard({ size = 80, speed = 2000 }: { size?: number; speed?: num
         options={{
           position,
           boardStyle: { borderRadius: '8px' },
-          darkSquareStyle: { backgroundColor: '#779952' },
-          lightSquareStyle: { backgroundColor: '#edeed1' },
+          darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+          lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
         }}
       />
     </div>

@@ -7,6 +7,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 // King Hunt puzzle - 8 move checkmate (mateIn4)
 const PUZZLE = {
@@ -96,8 +97,8 @@ function AnimatedBoard({ size }: { size: number }) {
           boardOrientation: PUZZLE.orientation,
           squareStyles: customSquareStyles,
           boardStyle: { borderRadius: '16px' },
-          darkSquareStyle: { backgroundColor: '#779952' },
-          lightSquareStyle: { backgroundColor: '#edeed1' },
+          darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+          lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
         }}
       />
       {isCheckmate && (

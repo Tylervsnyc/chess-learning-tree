@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 interface DailyChallengeReportProps {
   puzzlesSolved: number;
@@ -82,8 +83,8 @@ function MiniBoard({ fen, size = 160, orientation = 'white' }: { fen: string; si
   const board = orientation === 'black'
     ? rawBoard.map(row => [...row].reverse()).reverse()
     : rawBoard;
-  const lightSquare = '#edeed1';
-  const darkSquare = '#779952';
+  const lightSquare = BOARD_COLORS.light;
+  const darkSquare = BOARD_COLORS.dark;
 
   return (
     <div

@@ -11,7 +11,8 @@ import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessPr
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
-import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove } from '@/lib/puzzle-utils';
+import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import confetti from 'canvas-confetti';
 
 type TestState = 'loading' | 'intro' | 'playing' | 'passed' | 'failed';
@@ -59,19 +60,7 @@ export default function LevelTestPage() {
   const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      warmupAudio();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, []);
+  useAudioWarmup();
 
   // Validate transition
   useEffect(() => {
@@ -702,8 +691,8 @@ export default function LevelTestPage() {
                   borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 },
-                darkSquareStyle: { backgroundColor: '#779952' },
-                lightSquareStyle: { backgroundColor: '#edeed1' },
+                darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
               }}
             />
           </div>

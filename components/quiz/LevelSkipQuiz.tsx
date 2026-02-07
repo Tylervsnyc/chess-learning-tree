@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { LEVEL_SKIP_QUIZ } from '@/types/permissions';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 interface QuizPuzzle {
   id: string;
@@ -288,8 +289,8 @@ export default function LevelSkipQuiz({
                   onPieceDrop: handleMove,
                   boardOrientation: playerColor as 'white' | 'black',
                   boardStyle: { borderRadius: '12px' },
-                  darkSquareStyle: { backgroundColor: '#779952' },
-                  lightSquareStyle: { backgroundColor: '#edeed1' },
+                  darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                  lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
                 }}
               />
             )}

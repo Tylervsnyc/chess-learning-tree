@@ -5,9 +5,11 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import { useRouter } from 'next/navigation';
 import { LEVEL_TEST_CONFIG } from '@/data/level-unlock-tests';
-import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio } from '@/lib/sounds';
+import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound } from '@/lib/sounds';
+import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
+import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 interface TestPuzzle {
   id: string;
@@ -46,19 +48,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      warmupAudio();
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, []);
+  useAudioWarmup();
 
   // Fetch test puzzles
   useEffect(() => {
@@ -464,8 +454,8 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
                     borderRadius: '8px 8px 0 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                   },
-                  darkSquareStyle: { backgroundColor: '#779952' },
-                  lightSquareStyle: { backgroundColor: '#edeed1' },
+                  darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                  lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
                 }}
               />
             )}
