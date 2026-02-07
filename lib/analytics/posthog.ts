@@ -121,11 +121,11 @@ export const SubscriptionEvents = {
 
 // Share/Viral funnel
 export const ShareEvents = {
-  shareClicked: (source: 'lesson' | 'daily_challenge', type?: 'text' | 'link' | 'image') =>
+  shareClicked: (source: 'lesson' | 'daily_challenge', type?: 'text' | 'link' | 'image' | 'card') =>
     trackEvent('share_clicked', { source, type }),
   shareGenerated: (source: 'lesson' | 'daily_challenge') =>
     trackEvent('share_generated', { source }),
-  shareCompleted: (source: 'lesson' | 'daily_challenge', method: 'native' | 'download' | 'clipboard') =>
+  shareCompleted: (source: 'lesson' | 'daily_challenge', method: 'native' | 'native_image' | 'download' | 'clipboard' | 'clipboard_link') =>
     trackEvent('share_completed', { source, method }),
   shareFailed: (source: 'lesson' | 'daily_challenge', error: string) =>
     trackEvent('share_failed', { source, error }),
