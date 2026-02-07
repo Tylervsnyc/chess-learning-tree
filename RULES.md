@@ -1322,43 +1322,27 @@ description: 'The shortest path to chess improvement'
 ## 33. Daily Maintenance Check
 
 ### What It Does
-Automated health check script that validates curriculum, puzzles, quips, and database connectivity.
+Automated health check script that validates curriculum, puzzles, quips, database connectivity, and page rendering.
 
 ### How to Run
 ```bash
-npx ts-node scripts/maintenance-check.ts        # Report only
-npx ts-node scripts/maintenance-check.ts --fix  # Auto-fix missing puzzle files
+npx tsx scripts/maintenance-check.ts              # All 8 checks (includes dev server smoke test)
+npx tsx scripts/maintenance-check.ts --fix        # Auto-fix missing puzzle files
+npx tsx scripts/maintenance-check.ts --no-server  # Skip smoke test (faster, checks 1-7 only)
 ```
 
-### The 7 Checks
+### The 8 Checks
 
 | Check | What It Validates | Auto-Fix? |
 |-------|-------------------|-----------|
 | **Lesson Puzzles** | Every lesson has puzzle files with sufficient puzzles in rating range | Yes |
-| **Daily Rook** | All 5 rating bracket files exist and have puzzles | No |
+| **Daily Rook** | Coverage for today + future days | No |
 | **Quip Coverage** | All sections have quip responses | No |
 | **Puzzle File Integrity** | JSON files parse correctly, puzzles have required fields | No |
 | **Lesson ID Uniqueness** | No duplicate lesson IDs across curriculum | No |
 | **Database Connectivity** | Can connect to Supabase and query profiles | No |
 | **Feature Flags** | All flags have valid boolean values | No |
-
-### Output Format
-```
-=== Chess Path Maintenance Check ===
-Running at: 2026-02-04T12:00:00.000Z
-
-✓ Check 1: Lesson Puzzle Availability
-  └─ 278 lessons checked, 0 issues
-
-✗ Check 2: Daily Rook Files
-  └─ Missing: 0800-1200.json
-
-...
-
-=== Summary ===
-Passed: 6/7
-Failed: 1/7
-```
+| **Page Render Smoke Test** | Key pages (/, /learn, /lesson/*, /daily-challenge, APIs) return 200 with no SSR errors | No |
 
 ### Auto-Fix Capability
 When run with `--fix`, the script can:
@@ -1373,7 +1357,7 @@ When run with `--fix`, the script can:
 - Before deploying new curriculum changes
 - After adding new levels or sections
 - Weekly health check
-- When puzzles seem to be missing
+- When pages seem broken or puzzles are missing
 
 ---
 

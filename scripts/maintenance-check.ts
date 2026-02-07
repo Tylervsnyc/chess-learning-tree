@@ -818,6 +818,170 @@ function loadEnvFile() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CHECK 8: PAGE RENDER SMOKE TEST
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Key pages to test — covers the main user flows
+const SMOKE_TEST_PAGES = [
+  '/',
+  '/learn',
+  '/daily-challenge',
+  '/lesson/1.1.1',       // First lesson (level 1)
+  '/lesson/3.1.1',       // Mid-level lesson (level 3)
+  '/lesson/5.1.1',       // High-level lesson (level 5)
+  '/auth/login',
+  '/pricing',
+  '/api/puzzles/lesson?themes=fork&ratingMin=400&ratingMax=800&minPlays=100',
+  '/api/daily-challenge/puzzles',
+];
+
+const ERROR_PATTERNS = [
+  'Cannot read properties of undefined',
+  'Cannot read properties of null',
+  'is not a function',
+  'is not defined',
+  'Unexpected token',
+  'Internal Server Error',
+  'MODULE_NOT_FOUND',
+  'ENOENT',
+];
+
+import { exec, ChildProcess } from 'child_process';
+
+async function startDevServer(): Promise<{ process: ChildProcess; port: number }> {
+  const port = 3099; // Use non-standard port to avoid conflicts
+  return new Promise((resolve, reject) => {
+    const proc = exec(`npx next dev -p ${port}`, { cwd: process.cwd() });
+
+    const timeout = setTimeout(() => {
+      reject(new Error('Dev server failed to start within 30s'));
+    }, 30000);
+
+    proc.stderr?.on('data', (data: string) => {
+      if (data.includes(`http://localhost:${port}`)) {
+        clearTimeout(timeout);
+        // Give it an extra moment to be fully ready
+        setTimeout(() => resolve({ process: proc, port }), 2000);
+      }
+    });
+
+    proc.stdout?.on('data', (data: string) => {
+      if (data.includes(`Ready in`) || data.includes(`http://localhost:${port}`)) {
+        clearTimeout(timeout);
+        setTimeout(() => resolve({ process: proc, port }), 2000);
+      }
+    });
+
+    proc.on('error', (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
+  });
+}
+
+async function fetchPage(url: string): Promise<{ status: number; body: string; error?: string }> {
+  try {
+    const response = await fetch(url);
+    const body = await response.text();
+    return { status: response.status, body };
+  } catch (e) {
+    return { status: 0, body: '', error: String(e) };
+  }
+}
+
+async function checkPageRenders(skipServer?: boolean): Promise<CheckResult> {
+  const port = 3099;
+  let serverProcess: ChildProcess | null = null;
+
+  try {
+    if (!skipServer) {
+      // Start dev server
+      const server = await startDevServer();
+      serverProcess = server.process;
+    }
+
+    const baseUrl = `http://localhost:${port}`;
+    const issues: string[] = [];
+    let pagesChecked = 0;
+
+    for (const pagePath of SMOKE_TEST_PAGES) {
+      const url = `${baseUrl}${pagePath}`;
+      const isApi = pagePath.startsWith('/api/');
+      const result = await fetchPage(url);
+
+      pagesChecked++;
+
+      // Check HTTP status
+      if (result.error) {
+        issues.push(`${pagePath}: Connection failed - ${result.error}`);
+        continue;
+      }
+
+      if (result.status >= 500) {
+        issues.push(`${pagePath}: HTTP ${result.status}`);
+        continue;
+      }
+
+      if (isApi && result.status === 404) {
+        issues.push(`${pagePath}: HTTP 404 (API not found)`);
+        continue;
+      }
+
+      // Check for runtime error patterns in HTML response
+      if (!isApi) {
+        for (const pattern of ERROR_PATTERNS) {
+          if (result.body.includes(pattern)) {
+            // Extract a snippet around the error
+            const idx = result.body.indexOf(pattern);
+            const snippet = result.body.slice(Math.max(0, idx - 20), idx + pattern.length + 40).replace(/\n/g, ' ').trim();
+            issues.push(`${pagePath}: SSR error "${pattern}" → ...${snippet}...`);
+            break;
+          }
+        }
+      }
+
+      // For API routes, check for valid JSON
+      if (isApi && result.status === 200) {
+        try {
+          const json = JSON.parse(result.body);
+          if (json.error) {
+            issues.push(`${pagePath}: API returned error: ${json.error}`);
+          }
+        } catch {
+          issues.push(`${pagePath}: Invalid JSON response`);
+        }
+      }
+    }
+
+    if (issues.length > 0) {
+      return {
+        name: 'Page Render Smoke Test',
+        passed: false,
+        message: `${issues.length} of ${pagesChecked} pages have issues`,
+        details: issues,
+      };
+    }
+
+    return {
+      name: 'Page Render Smoke Test',
+      passed: true,
+      message: `All ${pagesChecked} key pages render without errors`,
+    };
+  } catch (e) {
+    return {
+      name: 'Page Render Smoke Test',
+      passed: false,
+      message: `Could not run smoke test: ${e}`,
+      details: ['Ensure no other dev server is running on port 3099'],
+    };
+  } finally {
+    if (serverProcess) {
+      serverProcess.kill('SIGTERM');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -880,6 +1044,18 @@ async function main() {
   const flagsResult = checkFeatureFlags();
   results.push(flagsResult);
   printResult(flagsResult);
+
+  // Check 8: Page render smoke test (skip with --no-server)
+  const skipServer = args.includes('--no-server');
+  if (!skipServer) {
+    printHeader('8. PAGE RENDER SMOKE TEST');
+    console.log(`  ${DIM}Starting dev server on port 3099...${RESET}`);
+    const renderResult = await checkPageRenders();
+    results.push(renderResult);
+    printResult(renderResult);
+  } else {
+    console.log(`\n${DIM}Skipping page render test (--no-server)${RESET}`);
+  }
 
   // Summary
   console.log('\n' + '═'.repeat(70));
