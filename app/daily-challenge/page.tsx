@@ -139,6 +139,8 @@ export default function DailyChallengePage() {
 
   // Share state
   const [cardSharing, setCardSharing] = useState(false);
+  const shareImageRef = useRef<Blob | null>(null);
+  const shareImageFetchingRef = useRef(false);
 
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -675,6 +677,58 @@ export default function DailyChallengePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, recordDailyActivity, user]);
 
+  // Pre-fetch share image as soon as game finishes (so Share is instant)
+  useEffect(() => {
+    if (gameState !== 'finished' || allPuzzles.length === 0) return;
+    if (shareImageRef.current || shareImageFetchingRef.current) return;
+    shareImageFetchingRef.current = true;
+
+    const ogParams = new URLSearchParams({
+      score: String(puzzlesSolved),
+      time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
+      variant: '3',
+    });
+    if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
+    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
+    if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
+    const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
+    ogParams.set('results', resultsStr);
+
+    fetch(`/api/og/daily-challenge?${ogParams.toString()}`)
+      .then(res => res.ok ? res.blob() : null)
+      .then(blob => { if (blob) shareImageRef.current = blob; })
+      .catch(() => {})
+      .finally(() => { shareImageFetchingRef.current = false; });
+  }, [gameState, allPuzzles, puzzlesSolved, timeLeft, userEntry, totalParticipants, puzzleResults]);
+
+  // Re-fetch share image when leaderboard data arrives (updates rank/percentage)
+  useEffect(() => {
+    if (gameState !== 'finished' || allPuzzles.length === 0) return;
+    if (!userEntry?.rank || shareImageFetchingRef.current) return;
+
+    // Only re-fetch if we have rank data that wasn't in the initial fetch
+    shareImageRef.current = null;
+    shareImageFetchingRef.current = true;
+
+    const ogParams = new URLSearchParams({
+      score: String(puzzlesSolved),
+      time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
+      variant: '3',
+    });
+    ogParams.set('rank', String(userEntry.rank));
+    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
+    if (userEntry.displayName) ogParams.set('name', userEntry.displayName);
+    const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
+    ogParams.set('results', resultsStr);
+
+    fetch(`/api/og/daily-challenge?${ogParams.toString()}`)
+      .then(res => res.ok ? res.blob() : null)
+      .then(blob => { if (blob) shareImageRef.current = blob; })
+      .catch(() => {})
+      .finally(() => { shareImageFetchingRef.current = false; });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userEntry?.rank]);
+
   // Format time display
   const formatTime = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
@@ -951,20 +1005,25 @@ export default function DailyChallengePage() {
                   setCardSharing(true);
                   ShareEvents.shareClicked('daily_challenge', 'image');
                   try {
-                    const ogParams = new URLSearchParams({
-                      score: String(puzzlesSolved),
-                      time: String(completionTimeMs),
-                      variant: '3',
-                    });
-                    if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
-                    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-                    if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
-                    const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
-                    ogParams.set('results', resultsStr);
+                    // Use pre-fetched image if available, otherwise fetch now
+                    let blob = shareImageRef.current;
+                    if (!blob) {
+                      const ogParams = new URLSearchParams({
+                        score: String(puzzlesSolved),
+                        time: String(completionTimeMs),
+                        variant: '3',
+                      });
+                      if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
+                      if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
+                      if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
+                      const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
+                      ogParams.set('results', resultsStr);
+                      const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
+                      if (!res.ok) throw new Error('Failed to generate share card');
+                      blob = await res.blob();
+                      shareImageRef.current = blob;
+                    }
 
-                    const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
-                    if (!res.ok) throw new Error('Failed to generate share card');
-                    const blob = await res.blob();
                     const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
 
                     let shared = false;
@@ -996,7 +1055,6 @@ export default function DailyChallengePage() {
                       a.style.display = 'none';
                       document.body.appendChild(a);
                       a.click();
-                      // Delay cleanup so the download can start
                       setTimeout(() => {
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
