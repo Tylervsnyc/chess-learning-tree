@@ -92,63 +92,42 @@ async function preloadSounds(): Promise<void> {
 /**
  * Warmup audio system - call this on first user interaction (click/touch)
  * This unlocks AudioContext on mobile browsers and preloads sounds
+ *
+ * CRITICAL: Everything here must be SYNCHRONOUS within the user gesture.
+ * iOS Safari will permanently block audio if AudioContext creation or
+ * resume() happens in a .then() or async callback.
  */
 export function warmupAudio(): void {
   if (typeof window === 'undefined') return;
   if (isAudioWarmedUp) return;
 
-  // Start preloading sounds
+  // Step 1: Create AudioContext synchronously during user gesture
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+
+  // Step 2: Resume synchronously during user gesture (don't await)
+  if (sharedAudioContext.state === 'suspended') {
+    sharedAudioContext.resume();
+  }
+
+  // Step 3: Play a silent sound synchronously to fully unlock iOS Safari
+  try {
+    const osc = sharedAudioContext.createOscillator();
+    const gain = sharedAudioContext.createGain();
+    gain.gain.value = 0; // Silent
+    osc.connect(gain);
+    gain.connect(sharedAudioContext.destination);
+    osc.start();
+    osc.stop(sharedAudioContext.currentTime + 0.001);
+  } catch {
+    // Ignore - context may not be fully ready yet, but it's unlocked
+  }
+
+  // Step 4: Preload mp3 sounds (async is fine here, context is already unlocked)
   preloadSounds();
 
-  // Unlock AudioContext with a silent oscillator
-  ensureAudioReady().then(ctx => {
-    if (ctx && ctx.state === 'running') {
-      // Play a silent sound to fully unlock on iOS
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      gain.gain.value = 0; // Silent
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.001);
-    }
-  });
-
   isAudioWarmedUp = true;
-}
-
-/**
- * Check if audio has been warmed up
- */
-export function isAudioReady(): boolean {
-  return isAudioWarmedUp;
-}
-
-// Mellow coin sound at a specific frequency
-export async function playMellowCoin(baseFreq: number): Promise<void> {
-  const ctx = await ensureAudioReady();
-  if (!ctx) return;
-
-  const osc1 = ctx.createOscillator();
-  const osc2 = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc1.type = 'triangle';
-  osc2.type = 'triangle';
-  osc1.frequency.value = baseFreq;
-  osc2.frequency.value = baseFreq * 1.26; // Major third above
-
-  gain.gain.setValueAtTime(0.35, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.55);
-
-  osc1.connect(gain);
-  osc2.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc1.start();
-  osc2.start(ctx.currentTime + 0.1);
-  osc1.stop(ctx.currentTime + 0.25);
-  osc2.stop(ctx.currentTime + 0.55);
 }
 
 /**
@@ -316,28 +295,3 @@ export function vibrateOnError(): void {
   }
 }
 
-// Supernova Gentle streak effect styles
-export function getStreakStyle(streak: number, hadWrongAnswer: boolean): React.CSSProperties {
-  // If had wrong answer, just return normal green
-  if (hadWrongAnswer || streak < 2) {
-    return { backgroundColor: '#58CC02' };
-  }
-
-  const intensity = Math.min(streak / 6, 1);
-
-  return {
-    background: `
-      radial-gradient(ellipse at center,
-        rgba(255, 255, 255, ${0.3 + intensity * 0.7}) 0%,
-        rgba(255, 220, 240, ${0.2 + intensity * 0.4}) 20%,
-        transparent 50%),
-      linear-gradient(90deg, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))
-    `,
-    backgroundSize: '100% 100%, 300% 100%',
-    animation: `rainbowFlow ${3 - streak * 0.2}s linear infinite${streak >= 4 ? `, shake 0.4s infinite` : ''}`,
-    boxShadow: `
-      0 0 ${streak * 5}px rgba(255, 200, 220, ${0.4 + intensity * 0.4}),
-      0 0 ${streak * 10}px rgba(255, 150, 200, 0.4)
-    `,
-  };
-}

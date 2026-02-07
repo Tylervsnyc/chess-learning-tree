@@ -1,4 +1,4 @@
-import type { Progress, PuzzleAttempt } from '@/hooks/useProgress';
+import type { Progress } from '@/hooks/useProgress';
 
 /**
  * Server-side progress data structure (from Supabase)
@@ -81,31 +81,11 @@ export function mergeProgress(
     totalPuzzlesSolved: local.totalPuzzlesSolved, // Keep local count
     currentStreak,
     lastActivityDate,
-    currentPosition, // Server is source of truth
+    currentPosition, // Local wins unless at default (prevents POST/GET race)
     lessonsCompletedToday, // Server value takes priority
     lastLessonDate,
     unlockedLevels, // Merged from both local and server
   };
-}
-
-/**
- * Deduplicate puzzle attempts by puzzleId + approximate timestamp
- * (within 1 second considered duplicate)
- */
-export function dedupePuzzleAttempts(attempts: PuzzleAttempt[]): PuzzleAttempt[] {
-  const seen = new Set<string>();
-  const result: PuzzleAttempt[] = [];
-
-  for (const attempt of attempts) {
-    // Round timestamp to nearest second for deduplication
-    const key = `${attempt.puzzleId}-${Math.floor(attempt.timestamp / 1000)}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      result.push(attempt);
-    }
-  }
-
-  return result;
 }
 
 // Re-export from curriculum registry for backwards compatibility
