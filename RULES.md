@@ -288,7 +288,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 | Timer | 5 minutes |
 | Lives | 3 (3 wrong = out) |
 | Puzzles | 20 total |
-| Difficulty | Progressive: 400 → 2600 ELO (hidden from user) |
+| Difficulty | Linear: 400 → 2300 ELO, ~100 per step (hidden from user) |
 | Correct answer | Advance to next puzzle |
 | Wrong answer | Lose a life, advance to next puzzle |
 | Same puzzles for all users | Yes (seeded by date) |
@@ -296,8 +296,9 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ### How It Works:
 - Display shows "Puzzle X / 20" (no ELO shown to users)
-- Puzzles get progressively harder behind the scenes
-- Rating targets: 400-550, 500-650, 600-750... up to 2300-2600
+- Puzzles get linearly harder behind the scenes
+- Each puzzle targets ~100 ELO higher than the last (400, 500, 600, ..., 2300)
+- No two consecutive puzzles share the same primary theme
 - Goal: How many can you solve in 5 minutes?
 
 ### Puzzle Selection (Pre-generated):
@@ -307,18 +308,19 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 - **Puzzles are pre-generated** in `data/daily-challenge-puzzles.json`
 - 90 days of coverage, regenerate with: `npx ts-node scripts/generate-daily-puzzles.ts`
 - Uses date-seeded random number generator (same puzzles for everyone)
-- 20 deliberate rating targets spanning 400-2600 ELO
+- 20 linear rating targets: 400, 500, 600, ..., 2300 (~100 ELO per step)
 - Prioritizes tactical themes (forks, pins, mates) over endgames
 - Each puzzle comes from a different theme when possible
 
-### Rating Brackets Used:
-| Bracket | Puzzles | Rating Range |
-|---------|---------|--------------|
-| 0400-0800 | 1-4 | 400-850 |
-| 0800-1200 | 5-8 | 800-1250 |
-| 1200-1600 | 9-12 | 1200-1650 |
-| 1600-2000 | 13-16 | 1600-2050 |
-| 2000-plus | 17-20 | 2000-2600 |
+### Rating Progression:
+Linear 400 → 2300 in 20 steps (~100 ELO per puzzle). Sources:
+| Bracket Folder | Puzzle Centers |
+|----------------|---------------|
+| 0400-0800 | 400, 500, 600, 700 |
+| 0800-1200 | 800, 900, 1000, 1100 |
+| 1200-1600 | 1200, 1300, 1400, 1500 |
+| 1600-2000 | 1600, 1700, 1800, 1900 |
+| 2000-plus | 2000, 2100, 2200, 2300 |
 
 ### End Conditions:
 - Complete all 20 puzzles, OR

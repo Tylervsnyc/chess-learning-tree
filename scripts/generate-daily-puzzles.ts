@@ -2,7 +2,7 @@
  * Generate Daily Challenge Puzzles
  *
  * Creates a JSON file with pre-selected puzzles for the next 90 days.
- * Each day gets 20 puzzles with progressive difficulty (400 → 2600 ELO).
+ * Each day gets 20 puzzles with linear difficulty (400 → 2300 ELO, ~100 per step).
  * Same seed = same puzzles, so all users get identical puzzles on a given day.
  *
  * Data sources:
@@ -57,29 +57,29 @@ function getDateSeed(date: string): number {
   return Math.abs(hash);
 }
 
-// 20 puzzle targets with progressive difficulty
-// Maps to bracket folders in puzzles-by-rating
+// 20 puzzle targets with linear difficulty: 400 → 2300 (~100 ELO per step)
+// Each target maps to the appropriate bracket folder in puzzles-by-rating
 const PUZZLE_TARGETS = [
-  { min: 400, max: 550, bracket: '0400-0800' },
-  { min: 500, max: 650, bracket: '0400-0800' },
-  { min: 600, max: 750, bracket: '0400-0800' },
-  { min: 700, max: 800, bracket: '0400-0800' },
-  { min: 800, max: 900, bracket: '0800-1200' },
-  { min: 900, max: 1000, bracket: '0800-1200' },
-  { min: 1000, max: 1100, bracket: '0800-1200' },
-  { min: 1100, max: 1200, bracket: '0800-1200' },
-  { min: 1200, max: 1300, bracket: '1200-1600' },
-  { min: 1300, max: 1400, bracket: '1200-1600' },
-  { min: 1400, max: 1500, bracket: '1200-1600' },
-  { min: 1500, max: 1600, bracket: '1200-1600' },
-  { min: 1600, max: 1700, bracket: '1600-2000' },
-  { min: 1700, max: 1800, bracket: '1600-2000' },
-  { min: 1800, max: 1900, bracket: '1600-2000' },
-  { min: 1900, max: 2000, bracket: '1600-2000' },
-  { min: 2000, max: 2150, bracket: '2000-plus' },
-  { min: 2150, max: 2300, bracket: '2000-plus' },
-  { min: 2300, max: 2500, bracket: '2000-plus' },
-  { min: 2500, max: 3000, bracket: '2000-plus' },
+  { min: 350, max: 475, bracket: '0400-0800' },   // center 400
+  { min: 425, max: 575, bracket: '0400-0800' },   // center 500
+  { min: 525, max: 675, bracket: '0400-0800' },   // center 600
+  { min: 625, max: 775, bracket: '0400-0800' },   // center 700
+  { min: 725, max: 875, bracket: '0800-1200' },   // center 800
+  { min: 825, max: 975, bracket: '0800-1200' },   // center 900
+  { min: 925, max: 1075, bracket: '0800-1200' },  // center 1000
+  { min: 1025, max: 1175, bracket: '0800-1200' }, // center 1100
+  { min: 1125, max: 1275, bracket: '1200-1600' }, // center 1200
+  { min: 1225, max: 1375, bracket: '1200-1600' }, // center 1300
+  { min: 1325, max: 1475, bracket: '1200-1600' }, // center 1400
+  { min: 1425, max: 1575, bracket: '1200-1600' }, // center 1500
+  { min: 1525, max: 1675, bracket: '1600-2000' }, // center 1600
+  { min: 1625, max: 1775, bracket: '1600-2000' }, // center 1700
+  { min: 1725, max: 1875, bracket: '1600-2000' }, // center 1800
+  { min: 1825, max: 1975, bracket: '1600-2000' }, // center 1900
+  { min: 1925, max: 2075, bracket: '2000-plus' }, // center 2000
+  { min: 2025, max: 2175, bracket: '2000-plus' }, // center 2100
+  { min: 2100, max: 2300, bracket: '2000-plus' }, // center 2200
+  { min: 2200, max: 2500, bracket: '2000-plus' }, // center 2300
 ];
 
 // Tactical themes to prioritize
@@ -190,6 +190,7 @@ function generateDayPuzzles(
   const puzzles: Puzzle[] = [];
   const usedPuzzleIds = new Set<string>();
   const usedThemes = new Set<string>();
+  let lastPrimaryTheme = ''; // Track previous puzzle's primary Lichess theme for diversity
 
   for (const target of PUZZLE_TARGETS) {
     const themes = getThemesForBracket(allPuzzles, target.bracket);
@@ -208,7 +209,7 @@ function generateDayPuzzles(
       ...shuffled.filter(t => usedThemes.has(t)),
     ];
 
-    // Find a puzzle
+    // Find a puzzle — prefer one whose primary theme differs from the last puzzle's
     let found = false;
     for (const theme of sorted) {
       const bracketPuzzles = allPuzzles.get(target.bracket);
@@ -216,11 +217,22 @@ function generateDayPuzzles(
 
       const themePuzzles = bracketPuzzles.get(theme) || [];
 
-      const eligible = themePuzzles.filter(p =>
+      // Filter by rating range, not used, and different primary theme from last puzzle
+      let eligible = themePuzzles.filter(p =>
         p.rating >= target.min &&
         p.rating <= target.max &&
-        !usedPuzzleIds.has(p.puzzleId)
+        !usedPuzzleIds.has(p.puzzleId) &&
+        p.themes[0] !== lastPrimaryTheme
       );
+
+      // If no eligible with different theme, allow same theme as fallback
+      if (eligible.length === 0) {
+        eligible = themePuzzles.filter(p =>
+          p.rating >= target.min &&
+          p.rating <= target.max &&
+          !usedPuzzleIds.has(p.puzzleId)
+        );
+      }
 
       if (eligible.length === 0) continue;
 
@@ -238,12 +250,13 @@ function generateDayPuzzles(
 
       usedPuzzleIds.add(puzzle.puzzleId);
       usedThemes.add(theme);
+      lastPrimaryTheme = puzzle.themes[0];
       found = true;
       break;
     }
 
     if (!found) {
-      // Fallback: try any puzzle in the rating range across all themes
+      // Fallback: try any puzzle in a wider rating range across all themes
       for (const theme of sorted) {
         const bracketPuzzles = allPuzzles.get(target.bracket);
         if (!bracketPuzzles) continue;
@@ -273,6 +286,7 @@ function generateDayPuzzles(
 
         usedPuzzleIds.add(puzzle.puzzleId);
         usedThemes.add(theme);
+        lastPrimaryTheme = puzzle.themes[0];
         break;
       }
     }
@@ -280,6 +294,16 @@ function generateDayPuzzles(
 
   // Sort by rating
   puzzles.sort((a, b) => a.rating - b.rating);
+
+  // Post-sort theme diversity: swap consecutive puzzles that share the same primary theme
+  for (let i = 1; i < puzzles.length - 1; i++) {
+    if (puzzles[i].themes[0] === puzzles[i - 1].themes[0]) {
+      // Try swapping with the next puzzle if it has a different theme
+      if (puzzles[i + 1].themes[0] !== puzzles[i - 1].themes[0]) {
+        [puzzles[i], puzzles[i + 1]] = [puzzles[i + 1], puzzles[i]];
+      }
+    }
+  }
 
   return puzzles;
 }
