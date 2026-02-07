@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Chessboard } from 'react-chessboard';
@@ -16,25 +16,26 @@ const PUZZLE = {
   orientation: 'white' as const,
 };
 
-function useResponsiveBoardSize() {
-  const [size, setSize] = useState(280);
+// Measures the ref container and returns the largest square that fits inside it
+function useBoardSizeFromRef(ref: React.RefObject<HTMLDivElement | null>) {
+  const [size, setSize] = useState(0);
 
   useEffect(() => {
-    function calculateSize() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      // Use more width (only 24px total padding), cap at 85% of available height minus other content
-      const maxFromWidth = width - 24;
-      const maxFromHeight = height * 0.42; // 42% of viewport height for board
-      return Math.min(320, maxFromWidth, maxFromHeight);
+    const el = ref.current;
+    if (!el) return;
+
+    function measure() {
+      const { width, height } = el!.getBoundingClientRect();
+      // Square board = min(width, height), clamped to a reasonable range
+      setSize(Math.max(200, Math.min(360, width, height)));
     }
 
-    setSize(calculateSize());
+    measure();
 
-    const handleResize = () => setSize(calculateSize());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
 
   return size;
 }
@@ -118,7 +119,8 @@ function AnimatedBoard({ size }: { size: number }) {
 export default function LandingPage() {
   const router = useRouter();
   const { user, loading } = useUser();
-  const boardSize = useResponsiveBoardSize();
+  const boardContainerRef = useRef<HTMLDivElement>(null);
+  const boardSize = useBoardSizeFromRef(boardContainerRef);
 
   // Redirect logged-in users to /learn (don't block page render)
   useEffect(() => {
@@ -129,53 +131,52 @@ export default function LandingPage() {
 
   return (
     <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
-      {/* Flexible content area */}
-      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
-        {/* Animated Logo */}
-        <div className="mb-4" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>
-          <AnimatedLogo theme="light" size="md" />
+      <div className="flex-1 flex flex-col items-center px-3 min-h-0">
+        {/* Top: logo + tagline (fixed size) */}
+        <div className="pt-4 pb-3 flex flex-col items-center">
+          <div className="mb-3" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>
+            <AnimatedLogo theme="light" size="md" />
+          </div>
+          <div className="bg-white rounded-2xl px-4 py-2.5 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Curated puzzles to help you improve in the shortest time possible
+            </p>
+          </div>
         </div>
 
-        {/* Tagline card */}
-        <div className="mb-4 bg-white rounded-2xl px-4 py-3 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Curated puzzles to help you improve in the shortest time possible
-          </p>
+        {/* Middle: board takes all remaining space (flex-1) */}
+        <div ref={boardContainerRef} className="flex-1 min-h-0 w-full flex items-center justify-center">
+          {boardSize > 0 && (
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)' }}
+            >
+              <AnimatedBoard size={boardSize} />
+            </div>
+          )}
         </div>
 
-        {/* Board with subtle shadow */}
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
-          }}
-        >
-          <AnimatedBoard size={boardSize} />
-        </div>
-
-        {/* CTA Button */}
-        <Link
-          href="/about"
-          className="py-3.5 mt-5 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-          style={{ backgroundColor: '#58CC02', width: boardSize }}
-        >
-          Start Learning
-        </Link>
-
-        {/* Login link in card */}
-        <div className="mt-4 bg-white rounded-xl px-4 py-3 shadow-sm">
+        {/* Bottom: CTA + login (fixed size) */}
+        <div className="pb-3 pt-3 flex flex-col items-center gap-3">
           <Link
-            href="/auth/login"
-            className="text-slate-500 text-sm hover:text-slate-700 transition-colors"
+            href="/about"
+            className="py-3 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+            style={{ backgroundColor: '#58CC02', width: Math.max(boardSize, 260) }}
           >
-            Already have an account? <span className="font-medium text-[#58CC02]">Sign in</span>
+            Start Learning
           </Link>
+          <div className="bg-white rounded-xl px-4 py-2.5 shadow-sm">
+            <Link
+              href="/auth/login"
+              className="text-slate-500 text-sm hover:text-slate-700 transition-colors"
+            >
+              Already have an account? <span className="font-medium text-[#58CC02]">Sign in</span>
+            </Link>
+          </div>
+          <a href="mailto:support@chesspath.app" className="text-slate-400 text-[10px] hover:text-slate-500">
+            support@chesspath.app
+          </a>
         </div>
-
-        {/* Support email */}
-        <a href="mailto:support@chesspath.app" className="mt-auto mb-3 text-slate-400 text-[10px] hover:text-slate-500">
-          support@chesspath.app
-        </a>
       </div>
     </div>
   );
