@@ -134,7 +134,7 @@ export default function LessonPage() {
   const lessonId = params.lessonId as string;
 
   // Progress tracking (Supabase + localStorage)
-  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded, currentStreak } = useLessonProgress();
 
   // User and permissions
   const { user, profile, loading: userLoading } = useUser();
@@ -939,6 +939,8 @@ export default function LessonPage() {
           lessonId={lessonId}
           isGuest={!user}
           getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+          streak={currentStreak}
+          puzzleResults={puzzles.map(p => firstAttemptResults[p.puzzleId] === 'correct' ? 'correct' : 'wrong')}
         />
         <LessonLimitModal
           isOpen={showLimitModal}
