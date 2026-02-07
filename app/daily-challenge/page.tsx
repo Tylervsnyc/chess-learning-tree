@@ -141,6 +141,8 @@ export default function DailyChallengePage() {
   const [cardSharing, setCardSharing] = useState(false);
   const shareImageRef = useRef<Blob | null>(null);
   const shareImageFetchingRef = useRef(false);
+  const [shareImageReady, setShareImageReady] = useState(false);
+  const shareParamsRef = useRef<string>('');
 
   // Timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -384,6 +386,10 @@ export default function DailyChallengePage() {
     setReviewingPuzzle(null);
     hasRecordedRef.current = false;
     finalElapsedMsRef.current = 0;
+    shareImageRef.current = null;
+    shareImageFetchingRef.current = false;
+    setShareImageReady(false);
+    shareParamsRef.current = '';
 
     // Show loading state
     setGameState('loading');
@@ -677,11 +683,11 @@ export default function DailyChallengePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, recordDailyActivity, user]);
 
-  // Pre-fetch share image as soon as game finishes (so Share is instant)
+  // Pre-fetch share image when game finishes; re-fetches when rank data arrives
+  // Uses paramsKey dedup to avoid redundant fetches, never clears cached image
   useEffect(() => {
     if (gameState !== 'finished' || allPuzzles.length === 0) return;
-    if (shareImageRef.current || shareImageFetchingRef.current) return;
-    shareImageFetchingRef.current = true;
+    if (shareImageFetchingRef.current) return;
 
     const ogParams = new URLSearchParams({
       score: String(puzzlesSolved),
@@ -694,40 +700,24 @@ export default function DailyChallengePage() {
     const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
     ogParams.set('results', resultsStr);
 
-    fetch(`/api/og/daily-challenge?${ogParams.toString()}`)
+    // Skip if we already fetched with these exact params
+    const paramsKey = ogParams.toString();
+    if (shareParamsRef.current === paramsKey && shareImageRef.current) return;
+
+    shareImageFetchingRef.current = true;
+    shareParamsRef.current = paramsKey;
+
+    fetch(`/api/og/daily-challenge?${paramsKey}`)
       .then(res => res.ok ? res.blob() : null)
-      .then(blob => { if (blob) shareImageRef.current = blob; })
+      .then(blob => {
+        if (blob) {
+          shareImageRef.current = blob;
+          setShareImageReady(true); // enables button + triggers re-render for rank upgrade
+        }
+      })
       .catch(() => {})
       .finally(() => { shareImageFetchingRef.current = false; });
   }, [gameState, allPuzzles, puzzlesSolved, timeLeft, userEntry, totalParticipants, puzzleResults]);
-
-  // Re-fetch share image when leaderboard data arrives (updates rank/percentage)
-  useEffect(() => {
-    if (gameState !== 'finished' || allPuzzles.length === 0) return;
-    if (!userEntry?.rank || shareImageFetchingRef.current) return;
-
-    // Only re-fetch if we have rank data that wasn't in the initial fetch
-    shareImageRef.current = null;
-    shareImageFetchingRef.current = true;
-
-    const ogParams = new URLSearchParams({
-      score: String(puzzlesSolved),
-      time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
-      format: 'story',
-    });
-    ogParams.set('rank', String(userEntry.rank));
-    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-    if (userEntry.displayName) ogParams.set('name', userEntry.displayName);
-    const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
-    ogParams.set('results', resultsStr);
-
-    fetch(`/api/og/daily-challenge?${ogParams.toString()}`)
-      .then(res => res.ok ? res.blob() : null)
-      .then(blob => { if (blob) shareImageRef.current = blob; })
-      .catch(() => {})
-      .finally(() => { shareImageFetchingRef.current = false; });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userEntry?.rank]);
 
   // Format time display
   const formatTime = (ms: number) => {
@@ -999,29 +989,13 @@ export default function DailyChallengePage() {
               {/* Share Results button */}
               <button
                 onClick={async () => {
-                  if (cardSharing) return;
+                  if (cardSharing || !shareImageRef.current) return;
                   setCardSharing(true);
                   ShareEvents.shareClicked('daily_challenge', 'image');
                   try {
-                    // Use pre-fetched image if available, otherwise fetch now
-                    let blob = shareImageRef.current;
-                    if (!blob) {
-                      const ogParams = new URLSearchParams({
-                        score: String(puzzlesSolved),
-                        time: String(completionTimeMs),
-                        format: 'story',
-                      });
-                      if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
-                      if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-                      if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
-                      const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
-                      ogParams.set('results', resultsStr);
-                      const res = await fetch(`/api/og/daily-challenge?${ogParams.toString()}`);
-                      if (!res.ok) throw new Error('Failed to generate share card');
-                      blob = await res.blob();
-                      shareImageRef.current = blob;
-                    }
-
+                    // Image is guaranteed ready (button disabled until pre-fetch completes)
+                    // No async work before navigator.share() — preserves user activation
+                    const blob = shareImageRef.current;
                     const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
 
                     // Try native share (mobile share sheet) — skip canShare check,
@@ -1065,12 +1039,14 @@ export default function DailyChallengePage() {
                     setCardSharing(false);
                   }
                 }}
-                disabled={cardSharing}
+                disabled={cardSharing || !shareImageReady}
                 className="w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-70 mb-2"
                 style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
               >
                 {cardSharing ? (
-                  <span className="animate-pulse">Generating...</span>
+                  <span className="animate-pulse">Sharing...</span>
+                ) : !shareImageReady ? (
+                  <span className="animate-pulse">Preparing...</span>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
