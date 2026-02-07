@@ -10,6 +10,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lessonId } = await params;
   const sp = await searchParams;
+
+  if (!sp) {
+    return {
+      title: 'Lesson | The Chess Path',
+      description: 'Practice chess tactics with interactive puzzles on Chess Path.',
+    };
+  }
+
   const score = sp.score as string | undefined;
 
   // Dynamic OG when share params are present
