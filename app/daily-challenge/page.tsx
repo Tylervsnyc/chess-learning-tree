@@ -1024,23 +1024,23 @@ export default function DailyChallengePage() {
 
                     const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
 
+                    // Try native share (mobile share sheet) — skip canShare check,
+                    // just attempt it and catch errors
                     let shared = false;
                     if (typeof navigator !== 'undefined' && 'share' in navigator) {
                       try {
-                        if (navigator.canShare?.({ files: [file] })) {
-                          await navigator.share({
-                            files: [file],
-                            title: 'The Daily Rook',
-                            text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
-                          });
-                          shared = true;
-                          ShareEvents.shareCompleted('daily_challenge', 'native_image');
-                        }
+                        await navigator.share({
+                          files: [file],
+                          title: 'The Daily Rook',
+                          text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!\nchesspath.app/daily-challenge`,
+                        });
+                        shared = true;
+                        ShareEvents.shareCompleted('daily_challenge', 'native_image');
                       } catch (shareErr) {
                         if (shareErr instanceof Error && shareErr.name === 'AbortError') {
                           shared = true; // User cancelled — don't fall through to download
                         }
-                        // Other share errors → fall through to download
+                        // TypeError = browser doesn't support file sharing → fall through
                       }
                     }
 
