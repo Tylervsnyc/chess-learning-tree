@@ -320,7 +320,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   // Loading state - matches lesson page structure
   if (testState === 'loading') {
     return (
-      <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+      <div className="h-full bg-[#131F24] text-white flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
         {/* Header placeholder */}
         <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
@@ -354,7 +354,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   // Passed state
   if (testState === 'passed') {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-3xl font-black text-[#58CC02] mb-2">Level Unlocked!</h1>
@@ -380,7 +380,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   // Failed state
   if (testState === 'failed') {
     return (
-      <div className="h-screen bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">💪</div>
           <h1 className="text-3xl font-black text-[#FF4B4B] mb-2">Not Quite Yet</h1>
@@ -402,7 +402,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
 
   // Playing state
   return (
-    <div className="h-screen bg-[#131F24] text-white flex flex-col overflow-hidden">
+    <div className="h-full bg-[#131F24] text-white flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
       {/* Header */}
       <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">

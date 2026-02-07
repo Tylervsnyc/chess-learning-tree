@@ -40,9 +40,23 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // Find user by email
-    const { data: users } = await supabase.auth.admin.listUsers();
-    const user = users?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+    // Find user by email via profiles table (avoids loading all users)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: 'Account not found. Please wait a moment and try again.' },
+        { status: 404 }
+      );
+    }
+
+    // Fetch auth user for metadata
+    const { data: authUser } = await supabase.auth.admin.getUserById(profile.id);
+    const user = authUser?.user;
 
     if (!user) {
       return NextResponse.json(

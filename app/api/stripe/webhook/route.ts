@@ -3,7 +3,10 @@ import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
 import Stripe from 'stripe';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  console.error('STRIPE_WEBHOOK_SECRET is not configured');
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +17,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing stripe-signature header' },
         { status: 400 }
+      );
+    }
+
+    if (!webhookSecret) {
+      return NextResponse.json(
+        { error: 'Webhook secret not configured' },
+        { status: 500 }
       );
     }
 
@@ -81,9 +91,13 @@ async function handleCheckoutComplete(
   // Handle guest checkout - create account
   if (isGuestCheckout && guestEmail && !userId) {
     try {
-      // Check if user already exists with this email
-      const { data: existingUsers } = await supabase.auth.admin.listUsers();
-      const existingUser = existingUsers?.users?.find(u => u.email === guestEmail);
+      // Check if user already exists with this email via profiles table
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', guestEmail)
+        .maybeSingle();
+      const existingUser = existingProfile;
 
       if (existingUser) {
         // User already exists, use their ID

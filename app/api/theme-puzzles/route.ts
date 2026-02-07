@@ -80,7 +80,9 @@ function processPuzzle(raw: RawPuzzle): ProcessedPuzzle | null {
 }
 
 function loadPuzzlesWithThemes(bracket: string, theme1: string, theme2: string, limit: number = 20, exclude: string[] = []): ProcessedPuzzle[] {
-  const bracketDir = join(BASE_DIR, bracket);
+  // Sanitize bracket to prevent path traversal
+  const safeBracket = bracket.replace(/[^a-zA-Z0-9_-]/g, '');
+  const bracketDir = join(BASE_DIR, safeBracket);
   if (!existsSync(bracketDir)) return [];
 
   const files = readdirSync(bracketDir).filter(f => f.endsWith('.csv'));

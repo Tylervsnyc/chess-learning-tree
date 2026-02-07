@@ -121,8 +121,13 @@ export function isCorrectMove(
   // Exact match
   if (actualUci === expectedUci) return true;
 
-  // Match without promotion (for auto-queen)
-  if (actualUci.slice(0, 4) === expectedUci.slice(0, 4)) return true;
+  // Auto-queen flexibility: if player auto-queens (promotion='q') and the
+  // expected move goes to the same square, accept it. This handles the common
+  // case where the board auto-promotes to queen. But don't accept non-queen
+  // promotions when queen is expected (or vice versa).
+  if (actualUci.length >= 5 && actualUci[4] === 'q' && actualUci.slice(0, 4) === expectedUci.slice(0, 4)) {
+    return true;
+  }
 
   return false;
 }

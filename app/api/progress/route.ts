@@ -105,9 +105,29 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { type, data } = body;
 
+  if (type === 'position') {
+    // Update current position only (no lesson completion)
+    const { currentPosition } = data;
+    if (!currentPosition) {
+      return NextResponse.json({ error: 'Missing currentPosition' }, { status: 400 });
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ current_position: currentPosition })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Error updating current position:', error);
+      return NextResponse.json({ error: 'Failed to update position' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  }
+
   if (type === 'lesson') {
     // Record lesson completion
-    const { lessonId, nextLessonId, currentPosition } = data;
+    const { lessonId, nextLessonId, currentPosition, updateStreak } = data;
     if (!lessonId) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
     }
@@ -188,45 +208,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to record progress' }, { status: 500 });
     }
 
-    // Update daily count, activity date, and streak
-    const today = new Date().toISOString().split('T')[0];
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('lessons_completed_today, last_lesson_date, current_streak, last_activity_date')
-      .eq('id', user.id)
-      .single();
-
-    const isNewLessonDay = profileData?.last_lesson_date !== today;
-    const newLessonCount = isNewLessonDay ? 1 : (profileData?.lessons_completed_today ?? 0) + 1;
-
-    // Calculate streak using day-based logic (per RULES.md Section 11)
-    const currentStreak = profileData?.current_streak ?? 0;
-    const lastActivityDate = profileData?.last_activity_date;
-
-    // Calculate yesterday's date
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    let newStreak: number;
-    if (lastActivityDate === today) {
-      // Already played today - don't change streak
-      newStreak = currentStreak;
-    } else if (lastActivityDate === yesterdayStr) {
-      // Continuing streak from yesterday - increment
-      newStreak = currentStreak + 1;
-    } else {
-      // Missed day(s) or first time - start fresh at 1
-      newStreak = 1;
-    }
-
     // Build update object - include currentPosition if provided
-    const updateData: Record<string, unknown> = {
-      lessons_completed_today: newLessonCount,
-      last_lesson_date: today,
-      last_activity_date: today,
-      current_streak: newStreak,
-    };
+    const updateData: Record<string, unknown> = {};
+
+    // Only update daily count and streak for new completions (not replays)
+    if (updateStreak !== false) {
+      const today = new Date().toISOString().split('T')[0];
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('lessons_completed_today, last_lesson_date, current_streak, last_activity_date')
+        .eq('id', user.id)
+        .single();
+
+      const isNewLessonDay = profileData?.last_lesson_date !== today;
+      const newLessonCount = isNewLessonDay ? 1 : (profileData?.lessons_completed_today ?? 0) + 1;
+
+      // Calculate streak using day-based logic (per RULES.md Section 11)
+      const currentStreak = profileData?.current_streak ?? 0;
+      const lastActivityDate = profileData?.last_activity_date;
+
+      // Calculate yesterday's date
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      let newStreak: number;
+      if (lastActivityDate === today) {
+        newStreak = currentStreak;
+      } else if (lastActivityDate === yesterdayStr) {
+        newStreak = currentStreak + 1;
+      } else {
+        newStreak = 1;
+      }
+
+      updateData.lessons_completed_today = newLessonCount;
+      updateData.last_lesson_date = today;
+      updateData.last_activity_date = today;
+      updateData.current_streak = newStreak;
+    }
 
     if (currentPosition) {
       updateData.current_position = currentPosition;

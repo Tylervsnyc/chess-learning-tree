@@ -6,6 +6,7 @@ interface LocalProgress {
   completedLessons: string[];
   currentStreak: number;
   lastActivityDate: string | null;
+  currentPosition?: string;
   // Progress tracking fields
   lessonsCompletedToday?: number;
   lastLessonDate?: string | null;
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       .eq('user_id', user.id),
     supabase
       .from('profiles')
-      .select('current_streak, last_activity_date, lessons_completed_today, last_lesson_date, unlocked_levels')
+      .select('current_streak, last_activity_date, lessons_completed_today, last_lesson_date, unlocked_levels, current_position')
       .eq('id', user.id)
       .single(),
   ]);
@@ -105,6 +106,15 @@ export async function POST(request: NextRequest) {
           ? localProgress.lastLessonDate
           : serverProfile.last_lesson_date;
 
+  // Merge currentPosition: local wins unless local is at default
+  const localPosition = localProgress.currentPosition;
+  const serverPosition = serverProfile?.current_position;
+  const localIsDefault = !localPosition || localPosition === '1.1.1';
+  const serverHasProgress = serverPosition && serverPosition !== '1.1.1';
+  const mergedCurrentPosition = (localIsDefault && serverHasProgress)
+    ? serverPosition
+    : (localPosition || serverPosition || '1.1.1');
+
   // Update profile with merged data
   const { error: profileError } = await supabase
     .from('profiles')
@@ -114,6 +124,7 @@ export async function POST(request: NextRequest) {
       unlocked_levels: mergedUnlockedLevels,
       lessons_completed_today: mergedLessonsCompletedToday,
       last_lesson_date: mergedLastLessonDate,
+      current_position: mergedCurrentPosition,
     })
     .eq('id', user.id);
 
@@ -131,5 +142,6 @@ export async function POST(request: NextRequest) {
     lessonsCompletedToday: mergedLessonsCompletedToday,
     lastLessonDate: mergedLastLessonDate,
     unlockedLevels: mergedUnlockedLevels,
+    currentPosition: mergedCurrentPosition,
   });
 }

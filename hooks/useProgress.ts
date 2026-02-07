@@ -12,7 +12,7 @@ export type SyncState = 'idle' | 'syncing' | 'error' | 'offline';
 
 // Queue for failed syncs that need retry
 interface PendingSync {
-  type: 'lesson' | 'puzzle' | 'unlockLevel';
+  type: 'lesson' | 'puzzle' | 'unlockLevel' | 'position';
   data: Record<string, unknown>;
   timestamp: number;
 }
@@ -212,7 +212,7 @@ export function useLessonProgress() {
 
   // Helper to sync data with retry tracking
   const syncToServer = useCallback(async (
-    type: 'lesson' | 'puzzle' | 'unlockLevel',
+    type: 'lesson' | 'puzzle' | 'unlockLevel' | 'position',
     data: Record<string, unknown>
   ): Promise<boolean> => {
     if (!user) return true; // No user, nothing to sync
@@ -421,6 +421,7 @@ export function useLessonProgress() {
             completedLessons: localProgress.completedLessons,
             currentStreak: localProgress.currentStreak,
             lastActivityDate: localProgress.lastActivityDate,
+            currentPosition: localProgress.currentPosition,
           }),
           signal: abortController.signal,
         });
@@ -639,8 +640,7 @@ export function useLessonProgress() {
 
     // Sync to server if logged in
     if (user) {
-      // Use lesson type sync with just the currentPosition update
-      syncToServer('lesson', { lessonId: '', currentPosition: lessonId, updateStreak: false });
+      syncToServer('position', { currentPosition: lessonId });
     }
   }, [user, syncToServer]);
 

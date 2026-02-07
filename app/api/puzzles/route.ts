@@ -101,7 +101,9 @@ export async function GET(request: NextRequest) {
     return themes[Math.floor(Math.random() * themes.length)] || 'fork';
   })();
 
-  const filePath = join(PUZZLES_DIR, ratingBracket, `${selectedTheme}.csv`);
+  // Sanitize theme to prevent path traversal
+  const safeTheme = selectedTheme.replace(/[^a-zA-Z0-9_-]/g, '');
+  const filePath = join(PUZZLES_DIR, ratingBracket, `${safeTheme}.csv`);
 
   if (!existsSync(filePath)) {
     return NextResponse.json(

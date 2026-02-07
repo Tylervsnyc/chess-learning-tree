@@ -272,6 +272,28 @@ export default function LevelTestPage() {
 
         return true;
       } else {
+        // Check for alternate checkmate (accept ANY checkmate in mate puzzles)
+        const isMatingPuzzle = currentPuzzle.themes?.some((t: string) =>
+          t.toLowerCase().includes('mate')
+        );
+
+        if (isMatingPuzzle && chessCopy.isCheckmate()) {
+          setCurrentFen(chessCopy.fen());
+          setSelectedSquare(null);
+          if (move.captured) {
+            playCaptureSound();
+          } else {
+            playMoveSound();
+          }
+          const newStreak = streak + 1;
+          setMoveStatus('correct');
+          playCorrectSound(correctCount);
+          vibrateOnCorrect();
+          setStreak(newStreak);
+          setSolvedPuzzleCount(c => c + 1);
+          return true;
+        }
+
         // Wrong move
         setSelectedSquare(null);
         playErrorSound();
@@ -561,6 +583,7 @@ export default function LevelTestPage() {
                 setWrongCount(0);
                 setStreak(0);
                 setHadWrongAnswer(false);
+                setSolvedPuzzleCount(0);
                 confettiFired.current = false;
                 // Re-fetch puzzles
                 fetch(`/api/level-test?transition=${transition}`)
@@ -569,7 +592,13 @@ export default function LevelTestPage() {
                     const processed = data.puzzles.map(processPuzzle);
                     setPuzzles(processed);
                     if (processed.length > 0) {
-                      setCurrentFen(processed[0].puzzleFen);
+                      // Use 3-step animation pattern to prevent pieces flying
+                      setAnimationDuration(0);
+                      setCurrentFen(processed[0].originalFen);
+                      setTimeout(() => {
+                        setAnimationDuration(300);
+                        setCurrentFen(processed[0].puzzleFen);
+                      }, 100);
                     }
                     setTestState('playing');
                   })

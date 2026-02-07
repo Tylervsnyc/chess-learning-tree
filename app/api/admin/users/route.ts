@@ -134,6 +134,10 @@ export async function PATCH(request: NextRequest) {
     const updateData: Record<string, unknown> = {};
 
     if (subscriptionStatus !== undefined) {
+      const validStatuses = ['free', 'premium'];
+      if (!validStatuses.includes(subscriptionStatus)) {
+        return NextResponse.json({ error: 'Invalid subscription status' }, { status: 400 });
+      }
       updateData.subscription_status = subscriptionStatus;
     }
 
