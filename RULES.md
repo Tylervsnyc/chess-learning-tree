@@ -1176,48 +1176,74 @@ When resuming work:
 
 ---
 
-## 31. Puzzle Share Feature
+## 31. Share Card — "The Daily Rook" Story Card
 
 **Status:** ✅ Complete
 
-**What it does:**
-Allows users to share a puzzle they just solved with a shareable PNG image card.
+**This is THE ONLY share card format for Chess Path results.** All sharing (Daily Rook, lessons, puzzles) uses this layout.
 
-### Image Layout (top to bottom)
-- Chess Path logo (horizontal version, centered)
-- "I SOLVED this" + "tricky puzzle" header text
-- Chessboard with opponent's last move highlighted
-- "White/Black to move" indicator
-- Green CTA button: "SWIPE TO SEE THE SOLUTION" + "chesspath.app"
+### Format
 
-**Size:** 1080x1080 for Instagram
+**Size:** 9:16 (1080×1920) — Instagram Stories / Reels
+
+### Layout (top to bottom)
+
+1. **Gradient bar** — `linear-gradient(90deg, #FF9600, #FF6B6B, #A560E8, #1CB0F6)` — 4px
+2. **chesspath logo** — tiny rook icon + "chesspath" wordmark
+3. **"THE DAILY ROOK" title** — gradient badge (`#FF9600` → `#FF6B6B`), tracking-widest
+4. **Tagline** — *"Build the Rook. Improve at Chess."* — italic, `#6b7c8a`
+5. **Date** — e.g. "Feb 7, 2026" — `#6b7c8a`, 10px
+6. **Rule pills** — 4 colored pills: "22 puzzles" (`#1CB0F6`), "5 min" (`#FF9600`), "3 lives" (`#FF6B6B`), "Easy→Hard" (`#A560E8`)
+7. **Results card** — white rounded card, "Score + Divider" layout (see below)
+8. **Rook grid** — 22-block rook shape, colored blocks for correct, gray for wrong, fills remaining space
+9. **Footer** — "chesspath.app" subtle text
+
+### Results Card Layout: "Score + Divider"
+
+White card with `border-radius: 12px`, subtle shadow. Three columns:
+
+```
+┌────────────────────────────────────────┐
+│  18     │  TacticQueen       ❤❤🩶  │
+│ SOLVED  │  3:45          Beat 72%  │
+└────────────────────────────────────────┘
+```
+
+- **Left:** Score number (3xl, `#FF9600`, font-black) + "SOLVED" label (9px, `#2A3C45/50`)
+- **Divider:** 1px vertical line (`#dce8f0`)
+- **Right:** Two rows — name + hearts top, time + beat% bottom
+
+### Background
+
+Light theme: `#eef6fc` (matches Daily Rook page)
 
 ### Files
 
 | File | Purpose |
 |------|---------|
-| `components/share/PuzzleShareCard.tsx` | Static image card component |
-| `components/share/ShareButton.tsx` | Share button + generation trigger |
-| `lib/share/generate-puzzle-image.ts` | Converts card → PNG |
-| `components/puzzle/PuzzleResultPopup.tsx` | Shows share button on correct answers |
+| `app/api/og/daily-challenge/route.tsx` | Server-side OG image generation |
+| `app/test-story-cards/page.tsx` | Test page with mockups |
+| `lib/share/generate-share-text.ts` | Emoji rook text for clipboard |
+| `lib/daily-rook-blocks.ts` | Rook block positions + colors |
+| `components/daily-challenge/DailyRookDisplay.tsx` | Interactive rook display |
 
 ### Test Page
 
-`/test-share` - Preview share card design
+`/test-story-cards` — Preview story card design
 
-### Generation Approach
+### Generation
 
-**On-demand generation:**
-1. Browser captures the puzzle card as PNG using html-to-image
-2. File is created client-side (~2-3 seconds)
+1. OG route renders server-side at 1080×1920
+2. Client fetches as blob → File
 3. Web Share API (mobile) or download fallback (desktop)
 
 ### Entry Points
 
 | Location | When it appears |
 |----------|-----------------|
-| Puzzle success popup | After solving any puzzle correctly |
-| Daily challenge review | When reviewing a completed puzzle |
+| Daily Rook finished screen | "Share Card" button |
+| Daily Rook finished screen | "Copy Rook" button (emoji text) |
+| Daily Rook finished screen | Link icon (clipboard URL) |
 
 ---
 

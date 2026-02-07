@@ -54,6 +54,8 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | Feature flags | `lib/config/feature-flags.ts` |
 | Database schema | `supabase/schema.sql` |
 | Daily puzzles | `data/daily-challenge-puzzles.json` |
+| Share card (story) | `app/api/og/daily-challenge/route.tsx`, `app/test-story-cards/page.tsx` |
+| Rook blocks | `lib/daily-rook-blocks.ts` |
 | Quips | `data/staging/v2-puzzle-responses.ts` |
 
 ### Single Source of Truth
@@ -71,6 +73,7 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | Permissions | `hooks/usePermissions.ts` |
 | Header | `components/layout/NavHeader.tsx` |
 | Animated logo | `components/brand/AnimatedLogo.tsx` |
+| Share card design | `app/test-story-cards/page.tsx` (V3 "Score + Divider" is THE format) |
 
 **If you find logic in multiple places, consolidate it first!**
 
