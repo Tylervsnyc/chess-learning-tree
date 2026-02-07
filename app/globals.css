@@ -263,6 +263,17 @@ body {
   animation: ctaGlow 3s ease-in-out infinite;
 }
 
+/* Daily Rook results celebratory glow */
+@keyframes celebratoryGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,150,0,0.3), 0 0 24px rgba(255,107,107,0.15), inset 0 0 0 1px rgba(255,150,0,0.2); }
+  50% { box-shadow: 0 0 20px rgba(255,150,0,0.5), 0 0 40px rgba(255,107,107,0.25), inset 0 0 0 1px rgba(255,150,0,0.35); }
+}
+
+.celebratory-glow {
+  border: 2px solid rgba(255,150,0,0.4);
+  animation: celebratoryGlow 2.5s ease-in-out infinite;
+}
+
 /* Tooltip styles */
 .milestone-tooltip {
   position: absolute;

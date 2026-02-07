@@ -972,22 +972,20 @@ export default function DailyChallengePage() {
           <div className="px-4 py-2">
             <div className="max-w-sm mx-auto w-full">
               {/* Score card — matches share card design */}
-              <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
+              <div className="bg-white rounded-2xl p-4 mb-3 celebratory-glow text-center">
                 <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600] mb-2">
                   {puzzlesSolved === allPuzzles.length ? 'Perfect Run!' : lives <= 0 ? 'Game Over' : 'Time\'s Up!'}
                 </h2>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-5xl font-black text-[#FF9600]">{puzzlesSolved}</span>
-                    <span className="text-lg font-bold text-[#FF9600]/35">/{allPuzzles.length || 22}</span>
-                  </div>
-                  {globalPct !== null && globalPct > 0 && (
-                    <div className="px-3 py-1 rounded-full" style={{ background: 'rgba(88,204,2,0.12)' }}>
-                      <span className="text-sm font-extrabold text-[#46A302]">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
-                    </div>
-                  )}
+                <div className="flex items-baseline justify-center gap-1.5">
+                  <span className="text-5xl font-black text-[#FF9600]">{puzzlesSolved}</span>
+                  <span className="text-lg font-bold text-[#FF9600]/35">/{allPuzzles.length || 22}</span>
                 </div>
-                <div className="flex items-center gap-2 mt-1">
+                {globalPct !== null && globalPct > 0 && (
+                  <div className="inline-block px-3 py-1 rounded-full mt-2" style={{ background: 'rgba(88,204,2,0.12)' }}>
+                    <span className="text-sm font-extrabold text-[#46A302]">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-center gap-2 mt-1">
                   {userEntry?.displayName && (
                     <>
                       <span className="text-base font-bold text-[#2A3C45]">{userEntry.displayName}</span>
