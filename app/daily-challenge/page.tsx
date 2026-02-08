@@ -1277,10 +1277,10 @@ export default function DailyChallengePage() {
             <>
               {moveStatus === 'playing' && currentPuzzle && game && (
                 <div className="flex flex-col items-center gap-0.5">
-                  <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                  <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
                     {game.turn() === 'w' ? 'White' : 'Black'} to move
                   </div>
-                  <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
+                  <div className="flex items-center gap-2 text-[#6b7c8a] text-sm">
                     <span>Find the best move</span>
                     {primaryTheme && (
                       <HelpIconButton onClick={() => setShowHelpModal(true)} />
@@ -1289,12 +1289,12 @@ export default function DailyChallengePage() {
                 </div>
               )}
               {moveStatus === 'correct' && (
-                <div className="text-green-400 font-semibold animate-pulse">
+                <div className="text-lg text-green-400 font-black animate-pulse">
                   Correct!
                 </div>
               )}
               {moveStatus === 'incorrect' && (
-                <div className="text-red-400 font-semibold">
+                <div className="text-lg text-red-400 font-black">
                   Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
                 </div>
               )}

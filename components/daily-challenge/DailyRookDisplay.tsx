@@ -172,6 +172,13 @@ export function DailyRookDisplay({
 
         {/* Stats — right */}
         <div className="flex flex-col items-center gap-2 flex-1">
+          {/* Status text */}
+          {statusNode && (
+            <div className="text-center text-base font-bold">
+              {statusNode}
+            </div>
+          )}
+
           {/* Timer card */}
           <div className="bg-white rounded-xl px-4 py-2 shadow-sm">
             <div
@@ -202,13 +209,6 @@ export function DailyRookDisplay({
               );
             })}
           </div>
-
-          {/* Status text */}
-          {statusNode && (
-            <div className="text-center text-sm">
-              {statusNode}
-            </div>
-          )}
         </div>
       </div>
     );
