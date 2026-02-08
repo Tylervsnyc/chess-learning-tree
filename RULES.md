@@ -136,8 +136,16 @@ No URL params needed. The `currentPosition` field stored in the database determi
 ### The Rules:
 | Scenario | Behavior |
 |----------|----------|
-| Section expand/collapse | **NO scrolling. Ever.** Just toggle. |
+| Section expand/collapse | **NO scrolling. Ever.** Animated toggle with staggered children. |
 | Opening /learn | Expand section containing `currentPosition`, scroll to it |
+
+### Section Expand/Collapse Animation:
+- Lessons are **always rendered** in the DOM (not conditionally mounted) for height measurement
+- Container: `maxHeight` transitions over 500ms, pushing sections below smoothly
+- Each lesson puck: bounces in with 75ms stagger delay (spring bezier `0.34, 1.56, 0.64, 1`)
+- Collapse: reverse stagger (30ms per child), faster out than in
+- `pointer-events: none` + `aria-hidden` when collapsed to prevent interaction and screen reader access
+- **Initial render**: skips animation (no transition) so pre-expanded sections appear instantly
 
 ### The `currentPosition` Field:
 - Stored in `profiles.current_position` (database)

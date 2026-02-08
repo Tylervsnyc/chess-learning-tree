@@ -665,9 +665,21 @@ function SectionView({
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const hasMeasured = useRef(false);
+
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
     : CURRICULUM_V2_CONFIG.moduleColors[sectionIndex % CURRICULUM_V2_CONFIG.moduleColors.length];
+
+  // Measure content height for smooth expand/collapse animation
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+      hasMeasured.current = true;
+    }
+  }, [isExpanded]);
 
   // Clear selection when clicking outside
   useEffect(() => {
@@ -731,20 +743,38 @@ function SectionView({
         </div>
       </button>
 
-      {/* Lessons - Evenly Spaced Row */}
-      {isExpanded && (
-        <div className="mt-4 px-2">
+      {/* Lessons - Evenly Spaced Row (always rendered for height measurement) */}
+      <div
+        className="overflow-hidden"
+        aria-hidden={!isExpanded}
+        style={{
+          maxHeight: isExpanded
+            ? (hasMeasured.current ? contentHeight + 40 : 'none')
+            : 0,
+          transition: hasMeasured.current ? 'max-height 500ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+          pointerEvents: isExpanded ? 'auto' : 'none',
+        }}
+      >
+        <div ref={contentRef} className="mt-4 px-2">
           <div className="flex flex-row justify-evenly items-start">
             {section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
               const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, currentPosition);
               const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
               const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
+              const totalLessons = section.lessons.length;
 
               return (
                 <div
                   key={lesson.id}
                   id={`lesson-${lesson.id}`}
+                  style={{
+                    opacity: isExpanded ? 1 : 0,
+                    transform: isExpanded ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.8)',
+                    transition: isExpanded
+                      ? `opacity 300ms ease ${lessonIndex * 75 + 100}ms, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1) ${lessonIndex * 75 + 100}ms`
+                      : `opacity 150ms ease ${(totalLessons - lessonIndex) * 30}ms, transform 200ms ease ${(totalLessons - lessonIndex) * 30}ms`,
+                  }}
                 >
                   <LessonButton
                     lesson={lesson}
@@ -755,14 +785,15 @@ function SectionView({
                     onSelect={() => handleLessonSelect(lesson.id)}
                     onStart={() => handleLessonStart(lesson.id)}
                     lessonIndex={lessonIndex}
-                    totalLessons={section.lessons.length}
+                    totalLessons={totalLessons}
                   />
                 </div>
               );
             })}
           </div>
         </div>
-      )}
+        <div className="h-2" />
+      </div>
     </div>
   );
 }
