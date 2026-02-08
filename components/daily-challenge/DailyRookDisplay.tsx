@@ -12,6 +12,7 @@ interface DailyRookDisplayProps {
   timeLeft: number; // ms remaining
   mode: 'demo' | 'playing' | 'finished';
   totalTime?: number; // ms total for finished display
+  statusNode?: React.ReactNode; // Status text to show in playing mode right column
 }
 
 // Grid sizing
@@ -43,6 +44,7 @@ export function DailyRookDisplay({
   timeLeft,
   mode,
   totalTime,
+  statusNode,
 }: DailyRookDisplayProps) {
   // Track previous results to detect changes for animation
   const prevResultsRef = useRef<BlockResult[]>(results);
@@ -170,6 +172,17 @@ export function DailyRookDisplay({
 
         {/* Stats — right */}
         <div className="flex flex-col items-center gap-2 flex-1">
+          {/* Timer card */}
+          <div className="bg-white rounded-xl px-4 py-2 shadow-sm">
+            <div
+              className={`text-2xl font-black tabular-nums transition-colors ${
+                isTimeLow ? 'text-[#FF4B4B] animate-pulse' : 'text-[#2A3C45]'
+              }`}
+            >
+              {formatTime(activeTime)}
+            </div>
+          </div>
+
           {/* Lives card */}
           <div className="bg-white rounded-xl px-3 py-2 shadow-sm flex items-center gap-1.5">
             {Array.from({ length: maxLives }).map((_, i) => {
@@ -190,16 +203,12 @@ export function DailyRookDisplay({
             })}
           </div>
 
-          {/* Timer card */}
-          <div className="bg-white rounded-xl px-4 py-2 shadow-sm">
-            <div
-              className={`text-2xl font-black tabular-nums transition-colors ${
-                isTimeLow ? 'text-[#FF4B4B] animate-pulse' : 'text-[#2A3C45]'
-              }`}
-            >
-              {formatTime(activeTime)}
+          {/* Status text */}
+          {statusNode && (
+            <div className="text-center text-sm">
+              {statusNode}
             </div>
-          </div>
+          )}
         </div>
       </div>
     );

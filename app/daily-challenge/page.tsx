@@ -926,33 +926,6 @@ export default function DailyChallengePage() {
                   />
                 )}
               </div>
-
-              {/* Status */}
-              <div className="text-left text-sm">
-                {moveStatus === 'playing' && currentPuzzle && game && (
-                  <div className="flex flex-col gap-0.5">
-                    <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
-                      {game.turn() === 'w' ? 'White' : 'Black'} to move
-                    </div>
-                    <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
-                      <span>Find the best move</span>
-                      {primaryTheme && (
-                        <HelpIconButton onClick={() => setShowHelpModal(true)} />
-                      )}
-                    </div>
-                  </div>
-                )}
-                {moveStatus === 'correct' && (
-                  <div className="text-green-400 font-semibold animate-pulse">
-                    Correct!
-                  </div>
-                )}
-                {moveStatus === 'incorrect' && (
-                  <div className="text-red-400 font-semibold">
-                    Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         )}
@@ -1300,6 +1273,33 @@ export default function DailyChallengePage() {
           timeLeft={timeLeft}
           mode={rookMode}
           totalTime={gameState === 'finished' ? completionTimeMs : undefined}
+          statusNode={gameState === 'playing' ? (
+            <>
+              {moveStatus === 'playing' && currentPuzzle && game && (
+                <div className="flex flex-col items-center gap-0.5">
+                  <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                    {game.turn() === 'w' ? 'White' : 'Black'} to move
+                  </div>
+                  <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
+                    <span>Find the best move</span>
+                    {primaryTheme && (
+                      <HelpIconButton onClick={() => setShowHelpModal(true)} />
+                    )}
+                  </div>
+                </div>
+              )}
+              {moveStatus === 'correct' && (
+                <div className="text-green-400 font-semibold animate-pulse">
+                  Correct!
+                </div>
+              )}
+              {moveStatus === 'incorrect' && (
+                <div className="text-red-400 font-semibold">
+                  Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
+                </div>
+              )}
+            </>
+          ) : undefined}
         />
       )}
 
