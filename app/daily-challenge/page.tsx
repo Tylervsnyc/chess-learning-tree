@@ -928,9 +928,9 @@ export default function DailyChallengePage() {
               </div>
 
               {/* Status */}
-              <div className="text-center text-sm">
+              <div className="text-left text-sm">
                 {moveStatus === 'playing' && currentPuzzle && game && (
-                  <div className="flex flex-col items-center gap-1">
+                  <div className="flex flex-col gap-0.5">
                     <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
                       {game.turn() === 'w' ? 'White' : 'Black'} to move
                     </div>
