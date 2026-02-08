@@ -163,7 +163,7 @@ export function DailyRookDisplay({
   // Playing mode: side-by-side layout (rook left, stats right)
   if (mode === 'playing') {
     return (
-      <div className="flex items-center justify-start gap-3 px-3 pb-1 pt-1 flex-shrink-0">
+      <div className="flex items-center justify-center gap-3 px-3 pb-1 pt-1 flex-shrink-0">
         {/* Rook grid — left */}
         <RookGrid
           results={activeResults}
@@ -216,7 +216,7 @@ export function DailyRookDisplay({
 
   // Demo + Finished: side-by-side layout (same as playing — rook left, stats right)
   return (
-    <div className="flex items-center justify-start gap-3 px-3 pb-1 pt-1 flex-shrink-0">
+    <div className="flex items-center justify-center gap-3 px-3 pb-1 pt-1 flex-shrink-0">
       {/* Rook grid — left */}
       <RookGrid
         results={activeResults}

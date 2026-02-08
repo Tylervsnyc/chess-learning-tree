@@ -815,13 +815,13 @@ export default function DailyChallengePage() {
 
   // ─── SPLIT SCREEN LAYOUT (all 3 states) ───────────────────────────────
   return (
-    <div className="h-full bg-[#eef6fc] text-[#3c3c3c] overflow-hidden flex flex-col">
+    <div className={`h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col items-center ${gameState === 'playing' ? 'overflow-hidden justify-center' : 'overflow-auto'}`}>
       {/* Top section — changes per state */}
-      <div className={`flex-1 min-h-0 ${gameState === 'playing' ? 'flex flex-col' : 'overflow-auto'}`}>
+      <div className="w-full max-w-md">
         {/* ── READY / LOADING ── */}
         {(gameState === 'ready' || gameState === 'loading') && (
-          <div className="flex flex-col items-center justify-start px-4 pt-4 pb-2 h-full">
-            <div className="text-center max-w-sm w-full flex flex-col h-full">
+          <div className="flex flex-col items-center justify-start px-4 pt-4 pb-2">
+            <div className="text-center max-w-sm w-full flex flex-col">
               {/* Title */}
               <div
                 className="inline-block px-5 py-2.5 rounded-xl mb-2 border-2 border-[#FF9600]/50 self-center"
@@ -889,8 +889,8 @@ export default function DailyChallengePage() {
                 </div>
               </div>
 
-              {/* Buttons — pushed to bottom */}
-              <div className="flex gap-2 mt-auto">
+              {/* Buttons */}
+              <div className="flex gap-2 mt-3">
                 <button
                   onClick={startChallenge}
                   disabled={gameState === 'loading'}
@@ -913,7 +913,7 @@ export default function DailyChallengePage() {
 
         {/* ── PLAYING ── */}
         {gameState === 'playing' && (
-          <div className="flex flex-col max-w-sm mx-auto px-3 pt-1 pb-1 w-full">
+          <div className="flex flex-col max-w-md mx-auto px-3 pt-1 pb-1 w-full">
             <div className="flex flex-col">
               <div className="mb-1">
                 {game && (
@@ -944,7 +944,7 @@ export default function DailyChallengePage() {
         {/* ── FINISHED ── */}
         {gameState === 'finished' && (
           <div className="px-4 py-2">
-            <div className="max-w-sm mx-auto w-full">
+            <div className="max-w-md mx-auto w-full">
               {/* Score card — matches share card design */}
               <div className="bg-white rounded-2xl p-4 mb-3 celebratory-glow text-center">
                 <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600] mb-2">
@@ -1229,7 +1229,7 @@ export default function DailyChallengePage() {
       {/* Bottom section — rook or review board */}
       {reviewingPuzzle && reviewGame ? (
         <div className="flex-shrink-0 px-4 pb-2 pt-1">
-          <div className="max-w-sm mx-auto w-full">
+          <div className="max-w-md mx-auto w-full">
             <div className="rounded-lg overflow-hidden mb-2">
               <Chessboard
                 options={{
@@ -1277,38 +1277,40 @@ export default function DailyChallengePage() {
           </div>
         </div>
       ) : (
-        <DailyRookDisplay
-          results={buildResultsArray()}
-          lives={lives}
-          maxLives={MAX_LIVES}
-          timeLeft={timeLeft}
-          mode={rookMode}
-          totalTime={gameState === 'finished' ? completionTimeMs : undefined}
-          statusNode={gameState === 'playing' ? (
-            <>
-              {moveStatus === 'playing' && currentPuzzle && game && (
-                <div className="flex flex-col items-center gap-0.5">
-                  <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
-                    {game.turn() === 'w' ? 'White' : 'Black'} to move
+        <div className="max-w-md mx-auto w-full">
+          <DailyRookDisplay
+            results={buildResultsArray()}
+            lives={lives}
+            maxLives={MAX_LIVES}
+            timeLeft={timeLeft}
+            mode={rookMode}
+            totalTime={gameState === 'finished' ? completionTimeMs : undefined}
+            statusNode={gameState === 'playing' ? (
+              <>
+                {moveStatus === 'playing' && currentPuzzle && game && (
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                      {game.turn() === 'w' ? 'White' : 'Black'} to move
+                    </div>
+                    <div className="text-[#6b7c8a] text-sm">
+                      Find the best move
+                    </div>
                   </div>
-                  <div className="text-[#6b7c8a] text-sm">
-                    Find the best move
+                )}
+                {moveStatus === 'correct' && (
+                  <div className="text-lg text-green-400 font-black animate-pulse">
+                    Correct!
                   </div>
-                </div>
-              )}
-              {moveStatus === 'correct' && (
-                <div className="text-lg text-green-400 font-black animate-pulse">
-                  Correct!
-                </div>
-              )}
-              {moveStatus === 'incorrect' && (
-                <div className="text-lg text-red-400 font-black">
-                  Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
-                </div>
-              )}
-            </>
-          ) : undefined}
-        />
+                )}
+                {moveStatus === 'incorrect' && (
+                  <div className="text-lg text-red-400 font-black">
+                    Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
+                  </div>
+                )}
+              </>
+            ) : undefined}
+          />
+        </div>
       )}
 
     </div>

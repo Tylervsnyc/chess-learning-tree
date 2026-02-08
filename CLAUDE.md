@@ -27,7 +27,13 @@ Tasks are auto-dispatched to specialized agents. Just describe what you want in 
 
 Spawn agents via Task tool with `subagent_type: "general-purpose"`. Prompt: `Read .claude/agents/{type}-agent.md, then execute: TASK: {description}`.
 
-**When NOT to dispatch:** Trivial tasks (fix a typo), questions ("how does X work?"), or ambiguous requests (clarify first).
+**Use agents aggressively.** Default to dispatching — don't do work in the main conversation that an agent should own. Examples:
+- "daily health check" → **QA Agent**
+- "this page is broken" → investigate briefly, then dispatch fix to the owning agent
+- "add a feature" → dispatch to the relevant agent immediately
+- Multi-file bugs → investigate in main, then dispatch fixes to each agent in parallel
+
+**When NOT to dispatch:** Only for truly trivial tasks (fix a typo), pure questions ("how does X work?"), or ambiguous requests (clarify first).
 
 See `AGENTS.md` for parallel safety matrix, branching strategy, and full details.
 
@@ -116,6 +122,8 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 
 **Layout:** Mobile-first. Body (`flex-col, overflow-hidden`) → NavHeader → main (`flex-1`) → page (`h-full`). Use `h-full` NOT `h-screen`. Only `/learn` and `/test-*` get `overflow-auto`.
 
+**Desktop containment:** Every page/feature must look correct at wide viewports, not just mobile. All content sections within a page must share the same max-width container (e.g., `max-w-sm mx-auto` or `max-w-lg mx-auto`). Never leave a section unconstrained while others are constrained — this causes misalignment on desktop. For phone-width experiences (Daily Rook, lessons), wrap the outermost page div in `max-w-lg mx-auto w-full`.
+
 ---
 
 ## Chess Board Rules
@@ -167,13 +175,14 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 
 ---
 
-## Common Pitfalls (Top 5)
+## Common Pitfalls (Top 6)
 
 1. **Competing code** — Search ALL code touching a feature before changing any. Delete competing implementations first.
 2. **Data flow gaps** — Trace every field: DB → API → sync → hook → component. If any layer drops it, the feature breaks.
 3. **Schema drift** — `schema.sql` may not match live DB. Check both.
 4. **Race conditions** — POST and GET can race after navigation. Local wins for recent actions.
 5. **Uncommitted files** — After fixing, `git status` to verify ALL related files are committed.
+6. **Desktop overflow** — Every section on a page must share the same max-width container. If one section is `max-w-sm mx-auto` and another has no constraint, desktop breaks.
 
 Full list: `.claude/lessons-learned.md` (20 entries from real debugging sessions)
 
