@@ -159,9 +159,9 @@ export function DailyRookDisplay({
   const isTimeLow = mode === 'playing' && timeLeft < 30000;
 
   return (
-    <div className="flex flex-col items-center px-4 pb-2 pt-1 flex-shrink-0">
+    <div className="flex flex-col items-center px-4 pb-1 pt-1 flex-shrink-0">
       {/* Hearts + Timer row */}
-      <div className="flex items-center justify-between w-full max-w-[280px] mb-2">
+      <div className="flex items-center justify-between w-full max-w-[250px] mb-1.5">
         <div className="flex items-center gap-1">
           {Array.from({ length: maxLives }).map((_, i) => {
             const isFilled = i < activeLives;
@@ -169,7 +169,7 @@ export function DailyRookDisplay({
             return (
               <svg
                 key={i}
-                className={`w-6 h-6 transition-all duration-300 ${
+                className={`w-5 h-5 transition-all duration-300 ${
                   isFilled ? 'text-[#FF4B4B]' : 'text-[#c5d4de]'
                 } ${isShaking ? 'animate-heart-shake' : ''}`}
                 fill="currentColor"
@@ -181,7 +181,7 @@ export function DailyRookDisplay({
           })}
         </div>
         <div
-          className={`text-xl font-bold tabular-nums transition-colors ${
+          className={`text-lg font-bold tabular-nums transition-colors ${
             isTimeLow ? 'text-[#FF4B4B] animate-pulse' : 'text-[#2A3C45]'
           }`}
         >
@@ -210,8 +210,8 @@ function RookGrid({
 }) {
   // Each cell is a square. We use absolute positioning within a relative container.
   // Block size adapts to screen width.
-  const blockSize = 'clamp(28px, 12vw, 48px)';
-  const gap = 'clamp(3px, 1vw, 5px)';
+  const blockSize = 'clamp(24px, 10vw, 42px)';
+  const gap = 'clamp(2px, 0.8vw, 4px)';
 
   return (
     <div
