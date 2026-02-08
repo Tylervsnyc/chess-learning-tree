@@ -345,11 +345,11 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 | Element | Style |
 |---------|-------|
 | "THE DAILY ROOK" title | Nunito font, font-black, gradient text (orange→red), in gradient box with orange border |
-| Background | `#1A2C35` (lighter dark) |
-| Cards | `#131F24` (darker) |
+| Background | `#eef6fc` (light theme) |
+| Cards | White with `shadow-sm`, rounded-xl |
 | Brand logo | chesspath logo + wordmark above title |
-| Header (playing) | Orange-red gradient bar with lives, timer, solved count |
-| Board | Fixed position, doesn't shift when UI updates |
+| Board | Fixed size (`max-w-sm`), doesn't shift when UI updates |
+| Playing bottom | Side-by-side: rook grid left, stats cards right |
 
 ### Ready Screen:
 - 5 Minutes on the Clock
@@ -358,10 +358,10 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 - Compete Globally
 
 ### Playing Screen:
-- Lives (hearts) - top bar
-- Timer (countdown) - top bar
-- Puzzle counter ("Puzzle X / 20") - above board
-- "White/Black to move" indicator
+- **Top half:** Chess board (fixed size, `max-w-sm`) + no scrolling
+- **Bottom half — side-by-side:** Rook grid (left), stats column (right)
+  - Stats column top-to-bottom: "White/Black to move" status → timer (card) → lives/hearts (card)
+  - No theme help (?) button — Daily Rook never shows hints
 - Opponent's last move highlighted (orange)
 
 ### Finished Screen:
@@ -386,6 +386,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | File | Purpose |
 |------|---------|
 | `app/daily-challenge/page.tsx` | Main game UI (ready/playing/finished) |
+| `components/daily-challenge/DailyRookDisplay.tsx` | Rook grid + stats (side-by-side in playing, stacked otherwise) |
 | `app/api/daily-challenge/puzzles/route.ts` | Returns seeded puzzles for today |
 | `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
 

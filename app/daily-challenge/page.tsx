@@ -7,8 +7,6 @@ import { Chess, Square } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase/client';
-import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpModal';
-import { getThemeExplanation } from '@/data/theme-explanations';
 import {
   playCorrectSound,
   playErrorSound,
@@ -130,9 +128,6 @@ export default function DailyChallengePage() {
 
   // Track if guest has completed in this session (prevents replay for non-logged-in users)
   const [guestCompletedSession, setGuestCompletedSession] = useState(false);
-
-  // Help modal state
-  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Leaderboard view toggle - default to My Standing
   const [showMyStanding, setShowMyStanding] = useState(true);
@@ -727,14 +722,6 @@ export default function DailyChallengePage() {
   };
 
   // Find primary theme from current puzzle for help modal
-  const primaryTheme = useMemo(() => {
-    if (!currentPuzzle?.themes) return null;
-    for (const theme of currentPuzzle.themes) {
-      if (getThemeExplanation(theme)) return theme;
-    }
-    return null;
-  }, [currentPuzzle]);
-
   // Square styles (highlight opponent's last move and selected square)
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
@@ -1280,11 +1267,8 @@ export default function DailyChallengePage() {
                   <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
                     {game.turn() === 'w' ? 'White' : 'Black'} to move
                   </div>
-                  <div className="flex items-center gap-2 text-[#6b7c8a] text-sm">
-                    <span>Find the best move</span>
-                    {primaryTheme && (
-                      <HelpIconButton onClick={() => setShowHelpModal(true)} />
-                    )}
+                  <div className="text-[#6b7c8a] text-sm">
+                    Find the best move
                   </div>
                 </div>
               )}
@@ -1303,14 +1287,6 @@ export default function DailyChallengePage() {
         />
       )}
 
-      {/* Theme help modal */}
-      {primaryTheme && (
-        <ThemeHelpModal
-          isOpen={showHelpModal}
-          onClose={() => setShowHelpModal(false)}
-          themeId={primaryTheme}
-        />
-      )}
     </div>
   );
 }
