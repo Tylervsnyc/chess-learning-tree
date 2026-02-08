@@ -830,7 +830,7 @@ export default function DailyChallengePage() {
   return (
     <div className="h-full bg-[#eef6fc] text-[#3c3c3c] overflow-hidden flex flex-col">
       {/* Top section — changes per state */}
-      <div className="overflow-auto">
+      <div className={`flex-1 min-h-0 ${gameState === 'playing' ? 'flex flex-col' : 'overflow-auto'}`}>
         {/* ── READY / LOADING ── */}
         {(gameState === 'ready' || gameState === 'loading') && (
           <div className="flex flex-col items-center px-4 pt-2 pb-2">
@@ -902,9 +902,9 @@ export default function DailyChallengePage() {
 
         {/* ── PLAYING ── */}
         {gameState === 'playing' && (
-          <div className="flex flex-col max-w-sm mx-auto px-3 pt-1 pb-1 w-full">
-            <div className="flex flex-col">
-              <div className="mb-1">
+          <div className="flex-1 min-h-0 flex flex-col items-center px-3 pt-1 pb-1 w-full">
+            <div className="flex-1 min-h-0 w-full flex justify-center">
+              <div className="aspect-square h-full max-w-sm">
                 {game && (
                   <Chessboard
                     options={{
@@ -926,33 +926,33 @@ export default function DailyChallengePage() {
                   />
                 )}
               </div>
+            </div>
 
-              {/* Status */}
-              <div className="text-center text-sm">
-                {moveStatus === 'playing' && currentPuzzle && game && (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
-                      {game.turn() === 'w' ? 'White' : 'Black'} to move
-                    </div>
-                    <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
-                      <span>Find the best move</span>
-                      {primaryTheme && (
-                        <HelpIconButton onClick={() => setShowHelpModal(true)} />
-                      )}
-                    </div>
+            {/* Status */}
+            <div className="flex-shrink-0 text-center text-sm py-1">
+              {moveStatus === 'playing' && currentPuzzle && game && (
+                <div className="flex flex-col items-center gap-1">
+                  <div className={`font-bold ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                    {game.turn() === 'w' ? 'White' : 'Black'} to move
                   </div>
-                )}
-                {moveStatus === 'correct' && (
-                  <div className="text-green-400 font-semibold animate-pulse">
-                    Correct!
+                  <div className="flex items-center gap-2 text-[#6b7c8a] text-xs">
+                    <span>Find the best move</span>
+                    {primaryTheme && (
+                      <HelpIconButton onClick={() => setShowHelpModal(true)} />
+                    )}
                   </div>
-                )}
-                {moveStatus === 'incorrect' && (
-                  <div className="text-red-400 font-semibold">
-                    Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
+              {moveStatus === 'correct' && (
+                <div className="text-green-400 font-semibold animate-pulse">
+                  Correct!
+                </div>
+              )}
+              {moveStatus === 'incorrect' && (
+                <div className="text-red-400 font-semibold">
+                  Wrong! {lives > 0 ? 'Next puzzle...' : 'No lives left'}
+                </div>
+              )}
             </div>
           </div>
         )}
