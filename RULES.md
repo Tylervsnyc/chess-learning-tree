@@ -386,7 +386,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | File | Purpose |
 |------|---------|
 | `app/daily-challenge/page.tsx` | Main game UI (ready/playing/finished) |
-| `components/daily-challenge/DailyRookDisplay.tsx` | Rook grid + stats (side-by-side in playing, stacked otherwise) |
+| `components/daily-challenge/DailyRookDisplay.tsx` | Rook grid + stats (side-by-side layout in all modes) |
 | `app/api/daily-challenge/puzzles/route.ts` | Returns seeded puzzles for today |
 | `app/api/daily-challenge/leaderboard/route.ts` | Returns leaderboard data |
 
