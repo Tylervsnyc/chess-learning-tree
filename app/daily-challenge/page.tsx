@@ -820,7 +820,7 @@ export default function DailyChallengePage() {
       <div className={`flex-1 min-h-0 ${gameState === 'playing' ? 'flex flex-col' : 'overflow-auto'}`}>
         {/* ── READY / LOADING ── */}
         {(gameState === 'ready' || gameState === 'loading') && (
-          <div className="flex flex-col items-center px-4 pt-2 pb-2">
+          <div className="flex flex-col items-center justify-end px-4 pt-2 pb-2 h-full">
             <div className="text-center max-w-sm w-full">
               <div
                 className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
