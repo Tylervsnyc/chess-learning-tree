@@ -8,10 +8,11 @@ import { playCelebrationSound } from '@/lib/sounds';
 import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnimationStyle } from './RookCelebrationAnimation';
 import { generateLessonShareText } from '@/lib/share/generate-share-text';
 import { ShareEvents } from '@/lib/analytics/posthog';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 const COLORS = {
-  green: '#58CC02',
-  blue: '#1CB0F6',
+  green: 'var(--color-chess-green)',
+  blue: 'var(--color-chess-blue)',
 };
 
 const celebrationStyles = `
@@ -69,8 +70,8 @@ export function LessonCompleteScreen({
       spread: 55,
       origin: { x: 0, y: 0.65 },
       colors: isPerfect
-        ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
-        : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
+        ? ['#FFC800', 'var(--color-chess-gold)', '#FFAA00', '#FFFFFF']
+        : ['var(--color-chess-green)', 'var(--color-chess-blue)', '#FF9600', '#FFFFFF'],
       gravity: 1.2,
       ticks: 200,
     });
@@ -80,8 +81,8 @@ export function LessonCompleteScreen({
       spread: 55,
       origin: { x: 1, y: 0.65 },
       colors: isPerfect
-        ? ['#FFC800', '#FFD700', '#FFAA00', '#FFFFFF']
-        : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
+        ? ['#FFC800', 'var(--color-chess-gold)', '#FFAA00', '#FFFFFF']
+        : ['var(--color-chess-green)', 'var(--color-chess-blue)', '#FF9600', '#FFFFFF'],
       gravity: 1.2,
       ticks: 200,
     });
@@ -101,7 +102,7 @@ export function LessonCompleteScreen({
   if (streak > 0) ogParams.set('streak', String(streak));
 
   return (
-    <div className="h-full bg-[#131F24] text-white flex flex-col items-center overflow-auto px-5 py-6">
+    <div className="h-full bg-chess-bg text-white flex flex-col items-center overflow-auto px-5 py-6">
       <style>{celebrationStyles}</style>
       <div className="max-w-sm w-full">
         {/* Animated Rook */}
@@ -144,110 +145,114 @@ export function LessonCompleteScreen({
         </div>
 
         {/* OG Share Card */}
-        <div
-          className="mb-4 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] animate-fadeInUp"
-          style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
-        >
-          <img
-            src={`/api/og/lesson?${ogParams.toString()}`}
-            alt={`${lessonName} - ${correctCount}/6`}
-            className="w-full h-auto"
-          />
-        </div>
+        {FEATURE_FLAGS.SHOW_SHARING && (
+          <div
+            className="mb-4 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] animate-fadeInUp"
+            style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
+          >
+            <img
+              src={`/api/og/lesson?${ogParams.toString()}`}
+              alt={`${lessonName} - ${correctCount}/6`}
+              className="w-full h-auto"
+            />
+          </div>
+        )}
 
         {/* Share buttons */}
-        <div
-          className="flex gap-3 mb-4 animate-fadeInUp"
-          style={{ animationDelay: '0.38s', animationFillMode: 'backwards' }}
-        >
-          {/* Share Results - text share */}
-          <button
-            onClick={async () => {
-              ShareEvents.shareClicked('lesson', 'text');
-              const shareText = generateLessonShareText({
-                puzzleResults,
-                correctCount,
-                lessonName,
-                streak,
-              });
-              try {
-                await navigator.clipboard.writeText(shareText);
-                setTextCopied(true);
-                ShareEvents.shareCompleted('lesson', 'clipboard');
-                setTimeout(() => setTextCopied(false), 2000);
-              } catch {
-                // Silent fail
-              }
-            }}
-            className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
-            style={{ background: 'linear-gradient(135deg, #1CB0F6, #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
+        {FEATURE_FLAGS.SHOW_SHARING && (
+          <div
+            className="flex gap-3 mb-4 animate-fadeInUp"
+            style={{ animationDelay: '0.38s', animationFillMode: 'backwards' }}
           >
-            {textCopied ? (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Copied!
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                </svg>
-                Share Results
-              </>
-            )}
-          </button>
-
-          {/* Share Link */}
-          <button
-            onClick={async () => {
-              ShareEvents.shareClicked('lesson', 'link');
-              const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
-
-              if (typeof navigator !== 'undefined' && 'share' in navigator) {
+            {/* Share Results - text share */}
+            <button
+              onClick={async () => {
+                ShareEvents.shareClicked('lesson', 'text');
+                const shareText = generateLessonShareText({
+                  puzzleResults,
+                  correctCount,
+                  lessonName,
+                  streak,
+                });
                 try {
-                  await navigator.share({
-                    title: `${lessonName} | Chess Path`,
-                    text: `I scored ${correctCount}/6 on "${lessonName}" on Chess Path!`,
-                    url: shareUrl,
-                  });
-                  ShareEvents.shareCompleted('lesson', 'native');
-                  return;
-                } catch (err) {
-                  if (err instanceof Error && err.name === 'AbortError') return;
+                  await navigator.clipboard.writeText(shareText);
+                  setTextCopied(true);
+                  ShareEvents.shareCompleted('lesson', 'clipboard');
+                  setTimeout(() => setTextCopied(false), 2000);
+                } catch {
+                  // Silent fail
                 }
-              }
+              }}
+              className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+              style={{ background: 'linear-gradient(135deg, var(--color-chess-blue), #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
+            >
+              {textCopied ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                  </svg>
+                  Share Results
+                </>
+              )}
+            </button>
 
-              try {
-                await navigator.clipboard.writeText(shareUrl);
-                setLinkCopied(true);
-                ShareEvents.shareCompleted('lesson', 'clipboard');
-                setTimeout(() => setLinkCopied(false), 2000);
-              } catch {
-                // Silent fail
-              }
-            }}
-            className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
-          >
-            {linkCopied ? (
-              <>
-                <svg className="w-4 h-4 text-[#58CC02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-[#58CC02]">Copied!</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                Share Link
-              </>
-            )}
-          </button>
-        </div>
+            {/* Share Link */}
+            <button
+              onClick={async () => {
+                ShareEvents.shareClicked('lesson', 'link');
+                const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
+
+                if (typeof navigator !== 'undefined' && 'share' in navigator) {
+                  try {
+                    await navigator.share({
+                      title: `${lessonName} | Chess Path`,
+                      text: `I scored ${correctCount}/6 on "${lessonName}" on Chess Path!`,
+                      url: shareUrl,
+                    });
+                    ShareEvents.shareCompleted('lesson', 'native');
+                    return;
+                  } catch (err) {
+                    if (err instanceof Error && err.name === 'AbortError') return;
+                  }
+                }
+
+                try {
+                  await navigator.clipboard.writeText(shareUrl);
+                  setLinkCopied(true);
+                  ShareEvents.shareCompleted('lesson', 'clipboard');
+                  setTimeout(() => setLinkCopied(false), 2000);
+                } catch {
+                  // Silent fail
+                }
+              }}
+              className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+            >
+              {linkCopied ? (
+                <>
+                  <svg className="w-4 h-4 text-chess-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-chess-green">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  Share Link
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Continue button */}
         <button
@@ -256,9 +261,10 @@ export function LessonCompleteScreen({
               ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
               : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
           }}
-          className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] animate-fadeInUp"
+          className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] animate-fadeInUp"
           style={{
             backgroundColor: COLORS.green,
+            boxShadow: '0 4px 0 var(--color-chess-green-shadow)',
             animationDelay: '0.4s',
             animationFillMode: 'backwards',
           }}
@@ -269,20 +275,20 @@ export function LessonCompleteScreen({
         {/* Guest signup prompt */}
         {isGuest && (
           <div
-            className="mt-4 bg-[#1A2C35] rounded-xl p-4 animate-fadeInUp"
+            className="mt-4 bg-chess-bg-light rounded-xl p-4 animate-fadeInUp"
             style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
           >
             <p className="text-gray-400 text-sm mb-3 text-center">Create a free account to save progress</p>
             <div className="flex gap-3">
               <Link
                 href="/auth/signup?from=lesson"
-                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-chess-text hover:bg-[#3A4C55] transition-colors"
               >
                 Sign Up
               </Link>
               <Link
                 href="/auth/login"
-                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-[#2A3C45] hover:bg-[#3A4C55] transition-colors"
+                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-chess-text hover:bg-[#3A4C55] transition-colors"
               >
                 Sign In
               </Link>

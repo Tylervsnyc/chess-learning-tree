@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { ShareButton } from '@/components/share/ShareButton';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import {
   RookProgressAnimation,
   RookProgressAnimationRef,
@@ -118,7 +119,7 @@ export function PuzzleResultPopup({
         <div className="flex-1 min-w-0">
           {/* Message */}
           <p
-            className={`font-bold leading-tight mb-1.5 ${isCorrect ? 'text-[#458500]' : 'text-[#cd2929]'}`}
+            className={`font-bold leading-tight mb-1.5 ${isCorrect ? 'text-chess-green-dark' : 'text-chess-red'}`}
             style={{ fontSize: 15 }}
           >
             {displayMessage}
@@ -128,13 +129,13 @@ export function PuzzleResultPopup({
           {!isCorrect && !showSolution && onShowSolution ? (
             <button
               onClick={onShowSolution}
-              className="w-full py-1.5 bg-[#FF4B4B] text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#CC3939] active:translate-y-[1px] active:shadow-[0_2px_0_#CC3939] transition-all"
+              className="w-full py-1.5 bg-chess-red text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#CC3939] active:translate-y-[1px] active:shadow-[0_2px_0_#CC3939] transition-all"
             >
               Try Again
             </button>
           ) : (
             <div className="flex gap-2">
-              {isCorrect && puzzleShareData && (
+              {FEATURE_FLAGS.SHOW_SHARING && isCorrect && puzzleShareData && (
                 <div className="relative flex-shrink-0">
                   <ShareButton
                     fen={puzzleShareData.fen}
@@ -150,8 +151,8 @@ export function PuzzleResultPopup({
                   flex-1 py-1.5 font-bold rounded-xl uppercase tracking-wide text-[13px] transition-all
                   active:translate-y-[1px]
                   ${isCorrect
-                    ? 'bg-[#58CC02] text-white shadow-[0_3px_0_#46A302] active:shadow-[0_2px_0_#46A302]'
-                    : 'bg-[#FF4B4B] text-white shadow-[0_3px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
+                    ? 'bg-chess-green text-white shadow-[0_3px_0_var(--color-chess-green-dark)] active:shadow-[0_2px_0_var(--color-chess-green-dark)]'
+                    : 'bg-chess-red text-white shadow-[0_3px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
                   }
                 `}
               >
