@@ -2042,6 +2042,353 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
+// LEVEL 7: THERE IS ALWAYS HOPE... UNLESS IT'S CHECKMATE (THE TWO TOWERS)
+// Tone: Rohan's resilience, Helm's Deep stand, Ents awakening, Gollum's duality,
+//       the long march, hope against the odds, towers of strength
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const level7Responses: Record<string, Record<string, string[]>> = {
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 1: "The Battle of Helm's Deep" — Fortification and defense themes
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 1: Back Rank Mastery
+  '7.1': {
+    general: [
+      "The Deeping Wall has been breached. Their back rank never stood a chance.",
+      "Fortress sealed. No escape through the back door.",
+      "Their back rank held like Helm's Deep at dawn. Not well enough.",
+      "The wall behind the king is both shield and prison.",
+      "Back rank sealed tighter than the gates of Isengard.",
+      "Their own pawns became the walls of their dungeon.",
+      "Some fortresses protect. This one trapped.",
+      "Nowhere to retreat. The back rank says no.",
+      "They built a stronghold. You turned it into a cage.",
+      "The final rank: a fortress for some, a tomb for others.",
+    ],
+    backRankMate: [
+      "Back rank sealed. Checkmate delivered like a battering ram.",
+      "Their pawns stood guard. Their pawns stood in the way.",
+      "The rook charges down the file. The king has no window.",
+      "Should have made a luft move. Too late now.",
+      "The deep wall of pawns became a deep problem.",
+      "Locked behind their own defenses. Classic back rank.",
+    ],
+  },
+
+  // Section 2: The Promotion Race
+  '7.2': {
+    general: [
+      "The pawn marches to the eighth rank like the Ents march to Isengard.",
+      "Slow. Steady. Unstoppable. That pawn is going all the way.",
+      "The long march pays off. A new queen rises.",
+      "Promotion secured. The board just changed entirely.",
+      "Every pawn dreams of the eighth rank. This one made it.",
+      "They raced. You arrived first. Crown claimed.",
+      "The march forward was patient. The promotion was decisive.",
+      "From the smallest piece, the greatest threat emerges.",
+      "Push forward. Don't look back. Promote.",
+      "The pawn crossed enemy lines and came back royalty.",
+    ],
+    promotion: [
+      "Promoted. The pawn's journey from the Shire to the throne.",
+      "New queen on the board. The balance tips immediately.",
+      "The little piece that could. And did.",
+      "From foot soldier to royalty in one move.",
+      "They underestimated the pawn. That was their first mistake.",
+      "The promotion parade has arrived.",
+    ],
+    advancedPawn: [
+      "That passed pawn is more relentless than an Ent on the move.",
+      "The advanced pawn demands attention. And respect.",
+      "One square from promotion. One square from panic.",
+      "The pawn is too far gone. Nothing can stop it now.",
+      "An advanced pawn is a promise of destruction.",
+      "Deep in their territory. The threat is obvious and unstoppable.",
+    ],
+  },
+
+  // Section 3: Trapped Pieces
+  '7.3': {
+    general: [
+      "Trapped like Gollum in the forbidden pools. Nowhere to swim.",
+      "That piece wandered too deep. No way home.",
+      "Cornered. Surrounded. Collected.",
+      "The net closes. The piece has no squares.",
+      "They placed it there boldly. It stays there permanently.",
+      "Every retreat cut off. Every escape blocked.",
+      "Trapped pieces don't fight back. They just wait.",
+      "When a piece runs out of squares, it runs out of time.",
+      "Hemmed in on all sides. A tactical Isengard.",
+      "That piece was an adventurer. Now it's a prisoner.",
+    ],
+    trappedPiece: [
+      "Trapped piece spotted. Trapped piece collected.",
+      "No squares left. No hope left.",
+      "The bishop wandered into Fangorn. It didn't come back.",
+      "Surrounded with no retreat. The capture is just a formality.",
+      "That piece is stuck like Saruman in his tower.",
+      "Every exit sealed. Every square covered. Goodbye, piece.",
+    ],
+  },
+
+  // Section 4: Review - The Unexpected Arsenal
+  '7.4': {
+    general: [
+      "Back ranks, promotions, and trapped pieces. The full arsenal of Helm's Deep.",
+      "Block 1 reviewed. Your fortress game is unbreakable.",
+      "From trapping pieces to racing pawns: all confirmed.",
+      "The unexpected review reveals: you're ready for deeper battles.",
+      "Mixed themes, unified excellence. Rohan rides again.",
+      "Review complete. The wall holds. The pawns march. The traps spring.",
+      "Every tool from Block 1 at your fingertips.",
+      "The fortress themes are locked in tight.",
+      "Back rank mastery, promotion races, trapped pieces. All yours.",
+      "The Deeping Wall of skills: reviewed and reinforced.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 2: "The March of the Ents" — Power and patience themes
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 5: Deeper Sacrifices
+  '7.5': {
+    general: [
+      "Treebeard doesn't make hasty decisions. Neither did that sacrifice.",
+      "Give up the piece. Gain the position. Win the war.",
+      "The sacrifice ran deeper than the roots of Fangorn.",
+      "Material is temporary. Initiative is permanent.",
+      "They accepted the offering. They didn't read the terms.",
+      "Bold sacrifice. Patient follow-up. Inevitable conclusion.",
+      "The deeper you sacrifice, the sweeter the reward.",
+      "That wasn't a loss. That was an investment with compound interest.",
+      "Sacrificed with the patience of an Ent and the precision of an arrow.",
+      "They thought they were winning material. They were losing everything.",
+    ],
+    sacrifice: [
+      "Deep sacrifice planted. The position blooms in your favor.",
+      "The sacrifice was three moves ahead. They caught on two moves late.",
+      "Give a piece, gain a symphony of threats.",
+      "Sacrificed cleanly. The compensation is overwhelming.",
+      "That sacrifice shook the board like an Ent shakes Isengard.",
+      "Not reckless. Calculated to the final check.",
+    ],
+  },
+
+  // Section 6: Long Combinations
+  '7.6': {
+    general: [
+      "The Ents are going to Isengard. Four moves at a time.",
+      "Long calculation. Clean execution. Checkmate.",
+      "The combination stretched further than the road to Mordor.",
+      "Every move forced. Every response predicted. Every outcome: yours.",
+      "See deep. Play deep. Win deep.",
+      "That sequence took patience, vision, and nerve.",
+      "Long combinations separate the tacticians from the legends.",
+      "The whole line visualized before a single piece moved.",
+      "From the first sacrifice to the final check: perfection.",
+      "They ran out of defensive moves before you ran out of attacking ones.",
+    ],
+    mateIn4: [
+      "Mate in 4. Every branch calculated like an Entmoot debate.",
+      "Four moves, four steps to checkmate. All foreseen.",
+      "The four-move sequence lands like a falling tree.",
+      "Calculated four deep. The finish was never in doubt.",
+      "They had four chances to survive. None of them worked.",
+      "Four precise moves. One devastating outcome.",
+    ],
+    mateIn5: [
+      "Mate in 5. The long march ends in checkmate.",
+      "Five moves deep and the board bends to your will.",
+      "The five-move combination: patient, powerful, perfect.",
+      "See five, execute five. The Ents would be proud.",
+      "Five moves of relentless pressure. Then silence.",
+      "From here to checkmate: five moves of pure calculation.",
+    ],
+  },
+
+  // Section 7: Defensive Resources
+  '7.7': {
+    general: [
+      "The best defense is a Helm's Deep defense.",
+      "Hold the line. The counterattack is coming.",
+      "Sometimes the strongest move is the one that says 'not today.'",
+      "Defense isn't weakness. It's delayed strength.",
+      "The position looked lost. The resource said otherwise.",
+      "They thought they were winning. You found the save.",
+      "Defensive brilliance. The tide turns.",
+      "Survive first. Punish second.",
+      "The fortress holds. The counterplay begins.",
+      "When the position screams danger, cool heads find resources.",
+    ],
+    defensiveMove: [
+      "Defensive resource found. The position stabilizes.",
+      "The only move. And you found it.",
+      "That defensive shot turned the entire game around.",
+      "Hold the wall. The Riders of Rohan are coming.",
+      "The saving move was hiding in plain sight.",
+      "From lost to level. One defensive resource changes everything.",
+    ],
+  },
+
+  // Section 8: Review - Calculated March
+  '7.8': {
+    general: [
+      "Sacrifices, combinations, defensive saves. The march continues.",
+      "Block 2 review: the patience of Ents, the power of calculation.",
+      "From deep sacrifices to long combinations to clutch defense.",
+      "The calculated march through Block 2: complete.",
+      "Review confirms: your calculation runs deep as Fangorn's roots.",
+      "Every sacrifice, every combination, every save: accounted for.",
+      "The Ents marched. You calculated. Both unstoppable.",
+      "Deep play reviewed. Deep play confirmed.",
+      "Sacrifices that bloom, combinations that land, defenses that hold.",
+      "The march was long. The review was flawless.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 3: "The Two Towers of Tactics" — Classic themes elevated
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 9: Pin Mastery
+  '7.9': {
+    general: [
+      "Pinned like Wormtongue to his lies. Not going anywhere.",
+      "The pin holds. The pressure builds. The piece falls.",
+      "Absolute pin deployed. Absolutely winning.",
+      "Frozen in place by geometry and patience.",
+      "The line attack finds its mark once again.",
+      "Pinned to the king. Pinned to their fate.",
+      "They can see the danger. They just can't escape it.",
+      "The invisible thread holds the piece hostage.",
+      "Pin mastery means seeing lines others miss.",
+      "That piece is going nowhere. Except off the board.",
+    ],
+    pin: [
+      "Pin applied. The piece crumbles under the pressure.",
+      "The bishop sees right through to the king. The knight pays the price.",
+      "Absolute pin. Absolute advantage.",
+      "Pinned and piled on. The classic combination.",
+      "The pin is the thread. The win is the tapestry.",
+      "Stuck in place like Saruman in Orthanc. Not by choice.",
+    ],
+  },
+
+  // Section 10: Skewer & Fork Mastery
+  '7.10': {
+    general: [
+      "Two targets, one move. The algebra of winning.",
+      "Skewered or forked? Either way, they lose a piece.",
+      "The dual threat strikes again.",
+      "Line up the targets. Collect the spoils.",
+      "Their pieces stood on the wrong squares. Your pieces noticed.",
+      "Fork the royals. Skewer the valuables. Win the game.",
+      "Double attacks are the bread and butter of tactical chess.",
+      "The horse rides to Rohan. And takes everything.",
+      "Two threats with one move. The efficiency is beautiful.",
+      "When pieces align, profits follow.",
+    ],
+    skewer: [
+      "Skewered clean through, like a lance at Helm's Deep.",
+      "The king steps aside. The queen stays behind. Forever.",
+      "Through and through. Thanks for the material.",
+      "The reverse pin delivers again.",
+      "Big piece in front, small piece behind. The skewer writes itself.",
+      "Pierced both targets. Only one survived.",
+    ],
+    fork: [
+      "Forked like a crossroads in Rohan. Both paths lead to loss.",
+      "The knight lands and two pieces tremble.",
+      "Double attack deployed. Pick which piece to save.",
+      "The fork is elegant. The result is brutal.",
+      "Two targets, zero solutions for the defender.",
+      "Fork executed. Material advantage: secured.",
+    ],
+  },
+
+  // Section 11: Endgame Mastery
+  '7.11': {
+    general: [
+      "The endgame is where kings become warriors.",
+      "Fewer pieces. Higher stakes. Same precision.",
+      "Technique sharper than the blade of Rohan.",
+      "The long game rewards the patient tactician.",
+      "When the dust settles, technique decides everything.",
+      "Endgame mastery: the crown jewel of chess skill.",
+      "Convert the advantage. Close the game. Claim the win.",
+      "The board is open. The king steps forward. Victory follows.",
+      "From middlegame chaos to endgame clarity.",
+      "The final phase. The decisive phase. Your phase.",
+    ],
+    endgame: [
+      "Endgame technique on full display. Textbook conversion.",
+      "The position simplified. Your advantage didn't.",
+      "Clean endgame. Clean win. No complications survived.",
+      "Technical precision from the first trade to the final check.",
+      "The endgame road is narrow. You walked it perfectly.",
+      "Converted with the patience of Treebeard counting the seasons.",
+    ],
+  },
+
+  // Section 12: Review - The Full Stew
+  '7.12': {
+    general: [
+      "Pins, skewers, forks, endgames. The full stew, Precious.",
+      "Block 3 review: every classic tactic elevated.",
+      "The Two Towers of tactics: line attacks and double threats.",
+      "All the classic themes. All at a higher level.",
+      "Review confirms: your tactical foundation is a fortress.",
+      "Pins that paralyze. Forks that plunder. Endgames that convert.",
+      "From pin mastery to endgame precision: the full package.",
+      "Every tactic sharpened. Every theme covered.",
+      "The stew is ready. Every ingredient accounted for.",
+      "Block 3 mastery: the classic tactics bow to your command.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 4: "The Horn of Helm Hammerhand" — Full mastery
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 13: Level 7 Review
+  '7.13': {
+    general: [
+      "Level 7 review: from back rank traps to endgame conversions.",
+      "Every theme, every tactic, every block. Reviewed and confirmed.",
+      "The full Level 7 arsenal: deployed and devastating.",
+      "Mixed puzzles from all four blocks. All four handled.",
+      "There is always hope. Unless you're on the other side of this board.",
+      "From Helm's Deep to the march of the Ents: all skills accounted for.",
+      "The review reveals: you've earned every section of Level 7.",
+      "Back ranks, promotions, sacrifices, pins. The complete warrior.",
+      "All themes mixed. All themes mastered.",
+      "The horn sounds. Level 7 skills answer the call.",
+    ],
+  },
+
+  // Section 14: Level 7 Final
+  '7.14': {
+    general: [
+      "Level 7 Final: the towers have fallen. You still stand.",
+      "There is always hope. And you just proved it.",
+      "The Two Towers crumbled. Your skills are the ones still standing.",
+      "From back rank prisons to five-move combinations: mastered.",
+      "Level 7: conquered with the resilience of Rohan.",
+      "The horn of Helm Hammerhand sounds for the last time. You've graduated.",
+      "Through sacrifice, defense, and precision: Level 7 complete.",
+      "Not all who wander through puzzles are lost. Some of them are you.",
+      "Level 7 complete. The path ahead grows steeper. You're ready.",
+      "Helm's Deep held. So did you.",
+      "The march is done. The Ents would nod in slow approval.",
+      "Level 7: where hope meets calculation, and calculation wins.",
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -2070,6 +2417,7 @@ const allLevelResponses: Record<string, Record<string, Record<string, string[]>>
   '4': level4Responses,
   '5': level5Responses,
   '6': level6Responses,
+  '7': level7Responses,
 };
 
 /**
@@ -2098,7 +2446,7 @@ export function getV2Response(sectionId: string, themes?: string[]): string {
       sectionResponses = blockResponses[sectionId];
     }
   } else {
-    // Levels 2-6 use flat structure by section ID
+    // Levels 2-7 use flat structure by section ID
     const levelResponses = allLevelResponses[levelNum];
     if (levelResponses) {
       sectionResponses = levelResponses[sectionId] as SectionResponses | undefined;

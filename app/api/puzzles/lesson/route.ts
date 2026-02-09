@@ -111,7 +111,8 @@ function getLevelFromRating(ratingMin: number): number {
   if (ratingMin < 1200) return 3;
   if (ratingMin < 1400) return 4;
   if (ratingMin < 1600) return 5;
-  return 6;
+  if (ratingMin < 1800) return 6;
+  return 7;
 }
 
 export async function GET(request: NextRequest) {

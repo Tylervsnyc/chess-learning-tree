@@ -11,6 +11,7 @@ import { level3V2 } from '@/data/staging/level3-v2-curriculum';
 import { level4V2 } from '@/data/staging/level4-v2-curriculum';
 import { level5V2 } from '@/data/staging/level5-v2-curriculum';
 import { level6V2 } from '@/data/staging/level6-v2-curriculum';
+import { level7V2 } from '@/data/staging/level7-v2-curriculum';
 
 // Re-export types for convenience
 export type { LessonCriteria, Section, Block, Level };
@@ -75,6 +76,14 @@ export const LEVELS: LevelConfig[] = [
     treeId: '1600-1800',
     color: '#2FCBEF',
     darkColor: '#1a9cc0',
+  },
+  {
+    level: 7,
+    data: level7V2,
+    puzzleDir: '1600-2000',  // Level 7 lessons are rated 1800-2050
+    treeId: '1800-2000',
+    color: '#00B894',
+    darkColor: '#009975',
   },
 ];
 
