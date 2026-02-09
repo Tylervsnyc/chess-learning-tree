@@ -5,38 +5,38 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 // Block data: position and color
 const BLOCKS = [
   // Row 0: Crown points
-  { x: 8, y: 8, color: '#1CB0F6' },
-  { x: 44, y: 8, color: '#2FCBEF' },
-  { x: 80, y: 8, color: '#A560E8' },
+  { x: 4, y: 8, color: '#1CB0F6' },
+  { x: 40, y: 8, color: '#2FCBEF' },
+  { x: 76, y: 8, color: '#A560E8' },
   // Row 1: Crown rim
-  { x: 8, y: 26, color: '#58CC02' },
-  { x: 26, y: 26, color: '#FFC800' },
-  { x: 44, y: 26, color: '#FF9600' },
-  { x: 62, y: 26, color: '#FF6B6B' },
-  { x: 80, y: 26, color: '#FF4B4B' },
+  { x: 4, y: 26, color: '#58CC02' },
+  { x: 22, y: 26, color: '#FFC800' },
+  { x: 40, y: 26, color: '#FF9600' },
+  { x: 58, y: 26, color: '#FF6B6B' },
+  { x: 76, y: 26, color: '#FF4B4B' },
   // Row 2: Head
-  { x: 26, y: 44, color: '#1CB0F6' },
-  { x: 44, y: 44, color: '#2FCBEF' },
-  { x: 62, y: 44, color: '#A560E8' },
+  { x: 22, y: 44, color: '#1CB0F6' },
+  { x: 40, y: 44, color: '#2FCBEF' },
+  { x: 58, y: 44, color: '#A560E8' },
   // Row 3: Neck
-  { x: 26, y: 62, color: '#58CC02' },
-  { x: 44, y: 62, color: '#FFC800' },
-  { x: 62, y: 62, color: '#FF9600' },
+  { x: 22, y: 62, color: '#58CC02' },
+  { x: 40, y: 62, color: '#FFC800' },
+  { x: 58, y: 62, color: '#FF9600' },
   // Row 4: Body
-  { x: 26, y: 80, color: '#FF6B6B' },
-  { x: 44, y: 80, color: '#FF4B4B' },
-  { x: 62, y: 80, color: '#1CB0F6' },
+  { x: 22, y: 80, color: '#FF6B6B' },
+  { x: 40, y: 80, color: '#FF4B4B' },
+  { x: 58, y: 80, color: '#1CB0F6' },
   // Row 5: Base
-  { x: 8, y: 98, color: '#2FCBEF' },
-  { x: 26, y: 98, color: '#A560E8' },
-  { x: 44, y: 98, color: '#58CC02' },
-  { x: 62, y: 98, color: '#FFC800' },
-  { x: 80, y: 98, color: '#FF9600' },
+  { x: 4, y: 98, color: '#2FCBEF' },
+  { x: 22, y: 98, color: '#A560E8' },
+  { x: 40, y: 98, color: '#58CC02' },
+  { x: 58, y: 98, color: '#FFC800' },
+  { x: 76, y: 98, color: '#FF9600' },
 ];
 
 // Animation configuration
 const CONFIG = {
-  centerX: 51,
+  centerX: 47,
   centerY: 60,
   maxDelay: 400,
   duration: 400,
