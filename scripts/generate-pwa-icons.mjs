@@ -15,9 +15,18 @@ const innerContent = inputSvg
   .replace(/<\/svg>/, '')
   .trim();
 
-// Regular icons — just resize the SVG
+// The queen content isn't centered in the 96x96 viewBox:
+// X: 6..78 (center=42), Y: 2..89 (center=45.5), viewBox center=48,48
+// Shift viewBox origin so the content is visually centered
+const CENTERED_VIEWBOX = '-6 -2.5 96 96';
+
+// Regular icons — just resize the SVG with centered viewBox
 async function generateRegularIcon(size, outputPath) {
-  await sharp(inputSvg, { density: 300 })
+  const centeredSvg = `<svg width="96" height="96" viewBox="${CENTERED_VIEWBOX}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    ${innerContent}
+  </svg>`;
+
+  await sharp(Buffer.from(centeredSvg), { density: 300 })
     .resize(size, size)
     .png()
     .toFile(outputPath);
@@ -31,7 +40,7 @@ async function generateMaskableIcon(size, outputPath) {
 
   const maskableSvg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
     <rect width="${size}" height="${size}" fill="#eef6fc"/>
-    <svg x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" viewBox="0 0 96 96">
+    <svg x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" viewBox="${CENTERED_VIEWBOX}">
       ${innerContent}
     </svg>
   </svg>`;
@@ -51,7 +60,7 @@ async function generateAppleTouchIcon() {
 
   const appleSvg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
     <rect width="${size}" height="${size}" fill="#eef6fc"/>
-    <svg x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" viewBox="0 0 96 96">
+    <svg x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" viewBox="${CENTERED_VIEWBOX}">
       ${innerContent}
     </svg>
   </svg>`;

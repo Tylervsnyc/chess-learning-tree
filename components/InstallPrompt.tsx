@@ -21,7 +21,7 @@ const DISMISSED_KEY = 'chess-path-install-dismissed';
 export function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [platform, setPlatform] = useState<'native' | 'ios-safari' | 'ios-other' | 'desktop'>('desktop');
 
   useEffect(() => {
     // Register service worker
@@ -35,9 +35,14 @@ export function InstallPrompt() {
     // User previously dismissed
     if (localStorage.getItem(DISMISSED_KEY)) return;
 
-    // Detect iOS (no beforeinstallprompt — show manual instructions instead)
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window);
-    setIsIOS(ios);
+    // Detect platform for install instructions
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !('MSStream' in window);
+    if (isIOS) {
+      // Only Safari on iOS supports Add to Home Screen
+      const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(ua);
+      setPlatform(isSafari ? 'ios-safari' : 'ios-other');
+    }
 
     // Capture the browser's deferred install prompt (Chrome/Edge/Android)
     const handleBeforeInstall = (e: Event) => {
@@ -73,8 +78,7 @@ export function InstallPrompt() {
     localStorage.setItem(DISMISSED_KEY, 'true');
   }, []);
 
-  // Don't render if: hidden, or neither Android install nor iOS instructions available
-  if (!showPrompt || (!deferredPrompt && !isIOS)) return null;
+  if (!showPrompt) return null;
 
   return (
     <div
@@ -92,9 +96,7 @@ export function InstallPrompt() {
                 Add Chess Path to Home Screen
               </h3>
               <p className="text-chess-text-muted text-sm mt-0.5">
-                {isIOS
-                  ? 'Tap Share, then "Add to Home Screen"'
-                  : 'Quick access to your daily puzzles'}
+                Quick access to your daily puzzles
               </p>
             </div>
             <button
@@ -112,13 +114,39 @@ export function InstallPrompt() {
               </svg>
             </button>
           </div>
-          {!isIOS && (
+          {deferredPrompt ? (
             <button
               onClick={handleInstall}
               className="w-full mt-4 bg-chess-green text-white font-bold py-3 rounded-xl transition-all border-b-[4px] border-chess-green-shadow hover:brightness-105 active:border-b-[2px] active:translate-y-[2px]"
             >
               Install App
             </button>
+          ) : platform === 'ios-safari' ? (
+            <div className="mt-4 bg-chess-page rounded-xl p-3 text-center">
+              <p className="text-chess-text text-sm font-medium">
+                Tap the <span className="inline-block mx-0.5 align-text-bottom"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M12 3l4 4M12 3L8 7" stroke="#1CB0F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 14v5a2 2 0 002 2h12a2 2 0 002-2v-5" stroke="#1CB0F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></span> icon below, then <strong>&quot;Add to Home Screen&quot;</strong>
+              </p>
+            </div>
+          ) : platform === 'ios-other' ? (
+            <div className="mt-4 bg-chess-page rounded-xl p-3 text-center">
+              <p className="text-chess-text text-sm">
+                Open in <strong>Safari</strong> to add to your home screen
+              </p>
+              <button
+                onClick={() => {
+                  navigator.clipboard?.writeText(window.location.origin + '/learn');
+                }}
+                className="mt-2 text-chess-blue text-sm font-semibold hover:underline"
+              >
+                Copy link
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 bg-chess-page rounded-xl p-3 text-center">
+              <p className="text-chess-text text-sm">
+                Look for <strong>&quot;Install&quot;</strong> in your browser&apos;s address bar or menu
+              </p>
+            </div>
           )}
         </div>
       </div>
