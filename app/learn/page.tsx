@@ -435,6 +435,11 @@ export default function LearnPage() {
           0% { transform: skewX(-20deg) translateX(-150%); }
           100% { transform: skewX(-20deg) translateX(250%); }
         }
+        @keyframes popup-enter {
+          0% { opacity: 0; transform: translateY(-8px) scale(0.9); }
+          50% { transform: translateY(2px) scale(1.02); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
         .level-card-hover:hover .level-card-main {
           transform: translate(-2px, -2px);
         }
@@ -962,6 +967,7 @@ function LessonButton({
             top: size + depthY + 12,
             left: '50%',
             transform: popupTransform,
+            animation: 'popup-enter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
           }}
         >
           {/* Arrow pointing up */}
