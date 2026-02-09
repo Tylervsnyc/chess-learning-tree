@@ -396,7 +396,7 @@ export default function LearnPage() {
   // serverFetched ensures currentPosition has merged with server data before render
   if (userLoading || isProfileLoading || !progressLoaded || !serverFetched) {
     return (
-      <div className="h-full overflow-auto bg-[#eef6fc] text-[#3c3c3c] pb-20">
+      <div className="h-full overflow-auto bg-chess-page text-chess-text pb-20">
         <div className="max-w-lg mx-auto px-4 py-6">
           {/* Skeleton level header */}
           <div className="h-24 bg-gray-200 rounded-2xl animate-pulse mb-6" />
@@ -417,7 +417,7 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="h-full overflow-auto bg-[#eef6fc] text-[#3c3c3c] pb-20">
+    <div className="h-full overflow-auto bg-chess-page text-chess-text pb-20">
       <style>{`
         @keyframes sparkle {
           0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
@@ -515,7 +515,7 @@ export default function LearnPage() {
                   <div
                     className="relative rounded-2xl p-4 border-2 transition-transform duration-300 level-card-main overflow-hidden"
                     style={{
-                      backgroundColor: '#1A2C35',
+                      backgroundColor: 'var(--color-chess-bg-light)',
                       borderColor: color,
                       boxShadow: `0 12px 24px rgba(0,0,0,0.3)`,
                     }}
@@ -616,8 +616,8 @@ function BlockView({
       {/* Block Title */}
       <div className="mb-4 px-2 text-center">
         <div className="mb-2">
-          <h2 className="text-lg font-black text-[#3c3c3c]">{block.name}</h2>
-          <p className="text-xs text-[#afafaf]">{block.description}</p>
+          <h2 className="text-lg font-black text-chess-text">{block.name}</h2>
+          <p className="text-xs text-chess-text-muted">{block.description}</p>
         </div>
         <div className="h-0.5 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
       </div>
@@ -730,7 +730,7 @@ function SectionView({
   }, [router]);
 
   return (
-    <div className="mb-3" ref={sectionRef}>
+    <div className="mb-3" ref={sectionRef} style={{ position: 'relative', zIndex: selectedLessonId ? 10 : 'auto' }}>
       {/* Section Header */}
       <button
         onClick={onToggle}
@@ -750,8 +750,8 @@ function SectionView({
           {section.isReview ? '★' : sectionIndex + 1}
         </div>
         <div className="flex-1 text-left">
-          <div className={`font-bold ${isExpanded ? 'text-white' : 'text-[#3c3c3c]'}`}>{section.name}</div>
-          <div className={`text-xs ${isExpanded ? 'text-white/70' : 'text-[#afafaf]'}`}>
+          <div className={`font-bold ${isExpanded ? 'text-white' : 'text-chess-text'}`}>{section.name}</div>
+          <div className={`text-xs ${isExpanded ? 'text-white/70' : 'text-chess-text-muted'}`}>
             {section.lessons.length} lessons • {section.description}
           </div>
         </div>
@@ -775,8 +775,8 @@ function SectionView({
           pointerEvents: isExpanded ? 'auto' : 'none',
         }}
       >
-        <div ref={contentRef} className="mt-4 px-2">
-          <div className="flex flex-row justify-evenly items-start">
+        <div ref={contentRef} className="mt-4 px-0 sm:px-2">
+          <div className="flex flex-row justify-evenly items-start scale-[0.85] sm:scale-100 origin-top">
             {section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
               const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, currentPosition);
@@ -857,7 +857,7 @@ function LessonButton({
   if (isCompleted) {
     topColor = CURRICULUM_V2_CONFIG.completedColor;
     bottomColor = CURRICULUM_V2_CONFIG.completedDarkColor;
-    iconColor = '#B8860B';
+    iconColor = 'var(--color-chess-gold-dark)';
   } else if (isLocked) {
     topColor = CURRICULUM_V2_CONFIG.lockedColor;
     bottomColor = CURRICULUM_V2_CONFIG.lockedDarkColor;
@@ -987,7 +987,7 @@ function LessonButton({
             className="relative rounded-2xl overflow-hidden shadow-xl"
             style={{
               width: '200px',
-              backgroundColor: '#1A2C35',
+              backgroundColor: 'var(--color-chess-bg-light)',
               border: `3px solid ${isLocked ? '#374151' : sectionColor}`,
             }}
           >
