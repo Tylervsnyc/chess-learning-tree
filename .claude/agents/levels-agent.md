@@ -158,11 +158,14 @@ Tests for 5→6, 6→7, 7→8 are already stubbed — need to be populated with 
 2. **Read existing levels** — Study level 4 and 5 curriculum files for the exact TypeScript structure
 3. **Design block/section names** — Movie quotes for blocks, tactical themes cleverly named for sections
 4. **Map tactical themes to sections** — 14 sections covering appropriate themes for the ELO range
-5. **Generate puzzle pools** — Filter and select puzzles for each of the 56 lessons
+5. **Generate puzzle files** — Add level to `V2_LEVELS` in `scripts/extract-clean-puzzles.ts` and run it (see Puzzle Pool Generation above)
 6. **Write quips** — Intro messages, correct/wrong responses for each section
 7. **Register in curriculum-registry.ts** — Add new level to the registry
-8. **Populate level tests** — 10-15 test puzzles for level transition tests
-9. **Verify** — All IDs unique, no duplicates, naming follows conventions
+8. **Update `getLevelFromRating()`** — In `app/api/puzzles/lesson/route.ts`, add the new rating range
+9. **Update maintenance check** — Add level import and entry to `scripts/maintenance-check.ts`
+10. **Populate level tests** — 10-15 test puzzles for level transition tests
+11. **Run maintenance check** — `npx tsx scripts/maintenance-check.ts --no-server` — ALL lessons must have 6+ puzzles. **DO NOT ship a level that fails this check.**
+12. **Verify** — All IDs unique, no duplicates, naming follows conventions, `npm run check` passes
 
 ---
 

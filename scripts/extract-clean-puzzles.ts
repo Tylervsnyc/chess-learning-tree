@@ -310,12 +310,12 @@ function extractCleanPuzzles(
 
   console.log(`  Processed ${totalProcessed} puzzles, ${totalCleaned} clean (${((totalCleaned / totalProcessed) * 100).toFixed(1)}%)`);
 
-  // Sort each theme by rating (easy to hard), then by popularity (most played first)
+  // Sort each theme by popularity (most played first) for the cap,
+  // then re-sort by rating after slicing in main loop.
+  // This ensures the 1000-puzzle cap keeps the best puzzles across
+  // the FULL rating range, not just the lowest-rated ones.
   for (const [theme, puzzles] of puzzlesByTheme) {
-    puzzles.sort((a, b) => {
-      if (a.rating !== b.rating) return a.rating - b.rating;
-      return b.popularity - a.popularity;
-    });
+    puzzles.sort((a, b) => b.popularity - a.popularity);
   }
 
   return puzzlesByTheme;
@@ -350,16 +350,22 @@ for (const levelConfig of V2_LEVELS) {
 
   summary[`level${levelConfig.level}`] = {};
 
-  // Save each theme to its own file (cap at 1000 per theme)
+  // Save each theme to its own file (cap at 1000 most popular, then sort by rating)
   for (const [theme, puzzles] of puzzlesByTheme) {
     const outputFile = path.join(outputDir, `level${levelConfig.level}-${theme}.json`);
+
+    // Take top 1000 by popularity, then sort by rating for the API
+    const capped = puzzles.slice(0, 1000).sort((a, b) => {
+      if (a.rating !== b.rating) return a.rating - b.rating;
+      return b.popularity - a.popularity;
+    });
 
     fs.writeFileSync(outputFile, JSON.stringify({
       level: levelConfig.level,
       ratingRange: levelConfig.label,
       theme,
       count: puzzles.length,
-      puzzles: puzzles.slice(0, 1000), // Cap at 1000 per theme
+      puzzles: capped,
     }, null, 2));
 
     summary[`level${levelConfig.level}`][theme] = puzzles.length;

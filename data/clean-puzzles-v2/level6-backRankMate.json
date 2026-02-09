@@ -112,25 +112,6 @@
       "gameUrl": "https://lichess.org/Y4mjz24J/black#48"
     },
     {
-      "puzzleId": "iXIJo",
-      "fen": "r1b1kbnR/1p3pp1/5q2/p1p1p1p1/2P1P3/N3B1P1/PPP2PP1/1K1R4 b q - 0 15",
-      "moves": "g8e7 h8f8 e8f8 d1d8",
-      "rating": 1600,
-      "popularity": 78,
-      "nbPlays": 819,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attraction",
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/zXT0Mskf/black#30"
-    },
-    {
       "puzzleId": "Z9fGe",
       "fen": "r4rk1/p1p2Rpp/1b6/3Q4/8/3P4/P2q2PP/1R5K b - - 0 21",
       "moves": "f8d8 f7d7 g8h8 d7d8 a8d8 d5d8",
@@ -239,25 +220,6 @@
       "gameUrl": "https://lichess.org/IKM74X69#55"
     },
     {
-      "puzzleId": "O1mPN",
-      "fen": "4rrk1/pp4pp/2b5/2qpnN2/8/2P3P1/PP2BQ1P/3R1RK1 b - - 0 23",
-      "moves": "c5a5 f5e7 g8h8 f2f8 e8f8 f1f8",
-      "rating": 1601,
-      "popularity": 80,
-      "nbPlays": 544,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "discoveredAttack",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/id5T8rdt/black#46"
-    },
-    {
       "puzzleId": "5MqL0",
       "fen": "3Q1bk1/5ppp/p7/P1p1B3/q1P5/5rP1/5P1P/4R1K1 b - - 7 30",
       "moves": "a4c2 d8f8 g8f8 e5d6 f8g8 e1e8",
@@ -350,25 +312,6 @@
       "gameUrl": "https://lichess.org/MxcVTfqb/black#56"
     },
     {
-      "puzzleId": "SJu4y",
-      "fen": "5rk1/1b3ppp/1pN5/pPn1N3/P1q5/2P1P2P/5PP1/3R2K1 b - - 0 26",
-      "moves": "c4c3 c6e7 g8h8 e5f7 f8f7 d1d8 f7f8 d8f8",
-      "rating": 1602,
-      "popularity": 80,
-      "nbPlays": 512,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "mate",
-        "mateIn4",
-        "middlegame",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/12f4LH9c/black#52"
-    },
-    {
       "puzzleId": "h7dKm",
       "fen": "2r3k1/4Rppp/1p1n4/p2p4/7P/2P2Q2/5PPK/2q5 b - - 1 26",
       "moves": "c8c3 f3f7 d6f7 e7e8",
@@ -456,43 +399,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/9Xk7iURy#63"
-    },
-    {
-      "puzzleId": "iVEEj",
-      "fen": "Q7/1R4pp/3qppk1/2N5/2b1P3/8/P1p1nPPP/R6K w - - 4 31",
-      "moves": "a8g8 d6d1 a1d1 c2d1q",
-      "rating": 1603,
-      "popularity": 84,
-      "nbPlays": 707,
-      "theme": "backRankMate",
-      "allThemes": [
-        "advancedPawn",
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "promotion",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/O1tTjDyI#61"
-    },
-    {
-      "puzzleId": "Gfgny",
-      "fen": "r4r1k/2Q1N1pp/4p3/1R1pp3/8/8/q4PPP/1R4K1 w - - 0 32",
-      "moves": "c7e5 a2f2 g1h1 f2f1 b1f1 f8f1",
-      "rating": 1603,
-      "popularity": 83,
-      "nbPlays": 1053,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/ZkIhaQre#63"
     },
     {
       "puzzleId": "T67RE",
@@ -694,24 +600,6 @@
       "gameUrl": "https://lichess.org/Oxr7Qj3g/black#48"
     },
     {
-      "puzzleId": "Mdt6p",
-      "fen": "1r3rk1/3pRppp/8/2Q5/8/1P3P2/P6q/K3R3 b - - 0 26",
-      "moves": "f8c8 c5c8 b8c8 e7e8 c8e8 e1e8",
-      "rating": 1605,
-      "popularity": 69,
-      "nbPlays": 1308,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/Xln8mKk1/black#52"
-    },
-    {
       "puzzleId": "fPdn8",
       "fen": "5rk1/3R2pp/5p2/8/5q2/4p2P/6P1/3Q3K b - - 0 41",
       "moves": "f8b8 d1d5 g8h8 d7d8 b8d8 d5d8",
@@ -834,23 +722,6 @@
         "middlegame"
       ],
       "gameUrl": "https://lichess.org/6Jgc2cSR/black#38"
-    },
-    {
-      "puzzleId": "j35bq",
-      "fen": "1nr1k3/3q2bQ/1p2p1PB/p2p1r2/P2n4/1N5R/1P4PP/2R4K w - - 0 33",
-      "moves": "h6g7 c8c1 b3c1 f5f1",
-      "rating": 1606,
-      "popularity": 84,
-      "nbPlays": 1330,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/0AXnKeyu#65"
     },
     {
       "puzzleId": "ljHkn",
@@ -995,23 +866,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/BfhzlgSN/black#54"
-    },
-    {
-      "puzzleId": "BshS8",
-      "fen": "3r1rk1/pp2p2p/6p1/6Rn/2P5/1P6/P4qPP/R1BQ3K w - - 2 20",
-      "moves": "g5d5 f2f1 d1f1 f8f1",
-      "rating": 1607,
-      "popularity": 83,
-      "nbPlays": 984,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/Lculmchi#39"
     },
     {
       "puzzleId": "FJP05",
@@ -1266,24 +1120,6 @@
       "gameUrl": "https://lichess.org/C4juxyuL#57"
     },
     {
-      "puzzleId": "U7tbw",
-      "fen": "r3k1nr/p1Q2ppp/p1p3q1/8/4P3/4B3/PKP2PPP/3R4 b kq - 0 14",
-      "moves": "g8e7 c7d7 e8f8 d7d8 a8d8 d1d8",
-      "rating": 1609,
-      "popularity": 79,
-      "nbPlays": 626,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/1S2R2DzZ/black#28"
-    },
-    {
       "puzzleId": "jZaVu",
       "fen": "2r3k1/p1Q2ppp/2p2q2/3p4/8/1P3N1b/P5P1/4R2K b - - 2 24",
       "moves": "h3e6 c7c8 e6c8 e1e8",
@@ -1407,23 +1243,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/vjuKhoyA/black#54"
-    },
-    {
-      "puzzleId": "i728l",
-      "fen": "1k1r1b1r/pp4pp/2b1pp2/2N5/3P4/4B3/PPR2PPP/2R3K1 b - - 5 19",
-      "moves": "c6d5 c5d7 b8a8 c2c8 d8c8 c1c8",
-      "rating": 1611,
-      "popularity": 70,
-      "nbPlays": 672,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/WUyREHsB/black#38"
     },
     {
       "puzzleId": "cbtag",
@@ -1605,42 +1424,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/50tNmkuQ#31"
-    },
-    {
-      "puzzleId": "vFKqM",
-      "fen": "1r2n1k1/3p1ppp/pb6/1pNq4/1P1n4/P5PK/2P1Q2P/R3R3 b - - 5 26",
-      "moves": "g8f8 e2e7 f8g8 e7e8 b8e8 e1e8",
-      "rating": 1612,
-      "popularity": 79,
-      "nbPlays": 615,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/SoCCqp43/black#52"
-    },
-    {
-      "puzzleId": "WmNab",
-      "fen": "rnb1k1nr/pp1ppp1p/8/8/3bP3/4B3/Pq1N1PPP/2RQKBNR b Kkq - 1 8",
-      "moves": "d4e3 c1c8",
-      "rating": 1612,
-      "popularity": 78,
-      "nbPlays": 887,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "hangingPiece",
-        "mate",
-        "mateIn1",
-        "oneMove",
-        "opening"
-      ],
-      "gameUrl": "https://lichess.org/ds5hDrhp/black#16"
     },
     {
       "puzzleId": "llSvn",
@@ -1951,42 +1734,6 @@
       "gameUrl": "https://lichess.org/bBw2q0J6/black#48"
     },
     {
-      "puzzleId": "1p2u6",
-      "fen": "5knr/1p3pbp/p2Qn1p1/8/2q5/P4P2/1P3P1P/1K1R3R b - - 1 21",
-      "moves": "g8e7 d6d8 e6d8 d1d8",
-      "rating": 1615,
-      "popularity": 79,
-      "nbPlays": 534,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/JEuUGEs8/black#42"
-    },
-    {
-      "puzzleId": "yqiRp",
-      "fen": "5rk1/1pp1n1pp/8/3pp3/1P2P1Q1/1BPP4/P2q2PP/R5K1 w - - 0 22",
-      "moves": "e4d5 d2f2 g1h1 f2f1 a1f1 f8f1",
-      "rating": 1615,
-      "popularity": 71,
-      "nbPlays": 683,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/Ea1mVpbk#43"
-    },
-    {
       "puzzleId": "2fO37",
       "fen": "7k/2p3pp/p1Qp2r1/q7/4r1b1/P2K4/1PP5/4R1R1 b - - 5 28",
       "moves": "e4e1 c6a8 g4c8 a8c8 e1e8 c8e8",
@@ -2276,24 +2023,6 @@
       "gameUrl": "https://lichess.org/M5n2vjL9/black#44"
     },
     {
-      "puzzleId": "oRERi",
-      "fen": "2r3k1/5p1p/1Q3qpb/p2Pp3/Np2P3/1P3P2/P3b1PP/1B4K1 w - - 0 25",
-      "moves": "b6f6 h6e3 g1h1 c8c1",
-      "rating": 1619,
-      "popularity": 75,
-      "nbPlays": 611,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "master",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/VpyF3x4K#49"
-    },
-    {
       "puzzleId": "dp67i",
       "fen": "2rk4/Q3nppp/1r3q2/1P2p3/8/8/4KPBP/3R4 b - - 2 31",
       "moves": "d8e8 a7d7 e8f8 d7d8 c8d8 d1d8",
@@ -2347,25 +2076,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/ODSBN6iD#69"
-    },
-    {
-      "puzzleId": "4SZPZ",
-      "fen": "r1b1k2r/ppppnppp/8/8/1bQBP3/2N2R2/PPP3Pq/2KR4 b kq - 1 14",
-      "moves": "b4c3 c4f7 e8d8 f7f8 h8f8 f3f8",
-      "rating": 1620,
-      "popularity": 81,
-      "nbPlays": 502,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attackingF2F7",
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/VtMneKRf/black#28"
     },
     {
       "puzzleId": "PTnA9",
@@ -2476,42 +2186,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/cFIILMPO/black#66"
-    },
-    {
-      "puzzleId": "YjwFH",
-      "fen": "1k1rb2r/pp4p1/4pp2/Q1pq3p/3PnP2/1P1NP3/PBR3PP/5RK1 b - - 1 22",
-      "moves": "c5d4 a5c7 b8a8 c7c8 d8c8 c2c8",
-      "rating": 1621,
-      "popularity": 83,
-      "nbPlays": 546,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/GweNtwER/black#44"
-    },
-    {
-      "puzzleId": "tv9o9",
-      "fen": "6k1/1Q3p1p/pN1p2p1/3Pb3/8/1P6/P1rq1PPP/5RK1 w - - 3 25",
-      "moves": "b6c4 d2f2 f1f2 c2c1 f2f1 e5d4 c4e3 d4e3 g1h1 c1f1",
-      "rating": 1621,
-      "popularity": 83,
-      "nbPlays": 1488,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn5",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/HT7Ew43Z#49"
     },
     {
       "puzzleId": "tTmCh",
@@ -2734,42 +2408,6 @@
       "gameUrl": "https://lichess.org/Uh0l2dUR#71"
     },
     {
-      "puzzleId": "AWaKd",
-      "fen": "r6k/1p4pp/p1n5/3Qn3/8/2q3P1/2P4P/1K1RR3 b - - 1 24",
-      "moves": "e5c4 d5d8 a8d8 d1d8 c6d8 e1e8",
-      "rating": 1623,
-      "popularity": 78,
-      "nbPlays": 872,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/DjgoPjYM/black#48"
-    },
-    {
-      "puzzleId": "oKXJa",
-      "fen": "4r2k/5Qpp/8/3p4/p1bP4/B1P2P2/4q1PP/5RK1 w - - 8 32",
-      "moves": "f1a1 e2e3 g1h1 e3e1 a1e1 e8e1",
-      "rating": 1623,
-      "popularity": 76,
-      "nbPlays": 527,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/jFJYuHWd#63"
-    },
-    {
       "puzzleId": "pI2DD",
       "fen": "1k4r1/pp3Q2/q3pb2/8/1B1p1P1P/P2b1K2/1P4r1/2R1R3 b - - 5 29",
       "moves": "f6h4 f7c7 b8a8 c7c8 g8c8 c1c8",
@@ -2950,24 +2588,6 @@
       "gameUrl": "https://lichess.org/H3QN4mtx/black#42"
     },
     {
-      "puzzleId": "wGe5Y",
-      "fen": "1r3bk1/2N2ppp/p2pN3/2pPr1qP/2p1P1b1/5QP1/PP2R3/5RK1 b - - 3 22",
-      "moves": "f7e6 f3f7 g8h8 f7f8 b8f8 f1f8",
-      "rating": 1624,
-      "popularity": 72,
-      "nbPlays": 515,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/RmA4Hqhl/black#44"
-    },
-    {
       "puzzleId": "5nOMm",
       "fen": "r1k3r1/ppp1Q1pq/3p4/2bP2B1/3n4/8/PP3PPP/R3R1K1 b - - 1 19",
       "moves": "d4c2 e7e6 c8b8 e6e8 g8e8 e1e8",
@@ -3038,24 +2658,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/pXkilaef/black#44"
-    },
-    {
-      "puzzleId": "hOX6Q",
-      "fen": "2r1k2r/pp2npb1/6p1/2qp4/4B1Q1/8/PPP2PP1/1KBRR3 b k - 0 21",
-      "moves": "d5e4 g4d7 e8f8 d7d8 c8d8 d1d8",
-      "rating": 1625,
-      "popularity": 81,
-      "nbPlays": 1020,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/MB5fFO94/black#42"
     },
     {
       "puzzleId": "H0YYr",
@@ -3196,25 +2798,6 @@
         "mateIn3"
       ],
       "gameUrl": "https://lichess.org/aDZEKyaZ/black#60"
-    },
-    {
-      "puzzleId": "ShYh8",
-      "fen": "1r3b2/1rknNQ2/3p1B2/p2Pp3/P3P3/6R1/1p3PPP/1Rq3K1 w - - 5 37",
-      "moves": "b1c1 b2c1q",
-      "rating": 1626,
-      "popularity": 72,
-      "nbPlays": 673,
-      "theme": "backRankMate",
-      "allThemes": [
-        "advancedPawn",
-        "backRankMate",
-        "mate",
-        "mateIn1",
-        "middlegame",
-        "oneMove",
-        "promotion"
-      ],
-      "gameUrl": "https://lichess.org/srZkhoLo#73"
     },
     {
       "puzzleId": "eInvL",
@@ -3470,24 +3053,6 @@
       "gameUrl": "https://lichess.org/JbtUzyux#41"
     },
     {
-      "puzzleId": "rLuvS",
-      "fen": "1Q5r/p4kpp/N3pq2/3p4/P3n3/1P6/2P3PP/R6K w - - 9 34",
-      "moves": "b8h8 f6a1",
-      "rating": 1628,
-      "popularity": 81,
-      "nbPlays": 756,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "hangingPiece",
-        "mate",
-        "mateIn1",
-        "oneMove"
-      ],
-      "gameUrl": "https://lichess.org/CDz7RMte#67"
-    },
-    {
       "puzzleId": "xsikK",
       "fen": "rn3k1r/pp1b1ppp/8/2QP3q/5B2/PBb5/1PP3P1/4RKN1 b - - 1 17",
       "moves": "f8g8 c5c8 d7c8 e1e8",
@@ -3616,25 +3181,6 @@
       "gameUrl": "https://lichess.org/PcBukKDP/black#76"
     },
     {
-      "puzzleId": "v95yw",
-      "fen": "5rk1/p2b2p1/1p2p1Qp/3p4/3b1q2/2PB2R1/PP4PP/5NK1 w - - 0 23",
-      "moves": "c3d4 f4f2 g1h1 f2f1 d3f1 f8f1",
-      "rating": 1629,
-      "popularity": 83,
-      "nbPlays": 567,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/UsHJoEzw#45"
-    },
-    {
       "puzzleId": "81C9s",
       "fen": "5r1k/pp4p1/7p/2pQ4/3b4/2P1P3/PPq3PP/2BR1NK1 w - - 3 25",
       "moves": "d5h5 c2f2 g1h1 f2f1 d1f1 f8f1",
@@ -3686,42 +3232,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/pCeig0hU/black#34"
-    },
-    {
-      "puzzleId": "wcgVa",
-      "fen": "1qr3k1/1pr1bppp/p3p1n1/Pb2P2Q/5B2/2PB3R/2P2PPP/3R2K1 b - - 2 24",
-      "moves": "b5d3 h5h7 g8f8 h7h8 g6h8 h3h8",
-      "rating": 1630,
-      "popularity": 83,
-      "nbPlays": 868,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/yWvn4pWn/black#48"
-    },
-    {
-      "puzzleId": "IQf7N",
-      "fen": "1RN5/6pp/p3rk2/3Q1pq1/8/8/P1P2bPP/5RK1 w - - 0 27",
-      "moves": "f1f2 e6e1 f2f1 g5e3 g1h1 e1f1",
-      "rating": 1630,
-      "popularity": 81,
-      "nbPlays": 1936,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/CvrJ6fSd#53"
     },
     {
       "puzzleId": "1SQlJ",
@@ -3885,24 +3395,6 @@
       "gameUrl": "https://lichess.org/EABZC1zS/black#50"
     },
     {
-      "puzzleId": "qMQnE",
-      "fen": "4r1k1/2Q2p1p/b2P2p1/2p5/8/5P2/PPP1q1PP/R5K1 w - - 1 24",
-      "moves": "d6d7 e2e3 g1h1 e3e1 a1e1 e8e1",
-      "rating": 1631,
-      "popularity": 83,
-      "nbPlays": 1164,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/6H5XWQj4#47"
-    },
-    {
       "puzzleId": "A2BRG",
       "fen": "Q7/pp1k1p2/2pp1B2/4p3/4P1q1/3P4/PPP2brP/R2K3R w - - 2 22",
       "moves": "d1c1 f2e3 c1b1 g2g1 h1g1 g4g1",
@@ -4043,24 +3535,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/DHTHH9cB#51"
-    },
-    {
-      "puzzleId": "vWpkM",
-      "fen": "2r1r1k1/p1q4p/1p6/1B1P2p1/3Rn3/5Q1P/PP4P1/1K5R w - - 4 25",
-      "moves": "b5e8 c7c2 b1a1 c2c1 h1c1 c8c1",
-      "rating": 1633,
-      "popularity": 84,
-      "nbPlays": 520,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/f4iJWNzK#49"
     },
     {
       "puzzleId": "NeWkb",
@@ -4515,24 +3989,6 @@
       "gameUrl": "https://lichess.org/klfcGv8j/black#32"
     },
     {
-      "puzzleId": "rff9H",
-      "fen": "2k5/p1p2pp1/4r2p/4Q3/8/4B3/P1q2PPP/1nR3K1 w - - 0 22",
-      "moves": "e5g7 c2c1 e3c1 e6e1",
-      "rating": 1637,
-      "popularity": 82,
-      "nbPlays": 1608,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/uZ1z7nRj#43"
-    },
-    {
       "puzzleId": "JUW8M",
       "fen": "5rk1/R4Rpp/2B5/4P3/1pp2PP1/1r2PK2/3b3P/8 b - - 0 26",
       "moves": "f8f7 a7a8 f7f8 c6d5 g8h8 a8f8",
@@ -4732,41 +4188,6 @@
       "gameUrl": "https://lichess.org/jfXNgo9i#51"
     },
     {
-      "puzzleId": "EmwwO",
-      "fen": "4r1k1/5ppp/p1p5/3n4/3P4/1Pq1BQ2/P4PPP/R5K1 w - - 5 23",
-      "moves": "a1c1 c3c1 e3c1 e8e1",
-      "rating": 1639,
-      "popularity": 69,
-      "nbPlays": 852,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/56TGu9aO#45"
-    },
-    {
-      "puzzleId": "fUyjJ",
-      "fen": "4k3/5R1p/3pPp2/5P2/2p1r3/p7/Bq4PP/1Q5K w - - 5 47",
-      "moves": "b1e4 b2c1 e4e1 c1e1",
-      "rating": 1639,
-      "popularity": 69,
-      "nbPlays": 596,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/8SYO0Q0W#93"
-    },
-    {
       "puzzleId": "EGgw6",
       "fen": "2r3k1/4Nppp/6n1/3q4/1P1p2Q1/8/1P4PP/4R2K b - - 0 28",
       "moves": "g6e7 g4c8 e7c8 e1e8",
@@ -4912,24 +4333,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/EsayaHW4#53"
-    },
-    {
-      "puzzleId": "06iSh",
-      "fen": "3rr1k1/Qpp2pp1/2p4p/6b1/4q3/2P2N2/PP3PPP/R2R2K1 w - - 0 17",
-      "moves": "f3g5 d8d1 a1d1 e4e1 d1e1 e8e1",
-      "rating": 1641,
-      "popularity": 82,
-      "nbPlays": 887,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/xpWYSLxS#33"
     },
     {
       "puzzleId": "c28ip",
@@ -5291,23 +4694,6 @@
       "gameUrl": "https://lichess.org/fikFRIGc#63"
     },
     {
-      "puzzleId": "BrcQE",
-      "fen": "3rr3/pbp2pk1/1p3np1/4b1Bp/4N2P/5P2/PPP3Q1/2K2BR1 w - - 0 20",
-      "moves": "e4f6 e5f4 c1b1 e8e1",
-      "rating": 1644,
-      "popularity": 81,
-      "nbPlays": 1761,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/sDTLhMSb#39"
-    },
-    {
       "puzzleId": "0YfVa",
       "fen": "2kr4/p2r2pp/8/4pb2/1b1nN3/1B3PP1/PPPB2P1/2KR3R w - - 9 21",
       "moves": "d2b4 d4e2 c1b1 d7d1 h1d1 d8d1",
@@ -5476,24 +4862,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/hM41zNMk/black#42"
-    },
-    {
-      "puzzleId": "tityX",
-      "fen": "5rk1/2Q2ppp/3pbb2/8/5q2/2P2N2/r4PPP/3RR1K1 b - - 0 21",
-      "moves": "f8c8 c7c8 e6c8 e1e8",
-      "rating": 1645,
-      "popularity": 76,
-      "nbPlays": 611,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/iEkj6MJY/black#42"
     },
     {
       "puzzleId": "yhfZt",
@@ -6094,23 +5462,6 @@
       "gameUrl": "https://lichess.org/lfqxImvg#47"
     },
     {
-      "puzzleId": "Uw6z7",
-      "fen": "6k1/6pp/4pp2/8/2QPq3/4P1BP/5PPK/r7 b - - 1 26",
-      "moves": "e4b1 c4e6 g8h8 e6c8",
-      "rating": 1650,
-      "popularity": 82,
-      "nbPlays": 1864,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/NUk8Faj7/black#52"
-    },
-    {
       "puzzleId": "vkLnz",
       "fen": "r2qnrk1/1b1nb1pp/pp3p2/2pPp1NQ/2P1P3/2NBB3/PP3RPP/5RK1 b - - 1 15",
       "moves": "f6g5 f2f8 d7f8 h5f7 g8h8 f7f8 e7f8 f1f8",
@@ -6624,23 +5975,6 @@
       "gameUrl": "https://lichess.org/UIuQnoby/black#50"
     },
     {
-      "puzzleId": "oXW0d",
-      "fen": "4qk2/pp2rp1p/2pQ4/3b4/1P4RP/P4PP1/6K1/8 b - - 0 33",
-      "moves": "e8d7 d6h6 f8e8 g4g8",
-      "rating": 1653,
-      "popularity": 81,
-      "nbPlays": 2071,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/qNJyuYTV/black#66"
-    },
-    {
       "puzzleId": "4efpf",
       "fen": "r4r1k/2p3p1/p5Q1/6N1/3q3P/3P4/PPPb4/2K4R w - - 0 26",
       "moves": "c1d2 f8f2 d2d1 d4g4 d1c1 g4f4 c1b1 f2f1 h1f1 f4f1",
@@ -6728,24 +6062,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/LfdVBkg5/black#36"
-    },
-    {
-      "puzzleId": "DHizu",
-      "fen": "3r4/5rk1/8/p1Q1p1nR/1p2Pq2/3B4/PPP5/2K3R1 w - - 4 30",
-      "moves": "c1b1 f4f1 g1f1 f7f1 d3f1 d8d1",
-      "rating": 1654,
-      "popularity": 83,
-      "nbPlays": 506,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/Fz5UB6bI#59"
     },
     {
       "puzzleId": "BIZF5",
@@ -7112,24 +6428,6 @@
       "gameUrl": "https://lichess.org/xToFpuBS#55"
     },
     {
-      "puzzleId": "3APdB",
-      "fen": "r3r2k/1q4pp/p7/1p3QB1/3Pn3/8/PP4PP/4RRK1 b - - 6 25",
-      "moves": "e4g5 e1e8 a8e8 f5f8 e8f8 f1f8",
-      "rating": 1658,
-      "popularity": 83,
-      "nbPlays": 602,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/mdAsjPoU/black#50"
-    },
-    {
       "puzzleId": "xWe0O",
       "fen": "rn5k/p1Rb2pp/1p2p3/8/2B5/2r5/P4PPP/3R2K1 b - - 1 18",
       "moves": "b6b5 c7c8 d7c8 d1d8",
@@ -7346,23 +6644,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/70a42W4h/black#42"
-    },
-    {
-      "puzzleId": "ybH4r",
-      "fen": "1k2r3/pp1B1p1p/2p3p1/8/1Q1PP3/8/qPK2P2/8 b - - 1 25",
-      "moves": "e8e4 b4d6 b8a8 d6f8 e4e8 f8e8",
-      "rating": 1660,
-      "popularity": 82,
-      "nbPlays": 567,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/90qcEhb7/black#50"
     },
     {
       "puzzleId": "FrPsu",
@@ -7730,24 +7011,6 @@
       "gameUrl": "https://lichess.org/paXwr10z#57"
     },
     {
-      "puzzleId": "VbZzE",
-      "fen": "r4k2/1pp5/p2p1qpN/2nP1b2/4r3/2N2R2/P2Q1PPP/R5K1 w - - 2 26",
-      "moves": "c3e4 f6a1 d2c1 a1c1",
-      "rating": 1663,
-      "popularity": 82,
-      "nbPlays": 1030,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "hangingPiece",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/Wh17Y0nC#51"
-    },
-    {
       "puzzleId": "LkzmK",
       "fen": "5rk1/2R2ppp/5b2/8/2Q5/5BP1/1q3P1P/6K1 b - - 0 26",
       "moves": "f6d4 c4f7 f8f7 c7c8 f7f8 f3d5 g8h8 c8f8",
@@ -7873,24 +7136,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/wXwGewRp#63"
-    },
-    {
-      "puzzleId": "gwMMQ",
-      "fen": "2kr2nQ/ppp1pp1p/6p1/8/2qN4/4B3/4nPPP/2R3KR w - - 6 25",
-      "moves": "d4e2 c4c1 e2c1 d8d1",
-      "rating": 1664,
-      "popularity": 73,
-      "nbPlays": 1184,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/MDUVo5t1#49"
     },
     {
       "puzzleId": "GWMaK",
@@ -8021,25 +7266,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/hN2kgvWS#51"
-    },
-    {
-      "puzzleId": "M1XHB",
-      "fen": "4r1k1/5ppp/p7/2r2b2/7Q/8/4qPPP/2R2RK1 w - - 0 26",
-      "moves": "c1c5 e2f1 g1f1 f5d3 f1g1 e8e1",
-      "rating": 1665,
-      "popularity": 83,
-      "nbPlays": 838,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attraction",
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/g9ovtjoZ#51"
     },
     {
       "puzzleId": "GAn6D",
@@ -8202,24 +7428,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/pxytdtaP/black#48"
-    },
-    {
-      "puzzleId": "n2QRO",
-      "fen": "2r3k1/1p3pnp/p1qp2P1/3Nr3/2P5/1P3Q1P/P7/2R2RK1 b - - 0 25",
-      "moves": "f7g6 f3f7 g8h8 f7f8 c8f8 f1f8",
-      "rating": 1667,
-      "popularity": 83,
-      "nbPlays": 1248,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/56YFcbiq/black#50"
     },
     {
       "puzzleId": "bh1Mi",
@@ -8712,41 +7920,6 @@
       "gameUrl": "https://lichess.org/dgpI2eGj/black#54"
     },
     {
-      "puzzleId": "Lp6dM",
-      "fen": "6k1/6pp/Q3p3/3p3r/3Pn3/3KB3/PP4q1/2R5 b - - 1 28",
-      "moves": "h5h3 a6e6 g8h8 c1c8",
-      "rating": 1672,
-      "popularity": 83,
-      "nbPlays": 500,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/rbKXUwNl/black#56"
-    },
-    {
-      "puzzleId": "fYH88",
-      "fen": "2k3nr/ppp2pp1/2b4p/2p1pP2/2B1P3/1QP1qNP1/PP4KP/3R4 b - - 0 18",
-      "moves": "c6e4 c4e6 f7e6 b3e6 c8b8 d1d8",
-      "rating": 1672,
-      "popularity": 65,
-      "nbPlays": 628,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/7URl2SZo/black#36"
-    },
-    {
       "puzzleId": "U67JB",
       "fen": "3k3r/pbpn2Qp/1p3p2/3q1P2/8/8/PP4PP/1R2R2K b - - 0 25",
       "moves": "h8g8 g7e7 d8c8 e7e8 g8e8 e1e8",
@@ -8873,25 +8046,6 @@
       "gameUrl": "https://lichess.org/IcIZIr5d/black#40"
     },
     {
-      "puzzleId": "lIVez",
-      "fen": "4r1k1/3Q2pp/2P1p3/3pP3/8/2q1p3/6PP/5R1K b - - 1 32",
-      "moves": "e8a8 d7f7 g8h8 f7f8 a8f8 f1f8",
-      "rating": 1674,
-      "popularity": 76,
-      "nbPlays": 968,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "master",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/sn6qnqg0/black#64"
-    },
-    {
       "puzzleId": "OZZat",
       "fen": "5rk1/3R1Rpp/1p6/p7/8/2r2B1P/2n2PP1/6K1 b - - 0 25",
       "moves": "f8f7 d7d8 f7f8 f3d5 g8h8 d8f8",
@@ -8999,23 +8153,6 @@
       "gameUrl": "https://lichess.org/AOhm9Sxy/black#66"
     },
     {
-      "puzzleId": "8y5DU",
-      "fen": "2r3k1/1p3ppp/4p3/1r4q1/2R5/8/Q4PPP/3R2K1 b - - 0 28",
-      "moves": "c8c4 a2a8 c4c8 a8c8 g5d8 c8d8",
-      "rating": 1675,
-      "popularity": 83,
-      "nbPlays": 583,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/ngSe7SuU/black#56"
-    },
-    {
       "puzzleId": "gZRR3",
       "fen": "r1b3k1/pp1qb1pp/4n3/4B2Q/3p4/3P2PP/PPP4K/5RN1 b - - 0 22",
       "moves": "b7b6 h5f7 g8h8 e5g7 e6g7 f7f8 e7f8 f1f8",
@@ -9087,25 +8224,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/HRilIoD5#61"
-    },
-    {
-      "puzzleId": "0OcPH",
-      "fen": "r5k1/1bq1bRpr/1p2Q3/1p1nP3/3Pp3/2P4P/PP6/R1B3K1 b - - 0 25",
-      "moves": "a8e8 f7e7 g8h8 e7e8",
-      "rating": 1676,
-      "popularity": 81,
-      "nbPlays": 535,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "discoveredAttack",
-        "discoveredCheck",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/RvtipzzY/black#50"
     },
     {
       "puzzleId": "5cIw3",
@@ -9202,25 +8320,6 @@
       "gameUrl": "https://lichess.org/3O7cIuk4/black#58"
     },
     {
-      "puzzleId": "EaNnk",
-      "fen": "r7/1b4kp/1qp2pp1/Qpp1p3/3nP3/1P1PNN2/2P2PPP/R5K1 w - - 12 24",
-      "moves": "a5b6 a8a1 f3e1 a1e1 e3f1 d4e2 g1h1 e1f1",
-      "rating": 1677,
-      "popularity": 79,
-      "nbPlays": 808,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "hangingPiece",
-        "mate",
-        "mateIn4",
-        "middlegame",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/jAX7poW3#47"
-    },
-    {
       "puzzleId": "Gf4B9",
       "fen": "5rk1/pp2Qppp/6b1/8/3P2q1/5NB1/PP3P1P/4R1K1 b - - 0 22",
       "moves": "g4f3 e7f8 g8f8 g3d6 f8g8 e1e8",
@@ -9274,24 +8373,6 @@
         "middlegame"
       ],
       "gameUrl": "https://lichess.org/cO1ABH6G#47"
-    },
-    {
-      "puzzleId": "w104D",
-      "fen": "1R3rk1/p4ppp/p1P5/3Nbbq1/3P3P/6P1/2P2PB1/3nR1K1 b - - 0 24",
-      "moves": "g5g4 d5e7 g8h8 b8f8",
-      "rating": 1678,
-      "popularity": 82,
-      "nbPlays": 764,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/VKZV39tw/black#48"
     },
     {
       "puzzleId": "FzamB",
@@ -9421,23 +8502,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/FYwZ3iiP/black#54"
-    },
-    {
-      "puzzleId": "6tAev",
-      "fen": "4r2k/ppq3pp/8/3p4/4p3/QB5P/PPP2rP1/2KR3R w - - 0 24",
-      "moves": "d1f1 c7f4 c1b1 f2f1 h1f1 f4f1",
-      "rating": 1679,
-      "popularity": 83,
-      "nbPlays": 4069,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/tD5arEvK#47"
     },
     {
       "puzzleId": "TFEFx",
@@ -10157,24 +9221,6 @@
       "gameUrl": "https://lichess.org/NmQ8W7sh#45"
     },
     {
-      "puzzleId": "6ESSy",
-      "fen": "5rk1/5ppp/2N1p3/3pN3/r2PnB2/8/5PPP/1R4K1 b - - 0 21",
-      "moves": "f7f6 c6e7 g8h8 e5f7 f8f7 b1b8 f7f8 b8f8",
-      "rating": 1686,
-      "popularity": 77,
-      "nbPlays": 704,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn4",
-        "middlegame",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/eCqwTZ1t/black#42"
-    },
-    {
       "puzzleId": "8SHUQ",
       "fen": "3k4/p3b1pp/2b5/4P3/2Q5/2P1q3/PP4PP/1K6 w - - 0 24",
       "moves": "c4c6 e3d3 b1a1 d3f1",
@@ -10337,42 +9383,6 @@
       "gameUrl": "https://lichess.org/ei8dmXA4/black#56"
     },
     {
-      "puzzleId": "XihSs",
-      "fen": "1r4k1/p1Q2ppb/p3p2p/3N4/P3p3/1q6/1P3PPP/2R3K1 b - - 3 25",
-      "moves": "b3b2 c7c8 b8c8 c1c8",
-      "rating": 1688,
-      "popularity": 82,
-      "nbPlays": 2150,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/Q2COeC5P/black#50"
-    },
-    {
-      "puzzleId": "nMcu1",
-      "fen": "2r2r1k/1R4pp/8/8/p3PQ2/3P4/P1qN2PP/1R5K w - - 1 28",
-      "moves": "f4g5 c2c1 b1c1 c8c1 d2f1 c1f1",
-      "rating": 1688,
-      "popularity": 81,
-      "nbPlays": 1229,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/kHrHxKMf#55"
-    },
-    {
       "puzzleId": "Lz7Sq",
       "fen": "r3k1nr/pp2bpp1/4p3/4qNBp/7P/3Q4/PP3PP1/3R1K1R b kq - 3 16",
       "moves": "e5f5 d3d7 e8f8 g5e7 g8e7 d7d8 a8d8 d1d8",
@@ -10461,23 +9471,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/jkSizvQu#65"
-    },
-    {
-      "puzzleId": "z8El9",
-      "fen": "2k5/ppp5/3pp3/4p3/3q4/1QR4r/P3KR2/8 b - - 5 32",
-      "moves": "h3c3 b3e6 c8b8 f2f8",
-      "rating": 1689,
-      "popularity": 79,
-      "nbPlays": 761,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/hNgeKaka/black#64"
     },
     {
       "puzzleId": "8JQyt",
@@ -10826,25 +9819,6 @@
       "gameUrl": "https://lichess.org/P1XgAxQh#57"
     },
     {
-      "puzzleId": "NEuDj",
-      "fen": "7k/4Q3/6pb/1P1P3p/2P1P3/4P3/r3qNPP/5RK1 w - - 3 39",
-      "moves": "d5d6 e2f2 f1f2 a2a1 f2f1 h6e3 g1h1 a1f1",
-      "rating": 1693,
-      "popularity": 81,
-      "nbPlays": 516,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "mate",
-        "mateIn4",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/257ywr3Z#77"
-    },
-    {
       "puzzleId": "st0HN",
       "fen": "2b1r1k1/5p1p/2PQ1p2/8/3P4/8/4qPPP/5RK1 w - - 0 25",
       "moves": "d6f6 e2f1 g1f1 c8a6 f1g1 e8e1",
@@ -10899,24 +9873,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/m0KuTfq6#45"
-    },
-    {
-      "puzzleId": "s1qrj",
-      "fen": "2r1k2r/pbBpnppp/1p1Qp3/7q/4P1PP/5K2/P4P2/2RR4 b k - 0 21",
-      "moves": "h5h4 d6d7 e8f8 d7d8 c8d8 d1d8",
-      "rating": 1694,
-      "popularity": 78,
-      "nbPlays": 1140,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/sZGNPrpj/black#42"
     },
     {
       "puzzleId": "Ip1MQ",
@@ -11050,23 +10006,6 @@
       "gameUrl": "https://lichess.org/1k0qWMrX/black#62"
     },
     {
-      "puzzleId": "WGhqA",
-      "fen": "2r3k1/pb3ppp/1p2p3/1N2P3/1Pr1pP2/2P1Q1Pq/P2R3P/2KR4 b - - 7 23",
-      "moves": "a7a6 d2d8 c8d8 d1d8",
-      "rating": 1695,
-      "popularity": 80,
-      "nbPlays": 1699,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/69E5f9S4/black#46"
-    },
-    {
       "puzzleId": "ykwEg",
       "fen": "5r2/p3R2p/6pk/8/2QP4/2P5/PP1q1rPP/5RK1 w - - 4 30",
       "moves": "f1f2 d2f2 g1h1 f2f1 c4f1 f8f1",
@@ -11135,24 +10074,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/rqGT5shz#45"
-    },
-    {
-      "puzzleId": "eGaaL",
-      "fen": "2r3k1/3Q2pp/8/3N4/3qP3/8/P1r3PP/5R1K b - - 3 23",
-      "moves": "d4e4 d7f7 g8h8 f7f8 c8f8 f1f8",
-      "rating": 1696,
-      "popularity": 82,
-      "nbPlays": 958,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/7Asf8475/black#46"
     },
     {
       "puzzleId": "EEeIU",
@@ -11451,25 +10372,6 @@
       "gameUrl": "https://lichess.org/aQEXeXMN#55"
     },
     {
-      "puzzleId": "BcC26",
-      "fen": "r1b2rk1/1pp1Qppp/p1p5/8/2Pq4/4B3/PP3PPP/R3R1K1 b - - 1 17",
-      "moves": "d4b2 e7f8 g8f8 e3c5 f8g8 e1e8",
-      "rating": 1699,
-      "popularity": 81,
-      "nbPlays": 862,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attraction",
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/QBV0oLRQ/black#34"
-    },
-    {
       "puzzleId": "dYA3u",
       "fen": "4r1k1/p1p5/1p1p3p/2P3p1/3PnQ2/8/PP3PPP/4rNK1 w - - 0 24",
       "moves": "f4f5 e1f1 g1f1 e4d2 f1g1 e8e1",
@@ -11576,24 +10478,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/LmUi6FSl/black#60"
-    },
-    {
-      "puzzleId": "SZyFC",
-      "fen": "2r3kr/5ppp/3Qbq2/p2p4/6n1/P2P2P1/2PNRP1P/R5K1 b - - 7 22",
-      "moves": "c8c2 d6b8 c2c8 b8c8 e6c8 e2e8",
-      "rating": 1700,
-      "popularity": 78,
-      "nbPlays": 514,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/4iEuikLX/black#44"
     },
     {
       "puzzleId": "s5zXS",
@@ -11793,61 +10677,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/5Glo4w0r/black#58"
-    },
-    {
-      "puzzleId": "4oLvt",
-      "fen": "4r2k/4r1pp/p2p1p2/1p1Q4/3p4/1P1P4/P1Pq1PPP/R1R2K2 w - - 2 27",
-      "moves": "d5d4 d2e2 f1g1 e2e1 c1e1 e7e1 a1e1 e8e1",
-      "rating": 1702,
-      "popularity": 83,
-      "nbPlays": 930,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn4",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/1eDQxRR9#53"
-    },
-    {
-      "puzzleId": "imTNw",
-      "fen": "3r2k1/pp4pp/2p3b1/8/2r3PP/2qP1B2/P1P2Q2/2KR1R2 b - - 6 22",
-      "moves": "g6d3 f3d5 c6d5 f2f7 g8h8 f7f8 d8f8 f1f8",
-      "rating": 1702,
-      "popularity": 83,
-      "nbPlays": 556,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "clearance",
-        "mate",
-        "mateIn4",
-        "middlegame",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/mh1wSrZJ/black#44"
-    },
-    {
-      "puzzleId": "WsOou",
-      "fen": "r7/2kP2pp/bp5q/p2rNQ2/8/PN6/1P3PPP/4R1K1 w - - 1 27",
-      "moves": "e1c1 h6c1 b3c1 d5d1",
-      "rating": 1702,
-      "popularity": 81,
-      "nbPlays": 820,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/eyHsX4CM#53"
     },
     {
       "puzzleId": "ISouc",
@@ -12063,24 +10892,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/gHP9juMc/black#52"
-    },
-    {
-      "puzzleId": "qniKC",
-      "fen": "rnb2r1k/pp2Nppp/8/6N1/8/P7/1Pq1BPPP/2R2RK1 b - - 3 19",
-      "moves": "c2e2 g5f7 f8f7 c1c8 f7f8 c8f8",
-      "rating": 1705,
-      "popularity": 82,
-      "nbPlays": 907,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/3ZpiBXQo/black#38"
     },
     {
       "puzzleId": "crBeV",
@@ -12339,43 +11150,6 @@
       "gameUrl": "https://lichess.org/I0xnmm27#45"
     },
     {
-      "puzzleId": "o8GLg",
-      "fen": "1k2q3/1pr2p2/4p2p/PB1pN1p1/3Pn3/1Qn1P3/5PPP/5RK1 w - - 1 26",
-      "moves": "b5e8 c3e2 g1h1 e4f2 f1f2 c7c1 b3d1 c1d1 f2f1 d1f1",
-      "rating": 1708,
-      "popularity": 84,
-      "nbPlays": 783,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "mate",
-        "mateIn5",
-        "middlegame",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/iD4efVe7#51"
-    },
-    {
-      "puzzleId": "y1Iyd",
-      "fen": "5r1k/pp4bp/3BQ1p1/8/2BR4/8/P1q3PP/6K1 w - - 1 26",
-      "moves": "d4e4 c2f2 g1h1 f2f1 c4f1 f8f1",
-      "rating": 1708,
-      "popularity": 81,
-      "nbPlays": 837,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/pS5FF0DV#51"
-    },
-    {
       "puzzleId": "er5aD",
       "fen": "2r1r1k1/pQB2ppp/1n2b2q/8/2p5/5P2/PPP3PP/3RR1K1 b - - 0 21",
       "moves": "e8e7 b7c8 b6c8 d1d8 e7e8 d8e8",
@@ -12481,24 +11255,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/d7dDYr2b#49"
-    },
-    {
-      "puzzleId": "gZxkx",
-      "fen": "6k1/RB4pp/3K4/5p1b/4p1P1/1P1n1r2/7P/8 b - - 3 35",
-      "moves": "h5g4 b7d5 g8h8 a7a8",
-      "rating": 1709,
-      "popularity": 77,
-      "nbPlays": 655,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "master",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/o5S4iieT/black#70"
     },
     {
       "puzzleId": "rZYZH",
@@ -12807,59 +11563,6 @@
       "gameUrl": "https://lichess.org/kzS3Nzpk#51"
     },
     {
-      "puzzleId": "2Bfm7",
-      "fen": "2kr4/5R1p/2p2n2/1p2Q3/p2pP3/P2P4/BPPK1q1P/3R2r1 w - - 0 22",
-      "moves": "d2c1 f2e3 c1b1 g1d1",
-      "rating": 1713,
-      "popularity": 82,
-      "nbPlays": 816,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/JAoTSF43#43"
-    },
-    {
-      "puzzleId": "FjhWo",
-      "fen": "5r1k/6pp/p7/3R4/4Q3/4B3/Pq3rPP/R5K1 w - - 0 23",
-      "moves": "e3f2 b2f2 g1h1 f2f1 a1f1 f8f1",
-      "rating": 1713,
-      "popularity": 82,
-      "nbPlays": 521,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/CukzsOrz#45"
-    },
-    {
-      "puzzleId": "vEu9F",
-      "fen": "r1k1R3/ppp2Q1p/7p/8/8/4K3/P1q2PPP/3r4 b - - 1 34",
-      "moves": "d1d8 f7e6 c8b8 e8d8",
-      "rating": 1713,
-      "popularity": 69,
-      "nbPlays": 531,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/kRE1FaJX/black#68"
-    },
-    {
       "puzzleId": "EeLU6",
       "fen": "5rk1/p3Qppp/6r1/3p4/8/2PnR2P/PB3qPK/5B2 b - - 1 27",
       "moves": "f2f1 e7f8 g8f8 b2a3 d3b4 a3b4 g6d6 b4d6 f8g8 e3e8",
@@ -12987,42 +11690,6 @@
       "gameUrl": "https://lichess.org/57FRdpfR/black#42"
     },
     {
-      "puzzleId": "qKYuy",
-      "fen": "1R6/1p4kp/pb2p1p1/3p4/1P4B1/P3P3/r4rPP/5RK1 w - - 0 24",
-      "moves": "f1f2 a2a1 g4d1 a1d1 f2f1 b6e3 g1h1 d1f1",
-      "rating": 1715,
-      "popularity": 78,
-      "nbPlays": 523,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "mate",
-        "mateIn4",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/DHktHqqh#47"
-    },
-    {
-      "puzzleId": "lw83s",
-      "fen": "6k1/ppp2rpp/5p1B/7q/4P1Q1/3R1K1P/P7/8 b - - 7 28",
-      "moves": "h5h6 d3d8 f7f8 g4e6 g8h8 d8f8",
-      "rating": 1715,
-      "popularity": 73,
-      "nbPlays": 718,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/si8AoaEn/black#56"
-    },
-    {
       "puzzleId": "yOjA1",
       "fen": "3r3k/ppp5/8/6Q1/3q4/8/P1PB2PP/5R1K w - - 6 33",
       "moves": "f1f3 d4a1 d2c1 d8d1 f3f1 d1f1",
@@ -13093,59 +11760,6 @@
         "sacrifice"
       ],
       "gameUrl": "https://lichess.org/USO5SyUF#51"
-    },
-    {
-      "puzzleId": "Yb1jU",
-      "fen": "2r2r1k/p3p1bp/3p2p1/6B1/Q3n3/2N5/P4qPP/R1R4K w - - 0 21",
-      "moves": "c3e4 c8c1 a1c1 f2f1 c1f1 f8f1",
-      "rating": 1716,
-      "popularity": 83,
-      "nbPlays": 662,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/ovxSXSiC#41"
-    },
-    {
-      "puzzleId": "dmXnF",
-      "fen": "1Q3bk1/3q3p/p2rp1p1/Rb2r3/2pN4/2P2B2/5PPP/R5K1 w - - 4 28",
-      "moves": "d4b5 d6d1 a1d1 d7d1 f3d1 e5e1",
-      "rating": 1716,
-      "popularity": 83,
-      "nbPlays": 1064,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/bj1SPDLq#55"
-    },
-    {
-      "puzzleId": "4oszT",
-      "fen": "3r1k2/p7/6R1/1prNB3/4nP2/8/PP4P1/1K1R4 w - - 3 36",
-      "moves": "d5e3 d8d1 e3d1 e4d2 b1a1 c5c1",
-      "rating": 1716,
-      "popularity": 82,
-      "nbPlays": 515,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/Nv53RI9b#71"
     },
     {
       "puzzleId": "2bZCK",
@@ -13220,24 +11834,6 @@
         "short"
       ],
       "gameUrl": "https://lichess.org/SDwldUUC#63"
-    },
-    {
-      "puzzleId": "rcJS5",
-      "fen": "4r2k/ppp2pp1/7p/P7/3r4/2Nq4/PQ3PRP/R4K2 w - - 2 27",
-      "moves": "f1g1 d3d1 a1d1 d4d1 c3d1 e8e1",
-      "rating": 1717,
-      "popularity": 79,
-      "nbPlays": 587,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/8Fa0a1LB#53"
     },
     {
       "puzzleId": "JPW0O",
@@ -13328,23 +11924,6 @@
       "gameUrl": "https://lichess.org/7JTWVhtO/black#34"
     },
     {
-      "puzzleId": "rtJcZ",
-      "fen": "1r4k1/p4ppp/2R5/3N4/8/1P6/P1b1r1PP/2R3K1 b - - 3 22",
-      "moves": "c2e4 c6c8 b8c8 c1c8",
-      "rating": 1718,
-      "popularity": 84,
-      "nbPlays": 980,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/ItYDvOBw/black#44"
-    },
-    {
       "puzzleId": "5WJnh",
       "fen": "4Qr1k/p5bp/2p3p1/8/4P3/2N1q3/PPP3PP/6RK w - - 3 25",
       "moves": "e8c6 e3g1 h1g1 g7d4 g1h1 f8f1",
@@ -13379,24 +11958,6 @@
         "mateIn3"
       ],
       "gameUrl": "https://lichess.org/KQSErNwm#57"
-    },
-    {
-      "puzzleId": "YoOB8",
-      "fen": "r1b2rk1/pp3ppp/q6b/3NN3/2P1P3/6P1/1BB4P/1K1R3R b - - 4 21",
-      "moves": "f7f6 d5e7 g8h8 e5f7 f8f7 d1d8 f7f8 d8f8",
-      "rating": 1719,
-      "popularity": 82,
-      "nbPlays": 666,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn4",
-        "middlegame",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/k9iSZeTe/black#42"
     },
     {
       "puzzleId": "Ev8ZJ",
@@ -13864,24 +12425,6 @@
       "gameUrl": "https://lichess.org/8ihHs1Uf#45"
     },
     {
-      "puzzleId": "90l7G",
-      "fen": "r2r2k1/pq2bppp/4p3/2P1N3/P3nP2/2p5/1R4PP/R1BQ3K w - - 0 23",
-      "moves": "b2b7 d8d1",
-      "rating": 1724,
-      "popularity": 74,
-      "nbPlays": 1048,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "hangingPiece",
-        "mate",
-        "mateIn1",
-        "middlegame",
-        "oneMove"
-      ],
-      "gameUrl": "https://lichess.org/JO7rp9PE#45"
-    },
-    {
       "puzzleId": "UqhyG",
       "fen": "5r1k/pp4pp/4Q3/3p3n/7q/1PN5/PP4PP/4R1K1 w - - 1 24",
       "moves": "c3d5 h4f2 g1h1 f2f1 e1f1 f8f1",
@@ -14293,24 +12836,6 @@
       "gameUrl": "https://lichess.org/bAwzovdz/black#42"
     },
     {
-      "puzzleId": "J1ygU",
-      "fen": "rnb1k2r/2b5/p1p1p3/1p3p2/3P2pq/2N3N1/PP2BPP1/R1BQ1RK1 w kq - 2 17",
-      "moves": "f1e1 h4h2 g1f1 h2h1 g3h1 h8h1",
-      "rating": 1729,
-      "popularity": 81,
-      "nbPlays": 660,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "opening",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/0wSYr3bb#33"
-    },
-    {
       "puzzleId": "S6EAR",
       "fen": "r4knr/p2Q1ppp/b1pB4/8/4P3/2N3P1/PP5q/3RK3 b - - 2 17",
       "moves": "g8e7 d6e7 f8g8 d7d8 a8d8 d1d8",
@@ -14344,23 +12869,6 @@
         "mateIn3"
       ],
       "gameUrl": "https://lichess.org/YWqu2y2P#41"
-    },
-    {
-      "puzzleId": "cgLCq",
-      "fen": "R6N/pp6/1kpb3p/6pQ/5q2/2N5/PPP3PP/R5K1 w - - 0 25",
-      "moves": "a1f1 d6c5 f1f2 f4f2 g1h1 f2e1",
-      "rating": 1730,
-      "popularity": 82,
-      "nbPlays": 952,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame"
-      ],
-      "gameUrl": "https://lichess.org/BqYnAP07#49"
     },
     {
       "puzzleId": "Nubo9",
@@ -14540,25 +13048,6 @@
       "gameUrl": "https://lichess.org/RuCkKnYb#105"
     },
     {
-      "puzzleId": "SJFPL",
-      "fen": "3Qnk2/p4ppp/1pb5/8/4q3/5NP1/PP3P1P/4R1K1 b - - 4 29",
-      "moves": "e4f3 d8e7 f8g8 e7e8 c6e8 e1e8",
-      "rating": 1732,
-      "popularity": 73,
-      "nbPlays": 680,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/8wKJhEH9/black#58"
-    },
-    {
       "puzzleId": "BrEtI",
       "fen": "5rk1/pR4p1/2qNP3/4B3/3PnNp1/8/PP6/1K5R w - - 5 31",
       "moves": "f4g6 e4d2 b1a1 c6h1",
@@ -14609,23 +13098,6 @@
         "middlegame"
       ],
       "gameUrl": "https://lichess.org/6TO2R5OK/black#58"
-    },
-    {
-      "puzzleId": "ScD1C",
-      "fen": "3r1k2/1q3pbp/6p1/p7/4n3/1Q5P/PPP2PP1/2K2B1R w - - 0 28",
-      "moves": "b3b7 g7h6 f2f4 h6f4 c1b1 d8d1",
-      "rating": 1733,
-      "popularity": 81,
-      "nbPlays": 601,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/1qg5MqPw#55"
     },
     {
       "puzzleId": "4I1Z3",
@@ -15028,24 +13500,6 @@
       "gameUrl": "https://lichess.org/etx7XUKL/black#74"
     },
     {
-      "puzzleId": "dv4I3",
-      "fen": "3q3k/1pp2ppB/8/p4Q2/2P2P2/8/PP2rnPP/5RK1 w - - 0 28",
-      "moves": "f1f2 e2e1 f2f1 d8d4 g1h1 e1f1",
-      "rating": 1738,
-      "popularity": 70,
-      "nbPlays": 502,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/ThwaMnPk#55"
-    },
-    {
       "puzzleId": "5uqds",
       "fen": "2kr1b1r/Q1p2ppp/3q1n2/1p6/8/4B1P1/PPn2PBP/R3K1NR w KQ - 1 14",
       "moves": "e1f1 d6d3 g1e2 d3d1 a1d1 d8d1",
@@ -15305,24 +13759,6 @@
       "gameUrl": "https://lichess.org/wdFwMZim#67"
     },
     {
-      "puzzleId": "5XpJm",
-      "fen": "1k2r3/1p6/1Q5p/3p1qp1/P7/2R5/5PPP/4rRK1 w - - 3 35",
-      "moves": "c3c7 e1f1 g1f1 f5d3 f1g1 e8e1",
-      "rating": 1741,
-      "popularity": 82,
-      "nbPlays": 566,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attraction",
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3"
-      ],
-      "gameUrl": "https://lichess.org/QBRl91D0#69"
-    },
-    {
       "puzzleId": "7r6b8",
       "fen": "b2r2k1/5ppp/1Qnq1b2/3p4/Bp3B2/5N2/1PP2PPP/4R1K1 b - - 7 21",
       "moves": "d6f4 b6d8 c6d8 e1e8",
@@ -15491,23 +13927,6 @@
       "gameUrl": "https://lichess.org/xtDWrBk6/black#100"
     },
     {
-      "puzzleId": "SdiRf",
-      "fen": "r2q1rk1/1pp2ppp/4p3/1B1n1b2/1p1Pp3/2N1P2P/1PPQN1P1/2KR3R w - - 0 15",
-      "moves": "c3d5 a8a1",
-      "rating": 1743,
-      "popularity": 83,
-      "nbPlays": 578,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn1",
-        "middlegame",
-        "oneMove"
-      ],
-      "gameUrl": "https://lichess.org/eFgsVLwd#29"
-    },
-    {
       "puzzleId": "9pnHx",
       "fen": "4rrk1/pp4pp/2p1b1p1/4R3/3q4/PQ6/1PP2PPP/4R1K1 w - - 0 21",
       "moves": "e5e6 d4f2 g1h1 f2f1 e1f1 f8f1",
@@ -15632,24 +14051,6 @@
         "middlegame"
       ],
       "gameUrl": "https://lichess.org/EMAdP0Te#41"
-    },
-    {
-      "puzzleId": "jqpkn",
-      "fen": "4k3/8/QPq4p/2N2pp1/6n1/B4P2/2Prn1PP/R6K w - - 2 29",
-      "moves": "a1f1 g4f2 f1f2 d2d1 f2f1 d1f1",
-      "rating": 1745,
-      "popularity": 77,
-      "nbPlays": 779,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/hJO6QdWl#57"
     },
     {
       "puzzleId": "HsvPQ",
@@ -16138,44 +14539,6 @@
       "gameUrl": "https://lichess.org/o4YOx60Q/black#56"
     },
     {
-      "puzzleId": "AMzFk",
-      "fen": "3r2k1/p3Rpp1/4p2p/4P3/3N4/2P1B3/P3bPPP/1r3BK1 w - - 2 23",
-      "moves": "d4e2 b1f1 g1f1 d8d1",
-      "rating": 1749,
-      "popularity": 79,
-      "nbPlays": 845,
-      "theme": "backRankMate",
-      "allThemes": [
-        "attraction",
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "sacrifice",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/51Qaq4bm#45"
-    },
-    {
-      "puzzleId": "nqVXX",
-      "fen": "6k1/Q4p1p/5pp1/PP2p3/8/1b6/r2qBPPP/4RK2 w - - 1 30",
-      "moves": "a5a6 d2e2 e1e2 a2a1 e2e1 b3c4 f1g1 a1e1",
-      "rating": 1749,
-      "popularity": 79,
-      "nbPlays": 576,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "deflection",
-        "endgame",
-        "mate",
-        "mateIn4",
-        "sacrifice",
-        "veryLong"
-      ],
-      "gameUrl": "https://lichess.org/fbly3eVq#59"
-    },
-    {
       "puzzleId": "tQ5vb",
       "fen": "6k1/ppp3pp/2n2p2/2BbpQ2/8/P1P2N1P/1PP2PPK/3q4 b - - 5 19",
       "moves": "d5f3 f5e6 g8h8 e6e8",
@@ -16378,24 +14741,6 @@
       "gameUrl": "https://lichess.org/uvRYO52v/black#50"
     },
     {
-      "puzzleId": "lz9TG",
-      "fen": "r3kb1r/1p3ppp/3pb3/N3p3/q7/3BBP2/PPPQ2PP/1K1R3R w kq - 1 17",
-      "moves": "a5b3 a4a2 b1c1 a2a1 b3a1 a8a1",
-      "rating": 1752,
-      "popularity": 84,
-      "nbPlays": 1354,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/JAI1zJEO#33"
-    },
-    {
       "puzzleId": "am8Gu",
       "fen": "1k1q2nr/ppp2ppp/8/n7/8/7Q/P3BPPP/3R2K1 b - - 1 19",
       "moves": "d8c8 h3c8 b8c8 e2g4 f7f5 g4f5 c8b8 d1d8",
@@ -16561,23 +14906,6 @@
         "veryLong"
       ],
       "gameUrl": "https://lichess.org/Gha0kNdR#49"
-    },
-    {
-      "puzzleId": "Dgz2h",
-      "fen": "4nr1k/Q3Np1b/6p1/1p2R1RP/2p5/7q/PPP5/1K6 w - - 1 31",
-      "moves": "h5g6 h3f1 e5e1 f1e1",
-      "rating": 1754,
-      "popularity": 73,
-      "nbPlays": 593,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/CipTmT6P#61"
     },
     {
       "puzzleId": "AqDU3",
@@ -17054,24 +15382,6 @@
       "gameUrl": "https://lichess.org/0zI3UD4S#57"
     },
     {
-      "puzzleId": "qS7pR",
-      "fen": "3r3k/3r2pp/p1n5/1p4Q1/8/1Bq5/P1P2RPP/5R1K b - - 6 29",
-      "moves": "d7d1 g5d8 d1d8 f2f8 d8f8 f1f8",
-      "rating": 1761,
-      "popularity": 84,
-      "nbPlays": 653,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "long",
-        "mate",
-        "mateIn3",
-        "middlegame",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/x9sUsRGI/black#58"
-    },
-    {
       "puzzleId": "DOgDn",
       "fen": "4r1k1/5pp1/p6p/3p4/1P1P4/P2P1Q2/2q1rPPP/R2R2K1 w - - 10 29",
       "moves": "a1c1 c2d1 c1d1 e2e1 d1e1 e8e1",
@@ -17327,24 +15637,6 @@
         "mateIn3"
       ],
       "gameUrl": "https://lichess.org/Cc43BrhD/black#48"
-    },
-    {
-      "puzzleId": "T0HWi",
-      "fen": "5rk1/2Q3pp/p7/3p4/PPp1r3/2P5/5qPP/3RR2K w - - 0 33",
-      "moves": "c7g3 e4e1 d1e1 f2f1 e1f1 f8f1",
-      "rating": 1763,
-      "popularity": 79,
-      "nbPlays": 904,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "long",
-        "mate",
-        "mateIn3",
-        "sacrifice"
-      ],
-      "gameUrl": "https://lichess.org/ofPDEn04#65"
     },
     {
       "puzzleId": "YIFMc",
@@ -17784,23 +16076,6 @@
       "gameUrl": "https://lichess.org/sKa71HiB/black#62"
     },
     {
-      "puzzleId": "bKtPd",
-      "fen": "6k1/p1q1ppb1/6p1/2pQP2p/8/1PP2N1P/P5P1/6K1 b - - 2 27",
-      "moves": "g8f8 d5a8 c7b8 a8b8",
-      "rating": 1769,
-      "popularity": 77,
-      "nbPlays": 1397,
-      "theme": "backRankMate",
-      "allThemes": [
-        "backRankMate",
-        "endgame",
-        "mate",
-        "mateIn2",
-        "short"
-      ],
-      "gameUrl": "https://lichess.org/gtNS4ApB/black#54"
-    },
-    {
       "puzzleId": "VzQOJ",
       "fen": "6rk/pp3Qpp/8/3p1N2/6P1/4p1KP/P1q5/5R2 b - - 5 32",
       "moves": "e3e2 f7g8 h8g8 f5e7 g8h8 f1f8",
@@ -18106,6 +16381,1742 @@
         "mateIn3"
       ],
       "gameUrl": "https://lichess.org/xt29UUmL#57"
+    },
+    {
+      "puzzleId": "yVsHs",
+      "fen": "r2k3r/bpp2Qp1/p6p/4q3/1PB1P3/P7/5PPP/3R2K1 b - - 2 19",
+      "moves": "d8c8 f7d7 c8b8 d7d8 h8d8 d1d8",
+      "rating": 1776,
+      "popularity": 93,
+      "nbPlays": 1457,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/66Ykprqo/black#38"
+    },
+    {
+      "puzzleId": "tKAXX",
+      "fen": "2N3kr/pp3ppp/2nQ1b2/q2p4/2P1p3/1P2P3/P5PP/R2K1B1R b - - 0 18",
+      "moves": "f6a1 c8e7 c6e7 d6b8 e7c8 b8c8 a5d8 c8d8",
+      "rating": 1776,
+      "popularity": 92,
+      "nbPlays": 1031,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/y4nX01C1/black#36"
+    },
+    {
+      "puzzleId": "H7SjZ",
+      "fen": "r4rk1/pQp1n1pp/4pq2/8/2B5/8/PPP3PP/RNB1R1K1 w - - 1 14",
+      "moves": "e1e6 f6f2 g1h1 f2f1 c4f1 f8f1",
+      "rating": 1776,
+      "popularity": 91,
+      "nbPlays": 4206,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/zxn3eP26#27"
+    },
+    {
+      "puzzleId": "flhor",
+      "fen": "2r2k2/1bq2p2/p4Q2/4P3/8/3B2R1/PP4P1/K1q4R w - - 0 35",
+      "moves": "h1c1 c7c1 d3b1 c1b1 a1b1 b7e4 g3d3 e4d3 b1a1 c8c1",
+      "rating": 1777,
+      "popularity": 97,
+      "nbPlays": 2480,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/1vyHJQ2w#69"
+    },
+    {
+      "puzzleId": "vnq1p",
+      "fen": "5r1k/6pp/6n1/3Q4/P2N4/1P2P3/3q2PP/2R3K1 w - - 5 30",
+      "moves": "d5c5 d2f2 g1h1 f2f1 c1f1 f8f1",
+      "rating": 1777,
+      "popularity": 96,
+      "nbPlays": 2655,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/sfWGL7vL#59"
+    },
+    {
+      "puzzleId": "Dx7q4",
+      "fen": "2Q5/p5pk/2p4p/8/B3q3/2b1B3/P4PPP/5K2 w - - 4 35",
+      "moves": "c8c6 e4d3 f1g1 d3b1 e3c1 b1c1 a4d1 c1d1",
+      "rating": 1777,
+      "popularity": 95,
+      "nbPlays": 12915,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn4",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/NHZFk06L#69"
+    },
+    {
+      "puzzleId": "zwEEc",
+      "fen": "1nkr3r/1pp1pp2/p6q/8/PP2Qbp1/2P5/4BPP1/R1B1RNK1 w - - 1 21",
+      "moves": "f1g3 h6h2 g1f1 h2h1 g3h1 h8h1",
+      "rating": 1777,
+      "popularity": 95,
+      "nbPlays": 20347,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "master",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/gmIyhSMZ#41"
+    },
+    {
+      "puzzleId": "pFtnD",
+      "fen": "2r4k/6pp/2P5/2R5/3Qr3/8/4q1PP/2R3K1 w - - 0 33",
+      "moves": "d4d7 e2e3 g1h1 e3e1 c1e1 e4e1",
+      "rating": 1777,
+      "popularity": 87,
+      "nbPlays": 2196,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/6mXa8D9f#65"
+    },
+    {
+      "puzzleId": "nBATt",
+      "fen": "1k3r2/pp1Q1pp1/b3p1n1/q2pP3/N2P2P1/bP3N2/3B1PK1/2R5 b - - 1 28",
+      "moves": "a5b5 d7c7 b8a8 c7c8 f8c8 c1c8",
+      "rating": 1778,
+      "popularity": 95,
+      "nbPlays": 1634,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/6jdtjQAv/black#56"
+    },
+    {
+      "puzzleId": "cHUb8",
+      "fen": "1B4k1/4Qpbp/p2P2p1/1p3q2/8/8/PPr2PPP/3R2K1 w - - 3 25",
+      "moves": "d1f1 f5f2 f1f2 c2c1 f2f1 g7d4 e7e3 d4e3 g1h1 c1f1",
+      "rating": 1778,
+      "popularity": 93,
+      "nbPlays": 1073,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn5",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/5Y639IwB#49"
+    },
+    {
+      "puzzleId": "ZgZ98",
+      "fen": "3r2k1/5ppp/4p3/p4q2/2P1N3/1P3nQP/1r3P2/3RR2K b - - 4 31",
+      "moves": "d8d1 g3b8 d1d8 b8d8",
+      "rating": 1778,
+      "popularity": 91,
+      "nbPlays": 689,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/Idyr0R7W/black#62"
+    },
+    {
+      "puzzleId": "B1fE4",
+      "fen": "5r2/1pp3pp/p1n1Q3/2kBp3/3qP3/3P4/PPPR2PP/2K5 w - - 0 21",
+      "moves": "d5c6 f8f1 d2d1 d4e3 c1b1 f1d1",
+      "rating": 1778,
+      "popularity": 87,
+      "nbPlays": 910,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/3ux4Z7N8#41"
+    },
+    {
+      "puzzleId": "wX3SK",
+      "fen": "3rr1k1/pQp2ppp/1P6/1b1P4/1P1p4/3P4/4qPPP/R1B2RK1 w - - 1 19",
+      "moves": "b6c7 e2f1 g1f1 b5d3 f1g1 e8e1",
+      "rating": 1779,
+      "popularity": 99,
+      "nbPlays": 822,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/GLwKjqPI#37"
+    },
+    {
+      "puzzleId": "1sGpF",
+      "fen": "r2r2k1/ppp1qpp1/1n2p1n1/6PQ/2PP4/2PBB3/P2K1P2/7R b - - 5 20",
+      "moves": "c7c5 h5h7 g8f8 h7h8 g6h8 h1h8",
+      "rating": 1779,
+      "popularity": 98,
+      "nbPlays": 3754,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/8W6KUlk2/black#40"
+    },
+    {
+      "puzzleId": "FjR02",
+      "fen": "r6k/p1p1N1pp/3pp2r/5P2/1p6/5Q1R/P2q2PP/5K2 b - - 8 25",
+      "moves": "d2g5 f3a8",
+      "rating": 1779,
+      "popularity": 95,
+      "nbPlays": 854,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "hangingPiece",
+        "mate",
+        "mateIn1",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/gPlO8Wyu/black#50"
+    },
+    {
+      "puzzleId": "u8Td7",
+      "fen": "6r1/pp1bkpQ1/4p3/b2pP3/3P4/2P5/Pq3PPP/RN3K1R w - - 0 18",
+      "moves": "g7g8 d7b5 c3c4 b5c4 f1g1 b2c1",
+      "rating": 1779,
+      "popularity": 95,
+      "nbPlays": 1422,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/tQHZt44u#35"
+    },
+    {
+      "puzzleId": "5GSLD",
+      "fen": "5r2/2P2Qpk/6n1/q3p2p/4P3/B3bN2/1PR3PP/7K w - - 1 33",
+      "moves": "f7d5 a5e1 f3e1 f8f1",
+      "rating": 1779,
+      "popularity": 92,
+      "nbPlays": 991,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "master",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/P33PYED0#65"
+    },
+    {
+      "puzzleId": "SY5TH",
+      "fen": "3r2k1/pQ1R2pp/1p2p3/8/1Pr5/P5qP/6P1/5R1K b - - 0 25",
+      "moves": "c4c8 d7d8 c8d8 b7f7 g8h8 f7f8 d8f8 f1f8",
+      "rating": 1779,
+      "popularity": 92,
+      "nbPlays": 2035,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "clearance",
+        "endgame",
+        "mate",
+        "mateIn4",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/IkcE3ZjT/black#50"
+    },
+    {
+      "puzzleId": "V0wEq",
+      "fen": "5rk1/1b3ppp/3Q1b2/ppB2q2/8/1PnR3P/2P3P1/4R1K1 b - - 4 25",
+      "moves": "f8c8 d6d8 c8d8 d3d8 f6d8 e1e8",
+      "rating": 1779,
+      "popularity": 89,
+      "nbPlays": 1040,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/LvsCUBMX/black#50"
+    },
+    {
+      "puzzleId": "9vT3F",
+      "fen": "3r2k1/1Q3ppp/2np4/3q4/8/1P4P1/2R4P/5K2 b - - 2 40",
+      "moves": "d8b8 b7b8 c6b8 c2c8",
+      "rating": 1780,
+      "popularity": 95,
+      "nbPlays": 20430,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/PnUlwjCu/black#80"
+    },
+    {
+      "puzzleId": "5vIDJ",
+      "fen": "r3kbnr/pp3ppp/4p3/2p1P1B1/6q1/2P5/P2Q1P1P/3R1K2 b kq - 3 18",
+      "moves": "f8e7 d2d7 e8f8 g5e7 g8e7 d7d8 a8d8 d1d8",
+      "rating": 1780,
+      "popularity": 92,
+      "nbPlays": 1727,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/a6XD8eLs/black#36"
+    },
+    {
+      "puzzleId": "E2Vae",
+      "fen": "r6k/p1P3pp/2p3q1/2N5/3PpP2/1Q3nP1/PP2R2r/3R1K2 b - - 2 31",
+      "moves": "g6g3 b3b8 a8b8 c7b8q",
+      "rating": 1780,
+      "popularity": 91,
+      "nbPlays": 4848,
+      "theme": "backRankMate",
+      "allThemes": [
+        "advancedPawn",
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "promotion",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/GxFq2fpl/black#62"
+    },
+    {
+      "puzzleId": "GwDcE",
+      "fen": "kr5r/1pQ1R1R1/2p5/p2p4/3P2p1/2N2n2/PPP2P2/K6q w - - 12 35",
+      "moves": "c3b1 h1b1 a1b1 h8h1 e7e1 h1e1",
+      "rating": 1781,
+      "popularity": 96,
+      "nbPlays": 13154,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/BPnJHvcn#69"
+    },
+    {
+      "puzzleId": "IdtTM",
+      "fen": "r6r/ppp3pp/1k6/3Bn2Q/4P1b1/8/Pp1qNPPP/1R3K1R w - - 6 20",
+      "moves": "h5e5 g4e2 f1g1 d2c1 b1c1 b2c1q",
+      "rating": 1781,
+      "popularity": 96,
+      "nbPlays": 19543,
+      "theme": "backRankMate",
+      "allThemes": [
+        "advancedPawn",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/4IQrNLPi#39"
+    },
+    {
+      "puzzleId": "HaZqP",
+      "fen": "1k6/p5pp/2p2r2/8/8/2QBNq2/P1P4P/7K w - - 2 31",
+      "moves": "e3g2 f3f1 d3f1 f6f1",
+      "rating": 1781,
+      "popularity": 95,
+      "nbPlays": 15394,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/4IN2TfLL#61"
+    },
+    {
+      "puzzleId": "tflyn",
+      "fen": "2r4r/4kp2/p2p1p1b/4pP1N/1p2P2P/3P1Q2/PPq3P1/K2R3R w - - 3 23",
+      "moves": "g2g4 h6c1 d1c1 c2c1 h1c1 c8c1",
+      "rating": 1781,
+      "popularity": 95,
+      "nbPlays": 4447,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/rDuNtbrA#45"
+    },
+    {
+      "puzzleId": "94cUK",
+      "fen": "5rk1/pR3ppp/1p6/7r/5QP1/1P2p3/P3qbBP/5R1K b - - 0 32",
+      "moves": "h5h6 f4f7 f8f7 b7b8 f7f8 g2d5 h6e6 d5e6 g8h8 b8f8",
+      "rating": 1781,
+      "popularity": 90,
+      "nbPlays": 3414,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "master",
+        "masterVsMaster",
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/53AlN3F8/black#64"
+    },
+    {
+      "puzzleId": "mNbEH",
+      "fen": "q5k1/5p1p/3B1Qp1/3P4/8/8/1Pn2PPP/r3R1K1 w - - 3 26",
+      "moves": "e1f1 a1f1 g1f1 a8a6 f1g1 a6a1",
+      "rating": 1782,
+      "popularity": 94,
+      "nbPlays": 1432,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/WrysxQgR#51"
+    },
+    {
+      "puzzleId": "yxkMd",
+      "fen": "1k6/pp3p2/1npp3Q/4pB2/2P1P2p/3P3P/PP3q2/2K5 b - - 3 33",
+      "moves": "b6a4 h6d6 b8a8 d6f8",
+      "rating": 1782,
+      "popularity": 94,
+      "nbPlays": 840,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/CW6UXq36/black#66"
+    },
+    {
+      "puzzleId": "qXCTh",
+      "fen": "4r1kb/pp1bp2p/1q2n1pB/2r1P3/6P1/2N2Q1P/PP2BR2/6K1 b - - 7 24",
+      "moves": "h8g7 f3f7 g8h8 h6g7 e6g7 f7f8 e8f8 f2f8",
+      "rating": 1782,
+      "popularity": 89,
+      "nbPlays": 3507,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/G3fylZ39/black#48"
+    },
+    {
+      "puzzleId": "im1at",
+      "fen": "1k5r/bpp5/3p4/pP1P4/P2P1Q2/8/4RPPN/1q4K1 w - - 1 29",
+      "moves": "h2f1 b1f1 g1f1 h8h1",
+      "rating": 1783,
+      "popularity": 96,
+      "nbPlays": 1810,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/XccjuPJj#57"
+    },
+    {
+      "puzzleId": "6Sg8T",
+      "fen": "1R4Q1/4p2p/p2p2pk/4p1b1/4P3/2P2r2/P4qPP/R6K w - - 2 31",
+      "moves": "a1g1 f2g1 h1g1 g5e3 g1h1 f3f1",
+      "rating": 1783,
+      "popularity": 95,
+      "nbPlays": 5299,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/ZARb89N5#61"
+    },
+    {
+      "puzzleId": "9kWl8",
+      "fen": "2kr3r/ppR2ppp/3Q1n2/1q6/8/8/P1P2PPP/3R2K1 b - - 4 22",
+      "moves": "c8b8 c7d7 b8a8 d7d8 h8d8 d6d8",
+      "rating": 1783,
+      "popularity": 95,
+      "nbPlays": 18084,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/G11X82R3/black#44"
+    },
+    {
+      "puzzleId": "ZuGTa",
+      "fen": "r5k1/pQ3ppp/4b2q/8/1np5/5N2/P5PP/4R2K b - - 0 23",
+      "moves": "a8c8 b7c8 e6c8 e1e8",
+      "rating": 1783,
+      "popularity": 94,
+      "nbPlays": 1636,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/7Rh5MUAL/black#46"
+    },
+    {
+      "puzzleId": "g06mY",
+      "fen": "3kr3/ppp2pp1/8/2b4p/Q3q3/4B2P/PP2KPP1/3R4 b - - 1 23",
+      "moves": "d8c8 a4d7 c8b8 d7d8 e8d8 d1d8",
+      "rating": 1783,
+      "popularity": 93,
+      "nbPlays": 1897,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/G8gYUkJB/black#46"
+    },
+    {
+      "puzzleId": "T5S4y",
+      "fen": "r4k1r/pp4pp/3p2P1/6BQ/2n1P3/7P/qP4P1/2KR1R2 b - - 1 22",
+      "moves": "f8g8 g6h7 h8h7 h5f7 g8h8 f7f8 a8f8 f1f8",
+      "rating": 1783,
+      "popularity": 85,
+      "nbPlays": 536,
+      "theme": "backRankMate",
+      "allThemes": [
+        "advancedPawn",
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/Dl6gBu4X/black#44"
+    },
+    {
+      "puzzleId": "OlE0F",
+      "fen": "Q4rk1/5ppp/p1p5/P2p4/3B2q1/2P2nP1/1P2RP1P/4R2K b - - 2 26",
+      "moves": "f3e1 a8f8 g8f8 d4c5 f8g8 e2e8",
+      "rating": 1784,
+      "popularity": 91,
+      "nbPlays": 1414,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/pnR9dGCU/black#52"
+    },
+    {
+      "puzzleId": "UzBQl",
+      "fen": "5r1k/4N2p/p2p2p1/3B4/2Pb4/7n/P5PP/1R4K1 w - - 5 35",
+      "moves": "g1h1 h3f2 h1g1 f2d1 g1h1 f8f1",
+      "rating": 1785,
+      "popularity": 98,
+      "nbPlays": 2648,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/R339cceO#69"
+    },
+    {
+      "puzzleId": "tMECo",
+      "fen": "3r2k1/pp2qppp/2p5/8/6Q1/1P2NP2/P1PPr1PP/R1B2RK1 w - - 3 22",
+      "moves": "f1d1 e7e3 g1h1 e2e1 d1e1 e3e1",
+      "rating": 1785,
+      "popularity": 97,
+      "nbPlays": 4318,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/IODNVrb5#43"
+    },
+    {
+      "puzzleId": "3maBj",
+      "fen": "r6k/1p2b1pp/p1p2qr1/4B3/8/3Q2PP/PPP4K/3R1R2 b - - 0 24",
+      "moves": "f6e5 d3d8 a8d8 d1d8 e7d8 f1f8",
+      "rating": 1785,
+      "popularity": 94,
+      "nbPlays": 1131,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/gOCGi2n0/black#48"
+    },
+    {
+      "puzzleId": "K32hE",
+      "fen": "r2q3k/1pp1RBpp/3n2r1/5p2/p2Q4/5P2/P3RP1P/7K b - - 1 26",
+      "moves": "d6f7 d4d8 a8d8 e7e8 d8e8 e2e8",
+      "rating": 1785,
+      "popularity": 94,
+      "nbPlays": 15019,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/6bjYiP7J/black#52"
+    },
+    {
+      "puzzleId": "7fPb1",
+      "fen": "7R/pb6/kp3Q2/3p1n2/P4r2/1P6/1BPb2PP/4r1RK w - - 5 38",
+      "moves": "b2e5 e1g1 h1g1 d2e3 g1h1 f4f1",
+      "rating": 1785,
+      "popularity": 93,
+      "nbPlays": 13218,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/g9VRipXv#75"
+    },
+    {
+      "puzzleId": "8H6fq",
+      "fen": "r5k1/1q2pp1p/3n2p1/3RN3/p4P1P/2Q5/BPP5/1K6 w - - 2 30",
+      "moves": "d5c5 b7h1 c3e1 h1e1",
+      "rating": 1785,
+      "popularity": 93,
+      "nbPlays": 2022,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/SOwLi7C8#59"
+    },
+    {
+      "puzzleId": "NBFnS",
+      "fen": "r6k/ppp3pp/2nb4/3QP3/8/6qP/P5P1/3R1R1K b - - 0 24",
+      "moves": "d6e5 d5d8 a8d8 d1d8 c6d8 f1f8",
+      "rating": 1785,
+      "popularity": 90,
+      "nbPlays": 6514,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/1usOOnjk/black#48"
+    },
+    {
+      "puzzleId": "BYbxh",
+      "fen": "2k3r1/p3n3/Ppp1p1rp/3qpp2/8/Q2P2PP/1PPN1P2/R4RK1 w - - 0 24",
+      "moves": "a3e7 g6g3 f2g3 g8g3 g1f2 d5g2 f2e1 g3e3 e1d1 g2e2 d1c1 e2e1 f1e1 e3e1",
+      "rating": 1786,
+      "popularity": 93,
+      "nbPlays": 543,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/dwz4WZnJ#47"
+    },
+    {
+      "puzzleId": "Nhj9f",
+      "fen": "7k/1R6/7p/p3b3/8/1B6/Pr3rPP/5RK1 w - - 0 26",
+      "moves": "f1f2 b2b1 b3d1 b1d1 f2f1 e5d4 g1h1 d1f1",
+      "rating": 1787,
+      "popularity": 94,
+      "nbPlays": 2568,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn4",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/2w1PmDPV#51"
+    },
+    {
+      "puzzleId": "GsTOt",
+      "fen": "4r2k/p5pp/2Q5/1P2r3/2P2p2/B4B2/P1qn1PPP/R4RK1 w - - 0 27",
+      "moves": "f1c1 c2c1 a1c1 e5e1 c1e1 e8e1",
+      "rating": 1787,
+      "popularity": 91,
+      "nbPlays": 1701,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/CQIWEZBb#53"
+    },
+    {
+      "puzzleId": "VthR6",
+      "fen": "r3r1k1/2pQN1pp/p2p4/1p2bR2/4P3/6qP/PPP3P1/5RK1 b - - 4 28",
+      "moves": "g8h8 d7e8 a8e8 f5f8 e8f8 f1f8",
+      "rating": 1787,
+      "popularity": 87,
+      "nbPlays": 2630,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/NeCHuizU/black#56"
+    },
+    {
+      "puzzleId": "eCMro",
+      "fen": "6k1/4R1pp/1p3p2/2p5/2P5/2Br2qP/P5P1/4Q1K1 b - - 11 41",
+      "moves": "d3c3 e1e6 g8h8 e7e8",
+      "rating": 1788,
+      "popularity": 98,
+      "nbPlays": 564,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/DYPZsi46/black#82"
+    },
+    {
+      "puzzleId": "P9P3c",
+      "fen": "r3r1k1/ppp2ppp/8/2p2b2/3Q4/2PP4/PP2qPPP/RNB2RK1 w - - 0 15",
+      "moves": "d4c5 e2f1 g1f1 f5d3 f1g1 e8e1",
+      "rating": 1788,
+      "popularity": 97,
+      "nbPlays": 1017,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/Fmt3n4RV#29"
+    },
+    {
+      "puzzleId": "BhzsP",
+      "fen": "1nk1rr2/p1pp3p/1p1b3P/5p2/3N2n1/5Q2/PPP2PP1/2K2B1R w - - 4 24",
+      "moves": "f3a8 d6f4 c1b1 e8e1",
+      "rating": 1788,
+      "popularity": 93,
+      "nbPlays": 1063,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/ahmHhTIW#47"
+    },
+    {
+      "puzzleId": "LkWK6",
+      "fen": "Q7/6pk/4p3/3pP2B/3q3B/4p3/6PP/6K1 w - - 0 39",
+      "moves": "a8a2 e3e2 g1h1 d4d1 h4e1 d1e1",
+      "rating": 1788,
+      "popularity": 92,
+      "nbPlays": 1265,
+      "theme": "backRankMate",
+      "allThemes": [
+        "advancedPawn",
+        "backRankMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/NuW5TBKf#77"
+    },
+    {
+      "puzzleId": "kWsmn",
+      "fen": "2r4k/6pp/3P1b2/1R6/8/1B6/1p1B2PP/rR5K w - - 1 32",
+      "moves": "b3c2 a1b1 c2b1 c8c1 d2c1 b2c1q",
+      "rating": 1789,
+      "popularity": 95,
+      "nbPlays": 3417,
+      "theme": "backRankMate",
+      "allThemes": [
+        "advancedPawn",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "promotion"
+      ],
+      "gameUrl": "https://lichess.org/fsaUOrsl#63"
+    },
+    {
+      "puzzleId": "ttqZp",
+      "fen": "2Qbkr2/6pp/r1p5/p3N3/Pp1qn3/8/1P3PPP/RN2R1K1 w - - 2 22",
+      "moves": "e5f3 d4f2 g1h1 f2e1 f3e1 f8f1",
+      "rating": 1789,
+      "popularity": 95,
+      "nbPlays": 8919,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "clearance",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/mK3ruNph#43"
+    },
+    {
+      "puzzleId": "6W7ZX",
+      "fen": "8/ppk3Q1/2p3p1/8/6P1/PB3p2/KPPn4/3q4 b - - 3 39",
+      "moves": "c7c8 b3e6 c8b8 g7e5 b8a8 e5h8",
+      "rating": 1790,
+      "popularity": 98,
+      "nbPlays": 604,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/EIRV7FFZ/black#78"
+    },
+    {
+      "puzzleId": "MdQwv",
+      "fen": "2q1r2k/1p2BQpp/p2br3/3p4/1P2p3/P7/6PP/2R2R1K b - - 5 32",
+      "moves": "c8c1 f7e8",
+      "rating": 1790,
+      "popularity": 97,
+      "nbPlays": 1833,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "hangingPiece",
+        "mate",
+        "mateIn1",
+        "middlegame",
+        "oneMove"
+      ],
+      "gameUrl": "https://lichess.org/Hm4oFEUX/black#64"
+    },
+    {
+      "puzzleId": "agJCB",
+      "fen": "r4rk1/8/pQ6/3p1qpp/2b5/2N1P1B1/PP3PPP/R2R2K1 w - - 0 23",
+      "moves": "g3d6 f5f2 g1h1 c4f1 d1f1 f2f1 a1f1 f8f1",
+      "rating": 1790,
+      "popularity": 96,
+      "nbPlays": 6529,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/pArZSFCw#45"
+    },
+    {
+      "puzzleId": "psBC7",
+      "fen": "4r1k1/Q4p1p/8/6p1/P2P4/3b1N2/1P2nPPP/R4K2 w - - 0 22",
+      "moves": "f3g5 e2c1 f1g1 e8e1",
+      "rating": 1790,
+      "popularity": 96,
+      "nbPlays": 1501,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/FhPWn4sU#43"
+    },
+    {
+      "puzzleId": "GrII0",
+      "fen": "1rbr3k/5R1p/p3pn2/4q3/4N2Q/1P1p4/2P1B1PP/R6K w - - 0 26",
+      "moves": "e4f6 e5a1 e2d1 a1d1 h4e1 d1e1",
+      "rating": 1790,
+      "popularity": 87,
+      "nbPlays": 2461,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "hangingPiece",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/uSkUOBuP#51"
+    },
+    {
+      "puzzleId": "Ng4tp",
+      "fen": "4r1k1/ppB2p1p/6p1/1P1p2q1/P2P4/2Pb1P2/1Q1Rr1PP/3R2K1 w - - 7 27",
+      "moves": "c7g3 g5e3 g1h1 e2e1 g3e1 e3e1 d1e1 e8e1",
+      "rating": 1791,
+      "popularity": 96,
+      "nbPlays": 692,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/boWaCm7o#53"
+    },
+    {
+      "puzzleId": "Pe18n",
+      "fen": "5Qk1/5ppp/pN2pn2/3p4/8/4BP2/q5PP/2R3K1 b - - 0 25",
+      "moves": "g8f8 c1c8 f6e8 e3c5 f8g8 c8e8",
+      "rating": 1792,
+      "popularity": 96,
+      "nbPlays": 2186,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "endgame",
+        "long",
+        "master",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/GaXA8mpB/black#50"
+    },
+    {
+      "puzzleId": "eXgRY",
+      "fen": "r1bn1rk1/pp1q1ppp/1n6/2Q1B3/8/5B2/PPP2PPP/3RR1K1 b - - 2 17",
+      "moves": "d7f5 c5f8 g8f8 e5d6 f8g8 e1e8",
+      "rating": 1792,
+      "popularity": 95,
+      "nbPlays": 18182,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/xcOtx5Tt/black#34"
+    },
+    {
+      "puzzleId": "55Duk",
+      "fen": "2k3nr/ppp2Qpp/4p3/q7/8/P1b2P2/1PP1BP1P/2KR4 b - - 0 17",
+      "moves": "g8h6 f7d7 c8b8 d7d8 h8d8 d1d8",
+      "rating": 1792,
+      "popularity": 90,
+      "nbPlays": 721,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/E7l5GKk9/black#34"
+    },
+    {
+      "puzzleId": "HoZTP",
+      "fen": "4r1k1/n4p1p/p4bp1/1p5Q/1Pq5/P6P/3RNPPB/6K1 w - - 0 26",
+      "moves": "h5g4 c4c1 e2c1 e8e1",
+      "rating": 1793,
+      "popularity": 98,
+      "nbPlays": 3158,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/tE7Y8u7V#51"
+    },
+    {
+      "puzzleId": "SWywi",
+      "fen": "3r2k1/p2r3p/bq2nQ2/1pp1pN2/4P3/1P4PP/P5BK/5R2 b - - 1 30",
+      "moves": "e6g7 f5h6 g8h8 f6f8 d8f8 f1f8",
+      "rating": 1793,
+      "popularity": 96,
+      "nbPlays": 6715,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/qYJEogGw/black#60"
+    },
+    {
+      "puzzleId": "zFFlX",
+      "fen": "5rk1/3R1ppp/3p3b/3Qp3/p3P2P/2qB4/4KPP1/R7 b - - 0 26",
+      "moves": "c3a1 d5f7 f8f7 d7d8 f7f8 d3c4 d6d5 c4d5 g8h8 d8f8",
+      "rating": 1794,
+      "popularity": 99,
+      "nbPlays": 1245,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "endgame",
+        "mate",
+        "mateIn5",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/N5zKdCWf/black#52"
+    },
+    {
+      "puzzleId": "qhH2i",
+      "fen": "4r2k/p1R3b1/b2p2Qp/3B4/8/1P3N2/P5PP/5q1K w - - 0 30",
+      "moves": "f3g1 f1g1 h1g1 g7d4 g1h1 e8e1",
+      "rating": 1794,
+      "popularity": 95,
+      "nbPlays": 21347,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/riwg0NXJ#59"
+    },
+    {
+      "puzzleId": "wUnWv",
+      "fen": "4Bq1k/pbp4p/1p2p3/6RQ/3P2p1/2P5/PP3rP1/2KR4 w - - 0 25",
+      "moves": "d1h1 f8f4 c1b1 b7e4 b1a1 f2f1 h1f1 f4f1",
+      "rating": 1794,
+      "popularity": 95,
+      "nbPlays": 19818,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/nnrHBPye#49"
+    },
+    {
+      "puzzleId": "PS6AZ",
+      "fen": "6k1/6pp/p1p2p2/3p1q2/P2Pb2P/Br2P1PQ/5P1K/R7 b - - 4 29",
+      "moves": "f5f3 h3e6 g8h8 e6e8",
+      "rating": 1794,
+      "popularity": 94,
+      "nbPlays": 1707,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/VcqwvjV6/black#58"
+    },
+    {
+      "puzzleId": "VLvyV",
+      "fen": "1Q6/1B4pp/3rkp2/2Bp1b2/8/2q1P3/5PPP/R3K2R w KQ - 0 28",
+      "moves": "e1f1 f5d3 f1g1 c3a1",
+      "rating": 1794,
+      "popularity": 84,
+      "nbPlays": 788,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/TgzpdApY#55"
+    },
+    {
+      "puzzleId": "LhWWp",
+      "fen": "5rk1/p4ppp/8/Q7/4q3/P7/1PP3PP/R1BrRb1K w - - 5 22",
+      "moves": "e1e4 f1e2 a5e1 d1e1",
+      "rating": 1795,
+      "popularity": 97,
+      "nbPlays": 7403,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "discoveredAttack",
+        "discoveredCheck",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5UsZcxgj#43"
+    },
+    {
+      "puzzleId": "7CORk",
+      "fen": "4r1k1/5p1p/3Q4/p4B2/2p5/3P4/P1q2PPP/3R1K2 w - - 1 35",
+      "moves": "d3c4 c2e2 f1g1 e2e1 d1e1 e8e1",
+      "rating": 1795,
+      "popularity": 96,
+      "nbPlays": 14875,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/RTDzYfKi#69"
+    },
+    {
+      "puzzleId": "FVUBS",
+      "fen": "r1k4r/ppp2Qpp/2p5/4q3/2Bb4/2P3P1/PP2NP1P/3R2K1 b - - 0 17",
+      "moves": "d4b6 f7d7 c8b8 d7d8 h8d8 d1d8",
+      "rating": 1795,
+      "popularity": 95,
+      "nbPlays": 4273,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/i1iLNXf9/black#34"
+    },
+    {
+      "puzzleId": "njOsL",
+      "fen": "1r3rk1/p1p3pp/b1P2q2/N2Pp3/1P2p3/2Q1p3/1P3PPP/2RR2K1 w - - 0 24",
+      "moves": "f2e3 f6f2 g1h1 a6f1 d1f1 f2f1 c1f1 f8f1",
+      "rating": 1795,
+      "popularity": 95,
+      "nbPlays": 19522,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/AGJ6QM0a#47"
+    },
+    {
+      "puzzleId": "zlo35",
+      "fen": "rn4k1/pp3ppp/4b3/3N3q/8/5N2/P1QB1KPP/4R3 b - - 0 21",
+      "moves": "h5d5 c2c8 e6c8 e1e8",
+      "rating": 1795,
+      "popularity": 95,
+      "nbPlays": 16072,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/5vmnMKnt/black#42"
+    },
+    {
+      "puzzleId": "vLGDV",
+      "fen": "r1b3k1/ppb3pp/2p2n2/2Pp1N2/3Pp1B1/4P3/PP1BQ1Pq/4KR2 b - - 3 20",
+      "moves": "f6g4 f5e7 g8h8 f1f8",
+      "rating": 1795,
+      "popularity": 91,
+      "nbPlays": 1910,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/90ip4dB8/black#40"
+    },
+    {
+      "puzzleId": "XUe6b",
+      "fen": "3rr1k1/p2N1pp1/2p2b1p/3p4/3q1PQ1/8/PP3RPP/3R2K1 w - - 4 23",
+      "moves": "d1d4 e8e1 f2f1 f6d4 g1h1 e1f1",
+      "rating": 1795,
+      "popularity": 89,
+      "nbPlays": 5453,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "intermezzo",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/IW70VuOz#45"
+    },
+    {
+      "puzzleId": "1OXVb",
+      "fen": "3r1r1k/pp2bB1n/7Q/2q5/4p3/8/PPP2PPP/3R1RK1 w - - 1 21",
+      "moves": "f7g6 c5f2 g1h1 f2f1 d1f1 f8f1",
+      "rating": 1795,
+      "popularity": 87,
+      "nbPlays": 1660,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/zx0HlhbA#41"
+    },
+    {
+      "puzzleId": "lceQI",
+      "fen": "r4rk1/p1p1n2p/b1p1pqp1/2PpN3/3P4/2N5/PP3PPP/R2QR1K1 w - - 4 18",
+      "moves": "d1a4 f6f2 g1h1 a6f1 e1f1 f2f1 a1f1 f8f1",
+      "rating": 1796,
+      "popularity": 96,
+      "nbPlays": 2833,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/sVSzl3Iu#35"
+    },
+    {
+      "puzzleId": "OtlTI",
+      "fen": "2k2b1N/ppp3p1/4Pq1p/8/4Q3/8/PPPr1PPP/R5K1 w - - 1 21",
+      "moves": "a1f1 f6f2 f1f2 d2d1 f2f1 f8c5 e4d4 c5d4 g1h1 d1f1",
+      "rating": 1796,
+      "popularity": 93,
+      "nbPlays": 2226,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn5",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/Ne8ulwWH#41"
+    },
+    {
+      "puzzleId": "0nKMn",
+      "fen": "7k/p1pq2pp/2np4/3Q4/6N1/P6P/8/5K2 b - - 0 37",
+      "moves": "c6e5 d5a8 d7c8 a8c8",
+      "rating": 1796,
+      "popularity": 90,
+      "nbPlays": 1148,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/0Wy8OJhF/black#74"
+    },
+    {
+      "puzzleId": "BaEba",
+      "fen": "r5k1/pQ3ppp/2n4q/3bP3/3p1P2/6PB/r4B2/2R1K1N1 b - - 1 22",
+      "moves": "a8b8 b7b8 c6b8 c1c8",
+      "rating": 1796,
+      "popularity": 90,
+      "nbPlays": 1246,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/xKfSX8PN/black#44"
+    },
+    {
+      "puzzleId": "v5crn",
+      "fen": "2rq2k1/pQ3ppp/4b3/8/2pb1P1P/3p4/PP1N1PB1/4R1K1 b - - 0 25",
+      "moves": "d8h4 b7c8 e6c8 e1e8",
+      "rating": 1797,
+      "popularity": 96,
+      "nbPlays": 14270,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/32GLs8Sq/black#50"
+    },
+    {
+      "puzzleId": "GlPw3",
+      "fen": "4r1k1/1b3ppp/p4n2/3p2q1/3R4/1BN2Q2/PPP2PPP/6K1 w - - 0 20",
+      "moves": "c3e2 g5c1 e2c1 e8e1",
+      "rating": 1797,
+      "popularity": 94,
+      "nbPlays": 20559,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "sacrifice",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/g28MpQs1#39"
+    },
+    {
+      "puzzleId": "yjajp",
+      "fen": "5rk1/p6R/1p4p1/6Np/2n5/4r2Q/P3qPPP/2R3K1 w - - 2 32",
+      "moves": "f2e3 e2f2 g1h1 f2f1 c1f1 f8f1",
+      "rating": 1797,
+      "popularity": 91,
+      "nbPlays": 5919,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/0m4HHMyo#63"
+    },
+    {
+      "puzzleId": "9zyYv",
+      "fen": "rn1k1r2/pbp3Q1/8/2pp4/2BP4/1KP3P1/P2q2P1/R3R3 b - - 0 24",
+      "moves": "b8d7 g7e7 d8c8 e7e8 f8e8 e1e8",
+      "rating": 1798,
+      "popularity": 98,
+      "nbPlays": 812,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/U065TsGb/black#48"
+    },
+    {
+      "puzzleId": "UH68N",
+      "fen": "r4rk1/p3R1pp/8/q5P1/b7/4QP2/1P4P1/4R1K1 b - - 1 31",
+      "moves": "f8e8 e3e6 g8h8 e7e8 a4e8 e6e8 a8e8 e1e8",
+      "rating": 1798,
+      "popularity": 97,
+      "nbPlays": 3946,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/VmSPB5Aw/black#62"
+    },
+    {
+      "puzzleId": "peo70",
+      "fen": "5rk1/4Rpbp/3p2p1/4nq2/8/1P3N2/R2Q1PPP/6K1 w - - 1 28",
+      "moves": "f3e5 f5b1 d2c1 b1c1",
+      "rating": 1798,
+      "popularity": 95,
+      "nbPlays": 1665,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn2",
+        "middlegame",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/oTCTWN2l#55"
+    },
+    {
+      "puzzleId": "rVFGC",
+      "fen": "r1k1Qb1r/ppp3p1/2n4p/6q1/2P5/1PN5/PBP3PP/3R1K2 b - - 0 20",
+      "moves": "c6d8 e8d7 c8b8 d7d8 g5d8 d1d8",
+      "rating": 1798,
+      "popularity": 95,
+      "nbPlays": 20043,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame"
+      ],
+      "gameUrl": "https://lichess.org/olVURsYc/black#40"
+    },
+    {
+      "puzzleId": "Fiy85",
+      "fen": "5rk1/R4Rpp/8/3pP3/3Pb3/4r1PB/7P/6K1 b - - 0 26",
+      "moves": "f8f7 a7a8 f7f8 h3e6 g8h8 a8f8",
+      "rating": 1798,
+      "popularity": 92,
+      "nbPlays": 3726,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "deflection",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/P8vjaYSw/black#52"
+    },
+    {
+      "puzzleId": "Xz5Gn",
+      "fen": "5k2/5ppP/4p3/1pP4q/2r2Q2/4PB2/4KP2/8 b - - 6 40",
+      "moves": "h5h7 f4d6 f8g8 d6d8",
+      "rating": 1798,
+      "popularity": 91,
+      "nbPlays": 1984,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "master",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "gameUrl": "https://lichess.org/F5mfOeHR/black#80"
+    },
+    {
+      "puzzleId": "yrOv0",
+      "fen": "6k1/1Q3pp1/4r2p/3p4/2p2q2/2P2B2/PP1n2PP/3R2K1 w - - 0 25",
+      "moves": "b7d5 f4e3 g1h1 e3e1 d1e1 e6e1",
+      "rating": 1798,
+      "popularity": 87,
+      "nbPlays": 1461,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/VgxneErq#49"
+    },
+    {
+      "puzzleId": "zlk6H",
+      "fen": "r1b2rk1/p2pQppp/2p5/4R2n/4P3/1Pq5/P1P1KP1P/R1B5 b - - 1 17",
+      "moves": "c3a1 e7f8 g8f8 c1a3 c6c5 a3c5 d7d6 c5d6 f8g8 e5e8",
+      "rating": 1799,
+      "popularity": 96,
+      "nbPlays": 6663,
+      "theme": "backRankMate",
+      "allThemes": [
+        "attraction",
+        "backRankMate",
+        "mate",
+        "mateIn5",
+        "middlegame",
+        "sacrifice",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/ysA0zzMi/black#34"
+    },
+    {
+      "puzzleId": "5IdDk",
+      "fen": "2kr3r/pp2Qp2/2p2p2/7p/6bP/1N4P1/PPP2q2/2K1RB1R w - - 0 20",
+      "moves": "b3c5 f2d2 c1b1 d2d1 e1d1 d8d1",
+      "rating": 1799,
+      "popularity": 95,
+      "nbPlays": 21036,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "long",
+        "mate",
+        "mateIn3",
+        "middlegame",
+        "sacrifice"
+      ],
+      "gameUrl": "https://lichess.org/lbFVUVrW#39"
+    },
+    {
+      "puzzleId": "mZq0I",
+      "fen": "6k1/5ppp/1Q6/2p1qP2/8/8/P1Pr1KPP/1R6 w - - 1 27",
+      "moves": "f2g1 e5d4 g1h1 d2d1 b1d1 d4d1",
+      "rating": 1799,
+      "popularity": 95,
+      "nbPlays": 21042,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "endgame",
+        "long",
+        "mate",
+        "mateIn3"
+      ],
+      "gameUrl": "https://lichess.org/hZz6gSTA#53"
+    },
+    {
+      "puzzleId": "l8TJV",
+      "fen": "2r5/1p2kp1p/p3p1p1/3pb3/4P1Q1/1P6/PBrq1PPP/RR4K1 w - - 0 23",
+      "moves": "b2e5 c2c1 b1c1 c8c1 a1c1 d2c1 g4d1 c1d1",
+      "rating": 1799,
+      "popularity": 91,
+      "nbPlays": 1574,
+      "theme": "backRankMate",
+      "allThemes": [
+        "backRankMate",
+        "mate",
+        "mateIn4",
+        "middlegame",
+        "veryLong"
+      ],
+      "gameUrl": "https://lichess.org/YgN4V1ik#45"
     }
   ]
 }
