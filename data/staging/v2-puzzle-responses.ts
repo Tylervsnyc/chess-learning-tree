@@ -177,7 +177,7 @@ export const block2Responses = {
       "Undefended means unemployed.",
       "Lonely piece, now your piece.",
       "They forgot about that one. You didn't.",
-      "Dangling like a piñata. Taken.",
+      "Dangling like a pi\u00f1ata. Taken.",
       "No bodyguard? No piece.",
     ],
     crushing: [
@@ -1663,6 +1663,385 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
+// LEVEL 6: WHY SO SERIOUS (THE DARK KNIGHT)
+// Tone: Gotham's finest, agent of chaos on the board, calculated madness,
+//       the hero chess deserves, plans within plans
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const level6Responses: Record<string, Record<string, string[]>> = {
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 1: "Why So Serious" — Subtle, surprising tactics
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 1: Quiet Moves
+  '6.1': {
+    general: [
+      "No check. No capture. Just a plan they never saw coming.",
+      "Why so serious? Because that quiet move just won the game.",
+      "The best moves don't announce themselves.",
+      "Gotham's finest move: the one nobody expected.",
+      "Not every threat needs to shout.",
+      "Silence on the board. Panic in their position.",
+      "That move didn't look like much. It was everything.",
+      "Some moves wear a mask. This one wore a cape.",
+      "The subtle approach. The devastating result.",
+      "You want to know how you got these wins? Quiet moves.",
+    ],
+    quietMove: [
+      "The quiet move speaks volumes.",
+      "No fireworks. Just an unstoppable threat.",
+      "They searched for checks and captures. The answer was neither.",
+      "Gotham sleeps. The quiet move strikes.",
+      "The calm before their resignation.",
+      "Sometimes the scariest move is the quietest one.",
+    ],
+  },
+
+  // Section 2: The Zwischenzug
+  '6.2': {
+    general: [
+      "An in-between move that changes everything.",
+      "They expected a recapture. You had other plans.",
+      "The intermezzo strikes when they least expect it.",
+      "Gotham loves a plot twist. So does your chess.",
+      "Not yet. First, this. Then checkmate.",
+      "The unexpected detour that wins the highway.",
+      "They blinked. You squeezed in an extra move.",
+      "That wasn't in their script.",
+      "Patience has a middle name: zwischenzug.",
+      "Why recapture when you can win instead?",
+    ],
+    intermezzo: [
+      "Zwischenzug executed. They never saw the intermission.",
+      "The in-between move rewrites the story.",
+      "One extra move. One extra advantage. One stunned opponent.",
+      "Intermezzo timing: immaculate.",
+      "They planned for your recapture. You planned for their defeat.",
+      "The best detours lead to victory.",
+    ],
+  },
+
+  // Section 3: X-Ray Vision
+  '6.3': {
+    general: [
+      "You see through their pieces. They see through nothing.",
+      "X-ray vision activated. Gotham has a new hero.",
+      "The attack passes right through the obstacle.",
+      "Transparent defense meets unstoppable offense.",
+      "Seeing what others can't. That's the job.",
+      "Hidden threats behind every piece.",
+      "The discovery reveals what was always there.",
+      "Your pieces have eyes everywhere.",
+      "Like sonar for the chessboard.",
+      "They hid behind their pieces. You saw right through them.",
+    ],
+    xRayAttack: [
+      "X-ray attack pierces through the defense.",
+      "The hidden line was always there. You found it.",
+      "Through the obstacle, to the prize.",
+      "X-ray vision: Gotham's tactical advantage.",
+      "They thought that piece was safe. X-ray disagrees.",
+      "See through. Strike through. Win through.",
+    ],
+    discoveredAttack: [
+      "One piece steps aside. Another delivers justice.",
+      "The discovered attack was hiding in plain sight.",
+      "Reveal and conquer. The Gotham way.",
+      "The curtain rises. The attack begins.",
+      "They focused on the decoy. The real threat walked in.",
+      "Behind every piece, another threat lurks.",
+    ],
+  },
+
+  // Section 4: Review - The Unexpected
+  '6.4': {
+    general: [
+      "Quiet moves, zwischenzugs, x-rays. The unexpected arsenal.",
+      "They never see it coming. That's the point.",
+      "Review confirms: you play the moves nobody expects.",
+      "Block 1 mastery. The subtle game is yours.",
+      "When obvious fails, the unexpected thrives.",
+      "Gotham's tactical playbook: reviewed and ready.",
+      "The element of surprise is your best advantage.",
+      "Subtlety wins where brute force can't.",
+      "All the hidden threats. All the quiet wins.",
+      "The unexpected review: expectedly excellent.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 2: "The Rook Gotham Deserves" — Deep calculation
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 5: Deep Sacrifices
+  '6.5': {
+    general: [
+      "It's not about the material. It's about sending a message.",
+      "Give up the piece. Keep the initiative. Win the war.",
+      "A sacrifice so deep even the engine needs a moment.",
+      "Bold sacrifice. Bolder follow-up.",
+      "They thought they were winning material. They were losing the game.",
+      "Gotham rewards the brave and the calculated.",
+      "The deeper the sacrifice, the sweeter the victory.",
+      "Material is a suggestion. Checkmate is mandatory.",
+      "You don't need all your pieces. Just the right moves.",
+      "Sacrificed with purpose. Collected with interest.",
+    ],
+    sacrifice: [
+      "Deep sacrifice executed. The board trembles.",
+      "Give a rook, gain a legend.",
+      "They accepted the gift. They didn't read the fine print.",
+      "Sacrifice depth: unfathomable. Result: inevitable.",
+      "The deepest sacrifice reveals the clearest path.",
+      "Not reckless. Calculated to the last move.",
+    ],
+  },
+
+  // Section 6: Complex Combinations
+  '6.6': {
+    general: [
+      "Four moves deep and still calculating.",
+      "The combination that took vision, nerve, and precision.",
+      "Complex? For them. Clean? For you.",
+      "Gotham's longest night has nothing on this calculation.",
+      "The deeper you see, the harder they fall.",
+      "That wasn't a combination. That was architecture.",
+      "Multi-move mastery on full display.",
+      "Calculated from the first move to the last gasp.",
+      "The whole sequence visualized. The whole game decided.",
+      "When the line is long, you follow it to the end.",
+    ],
+    mateIn4: [
+      "Mate in 4. Every move accounted for.",
+      "Four moves. Four steps closer to Gotham's finest hour.",
+      "The four-move sequence unfolds like a plan.",
+      "Calculated four deep. Executed four perfect.",
+      "They had four moves to survive. They needed five.",
+      "Long checkmate. Short celebration.",
+    ],
+    mateIn5: [
+      "Mate in 5. The long arm of justice reaches.",
+      "Five moves of pure, unstoppable calculation.",
+      "See five, execute five, win.",
+      "The five-move checkmate lands with authority.",
+      "Deep calculation, clean finish. Five moves of precision.",
+      "From here to checkmate: five moves, zero doubt.",
+    ],
+  },
+
+  // Section 7: Attraction & Lure
+  '6.7': {
+    general: [
+      "Come into the light. Where the traps are.",
+      "Attracted to the wrong square. Gotham sends its regards.",
+      "The lure worked. It always works on the unsuspecting.",
+      "Drawn in. Locked down. Game over.",
+      "They followed the bait right into the trap.",
+      "Attraction tactics: irresistible and inescapable.",
+      "Lured to the perfect square for the perfect finish.",
+      "The invitation was tempting. The result was devastating.",
+      "Step right up. Into the trap.",
+      "The board is a stage, and you just directed the finale.",
+    ],
+    attraction: [
+      "Attracted to exactly where you needed them.",
+      "The king came willingly. Left involuntarily.",
+      "Lured into the danger zone. No way back.",
+      "Attraction play: textbook Gotham.",
+      "They accepted the invitation. The party was a trap.",
+      "Drawn forward, punished backward.",
+    ],
+    clearance: [
+      "Clear the square. Unleash the attack.",
+      "The path is now open. The king is now finished.",
+      "Clearance sacrifice opens the highway to checkmate.",
+      "Out of the way. Gotham has business to handle.",
+      "The piece moved aside. The threat moved in.",
+      "Cleared for takeoff. Destination: victory.",
+    ],
+  },
+
+  // Section 8: Review - Calculated Justice
+  '6.8': {
+    general: [
+      "Sacrifices, combinations, lures. Calculated justice served.",
+      "Block 2 review: deep calculation confirmed.",
+      "The hero Gotham's chessboard deserves.",
+      "From sacrifice to checkmate: flawless sequence.",
+      "Review shows: you calculate deeper than they can defend.",
+      "Deep play reviewed. Deep play approved.",
+      "Attraction, clearance, long mates. The full arsenal.",
+      "Every sacrifice accounted for. Every combination landed.",
+      "The calculated approach wins again.",
+      "Justice is served. Four moves at a time.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 3: "Some Men Just Want to Watch the Board Burn" — Aggressive play
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 9: Kingside Assault
+  '6.9': {
+    general: [
+      "The kingside is crumbling. You brought the pressure.",
+      "Full-scale assault on the king's fortress.",
+      "Their castled king thought it was safe. It wasn't.",
+      "When the pawns storm forward, the king has nowhere to hide.",
+      "Gotham shines brightest on the kingside.",
+      "The attack is relentless. The defense is crumbling.",
+      "Pawn storm deployed. King storm follows.",
+      "Some positions just want to watch the kingside crumble.",
+      "Every piece aimed at one target. One terrified target.",
+      "The kingside collapsed. The king had nowhere to go.",
+    ],
+    kingsideAttack: [
+      "Kingside assault: devastating and complete.",
+      "The pawn storm breaks through.",
+      "All forces converge on the kingside. All forces win.",
+      "The kingside attack is textbook aggression.",
+      "Storm the castle. Claim the crown.",
+      "Kingside pressure converts to kingside checkmate.",
+    ],
+    exposedKing: [
+      "The king stands exposed. The checkmate arrives.",
+      "No pawn shield. No chance.",
+      "Exposed king in Gotham? That's game over.",
+      "Their king needed a mask. And a fortress.",
+      "The exposed king has nowhere to hide.",
+      "Open king, open file, open bar on wins.",
+    ],
+  },
+
+  // Section 10: Breaking the Defense
+  '6.10': {
+    general: [
+      "Their defense had a weakness. You found it.",
+      "Interference disrupts. Deflection conquers.",
+      "Break the chain and the whole defense collapses.",
+      "One link removed. The entire structure falls.",
+      "Gotham's defenses are only as strong as their weakest piece.",
+      "The defender is compromised. The position follows.",
+      "Disrupt, dismantle, dominate.",
+      "They built a wall. You built a wrecking ball.",
+      "Every defense has a flaw. You are that flaw's worst nightmare.",
+      "When the defense breaks, the win floods in.",
+    ],
+    interference: [
+      "Interference complete. Communication severed.",
+      "Block the defender. Claim the prize.",
+      "The pieces can no longer coordinate. By design.",
+      "One piece between them changes everything.",
+      "Interference deployed. Harmony dismantled.",
+      "Block the lifeline. Win the game.",
+    ],
+    deflection: [
+      "Deflected away from the critical square.",
+      "The key defender had two jobs. You gave it a third.",
+      "Pulled from duty. Position collapses.",
+      "The guard abandoned its post. Checkmate follows.",
+      "Deflection: Gotham's favorite disarmament tactic.",
+      "Look away from the threat. Too late to look back.",
+    ],
+  },
+
+  // Section 11: Complex Endgames
+  '6.11': {
+    general: [
+      "The endgame is where legends are made.",
+      "Technique smoother than the Batmobile.",
+      "Complex ending, clean conversion.",
+      "The pieces are few. The precision is everything.",
+      "Gotham's finest endgame technique.",
+      "When the board clears, the real skill shows.",
+      "Endgame mastery: the cape and cowl of chess.",
+      "From chaos to conversion. That's the discipline.",
+      "Fewer pieces, higher stakes, same excellence.",
+      "Technical endgame? Technical victory.",
+    ],
+    rookEndgame: [
+      "Rook endgame navigated like a Gotham alley. Expertly.",
+      "The rook cuts off escape. The pawn marches home.",
+      "Rook activity wins. You wrote the playbook.",
+      "Lucena, Philidor, and now your personal collection.",
+      "The rook endgame: where patience meets precision.",
+      "Active rook, passive opponent, predictable outcome.",
+    ],
+    pawnEndgame: [
+      "King and pawn versus king and hope. Hope loses.",
+      "The opposition is seized. The promotion is secured.",
+      "Every tempo counts. You counted them all.",
+      "Pawn endgame precision. Every square calculated.",
+      "The key squares are yours. The game is yours.",
+      "March forward. The eighth rank awaits.",
+    ],
+    queenEndgame: [
+      "Queen technique on display. No stalemate tricks today.",
+      "The queen dances to checkmate. Gracefully.",
+      "Queen endgame converted without a stalemate scare.",
+      "The queen finishes what the middlegame started.",
+      "Precise queen play. Gotham approves.",
+      "From queen advantage to queen checkmate. Textbook.",
+    ],
+  },
+
+  // Section 12: Review - Controlled Chaos
+  '6.12': {
+    general: [
+      "Kingside attacks, defensive breaks, complex endings. Controlled chaos.",
+      "Block 3 review: aggressive play, disciplined results.",
+      "Some positions crumbled. All of them crumbled in your favor.",
+      "Chaos on the board, clarity in your mind.",
+      "The board erupted. You controlled the chaos.",
+      "Review confirms: you bring the chaos, they bring the resignation.",
+      "From attack to endgame to victory. The full arc.",
+      "Aggressive play with endgame precision. Rare combination.",
+      "The chaos was never random. It was calculated.",
+      "Controlled chaos mastery: confirmed.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 4: "Checkmate Is the Best Policy, Harvey" — Mastery review
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 13: Level 6 Review
+  '6.13': {
+    general: [
+      "Level 6 review: the whole arsenal deployed.",
+      "Quiet moves to king hunts. You do it all.",
+      "Why so serious? Because Level 6 demands it.",
+      "Gotham's complete tactical package: reviewed.",
+      "From subtle zwischenzugs to relentless kingside assaults.",
+      "All four blocks. All the skills. All the wins.",
+      "The review reveals: you earned every section.",
+      "Mixed themes? Mixed excellence.",
+      "Every tactic from Level 6, ready for action.",
+      "The hero the chessboard deserves. Reviewed and confirmed.",
+    ],
+  },
+
+  // Section 14: Level 6 Final
+  '6.14': {
+    general: [
+      "Level 6 Final: Gotham is yours.",
+      "Why so serious? Because you just graduated Level 6.",
+      "The night is darkest before the dawn. Dawn arrived.",
+      "You either solve the puzzle or you play long enough to become the puzzle.",
+      "Level 6: conquered. The board bows.",
+      "From quiet moves to controlled chaos: mastered.",
+      "Gotham's finest tactician. Certified.",
+      "Not the hero they expected. The hero they got.",
+      "Level 6 complete. Level 7 awaits in the shadows.",
+      "You wanted to prove yourself. Consider it proven.",
+      "Some rise by luck, some by instinct. You rose by calculation.",
+      "The signal is lit. You answered. Level 6: complete.",
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1690,6 +2069,7 @@ const allLevelResponses: Record<string, Record<string, Record<string, string[]>>
   '3': level3Responses,
   '4': level4Responses,
   '5': level5Responses,
+  '6': level6Responses,
 };
 
 /**
@@ -1718,7 +2098,7 @@ export function getV2Response(sectionId: string, themes?: string[]): string {
       sectionResponses = blockResponses[sectionId];
     }
   } else {
-    // Levels 2-5 use flat structure by section ID
+    // Levels 2-6 use flat structure by section ID
     const levelResponses = allLevelResponses[levelNum];
     if (levelResponses) {
       sectionResponses = levelResponses[sectionId] as SectionResponses | undefined;
