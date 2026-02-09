@@ -14,6 +14,7 @@ Tasks are auto-dispatched to specialized agents. Just describe what you want in 
 
 | Request mentions... | Agent | File |
 |---|---|---|
+| Colors, tokens, brand, design system, theme | **Design System** | `.claude/agents/design-system-agent.md` |
 | Components, pages, styling, a11y, CSS | **Frontend** | `.claude/agents/frontend-agent.md` |
 | API routes, server logic, auth (not progress) | **Backend** | `.claude/agents/backend-agent.md` |
 | Schema, migrations, queries | **Database** | `.claude/agents/database-agent.md` |
@@ -61,6 +62,7 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | Feature flags | `lib/config/feature-flags.ts` |
 | Database schema | `supabase/schema.sql` |
 | Daily puzzles | `data/daily-challenge-puzzles.json` |
+| Default OG image | `app/api/og/default/route.tsx` (dynamic, edge) |
 | Share card (story) | `app/api/og/daily-challenge/route.tsx` → `renderStoryLayout()` **LOCKED DESIGN** |
 | Rook blocks | `lib/daily-rook-blocks.ts` |
 | Quips | `data/staging/v2-puzzle-responses.ts` |
@@ -112,13 +114,15 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 
 ## Styling Reference
 
-| Color | Value |
-|-------|-------|
-| Background | `#131F24` |
-| Secondary | `#1A2C35` |
-| Green accent | `#58CC02` |
-| Blue accent | `#1CB0F6` |
-| Error | `#FF4B4B` |
+**Full design system: `.claude/design-system.md`** — read this before any visual work.
+
+**Theme:** Light everywhere. All user-facing pages use `bg-chess-page` (#eef6fc). No dark backgrounds except landing hero.
+
+**Colors — always use tokens, never raw hex:**
+- Page bg: `bg-chess-page` | Cards: `bg-chess-surface`
+- Text: `text-chess-text` / `text-chess-text-muted` / `text-chess-text-faint`
+- Actions: `bg-chess-green` (primary) / `bg-chess-blue` (secondary)
+- Accents: `chess-gold`, `chess-orange`, `chess-red`, `chess-purple`
 
 **Layout:** Mobile-first. Body (`flex-col, overflow-hidden`) → NavHeader → main (`flex-1`) → page (`h-full`). Use `h-full` NOT `h-screen`. Only `/learn` and `/test-*` get `overflow-auto`.
 

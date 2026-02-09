@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: 'The Chess Path',
     images: [
       {
-        url: 'https://chesspath.app/og-image.png',
+        url: 'https://chesspath.app/api/og/default',
         width: 1200,
         height: 630,
         alt: 'The Chess Path - The shortest path to chess improvement',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'The Chess Path',
     description: 'The shortest path to chess improvement',
-    images: ['https://chesspath.app/og-image.png'],
+    images: ['https://chesspath.app/api/og/default'],
   },
 };
 

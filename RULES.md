@@ -1085,6 +1085,7 @@ This section tracks features currently being tested on localhost:3000 before pus
 **Files:**
 | File | Purpose |
 |------|---------|
+| `app/api/og/default/route.tsx` | Default site OG image (server-side) |
 | `app/api/og/daily-challenge/route.tsx` | Daily Rook story card (server-side) |
 | `app/api/og/lesson/route.tsx` | Lesson share card (server-side) |
 | `components/share/ShareButton.tsx` | Puzzle share button + generation trigger |
@@ -1311,13 +1312,13 @@ description: 'The shortest path to chess improvement'
 | `app/layout.tsx` | Global meta tags, OpenGraph, Twitter cards |
 | `app/sitemap.ts` | Dynamic sitemap for Google |
 | `app/robots.ts` | Search engine crawl rules |
-| `public/og-image.png` | Default social share image (1200x630) |
+| `app/api/og/default/route.tsx` | Default social share image (dynamic, 1200x630) |
 
 ### OpenGraph Image
 
 - Size: 1200x630px
-- Shows: Logo + tagline + chess visual
-- Location: `/public/og-image.png`
+- Shows: Logo + tagline + value prop pills + starting chess board
+- Location: `/api/og/default` (dynamic edge route, same pattern as daily-challenge and lesson OG routes)
 - Used when sharing links on social media
 
 ### Tracking (PostHog)
