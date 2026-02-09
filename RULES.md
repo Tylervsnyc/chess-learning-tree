@@ -82,8 +82,11 @@ const userType = useMemo(() => {
    - Only N.1.1 in Level N (then sequential)
 4. **Admin: ALL lessons unlocked, always**
 
-### Enforced In (ONE place only):
-`/hooks/useProgress.ts` → `isLessonUnlocked()`
+### Enforced In (TWO places — must stay in sync!):
+- **Client:** `/hooks/useProgress.ts` → `isLessonUnlocked()`
+- **Server:** `/app/api/progress/route.ts` → POST handler unlock validation
+
+**RULE: Server validation MUST match client logic.** Both check `unlocked_levels` from the user's profile. If you change unlock rules in one place, change BOTH. A mismatch causes silent 403 rejections — progress saves to localStorage but never reaches Supabase.
 
 ### Visual States:
 | State | Appearance | Click Action |

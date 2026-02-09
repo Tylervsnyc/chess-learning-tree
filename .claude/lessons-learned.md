@@ -114,6 +114,10 @@ Adding a `@keyframes` animation with `transform: scale()` to an element that alr
 When adding Level 6, a background agent wrote a brand new `extract-level6-puzzles.ts` instead of adding Level 6 to the existing `scripts/extract-clean-puzzles.ts`. The new script dumped ALL matching puzzles (393 MB total, with `endgame.json` alone at 80 MB). The existing script already caps at 1,000 puzzles per theme file (line 361: `puzzles.slice(0, 1000)`), keeping total size at ~12 MB per level. The uncapped files exceeded Vercel's 250 MB serverless function limit and the deploy failed.
 → **New rule:** NEVER write a new puzzle extraction script. Add the new level to `V2_LEVELS` in `scripts/extract-clean-puzzles.ts` and run it. The script handles rating filtering, theme detection, popularity sorting, and the 1,000 puzzle cap. This is documented in RULES.md Section 29 and the levels agent.
 
+### Lesson: 2026-02-09 - Server-side unlock validation didn't match client, silently rejected progress
+The POST `/api/progress` route validated lesson unlocks using global sequential order (previous lesson in `allLessonIds` must be completed). But the client-side `isLessonUnlocked()` checks `unlocked_levels` — levels below the highest unlocked are fully open. When users skipped levels via placement tests, the server returned 403, silently rejecting lesson completions and `current_position` updates. Progress lived only in localStorage. When localStorage was lost/stale, users got sent back to 1.1.1.
+-> **New rule:** Server-side and client-side validation logic MUST stay in sync. Both must check `unlocked_levels`. If you change unlock rules in `useProgress.ts`, update the POST handler in `app/api/progress/route.ts` too. This is now documented in RULES.md Section 2.
+
 ---
 
 *Add new lessons at the bottom. Follow the format above.*

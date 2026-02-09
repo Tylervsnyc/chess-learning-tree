@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid lessonId' }, { status: 400 });
     }
 
-    // Fetch user's completed lessons and admin status
+    // Fetch user's completed lessons, admin status, and unlocked levels
     const [existingProgressResult, profileResult] = await Promise.all([
       supabase
         .from('lesson_progress')
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
         .eq('user_id', user.id),
       supabase
         .from('profiles')
-        .select('is_admin')
+        .select('is_admin, unlocked_levels')
         .eq('id', user.id)
         .maybeSingle(), // Use maybeSingle to handle missing profile gracefully
     ]);
@@ -166,13 +166,15 @@ export async function POST(request: NextRequest) {
 
     const completedLessons = (existingProgressResult.data || []).map(p => p.lesson_id);
     const isAdmin = profileResult.data?.is_admin ?? false;
-    // Server validation uses sequential unlock logic (previous lesson must be complete)
-    // currentPosition is updated separately after validation passes
+    const unlockedLevels: number[] = profileResult.data?.unlocked_levels ?? [1];
 
-    // Check unlock status using sequential unlock logic
+    // Check unlock status matching client-side isLessonUnlocked() logic:
+    // - Levels BELOW highest unlocked → ALL lessons fully open
+    // - Highest unlocked level → first lesson of level always unlocked + sequential within level
+    // - Levels above highest → locked
     let isUnlocked = false;
 
-    // First lesson is always unlocked
+    // First lesson of entire curriculum is always unlocked
     if (lessonIndex === 0) {
       isUnlocked = true;
     }
@@ -180,12 +182,33 @@ export async function POST(request: NextRequest) {
     else if (completedLessons.includes(lessonId)) {
       isUnlocked = true;
     }
-    // Check if previous lesson is completed (sequential unlock)
-    else if (lessonIndex > 0) {
-      const previousLessonId = allLessonIds[lessonIndex - 1];
-      if (completedLessons.includes(previousLessonId)) {
+    // Check using unlocked_levels logic
+    else {
+      const lessonLevel = parseInt(lessonId.split('.')[0], 10);
+      const highestUnlocked = Math.max(...unlockedLevels);
+
+      // Levels BELOW highest unlocked → ALL lessons fully open
+      if (lessonLevel < highestUnlocked) {
         isUnlocked = true;
       }
+      // Highest unlocked level → first lesson of level + sequential within level
+      else if (lessonLevel === highestUnlocked) {
+        const levelLessons = allLessonIds.filter(id => parseInt(id.split('.')[0], 10) === lessonLevel);
+        const indexInLevel = levelLessons.indexOf(lessonId);
+
+        // First lesson of the level is always unlocked
+        if (indexInLevel === 0) {
+          isUnlocked = true;
+        }
+        // Otherwise, previous lesson IN THIS LEVEL must be completed
+        else if (indexInLevel > 0) {
+          const previousLessonInLevel = levelLessons[indexInLevel - 1];
+          if (completedLessons.includes(previousLessonInLevel)) {
+            isUnlocked = true;
+          }
+        }
+      }
+      // Levels above highest → locked (isUnlocked stays false)
     }
 
     // Reject if locked and not admin

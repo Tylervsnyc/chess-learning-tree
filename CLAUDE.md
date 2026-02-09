@@ -53,7 +53,7 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 | User state & type | `hooks/useUser.ts` |
 | Progress tracking | `hooks/useProgress.ts`, `lib/progress-sync.ts` |
 | Permissions/limits | `hooks/usePermissions.ts` |
-| Lesson unlocking | `hooks/useProgress.ts` → `isLessonUnlocked()` |
+| Lesson unlocking | `hooks/useProgress.ts` → `isLessonUnlocked()` (client) + `app/api/progress/route.ts` (server) |
 | Current position | `hooks/useProgress.ts` → `currentPosition` |
 | Puzzle utilities | `lib/puzzle-utils.ts` |
 | Puzzle selection | `lib/puzzle-selector.ts` |
@@ -71,7 +71,7 @@ User Action → Component (UI) → Hook → Sync Layer → API Route → Supabas
 
 | Behavior | Enforced In |
 |----------|-------------|
-| Lesson unlocking | `hooks/useProgress.ts` → `isLessonUnlocked()` |
+| Lesson unlocking | `hooks/useProgress.ts` → `isLessonUnlocked()` (client) + `app/api/progress/route.ts` (server) — **must match** |
 | Level unlocking | `hooks/useProgress.ts` → `isLevelUnlocked()` |
 | Current position | `hooks/useProgress.ts` → `currentPosition` |
 | Page layout/height | `app/globals.css` + `app/layout.tsx` |
@@ -187,8 +187,9 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 4. **Race conditions** — POST and GET can race after navigation. Local wins for recent actions.
 5. **Uncommitted files** — After fixing, `git status` to verify ALL related files are committed.
 6. **Desktop overflow** — Every section on a page must share the same max-width container. If one section is `max-w-sm mx-auto` and another has no constraint, desktop breaks.
+7. **Client/server validation drift** — If the client validates something (e.g., lesson unlocking) and the server validates the same thing, they MUST use the same logic. A stricter server silently rejects data, so progress only lives in localStorage and is lost on device switch or data clear.
 
-Full list: `.claude/lessons-learned.md` (20 entries from real debugging sessions)
+Full list: `.claude/lessons-learned.md` (24 entries from real debugging sessions)
 
 ---
 
