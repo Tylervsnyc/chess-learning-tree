@@ -668,6 +668,7 @@ function SectionView({
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
   const hasMeasured = useRef(false);
+  const [animationDone, setAnimationDone] = useState(isExpanded);
 
   const sectionColor = section.isReview
     ? CURRICULUM_V2_CONFIG.reviewSectionColor
@@ -678,6 +679,20 @@ function SectionView({
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
       hasMeasured.current = true;
+    }
+  }, [isExpanded]);
+
+  // Track when expand animation finishes so we can switch from overflow-hidden to overflow-visible.
+  // overflow-hidden is needed DURING animation for smooth height transitions,
+  // but clips the absolutely-positioned "Start Lesson" popup cards when fully expanded.
+  useEffect(() => {
+    if (isExpanded) {
+      // After expand animation completes (500ms transition), allow overflow
+      const timer = setTimeout(() => setAnimationDone(true), 520);
+      return () => clearTimeout(timer);
+    } else {
+      // Immediately hide overflow when collapsing starts
+      setAnimationDone(false);
     }
   }, [isExpanded]);
 
@@ -745,7 +760,7 @@ function SectionView({
 
       {/* Lessons - Evenly Spaced Row (always rendered for height measurement) */}
       <div
-        className="overflow-hidden"
+        className={animationDone ? 'overflow-visible' : 'overflow-hidden'}
         aria-hidden={!isExpanded}
         style={{
           maxHeight: isExpanded

@@ -98,6 +98,10 @@ The original share flow generated the image when the user tapped "Share" (~2-3 s
 API routes trusted client data without validation — unsanitized strings in SQL-adjacent contexts, missing auth checks on admin routes, no CRON_SECRET verification on cron endpoints. None had been exploited, but all were exploitable.
 → **New rule:** Every API route must validate inputs at the boundary: check auth, sanitize strings, verify secrets on cron routes, and use parameterized queries. Don't trust client data even for "internal" routes.
 
+### Lesson: 2026-02-09 - Staggered animation broke Start Lesson buttons by clipping popups
+Adding `overflow-hidden` to a container for expand/collapse animation clipped the absolutely-positioned popup cards that contain "Start Lesson" buttons. Users could see lesson pucks but couldn't access the buttons to actually start lessons — the core functionality of the site was broken by a "small" CSS animation feature.
+→ **New rule:** Before adding `overflow-hidden`, `overflow-auto`, `max-height`, or similar CSS containment properties, check if ANY child elements use absolute/fixed positioning that extends beyond the container bounds (popups, dropdowns, tooltips, modals). Test that ALL interactive flows still work after CSS animation changes, not just the animation itself.
+
 ---
 
 *Add new lessons at the bottom. Follow the format above.*

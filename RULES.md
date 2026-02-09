@@ -146,6 +146,7 @@ No URL params needed. The `currentPosition` field stored in the database determi
 - Collapse: reverse stagger (30ms per child), faster out than in
 - `pointer-events: none` + `aria-hidden` when collapsed to prevent interaction and screen reader access
 - **Initial render**: skips animation (no transition) so pre-expanded sections appear instantly
+- **CSS containment warning**: Do NOT add `overflow-hidden` to containers with absolutely-positioned children (popups, tooltips). It clips interactive elements like Start Lesson buttons.
 
 ### The `currentPosition` Field:
 - Stored in `profiles.current_position` (database)
@@ -1401,6 +1402,7 @@ Before modifying any behavior:
 - [ ] Update this document if the rule changed
 - [ ] Test the change
 - [ ] Verify no duplicate implementations exist
+- [ ] **CSS containment check** — Before adding `overflow-hidden`, `max-height`, or `clip` to any container, verify no child uses absolute/fixed positioning that extends beyond bounds (popups, tooltips, dropdowns). Test all interactive flows, not just the visual animation.
 
 ---
 
