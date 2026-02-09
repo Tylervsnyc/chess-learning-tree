@@ -967,9 +967,9 @@ function LessonButton({
             top: size + depthY + 12,
             left: '50%',
             transform: popupTransform,
-            animation: 'popup-enter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
           }}
         >
+         <div style={{ animation: 'popup-enter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}>
           {/* Arrow pointing up */}
           <div
             className="w-4 h-4"
@@ -1032,6 +1032,7 @@ function LessonButton({
               )}
             </div>
           </div>
+         </div>
         </div>
         );
       })()}
