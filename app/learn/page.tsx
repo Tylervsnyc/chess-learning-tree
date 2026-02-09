@@ -730,7 +730,7 @@ function SectionView({
   }, [router]);
 
   return (
-    <div className="mb-3" ref={sectionRef} style={{ position: 'relative', zIndex: selectedLessonId ? 10 : 'auto' }}>
+    <div className="mb-3" ref={sectionRef} style={{ position: 'relative', zIndex: selectedLessonId ? 10 : 1 }}>
       {/* Section Header */}
       <button
         onClick={onToggle}

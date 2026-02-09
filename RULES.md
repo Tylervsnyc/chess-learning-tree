@@ -147,7 +147,7 @@ No URL params needed. The `currentPosition` field stored in the database determi
 - `pointer-events: none` + `aria-hidden` when collapsed to prevent interaction and screen reader access
 - **Initial render**: skips animation (no transition) so pre-expanded sections appear instantly
 - **CSS containment warning**: Do NOT add `overflow-hidden` to containers with absolutely-positioned children (popups, tooltips). It clips interactive elements like Start Lesson buttons.
-- **Popup z-index rule**: The section wrapper (`mb-3` div) gets `position: relative; z-index: 10` when a lesson popup is open, and `z-index: auto` when closed. This ensures the popup renders above the next section's lessons (which have `transform` creating stacking contexts).
+- **Popup z-index rule**: ALL section wrappers get `position: relative; z-index: 1` (creates stacking context that contains transformed children). The section with an open popup gets `z-index: 10`. Using `z-index: 1` (not `auto`) is critical — `auto` does NOT create a stacking context, so children with `transform` (lesson bubbles, the `scale-[0.85]` flex row) escape and paint above the popup.
 
 ### The `currentPosition` Field:
 - Stored in `profiles.current_position` (database)
