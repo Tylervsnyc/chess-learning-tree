@@ -1,0 +1,17 @@
+{
+  "name": "Chess Path",
+  "short_name": "Chess Path",
+  "description": "Curated puzzles to help you improve in the shortest time possible",
+  "start_url": "/learn",
+  "display": "standalone",
+  "background_color": "#eef6fc",
+  "theme_color": "#eef6fc",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/brand/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "categories": ["education", "games"]
+}
