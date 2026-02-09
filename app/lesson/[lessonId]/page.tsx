@@ -424,11 +424,11 @@ export default function LessonPage() {
     if (showMoveHint && hintSquares) {
       styles[hintSquares.from] = {
         backgroundColor: 'rgba(88, 204, 2, 0.7)',
-        boxShadow: 'inset 0 0 0 3px #58CC02',
+        boxShadow: 'inset 0 0 0 3px var(--color-chess-green)',
       };
       styles[hintSquares.to] = {
         backgroundColor: 'rgba(88, 204, 2, 0.5)',
-        boxShadow: 'inset 0 0 0 3px #58CC02',
+        boxShadow: 'inset 0 0 0 3px var(--color-chess-green)',
       };
     } else if (currentPuzzle && moveIndex === 0 && !showMoveHint) {
       styles[currentPuzzle.lastMoveFrom] = { backgroundColor: 'rgba(255, 170, 0, 0.5)' };
@@ -757,6 +757,9 @@ export default function LessonPage() {
   // Record lesson completion and show limit modal if needed
   useEffect(() => {
     if (lessonComplete) {
+      // Trigger PWA install prompt after first puzzle experience
+      window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+
       // Record the lesson completion for permission tracking
       recordLessonComplete();
 
@@ -811,8 +814,8 @@ export default function LessonPage() {
   // Only show blocked state AFTER permissions have finished loading
   if (!permissionsLoading && !canAccessLesson) {
     return (
-      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
-        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
               onClick={() => router.push('/learn')}
@@ -834,7 +837,7 @@ export default function LessonPage() {
                 </p>
                 <button
                   onClick={() => router.push('/auth/signup')}
-                  className="px-8 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+                  className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
                 >
                   Sign Up Free
                 </button>
@@ -849,13 +852,13 @@ export default function LessonPage() {
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => router.push('/pricing')}
-                    className="px-8 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+                    className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
                   >
                     Upgrade to Premium
                   </button>
                   <button
                     onClick={() => router.push('/learn')}
-                    className="px-8 py-3 bg-[#1A2C35] text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
+                    className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
                   >
                     Back to Learn
                   </button>
@@ -871,9 +874,9 @@ export default function LessonPage() {
   // Loading state (either permissions or puzzle data)
   if (loading || permissionsLoading) {
     return (
-      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
-        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
               onClick={() => router.push('/learn')}
@@ -902,8 +905,8 @@ export default function LessonPage() {
   // Error state
   if (error) {
     return (
-      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
-        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
               onClick={() => router.push('/learn')}
@@ -918,7 +921,7 @@ export default function LessonPage() {
             <p className="text-red-400 mb-4">{error}</p>
             <button
               onClick={() => router.push('/learn')}
-              className="text-[#1CB0F6] hover:underline"
+              className="text-chess-blue hover:underline"
             >
               ← Back to curriculum
             </button>
@@ -954,8 +957,8 @@ export default function LessonPage() {
 
   if (!currentPuzzle) {
     return (
-      <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
-        <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
               onClick={() => router.push('/learn')}
@@ -973,10 +976,10 @@ export default function LessonPage() {
   }
 
   return (
-    <div className="h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
       {/* Header */}
-      <div className="bg-[#eef6fc] border-b border-gray-200 px-4 py-3 flex-shrink-0">
+      <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push('/learn')}
@@ -1005,7 +1008,7 @@ export default function LessonPage() {
           {/* Theme + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-semibold text-[#3c3c3c]">{lessonName}</h1>
+              <h1 className="text-base font-semibold text-chess-text">{lessonName}</h1>
               {inRetryMode && (
                 <span className="text-yellow-600 text-xs">(retry)</span>
               )}
@@ -1013,7 +1016,7 @@ export default function LessonPage() {
                 <HelpIconButton onClick={() => setShowHelpModal(true)} />
               )}
             </div>
-            <span className="text-base font-bold text-[#3c3c3c]">
+            <span className="text-base font-bold text-chess-text">
               {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
             </span>
           </div>

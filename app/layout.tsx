@@ -5,10 +5,20 @@ import { NavHeader } from '@/components/layout/NavHeader';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { ScrollToTop } from '@/components/providers/ScrollToTop';
+import { InstallPrompt } from '@/components/InstallPrompt';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
   description: 'The shortest path to chess improvement',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Chess Path',
+  },
+  icons: {
+    apple: '/brand/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'The Chess Path',
     description: 'The shortest path to chess improvement',
@@ -37,7 +47,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#131F24',
+  themeColor: '#eef6fc',
 };
 
 export default function RootLayout({
@@ -56,6 +66,7 @@ export default function RootLayout({
             <main className="flex-1 min-h-0 flex flex-col">
               {children}
             </main>
+            <InstallPrompt />
           </PostHogProvider>
         </Suspense>
       </body>

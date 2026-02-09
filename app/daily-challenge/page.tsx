@@ -663,6 +663,9 @@ export default function DailyChallengePage() {
   // Record when finished and fetch leaderboard
   useEffect(() => {
     if (gameState === 'finished') {
+      // Trigger PWA install prompt after first puzzle experience
+      window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+
       if (user) {
         // Use finalElapsedMsRef which was captured at the exact moment the game ended
         const finalTimeLeft = TOTAL_TIME - finalElapsedMsRef.current;
@@ -787,20 +790,20 @@ export default function DailyChallengePage() {
   // Loading state while checking if user already completed today
   if (checkingCompletion || userLoading) {
     return (
-      <div className="h-full bg-[#eef6fc] flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-full bg-chess-page flex flex-col items-center justify-center px-4 overflow-hidden">
         <div className="text-center max-w-sm w-full">
           <div
-            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-[#FF9600]/50"
+            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-chess-orange/50"
             style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
           >
             <h1
-              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange"
               style={{ fontFamily: 'Nunito, sans-serif' }}
             >
               THE DAILY ROOK
             </h1>
           </div>
-          <div className="text-[#6b7c8a] animate-pulse">Loading...</div>
+          <div className="text-chess-text-muted animate-pulse">Loading...</div>
         </div>
       </div>
     );
@@ -815,7 +818,7 @@ export default function DailyChallengePage() {
 
   // ─── SPLIT SCREEN LAYOUT (all 3 states) ───────────────────────────────
   return (
-    <div className={`h-full bg-[#eef6fc] text-[#3c3c3c] flex flex-col items-center ${gameState === 'playing' ? 'overflow-hidden justify-center' : 'overflow-auto'}`}>
+    <div className={`h-full bg-chess-page text-chess-text flex flex-col items-center ${gameState === 'playing' ? 'overflow-hidden justify-center' : 'overflow-auto'}`}>
       {/* Top section — changes per state */}
       <div className="w-full max-w-md">
         {/* ── READY / LOADING ── */}
@@ -824,11 +827,11 @@ export default function DailyChallengePage() {
             <div className="text-center max-w-sm w-full flex flex-col">
               {/* Title */}
               <div
-                className="inline-block px-5 py-2.5 rounded-xl mb-2 border-2 border-[#FF9600]/50 self-center"
+                className="inline-block px-5 py-2.5 rounded-xl mb-2 border-2 border-chess-orange/50 self-center"
                 style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
               >
                 <h1
-                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600]"
+                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange"
                   style={{ fontFamily: 'Nunito, sans-serif' }}
                 >
                   THE DAILY ROOK
@@ -837,14 +840,14 @@ export default function DailyChallengePage() {
 
               {/* Tagline */}
               <p
-                className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#e05a5a] to-[#FF9600] mb-4"
+                className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#e05a5a] to-chess-orange mb-4"
               >
                 Solve Puzzles. Build the Rook. Improve at Chess.
               </p>
 
               {/* Rules */}
               <div
-                className="rounded-2xl p-3 mb-3 text-left space-y-2 border border-[#FF9600]/20"
+                className="rounded-2xl p-3 mb-3 text-left space-y-2 border border-chess-orange/20"
                 style={{ background: 'linear-gradient(145deg, rgba(255,150,0,0.08), rgba(255,107,107,0.06), rgba(255,150,0,0.04))' }}
               >
                 <div className="flex items-center gap-2.5">
@@ -854,7 +857,7 @@ export default function DailyChallengePage() {
                   >
                     <span className="text-[#38bdf8] font-black text-xs">5</span>
                   </div>
-                  <div className="text-[#2A3C45] font-bold text-sm">5 minutes on the clock</div>
+                  <div className="text-chess-text font-bold text-sm">5 minutes on the clock</div>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div
@@ -865,7 +868,7 @@ export default function DailyChallengePage() {
                       <path strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                     </svg>
                   </div>
-                  <div className="text-[#2A3C45] font-bold text-sm">Puzzles get harder</div>
+                  <div className="text-chess-text font-bold text-sm">Puzzles get harder</div>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div
@@ -874,7 +877,7 @@ export default function DailyChallengePage() {
                   >
                     <span className="text-[#f87171] font-black text-xs">3</span>
                   </div>
-                  <div className="text-[#2A3C45] font-bold text-sm">3 mistakes and you&apos;re out</div>
+                  <div className="text-chess-text font-bold text-sm">3 mistakes and you&apos;re out</div>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div
@@ -885,7 +888,7 @@ export default function DailyChallengePage() {
                       <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-5 5h-1v2h2a2 2 0 0 1 2 2v4h-4v-2H9v2H5v-4a2 2 0 0 1 2-2h2v-2H8a5 5 0 0 1-5-5V5a2 2 0 0 1 2-2z"/>
                     </svg>
                   </div>
-                  <div className="text-[#2A3C45] font-bold text-sm">Same puzzles for everyone</div>
+                  <div className="text-chess-text font-bold text-sm">Same puzzles for everyone</div>
                 </div>
               </div>
 
@@ -895,14 +898,14 @@ export default function DailyChallengePage() {
                   onClick={startChallenge}
                   disabled={gameState === 'loading'}
                   className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] disabled:opacity-70"
-                  style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                  style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
                 >
                   {gameState === 'loading' ? 'Loading...' : 'Begin the Challenge'}
                 </button>
                 <button
                   onClick={() => router.push('/learn')}
                   className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
-                  style={{ backgroundColor: '#58CC02', boxShadow: '0 3px 0 #3d8c01' }}
+                  style={{ backgroundColor: 'var(--color-chess-green)', boxShadow: '0 3px 0 var(--color-chess-green-shadow)' }}
                 >
                   Back to Path
                 </button>
@@ -946,27 +949,27 @@ export default function DailyChallengePage() {
           <div className="px-4 py-2">
             <div className="max-w-md mx-auto w-full">
               {/* Score card — matches share card design */}
-              <div className="bg-white rounded-2xl p-4 mb-3 celebratory-glow text-center">
-                <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF9600] via-[#FF6B6B] to-[#FF9600] mb-2">
+              <div className="bg-chess-surface rounded-2xl p-4 mb-3 celebratory-glow text-center">
+                <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange mb-2">
                   {puzzlesSolved === allPuzzles.length ? 'Perfect Run!' : lives <= 0 ? 'Game Over' : 'Time\'s Up!'}
                 </h2>
                 <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="text-5xl font-black text-[#FF9600]">{puzzlesSolved}</span>
-                  <span className="text-lg font-bold text-[#FF9600]/35">/{allPuzzles.length || 22}</span>
+                  <span className="text-5xl font-black text-chess-orange">{puzzlesSolved}</span>
+                  <span className="text-lg font-bold text-chess-orange/35">/{allPuzzles.length || 22}</span>
                 </div>
                 {globalPct !== null && globalPct > 0 && (
-                  <div className="inline-block px-3 py-1 rounded-full mt-2" style={{ background: 'rgba(88,204,2,0.12)' }}>
-                    <span className="text-sm font-extrabold text-[#46A302]">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
+                  <div className="inline-block px-3 py-1 rounded-full mt-2" style={{ background: 'rgba(70,163,2,0.12)' }}>
+                    <span className="text-sm font-extrabold text-chess-green-dark">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
                   </div>
                 )}
                 <div className="flex items-center justify-center gap-2 mt-1">
                   {userEntry?.displayName && (
                     <>
-                      <span className="text-base font-bold text-[#2A3C45]">{userEntry.displayName}</span>
+                      <span className="text-base font-bold text-chess-text">{userEntry.displayName}</span>
                       <span className="w-1 h-1 rounded-full bg-black/15 inline-block" />
                     </>
                   )}
-                  <span className="text-base font-semibold text-[#2A3C45]/40">in {formatTime(completionTimeMs)}</span>
+                  <span className="text-base font-semibold text-chess-text/40">in {formatTime(completionTimeMs)}</span>
                 </div>
               </div>
 
@@ -1025,7 +1028,7 @@ export default function DailyChallengePage() {
                 }}
                 disabled={cardSharing || !shareImageReady}
                 className="w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-70 mb-2"
-                style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
               >
                 {cardSharing ? (
                   <span className="animate-pulse">Sharing...</span>
@@ -1043,13 +1046,13 @@ export default function DailyChallengePage() {
 
               {/* Leaderboard for logged-in users, Login CTA for guests */}
               {user ? (
-                <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
+                <div className="bg-chess-surface rounded-xl p-3 mb-2 shadow-sm">
                   {/* Toggle buttons */}
-                  <div className="flex rounded-lg bg-[#eef6fc] p-1 mb-3">
+                  <div className="flex rounded-lg bg-chess-page p-1 mb-3">
                     <button
                       onClick={() => setShowMyStanding(false)}
                       className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                        !showMyStanding ? 'bg-white text-[#2A3C45] shadow-sm' : 'text-[#6b7c8a]'
+                        !showMyStanding ? 'bg-chess-surface text-chess-text shadow-sm' : 'text-chess-text-muted'
                       }`}
                     >
                       Top 10
@@ -1057,7 +1060,7 @@ export default function DailyChallengePage() {
                     <button
                       onClick={() => setShowMyStanding(true)}
                       className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                        showMyStanding ? 'bg-white text-[#2A3C45] shadow-sm' : 'text-[#6b7c8a]'
+                        showMyStanding ? 'bg-chess-surface text-chess-text shadow-sm' : 'text-chess-text-muted'
                       }`}
                     >
                       My Standing
@@ -1065,27 +1068,27 @@ export default function DailyChallengePage() {
                   </div>
 
                   {loadingLeaderboard ? (
-                    <div className="text-[#6b7c8a] py-3 text-sm">Loading...</div>
+                    <div className="text-chess-text-muted py-3 text-sm">Loading...</div>
                   ) : showMyStanding ? (
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-[#58CC02]/10 border border-[#58CC02]/30">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-chess-green/10 border border-chess-green/30">
                         <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-full bg-[#58CC02]/20 flex items-center justify-center text-[#58CC02] font-bold text-sm">
+                          <span className="w-8 h-8 rounded-full bg-chess-green/20 flex items-center justify-center text-chess-green font-bold text-sm">
                             #{userEntry?.rank || 1}
                           </span>
                           <div className="text-left">
-                            <div className="text-[#58CC02] font-semibold text-sm">Your Rank</div>
-                            <div className="text-[#6b7c8a] text-xs">
+                            <div className="text-chess-green font-semibold text-sm">Your Rank</div>
+                            <div className="text-chess-text-muted text-xs">
                               {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-[#2A3C45] font-bold text-lg">{puzzlesSolved}</div>
-                          <div className="text-[#6b7c8a] text-xs">{formatTime(completionTimeMs)}</div>
+                          <div className="text-chess-text font-bold text-lg">{puzzlesSolved}</div>
+                          <div className="text-chess-text-muted text-xs">{formatTime(completionTimeMs)}</div>
                         </div>
                       </div>
-                      <div className="text-center text-[#6b7c8a] text-xs py-1">
+                      <div className="text-center text-chess-text-muted text-xs py-1">
                         {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
                       </div>
                     </div>
@@ -1095,7 +1098,7 @@ export default function DailyChallengePage() {
                         <div
                           key={entry.rank}
                           className={`flex items-center justify-between p-2 rounded-lg ${
-                            entry.isCurrentUser ? 'bg-[#58CC02]/10 border border-[#58CC02]/30' : 'bg-[#eef6fc]'
+                            entry.isCurrentUser ? 'bg-chess-green/10 border border-chess-green/30' : 'bg-chess-page'
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -1103,17 +1106,17 @@ export default function DailyChallengePage() {
                               entry.rank === 1 ? 'text-yellow-500' :
                               entry.rank === 2 ? 'text-gray-400' :
                               entry.rank === 3 ? 'text-orange-400' :
-                              'text-[#6b7c8a]'
+                              'text-chess-text-muted'
                             }`}>
                               #{entry.rank}
                             </span>
-                            <span className={`text-sm ${entry.isCurrentUser ? 'text-[#58CC02] font-semibold' : 'text-[#2A3C45]'}`}>
+                            <span className={`text-sm ${entry.isCurrentUser ? 'text-chess-green font-semibold' : 'text-chess-text'}`}>
                               {entry.displayName}
                             </span>
                           </div>
                           <div className="text-right">
-                            <div className="text-[#2A3C45] font-bold text-sm">{entry.puzzlesCompleted}</div>
-                            <div className="text-[#6b7c8a] text-[10px]">{formatTime(entry.timeMs)}</div>
+                            <div className="text-chess-text font-bold text-sm">{entry.puzzlesCompleted}</div>
+                            <div className="text-chess-text-muted text-[10px]">{formatTime(entry.timeMs)}</div>
                           </div>
                         </div>
                       ))}
@@ -1121,22 +1124,22 @@ export default function DailyChallengePage() {
                   )}
                 </div>
               ) : (
-                <div className="bg-white rounded-xl p-4 mb-2 shadow-sm">
+                <div className="bg-chess-surface rounded-xl p-4 mb-2 shadow-sm">
                   <div className="text-center">
-                    <h2 className="text-[#2A3C45] font-bold text-base mb-1">How did you stack up?</h2>
-                    <p className="text-[#6b7c8a] text-xs mb-3">
+                    <h2 className="text-chess-text font-bold text-base mb-1">How did you stack up?</h2>
+                    <p className="text-chess-text-muted text-xs mb-3">
                       Log in to compare with other players and track your streak
                     </p>
                     <button
                       onClick={() => router.push('/auth/signup')}
                       className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mb-2"
-                      style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                      style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
                     >
                       Create Free Account
                     </button>
                     <button
                       onClick={() => router.push('/auth/login')}
-                      className="text-[#6b7c8a] hover:text-[#2A3C45] transition-colors text-xs"
+                      className="text-chess-text-muted hover:text-chess-text transition-colors text-xs"
                     >
                       Already have an account? Log in
                     </button>
@@ -1146,8 +1149,8 @@ export default function DailyChallengePage() {
 
               {/* Puzzle Review Section */}
               {attemptedPuzzles.length > 0 && (
-                <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
-                  <h2 className="text-sm font-bold text-[#2A3C45] mb-2">Review Puzzles</h2>
+                <div className="bg-chess-surface rounded-xl p-3 mb-2 shadow-sm">
+                  <h2 className="text-sm font-bold text-chess-text mb-2">Review Puzzles</h2>
                   <div className="space-y-1 max-h-28 overflow-y-auto">
                     {attemptedPuzzles.map((puzzle, idx) => (
                       <button
@@ -1155,21 +1158,21 @@ export default function DailyChallengePage() {
                         onClick={() => startReview(puzzle)}
                         className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors ${
                           reviewingPuzzle?.puzzleId === puzzle.puzzleId
-                            ? 'bg-[#38bdf8]/15 border border-[#38bdf8]/30'
-                            : 'bg-[#eef6fc] hover:bg-[#dce8f0]'
+                            ? 'bg-chess-blue/15 border border-chess-blue/30'
+                            : 'bg-chess-page hover:bg-[#dce8f0]'
                         }`}
                       >
                         <div className="flex items-center gap-2">
                           <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-bold ${
                             puzzle.result === 'correct'
-                              ? 'bg-[#58CC02]/15 text-[#58CC02]'
-                              : 'bg-[#FF4B4B]/15 text-[#FF4B4B]'
+                              ? 'bg-chess-green/15 text-chess-green'
+                              : 'bg-chess-red/15 text-chess-red'
                           }`}>
                             {idx + 1}
                           </div>
-                          <span className="text-[#2A3C45] text-sm">Puzzle {idx + 1}</span>
+                          <span className="text-chess-text text-sm">Puzzle {idx + 1}</span>
                         </div>
-                        <span className="text-[#6b7c8a] text-xs">{puzzle.rating}</span>
+                        <span className="text-chess-text-muted text-xs">{puzzle.rating}</span>
                       </button>
                     ))}
                   </div>
@@ -1182,12 +1185,12 @@ export default function DailyChallengePage() {
                 <>
                   <button
                     onClick={() => router.push('/learn')}
-                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
-                    style={{ backgroundColor: '#58CC02' }}
+                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
+                    style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
                     Start Learning
                   </button>
-                  <div className="mt-2 text-[#6b7c8a] text-xs text-center">
+                  <div className="mt-2 text-chess-text-muted text-xs text-center">
                     New challenge drops at midnight!
                   </div>
                 </>
@@ -1195,12 +1198,12 @@ export default function DailyChallengePage() {
                 <>
                   <button
                     onClick={() => router.push('/learn')}
-                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_#3d8c01]"
-                    style={{ backgroundColor: '#58CC02' }}
+                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
+                    style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
                     Back to Path
                   </button>
-                  <div className="mt-2 text-[#6b7c8a] text-xs text-center">
+                  <div className="mt-2 text-chess-text-muted text-xs text-center">
                     New challenge drops at midnight!
                   </div>
                 </>
@@ -1209,13 +1212,13 @@ export default function DailyChallengePage() {
                   <button
                     onClick={startChallenge}
                     className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98]"
-                    style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)' }}
+                    style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)' }}
                   >
                     Play Again
                   </button>
                   <button
                     onClick={() => router.push('/learn')}
-                    className="mt-2 text-[#6b7c8a] hover:text-[#2A3C45] transition-colors block w-full text-sm"
+                    className="mt-2 text-chess-text-muted hover:text-chess-text transition-colors block w-full text-sm"
                   >
                     Back to Path
                   </button>
@@ -1246,7 +1249,7 @@ export default function DailyChallengePage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={resetReview}
-                className="py-2 px-3 rounded-lg bg-[#1CB0F6] text-white text-xs font-bold shadow-[0_3px_0_#1899D6] active:scale-[0.98] transition-all"
+                className="py-2 px-3 rounded-lg bg-chess-blue text-white text-xs font-bold shadow-[0_3px_0_var(--color-chess-blue-dark)] active:scale-[0.98] transition-all"
               >
                 Reset
               </button>
@@ -1255,8 +1258,8 @@ export default function DailyChallengePage() {
                 disabled={reviewMoveIndex >= reviewingPuzzle.solutionMoves.length}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] ${
                   reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
-                    ? 'bg-[#dce8f0] text-[#6b7c8a]'
-                    : 'bg-[#58CC02] text-white shadow-[0_3px_0_#3d8c01]'
+                    ? 'bg-[#dce8f0] text-chess-text-muted'
+                    : 'bg-chess-green text-white shadow-[0_3px_0_var(--color-chess-green-shadow)]'
                 }`}
               >
                 {reviewMoveIndex >= reviewingPuzzle.solutionMoves.length
@@ -1266,12 +1269,12 @@ export default function DailyChallengePage() {
               <button
                 onClick={closeReview}
                 className="flex-[2] py-2 rounded-lg text-xs font-bold text-white active:scale-[0.98] transition-all"
-                style={{ background: 'linear-gradient(135deg, #FF9600, #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
               >
                 Close
               </button>
             </div>
-            <div className="text-center text-[#6b7c8a] text-[10px] mt-1">
+            <div className="text-center text-chess-text-muted text-[10px] mt-1">
               Move {reviewMoveIndex}/{reviewingPuzzle.solutionMoves.length}
             </div>
           </div>
@@ -1289,10 +1292,10 @@ export default function DailyChallengePage() {
               <>
                 {moveStatus === 'playing' && currentPuzzle && game && (
                   <div className="flex flex-col items-center gap-0.5">
-                    <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-[#2A3C45]' : 'text-[#4a5c6a]'}`}>
+                    <div className={`text-lg font-black ${game.turn() === 'w' ? 'text-chess-text' : 'text-[#4a5c6a]'}`}>
                       {game.turn() === 'w' ? 'White' : 'Black'} to move
                     </div>
-                    <div className="text-[#6b7c8a] text-sm">
+                    <div className="text-chess-text-muted text-sm">
                       Find the best move
                     </div>
                   </div>
