@@ -104,4 +104,16 @@ Adding `overflow-hidden` to a container for expand/collapse animation clipped th
 
 ---
 
+### Lesson: 2026-02-09 - CSS animation transform overrode positioning transform
+Adding a `@keyframes` animation with `transform: scale()` to an element that already had an inline `transform: translateX()` for positioning caused the animation to **replace** the positioning entirely. The popup jumped to the wrong location because CSS animations override inline transforms — they don't compose.
+→ **New rule:** Never put a CSS `animation` with `transform` on the same element that uses `transform` for positioning. Instead, use a wrapper div: outer div for positioning (translateX/Y), inner div for animation (scale, opacity). This is a fundamental CSS limitation — transforms from different sources don't stack, the last one wins.
+
+---
+
+### Lesson: 2026-02-09 - New level puzzle extraction must use existing script with 1,000 cap
+When adding Level 6, a background agent wrote a brand new `extract-level6-puzzles.ts` instead of adding Level 6 to the existing `scripts/extract-clean-puzzles.ts`. The new script dumped ALL matching puzzles (393 MB total, with `endgame.json` alone at 80 MB). The existing script already caps at 1,000 puzzles per theme file (line 361: `puzzles.slice(0, 1000)`), keeping total size at ~12 MB per level. The uncapped files exceeded Vercel's 250 MB serverless function limit and the deploy failed.
+→ **New rule:** NEVER write a new puzzle extraction script. Add the new level to `V2_LEVELS` in `scripts/extract-clean-puzzles.ts` and run it. The script handles rating filtering, theme detection, popularity sorting, and the 1,000 puzzle cap. This is documented in RULES.md Section 29 and the levels agent.
+
+---
+
 *Add new lessons at the bottom. Follow the format above.*

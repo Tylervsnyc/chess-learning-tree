@@ -1016,31 +1016,43 @@ When adding Level N:
 
 1. **Create curriculum file**
    - `/data/staging/levelN-v2-curriculum.ts`
-   - Structure: 4 blocks, 4 sections each, 4 lessons each
+   - Structure: 4 blocks, ~3.5 sections each, 4 lessons each (56 lessons total)
 
 2. **Register in curriculum registry**
-   - `/lib/curriculum-registry.ts`
+   - `/lib/curriculum-registry.ts` — add import and LEVELS entry
 
-3. **Ensure puzzle CSVs exist**
-   - For the rating range
+3. **Generate puzzle files (USE EXISTING SCRIPT)**
+   - Add your level to `V2_LEVELS` in `scripts/extract-clean-puzzles.ts`
+   - Run `npx tsx scripts/extract-clean-puzzles.ts`
+   - Output: `data/clean-puzzles-v2/levelN-{theme}.json` (1,000 puzzles max per file)
+   - **DO NOT write a new extraction script** — the existing one handles caps, filtering, and theme detection
+   - **WHY:** Vercel has a 250 MB serverless function limit. All puzzle JSON files get bundled. Without the 1,000 cap, files can reach 80+ MB each and break deploys.
 
-4. **Generate puzzle pools**
-   - Output to `/data/lesson-pools/`
+4. **Update `getLevelFromRating()` in `/app/api/puzzles/lesson/route.ts`**
+   - Add the new level's rating range so puzzles load from the correct `levelN-*.json` files
 
 5. **Add level test config**
    - `/data/level-unlock-tests.ts`
 
 6. **Add quips**
-   - Section quips
-   - Global theme quips
+   - Append to `data/staging/v2-puzzle-responses.ts`
+   - Register in `allLevelResponses` map
+   - Follow content guidelines (no violence/death language, kid-safe)
 
-7. **Use unique section IDs**
+7. **Update maintenance check**
+   - Add level import and entry to `scripts/maintenance-check.ts`
+
+8. **Use unique section IDs**
    - Dot notation: `N.1`, `N.2`, `N.3`, etc.
 
-8. **Follow content guidelines**
-   - No death/violence language
+9. **Follow content guidelines**
+   - No death/violence language, weapons, or dark themes
+   - Kid-friendly — review all quips against Section 28 guidelines
 
-9. **Test everything**
+10. **Test everything**
+    - `npm run check` — 0 errors
+    - `npx tsx scripts/maintenance-check.ts` — all checks pass
+    - Verify total `clean-puzzles-v2/` size stays under ~50 MB
 
 ---
 
