@@ -1,38 +1,38 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Queen Icon - 22 dots scaled to 32x32 (favicon) -->
-  <!-- 4px squares, 1px gap (5px step), 1px radius -->
+  <!-- 4px squares, 1px gap (5px step), 1px radius, centered -->
 
   <!-- Row 0: Crown points -->
-  <rect x="2" y="1" width="4" height="4" rx="1" fill="#1CB0F6"/>
-  <rect x="12" y="1" width="4" height="4" rx="1" fill="#2FCBEF"/>
-  <rect x="22" y="1" width="4" height="4" rx="1" fill="#A560E8"/>
+  <rect x="4" y="1.5" width="4" height="4" rx="1" fill="#1CB0F6"/>
+  <rect x="14" y="1.5" width="4" height="4" rx="1" fill="#2FCBEF"/>
+  <rect x="24" y="1.5" width="4" height="4" rx="1" fill="#A560E8"/>
 
   <!-- Row 1: Crown rim -->
-  <rect x="2" y="6" width="4" height="4" rx="1" fill="#58CC02"/>
-  <rect x="7" y="6" width="4" height="4" rx="1" fill="#FFC800"/>
-  <rect x="12" y="6" width="4" height="4" rx="1" fill="#FF9600"/>
-  <rect x="17" y="6" width="4" height="4" rx="1" fill="#FF6B6B"/>
-  <rect x="22" y="6" width="4" height="4" rx="1" fill="#FF4B4B"/>
+  <rect x="4" y="6.5" width="4" height="4" rx="1" fill="#58CC02"/>
+  <rect x="9" y="6.5" width="4" height="4" rx="1" fill="#FFC800"/>
+  <rect x="14" y="6.5" width="4" height="4" rx="1" fill="#FF9600"/>
+  <rect x="19" y="6.5" width="4" height="4" rx="1" fill="#FF6B6B"/>
+  <rect x="24" y="6.5" width="4" height="4" rx="1" fill="#FF4B4B"/>
 
   <!-- Row 2: Head -->
-  <rect x="7" y="11" width="4" height="4" rx="1" fill="#1CB0F6"/>
-  <rect x="12" y="11" width="4" height="4" rx="1" fill="#2FCBEF"/>
-  <rect x="17" y="11" width="4" height="4" rx="1" fill="#A560E8"/>
+  <rect x="9" y="11.5" width="4" height="4" rx="1" fill="#1CB0F6"/>
+  <rect x="14" y="11.5" width="4" height="4" rx="1" fill="#2FCBEF"/>
+  <rect x="19" y="11.5" width="4" height="4" rx="1" fill="#A560E8"/>
 
   <!-- Row 3: Neck -->
-  <rect x="7" y="16" width="4" height="4" rx="1" fill="#58CC02"/>
-  <rect x="12" y="16" width="4" height="4" rx="1" fill="#FFC800"/>
-  <rect x="17" y="16" width="4" height="4" rx="1" fill="#FF9600"/>
+  <rect x="9" y="16.5" width="4" height="4" rx="1" fill="#58CC02"/>
+  <rect x="14" y="16.5" width="4" height="4" rx="1" fill="#FFC800"/>
+  <rect x="19" y="16.5" width="4" height="4" rx="1" fill="#FF9600"/>
 
   <!-- Row 4: Body -->
-  <rect x="7" y="21" width="4" height="4" rx="1" fill="#FF6B6B"/>
-  <rect x="12" y="21" width="4" height="4" rx="1" fill="#FF4B4B"/>
-  <rect x="17" y="21" width="4" height="4" rx="1" fill="#1CB0F6"/>
+  <rect x="9" y="21.5" width="4" height="4" rx="1" fill="#FF6B6B"/>
+  <rect x="14" y="21.5" width="4" height="4" rx="1" fill="#FF4B4B"/>
+  <rect x="19" y="21.5" width="4" height="4" rx="1" fill="#1CB0F6"/>
 
   <!-- Row 5: Base -->
-  <rect x="2" y="26" width="4" height="4" rx="1" fill="#2FCBEF"/>
-  <rect x="7" y="26" width="4" height="4" rx="1" fill="#A560E8"/>
-  <rect x="12" y="26" width="4" height="4" rx="1" fill="#58CC02"/>
-  <rect x="17" y="26" width="4" height="4" rx="1" fill="#FFC800"/>
-  <rect x="22" y="26" width="4" height="4" rx="1" fill="#FF9600"/>
+  <rect x="4" y="26.5" width="4" height="4" rx="1" fill="#2FCBEF"/>
+  <rect x="9" y="26.5" width="4" height="4" rx="1" fill="#A560E8"/>
+  <rect x="14" y="26.5" width="4" height="4" rx="1" fill="#58CC02"/>
+  <rect x="19" y="26.5" width="4" height="4" rx="1" fill="#FFC800"/>
+  <rect x="24" y="26.5" width="4" height="4" rx="1" fill="#FF9600"/>
 </svg>
