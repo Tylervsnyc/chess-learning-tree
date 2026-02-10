@@ -880,14 +880,14 @@ export default function DailyChallengePage() {
 
               {/* Auth CTAs */}
               <button
-                onClick={() => router.push('/auth/signup')}
+                onClick={() => router.push('/auth/signup?redirect=%2Fdaily-challenge')}
                 className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-3"
                 style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
               >
                 Sign Up Free to Play
               </button>
               <button
-                onClick={() => router.push('/auth/login')}
+                onClick={() => router.push('/auth/login?redirect=%2Fdaily-challenge')}
                 className="text-chess-text-muted hover:text-chess-text transition-colors text-xs mt-2"
               >
                 Already have an account? Log in
