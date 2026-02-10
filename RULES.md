@@ -1000,6 +1000,7 @@ Current names are good - keep them
 | 5 | No Country for Beginners |
 | 6 | Why So Serious? |
 | 7 | There Is Always Hope... Unless It's Checkmate |
+| 8 | Say Checkmate Again |
 
 ### Level Card Display Rule:
 - The `name` field in curriculum data is the movie spoof name ONLY (e.g., `"Begin to Believe"`, NOT `"Level 1: Begin to Believe"`)

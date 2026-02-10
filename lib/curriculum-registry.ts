@@ -12,6 +12,7 @@ import { level4V2 } from '@/data/staging/level4-v2-curriculum';
 import { level5V2 } from '@/data/staging/level5-v2-curriculum';
 import { level6V2 } from '@/data/staging/level6-v2-curriculum';
 import { level7V2 } from '@/data/staging/level7-v2-curriculum';
+import { level8V2 } from '@/data/staging/level8-v2-curriculum';
 
 // Re-export types for convenience
 export type { LessonCriteria, Section, Block, Level };
@@ -84,6 +85,14 @@ export const LEVELS: LevelConfig[] = [
     treeId: '1800-2000',
     color: '#00B894',
     darkColor: '#009975',
+  },
+  {
+    level: 8,
+    data: level8V2,
+    puzzleDir: '2000-plus',
+    treeId: '2000-2200',
+    color: '#FF6B6B',     // Coral — Tarantino red
+    darkColor: '#cc4444',
   },
 ];
 

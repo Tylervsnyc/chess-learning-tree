@@ -2389,6 +2389,369 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
+// LEVEL 8: TARANTINO VIBES
+// General Tarantino energy: swagger, sharp dialogue, cool under pressure,
+// pop culture wit, non-linear thinking, soundtrack vibes
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const level8Responses: Record<string, Record<string, string[]>> = {
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 1: "En Passant, Do You Speak It?" — Subtle, positional, cool
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 1: Zugzwang
+  '8.1': {
+    general: [
+      "That's what I thought you'd play. Just didn't think you'd play it that COOL.",
+      "You just served them a Royale with Checkmate.",
+      "That wasn't a move. That was a monologue.",
+      "Smooth. Real smooth. Jukebox-in-a-diner smooth.",
+      "You didn't rush. You let the scene play out. Perfection.",
+      "Style points? Off the charts. Effectiveness? Also off the charts.",
+      "That move had its own soundtrack.",
+      "Cool, calm, and absolutely devastating.",
+      "They didn't see it. You didn't blink. Beautiful.",
+      "Like ordering something off-menu and getting exactly what you wanted.",
+    ],
+    zugzwang: [
+      "Every move they make is wrong. And they HAVE to move. That's the cruelty of it.",
+      "You put them in the chair, and the chair has no good options.",
+      "They're stuck. Not because they can't move — because they CAN'T NOT move.",
+      "Zugzwang: the one word in chess that means 'you're already done.'",
+      "Pass? There is no pass. There's only worse.",
+      "The board is a locked room and every door leads somewhere bad for them.",
+    ],
+    defensiveMove: [
+      "The save nobody expected. Including your opponent.",
+      "Defense isn't boring when it's this smooth.",
+      "Defensive resources: found. Crisis: averted.",
+      "They thought they had you. They thought wrong.",
+      "One move. The ONLY move. And you found it.",
+      "Cool under pressure. The board was on fire and you walked through it.",
+    ],
+  },
+
+  // Section 2: Quiet Moves
+  '8.2': {
+    general: [
+      "The quiet move. The one nobody heard coming.",
+      "No check. No capture. Just pure, quiet menace.",
+      "That's the move that doesn't announce itself. It just arrives.",
+      "Understated. Lethal. Like a bass line you don't notice until it owns you.",
+      "Quiet moves speak louder than checks.",
+      "The most dangerous thing in the room is the one that isn't making noise.",
+      "You whispered. The board screamed.",
+      "Not every great move needs an exclamation mark. Some just need a period.",
+      "That move walked in, sat down, and ordered a drink like it owned the place.",
+      "Low-key brilliance. The best kind.",
+    ],
+    quietMove: [
+      "No check, no capture, no warning. Just a quiet move that changes everything.",
+      "The calm before their storm of panic.",
+      "Quiet like a conversation you overhear that changes the whole plot.",
+      "They were waiting for fireworks. You gave them a slow burn.",
+      "The gentlest move on the board. The most dangerous one too.",
+      "Sometimes the best line has no dialogue at all.",
+    ],
+  },
+
+  // Section 3: Intermezzo
+  '8.3': {
+    general: [
+      "Non-linear. Unpredictable. Exactly right.",
+      "You just rearranged the sequence and they never recovered.",
+      "That wasn't the expected move. That was the BETTER move.",
+      "Plot twist. Their recapture can wait — you had business to handle first.",
+      "Out of order, but in perfect control.",
+      "They expected Scene 2. You jumped to Scene 5. Brilliant.",
+      "The timeline just got reshuffled. In your favor.",
+      "Linear is predictable. You're not predictable.",
+      "They had a plan. Your intermezzo had a better one.",
+      "You cut to a different scene. And it was the scene that mattered most.",
+    ],
+    intermezzo: [
+      "In-between move. In-between genius.",
+      "The intermezzo: chess's version of 'wait, before that...'",
+      "They thought you'd recapture. You had a detour in mind.",
+      "One move out of sequence. One whole position out of their control.",
+      "The intermediate move that rewrites the whole script.",
+      "Pause the expected. Insert the brilliant. Resume winning.",
+    ],
+  },
+
+  // Section 4: Review - Palate Cleanser
+  '8.4': {
+    general: [
+      "Zugzwang, quiet moves, intermezzos. The refined palate on full display.",
+      "Block 1 review: cool under pressure, sharp in execution.",
+      "The Royale with Cheese block: sophisticated, precise, confident.",
+      "You didn't just solve these. You solved them with STYLE.",
+      "Quiet moves that roar. Intermezzos that redirect. Zugzwangs that squeeze.",
+      "The subtle arts of chess, handled with zero subtlety in quality.",
+      "Review passed. Your positional taste is impeccable.",
+      "From trapped positions to plot twists: the whole menu, devoured.",
+      "Refined. Calculated. Cool. Block 1: complete.",
+      "That's a wrap on the appetizer course. Main course incoming.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 2: "Does He Look Like a Bishop?" — Deep calculation, interrogation
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 5: Sacrifices
+  '8.5': {
+    general: [
+      "You put something on the table. They took it. Now they owe you everything.",
+      "That sacrifice wasn't reckless. That sacrifice was an INVESTMENT.",
+      "Give a piece, get a position. The exchange rate is in your favor.",
+      "Cool under pressure. Giving up material while the room watches.",
+      "The sacrifice said 'trust me.' The follow-up said 'told you.'",
+      "Material is temporary. Initiative is forever.",
+      "You didn't lose a piece. You deployed a piece.",
+      "That wasn't generosity. That was a setup.",
+      "The briefcase glows for a reason. What's inside is worth more than what you gave up.",
+      "You traded a piece for the whole position. Good deal.",
+    ],
+    sacrifice: [
+      "Sacrifice landed. The compensation is rolling in.",
+      "They accepted the gift. They shouldn't have accepted the gift.",
+      "You offered the piece like a handshake. What came next wasn't friendly.",
+      "Material down, winning chances up. The math checks out.",
+      "The sacrifice had a plan, a backup plan, and a getaway car.",
+      "Gave up the piece with a smile. Got back the game with a grin.",
+    ],
+  },
+
+  // Section 6: Long Mates
+  '8.6': {
+    general: [
+      "You saw the whole movie before the first scene played.",
+      "Five moves deep. Five moves perfect.",
+      "That wasn't calculation. That was choreography.",
+      "You didn't just find the move. You KNEW the move.",
+      "Long combination, short result: checkmate.",
+      "The long game. The patient game. YOUR game.",
+      "They thought they had time. You'd already written the ending.",
+      "That sequence played out like a scene you'd rehearsed a hundred times.",
+      "Move by move. Beat by beat. Check by checkmate.",
+      "Seeing five moves ahead is talent. Executing all five is mastery.",
+    ],
+    mateIn5: [
+      "Mate in five. The whole sequence, visualized and executed.",
+      "Five moves from now, it's over. And you knew from move one.",
+      "The five-move combination: scripted, directed, and wrapped.",
+      "Long-range checkmate. Every move essential. No filler.",
+      "From opening move to final check: five acts of pure precision.",
+      "Five moves. One outcome. Zero doubt.",
+    ],
+  },
+
+  // Section 7: X-Ray & Interference
+  '8.7': {
+    general: [
+      "You see through pieces like they're not even there.",
+      "Lines, diagonals, the geometry of winning.",
+      "That piece was in the way. Correction: that piece WAS the way.",
+      "You see the board differently. That's why you're winning.",
+      "Through the clutter, through the noise, straight to the target.",
+      "The line was always there. You just had to clear it.",
+      "X-ray vision isn't a superpower on the chessboard. It's a requirement.",
+      "Interference played. Communication cut. Position won.",
+      "You interrupted their coordination like a record scratch.",
+      "The diagonal tells stories. You just read the whole chapter.",
+    ],
+    xRayAttack: [
+      "X-ray: seeing the threat through the piece that thought it was safe.",
+      "The piece in front doesn't matter. The line behind it does.",
+      "Through and through. The x-ray reveals all.",
+      "Looking past the obvious to the devastating.",
+      "The attack went through the bodyguard straight to the principal.",
+      "X-ray deployed. Hidden threats exposed.",
+    ],
+    interference: [
+      "You stepped right between their pieces and cut the conversation.",
+      "Interference: the move that says 'you two don't talk anymore.'",
+      "Communication severed. Their pieces are islands now.",
+      "One piece in the right square disconnects their entire defense.",
+      "The interference piece didn't need to survive. It needed to interrupt.",
+      "Block the line. Break the coordination. Win the game.",
+    ],
+  },
+
+  // Section 8: Review - Full Technique
+  '8.8': {
+    general: [
+      "Sacrifices, long mates, x-rays, interference. The full technique.",
+      "Block 2 review: precision from start to checkmate.",
+      "The Five Point Checkmate Technique: studied and certified.",
+      "Give up material, see deep, cut lines. That's the toolkit right there.",
+      "From calculated sacrifices to surgical interference. All clean.",
+      "Deep calculation confirmed. Your technique has zero plot holes.",
+      "Every sacrifice landed. Every combination connected. Every line cleared.",
+      "Block 2 was the test of depth. You passed with room to spare.",
+      "The technique block: where cool meets calculated.",
+      "Review complete. Your depth of play would make any director proud.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 3: "That IS a Tasty Fork" — Winning material, tactical satisfaction
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 9: Deflection & Attraction
+  '8.9': {
+    general: [
+      "You pulled them where you wanted them. They didn't even argue.",
+      "Misdirection is an art. You just painted a masterpiece.",
+      "Their defender had a job. You gave it a different one.",
+      "Push here, pull there. The whole position rearranged to your liking.",
+      "You're not just moving pieces. You're directing traffic.",
+      "The defender left its post. That's what you were counting on.",
+      "Attraction and deflection: the push and pull of tactical genius.",
+      "You lured them in. Then you closed the door.",
+      "Like pulling strings. Except the strings are rooks and bishops.",
+      "They went where you pointed. Right into the trap.",
+    ],
+    deflection: [
+      "Deflected. That defender had somewhere more important to NOT be.",
+      "Pull the guard from the gate and the fortress falls.",
+      "The defender was loyal. Until you gave it a reason to move.",
+      "One piece deflected, one position collapsed.",
+      "Deflection: making their best piece their worst problem.",
+      "They can't guard everything. You just proved it.",
+    ],
+    attraction: [
+      "Attracted to the wrong square. Everything falls apart from there.",
+      "Come closer. Closer. Perfect. Checkmate.",
+      "Lured into position like a character walking into the wrong room.",
+      "Attraction: the art of making them stand exactly where you want.",
+      "The king walked forward. The king shouldn't have walked forward.",
+      "Drawn in, set up, finished off. The whole sequence was scripted.",
+    ],
+  },
+
+  // Section 10: Endgames (Rook + Pawn)
+  '8.10': {
+    general: [
+      "The final act. Where everything that happened before pays off.",
+      "Fewer pieces, higher stakes. This is where it all matters.",
+      "Endgame technique sharper than the dialogue in a diner scene.",
+      "The board is almost empty. Your advantage isn't.",
+      "Convert. Close. Collect. That's the endgame motto.",
+      "From opening chaos to endgame clarity. The long arc of a well-played game.",
+      "The last act is always the most important. You nailed it.",
+      "Simple position, precise technique. That's how it's done.",
+      "They survived the middlegame. They won't survive this.",
+      "When the smoke clears, technique decides who's standing.",
+    ],
+    rookEndgame: [
+      "Rook endgame converted. Lucena, Philidor, whatever it took.",
+      "The rook endgame: where precision separates contenders from pretenders.",
+      "Active rook, right technique, clean conversion.",
+      "Rook behind the passed pawn. Textbook. Effective. Done.",
+      "The rook did what rooks do in endgames: everything.",
+      "Rook endgame mastery. The most common endgame, handled uncommonly well.",
+    ],
+    pawnEndgame: [
+      "King and pawns. The purest form of chess. And you played it perfectly.",
+      "Pawn endgame: where every tempo matters and you didn't waste one.",
+      "The opposition was key. You held it like a briefcase full of checkmate.",
+      "Pawn structure won. King activity won. You won.",
+      "Every pawn move was permanent. Every one was correct.",
+      "The pawn endgame is a conversation of tempi. You had the last word.",
+    ],
+  },
+
+  // Section 11: Kingside & Queenside Attacks
+  '8.11': {
+    general: [
+      "Both flanks. Both lethal. Pick a side — they're both losing.",
+      "The Mexican standoff of chess: tension on every side of the board.",
+      "Left side, right side, doesn't matter. You brought the pressure.",
+      "The attack came from where they weren't looking. Classic.",
+      "Flank attack executed with diner-booth cool.",
+      "When you attack both sides, they can only defend one.",
+      "The board is a stage. The attack played on both wings.",
+      "Tension on the kingside. Tension on the queenside. Tension everywhere.",
+      "They reinforced one flank. You broke through the other. Predictable.",
+      "Full-board pressure. The kind that doesn't let up.",
+    ],
+    kingsideAttack: [
+      "Kingside assault: direct, aggressive, and very much on purpose.",
+      "The king's neighborhood just got a lot less safe.",
+      "Pawns forward, pieces aimed, king exposed. Your kind of position.",
+      "The kingside attack hit like a soundtrack change from smooth to intense.",
+      "Storming the kingside with purpose and precision.",
+      "The h-file opened. The king wished it hadn't.",
+    ],
+    queensideAttack: [
+      "Queenside pressure: the slow squeeze that wins games.",
+      "While they watched the kingside, the queenside fell apart.",
+      "Queenside breakthrough. The minority attack pays dividends.",
+      "The a and b pawns marched. The queenside crumbled.",
+      "Positional pressure on the queenside. The kind they can't ignore.",
+      "Queenside attack: patient, methodical, and ultimately decisive.",
+    ],
+  },
+
+  // Section 12: Review - The Full Lineup
+  '8.12': {
+    general: [
+      "Deflections, endgames, flank attacks. The full lineup, assembled.",
+      "Block 3 review: tension on every square, technique on every move.",
+      "Stuck in the middle with you — and you played your way out beautifully.",
+      "Push, pull, convert, attack. The middle block was your showcase.",
+      "Every piece mattered. Every move counted. Block 3: wrapped.",
+      "From misdirection to endgame conversion to full-board attacks.",
+      "The lineup reviewed. Every member accounted for.",
+      "Block 3 demanded everything. You gave it and then some.",
+      "Tension, technique, and tactical fireworks. All present.",
+      "Review complete. Your middlegame-to-endgame transition is seamless.",
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BLOCK 4: "The Path of the Righteous Pawn" — The final journey
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Section 13: Level 8 Review
+  '8.13': {
+    general: [
+      "Level 8 review: every theme, every scene, every move accounted for.",
+      "From zugzwang to flank attacks. The whole script, revisited.",
+      "Say checkmate again. SAY. CHECKMATE. AGAIN.",
+      "The ensemble cast of tactics: all present, all performing.",
+      "Quiet moves, loud sacrifices, everything in between. Reviewed.",
+      "The full Tarantino: non-linear, stylish, and impossible to look away from.",
+      "Mixed puzzles from all four blocks. All four handled with swagger.",
+      "Every chapter revisited. Every chapter passed.",
+      "From the Royale with Cheese to the Final Chapter. All skills confirmed.",
+      "The review reel plays. Nothing but highlights.",
+    ],
+  },
+
+  // Section 14: Level 8 Final
+  '8.14': {
+    general: [
+      "That's a bingo. Checkmate's a bingo.",
+      "Level 8: wrapped. Credits rolling. Standing ovation.",
+      "You didn't just finish Level 8. You DIRECTED Level 8.",
+      "The final chapter closes. And what a chapter it was.",
+      "From quiet moves to long mates to full-board attacks: mastered.",
+      "Say checkmate one more time. Actually, don't. They've heard enough.",
+      "Level 8 complete. Tarantino would nod. Slowly. With respect.",
+      "The whole level was a long take. And you didn't blink once.",
+      "Cool under pressure from move one to the final checkmate.",
+      "You came in with swagger. You're leaving with mastery.",
+      "Level 8 done. The briefcase is yours. Don't ask what's inside.",
+      "Roll credits. You're the one still standing.",
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -2418,6 +2781,7 @@ const allLevelResponses: Record<string, Record<string, Record<string, string[]>>
   '5': level5Responses,
   '6': level6Responses,
   '7': level7Responses,
+  '8': level8Responses,
 };
 
 /**
@@ -2446,7 +2810,7 @@ export function getV2Response(sectionId: string, themes?: string[]): string {
       sectionResponses = blockResponses[sectionId];
     }
   } else {
-    // Levels 2-7 use flat structure by section ID
+    // Levels 2-8 use flat structure by section ID
     const levelResponses = allLevelResponses[levelNum];
     if (levelResponses) {
       sectionResponses = levelResponses[sectionId] as SectionResponses | undefined;

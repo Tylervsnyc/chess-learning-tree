@@ -98,6 +98,7 @@ const V2_LEVELS = [
   { level: 5, label: '1400-1600', file: '1200-1600.csv', minRating: 1400, maxRating: 1600, minPlays: 500, lowMinPlays: 50 },
   { level: 6, label: '1600-1800', file: '1600-2000.csv', minRating: 1600, maxRating: 1800, minPlays: 500, lowMinPlays: 50 },
   { level: 7, label: '1800-2000', file: '1600-2000.csv', minRating: 1800, maxRating: 2000, minPlays: 500, lowMinPlays: 50 },
+  { level: 8, label: '2000-2200', file: '2000-plus.csv', minRating: 2000, maxRating: 2200, minPlays: 100, lowMinPlays: 50 },
 ];
 
 interface CleanPuzzle {

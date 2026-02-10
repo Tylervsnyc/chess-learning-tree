@@ -28,6 +28,7 @@ import { level4V2 } from '../data/staging/level4-v2-curriculum';
 import { level5V2 } from '../data/staging/level5-v2-curriculum';
 import { level6V2 } from '../data/staging/level6-v2-curriculum';
 import { level7V2 } from '../data/staging/level7-v2-curriculum';
+import { level8V2 } from '../data/staging/level8-v2-curriculum';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -41,6 +42,7 @@ const LEVELS = [
   { num: 5, data: level5V2, puzzleDir: '1200-1600' },
   { num: 6, data: level6V2, puzzleDir: '1600-2000' },
   { num: 7, data: level7V2, puzzleDir: '1600-2000' },
+  { num: 8, data: level8V2, puzzleDir: '2000-plus' },
 ];
 
 const CLEAN_PUZZLES_DIR = path.join(process.cwd(), 'data', 'clean-puzzles-v2');
