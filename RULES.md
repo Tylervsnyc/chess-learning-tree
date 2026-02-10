@@ -986,7 +986,7 @@ Current names are good - keep them
 | 3 | We Need to Go Deeper |
 | 4 | I Am the One Who Knocks |
 | 5 | No Country for Beginners |
-| 6 | Why So Serious |
+| 6 | Why So Serious? |
 | 7 | There Is Always Hope... Unless It's Checkmate |
 
 ### Level Card Display Rule:

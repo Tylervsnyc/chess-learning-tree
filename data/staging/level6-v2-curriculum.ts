@@ -1,6 +1,6 @@
 /**
  * Level 6 V2 Curriculum (1600-1800 ELO)
- * "Why So Serious"
+ * "Why So Serious?"
  *
  * The Dark Knight. Gotham's chess underground.
  * Quiet moves, zwischenzugs, deep sacrifices, and complex endgames.
@@ -11,7 +11,7 @@
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: Why So Serious - Subtle, surprising tactics
+ * Block 1: Why So Serious? - Subtle, surprising tactics
  * Block 2: The Rook Gotham Deserves - Deep calculation
  * Block 3: Some Men Just Want to Watch the Board Burn - Aggressive play
  * Block 4: Checkmate Is the Best Policy, Harvey - Final mastery
@@ -23,16 +23,16 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level6V2: Level = {
   id: 'level-6',
-  name: 'Why So Serious',
+  name: 'Why So Serious?',
   ratingRange: '1600-1800',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 1: WHY SO SERIOUS
+    // BLOCK 1: WHY SO SERIOUS?
     // Subtle, surprising tactics
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Why So Serious',
+      name: 'Why So Serious?',
       description: 'Subtle, surprising tactics.',
       blockIntroMessage: `Welcome to Level 6. Why So Serious?
 

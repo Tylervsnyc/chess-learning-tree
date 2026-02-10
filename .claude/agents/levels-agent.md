@@ -78,7 +78,7 @@ Total: 14 sections × 4 lessons = 56 lessons per level
 | 3 | "We Need to Go Deeper" | 1000-1200 | Inception | `1000-1200` |
 | 4 | "I Am the One Who Knocks" | 1200-1400 | Breaking Bad | `1200-1400` |
 | 5 | "No Country for Beginners" | 1400-1600 | No Country for Old Men | `1400-1600` |
-| 6 | "Why So Serious" | 1600-1800 | The Dark Knight | `1600-2000` |
+| 6 | "Why So Serious?" | 1600-1800 | The Dark Knight | `1600-2000` |
 
 ### New Levels to Build
 

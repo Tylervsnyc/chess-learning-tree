@@ -1671,7 +1671,7 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // ─────────────────────────────────────────────────────────────────────────
-  // BLOCK 1: "Why So Serious" — Subtle, surprising tactics
+  // BLOCK 1: "Why So Serious?" — Subtle, surprising tactics
   // ─────────────────────────────────────────────────────────────────────────
 
   // Section 1: Quiet Moves
