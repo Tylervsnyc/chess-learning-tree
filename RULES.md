@@ -294,6 +294,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 ### Core Rules:
 | Rule | Value |
 |------|-------|
+| **Login required** | Anonymous users see a teaser gate screen with signup/login CTAs. Must be logged in to play. |
 | Timer | 5 minutes |
 | Lives | 3 (3 wrong = out) |
 | Puzzles | 22 total |
