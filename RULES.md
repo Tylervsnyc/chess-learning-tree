@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-07
+Last Updated: 2026-02-10
 
 ---
 
@@ -209,10 +209,7 @@ useEffect(() => {
 
 ## 7. Daily Limits
 
-### Current Status:
-**DISABLED** via `FEATURE_FLAGS.ENABLE_LESSON_LIMITS = false`
-
-### When Enabled:
+### Current Limits:
 | User Type | Limit | Reset |
 |-----------|-------|-------|
 | Anonymous | 2 total | Never (must sign up) |
@@ -224,7 +221,7 @@ useEffect(() => {
 `/hooks/usePermissions.ts`
 
 ### Config:
-`/lib/config/feature-flags.ts`
+`/types/permissions.ts` → `LESSON_LIMITS` constant
 
 ---
 
@@ -371,6 +368,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ### Playing Screen:
 - **Top half:** Chess board (fixed size, `max-w-sm`) + no scrolling
+- **Mobile board sizing:** Board container uses `maxWidth: min(28rem, calc(100dvh - 19rem))` so the full board + rook display fit on small viewports without clipping. On desktop the 28rem cap wins (unchanged); on mobile the viewport calc shrinks the board to fit.
 - **Bottom half — side-by-side:** Rook grid (left), stats column (right)
   - Stats column top-to-bottom: "White/Black to move" status → timer (card) → lives/hearts (card)
   - No theme help (?) button — Daily Rook never shows hints
@@ -839,13 +837,26 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 
 | Flag | Value | Description |
 |------|-------|-------------|
-| `ENABLE_LESSON_LIMITS` | `false` | Daily lesson limits |
-| `ANONYMOUS_LESSON_LIMIT` | `2` | Total lessons before signup prompt |
-| `FREE_DAILY_LESSON_LIMIT` | `2` | Daily limit for free users |
-| `SHOW_PREMIUM_UPSELLS` | `false` | Premium upsell prompts |
-| `PROMPT_SIGNUP_EVERY_N_LESSONS` | `2` | Signup prompt frequency |
-| `ENABLE_DAILY_CHALLENGE` | `true` | Daily challenge feature |
-| `ENABLE_STREAKS` | `true` | Streak tracking |
+| `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on /learn and /daily-challenge |
+| `SHOW_SHARING` | `false` | Show share buttons/cards on lesson complete and daily challenge screens |
+
+### Permissions & Limits (not feature flags)
+
+Lesson limits and signup prompts are now configured as **constants** in `types/permissions.ts`, not feature flags:
+
+**File**: `/types/permissions.ts` → `LESSON_LIMITS`
+
+| Config | Value | Description |
+|--------|-------|-------------|
+| `anonymous.totalLessons` | `2` | Total lessons before signup required |
+| `free.dailyLimit` | `2` | Daily lesson limit for free users |
+| `premium.dailyLimit` | `null` | Unlimited for premium users |
+| `admin.dailyLimit` | `null` | Unlimited for admin users |
+
+**Implementation**: `hooks/usePermissions.ts`
+- Enforces lesson limits based on user tier
+- Determines when to show signup/premium prompts
+- Tracks lessons via localStorage + server-side validation (httpOnly cookie for anonymous, DB for logged-in users)
 
 ---
 
