@@ -918,7 +918,10 @@ export default function DailyChallengePage() {
 
         {/* ── PLAYING ── */}
         {gameState === 'playing' && (
-          <div className="flex flex-col max-w-md mx-auto px-3 pt-1 pb-1 w-full">
+          <div
+            className="flex flex-col max-w-md mx-auto px-3 pt-1 pb-1 w-full"
+            style={{ maxWidth: 'min(28rem, calc(100dvh - 19rem))' }}
+          >
             <div className="flex flex-col">
               <div className="mb-1">
                 {game && (
