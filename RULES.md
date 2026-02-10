@@ -82,11 +82,10 @@ const userType = useMemo(() => {
    - Only N.1.1 in Level N (then sequential)
 4. **Admin: ALL lessons unlocked, always**
 
-### Enforced In (TWO places — must stay in sync!):
+### Enforced In (ONE place — client only):
 - **Client:** `/hooks/useProgress.ts` → `isLessonUnlocked()`
-- **Server:** `/app/api/progress/route.ts` → POST handler unlock validation
 
-**RULE: Server validation MUST match client logic.** Both check `unlocked_levels` from the user's profile. If you change unlock rules in one place, change BOTH. A mismatch causes silent 403 rejections — progress saves to localStorage but never reaches Supabase.
+The server does **NOT** validate unlock order. It only checks that the `lessonId` exists in the curriculum. The client UI prevents users from accessing locked lessons — the server trusts the client and stores the data. This avoids cascading sync failures when earlier lessons are missing from the DB due to failed POSTs.
 
 ### Visual States:
 | State | Appearance | Click Action |

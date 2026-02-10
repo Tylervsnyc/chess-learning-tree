@@ -132,30 +132,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
     }
 
-    // Server-side unlock validation
+    // Validate lessonId exists in curriculum
     const allLessonIds = getAllLessonIds();
-    const lessonIndex = allLessonIds.indexOf(lessonId);
-
-    if (lessonIndex === -1) {
+    if (!allLessonIds.includes(lessonId)) {
       return NextResponse.json({ error: 'Invalid lessonId' }, { status: 400 });
     }
 
-    // Fetch user's completed lessons, admin status, and unlocked levels
-    const [existingProgressResult, profileResult] = await Promise.all([
-      supabase
-        .from('lesson_progress')
-        .select('lesson_id')
-        .eq('user_id', user.id),
-      supabase
-        .from('profiles')
-        .select('is_admin, unlocked_levels')
-        .eq('id', user.id)
-        .maybeSingle(), // Use maybeSingle to handle missing profile gracefully
-    ]);
+    // Ensure profile exists (for foreign key constraints and streak updates below)
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
 
-    // Handle missing profile (create one if needed)
-    if (!profileResult.data && !profileResult.error) {
-      // Profile doesn't exist - create one
+    if (!existingProfile) {
       console.log('Profile not found for user in POST, creating one:', user.id);
       await supabase.from('profiles').insert({
         id: user.id,
@@ -164,57 +154,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const completedLessons = (existingProgressResult.data || []).map(p => p.lesson_id);
-    const isAdmin = profileResult.data?.is_admin ?? false;
-    const unlockedLevels: number[] = profileResult.data?.unlocked_levels ?? [1];
-
-    // Check unlock status matching client-side isLessonUnlocked() logic:
-    // - Levels BELOW highest unlocked → ALL lessons fully open
-    // - Highest unlocked level → first lesson of level always unlocked + sequential within level
-    // - Levels above highest → locked
-    let isUnlocked = false;
-
-    // First lesson of entire curriculum is always unlocked
-    if (lessonIndex === 0) {
-      isUnlocked = true;
-    }
-    // Already completed lessons are "unlocked" (replay)
-    else if (completedLessons.includes(lessonId)) {
-      isUnlocked = true;
-    }
-    // Check using unlocked_levels logic
-    else {
-      const lessonLevel = parseInt(lessonId.split('.')[0], 10);
-      const highestUnlocked = Math.max(...unlockedLevels);
-
-      // Levels BELOW highest unlocked → ALL lessons fully open
-      if (lessonLevel < highestUnlocked) {
-        isUnlocked = true;
-      }
-      // Highest unlocked level → first lesson of level + sequential within level
-      else if (lessonLevel === highestUnlocked) {
-        const levelLessons = allLessonIds.filter(id => parseInt(id.split('.')[0], 10) === lessonLevel);
-        const indexInLevel = levelLessons.indexOf(lessonId);
-
-        // First lesson of the level is always unlocked
-        if (indexInLevel === 0) {
-          isUnlocked = true;
-        }
-        // Otherwise, previous lesson IN THIS LEVEL must be completed
-        else if (indexInLevel > 0) {
-          const previousLessonInLevel = levelLessons[indexInLevel - 1];
-          if (completedLessons.includes(previousLessonInLevel)) {
-            isUnlocked = true;
-          }
-        }
-      }
-      // Levels above highest → locked (isUnlocked stays false)
-    }
-
-    // Reject if locked and not admin
-    if (!isUnlocked && !isAdmin) {
-      return NextResponse.json({ error: 'Lesson is locked' }, { status: 403 });
-    }
+    // No unlock validation here — client UI enforces sequential order.
+    // Server trusts the client and just stores the data. This prevents
+    // cascading sync failures when earlier lessons are missing from the DB.
 
     const { error } = await supabase.from('lesson_progress').upsert(
       {

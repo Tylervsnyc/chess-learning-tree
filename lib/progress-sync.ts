@@ -15,44 +15,42 @@ export interface ServerProgress {
 }
 
 /**
- * Merge local and server progress with additive strategy:
- * - Union of completed lessons (ONLY if server has data - prevents stale localStorage)
+ * Merge local and server progress with additive (union) strategy:
+ * - Always union completed lessons from both sources
  * - Max of streaks
- * - Server wins for currentPosition (explicit stored position)
- * - Dedupe puzzle attempts by puzzleId + timestamp
+ * - Local wins for currentPosition (prevents POST/GET race)
+ * - Union of unlocked levels
+ *
+ * This prevents data loss when the server is behind due to sync failures
+ * (e.g., lesson completions rejected by strict validation).
+ * If both are empty (genuinely new user), union is empty — safe.
  */
 export function mergeProgress(
   local: Progress,
   server: ServerProgress
 ): Progress {
-  // IMPORTANT: If server has no completed lessons, this is likely a new user.
-  // Don't merge from localStorage to prevent stale data from contaminating new accounts.
-  // If server has data, union both (supports offline usage).
-  const serverHasLessons = server.completedLessons.length > 0;
-  const completedLessons = serverHasLessons
-    ? Array.from(new Set([...local.completedLessons, ...server.completedLessons]))
-    : server.completedLessons; // Use server's empty array for new users
+  // Always union completed lessons from both sources
+  // This prevents data loss when server is behind due to sync failures
+  const completedLessons = Array.from(
+    new Set([...local.completedLessons, ...server.completedLessons])
+  );
 
-  // Max of streaks (for new users, use server defaults)
-  const currentStreak = serverHasLessons
-    ? Math.max(local.currentStreak, server.currentStreak)
-    : server.currentStreak;
+  // Max of streaks from both sources
+  const currentStreak = Math.max(local.currentStreak, server.currentStreak);
 
-  // Latest activity date (for new users, use server; otherwise compare)
-  const lastActivityDate = serverHasLessons
-    ? (!local.lastActivityDate
-        ? server.lastActivityDate
-        : !server.lastActivityDate
-          ? local.lastActivityDate
-          : local.lastActivityDate > server.lastActivityDate
-            ? local.lastActivityDate
-            : server.lastActivityDate)
-    : server.lastActivityDate;
+  // Latest activity date from either source
+  const lastActivityDate = !local.lastActivityDate
+    ? server.lastActivityDate
+    : !server.lastActivityDate
+      ? local.lastActivityDate
+      : local.lastActivityDate > server.lastActivityDate
+        ? local.lastActivityDate
+        : server.lastActivityDate;
 
-  // Merge unlocked levels (only union if server has data, else use server's defaults)
-  const unlockedLevels = serverHasLessons
-    ? Array.from(new Set([...local.unlockedLevels, ...(server.unlockedLevels || [1])])).sort((a, b) => a - b)
-    : (server.unlockedLevels || [1]);
+  // Union of unlocked levels from both sources
+  const unlockedLevels = Array.from(
+    new Set([...local.unlockedLevels, ...(server.unlockedLevels || [1])])
+  ).sort((a, b) => a - b);
 
   // Server wins for daily count (can't bypass by clearing localStorage)
   // But reset if it's a new day
@@ -60,10 +58,14 @@ export function mergeProgress(
   const serverIsNewDay = server.lastLessonDate !== today;
   const lessonsCompletedToday = serverIsNewDay ? 0 : (server.lessonsCompletedToday ?? local.lessonsCompletedToday);
 
-  // Use server's last lesson date (for new users, don't inherit local date)
-  const lastLessonDate = serverHasLessons
-    ? (server.lastLessonDate ?? local.lastLessonDate)
-    : server.lastLessonDate;
+  // Latest lesson date from either source
+  const lastLessonDate = !local.lastLessonDate
+    ? server.lastLessonDate
+    : !server.lastLessonDate
+      ? local.lastLessonDate
+      : local.lastLessonDate > server.lastLessonDate
+        ? local.lastLessonDate
+        : server.lastLessonDate;
 
   // currentPosition merge strategy:
   // - If local is at default '1.1.1' and server has real progress, use server (returning user)
@@ -76,7 +78,7 @@ export function mergeProgress(
 
   return {
     completedLessons,
-    puzzleAttempts: serverHasLessons ? local.puzzleAttempts : [], // Clear for new users
+    puzzleAttempts: local.puzzleAttempts, // Keep local puzzle attempts
     totalPuzzlesAttempted: local.totalPuzzlesAttempted, // Keep local count
     totalPuzzlesSolved: local.totalPuzzlesSolved, // Keep local count
     currentStreak,

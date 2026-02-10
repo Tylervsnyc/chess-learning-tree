@@ -375,6 +375,28 @@ export function useLessonProgress() {
         setProgress(prev => {
           const merged = mergeProgress(prev, serverProgress);
           saveProgress(merged);
+
+          // After merge, check if local has lessons the server doesn't
+          // If so, trigger a repair sync to push missing completions
+          const serverLessonCount = serverProgress.completedLessons.length;
+          const mergedLessonCount = merged.completedLessons.length;
+          if (mergedLessonCount > serverLessonCount && merged.completedLessons.length > 0) {
+            // Background repair sync - don't await, don't block
+            fetch('/api/progress/sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                completedLessons: merged.completedLessons,
+                currentStreak: merged.currentStreak,
+                lastActivityDate: merged.lastActivityDate,
+                currentPosition: merged.currentPosition,
+                lessonsCompletedToday: merged.lessonsCompletedToday,
+                lastLessonDate: merged.lastLessonDate,
+                unlockedLevels: merged.unlockedLevels,
+              }),
+            }).catch(err => console.error('Repair sync failed:', err));
+          }
+
           return merged;
         });
       } catch (error) {
