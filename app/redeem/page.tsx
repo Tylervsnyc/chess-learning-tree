@@ -81,59 +81,59 @@ export default function RedeemPage() {
   // Show loading state while checking auth
   if (isLoggedIn === null) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-full bg-chess-page flex items-center justify-center">
+        <div className="text-chess-text">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
+    <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🎁</div>
-          <h1 className="text-3xl font-bold text-white mb-2">Redeem Code</h1>
-          <p className="text-gray-400">
+          <h1 className="text-3xl font-bold text-chess-text mb-2">Redeem Code</h1>
+          <p className="text-chess-text-muted">
             Enter your promo code to unlock premium features
           </p>
         </div>
 
         {!isLoggedIn ? (
-          <div className="bg-[#1A2C35] rounded-xl p-6 text-center">
-            <p className="text-gray-300 mb-4">
+          <div className="bg-chess-surface rounded-xl p-6 text-center shadow-md">
+            <p className="text-chess-text-muted mb-4">
               You need an account to redeem a promo code.
             </p>
             <div className="space-y-3">
               <Link
                 href="/auth/signup?redirect=/redeem"
-                className="block w-full py-3 bg-[#58CC02] hover:bg-[#4CAD02] text-white font-semibold rounded-lg transition-colors text-center"
+                className="block w-full py-3 bg-chess-green hover:bg-chess-green-dark text-white font-semibold rounded-lg transition-colors text-center"
               >
                 Create Account
               </Link>
               <Link
                 href="/auth/login?redirect=/redeem"
-                className="block w-full py-3 bg-[#131F24] border border-gray-600 hover:border-gray-500 text-white font-semibold rounded-lg transition-colors text-center"
+                className="block w-full py-3 bg-chess-surface border border-gray-300 hover:border-gray-400 text-chess-text font-semibold rounded-lg transition-colors text-center"
               >
                 Sign In
               </Link>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleRedeem} className="bg-[#1A2C35] rounded-xl p-6 space-y-4">
+          <form onSubmit={handleRedeem} className="bg-chess-surface rounded-xl p-6 space-y-4 shadow-md">
             {error && (
-              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
+              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-600 text-sm">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-3 text-green-400 text-sm">
+              <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-3 text-green-600 text-sm">
                 {success}
               </div>
             )}
 
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="code" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Promo Code
               </label>
               <input
@@ -143,7 +143,7 @@ export default function RedeemPage() {
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 required
                 disabled={!!success}
-                className="w-full px-4 py-3 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] text-center text-xl tracking-wider uppercase"
+                className="w-full px-4 py-3 bg-chess-page border border-gray-300 rounded-lg text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-green text-center text-xl tracking-wider uppercase"
                 placeholder="ENTER CODE"
                 autoComplete="off"
               />
@@ -152,14 +152,14 @@ export default function RedeemPage() {
             <button
               type="submit"
               disabled={loading || !!success}
-              className="w-full py-3 bg-[#58CC02] hover:bg-[#4CAD02] disabled:bg-[#58CC02]/50 text-white font-semibold rounded-lg transition-colors"
+              className="w-full py-3 bg-chess-green hover:bg-chess-green-dark disabled:bg-chess-green/50 text-white font-semibold rounded-lg transition-colors"
             >
               {loading ? 'Redeeming...' : success ? 'Redirecting...' : 'Redeem Code'}
             </button>
 
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-chess-text-muted text-sm">
               Don't have a code?{' '}
-              <Link href="/home" className="text-[#1CB0F6] hover:underline">
+              <Link href="/home" className="text-chess-blue hover:underline">
                 Continue to app
               </Link>
             </p>

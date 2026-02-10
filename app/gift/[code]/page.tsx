@@ -97,30 +97,30 @@ export default function GiftPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
+    <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🎁</div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-chess-text mb-2">
             You've been gifted
           </h1>
-          <p className="text-2xl font-bold text-[#58CC02] mb-4">
+          <p className="text-2xl font-bold text-chess-green mb-4">
             1 Month of Premium Chess Training
           </p>
-          <p className="text-gray-400">
+          <p className="text-chess-text-muted">
             Create your account to start learning
           </p>
         </div>
 
-        <form onSubmit={handleSignup} className="bg-[#1A2C35] rounded-xl p-6 space-y-4">
+        <form onSubmit={handleSignup} className="bg-chess-surface rounded-xl p-6 space-y-4 shadow-md">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
+            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-600 text-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-chess-text-muted mb-1">
               Your Name
             </label>
             <input
@@ -128,13 +128,13 @@ export default function GiftPage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02]"
+              className="w-full px-4 py-3 bg-chess-page border border-gray-300 rounded-lg text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-green"
               placeholder="What should we call you?"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-chess-text-muted mb-1">
               Email
             </label>
             <input
@@ -142,13 +142,13 @@ export default function GiftPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02]"
+              className="w-full px-4 py-3 bg-chess-page border border-gray-300 rounded-lg text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-green"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-chess-text-muted mb-1">
               Password
             </label>
             <input
@@ -157,7 +157,7 @@ export default function GiftPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-3 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02]"
+              className="w-full px-4 py-3 bg-chess-page border border-gray-300 rounded-lg text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-green"
               placeholder="At least 6 characters"
             />
           </div>
@@ -165,12 +165,12 @@ export default function GiftPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-[#58CC02] hover:bg-[#4CAD02] disabled:bg-[#58CC02]/50 text-white font-bold text-lg rounded-xl transition-colors"
+            className="w-full py-4 bg-chess-green hover:bg-chess-green-dark disabled:bg-chess-green/50 text-white font-bold text-lg rounded-xl transition-colors"
           >
             {loading ? 'Setting up your account...' : 'Claim My Free Month'}
           </button>
 
-          <p className="text-center text-gray-500 text-xs">
+          <p className="text-center text-chess-text-muted text-xs">
             By signing up, you agree to our terms of service.
           </p>
         </form>

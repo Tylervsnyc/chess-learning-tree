@@ -99,28 +99,28 @@ function SetupContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
+      <div className="min-h-full bg-chess-page flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
       </div>
     );
   }
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center px-4">
+      <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#58CC02] to-[#4CAF00] flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-chess-green to-chess-green-dark flex items-center justify-center">
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Account Created!</h1>
-          <p className="text-gray-400 mb-8">
+          <h1 className="text-3xl font-bold text-chess-text mb-2">Account Created!</h1>
+          <p className="text-chess-text-muted mb-8">
             Your account is all set up. Please sign in to continue.
           </p>
           <button
             onClick={() => router.push('/auth/login')}
-            className="w-full py-4 rounded-xl bg-[#58CC02] text-white font-bold text-lg hover:opacity-90 transition-opacity"
+            className="w-full py-4 rounded-xl bg-chess-green text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-sm"
           >
             Sign In
           </button>
@@ -130,8 +130,8 @@ function SetupContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col">
-      <div className="h-1 w-full bg-gradient-to-r from-[#FFD700] via-[#FFA500] to-[#58CC02]" />
+    <div className="min-h-full bg-chess-page flex flex-col">
+      <div className="h-1 w-full bg-gradient-to-r from-chess-gold via-chess-orange to-chess-green" />
 
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="max-w-md w-full">
@@ -140,33 +140,33 @@ function SetupContent() {
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
               <span className="text-4xl">👑</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Payment Successful!</h1>
-            <p className="text-gray-400">
+            <h1 className="text-2xl font-bold text-chess-text mb-2">Payment Successful!</h1>
+            <p className="text-chess-text-muted">
               Set up your password to access your Premium account
             </p>
           </div>
 
           <form onSubmit={handleSetupAccount} className="space-y-4">
             {error && (
-              <div className="bg-[#FF4B4B]/10 border border-[#FF4B4B]/50 rounded-xl p-3 text-[#FF4B4B] text-sm">
+              <div className="bg-chess-red/10 border border-chess-red/50 rounded-xl p-3 text-chess-red text-sm">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-chess-text-muted mb-1">
                 Email
               </label>
               <input
                 type="email"
                 value={email || ''}
                 disabled
-                className="w-full px-4 py-3 bg-[#0D1A1F] border-2 border-white/10 rounded-xl text-gray-400 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-chess-text-faint/10 border-2 border-chess-text-faint/10 rounded-xl text-chess-text-muted cursor-not-allowed shadow-sm"
               />
             </div>
 
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="displayName" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Display Name
               </label>
               <input
@@ -175,13 +175,13 @@ function SetupContent() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="ChessMaster2000"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Password
               </label>
               <input
@@ -191,14 +191,14 @@ function SetupContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="••••••••"
               />
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+              <p className="text-xs text-chess-text-faint mt-1">Minimum 6 characters</p>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Confirm Password
               </label>
               <input
@@ -208,7 +208,7 @@ function SetupContent() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="••••••••"
               />
             </div>
@@ -216,7 +216,7 @@ function SetupContent() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 disabled:opacity-50"
+              className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 disabled:opacity-50 shadow-sm"
               style={{
                 background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                 color: '#000',
@@ -234,8 +234,8 @@ function SetupContent() {
 export default function SubscriptionSetupPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
+      <div className="min-h-full bg-chess-page flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
       </div>
     }>
       <SetupContent />

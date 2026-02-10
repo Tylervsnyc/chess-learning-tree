@@ -1,8 +1,9 @@
 'use client';
-
+// Compact single-screen pricing layout
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSubscription } from '@/hooks/useSubscription';
+import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 
 function PricingContent() {
   const router = useRouter();
@@ -25,7 +26,6 @@ function PricingContent() {
     setCheckoutError(null);
 
     if (!isAuthenticated) {
-      // Guest checkout flow
       if (!email) {
         setEmailError('Please enter your email');
         return;
@@ -55,207 +55,161 @@ function PricingContent() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <button
-          onClick={() => router.back()}
-          className="mb-6 text-gray-400 hover:text-white transition-colors"
-        >
-          ← Back
-        </button>
-
-        <h1 className="text-3xl font-bold mb-3">
-          Unlock Your Full Potential
-        </h1>
-        <p className="text-gray-400 max-w-md mx-auto">
-          Choose how you want to learn chess
-        </p>
-      </div>
-
-      {/* Success/Cancel Messages */}
+    <div className="flex flex-col h-[calc(100dvh-45px)]">
+      {/* Success/Cancel Messages — overlay at top if present */}
       {success && (
-        <div className="mb-8 p-4 bg-[#58CC02]/20 border border-[#58CC02] rounded-xl text-center">
-          <p className="text-[#58CC02] font-medium">
+        <div className="mx-4 mt-2 p-3 bg-chess-green/10 border border-chess-green rounded-xl text-center">
+          <p className="text-chess-green-dark font-medium text-sm">
             Welcome to Premium! Your subscription is now active.
           </p>
         </div>
       )}
-
       {canceled && (
-        <div className="mb-8 p-4 bg-yellow-500/20 border border-yellow-500 rounded-xl text-center">
-          <p className="text-yellow-500 font-medium">
-            Checkout was canceled. Feel free to try again when you&apos;re ready.
+        <div className="mx-4 mt-2 p-3 bg-yellow-500/10 border border-yellow-500 rounded-xl text-center">
+          <p className="text-yellow-600 font-medium text-sm">
+            Checkout was canceled. Feel free to try again.
           </p>
         </div>
       )}
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
+        <div className="flex-1 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
         </div>
       ) : isPremium ? (
-        <div className="text-center py-12">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-            <span className="text-4xl">👑</span>
+        <div className="flex-1 flex flex-col justify-center items-center px-4">
+          <div className="w-16 h-16 mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+            <span className="text-3xl">👑</span>
           </div>
-          <h2 className="text-2xl font-bold mb-2">You&apos;re Premium!</h2>
-          <p className="text-gray-400 mb-6">You have unlimited access to all features.</p>
+          <h2 className="text-2xl font-bold text-chess-text mb-1">You&apos;re Premium!</h2>
+          <p className="text-chess-text-muted mb-4 text-sm">Unlimited access to all features.</p>
           <button
             onClick={() => router.push('/learn')}
-            className="px-6 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+            className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+            style={{ boxShadow: '0 4px 0 var(--color-chess-green-shadow)' }}
           >
             Continue Learning
           </button>
         </div>
       ) : (
-        <>
-          {/* Comparison Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
-            {/* Free Tier */}
-            <div className="bg-[#1A2C35] rounded-2xl p-6 border border-white/10">
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-bold text-gray-300 mb-1">Free</h2>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl font-black text-white">$0</span>
-                </div>
-              </div>
-
-              <ul className="space-y-4 mb-6">
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-500 mt-0.5">✕</span>
-                  <div>
-                    <p className="text-gray-300">2 lessons per day</p>
-                    <p className="text-gray-500 text-sm">Limited daily practice</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-500 mt-0.5">✕</span>
-                  <div>
-                    <p className="text-gray-300">Current level only</p>
-                    <p className="text-gray-500 text-sm">Can&apos;t skip ahead or review</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-500 mt-0.5">✕</span>
-                  <div>
-                    <p className="text-gray-300">15 puzzles per day</p>
-                    <p className="text-gray-500 text-sm">Daily limit on practice</p>
-                  </div>
-                </li>
-              </ul>
-
-              <div className="text-center">
-                <span className="text-gray-500 text-sm">Your current plan</span>
-              </div>
+        <div className="flex-1 flex flex-col px-4 pt-3 pb-4 max-w-lg mx-auto w-full">
+          {/* Logo + Heading — compact */}
+          <div className="text-center mb-3">
+            <div className="flex justify-center mb-2">
+              <AnimatedLogo theme="light" size={0.35} showWordmark={false} iconOnly={true} />
             </div>
+            <h1 className="text-xl font-black text-chess-text">Level Up Your Chess</h1>
+          </div>
 
-            {/* Premium Tier */}
-            <div className="bg-gradient-to-b from-[#2A3F4D] to-[#1A2C35] rounded-2xl p-6 border-2 border-[#FFD700] relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-full">
-                RECOMMENDED
+          {/* Price banner */}
+          <div
+            className="rounded-2xl px-5 py-4 mb-3 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, var(--color-chess-gold) 0%, var(--color-chess-orange) 100%)',
+            }}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-20 blur-2xl bg-white" />
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-black">$4.99</span>
+                  <span className="text-black/60 font-medium text-sm">/month</span>
+                </div>
+                <p className="text-black/50 text-xs">Cancel anytime</p>
               </div>
+              <div className="text-3xl">👑</div>
+            </div>
+          </div>
 
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-bold text-white mb-1">Premium</h2>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-black text-[#FFD700]">$4.99</span>
-                  <span className="text-gray-400">/month</span>
-                </div>
+          {/* Features — compact grid */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-3 divide-y divide-slate-100">
+            <FeatureRow icon="♟️" title="Unlimited lessons" free="2/day" />
+            <FeatureRow icon="🏰" title="All levels unlocked" free="Current only" />
+            <FeatureRow icon="🧩" title="Unlimited puzzles" free="15/day" />
+            <FeatureRow icon="🔥" title="Daily challenges" free="—" />
+          </div>
+
+          {/* Checkout — pushed to bottom */}
+          <div className="mt-auto">
+            {checkoutError && (
+              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">
+                {checkoutError}
               </div>
+            )}
 
-              <ul className="space-y-4 mb-6">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#58CC02] mt-0.5">✓</span>
-                  <div>
-                    <p className="text-white font-medium">Unlimited lessons</p>
-                    <p className="text-gray-400 text-sm">Learn as much as you want</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#58CC02] mt-0.5">✓</span>
-                  <div>
-                    <p className="text-white font-medium">All 6 levels unlocked</p>
-                    <p className="text-gray-400 text-sm">From beginner to expert</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#58CC02] mt-0.5">✓</span>
-                  <div>
-                    <p className="text-white font-medium">Unlimited puzzles</p>
-                    <p className="text-gray-400 text-sm">Practice without limits</p>
-                  </div>
-                </li>
-              </ul>
-
-              {checkoutError && (
-                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-                  {checkoutError}
-                </div>
-              )}
-
-              {!isAuthenticated && (
-                <div className="mb-4">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setEmailError(null);
-                    }}
-                    placeholder="Enter your email"
-                    className={`w-full px-4 py-3 bg-[#1A2C35] border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-colors ${
-                      emailError ? 'border-[#FF4B4B]' : 'border-transparent focus:border-[#FFD700]'
-                    }`}
-                  />
-                  {emailError && (
-                    <p className="text-[#FF4B4B] text-sm mt-1">{emailError}</p>
-                  )}
-                </div>
-              )}
-
-              <button
-                onClick={handleGetPremium}
-                disabled={checkoutLoading}
-                className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 disabled:opacity-50"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                  color: '#000',
+            {!isAuthenticated && (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(null);
                 }}
-              >
-                {checkoutLoading ? 'Loading...' : 'Get Premium'}
-              </button>
+                placeholder="Enter your email"
+                className={`w-full px-4 py-3 mb-2 bg-white border-2 rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none transition-colors text-sm ${
+                  emailError ? 'border-chess-red' : 'border-slate-200 focus:border-chess-gold'
+                }`}
+              />
+            )}
+            {emailError && (
+              <p className="text-chess-red text-xs mb-2">{emailError}</p>
+            )}
+
+            <button
+              onClick={handleGetPremium}
+              disabled={checkoutLoading}
+              className="w-full py-3.5 rounded-xl font-bold text-base transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-chess-gold) 0%, var(--color-chess-orange) 100%)',
+                color: '#000',
+                boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
+              }}
+            >
+              {checkoutLoading ? 'Loading...' : 'Get Premium'}
+            </button>
+
+            <div className="flex items-center justify-center gap-4 mt-3">
+              <span className="text-chess-text-faint text-[10px]">5,000+ puzzles</span>
+              <span className="text-chess-text-faint text-[10px]">·</span>
+              <span className="text-chess-text-faint text-[10px]">200+ lessons</span>
+              <span className="text-chess-text-faint text-[10px]">·</span>
+              <span className="text-chess-text-faint text-[10px]">Secure via Stripe</span>
             </div>
           </div>
-
-          {/* Trust badge */}
-          <div className="text-center text-gray-500 text-sm">
-            <p>Cancel anytime. No questions asked.</p>
-          </div>
-        </>
+        </div>
       )}
+    </div>
+  );
+}
+
+/* Feature row — premium vs free comparison in one line */
+function FeatureRow({ icon, title, free }: {
+  icon: string;
+  title: string;
+  free: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-2.5">
+      <span className="text-base flex-shrink-0">{icon}</span>
+      <span className="text-chess-text text-sm font-medium flex-1">{title}</span>
+      <span className="text-chess-green font-bold text-xs flex-shrink-0">✓</span>
+      <div className="w-px h-4 bg-slate-200 flex-shrink-0" />
+      <span className="text-chess-text-faint text-xs flex-shrink-0 w-16 text-right">{free}</span>
     </div>
   );
 }
 
 function PricingFallback() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <div className="mb-8 h-6 w-32 bg-[#1A2C35] rounded animate-pulse mx-auto" />
-        <div className="h-10 w-64 bg-[#1A2C35] rounded animate-pulse mx-auto mb-4" />
-        <div className="h-4 w-96 bg-[#1A2C35] rounded animate-pulse mx-auto" />
-      </div>
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58CC02]"></div>
-      </div>
+    <div className="flex-1 flex justify-center items-center h-[calc(100dvh-45px)]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
     </div>
   );
 }
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="h-full bg-chess-page overflow-hidden">
       <Suspense fallback={<PricingFallback />}>
         <PricingContent />
       </Suspense>

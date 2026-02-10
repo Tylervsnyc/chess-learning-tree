@@ -69,8 +69,8 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-chess-page flex items-center justify-center">
+        <div className="text-chess-text-muted">Loading...</div>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#131F24] p-4 flex flex-col gap-3">
+    <div className="min-h-full bg-chess-page p-4 flex flex-col gap-3 max-w-lg mx-auto w-full">
       {/* The Daily Rook Card */}
       <button
         onClick={() => router.push('/daily-challenge')}

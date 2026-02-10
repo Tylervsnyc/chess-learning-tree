@@ -75,9 +75,9 @@ function PremiumSignupContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#131F24] flex flex-col">
+    <div className="min-h-full bg-chess-page flex flex-col">
       {/* Gradient accent */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#FFD700] via-[#FFA500] to-[#FFD700]" />
+      <div className="h-1 w-full bg-gradient-to-r from-chess-gold via-chess-orange to-chess-gold" />
 
       <div className="flex-1 flex items-center justify-center px-5 py-6">
         <div className="max-w-sm w-full">
@@ -86,41 +86,41 @@ function PremiumSignupContent() {
             <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
               <span className="text-3xl">👑</span>
             </div>
-            <h1 className="text-2xl font-black text-white mb-2">Get Premium Access</h1>
-            <p className="text-gray-400 text-sm">Create your account and unlock everything</p>
+            <h1 className="text-2xl font-black text-chess-text mb-2">Get Premium Access</h1>
+            <p className="text-chess-text-muted text-sm">Create your account and unlock everything</p>
           </div>
 
           {/* Premium benefits */}
-          <div className="bg-[#1A2C35] rounded-xl p-4 mb-6 border border-[#FFD700]/30">
+          <div className="bg-chess-surface rounded-xl p-4 mb-6 border border-chess-gold/30 shadow-sm">
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
-                <span className="text-[#58CC02]">✓</span>
-                <span className="text-gray-300">Unlimited lessons & puzzles</span>
+                <span className="text-chess-green">✓</span>
+                <span className="text-chess-text-muted">Unlimited lessons & puzzles</span>
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-[#58CC02]">✓</span>
-                <span className="text-gray-300">All 6 skill levels unlocked</span>
+                <span className="text-chess-green">✓</span>
+                <span className="text-chess-text-muted">All 6 skill levels unlocked</span>
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-[#58CC02]">✓</span>
-                <span className="text-gray-300">Track your progress forever</span>
+                <span className="text-chess-green">✓</span>
+                <span className="text-chess-text-muted">Track your progress forever</span>
               </li>
             </ul>
-            <div className="mt-3 pt-3 border-t border-white/10 text-center">
-              <span className="text-[#FFD700] font-bold text-lg">$4.99</span>
-              <span className="text-gray-400 text-sm">/month</span>
+            <div className="mt-3 pt-3 border-t border-chess-text-faint/10 text-center">
+              <span className="text-chess-gold font-bold text-lg">$4.99</span>
+              <span className="text-chess-text-muted text-sm">/month</span>
             </div>
           </div>
 
           <form onSubmit={handleSignupAndCheckout} className="space-y-4">
             {error && (
-              <div className="bg-[#FF4B4B]/10 border border-[#FF4B4B]/50 rounded-xl p-3 text-[#FF4B4B] text-sm">
+              <div className="bg-chess-red/10 border border-chess-red/50 rounded-xl p-3 text-chess-red text-sm">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="displayName" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Display Name
               </label>
               <input
@@ -129,13 +129,13 @@ function PremiumSignupContent() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="ChessMaster2000"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Email
               </label>
               <input
@@ -144,13 +144,13 @@ function PremiumSignupContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-chess-text-muted mb-1">
                 Password
               </label>
               <input
@@ -160,10 +160,10 @@ function PremiumSignupContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 bg-[#1A2C35] border-2 border-transparent rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD700] transition-colors"
+                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
                 placeholder="••••••••"
               />
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+              <p className="text-xs text-chess-text-faint mt-1">Minimum 6 characters</p>
             </div>
 
             <button
@@ -179,13 +179,13 @@ function PremiumSignupContent() {
               {loading ? 'Creating account...' : 'Get Premium - $4.99/mo'}
             </button>
 
-            <p className="text-center text-gray-500 text-xs">
+            <p className="text-center text-chess-text-faint text-xs">
               Cancel anytime. No questions asked.
             </p>
 
-            <p className="text-center text-gray-400 text-sm pt-2">
+            <p className="text-center text-chess-text-muted text-sm pt-2">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-[#1CB0F6] hover:underline font-medium">
+              <Link href="/auth/login" className="text-chess-blue hover:underline font-medium">
                 Sign in
               </Link>
             </p>
@@ -199,8 +199,8 @@ function PremiumSignupContent() {
 export default function PremiumSignupPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+      <div className="min-h-full bg-chess-page flex items-center justify-center">
+        <div className="text-chess-text-muted">Loading...</div>
       </div>
     }>
       <PremiumSignupContent />

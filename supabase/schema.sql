@@ -95,11 +95,13 @@ CREATE TABLE public.daily_challenge_results (
 CREATE TABLE public.level_test_attempts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  transition TEXT NOT NULL,  -- e.g., '1-2', '2-3'
+  from_level INTEGER NOT NULL,
+  to_level INTEGER NOT NULL,
+  variant_id TEXT NOT NULL,
   passed BOOLEAN NOT NULL,
-  score INTEGER,  -- Number correct out of 10
-  variant_id TEXT,  -- Which variant was used (for anti-memorization)
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  correct_count INTEGER NOT NULL,
+  wrong_count INTEGER NOT NULL,
+  attempted_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ═══════════════════════════════════════════════════════════════════════════
