@@ -141,16 +141,32 @@ export function AnimatedLogo({
         width: containerWidth,
         height: containerHeight,
         fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif",
-        animation: showPerpetual ? 'logoFloat 3s ease-in-out infinite' : undefined,
+        overflow: 'hidden',
       }}
     >
-      {perpetual && (
-        <style>{`
-          @keyframes logoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-          }
-        `}</style>
+      {/* Shimmer overlay */}
+      {showPerpetual && (
+        <>
+          <style>{`
+            @keyframes logoShimmer {
+              0% { transform: translateX(-200%); }
+              20%, 100% { transform: translateX(300%); }
+            }
+          `}</style>
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '50%',
+              height: '100%',
+              background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%)',
+              animation: 'logoShimmer 4s ease-in-out infinite',
+              pointerEvents: 'none',
+              zIndex: 1,
+            }}
+          />
+        </>
       )}
       {/* Blocks */}
       {BLOCKS.map((block, index) => {

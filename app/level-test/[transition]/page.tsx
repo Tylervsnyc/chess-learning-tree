@@ -471,9 +471,9 @@ export default function LevelTestPage() {
   // Intro screen - show test parameters before starting
   if (testState === 'intro') {
     return (
-      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
+      <div className="h-full bg-chess-page flex flex-col items-center pt-6 px-4">
         <div className="text-center max-w-sm w-full">
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-3">
             <AnimatedLogo
               theme="light"
               iconOnly
@@ -498,10 +498,12 @@ export default function LevelTestPage() {
             </div>
             <div className="border-t border-slate-100 mb-3" />
             <div className="flex justify-between items-center mb-3">
-              <span className="text-chess-text-muted text-sm">Strikes</span>
-              <div className="flex gap-1.5">
+              <span className="text-chess-text-muted text-sm">Lives</span>
+              <div className="flex gap-1">
                 {[0, 1, 2].map(i => (
-                  <div key={i} className="w-4 h-4 rounded-full border-2 border-chess-red/30 bg-chess-red/10" />
+                  <svg key={i} className="w-5 h-5 text-chess-red" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
                 ))}
               </div>
             </div>
@@ -572,12 +574,14 @@ export default function LevelTestPage() {
     return (
       <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm w-full">
-          <div className="flex justify-center gap-2.5 mb-6">
+          <div className="flex justify-center gap-1 mb-4">
             {[0, 1, 2].map(i => (
-              <div key={i} className="w-5 h-5 rounded-full bg-chess-red" />
+              <svg key={i} className="w-8 h-8 text-[#c5d4de]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
             ))}
           </div>
-          <h1 className="text-3xl font-black text-chess-red mb-2">3 Strikes</h1>
+          <h1 className="text-3xl font-black text-chess-red mb-2">Out of Lives</h1>
           <p className="text-chess-text-muted mb-2">
             You got {correctCount} out of {correctCount + wrongCount} correct
           </p>
@@ -677,15 +681,18 @@ export default function LevelTestPage() {
           <span className="text-sm text-chess-text-muted">
             Puzzle {currentIndex + 1}/{puzzleCount}
           </span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-chess-text-faint mr-1">Strikes</span>
+          <div className="flex items-center gap-0.5">
             {[0, 1, 2].map(i => (
-              <div
+              <svg
                 key={i}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  i < wrongCount ? 'bg-chess-red' : 'bg-slate-200'
+                className={`w-5 h-5 transition-all duration-300 ${
+                  i < (maxWrongAnswers - wrongCount) ? 'text-chess-red' : 'text-[#c5d4de]'
                 }`}
-              />
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
             ))}
           </div>
         </div>
