@@ -846,6 +846,55 @@ All copy must be ultra-short — one sentence max per step. Real phones have bro
 
 ---
 
+## 17c. Theme Tutorials
+
+Theme tutorials replace generic intro popups with educational walkthroughs when a chess concept is first introduced. Config lives in `data/theme-tutorials.ts`.
+
+### Three Tiers:
+
+| Tier | Experience | Guided Puzzles |
+|------|-----------|----------------|
+| **Quick** | Rich intro popup explaining the concept → 6 normal puzzles | 0 |
+| **Medium** | Rich intro popup → hint card on puzzle 1 → 5 normal puzzles | 1 |
+| **Full** | Rich intro popup → hint cards on puzzles 1-2 → 4 normal puzzles | 2 |
+
+All 6 puzzles still come from the API (no hardcoded puzzles). Hint cards are theme-specific but not position-specific.
+
+### Level 1 Tutorials (12 lessons):
+
+**Quick:** 1.2.1 (backRankMate), 1.2.2 (smotheredMate), 1.2.3 (arabianMate), 1.2.4 (hookMate), 1.5.1 (hangingPiece), 1.9.1 (rookEndgame), 1.10.3 (promotion), 1.11.2 (trappedPiece)
+
+**Medium:** 1.3.1 (mateIn2), 1.7.1 (skewer), 1.11.1 (deflection)
+
+**Full:** 1.6.1 (fork)
+
+### How It Works:
+- Lesson page checks `getTutorialForLesson(lessonId)` on mount
+- If tutorial exists: tutorial intro replaces the normal themeIntro popup
+- Tutorial intro has "Let's Learn!" + "Skip" buttons
+- Skip suppresses hint cards for the rest of the lesson
+- Hint cards appear below the board (flush, rounded-b-2xl) during guided puzzles
+- Hint cards hide when PuzzleResultPopup is showing
+
+### Hint Card Visual:
+- Background: `#FFF3CD`, title: `#7A6200` (15px bold), body: `#8B7000` (14px)
+- Shadow: `0 2px 8px rgba(180, 140, 0, 0.15)`
+- Animation: slideUp 0.3s ease-out
+- Same style as 1.1.1 tutorial hint cards
+
+### Feature Flag:
+- `SHOW_BLOCK_INTROS: false` in `lib/config/feature-flags.ts` suppresses block intro popups
+- Theme tutorials replace themeIntro popups for tutorial lessons
+- Non-tutorial lessons still show themeIntro normally
+
+### Files:
+- `data/theme-tutorials.ts` — tutorial configs (12 entries)
+- `app/lesson/[lessonId]/page.tsx` — tutorial integration
+- `lib/config/feature-flags.ts` — SHOW_BLOCK_INTROS flag
+- `lib/curriculum-registry.ts` — respects SHOW_BLOCK_INTROS flag
+
+---
+
 ## 18. Puzzle Interaction
 
 ### Input Methods:

@@ -48,6 +48,7 @@ import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { TutorialFlow } from '@/app/test-tutorial/page';
+import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 
 interface Puzzle {
   id: string;
@@ -208,6 +209,10 @@ export default function LessonPage() {
   const [introState, setIntroState] = useState<IntroState>('playing');
   const [introMessages, setIntroMessages] = useState<IntroMessages>({});
 
+  // Tutorial state
+  const [tutorialConfig] = useState<ThemeTutorial | undefined>(() => getTutorialForLesson(lessonId));
+  const [tutorialSkipped, setTutorialSkipped] = useState(false);
+
 
   // Rook animation state - one style per lesson (cycles through), wrong styles cycle each wrong
   const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[];
@@ -354,17 +359,27 @@ export default function LessonPage() {
   useEffect(() => {
     if (isTutorial) return; // Tutorial has its own intro flow
     const messages = getIntroMessagesFromAnyLevel(lessonId);
+
+    // If this lesson has a tutorial, replace the theme intro with the tutorial intro
+    if (tutorialConfig) {
+      // Suppress the normal theme intro - tutorial replaces it
+      messages.themeIntro = undefined;
+    }
+
     setIntroMessages(messages);
 
     // Determine initial intro state
     if (messages.blockIntro) {
       setIntroState('block');
+    } else if (tutorialConfig) {
+      // Show tutorial intro in the 'theme' slot
+      setIntroState('theme');
     } else if (messages.themeIntro) {
       setIntroState('theme');
     } else {
       setIntroState('playing');
     }
-  }, [lessonId, isTutorial]);
+  }, [lessonId, isTutorial, tutorialConfig]);
 
   // Handle dismissing intro popups
   const handleIntroDismiss = useCallback(() => {
@@ -372,8 +387,8 @@ export default function LessonPage() {
     warmupAudio();
 
     if (introState === 'block') {
-      // If there's a theme intro, show it next
-      if (introMessages.themeIntro) {
+      // If there's a tutorial or theme intro, show it next
+      if (tutorialConfig || introMessages.themeIntro) {
         setIntroState('theme');
       } else {
         setIntroState('playing');
@@ -381,7 +396,20 @@ export default function LessonPage() {
     } else if (introState === 'theme') {
       setIntroState('playing');
     }
-  }, [introState, introMessages]);
+  }, [introState, introMessages, tutorialConfig]);
+
+  // Handle skipping the tutorial
+  const handleSkipTutorial = useCallback(() => {
+    warmupAudio();
+    setTutorialSkipped(true);
+    setIntroState('playing');
+  }, []);
+
+  // Tutorial hint card: show when tutorial is active, not skipped, and current puzzle is guided
+  const tutorialHint = useMemo(() => {
+    if (!tutorialConfig?.hints || tutorialSkipped) return null;
+    return tutorialConfig.hints.find(h => h.puzzleIndex === currentIndex) ?? null;
+  }, [tutorialConfig, tutorialSkipped, currentIndex]);
 
   // Reset puzzle state when current puzzle changes
   useEffect(() => {
@@ -1028,7 +1056,12 @@ export default function LessonPage() {
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      <style>{progressBarStyles}</style>
+      <style>{progressBarStyles}{`
+        @keyframes tutorialSlideUp {
+          0% { opacity: 0; transform: translateY(8px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       {/* Header */}
       <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -1112,8 +1145,20 @@ export default function LessonPage() {
               />
             )}
 
-            {/* Theme intro popup */}
-            {introState === 'theme' && introMessages.themeIntro && (
+            {/* Tutorial intro popup (replaces theme intro when tutorial exists) */}
+            {introState === 'theme' && tutorialConfig && (
+              <IntroPopup
+                title={tutorialConfig.intro.title}
+                message={tutorialConfig.intro.message}
+                onStart={handleIntroDismiss}
+                buttonText="Let's Learn!"
+                onSkip={handleSkipTutorial}
+                skipText="Skip"
+              />
+            )}
+
+            {/* Normal theme intro popup (when no tutorial) */}
+            {introState === 'theme' && !tutorialConfig && introMessages.themeIntro && (
               <IntroPopup
                 title={introMessages.themeIntro.title}
                 message={introMessages.themeIntro.message}
@@ -1122,6 +1167,28 @@ export default function LessonPage() {
               />
             )}
           </div>
+
+          {/* Tutorial hint card — shows below board during guided puzzles */}
+          {tutorialHint && moveStatus !== 'correct' && introState === 'playing' && (
+            <div
+              key={`tutorial-hint-${currentIndex}`}
+              className="w-full rounded-b-2xl py-2.5 px-4"
+              style={{
+                animation: 'tutorialSlideUp 0.3s ease-out',
+                backgroundColor: '#FFF3CD',
+                boxShadow: '0 2px 8px rgba(180, 140, 0, 0.15)',
+              }}
+            >
+              {tutorialHint.title && (
+                <div className="font-bold mb-0.5" style={{ color: '#7A6200', fontSize: '15px' }}>
+                  {tutorialHint.title}
+                </div>
+              )}
+              <div style={{ color: '#8B7000', fontSize: '14px', lineHeight: '1.4' }}>
+                {tutorialHint.message}
+              </div>
+            </div>
+          )}
 
           {/* Result popup - only show when not in intro state */}
           {moveStatus === 'correct' && introState === 'playing' && (

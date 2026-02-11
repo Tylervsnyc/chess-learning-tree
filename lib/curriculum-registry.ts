@@ -13,6 +13,7 @@ import { level5V2 } from '@/data/staging/level5-v2-curriculum';
 import { level6V2 } from '@/data/staging/level6-v2-curriculum';
 import { level7V2 } from '@/data/staging/level7-v2-curriculum';
 import { level8V2 } from '@/data/staging/level8-v2-curriculum';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // Re-export types for convenience
 export type { LessonCriteria, Section, Block, Level };
@@ -312,7 +313,7 @@ export function getIntroMessagesForLesson(lessonId: string): IntroMessages {
   const isFirstLessonInSection = section.lessons[0]?.id === lesson.id;
 
   return {
-    blockIntro: isFirstLessonInBlock ? (block.blockIntroMessage ?? null) : null,
+    blockIntro: (FEATURE_FLAGS.SHOW_BLOCK_INTROS && isFirstLessonInBlock) ? (block.blockIntroMessage ?? null) : null,
     themeIntro: isFirstLessonInSection ? (section.themeIntroMessage ?? null) : null,
   };
 }

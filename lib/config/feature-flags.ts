@@ -10,4 +10,6 @@ export const FEATURE_FLAGS = {
   SHOW_STREAK_COUNTER: false,
   /** Show share buttons/cards on lesson complete and daily challenge screens */
   SHOW_SHARING: false,
+  /** Show block intro popups (the "Welcome to Forks!" style popups at block boundaries) */
+  SHOW_BLOCK_INTROS: false,
 } as const;
