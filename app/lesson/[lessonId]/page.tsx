@@ -754,13 +754,15 @@ export default function LessonPage() {
 
   // Save completion via progress hook (localStorage + Supabase for authenticated users)
   useEffect(() => {
+    if (isTutorial) return; // Tutorial handles its own persistence in onComplete
     if (lessonComplete) {
       completeLesson(lessonId, allLessonIds);
     }
-  }, [lessonComplete, lessonId, completeLesson, allLessonIds]);
+  }, [lessonComplete, lessonId, completeLesson, allLessonIds, isTutorial]);
 
   // Record lesson completion and show limit modal if needed
   useEffect(() => {
+    if (isTutorial) return; // Tutorial handles its own completion in onComplete
     if (lessonComplete) {
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));

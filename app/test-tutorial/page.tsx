@@ -430,7 +430,7 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
       setPuzzleIndex(prev => prev + 1);
       setTimeout(() => setIsBoardTransitioning(false), 50);
     }, 150);
-  }, [puzzleIndex]);
+  }, [puzzleIndex, onComplete, completedCount]);
 
   // ─── Try a move (free play, puzzles 2-6) ───
   const tryFreeMove = useCallback((from: Square, to: Square) => {
