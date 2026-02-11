@@ -161,6 +161,13 @@ function SignupContent() {
       return;
     }
 
+    // Supabase returns a fake success with empty identities when the email already exists
+    if (data.user && data.user.identities?.length === 0) {
+      setError('An account with this email already exists. Try signing in instead.');
+      setLoading(false);
+      return;
+    }
+
     setPendingVerification(true);
     setLoading(false);
     // Focus first OTP input after render
@@ -169,15 +176,15 @@ function SignupContent() {
 
   if (pendingVerification) {
     return (
-      <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
+      <div className="h-full bg-chess-page flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex flex-col items-center justify-center px-3">
           <div className="max-w-[320px] w-full">
             <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
               <div className="text-5xl mb-4">✉️</div>
-              <h1 className="text-2xl font-bold text-[#3c3c3c] mb-2">Enter verification code</h1>
+              <h1 className="text-2xl font-bold text-chess-text mb-2">Enter verification code</h1>
               <p className="text-slate-500 mb-6">
-                We sent a code to <strong className="text-[#3c3c3c]">{email}</strong>
+                We sent a code to <strong className="text-chess-text">{email}</strong>
               </p>
 
               {error && (
@@ -197,7 +204,7 @@ function SignupContent() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    className="w-8 h-12 text-center text-lg font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-[#3c3c3c] focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                    className="w-8 h-12 text-center text-lg font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-chess-text focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   />
                 ))}
               </div>
@@ -205,8 +212,7 @@ function SignupContent() {
               <button
                 onClick={handleVerifyOtp}
                 disabled={verifying || otpCode.join('').length !== 8}
-                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
-                style={{ backgroundColor: '#58CC02' }}
+                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none bg-chess-green"
               >
                 {verifying ? 'Verifying...' : 'Verify'}
               </button>
@@ -214,12 +220,12 @@ function SignupContent() {
               <div className="mt-6 pt-6 border-t border-slate-200">
                 <p className="text-slate-400 text-sm mb-3">Didn&apos;t receive the code?</p>
                 {resendSuccess ? (
-                  <p className="text-[#58CC02] text-sm">New code sent!</p>
+                  <p className="text-chess-green text-sm">New code sent!</p>
                 ) : (
                   <button
                     onClick={handleResendConfirmation}
                     disabled={resending}
-                    className="text-[#1CB0F6] hover:underline text-sm font-medium disabled:opacity-50"
+                    className="text-chess-blue hover:underline text-sm font-medium disabled:opacity-50"
                   >
                     {resending ? 'Sending...' : 'Resend code'}
                   </button>
@@ -244,7 +250,7 @@ function SignupContent() {
   }
 
   return (
-    <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page flex flex-col overflow-hidden">
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
@@ -267,12 +273,12 @@ function SignupContent() {
             {/* Congratulatory header for guests who completed a lesson */}
             {fromLesson ? (
               <div className="text-center mb-4">
-                <h1 className="text-xl font-bold text-[#3c3c3c] mb-1">Nice work! 🎉</h1>
+                <h1 className="text-xl font-bold text-chess-text mb-1">Nice work! 🎉</h1>
                 <p className="text-slate-500 text-sm">Create an account to save progress</p>
               </div>
             ) : (
               <div className="text-center mb-4">
-                <h1 className="text-xl font-bold text-[#3c3c3c] mb-1">Create Account</h1>
+                <h1 className="text-xl font-bold text-chess-text mb-1">Create Account</h1>
                 <p className="text-slate-500 text-sm">Start your chess journey</p>
               </div>
             )}
@@ -314,7 +320,7 @@ function SignupContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-[#3c3c3c] placeholder-slate-400 focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -330,7 +336,7 @@ function SignupContent() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-[#3c3c3c] placeholder-slate-400 focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   placeholder="••••••••"
                 />
                 <p className="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
@@ -339,8 +345,7 @@ function SignupContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none"
-                style={{ backgroundColor: '#58CC02' }}
+                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none bg-chess-green"
               >
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
@@ -351,7 +356,7 @@ function SignupContent() {
             Already have an account?{' '}
             <Link
               href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'}
-              className="text-[#58CC02] hover:underline font-medium"
+              className="text-chess-green hover:underline font-medium"
             >
               Sign in
             </Link>
@@ -365,7 +370,7 @@ function SignupContent() {
 export default function SignupPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#eef6fc] flex items-center justify-center">
+      <div className="min-h-screen bg-chess-page flex items-center justify-center">
         <div className="text-slate-500">Loading...</div>
       </div>
     }>
