@@ -52,23 +52,23 @@ export function IntroPopup({
             ))}
           </div>
 
-          {/* Start button */}
-          <button
-            onClick={onStart}
-            className="w-full py-2.5 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]"
-          >
-            {buttonText}
-          </button>
-
-          {/* Optional skip button */}
-          {onSkip && skipText && (
+          {/* Buttons */}
+          <div className={onSkip && skipText ? 'flex gap-2' : ''}>
+            {onSkip && skipText && (
+              <button
+                onClick={onSkip}
+                className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
+              >
+                {skipText}
+              </button>
+            )}
             <button
-              onClick={onSkip}
-              className="w-full mt-3 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
+              onClick={onStart}
+              className={`${onSkip && skipText ? 'flex-[2]' : 'w-full'} py-2.5 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]`}
             >
-              {skipText}
+              {buttonText}
             </button>
-          )}
+          </div>
         </div>
       </div>
 
