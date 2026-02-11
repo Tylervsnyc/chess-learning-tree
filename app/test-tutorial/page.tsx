@@ -45,17 +45,17 @@ interface TutorialPuzzle {
   description: string;
 }
 
-// P1: Qd3→h7 mate (26 pieces, rating 400) — FULLY GUIDED
-// Classic h7 checkmate pattern. Knight on f3 + bishop on c2 support.
+// P1: Qd4→g7 mate (rating 566) — FULLY GUIDED
+// Queen swoops from center to g7, king trapped by own f7/h7 pawns.
 const PUZZLE_1: TutorialPuzzle = {
-  fen: 'r1b2rk1/p3qpp1/3np2p/1p1p4/3P4/1PPQ1N2/P1B2PPP/R4RK1 b - - 1 18',
-  puzzleFen: 'r1b2rk1/4qpp1/p2np2p/1p1p4/3P4/1PPQ1N2/P1B2PPP/R4RK1 w - - 0 19',
+  fen: '4r1k1/pp3ppp/2p5/P2p1q2/1P1Q4/2P2P2/7P/2K3R1 b - - 3 28',
+  puzzleFen: '4r1k1/1p3ppp/p1p5/P2p1q2/1P1Q4/2P2P2/7P/2K3R1 w - - 0 29',
   setupFrom: 'a7' as Square,
   setupTo: 'a6' as Square,
-  queenSquare: 'd3' as Square,
-  checkmateSquare: 'h7' as Square,
+  queenSquare: 'd4' as Square,
+  checkmateSquare: 'g7' as Square,
   playerColor: 'white',
-  description: 'Queen delivers classic h7 checkmate',
+  description: 'Queen swoops to g7, king trapped by its own pawns',
 };
 
 // P2: Qd7→d1 back rank (28 pieces, rating 407) — SEMI-GUIDED
@@ -71,30 +71,30 @@ const PUZZLE_2: TutorialPuzzle = {
   description: 'Black queen infiltrates the back rank',
 };
 
-// P3: Qb3→f7 mate (31 pieces, rating 450) — LIGHT TIP
-// The classic f7 weakness — queen strikes the undefended pawn.
+// P3: Qd7→h3 mate (rating 530) — LIGHT TIP
+// Queen + bishop cooperation — bishop on h2 traps king, queen delivers on h3.
 const PUZZLE_3: TutorialPuzzle = {
-  fen: 'rnbqkb1r/pp2pppp/2p2n2/6N1/4p3/1QP5/PP1P1PPP/RNB1KB1R b KQkq - 3 5',
-  puzzleFen: 'rnbqkb1r/pp3ppp/2p2n2/4p1N1/4p3/1QP5/PP1P1PPP/RNB1KB1R w KQkq - 0 6',
-  setupFrom: 'e7' as Square,
-  setupTo: 'e5' as Square,
-  queenSquare: 'b3' as Square,
-  checkmateSquare: 'f7' as Square,
-  playerColor: 'white',
-  description: 'Queen exploits the f7 weakness',
+  fen: 'r5k1/pp1q1p1p/6p1/2p4r/8/3P1QP1/PPP2PKb/R1B2R2 w - - 3 21',
+  puzzleFen: 'r5k1/pp1q1p1p/6p1/2p4r/8/3P1QP1/PPP2PKb/R1B4R b - - 4 21',
+  setupFrom: 'f1' as Square,
+  setupTo: 'h1' as Square,
+  queenSquare: 'd7' as Square,
+  checkmateSquare: 'h3' as Square,
+  playerColor: 'black',
+  description: 'Queen and bishop team up to trap the king',
 };
 
-// P4: Qg4→g7 mate (26 pieces, rating 437) — MINIMAL HINT
-// Queen crashes through on g7, king trapped on h-file by its own pawns.
+// P4: Qh5→g6 mate (rating 471) — MINIMAL HINT
+// Distance mate — queen lands on g6, bishop on d3 covers diagonal, king stuck on e8.
 const PUZZLE_4: TutorialPuzzle = {
-  fen: '3rr3/2pq1ppk/p1npB2p/1p2pN2/4P1QP/P1PP4/1P3PP1/R4RK1 b - - 0 20',
-  puzzleFen: '3rr3/2p2ppk/p1npq2p/1p2pN2/4P1QP/P1PP4/1P3PP1/R4RK1 w - - 0 21',
-  setupFrom: 'd7' as Square,
-  setupTo: 'e6' as Square,
-  queenSquare: 'g4' as Square,
-  checkmateSquare: 'g7' as Square,
+  fen: 'rn1qkbnr/1bppp1p1/p6p/1p2p2Q/3PP3/3B4/PPP2PPP/RNB2RK1 b kq - 1 7',
+  puzzleFen: 'rn1qkbnr/1bppp3/p5pp/1p2p2Q/3PP3/3B4/PPP2PPP/RNB2RK1 w kq - 0 8',
+  setupFrom: 'g7' as Square,
+  setupTo: 'g6' as Square,
+  queenSquare: 'h5' as Square,
+  checkmateSquare: 'g6' as Square,
   playerColor: 'white',
-  description: 'Queen crashes through on the g-file',
+  description: 'Queen lands on g6 — bishop covers the diagonal',
 };
 
 // P5: Qd6→h2 mate (26 pieces, rating 500) — NO HELP
@@ -110,17 +110,17 @@ const PUZZLE_5: TutorialPuzzle = {
   description: 'Black queen finds h2 checkmate',
 };
 
-// P6: Qf3→f7 mate (31 pieces, rating 448) — NO HELP
-// Full opening position — queen strikes f7 while knight lurks on h5.
+// P6: Qg2→g3 mate (rating 562) — NO HELP
+// Endgame — queen takes rook on g3, knight on e2 covers escape squares, king trapped on g4.
 const PUZZLE_6: TutorialPuzzle = {
-  fen: 'r1bqk2r/ppp2pb1/2np1np1/4p1P1/2B1P3/2P2Q1P/PP1P1P2/RNB1K1NR b KQkq - 0 7',
-  puzzleFen: 'r1bqk2r/ppp2pb1/2np2p1/4p1Pn/2B1P3/2P2Q1P/PP1P1P2/RNB1K1NR w KQkq - 1 8',
-  setupFrom: 'f6' as Square,
-  setupTo: 'h5' as Square,
-  queenSquare: 'f3' as Square,
-  checkmateSquare: 'f7' as Square,
-  playerColor: 'white',
-  description: 'Queen strikes f7 in a crowded position',
+  fen: '8/p3Q2p/6pk/8/P1Pp2KP/5R2/2P1n1q1/8 w - - 0 44',
+  puzzleFen: '8/p3Q2p/6pk/8/P1Pp2KP/6R1/2P1n1q1/8 b - - 1 44',
+  setupFrom: 'f3' as Square,
+  setupTo: 'g3' as Square,
+  queenSquare: 'g2' as Square,
+  checkmateSquare: 'g3' as Square,
+  playerColor: 'black',
+  description: 'Queen takes the rook — king has nowhere to go',
 };
 
 const ALL_PUZZLES: TutorialPuzzle[] = [PUZZLE_1, PUZZLE_2, PUZZLE_3, PUZZLE_4, PUZZLE_5, PUZZLE_6];
@@ -211,8 +211,8 @@ const GUIDED_STEPS: GuidedStep[] = [
     message: 'Tap the white queen to see where it can move.',
     useIntroPopup: false,
     boardInteractive: true,
-    dimExcept: ['d3'] as Square[],
-    highlightSquares: ['d3'] as Square[],
+    dimExcept: ['d4'] as Square[],
+    highlightSquares: ['d4'] as Square[],
   },
   {
     id: 'see-moves',
@@ -227,13 +227,13 @@ const GUIDED_STEPS: GuidedStep[] = [
     message: 'Find the checkmate square and tap it!',
     useIntroPopup: false,
     boardInteractive: true,
-    highlightSquares: ['h7'] as Square[],
+    highlightSquares: ['g7'] as Square[],
   },
   {
     id: 'checkmate',
     title: 'Checkmate!',
     message:
-      "Your queen landed on h7 right next to the king — and the king's own pawns block every escape. That's checkmate — you win!",
+      "Your queen landed on g7 right next to the king — and the king's own pawns block every escape. That's checkmate — you win!",
     buttonText: 'Next Puzzle',
     useIntroPopup: false,
     boardInteractive: false,
@@ -253,13 +253,13 @@ function getTipForLevel(level: ScaffoldLevel, puzzle: TutorialPuzzle): { title: 
       buttonText: "Let's Go",
     };
     case 2: return {
-      title: 'The f7 Weakness',
-      message: "In the opening, the f7 pawn is only protected by the king. That makes it a prime target — the queen and knight are ready to strike!",
+      title: 'Teamwork',
+      message: "Sometimes your queen needs help. Look for pieces that are already cutting off the king's escape — then deliver the final blow!",
       buttonText: 'Got It',
     };
     case 3: return {
-      title: 'King on the Run',
-      message: "When the king hides on the side of the board, look for ways to crash through with your queen. Pawns can trap their own king!",
+      title: 'Long Range',
+      message: "The queen doesn't have to be right next to the king to deliver checkmate. Sometimes she can strike from a distance — if other pieces block the escapes!",
       buttonText: 'Find It',
     };
     case 4: return null;
@@ -269,19 +269,23 @@ function getTipForLevel(level: ScaffoldLevel, puzzle: TutorialPuzzle): { title: 
 
 // Completion messages per puzzle
 const COMPLETION_MESSAGES = [
-  "Your queen landed on h7 and the king's own pawns sealed the deal. Classic checkmate pattern!",
-  "Back rank infiltration! White's pieces were too far away to defend.",
-  "The f7 square is the weakest point in the opening — your queen and knight exploited it perfectly.",
-  "The queen crashed through on g7 while the king was boxed in by its own pawns. No escape!",
-  "The queen snuck in on h2 — white never saw it coming. Beautiful mate!",
-  "Six for six! Full board, full confidence. You're ready for the real puzzles.",
+  "Your queen swooped to g7 and the king's own pawns sealed the deal. Classic checkmate!",
+  "Back rank infiltration! The queen slid right down the d-file. White never saw it coming.",
+  "Queen and bishop teamwork! The bishop trapped the king, and the queen delivered the final blow.",
+  "The queen captured on g6 from a distance — the bishop on d3 made sure the king had nowhere to run.",
+  "The queen snuck in on h2 — white's king was completely exposed. Beautiful mate!",
+  "Six for six! The queen took the rook and it was checkmate. You're ready for the real puzzles.",
 ];
 
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════
 
-export default function TestTutorialPage() {
+interface TutorialFlowProps {
+  onComplete?: (correctCount: number, wrongCount: number) => void;
+}
+
+export function TutorialFlow({ onComplete }: TutorialFlowProps) {
   const router = useRouter();
   useAudioWarmup();
 
@@ -412,6 +416,11 @@ export default function TestTutorialPage() {
     // Check completion BEFORE entering any state updater — side effects
     // inside setState updaters are unsafe (React StrictMode double-invokes them).
     if (puzzleIndex >= ALL_PUZZLES.length - 1) {
+      if (onComplete) {
+        const wrong = ALL_PUZZLES.length - (completedCount + 1);
+        onComplete(completedCount + 1, wrong);
+        return;
+      }
       setAllDone(true);
       return;
     }
@@ -931,4 +940,9 @@ export default function TestTutorialPage() {
       `}</style>
     </div>
   );
+}
+
+// Test page wrapper — keeps /test-tutorial working
+export default function TestTutorialPage() {
+  return <TutorialFlow />;
 }

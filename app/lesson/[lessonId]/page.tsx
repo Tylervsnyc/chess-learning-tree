@@ -47,6 +47,7 @@ import { LearningEvents } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
+import { TutorialFlow } from '@/app/test-tutorial/page';
 
 interface Puzzle {
   id: string;
@@ -132,6 +133,7 @@ export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
   const lessonId = params.lessonId as string;
+  const isTutorial = lessonId === '1.1.1';
 
   // Progress tracking (Supabase + localStorage)
   const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded, currentStreak } = useLessonProgress();
@@ -251,6 +253,7 @@ export default function LessonPage() {
 
   // Fetch lesson data and puzzles
   useEffect(() => {
+    if (isTutorial) return; // Tutorial uses its own fixed puzzles
     async function loadLesson() {
       setLoading(true);
       setError(null);
@@ -342,10 +345,11 @@ export default function LessonPage() {
     }
 
     loadLesson();
-  }, [lessonId]);
+  }, [lessonId, isTutorial]);
 
   // Load intro messages from v2 curriculum
   useEffect(() => {
+    if (isTutorial) return; // Tutorial has its own intro flow
     const messages = getIntroMessagesFromAnyLevel(lessonId);
     setIntroMessages(messages);
 
@@ -357,7 +361,7 @@ export default function LessonPage() {
     } else {
       setIntroState('playing');
     }
-  }, [lessonId]);
+  }, [lessonId, isTutorial]);
 
   // Handle dismissing intro popups
   const handleIntroDismiss = useCallback(() => {
@@ -868,6 +872,22 @@ export default function LessonPage() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Tutorial for lesson 1.1.1
+  if (isTutorial) {
+    return (
+      <TutorialFlow
+        onComplete={(correctCount, wrongCount) => {
+          completeLesson(lessonId, allLessonIds);
+          recordLessonComplete();
+          const accuracy = Math.round((correctCount / 6) * 100);
+          LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+          window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+          router.push('/learn');
+        }}
+      />
     );
   }
 
