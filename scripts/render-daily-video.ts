@@ -107,12 +107,12 @@ function main() {
 
   console.log(`Selected puzzle: ${puzzle.puzzleId} (${puzzle.theme}, rating ${puzzle.rating})`);
 
-  // Ensure output dir exists
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-
   const now = new Date();
   const dateStr = `${now.getMonth() + 1}.${now.getDate()}.${String(now.getFullYear()).slice(-2)}`;
-  const outputFile = path.join(OUTPUT_DIR, `daily.${dateStr}-${puzzle.puzzleId}.mp4`);
+  const dayDir = path.join(OUTPUT_DIR, dateStr);
+  fs.mkdirSync(dayDir, { recursive: true });
+
+  const outputFile = path.join(dayDir, `daily.${dateStr}-${puzzle.puzzleId}.mp4`);
 
   // Build Remotion input props
   const rawMoves = puzzle.moves.split(' ');
