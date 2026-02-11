@@ -801,11 +801,33 @@ All are mateIn1 queen checkmates from `level1-mateIn1.json`, rating 400-566, 100
 | 6 | King in center | Black | Qg2→g3 | No help |
 
 ### Scaffolding Levels:
-- **Level 0 (Puzzle 1):** 8-step walkthrough — welcome, last move, turn indicator, goal, tap queen, see moves, find mate, checkmate explanation
-- **Level 1 (Puzzle 2):** Intro popup with orientation ("you're playing as Black")
-- **Level 2 (Puzzle 3):** Tip card about the pattern
-- **Level 3 (Puzzle 4):** Minimal hint card
+- **Level 0 (Puzzle 1):** 8-step walkthrough — welcome, last move, turn indicator, goal, tap queen, see moves, find mate, checkmate
+- **Level 1 (Puzzle 2):** Intro popup "Your Turn!" / "Find the queen checkmate!"
+- **Level 2 (Puzzle 3):** Tip card "f7 Weakness" / "The f7 pawn is barely guarded — strike!"
+- **Level 3 (Puzzle 4):** Tip card "Trapped King" / "The king is boxed in. Crash through!"
 - **Level 4-5 (Puzzles 5-6):** No guidance — pure solving
+
+### Guided Steps Copy (Puzzle 1 walkthrough):
+All copy must be ultra-short — one sentence max per step. Real phones have browser chrome eating viewport height.
+
+| Step | Title | Message | Button |
+|------|-------|---------|--------|
+| welcome | Your First Puzzle | Find the best move and play it! | Got It |
+| last-move | Yellow Squares | These show your opponent's last move. | Got It |
+| your-turn | Your Turn | "White to move" means you're White! | Got It |
+| goal | Find Checkmate | Trap the king with your queen! | Let's Do It |
+| tap-queen | _(none)_ | Tap the white queen. | _(none)_ |
+| see-moves | _(none)_ | One of these circles is checkmate! | _(auto-advance)_ |
+| find-mate | _(none)_ | Tap the checkmate square! | _(none)_ |
+| checkmate | Checkmate! | The king had no escape! | Next Puzzle |
+
+### Completion Messages (one per puzzle):
+1. "Sealed by its own pawns!"
+2. "Back rank mate!"
+3. "f7 weakness exploited!"
+4. "No escape!"
+5. "Beautiful mate!"
+6. "Six for six! Let's go!"
 
 ### Visual Features:
 - Pulsing green callout around "Queen Checkmate: Easy" during `goal` step
@@ -813,9 +835,12 @@ All are mateIn1 queen checkmates from `level1-mateIn1.json`, rating 400-566, 100
 - Board dims to highlight queen during `tap-queen` step
 - Green hint square appears after 1 wrong attempt (not 3)
 - Rook animation in correct popup (same as other lessons)
+- **Board never shrinks** — bottom cards are compact to fit below full-width board
 
 ### Files:
-- `app/test-tutorial/page.tsx` — tutorial component + test page at `/test-tutorial`
+- `components/tutorial/TutorialFlow.tsx` — tutorial component
+- `app/test-tutorial/page.tsx` — test page at `/test-tutorial`
+- `components/puzzle/IntroPopup.tsx` — overlay popup (shared with lessons)
 - `app/lesson/[lessonId]/page.tsx` — conditional render for `1.1.1`
 
 ---
