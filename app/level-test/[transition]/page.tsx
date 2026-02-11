@@ -473,30 +473,31 @@ export default function LevelTestPage() {
     return (
       <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm w-full">
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-4">
             <AnimatedLogo
               theme="light"
               iconOnly
-              size={2}
+              size={1.5}
               autoPlay
+              perpetual
             />
           </div>
 
-          <h1 className="text-3xl font-black text-chess-text mb-2">
+          <h1 className="text-3xl font-black text-chess-text mb-1">
             Level {targetLevel?.number || parseInt(transition.split('-')[1])} Test
           </h1>
-          <p className="text-chess-text-muted mb-8">
+          <p className="text-chess-text-muted mb-5">
             Prove your skills to unlock the next level
           </p>
 
           {/* Rules card */}
-          <div className="bg-chess-surface rounded-2xl p-5 mb-6 shadow-sm border border-slate-200">
-            <div className="flex justify-between items-center mb-4">
+          <div className="bg-chess-surface rounded-2xl px-5 py-4 mb-4 shadow-sm border border-slate-200">
+            <div className="flex justify-between items-center mb-3">
               <span className="text-chess-text-muted text-sm">Puzzles</span>
               <span className="text-chess-text font-bold">{puzzleCount}</span>
             </div>
-            <div className="border-t border-slate-100 mb-4" />
-            <div className="flex justify-between items-center mb-4">
+            <div className="border-t border-slate-100 mb-3" />
+            <div className="flex justify-between items-center mb-3">
               <span className="text-chess-text-muted text-sm">Strikes</span>
               <div className="flex gap-1.5">
                 {[0, 1, 2].map(i => (
@@ -504,13 +505,13 @@ export default function LevelTestPage() {
                 ))}
               </div>
             </div>
-            <div className="border-t border-slate-100 mb-4" />
+            <div className="border-t border-slate-100 mb-3" />
             <p className="text-sm font-bold text-chess-text">
               3 wrong and you&apos;re out
             </p>
           </div>
 
-          <p className="text-chess-text-faint text-sm mb-6">
+          <p className="text-chess-text-faint text-sm mb-4">
             Puzzles are from the level you&apos;re testing into
           </p>
 

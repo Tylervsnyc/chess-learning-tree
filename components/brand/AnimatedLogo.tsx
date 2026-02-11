@@ -59,6 +59,7 @@ interface AnimatedLogoProps {
   showWordmark?: boolean;
   iconOnly?: boolean;
   size?: 'sm' | 'md' | 'lg' | number;
+  perpetual?: boolean;
 }
 
 export function AnimatedLogo({
@@ -68,6 +69,7 @@ export function AnimatedLogo({
   showWordmark = true,
   iconOnly = false,
   size = 'md',
+  perpetual = false,
 }: AnimatedLogoProps) {
   const [animationState, setAnimationState] = useState<'pending' | 'animating' | 'complete'>(
     autoPlay ? 'pending' : 'complete'
@@ -130,6 +132,8 @@ export function AnimatedLogo({
 
   const textColor = theme === 'dark' ? '#FFFFFF' : '#0F172A';
 
+  const showPerpetual = perpetual && animationState === 'complete';
+
   return (
     <div
       style={{
@@ -137,8 +141,17 @@ export function AnimatedLogo({
         width: containerWidth,
         height: containerHeight,
         fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif",
+        animation: showPerpetual ? 'logoFloat 3s ease-in-out infinite' : undefined,
       }}
     >
+      {perpetual && (
+        <style>{`
+          @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+          }
+        `}</style>
+      )}
       {/* Blocks */}
       {BLOCKS.map((block, index) => {
         const distance = getDistance(block);
