@@ -51,6 +51,12 @@ interface LeaderboardEntry {
   isCurrentUser: boolean;
 }
 
+interface PersonalBestEntry {
+  challengeDate: string;
+  puzzlesCompleted: number;
+  timeMs: number;
+}
+
 const TOTAL_TIME = 5 * 60 * 1000; // 5 minutes in ms
 const MAX_LIVES = 3;
 
@@ -122,6 +128,11 @@ export default function DailyChallengePage() {
   const [userEntry, setUserEntry] = useState<LeaderboardEntry | null>(null);
   const [totalParticipants, setTotalParticipants] = useState(0);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
+
+  // Personal best state
+  const [personalBests, setPersonalBests] = useState<PersonalBestEntry[]>([]);
+  const [totalGames, setTotalGames] = useState(0);
+  const [loadingPersonalBests, setLoadingPersonalBests] = useState(false);
 
   // Track if user already completed today (prevents replay)
   const [alreadyCompletedToday, setAlreadyCompletedToday] = useState(false);
@@ -252,9 +263,12 @@ export default function DailyChallengePage() {
           setUserEntry(data.userEntry || userInLeaderboard);
           setTotalParticipants(data.totalParticipants || 0);
 
-          // Also fetch today's puzzles for review
+          // Also fetch today's puzzles for review and personal bests
           try {
-            const puzzleRes = await fetch('/api/daily-challenge/puzzles');
+            const [puzzleRes, personalBestRes] = await Promise.all([
+              fetch('/api/daily-challenge/puzzles'),
+              fetch('/api/daily-challenge/personal-best?limit=10'),
+            ]);
             const puzzleData = await puzzleRes.json();
             if (puzzleData.puzzles) {
               const processed = puzzleData.puzzles.map((p: Puzzle) => processPuzzle(p));
@@ -265,6 +279,11 @@ export default function DailyChallengePage() {
                 results[p.puzzleId] = 'correct';
               });
               setPuzzleResults(results);
+            }
+            const personalBestData = await personalBestRes.json();
+            if (personalBestData.personalBests) {
+              setPersonalBests(personalBestData.personalBests);
+              setTotalGames(personalBestData.totalGames || 0);
             }
           } catch (puzzleError) {
             console.error('Failed to fetch puzzles for review:', puzzleError);
@@ -664,6 +683,22 @@ export default function DailyChallengePage() {
     setLoadingLeaderboard(false);
   }, []);
 
+  // Fetch personal bests
+  const fetchPersonalBests = useCallback(async () => {
+    setLoadingPersonalBests(true);
+    try {
+      const res = await fetch('/api/daily-challenge/personal-best?limit=10');
+      const data = await res.json();
+      if (data.personalBests) {
+        setPersonalBests(data.personalBests);
+        setTotalGames(data.totalGames || 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch personal bests:', error);
+    }
+    setLoadingPersonalBests(false);
+  }, []);
+
   // Record when finished and fetch leaderboard
   useEffect(() => {
     if (gameState === 'finished') {
@@ -677,10 +712,13 @@ export default function DailyChallengePage() {
         recordResult(puzzlesSolved, finalTimeLeft);
         // Update global day streak (per RULES.md Section 11)
         recordDailyActivity();
-        setTimeout(() => fetchLeaderboard(), 500);
+        setTimeout(() => {
+          fetchLeaderboard();
+          fetchPersonalBests();
+        }, 500);
       }
     }
-  }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, recordDailyActivity, user]);
+  }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, fetchPersonalBests, recordDailyActivity, user]);
 
   // Pre-fetch share image when game finishes; re-fetches when rank data arrives
   // Uses paramsKey dedup to avoid redundant fetches, never clears cached image
@@ -768,22 +806,14 @@ export default function DailyChallengePage() {
   // Completion time (time used) — use ref for accuracy, fall back to state calculation
   const completionTimeMs = finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft;
 
-  // Dummy leaderboard data (sorted by puzzles desc, then time asc)
-  const dummyLeaderboard: LeaderboardEntry[] = [
-    { rank: 1, displayName: 'GrandMaster42', puzzlesCompleted: 18, timeMs: 245000, isCurrentUser: false },
-    { rank: 2, displayName: 'TacticQueen', puzzlesCompleted: 16, timeMs: 198000, isCurrentUser: false },
-    { rank: 3, displayName: 'ChessNinja', puzzlesCompleted: 15, timeMs: 212000, isCurrentUser: false },
-    { rank: 4, displayName: 'PawnStorm', puzzlesCompleted: 14, timeMs: 187000, isCurrentUser: false },
-    { rank: 5, displayName: 'BishopSniper', puzzlesCompleted: 13, timeMs: 234000, isCurrentUser: false },
-    { rank: 6, displayName: 'KnightRider99', puzzlesCompleted: 12, timeMs: 178000, isCurrentUser: false },
-    { rank: 7, displayName: 'RookieMove', puzzlesCompleted: 11, timeMs: 256000, isCurrentUser: false },
-    { rank: 8, displayName: 'CheckMate101', puzzlesCompleted: 10, timeMs: 189000, isCurrentUser: false },
-    { rank: 9, displayName: 'CastleKing', puzzlesCompleted: 9, timeMs: 221000, isCurrentUser: false },
-    { rank: 10, displayName: 'EndgameExpert', puzzlesCompleted: 8, timeMs: 167000, isCurrentUser: false },
-  ];
+  // Helper to format date as short month + day (e.g. "Feb 11")
+  const formatShortDate = (dateStr: string) => {
+    const date = new Date(dateStr + 'T12:00:00'); // noon to avoid timezone issues
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
 
-  // Use dummy data if no real leaderboard
-  const displayLeaderboard = leaderboard.length > 0 ? leaderboard : dummyLeaderboard;
+  // Today's date string for highlighting
+  const todayStr = new Date().toISOString().split('T')[0];
 
   const globalPct = userEntry && totalParticipants > 0
     ? Math.round(((totalParticipants - userEntry.rank) / totalParticipants) * 100)
@@ -1175,7 +1205,7 @@ export default function DailyChallengePage() {
                         !showMyStanding ? 'bg-chess-surface text-chess-text shadow-sm' : 'text-chess-text-muted'
                       }`}
                     >
-                      Top 10
+                      My Best
                     </button>
                     <button
                       onClick={() => setShowMyStanding(true)}
@@ -1187,7 +1217,7 @@ export default function DailyChallengePage() {
                     </button>
                   </div>
 
-                  {loadingLeaderboard ? (
+                  {(showMyStanding ? loadingLeaderboard : loadingPersonalBests) ? (
                     <div className="text-chess-text-muted py-3 text-sm">Loading...</div>
                   ) : showMyStanding ? (
                     <div className="space-y-2">
@@ -1212,34 +1242,38 @@ export default function DailyChallengePage() {
                         {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
                       </div>
                     </div>
+                  ) : personalBests.length === 0 ? (
+                    <div className="text-center text-chess-text-muted text-sm py-4">
+                      Complete your first Daily Rook to see your history here!
+                    </div>
                   ) : (
-                    <div className="space-y-1">
-                      {displayLeaderboard.map((entry) => (
-                        <div
-                          key={entry.rank}
-                          className={`flex items-center justify-between p-2 rounded-lg ${
-                            entry.isCurrentUser ? 'bg-chess-green/10 border border-chess-green/30' : 'bg-chess-page'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className={`w-5 text-center font-bold text-xs ${
-                              entry.rank === 1 ? 'text-yellow-500' :
-                              entry.rank === 2 ? 'text-gray-400' :
-                              entry.rank === 3 ? 'text-orange-400' :
-                              'text-chess-text-muted'
-                            }`}>
-                              #{entry.rank}
-                            </span>
-                            <span className={`text-sm ${entry.isCurrentUser ? 'text-chess-green font-semibold' : 'text-chess-text'}`}>
-                              {entry.displayName}
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-chess-text font-bold text-sm">{entry.puzzlesCompleted}</div>
-                            <div className="text-chess-text-muted text-[10px]">{formatTime(entry.timeMs)}</div>
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <div className="space-y-1 max-h-48 overflow-y-auto">
+                        {personalBests.map((entry) => {
+                          const isToday = entry.challengeDate === todayStr;
+                          return (
+                            <div
+                              key={entry.challengeDate}
+                              className={`flex items-center justify-between p-2 rounded-lg ${
+                                isToday ? 'bg-chess-green/10 border border-chess-green/30' : 'bg-chess-page'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className={`text-sm font-medium ${isToday ? 'text-chess-green' : 'text-chess-text'}`}>
+                                  {isToday ? 'Today' : formatShortDate(entry.challengeDate)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-chess-text font-bold text-sm tabular-nums">{entry.puzzlesCompleted}</span>
+                                <span className="text-chess-text-muted text-[10px] tabular-nums w-10 text-right">{formatTime(entry.timeMs)}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="text-center text-chess-text-muted text-xs pt-2">
+                        {totalGames} game{totalGames === 1 ? '' : 's'} played
+                      </div>
                     </div>
                   )}
                 </div>
