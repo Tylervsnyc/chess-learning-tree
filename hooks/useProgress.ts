@@ -157,8 +157,8 @@ function calculateNewStreak(currentStreak: number, lastActivityDate: string | nu
 }
 
 export function useLessonProgress() {
-  const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS);
-  const [loaded, setLoaded] = useState(false);
+  const [progress, setProgress] = useState<Progress>(() => getStoredProgress());
+  const [loaded, setLoaded] = useState(true);
   const [serverFetched, setServerFetched] = useState(false); // True after GET /api/progress completes
   const [syncState, setSyncState] = useState<SyncState>('idle');
   const [pendingSyncs, setPendingSyncs] = useState<PendingSync[]>([]);
@@ -300,13 +300,6 @@ export function useLessonProgress() {
       return () => clearTimeout(timer);
     }
   }, [isOnline, pendingSyncs.length, user, retryPendingSyncs]);
-
-  // Load from localStorage on mount (instant)
-  useEffect(() => {
-    const localProgress = getStoredProgress();
-    setProgress(localProgress);
-    setLoaded(true);
-  }, []);
 
   // Listen for localStorage changes from OTHER tabs
   // This prevents data loss when multiple tabs are open
