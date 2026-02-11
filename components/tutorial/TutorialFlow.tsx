@@ -710,7 +710,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-y-auto">
         <div className="w-full max-w-lg">
           {/* Lesson name + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
@@ -825,16 +825,16 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
               {/* Accent bar */}
               <div className="h-1 bg-gradient-to-r from-chess-green to-chess-blue" />
 
-              <div className="px-4 py-3">
+              <div className="px-3 py-2">
                 {bottomHintCard.title && (
-                  <h2 className="text-lg font-bold text-chess-text mb-1.5">
+                  <h2 className="text-base font-bold text-chess-text mb-1">
                     {bottomHintCard.title}
                   </h2>
                 )}
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {bottomHintCard.message.split('\n\n').map((p, i) => (
-                    <p key={i} className="text-chess-text-muted text-sm leading-relaxed">
+                    <p key={i} className="text-chess-text-muted text-sm leading-snug">
                       {p}
                     </p>
                   ))}
@@ -843,7 +843,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 {bottomHintCard.buttonText && bottomHintCard.onButton && (
                   <button
                     onClick={bottomHintCard.onButton}
-                    className="w-full mt-3 py-3 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:brightness-105"
+                    className="w-full mt-2 py-2 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:brightness-105"
                   >
                     {bottomHintCard.buttonText}
                   </button>
