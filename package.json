@@ -12,7 +12,9 @@
     "email:dev": "email dev -d lib/email/templates",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "video:studio": "remotion studio remotion/index.ts",
+    "video:render": "npx tsx scripts/render-daily-video.ts"
   },
   "dependencies": {
     "@react-email/components": "^1.0.6",
@@ -31,6 +33,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
+    "@remotion/bundler": "^4.0.421",
+    "@remotion/cli": "^4.0.421",
+    "@remotion/google-fonts": "^4.0.421",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^25.0.9",
@@ -41,6 +46,8 @@
     "eslint-config-next": "^16.1.2",
     "postcss": "^8.5.6",
     "react-email": "^5.2.5",
+    "remotion": "^4.0.421",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },
