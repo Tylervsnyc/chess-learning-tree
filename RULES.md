@@ -439,8 +439,8 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | Rule | Value |
 |------|-------|
 | Puzzles | 10 |
-| Pass requirement | 2 or fewer wrong |
-| Must complete | All 10 puzzles |
+| Strikes | 3 wrong and you're out |
+| Early exit | Test ends immediately on 3rd wrong answer |
 | Retry | Unlimited, immediate |
 
 ### On Pass:

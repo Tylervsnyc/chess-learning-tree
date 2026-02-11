@@ -8,6 +8,7 @@ import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests
 import { getFirstLessonIdForLevel } from '@/lib/curriculum-registry';
 import { playCorrectSound, playErrorSound, playMoveSound, playCaptureSound, playCelebrationSound, warmupAudio, vibrateOnCorrect, vibrateOnError } from '@/lib/sounds';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
@@ -391,8 +392,8 @@ export default function LevelTestPage() {
   // Loading state while checking auth
   if (userLoading) {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      <div className="h-full bg-chess-page flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -400,23 +401,22 @@ export default function LevelTestPage() {
   // Auth check - must be logged in to take level tests
   if (!user) {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-chess-page flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-2xl font-bold text-white mb-2">Sign In Required</h1>
-          <p className="text-white/60 mb-6">
-            Please sign in to take level tests and track your progress.
+          <h1 className="text-2xl font-bold text-chess-text mb-2">Sign In Required</h1>
+          <p className="text-chess-text-muted mb-6">
+            Sign in to take level tests and track your progress.
           </p>
           <div className="flex flex-col gap-3">
             <button
               onClick={() => router.push('/auth/login')}
-              className="px-6 py-3 bg-[#1CB0F6] text-white font-bold rounded-xl hover:bg-[#1A9FE0] transition-colors"
+              className="px-6 py-3 bg-chess-blue text-white font-bold rounded-xl hover:bg-blue-600 transition-colors"
             >
               Sign In
             </button>
             <button
               onClick={() => router.push('/auth/signup')}
-              className="px-6 py-3 bg-[#58CC02] text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+              className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-chess-green-dark transition-colors"
             >
               Sign Up Free
             </button>
@@ -429,8 +429,8 @@ export default function LevelTestPage() {
   // Loading state while validating transition
   if (isValid === null) {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      <div className="h-full bg-chess-page flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -438,16 +438,15 @@ export default function LevelTestPage() {
   // Invalid transition
   if (isValid === false) {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center p-4">
+      <div className="h-full bg-chess-page flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🤔</div>
-          <h1 className="text-2xl font-bold text-white mb-2">Invalid Test</h1>
-          <p className="text-white/60 mb-6">
+          <h1 className="text-2xl font-bold text-chess-text mb-2">Invalid Test</h1>
+          <p className="text-chess-text-muted mb-6">
             The test &quot;{transition}&quot; doesn&apos;t exist.
           </p>
           <button
             onClick={handleBackToLearn}
-            className="px-6 py-2 bg-[#1CB0F6] text-white font-bold rounded-xl hover:bg-[#1A9FE0] transition-colors"
+            className="px-6 py-2 bg-chess-blue text-white font-bold rounded-xl hover:bg-blue-600 transition-colors"
           >
             Back to Chess Path
           </button>
@@ -459,11 +458,11 @@ export default function LevelTestPage() {
   // Loading state
   if (testState === 'loading') {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <style>{progressBarStyles}</style>
         <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-white/60">Loading test puzzles...</p>
+          <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-chess-text-muted">Loading test puzzles...</p>
         </div>
       </div>
     );
@@ -472,36 +471,47 @@ export default function LevelTestPage() {
   // Intro screen - show test parameters before starting
   if (testState === 'intro') {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🎯</div>
-          <h1 className="text-3xl font-black text-white mb-2">
+      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
+        <div className="text-center max-w-sm w-full">
+          <div className="flex justify-center mb-8">
+            <AnimatedLogo
+              theme="light"
+              iconOnly
+              size={2}
+              autoPlay
+            />
+          </div>
+
+          <h1 className="text-3xl font-black text-chess-text mb-2">
             Level {targetLevel?.number || parseInt(transition.split('-')[1])} Test
           </h1>
-          <p className="text-white/60 mb-6">
+          <p className="text-chess-text-muted mb-8">
             Prove your skills to unlock the next level
           </p>
 
-          {/* Test parameters */}
-          <div className="bg-[#1A2C35] rounded-2xl p-6 mb-6 text-left">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-white/70">Puzzles</span>
-                <span className="text-white font-bold">{puzzleCount}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-white/70">To pass</span>
-                <span className="text-[#58CC02] font-bold">{passingScore} correct</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-white/70">Max wrong</span>
-                <span className="text-[#FF4B4B] font-bold">{maxWrongAnswers}</span>
+          {/* Rules card */}
+          <div className="bg-chess-surface rounded-2xl p-5 mb-6 shadow-sm border border-slate-200">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-chess-text-muted text-sm">Puzzles</span>
+              <span className="text-chess-text font-bold">{puzzleCount}</span>
+            </div>
+            <div className="border-t border-slate-100 mb-4" />
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-chess-text-muted text-sm">Strikes</span>
+              <div className="flex gap-1.5">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="w-4 h-4 rounded-full border-2 border-chess-red/30 bg-chess-red/10" />
+                ))}
               </div>
             </div>
+            <div className="border-t border-slate-100 mb-4" />
+            <p className="text-sm font-bold text-chess-text">
+              3 wrong and you&apos;re out
+            </p>
           </div>
 
-          <p className="text-white/40 text-sm mb-6">
-            Each puzzle is from the level you&apos;re testing into
+          <p className="text-chess-text-faint text-sm mb-6">
+            Puzzles are from the level you&apos;re testing into
           </p>
 
           <button
@@ -509,14 +519,14 @@ export default function LevelTestPage() {
               warmupAudio(); // Warmup audio NOW - user just clicked
               setTestState('playing');
             }}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all hover:bg-chess-green-dark"
           >
             Start Test
           </button>
 
           <button
             onClick={handleBackToLearn}
-            className="w-full py-3 mt-3 text-white/60 hover:text-white transition-colors"
+            className="w-full py-3 mt-3 text-chess-text-muted hover:text-chess-text transition-colors"
           >
             Back to Chess Path
           </button>
@@ -528,19 +538,26 @@ export default function LevelTestPage() {
   // Test passed
   if (testState === 'passed') {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🎉</div>
-          <h1 className="text-3xl font-black text-[#58CC02] mb-2">Test Passed!</h1>
-          <p className="text-white/60 mb-2">
+      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
+        <div className="text-center max-w-sm w-full">
+          <div className="flex justify-center mb-6">
+            <AnimatedLogo
+              theme="light"
+              iconOnly
+              size={1.5}
+              autoPlay
+            />
+          </div>
+          <h1 className="text-3xl font-black text-chess-green mb-2">Test Passed!</h1>
+          <p className="text-chess-text-muted mb-2">
             You scored {correctCount}/{puzzleCount}
           </p>
-          <p className="text-white/80 mb-6">
-            {targetLevel ? `Level ${targetLevel.number} is now unlocked!` : 'Great job!'}
+          <p className="text-chess-text font-semibold mb-8">
+            {targetLevel ? `Level ${targetLevel.number} is now unlocked` : 'Great job!'}
           </p>
           <button
             onClick={handleBackToLearn}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#58CC02] shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all"
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all hover:bg-chess-green-dark"
           >
             Continue to Level {targetLevel?.number || 2}
           </button>
@@ -552,15 +569,19 @@ export default function LevelTestPage() {
   // Test failed
   if (testState === 'failed') {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">😔</div>
-          <h1 className="text-3xl font-black text-[#FF4B4B] mb-2">Test Not Passed</h1>
-          <p className="text-white/60 mb-6">
-            You scored {correctCount}/{puzzleCount}. Need {passingScore} to pass.
+      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
+        <div className="text-center max-w-sm w-full">
+          <div className="flex justify-center gap-2.5 mb-6">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="w-5 h-5 rounded-full bg-chess-red" />
+            ))}
+          </div>
+          <h1 className="text-3xl font-black text-chess-red mb-2">3 Strikes</h1>
+          <p className="text-chess-text-muted mb-2">
+            You got {correctCount} out of {correctCount + wrongCount} correct
           </p>
-          <p className="text-white/40 text-sm mb-6">
-            Keep practicing the current level and try again when you&apos;re ready!
+          <p className="text-chess-text-faint text-sm mb-8">
+            Keep practicing and try again when you&apos;re ready
           </p>
           <div className="space-y-3">
             <button
@@ -595,13 +616,13 @@ export default function LevelTestPage() {
                     // Error re-fetching puzzles
                   });
               }}
-              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-[#1CB0F6] shadow-[0_4px_0_#1487c0] active:translate-y-[2px] active:shadow-[0_2px_0_#1487c0] transition-all"
+              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-blue shadow-[0_4px_0_#1487c0] active:translate-y-[2px] active:shadow-[0_2px_0_#1487c0] transition-all hover:bg-blue-600"
             >
               Try Again
             </button>
             <button
               onClick={handleBackToLearn}
-              className="w-full py-3 text-white/60 hover:text-white transition-colors"
+              className="w-full py-3 text-chess-text-muted hover:text-chess-text transition-colors"
             >
               Back to Chess Path
             </button>
@@ -614,22 +635,22 @@ export default function LevelTestPage() {
   // Playing state - wait for puzzle to be ready
   if (!currentPuzzle || !currentFen || !chess) {
     return (
-      <div className="h-full bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      <div className="h-full bg-chess-page flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="h-full bg-[#131F24] text-white flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
       <style>{progressBarStyles}</style>
 
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="bg-chess-surface border-b border-chess-text-faint/10 px-4 py-3 flex-shrink-0 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={handleBackToLearn}
-            className="text-gray-400 hover:text-white"
+            className="text-chess-text-muted hover:text-chess-text"
           >
             ✕
           </button>
@@ -646,16 +667,27 @@ export default function LevelTestPage() {
       </div>
 
       {/* Test info banner */}
-      <div className="bg-[#1A2C35]/50 px-4 py-2 text-center">
-        <span className="text-sm text-white/60">
-          Level {transition.split('-')[0]} → {transition.split('-')[1]} Test
-        </span>
-        <span className="mx-3 text-white/30">•</span>
-        <span className="text-sm">
-          <span className="text-[#58CC02]">{correctCount} correct</span>
-          <span className="text-white/30 mx-2">•</span>
-          <span className="text-[#FF4B4B]">{wrongCount}/{maxWrongAnswers} wrong</span>
-        </span>
+      <div className="bg-chess-surface/50 px-4 py-2 border-b border-chess-text-faint/10">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <span className="text-sm">
+            <span className="text-chess-green font-semibold">{correctCount}</span>
+            <span className="text-chess-text-faint"> correct</span>
+          </span>
+          <span className="text-sm text-chess-text-muted">
+            Puzzle {currentIndex + 1}/{puzzleCount}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-chess-text-faint mr-1">Strikes</span>
+            {[0, 1, 2].map(i => (
+              <div
+                key={i}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  i < wrongCount ? 'bg-chess-red' : 'bg-slate-200'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Main content */}
@@ -663,12 +695,10 @@ export default function LevelTestPage() {
         <div className="w-full max-w-lg">
           {/* Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
-            <div className="text-base font-semibold text-gray-300">
+            <div className="text-base font-semibold text-chess-text-muted">
               Puzzle {currentIndex + 1}
             </div>
-            <span className={`text-base font-bold ${
-              currentPuzzle.playerColor === 'white' ? 'text-white' : 'text-gray-300'
-            }`}>
+            <span className={`text-base font-bold ${currentPuzzle.playerColor === 'white' ? 'text-chess-text' : 'text-chess-text-muted'}`}>
               {currentPuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
             </span>
           </div>
