@@ -839,11 +839,7 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
                 }}
                 buttonText={guidedStep.buttonText}
                 onSkip={guidedStep.id === 'welcome' ? () => {
-                  if (onComplete) {
-                    onComplete(6, 0);
-                  } else {
-                    router.push('/learn');
-                  }
+                  router.push('/lesson/1.1.1?skipTutorial=true');
                 } : undefined}
                 skipText={guidedStep.id === 'welcome' ? 'Skip Tutorial' : undefined}
               />

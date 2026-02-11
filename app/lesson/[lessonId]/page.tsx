@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Square } from 'chess.js';
 import {
@@ -132,8 +132,10 @@ function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
-  const isTutorial = lessonId === '1.1.1';
+  const skipTutorial = searchParams.get('skipTutorial') === 'true';
+  const isTutorial = lessonId === '1.1.1' && !skipTutorial;
   const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)

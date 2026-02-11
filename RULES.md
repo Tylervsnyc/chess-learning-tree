@@ -787,6 +787,7 @@ Lesson 1.1.1 ("Queen Checkmate: Easy") renders a **guided tutorial** instead of 
 - `app/lesson/[lessonId]/page.tsx` checks `lessonId === '1.1.1'` and renders `<TutorialFlow>` from `app/test-tutorial/page.tsx`
 - On completion, shows the same `LessonCompleteScreen` as all other lessons
 - Progress persists normally via `completeLesson` + `recordLessonComplete`
+- **"Skip Tutorial" navigates to `/lesson/1.1.1?skipTutorial=true`**, which renders the standard lesson flow (random puzzles from the pool, no guided overlays). The user must solve all puzzles like any other lesson — no free credit is given.
 
 ### The 6 Puzzles (fixed, not random):
 All are mateIn1 queen checkmates from `level1-mateIn1.json`, rating 400-566, 1000+ plays.
