@@ -60,11 +60,11 @@ export function IntroPopup({
             {buttonText}
           </button>
 
-          {/* Optional skip link */}
+          {/* Optional skip button */}
           {onSkip && skipText && (
             <button
               onClick={onSkip}
-              className="w-full mt-2 py-1.5 text-center text-sm text-[#A3B8C2] underline underline-offset-2 hover:text-white transition-colors"
+              className="w-full mt-3 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
             >
               {skipText}
             </button>

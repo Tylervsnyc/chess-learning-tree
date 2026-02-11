@@ -787,7 +787,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 }}
                 buttonText={guidedStep.buttonText}
                 onSkip={guidedStep.id === 'welcome' ? () => onComplete(6, 0) : undefined}
-                skipText={guidedStep.id === 'welcome' ? 'I already know this' : undefined}
+                skipText={guidedStep.id === 'welcome' ? 'Skip Tutorial' : undefined}
               />
             )}
 
