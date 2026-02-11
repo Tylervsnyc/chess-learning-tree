@@ -220,7 +220,7 @@ const GUIDED_STEPS: GuidedStep[] = [
       'See those circles? Each one is a square the queen can move to. One of them is checkmate!',
     useIntroPopup: false,
     boardInteractive: false,
-    autoAdvance: 3500,
+    autoAdvance: 1800,
   },
   {
     id: 'find-mate',
