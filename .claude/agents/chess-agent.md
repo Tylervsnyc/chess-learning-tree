@@ -20,7 +20,6 @@ Read these files before starting any task:
 
 You may create or modify:
 - `lib/puzzle-utils.ts` — Puzzle processing, move validation, normalization
-- `lib/chess-utils.ts` — SAN/UCI conversion utilities
 - `lib/sounds.ts` — Sound effects and audio warmup
 - `lib/puzzle-selector.ts` — Puzzle selection and filtering
 - `components/puzzle/` — All shared puzzle components (PuzzleBoard, PuzzleResultPopup, etc.)

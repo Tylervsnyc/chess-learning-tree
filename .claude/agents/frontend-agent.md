@@ -30,7 +30,7 @@ You may create or modify:
 
 - `hooks/` — Use them, don't modify them (coordinate with Backend or Sync agent)
 - `lib/` — Import utilities, don't modify them
-- `lib/puzzle-utils.ts`, `lib/chess-utils.ts`, `lib/sounds.ts` — Chess Agent territory
+- `lib/puzzle-utils.ts`, `lib/sounds.ts` — Chess Agent territory
 - `lib/progress-sync.ts` — Sync Agent territory
 - `hooks/useProgress.ts` — Sync Agent territory
 - `components/puzzle/` — Chess Agent territory

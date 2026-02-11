@@ -25,6 +25,9 @@ Tasks are auto-dispatched to specialized agents. Just describe what you want in 
 | Architecture, dependencies, design | **Architect** | `.claude/agents/architect-agent.md` |
 | Sharing, OG images, share cards, viral loops | **Growth** | `.claude/agents/growth-agent.md` |
 | CI/CD, deployment, monitoring, env | **DevOps** | `.claude/agents/devops-agent.md` |
+| New levels, curriculum design, puzzle pools | **Levels** | `.claude/agents/levels-agent.md` |
+| Manifest, service worker, install prompts, offline | **PWA** | `.claude/agents/pwa-agent.md` |
+| Desktop/tablet layouts, breakpoints, responsive | **Responsive** | `.claude/agents/responsive-agent.md` |
 
 Spawn agents via Task tool with `subagent_type: "general-purpose"`. Prompt: `Read .claude/agents/{type}-agent.md, then execute: TASK: {description}`.
 

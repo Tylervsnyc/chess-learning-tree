@@ -21,7 +21,7 @@ Read these files before starting any task:
 
 You may create or modify:
 - `app/api/` — API route handlers **except** `app/api/progress/` (Sync Agent territory)
-- `lib/` — Server-side utilities **except** `lib/progress-sync.ts` (Sync Agent), `lib/puzzle-utils.ts`, `lib/chess-utils.ts`, `lib/sounds.ts`, `lib/puzzle-selector.ts` (Chess Agent)
+- `lib/` — Server-side utilities **except** `lib/progress-sync.ts` (Sync Agent), `lib/puzzle-utils.ts`, `lib/sounds.ts`, `lib/puzzle-selector.ts` (Chess Agent)
 - `hooks/` — React hooks **except** `hooks/useProgress.ts` (Sync Agent territory)
 - `middleware.ts` — Request middleware
 
