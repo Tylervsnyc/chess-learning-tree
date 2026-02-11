@@ -1169,7 +1169,7 @@ export default function LessonPage() {
           </div>
 
           {/* Tutorial hint card — shows below board during guided puzzles */}
-          {tutorialHint && moveStatus !== 'correct' && introState === 'playing' && (
+          {tutorialHint && moveStatus === 'playing' && introState === 'playing' && (
             <div
               key={`tutorial-hint-${currentIndex}`}
               className="w-full rounded-b-2xl py-2.5 px-4"
