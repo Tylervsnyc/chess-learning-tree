@@ -141,38 +141,22 @@ export function AnimatedLogo({
         width: containerWidth,
         height: containerHeight,
         fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif",
-        overflow: 'hidden',
       }}
     >
-      {/* Shimmer overlay */}
-      {showPerpetual && (
-        <>
-          <style>{`
-            @keyframes logoShimmer {
-              0% { transform: translateX(-200%); }
-              20%, 100% { transform: translateX(300%); }
-            }
-          `}</style>
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '50%',
-              height: '100%',
-              background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%)',
-              animation: 'logoShimmer 4s ease-in-out infinite',
-              pointerEvents: 'none',
-              zIndex: 1,
-            }}
-          />
-        </>
+      {perpetual && (
+        <style>{`
+          @keyframes blockGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.35); }
+          }
+        `}</style>
       )}
       {/* Blocks */}
       {BLOCKS.map((block, index) => {
         const distance = getDistance(block);
         const delay = (distance / maxDistance) * CONFIG.maxDelay;
         const isVisible = animationState !== 'pending';
+        const glowDelay = (distance / maxDistance) * 1.2;
 
         return (
           <div
@@ -192,6 +176,7 @@ export function AnimatedLogo({
                 animationState === 'animating'
                   ? `all ${CONFIG.duration}ms ${CONFIG.easing} ${delay}ms`
                   : 'none',
+              animation: showPerpetual ? `blockGlow 3s ease-in-out ${glowDelay}s infinite` : undefined,
             }}
           />
         );

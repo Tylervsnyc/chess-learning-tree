@@ -439,9 +439,22 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | Rule | Value |
 |------|-------|
 | Puzzles | 10 |
-| Strikes | 3 wrong and you're out |
-| Early exit | Test ends immediately on 3rd wrong answer |
+| Lives | 3 hearts (same style as Daily Rook) |
+| Elimination | 3 wrong = out, test ends immediately |
 | Retry | Unlimited, immediate |
+
+### Screen Layout (LOCKED):
+- **Intro screen**: Content top-aligned (`pt-6`), not vertically centered
+  - AnimatedLogo (iconOnly, size 1.5, perpetual glow animation)
+  - "Level X Test" heading + subtitle
+  - Compact rules card: puzzles count, 3 red hearts for lives, "3 wrong and you're out"
+  - Start Test button (must be visible without scrolling on mobile)
+  - Back button
+- **Gameplay banner**: Left = correct count (green), center = "Puzzle X/10", right = 3 hearts (red→gray as lost)
+- **Passed screen**: AnimatedLogo (1.5, perpetual) + score + unlock message
+- **Failed screen**: 3 gray empty hearts + "Out of Lives" heading + score
+- **No emojis anywhere** in level test screens
+- All screens use design system tokens, never raw hex
 
 ### On Pass:
 1. Level unlocks
