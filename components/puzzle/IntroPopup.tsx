@@ -37,14 +37,14 @@ export function IntroPopup({
         {/* Header accent bar */}
         <div className="h-1.5 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6]" />
 
-        <div className="p-3">
+        <div className="px-3 py-2">
           {/* Title */}
-          <h2 className="text-base font-bold text-white mb-1.5">
+          <h2 className="text-base font-bold text-white mb-1">
             {title}
           </h2>
 
           {/* Message paragraphs */}
-          <div className="space-y-1 mb-3">
+          <div className="space-y-1 mb-2">
             {paragraphs.map((paragraph, index) => (
               <p key={index} className="text-[#A3B8C2] text-sm leading-snug">
                 {paragraph}
