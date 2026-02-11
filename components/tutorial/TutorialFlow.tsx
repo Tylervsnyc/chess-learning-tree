@@ -710,10 +710,10 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 min-h-0">
+        <div className="w-full max-w-lg flex-1 min-h-0 flex flex-col">
           {/* Lesson name + Turn indicator */}
-          <div className="flex items-center justify-between mb-2 h-8">
+          <div className="flex items-center justify-between mb-2 h-8 flex-shrink-0">
             {/* Lesson name with highlight callout */}
             <div className="relative inline-flex items-center">
               {highlightGoal && (
@@ -748,7 +748,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
           </div>
 
           {/* Chessboard with overlays */}
-          <div className="relative">
+          <div className="relative flex-1 min-h-0 aspect-square max-h-full">
             <div
               className={shakeBoard ? 'tut-shake' : ''}
               style={{
@@ -807,19 +807,21 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
           {/* PuzzleResultPopup — correct answer (matches real lesson page) */}
           {puzzleComplete && (
-            <PuzzleResultPopup
-              key={`correct-${completedCount}`}
-              type="correct"
-              message={COMPLETION_MESSAGES[puzzleIndex] || 'Checkmate!'}
-              onContinue={nextPuzzle}
-            />
+            <div className="flex-shrink-0">
+              <PuzzleResultPopup
+                key={`correct-${completedCount}`}
+                type="correct"
+                message={COMPLETION_MESSAGES[puzzleIndex] || 'Checkmate!'}
+                onContinue={nextPuzzle}
+              />
+            </div>
           )}
 
           {/* Bottom hint card — guided steps + wrong attempt feedback */}
           {bottomHintCard && !puzzleComplete && (
             <div
               key={`hint-${puzzleIndex}-${guidedStep?.id || 'play'}-${wrongAttempts}`}
-              className="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
+              className="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden flex-shrink-0"
               style={{ animation: 'tutSlideUp 0.3s ease-out' }}
             >
               {/* Accent bar */}
