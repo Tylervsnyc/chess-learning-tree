@@ -838,6 +838,14 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
                   setGuidedStepIndex(prev => prev + 1);
                 }}
                 buttonText={guidedStep.buttonText}
+                onSkip={guidedStep.id === 'welcome' ? () => {
+                  if (onComplete) {
+                    onComplete(6, 0);
+                  } else {
+                    router.push('/learn');
+                  }
+                } : undefined}
+                skipText={guidedStep.id === 'welcome' ? 'Skip Tutorial' : undefined}
               />
             )}
 
@@ -872,19 +880,26 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
           {bottomHintCard && !puzzleComplete && (
             <div
               key={`hint-${puzzleIndex}-${guidedStep?.id || 'play'}-${wrongAttempts}`}
-              className="mt-1 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
-              style={{ animation: 'tutSlideUp 0.3s ease-out' }}
+              className="w-full rounded-b-2xl py-2.5 px-4"
+              style={{
+                animation: 'tutSlideUp 0.3s ease-out',
+                backgroundColor: '#FFF3CD',
+                boxShadow: '0 2px 8px rgba(180, 140, 0, 0.15)',
+              }}
             >
-              <div className="px-3 py-1.5">
+              <div className="max-w-lg mx-auto">
                 {bottomHintCard.title && (
-                  <h2 className="text-sm font-bold text-chess-text mb-1">
+                  <p
+                    className="font-bold leading-tight mb-1"
+                    style={{ fontSize: 15, color: '#7A6200' }}
+                  >
                     {bottomHintCard.title}
-                  </h2>
+                  </p>
                 )}
 
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   {bottomHintCard.message.split('\n\n').map((p, i) => (
-                    <p key={i} className="text-chess-text-muted text-sm leading-snug">
+                    <p key={i} className="leading-snug" style={{ fontSize: 14, color: '#8B7000' }}>
                       {p}
                     </p>
                   ))}
@@ -893,7 +908,12 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
                 {bottomHintCard.buttonText && bottomHintCard.onButton && (
                   <button
                     onClick={bottomHintCard.onButton}
-                    className="w-full mt-1.5 py-1.5 bg-chess-green text-white text-xs font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:brightness-105"
+                    className="w-full mt-2 py-1.5 font-bold rounded-xl uppercase tracking-wide text-[13px] transition-all active:translate-y-[1px]"
+                    style={{
+                      backgroundColor: '#D4A017',
+                      color: '#FFFFFF',
+                      boxShadow: '0 3px 0 #A67C00',
+                    }}
                   >
                     {bottomHintCard.buttonText}
                   </button>
