@@ -5,7 +5,7 @@ import React from 'react';
  * Green border, depth layers, corner accent.
  */
 const CARD_COLOR = '#58CC02';
-const CARD_H = 224; // 56 * 4
+const CARD_H = 272; // taller for vertical breathing room
 
 export const BottomCard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -60,7 +60,7 @@ export const BottomCard: React.FC<{ children: React.ReactNode }> = ({ children }
               pointerEvents: 'none',
             }}
           />
-          <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 48px' }}>
+          <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '24px 48px' }}>
             {children}
           </div>
         </div>

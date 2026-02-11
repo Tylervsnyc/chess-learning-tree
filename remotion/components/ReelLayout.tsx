@@ -3,11 +3,11 @@ import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLogo, LOGO_H } from './ReelLogo';
 import { BoardSlot } from './BoardSlot';
 import { FooterTagline } from './FooterTagline';
-import { FRAME_H, BOARD_SIZE, ZONE_H } from '../lib/timing';
+import { FRAME_H, BOARD_SIZE, ZONE_H, SAFE_PAD } from '../lib/timing';
 
 const { fontFamily } = loadFont();
 
-const LOGO_TOP = 72; // pushed down so logo+badge feel centered in top zone
+const LOGO_TOP = 88; // pushed down so logo+badge feel centered in top zone
 
 /**
  * 3-zone reel layout (1080x1920). Board is dead center, never moves.
@@ -29,10 +29,13 @@ export const ReelLayout: React.FC<{
         position: 'relative',
         backgroundColor: '#EBF0F5',
         fontFamily,
+        padding: SAFE_PAD,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* TOP ZONE */}
-      <div style={{ height: ZONE_H, position: 'relative' }}>
+      <div style={{ height: ZONE_H - SAFE_PAD, position: 'relative' }}>
         {/* Logo — absolute, pixel-pinned */}
         <div
           style={{
@@ -56,7 +59,6 @@ export const ReelLayout: React.FC<{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0 48px',
           }}
         >
           <span
@@ -81,8 +83,8 @@ export const ReelLayout: React.FC<{
         </div>
       </div>
 
-      {/* BOARD — dead center */}
-      <div style={{ position: 'relative' }}>
+      {/* BOARD — centered, inset by SAFE_PAD */}
+      <div style={{ position: 'relative', alignSelf: 'center' }}>
         <BoardSlot fen={fen} orientation={orientation} highlightFrom={highlightFrom} highlightTo={highlightTo} />
         {boardOverlay && (
           <div
@@ -102,15 +104,14 @@ export const ReelLayout: React.FC<{
       {/* BOTTOM ZONE */}
       <div
         style={{
-          height: ZONE_H,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'stretch',
-          paddingTop: 48,
-          paddingBottom: 32,
+          paddingTop: 24,
+          gap: 16,
         }}
       >
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>{bottomContent}</div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>{bottomContent}</div>
         <FooterTagline />
       </div>
     </div>

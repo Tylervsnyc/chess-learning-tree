@@ -27,5 +27,6 @@ export function totalFrames(numSolutionMoves: number): number {
 // Layout constants (1080x1920 — 4x scale from 270x480 test page)
 export const FRAME_W = 1080;
 export const FRAME_H = 1920;
-export const BOARD_SIZE = 1080;
-export const ZONE_H = (FRAME_H - BOARD_SIZE) / 2; // 420px
+export const SAFE_PAD = 48; // inset on all 4 sides so content isn't clipped by Reels UI
+export const BOARD_SIZE = FRAME_W - SAFE_PAD * 2; // 984px
+export const ZONE_H = (FRAME_H - BOARD_SIZE) / 2; // 468px
