@@ -51,7 +51,7 @@ There are exactly **four** user types:
 | Type | Can Do Lessons | Limit | Progress Storage |
 |------|----------------|-------|------------------|
 | **Anonymous** | Yes | 2 total, then signup prompt | localStorage only |
-| **Free** | Yes | Unlimited (limits currently disabled) | localStorage + Supabase |
+| **Free** | Yes | Unlimited until March 1, 2026; then 2/day | localStorage + Supabase |
 | **Premium** | Yes | Unlimited | localStorage + Supabase |
 | **Admin** | Yes | Unlimited, ALL lessons unlocked | localStorage + Supabase |
 
@@ -213,7 +213,7 @@ useEffect(() => {
 | User Type | Limit | Reset |
 |-----------|-------|-------|
 | Anonymous | 2 total | Never (must sign up) |
-| Free | 2 per day | Midnight UTC |
+| Free | Unlimited until March 1, 2026; then 2 per day | Midnight UTC (after March 1) |
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
 
@@ -1032,6 +1032,8 @@ email_log
 
 ### Columns/Tables to DELETE:
 - `theme_performance` table
+- `promo_codes` table
+- `promo_redemptions` table
 - `profiles.elo_rating`
 - `profiles.current_level`
 

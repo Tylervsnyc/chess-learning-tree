@@ -93,11 +93,6 @@ export const SubscriptionEvents = {
   checkoutStarted: (plan: string) => trackEvent('checkout_started', { plan }),
   checkoutCompleted: (plan: string) => trackEvent('checkout_completed', { plan }),
   checkoutAbandoned: (plan: string) => trackEvent('checkout_abandoned', { plan }),
-  promoCodeEntered: (code: string) => trackEvent('promo_code_entered', { code }),
-  promoCodeRedeemed: (code: string, days: number) =>
-    trackEvent('promo_code_redeemed', { code, days }),
-  promoCodeFailed: (code: string, error: string) =>
-    trackEvent('promo_code_failed', { code, error }),
 };
 
 // Share/Viral funnel

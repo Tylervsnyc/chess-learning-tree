@@ -110,8 +110,10 @@ export function usePermissions() {
       }
 
       case 'free': {
-        const limit = LESSON_LIMITS.free.dailyLimit;
-        const remaining = Math.max(0, limit - data.lessonsCompletedToday);
+        // Free users get unlimited lessons until March 1, 2026
+        const freeLimitActive = new Date() >= new Date('2026-03-01T00:00:00');
+        const limit = freeLimitActive ? LESSON_LIMITS.free.dailyLimit : null;
+        const remaining = limit !== null ? Math.max(0, limit - data.lessonsCompletedToday) : null;
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0);
@@ -121,12 +123,12 @@ export function usePermissions() {
           dailyLessonLimit: limit,
           lessonsCompletedToday: data.lessonsCompletedToday,
           lessonsRemainingToday: remaining,
-          canAccessLesson: remaining > 0,
+          canAccessLesson: remaining === null || remaining > 0,
           canSkipLevels: true,
           canAccessAllPuzzles: false,
           shouldPromptSignup: false,
-          shouldPromptPremium: remaining === 0,
-          dailyResetTime: tomorrow,
+          shouldPromptPremium: remaining !== null && remaining === 0,
+          dailyResetTime: freeLimitActive ? tomorrow : null,
         };
       }
 

@@ -102,7 +102,6 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 | Page | Problem | Fix |
 |------|---------|-----|
 | `/auth/welcome` | Signup flow skips it, goes straight to `/learn` | Wire into signup redirect |
-| `/gift/welcome` | CTA links to `/onboarding` which was deleted | Fix CTA to link to `/learn` |
 | `/flagged` | No "flag puzzle" button exists in puzzle UI | Add flag button or remove page |
 | `/brand` | Internal tool, not linked anywhere | Fine as-is, link from admin if desired |
 
@@ -189,8 +188,7 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 | 2 | `SHOW_SHARING: true` | 1 line | Growth |
 | 3 | Wire `SubscriptionEvents` (paywall, pricing, checkout) | ~30 min | Conversion data |
 | 4 | Wire `EngagementEvents` (daily challenge start/complete) | ~15 min | Engagement data |
-| 5 | Fix `/gift/welcome` broken CTA | 1 line | Bug fix |
-| 6 | Block `/test-*` from crawlers | ~10 min | SEO |
+| 5 | Block `/test-*` from crawlers | ~10 min | SEO |
 | 7 | Commit agent system files | `git add` | Unblock agent workflow |
 
 ---

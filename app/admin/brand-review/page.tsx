@@ -10,7 +10,6 @@ const PAGES_TO_REVIEW = [
   { name: 'Sign Up', path: '/auth/signup', status: 'needs-review' },
   { name: 'Login', path: '/auth/login', status: 'needs-review' },
   { name: 'Auth Welcome', path: '/auth/welcome', status: 'needs-review' },
-  { name: 'Gift Welcome', path: '/gift/welcome', status: 'needs-review' },
   { name: 'Learn (logged out)', path: '/learn?guest=true', status: 'needs-review' },
 ];
 

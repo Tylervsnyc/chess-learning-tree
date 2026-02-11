@@ -51,7 +51,6 @@ Generated 2026-02-06 from a 5-agent code audit (Architect, Frontend, Chess, Sync
 - [x] **Fix `listUsers()` full scan** — Both routes now query profiles table by email instead of loading all users.
 - [ ] **Add auth to Stripe session route** — `api/stripe/session/route.ts` exposes customer data to anyone with a session ID.
 - [x] **Validate `subscriptionStatus` values in admin route** — Whitelist validation added.
-- [ ] **Fix promo code race condition** — `api/promo/redeem/route.ts:55-152`. Use DB-level atomic increment instead of read-then-write.
 - [x] **Add runtime check for `STRIPE_WEBHOOK_SECRET`** — Removed `!` assertion, added guard before use.
 - [x] **Standardize `CRON_SECRET` checking** — Both cron routes now return false when `CRON_SECRET` is undefined.
 
