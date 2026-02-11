@@ -134,6 +134,7 @@ export default function LessonPage() {
   const router = useRouter();
   const lessonId = params.lessonId as string;
   const isTutorial = lessonId === '1.1.1';
+  const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)
   const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded, currentStreak } = useLessonProgress();
@@ -877,15 +878,41 @@ export default function LessonPage() {
 
   // Tutorial for lesson 1.1.1
   if (isTutorial) {
+    if (lessonComplete) {
+      return (
+        <>
+          <LessonCompleteScreen
+            correctCount={tutorialCorrectCount}
+            wrongCount={6 - tutorialCorrectCount}
+            lessonName="Queen Checkmate: Easy"
+            lessonId={lessonId}
+            isGuest={!user}
+            getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+            streak={currentStreak}
+            puzzleResults={Array.from({ length: 6 }, (_, i) => i < tutorialCorrectCount ? 'correct' : 'wrong') as ('correct' | 'wrong')[]}
+          />
+          <LessonLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            lessonsCompleted={lessonsCompletedToday}
+            isLoggedIn={!!user}
+          />
+        </>
+      );
+    }
     return (
       <TutorialFlow
-        onComplete={(correctCount, wrongCount) => {
+        onComplete={(correctCount) => {
+          setTutorialCorrectCount(correctCount);
           completeLesson(lessonId, allLessonIds);
           recordLessonComplete();
           const accuracy = Math.round((correctCount / 6) * 100);
           LearningEvents.lessonCompleted(lessonId, accuracy, 0);
           window.dispatchEvent(new Event('chess-path:puzzle-complete'));
-          router.push('/learn');
+          setLessonComplete(true);
+          if (shouldPromptSignup || shouldPromptPremium) {
+            setTimeout(() => setShowLimitModal(true), 2000);
+          }
         }}
       />
     );
