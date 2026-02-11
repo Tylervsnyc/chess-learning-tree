@@ -7,6 +7,8 @@ interface IntroPopupProps {
   message: string;
   onStart: () => void;
   buttonText?: string;
+  onSkip?: () => void;
+  skipText?: string;
 }
 
 export function IntroPopup({
@@ -14,6 +16,8 @@ export function IntroPopup({
   message,
   onStart,
   buttonText = "Let's Go",
+  onSkip,
+  skipText,
 }: IntroPopupProps) {
   // Split message by newlines to create paragraphs
   const paragraphs = message.split('\n\n').filter(p => p.trim());
@@ -55,6 +59,16 @@ export function IntroPopup({
           >
             {buttonText}
           </button>
+
+          {/* Optional skip link */}
+          {onSkip && skipText && (
+            <button
+              onClick={onSkip}
+              className="w-full mt-3 text-center text-sm text-[#6B7F8A] hover:text-[#A3B8C2] transition-colors"
+            >
+              {skipText}
+            </button>
+          )}
         </div>
       </div>
 

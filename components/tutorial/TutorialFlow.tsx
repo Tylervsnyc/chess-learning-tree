@@ -497,7 +497,6 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     if (guidedStep.id === 'tap-queen') {
       if (sq === activePuzzle.queenSquare) {
         setSelectedSquare(sq);
-        playMoveSound();
         setTimeout(() => setGuidedStepIndex(prev => prev + 1), 350);
       }
       return;
@@ -787,6 +786,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                   setGuidedStepIndex(prev => prev + 1);
                 }}
                 buttonText={guidedStep.buttonText}
+                onSkip={guidedStep.id === 'welcome' ? () => onComplete(6, 0) : undefined}
+                skipText={guidedStep.id === 'welcome' ? 'I already know this' : undefined}
               />
             )}
 
