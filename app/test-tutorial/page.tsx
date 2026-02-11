@@ -417,8 +417,8 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
     // inside setState updaters are unsafe (React StrictMode double-invokes them).
     if (puzzleIndex >= ALL_PUZZLES.length - 1) {
       if (onComplete) {
-        const wrong = ALL_PUZZLES.length - (completedCount + 1);
-        onComplete(completedCount + 1, wrong);
+        const wrong = ALL_PUZZLES.length - completedCount;
+        onComplete(completedCount, wrong);
         return;
       }
       setAllDone(true);
