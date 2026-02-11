@@ -37,16 +37,16 @@ export function IntroPopup({
         {/* Header accent bar */}
         <div className="h-1.5 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6]" />
 
-        <div className="p-5">
+        <div className="p-3">
           {/* Title */}
-          <h2 className="text-xl font-bold text-white mb-3">
+          <h2 className="text-base font-bold text-white mb-1.5">
             {title}
           </h2>
 
           {/* Message paragraphs */}
-          <div className="space-y-3 mb-5">
+          <div className="space-y-1 mb-3">
             {paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-[#A3B8C2] text-sm leading-relaxed">
+              <p key={index} className="text-[#A3B8C2] text-sm leading-snug">
                 {paragraph}
               </p>
             ))}
@@ -55,7 +55,7 @@ export function IntroPopup({
           {/* Start button */}
           <button
             onClick={onStart}
-            className="w-full py-3 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]"
+            className="w-full py-2.5 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]"
           >
             {buttonText}
           </button>
@@ -64,7 +64,7 @@ export function IntroPopup({
           {onSkip && skipText && (
             <button
               onClick={onSkip}
-              className="w-full mt-4 py-2 text-center text-sm text-[#A3B8C2] underline underline-offset-2 hover:text-white transition-colors"
+              className="w-full mt-2 py-1.5 text-center text-sm text-[#A3B8C2] underline underline-offset-2 hover:text-white transition-colors"
             >
               {skipText}
             </button>

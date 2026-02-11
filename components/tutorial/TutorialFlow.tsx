@@ -170,18 +170,18 @@ interface GuidedStep {
 const GUIDED_STEPS: GuidedStep[] = [
   {
     id: 'welcome',
-    title: 'Your First Chess Puzzle',
+    title: 'Your First Puzzle',
     message:
-      "In a chess puzzle, you look at the board and find the best move. Then you play it!\n\nLet's walk through this one together.",
+      "Find the best move and play it!\n\nLet's try one together.",
     buttonText: 'Got It',
     useIntroPopup: true,
     boardInteractive: false,
   },
   {
     id: 'last-move',
-    title: "What Are Those Yellow Squares?",
+    title: 'Yellow Squares',
     message:
-      "Those yellow squares show what your opponent just did — their pawn moved from one square to the other. Every puzzle starts by showing you the opponent's last move.",
+      "Those show your opponent's last move — their pawn moved here.",
     buttonText: 'Got It',
     useIntroPopup: false,
     boardInteractive: false,
@@ -189,25 +189,25 @@ const GUIDED_STEPS: GuidedStep[] = [
   },
   {
     id: 'your-turn',
-    title: "Whose Turn Is It?",
+    title: 'Your Turn',
     message:
-      'Look at the top right — it says "White to move." That tells you which side you\'re playing this puzzle.',
+      'Top right says "White to move" — that\'s you!',
     buttonText: 'Got It',
     useIntroPopup: false,
     boardInteractive: false,
   },
   {
     id: 'goal',
-    title: 'Your Goal: Checkmate',
+    title: 'Checkmate!',
     message:
-      "The lesson name says \"Queen Checkmate.\" Your job is to use the queen to trap the enemy king so it can't escape. That's called checkmate — and it wins the game!",
+      "Use your queen to trap the king so it can't escape. That's checkmate!",
     buttonText: "Let's Do It",
     useIntroPopup: false,
     boardInteractive: false,
   },
   {
     id: 'tap-queen',
-    message: 'Tap the white queen to see where it can move.',
+    message: 'Tap the white queen.',
     useIntroPopup: false,
     boardInteractive: true,
     dimExcept: ['d3'] as Square[],
@@ -216,14 +216,14 @@ const GUIDED_STEPS: GuidedStep[] = [
   {
     id: 'see-moves',
     message:
-      'See those circles? Each one is a square the queen can move to. One of them is checkmate!',
+      'See the circles? One of them is checkmate!',
     useIntroPopup: false,
     boardInteractive: false,
     autoAdvance: 3500,
   },
   {
     id: 'find-mate',
-    message: 'Find the checkmate square and tap it!',
+    message: 'Tap the checkmate square!',
     useIntroPopup: false,
     boardInteractive: true,
     highlightSquares: ['h7'] as Square[],
@@ -232,7 +232,7 @@ const GUIDED_STEPS: GuidedStep[] = [
     id: 'checkmate',
     title: 'Checkmate!',
     message:
-      "Your queen landed on h7 right next to the king — and the king's own pawns block every escape. That's checkmate — you win!",
+      "The king's own pawns blocked every escape. You win!",
     buttonText: 'Next Puzzle',
     useIntroPopup: false,
     boardInteractive: false,
@@ -248,17 +248,17 @@ function getTipForLevel(level: ScaffoldLevel, puzzle: TutorialPuzzle): { title: 
     case 0: return null;
     case 1: return {
       title: 'Now You Try!',
-      message: `This time you're playing as ${puzzle.playerColor === 'black' ? 'Black' : 'White'}. ${puzzle.playerColor === 'black' ? 'The board flips so your pieces are at the bottom.\n\n' : ''}Can you find the queen checkmate?`,
+      message: `You're playing as ${puzzle.playerColor === 'black' ? 'Black' : 'White'}. ${puzzle.playerColor === 'black' ? 'The board flips so your pieces are at the bottom. ' : ''}Find the queen checkmate!`,
       buttonText: "Let's Go",
     };
     case 2: return {
-      title: 'The f7 Weakness',
-      message: "In the opening, the f7 pawn is only protected by the king. That makes it a prime target — the queen and knight are ready to strike!",
+      title: 'f7 Weakness',
+      message: "The f7 pawn is only guarded by the king — strike there!",
       buttonText: 'Got It',
     };
     case 3: return {
-      title: 'King on the Run',
-      message: "When the king hides on the side of the board, look for ways to crash through with your queen. Pawns can trap their own king!",
+      title: 'Trapped King',
+      message: "The king is boxed in by its own pawns. Crash through with your queen!",
       buttonText: 'Find It',
     };
     case 4: return null;
@@ -268,12 +268,12 @@ function getTipForLevel(level: ScaffoldLevel, puzzle: TutorialPuzzle): { title: 
 
 // Completion messages per puzzle
 const COMPLETION_MESSAGES = [
-  "Your queen landed on h7 and the king's own pawns sealed the deal. Classic checkmate pattern!",
-  "Back rank infiltration! White's pieces were too far away to defend.",
-  "The f7 square is the weakest point in the opening — your queen and knight exploited it perfectly.",
-  "The queen crashed through on g7 while the king was boxed in by its own pawns. No escape!",
-  "The queen snuck in on h2 — white never saw it coming. Beautiful mate!",
-  "Six for six! Full board, full confidence. You're ready for the real puzzles.",
+  "The king's own pawns sealed the deal!",
+  "Back rank mate! White couldn't defend.",
+  "f7 — the weakest square in the opening!",
+  "Boxed in by its own pawns. No escape!",
+  "Queen snuck in on h2 — beautiful mate!",
+  "Six for six! You're ready for real puzzles.",
 ];
 
 // ═══════════════════════════════════════════
@@ -822,12 +822,9 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
               className="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
               style={{ animation: 'tutSlideUp 0.3s ease-out' }}
             >
-              {/* Accent bar */}
-              <div className="h-1 bg-gradient-to-r from-chess-green to-chess-blue" />
-
               <div className="px-3 py-2">
                 {bottomHintCard.title && (
-                  <h2 className="text-base font-bold text-chess-text mb-1">
+                  <h2 className="text-sm font-bold text-chess-text mb-1">
                     {bottomHintCard.title}
                   </h2>
                 )}
@@ -843,7 +840,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 {bottomHintCard.buttonText && bottomHintCard.onButton && (
                   <button
                     onClick={bottomHintCard.onButton}
-                    className="w-full mt-2 py-2 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:brightness-105"
+                    className="w-full mt-2 py-2 bg-chess-green text-white text-xs font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:brightness-105"
                   >
                     {bottomHintCard.buttonText}
                   </button>
