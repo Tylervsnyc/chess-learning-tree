@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 interface LessonLimitModalProps {
   isOpen: boolean;
@@ -11,6 +13,12 @@ interface LessonLimitModalProps {
 
 export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn }: LessonLimitModalProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    if (isOpen) {
+      SubscriptionEvents.paywallViewed(isLoggedIn ? 'daily_limit' : 'guest_limit');
+    }
+  }, [isOpen, isLoggedIn]);
 
   if (!isOpen) return null;
 

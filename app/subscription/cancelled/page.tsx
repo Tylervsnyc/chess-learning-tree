@@ -1,9 +1,15 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 export default function SubscriptionCancelledPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    SubscriptionEvents.checkoutAbandoned('monthly');
+  }, []);
 
   return (
     <div className="min-h-full bg-chess-page flex items-center justify-center px-4">

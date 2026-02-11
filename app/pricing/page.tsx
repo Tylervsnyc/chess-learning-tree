@@ -1,15 +1,20 @@
 'use client';
 // Compact single-screen pricing layout
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSubscription } from '@/hooks/useSubscription';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  useEffect(() => {
+    SubscriptionEvents.pricingViewed();
+  }, []);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);

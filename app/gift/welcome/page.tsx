@@ -51,12 +51,12 @@ export default function GiftWelcomePage() {
 
   if (status === 'loading') {
     return (
-      <div className="h-full bg-[#131F24] flex flex-col overflow-hidden">
+      <div className="h-full bg-chess-page flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="text-5xl mb-4 animate-bounce">🎁</div>
-            <p className="text-white">Activating your gift...</p>
+            <p className="text-chess-text">Activating your gift...</p>
           </div>
         </div>
       </div>
@@ -65,16 +65,16 @@ export default function GiftWelcomePage() {
 
   if (status === 'error') {
     return (
-      <div className="h-full bg-[#131F24] flex flex-col overflow-hidden">
+      <div className="h-full bg-chess-page flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex flex-col items-center justify-center px-3">
           <div className="max-w-[320px] w-full text-center">
             <div className="text-5xl mb-4">😕</div>
-            <h1 className="text-xl font-bold text-white mb-2">Something went wrong</h1>
-            <p className="text-gray-400 mb-6">{error}</p>
+            <h1 className="text-xl font-bold text-chess-text mb-2">Something went wrong</h1>
+            <p className="text-chess-text-muted mb-6">{error}</p>
             <button
-              onClick={() => router.push('/onboarding')}
-              className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+              onClick={() => router.push('/learn')}
+              className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-md hover:bg-chess-green-dark"
               style={{ backgroundColor: '#58CC02' }}
             >
               Continue anyway
@@ -86,7 +86,7 @@ export default function GiftWelcomePage() {
   }
 
   return (
-    <div className="h-full bg-[#131F24] flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page flex flex-col overflow-hidden">
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
@@ -105,31 +105,31 @@ export default function GiftWelcomePage() {
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-center mb-1">
-          <span className="text-white">Welcome to </span>
-          <span className="text-white">chess</span>
+          <span className="text-chess-text">Welcome to </span>
+          <span className="text-chess-text">chess</span>
           <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }}>path</span>
-          <span className="text-white">!</span>
+          <span className="text-chess-text">!</span>
         </h1>
 
         {/* Premium badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#58CC02]/30 bg-[#58CC02]/10 mb-4">
-          <span className="text-[#58CC02] text-sm font-medium">✓ Premium membership active</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-chess-green/30 bg-chess-green/10 mb-4">
+          <span className="text-chess-green text-sm font-medium">✓ Premium membership active</span>
         </div>
 
-        <p className="text-gray-400 text-center mb-6 max-w-[280px]">
+        <p className="text-chess-text-muted text-center mb-6 max-w-[280px]">
           You have 30 days of unlimited access to all lessons and features.
         </p>
 
         {/* CTA */}
         <button
-          onClick={() => router.push('/onboarding')}
-          className="w-full max-w-[320px] py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
+          onClick={() => router.push('/learn')}
+          className="w-full max-w-[320px] py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-md hover:bg-chess-green-dark"
           style={{ backgroundColor: '#58CC02' }}
         >
           Start Learning
         </button>
 
-        <p className="text-gray-500 text-sm mt-3">
+        <p className="text-chess-text-muted text-sm mt-3">
           Let&apos;s find your skill level and get started!
         </p>
       </div>

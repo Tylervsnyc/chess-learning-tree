@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 function SuccessContent() {
   const router = useRouter();
@@ -38,6 +39,7 @@ function SuccessContent() {
         setSyncError('Failed to sync subscription');
       } finally {
         setSyncing(false);
+        SubscriptionEvents.checkoutCompleted('monthly');
       }
     }
 

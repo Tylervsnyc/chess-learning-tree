@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 interface SubscriptionState {
   status: 'free' | 'premium' | 'trial';
@@ -61,6 +62,7 @@ export function useSubscription() {
   }, [fetchStatus]);
 
   const startCheckout = async (priceId: 'monthly' | 'yearly') => {
+    SubscriptionEvents.checkoutStarted(priceId);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -85,6 +87,7 @@ export function useSubscription() {
   };
 
   const startGuestCheckout = async (priceId: 'monthly' | 'yearly', email: string) => {
+    SubscriptionEvents.checkoutStarted(priceId);
     try {
       const res = await fetch('/api/stripe/guest-checkout', {
         method: 'POST',

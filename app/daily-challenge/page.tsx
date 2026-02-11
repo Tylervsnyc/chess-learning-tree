@@ -16,7 +16,7 @@ import {
 } from '@/lib/sounds';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { ShareEvents } from '@/lib/analytics/posthog';
+import { ShareEvents, EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 
@@ -359,8 +359,14 @@ export default function DailyChallengePage() {
     return [];
   }, [testSeed]);
 
+  // Track page view
+  useEffect(() => {
+    EngagementEvents.dailyChallengeViewed();
+  }, []);
+
   // Start the challenge
   const startChallenge = async () => {
+    EngagementEvents.dailyChallengeStarted();
     // Warmup audio NOW - user just clicked, and we have time while puzzles load
     warmupAudio();
 
@@ -661,6 +667,7 @@ export default function DailyChallengePage() {
   // Record when finished and fetch leaderboard
   useEffect(() => {
     if (gameState === 'finished') {
+      EngagementEvents.dailyChallengeCompleted(puzzlesSolved === allPuzzles.length);
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
 

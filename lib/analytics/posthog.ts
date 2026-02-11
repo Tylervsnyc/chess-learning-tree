@@ -63,22 +63,6 @@ export const AuthEvents = {
   logout: () => trackEvent('logout'),
 };
 
-// Onboarding funnel
-export const OnboardingEvents = {
-  onboardingStarted: () => trackEvent('onboarding_started'),
-  pathChosen: (path: 'beginner' | 'diagnostic' | 'connect') =>
-    trackEvent('onboarding_path_chosen', { path }),
-  diagnosticStarted: () => trackEvent('diagnostic_started'),
-  diagnosticPuzzleCompleted: (puzzleNum: number, correct: boolean, rating: number) =>
-    trackEvent('diagnostic_puzzle_completed', { puzzleNum, correct, rating }),
-  diagnosticCompleted: (placedRating: number) =>
-    trackEvent('diagnostic_completed', { placedRating }),
-  diagnosticAbandoned: (puzzleNum: number) =>
-    trackEvent('diagnostic_abandoned', { puzzleNum }),
-  onboardingCompleted: (placedRating: number) =>
-    trackEvent('onboarding_completed', { placedRating }),
-};
-
 // Learning funnel
 export const LearningEvents = {
   treeLevelViewed: (level: number) => trackEvent('tree_level_viewed', { level }),
@@ -98,9 +82,6 @@ export const EngagementEvents = {
   dailyChallengeStarted: () => trackEvent('daily_challenge_started'),
   dailyChallengeCompleted: (correct: boolean) =>
     trackEvent('daily_challenge_completed', { correct }),
-  workoutStarted: () => trackEvent('workout_started'),
-  workoutPuzzleCompleted: (correct: boolean, count: number) =>
-    trackEvent('workout_puzzle_completed', { correct, count }),
   profileViewed: () => trackEvent('profile_viewed'),
   streakUpdated: (streak: number) => trackEvent('streak_updated', { streak }),
 };
