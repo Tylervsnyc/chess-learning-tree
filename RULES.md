@@ -779,6 +779,47 @@ playCelebrationSound(correctCount);
 
 ---
 
+## 17b. Tutorial (Lesson 1.1.1)
+
+Lesson 1.1.1 ("Queen Checkmate: Easy") renders a **guided tutorial** instead of the standard lesson flow. It uses 6 fixed puzzles with progressive scaffolding to onboard new users.
+
+### How It Works:
+- `app/lesson/[lessonId]/page.tsx` checks `lessonId === '1.1.1'` and renders `<TutorialFlow>` from `app/test-tutorial/page.tsx`
+- On completion, shows the same `LessonCompleteScreen` as all other lessons
+- Progress persists normally via `completeLesson` + `recordLessonComplete`
+
+### The 6 Puzzles (fixed, not random):
+All are mateIn1 queen checkmates from `level1-mateIn1.json`, rating 400-566, 1000+ plays.
+
+| # | Pattern | Color | Queen Move | Scaffolding |
+|---|---------|-------|-----------|-------------|
+| 1 | Edge mate (pawn trap) | White | Qd4→g7 | Fully guided 8-step walkthrough |
+| 2 | Back rank (d-file) | Black | Qd7→d1 | Semi-guided (orientation message) |
+| 3 | Queen + Bishop | Black | Qd7→h3 | Light tip |
+| 4 | Distance mate | White | Qh5→g6 | Minimal hint |
+| 5 | Infiltration | Black | Qd6→h2 | No help |
+| 6 | King in center | Black | Qg2→g3 | No help |
+
+### Scaffolding Levels:
+- **Level 0 (Puzzle 1):** 8-step walkthrough — welcome, last move, turn indicator, goal, tap queen, see moves, find mate, checkmate explanation
+- **Level 1 (Puzzle 2):** Intro popup with orientation ("you're playing as Black")
+- **Level 2 (Puzzle 3):** Tip card about the pattern
+- **Level 3 (Puzzle 4):** Minimal hint card
+- **Level 4-5 (Puzzles 5-6):** No guidance — pure solving
+
+### Visual Features:
+- Pulsing green callout around "Queen Checkmate: Easy" during `goal` step
+- Pulsing blue callout around "White to move" during `your-turn` step
+- Board dims to highlight queen during `tap-queen` step
+- Green hint square appears after 1 wrong attempt (not 3)
+- Rook animation in correct popup (same as other lessons)
+
+### Files:
+- `app/test-tutorial/page.tsx` — tutorial component + test page at `/test-tutorial`
+- `app/lesson/[lessonId]/page.tsx` — conditional render for `1.1.1`
+
+---
+
 ## 18. Puzzle Interaction
 
 ### Input Methods:

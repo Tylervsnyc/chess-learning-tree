@@ -53,7 +53,7 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 ### Prototypes (should ship or archive)
 | Route | What | Production route? | Status |
 |-------|------|-------------------|--------|
-| `/test-tutorial` | 6-puzzle beginner tutorial with scaffolding | Should replace lesson 1.1.1 | Uncommitted |
+| `/test-tutorial` | 6-puzzle beginner tutorial with scaffolding | **Shipped** — wired into lesson 1.1.1 | Committed |
 | `/test-kings-path` | Fog-of-war chess minigame | Needs `/kings-path` route | Uncommitted |
 | `/test-daily-video` | Instagram reel generator (4 stages) | Content tool, may stay as test | Uncommitted |
 
@@ -123,11 +123,10 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 - **To ship:** Production route, daily puzzle generator, scoring, share cards, DB table
 - **Effort:** Large
 
-### Beginner Tutorial
-- **Code:** `app/test-tutorial/` (uncommitted)
-- **Status:** 6 puzzles with progressive scaffolding, fully interactive
-- **To ship:** Wire into lesson 1.1.1, persist completion, analytics
-- **Effort:** Medium
+### Beginner Tutorial — SHIPPED
+- **Code:** `app/test-tutorial/page.tsx`, `app/lesson/[lessonId]/page.tsx`
+- **Status:** Live — lesson 1.1.1 renders guided tutorial with 6 diverse queen checkmate puzzles
+- **Docs:** RULES.md section 17b
 
 ### Daily Puzzle Video
 - **Code:** `app/test-daily-video/` (uncommitted), `.claude/daily-puzzle-video-rules.md`
