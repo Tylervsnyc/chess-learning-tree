@@ -129,7 +129,7 @@ export async function GET() {
                 fontStyle: 'italic',
               }}
             >
-              The shortest path to chess improvement
+              Chess. Made Simple.
             </span>
           </div>
 

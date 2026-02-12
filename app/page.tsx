@@ -86,8 +86,8 @@ function AnimatedBoard({ size }: { size: number }) {
   }, [moveIndex, game, resetPuzzle]);
 
   const customSquareStyles = lastMove ? {
-    [lastMove[0]]: { backgroundColor: 'rgba(88, 204, 2, 0.5)' },
-    [lastMove[1]]: { backgroundColor: 'rgba(88, 204, 2, 0.5)' },
+    [lastMove[0]]: { backgroundColor: 'rgba(var(--color-chess-green), 0.5)' },
+    [lastMove[1]]: { backgroundColor: 'rgba(var(--color-chess-green), 0.5)' },
   } : {};
 
   return (
@@ -130,16 +130,16 @@ export default function LandingPage() {
   }, [user, loading, router]);
 
   return (
-    <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col items-center px-3 min-h-0">
         {/* Top: logo + tagline (fixed size) */}
         <div className="pt-4 pb-3 flex flex-col items-center">
           <div className="mb-3" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>
             <AnimatedLogo theme="light" size="md" />
           </div>
-          <div className="bg-white rounded-2xl px-4 py-2.5 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              Curated puzzles to help you improve in the shortest time possible
+          <div className="bg-chess-surface rounded-2xl px-4 py-2.5 text-center shadow-sm" style={{ width: 'min(92vw, 340px)' }}>
+            <p className="text-chess-text-muted text-sm leading-relaxed">
+              Chess. Made Simple.
             </p>
           </div>
         </div>
@@ -160,20 +160,20 @@ export default function LandingPage() {
         <div className="pb-3 pt-3 flex flex-col items-center gap-3">
           <Link
             href="/about"
-            className="py-3 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#3d8c01]"
-            style={{ backgroundColor: '#58CC02', width: Math.max(boardSize, 260) }}
+            className="py-3 text-center font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)]"
+            style={{ width: Math.max(boardSize, 260) }}
           >
             Start Learning
           </Link>
-          <div className="bg-white rounded-xl px-4 py-2.5 shadow-sm">
+          <div className="bg-chess-surface rounded-xl px-4 py-2.5 shadow-sm">
             <Link
               href="/auth/login"
-              className="text-slate-500 text-sm hover:text-slate-700 transition-colors"
+              className="text-chess-text-muted text-sm hover:text-chess-text transition-colors"
             >
-              Already have an account? <span className="font-medium text-[#58CC02]">Sign in</span>
+              Already have an account? <span className="font-medium text-chess-green">Sign in</span>
             </Link>
           </div>
-          <a href="mailto:support@chesspath.app" className="text-slate-400 text-[10px] hover:text-slate-500">
+          <a href="mailto:support@chesspath.app" className="text-chess-text-faint text-[10px] hover:text-chess-text-muted">
             support@chesspath.app
           </a>
         </div>

@@ -9,7 +9,7 @@ import { InstallPrompt } from '@/components/InstallPrompt';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
-  description: 'The shortest path to chess improvement',
+  description: 'Chess. Made Simple.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'The Chess Path',
-    description: 'The shortest path to chess improvement',
+    description: 'Chess. Made Simple.',
     url: 'https://chesspath.app',
     siteName: 'The Chess Path',
     images: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
         url: 'https://chesspath.app/api/og/default',
         width: 1200,
         height: 630,
-        alt: 'The Chess Path - The shortest path to chess improvement',
+        alt: 'The Chess Path - Chess. Made Simple.',
       },
     ],
     type: 'website',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'The Chess Path',
-    description: 'The shortest path to chess improvement',
+    description: 'Chess. Made Simple.',
     images: ['https://chesspath.app/api/og/default'],
   },
 };

@@ -1407,7 +1407,7 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 
 ### Brand Positioning
 
-- "The shortest path to chess improvement"
+- "Chess. Made Simple."
 - "Beat your friends at chess"
 - "Chess tactics that actually work"
 - NOT competing with Chess.com for serious players
@@ -1439,14 +1439,14 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 **Global (app/layout.tsx):**
 ```typescript
 title: 'The Chess Path'
-description: 'The shortest path to chess improvement'
+description: 'Chess. Made Simple.'
 ```
 
 **Page-Specific (override in each page.tsx):**
 
 | Page | Title | Description |
 |------|-------|-------------|
-| `/` | The Chess Path - Beat Your Friends at Chess | Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
+| `/` | The Chess Path - Chess. Made Simple. | Chess. Made Simple. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
 | `/learn` | Learn Chess Tactics \| Chess Path | Master chess tactics step by step. From beginner to beating your friends. |
 | `/daily-challenge` | The Daily Rook \| The Chess Path | Test your skills with 22 puzzles. Compete on the leaderboard. |
 | `/pricing` | Chess Path Premium - Unlimited Tactics Training | Unlock all lessons, remove limits, accelerate your chess improvement. |

@@ -41,7 +41,7 @@ export function PuzzleShareCard({
       style={{
         width: 1080,
         height: 1920,
-        backgroundColor: '#1A2C35',
+        backgroundColor: 'var(--color-chess-bg-light)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -99,7 +99,7 @@ export function PuzzleShareCard({
         </p>
         <p
           style={{
-            color: '#58CC02',
+            color: 'var(--color-chess-green)',
             fontSize: 52,
             fontWeight: 700,
             margin: 0,
@@ -118,7 +118,7 @@ export function PuzzleShareCard({
             position: 'absolute',
             inset: 0,
             borderRadius: 24,
-            backgroundColor: '#58CC02',
+            backgroundColor: 'var(--color-chess-green)',
             transform: 'translate(14px, 14px)',
             opacity: 0.25,
           }}
@@ -128,7 +128,7 @@ export function PuzzleShareCard({
             position: 'absolute',
             inset: 0,
             borderRadius: 24,
-            backgroundColor: '#58CC02',
+            backgroundColor: 'var(--color-chess-green)',
             transform: 'translate(7px, 7px)',
             opacity: 0.5,
           }}
@@ -139,7 +139,7 @@ export function PuzzleShareCard({
             position: 'relative',
             borderRadius: 20,
             overflow: 'hidden',
-            border: '5px solid #58CC02',
+            border: '5px solid var(--color-chess-green)',
             width: 840,
             height: 840,
           }}
@@ -195,7 +195,7 @@ export function PuzzleShareCard({
             position: 'absolute',
             inset: 0,
             borderRadius: 28,
-            backgroundColor: '#46A302',
+            backgroundColor: 'var(--color-chess-green-dark)',
             transform: 'translate(0, 10px)',
           }}
         />
@@ -205,7 +205,7 @@ export function PuzzleShareCard({
             textAlign: 'center',
             padding: '40px 0',
             borderRadius: 28,
-            backgroundColor: '#58CC02',
+            backgroundColor: 'var(--color-chess-green)',
             overflow: 'hidden',
           }}
         >
@@ -244,7 +244,7 @@ export function PuzzleShareCard({
               zIndex: 10,
             }}
           >
-            the shortest path to chess improvement
+            chess. made simple.
           </p>
         </div>
       </div>
