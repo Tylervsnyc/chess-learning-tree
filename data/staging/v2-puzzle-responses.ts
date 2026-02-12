@@ -21,7 +21,6 @@ export const block1Responses = {
     general: [
       "Say good game. Try not to smirk.",
       "That's checkmate. Act surprised.",
-      "One move. One win. One awkward handshake.",
       "Try not to smile too big. They're watching.",
       "GG. Keep a straight face.",
       "Checkmate. Now look humble.",
@@ -31,20 +30,25 @@ export const block1Responses = {
       "Checkmate delivered. Poker face: ON.",
     ],
     mateIn1: [
-      "One move to end a friendship.",
       "Blink and it's checkmate.",
       "They never saw it coming. You did.",
       "Speed run: complete.",
       "The fastest goodbye in chess.",
       "In and out. Clean finish.",
     ],
+    'moves:1': [
+      "One move to end a friendship.",
+      "One move. One win. One awkward handshake.",
+      "One move. One win. That's all it took.",
+      "Single move, total impact.",
+    ],
     smotheredMate: [
-      "Suffocated by their own pieces. Poetic.",
+      "Trapped by their own pieces. Poetic.",
       "The knight whispered 'shhh' and it was over.",
       "Smothered. By a horse. Embarrassing.",
       "Their own army betrayed them.",
       "No room to breathe. No room to escape.",
-      "The ultimate betrayal: death by friends.",
+      "The ultimate betrayal: boxed in by friends.",
     ],
     backRankMate: [
       "They built a wall. It became a prison.",
@@ -77,7 +81,7 @@ export const block1Responses = {
       "The old tricks are the best tricks.",
     ],
     doubleBishopMate: [
-      "Two bishops, one coffin.",
+      "Two bishops, one checkmate.",
       "The diagonal duo delivers.",
       "Criss-cross destruction.",
       "Bishops see everything. Including the end.",
@@ -114,16 +118,20 @@ export const block1Responses = {
     discoveredAttack: [
       "Surprise! It's over.",
       "The real threat was behind the curtain.",
-      "Reveal and destroy.",
-      "One moves. One kills. Confusion ensues.",
+      "Reveal and conquer.",
+      "One steps aside. One attacks. Confusion ensues.",
       "The ambush worked perfectly.",
     ],
     mateIn3: [
-      "Three moves of pure calculation.",
       "Saw it all. Did it all.",
       "The long con. The short victory.",
-      "Three steps to their demise.",
       "Calculated. Precise. Brutal.",
+      "The checkmate hid behind layers. You found it.",
+    ],
+    'moves:3': [
+      "Three moves of pure calculation.",
+      "Three steps to their downfall.",
+      "Three deep. Three perfect.",
     ],
   },
 
@@ -142,12 +150,16 @@ export const block1Responses = {
       "Calculated destruction. Say GG.",
     ],
     mateIn2: [
-      "Two moves. Two perfect moves.",
       "Setup, strike. Done.",
       "The one-two punch lands.",
       "First the trap. Then the finish.",
       "They had one response. Both led here.",
       "Short but decisive.",
+    ],
+    'moves:2': [
+      "Two moves. Two perfect moves.",
+      "Two-move checkmate. Clean and final.",
+      "Saw it two deep. Executed two deep.",
     ],
   },
 };
@@ -192,32 +204,38 @@ export const block2Responses = {
   // Section 6: Knight Forks
   '1.6': {
     general: [
-      "The knight takes what it wants.",
-      "L-shaped larceny.",
-      "Horsey chose chaos. And profit.",
-      "Two victims. One horse. No survivors.",
       "The fork master strikes.",
-      "Knights don't ask. They take.",
-      "Hop in, hop out, pockets full.",
-      "The tricky pony profits again.",
       "They can't guard what they can't predict.",
       "Fork around and find out.",
+      "Two targets. One move. Zero solutions.",
+      "Double attack deployed. Pick your loss.",
+      "Hop in, hop out, pockets full.",
+      "Fork delivered. Both targets trembling.",
+      "Two pieces, one threat, their problem.",
     ],
     fork: [
       "Two targets. Pick which one to lose.",
       "Fork delivered. Payment received.",
       "Double attack, double trouble.",
+      "Forked and they can't get up.",
+      "Two pieces threatened. One piece saved. One piece gone.",
+      "The double attack lands clean.",
+    ],
+    'fork:N': [
+      "L-shaped larceny at its finest.",
+      "Horsey chose chaos. And profit.",
+      "Two victims. One horse. No survivors.",
+      "The tricky pony profits again.",
       "One knight, two problems, zero solutions.",
       "The horse sees what others miss.",
-      "Forked and they can't get up.",
     ],
-    knight: [
+    'piece:N': [
       "The knight is a menace. Your menace.",
-      "L-shaped violence pays well.",
       "The horse doesn't care about your plans.",
       "Knights jump over problems. Into profit.",
       "The L stands for Loot.",
       "Bounce, bounce, bank.",
+      "Knights don't ask. They take.",
     ],
   },
 
@@ -230,7 +248,7 @@ export const block2Responses = {
       "Stuck between a rock and your taking it.",
       "The invisible leash tightens.",
       "Paralyzed. Profitable.",
-      "Move? Can't. Stay? Die.",
+      "Move? Can't. Stay? Lose.",
       "Pinned to the board of shame.",
       "Glued in place. Soon to be removed.",
       "The geometry of greed.",
@@ -249,7 +267,7 @@ export const block2Responses = {
   '1.8': {
     general: [
       "Run and leave your friend behind.",
-      "Big piece moves, little piece dies.",
+      "Big piece moves, little piece falls.",
       "The reverse pin pays dividends.",
       "Step aside. I'm taking what's behind you.",
       "Through and through. Thanks for the piece.",
@@ -345,7 +363,7 @@ export const block3Responses = {
       "When simple doesn't work, smart does.",
     ],
     deflection: [
-      "Defender distracted. Defenses destroyed.",
+      "Defender distracted. Defenses dismantled.",
       "Look over there! Too late.",
       "Pulled away from duty. Paid the price.",
       "The decoy worked. It always works.",
@@ -381,7 +399,7 @@ export const block3Responses = {
       "Technique over tricks. Always.",
       "You're not just ahead. You're winning.",
       "The conversion is textbook.",
-      "Slow suffocation. Fast surrender.",
+      "Slow squeeze. Fast surrender.",
       "When you know endgames, you win endgames.",
     ],
     knightEndgame: [
@@ -468,6 +486,26 @@ export const block4Responses = {
       "Through and through. Every time.",
       "The reverse pin delivers again.",
     ],
+    'piece:N': [
+      "The knight does knight things. Profitably.",
+      "Horsey hopping into trouble. Their trouble.",
+      "The L-shape finds another victim.",
+    ],
+    'piece:Q': [
+      "The queen does it all. Attack, defend, collect.",
+      "When the queen moves, pieces fall.",
+      "Royal power on full display.",
+    ],
+    'piece:R': [
+      "The rook owns the open file. And the game.",
+      "Heavy piece, heavy impact.",
+      "The rook slides in. Material slides out.",
+    ],
+    'piece:B': [
+      "The bishop's diagonal vision pays off.",
+      "Long-range sniper on the diagonal.",
+      "The bishop sees what others can't.",
+    ],
   },
 
   // Section 15: Review Endgames
@@ -542,9 +580,14 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
     ],
     fork: [
       "The classic fork. Still lethal.",
-      "Knight says hello to king AND queen.",
       "Two pieces enter. One leaves.",
       "Forked and forgotten.",
+      "Double attack, double profit.",
+    ],
+    'fork:N': [
+      "The knight says hello to everyone. And takes from everyone.",
+      "L-shaped chaos finds two targets at once.",
+      "The horse hops in, the material hops out.",
     ],
   },
 
@@ -556,16 +599,31 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
       "You've seen this setup a hundred times. Works every time.",
       "Fork geometry: mastered.",
       "The angles don't lie.",
-      "Diagonal destruction delivered.",
       "Classic fork pattern. Classic win.",
       "Setup complete. Fork deployed.",
       "The squares aligned. The pieces fell.",
       "Pattern hunting: successful.",
+      "The double attack pattern emerges again.",
     ],
     fork: [
       "Royal fork spotted. Royals collected.",
-      "King and queen in the crosshairs.",
       "The family fork. Devastating.",
+      "Two targets in the crosshairs.",
+    ],
+    'fork:N': [
+      "The knight's geometry is unforgiving.",
+      "L-shape finds two victims. Every time.",
+      "The pony hops to the perfect square.",
+    ],
+    'fork:Q': [
+      "The queen forks with authority. Two targets, one move.",
+      "Queen attack hits two pieces at once. Royal privilege.",
+      "The queen's range finds both targets. Effortless.",
+    ],
+    'fork:B': [
+      "Diagonal fork. The bishop sees both targets.",
+      "The bishop's long diagonal catches two pieces.",
+      "Bishop fork deployed. Both targets on the same diagonal.",
     ],
   },
 
@@ -613,18 +671,28 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
       "The absolute pin locks them down.",
       "Frozen in place. Easy target.",
       "X-ray vision activated.",
-      "Pinned piece = dead piece.",
       "The line attack strikes.",
-      "King behind it? Can't move.",
       "Absolute pin deployed. Absolutely winning.",
       "They're stuck. You're not.",
       "The pin holds. The material falls.",
+      "Pinned piece, free piece.",
+      "The geometry of winning on display.",
     ],
     pin: [
       "Pin applied. Pressure sustained.",
-      "The bishop sees through them.",
-      "Rook pin. King behind. GG.",
-      "The geometry of destruction.",
+      "The geometry of the pin prevails.",
+      "Pinned and paralyzed. Collected soon.",
+      "The line is lethal. The piece is stuck.",
+    ],
+    'pin:B': [
+      "The bishop sees right through them.",
+      "Diagonal pin locks them down tight.",
+      "The bishop's x-ray finds the king behind.",
+    ],
+    'pin:R': [
+      "Rook pin. Royalty behind. GG.",
+      "The rook's file is a prison for that piece.",
+      "Pinned along the rank. The rook demands tribute.",
     ],
   },
 
@@ -654,20 +722,30 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
     general: [
       "Skewer deployed. Piece collected.",
       "Royal skewer finds its mark.",
-      "Move the king, lose the queen.",
       "The reverse pin pierces through.",
       "High value in front? Perfect.",
       "Through and through.",
       "The skewer alignment was too tempting.",
-      "King runs, queen dies.",
       "Pierced both targets.",
       "The line attack strikes from behind.",
+      "Step aside and leave your friend behind.",
+      "The skewer special: move or lose.",
     ],
     skewer: [
       "Skewered clean through.",
-      "The rook sees all the way through.",
-      "Queen behind king = queen goodbye.",
       "The pierce attack delivers.",
+      "Big piece in front, prize behind. Classic skewer.",
+      "One line, two pieces, one loss for them.",
+    ],
+    'skewer:R': [
+      "The rook sees all the way through.",
+      "Rook skewer pierces two targets on the file.",
+      "The rook's reach catches them both.",
+    ],
+    'skewer:B': [
+      "The bishop's diagonal skewers both targets.",
+      "Diagonal piercing. Two pieces, one line.",
+      "The bishop sees front and back. Both suffer.",
     ],
   },
 
@@ -732,21 +810,24 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
   // Section 11: Tactical Checkmates
   '2.11': {
     general: [
-      "Two moves to checkmate. Found it.",
       "The mating net closes.",
-      "Calculate two. Execute two. Win.",
-      "Mate in 2: the kill shot.",
       "The forcing sequence ends in checkmate.",
       "Setup, checkmate. Simple.",
-      "Two-move calculation: complete.",
-      "The kill is visualized and delivered.",
       "Checkmate was always the answer.",
-      "The king has nowhere to go.",
+      "The checkmate was visualized and delivered.",
+      "The mating pattern emerges. Game over.",
+      "Checkmate hiding in plain sight. You found it.",
+      "The final blow lands. Clean finish.",
     ],
     mateIn2: [
       "Mate in 2 executed.",
       "Two moves, game over.",
       "The checkmate was hiding in plain sight.",
+    ],
+    'moves:2': [
+      "Two moves to checkmate. Found it.",
+      "Calculate two. Execute two. Win.",
+      "Two-move calculation: complete.",
     ],
   },
 
@@ -757,7 +838,7 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
       "The complete Level 2 toolkit.",
       "Mixed practice, unified excellence.",
       "Review shows: you're ready.",
-      "Discoveries and death. Your wheelhouse.",
+      "Discoveries and checkmates. Your wheelhouse.",
       "The tactical foundation is solid.",
       "All the weapons. All the time.",
       "Review complete. Skills confirmed.",
@@ -868,7 +949,7 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
       "Out of the way. Victory incoming.",
     ],
     interference: [
-      "Interference complete. Coordination destroyed.",
+      "Interference complete. Coordination severed.",
       "Blocked the defender. Claimed the prize.",
     ],
   },
@@ -913,9 +994,7 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
   // Section 6: Sacrifice for Material
   '3.6': {
     general: [
-      "Exchange sacrifice: rook for domination.",
       "Temporary sacrifice, permanent advantage.",
-      "Give the rook, get the game.",
       "The calculation justified the sacrifice.",
       "Material down, position up, game won.",
       "Sacrificed and collected.",
@@ -923,11 +1002,18 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
       "Short-term loss, long-term gain.",
       "Give material, get checkmate.",
       "The trade that wasn't equal... in your favor.",
+      "Give a piece, gain the whole position.",
+      "The sacrifice math checks out. Every time.",
     ],
     sacrifice: [
       "Exchange sacrifice delivered.",
-      "Rook for bishop? Plus the win.",
       "Temporary material debt, permanent positional credit.",
+      "The sacrifice converts to a winning advantage.",
+    ],
+    'piece:R': [
+      "Exchange sacrifice: rook for domination.",
+      "Give the rook, get the game.",
+      "Rook for minor piece? Plus the win.",
     ],
   },
 
@@ -974,9 +1060,7 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
   // Section 9: Multi-Move Checkmates
   '3.9': {
     general: [
-      "Mate in 2. Calculated perfectly.",
       "The checkmate sequence visualized.",
-      "Three moves to glory.",
       "Deep calculation, clean finish.",
       "The mating attack unfolds.",
       "Multiple moves, one destination: checkmate.",
@@ -987,11 +1071,21 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
     ],
     mateIn2: [
       "Mate in 2 delivered.",
-      "Two moves to victory.",
+      "The two-move checkmate lands.",
     ],
     mateIn3: [
       "Mate in 3 executed.",
+      "The three-move sequence unfolds perfectly.",
+    ],
+    'moves:2': [
+      "Mate in 2. Calculated perfectly.",
+      "Two moves to victory. Both forced.",
+      "Two-move calculation, clean finish.",
+    ],
+    'moves:3': [
+      "Three moves to glory. All calculated.",
       "Three moves of pure calculation.",
+      "Three deep. Three precise. Checkmate.",
     ],
   },
 
@@ -1104,7 +1198,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
       "Calculated destruction.",
       "The formula works. It always works.",
       "Sacrifice pattern executed perfectly.",
-      "Lines opened. Position destroyed.",
+      "Lines opened. Position dismantled.",
       "The classic sacrifice delivers.",
       "Apply the formula, get the result.",
       "Sacrificial precision.",
@@ -1134,7 +1228,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
     trappedPiece: [
       "Trapped piece tactics: perfection.",
       "Find the cage, lock it, profit.",
-      "The piece died in a cage of its own making.",
+      "The piece fell in a cage of its own making.",
     ],
   },
 
@@ -1155,7 +1249,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
     exposedKing: [
       "Exposed king exploited.",
       "The uncastled king regrets everything.",
-      "Open king, open coffin.",
+      "Open king, open season.",
     ],
   },
 
@@ -1168,7 +1262,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
       "Review mode: still dangerous.",
       "Attack review: flawless execution.",
       "The aggression is calculated.",
-      "From setup to kill: smooth.",
+      "From setup to finish: smooth.",
       "Review confirms: you're the danger.",
       "Attack patterns on autopilot.",
       "The formula is internalized.",
@@ -1178,21 +1272,25 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
   // Section 5: Mate in 4
   '4.5': {
     general: [
-      "Four moves. One destination.",
       "Calculate deep. Execute deeper.",
-      "Mate in 4: the long kill.",
       "The forcing sequence is beautiful.",
-      "Four moves of pure precision.",
       "Deep calculation delivers.",
       "The checkmate was always there.",
-      "Visualize four, execute four, win.",
       "The long combination pays off.",
       "Calculated to the end.",
+      "Deep vision, clean execution.",
+      "The mating net was inevitable.",
     ],
     mateIn4: [
       "Mate in 4 executed flawlessly.",
-      "Four moves of inevitability.",
       "The deep checkmate lands.",
+      "The four-move sequence unfolds perfectly.",
+    ],
+    'moves:4': [
+      "Four moves. One destination.",
+      "Four moves of pure precision.",
+      "Visualize four, execute four, win.",
+      "Four moves of inevitability.",
     ],
   },
 
@@ -1222,7 +1320,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
     general: [
       "Squeeze until they break.",
       "Any move makes it worse.",
-      "Positional suffocation.",
+      "Positional stranglehold.",
       "They wish they could pass. They can't.",
       "The pressure is unbearable.",
       "Zugzwang territory.",
@@ -1261,7 +1359,7 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
       "The finishing blow lands.",
       "No slow grind. Maximum impact.",
       "Decisive tactics deployed.",
-      "The kill shot connects.",
+      "The finishing blow connects.",
       "Empire business: crushing opponents.",
       "Decisive and dominant.",
       "The winning blow delivered.",
@@ -1382,21 +1480,24 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
   // Section 1: Mate in 5+
   '5.1': {
     general: [
-      "Five moves ahead. All calculated.",
       "The long checkmate visualized.",
       "Deep calculation delivers deep checkmate.",
-      "Mate in 5: the long goodbye.",
-      "Five moves of pure inevitability.",
       "The extended forcing sequence.",
       "Calculate the whole line. Execute it.",
       "Long range planning, precise execution.",
       "The deep mate lands.",
       "From here to checkmate: calculated.",
+      "The deepest checkmate. Found and executed.",
     ],
     mateIn5: [
       "Mate in 5 executed.",
-      "Five moves of destiny.",
       "The long checkmate arrives.",
+      "Deep mate delivered with precision.",
+    ],
+    'moves:5': [
+      "Five moves ahead. All calculated.",
+      "Five moves of pure inevitability.",
+      "Five moves of destiny. All foreseen.",
     ],
   },
 
@@ -1469,7 +1570,7 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
       "Defense that attacks.",
       "Hold the position. Find the counter.",
       "Defensive resources discovered.",
-      "Not dead yet. Not even close.",
+      "Not done yet. Not even close.",
       "The hidden defense emerges.",
       "Defense is offense in disguise.",
       "The counter-threat saves the day.",
@@ -1657,7 +1758,7 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
       "The journey ends. The dominance continues.",
       "What's the most you ever lost on a coin flip? Nothing.",
       "Call it. You won.",
-      "Graduate. Go find someone to destroy.",
+      "Graduate. Go find someone to outplay.",
     ],
   },
 };
@@ -1801,30 +1902,35 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
   // Section 6: Complex Combinations
   '6.6': {
     general: [
-      "Four moves deep and still calculating.",
       "The combination that took vision, nerve, and precision.",
       "Complex? For them. Clean? For you.",
       "Gotham's longest night has nothing on this calculation.",
       "The deeper you see, the harder they fall.",
       "That wasn't a combination. That was architecture.",
       "Multi-move mastery on full display.",
-      "Calculated from the first move to the last gasp.",
       "The whole sequence visualized. The whole game decided.",
       "When the line is long, you follow it to the end.",
+      "Calculated from the opening move to the final check.",
+      "Deep combination, clean conclusion.",
     ],
     mateIn4: [
       "Mate in 4. Every move accounted for.",
-      "Four moves. Four steps closer to Gotham's finest hour.",
       "The four-move sequence unfolds like a plan.",
-      "Calculated four deep. Executed four perfect.",
-      "They had four moves to survive. They needed five.",
       "Long checkmate. Short celebration.",
     ],
     mateIn5: [
       "Mate in 5. The long arm of justice reaches.",
-      "Five moves of pure, unstoppable calculation.",
       "See five, execute five, win.",
-      "The five-move checkmate lands with authority.",
+      "The deep checkmate lands with authority.",
+    ],
+    'moves:4': [
+      "Four moves. Four steps closer to Gotham's finest hour.",
+      "Calculated four deep. Executed four perfect.",
+      "They had four moves to survive. They needed five.",
+      "Four moves deep and still calculating. Impressive.",
+    ],
+    'moves:5': [
+      "Five moves of pure, unstoppable calculation.",
       "Deep calculation, clean finish. Five moves of precision.",
       "From here to checkmate: five moves, zero doubt.",
     ],
@@ -2065,7 +2171,7 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
       "Some fortresses protect. This one trapped.",
       "Nowhere to retreat. The back rank says no.",
       "They built a stronghold. You turned it into a cage.",
-      "The final rank: a fortress for some, a tomb for others.",
+      "The final rank: a fortress for some, a trap for others.",
     ],
     backRankMate: [
       "Back rank sealed. Checkmate delivered like a battering ram.",
@@ -2180,7 +2286,6 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
   // Section 6: Long Combinations
   '7.6': {
     general: [
-      "The Ents are going to Isengard. Four moves at a time.",
       "Long calculation. Clean execution. Checkmate.",
       "The combination stretched further than the road to Mordor.",
       "Every move forced. Every response predicted. Every outcome: yours.",
@@ -2190,19 +2295,27 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
       "The whole line visualized before a single piece moved.",
       "From the first sacrifice to the final check: perfection.",
       "They ran out of defensive moves before you ran out of attacking ones.",
+      "The deep combination lands with authority.",
     ],
     mateIn4: [
       "Mate in 4. Every branch calculated like an Entmoot debate.",
-      "Four moves, four steps to checkmate. All foreseen.",
       "The four-move sequence lands like a falling tree.",
+      "Calculated to the finish. Never in doubt.",
+    ],
+    mateIn5: [
+      "Mate in 5. The long march ends in checkmate.",
+      "The deep combination: patient, powerful, perfect.",
+      "The Ents would be proud of that sequence.",
+    ],
+    'moves:4': [
+      "The Ents are going to Isengard. Four moves at a time.",
+      "Four moves, four steps to checkmate. All foreseen.",
       "Calculated four deep. The finish was never in doubt.",
       "They had four chances to survive. None of them worked.",
       "Four precise moves. One devastating outcome.",
     ],
-    mateIn5: [
-      "Mate in 5. The long march ends in checkmate.",
+    'moves:5': [
       "Five moves deep and the board bends to your will.",
-      "The five-move combination: patient, powerful, perfect.",
       "See five, execute five. The Ents would be proud.",
       "Five moves of relentless pressure. Then silence.",
       "From here to checkmate: five moves of pure calculation.",
@@ -2269,11 +2382,21 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
     ],
     pin: [
       "Pin applied. The piece crumbles under the pressure.",
-      "The bishop sees right through to the king. The knight pays the price.",
       "Absolute pin. Absolute advantage.",
       "Pinned and piled on. The classic combination.",
       "The pin is the thread. The win is the tapestry.",
       "Stuck in place like Saruman in Orthanc. Not by choice.",
+      "The line holds. The piece stays. The win comes.",
+    ],
+    'pin:B': [
+      "The bishop sees right through to the royalty behind.",
+      "Diagonal pin locks down the target. Classic bishop work.",
+      "The bishop's line of sight is a prison cell.",
+    ],
+    'pin:R': [
+      "The rook's file pins the piece to its fate.",
+      "Pinned along the rank. The rook won't let go.",
+      "Rook pin deployed. Nowhere to move along the file.",
     ],
   },
 
@@ -2285,27 +2408,32 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
       "The dual threat strikes again.",
       "Line up the targets. Collect the spoils.",
       "Their pieces stood on the wrong squares. Your pieces noticed.",
-      "Fork the royals. Skewer the valuables. Win the game.",
       "Double attacks are the bread and butter of tactical chess.",
-      "The horse rides to Rohan. And takes everything.",
       "Two threats with one move. The efficiency is beautiful.",
       "When pieces align, profits follow.",
+      "The double attack finds two targets at once.",
+      "Fork the valuables. Skewer the royals. Win the game.",
     ],
     skewer: [
       "Skewered clean through, like a lance at Helm's Deep.",
-      "The king steps aside. The queen stays behind. Forever.",
       "Through and through. Thanks for the material.",
       "The reverse pin delivers again.",
       "Big piece in front, small piece behind. The skewer writes itself.",
       "Pierced both targets. Only one survived.",
+      "Step aside, leave a friend behind.",
     ],
     fork: [
       "Forked like a crossroads in Rohan. Both paths lead to loss.",
-      "The knight lands and two pieces tremble.",
       "Double attack deployed. Pick which piece to save.",
       "The fork is elegant. The result is brutal.",
       "Two targets, zero solutions for the defender.",
       "Fork executed. Material advantage: secured.",
+      "Both pieces threatened. Only one survives.",
+    ],
+    'fork:N': [
+      "The knight lands and two pieces tremble.",
+      "The horse rides to Rohan. And takes everything.",
+      "L-shaped fork finds two targets. Classic horsey chaos.",
     ],
   },
 
@@ -2528,7 +2656,6 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
   '8.6': {
     general: [
       "You saw the whole movie before the first scene played.",
-      "Five moves deep. Five moves perfect.",
       "That wasn't calculation. That was choreography.",
       "You didn't just find the move. You KNEW the move.",
       "Long combination, short result: checkmate.",
@@ -2536,15 +2663,20 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
       "They thought they had time. You'd already written the ending.",
       "That sequence played out like a scene you'd rehearsed a hundred times.",
       "Move by move. Beat by beat. Check by checkmate.",
-      "Seeing five moves ahead is talent. Executing all five is mastery.",
+      "Deep sight, clean execution. That's the formula.",
+      "The whole line played out exactly as calculated.",
     ],
     mateIn5: [
       "Mate in five. The whole sequence, visualized and executed.",
-      "Five moves from now, it's over. And you knew from move one.",
-      "The five-move combination: scripted, directed, and wrapped.",
+      "The deep combination: scripted, directed, and wrapped.",
       "Long-range checkmate. Every move essential. No filler.",
+    ],
+    'moves:5': [
+      "Five moves deep. Five moves perfect.",
+      "Five moves from now, it's over. And you knew from move one.",
       "From opening move to final check: five acts of pure precision.",
       "Five moves. One outcome. Zero doubt.",
+      "Seeing five moves ahead is talent. Executing all five is mastery.",
     ],
   },
 
@@ -2784,13 +2916,39 @@ const allLevelResponses: Record<string, Record<string, Record<string, string[]>>
   '8': level8Responses,
 };
 
+// ═══════════════════════════════════════════════════════════════════════════
+// DEDUP TRACKING (session-level, resets on page reload)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const recentlyUsedMap = new Map<string, Set<string>>();
+
+/** Reset quip history for a section (or all sections). For testing. */
+export function resetQuipHistory(sectionId?: string): void {
+  if (sectionId) {
+    recentlyUsedMap.delete(sectionId);
+  } else {
+    recentlyUsedMap.clear();
+  }
+}
+
 /**
- * Get a section-specific response for the v2 curriculum
+ * Get a section-specific response for the v2 curriculum.
+ *
+ * Supports piece-aware keys (e.g. "fork:N"), move-count keys (e.g. "moves:1"),
+ * and session-level dedup so the same quip doesn't repeat in one lesson.
+ *
  * @param sectionId - The section ID (e.g., '1.1', '2.5', '3.12') using dot notation
  * @param themes - Array of puzzle themes to match against
+ * @param heroPiece - The piece executing the tactic ('N','B','R','Q','K','P')
+ * @param playerMoveCount - Number of player moves in the solution (1, 2, 3...)
  * @returns A themed response or general section response
  */
-export function getV2Response(sectionId: string, themes?: string[]): string {
+export function getV2Response(
+  sectionId: string,
+  themes?: string[],
+  heroPiece?: string,
+  playerMoveCount?: number
+): string {
   const parts = sectionId.split('.');
   const levelNum = parts[0] || '1';
   const sectionNum = parts.length >= 2 ? parseInt(parts[1], 10) : 1;
@@ -2819,25 +2977,67 @@ export function getV2Response(sectionId: string, themes?: string[]): string {
 
   if (!sectionResponses) return "Nice!";
 
-  // Try to find a theme-specific response
-  if (themes && themes.length > 0) {
+  // Build candidate pool from all matching buckets
+  const candidates: string[] = [];
+
+  // 1. Add piece:{heroPiece} quips (e.g. "piece:N")
+  if (heroPiece && sectionResponses[`piece:${heroPiece}`]) {
+    candidates.push(...sectionResponses[`piece:${heroPiece}`]);
+  }
+
+  // 2. Add {theme}:{heroPiece} quips (e.g. "fork:N")
+  if (themes && heroPiece) {
     for (const theme of themes) {
-      const themeLower = theme.toLowerCase();
-
-      // Check for exact matches and partial matches
+      const pieceKey = `${theme.toLowerCase()}:${heroPiece}`;
       for (const key of Object.keys(sectionResponses)) {
-        if (key === 'general') continue;
-
-        const keyLower = key.toLowerCase();
-        if (themeLower.includes(keyLower) || keyLower.includes(themeLower)) {
-          return pickRandom(sectionResponses[key]);
+        if (key.toLowerCase() === pieceKey && sectionResponses[key]) {
+          candidates.push(...sectionResponses[key]);
         }
       }
     }
   }
 
-  // Fall back to general section responses
-  return pickRandom(sectionResponses.general);
+  // 3. Add theme-matched quips (exact and partial match, skip general and keyed buckets)
+  if (themes && themes.length > 0) {
+    for (const theme of themes) {
+      const themeLower = theme.toLowerCase();
+      for (const key of Object.keys(sectionResponses)) {
+        if (key === 'general' || key.includes(':')) continue;
+        const keyLower = key.toLowerCase();
+        if (themeLower.includes(keyLower) || keyLower.includes(themeLower)) {
+          candidates.push(...sectionResponses[key]);
+        }
+      }
+    }
+  }
+
+  // 4. Add moves:{count} quips (e.g. "moves:1")
+  if (playerMoveCount && sectionResponses[`moves:${playerMoveCount}`]) {
+    candidates.push(...sectionResponses[`moves:${playerMoveCount}`]);
+  }
+
+  // 5. If no candidates found, fall back to general
+  const pool = candidates.length > 0 ? candidates : sectionResponses.general;
+  if (!pool || pool.length === 0) return "Nice!";
+
+  // Dedup: filter out recently used quips for this section
+  if (!recentlyUsedMap.has(sectionId)) {
+    recentlyUsedMap.set(sectionId, new Set());
+  }
+  const used = recentlyUsedMap.get(sectionId)!;
+
+  let available = pool.filter(q => !used.has(q));
+
+  // If all candidates filtered out, reset and try again
+  if (available.length === 0) {
+    used.clear();
+    available = pool;
+  }
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+  used.add(pick);
+
+  return pick;
 }
 
 /**
