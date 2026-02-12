@@ -1103,31 +1103,41 @@ If all 40 seen in last 30 days → include oldest seen
 
 ## 25. Quip System
 
-### Quip ID Format:
-`{level}.{section}.{type}.{number}`
+### Data File:
+`/data/staging/v2-puzzle-responses.ts`
 
-### Examples:
-- `1.1.g.01` - General quip
-- `2.6.fork.03` - Fork-specific quip
-- `5.12.mateIn2.07` - Mate in 2 specific quip
+### Selection Function:
+`getV2Response(sectionId, themes?, heroPiece?, playerMoveCount?)`
 
-### Tracking:
-Store seen quips in `quip_history` table
+### Key Convention:
+- `general` — fallback quips for any puzzle
+- `{theme}` — theme-specific quips (e.g. `fork`, `pin`, `mateIn2`)
+- `{theme}:{piece}` — theme+piece quips (e.g. `fork:N`, `pin:B`)
+- `piece:{piece}` — piece-specific quips (e.g. `piece:N`, `piece:Q`)
+- `moves:{N}` — move-count quips (e.g. `moves:1`, `moves:2`)
 
-### Selection Priority:
-1. Section + theme specific quips
-2. Global theme pool
-3. Block general quips
-4. Reset and start over
+### Piece Values:
+N (knight), B (bishop), R (rook), Q (queen), K (king), P (pawn)
 
-### Global Theme Pools Needed:
-| Theme | Minimum Count |
-|-------|---------------|
-| checkmate | 100+ |
-| mateIn1 | 50+ |
-| mateIn2 | 50+ |
-| fork | 50+ |
-| pin | 50+ |
+### Selection Algorithm:
+1. Build candidate pool from matching keys: `piece:{heroPiece}`, `{theme}:{heroPiece}`, `{theme}`, `moves:{N}`
+2. If no candidates, fall back to `general`
+3. Filter out recently used quips (session-level dedup via module-level Map)
+4. If all filtered out, reset dedup for that section and try again
+5. Pick random quip from available pool
+
+### Detection Functions:
+- `getHeroPiece(puzzleFen, movesStr)` — reads puzzle FEN + first player move to identify piece
+- `getPlayerMoveCount(solutionMovesLength)` — counts player moves from solution array
+
+### Dedup Tracking:
+- Session-level: `recentlyUsedMap` (module-level Map, resets on page reload)
+- Database: `quip_history` table exists but is NOT currently used (future enhancement)
+
+### Minimum Quip Counts Per Section:
+- 6-8 general quips
+- 3-4 quips per theme key
+- 3-4 quips per piece-specific key
 
 ---
 
@@ -1150,13 +1160,14 @@ Store seen quips in `quip_history` table
 - Swearing
 - Cheesy emojis (no 🔥💪🏆✨ etc. in UI)
 
-### Words to REMOVE from app:
-- suffocated
-- death
-- dead
-- killed
-- murdered
-- destroyed (in violent context)
+### Banned Words:
+suffocated, death, dead, killed, murdered, destroyed (in violent context), die, dies, kill, coffin, tomb, violence
+
+### Quip Structure Notes:
+- Piece-specific quips go in `{theme}:{piece}` or `piece:{piece}` keys
+- Move-count quips go in `moves:{N}` keys
+- Keep quips short (under 60 characters preferred)
+- Each section should have 6-8 general quips minimum
 
 ---
 
