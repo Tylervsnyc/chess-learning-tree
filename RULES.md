@@ -913,6 +913,11 @@ All 6 puzzles still come from the API (no hardcoded puzzles). Hint cards are the
 3. Auto-play opponent response
 4. Green popup if last move of puzzle
 
+### Alternate Checkmate Acceptance:
+- On **mate-themed puzzles** (theme contains "mate" — e.g. `mateIn1`, `mateIn2`, `backRankMate`), any move that results in checkmate is accepted as correct, even if it differs from the Lichess solution.
+- Non-mate-themed puzzles (e.g. `crushing`, `fork`) require the exact solution move, even if the player's move happens to be checkmate.
+- Logic is centralized in `lib/puzzle-utils.ts` → `isAlternateCheckmate()`. All pages call this single function.
+
 ---
 
 ## 19. Sounds

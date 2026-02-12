@@ -19,7 +19,7 @@ import { level1V2, getLessonById, getIntroMessages, IntroMessages } from '@/data
 import { level2V2, getLessonByIdL2 } from '@/data/staging/level2-v2-curriculum';
 import { level3V2, getLessonByIdL3 } from '@/data/staging/level3-v2-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
-import { normalizeMove, processPuzzleWithSAN } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
 
 interface Puzzle {
@@ -393,11 +393,7 @@ export default function StagingLessonPage() {
         return true;
       } else {
         // Check for alternate checkmate
-        const isMatingPuzzle = currentPuzzle.themes.some((t: string) =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, currentPuzzle.themes)) {
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
           setShowMoveHint(false);

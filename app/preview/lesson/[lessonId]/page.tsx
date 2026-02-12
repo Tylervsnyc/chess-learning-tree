@@ -18,7 +18,7 @@ import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-
 import { getLessonById, getIntroMessages, IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { getLessonByIdL2 } from '@/data/staging/level2-v2-curriculum';
 import { getLessonByIdL3 } from '@/data/staging/level3-v2-curriculum';
-import { normalizeMove, processPuzzleWithSAN } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import confetti from 'canvas-confetti';
 
 const PREVIEW_STORAGE_KEY = 'preview-completed-lessons';
@@ -391,11 +391,7 @@ export default function PreviewLessonPage() {
         return true;
       } else {
         // Check for alternate checkmate
-        const isMatingPuzzle = currentPuzzle.themes.some((t: string) =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, currentPuzzle.themes)) {
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
           setShowMoveHint(false);

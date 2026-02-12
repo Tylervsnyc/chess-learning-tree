@@ -11,7 +11,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
-import { normalizeMove } from '@/lib/puzzle-utils';
+import { normalizeMove, isAlternateCheckmate } from '@/lib/puzzle-utils';
 
 // CSS for rotating border animation
 const rotatingBorderStyles = `
@@ -497,7 +497,7 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
 
         return true;
       } else {
-        if (currentPuzzle.themes.some(t => t.toLowerCase().includes('mate')) && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, currentPuzzle.themes)) {
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
           if (move.captured) playCaptureSound(); else playMoveSound();

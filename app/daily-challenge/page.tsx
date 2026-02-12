@@ -14,7 +14,7 @@ import {
   playCaptureSound,
   warmupAudio,
 } from '@/lib/sounds';
-import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { ShareEvents, EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
@@ -570,11 +570,7 @@ export default function DailyChallengePage() {
         return true;
       } else {
         // Check for alternate checkmate in mate-themed puzzles
-        const isMatingPuzzle = currentPuzzle.themes?.some((t: string) =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, currentPuzzle.themes ?? [])) {
           // Accept ANY checkmate in mate puzzles
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);

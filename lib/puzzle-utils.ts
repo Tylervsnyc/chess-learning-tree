@@ -157,6 +157,24 @@ export function getRatingBracket(rating: number): string {
 }
 
 /**
+ * Detect if the current board state is an alternate checkmate for a mate-themed puzzle.
+ *
+ * Many puzzles have multiple mating moves. If the puzzle has a mate theme
+ * and the position is checkmate, we accept ANY checkmate as correct —
+ * even if it differs from the stored solution.
+ *
+ * @param game - Chess instance AFTER the player's move has been applied
+ * @param themes - The puzzle's theme tags (e.g. ['mateIn1', 'short'])
+ * @returns true if the puzzle is mate-themed AND the position is checkmate
+ */
+export function isAlternateCheckmate(game: Chess, themes: string[]): boolean {
+  const isMatingPuzzle = themes.some((t: string) =>
+    t.toLowerCase().includes('mate')
+  );
+  return isMatingPuzzle && game.isCheckmate();
+}
+
+/**
  * Check if a move matches the expected solution move (with promotion flexibility)
  */
 export function isCorrectMove(

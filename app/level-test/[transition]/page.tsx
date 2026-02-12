@@ -12,7 +12,7 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
-import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import confetti from 'canvas-confetti';
 
@@ -263,11 +263,7 @@ export default function LevelTestPage() {
         return true;
       } else {
         // Check for alternate checkmate (accept ANY checkmate in mate puzzles)
-        const isMatingPuzzle = currentPuzzle.themes?.some((t: string) =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && chessCopy.isCheckmate()) {
+        if (isAlternateCheckmate(chessCopy, currentPuzzle.themes ?? [])) {
           setCurrentFen(chessCopy.fen());
           setSelectedSquare(null);
           if (move.captured) {

@@ -9,7 +9,7 @@ import {
   playMoveSound,
   playCaptureSound,
 } from '@/lib/sounds';
-import { normalizeMove, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { normalizeMove, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 
@@ -234,11 +234,7 @@ export function OnboardingPuzzleBoard({
       } else {
         // Check if this is an alternate checkmate - if so, accept it!
         // Many puzzles have multiple mating moves, we should accept any checkmate
-        const isMatingPuzzle = puzzle.themes.some(t =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, puzzle.themes)) {
           // They found an alternate checkmate - that's correct!
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
