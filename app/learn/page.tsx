@@ -8,6 +8,7 @@ import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
+import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
@@ -205,6 +206,7 @@ function LockedLevelCard({
   prevLevelCompleted: boolean;
   isLoggedIn: boolean;
 }) {
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const testTransition = `${levelNum - 1}-${levelNum}`;
 
   if (isUnlocked) {
@@ -278,21 +280,27 @@ function LockedLevelCard({
                   Sign in to take the placement test and unlock this level
                 </p>
 
-                <Link
-                  href="/auth/login?redirect=/learn"
-                  className="inline-block px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105"
+                <button
+                  onClick={() => setShowSignupModal(true)}
+                  className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105"
                   style={{
                     backgroundColor: levelColor,
                     boxShadow: `0 4px 0 ${darkColor}`,
                   }}
                 >
                   Sign In to Take Test
-                </Link>
+                </button>
               </>
             )}
           </div>
         </div>
       </div>
+
+      <CreateProfileModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        context="level-test"
+      />
     </div>
   );
 }

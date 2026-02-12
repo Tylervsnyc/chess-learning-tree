@@ -43,10 +43,12 @@ import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
+import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
+import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
 import { TutorialFlow } from '@/app/test-tutorial/page';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 
@@ -153,8 +155,9 @@ export default function LessonPage() {
     loading: permissionsLoading,
   } = usePermissions();
 
-  // State for lesson limit modal
+  // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showCreateProfileModal, setShowCreateProfileModal] = useState(false);
 
   // Theme help modal
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -173,6 +176,7 @@ export default function LessonPage() {
   const [retryQueue, setRetryQueue] = useState<LessonPuzzle[]>([]);
   const [inRetryMode, setInRetryMode] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
+  const [lessonPassed, setLessonPassed] = useState<boolean | null>(null);
 
   // Puzzle interaction state
   const [currentFen, setCurrentFen] = useState<string | null>(null);
@@ -725,11 +729,15 @@ export default function LessonPage() {
 
           if (newRetryQueue.length === 0) {
             setLessonComplete(true);
-            playCelebrationSound(firstAttemptCorrectCount);
+            if (firstAttemptCorrectCount >= 4) {
+              playCelebrationSound(firstAttemptCorrectCount);
+            }
           }
         } else {
           setLessonComplete(true);
-          playCelebrationSound(firstAttemptCorrectCount);
+          if (firstAttemptCorrectCount >= 4) {
+            playCelebrationSound(firstAttemptCorrectCount);
+          }
         }
       } else {
         const wrongPuzzles = puzzles.filter(p =>
@@ -745,7 +753,9 @@ export default function LessonPage() {
           setCurrentIndex(0);
         } else {
           setLessonComplete(true);
-          playCelebrationSound(firstAttemptCorrectCount);
+          if (firstAttemptCorrectCount >= 4) {
+            playCelebrationSound(firstAttemptCorrectCount);
+          }
         }
       }
     } else {
@@ -782,18 +792,26 @@ export default function LessonPage() {
   // Keep these for retry logic
   const correctCount = Object.values(results).filter(r => r === 'correct').length;
 
-  // Save completion via progress hook (localStorage + Supabase for authenticated users)
+  // Determine pass/fail and save completion via progress hook
   useEffect(() => {
     if (isTutorial) return; // Tutorial handles its own persistence in onComplete
-    if (lessonComplete) {
-      completeLesson(lessonId, allLessonIds);
-    }
-  }, [lessonComplete, lessonId, completeLesson, allLessonIds, isTutorial]);
+    if (lessonComplete && lessonPassed === null) {
+      const passed = firstAttemptCorrectCount >= 4;
+      setLessonPassed(passed);
 
-  // Record lesson completion and show limit modal if needed
+      if (passed) {
+        // Pass: advance to next lesson
+        completeLesson(lessonId, allLessonIds, firstAttemptCorrectCount);
+      }
+      // Fail: don't call completeLesson — lesson stays as currentPosition
+      // User returns to /learn and can retry with fresh puzzles
+    }
+  }, [lessonComplete, lessonPassed, firstAttemptCorrectCount, lessonId, completeLesson, allLessonIds, isTutorial]);
+
+  // Record lesson completion and show limit modal if needed (only when passed)
   useEffect(() => {
     if (isTutorial) return; // Tutorial handles its own completion in onComplete
-    if (lessonComplete) {
+    if (lessonComplete && lessonPassed === true) {
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
 
@@ -804,15 +822,20 @@ export default function LessonPage() {
       const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
       LearningEvents.lessonCompleted(lessonId, accuracy, 0);
 
-      // Show limit modal for users who've hit their limit
-      if (shouldPromptSignup || shouldPromptPremium) {
+      // Show appropriate modal for users who've hit their limit
+      if (shouldPromptSignup) {
+        const timer = setTimeout(() => {
+          setShowCreateProfileModal(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+      } else if (shouldPromptPremium) {
         const timer = setTimeout(() => {
           setShowLimitModal(true);
         }, 2000);
         return () => clearTimeout(timer);
       }
     }
-  }, [lessonComplete, shouldPromptSignup, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
+  }, [lessonComplete, lessonPassed, shouldPromptSignup, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
 
   // Confetti + celebration sound now handled by LessonCompleteScreen component
 
@@ -923,6 +946,11 @@ export default function LessonPage() {
             streak={currentStreak}
             puzzleResults={Array.from({ length: 6 }, (_, i) => i < tutorialCorrectCount ? 'correct' : 'wrong') as ('correct' | 'wrong')[]}
           />
+          <CreateProfileModal
+            isOpen={showCreateProfileModal}
+            onClose={() => setShowCreateProfileModal(false)}
+            lessonsCompleted={lessonsCompletedToday}
+          />
           <LessonLimitModal
             isOpen={showLimitModal}
             onClose={() => setShowLimitModal(false)}
@@ -942,7 +970,9 @@ export default function LessonPage() {
           LearningEvents.lessonCompleted(lessonId, accuracy, 0);
           window.dispatchEvent(new Event('chess-path:puzzle-complete'));
           setLessonComplete(true);
-          if (shouldPromptSignup || shouldPromptPremium) {
+          if (shouldPromptSignup) {
+            setTimeout(() => setShowCreateProfileModal(true), 2000);
+          } else if (shouldPromptPremium) {
             setTimeout(() => setShowLimitModal(true), 2000);
           }
         }}
@@ -1012,26 +1042,49 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
-    return (
-      <>
-        <LessonCompleteScreen
-          correctCount={firstAttemptCorrectCount}
-          wrongCount={puzzles.length - firstAttemptCorrectCount}
+    // Show try-again screen if user didn't pass (score <= 3)
+    if (lessonPassed === false) {
+      return (
+        <LessonTryAgainScreen
+          score={firstAttemptCorrectCount}
+          totalPuzzles={puzzles.length}
           lessonName={lessonName}
-          lessonId={lessonId}
-          isGuest={!user}
-          getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
-          streak={currentStreak}
-          puzzleResults={puzzles.map(p => firstAttemptResults[p.puzzleId] === 'correct' ? 'correct' : 'wrong')}
+          onContinue={() => router.push('/learn')}
         />
-        <LessonLimitModal
-          isOpen={showLimitModal}
-          onClose={() => setShowLimitModal(false)}
-          lessonsCompleted={lessonsCompletedToday}
-          isLoggedIn={!!user}
-        />
-      </>
-    );
+      );
+    }
+
+    // Show celebration screen if user passed (score >= 4)
+    if (lessonPassed === true) {
+      return (
+        <>
+          <LessonCompleteScreen
+            correctCount={firstAttemptCorrectCount}
+            wrongCount={puzzles.length - firstAttemptCorrectCount}
+            lessonName={lessonName}
+            lessonId={lessonId}
+            isGuest={!user}
+            getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+            streak={currentStreak}
+            puzzleResults={puzzles.map(p => firstAttemptResults[p.puzzleId] === 'correct' ? 'correct' : 'wrong')}
+          />
+          <CreateProfileModal
+            isOpen={showCreateProfileModal}
+            onClose={() => setShowCreateProfileModal(false)}
+            lessonsCompleted={lessonsCompletedToday}
+          />
+          <LessonLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            lessonsCompleted={lessonsCompletedToday}
+            isLoggedIn={!!user}
+          />
+        </>
+      );
+    }
+
+    // lessonPassed is null — still determining pass/fail, show nothing
+    return null;
   }
 
   if (!currentPuzzle) {

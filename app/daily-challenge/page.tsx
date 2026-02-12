@@ -19,6 +19,7 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { ShareEvents, EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
+import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 
 interface Puzzle {
   puzzleId: string;
@@ -137,6 +138,7 @@ export default function DailyChallengePage() {
   // Track if user already completed today (prevents replay)
   const [alreadyCompletedToday, setAlreadyCompletedToday] = useState(false);
   const [checkingCompletion, setCheckingCompletion] = useState(true);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   // Leaderboard view toggle - default to My Standing
   const [showMyStanding, setShowMyStanding] = useState(true);
@@ -917,7 +919,7 @@ export default function DailyChallengePage() {
 
               {/* Auth CTAs */}
               <button
-                onClick={() => router.push('/auth/signup?redirect=%2Fdaily-challenge')}
+                onClick={() => setShowSignupModal(true)}
                 className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-3"
                 style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
               >
@@ -936,6 +938,12 @@ export default function DailyChallengePage() {
               >
                 Back to Learning
               </button>
+
+              <CreateProfileModal
+                isOpen={showSignupModal}
+                onClose={() => setShowSignupModal(false)}
+                context="daily-rook"
+              />
             </div>
           </div>
         </div>
