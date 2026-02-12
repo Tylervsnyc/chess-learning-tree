@@ -55,19 +55,73 @@ function getLessonStatus(
 // Assign piece types to lessons
 const PIECE_CYCLE: PieceType[] = ['knight', 'queen', 'rook', 'bishop', 'pawn', 'star'];
 
+// Pattern-based tag → icon mapping. Uses string matching so new tags
+// (e.g. mateIn6, bishopEndgame) are handled automatically.
+function getIconForTag(tag: string): PieceType | null {
+  const t = tag.toLowerCase();
+
+  // 1. Piece-specific endgames: tag contains piece name + "endgame"
+  if (t.includes('endgame')) {
+    if (t.includes('rook')) return 'rook';
+    if (t.includes('bishop')) return 'bishop';
+    if (t.includes('knight')) return 'knight';
+    if (t.includes('queen')) return 'queen';
+    if (t.includes('pawn')) return 'pawn';
+  }
+
+  // 2. Smothered mate → knight (before generic mate check)
+  if (tag === 'smotheredMate') return 'knight';
+
+  // 3. Arabian/hook mate → knight
+  if (t.includes('arabian') || t.includes('hook')) return 'knight';
+
+  // 4. Any mate pattern → queen
+  if (t.includes('mate')) return 'queen';
+
+  // 5. Fork → knight
+  if (t.includes('fork')) return 'knight';
+
+  // 6. Line piece tactics → bishop
+  if (tag === 'pin' || tag === 'skewer' || tag === 'xRayAttack') return 'bishop';
+
+  // 7. Pawn themes → pawn
+  if (t.includes('pawn') || tag === 'promotion' || tag === 'advancedPawn') return 'pawn';
+
+  // 8. Attack themes → queen
+  if (tag === 'crushing' || tag === 'kingsideAttack' || tag === 'queensideAttack' || tag === 'exposedKing' || tag === 'doubleCheck') return 'queen';
+
+  // 9. Hanging/trapped pieces → rook
+  if (tag === 'hangingPiece' || tag === 'trappedPiece') return 'rook';
+
+  // 10. Tricky/special tactics → star
+  if (tag === 'discoveredAttack' || tag === 'deflection' || tag === 'intermezzo' || tag === 'sacrifice' || tag === 'attraction' || tag === 'clearance' || tag === 'interference') return 'star';
+
+  // 11. Defensive/quiet → pawn
+  if (tag === 'defensiveMove' || tag === 'quietMove') return 'pawn';
+
+  return null;
+}
+
 function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionIndex: number): PieceType {
+  // 1. Explicit piece filter takes priority
   if (lesson.pieceFilter) {
     return lesson.pieceFilter as PieceType;
   }
 
-  // Smothered mates are always delivered by knights
-  const hasSmotheredMate = lesson.requiredTags?.some(tag =>
-    tag.toLowerCase().includes('smother')
-  );
-  if (hasSmotheredMate) {
-    return 'knight';
+  // 2. Mixed practice / review lessons get star
+  if (lesson.isMixedPractice) {
+    return 'star';
   }
 
+  // 3. Pattern-based match on requiredTags
+  if (lesson.requiredTags) {
+    for (const tag of lesson.requiredTags) {
+      const match = getIconForTag(tag);
+      if (match) return match;
+    }
+  }
+
+  // 4. Fallback: cycle through pieces by position
   return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
 }
 
