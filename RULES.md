@@ -853,6 +853,7 @@ All copy must be ultra-short — one sentence max per step. Real phones have bro
 - Green hint square appears after 1 wrong attempt (not 3)
 - Rook animation in correct popup (same as other lessons)
 - **Board never shrinks** — bottom cards are compact to fit below full-width board
+- **Checkmate explanation** — WHY? button on all checkmate puzzles shows red/yellow square highlights (see § 18 Checkmate Explanation)
 
 ### Files:
 - `components/tutorial/TutorialFlow.tsx` — tutorial component
@@ -933,6 +934,28 @@ All 6 puzzles still come from the API (no hardcoded puzzles). Hint cards are the
 - On **mate-themed puzzles** (theme contains "mate" — e.g. `mateIn1`, `mateIn2`, `backRankMate`), any move that results in checkmate is accepted as correct, even if it differs from the Lichess solution.
 - Non-mate-themed puzzles (e.g. `crushing`, `fork`) require the exact solution move, even if the player's move happens to be checkmate.
 - Logic is centralized in `lib/puzzle-utils.ts` → `isAlternateCheckmate()`. All pages call this single function.
+
+### Checkmate Explanation ("WHY?" Feature):
+When a player delivers checkmate, the success popup shows a **WHY?** toggle button that highlights squares around the checkmated king explaining why it's checkmate.
+
+**Square Colors:**
+- **Red** = King can't escape — attacked by the player's pieces
+- **Yellow** = King can't move there — blocked by its own pieces
+
+**Behavior:**
+- Highlights start **ON** by default (auto-triggered on checkmate)
+- WHY? button **toggles on/off** — board highlights appear/disappear with the toggle
+- Button fills green when active, outline when inactive
+- Compact one-line legend above Continue button: `[red square] Attacked Square  [yellow square] Blocked by own pieces`
+- Works on **all checkmate puzzles** (tutorial + regular lessons), not just tutorial
+
+**X-Ray Detection:**
+- The king is temporarily removed from the board before checking `isAttacked()` — this catches sliding piece attacks through the king's square (e.g. queen on d1 attacking f1 through king on e1)
+
+**Logic:**
+- `lib/puzzle-utils.ts` → `getCheckmateSquareHighlights(game, kingColor)` — returns `{ attackedSquares, blockedByFriendlySquares }`
+- `components/puzzle/PuzzleResultPopup.tsx` — WHY? button + inline legend
+- Board highlights applied via `customSquareStyles` in the lesson/tutorial page
 
 ---
 

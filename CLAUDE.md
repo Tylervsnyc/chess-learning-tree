@@ -96,6 +96,12 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 
 ---
 
+## Testing Rule
+
+When testing changes: clear `.next` cache, start `npm run dev` (background), and `open http://localhost:3000/{page}` to pull it up in Tyler's browser automatically. Never make Tyler start the server or navigate manually.
+
+---
+
 ## Three Rules
 
 1. **Search before changing.** Search ALL code touching a feature before modifying any of it. Delete competing implementations first.

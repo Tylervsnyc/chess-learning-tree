@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ShareButton } from '@/components/share/ShareButton';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import {
@@ -35,6 +35,9 @@ interface PuzzleResultPopupProps {
   rookProgressRef?: React.RefObject<RookProgressAnimationRef | null>;
   rookWrongRef?: React.RefObject<RookWrongAnimationRef | null>;
   rookCurrentStage?: number; // Pass current stage to maintain progress across popup mounts
+  // Checkmate explanation props
+  isCheckmate?: boolean;
+  onShowCheckmateExplain?: (show: boolean) => void;
 }
 
 export function PuzzleResultPopup({
@@ -49,9 +52,12 @@ export function PuzzleResultPopup({
   rookProgressRef,
   rookWrongRef,
   rookCurrentStage = 0,
+  isCheckmate,
+  onShowCheckmateExplain,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
   const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
+  const [showLegend, setShowLegend] = useState(!!isCheckmate);
 
   // Local refs if external ones not provided
   const localCorrectRef = useRef<RookProgressAnimationRef>(null);
@@ -67,6 +73,13 @@ export function PuzzleResultPopup({
       setTimeout(() => wrongRef.current?.triggerAnimation(), 250);
     }
   }, [isCorrect, rookAnimationStyle, rookWrongStyle, correctRef, wrongRef]);
+
+  // Auto-show checkmate highlights on mount
+  useEffect(() => {
+    if (isCorrect && isCheckmate && onShowCheckmateExplain) {
+      onShowCheckmateExplain(true);
+    }
+  }, [isCorrect, isCheckmate, onShowCheckmateExplain]);
 
   const showRook = (isCorrect && rookAnimationStyle) || (!isCorrect && rookWrongStyle);
 
@@ -117,13 +130,49 @@ export function PuzzleResultPopup({
 
         {/* Content area */}
         <div className="flex-1 min-w-0">
-          {/* Message */}
-          <p
-            className={`font-bold leading-tight mb-1.5 ${isCorrect ? 'text-chess-green-dark' : 'text-chess-red'}`}
-            style={{ fontSize: 15 }}
-          >
-            {displayMessage}
-          </p>
+          {/* Message + Why button row */}
+          <div className="flex items-center gap-2 mb-1.5">
+            <p
+              className={`font-bold leading-tight flex-1 ${isCorrect ? 'text-chess-green-dark' : 'text-chess-red'}`}
+              style={{ fontSize: 15 }}
+            >
+              {displayMessage}
+            </p>
+            {isCorrect && isCheckmate && onShowCheckmateExplain && (
+              <button
+                onClick={() => {
+                  const next = !showLegend;
+                  setShowLegend(next);
+                  onShowCheckmateExplain(next);
+                }}
+                className="flex-shrink-0 text-[12px] font-semibold px-2.5 py-0.5 rounded-full transition-all active:scale-95"
+                style={{
+                  color: showLegend ? '#FFFFFF' : '#46A302',
+                  backgroundColor: showLegend ? '#46A302' : 'rgba(88, 204, 2, 0.12)',
+                  border: '1px solid rgba(88, 204, 2, 0.3)',
+                }}
+              >
+                WHY?
+              </button>
+            )}
+          </div>
+
+          {/* Checkmate legend + Continue button */}
+          {showLegend && (
+            <div
+              className="flex items-center gap-3 mb-1.5 text-[11px] text-chess-green-dark"
+              style={{ animation: 'legendFadeIn 0.25s ease-out' }}
+            >
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-2.5 h-2.5" style={{ backgroundColor: 'rgba(255, 0, 0, 0.6)' }} />
+                Attacked Square
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block w-2.5 h-2.5" style={{ backgroundColor: 'rgba(255, 255, 0, 0.7)' }} />
+                Blocked by own pieces
+              </span>
+            </div>
+          )}
 
           {/* Button row */}
           {!isCorrect && !showSolution && onShowSolution ? (
@@ -183,6 +232,16 @@ export function PuzzleResultPopup({
           }
           100% {
             opacity: 1;
+          }
+        }
+        @keyframes legendFadeIn {
+          0% {
+            opacity: 0;
+            max-height: 0;
+          }
+          100% {
+            opacity: 1;
+            max-height: 60px;
           }
         }
       `}</style>

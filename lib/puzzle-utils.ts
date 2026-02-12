@@ -9,7 +9,7 @@
  * We apply moves[0] to get the actual puzzle position the player sees.
  */
 
-import { Chess } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 
 /**
  * Standard chess board square colors (Lichess green theme)
@@ -174,6 +174,53 @@ export function isAlternateCheckmate(game: Chess, themes: string[]): boolean {
   return isMatingPuzzle && game.isCheckmate();
 }
 
+// ============================================================================
+// QUIP HELPERS (piece-aware, move-aware quip selection)
+// ============================================================================
+
+/**
+ * Get the piece type that executes the player's first move.
+ *
+ * Works with LessonPuzzle: pass puzzleFen and the UCI moves string.
+ * The moves string format is "setupUCI playerUCI1 opponentUCI1 ..." —
+ * so the player's first move is at index 1.
+ *
+ * @param puzzleFen - The FEN after the opponent's setup move
+ * @param movesStr - Space-separated UCI moves (setup + solution)
+ * @returns 'N' | 'B' | 'R' | 'Q' | 'K' | 'P'
+ */
+export function getHeroPiece(puzzleFen: string, movesStr: string): string {
+  const moveList = movesStr.split(' ');
+  // Player's first move is index 1 (index 0 is the setup move)
+  const playerFirstUci = moveList[1];
+  if (!playerFirstUci) return 'P';
+
+  const from = playerFirstUci.slice(0, 2);
+
+  // Parse the puzzleFen to find what piece is on the from-square
+  const chess = new Chess(puzzleFen);
+  const piece = chess.get(from as Square);
+
+  if (!piece) return 'P';
+
+  // chess.js returns { type: 'n', color: 'w' } — convert to uppercase
+  return piece.type.toUpperCase();
+}
+
+/**
+ * Get the number of player moves in the solution.
+ *
+ * In LessonPuzzle.solutionMoves (SAN), moves alternate: player, opponent, player, ...
+ * Player moves are at even indices (0, 2, 4...).
+ *
+ * @param solutionMovesLength - Length of the solutionMoves array
+ * @returns Number of player moves
+ */
+export function getPlayerMoveCount(solutionMovesLength: number): number {
+  // Player moves are at indices 0, 2, 4...
+  return Math.ceil(solutionMovesLength / 2);
+}
+
 /**
  * Check if a move matches the expected solution move (with promotion flexibility)
  */
@@ -299,6 +346,81 @@ export function processPuzzleFromCSV(raw: RawPuzzleCSV): ServerProcessedPuzzle |
  * Format solution moves with proper move numbering.
  * Example: "1.Qh7#" or "1...Nxe5 2.Qxe5"
  */
+// ============================================================================
+// CHECKMATE EXPLANATION HELPER
+// ============================================================================
+
+/**
+ * Analyzes the board after checkmate and returns squares around the king
+ * categorized by WHY the king can't move there.
+ *
+ * - attackedSquares: empty/capturable squares that are defended by the attacker
+ * - blockedByFriendlySquares: squares occupied by the king's own pieces
+ */
+export function getCheckmateSquareHighlights(
+  game: Chess,
+  kingColor: 'w' | 'b'
+): { attackedSquares: Square[]; blockedByFriendlySquares: Square[] } {
+  const attackerColor = kingColor === 'w' ? 'b' : 'w';
+  const attackedSquares: Square[] = [];
+  const blockedByFriendlySquares: Square[] = [];
+
+  // Find the king's position
+  const board = game.board();
+  let kingSquare: Square | null = null;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const piece = board[r][c];
+      if (piece && piece.type === 'k' && piece.color === kingColor) {
+        const file = String.fromCharCode(97 + c); // a-h
+        const rank = String(8 - r); // 8-1
+        kingSquare = `${file}${rank}` as Square;
+      }
+    }
+  }
+
+  if (!kingSquare) return { attackedSquares, blockedByFriendlySquares };
+
+  // Create a copy with the king removed so x-ray attacks are detected.
+  // Without this, the king itself blocks sliding piece attacks on squares
+  // behind it (e.g. queen on d1 can't "see" f1 through king on e1).
+  const noKingGame = new Chess(game.fen());
+  noKingGame.remove(kingSquare);
+
+  const kingFile = kingSquare.charCodeAt(0) - 97; // 0-7
+  const kingRank = parseInt(kingSquare[1]) - 1; // 0-7
+
+  // Check all 8 adjacent squares
+  const deltas = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1],           [0, 1],
+    [1, -1],  [1, 0],  [1, 1],
+  ];
+
+  for (const [df, dr] of deltas) {
+    const newFile = kingFile + df;
+    const newRank = kingRank + dr;
+
+    // Skip off-board squares
+    if (newFile < 0 || newFile > 7 || newRank < 0 || newRank > 7) continue;
+
+    const sq = `${String.fromCharCode(97 + newFile)}${newRank + 1}` as Square;
+    const piece = game.get(sq);
+
+    if (piece && piece.color === kingColor) {
+      // Friendly piece blocking the king
+      blockedByFriendlySquares.push(sq);
+    } else {
+      // Check attacks with king removed to catch x-ray attacks
+      if (noKingGame.isAttacked(sq, attackerColor)) {
+        attackedSquares.push(sq);
+      }
+    }
+  }
+
+  return { attackedSquares, blockedByFriendlySquares };
+}
+
 export function formatSolution(moves: string[], startsAsBlack: boolean): string {
   if (moves.length === 0) return '';
   const parts: string[] = [];

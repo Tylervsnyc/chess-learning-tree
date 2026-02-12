@@ -45,7 +45,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
-import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
@@ -200,6 +200,9 @@ export default function LessonPage() {
 
   // Track time spent on puzzle (for analytics)
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
+
+  // Checkmate explanation highlights
+  const [showCheckmateHighlights, setShowCheckmateHighlights] = useState(false);
 
   // Board transition animation
   const [isBoardTransitioning, setIsBoardTransitioning] = useState(false);
@@ -431,6 +434,7 @@ export default function LessonPage() {
       setHintSquares(null);
       setPuzzleHadWrongAttempt(false);
       setPuzzleStartTime(Date.now()); // Reset timer for new puzzle
+      setShowCheckmateHighlights(false);
 
       // Step 2: Enable animation, then animate the setup move
       const timer = setTimeout(() => {
@@ -455,6 +459,12 @@ export default function LessonPage() {
       return null;
     }
   }, [currentFen, currentPuzzle]);
+
+  // Detect if current puzzle is a checkmate puzzle (themes include 'mate')
+  const isCheckmatePuzzle = useMemo(() => {
+    if (!currentPuzzle) return false;
+    return currentPuzzle.themes.some(t => t.toLowerCase().includes('mate'));
+  }, [currentPuzzle]);
 
   // Square styles
   const squareStyles = useMemo(() => {
@@ -486,8 +496,28 @@ export default function LessonPage() {
       }
     }
 
+    // Checkmate explanation highlights (red = attacked, yellow = blocked by friendly)
+    if (showCheckmateHighlights && game && game.isCheckmate()) {
+      const kingColor = game.turn(); // The side in checkmate is the one whose turn it is
+      const highlights = getCheckmateSquareHighlights(game, kingColor);
+
+      highlights.attackedSquares.forEach(sq => {
+        styles[sq] = {
+          backgroundColor: 'rgba(255, 0, 0, 0.5)',
+          boxShadow: 'inset 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.4)',
+        };
+      });
+
+      highlights.blockedByFriendlySquares.forEach(sq => {
+        styles[sq] = {
+          backgroundColor: 'rgba(255, 255, 0, 0.5)',
+          boxShadow: 'inset 0 0 0 3px rgba(255, 200, 0, 0.8), 0 0 12px rgba(255, 255, 0, 0.4)',
+        };
+      });
+    }
+
     return styles;
-  }, [selectedSquare, game, currentPuzzle, moveIndex, showMoveHint, hintSquares]);
+  }, [selectedSquare, game, currentPuzzle, moveIndex, showMoveHint, hintSquares, showCheckmateHighlights]);
 
   // Try to make a move
   const tryMove = useCallback((from: Square, to: Square) => {
@@ -524,7 +554,7 @@ export default function LessonPage() {
           // Puzzle complete!
           const newStreak = streak + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
+          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
           playCorrectSound(completedPuzzleCount);
           vibrateOnCorrect();
           setStreak(newStreak);
@@ -554,7 +584,7 @@ export default function LessonPage() {
             if (nextMoveIndex + 1 >= currentPuzzle.solutionMoves.length) {
               const newStreak = streak + 1;
               setMoveStatus('correct');
-              setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
+              setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
               playCorrectSound(completedPuzzleCount);
               vibrateOnCorrect();
               setStreak(newStreak);
@@ -566,7 +596,7 @@ export default function LessonPage() {
           } catch {
             const newStreak = streak + 1;
             setMoveStatus('correct');
-            setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
+            setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
             playCorrectSound(completedPuzzleCount);
             vibrateOnCorrect();
             setStreak(newStreak);
@@ -593,7 +623,7 @@ export default function LessonPage() {
           }
           const newStreak = streak + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes));
+          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
           playCorrectSound(completedPuzzleCount);
           vibrateOnCorrect();
           setStreak(newStreak);
@@ -1257,6 +1287,8 @@ export default function LessonPage() {
               rookAnimationStyle={rookCorrectStyle}
               rookProgressRef={rookProgressRef}
               rookCurrentStage={completedPuzzleCount - 1}
+              isCheckmate={isCheckmatePuzzle && game?.isCheckmate()}
+              onShowCheckmateExplain={(show) => setShowCheckmateHighlights(show)}
             />
           )}
 
