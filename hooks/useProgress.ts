@@ -468,7 +468,18 @@ export function useLessonProgress() {
     }
   }, [user]);
 
-  const completeLesson = useCallback((lessonId: string, allLessonIds?: string[]) => {
+  /**
+   * Complete a lesson with pass/fail scoring.
+   * @param lessonId - The lesson that was attempted
+   * @param allLessonIds - All lesson IDs in order (for calculating next lesson)
+   * @param score - Number of puzzles correct on first attempt (0-6). If undefined, treated as pass (backwards compat).
+   * @returns true if passed (score >= 4 or undefined), false if failed
+   */
+  const completeLesson = useCallback((lessonId: string, allLessonIds?: string[], score?: number): boolean => {
+    // Determine pass/fail before entering state setter
+    // score undefined = backwards compat = pass
+    const passed = score === undefined || score >= 4;
+
     setProgress(prev => {
       const alreadyCompleted = prev.completedLessons.includes(lessonId);
 
@@ -479,31 +490,38 @@ export function useLessonProgress() {
         nextLessonId = allLessonIds[currentIndex + 1] || null;
       }
 
-      // Update currentPosition even for replays (user might have navigated here)
-      const newCurrentPosition = nextLessonId || lessonId;
+      // Only advance position if passed
+      const newCurrentPosition = passed ? (nextLessonId || lessonId) : prev.currentPosition;
 
       // If already completed, just update currentPosition (no other changes)
       if (alreadyCompleted) {
         const updatedProgress = {
           ...prev,
-          currentPosition: newCurrentPosition,
+          currentPosition: passed ? (nextLessonId || lessonId) : prev.currentPosition,
         };
         saveProgress(updatedProgress);
 
-        // Sync currentPosition to server even for replays
+        // Sync to server even for replays (include score)
         if (user) {
-          syncToServer('lesson', { lessonId, nextLessonId, currentPosition: newCurrentPosition, updateStreak: false });
+          syncToServer('lesson', {
+            lessonId,
+            nextLessonId,
+            currentPosition: passed ? (nextLessonId || lessonId) : undefined,
+            updateStreak: false,
+            score,
+          });
         }
 
         return updatedProgress;
       }
 
-      // Track daily lesson count
+      // Track daily lesson count (still counts even on fail — they did practice)
       const today = new Date().toISOString().split('T')[0];
       const isNewDay = prev.lastLessonDate !== today;
       const newLessonsCompletedToday = isNewDay ? 1 : prev.lessonsCompletedToday + 1;
 
       // Update streak using day-based logic (per RULES.md Section 11)
+      // Streak updates even on fail — they practiced today
       const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
 
       // Trigger streak popup if streak was extended
@@ -512,11 +530,11 @@ export function useLessonProgress() {
         setStreakJustExtended(true);
       }
 
-      // Note: nextLessonId and newCurrentPosition already calculated above
-
       const newProgress = {
         ...prev,
-        completedLessons: [...prev.completedLessons, lessonId],
+        // Only add to completedLessons if passed
+        completedLessons: passed ? [...prev.completedLessons, lessonId] : prev.completedLessons,
+        // Only advance position if passed
         currentPosition: newCurrentPosition,
         lessonsCompletedToday: newLessonsCompletedToday,
         lastLessonDate: today,
@@ -525,13 +543,21 @@ export function useLessonProgress() {
       };
       saveProgress(newProgress);
 
-      // Sync to server with error tracking - include currentPosition
+      // Always sync to server (records the attempt with score, even on fail)
       if (user) {
-        syncToServer('lesson', { lessonId, nextLessonId, currentPosition: newCurrentPosition, updateStreak: true });
+        syncToServer('lesson', {
+          lessonId,
+          nextLessonId,
+          currentPosition: passed ? newCurrentPosition : undefined,
+          updateStreak: true,
+          score,
+        });
       }
 
       return newProgress;
     });
+
+    return passed;
   }, [user, syncToServer]);
 
   const recordPuzzleAttempt = useCallback((
