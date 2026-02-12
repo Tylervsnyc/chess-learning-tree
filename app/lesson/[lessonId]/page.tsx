@@ -497,23 +497,32 @@ export default function LessonPage() {
     }
 
     // Checkmate explanation highlights (red = attacked, yellow = blocked by friendly)
-    if (showCheckmateHighlights && game && game.isCheckmate()) {
+    if (game && game.isCheckmate()) {
       const kingColor = game.turn(); // The side in checkmate is the one whose turn it is
       const highlights = getCheckmateSquareHighlights(game, kingColor);
 
-      highlights.attackedSquares.forEach(sq => {
-        styles[sq] = {
-          backgroundColor: 'rgba(255, 0, 0, 0.5)',
-          boxShadow: 'inset 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.4)',
-        };
-      });
+      const allHighlightSquares = [...highlights.attackedSquares, ...highlights.blockedByFriendlySquares];
 
-      highlights.blockedByFriendlySquares.forEach(sq => {
-        styles[sq] = {
-          backgroundColor: 'rgba(255, 255, 0, 0.5)',
-          boxShadow: 'inset 0 0 0 3px rgba(255, 200, 0, 0.8), 0 0 12px rgba(255, 255, 0, 0.4)',
-        };
-      });
+      if (showCheckmateHighlights) {
+        highlights.attackedSquares.forEach(sq => {
+          styles[sq] = {
+            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+            boxShadow: 'inset 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.4)',
+          };
+        });
+
+        highlights.blockedByFriendlySquares.forEach(sq => {
+          styles[sq] = {
+            backgroundColor: 'rgba(255, 255, 0, 0.5)',
+            boxShadow: 'inset 0 0 0 3px rgba(255, 200, 0, 0.8), 0 0 12px rgba(255, 255, 0, 0.4)',
+          };
+        });
+      } else {
+        // Explicitly clear highlight squares so react-chessboard removes cached styles
+        allHighlightSquares.forEach(sq => {
+          styles[sq] = {};
+        });
+      }
     }
 
     return styles;
