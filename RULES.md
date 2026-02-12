@@ -943,8 +943,9 @@ When a player delivers checkmate, the success popup shows a **WHY?** toggle butt
 - **Yellow** = King can't move there — blocked by its own pieces
 
 **Behavior:**
-- Highlights start **ON** by default (auto-triggered on checkmate)
-- WHY? button **toggles on/off** — board highlights appear/disappear with the toggle
+- Highlights start **ON** by default (auto-triggered on checkmate popup mount)
+- WHY? button **toggles on/off** — board highlights AND legend appear/disappear together
+- **Single source of truth:** Parent page owns `showCheckmateHighlights` state, passed to popup as `checkmateExplainActive` prop. Popup has NO local toggle state — it reads and writes the parent's state only.
 - Button fills green when active, outline when inactive
 - Compact one-line legend above Continue button: `[red square] Attacked Square  [yellow square] Blocked by own pieces`
 - Works on **all checkmate puzzles** (tutorial + regular lessons), not just tutorial
@@ -954,8 +955,9 @@ When a player delivers checkmate, the success popup shows a **WHY?** toggle butt
 
 **Logic:**
 - `lib/puzzle-utils.ts` → `getCheckmateSquareHighlights(game, kingColor)` — returns `{ attackedSquares, blockedByFriendlySquares }`
-- `components/puzzle/PuzzleResultPopup.tsx` — WHY? button + inline legend
-- Board highlights applied via `customSquareStyles` in the lesson/tutorial page
+- `components/puzzle/PuzzleResultPopup.tsx` — WHY? button + inline legend (reads `checkmateExplainActive` prop, calls `onShowCheckmateExplain` to toggle)
+- Parent page (lesson/tutorial) owns `showCheckmateHighlights` state → passed as `checkmateExplainActive`
+- Board highlights applied via `customSquareStyles` in the lesson/tutorial page, gated by `showCheckmateHighlights`
 
 ---
 

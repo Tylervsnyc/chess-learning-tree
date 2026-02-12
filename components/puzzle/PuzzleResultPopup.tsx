@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ShareButton } from '@/components/share/ShareButton';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import {
@@ -38,6 +38,7 @@ interface PuzzleResultPopupProps {
   // Checkmate explanation props
   isCheckmate?: boolean;
   onShowCheckmateExplain?: (show: boolean) => void;
+  checkmateExplainActive?: boolean;
 }
 
 export function PuzzleResultPopup({
@@ -54,10 +55,10 @@ export function PuzzleResultPopup({
   rookCurrentStage = 0,
   isCheckmate,
   onShowCheckmateExplain,
+  checkmateExplainActive,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
   const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
-  const [showLegend, setShowLegend] = useState(!!isCheckmate);
 
   // Local refs if external ones not provided
   const localCorrectRef = useRef<RookProgressAnimationRef>(null);
@@ -74,12 +75,13 @@ export function PuzzleResultPopup({
     }
   }, [isCorrect, rookAnimationStyle, rookWrongStyle, correctRef, wrongRef]);
 
-  // Auto-show checkmate highlights on mount
+  // Auto-show checkmate highlights on mount (parent controls initial state)
   useEffect(() => {
-    if (isCorrect && isCheckmate && onShowCheckmateExplain) {
+    if (isCorrect && isCheckmate && onShowCheckmateExplain && !checkmateExplainActive) {
       onShowCheckmateExplain(true);
     }
-  }, [isCorrect, isCheckmate, onShowCheckmateExplain]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only on mount — parent owns the state after that
 
   const showRook = (isCorrect && rookAnimationStyle) || (!isCorrect && rookWrongStyle);
 
@@ -141,14 +143,12 @@ export function PuzzleResultPopup({
             {isCorrect && isCheckmate && onShowCheckmateExplain && (
               <button
                 onClick={() => {
-                  const next = !showLegend;
-                  setShowLegend(next);
-                  onShowCheckmateExplain(next);
+                  onShowCheckmateExplain(!checkmateExplainActive);
                 }}
                 className="flex-shrink-0 text-[12px] font-semibold px-2.5 py-0.5 rounded-full transition-all active:scale-95"
                 style={{
-                  color: showLegend ? '#FFFFFF' : '#46A302',
-                  backgroundColor: showLegend ? '#46A302' : 'rgba(88, 204, 2, 0.12)',
+                  color: checkmateExplainActive ? '#FFFFFF' : '#46A302',
+                  backgroundColor: checkmateExplainActive ? '#46A302' : 'rgba(88, 204, 2, 0.12)',
                   border: '1px solid rgba(88, 204, 2, 0.3)',
                 }}
               >
@@ -158,7 +158,7 @@ export function PuzzleResultPopup({
           </div>
 
           {/* Checkmate legend + Continue button */}
-          {showLegend && (
+          {checkmateExplainActive && (
             <div
               className="flex items-center gap-3 mb-1.5 text-[11px] text-chess-green-dark"
               style={{ animation: 'legendFadeIn 0.25s ease-out' }}

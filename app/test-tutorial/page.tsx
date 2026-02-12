@@ -893,6 +893,7 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
               rookCurrentStage={completedCount - 1}
               isCheckmate
               onShowCheckmateExplain={(show) => setShowCheckmateExplain(show)}
+              checkmateExplainActive={showCheckmateExplain}
             />
           )}
 

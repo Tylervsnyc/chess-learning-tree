@@ -19,27 +19,13 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 **If a task touches files owned by an agent, you MUST dispatch. Do NOT do the work inline.**
 
+See **AGENTS.md** for the full agent roster, file ownership map, and parallel safety matrix.
+
 Spawn via Task tool (`subagent_type: "general-purpose"`). Prompt format:
 ```
 Read .claude/agents/{type}-agent.md, then execute: TASK: {description}
+RULES.md section: § {number} {name}
 ```
-
-| Request mentions... | Agent | File |
-|---|---|---|
-| Colors, tokens, brand, design system, theme | **Design System** | `.claude/agents/design-system-agent.md` |
-| Components, pages, styling, a11y, CSS | **Frontend** | `.claude/agents/frontend-agent.md` |
-| API routes, server logic, auth (not progress) | **Backend** | `.claude/agents/backend-agent.md` |
-| Schema, migrations, queries | **Database** | `.claude/agents/database-agent.md` |
-| Chess board, puzzles, moves, sounds, animation | **Chess** | `.claude/agents/chess-agent.md` |
-| Progress sync, merge, data flow, race conditions | **Sync** | `.claude/agents/sync-agent.md` |
-| Puzzle content, quips, curriculum, lessons | **Content** | `.claude/agents/content-agent.md` |
-| Tests, verify, check, QA, audit | **QA** | `.claude/agents/qa-agent.md` |
-| Architecture, dependencies, design | **Architect** | `.claude/agents/architect-agent.md` |
-| Sharing, OG images, share cards, viral loops | **Growth** | `.claude/agents/growth-agent.md` |
-| CI/CD, deployment, monitoring, env | **DevOps** | `.claude/agents/devops-agent.md` |
-| New levels, curriculum design, puzzle pools | **Levels** | `.claude/agents/levels-agent.md` |
-| Manifest, service worker, install prompts, offline | **PWA** | `.claude/agents/pwa-agent.md` |
-| Desktop/tablet layouts, breakpoints, responsive | **Responsive** | `.claude/agents/responsive-agent.md` |
 
 ### Dispatch Rules
 

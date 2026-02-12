@@ -1289,6 +1289,7 @@ export default function LessonPage() {
               rookCurrentStage={completedPuzzleCount - 1}
               isCheckmate={isCheckmatePuzzle && game?.isCheckmate()}
               onShowCheckmateExplain={(show) => setShowCheckmateHighlights(show)}
+              checkmateExplainActive={showCheckmateHighlights}
             />
           )}
 
