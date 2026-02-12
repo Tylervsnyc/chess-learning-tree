@@ -98,6 +98,20 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 
 **Note:** The pulsing ring always shows on `currentPosition`, even if that lesson is completed. This indicates "you are here" in the curriculum.
 
+### Lesson Icon Selection (priority order):
+1. **`pieceFilter`** — If the lesson has an explicit piece filter, use that piece as the icon
+2. **`isMixedPractice`** — Mixed practice / review lessons show a star
+3. **Pattern-based tag matching** — `getIconForTag()` in `/app/learn/page.tsx` maps `requiredTags` to icons using string patterns (not a hardcoded map), so new tags auto-match:
+   - `*Endgame` → the piece in the tag name (e.g. `rookEndgame` → rook)
+   - `smotheredMate`, `arabian*`, `hook*`, `*fork*` → knight
+   - `*mate*` (generic) → queen
+   - `pin`, `skewer`, `xRayAttack` → bishop
+   - `*pawn*`, `promotion`, `defensiveMove`, `quietMove` → pawn
+   - `crushing`, `*Attack`, `exposedKing`, `doubleCheck` → queen
+   - `hangingPiece`, `trappedPiece` → rook
+   - `discoveredAttack`, `deflection`, `intermezzo`, `sacrifice`, `attraction`, `clearance`, `interference` → star
+4. **Fallback** — Cycle through `['knight', 'queen', 'rook', 'bishop', 'pawn', 'star']` by position index
+
 ---
 
 ## 3. Level Unlocking
@@ -475,7 +489,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | Page | Status | Purpose |
 |------|--------|---------|
 | `/` | KEEP | Landing (new users) or redirect to /learn (returning) |
-| `/about` | KEEP | Step 2 of new user flow |
+| `/about` | KEEP | "How It Works" onboarding instructions (3 steps: free lessons, level test, daily rook) |
 | `/learn` | KEEP | Main curriculum tree |
 | `/lesson/[lessonId]` | KEEP | Puzzle solving |
 | `/level-test/[transition]` | KEEP | Level unlock tests |
@@ -511,8 +525,10 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ### Animated Logo:
 - **Component**: `/components/brand/AnimatedLogo.tsx`
 - **Animation**: Blocks fade in from center outward (~850ms ripple), then wordmark fades in
+- **Breathing animation**: `perpetual` prop — blocks glow (brightness 1→1.35→1) in a ripple pattern from center outward. Rook stays still, colors breathe. Use on `/about` page.
 - **Landing page (`/`) MUST use animated logo** - not the static SVG
-- Props: `theme="light"|"dark"`, `size="sm"|"md"|"lg"`, `iconOnly`, `autoPlay`
+- **About page (`/about`) uses AnimatedLogo** with `perpetual`, `iconOnly`, centered below "How It Works" heading
+- Props: `theme="light"|"dark"`, `size="sm"|"md"|"lg"`, `iconOnly`, `autoPlay`, `perpetual`
 - Test page: `/test-animated-logo`
 
 ### Layout Centering Rules:
