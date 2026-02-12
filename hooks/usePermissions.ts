@@ -215,7 +215,12 @@ export function usePermissions() {
   }, [user, userLoading]);
 
   // Record a completed lesson
-  const recordLessonComplete = useCallback(() => {
+  // Returns { shouldPromptSignup } so callers get the freshly-computed value
+  // (avoids stale closure — React batches re-renders, so the derived
+  //  shouldPromptSignup from permissions hasn't recalculated yet)
+  const recordLessonComplete = useCallback((): { shouldPromptSignup: boolean } => {
+    let newShouldPromptSignup = false;
+
     setLessonData(prev => {
       const updated: LessonTrackingData = {
         ...prev,
@@ -225,6 +230,14 @@ export function usePermissions() {
           : prev.totalLessonsAsAnon,
         lastResetDate: getTodayDateString(),
       };
+
+      // Pre-calculate signup prompt for callers (avoids stale closure issue)
+      if (tier === 'anonymous') {
+        const limit = LESSON_LIMITS.anonymous.totalLessons;
+        const remaining = Math.max(0, limit - updated.totalLessonsAsAnon);
+        newShouldPromptSignup = remaining === 0;
+      }
+
       saveLessonData(updated);
       return updated;
     });
@@ -235,6 +248,8 @@ export function usePermissions() {
       fetch('/api/anonymous-lessons', { method: 'POST' })
         .catch(err => console.error('Failed to update anonymous lesson count:', err));
     }
+
+    return { shouldPromptSignup: newShouldPromptSignup };
   }, [tier]);
 
   // Reset daily count (for testing or manual reset)

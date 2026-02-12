@@ -45,7 +45,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
-import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
@@ -580,11 +580,7 @@ export default function LessonPage() {
         return true;
       } else {
         // Check for alternate checkmate
-        const isMatingPuzzle = currentPuzzle.themes.some((t: string) =>
-          t.toLowerCase().includes('mate')
-        );
-
-        if (isMatingPuzzle && gameCopy.isCheckmate()) {
+        if (isAlternateCheckmate(gameCopy, currentPuzzle.themes)) {
           setCurrentFen(gameCopy.fen());
           setSelectedSquare(null);
           setShowMoveHint(false);
@@ -816,14 +812,15 @@ export default function LessonPage() {
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
 
       // Record the lesson completion for permission tracking
-      recordLessonComplete();
+      // Use the returned value (not the stale closure) to check signup prompt
+      const { shouldPromptSignup: promptSignup } = recordLessonComplete();
 
       // Track in analytics
       const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
       LearningEvents.lessonCompleted(lessonId, accuracy, 0);
 
       // Show appropriate modal for users who've hit their limit
-      if (shouldPromptSignup) {
+      if (promptSignup) {
         const timer = setTimeout(() => {
           setShowCreateProfileModal(true);
         }, 2000);
@@ -835,7 +832,7 @@ export default function LessonPage() {
         return () => clearTimeout(timer);
       }
     }
-  }, [lessonComplete, lessonPassed, shouldPromptSignup, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
+  }, [lessonComplete, lessonPassed, shouldPromptPremium, recordLessonComplete, firstAttemptCorrectCount, puzzles.length, lessonId]);
 
   // Confetti + celebration sound now handled by LessonCompleteScreen component
 
@@ -965,12 +962,12 @@ export default function LessonPage() {
         onComplete={(correctCount) => {
           setTutorialCorrectCount(correctCount);
           completeLesson(lessonId, allLessonIds);
-          recordLessonComplete();
+          const { shouldPromptSignup: promptSignup } = recordLessonComplete();
           const accuracy = Math.round((correctCount / 6) * 100);
           LearningEvents.lessonCompleted(lessonId, accuracy, 0);
           window.dispatchEvent(new Event('chess-path:puzzle-complete'));
           setLessonComplete(true);
-          if (shouldPromptSignup) {
+          if (promptSignup) {
             setTimeout(() => setShowCreateProfileModal(true), 2000);
           } else if (shouldPromptPremium) {
             setTimeout(() => setShowLimitModal(true), 2000);
