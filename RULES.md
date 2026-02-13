@@ -957,7 +957,42 @@ When a player delivers checkmate, the success popup shows a **WHY?** toggle butt
 - `lib/puzzle-utils.ts` → `getCheckmateSquareHighlights(game, kingColor)` — returns `{ attackedSquares, blockedByFriendlySquares }`
 - `components/puzzle/PuzzleResultPopup.tsx` — WHY? button + inline legend (reads `checkmateExplainActive` prop, calls `onShowCheckmateExplain` to toggle)
 - Parent page (lesson/tutorial) owns `showCheckmateHighlights` state → passed as `checkmateExplainActive`
-- Board highlights applied via `customSquareStyles` in the lesson/tutorial page, gated by `showCheckmateHighlights`
+- Board highlights applied via `squareStyles` in the lesson/tutorial page, gated by `showCheckmateHighlights`
+- **Style clearing:** When toggling highlights OFF, squares must be explicitly set to `{}` (empty style objects) — not omitted from the object. react-chessboard v5 caches square styles internally and won't clear them if the key is simply absent.
+
+---
+
+## 18d. ChessPathBoard Wrapper
+
+**NEVER import `Chessboard` from `react-chessboard` directly.** Always use:
+
+```tsx
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
+```
+
+### Why
+The raw `Chessboard` component ships with default piece styling and no board colors. Every page that uses it must manually configure `darkSquareStyle`, `lightSquareStyle`, and `boardStyle` — and agents consistently forget this, producing boards that don't match the app's look.
+
+### What It Does
+`ChessPathBoard` wraps `react-chessboard`'s `Chessboard` with Chess Path defaults:
+- **Board colors:** Green/cream from `BOARD_COLORS` (`#779952` / `#edeed1`)
+- **Board style:** `borderRadius: 8px`, `boxShadow: 0 4px 20px rgba(0,0,0,0.3)`
+- All `react-chessboard` options are passed as top-level props (same API, no `options` wrapper needed)
+- Style props (`boardStyle`, `darkSquareStyle`, `lightSquareStyle`) are **merged** — your overrides win
+
+### Usage
+```tsx
+<ChessPathBoard
+  position={fen}
+  boardOrientation="white"
+  onSquareClick={handler}
+  squareStyles={highlights}
+  boardStyle={{ borderRadius: '8px 8px 0 0' }}  // override just border-radius
+/>
+```
+
+### File
+`components/puzzle/ChessPathBoard.tsx` — owned by Chess Agent.
 
 ---
 

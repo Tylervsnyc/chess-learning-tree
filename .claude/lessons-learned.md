@@ -120,4 +120,16 @@ The POST `/api/progress` route validated lesson unlocks using sequential order, 
 
 ---
 
+### Lesson: 2026-02-12 - Test page wasn't scrollable, used fake pieces
+Tyler creates test pages to compare design variants. Two rules: (1) Test pages MUST scroll — use `min-h-screen` not `h-screen`, never `overflow-hidden` on the page wrapper. (2) Use the real `react-chessboard` Chessboard component with real piece images, not Unicode chess symbols — Unicode looks nothing like the app.
+-> **New rule:** Test/comparison pages must be scrollable and use real app components (Chessboard, design tokens, etc.) so Tyler can evaluate accurately.
+
+---
+
+### Lesson: 2026-02-12 - react-chessboard v5 caches square styles
+When toggling custom square highlights off, omitting a square key from the `squareStyles` object does NOT clear it. react-chessboard's memo'd Square component doesn't reconcile `undefined` → no style. You must explicitly set cleared squares to `{}` (empty style object) so React sees a definitive style change.
+-> **New rule:** When clearing per-square styles in react-chessboard, always pass `{}` for previously-styled squares — never rely on key absence.
+
+---
+
 *Add new lessons at the bottom. Follow the format above.*

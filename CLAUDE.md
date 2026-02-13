@@ -8,7 +8,7 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 - **Vibe coder** — explain simply, no jargon dumps. Short responses preferred.
 - **Ask before big changes.** Propose, don't just do. List the blast radius.
-- When Tyler says "fix this" — investigate briefly in main conversation, then dispatch to the owning agent.
+- When Tyler says "fix this" — **dispatch immediately.** Don't deep-dive the library source code or trace through rendering internals. A quick skim to identify the right agent is fine; anything beyond that wastes tokens. Let the agent investigate and fix.
 - Don't over-explain. If the fix is obvious, just do it (or dispatch it).
 - When Tyler asks "how does X work?" — answer directly, don't launch an agent.
 - Celebrate wins briefly. Tyler likes to see progress.
