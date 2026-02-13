@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
 import { Welcome } from '@/lib/email/templates/Welcome';
 import type { EmailType } from '@/types/email';
+import { createServiceClient } from '@/lib/supabase/service';
 
 // This route is for internal use (triggered by signup, etc.)
 // It should be protected by a secret or only called from server-side code
@@ -11,13 +11,6 @@ function verifyInternalSecret(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const secret = process.env.CRON_SECRET; // Reuse cron secret for internal calls
   return authHeader === `Bearer ${secret}`;
-}
-
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) throw new Error('Supabase configuration missing');
-  return createClient(url, serviceKey);
 }
 
 export async function POST(request: NextRequest) {
@@ -37,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const appUrl = getAppUrl();
 
     // Get user data

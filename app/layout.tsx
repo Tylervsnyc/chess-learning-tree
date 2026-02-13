@@ -63,7 +63,7 @@ export default function RootLayout({
           <ScrollToTop />
           <PostHogProvider>
             <NavHeader />
-            <main className="flex-1 min-h-0 flex flex-col">
+            <main className="flex-1 min-h-0 flex flex-col max-w-3xl mx-auto w-full">
               {children}
             </main>
             <InstallPrompt />

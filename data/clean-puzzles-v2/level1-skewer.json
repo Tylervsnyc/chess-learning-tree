@@ -21,23 +21,6 @@
       "gameUrl": "https://lichess.org/TLahSitm#61"
     },
     {
-      "puzzleId": "GpO0O",
-      "fen": "8/6pk/4p2p/1Q1p4/2pP4/PKP5/1P3r2/8 w - - 0 39",
-      "moves": "b3b4 f2b2 b4a5 b2b5",
-      "rating": 476,
-      "popularity": 84,
-      "nbPlays": 1241,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/HdjXxVIp#77"
-    },
-    {
       "puzzleId": "EDuVh",
       "fen": "3k2r1/R1p5/8/8/PP5p/2PK4/7b/8 b - - 0 31",
       "moves": "h4h3 a7a8 d8d7 a8g8",
@@ -52,24 +35,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/vU5GOdaQ/black#62"
-    },
-    {
-      "puzzleId": "Jb7mA",
-      "fen": "2R5/1r4kp/1r2p1p1/3pP3/p7/P7/2P3PP/2K1R3 w - - 5 31",
-      "moves": "e1f1 b6b1 c1d2 b1f1",
-      "rating": 526,
-      "popularity": 84,
-      "nbPlays": 1030,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/jVKwtUtl#61"
     },
     {
       "puzzleId": "4RvRO",
@@ -159,23 +124,6 @@
       "gameUrl": "https://lichess.org/Aq2QZaff/black#58"
     },
     {
-      "puzzleId": "CYngP",
-      "fen": "4r3/5p2/p2p1k1p/3P4/3Rp1P1/1P2K1P1/7P/8 b - - 5 34",
-      "moves": "f6e5 d4e4 e5d5 e4e8",
-      "rating": 563,
-      "popularity": 82,
-      "nbPlays": 1120,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/VAZWgO3E/black#68"
-    },
-    {
       "puzzleId": "XMfas",
       "fen": "6r1/R1pk4/1p1p4/bP1Pp3/2K1PpPp/5P1P/8/5B2 b - - 1 41",
       "moves": "d7c8 a7a8 c8d7 a8g8",
@@ -210,22 +158,6 @@
       "gameUrl": "https://lichess.org/mo0tacfw/black#138"
     },
     {
-      "puzzleId": "ICntE",
-      "fen": "r2k4/3p4/b4R1p/4np2/p1P3p1/K2BP3/3N1PPP/8 b - - 0 29",
-      "moves": "e5d3 f6f8 d8e7 f8a8",
-      "rating": 572,
-      "popularity": 82,
-      "nbPlays": 1161,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/yFkdXA9x/black#58"
-    },
-    {
       "puzzleId": "1qgS6",
       "fen": "2k3r1/R6p/2pp4/8/4P3/1P2n1P1/P1P4P/7K b - - 0 30",
       "moves": "h7h5 a7a8 c8c7 a8g8",
@@ -240,22 +172,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/zk2rp9Xo/black#60"
-    },
-    {
-      "puzzleId": "vy9FX",
-      "fen": "1r2k3/6R1/4Pn2/ppp4P/8/2P5/PP6/2K5 b - - 0 32",
-      "moves": "f6h5 g7g8 e8e7 g8b8",
-      "rating": 574,
-      "popularity": 88,
-      "nbPlays": 1449,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Orj7u4fr/black#64"
     },
     {
       "puzzleId": "t3hkS",
@@ -324,54 +240,6 @@
       "gameUrl": "https://lichess.org/IsgcRFCQ#51"
     },
     {
-      "puzzleId": "swBVX",
-      "fen": "2r2k2/p4pp1/7n/8/8/5P2/P1N4R/2K5 b - - 0 36",
-      "moves": "h6f5 h2h8 f8e7 h8c8",
-      "rating": 589,
-      "popularity": 85,
-      "nbPlays": 1050,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/JGcjXIlZ/black#72"
-    },
-    {
-      "puzzleId": "eCAju",
-      "fen": "r1b1k3/pp3p1p/2pp4/4p3/P1P1P2r/6R1/1P1NBP1n/2B1K3 b q - 1 24",
-      "moves": "c8e6 g3g8 e8d7 g8a8",
-      "rating": 590,
-      "popularity": 86,
-      "nbPlays": 1534,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/NsB2ZjLB/black#48"
-    },
-    {
-      "puzzleId": "UkwtC",
-      "fen": "4k2r/R7/1p4pp/2b5/8/2P5/P1P2P1P/3K4 b k - 0 23",
-      "moves": "c5f2 a7a8 e8f7 a8h8",
-      "rating": 591,
-      "popularity": 85,
-      "nbPlays": 1353,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/j7NVh1ul/black#46"
-    },
-    {
       "puzzleId": "lkV6H",
       "fen": "r1b5/pp4pk/2p5/4p1P1/1B2P3/P7/1PP1K3/3R4 w - - 0 32",
       "moves": "b4c3 c8g4 e2e1 g4d1",
@@ -421,23 +289,6 @@
       "gameUrl": "https://lichess.org/u85lNmNC/black#48"
     },
     {
-      "puzzleId": "hMNGN",
-      "fen": "8/3k4/8/8/r1pK3P/5R2/5P2/8 w - - 1 51",
-      "moves": "d4c3 a4a3 c3b4 a3f3",
-      "rating": 598,
-      "popularity": 88,
-      "nbPlays": 1119,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/UYe5IpJr#101"
-    },
-    {
       "puzzleId": "iznLq",
       "fen": "2kr1b1r/ppp2ppp/2n2n2/4p3/3P1N2/2P1B3/PP3P2/RN3K1Q w - - 0 14",
       "moves": "d4e5 d8d1 f1g2 d1h1",
@@ -471,23 +322,6 @@
       "gameUrl": "https://lichess.org/yiFfzmmT#63"
     },
     {
-      "puzzleId": "kTp6D",
-      "fen": "2k2r2/1p3r2/4p3/1P5p/R1pPp1p1/2P3P1/5PKP/5R2 b - - 1 30",
-      "moves": "f7c7 a4a8 c8d7 a8f8",
-      "rating": 601,
-      "popularity": 80,
-      "nbPlays": 1012,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/yUUaR36M/black#60"
-    },
-    {
       "puzzleId": "VIrfJ",
       "fen": "2k5/p7/2N4p/1p2b1p1/4P1P1/P2P4/r7/2K2R2 w - - 2 43",
       "moves": "c6e5 a2a1 c1d2 a1f1",
@@ -518,38 +352,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/U2LGZqja#49"
-    },
-    {
-      "puzzleId": "I6NYH",
-      "fen": "r3k3/7R/p1b5/P4p2/5P2/6Pp/7P/6K1 b - - 1 30",
-      "moves": "a8b8 h7h8 e8d7 h8b8",
-      "rating": 608,
-      "popularity": 84,
-      "nbPlays": 1613,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/eEIV5ONH/black#60"
-    },
-    {
-      "puzzleId": "2Mly4",
-      "fen": "rn3k2/p4p1R/2p1p3/5p2/8/1BP5/P1PK4/8 b - - 0 24",
-      "moves": "b8a6 h7h8 f8e7 h8a8",
-      "rating": 609,
-      "popularity": 84,
-      "nbPlays": 1175,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/wQ3RF9qt/black#48"
     },
     {
       "puzzleId": "0oyVp",
@@ -599,23 +401,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/iB4aTEy2#61"
-    },
-    {
-      "puzzleId": "FuAfN",
-      "fen": "1r2k3/5p1p/p5NR/8/1p4P1/8/PP2K2P/8 b - - 0 31",
-      "moves": "h7g6 h6h8 e8e7 h8b8",
-      "rating": 616,
-      "popularity": 85,
-      "nbPlays": 1182,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/bbyiJrrb/black#62"
     },
     {
       "puzzleId": "UGgOG",
@@ -682,22 +467,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/U84N1Ibq/black#86"
-    },
-    {
-      "puzzleId": "ZPeC0",
-      "fen": "6k1/3N1p1p/6p1/4n3/P7/2K5/6Pb/R7 w - - 0 51",
-      "moves": "d7e5 h2e5 c3c2 e5a1",
-      "rating": 619,
-      "popularity": 87,
-      "nbPlays": 1143,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/3Wfkmnmq#101"
     },
     {
       "puzzleId": "kNHL8",
@@ -833,39 +602,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/2wC7t1ux/black#86"
-    },
-    {
-      "puzzleId": "lls5H",
-      "fen": "3r4/6p1/4kp1p/1bP5/5PP1/2K4P/8/2R5 b - - 7 38",
-      "moves": "e6d5 c1d1 d5c5 d1d8",
-      "rating": 624,
-      "popularity": 88,
-      "nbPlays": 1526,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/TLTp28jM/black#76"
-    },
-    {
-      "puzzleId": "zCE8K",
-      "fen": "8/8/P7/6pp/2k5/6PP/2K2r2/R7 w - - 1 52",
-      "moves": "c2d1 f2f1 d1e2 f1a1",
-      "rating": 624,
-      "popularity": 86,
-      "nbPlays": 1557,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/qDWk79RP#103"
     },
     {
       "puzzleId": "gz5qF",
@@ -1217,23 +953,6 @@
       "gameUrl": "https://lichess.org/Lb45QjiL/black#70"
     },
     {
-      "puzzleId": "2dtzK",
-      "fen": "4b3/8/3k4/p2p1pp1/2pP4/P1P1PP2/4K3/3B4 b - - 8 48",
-      "moves": "d6c6 d1a4 c6d6 a4e8",
-      "rating": 637,
-      "popularity": 87,
-      "nbPlays": 1712,
-      "theme": "skewer",
-      "allThemes": [
-        "bishopEndgame",
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/jvwvHU0J/black#96"
-    },
-    {
       "puzzleId": "yf7Ua",
       "fen": "4kb1r/5ppp/4p3/1p2P3/1P6/2R2N2/6PP/6K1 b k - 0 26",
       "moves": "f8b4 c3c8 e8d7 c8h8",
@@ -1348,40 +1067,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/nPrhNVUK/black#60"
-    },
-    {
-      "puzzleId": "PjKS0",
-      "fen": "2kr2nr/2p2p1p/2B5/1pb3p1/5p1P/2P5/PP4P1/R1B2K1R w - - 1 18",
-      "moves": "h4g5 d8d1 f1e2 d1h1",
-      "rating": 642,
-      "popularity": 88,
-      "nbPlays": 1959,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/C4x5hCNd#35"
-    },
-    {
-      "puzzleId": "z2TID",
-      "fen": "r4k2/3p1p2/4p3/p6R/2P3p1/8/5P2/6K1 b - - 4 46",
-      "moves": "a5a4 h5h8 f8e7 h8a8",
-      "rating": 642,
-      "popularity": 88,
-      "nbPlays": 1208,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Oylgn49i/black#92"
     },
     {
       "puzzleId": "KwvTk",
@@ -1502,39 +1187,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/NpjS2Ab5/black#146"
-    },
-    {
-      "puzzleId": "ATAbf",
-      "fen": "4k2r/B2b1ppp/4pn2/3p4/1b6/8/P1PN1PPP/1R4K1 b k - 2 18",
-      "moves": "b4d2 b1b8 d7c8 b8c8 e8d7 c8h8",
-      "rating": 645,
-      "popularity": 88,
-      "nbPlays": 1066,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "long",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/caMnHMel/black#36"
-    },
-    {
-      "puzzleId": "TlLYx",
-      "fen": "5r2/pp5p/3pkP2/2p2R2/4P1r1/8/P6P/Q2K4 w - - 0 30",
-      "moves": "h2h3 g4g1 d1c2 g1a1",
-      "rating": 645,
-      "popularity": 86,
-      "nbPlays": 1259,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/vJhOadsj#59"
     },
     {
       "puzzleId": "ENZRE",
@@ -1707,41 +1359,6 @@
       "gameUrl": "https://lichess.org/BxZ5cA1T/black#66"
     },
     {
-      "puzzleId": "kwGxg",
-      "fen": "3k2r1/pR4pp/5p2/2p2K2/8/P4P1P/8/8 b - - 0 34",
-      "moves": "a7a6 b7b8 d8e7 b8g8",
-      "rating": 647,
-      "popularity": 87,
-      "nbPlays": 1406,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/MooxIB6o/black#68"
-    },
-    {
-      "puzzleId": "djgUm",
-      "fen": "2r1k3/pp5R/4pp2/3p4/3P4/8/PPP5/1K6 b - - 1 27",
-      "moves": "c8b8 h7h8 e8d7 h8b8",
-      "rating": 647,
-      "popularity": 86,
-      "nbPlays": 1056,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/M8b45yQh/black#54"
-    },
-    {
       "puzzleId": "QhvTj",
       "fen": "4k2r/p4ppp/4p3/n1rp4/8/P2KP3/3N1PPP/R1R5 b k - 1 21",
       "moves": "c5b5 c1c8 e8e7 c8h8",
@@ -1905,39 +1522,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/iHAUKsE6#55"
-    },
-    {
-      "puzzleId": "r3CA5",
-      "fen": "4r3/1p5p/p4k2/2pP2p1/8/3K3P/PP4P1/3R4 b - - 3 35",
-      "moves": "f6e5 d1e1 e5d5 e1e8",
-      "rating": 649,
-      "popularity": 88,
-      "nbPlays": 1575,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/wiDKnu5W/black#70"
-    },
-    {
-      "puzzleId": "L4uDf",
-      "fen": "4k2r/1b1p1p2/p3p3/2p1P1p1/2P5/2PB4/5KPP/1R6 b k - 1 23",
-      "moves": "b7c6 b1b8 e8e7 b8h8",
-      "rating": 649,
-      "popularity": 84,
-      "nbPlays": 1666,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/QnuHWUdL/black#46"
     },
     {
       "puzzleId": "raNUE",
@@ -2142,23 +1726,6 @@
       "gameUrl": "https://lichess.org/gye1wY0D#65"
     },
     {
-      "puzzleId": "VbhWE",
-      "fen": "1r2k3/pp5R/2p1p3/5pp1/8/4P1P1/PPP5/2K5 b - - 0 31",
-      "moves": "a7a5 h7h8 e8e7 h8b8",
-      "rating": 652,
-      "popularity": 85,
-      "nbPlays": 1099,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/XnNRGQ79/black#62"
-    },
-    {
       "puzzleId": "jHcif",
       "fen": "4kb1r/6pp/1B2b3/4pp2/1P2p3/2r3P1/3R1PBP/5RK1 b k - 0 18",
       "moves": "f8b4 d2d8 e8f7 d8h8",
@@ -2242,41 +1809,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/VvwxKTek#47"
-    },
-    {
-      "puzzleId": "W1FIK",
-      "fen": "R7/K7/PP2rk2/8/8/8/q6P/8 b - - 2 43",
-      "moves": "a2f2 a8f8 f6e5 f8f2",
-      "rating": 653,
-      "popularity": 85,
-      "nbPlays": 1052,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/eDX5RESO/black#86"
-    },
-    {
-      "puzzleId": "jQhjW",
-      "fen": "8/8/5R2/1k1p2P1/p7/4PKPP/8/r7 w - - 2 51",
-      "moves": "g5g6 a1f1 f3g4 f1f6",
-      "rating": 653,
-      "popularity": 84,
-      "nbPlays": 1011,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/dvKbwUPg#101"
     },
     {
       "puzzleId": "LVJUX",
@@ -2397,22 +1929,6 @@
       "gameUrl": "https://lichess.org/moHogXtp/black#90"
     },
     {
-      "puzzleId": "GFF7b",
-      "fen": "3k3r/2p2ppp/R3p1b1/pp2P3/8/4PN1P/PP3KP1/8 b - - 1 21",
-      "moves": "a5a4 a6a8 d8d7 a8h8",
-      "rating": 655,
-      "popularity": 86,
-      "nbPlays": 1391,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/5TcUyrba/black#42"
-    },
-    {
       "puzzleId": "2FzXZ",
       "fen": "3k2r1/p2p4/1b6/1R4P1/8/6PK/6P1/8 b - - 6 51",
       "moves": "b6e3 b5b8 d8e7 b8g8",
@@ -2461,56 +1977,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/Z7EI2TrD#47"
-    },
-    {
-      "puzzleId": "hjDWP",
-      "fen": "8/1p2k3/p4R1p/6p1/P3K1P1/1P5r/2P5/8 w - - 2 47",
-      "moves": "e4f5 h3f3 f5e4 f3f6",
-      "rating": 656,
-      "popularity": 88,
-      "nbPlays": 1960,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "deflection",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/PhJUd3lr#93"
-    },
-    {
-      "puzzleId": "sp5FX",
-      "fen": "3k3r/1R6/p2p4/3B4/1PPp3p/6r1/1KP5/8 b - - 0 40",
-      "moves": "h4h3 b7b8 d8c7 b8h8",
-      "rating": 656,
-      "popularity": 88,
-      "nbPlays": 1201,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/M9eqD2z7/black#80"
-    },
-    {
-      "puzzleId": "89mRp",
-      "fen": "8/8/8/8/7R/1p6/1Pbk2K1/8 w - - 3 65",
-      "moves": "h4h1 c2e4 g2g1 e4h1",
-      "rating": 656,
-      "popularity": 86,
-      "nbPlays": 1097,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/g74bGkA1#129"
     },
     {
       "puzzleId": "bEsAu",
@@ -2782,24 +2248,6 @@
       "gameUrl": "https://lichess.org/vmFPiF8M/black#110"
     },
     {
-      "puzzleId": "vqXce",
-      "fen": "8/p4p2/P1r2k2/7R/2p5/5P1P/6K1/8 b - - 0 42",
-      "moves": "c4c3 h5h6 f6e5 h6c6",
-      "rating": 659,
-      "popularity": 89,
-      "nbPlays": 1154,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/bU8kw5rJ/black#84"
-    },
-    {
       "puzzleId": "S4zP7",
       "fen": "r1bk1b1r/1p3Bp1/p1n4p/P1p5/3p1p2/3P4/1PPN1PPP/R3R1K1 b - - 3 20",
       "moves": "c8f5 e1e8 d8c7 e8a8",
@@ -2885,22 +2333,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/gNlq26vT#125"
-    },
-    {
-      "puzzleId": "g5OI6",
-      "fen": "3r1k2/6pQ/5p1p/4p3/2PpP1qP/3P2P1/6K1/4R3 b - - 4 40",
-      "moves": "d8a8 h7h8 f8f7 h8a8",
-      "rating": 660,
-      "popularity": 88,
-      "nbPlays": 1424,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/6iUmWss6/black#80"
     },
     {
       "puzzleId": "yOxSW",
@@ -3039,22 +2471,6 @@
       "gameUrl": "https://lichess.org/e1ckmChb/black#100"
     },
     {
-      "puzzleId": "zbi6T",
-      "fen": "3r2k1/ppp2pp1/8/8/1b4P1/4PP1R/Pr3PK1/7R b - - 3 22",
-      "moves": "f7f6 h3h8 g8f7 h8d8",
-      "rating": 661,
-      "popularity": 87,
-      "nbPlays": 1728,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/LRcv6UnP/black#44"
-    },
-    {
       "puzzleId": "Ru40K",
       "fen": "5k1r/6p1/p6p/1p3p2/PR6/8/1P3PPP/6K1 b - - 0 25",
       "moves": "b5a4 b4b8 f8e7 b8h8",
@@ -3135,38 +2551,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/dyISHKnz/black#62"
-    },
-    {
-      "puzzleId": "5wizA",
-      "fen": "r2r2k1/6p1/1p1p4/3P1p2/5P2/P1p1P1P1/PbK4R/7R b - - 0 33",
-      "moves": "a8a3 h2h8 g8f7 h8d8",
-      "rating": 662,
-      "popularity": 83,
-      "nbPlays": 1039,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/SMaYN6rf/black#66"
-    },
-    {
-      "puzzleId": "xgvuk",
-      "fen": "8/pp6/k1p5/8/3B4/4P3/7r/2R1K3 w - - 6 48",
-      "moves": "e1f1 h2h1 f1f2 h1c1",
-      "rating": 662,
-      "popularity": 83,
-      "nbPlays": 1318,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/o79qGCkL#95"
     },
     {
       "puzzleId": "kKS1J",
@@ -3320,39 +2704,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/ZnAh2j45#73"
-    },
-    {
-      "puzzleId": "oUUug",
-      "fen": "8/5kpp/1R1p1p2/8/1p6/1P1K1P1P/2P3P1/6r1 w - - 2 30",
-      "moves": "b6d6 g1d1 d3c4 d1d6",
-      "rating": 663,
-      "popularity": 86,
-      "nbPlays": 1345,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/VokFADuH#59"
-    },
-    {
-      "puzzleId": "PLPKS",
-      "fen": "6rk/p4p1p/p1p2p2/3p4/3P4/2NN4/PPP2P1b/R4K2 w - - 0 22",
-      "moves": "c3a4 g8g1 f1e2 g1a1",
-      "rating": 663,
-      "popularity": 83,
-      "nbPlays": 1060,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/HIJHtF3o#43"
     },
     {
       "puzzleId": "ldIf3",
@@ -3540,23 +2891,6 @@
       "gameUrl": "https://lichess.org/lWgk8wGy/black#122"
     },
     {
-      "puzzleId": "N1tUU",
-      "fen": "2r2k2/1pp2pb1/p2p4/7R/3Pb3/1P5R/P4PP1/6K1 b - - 9 37",
-      "moves": "e4g6 h5h8 g7h8 h3h8 f8e7 h8c8",
-      "rating": 665,
-      "popularity": 85,
-      "nbPlays": 1432,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "long",
-        "sacrifice",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/5gPHX9YH/black#74"
-    },
-    {
       "puzzleId": "TLZ4n",
       "fen": "1r2k3/5nR1/5pp1/ppP5/4P3/7P/P4K2/8 b - - 3 43",
       "moves": "g6g5 g7g8 e8d7 g8b8",
@@ -3653,23 +2987,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/epegCFvk/black#112"
-    },
-    {
-      "puzzleId": "nNix1",
-      "fen": "3r4/1p5p/p3k1p1/8/8/1P1p2P1/5P1P/3RK3 b - - 3 33",
-      "moves": "e6d5 d1d3 d5c6 d3d8",
-      "rating": 666,
-      "popularity": 84,
-      "nbPlays": 1171,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/B20woL4v/black#66"
     },
     {
       "puzzleId": "1FvEo",
@@ -3805,24 +3122,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/UDCa2Cvy/black#66"
-    },
-    {
-      "puzzleId": "LYAfu",
-      "fen": "6kr/1R1p3p/P1bNp2B/5n2/6p1/1p6/1P3PP1/6K1 b - - 2 42",
-      "moves": "f5d6 b7b8 g8f7 b8h8",
-      "rating": 667,
-      "popularity": 86,
-      "nbPlays": 1044,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "deflection",
-        "endgame",
-        "master",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/oFW0GXW5/black#84"
     },
     {
       "puzzleId": "83XTY",
@@ -4111,39 +3410,6 @@
       "gameUrl": "https://lichess.org/BtkQ3LQQ#103"
     },
     {
-      "puzzleId": "RZNio",
-      "fen": "8/pp6/3p4/2pP4/2P5/1P1k3R/r6p/2K5 b - - 6 57",
-      "moves": "d3e2 h3h2 e2d3 h2a2",
-      "rating": 670,
-      "popularity": 88,
-      "nbPlays": 1109,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/EMPl0onZ/black#114"
-    },
-    {
-      "puzzleId": "Juwcs",
-      "fen": "5k1r/p5pp/1p6/8/1PnR4/8/P4PPP/6K1 b - - 0 28",
-      "moves": "c4e5 d4d8 f8e7 d8h8",
-      "rating": 670,
-      "popularity": 85,
-      "nbPlays": 1160,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/ZTqIkrun/black#56"
-    },
-    {
       "puzzleId": "sw6v1",
       "fen": "8/1q2Bk2/7R/8/b7/5PP1/6PK/8 b - - 0 47",
       "moves": "f7e7 h6h7 e7d6 h7b7",
@@ -4192,38 +3458,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/bLHuFcaK#83"
-    },
-    {
-      "puzzleId": "chhc9",
-      "fen": "r4rk1/4bppp/3p4/3Rp3/4P3/1q2BP2/PPP3PP/2K4R w - - 0 19",
-      "moves": "a2b3 a8a1 c1d2 a1h1",
-      "rating": 671,
-      "popularity": 87,
-      "nbPlays": 1046,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/WFKK4uGn#37"
-    },
-    {
-      "puzzleId": "KGlbk",
-      "fen": "4k2r/Rp3ppn/2p1p1p1/8/1Pr1P3/6P1/1P3P1P/1N3RK1 b k - 0 20",
-      "moves": "c4b4 a7a8 e8e7 a8h8",
-      "rating": 671,
-      "popularity": 86,
-      "nbPlays": 1190,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/VxbchnSE/black#40"
     },
     {
       "puzzleId": "JK8n2",
@@ -4499,22 +3733,6 @@
       "gameUrl": "https://lichess.org/ZUOO3aVR/black#96"
     },
     {
-      "puzzleId": "NkIAZ",
-      "fen": "2r5/6pp/3kp3/p1Pp1p2/Pp5P/2n1P3/2R2PPK/2R5 b - - 0 33",
-      "moves": "d6c5 c2c3 b4c3 c1c3 c5b4 c3c8",
-      "rating": 673,
-      "popularity": 87,
-      "nbPlays": 1228,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "long",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/u1o3k6P8/black#66"
-    },
-    {
       "puzzleId": "EEnZe",
       "fen": "8/6k1/2r5/8/1pp5/7R/P2K1P2/8 b - - 1 44",
       "moves": "g7f6 h3h6 f6e5 h6c6",
@@ -4631,56 +3849,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/NuzJe1wN/black#130"
-    },
-    {
-      "puzzleId": "IF3Ge",
-      "fen": "2kr3r/1p4pp/2p5/R7/PP6/2P5/2b2PPP/R5K1 b - - 0 21",
-      "moves": "d8d3 a5a8 c8c7 a8h8",
-      "rating": 674,
-      "popularity": 87,
-      "nbPlays": 1558,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/BMCuxzGD/black#42"
-    },
-    {
-      "puzzleId": "w1SZF",
-      "fen": "3Rbk2/5p2/2p1pP1p/1p3p1P/1P3P2/3K1BP1/5P2/2r5 w - - 9 45",
-      "moves": "f3g2 c1d1 d3c3 d1d8",
-      "rating": 674,
-      "popularity": 84,
-      "nbPlays": 1045,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/hhgsVgzJ#89"
-    },
-    {
-      "puzzleId": "GfyyW",
-      "fen": "5r2/1p6/p7/5Pk1/4p3/P6K/1P6/4R3 b - - 0 36",
-      "moves": "g5f5 e1f1 f5e5 f1f8",
-      "rating": 674,
-      "popularity": 80,
-      "nbPlays": 1268,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/W46OabQh/black#72"
     },
     {
       "puzzleId": "cUktH",
@@ -4818,23 +3986,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/IHIyu41o/black#110"
-    },
-    {
-      "puzzleId": "HXCZP",
-      "fen": "6k1/6pp/5p2/NPBb3r/8/6P1/5P2/2R3K1 w - - 1 30",
-      "moves": "f2f4 h5h1 g1f2 h1c1",
-      "rating": 675,
-      "popularity": 86,
-      "nbPlays": 1082,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "master",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/kq6amV0w#59"
     },
     {
       "puzzleId": "beWjk",
@@ -5004,23 +4155,6 @@
       "gameUrl": "https://lichess.org/Z5NJzSCI/black#74"
     },
     {
-      "puzzleId": "uEZcM",
-      "fen": "8/ppp1kpp1/7p/2PP4/1P4PP/5P2/7r/1R3K2 w - - 1 33",
-      "moves": "h4h5 h2h1 f1g2 h1b1",
-      "rating": 677,
-      "popularity": 89,
-      "nbPlays": 1993,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/tAAOqRyx#65"
-    },
-    {
       "puzzleId": "U12tL",
       "fen": "2k4r/1p6/1bppq3/4pp2/2P1P3/3P1PB1/6K1/R3Q3 b - - 1 33",
       "moves": "f5f4 a1a8 c8d7 a8h8",
@@ -5135,41 +4269,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/tbSzxSrX#129"
-    },
-    {
-      "puzzleId": "XRyKg",
-      "fen": "8/8/1k6/R7/KP6/8/8/7r w - - 1 76",
-      "moves": "a5a8 h1a1 a4b3 a1a8",
-      "rating": 678,
-      "popularity": 86,
-      "nbPlays": 1155,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/opoviiOD#151"
-    },
-    {
-      "puzzleId": "O7Tcw",
-      "fen": "8/1r2k3/6R1/1p3p1p/8/4K1PP/5P2/8 b - - 0 48",
-      "moves": "b5b4 g6g7 e7d6 g7b7",
-      "rating": 678,
-      "popularity": 82,
-      "nbPlays": 1062,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/eOI3btrw/black#96"
     },
     {
       "puzzleId": "90ZFm",
@@ -5343,22 +4442,6 @@
       "gameUrl": "https://lichess.org/CFwpKHxz/black#68"
     },
     {
-      "puzzleId": "uP7Mr",
-      "fen": "4k1nr/5ppp/2p1p3/3p4/2P5/1P2P3/1P1K1PPP/R7 b k - 0 17",
-      "moves": "g8f6 a1a8 e8e7 a8h8",
-      "rating": 680,
-      "popularity": 86,
-      "nbPlays": 1319,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/gOplGlF1/black#34"
-    },
-    {
       "puzzleId": "7ASS7",
       "fen": "8/k1p5/p4Q2/6p1/Pp6/4b1KP/1P4P1/1r6 w - - 3 35",
       "moves": "g3f3 b1f1 f3e3 f1f6",
@@ -5507,38 +4590,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/0L3rhj6a/black#98"
-    },
-    {
-      "puzzleId": "R5WGE",
-      "fen": "8/2p5/1r6/2R3pk/2pPb3/p1P5/PP6/2K2R2 w - - 0 41",
-      "moves": "b2a3 b6b1 c1d2 b1f1",
-      "rating": 681,
-      "popularity": 88,
-      "nbPlays": 1121,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/fKcQnct0#81"
-    },
-    {
-      "puzzleId": "NeVnm",
-      "fen": "r2q2k1/p4pbp/1ppN1np1/2Pp4/1P6/P3PB1b/1B3Pr1/R2QK2R w KQ - 0 17",
-      "moves": "h1h3 g2g1 e1e2 g1d1",
-      "rating": 681,
-      "popularity": 87,
-      "nbPlays": 1087,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/lKIGaOGV#33"
     },
     {
       "puzzleId": "7a5KI",
@@ -6194,39 +5245,6 @@
       "gameUrl": "https://lichess.org/TUj0qmqk/black#68"
     },
     {
-      "puzzleId": "GscVC",
-      "fen": "8/p7/7R/3p4/n2P4/4k1p1/6P1/6K1 b - - 0 42",
-      "moves": "e3d4 h6h4 d4c5 h4a4",
-      "rating": 687,
-      "popularity": 88,
-      "nbPlays": 1896,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/nmNGd71M/black#84"
-    },
-    {
-      "puzzleId": "eabTN",
-      "fen": "8/7r/R2k1p2/4p3/8/4PK2/6P1/8 b - - 1 36",
-      "moves": "d6e7 a6a7 e7e6 a7h7",
-      "rating": 687,
-      "popularity": 88,
-      "nbPlays": 1187,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/OujXxy7q/black#72"
-    },
-    {
       "puzzleId": "LxnIy",
       "fen": "8/7R/2r1k3/p3P3/1p5P/8/6p1/6K1 b - - 0 43",
       "moves": "c6b6 h7h6 e6d5 h6b6",
@@ -6431,23 +5449,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/o9who3yM#81"
-    },
-    {
-      "puzzleId": "xzOfG",
-      "fen": "4kb1r/p1Rn1p1p/Bp3pb1/4p3/8/4P3/PP3PPP/3K3R b k - 0 15",
-      "moves": "f8d6 c7c8 e8e7 c8h8",
-      "rating": 689,
-      "popularity": 85,
-      "nbPlays": 1005,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "master",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/e0z0YfPE/black#30"
     },
     {
       "puzzleId": "I9UEM",
@@ -6704,22 +5705,6 @@
       "gameUrl": "https://lichess.org/7T7HrzNs/black#50"
     },
     {
-      "puzzleId": "5wP73",
-      "fen": "4k1r1/5p1p/p3pB2/5r2/8/5N2/PP4PP/2R3K1 b - - 2 23",
-      "moves": "f5f6 c1c8 e8e7 c8g8",
-      "rating": 691,
-      "popularity": 87,
-      "nbPlays": 1269,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/9ngTgcF3/black#46"
-    },
-    {
       "puzzleId": "nLHfm",
       "fen": "8/1p1R4/2p3p1/p3kpp1/P1P5/1P3PKP/4r1P1/8 b - - 7 46",
       "moves": "b7b6 d7e7 e5d6 e7e2",
@@ -6961,22 +5946,6 @@
       "gameUrl": "https://lichess.org/fO5c9CKb/black#100"
     },
     {
-      "puzzleId": "wDC7d",
-      "fen": "7r/3k2p1/p1pP4/1p4p1/1P4p1/2P5/P4PP1/RN3K2 w - - 1 30",
-      "moves": "b1d2 h8h1 f1e2 h1a1",
-      "rating": 692,
-      "popularity": 89,
-      "nbPlays": 1074,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/3NJnxWZQ#59"
-    },
-    {
       "puzzleId": "u34We",
       "fen": "8/p1Bk3p/8/4p3/1P4P1/7P/7r/2R2K2 w - - 1 31",
       "moves": "c7e5 h2h1 f1g2 h1c1",
@@ -7110,38 +6079,6 @@
       "gameUrl": "https://lichess.org/bS8qQjo7/black#48"
     },
     {
-      "puzzleId": "zunH0",
-      "fen": "8/p3n3/1p2k2p/2p2p1P/2P2P2/1P2KB2/P7/8 b - - 2 44",
-      "moves": "e7g8 f3d5 e6f6 d5g8",
-      "rating": 693,
-      "popularity": 89,
-      "nbPlays": 1209,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/myOpNuXf/black#88"
-    },
-    {
-      "puzzleId": "zAPCh",
-      "fen": "5k2/p1R1b1qp/1p2P1p1/1P2Pp2/P1N2p2/5P1P/6P1/7K b - - 0 38",
-      "moves": "g7g8 c7c8 f8g7 c8g8",
-      "rating": 693,
-      "popularity": 88,
-      "nbPlays": 1167,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/T57is3py/black#76"
-    },
-    {
       "puzzleId": "bthvU",
       "fen": "7r/1p3k2/r4pp1/3p1p1p/1bpP1P1N/2P1P1PP/1P4R1/2K2R2 w - - 0 30",
       "moves": "c3b4 a6a1 c1d2 a1f1",
@@ -7243,40 +6180,6 @@
       "gameUrl": "https://lichess.org/Nvnbdky8/black#128"
     },
     {
-      "puzzleId": "BTU8m",
-      "fen": "8/4R1R1/p2k4/1p6/2p2PK1/8/2r5/8 w - - 7 56",
-      "moves": "e7e5 c2g2 g4f5 g2g7",
-      "rating": 694,
-      "popularity": 87,
-      "nbPlays": 1106,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/HPtu534G#111"
-    },
-    {
-      "puzzleId": "unOUT",
-      "fen": "8/1Pk4p/5p2/8/5P2/3p4/6rP/R2K4 w - - 1 39",
-      "moves": "a1b1 g2g1 d1d2 g1b1",
-      "rating": 694,
-      "popularity": 76,
-      "nbPlays": 1733,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Bex238z8#77"
-    },
-    {
       "puzzleId": "4n8qj",
       "fen": "2b1kq2/1p1p3p/2n1p1p1/8/8/2R3P1/2R1B1KP/8 b - - 3 39",
       "moves": "c6d4 c3c8 e8e7 c8f8",
@@ -7309,22 +6212,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/8LOgHQ9N/black#76"
-    },
-    {
-      "puzzleId": "6DqNe",
-      "fen": "1r2B3/4k1p1/4p3/2Pp2P1/rPb1pP1R/8/4P2P/1R4K1 b - - 0 36",
-      "moves": "e7e8 h4h8 e8d7 h8b8",
-      "rating": 695,
-      "popularity": 82,
-      "nbPlays": 1333,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/hXUGMSab/black#72"
     },
     {
       "puzzleId": "ma5as",
@@ -7515,22 +6402,6 @@
       "gameUrl": "https://lichess.org/hh8BfaRN/black#102"
     },
     {
-      "puzzleId": "jrhMN",
-      "fen": "7R/8/8/2kb4/3p4/3P2P1/4PK2/1q6 b - - 0 58",
-      "moves": "c5b4 h8b8 b4c5 b8b1",
-      "rating": 697,
-      "popularity": 88,
-      "nbPlays": 1519,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/FWbl82FZ/black#116"
-    },
-    {
       "puzzleId": "S5G9O",
       "fen": "r5k1/p2nB2p/1p2R1p1/5p2/1P6/3B1P2/P4P1q/b2Q1K2 w - - 0 22",
       "moves": "d1a1 h2h1 f1e2 h1a1",
@@ -7614,22 +6485,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/m5jB8Do6#61"
-    },
-    {
-      "puzzleId": "LLCqK",
-      "fen": "1r3k2/5ppQ/1p1qN3/pR1p4/8/2P3PP/5P2/7K b - - 0 28",
-      "moves": "d6e6 h7h8 f8e7 h8b8",
-      "rating": 698,
-      "popularity": 88,
-      "nbPlays": 1406,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/3CE0Medw/black#56"
     },
     {
       "puzzleId": "t2XOo",
@@ -7933,24 +6788,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/4KvBJLtl/black#48"
-    },
-    {
-      "puzzleId": "uchLG",
-      "fen": "rn5r/1p2nkN1/2p3pp/p1P5/3p4/1P6/PB1P1PPP/2R2RK1 b - - 0 19",
-      "moves": "f7g7 b2d4 g7g8 d4h8",
-      "rating": 700,
-      "popularity": 84,
-      "nbPlays": 1193,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "master",
-        "masterVsMaster",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/usO9Ewme/black#38"
     },
     {
       "puzzleId": "1mzVT",
@@ -8523,22 +7360,6 @@
       "gameUrl": "https://lichess.org/AAQX3iRA#69"
     },
     {
-      "puzzleId": "vHac4",
-      "fen": "8/1p3r1k/p4p2/2p2P1K/2P1p3/8/PBP2P2/6R1 w - - 1 33",
-      "moves": "h5g4 f7g7 g4f4 g7g1",
-      "rating": 704,
-      "popularity": 89,
-      "nbPlays": 1371,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/ls5rD9Xi#65"
-    },
-    {
       "puzzleId": "ivPo4",
       "fen": "6R1/8/3p3k/1b1p1p2/3P4/3PK1Br/5P2/8 b - - 1 57",
       "moves": "b5a4 g8h8 h6g6 h8h3",
@@ -8710,22 +7531,6 @@
       "gameUrl": "https://lichess.org/6srfZhbu#69"
     },
     {
-      "puzzleId": "93f9k",
-      "fen": "2k2r2/1p1n4/1p2p3/1P6/2P3N1/7P/3r2P1/R5K1 b - - 6 35",
-      "moves": "d7c5 a1a8 c8d7 a8f8",
-      "rating": 705,
-      "popularity": 86,
-      "nbPlays": 1534,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/RuUwX4us/black#70"
-    },
-    {
       "puzzleId": "nDlNw",
       "fen": "4r3/p5k1/4K3/3pP3/2p5/6P1/PP6/3R4 w - - 4 49",
       "moves": "e6d5 e8d8 d5c4 d8d1",
@@ -8825,23 +7630,6 @@
       "gameUrl": "https://lichess.org/h74nnZTk#57"
     },
     {
-      "puzzleId": "NPdUS",
-      "fen": "r1kqQnr1/pp6/2p2p2/2p2P1p/6n1/3B2P1/PPP1R2P/5R1K b - - 5 28",
-      "moves": "d8e8 e2e8 c8c7 e8a8",
-      "rating": 706,
-      "popularity": 88,
-      "nbPlays": 1487,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "middlegame",
-        "queensideAttack",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/sQ1CQCRv/black#56"
-    },
-    {
       "puzzleId": "nbqOl",
       "fen": "8/3P1k2/2P5/B2K1p1p/8/5r2/4p3/8 w - - 1 65",
       "moves": "d7d8q f3d3 d5c5 d3d8",
@@ -8891,23 +7679,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/MAgZAWvh#113"
-    },
-    {
-      "puzzleId": "L8Mh4",
-      "fen": "3r4/pp3p2/7p/4k1p1/P1P5/1P6/3p1KPP/3R4 b - - 5 42",
-      "moves": "e5d4 d1d2 d4c3 d2d8",
-      "rating": 707,
-      "popularity": 87,
-      "nbPlays": 1167,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/d5osaCdl/black#84"
     },
     {
       "puzzleId": "t7z3a",
@@ -9042,24 +7813,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/KKOV4gge#89"
-    },
-    {
-      "puzzleId": "HVaWI",
-      "fen": "8/2kp2r1/2r1p3/1R3p2/5P2/1R3KP1/8/8 b - - 19 47",
-      "moves": "d7d5 b5b7 c7d6 b7g7",
-      "rating": 708,
-      "popularity": 88,
-      "nbPlays": 1731,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/d91M1JgJ/black#94"
     },
     {
       "puzzleId": "F1FHk",
@@ -9233,22 +7986,6 @@
       "gameUrl": "https://lichess.org/DoFF3Bx7/black#80"
     },
     {
-      "puzzleId": "EJ0vE",
-      "fen": "8/3r1K1k/5Q2/6p1/5bP1/8/8/8 w - - 31 65",
-      "moves": "f7e6 d7d6 e6f5 d6f6",
-      "rating": 709,
-      "popularity": 88,
-      "nbPlays": 1237,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/0uzkVIDC#129"
-    },
-    {
       "puzzleId": "B884c",
       "fen": "8/8/8/3p3R/1r1K1k2/8/8/8 w - - 1 38",
       "moves": "d4d5 b4b5 d5d6 b5h5",
@@ -9332,93 +8069,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/aSOQ5IrO#67"
-    },
-    {
-      "puzzleId": "PaTYj",
-      "fen": "8/8/5pp1/2p5/2P2k2/5P1R/2r4P/6K1 b - - 1 43",
-      "moves": "c2c4 h3h4 f4e5 h4c4",
-      "rating": 710,
-      "popularity": 88,
-      "nbPlays": 1741,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Be5FIO8X/black#86"
-    },
-    {
-      "puzzleId": "nZ9hR",
-      "fen": "r2k4/p5R1/1p1n1pNp/2pP4/2P5/8/5PPP/6K1 b - - 0 30",
-      "moves": "d6c4 g7g8 d8c7 g8a8",
-      "rating": 710,
-      "popularity": 87,
-      "nbPlays": 1386,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/15x0gTUM/black#60"
-    },
-    {
-      "puzzleId": "mUryF",
-      "fen": "7r/3k4/R6p/4p1p1/8/5P2/6P1/6K1 b - - 0 36",
-      "moves": "h8h7 a6a7 d7e6 a7h7",
-      "rating": 710,
-      "popularity": 86,
-      "nbPlays": 1323,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/mAWQKhSA/black#72"
-    },
-    {
-      "puzzleId": "XCKpG",
-      "fen": "7R/8/3pkp2/8/8/4r3/6K1/8 b - - 4 56",
-      "moves": "d6d5 h8e8 e6d6 e8e3",
-      "rating": 710,
-      "popularity": 85,
-      "nbPlays": 1008,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/IVW7kt9d/black#112"
-    },
-    {
-      "puzzleId": "s5efX",
-      "fen": "8/2k5/8/8/4p2R/r3K2P/8/8 w - - 1 56",
-      "moves": "e3e4 a3a4 e4f3 a4h4",
-      "rating": 710,
-      "popularity": 85,
-      "nbPlays": 2283,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "masterVsMaster",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/tA4xJbkI#111"
     },
     {
       "puzzleId": "UtUwN",
@@ -9540,22 +8190,6 @@
       "gameUrl": "https://lichess.org/l1PbSSE9/black#80"
     },
     {
-      "puzzleId": "eT5Lv",
-      "fen": "3R4/1p3pk1/p1b3pP/8/5P1n/8/PPPK4/8 b - - 0 32",
-      "moves": "g7h6 d8h8 h6g7 h8h4",
-      "rating": 711,
-      "popularity": 86,
-      "nbPlays": 1048,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/T8AQTk6v/black#64"
-    },
-    {
       "puzzleId": "geGRq",
       "fen": "7k/P5pp/8/8/8/5P1P/6r1/R2qK3 w - - 0 37",
       "moves": "e1d1 g2g1 d1d2 g1a1",
@@ -9659,24 +8293,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/jckrrhXA#115"
-    },
-    {
-      "puzzleId": "orSss",
-      "fen": "8/R4Pk1/4K2p/4p3/4P2p/7P/5r2/8 w - - 2 48",
-      "moves": "e6e7 f2f7 e7d6 f7a7",
-      "rating": 712,
-      "popularity": 88,
-      "nbPlays": 1542,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/F22dtzSq#95"
     },
     {
       "puzzleId": "KiGL9",
@@ -10028,25 +8644,6 @@
       "gameUrl": "https://lichess.org/JDJpW860/black#110"
     },
     {
-      "puzzleId": "66xR1",
-      "fen": "8/2R2pp1/6k1/4r1p1/PP6/r7/2P5/2KR4 w - - 1 33",
-      "moves": "a4a5 a3a1 c1b2 a1d1",
-      "rating": 715,
-      "popularity": 88,
-      "nbPlays": 1361,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "deflection",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/bNg0hRBK#65"
-    },
-    {
       "puzzleId": "8qtx6",
       "fen": "2R5/8/8/8/3p4/2k5/7r/1K6 b - - 3 69",
       "moves": "c3d2 c8c2 d2e3 c2h2",
@@ -10297,58 +8894,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/T4ctRzw3/black#108"
-    },
-    {
-      "puzzleId": "xzGZm",
-      "fen": "2r2rk1/pp4pp/8/3P4/1P2P3/P4P1P/6P1/R3K2R w KQ - 1 23",
-      "moves": "a1a2 c8c1 e1f2 c1h1",
-      "rating": 717,
-      "popularity": 86,
-      "nbPlays": 1158,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/mqqI96pG#45"
-    },
-    {
-      "puzzleId": "jAGVi",
-      "fen": "5R2/5p1p/1k2p1p1/2npP3/5P2/6P1/1r4BP/5K2 b - - 7 40",
-      "moves": "d5d4 f8b8 b6c7 b8b2",
-      "rating": 717,
-      "popularity": 85,
-      "nbPlays": 1139,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/YBPLetji/black#80"
-    },
-    {
-      "puzzleId": "m7AUU",
-      "fen": "8/1R6/8/3p4/2k4r/1P6/2K5/8 b - - 0 41",
-      "moves": "c4d4 b7b4 d4e5 b4h4",
-      "rating": 717,
-      "popularity": 83,
-      "nbPlays": 1054,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Cau8L1IR/black#82"
     },
     {
       "puzzleId": "aXAF2",
@@ -10673,39 +9218,6 @@
       "gameUrl": "https://lichess.org/XncSaot1#59"
     },
     {
-      "puzzleId": "iPNz6",
-      "fen": "R7/8/2p1k3/2P2n2/8/2B1r1p1/1P6/5K2 b - - 1 53",
-      "moves": "f5h4 a8e8 e6d7 e8e3",
-      "rating": 720,
-      "popularity": 87,
-      "nbPlays": 1404,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Td6WN3iB/black#106"
-    },
-    {
-      "puzzleId": "kdc0g",
-      "fen": "8/5R2/kp5p/2p5/2P5/3P1K1P/P1P3P1/2r5 w - - 3 35",
-      "moves": "f7f6 c1f1 f3e2 f1f6",
-      "rating": 720,
-      "popularity": 83,
-      "nbPlays": 1650,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/bcIwRSIx#69"
-    },
-    {
       "puzzleId": "uqy80",
       "fen": "r3kR2/p3p3/1pp1p3/3pn3/3P4/8/PPP2P2/2K4R b - - 0 27",
       "moves": "e8f8 h1h8 f8f7 h8a8",
@@ -10872,23 +9384,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/7e2bTrmx#23"
-    },
-    {
-      "puzzleId": "zYtDJ",
-      "fen": "8/8/1r1pk1pR/2p1p3/5p2/1P5P/8/3K4 b - - 0 38",
-      "moves": "d6d5 h6g6 e6f5 g6b6",
-      "rating": 722,
-      "popularity": 84,
-      "nbPlays": 1061,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/OzFZjDOt/black#76"
     },
     {
       "puzzleId": "yywsY",
@@ -11277,23 +9772,6 @@
       "gameUrl": "https://lichess.org/MNeX0Vhc#21"
     },
     {
-      "puzzleId": "6ERGA",
-      "fen": "3r4/7p/p1k1p1p1/1pp1Pp2/5P1P/1P2P3/P1K4R/8 b - - 4 31",
-      "moves": "c6d5 h2d2 d5e4 d2d8",
-      "rating": 725,
-      "popularity": 88,
-      "nbPlays": 1180,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/XX5PuAwy/black#62"
-    },
-    {
       "puzzleId": "tAYBW",
       "fen": "8/3bb3/p2Np1kp/1p1pP2p/1P1P1K2/P5PP/8/2B5 w - - 7 36",
       "moves": "d6b7 e7g5 f4f3 g5c1",
@@ -11617,23 +10095,6 @@
       "gameUrl": "https://lichess.org/wpEy6nID#101"
     },
     {
-      "puzzleId": "BVo5F",
-      "fen": "8/3P1k1p/6p1/6P1/3K1P2/7P/7r/8 w - - 0 51",
-      "moves": "d7d8q h2d2 d4e4 d2d8",
-      "rating": 727,
-      "popularity": 87,
-      "nbPlays": 1161,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/7K40L3DA#101"
-    },
-    {
       "puzzleId": "Wg687",
       "fen": "1R3R2/1p6/p5pk/P4p2/8/6r1/1r6/5K2 b - - 1 52",
       "moves": "g3h3 f8h8 h6g5 h8h3",
@@ -11909,24 +10370,6 @@
       "gameUrl": "https://lichess.org/9QTc8RKx/black#130"
     },
     {
-      "puzzleId": "9jEzG",
-      "fen": "8/p7/P4p1p/3k4/3Pp1p1/4P1Pr/6K1/1R6 b - - 1 38",
-      "moves": "h3h5 b1b5 d5c6 b5h5",
-      "rating": 729,
-      "popularity": 86,
-      "nbPlays": 1083,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/740hslXF/black#76"
-    },
-    {
       "puzzleId": "5NmIT",
       "fen": "8/R5pp/1p2kb2/8/1P6/4P1P1/3r1P1P/6K1 b - - 0 34",
       "moves": "e6d5 a7d7 d5c4 d7d2",
@@ -12133,22 +10576,6 @@
       "gameUrl": "https://lichess.org/urtnGUOQ/black#190"
     },
     {
-      "puzzleId": "PAEK2",
-      "fen": "r1b1k1r1/p4ppp/2p1p3/B6n/8/5P2/PPP2P1P/3RK1R1 b q - 4 15",
-      "moves": "g7g6 d1d8 e8e7 d8g8",
-      "rating": 731,
-      "popularity": 82,
-      "nbPlays": 1039,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "middlegame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/CDW8TN4f/black#30"
-    },
-    {
       "puzzleId": "3322x",
       "fen": "5k2/8/8/4p2R/r3K3/5P2/8/8 w - - 65 76",
       "moves": "e4e5 a4a5 e5f6 a5h5",
@@ -12199,22 +10626,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/pTlOcW8a/black#98"
-    },
-    {
-      "puzzleId": "VPOkI",
-      "fen": "2r2rk1/pp3ppp/8/8/3p1P2/PbPBP3/1P1R2PP/4K2R w K - 0 25",
-      "moves": "c3d4 c8c1 e1f2 c1h1",
-      "rating": 732,
-      "popularity": 88,
-      "nbPlays": 1121,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/kgK8rKZU#49"
     },
     {
       "puzzleId": "iiodK",
@@ -12470,23 +10881,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/UKy67Rgm/black#50"
-    },
-    {
-      "puzzleId": "yybAg",
-      "fen": "Q7/8/8/5p2/1r3kp1/R7/3K4/8 w - - 1 54",
-      "moves": "a8g2 b4b2 d2c3 b2g2",
-      "rating": 735,
-      "popularity": 83,
-      "nbPlays": 1196,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "queenRookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/bajSOM2r#107"
     },
     {
       "puzzleId": "k4QKn",
@@ -12808,43 +11202,6 @@
       "gameUrl": "https://lichess.org/HdvfD9NA/black#98"
     },
     {
-      "puzzleId": "mPRzc",
-      "fen": "7K/1r2kp2/8/7R/8/8/8/8 b - - 0 71",
-      "moves": "f7f6 h5h7 e7e6 h7b7",
-      "rating": 738,
-      "popularity": 86,
-      "nbPlays": 1419,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/obPZFvBS/black#142"
-    },
-    {
-      "puzzleId": "ARNB9",
-      "fen": "4R3/8/3k2p1/p2r1p1p/1p5P/1P4P1/P4PK1/8 b - - 1 39",
-      "moves": "d5d2 e8d8 d6c6 d8d2",
-      "rating": 738,
-      "popularity": 84,
-      "nbPlays": 1500,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "masterVsMaster",
-        "rookEndgame",
-        "short",
-        "skewer",
-        "superGM"
-      ],
-      "gameUrl": "https://lichess.org/3DMnhbZ9/black#78"
-    },
-    {
       "puzzleId": "DmbTN",
       "fen": "2R5/8/8/5rk1/4K3/8/8/8 b - - 85 88",
       "moves": "g5f6 c8f8 f6e7 f8f5",
@@ -12911,23 +11268,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/MavapaHO/black#38"
-    },
-    {
-      "puzzleId": "rZ8zk",
-      "fen": "3r4/1R5p/p2b1k1r/8/2B5/P7/5PP1/4RK2 w - - 2 37",
-      "moves": "g2g3 h6h1 f1g2 h1e1",
-      "rating": 739,
-      "popularity": 89,
-      "nbPlays": 1544,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "deflection",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/wBgtSSNX#73"
     },
     {
       "puzzleId": "qOp8M",
@@ -13046,24 +11386,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/zT7TcSsb/black#40"
-    },
-    {
-      "puzzleId": "4aOhA",
-      "fen": "5R2/1k6/p7/4p3/4P1K1/1P6/1r6/8 w - - 0 45",
-      "moves": "g4f5 b2f2 f5e5 f2f8",
-      "rating": 740,
-      "popularity": 71,
-      "nbPlays": 1650,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/537RIe3d#89"
     },
     {
       "puzzleId": "UxGcv",
@@ -13252,22 +11574,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/gZmYAZ5u#91"
-    },
-    {
-      "puzzleId": "yyujR",
-      "fen": "5rk1/pp1n2pp/2pp4/4p2n/4P3/2NPR1pP/PPP3P1/R2K4 w - - 2 21",
-      "moves": "c3e2 f8f1 d1d2 f1a1",
-      "rating": 742,
-      "popularity": 89,
-      "nbPlays": 1515,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/WAUbd55p#41"
     },
     {
       "puzzleId": "K592D",
@@ -13808,23 +12114,6 @@
       "gameUrl": "https://lichess.org/sux8iGIZ/black#90"
     },
     {
-      "puzzleId": "E2SDf",
-      "fen": "k7/2p5/2p5/3p4/r2P1P2/4K2R/P7/8 w - - 0 42",
-      "moves": "f4f5 a4a3 e3f4 a3h3",
-      "rating": 748,
-      "popularity": 86,
-      "nbPlays": 1660,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/xSZZ71mV#83"
-    },
-    {
       "puzzleId": "IOM8C",
       "fen": "2r5/p7/8/1pPk1p1p/5P1P/P2RK1P1/8/8 b - - 4 40",
       "moves": "d5c5 d3c3 c5d5 c3c8",
@@ -14180,26 +12469,6 @@
       "gameUrl": "https://lichess.org/oKdteW20/black#128"
     },
     {
-      "puzzleId": "YV9L5",
-      "fen": "8/6R1/r3p3/3p4/4k1p1/6P1/8/5K2 b - - 1 56",
-      "moves": "a6a4 g7g4 e4e5 g4a4",
-      "rating": 752,
-      "popularity": 86,
-      "nbPlays": 1134,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "master",
-        "masterVsMaster",
-        "rookEndgame",
-        "short",
-        "skewer",
-        "superGM"
-      ],
-      "gameUrl": "https://lichess.org/uHPQ8OaB/black#112"
-    },
-    {
       "puzzleId": "xzFLO",
       "fen": "2r5/5Npp/3kp3/p2p3n/P7/7P/5PP1/R5K1 b - - 2 29",
       "moves": "d6c5 a1c1 c5b4 c1c8",
@@ -14282,23 +12551,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/89zIhAvF#43"
-    },
-    {
-      "puzzleId": "PcCd6",
-      "fen": "6k1/7p/5R2/8/6PP/P1n2K2/1P6/6r1 w - - 0 43",
-      "moves": "b2c3 g1f1 f3e4 f1f6",
-      "rating": 754,
-      "popularity": 87,
-      "nbPlays": 1410,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/Phaw7Y6u#85"
     },
     {
       "puzzleId": "BFywY",
@@ -14572,22 +12824,6 @@
       "gameUrl": "https://lichess.org/WeYNQTgG#117"
     },
     {
-      "puzzleId": "BWBmv",
-      "fen": "r5k1/6p1/4pp2/8/7R/B3nK2/rP3P2/7R b - - 3 33",
-      "moves": "e3c2 h4h8 g8f7 h8a8",
-      "rating": 757,
-      "popularity": 88,
-      "nbPlays": 1214,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/s8a1bjDJ/black#66"
-    },
-    {
       "puzzleId": "0YuLu",
       "fen": "8/8/1q2kp2/3p3P/6Q1/6P1/r4PK1/8 b - - 2 47",
       "moves": "f6f5 g4g6 e6e7 g6b6",
@@ -14791,23 +13027,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/U0UD7utE#101"
-    },
-    {
-      "puzzleId": "PvAAt",
-      "fen": "1r3k2/pp5R/5ppp/8/8/1P1K4/P5PP/8 b - - 2 30",
-      "moves": "h6h5 h7h8 f8f7 h8b8",
-      "rating": 760,
-      "popularity": 87,
-      "nbPlays": 1390,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/jha18taD/black#60"
     },
     {
       "puzzleId": "nVtxI",
@@ -15147,23 +13366,6 @@
       "gameUrl": "https://lichess.org/JiPuZfe3#95"
     },
     {
-      "puzzleId": "sew7Q",
-      "fen": "8/p5p1/8/P5k1/1P3R2/4PK2/8/1r6 w - - 1 39",
-      "moves": "f4f7 b1f1 f3e4 f1f7",
-      "rating": 764,
-      "popularity": 85,
-      "nbPlays": 1055,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/ZZE9IU54#77"
-    },
-    {
       "puzzleId": "oj6cW",
       "fen": "6k1/6p1/p7/4Q3/1P6/P2K2PP/8/2r5 w - - 3 43",
       "moves": "e5d6 c1d1 d3c4 d1d6",
@@ -15315,23 +13517,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/ivlVoFnx/black#74"
-    },
-    {
-      "puzzleId": "MZd2J",
-      "fen": "8/1p2rp2/p5p1/1p1p1k1p/3P1P2/2R3P1/1P1K4/8 b - - 2 36",
-      "moves": "f5e4 c3e3 e4d4 e3e7",
-      "rating": 767,
-      "popularity": 84,
-      "nbPlays": 1136,
-      "theme": "skewer",
-      "allThemes": [
-        "advantage",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/YtyIebM8/black#72"
     },
     {
       "puzzleId": "BgPwi",
@@ -15623,23 +13808,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/B0FaxfV9/black#44"
-    },
-    {
-      "puzzleId": "6n3i5",
-      "fen": "3r2k1/p1R2ppp/8/8/8/8/r1P2PPP/2K4R w - - 0 22",
-      "moves": "h1e1 a2a1 c1b2 a1e1",
-      "rating": 772,
-      "popularity": 85,
-      "nbPlays": 1290,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "endgame",
-        "rookEndgame",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/ww6VSIBI#43"
     },
     {
       "puzzleId": "fYU1E",
@@ -16096,24 +14264,6 @@
         "skewer"
       ],
       "gameUrl": "https://lichess.org/h8tJbpW2/black#56"
-    },
-    {
-      "puzzleId": "D7RlI",
-      "fen": "8/4K3/5r2/3b1k2/8/8/8/5R2 b - - 15 77",
-      "moves": "d5f3 f1f3 f5e4 f3f6",
-      "rating": 780,
-      "popularity": 88,
-      "nbPlays": 1341,
-      "theme": "skewer",
-      "allThemes": [
-        "crushing",
-        "deflection",
-        "endgame",
-        "hangingPiece",
-        "short",
-        "skewer"
-      ],
-      "gameUrl": "https://lichess.org/L3Sa84mV/black#154"
     },
     {
       "puzzleId": "RUY2z",
@@ -16842,12 +14992,245 @@
       "gameUrl": "https://lichess.org/ZOal7Cwd#75"
     },
     {
-      "puzzleId": "kTKeU",
-      "fen": "8/8/8/4p2R/3k1p2/5P2/6PK/4q3 b - - 7 69",
-      "moves": "d4e3 h5e5 e3d2 e5e1",
-      "rating": 790,
-      "popularity": 87,
-      "nbPlays": 1450,
+      "puzzleId": "BEJdV",
+      "fen": "3r2k1/pQp2ppp/5b1q/8/2B1P2P/8/P1P2PP1/5K1R w - - 0 20",
+      "moves": "c4d3 h6c1 f1e2 c1h1",
+      "rating": 791,
+      "popularity": 99,
+      "nbPlays": 2271,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/hIebgwa4#39"
+    },
+    {
+      "puzzleId": "5ch9b",
+      "fen": "8/kpp5/8/p7/P5B1/1P4P1/3K2R1/1r6 w - - 1 57",
+      "moves": "g4e6 b1b2 d2d3 b2g2",
+      "rating": 791,
+      "popularity": 97,
+      "nbPlays": 2395,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/OFOtqSr5#113"
+    },
+    {
+      "puzzleId": "8ObtW",
+      "fen": "8/5kpp/8/4P3/5PP1/7r/2R1K3/8 w - - 0 42",
+      "moves": "e2f2 h3h2 f2g3 h2c2",
+      "rating": 791,
+      "popularity": 97,
+      "nbPlays": 1354,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/uMpdmQOv#83"
+    },
+    {
+      "puzzleId": "ps3nH",
+      "fen": "2k3r1/1p2p3/p7/1P1p1r1p/3P1P1R/4P3/5K2/R7 b - - 0 30",
+      "moves": "a6b5 a1a8 c8d7 a8g8",
+      "rating": 791,
+      "popularity": 97,
+      "nbPlays": 2622,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/4ASgoNp0/black#60"
+    },
+    {
+      "puzzleId": "DXp0A",
+      "fen": "8/8/1p3RK1/1P1rk1p1/4p3/8/7P/8 b - - 0 58",
+      "moves": "d5b5 f6f5 e5d4 f5b5",
+      "rating": 791,
+      "popularity": 96,
+      "nbPlays": 2866,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/upUsfDYM/black#116"
+    },
+    {
+      "puzzleId": "PhfSw",
+      "fen": "8/6k1/6p1/7p/5P1P/2P3P1/4RK2/7r w - - 1 42",
+      "moves": "e2c2 h1h2 f2e3 h2c2",
+      "rating": 791,
+      "popularity": 96,
+      "nbPlays": 1289,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/6P7jJAHv#83"
+    },
+    {
+      "puzzleId": "aNVeu",
+      "fen": "8/5p2/4p1pk/7p/1R3P2/6P1/7r/Q4K2 w - - 0 46",
+      "moves": "b4b2 h2h1 f1g2 h1a1",
+      "rating": 791,
+      "popularity": 96,
+      "nbPlays": 1418,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenRookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/aOu0KdLO#91"
+    },
+    {
+      "puzzleId": "RrcbU",
+      "fen": "4R3/8/8/8/5k2/8/3K4/2r5 b - - 2 72",
+      "moves": "c1f1 e8f8 f4e4 f8f1",
+      "rating": 791,
+      "popularity": 95,
+      "nbPlays": 1332,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/QDy4vwq2/black#144"
+    },
+    {
+      "puzzleId": "tx6Nw",
+      "fen": "3k3r/R4ppp/p3pb2/1pB5/8/2P5/PK4PP/8 b - - 1 23",
+      "moves": "d8c8 a7a8 c8d7 a8h8",
+      "rating": 791,
+      "popularity": 95,
+      "nbPlays": 2159,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/KsvoPNiu/black#46"
+    },
+    {
+      "puzzleId": "AJSXs",
+      "fen": "7r/pp6/2pBpk1p/2Pn2p1/8/6P1/PP3P2/4R1K1 b - - 1 36",
+      "moves": "h6h5 d6e5 f6f7 e5h8",
+      "rating": 791,
+      "popularity": 94,
+      "nbPlays": 2827,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/ccQoWLFz/black#72"
+    },
+    {
+      "puzzleId": "LWGge",
+      "fen": "1r6/6kr/P4p2/2p5/2BpPK2/3P4/1p6/6R1 b - - 6 55",
+      "moves": "g7f8 g1g8 f8e7 g8b8",
+      "rating": 791,
+      "popularity": 94,
+      "nbPlays": 1406,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/NRDByxs5/black#110"
+    },
+    {
+      "puzzleId": "WvUDz",
+      "fen": "5R2/p6p/1p2k1p1/8/1KP5/4r1P1/P6P/8 b - - 25 45",
+      "moves": "e3e2 f8e8 e6d7 e8e2",
+      "rating": 791,
+      "popularity": 94,
+      "nbPlays": 1101,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/uc3zw6Se/black#90"
+    },
+    {
+      "puzzleId": "eGg8r",
+      "fen": "3R4/1p6/1pb5/r5Pk/P1P2K2/1P6/8/8 b - - 0 41",
+      "moves": "a5g5 d8h8 h5g6 h8g8 g6f7 g8g5",
+      "rating": 791,
+      "popularity": 93,
+      "nbPlays": 1152,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "deflection",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/GmtqZR1i/black#82"
+    },
+    {
+      "puzzleId": "ti5iN",
+      "fen": "1rb2rk1/1pN2ppp/p2p4/8/3QP2P/1P1R1P2/q1P3P1/2K4R w - - 1 17",
+      "moves": "d4d6 a2a1 c1d2 a1h1",
+      "rating": 792,
+      "popularity": 96,
+      "nbPlays": 1211,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "middlegame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/nN3iEf4r#33"
+    },
+    {
+      "puzzleId": "ZHr3O",
+      "fen": "8/7p/6pk/1Q6/8/2P2K2/7r/8 w - - 0 42",
+      "moves": "b5d3 h2h3 f3e4 h3d3",
+      "rating": 792,
+      "popularity": 95,
+      "nbPlays": 2662,
       "theme": "skewer",
       "allThemes": [
         "crushing",
@@ -16856,15 +15239,601 @@
         "short",
         "skewer"
       ],
-      "gameUrl": "https://lichess.org/I0kOtMCu/black#138"
+      "gameUrl": "https://lichess.org/exOJh8UY#83"
     },
     {
-      "puzzleId": "Uk9op",
-      "fen": "8/6b1/p5P1/1p1k4/1P3p2/8/4K3/4B3 b - - 2 53",
-      "moves": "d5e5 e1c3 e5e6 c3g7",
-      "rating": 790,
-      "popularity": 86,
-      "nbPlays": 1440,
+      "puzzleId": "sikxd",
+      "fen": "2Q5/p1p2bpk/7p/4P3/3P1N2/2K1P1P1/PP6/5r2 w - - 12 44",
+      "moves": "c8c7 f1c1 c3d3 c1c7",
+      "rating": 792,
+      "popularity": 95,
+      "nbPlays": 1671,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/UZ4z5s19#87"
+    },
+    {
+      "puzzleId": "XrHam",
+      "fen": "1r6/5pkp/r2p2p1/2p5/2P2Pb1/1P4P1/3R3P/4R1KB w - - 0 30",
+      "moves": "e1e7 a6a1 g1f2 a1h1",
+      "rating": 792,
+      "popularity": 94,
+      "nbPlays": 2558,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "deflection",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/LqPXDp3B#59"
+    },
+    {
+      "puzzleId": "cGa3p",
+      "fen": "1rb2k2/8/p1p4R/2p5/8/8/PPP2PP1/6K1 b - - 0 27",
+      "moves": "c8d7 h6h8 f8f7 h8b8",
+      "rating": 792,
+      "popularity": 94,
+      "nbPlays": 1225,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/pCYEcpav/black#54"
+    },
+    {
+      "puzzleId": "R7D2j",
+      "fen": "1k6/p1R2p2/4p1p1/3p3q/8/3PP3/PP3P2/2R2K2 w - - 7 32",
+      "moves": "c7f7 h5h1 f1e2 h1c1",
+      "rating": 792,
+      "popularity": 93,
+      "nbPlays": 1908,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "queenRookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/b7sNiEOL#63"
+    },
+    {
+      "puzzleId": "pmQnp",
+      "fen": "4r3/p4p2/2p5/2P1Rk1p/1P4p1/P7/3R1KPP/8 b - - 0 37",
+      "moves": "f5e5 d2e2 e5f6 e2e8",
+      "rating": 792,
+      "popularity": 93,
+      "nbPlays": 1317,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/PAlM5JKI/black#74"
+    },
+    {
+      "puzzleId": "zOVzp",
+      "fen": "2kr3r/Rpp4p/4p3/4P3/8/1b3P2/6PP/2R3K1 b - - 0 27",
+      "moves": "d8d1 c1d1 b3d1 a7a8 c8d7 a8h8",
+      "rating": 792,
+      "popularity": 93,
+      "nbPlays": 1355,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/yHWFUy5a/black#54"
+    },
+    {
+      "puzzleId": "13R8g",
+      "fen": "8/5pk1/8/8/3N4/4K2R/7P/r7 w - - 5 57",
+      "moves": "d4e2 a1a3 e3f2 a3h3",
+      "rating": 792,
+      "popularity": 92,
+      "nbPlays": 1445,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/bBoFdGda#113"
+    },
+    {
+      "puzzleId": "5ZZdB",
+      "fen": "8/5p1p/p1pr4/5kP1/PP4bP/4P1P1/2R2K2/8 b - - 8 36",
+      "moves": "f5e4 c2c4 e4d3 c4g4",
+      "rating": 792,
+      "popularity": 92,
+      "nbPlays": 1578,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/3Pd2jFjW/black#72"
+    },
+    {
+      "puzzleId": "85hnZ",
+      "fen": "4r2k/pp3p2/5p2/3p2pP/3P4/4P3/P1r2PP1/1R2K2R w K - 0 21",
+      "moves": "b1b7 c2c1 e1e2 c1h1",
+      "rating": 793,
+      "popularity": 99,
+      "nbPlays": 1481,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/wjUn5dqW#41"
+    },
+    {
+      "puzzleId": "fiUrZ",
+      "fen": "4k3/4n2R/2p1p1p1/2P1p1P1/1P2P3/1P2B1Kp/5P2/1r6 w - - 8 53",
+      "moves": "g3h3 b1h1 h3g2 h1h7",
+      "rating": 793,
+      "popularity": 98,
+      "nbPlays": 1373,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/mNbycisP#105"
+    },
+    {
+      "puzzleId": "bURSU",
+      "fen": "2r2k2/7R/1p4pp/p1p1Pp2/4bP1P/6P1/1B3K2/8 b - - 1 62",
+      "moves": "h6h5 h7h8 f8e7 h8c8",
+      "rating": 793,
+      "popularity": 97,
+      "nbPlays": 1060,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/O5oxg8z0/black#124"
+    },
+    {
+      "puzzleId": "hWnqj",
+      "fen": "8/2R5/P5kp/5p2/3NbP2/1PK1P2P/8/r7 w - - 1 53",
+      "moves": "a6a7 a1c1 c3b4 c1c7",
+      "rating": 793,
+      "popularity": 97,
+      "nbPlays": 3530,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Vfvyfo4g#105"
+    },
+    {
+      "puzzleId": "okZ4l",
+      "fen": "7R/8/1p2k3/p1b3p1/P5Kp/8/8/8 b - - 1 50",
+      "moves": "c5e3 h8e8 e6d5 e8e3",
+      "rating": 793,
+      "popularity": 96,
+      "nbPlays": 2308,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/N95jfpDg/black#100"
+    },
+    {
+      "puzzleId": "GkGU0",
+      "fen": "8/p2k1pN1/Pp2pP2/3pP3/3P3n/1P6/3r3r/RN1K3R w - - 2 40",
+      "moves": "b1d2 h2h1 d1c2 h1a1",
+      "rating": 793,
+      "popularity": 95,
+      "nbPlays": 1585,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "hangingPiece",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/2boMgBFM#79"
+    },
+    {
+      "puzzleId": "ZZ5FA",
+      "fen": "r7/1k5K/1p6/3Q4/8/8/8/q7 b - - 4 64",
+      "moves": "b7a6 d5a8 a6b5 a8a1",
+      "rating": 793,
+      "popularity": 95,
+      "nbPlays": 1262,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "hangingPiece",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/ZtryyH7J/black#128"
+    },
+    {
+      "puzzleId": "atVlI",
+      "fen": "8/4K1r1/R7/7k/8/8/8/8 w - - 93 126",
+      "moves": "e7f6 g7g6 f6e5 g6a6",
+      "rating": 793,
+      "popularity": 94,
+      "nbPlays": 1195,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/jXSVBdBX#251"
+    },
+    {
+      "puzzleId": "WMrCH",
+      "fen": "5r2/6p1/p2k4/3Pp3/1Pp1P3/P1K4P/6P1/2R5 w - - 1 41",
+      "moves": "c3c4 f8c8 c4b3 c8c1",
+      "rating": 793,
+      "popularity": 93,
+      "nbPlays": 1294,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/oLA4g2Xg#81"
+    },
+    {
+      "puzzleId": "oZax8",
+      "fen": "8/2Q5/4pk2/4p3/4P3/2KP4/PP6/5r2 w - - 7 38",
+      "moves": "a2a4 f1c1 c3b3 c1c7",
+      "rating": 793,
+      "popularity": 93,
+      "nbPlays": 1118,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "queenRookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/F8kkozot#75"
+    },
+    {
+      "puzzleId": "wM7lc",
+      "fen": "r3k3/ppq5/2p5/2Ppp1n1/6Q1/2P1PP2/P7/R3K1N1 b Qq - 1 24",
+      "moves": "g5f7 g4g8 e8e7 g8a8",
+      "rating": 793,
+      "popularity": 93,
+      "nbPlays": 1564,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/skOgSKMj/black#48"
+    },
+    {
+      "puzzleId": "wWoHm",
+      "fen": "2r5/p3R2p/bkp1N3/5p1B/8/1P5P/r7/2K4R w - - 0 30",
+      "moves": "e7h7 a2a1 c1c2 a1h1",
+      "rating": 793,
+      "popularity": 93,
+      "nbPlays": 1664,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/s9FXzmOT#59"
+    },
+    {
+      "puzzleId": "9oURX",
+      "fen": "r2k4/p1pb1B2/2p3p1/8/8/2K1R3/PPP2n2/8 b - - 1 26",
+      "moves": "d7f5 e3e8 d8d7 e8a8",
+      "rating": 793,
+      "popularity": 92,
+      "nbPlays": 1247,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/urinEoaU/black#52"
+    },
+    {
+      "puzzleId": "zUkzQ",
+      "fen": "7r/p4pk1/1p1p2pq/2pRb3/2P5/PP2PQP1/5PK1/2R5 w - - 3 29",
+      "moves": "g2f1 h6h1 f3h1 h8h1 f1e2 h1c1",
+      "rating": 794,
+      "popularity": 99,
+      "nbPlays": 1658,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/9z912hQd#57"
+    },
+    {
+      "puzzleId": "03EI3",
+      "fen": "3r4/6pp/2p1k3/ppP5/6P1/7P/1P6/4R1K1 b - - 1 32",
+      "moves": "e6d5 e1d1 d5c5 d1d8",
+      "rating": 794,
+      "popularity": 97,
+      "nbPlays": 1323,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/FxsIzYzO/black#64"
+    },
+    {
+      "puzzleId": "rR80W",
+      "fen": "8/8/k7/P5R1/5P2/4P1K1/8/r7 w - - 1 50",
+      "moves": "g5g8 a1g1 g3f3 g1g8",
+      "rating": 794,
+      "popularity": 97,
+      "nbPlays": 1614,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/BsHma5Zq#99"
+    },
+    {
+      "puzzleId": "zk8NN",
+      "fen": "5k2/R2br1pQ/3p1p1p/1q5P/8/Pp1nP3/5PP1/6K1 b - - 2 35",
+      "moves": "b5b8 h7h8 f8f7 h8b8",
+      "rating": 794,
+      "popularity": 97,
+      "nbPlays": 1777,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/aejF3eIr/black#70"
+    },
+    {
+      "puzzleId": "4y1wt",
+      "fen": "6qk/7Q/2p5/1pPpP2p/1P3P1P/6P1/8/R5K1 b - - 0 39",
+      "moves": "g8h7 a1a8 h8g7 a8a7 g7h6 a7h7",
+      "rating": 794,
+      "popularity": 96,
+      "nbPlays": 3327,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "exposedKing",
+        "long",
+        "queenRookEndgame",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/OGRDpI7k/black#78"
+    },
+    {
+      "puzzleId": "SUX62",
+      "fen": "8/8/8/3k1K2/8/r7/8/4R3 b - - 42 79",
+      "moves": "a3a5 e1e5 d5c4 e5a5",
+      "rating": 794,
+      "popularity": 96,
+      "nbPlays": 1331,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/unJ39xtp/black#158"
+    },
+    {
+      "puzzleId": "8wW45",
+      "fen": "4R3/1p3k1p/1p1p2p1/3P1b2/5p2/2P2P2/rP1K2P1/7R w - - 6 29",
+      "moves": "e8b8 a2b2 d2e1 b2b1 e1f2 b1h1",
+      "rating": 794,
+      "popularity": 95,
+      "nbPlays": 2169,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/EaWeSL83#57"
+    },
+    {
+      "puzzleId": "jE0fx",
+      "fen": "7R/8/5kp1/4p3/2KnP3/Pp3r2/8/8 b - - 3 61",
+      "moves": "f3f2 h8f8 f6e7 f8f2",
+      "rating": 794,
+      "popularity": 95,
+      "nbPlays": 1387,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/lO1xjaJU/black#122"
+    },
+    {
+      "puzzleId": "9d4LO",
+      "fen": "8/r2k4/P4R2/5pp1/8/8/8/5K2 b - - 1 50",
+      "moves": "f5f4 f6f7 d7c6 f7a7",
+      "rating": 794,
+      "popularity": 94,
+      "nbPlays": 1599,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/FCSaO6tI/black#100"
+    },
+    {
+      "puzzleId": "Azemb",
+      "fen": "8/7p/8/3k4/8/3p3r/4KB2/1R6 w - - 0 55",
+      "moves": "e2e1 h3h1 e1d2 h1b1",
+      "rating": 794,
+      "popularity": 94,
+      "nbPlays": 1523,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/OuiiTb0A#109"
+    },
+    {
+      "puzzleId": "cbD97",
+      "fen": "1R6/8/p7/4pk2/8/3p4/1P6/1KN2q2 b - - 1 54",
+      "moves": "d3d2 b8f8 f5e4 f8f1 d2d1q f1d1",
+      "rating": 794,
+      "popularity": 94,
+      "nbPlays": 1130,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/ewYGnQZm/black#108"
+    },
+    {
+      "puzzleId": "nQrzg",
+      "fen": "5R2/2p4p/1k1p4/4n3/4P3/3P3P/PPr3P1/7K b - - 1 26",
+      "moves": "c2b2 f8b8 b6a5 b8b2",
+      "rating": 794,
+      "popularity": 93,
+      "nbPlays": 1442,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/6moJcjFa/black#52"
+    },
+    {
+      "puzzleId": "IACd8",
+      "fen": "R7/8/8/p4p1k/5P2/4P1K1/8/r7 w - - 0 44",
+      "moves": "a8g8 a1g1 g3f3 g1g8",
+      "rating": 794,
+      "popularity": 92,
+      "nbPlays": 1119,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/aOKwxNwi#87"
+    },
+    {
+      "puzzleId": "z5jz5",
+      "fen": "4k3/1p1r4/p1p5/2P3pP/2PKppP1/1P6/P4P2/4R3 w - - 5 35",
+      "moves": "d4e4 d7e7 e4f5 e7e1",
+      "rating": 794,
+      "popularity": 92,
+      "nbPlays": 1550,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/LSV4mu2I#69"
+    },
+    {
+      "puzzleId": "lI9nP",
+      "fen": "4b3/8/5k1p/2pP2p1/p1P3P1/P3K2P/2B5/8 w - - 0 46",
+      "moves": "e3e4 e8g6 e4f3 g6c2",
+      "rating": 794,
+      "popularity": 91,
+      "nbPlays": 1704,
       "theme": "skewer",
       "allThemes": [
         "bishopEndgame",
@@ -16873,7 +15842,1029 @@
         "short",
         "skewer"
       ],
-      "gameUrl": "https://lichess.org/KtQnufRQ/black#106"
+      "gameUrl": "https://lichess.org/ViuSMlXN#91"
+    },
+    {
+      "puzzleId": "wWebn",
+      "fen": "r3k3/1p2q3/1r3p2/p1p1pP1B/2PnP2p/PP1R4/6R1/3Q2K1 b - - 1 39",
+      "moves": "e8d8 g2g8 d8c7 g8a8",
+      "rating": 795,
+      "popularity": 99,
+      "nbPlays": 1470,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "master",
+        "middlegame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Tq9wHxZP/black#78"
+    },
+    {
+      "puzzleId": "FLSNh",
+      "fen": "2r5/8/8/8/1k6/3R4/3K4/8 b - - 11 74",
+      "moves": "b4c4 d3c3 c4d4 c3c8",
+      "rating": 795,
+      "popularity": 98,
+      "nbPlays": 1115,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/4FEta5nw/black#148"
+    },
+    {
+      "puzzleId": "XR7hr",
+      "fen": "8/p4p1p/5kp1/2P5/4P2P/5P2/P1R2K2/7r w - - 0 42",
+      "moves": "c5c6 h1h2 f2g3 h2c2",
+      "rating": 795,
+      "popularity": 97,
+      "nbPlays": 2078,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/npsWVVud#83"
+    },
+    {
+      "puzzleId": "2UrBy",
+      "fen": "r3k3/3p1p1n/p2Bp3/8/1p1b4/1B6/P5RP/7K b q - 1 32",
+      "moves": "f7f5 g2g8 e8f7 g8a8",
+      "rating": 795,
+      "popularity": 96,
+      "nbPlays": 1154,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/MR7CyySc/black#64"
+    },
+    {
+      "puzzleId": "Edu1h",
+      "fen": "2k3rr/5p2/1p1p3q/p7/2PpPpP1/3P2Q1/PP4P1/R4RK1 w - - 0 25",
+      "moves": "f1f4 h6h1 g1f2 h1a1",
+      "rating": 795,
+      "popularity": 95,
+      "nbPlays": 2654,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/eQRD1WGJ#49"
+    },
+    {
+      "puzzleId": "T9sVw",
+      "fen": "3k1n2/r6p/5p1R/1K2pP2/1p1pP3/p7/Pr6/2N4R b - - 6 58",
+      "moves": "d8e7 h6h7 f8h7 h1h7 e7d6 h7a7",
+      "rating": 795,
+      "popularity": 94,
+      "nbPlays": 1506,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/rtJ2sY1t/black#116"
+    },
+    {
+      "puzzleId": "Vx0XN",
+      "fen": "1r4k1/8/4r1p1/1KP3P1/R7/1pP5/1P6/5R2 w - - 1 52",
+      "moves": "b5c4 e6e4 c4d3 e4a4",
+      "rating": 795,
+      "popularity": 94,
+      "nbPlays": 1313,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/XDQkPsQQ#103"
+    },
+    {
+      "puzzleId": "KipSU",
+      "fen": "r4k2/pp6/3pp1p1/4np2/7R/3B4/PPP2P1P/7K b - - 0 25",
+      "moves": "e5d3 h4h8 f8e7 h8a8",
+      "rating": 795,
+      "popularity": 93,
+      "nbPlays": 1888,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/F0a6XLtD/black#50"
+    },
+    {
+      "puzzleId": "UhKAd",
+      "fen": "2B5/kp4Q1/p1p5/8/5P2/6KP/8/4q3 w - - 4 40",
+      "moves": "g3g4 e1g1 g4f3 g1g7",
+      "rating": 795,
+      "popularity": 93,
+      "nbPlays": 2261,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/MUBx3AVP#79"
+    },
+    {
+      "puzzleId": "hOxLH",
+      "fen": "8/k5pp/P7/8/1P6/R2K3P/6r1/8 w - - 0 44",
+      "moves": "b4b5 g2g3 d3c4 g3a3",
+      "rating": 795,
+      "popularity": 93,
+      "nbPlays": 2849,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/l4pl7vnK#87"
+    },
+    {
+      "puzzleId": "Y1RBl",
+      "fen": "8/pp1R4/8/6k1/6P1/P1P1K3/1r6/8 w - - 0 42",
+      "moves": "e3d4 b2d2 d4c5 d2d7",
+      "rating": 795,
+      "popularity": 91,
+      "nbPlays": 1459,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Q86iJf7l#83"
+    },
+    {
+      "puzzleId": "ZzO3Y",
+      "fen": "8/8/8/7p/1K6/7r/2R1k3/8 b - - 1 84",
+      "moves": "e2d3 c2c3 d3e4 c3h3",
+      "rating": 795,
+      "popularity": 90,
+      "nbPlays": 1100,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/7WJdmWFR/black#168"
+    },
+    {
+      "puzzleId": "wpn8J",
+      "fen": "2r5/2K5/5pkp/5b2/2B1p2P/PP6/5P2/3R4 w - - 1 29",
+      "moves": "c7d6 c8d8 d6c5 d8d1",
+      "rating": 796,
+      "popularity": 99,
+      "nbPlays": 1389,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/cbJy4n8N#57"
+    },
+    {
+      "puzzleId": "YNzNn",
+      "fen": "8/p6R/4k3/5p2/4p3/4q1P1/5R1P/6K1 b - - 2 38",
+      "moves": "e3b6 h7h6 e6e5 h6b6",
+      "rating": 796,
+      "popularity": 98,
+      "nbPlays": 3256,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "queenRookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Gyi0PVMi/black#76"
+    },
+    {
+      "puzzleId": "4K7uq",
+      "fen": "7r/2k1b3/4p3/1B1pP3/1p1P1P2/1R6/4K3/8 w - - 5 47",
+      "moves": "e2f3 h8h3 f3e2 h3b3",
+      "rating": 796,
+      "popularity": 97,
+      "nbPlays": 1056,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/CglAZQEU#93"
+    },
+    {
+      "puzzleId": "sI0gM",
+      "fen": "8/pp4p1/2kp3p/2r2p2/3r4/2PK3P/PP3PP1/3R4 w - - 0 25",
+      "moves": "d3d4 c5d5 d4e3 d5d1",
+      "rating": 796,
+      "popularity": 96,
+      "nbPlays": 1507,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Jh3LvGlq#49"
+    },
+    {
+      "puzzleId": "w9fNo",
+      "fen": "8/ppk4P/4p3/2p5/2P1Q3/5P1K/8/2q5 w - - 1 52",
+      "moves": "h7h8q c1h1 h3g3 h1h8",
+      "rating": 796,
+      "popularity": 96,
+      "nbPlays": 1763,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "queenEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/0Nos8qHc#103"
+    },
+    {
+      "puzzleId": "bbqRs",
+      "fen": "4b3/8/5k2/1pPp1p1p/1P1P3P/1R1NK1P1/6r1/8 w - - 8 49",
+      "moves": "d3f4 g2g3 e3e2 g3b3",
+      "rating": 796,
+      "popularity": 95,
+      "nbPlays": 1885,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/zUJfrWic#97"
+    },
+    {
+      "puzzleId": "Ejt0X",
+      "fen": "8/p3b1kp/2p5/1p6/4NPb1/PB2K1P1/1P5P/8 w - - 0 29",
+      "moves": "e4f2 e7c5 e3d2 c5f2",
+      "rating": 796,
+      "popularity": 94,
+      "nbPlays": 2037,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "deflection",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/VFFoKZyc#57"
+    },
+    {
+      "puzzleId": "NwqjR",
+      "fen": "1k6/2p1R3/1p1p4/p7/P6r/6p1/3R2K1/8 w - - 0 40",
+      "moves": "d2a2 h4h2 g2g3 h2a2",
+      "rating": 796,
+      "popularity": 94,
+      "nbPlays": 1066,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/WpPJN7V1#79"
+    },
+    {
+      "puzzleId": "OiGkg",
+      "fen": "4r3/2p5/1p5p/3k2p1/3Rp3/P3K1P1/6PP/8 b - - 2 35",
+      "moves": "d5e5 d4e4 e5d5 e4e8",
+      "rating": 796,
+      "popularity": 93,
+      "nbPlays": 1323,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/nvI1ypub/black#70"
+    },
+    {
+      "puzzleId": "lgLWG",
+      "fen": "3R4/8/8/3k4/8/6K1/8/4r3 b - - 3 70",
+      "moves": "d5e4 d8e8 e4d3 e8e1",
+      "rating": 796,
+      "popularity": 92,
+      "nbPlays": 1124,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/QooRnEuz/black#140"
+    },
+    {
+      "puzzleId": "m1mVj",
+      "fen": "8/7p/6p1/5p2/P1p1k2P/r5P1/4RK2/8 b - - 4 47",
+      "moves": "e4d3 e2e3 d3d4 e3a3",
+      "rating": 796,
+      "popularity": 92,
+      "nbPlays": 1008,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/bthviKKC/black#94"
+    },
+    {
+      "puzzleId": "zfv9g",
+      "fen": "6r1/2Pqk3/1p6/p3P2B/8/P5N1/1P3RKP/8 b - - 0 40",
+      "moves": "d7c7 f2f7 e7d8 f7c7",
+      "rating": 796,
+      "popularity": 90,
+      "nbPlays": 1738,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "masterVsMaster",
+        "short",
+        "skewer",
+        "superGM"
+      ],
+      "gameUrl": "https://lichess.org/8VzNX86T/black#80"
+    },
+    {
+      "puzzleId": "jl8Hb",
+      "fen": "8/1p6/1R2k3/3b2p1/p6p/P1B5/5rPK/8 b - - 3 39",
+      "moves": "e6f5 b6f6 f5e4 f6f2",
+      "rating": 797,
+      "popularity": 97,
+      "nbPlays": 1178,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/3CQnJiUk/black#78"
+    },
+    {
+      "puzzleId": "fcUE6",
+      "fen": "8/4rkp1/p6p/1p1K4/1b1B1PPP/8/P7/3R4 w - - 0 35",
+      "moves": "d4e5 e7d7 d5e4 d7d1",
+      "rating": 797,
+      "popularity": 96,
+      "nbPlays": 2883,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/1FqX9qrR#69"
+    },
+    {
+      "puzzleId": "rmQWo",
+      "fen": "2b2rk1/4pp1p/6p1/3R4/rpB1P3/4P3/2P3PP/2K4R w - - 0 20",
+      "moves": "d5c5 a4a1 c1b2 a1h1",
+      "rating": 797,
+      "popularity": 95,
+      "nbPlays": 1304,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/GgmqzoIa#39"
+    },
+    {
+      "puzzleId": "F1ao6",
+      "fen": "r2k4/p1p2p2/2p4r/6R1/8/2N5/PPP2PPP/6K1 b - - 0 20",
+      "moves": "h6d6 g5g8 d8d7 g8a8",
+      "rating": 797,
+      "popularity": 94,
+      "nbPlays": 1328,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/sd3iQGmp/black#40"
+    },
+    {
+      "puzzleId": "BBcTs",
+      "fen": "2R5/8/5P2/2p5/1k3K2/pr6/8/8 b - - 0 56",
+      "moves": "b3b1 c8b8 b4c3 b8b1",
+      "rating": 797,
+      "popularity": 90,
+      "nbPlays": 1366,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/lqaV5R8R/black#112"
+    },
+    {
+      "puzzleId": "vWAtm",
+      "fen": "8/6kP/4p1P1/p1r5/P3K1R1/2P5/8/8 w - - 5 43",
+      "moves": "g4h4 c5c4 e4d3 c4h4",
+      "rating": 797,
+      "popularity": 90,
+      "nbPlays": 1111,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/jszxG2ta#85"
+    },
+    {
+      "puzzleId": "J5aNN",
+      "fen": "8/1R6/1p6/7k/8/4K3/1r5P/8 b - - 5 44",
+      "moves": "b2h2 b7h7 h5g4 h7h2",
+      "rating": 798,
+      "popularity": 99,
+      "nbPlays": 1566,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Owz0mpUR/black#88"
+    },
+    {
+      "puzzleId": "IzGRP",
+      "fen": "8/p7/4k3/4P1pp/P7/1P4P1/7r/1R3K2 w - - 0 50",
+      "moves": "b3b4 h2h1 f1e2 h1b1",
+      "rating": 798,
+      "popularity": 98,
+      "nbPlays": 1433,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/QyJUPC4q#99"
+    },
+    {
+      "puzzleId": "AJSxI",
+      "fen": "6k1/5R2/6K1/7P/6r1/8/8/8 w - - 0 84",
+      "moves": "g6f6 g4f4 f6e5 f4f7",
+      "rating": 798,
+      "popularity": 97,
+      "nbPlays": 1674,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "deflection",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/V7nLsJUY#167"
+    },
+    {
+      "puzzleId": "H4uDd",
+      "fen": "6k1/5pp1/5n1p/8/6P1/1P5r/1B2KP2/R7 w - - 0 29",
+      "moves": "f2f3 h3h2 e2d3 h2b2",
+      "rating": 798,
+      "popularity": 96,
+      "nbPlays": 1026,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/3SfOFq3N#57"
+    },
+    {
+      "puzzleId": "ZvJno",
+      "fen": "8/6k1/8/3p4/7p/2P4B/P1P4r/2R2K2 w - - 8 42",
+      "moves": "h3c8 h2h1 f1g2 h1c1",
+      "rating": 798,
+      "popularity": 96,
+      "nbPlays": 2631,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/8ATuYhrI#83"
+    },
+    {
+      "puzzleId": "mFzru",
+      "fen": "5rk1/1p1R3p/6p1/8/8/pP6/P1r2PP1/5K1R w - - 2 28",
+      "moves": "f2f3 c2c1 f1f2 c1h1",
+      "rating": 798,
+      "popularity": 96,
+      "nbPlays": 1178,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/EiaUtxPU#55"
+    },
+    {
+      "puzzleId": "H7oVI",
+      "fen": "5r2/5kq1/1p2p1r1/3R1p2/5P2/P7/2R2QPP/6K1 b - - 0 33",
+      "moves": "e6d5 c2c7 f7g8 c7g7",
+      "rating": 798,
+      "popularity": 95,
+      "nbPlays": 1863,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/K3Tsul42/black#66"
+    },
+    {
+      "puzzleId": "Jy1xk",
+      "fen": "1R6/6p1/2k5/8/1p3KPP/2r5/8/8 b - - 6 50",
+      "moves": "b4b3 b8c8 c6b5 c8c3",
+      "rating": 798,
+      "popularity": 95,
+      "nbPlays": 1212,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Hn8fnXJ8/black#100"
+    },
+    {
+      "puzzleId": "rSXHt",
+      "fen": "2r1r3/p2k1p2/1p3p1p/3P4/2P3P1/P2B1P2/5K1P/1R6 b - - 0 24",
+      "moves": "e8e7 d3f5 d7d8 f5c8",
+      "rating": 798,
+      "popularity": 95,
+      "nbPlays": 1342,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/2BH5lyvZ/black#48"
+    },
+    {
+      "puzzleId": "U7oY9",
+      "fen": "5R1B/8/2p5/2p2p2/2k2K2/2P5/8/6r1 w - - 14 64",
+      "moves": "f4f5 g1f1 f5e5 f1f8",
+      "rating": 798,
+      "popularity": 94,
+      "nbPlays": 1147,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/OrygPo1Y#127"
+    },
+    {
+      "puzzleId": "XvCL8",
+      "fen": "8/p7/1p3k2/4p3/1P3pBp/2P2P1P/P4br1/1R2K3 w - - 1 43",
+      "moves": "e1f1 g2g1 f1f2 g1b1",
+      "rating": 798,
+      "popularity": 94,
+      "nbPlays": 1316,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/U3iZP34O#85"
+    },
+    {
+      "puzzleId": "96T2F",
+      "fen": "2r5/5kpp/8/8/1r1Pb3/8/6PP/2R1K2R w K - 0 24",
+      "moves": "c1c8 b4b1 e1f2 b1h1",
+      "rating": 798,
+      "popularity": 93,
+      "nbPlays": 1256,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/12NE56zR#47"
+    },
+    {
+      "puzzleId": "9S5eq",
+      "fen": "8/pp4Rp/2p5/4pk2/8/7P/P2r1PPK/8 b - - 4 29",
+      "moves": "d2f2 g7f7 f5e6 f7f2",
+      "rating": 798,
+      "popularity": 93,
+      "nbPlays": 1315,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/TM6NMoqm/black#58"
+    },
+    {
+      "puzzleId": "v9Nzp",
+      "fen": "4r3/4P3/6pp/p1k5/5KPP/1P6/P3R3/8 w - - 5 48",
+      "moves": "f4e5 e8e7 e5f6 e7e2",
+      "rating": 798,
+      "popularity": 93,
+      "nbPlays": 1110,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/IONX7V1b#95"
+    },
+    {
+      "puzzleId": "LXP3Z",
+      "fen": "8/p1p5/1pk5/8/PPP5/2bP4/4RP1r/4RK2 w - - 1 32",
+      "moves": "e1b1 h2h1 f1g2 h1b1",
+      "rating": 798,
+      "popularity": 92,
+      "nbPlays": 1537,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/wWc7XgYh#63"
+    },
+    {
+      "puzzleId": "UBZDo",
+      "fen": "8/7R/p2p4/8/r2k4/5K2/8/8 b - - 5 57",
+      "moves": "d6d5 h7h4 d4c5 h4a4",
+      "rating": 798,
+      "popularity": 89,
+      "nbPlays": 1033,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/J0yCOmU4/black#114"
+    },
+    {
+      "puzzleId": "AjWfV",
+      "fen": "8/5kp1/7p/p7/P5PP/R3K3/4N3/7r w - - 5 52",
+      "moves": "h4h5 h1h3 e3d4 h3a3",
+      "rating": 799,
+      "popularity": 96,
+      "nbPlays": 2284,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/IhszhR7o#103"
+    },
+    {
+      "puzzleId": "Svo2d",
+      "fen": "8/7R/p1r2kp1/P1Pp1p1P/2bP1P2/4PP2/5K2/8 b - - 0 41",
+      "moves": "g6h5 h7h6 f6f7 h6c6",
+      "rating": 799,
+      "popularity": 96,
+      "nbPlays": 2634,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/zXwpxeUZ/black#82"
+    },
+    {
+      "puzzleId": "ky5pb",
+      "fen": "4k2r/ppRb1pp1/4p3/3pP2p/8/nP1R4/P4PPP/6K1 b k - 1 20",
+      "moves": "d7c6 c7c8 e8d7 c8h8",
+      "rating": 799,
+      "popularity": 96,
+      "nbPlays": 1047,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/LvRtDDMN/black#40"
+    },
+    {
+      "puzzleId": "mHwqk",
+      "fen": "3q2k1/5pp1/p3pb1p/1p6/PP6/2P5/2Q2PPP/1B4K1 b - - 2 28",
+      "moves": "d8c8 c2h7 g8f8 h7h8 f8e7 h8c8",
+      "rating": 799,
+      "popularity": 96,
+      "nbPlays": 2293,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/h0w88YLP/black#56"
+    },
+    {
+      "puzzleId": "n9Xo2",
+      "fen": "8/p2kq2p/3p2pQ/1N3p2/P3n3/1P2P3/3r1PPP/2R3K1 b - - 12 36",
+      "moves": "e4f2 c1c7 d7d8 c7e7",
+      "rating": 799,
+      "popularity": 96,
+      "nbPlays": 1821,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/l5gf9Hlt/black#72"
+    },
+    {
+      "puzzleId": "U3GgJ",
+      "fen": "6k1/p1B2pp1/4pn1p/P2p4/3P4/4PP2/1R2K1PP/6r1 w - - 3 30",
+      "moves": "g2g4 g1g2 e2d3 g2b2",
+      "rating": 799,
+      "popularity": 95,
+      "nbPlays": 1802,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/8P1k2fDh#59"
+    },
+    {
+      "puzzleId": "knkFU",
+      "fen": "6r1/1kpr3p/1p4pB/1P2p3/R2bP3/3P3P/RP2K3/8 b - - 0 32",
+      "moves": "d7f7 a4a7 b7c8 a7a8 c8d7 a8g8",
+      "rating": 799,
+      "popularity": 95,
+      "nbPlays": 2028,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "long",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/WdlO2wIZ/black#64"
+    },
+    {
+      "puzzleId": "zLa4W",
+      "fen": "R2R4/5pkp/pr1bb2p/8/P7/5P1P/6P1/6K1 b - - 9 37",
+      "moves": "d6g3 d8g8 g7f6 g8g3",
+      "rating": 799,
+      "popularity": 95,
+      "nbPlays": 1245,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/AGAxMjqa/black#74"
+    },
+    {
+      "puzzleId": "q0mjh",
+      "fen": "2rr2k1/p1qn1ppp/4pn2/8/1P1Q4/3BPP2/1B3P1P/3RK2R w K - 5 18",
+      "moves": "d1c1 c7c1 b2c1 c8c1 e1e2 c1h1",
+      "rating": 799,
+      "popularity": 94,
+      "nbPlays": 1501,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "long",
+        "middlegame",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/pHZCsvh7#35"
+    },
+    {
+      "puzzleId": "rwjQ8",
+      "fen": "8/p4R1p/4p1p1/8/1P2k3/6PP/6K1/4q3 b - - 4 43",
+      "moves": "e1b4 f7f4 e4d5 f4b4",
+      "rating": 799,
+      "popularity": 94,
+      "nbPlays": 2436,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "queenRookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/5YWonRBL/black#86"
+    },
+    {
+      "puzzleId": "JDdjT",
+      "fen": "8/8/1r5p/7P/1k3PK1/p7/8/2R5 b - - 1 58",
+      "moves": "b4b3 c1b1 b3c2 b1b6",
+      "rating": 799,
+      "popularity": 93,
+      "nbPlays": 1030,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "master",
+        "rookEndgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/Nn4vc5kh/black#116"
+    },
+    {
+      "puzzleId": "ZOzYT",
+      "fen": "8/1pk5/p1p4p/5B2/1P4P1/r5r1/2R5/2KR4 w - - 0 44",
+      "moves": "d1h1 a3a1 c1b2 a1h1",
+      "rating": 799,
+      "popularity": 93,
+      "nbPlays": 1719,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/uTChUAoQ#87"
+    },
+    {
+      "puzzleId": "fPUsD",
+      "fen": "r4r1k/p6P/4bp2/8/1Q2N3/5P2/qPP2R2/2K3R1 w - - 1 31",
+      "moves": "b4d4 a2a1 c1d2 a1g1",
+      "rating": 799,
+      "popularity": 92,
+      "nbPlays": 1143,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "middlegame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/VumsXx3U#61"
+    },
+    {
+      "puzzleId": "dDTQg",
+      "fen": "2b1k1nr/1ppp1pRp/1b6/1N1PP3/8/8/r1PBBPPP/4K2R w Kk - 0 18",
+      "moves": "e2d3 a2a1 e1e2 a1h1",
+      "rating": 799,
+      "popularity": 91,
+      "nbPlays": 1512,
+      "theme": "skewer",
+      "allThemes": [
+        "advantage",
+        "middlegame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/6lkTVhbv#35"
+    },
+    {
+      "puzzleId": "iZCnl",
+      "fen": "3R4/8/1n6/1P2pk1p/3b2p1/3K4/5PPP/8 b - - 3 44",
+      "moves": "d4f2 d8f8 f5e6 f8f2",
+      "rating": 799,
+      "popularity": 89,
+      "nbPlays": 1626,
+      "theme": "skewer",
+      "allThemes": [
+        "crushing",
+        "endgame",
+        "short",
+        "skewer"
+      ],
+      "gameUrl": "https://lichess.org/fbVni8Vb/black#88"
     }
   ]
 }

@@ -12,7 +12,6 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Only initialize if we have the key
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      console.log('PostHog: No API key found, skipping initialization');
       return;
     }
 

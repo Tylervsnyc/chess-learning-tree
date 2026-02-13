@@ -133,7 +133,7 @@ async function handleCheckoutComplete(
 
         if (profileError) {
           // Profile might already exist from trigger, try update instead
-          console.log('Profile insert failed, trying update:', profileError.message);
+          console.warn('Profile insert failed, trying update:', profileError.message);
         }
       }
     } catch (err) {
@@ -153,12 +153,11 @@ async function handleCheckoutComplete(
       session.subscription as string
     );
 
-    // Safely get expiration date
+    // Get expiration date from the first subscription item
     let expiresAt: string | null = null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentPeriodEnd = (subscription as any).current_period_end;
-    if (currentPeriodEnd && typeof currentPeriodEnd === 'number') {
-      expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+    const firstItem = subscription.items?.data?.[0];
+    if (firstItem?.current_period_end) {
+      expiresAt = new Date(firstItem.current_period_end * 1000).toISOString();
     }
 
     // Update profile with premium status
@@ -219,13 +218,12 @@ async function updateSubscriptionStatus(
     ? 'premium'
     : 'free';
 
-  // Safely get expiration date
+  // Get expiration date from the first subscription item
   let expiresAt: string | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currentPeriodEnd = (subscription as any).current_period_end;
+  const firstItem = subscription.items?.data?.[0];
   if ((subscription.status === 'active' || subscription.status === 'trialing') &&
-      currentPeriodEnd && typeof currentPeriodEnd === 'number') {
-    expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+      firstItem?.current_period_end) {
+    expiresAt = new Date(firstItem.current_period_end * 1000).toISOString();
   }
 
   const { error } = await supabase
@@ -297,5 +295,5 @@ async function handlePaymentFailed(
 
   // Optionally: Send notification, mark account, etc.
   // For now, we just log it - Stripe will retry automatically
-  console.log(`Payment failed for user ${profile.id}`);
+  console.warn(`Payment failed for user ${profile.id}`);
 }

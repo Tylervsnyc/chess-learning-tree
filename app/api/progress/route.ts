@@ -18,11 +18,12 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Fetch completed lessons
-  // NOTE: In the new schema, presence in lesson_progress means completed (no 'completed' column)
+  // Fetch completed lessons (passed only)
+  // A lesson is "completed" if score >= 4 OR score is null (legacy data before pass/fail system)
+  // Lessons with score < 4 are failed attempts — recorded but not counted as completed
   const { data: lessonProgress, error: lessonError } = await supabase
     .from('lesson_progress')
-    .select('lesson_id')
+    .select('lesson_id, score')
     .eq('user_id', user.id);
 
   if (lessonError) {
@@ -40,8 +41,7 @@ export async function GET() {
   // Handle missing profile (e.g., Google OAuth users where trigger didn't fire)
   if (profileError && profileError.code === 'PGRST116') {
     // No profile found - create one
-    console.log('Profile not found for user, creating one:', user.id);
-    const { error: insertError } = await supabase
+        const { error: insertError } = await supabase
       .from('profiles')
       .insert({
         id: user.id,
@@ -55,8 +55,11 @@ export async function GET() {
     }
 
     // Return default values for new user
+    // Filter to only passed lessons (score >= 4 or null for legacy data)
     return NextResponse.json({
-      completedLessons: (lessonProgress || []).map((lp) => lp.lesson_id),
+      completedLessons: (lessonProgress || [])
+        .filter((lp) => lp.score === null || lp.score === undefined || lp.score >= 4)
+        .map((lp) => lp.lesson_id),
       currentStreak: 0,
       lastActivityDate: null,
       lessonsCompletedToday: 0,
@@ -74,8 +77,11 @@ export async function GET() {
   const isNewDay = profile?.last_lesson_date !== today;
   const lessonsCompletedToday = isNewDay ? 0 : (profile?.lessons_completed_today ?? 0);
 
+  // Filter to only passed lessons (score >= 4 or null for legacy data)
   return NextResponse.json({
-    completedLessons: (lessonProgress || []).map((lp) => lp.lesson_id),
+    completedLessons: (lessonProgress || [])
+      .filter((lp) => lp.score === null || lp.score === undefined || lp.score >= 4)
+      .map((lp) => lp.lesson_id),
     currentStreak: profile?.current_streak ?? 0,
     lastActivityDate: profile?.last_activity_date ?? null,
     lessonsCompletedToday,
@@ -126,11 +132,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (type === 'lesson') {
-    // Record lesson completion
-    const { lessonId, nextLessonId, currentPosition, updateStreak } = data;
+    // Record lesson completion (or failed attempt)
+    const { lessonId, nextLessonId, currentPosition, updateStreak, score } = data;
     if (!lessonId) {
       return NextResponse.json({ error: 'Missing lessonId' }, { status: 400 });
     }
+
+    // Determine if the user passed (4+ out of 6 correct on first attempt)
+    // score is optional for backwards compatibility — if not provided, treat as pass
+    const passed = score === undefined || score === null || score >= 4;
 
     // Validate lessonId exists in curriculum
     const allLessonIds = getAllLessonIds();
@@ -146,7 +156,6 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (!existingProfile) {
-      console.log('Profile not found for user in POST, creating one:', user.id);
       await supabase.from('profiles').insert({
         id: user.id,
         email: user.email,
@@ -158,13 +167,21 @@ export async function POST(request: NextRequest) {
     // Server trusts the client and just stores the data. This prevents
     // cascading sync failures when earlier lessons are missing from the DB.
 
+    // Build lesson_progress record — always store the attempt (even on fail)
+    const lessonProgressRecord: Record<string, unknown> = {
+      user_id: user.id,
+      lesson_id: lessonId,
+      tree_id: getTreeIdFromLessonId(lessonId),
+      completed_at: new Date().toISOString(),
+    };
+
+    // Store score if provided (new pass/fail system)
+    if (score !== undefined && score !== null) {
+      lessonProgressRecord.score = score;
+    }
+
     const { error } = await supabase.from('lesson_progress').upsert(
-      {
-        user_id: user.id,
-        lesson_id: lessonId,
-        tree_id: getTreeIdFromLessonId(lessonId),
-        completed_at: new Date().toISOString(),
-      },
+      lessonProgressRecord,
       { onConflict: 'user_id,lesson_id' }
     );
 
@@ -212,7 +229,9 @@ export async function POST(request: NextRequest) {
       updateData.current_streak = newStreak;
     }
 
-    if (currentPosition) {
+    // Only update currentPosition if the user passed (score >= 4)
+    // On fail, they stay on the same lesson
+    if (currentPosition && passed) {
       updateData.current_position = currentPosition;
     }
 
@@ -226,7 +245,7 @@ export async function POST(request: NextRequest) {
       // Don't fail the whole request for profile update failure
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, passed });
   }
 
   if (type === 'unlockLevel') {
@@ -274,7 +293,6 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (!existingProfile) {
-      console.log('Profile not found for puzzle sync, creating one:', user.id);
       await supabase.from('profiles').insert({
         id: user.id,
         email: user.email,

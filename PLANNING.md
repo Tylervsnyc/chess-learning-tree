@@ -1,8 +1,8 @@
 # Chess Path — Planning Session
 
-**Status:** Big productivity day. Level 8 shipped, level tests redesigned, auth gate on Daily Rook, design token sweep continuing, puzzle data cleanup.
+**Status:** Massive tutorial day. Theme tutorials for all Level 1 lessons, Daily Rook personal bests, promo code system removed, free lessons until March 1.
 
-**Last updated:** Feb 10, 2026 (evening)
+**Last updated:** Feb 11, 2026 (evening)
 
 ---
 
@@ -76,15 +76,24 @@ Tyler decided to focus on mobile-first and skip desktop layout improvements for 
 
 ---
 
-### 5. Beginner Tutorial (Lesson 1.1.1) — SHIPPED
+### 5. Tutorial System — SHIPPED + EXPANDED
 **Status:** Live in production (Feb 11, 2026)
-**Files:** `app/test-tutorial/page.tsx`, `app/lesson/[lessonId]/page.tsx`
+**Files:** `app/lesson/[lessonId]/page.tsx`, `data/theme-tutorials.ts`, `components/tutorial/TutorialFlow.tsx`
 **Docs:** RULES.md section 17b
 
-Guided tutorial replaces lesson 1.1.1. 6 diverse queen checkmate puzzles with progressive scaffolding. Wired into real lesson flow with progress persistence, analytics, and LessonCompleteScreen celebration.
+**Beginner Tutorial (lesson 1.1.1):** Guided walkthrough with 6 diverse queen checkmate puzzles, progressive scaffolding. Wired into real lesson flow with progress persistence, analytics, and LessonCompleteScreen celebration.
+
+**Theme Tutorial System (all Level 1 lessons):** Educational intro screens + yellow hint cards for all 12 Level 1 lessons. Each lesson gets a theme-specific intro explaining the tactic concept before puzzles begin.
+
+**Feb 11 polish (many iterations):**
+- Compact mobile layout: ultra-compact cards, single-sentence copy
+- Skip button: visible bordered button, side-by-side with start
+- Fixed: stale closure bug in celebration, count off-by-one (7/6), queen tap sound
+- Hint cards hide during wrong-answer popup so Try Again is reachable
+- See-moves auto-advance shortened from 3.5s → 1.8s
 
 **Future ideas:**
-- [ ] Tutorials for other first-in-section lessons?
+- [ ] Theme tutorials for Level 2+ (same pattern, new content)
 - [ ] Track tutorial funnel per-step (PostHog events for each guided step)
 - [ ] Template into reusable `<TutorialFlow puzzles={...} />` for other themes
 
@@ -108,19 +117,20 @@ Instagram Reel storyboard for daily puzzles — 4-stage flow in 9:16 frames:
 3. Animated solution (moves play on board, notation builds below)
 4. Celebration (confetti + CTA)
 
-**What got done (Feb 10):**
+**What got done (Feb 10-11):**
 - Built test page showing all 4 stages side-by-side as phone-frame mockups
 - Board goes edge-to-edge (270px = full frame width)
 - Countdown now says "Solution in 3" / "Solution in 2" / "Solution in 1"
 - Logo rendered in shared ReelLayout with absolute positioning
 - Confetti burst confined to bottom zone (never overlaps board)
 - Rules file created with NON-NEGOTIABLE layout constraints
+- **Feb 11:** Added Remotion video pipeline for actual video output
+- Per-day output folders, safe padding, layout polish
 
 **Remaining / known issues:**
-- Logo still rendering inconsistently across frames — needs debugging (visual diff between stages despite identical code path). Countdown stage looks closest to desired result.
-- Not yet producing actual video output — still a test/preview page
-- Need to decide: canvas API recording vs server-side ffmpeg vs manual screen-record
-- No real puzzle data integration yet (hardcoded demo puzzle)
+- Logo still rendering inconsistently across frames
+- Need real puzzle data integration (currently hardcoded demo puzzle)
+- Decide on distribution: auto-post vs manual upload
 
 ---
 
@@ -172,54 +182,46 @@ Fixed header button spacing on mobile (responsive logo sizing, tighter gaps/padd
 
 ---
 
+## Work Done Feb 11 (29 commits)
+
+### Tutorial System (biggest effort — ~15 commits)
+- Guided tutorial for lesson 1.1.1 (6 queen checkmate puzzles, progressive scaffolding)
+- **Theme tutorials for all 12 Level 1 lessons** — educational intros + yellow hint cards (`data/theme-tutorials.ts`)
+- Many mobile layout iterations: compact cards, skip button visibility, side-by-side buttons
+- Bug fixes: stale closure in celebration, off-by-one count (7/6), queen tap sound, hint card z-index
+- See-moves auto-advance shortened 3.5s → 1.8s
+
+### Daily Rook Overhaul
+- **Replaced Top 10 leaderboard with "My Best" personal scores** — new API endpoint
+- **Removed promo code system** (~400 lines: `/api/promo/redeem`, `/redeem`, `/gift/*` pages, SQL)
+- **Free lessons until March 1** (feature flag in `usePermissions.ts`)
+
+### Infrastructure
+- Agent system finalized (14 agents, stale refs fixed, PRODUCTION.md created)
+- CLAUDE.md slimmed for token efficiency (~103 lines, was 235)
+- Wired critical analytics events, fixed gift/welcome CTA
+- Signup: detect Supabase fake success for duplicate emails
+
+### Daily Video Pipeline
+- Remotion pipeline for daily puzzle Instagram reels
+- Per-day output folders, safe padding, layout polish
+
+### Still Uncommitted
+- Design token sweep (~15 pages/components converted to `chess-*` tokens)
+- ~58 puzzle JSON re-sorts across levels 1-5 (~900K lines)
+- `useProgress.ts` changes
+
 ## Work Done Feb 10
 
 ### Committed
-**Level Test Redesign (4 commits):**
-- Animated logo, strike system (hearts for lives), no emojis
-- Shimmer animation → replaced with ripple glow animation
-- Compact intro screen (smaller logo, perpetual float animation)
-- Level test layout locked in RULES.md
-
-**Daily Rook Auth Gate:**
-- Gated Daily Rook behind auth — require login to play
-- Redirect back to Daily Rook after signup/login from gate screen
-
-**Bug Fixes:**
-- Fixed mobile chess board clipping in Daily Rook (documented sizing rule in RULES.md)
-- Fixed /learn scrolling to 1.1.1 after failed level test
-- Fixed 7 QA health check warnings: layout, schema drift, dead URLs, docs, middleware
-
-### Uncommitted (in progress)
-**Design Token Sweep:**
-- ~10 pages converted from hardcoded hex to `chess-*` tokens (landing, about, auth/*, flagged, gift/welcome)
-- NavHeader: responsive logo sizing + tighter mobile padding
-- Share cards + ChessProgressBar tokenized
-
-**Puzzle Data Cleanup:**
-- ~58 puzzle JSON files re-sorted across levels 1-5 (data/clean-puzzles-v2/)
-
-**AGENTS.md Expansion:**
-- Updated from 10 → 14 agents (added Design System, Responsive, PWA, Levels)
-- Expanded parallel safety matrix from 10x10 to 14x14
-- Added more guaranteed-safe combos + WARN pair documentation
-
-**Small Fixes:**
-- Signup page: handle Supabase returning fake success for existing emails (empty identities array)
-- Daily challenge API: added `force-dynamic` to prevent stale caching
-- Added `sharp` package (image processing)
+- Level test redesign (animated logo, strike system, ripple glow, compact intro)
+- Daily Rook auth gate (require login, redirect back after)
+- Bug fixes: mobile board clipping, /learn scroll after failed test, 7 QA warnings
 
 ### Previous Days (for reference)
-**Learn Page Polish:**
-- Pop-in animations on lesson popup cards
-- 3 z-index / stacking fixes: popups were getting clipped by overflow-hidden from section animations
-- Separate positioning wrapper from animation wrapper to prevent transform conflicts
-
-**Other:**
-- Feature-flagged sharing UI (off for now) on lesson complete + daily challenge screens
-- Favicon centering fix
-- AnimatedLogo centering fix (equal 4px horizontal margins)
-- 1st draft of Substack blog post (`substack-draft-chesspath.md`)
+- Learn page polish (pop-in animations, z-index fixes)
+- Feature-flagged sharing UI, favicon/logo centering fixes
+- 1st draft Substack blog post
 
 ---
 
@@ -247,14 +249,16 @@ Fixed header button spacing on mobile (responsive logo sizing, tighter gaps/padd
 
 ## What's Next (suggested priority)
 
-1. **Commit uncommitted work** — design token sweep, puzzle re-sort, AGENTS.md, signup fix (lots of good stuff sitting unstaged)
-2. **Beginner tutorial — wire into production** — connect test-tutorial to real lesson 1.1.1 flow, persist completion
+1. **Commit uncommitted work** — design token sweep, puzzle re-sorts, useProgress changes (lots of good stuff sitting unstaged)
+2. **Theme tutorials for Level 2+** — same pattern as Level 1, new content per level
 3. **King's Path — build out to production** — puzzle generator, daily seeding, share card, production route
-4. **Finish daily video reel** — fix logo consistency bug, then decide on video export method
+4. **Finish daily video reel** — fix logo consistency, real puzzle data integration, distribution plan
 5. **Landing page improvements** — design system is ready, landing page is the front door
-6. **PostHog funnels** — understand user behavior before spending on marketing
+6. **PostHog funnels** — understand user behavior before marketing push
 7. **Blog post** — finalize and publish the Substack draft
+8. **Enable sharing** — flip `SHOW_SHARING` flag, QA on iOS/Android
+9. **Enable streaks** — flip `SHOW_STREAK_COUNTER` flag
 
 ---
 
-*Originally created Feb 9, 2026. Updated Feb 10, 2026 (evening).*
+*Originally created Feb 9, 2026. Updated Feb 11, 2026 (evening).*

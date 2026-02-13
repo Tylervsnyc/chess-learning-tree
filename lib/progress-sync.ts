@@ -90,5 +90,3 @@ export function mergeProgress(
   };
 }
 
-// Re-export from curriculum registry for backwards compatibility
-export { getTreeIdFromLessonId } from './curriculum-registry';

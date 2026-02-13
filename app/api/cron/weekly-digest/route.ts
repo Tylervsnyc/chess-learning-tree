@@ -1,23 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
 import { WeeklyDigest } from '@/lib/email/templates/WeeklyDigest';
-
-// Verify cron secret
-function verifyCronSecret(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return false;
-  return authHeader === `Bearer ${cronSecret}`;
-}
-
-// Create service role client
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) throw new Error('Supabase configuration missing');
-  return createClient(url, serviceKey);
-}
+import { verifyCronSecret } from '@/lib/cron-auth';
+import { createServiceClient } from '@/lib/supabase/service';
 
 export async function GET(request: NextRequest) {
   if (!verifyCronSecret(request)) {
@@ -25,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const oneWeekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
 
     // Get all users with their email preferences

@@ -1,23 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
 import { ReEngagement } from '@/lib/email/templates/ReEngagement';
-
-// Verify cron secret
-function verifyCronSecret(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return false;
-  return authHeader === `Bearer ${cronSecret}`;
-}
-
-// Create service role client
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) throw new Error('Supabase configuration missing');
-  return createClient(url, serviceKey);
-}
+import { verifyCronSecret } from '@/lib/cron-auth';
+import { createServiceClient } from '@/lib/supabase/service';
 
 // Calculate days between two dates
 function daysBetween(date1: Date, date2: Date): number {
@@ -31,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const today = new Date();
 
     // Target users who haven't played in 7-14 days

@@ -111,72 +111,6 @@ export const progressBarStyles = `
     }
   }
 
-  @keyframes comboFlash {
-    0% {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    15% {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(1.5);
-    }
-  }
-
-  @keyframes comboRainbow {
-    0% {
-      background-position: 0% 50%;
-      filter: brightness(1.5) saturate(1.5);
-    }
-    50% {
-      background-position: 100% 50%;
-      filter: brightness(2) saturate(2);
-    }
-    100% {
-      background-position: 200% 50%;
-      filter: brightness(1) saturate(1);
-    }
-  }
-
-  @keyframes particleBurst {
-    0% {
-      transform: translate(0, 0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes shockwave {
-    0% {
-      transform: scale(1);
-      opacity: 0.8;
-    }
-    100% {
-      transform: scale(3);
-      opacity: 0;
-    }
-  }
-
-  @keyframes starPop {
-    0% {
-      transform: scale(0) rotate(0deg);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.2) rotate(180deg);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(0) rotate(360deg);
-      opacity: 0;
-    }
-  }
-
   @keyframes flashPulse {
     0% {
       opacity: 0;
@@ -505,7 +439,7 @@ function MagicStreakCelebration({ endPosition, onComplete }: MagicStreakProps) {
                   <stop offset="0%" stopColor="#FFFFFF" />
                   <stop offset="20%" stopColor="#FFFACD" />
                   <stop offset="50%" stopColor="#FFE566" />
-                  <stop offset="80%" stopColor="#FFD700" />
+                  <stop offset="80%" stopColor="var(--color-chess-gold)" />
                   <stop offset="100%" stopColor="#FFA500" />
                 </linearGradient>
               </defs>
@@ -673,7 +607,7 @@ function MagicStreakCelebration({ endPosition, onComplete }: MagicStreakProps) {
                 <linearGradient id="miniBoltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#FFF" />
                   <stop offset="50%" stopColor="#FFE566" />
-                  <stop offset="100%" stopColor="#FFD700" />
+                  <stop offset="100%" stopColor="var(--color-chess-gold)" />
                 </linearGradient>
               </defs>
             </svg>
@@ -731,116 +665,6 @@ function MagicStreakCelebration({ endPosition, onComplete }: MagicStreakProps) {
           }}
         />
       )}
-    </div>
-  );
-}
-
-// Old particle component (keeping for backwards compatibility)
-function ComboParticle({
-  index,
-  total,
-  color
-}: {
-  index: number;
-  total: number;
-  color: string;
-}) {
-  const angle = (index / total) * 360;
-  const distance = 60 + Math.random() * 40;
-  const size = 4 + Math.random() * 6;
-  const duration = 0.6 + Math.random() * 0.3;
-
-  const rad = (angle * Math.PI) / 180;
-  const x = Math.cos(rad) * distance;
-  const y = Math.sin(rad) * distance;
-
-  return (
-    <div
-      className="absolute rounded-full pointer-events-none"
-      style={{
-        width: size,
-        height: size,
-        background: color,
-        left: '50%',
-        top: '50%',
-        marginLeft: -size / 2,
-        marginTop: -size / 2,
-        boxShadow: `0 0 ${size}px ${color}`,
-        animation: `particleBurst ${duration}s ease-out forwards`,
-        '--tx': `${x}px`,
-        '--ty': `${y}px`,
-        transform: `translate(0, 0)`,
-        animationName: 'none',
-      } as React.CSSProperties}
-      ref={(el) => {
-        if (el) {
-          el.animate([
-            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-            { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
-          ], {
-            duration: duration * 1000,
-            easing: 'cubic-bezier(0, 0.5, 0.5, 1)',
-            fill: 'forwards'
-          });
-        }
-      }}
-    />
-  );
-}
-
-// Star burst component
-function ComboBurst({ onComplete }: { onComplete: () => void }) {
-  const colors = ['#FFD700', '#FF6B35', '#FF4500', '#FFA500', '#FFEC8B', '#FF8C00'];
-  const particleCount = 16;
-
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 1000);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-visible" style={{ zIndex: 50 }}>
-      {/* Central flash */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,150,0,0.5) 30%, transparent 70%)',
-          animation: 'comboFlash 0.6s ease-out forwards',
-        }}
-      />
-
-      {/* Shockwave ring */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 border-yellow-400"
-        style={{
-          animation: 'shockwave 0.5s ease-out forwards',
-        }}
-      />
-
-      {/* Particles */}
-      {Array.from({ length: particleCount }).map((_, i) => (
-        <ComboParticle
-          key={i}
-          index={i}
-          total={particleCount}
-          color={colors[i % colors.length]}
-        />
-      ))}
-
-      {/* Star shapes */}
-      {[0, 72, 144, 216, 288].map((angle, i) => (
-        <div
-          key={`star-${i}`}
-          className="absolute left-1/2 top-1/2 text-yellow-400"
-          style={{
-            transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-30px)`,
-            animation: `starPop 0.8s ease-out ${i * 0.05}s forwards`,
-            fontSize: 12 + i * 2,
-          }}
-        >
-          ✦
-        </div>
-      ))}
     </div>
   );
 }
@@ -957,7 +781,7 @@ export function ChessProgressBar({
         90deg,
         #2E7D0A 0%,
         #3D9E1E 30%,
-        #58CC02 50%,
+        var(--color-chess-green) 50%,
         #3D9E1E 70%,
         #2E7D0A 100%
       )`,
@@ -1086,7 +910,7 @@ export function ChessProgressBar({
                   left: `calc(${progress}% - 8px)`,
                   background: isOnFire
                     ? 'radial-gradient(circle, rgba(255,200,100,0.8) 0%, rgba(255,100,0,0.3) 40%, transparent 70%)'
-                    : 'radial-gradient(circle, rgba(150,255,100,0.6) 0%, rgba(88,204,2,0.2) 50%, transparent 70%)',
+                    : 'radial-gradient(circle, rgba(150,255,100,0.6) 0%, rgba(88, 204, 2, 0.2) 50%, transparent 70%)',
                   animation: 'lavaGlow 3s ease-in-out infinite',
                 }}
               />

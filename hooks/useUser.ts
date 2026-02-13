@@ -66,7 +66,7 @@ export function useUser() {
           } else if (error) {
             // No profile found - create a fake one for display purposes
             // The real one should be created by the DB trigger
-            console.log('Profile not found, using defaults');
+            // No profile found - use defaults until DB trigger creates one
             setProfile({
               id: userId,
               email: email,

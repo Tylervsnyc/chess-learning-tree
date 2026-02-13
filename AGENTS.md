@@ -37,6 +37,7 @@ Both run in parallel (Content + Frontend = safe combo), results reported back to
 | **Responsive** | Desktop/tablet layouts, breakpoints, content width scaling | `app/` (layout adjustments), `components/` (responsive wrappers), `app/globals.css` (media queries) | `.claude/agents/responsive-agent.md` |
 | **PWA** | Manifest, service worker, install prompts, offline support | `public/manifest.json`, `public/sw.js`, `public/brand/` (PWA icons), `components/InstallPrompt.tsx` | `.claude/agents/pwa-agent.md` |
 | **Levels** | Building new levels 6-8, curriculum design, puzzle pools | `data/staging/level{6,7,8}-*.ts`, `data/lesson-pools/` (new levels), `lib/level-unlock-tests.ts` | `.claude/agents/levels-agent.md` |
+| **Test Screen** | Visual comparison pages for evaluating design variants | `app/test-*/page.tsx` | `.claude/agents/test-screen-agent.md` |
 
 ---
 

@@ -60,8 +60,6 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
                   position: theme.exampleFen,
                   squareStyles: theme.highlights,
                   boardStyle: { borderRadius: '8px' },
-                  darkSquareStyle: { backgroundColor: '#769656' },
-                  lightSquareStyle: { backgroundColor: '#eeeed2' },
                 }}
               />
             </div>

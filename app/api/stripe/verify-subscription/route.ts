@@ -75,9 +75,11 @@ export async function POST() {
     }
 
     // Found active subscription but user is marked free - FIX IT
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentPeriodEnd = (activeSubscription as any).current_period_end as number;
-    const expiresAt = new Date(currentPeriodEnd * 1000).toISOString();
+    const firstItem = activeSubscription.items?.data?.[0];
+    const currentPeriodEnd = firstItem?.current_period_end;
+    const expiresAt = currentPeriodEnd
+      ? new Date(currentPeriodEnd * 1000).toISOString()
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // Fallback: 30 days
 
     const { error: updateError } = await supabase
       .from('profiles')
@@ -94,7 +96,6 @@ export async function POST() {
       }, { status: 500 });
     }
 
-    console.log(`Synced subscription for user ${user.id} - was free, now premium`);
 
     return NextResponse.json({
       status: 'premium',

@@ -664,7 +664,6 @@ export default function DailyChallengePage() {
     if (error) {
       console.error('Failed to record result:', error.message, error.code);
     } else {
-      console.log('Daily challenge result recorded:', { puzzles: finalPuzzlesSolved, time: TOTAL_TIME - finalTimeLeft });
       setAlreadyCompletedToday(true); // Prevent replay in same session
     }
   }, [user]);

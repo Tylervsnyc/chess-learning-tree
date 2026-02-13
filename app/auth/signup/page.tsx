@@ -179,7 +179,7 @@ function SignupContent() {
       <div className="h-full bg-chess-page flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex flex-col items-center justify-center px-3">
-          <div className="max-w-[320px] w-full">
+          <div className="max-w-sm w-full">
             <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
               <div className="text-5xl mb-4">✉️</div>
               <h1 className="text-2xl font-bold text-chess-text mb-2">Enter verification code</h1>
@@ -267,7 +267,7 @@ function SignupContent() {
           />
         </div>
 
-        <div className="w-full max-w-[320px]">
+        <div className="w-full max-w-sm">
           {/* Card container */}
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             {/* Congratulatory header for guests who completed a lesson */}

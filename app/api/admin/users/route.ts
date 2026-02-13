@@ -1,29 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient as createAdminClient, SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-
-// Lazy initialization of admin client (uses service role key for elevated access)
-let supabaseAdmin: SupabaseClient | null = null;
-
-function getAdminClient(): SupabaseClient | null {
-  if (supabaseAdmin) return supabaseAdmin;
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceKey) {
-    return null;
-  }
-
-  supabaseAdmin = createAdminClient(url, serviceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-
-  return supabaseAdmin;
-}
+import { createServiceClient } from '@/lib/supabase/service';
 
 /**
  * Verify the requesting user is authenticated and has admin privileges
@@ -70,7 +47,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const admin = getAdminClient();
+  const admin = createServiceClient();
   if (!admin) {
     return NextResponse.json(
       { error: 'SUPABASE_SERVICE_ROLE_KEY not configured. Add it to your .env.local file.' },
@@ -115,7 +92,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const admin = getAdminClient();
+  const admin = createServiceClient();
   if (!admin) {
     return NextResponse.json(
       { error: 'SUPABASE_SERVICE_ROLE_KEY not configured. Add it to your .env.local file.' },

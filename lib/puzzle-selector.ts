@@ -428,25 +428,3 @@ export function selectPuzzlesForLesson(
   };
 }
 
-// ============================================================================
-// REVIEW LESSON HELPER
-// ============================================================================
-
-/**
- * Select puzzles for a review lesson with theme interleaving and no repeats
- */
-export function selectPuzzlesForReview(
-  puzzlesByTheme: Record<string, Puzzle[]>,
-  criteria: LessonSelectionCriteria
-): SelectionResult {
-  // Combine all puzzles
-  const allPuzzles: Puzzle[] = [];
-
-  for (const theme of criteria.themes) {
-    const puzzles = puzzlesByTheme[theme] || [];
-    allPuzzles.push(...puzzles);
-  }
-
-  // Use the main selection algorithm
-  return selectPuzzlesForLesson(allPuzzles, criteria);
-}

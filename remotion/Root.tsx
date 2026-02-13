@@ -1,7 +1,16 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
-import { FPS, FRAME_W, FRAME_H, totalFrames } from './lib/timing';
+import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
+import {
+  FPS,
+  FRAME_W,
+  FRAME_H,
+  totalFrames,
+  AD_TOTAL_FRAMES,
+  AD_SHORT_TOTAL_FRAMES,
+  AD_LONG_TOTAL_FRAMES,
+} from './lib/timing';
 
 const defaultProps: DailyPuzzleVideoProps = {
   puzzleId: 'Ttdum',
@@ -31,6 +40,43 @@ export const Root: React.FC = () => {
           const moves = p.rawMoves.length - 1;
           return { durationInFrames: totalFrames(moves) };
         }}
+      />
+      {/* Backwards-compatible alias for medium */}
+      <Composition
+        id="DuolingoAdReel"
+        component={DuolingoAdReel as any} // eslint-disable-line
+        durationInFrames={AD_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="DuolingoAdReel-Short"
+        component={DuolingoAdReelShort as any} // eslint-disable-line
+        durationInFrames={AD_SHORT_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="DuolingoAdReel-Medium"
+        component={DuolingoAdReel as any} // eslint-disable-line
+        durationInFrames={AD_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="DuolingoAdReel-Long"
+        component={DuolingoAdReelLong as any} // eslint-disable-line
+        durationInFrames={AD_LONG_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
       />
     </>
   );

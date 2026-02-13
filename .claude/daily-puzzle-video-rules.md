@@ -63,7 +63,7 @@ Rules for the Instagram Reel / daily puzzle video content. **Read this FIRST** b
 ## Chess Board Rules (from RULES.md)
 - Lichess puzzles: `moves[0]` is opponent's setup move. Apply it first, then player solves from `moves[1]`.
 - Board colors: dark `#779952`, light `#edeed1`
-- **Board goes edge-to-edge** — fills the full frame width (`BOARD_SIZE = FRAME_W`). No side gaps, no rounded corners on the board itself
+- **Board inset by SAFE_PAD (72px)** on all sides — `BOARD_SIZE = FRAME_W - SAFE_PAD * 2` = 936px. No rounded corners on the board itself
 - Board has a subtle shadow for depth
 - Orientation matches player color
 

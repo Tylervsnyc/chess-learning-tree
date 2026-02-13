@@ -1,33 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
 import { StreakWarning } from '@/lib/email/templates/StreakWarning';
 import { StreakLost } from '@/lib/email/templates/StreakLost';
-
-// Verify cron secret to prevent unauthorized access
-function verifyCronSecret(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (!cronSecret) {
-    console.error('CRON_SECRET not configured');
-    return false;
-  }
-
-  return authHeader === `Bearer ${cronSecret}`;
-}
-
-// Create service role client
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceKey) {
-    throw new Error('Supabase configuration missing');
-  }
-
-  return createClient(url, serviceKey);
-}
+import { verifyCronSecret } from '@/lib/cron-auth';
+import { createServiceClient } from '@/lib/supabase/service';
 
 export async function GET(request: NextRequest) {
   // Verify cron authorization
@@ -36,7 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0];

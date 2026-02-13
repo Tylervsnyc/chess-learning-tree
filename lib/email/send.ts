@@ -1,17 +1,23 @@
+import { createHmac } from 'crypto';
 import { getResendClient, EMAIL_FROM } from './resend';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase/service';
 import type { SendEmailParams, EmailPreferences, EmailType } from '@/types/email';
 
-// Create a Supabase client with service role for cron jobs
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// HMAC signing for unsubscribe tokens
+function getHmacSecret(): string {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for HMAC signing');
+  return secret;
+}
 
-  if (!url || !serviceKey) {
-    throw new Error('Supabase URL or service role key not configured');
-  }
+export function generateUnsubscribeToken(userId: string, emailType?: string): string {
+  const payload = emailType ? `${userId}:${emailType}` : userId;
+  return createHmac('sha256', getHmacSecret()).update(payload).digest('hex');
+}
 
-  return createClient(url, serviceKey);
+export function verifyUnsubscribeToken(userId: string, emailType: string | undefined, token: string): boolean {
+  const expected = generateUnsubscribeToken(userId, emailType);
+  return token === expected;
 }
 
 // Check if user has opted out of this email type
@@ -53,7 +59,7 @@ async function logEmail(
   }
 ) {
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     await supabase.from('email_log').insert({
       user_id: params.userId || null,
       email_type: params.emailType,
@@ -71,7 +77,7 @@ async function logEmail(
 export async function getEmailPreferences(
   userId: string
 ): Promise<EmailPreferences | null> {
-  const supabase = getServiceClient();
+  const supabase = createServiceClient();
   const { data } = await supabase
     .from('email_preferences')
     .select('*')
@@ -143,11 +149,13 @@ export async function sendEmail(params: SendEmailParams): Promise<{
   }
 }
 
-// Generate unsubscribe URL
+// Generate unsubscribe URL with HMAC token
 export function getUnsubscribeUrl(userId: string, emailType?: EmailType): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://chesspath.app';
   const params = new URLSearchParams({ userId });
   if (emailType) params.append('type', emailType);
+  const token = generateUnsubscribeToken(userId, emailType);
+  params.append('token', token);
   return `${appUrl}/api/email/unsubscribe?${params.toString()}`;
 }
 

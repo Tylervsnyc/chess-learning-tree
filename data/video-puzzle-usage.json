@@ -1,12 +1,30 @@
 {
   "usedPuzzleIds": [
-    "4qhmT"
+    "4qhmT",
+    "vY5aW",
+    "LzdCJ",
+    "hZvvo"
   ],
   "renders": [
     {
       "puzzleId": "4qhmT",
       "date": "2026-02-11",
       "file": "daily-puzzle-2026-02-11-4qhmT.mp4"
+    },
+    {
+      "puzzleId": "vY5aW",
+      "date": "2.11.26",
+      "file": "daily.2.11.26-vY5aW.mp4"
+    },
+    {
+      "puzzleId": "LzdCJ",
+      "date": "2.12.26",
+      "file": "daily.2.12.26-LzdCJ.mp4"
+    },
+    {
+      "puzzleId": "hZvvo",
+      "date": "2.13.26",
+      "file": "daily.2.13.26-hZvvo.mp4"
     }
   ]
 }

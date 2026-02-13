@@ -75,7 +75,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-full bg-[#eef6fc] flex flex-col overflow-hidden">
+    <div className="h-full bg-chess-page flex flex-col overflow-hidden">
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
@@ -92,10 +92,10 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="w-full max-w-[320px]">
+        <div className="w-full max-w-sm">
           {/* Card container */}
           <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h1 className="text-xl font-bold text-[#3c3c3c] text-center mb-1">Welcome back</h1>
+            <h1 className="text-xl font-bold text-chess-text text-center mb-1">Welcome back</h1>
             <p className="text-slate-500 text-sm text-center mb-4">Sign in to continue</p>
 
             {error && (
@@ -135,7 +135,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-[#3c3c3c] placeholder-slate-400 focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -150,7 +150,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-[#3c3c3c] placeholder-slate-400 focus:outline-none focus:border-[#1CB0F6] focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   placeholder="••••••••"
                 />
               </div>
@@ -158,8 +158,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4] disabled:opacity-50 disabled:shadow-none"
-                style={{ backgroundColor: '#1CB0F6' }}
+                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4] disabled:opacity-50 disabled:shadow-none bg-chess-blue"
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
@@ -170,7 +169,7 @@ export default function LoginPage() {
             Don&apos;t have an account?{' '}
             <Link
               href={redirectTo ? `/auth/signup?redirect=${encodeURIComponent(redirectTo)}` : '/auth/signup'}
-              className="text-[#58CC02] hover:underline font-medium"
+              className="text-chess-green hover:underline font-medium"
             >
               Sign up
             </Link>

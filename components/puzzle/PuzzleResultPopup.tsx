@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { ShareButton } from '@/components/share/ShareButton';
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import {
   RookProgressAnimation,
   RookProgressAnimationRef,
@@ -14,21 +12,12 @@ import {
   WrongAnimationStyle,
 } from '@/components/lesson/RookWrongAnimation';
 
-interface PuzzleShareData {
-  fen: string;
-  playerColor: 'white' | 'black';
-  lastMoveFrom?: string;
-  lastMoveTo?: string;
-  solutionMoves: string[]; // UCI format
-}
-
 interface PuzzleResultPopupProps {
   type: 'correct' | 'incorrect';
   message?: string;
   onContinue: () => void;
   showSolution?: boolean;
   onShowSolution?: () => void;
-  puzzleShareData?: PuzzleShareData;
   // Optional rook animation props - if not provided, no animation shown
   rookAnimationStyle?: AnimationStyle;
   rookWrongStyle?: WrongAnimationStyle;
@@ -47,7 +36,6 @@ export function PuzzleResultPopup({
   onContinue,
   showSolution,
   onShowSolution,
-  puzzleShareData,
   rookAnimationStyle,
   rookWrongStyle,
   rookProgressRef,
@@ -184,16 +172,6 @@ export function PuzzleResultPopup({
             </button>
           ) : (
             <div className="flex gap-2">
-              {FEATURE_FLAGS.SHOW_SHARING && isCorrect && puzzleShareData && (
-                <div className="relative flex-shrink-0">
-                  <ShareButton
-                    fen={puzzleShareData.fen}
-                    playerColor={puzzleShareData.playerColor}
-                    lastMoveFrom={puzzleShareData.lastMoveFrom}
-                    lastMoveTo={puzzleShareData.lastMoveTo}
-                  />
-                </div>
-              )}
               <button
                 onClick={onContinue}
                 className={`

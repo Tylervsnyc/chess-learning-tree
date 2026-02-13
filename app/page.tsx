@@ -131,7 +131,7 @@ export default function LandingPage() {
 
   return (
     <div className="h-full bg-chess-page flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col items-center px-3 min-h-0">
+      <div className="flex-1 flex flex-col items-center px-3 min-h-0 max-w-lg mx-auto w-full">
         {/* Top: logo + tagline (fixed size) */}
         <div className="pt-4 pb-3 flex flex-col items-center">
           <div className="mb-3" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>

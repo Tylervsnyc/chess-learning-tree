@@ -1,6 +1,6 @@
 # PRODUCTION.md — What's Built vs What's Live
 
-**Last updated:** Feb 10, 2026
+**Last updated:** Feb 11, 2026
 
 This is the single source of truth for features that are built but not yet live. If you build something, it goes here until it ships.
 
@@ -12,6 +12,7 @@ This is the single source of truth for features that are built but not yet live.
 |------|--------|---------|--------------|---------|
 | `SHOW_STREAK_COUNTER` | **OFF** | Streak fire badge in NavHeader | Fire emoji + streak count on `/learn` and `/daily-challenge` | Flip to `true`. Data pipeline fully wired. |
 | `SHOW_SHARING` | **OFF** | Share buttons everywhere | Lesson complete share (text + link), Daily Rook share (image card), puzzle result share button | Flip to `true`. OG images, native share, download fallback all working. QA on iOS/Android. |
+| `FREE_UNTIL_MARCH` | **ON** | Free lessons until March 1 | All lessons unlocked without subscription | Auto-expires March 1. Remove flag + `usePermissions.ts` check after. |
 
 **File:** `lib/config/feature-flags.ts`
 
@@ -19,18 +20,10 @@ This is the single source of truth for features that are built but not yet live.
 
 ## Dead Analytics (defined, never called)
 
-These events exist in `lib/analytics/posthog.ts` but are never fired from any production code:
+Critical analytics were wired on Feb 11 (commit `9abf8d1`). Remaining unwired events:
 
 | Event | Group | Impact | Where it should fire |
 |-------|-------|--------|---------------------|
-| `paywall_viewed` | SubscriptionEvents | **CRITICAL** — can't measure conversion | `LessonLimitModal` on open, lesson gate screen |
-| `pricing_viewed` | SubscriptionEvents | **CRITICAL** | `/pricing` page mount |
-| `checkout_started` | SubscriptionEvents | **CRITICAL** | `startCheckout()` / `startGuestCheckout()` |
-| `checkout_completed` | SubscriptionEvents | **CRITICAL** | Stripe success redirect |
-| `checkout_abandoned` | SubscriptionEvents | High | Stripe cancel redirect |
-| `daily_challenge_viewed` | EngagementEvents | High | `/daily-challenge` mount |
-| `daily_challenge_started` | EngagementEvents | High | Start button click |
-| `daily_challenge_completed` | EngagementEvents | High | Game finish |
 | `lesson_abandoned` | LearningEvents | Medium | User navigating away mid-lesson |
 | `tree_level_viewed` | LearningEvents | Medium | `/learn` page level scroll |
 | `logout` | AuthEvents | Low | Sign out button |
@@ -122,29 +115,33 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 - **To ship:** Production route, daily puzzle generator, scoring, share cards, DB table
 - **Effort:** Large
 
-### Beginner Tutorial — SHIPPED
-- **Code:** `app/test-tutorial/page.tsx`, `app/lesson/[lessonId]/page.tsx`
-- **Status:** Live — lesson 1.1.1 renders guided tutorial with 6 diverse queen checkmate puzzles
+### Tutorial System — SHIPPED + EXPANDED
+- **Code:** `app/lesson/[lessonId]/page.tsx`, `data/theme-tutorials.ts`, `components/tutorial/TutorialFlow.tsx`
+- **Status:** Live — lesson 1.1.1 has guided tutorial (6 queen checkmate puzzles). All 12 Level 1 lessons have theme-specific intro screens + yellow hint cards.
 - **Docs:** RULES.md section 17b
+- **Next:** Extend to Level 2+
+
+### Promo Code System — REMOVED (Feb 11)
+- **Deleted:** `/api/promo/redeem`, `/redeem`, `/gift/*` pages, `supabase/promo-codes.sql` (~400 lines)
+- **Replaced by:** Free lessons until March 1 feature flag
+
+### Daily Rook Personal Bests — SHIPPED (Feb 11)
+- **Code:** `/api/daily-challenge/personal-best/route.ts`, `app/daily-challenge/page.tsx`
+- **Status:** Live — replaced Top 10 leaderboard with "My Best" personal scores on results screen
 
 ### Daily Puzzle Video
-- **Code:** `app/test-daily-video/` (uncommitted), `.claude/daily-puzzle-video-rules.md`
-- **Status:** 4-stage mockup, not producing actual video
-- **To ship:** Decide: content tool vs user feature. Fix logo consistency bug.
+- **Code:** `app/test-daily-video/`, `.claude/daily-puzzle-video-rules.md`, Remotion pipeline
+- **Status:** Remotion pipeline added (Feb 11) — can render actual video. Per-day output folders.
+- **To ship:** Real puzzle data integration, fix logo consistency, decide distribution method
 - **Effort:** Medium
 
 ---
 
 ## Agent System
 
-### Status: Built, never used
+### Status: Finalized (Feb 11)
 
-14 agents defined, 0 dispatched this week. See `AGENTS.md` for full details.
-
-**Issues found:**
-- 4 agent files never committed (design-system, growth, pwa, responsive)
-- 3 agents missing from CLAUDE.md dispatch table (Levels, PWA, Responsive)
-- 4 agent files reference deleted `lib/chess-utils.ts` (should be `puzzle-utils.ts`)
+14 agents defined, all committed. Stale refs fixed. CLAUDE.md dispatch table complete. See `AGENTS.md` for full details.
 
 ---
 
@@ -153,14 +150,9 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 ### Should commit now
 | What | Files | Why |
 |------|-------|-----|
-| Design token sweep | 10 pages + 4 components | Production visual consistency |
-| Signup bug fix | `app/auth/signup/page.tsx` | Duplicate email detection broken |
-| Daily challenge API | `app/api/daily-challenge/puzzles/route.ts` | `force-dynamic` prevents stale cache |
-| Agent system files | 4 agent .md files + AGENTS.md | Need these committed to use agents |
-| Design system doc | `.claude/design-system.md` | Reference doc for all visual work |
-| sharp package | `package.json` | Image processing dependency |
-| Planning & rules docs | `PLANNING.md`, `KINGS-PATH-RULES.md`, video rules | Documentation |
-| Sound files | 2 Lichess mp3s | Already used in production |
+| Design token sweep | ~15 pages + components | Production visual consistency |
+| useProgress changes | `hooks/useProgress.ts` | Progress sync improvements |
+| Puzzle data re-sorts | ~58 JSON files in `data/clean-puzzles-v2/` | Consistent ordering (~900K lines) |
 
 ### Should .gitignore
 | What | Why |
@@ -170,13 +162,13 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 | `ads/` | Ad creative experiments |
 | `social-media/` | Social content generation scripts |
 | `Chess-Path-Duolingo-Quality-Audit.pdf` | Reference doc, not code |
+| `_archive/` directory | Old code archive |
 
-### Decide
-| What | Options |
-|------|---------|
-| 58 puzzle JSON re-sorts (~900K lines) | Commit as separate "Re-sort puzzle pools" or revert |
-| `_archive/` directory | Commit or .gitignore |
-| 6 uncommitted test pages | Commit for collaboration or keep local |
+### Previously uncommitted, now committed (Feb 11)
+- Agent system files (14 agents + AGENTS.md) ✅
+- Signup duplicate email fix ✅
+- Critical analytics wiring ✅
+- CLAUDE.md slim-down ✅
 
 ---
 
@@ -186,10 +178,9 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 |---|------|--------|--------|
 | 1 | `SHOW_STREAK_COUNTER: true` | 1 line | Retention |
 | 2 | `SHOW_SHARING: true` | 1 line | Growth |
-| 3 | Wire `SubscriptionEvents` (paywall, pricing, checkout) | ~30 min | Conversion data |
-| 4 | Wire `EngagementEvents` (daily challenge start/complete) | ~15 min | Engagement data |
-| 5 | Block `/test-*` from crawlers | ~10 min | SEO |
-| 7 | Commit agent system files | `git add` | Unblock agent workflow |
+| 3 | Block `/test-*` from crawlers | ~10 min | SEO |
+| 4 | Commit design token sweep + puzzle re-sorts | `git add` | Visual consistency |
+| 5 | Remove `FREE_UNTIL_MARCH` flag after March 1 | Cleanup | — |
 
 ---
 

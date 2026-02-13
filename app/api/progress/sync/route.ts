@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   const [lessonResult, profileResult] = await Promise.all([
     supabase
       .from('lesson_progress')
-      .select('lesson_id')
+      .select('lesson_id, score')
       .eq('user_id', user.id),
     supabase
       .from('profiles')
@@ -45,7 +45,12 @@ export async function POST(request: NextRequest) {
       .single(),
   ]);
 
-  const serverLessons = new Set((lessonResult.data || []).map((lp) => lp.lesson_id));
+  // Only count passed lessons as "completed" (score >= 4 or null for legacy data)
+  const serverLessons = new Set(
+    (lessonResult.data || [])
+      .filter((lp) => lp.score === null || lp.score === undefined || lp.score >= 4)
+      .map((lp) => lp.lesson_id)
+  );
   const serverProfile = profileResult.data;
 
   // Merge completed lessons (union)

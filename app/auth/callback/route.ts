@@ -55,10 +55,6 @@ export async function GET(request: Request) {
       return NextResponse.redirect(errorUrl.toString());
     }
 
-    // Log success for debugging
-    console.log('[Auth Callback] Session established for user:', data.user?.email);
-    console.log('[Auth Callback] Cookies being set:', response.cookies.getAll().map(c => c.name));
-
     // Return the response with cookies attached
     return response;
   }

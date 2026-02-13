@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import dailyPuzzles from '@/data/daily-challenge-puzzles.json';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/daily-challenge/puzzles
  *

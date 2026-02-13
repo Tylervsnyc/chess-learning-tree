@@ -81,6 +81,18 @@ Every color in the app should come from these tokens (defined in `globals.css` u
 
 ---
 
+## Lesson Icons
+
+**Rule: No two consecutive lessons may show the same icon.** If tag-matching would repeat, the icon auto-bumps to the next in the cycle.
+
+8 icons available: `queen`, `rook`, `bishop`, `knight`, `pawn`, `star`, `lightning`, `shield`
+
+Tag → icon mapping (in `app/learn/page.tsx`):
+- Chess pieces: mate patterns → queen, forks → knight, pins/skewers → bishop, hanging/trapped → rook, pawn themes → pawn
+- Non-chess: attacks/crushing → lightning, defense/quiet → shield, tricky tactics → star, mixed practice → star
+
+---
+
 ## Typography
 
 ### Fonts

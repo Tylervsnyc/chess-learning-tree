@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase/service';
+import { verifyUnsubscribeToken } from '@/lib/email/send';
 import type { EmailType } from '@/types/email';
-
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) throw new Error('Supabase configuration missing');
-  return createClient(url, serviceKey);
-}
 
 // Map email types to preference columns
 function getPreferenceColumn(emailType: EmailType | undefined): string | null {
@@ -28,6 +22,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const emailType = searchParams.get('type') as EmailType | null;
+  const token = searchParams.get('token');
 
   if (!userId) {
     return new NextResponse(renderUnsubscribePage({
@@ -38,8 +33,19 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  // Verify HMAC token
+  if (!token || !verifyUnsubscribeToken(userId, emailType || undefined, token)) {
+    return new NextResponse(renderUnsubscribePage({
+      success: false,
+      message: 'Invalid or expired unsubscribe link',
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'text/html' },
+    });
+  }
+
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const preferenceColumn = getPreferenceColumn(emailType || undefined);
 
     if (preferenceColumn) {
