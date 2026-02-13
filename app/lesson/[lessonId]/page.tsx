@@ -925,6 +925,15 @@ export default function LessonPage() {
   // Permission gate - check if user can access lessons
   // Only show blocked state AFTER permissions have finished loading
   if (!permissionsLoading && !canAccessLesson) {
+    if (shouldPromptSignup) {
+      return (
+        <CreateProfileModal
+          isOpen={true}
+          onClose={() => router.push('/learn')}
+          context="lesson-gate"
+        />
+      );
+    }
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
         <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
@@ -940,43 +949,25 @@ export default function LessonPage() {
         </div>
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center max-w-md">
-            {shouldPromptSignup ? (
-              <>
-                <div className="text-5xl mb-4">🔒</div>
-                <h1 className="text-2xl font-bold mb-2">Create an Account</h1>
-                <p className="text-white/60 mb-6">
-                  Sign up for free to continue learning! You&apos;ll get 2 lessons per day.
-                </p>
-                <button
-                  onClick={() => router.push('/auth/signup')}
-                  className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
-                >
-                  Sign Up Free
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="text-5xl mb-4">⏰</div>
-                <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
-                <p className="text-white/60 mb-6">
-                  You&apos;ve completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
-                </p>
-                <div className="flex flex-col gap-3">
-                  <button
-                    onClick={() => router.push('/pricing')}
-                    className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
-                  >
-                    Upgrade to Premium
-                  </button>
-                  <button
-                    onClick={() => router.push('/learn')}
-                    className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
-                  >
-                    Back to Learn
-                  </button>
-                </div>
-              </>
-            )}
+            <div className="text-5xl mb-4">⏰</div>
+            <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
+            <p className="text-white/60 mb-6">
+              You&apos;ve completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => router.push('/pricing')}
+                className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+              >
+                Upgrade to Premium
+              </button>
+              <button
+                onClick={() => router.push('/learn')}
+                className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
+              >
+                Back to Learn
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1003,12 +994,20 @@ export default function LessonPage() {
             onClose={() => setShowCreateProfileModal(false)}
             lessonsCompleted={lessonsCompletedToday}
           />
-          <LessonLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            lessonsCompleted={lessonsCompletedToday}
-            isLoggedIn={!!user}
-          />
+          {user ? (
+            <LessonLimitModal
+              isOpen={showLimitModal}
+              onClose={() => setShowLimitModal(false)}
+              lessonsCompleted={lessonsCompletedToday}
+              isLoggedIn={true}
+            />
+          ) : (
+            <CreateProfileModal
+              isOpen={showLimitModal}
+              onClose={() => setShowLimitModal(false)}
+              context="lesson-limit"
+            />
+          )}
         </>
       );
     }
@@ -1125,12 +1124,20 @@ export default function LessonPage() {
             onClose={() => setShowCreateProfileModal(false)}
             lessonsCompleted={lessonsCompletedToday}
           />
-          <LessonLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            lessonsCompleted={lessonsCompletedToday}
-            isLoggedIn={!!user}
-          />
+          {user ? (
+            <LessonLimitModal
+              isOpen={showLimitModal}
+              onClose={() => setShowLimitModal(false)}
+              lessonsCompleted={lessonsCompletedToday}
+              isLoggedIn={true}
+            />
+          ) : (
+            <CreateProfileModal
+              isOpen={showLimitModal}
+              onClose={() => setShowLimitModal(false)}
+              context="lesson-limit"
+            />
+          )}
         </>
       );
     }

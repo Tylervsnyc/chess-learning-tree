@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import LevelSkipQuiz from '@/components/quiz/LevelSkipQuiz';
 import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
+import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 
 export default function SkipQuizPage() {
   const params = useParams();
@@ -44,28 +45,11 @@ export default function SkipQuizPage() {
   // Check if user is logged in first
   if (!user) {
     return (
-      <div className="min-h-full bg-chess-page flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-chess-text mb-2">Sign In Required</h1>
-          <p className="text-chess-text-muted mb-4">
-            Please sign in to take the level skip quiz.
-          </p>
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => router.push('/auth/login')}
-              className="px-6 py-2 bg-chess-blue text-white rounded-lg hover:shadow-md transition-shadow"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => router.push('/auth/signup')}
-              className="px-6 py-2 bg-chess-green text-white rounded-lg hover:shadow-md transition-shadow"
-            >
-              Sign Up Free
-            </button>
-          </div>
-        </div>
-      </div>
+      <CreateProfileModal
+        isOpen={true}
+        onClose={() => router.push('/learn')}
+        context="skip-quiz"
+      />
     );
   }
 

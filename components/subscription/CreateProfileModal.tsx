@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
-export type SignupContext = 'lesson-limit' | 'level-test' | 'daily-rook';
+export type SignupContext = 'lesson-limit' | 'level-test' | 'daily-rook' | 'daily-rook-results' | 'lesson-gate' | 'skip-quiz';
 
 const CONTEXT_COPY: Record<SignupContext, { heading: string; subtext: string; analytics: string }> = {
   'lesson-limit': {
@@ -22,6 +22,21 @@ const CONTEXT_COPY: Record<SignupContext, { heading: string; subtext: string; an
     heading: 'The Daily Rook awaits!',
     subtext: 'Sign in to play today\u2019s challenge and compete.',
     analytics: 'daily_rook_gate',
+  },
+  'daily-rook-results': {
+    heading: 'How did you stack up?',
+    subtext: 'Create an account to track your scores and streaks.',
+    analytics: 'daily_rook_results',
+  },
+  'lesson-gate': {
+    heading: 'Keep learning!',
+    subtext: 'Create a free account to continue your chess journey.',
+    analytics: 'lesson_gate',
+  },
+  'skip-quiz': {
+    heading: 'Ready to skip ahead?',
+    subtext: 'Sign in to take the skip quiz and advance faster.',
+    analytics: 'skip_quiz_gate',
   },
 };
 

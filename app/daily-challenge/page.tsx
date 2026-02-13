@@ -143,6 +143,7 @@ export default function DailyChallengePage() {
   const [alreadyCompletedToday, setAlreadyCompletedToday] = useState(false);
   const [checkingCompletion, setCheckingCompletion] = useState(true);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showResultsSignupModal, setShowResultsSignupModal] = useState(false);
 
   // Leaderboard view toggle - default to My Standing
   const [showMyStanding, setShowMyStanding] = useState(true);
@@ -1298,27 +1299,28 @@ export default function DailyChallengePage() {
                   )}
                 </div>
               ) : (
-                <div className="bg-chess-surface rounded-xl p-4 mb-2 shadow-sm">
-                  <div className="text-center">
-                    <h2 className="text-chess-text font-bold text-base mb-1">How did you stack up?</h2>
-                    <p className="text-chess-text-muted text-xs mb-3">
-                      Log in to compare with other players and track your streak
-                    </p>
-                    <button
-                      onClick={() => router.push('/auth/signup')}
-                      className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mb-2"
-                      style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
-                    >
-                      Create Free Account
-                    </button>
-                    <button
-                      onClick={() => router.push('/auth/login')}
-                      className="text-chess-text-muted hover:text-chess-text transition-colors text-xs"
-                    >
-                      Already have an account? Log in
-                    </button>
+                <>
+                  <div className="bg-chess-surface rounded-xl p-4 mb-2 shadow-sm">
+                    <div className="text-center">
+                      <h2 className="text-chess-text font-bold text-base mb-1">How did you stack up?</h2>
+                      <p className="text-chess-text-muted text-xs mb-3">
+                        Create an account to track your scores and streaks
+                      </p>
+                      <button
+                        onClick={() => setShowResultsSignupModal(true)}
+                        className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
+                        style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                      >
+                        Create Free Account
+                      </button>
+                    </div>
                   </div>
-                </div>
+                  <CreateProfileModal
+                    isOpen={showResultsSignupModal}
+                    onClose={() => setShowResultsSignupModal(false)}
+                    context="daily-rook-results"
+                  />
+                </>
               )}
 
               {/* Puzzle Review Section */}

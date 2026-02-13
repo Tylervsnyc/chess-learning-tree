@@ -15,6 +15,7 @@ import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import confetti from 'canvas-confetti';
+import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 
 type TestState = 'loading' | 'intro' | 'playing' | 'passed' | 'failed';
 type MoveStatus = 'playing' | 'correct' | 'wrong';
@@ -413,28 +414,11 @@ export default function LevelTestPage() {
   // Auth check - must be logged in to take level tests
   if (!user) {
     return (
-      <div className="h-full bg-chess-page flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-chess-text mb-2">Sign In Required</h1>
-          <p className="text-chess-text-muted mb-6">
-            Sign in to take level tests and track your progress.
-          </p>
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => router.push('/auth/login')}
-              className="px-6 py-3 bg-chess-blue text-white font-bold rounded-xl hover:bg-blue-600 transition-colors"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => router.push('/auth/signup')}
-              className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-chess-green-dark transition-colors"
-            >
-              Sign Up Free
-            </button>
-          </div>
-        </div>
-      </div>
+      <CreateProfileModal
+        isOpen={true}
+        onClose={() => router.push('/learn')}
+        context="level-test"
+      />
     );
   }
 
