@@ -7,11 +7,12 @@
 ## Context Required
 
 Read these files before starting any task:
-- `RULES.md` — Sections 17 (Chess Board), 18 (Puzzle Interaction), 19 (Sounds), 24 (Puzzle Selection)
+- `RULES.md` — Sections 17 (Chess Board), 18 (Puzzle Interaction), 18d (ChessPathBoard Wrapper), 19 (Sounds), 24 (Puzzle Selection)
 - `CLAUDE.md` — Chess Board Rules section
 - `.claude/lessons-learned.md` — Audio and animation timing lessons
 - `lib/puzzle-utils.ts` — Canonical puzzle processing (THE source of truth)
 - `lib/sounds.ts` — Sound effects system
+- `components/puzzle/ChessPathBoard.tsx` — Standard board wrapper (ALWAYS use instead of raw `Chessboard`)
 - `components/puzzle/PuzzleBoard.tsx` — Shared puzzle board component
 
 ---

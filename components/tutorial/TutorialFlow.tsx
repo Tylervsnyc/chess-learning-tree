@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import {
   playCorrectSound,
@@ -301,6 +301,10 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
   const solvedRef = React.useRef(false);
   const advancingRef = React.useRef(false);
 
+  // Track previously highlighted selection squares so we can explicitly clear them
+  // (react-chessboard v5 caches square styles — omitting a style doesn't remove it)
+  const prevSelectionSquaresRef = useRef<Square[]>([]);
+
   // Guided tutorial state (puzzle 1 only)
   const [guidedStepIndex, setGuidedStepIndex] = useState(-1);
   const guidedStep = guidedStepIndex >= 0 && guidedStepIndex < GUIDED_STEPS.length
@@ -565,6 +569,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
         backgroundColor: 'rgba(100, 200, 255, 0.6)',
       };
 
+      const currentSelectionSquares: Square[] = [selectedSquare];
       const moves = game.moves({ square: selectedSquare, verbose: true });
       for (const move of moves) {
         const targetSq = move.to as Square;
@@ -579,7 +584,18 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
             ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
             : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
         };
+        currentSelectionSquares.push(targetSq);
       }
+      // Track current selection squares so we can clear them when deselected
+      prevSelectionSquaresRef.current = currentSelectionSquares;
+    } else {
+      // Explicitly clear previous selection squares so react-chessboard removes cached styles
+      for (const sq of prevSelectionSquaresRef.current) {
+        if (!styles[sq]) {
+          styles[sq] = {};
+        }
+      }
+      prevSelectionSquaresRef.current = [];
     }
 
     // Layer 4: Tutorial spotlight highlights (guided mode)
@@ -750,7 +766,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 transition: 'opacity 150ms ease-in-out',
               }}
             >
-              <Chessboard
+              <ChessPathBoard
                 options={{
                   position: currentFen,
                   boardOrientation: activePuzzle.playerColor,

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { BOARD_COLORS } from '@/lib/puzzle-utils';
 
 interface PuzzleShareCardProps {
@@ -144,7 +144,7 @@ export function PuzzleShareCard({
             height: 840,
           }}
         >
-          <Chessboard
+          <ChessPathBoard
             options={{
               position: fen,
               boardOrientation: playerColor,

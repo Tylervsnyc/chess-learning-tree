@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 
 const PUZZLE = {
@@ -78,7 +78,7 @@ function AnimatedPuzzleBoard({ size }: { size: number }) {
 
   return (
     <div style={{ width: size, height: size }} className="relative">
-      <Chessboard
+      <ChessPathBoard
         options={{
           position: game.fen(),
           boardOrientation: PUZZLE.orientation,

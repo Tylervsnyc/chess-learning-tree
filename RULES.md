@@ -977,17 +977,19 @@ The raw `Chessboard` component ships with default piece styling and no board col
 `ChessPathBoard` wraps `react-chessboard`'s `Chessboard` with Chess Path defaults:
 - **Board colors:** Green/cream from `BOARD_COLORS` (`#779952` / `#edeed1`)
 - **Board style:** `borderRadius: 8px`, `boxShadow: 0 4px 20px rgba(0,0,0,0.3)`
-- All `react-chessboard` options are passed as top-level props (same API, no `options` wrapper needed)
+- Same `options` API as `react-chessboard` — just swap the import and component name
 - Style props (`boardStyle`, `darkSquareStyle`, `lightSquareStyle`) are **merged** — your overrides win
 
 ### Usage
 ```tsx
 <ChessPathBoard
-  position={fen}
-  boardOrientation="white"
-  onSquareClick={handler}
-  squareStyles={highlights}
-  boardStyle={{ borderRadius: '8px 8px 0 0' }}  // override just border-radius
+  options={{
+    position: fen,
+    boardOrientation: 'white',
+    onSquareClick: handler,
+    squareStyles: highlights,
+    boardStyle: { borderRadius: '8px 8px 0 0' },  // override just border-radius
+  }}
 />
 ```
 

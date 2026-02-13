@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { parseUciMove } from '@/lib/puzzle-utils';
 
@@ -380,7 +380,7 @@ export default function TestChessPage() {
 
         {/* Chess Board */}
         <div className="w-full">
-          <Chessboard
+          <ChessPathBoard
             options={{
               position: displayFen,
               boardOrientation: puzzle.playerColor,

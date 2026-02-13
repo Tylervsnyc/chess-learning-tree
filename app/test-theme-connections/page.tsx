@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Chess } from 'chess.js';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 
 interface Puzzle {
   puzzleId: string;
@@ -1318,14 +1318,12 @@ export default function ThemeConnectionsPage() {
                   </div>
 
                   <div className="w-full max-w-[400px] mx-auto">
-                    <Chessboard
+                    <ChessPathBoard
                       options={{
                         position: exploreState.currentFen,
                         boardOrientation: exploreState.playerColor,
                         squareStyles,
                         boardStyle: { borderRadius: '8px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)' },
-                        darkSquareStyle: { backgroundColor: '#779952' },
-                        lightSquareStyle: { backgroundColor: '#edeed1' },
                       }}
                     />
                   </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 
 // 5 longer checkmate puzzles to preview for landing page (all verified from Lichess)
@@ -101,7 +101,7 @@ function AnimatedBoard({ puzzle, size }: { puzzle: typeof PUZZLES[0]; size: numb
 
   return (
     <div style={{ width: size, height: size }} className="relative">
-      <Chessboard
+      <ChessPathBoard
         options={{
           position: game.fen(),
           boardOrientation: 'white',

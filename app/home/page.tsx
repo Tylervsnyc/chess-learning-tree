@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 import { BOARD_COLORS } from '@/lib/puzzle-utils';
@@ -51,7 +51,7 @@ function AnimatedBoard({ size = 80, speed = 2000 }: { size?: number; speed?: num
 
   return (
     <div style={{ width: size, height: size }}>
-      <Chessboard
+      <ChessPathBoard
         options={{
           position,
           boardStyle: { borderRadius: '8px' },

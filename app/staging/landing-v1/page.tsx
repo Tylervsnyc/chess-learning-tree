@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 import { useUser } from '@/hooks/useUser';
 
@@ -90,7 +90,7 @@ function AnimatedBoard({ size }: { size: number }) {
 
   return (
     <div style={{ width: size, height: size }} className="relative">
-      <Chessboard
+      <ChessPathBoard
         options={{
           position: game.fen(),
           boardOrientation: PUZZLE.orientation,

@@ -97,3 +97,4 @@ STOP and ask when:
 - **Post-success navigation** — When building a flow, explicitly design where the user goes after success (Lesson: 2026-02-03).
 - **Inline chess logic** — Never reimplement `processPuzzle`, `normalizeMove`, or `isCorrectMove` in a page file. Import from `lib/puzzle-utils.ts`. If the function doesn't do what you need, coordinate with Chess Agent to extend it.
 - **Audio warmup copy-paste** — The `warmupAudio()` pattern is identical across puzzle pages. Don't modify — it's Chess Agent territory.
+- **Raw `Chessboard` import** — NEVER import `Chessboard` from `react-chessboard` directly. Use `ChessPathBoard` from `@/components/puzzle/ChessPathBoard` — it pre-applies our board colors and styling. See RULES.md §18d.

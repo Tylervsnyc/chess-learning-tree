@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { getThemeExplanation, ThemeExplanation } from '@/data/theme-explanations';
 
 interface ThemeHelpModalProps {
@@ -55,7 +55,7 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
             <p className="text-[#1CB0F6] text-sm font-semibold mb-2">Example Position</p>
             <p className="text-white/50 text-xs mb-2">{theme.toMove}</p>
             <div className="w-full aspect-square max-w-[280px] mx-auto">
-              <Chessboard
+              <ChessPathBoard
                 options={{
                   position: theme.exampleFen,
                   squareStyles: theme.highlights,

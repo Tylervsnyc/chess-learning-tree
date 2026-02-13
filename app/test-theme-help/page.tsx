@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { THEME_EXPLANATIONS, getAllThemeIds } from '@/data/theme-explanations';
 
 type ThemeKey = keyof typeof THEME_EXPLANATIONS;
@@ -38,13 +38,11 @@ export default function TestThemeHelpPage() {
 
                 {/* Chess Board with highlights */}
                 <div className="w-full aspect-square mb-3">
-                  <Chessboard
+                  <ChessPathBoard
                     options={{
                       position: data.exampleFen,
                       squareStyles: data.highlights,
                       boardStyle: { borderRadius: '8px' },
-                      darkSquareStyle: { backgroundColor: '#769656' },
-                      lightSquareStyle: { backgroundColor: '#eeeed2' },
                     }}
                   />
                 </div>
@@ -93,13 +91,11 @@ export default function TestThemeHelpPage() {
                 <p className="text-[#1CB0F6] text-sm font-semibold mb-2">Example Position</p>
                 <p className="text-white/50 text-xs mb-2">{THEME_EXPLANATIONS[selectedTheme].toMove}</p>
                 <div className="w-full aspect-square max-w-[300px] mx-auto">
-                  <Chessboard
+                  <ChessPathBoard
                     options={{
                       position: THEME_EXPLANATIONS[selectedTheme].exampleFen,
                       squareStyles: THEME_EXPLANATIONS[selectedTheme].highlights,
                       boardStyle: { borderRadius: '8px' },
-                      darkSquareStyle: { backgroundColor: '#769656' },
-                      lightSquareStyle: { backgroundColor: '#eeeed2' },
                     }}
                   />
                 </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 import { LEVEL_SKIP_QUIZ } from '@/types/permissions';
 import { BOARD_COLORS } from '@/lib/puzzle-utils';
@@ -283,7 +283,7 @@ export default function LevelSkipQuiz({
           {/* Board */}
           <div className={`relative rounded-xl overflow-hidden ${feedback ? 'pointer-events-none' : ''}`}>
             {chess && (
-              <Chessboard
+              <ChessPathBoard
                 options={{
                   position: chess.fen(),
                   onPieceDrop: handleMove,

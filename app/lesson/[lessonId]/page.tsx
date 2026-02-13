@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import {
   playCorrectSound,
@@ -45,7 +45,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { LearningEvents } from '@/lib/analytics/posthog';
-import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount } from '@/lib/puzzle-utils';
+import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
@@ -183,6 +183,10 @@ export default function LessonPage() {
   const [moveIndex, setMoveIndex] = useState(0);
   const [moveStatus, setMoveStatus] = useState<'playing' | 'correct' | 'wrong'>('playing');
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  // Track previously highlighted selection squares so we can explicitly clear them
+  // (react-chessboard v5 caches square styles — omitting a style doesn't remove it)
+  const prevSelectionSquaresRef = useRef<Square[]>([]);
 
   // Streak tracking
   const [streak, setStreak] = useState(0);
@@ -487,13 +491,25 @@ export default function LessonPage() {
     if (selectedSquare && game && !showMoveHint) {
       styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
       const moves = game.moves({ square: selectedSquare, verbose: true });
+      const currentSelectionSquares: Square[] = [selectedSquare];
       for (const move of moves) {
         styles[move.to] = {
           background: move.captured
             ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
             : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
         };
+        currentSelectionSquares.push(move.to as Square);
       }
+      // Track current selection squares so we can clear them when deselected
+      prevSelectionSquaresRef.current = currentSelectionSquares;
+    } else {
+      // Explicitly clear previous selection squares so react-chessboard removes cached styles
+      for (const sq of prevSelectionSquaresRef.current) {
+        if (!styles[sq]) {
+          styles[sq] = {};
+        }
+      }
+      prevSelectionSquaresRef.current = [];
     }
 
     // Checkmate explanation highlights (red = attacked, yellow = blocked by friendly)
@@ -1202,7 +1218,7 @@ export default function LessonPage() {
                 transition: 'opacity 150ms ease-in-out',
               }}
             >
-              <Chessboard
+              <ChessPathBoard
                 options={{
                   position: currentFen || currentPuzzle.puzzleFen,
                   boardOrientation: currentPuzzle.playerColor,

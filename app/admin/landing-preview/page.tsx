@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
 
 // Puzzles for each level
@@ -97,7 +97,7 @@ function AnimatedBoard({ puzzleKey, size }: { puzzleKey: PuzzleKey; size: number
         transition: 'opacity 0.3s ease-in-out',
       }}
     >
-      <Chessboard
+      <ChessPathBoard
         options={{
           position: game.fen(),
           boardOrientation: puzzle.orientation,

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 
 interface DifficultyFactors {
   patternVisibility: number;
@@ -463,7 +463,7 @@ export default function DifficultyAnalyzerPage() {
                   </span>
                 </div>
                 <div className="aspect-square">
-                  <Chessboard
+                  <ChessPathBoard
                     options={{
                       position: displayAnalysis.puzzleFen,
                       boardOrientation: displayAnalysis.playerColor,

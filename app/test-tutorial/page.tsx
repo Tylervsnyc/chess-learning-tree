@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import {
   playCorrectSound,
@@ -13,7 +13,7 @@ import {
   vibrateOnCorrect,
   vibrateOnError,
 } from '@/lib/sounds';
-import { BOARD_COLORS, getCheckmateSquareHighlights } from '@/lib/puzzle-utils';
+import { getCheckmateSquareHighlights } from '@/lib/puzzle-utils';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
@@ -830,7 +830,7 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
                 transition: 'opacity 150ms ease-in-out',
               }}
             >
-              <Chessboard
+              <ChessPathBoard
                 options={{
                   position: currentFen,
                   boardOrientation: activePuzzle.playerColor,
@@ -844,8 +844,6 @@ export function TutorialFlow({ onComplete }: TutorialFlowProps) {
                     borderRadius: '8px 8px 0 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                   },
-                  darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
-                  lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
                 }}
               />
             </div>

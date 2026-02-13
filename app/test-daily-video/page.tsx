@@ -8,13 +8,16 @@
  * - Nothing animates over the chess board
  * - Light bg, dark text
  * - Three zones: top (text), center (board), bottom (text/actions)
+ *
+ * Each frame has unique BOTTOM ZONE content. Top zone (logo + badge)
+ * and board position are identical across all frames (except frame 3
+ * which animates the solution moves on the board).
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Chessboard } from 'react-chessboard';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess } from 'chess.js';
-import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
-import { BOARD_COLORS, parseUciMove, uciToSan } from '@/lib/puzzle-utils';
+import { parseUciMove, uciToSan } from '@/lib/puzzle-utils';
 
 // ── Puzzle Data ─────────────────────────────────────────────
 const DEMO_PUZZLE = {
@@ -34,9 +37,56 @@ const ZONE_H = (FRAME_H - BOARD_SIZE) / 2; // 105px — equal top & bottom so bo
 const TOP_ZONE_H = ZONE_H;
 const BOTTOM_ZONE_H = ZONE_H;
 
-// Logo dimensions at size={0.5}: 520*0.5 = 260w, 120*0.5 = 60h
-const LOGO_W = 260;
+// Logo dimensions: static rook + wordmark at scale=0.5
+const LOGO_W = 215;
 const LOGO_H = 60;
+
+// Piece values for material counting
+const PIECE_VALUES: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+const PIECE_NAMES: Record<string, string> = { p: 'Pawn', n: 'Knight', b: 'Bishop', r: 'Rook', q: 'Queen' };
+
+function getMaterialCount(fen: string) {
+  const board = fen.split(' ')[0];
+  let white = 0, black = 0;
+  for (const ch of board) {
+    const lower = ch.toLowerCase();
+    if (PIECE_VALUES[lower] !== undefined) {
+      if (ch === ch.toUpperCase() && ch !== ch.toLowerCase()) white += PIECE_VALUES[lower];
+      else if (ch === ch.toLowerCase() && ch !== ch.toUpperCase()) black += PIECE_VALUES[lower];
+    }
+  }
+  return { white, black };
+}
+
+function describeResult(startFen: string, finalFen: string, playerColor: 'white' | 'black', themes: string[]): string {
+  // Check for checkmate from themes
+  if (themes.some(t => t.includes('mate') || t.includes('Mate'))) {
+    const mateTheme = themes.find(t => /mateIn(\d+)/i.test(t));
+    if (mateTheme) {
+      const n = mateTheme.match(/mateIn(\d+)/i)?.[1];
+      return `Checkmate in ${n}!`;
+    }
+    return 'Checkmate!';
+  }
+
+  // Check final position
+  const finalChess = new Chess(finalFen);
+  if (finalChess.isCheckmate()) return 'Checkmate!';
+  if (finalChess.isStalemate()) return 'Stalemate!';
+
+  // Material difference
+  const before = getMaterialCount(startFen);
+  const after = getMaterialCount(finalFen);
+  const playerBefore = playerColor === 'white' ? before.white - before.black : before.black - before.white;
+  const playerAfter = playerColor === 'white' ? after.white - after.black : after.black - after.white;
+  const gain = playerAfter - playerBefore;
+
+  if (gain >= 9) return 'Won the Queen!';
+  if (gain >= 5) return 'Won a Rook!';
+  if (gain >= 3) return 'Won a Piece!';
+  if (gain >= 1) return 'Won Material!';
+  return 'Brilliant Move!';
+}
 
 function getProcessedPuzzle() {
   const chess = new Chess(DEMO_PUZZLE.rawFen);
@@ -45,21 +95,26 @@ function getProcessedPuzzle() {
 
   const puzzleFen = chess.fen();
   const playerColor = chess.turn() === 'w' ? 'white' : 'black';
-  const solutionMoves = DEMO_PUZZLE.rawMoves.slice(1);
-  const sanMoves = uciToSan(puzzleFen, solutionMoves);
 
+  // Get all SAN moves for the puzzle (including setup move applied from rawFen)
+  const allSanMoves = uciToSan(DEMO_PUZZLE.rawFen, DEMO_PUZZLE.rawMoves);
+  const solutionSanMoves = allSanMoves.slice(1);
+
+  // Play through all moves to get final position
   const finalChess = new Chess(puzzleFen);
-  for (const uci of solutionMoves) {
+  for (const uci of DEMO_PUZZLE.rawMoves.slice(1)) {
     const { from, to, promotion } = parseUciMove(uci);
     try { finalChess.move({ from, to, promotion }); } catch { break; }
   }
+  const finalFen = finalChess.fen();
+  const result = describeResult(puzzleFen, finalFen, playerColor, DEMO_PUZZLE.themes);
 
   return {
     puzzleFen,
+    finalFen,
     playerColor: playerColor as 'white' | 'black',
-    solutionMoves,
-    sanMoves,
-    finalFen: finalChess.fen(),
+    solutionSanMoves,
+    result,
   };
 }
 
@@ -70,13 +125,11 @@ function ReelFrame({
   stageNum,
   children,
   active,
-  onReplay,
 }: {
   label: string;
   stageNum: number;
   children: React.ReactNode;
   active?: boolean;
-  onReplay?: () => void;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 shrink-0">
@@ -103,22 +156,11 @@ function ReelFrame({
           height: FRAME_H,
           borderRadius: 24,
           boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(0,0,0,0.08)',
+          border: '4px solid rgba(0,0,0,0.15)',
         }}
       >
         {children}
       </div>
-      {onReplay && (
-        <button
-          onClick={onReplay}
-          className="text-[11px] font-semibold text-chess-blue hover:text-chess-blue-dark transition-colors flex items-center gap-1"
-        >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-5.764 0a.25.25 0 0 0-.192.41l1.966 2.36a.25.25 0 0 0 .384 0l1.966-2.36a.25.25 0 0 0-.192-.41H5.77z" />
-          </svg>
-          Replay
-        </button>
-      )}
     </div>
   );
 }
@@ -127,31 +169,21 @@ function ReelFrame({
 function BoardSlot({
   fen,
   orientation,
-  highlightSquares,
 }: {
   fen: string;
   orientation: 'white' | 'black';
-  highlightSquares?: [string, string] | null;
 }) {
-  const squareStyles = highlightSquares ? {
-    [highlightSquares[0]]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-    [highlightSquares[1]]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-  } : {};
-
   return (
     <div style={{ height: BOARD_SIZE }}>
       <div
         style={{ width: BOARD_SIZE, height: BOARD_SIZE, boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}
         className="overflow-hidden"
       >
-        <Chessboard
+        <ChessPathBoard
           options={{
             position: fen,
             boardOrientation: orientation,
-            squareStyles,
             boardStyle: { borderRadius: '0px' },
-            darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
-            lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
           }}
         />
       </div>
@@ -159,16 +191,103 @@ function BoardSlot({
   );
 }
 
-// Logo — fixed wrapper dimensions so flex layout respects the space
-// At size={0.5}: containerWidth=260px, containerHeight=60px
-// Only stage 1 gets the entrance animation; stages 2-4 show it instantly
-function ReelLogo({ animate = false }: { animate?: boolean }) {
+// Static rook icon + "chesspath" wordmark — no animation, no AnimatedLogo dependency.
+// Block data copied from components/brand/AnimatedLogo.tsx BLOCKS array.
+const ROOK_BLOCKS = [
+  // Row 0: Crown points
+  { x: 4, y: 8, color: '#1CB0F6' },
+  { x: 40, y: 8, color: '#2FCBEF' },
+  { x: 76, y: 8, color: '#A560E8' },
+  // Row 1: Crown rim
+  { x: 4, y: 26, color: '#58CC02' },
+  { x: 22, y: 26, color: '#FFC800' },
+  { x: 40, y: 26, color: '#FF9600' },
+  { x: 58, y: 26, color: '#FF6B6B' },
+  { x: 76, y: 26, color: '#FF4B4B' },
+  // Row 2: Head
+  { x: 22, y: 44, color: '#1CB0F6' },
+  { x: 40, y: 44, color: '#2FCBEF' },
+  { x: 58, y: 44, color: '#A560E8' },
+  // Row 3: Neck
+  { x: 22, y: 62, color: '#58CC02' },
+  { x: 40, y: 62, color: '#FFC800' },
+  { x: 58, y: 62, color: '#FF9600' },
+  // Row 4: Body
+  { x: 22, y: 80, color: '#FF6B6B' },
+  { x: 40, y: 80, color: '#FF4B4B' },
+  { x: 58, y: 80, color: '#1CB0F6' },
+  // Row 5: Base
+  { x: 4, y: 98, color: '#2FCBEF' },
+  { x: 22, y: 98, color: '#A560E8' },
+  { x: 40, y: 98, color: '#58CC02' },
+  { x: 58, y: 98, color: '#FFC800' },
+  { x: 76, y: 98, color: '#FF9600' },
+];
+
+const ROOK_SCALE = 0.5;
+const ROOK_BLOCK_SIZE = 14 * ROOK_SCALE; // 7px
+const ROOK_BLOCK_RADIUS = 2 * ROOK_SCALE; // 1px
+const WORDMARK_LEFT = 110 * ROOK_SCALE; // 55px — more breathing room between rook and text
+const WORDMARK_FONT_SIZE = 72 * ROOK_SCALE; // 36px
+
+function ReelLogo() {
   return (
     <div
       className="flex items-center justify-center shrink-0"
       style={{ width: LOGO_W, height: LOGO_H }}
     >
-      <AnimatedLogo theme="light" size={0.5} autoPlay={animate} />
+      <div
+        style={{
+          position: 'relative',
+          width: LOGO_W,
+          height: 120 * ROOK_SCALE,
+          fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif",
+          left: -4, // shift whole logo container slightly left to keep visually centered
+        }}
+      >
+        {/* Rook icon blocks */}
+        {ROOK_BLOCKS.map((block, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: block.x * ROOK_SCALE,
+              top: block.y * ROOK_SCALE,
+              width: ROOK_BLOCK_SIZE,
+              height: ROOK_BLOCK_SIZE,
+              borderRadius: ROOK_BLOCK_RADIUS,
+              backgroundColor: block.color,
+              boxShadow: `0 ${4 * ROOK_SCALE}px ${12 * ROOK_SCALE}px ${block.color}40`,
+            }}
+          />
+        ))}
+
+        {/* Wordmark: "chess" dark + "path" gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            left: WORDMARK_LEFT,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: WORDMARK_FONT_SIZE,
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ color: '#0F172A' }}>chess</span>
+          <span
+            style={{
+              background:
+                'linear-gradient(90deg, #FFC800 0%, #FFC800 20%, #FF6B6B 40%, #FF6B6B 55%, #1CB0F6 75%, #1CB0F6 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            path
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -177,59 +296,165 @@ function ReelLogo({ animate = false }: { animate?: boolean }) {
 function FooterTagline() {
   return (
     <div className="text-center">
-      <p className="text-chess-text font-bold text-[10px] tracking-wide">Chess Path</p>
-      <p className="text-chess-text-muted text-[8px] tracking-wide">Shortest path to chess improvement</p>
+      <p className="text-chess-text font-bold text-[11px] tracking-wide">chesspath.app</p>
     </div>
   );
 }
 
-// Confetti — only in bottom zone (below board), never overlaps board
-// Uses useEffect to avoid hydration mismatch from Math.random()
-function ConfettiBurst({ replayKey }: { replayKey: number }) {
-  const [particles, setParticles] = useState<Array<{
-    id: number; color: string; left: number; delay: number;
-    duration: number; size: number; rotation: number; xDrift: number;
-  }>>([]);
+// ── 3D Layered Card Wrapper (scaled for 270px frames) ───────
+const CARD_COLOR = '#58CC02';
+
+function BottomCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-full px-3" style={{ height: 56 }}>
+      <div className="relative h-full">
+        {/* Back depth layers (like /learn level cards) */}
+        <div
+          className="absolute inset-0 rounded-2xl"
+          style={{ backgroundColor: CARD_COLOR, transform: 'translate(5px, 5px)', opacity: 0.2 }}
+        />
+        <div
+          className="absolute inset-0 rounded-2xl"
+          style={{ backgroundColor: CARD_COLOR, transform: 'translate(2.5px, 2.5px)', opacity: 0.4 }}
+        />
+        {/* Main card — light bg, green border, like level header */}
+        <div
+          className="absolute inset-0 rounded-2xl border-2 flex items-center justify-center overflow-hidden"
+          style={{
+            backgroundColor: 'var(--color-chess-bg-light)',
+            borderColor: CARD_COLOR,
+            boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+          }}
+        >
+          {/* Corner accent triangle */}
+          <div
+            className="absolute top-0 right-0 w-12 h-12 pointer-events-none"
+            style={{
+              background: `linear-gradient(135deg, transparent 50%, ${CARD_COLOR}20 50%)`,
+              borderTopRightRadius: '1rem',
+            }}
+          />
+          <div className="relative z-10 text-center px-3">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Bottom Zone Components (unique per stage) ───────────────
+
+// Frame 1: "Can you find the solution?"
+function BottomInitial() {
+  return (
+    <BottomCard>
+      <p className="font-semibold text-[17px] tracking-tight text-white">
+        Can you find the solution?
+      </p>
+      <p className="font-medium text-[11px] text-white/70">White to play</p>
+    </BottomCard>
+  );
+}
+
+// Frame 2: Animated countdown 3...2...1...
+function BottomCountdown() {
+  const [count, setCount] = useState(3);
 
   useEffect(() => {
-    const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF9600', '#CE82FF', '#FF4B4B'];
-    setParticles(Array.from({ length: 24 }, (_, i) => ({
-      id: i,
-      color: colors[i % colors.length],
-      left: 8 + Math.random() * 84,
-      delay: Math.random() * 0.4,
-      duration: 0.8 + Math.random() * 0.6,
-      size: 4 + Math.random() * 6,
-      rotation: Math.random() * 360,
-      xDrift: -25 + Math.random() * 50,
-    })));
-  }, [replayKey]);
+    if (count <= 0) return;
+    const timer = setTimeout(() => setCount((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [count]);
+
+  // Restart countdown when it finishes
+  useEffect(() => {
+    if (count === 0) {
+      const restart = setTimeout(() => setCount(3), 2000);
+      return () => clearTimeout(restart);
+    }
+  }, [count]);
 
   return (
-    <div className="absolute pointer-events-none overflow-hidden" style={{
-      top: TOP_ZONE_H + BOARD_SIZE,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    }}>
-      {particles.map((p) => (
-        <div
-          key={`${replayKey}-${p.id}`}
-          className="absolute"
-          style={{
-            left: `${p.left}%`,
-            top: '-6px',
-            width: p.size,
-            height: p.size * 0.6,
-            backgroundColor: p.color,
-            borderRadius: p.size > 7 ? '50%' : '1px',
-            transform: `rotate(${p.rotation}deg)`,
-            animation: `confetti-fall ${p.duration}s ease-in ${p.delay}s both`,
-            ['--x-drift' as string]: `${p.xDrift}px`,
-          }}
-        />
-      ))}
+    <BottomCard>
+      <p className="font-semibold text-[18px] text-white" style={{ lineHeight: 1.1 }}>
+        {count > 0 ? `Solution in ${count}` : 'GO!'}
+      </p>
+      <p className="font-normal text-[8px] text-white/50">(Tap Screen to Pause)</p>
+    </BottomCard>
+  );
+}
+
+// Frame 3: Solution moves with notation appearing one at a time
+function BottomSolution({ sanMoves }: { sanMoves: string[] }) {
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    if (visibleCount >= sanMoves.length) return;
+    const timer = setTimeout(() => setVisibleCount((c) => c + 1), 1200);
+    return () => clearTimeout(timer);
+  }, [visibleCount, sanMoves.length]);
+
+  // Restart when done
+  useEffect(() => {
+    if (visibleCount >= sanMoves.length && sanMoves.length > 0) {
+      const restart = setTimeout(() => setVisibleCount(0), 3000);
+      return () => clearTimeout(restart);
+    }
+  }, [visibleCount, sanMoves.length]);
+
+  // Format moves as numbered pairs: "1. Rxh5 gxh5 2. Qxh5 ..."
+  const formatNotation = useCallback(() => {
+    const visible = sanMoves.slice(0, visibleCount);
+    let result = '';
+    for (let i = 0; i < visible.length; i++) {
+      if (i % 2 === 0) {
+        // White move — add move number
+        result += `${Math.floor(i / 2) + 1}. ${visible[i]} `;
+      } else {
+        // Black move
+        result += `${visible[i]} `;
+      }
+    }
+    return result.trim();
+  }, [sanMoves, visibleCount]);
+
+  return (
+    <BottomCard>
+      <p className="font-medium text-[9px] uppercase tracking-wider text-white/60">
+        Solution
+      </p>
+      <p className="font-mono font-semibold text-[14px] text-white" style={{ letterSpacing: '0.02em' }}>
+        {formatNotation() || '\u00A0'}
+      </p>
+    </BottomCard>
+  );
+}
+
+// Result popup — overlays the board on frame 4
+function ResultPopup({ result }: { result: string }) {
+  return (
+    <div
+      className="rounded-2xl px-5 py-3 text-center"
+      style={{
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        backdropFilter: 'blur(4px)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+      }}
+    >
+      <p className="font-bold text-[18px] text-white" style={{ lineHeight: 1.2 }}>
+        {result}
+      </p>
     </div>
+  );
+}
+
+// Frame 4: Quip in bottom card
+function BottomCelebrate() {
+  return (
+    <BottomCard>
+      <p className="font-semibold text-[16px] italic text-white" style={{ lineHeight: 1.3 }}>
+        &ldquo;That rook had places to be!&rdquo;
+      </p>
+    </BottomCard>
   );
 }
 
@@ -237,271 +462,152 @@ function ConfettiBurst({ replayKey }: { replayKey: number }) {
 // Enforces the 3-zone layout. Board position NEVER changes.
 // Logo is rendered HERE — not in individual stages — so it never shifts.
 function ReelLayout({
-  topContent,
-  animateLogo = false,
   fen,
   orientation,
-  highlightSquares,
   bottomContent,
-  overlay,
+  boardOverlay,
 }: {
-  topContent: React.ReactNode;
-  animateLogo?: boolean;
   fen: string;
   orientation: 'white' | 'black';
-  highlightSquares?: [string, string] | null;
-  bottomContent: React.ReactNode;
-  overlay?: React.ReactNode;
+  bottomContent?: React.ReactNode;
+  boardOverlay?: React.ReactNode;
 }) {
   return (
     <div className="h-full relative">
-      {overlay}
-
       {/* TOP ZONE — absolute positioning so NOTHING shifts */}
       <div style={{ height: TOP_ZONE_H }} className="relative">
         {/* Logo — absolute, pixel-pinned, identical in every stage */}
         <div className="absolute left-1/2 -translate-x-1/2" style={{ top: 8 }}>
-          <ReelLogo animate={animateLogo} />
+          <ReelLogo />
         </div>
-        {/* Text — absolute, pinned below logo, centered */}
+        {/* "Daily Puzzle" badge — pinned below logo, centered */}
         <div
           className="absolute left-0 right-0 flex flex-col items-center justify-center px-3"
           style={{ top: 8 + LOGO_H, bottom: 0 }}
         >
-          {topContent}
+          <span
+            className="inline-block rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
+            style={{
+              background: 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+              color: '#fff',
+              boxShadow: '0 2px 6px rgba(88,204,2,0.3)',
+            }}
+          >
+            Daily Puzzle
+          </span>
         </div>
       </div>
 
       {/* BOARD — dead center, never moves */}
-      <BoardSlot fen={fen} orientation={orientation} highlightSquares={highlightSquares} />
+      <div className="relative">
+        <BoardSlot fen={fen} orientation={orientation} />
+        {boardOverlay && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {boardOverlay}
+          </div>
+        )}
+      </div>
 
-      {/* BOTTOM ZONE — fixed 130px */}
+      {/* BOTTOM ZONE */}
       <div
         style={{ height: BOTTOM_ZONE_H }}
-        className="flex flex-col items-center justify-between px-4 pt-2 pb-3"
+        className="flex flex-col items-stretch pt-3 pb-2"
       >
-        <div className="flex-1 flex flex-col items-center justify-center w-full">
-          {bottomContent}
-        </div>
+        <div className="flex-1 flex items-center">{bottomContent}</div>
         <FooterTagline />
       </div>
     </div>
   );
 }
 
-// ── Stage 1: Initial Position ───────────────────────────────
-function StageInitial({
-  fen,
-  playerColor,
-  replayKey,
-}: {
-  fen: string;
-  playerColor: 'white' | 'black';
-  replayKey: number;
-}) {
-  const colorLabel = playerColor === 'white' ? 'White' : 'Black';
-
-  return (
-    <ReelLayout
-      fen={fen}
-      orientation={playerColor}
-      topContent={
-        <>
-          <p className="text-chess-text-muted text-[9px] font-bold uppercase tracking-[0.15em]">
-            Daily Puzzle
-          </p>
-          <p className="text-chess-text text-base font-bold leading-tight">{colorLabel} to play</p>
-          <p className="text-chess-text-muted text-[11px]">Find the best move!</p>
-        </>
-      }
-      bottomContent={<></>}
-    />
-  );
-}
-
-// ── Stage 2: Countdown ──────────────────────────────────────
-function StageCountdown({
-  fen,
-  playerColor,
-  replayKey,
-}: {
-  fen: string;
-  playerColor: 'white' | 'black';
-  replayKey: number;
-}) {
-  const [count, setCount] = useState(3);
-
-  useEffect(() => { setCount(3); }, [replayKey]);
-
-  useEffect(() => {
-    if (count <= 0) return;
-    const t = setTimeout(() => setCount(c => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [count]);
-
-  return (
-    <ReelLayout
-      fen={fen}
-      orientation={playerColor}
-      topContent={
-        <p className="text-chess-text text-base font-bold leading-tight">Can you see it?</p>
-      }
-      bottomContent={
-        <div className="text-center">
-          <span
-            key={`${replayKey}-${count}`}
-            className="text-chess-text font-black inline-block"
-            style={{ fontSize: count > 0 ? 28 : 26 }}
-          >
-            {count > 0 ? `Solution in ${count}` : 'GO!'}
-          </span>
-          <p className="text-chess-text-faint text-[9px] mt-0.5">Tap to pause</p>
-        </div>
-      }
-    />
-  );
-}
-
-// ── Stage 3: Animation ──────────────────────────────────────
-function StageAnimation({
-  puzzleFen,
-  playerColor,
-  solutionMoves,
+// ── Solution Board (animates moves) ─────────────────────────
+// Frame 3 needs its own board that steps through the solution moves
+function SolutionReelLayout({
+  startFen,
+  orientation,
+  solutionUciMoves,
   sanMoves,
-  replayKey,
 }: {
-  puzzleFen: string;
-  playerColor: 'white' | 'black';
-  solutionMoves: string[];
+  startFen: string;
+  orientation: 'white' | 'black';
+  solutionUciMoves: string[];
   sanMoves: string[];
-  replayKey: number;
 }) {
-  const [currentFen, setCurrentFen] = useState(puzzleFen);
-  const [moveIndex, setMoveIndex] = useState(-1);
-  const [lastMove, setLastMove] = useState<[string, string] | null>(null);
-  const [displayedMoves, setDisplayedMoves] = useState<string[]>([]);
+  const [moveIndex, setMoveIndex] = useState(0);
 
+  // Step through solution moves one at a time
   useEffect(() => {
-    setCurrentFen(puzzleFen);
-    setMoveIndex(-1);
-    setLastMove(null);
-    setDisplayedMoves([]);
-  }, [replayKey, puzzleFen]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const nextIndex = moveIndex + 1;
-      if (nextIndex >= solutionMoves.length) return;
-
-      const uci = solutionMoves[nextIndex];
-      const { from, to, promotion } = parseUciMove(uci);
-
-      try {
-        const chess = new Chess(currentFen);
-        chess.move({ from, to, promotion });
-        setCurrentFen(chess.fen());
-        setLastMove([from, to]);
-        setMoveIndex(nextIndex);
-        setDisplayedMoves(prev => [...prev, sanMoves[nextIndex]]);
-      } catch { /* skip */ }
-    }, moveIndex === -1 ? 800 : 1500);
-
-    return () => clearTimeout(timeout);
-  }, [moveIndex, currentFen, solutionMoves, sanMoves]);
-
-  const formattedMoves = useMemo(() => {
-    const pairs: string[] = [];
-    for (let i = 0; i < displayedMoves.length; i += 2) {
-      const moveNum = Math.floor(i / 2) + 1;
-      let pair = `${moveNum}. ${displayedMoves[i]}`;
-      if (displayedMoves[i + 1]) pair += ` ${displayedMoves[i + 1]}`;
-      pairs.push(pair);
+    if (moveIndex >= solutionUciMoves.length) {
+      // Restart after a pause
+      const restart = setTimeout(() => setMoveIndex(0), 3000);
+      return () => clearTimeout(restart);
     }
-    return pairs.join('  ');
-  }, [displayedMoves]);
+    const timer = setTimeout(() => setMoveIndex((m) => m + 1), 1200);
+    return () => clearTimeout(timer);
+  }, [moveIndex, solutionUciMoves.length]);
+
+  // Calculate the current FEN after applying moveIndex moves
+  const currentFen = useMemo(() => {
+    const chess = new Chess(startFen);
+    for (let i = 0; i < moveIndex && i < solutionUciMoves.length; i++) {
+      const { from, to, promotion } = parseUciMove(solutionUciMoves[i]);
+      try {
+        chess.move({ from, to, promotion });
+      } catch {
+        break;
+      }
+    }
+    return chess.fen();
+  }, [startFen, moveIndex, solutionUciMoves]);
 
   return (
-    <ReelLayout
-      fen={currentFen}
-      orientation={playerColor}
-      highlightSquares={lastMove}
-      topContent={
-        <>
-          <p className="text-chess-text-muted text-[9px] font-bold uppercase tracking-[0.15em]">
-            Solution
-          </p>
-          <p className="text-chess-text text-base font-bold leading-tight">Watch closely!</p>
-        </>
-      }
-      bottomContent={
+    <div className="h-full relative">
+      {/* TOP ZONE — identical to other frames */}
+      <div style={{ height: TOP_ZONE_H }} className="relative">
+        <div className="absolute left-1/2 -translate-x-1/2" style={{ top: 8 }}>
+          <ReelLogo />
+        </div>
         <div
-          className="rounded-lg px-3 py-2 min-h-[28px] flex items-center justify-center w-full"
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.04)',
-            border: '1px solid rgba(0,0,0,0.06)',
-          }}
+          className="absolute left-0 right-0 flex flex-col items-center justify-center px-3"
+          style={{ top: 8 + LOGO_H, bottom: 0 }}
         >
-          <p className="text-chess-text text-[9px] font-mono font-semibold">
-            {formattedMoves || <span className="text-chess-text-faint">Moves appear here...</span>}
-          </p>
-        </div>
-      }
-    />
-  );
-}
-
-// ── Stage 4: Finish ─────────────────────────────────────────
-function StageFinish({
-  finalFen,
-  playerColor,
-  replayKey,
-}: {
-  finalFen: string;
-  playerColor: 'white' | 'black';
-  replayKey: number;
-}) {
-  return (
-    <ReelLayout
-      fen={finalFen}
-      orientation={playerColor}
-      overlay={<ConfettiBurst replayKey={replayKey} />}
-      topContent={
-        <>
-          <p className="text-chess-text-muted text-[9px] font-bold uppercase tracking-[0.15em]">
+          <span
+            className="inline-block rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
+            style={{
+              background: 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+              color: '#fff',
+              boxShadow: '0 2px 6px rgba(88,204,2,0.3)',
+            }}
+          >
             Daily Puzzle
-          </p>
-          <p className="text-chess-text text-base font-bold leading-tight">Checkmate!</p>
-          <p className="text-chess-text-muted text-[10px]">Mate in 3 &bull; Rating 829</p>
-        </>
-      }
-      bottomContent={
-        <div className="text-center">
-          <p className="text-chess-text font-bold text-sm">chesspath.app</p>
-          <p className="text-chess-text-muted text-[10px]">for daily improvement!</p>
+          </span>
         </div>
-      }
-    />
+      </div>
+
+      {/* BOARD — animates through solution moves */}
+      <BoardSlot fen={currentFen} orientation={orientation} />
+
+      {/* BOTTOM ZONE */}
+      <div
+        style={{ height: BOTTOM_ZONE_H }}
+        className="flex flex-col items-stretch pt-3 pb-2"
+      >
+        <div className="flex-1 flex items-center"><BottomSolution sanMoves={sanMoves} /></div>
+        <FooterTagline />
+      </div>
+    </div>
   );
 }
 
 // ── Main Test Page ──────────────────────────────────────────
 export default function TestDailyVideoPage() {
   const puzzle = useMemo(() => getProcessedPuzzle(), []);
-  const [replayKeys, setReplayKeys] = useState({ s1: 0, s2: 0, s3: 0, s4: 0 });
 
-  const replay = useCallback((stage: 's1' | 's2' | 's3' | 's4') => {
-    setReplayKeys(prev => ({ ...prev, [stage]: prev[stage] + 1 }));
-  }, []);
+  // Solution UCI moves (skip setup move at index 0)
+  const solutionUciMoves = DEMO_PUZZLE.rawMoves.slice(1);
 
   return (
     <div className="h-full overflow-auto" style={{ backgroundColor: '#f0f2f5' }}>
-      <style>{`
-        @keyframes confetti-fall {
-          0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(140px) translateX(var(--x-drift)) rotate(720deg); opacity: 0; }
-        }
-      `}</style>
-
       {/* Header */}
       <div className="text-center pt-10 pb-8 px-4">
         <h1 className="text-chess-text text-xl font-bold tracking-tight">
@@ -510,30 +616,49 @@ export default function TestDailyVideoPage() {
         <p className="text-chess-text-muted text-sm mt-1">
           Instagram Reel &mdash; 9:16 &mdash; {FRAME_W}&times;{FRAME_H}px frames
         </p>
+        <p className="text-chess-text-muted text-xs mt-2 italic">
+          Each frame has unique bottom-zone content. Top zone + board are static.
+        </p>
       </div>
 
       {/* 4 stage frames side by side */}
       <div className="flex gap-8 justify-center px-8 pb-10 overflow-x-auto">
-        <ReelFrame label="Initial" stageNum={1} active onReplay={() => replay('s1')}>
-          <StageInitial fen={puzzle.puzzleFen} playerColor={puzzle.playerColor} replayKey={replayKeys.s1} />
-        </ReelFrame>
-
-        <ReelFrame label="Countdown" stageNum={2} onReplay={() => replay('s2')}>
-          <StageCountdown fen={puzzle.puzzleFen} playerColor={puzzle.playerColor} replayKey={replayKeys.s2} />
-        </ReelFrame>
-
-        <ReelFrame label="Solution" stageNum={3} onReplay={() => replay('s3')}>
-          <StageAnimation
-            puzzleFen={puzzle.puzzleFen}
-            playerColor={puzzle.playerColor}
-            solutionMoves={puzzle.solutionMoves}
-            sanMoves={puzzle.sanMoves}
-            replayKey={replayKeys.s3}
+        {/* Frame 1: Initial — "Can you find the solution?" */}
+        <ReelFrame label="Initial" stageNum={1} active>
+          <ReelLayout
+            fen={puzzle.puzzleFen}
+            orientation={puzzle.playerColor}
+            bottomContent={<BottomInitial />}
           />
         </ReelFrame>
 
-        <ReelFrame label="Celebrate" stageNum={4} onReplay={() => replay('s4')}>
-          <StageFinish finalFen={puzzle.finalFen} playerColor={puzzle.playerColor} replayKey={replayKeys.s4} />
+        {/* Frame 2: Countdown — 3...2...1...GO! */}
+        <ReelFrame label="Countdown" stageNum={2} active>
+          <ReelLayout
+            fen={puzzle.puzzleFen}
+            orientation={puzzle.playerColor}
+            bottomContent={<BottomCountdown />}
+          />
+        </ReelFrame>
+
+        {/* Frame 3: Solution — animated moves + notation */}
+        <ReelFrame label="Solution" stageNum={3} active>
+          <SolutionReelLayout
+            startFen={puzzle.puzzleFen}
+            orientation={puzzle.playerColor}
+            solutionUciMoves={solutionUciMoves}
+            sanMoves={puzzle.solutionSanMoves}
+          />
+        </ReelFrame>
+
+        {/* Frame 4: Celebrate — result overlay + quip */}
+        <ReelFrame label="Celebrate" stageNum={4} active>
+          <ReelLayout
+            fen={puzzle.finalFen}
+            orientation={puzzle.playerColor}
+            boardOverlay={<ResultPopup result={puzzle.result} />}
+            bottomContent={<BottomCelebrate />}
+          />
         </ReelFrame>
       </div>
 
@@ -554,7 +679,6 @@ export default function TestDailyVideoPage() {
             <p><span className="text-chess-text font-medium">Color:</span> {puzzle.playerColor}</p>
             <p><span className="text-chess-text font-medium">Type:</span> Mate in 3</p>
             <p className="col-span-2"><span className="text-chess-text font-medium">Themes:</span> {DEMO_PUZZLE.themes.join(', ')}</p>
-            <p className="col-span-2"><span className="text-chess-text font-medium">Moves (SAN):</span> <span className="font-mono">{puzzle.sanMoves.join(' ')}</span></p>
           </div>
         </div>
       </div>

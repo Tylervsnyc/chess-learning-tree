@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { level1v2, Module, LessonCriteria } from '@/data/staging/level1-curriculum-v2';
 import {
@@ -632,15 +632,13 @@ function LessonPuzzleView({ lessonId, onBack }: { lessonId: string; onBack: () =
           </div>
 
           {/* Board */}
-          <Chessboard
+          <ChessPathBoard
             options={{
               position: currentFen || currentPuzzle.puzzleFen,
               boardOrientation: currentPuzzle.playerColor,
               onSquareClick: onSquareClick,
               squareStyles: squareStyles,
               boardStyle: { borderRadius: '8px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)' },
-              darkSquareStyle: { backgroundColor: '#779952' },
-              lightSquareStyle: { backgroundColor: '#edeed1' },
             }}
           />
 

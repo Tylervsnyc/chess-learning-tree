@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Chessboard } from 'react-chessboard';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { useRouter } from 'next/navigation';
 import { LEVEL_TEST_CONFIG } from '@/data/level-unlock-tests';
@@ -40,6 +40,10 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
   const [moveStatus, setMoveStatus] = useState<MoveStatus>('playing');
   const [boardKey, setBoardKey] = useState(0);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+
+  // Track previously highlighted selection squares so we can explicitly clear them
+  // (react-chessboard v5 caches square styles — omitting a style doesn't remove it)
+  const prevSelectionSquaresRef = useRef<Square[]>([]);
 
   // Streak tracking for progress bar effects
   const [streak, setStreak] = useState(0);
@@ -110,13 +114,25 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
     if (selectedSquare && chess) {
       styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
       const moves = chess.moves({ square: selectedSquare, verbose: true });
+      const currentSelectionSquares: Square[] = [selectedSquare];
       for (const move of moves) {
         styles[move.to] = {
           background: move.captured
             ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
             : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
         };
+        currentSelectionSquares.push(move.to as Square);
       }
+      // Track current selection squares so we can clear them when deselected
+      prevSelectionSquaresRef.current = currentSelectionSquares;
+    } else {
+      // Explicitly clear previous selection squares so react-chessboard removes cached styles
+      for (const sq of prevSelectionSquaresRef.current) {
+        if (!styles[sq]) {
+          styles[sq] = {};
+        }
+      }
+      prevSelectionSquaresRef.current = [];
     }
 
     return styles;
@@ -443,7 +459,7 @@ export default function LevelUnlockTest({ transition }: LevelUnlockTestProps) {
           {/* Chessboard */}
           <div className="relative">
             {chess && (
-              <Chessboard
+              <ChessPathBoard
                 key={boardKey}
                 options={{
                   position: chess.fen(),

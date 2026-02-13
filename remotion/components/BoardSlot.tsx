@@ -1,6 +1,5 @@
 import React from 'react';
-import { Chessboard } from 'react-chessboard';
-import { BOARD_COLORS } from '../../lib/puzzle-utils';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { BOARD_SIZE } from '../lib/timing';
 
 // Lichess-style last-move highlight (amber)
@@ -31,14 +30,12 @@ export const BoardSlot: React.FC<{
           overflow: 'hidden',
         }}
       >
-        <Chessboard
+        <ChessPathBoard
           options={{
             position: fen,
             boardOrientation: orientation,
             animationDurationInMs: 0,
             boardStyle: { borderRadius: '0px' },
-            darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
-            lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
             squareStyles,
           }}
         />

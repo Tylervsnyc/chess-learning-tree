@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Chessboard } from 'react-chessboard';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 
 // Back rank mate - Queen sacrifice into Rook checkmate
 const DEMO_FEN = '3qr1k1/5ppp/8/8/4Q3/8/5PPP/4R1K1 w - - 0 1';
@@ -84,13 +84,11 @@ export default function TestSharePage() {
               />
               {/* Board */}
               <div className="relative" style={{ borderRadius: 12, overflow: 'hidden', border: '2px solid #58CC02' }}>
-                <Chessboard
+                <ChessPathBoard
                   options={{
                     position: DEMO_FEN,
                     boardOrientation: 'white',
                     squareStyles: getSquareStyles([DEMO_LAST_MOVE.from, DEMO_LAST_MOVE.to]),
-                    darkSquareStyle: { backgroundColor: '#779952' },
-                    lightSquareStyle: { backgroundColor: '#edeed1' },
                   }}
                 />
               </div>

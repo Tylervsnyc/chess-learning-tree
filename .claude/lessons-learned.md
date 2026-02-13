@@ -130,6 +130,10 @@ Tyler creates test pages to compare design variants. Two rules: (1) Test pages M
 When toggling custom square highlights off, omitting a square key from the `squareStyles` object does NOT clear it. react-chessboard's memo'd Square component doesn't reconcile `undefined` → no style. You must explicitly set cleared squares to `{}` (empty style object) so React sees a definitive style change.
 -> **New rule:** When clearing per-square styles in react-chessboard, always pass `{}` for previously-styled squares — never rely on key absence.
 
+### Lesson: 2026-02-12 - Test pages always get wrong board styling
+Every test page that uses `<Chessboard>` directly from `react-chessboard` must manually configure `darkSquareStyle`, `lightSquareStyle`, and `boardStyle`. Agents consistently forget to import `BOARD_COLORS` or hardcode wrong values, producing boards that look wrong. The fix: a wrapper component `ChessPathBoard` that bakes in defaults. NEVER import `Chessboard` from `react-chessboard` directly — always use `ChessPathBoard` from `@/components/puzzle/ChessPathBoard`.
+-> **New rule:** Use `ChessPathBoard` wrapper for all chessboards. See RULES.md §18d.
+
 ---
 
 *Add new lessons at the bottom. Follow the format above.*
