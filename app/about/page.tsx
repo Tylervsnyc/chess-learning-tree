@@ -5,7 +5,7 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 
 export default function AboutPage() {
   return (
-    <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+    <div className="h-full md:h-auto bg-chess-page text-chess-text flex flex-col overflow-hidden">
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-6 pt-10 overflow-y-auto">
         <div className="max-w-md w-full">

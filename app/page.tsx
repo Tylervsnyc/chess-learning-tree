@@ -130,7 +130,7 @@ export default function LandingPage() {
   }, [user, loading, router]);
 
   return (
-    <div className="h-full bg-chess-page flex flex-col overflow-hidden">
+    <div className="h-full md:max-h-[650px] bg-chess-page flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col items-center px-3 min-h-0 max-w-lg mx-auto w-full">
         {/* Top: logo + tagline (fixed size) */}
         <div className="pt-4 pb-3 flex flex-col items-center">
