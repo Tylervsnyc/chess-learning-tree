@@ -16,6 +16,7 @@ import {
 } from '@/lib/sounds';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 
 // ══════════════════════════════════════════════════
 // TUTORIAL DATA
@@ -37,6 +38,8 @@ interface TutorialStep {
   introPieceSquare?: string;
   exercises: Exercise[];
 }
+
+const TOTAL_EXERCISES = 15; // 2+2+2+2+2+2+2+1
 
 const STEPS: TutorialStep[] = [
   {
@@ -144,6 +147,9 @@ export function BasicsTutorial() {
   const [tutorialDone, setTutorialDone] = useState(false);
   const [shakeBoard, setShakeBoard] = useState(false);
   const [animationDuration, setAnimationDuration] = useState(0); // 0 for transitions, 200 for user moves
+  const [boardKey, setBoardKey] = useState(0); // increment to force-remount board (kills all animation)
+  const [completedCount, setCompletedCount] = useState(0);
+  const [streak, setStreak] = useState(0);
 
   // Track completed exercises for sound progression
   const completedCountRef = useRef(0);
@@ -246,36 +252,33 @@ export function BasicsTutorial() {
   }, [exerciseIndex, currentStep, currentExercise, selectedSquare, game, exerciseComplete]);
 
   // ── Advance to next exercise/step ──
+  // Force-remount the board (boardKey++) so pieces snap — no sliding animation
   const advance = useCallback(() => {
     if (advancingRef.current) return;
     advancingRef.current = true;
 
-    // Kill animation FIRST, then change FEN on next tick
-    // so the board registers duration=0 before seeing the new position
+    const step = STEPS[stepIndex];
+    if (exerciseIndex < step.exercises.length - 1) {
+      const nextIdx = exerciseIndex + 1;
+      const nextEx = step.exercises[nextIdx];
+      setExerciseIndex(nextIdx);
+      setCurrentFen(nextEx.fen);
+      setSelectedSquare(null);
+      setExerciseComplete(false);
+    } else if (stepIndex < STEPS.length - 1) {
+      const nextStep = STEPS[stepIndex + 1];
+      setStepIndex(stepIndex + 1);
+      setExerciseIndex(-1);
+      setCurrentFen(nextStep.introFen);
+      setSelectedSquare(null);
+      setExerciseComplete(false);
+    } else {
+      setTutorialDone(true);
+    }
+
+    setBoardKey(k => k + 1); // remount board = zero animation
     setAnimationDuration(0);
-
-    requestAnimationFrame(() => {
-      const step = STEPS[stepIndex];
-      if (exerciseIndex < step.exercises.length - 1) {
-        const nextIdx = exerciseIndex + 1;
-        const nextEx = step.exercises[nextIdx];
-        setExerciseIndex(nextIdx);
-        setCurrentFen(nextEx.fen);
-        setSelectedSquare(null);
-        setExerciseComplete(false);
-      } else if (stepIndex < STEPS.length - 1) {
-        const nextStep = STEPS[stepIndex + 1];
-        setStepIndex(stepIndex + 1);
-        setExerciseIndex(-1);
-        setCurrentFen(nextStep.introFen);
-        setSelectedSquare(null);
-        setExerciseComplete(false);
-      } else {
-        setTutorialDone(true);
-      }
-
-      setTimeout(() => { advancingRef.current = false; }, 100);
-    });
+    setTimeout(() => { advancingRef.current = false; }, 100);
   }, [stepIndex, exerciseIndex]);
 
   // ── Handle exercise success ──
@@ -285,22 +288,24 @@ export function BasicsTutorial() {
     playCorrectSound(completedCountRef.current);
     vibrateOnCorrect();
     completedCountRef.current += 1;
+    setCompletedCount(c => c + 1);
+    setStreak(s => s + 1);
 
     // Auto-advance after brief pause
     setTimeout(() => advance(), 900);
   }, [advance, exerciseComplete]);
 
   // ── Start exercises (dismiss intro) ──
+  // Force-remount board so pieces snap into exercise position
   const handleStartExercises = useCallback(() => {
     warmupAudio();
+    const ex = currentStep.exercises[0];
+    setExerciseIndex(0);
+    setCurrentFen(ex.fen);
+    setSelectedSquare(null);
+    setExerciseComplete(false);
+    setBoardKey(k => k + 1); // remount board = zero animation
     setAnimationDuration(0);
-    requestAnimationFrame(() => {
-      const ex = currentStep.exercises[0];
-      setExerciseIndex(0);
-      setCurrentFen(ex.fen);
-      setSelectedSquare(null);
-      setExerciseComplete(false);
-    });
   }, [currentStep]);
 
   // ── Board shake ──
@@ -426,7 +431,7 @@ export function BasicsTutorial() {
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="mb-6">
+          <div className="mb-6 flex justify-center">
             <AnimatedLogo theme="dark" perpetual autoPlay size={1} iconOnly />
           </div>
           <h1
@@ -470,28 +475,22 @@ export function BasicsTutorial() {
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      {/* Header: X button + progress dots */}
-      <div className="px-4 py-3 flex-shrink-0">
-        <div className="flex items-center justify-between max-w-lg mx-auto">
+      {/* Header: X button + progress bar */}
+      <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push('/about')}
-            className="text-gray-500 hover:text-gray-300 text-lg w-8"
+            className="text-gray-500 hover:text-gray-700"
           >
             ✕
           </button>
-          <div className="flex gap-1.5">
-            {STEPS.map((_, i) => (
-              <div
-                key={i}
-                className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
-                  i < stepIndex ? 'bg-chess-green' :
-                  i === stepIndex ? 'bg-chess-blue' :
-                  'bg-gray-600'
-                }`}
-              />
-            ))}
+          <div className="flex-1 mx-4">
+            <ChessProgressBar
+              current={completedCount}
+              total={TOTAL_EXERCISES}
+              streak={streak}
+            />
           </div>
-          <div className="w-8" />
         </div>
       </div>
 
@@ -506,6 +505,7 @@ export function BasicsTutorial() {
           {/* Board */}
           <div className={`relative ${shakeBoard ? 'basics-shake' : ''}`}>
             <ChessPathBoard
+              key={boardKey}
               options={{
                 position: currentFen,
                 boardOrientation: 'white' as const,
@@ -522,47 +522,48 @@ export function BasicsTutorial() {
                 lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
               }}
             />
+
+            {/* Intro overlay — on top of board, matching IntroPopup design */}
+            {exerciseIndex === -1 && (
+              <div
+                key={`intro-${stepIndex}`}
+                className="absolute inset-0 z-50 flex items-center justify-center"
+                style={{ animation: 'fadeIn 0.25s ease-out' }}
+              >
+                <div className="absolute inset-0 bg-black/70 rounded-md" />
+                <div className="relative mx-4 max-w-sm w-full bg-[#1A2C35] rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+                  <div className="h-1.5 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6]" />
+                  <div className="px-3 py-2">
+                    <h2 className="text-base font-bold text-white mb-1">
+                      {currentStep.title}
+                    </h2>
+                    <p className="text-[#A3B8C2] text-sm leading-snug mb-2 whitespace-pre-line">
+                      {currentStep.introText}
+                    </p>
+                    <div className={stepIndex === 0 ? 'flex gap-2' : ''}>
+                      {stepIndex === 0 && (
+                        <button
+                          onClick={() => router.push('/learn')}
+                          className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
+                        >
+                          Skip
+                        </button>
+                      )}
+                      <button
+                        onClick={handleStartExercises}
+                        className={`${stepIndex === 0 ? 'flex-[2]' : 'w-full'} py-2.5 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]`}
+                      >
+                        Got It
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Below board: intro card or exercise instruction */}
-          {exerciseIndex === -1 ? (
-            <div
-              key={`intro-${stepIndex}`}
-              className="w-full rounded-2xl p-4 mt-3 text-center border border-white/10"
-              style={{
-                backgroundColor: '#1A2C35',
-                animation: 'basicsSlideUp 0.3s ease-out',
-              }}
-            >
-              {/* Accent bar */}
-              <div className="h-1 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6] rounded-full mb-3 mx-auto w-16" />
-
-              <p className="text-white text-sm whitespace-pre-line leading-relaxed mb-3">
-                {currentStep.introText}
-              </p>
-
-              <div className="flex gap-2">
-                {stepIndex === 0 && (
-                  <button
-                    onClick={() => router.push('/learn')}
-                    className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
-                  >
-                    Skip
-                  </button>
-                )}
-                <button
-                  onClick={handleStartExercises}
-                  className={`${stepIndex === 0 ? 'flex-[2]' : 'w-full'} py-2.5 font-bold rounded-xl text-white text-sm uppercase tracking-wide transition-all active:translate-y-[1px]`}
-                  style={{
-                    backgroundColor: '#1CB0F6',
-                    boxShadow: '0 3px 0 #1489bd',
-                  }}
-                >
-                  Got It
-                </button>
-              </div>
-            </div>
-          ) : currentExercise ? (
+          {/* Below board: exercise instruction bar */}
+          {exerciseIndex >= 0 && currentExercise ? (
             <div
               key={`ex-${stepIndex}-${exerciseIndex}`}
               className="w-full rounded-b-2xl py-3 px-4 text-center"
@@ -584,10 +585,15 @@ export function BasicsTutorial() {
       </div>
 
       {/* Animations */}
+      <style>{progressBarStyles}</style>
       <style jsx>{`
         @keyframes basicsSlideUp {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: scale(0.95); }
+          100% { opacity: 1; transform: scale(1); }
         }
         .basics-shake {
           animation: basicsShake 0.4s ease-in-out;

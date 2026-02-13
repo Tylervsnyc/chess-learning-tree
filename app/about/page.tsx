@@ -8,7 +8,7 @@ export default function AboutPage() {
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-6 pt-10 overflow-y-auto">
-        <div className="max-w-sm w-full">
+        <div className="max-w-md w-full">
           {/* Heading + Logo */}
           <h1 className="text-lg font-bold text-center mb-3">How It Works</h1>
           <div className="flex justify-center mb-5">
@@ -59,12 +59,18 @@ export default function AboutPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-5 pb-6">
+          <div className="mt-5 space-y-3 pb-6">
             <Link
               href="/learn"
               className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_var(--color-chess-green-shadow)] bg-chess-green"
             >
               Begin Learning
+            </Link>
+            <Link
+              href="/tutorial/basics"
+              className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#1489bd] bg-[#1CB0F6]"
+            >
+              Learn Chess Basics
             </Link>
           </div>
         </div>

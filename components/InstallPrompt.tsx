@@ -24,8 +24,8 @@ export function InstallPrompt() {
   const [platform, setPlatform] = useState<'native' | 'ios-safari' | 'ios-other' | 'desktop'>('desktop');
 
   useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator) {
+    // Register service worker (skip on localhost — it caches dev assets and breaks HMR)
+    if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       navigator.serviceWorker.register('/sw.js');
     }
 
