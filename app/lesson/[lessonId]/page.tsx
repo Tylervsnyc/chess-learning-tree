@@ -49,7 +49,7 @@ import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmate
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
-import { TutorialFlow } from '@/app/test-tutorial/page';
+import { TutorialFlow } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 
 interface Puzzle {
@@ -1013,6 +1013,7 @@ export default function LessonPage() {
     }
     return (
       <TutorialFlow
+        lessonId={lessonId}
         onComplete={(correctCount) => {
           setTutorialCorrectCount(correctCount);
           completeLesson(lessonId, allLessonIds);
@@ -1178,7 +1179,12 @@ export default function LessonPage() {
       <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push('/learn')}
+            onClick={() => {
+              if (!lessonComplete && puzzles.length > 0) {
+                LearningEvents.lessonAbandoned(lessonId, currentIndex + 1, totalPuzzles);
+              }
+              router.push('/learn');
+            }}
             className="text-gray-500 hover:text-gray-700"
           >
             ✕
@@ -1309,13 +1315,6 @@ export default function LessonPage() {
               type="correct"
               message={feedbackMessage}
               onContinue={handleContinue}
-              puzzleShareData={currentPuzzle ? {
-                fen: currentPuzzle.puzzleFen,
-                playerColor: currentPuzzle.playerColor,
-                lastMoveFrom: currentPuzzle.lastMoveFrom,
-                lastMoveTo: currentPuzzle.lastMoveTo,
-                solutionMoves: currentPuzzle.solution.split(' '),
-              } : undefined}
               rookAnimationStyle={rookCorrectStyle}
               rookProgressRef={rookProgressRef}
               rookCurrentStage={completedPuzzleCount - 1}

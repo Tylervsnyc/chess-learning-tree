@@ -65,7 +65,6 @@ export const AuthEvents = {
 
 // Learning funnel
 export const LearningEvents = {
-  treeLevelViewed: (level: number) => trackEvent('tree_level_viewed', { level }),
   lessonStarted: (lessonId: string, lessonName: string) =>
     trackEvent('lesson_started', { lessonId, lessonName }),
   puzzleAttempted: (lessonId: string, puzzleNum: number, correct: boolean, rating: number) =>
@@ -78,11 +77,11 @@ export const LearningEvents = {
 
 // Engagement events
 export const EngagementEvents = {
+  treeLevelViewed: (level: number) => trackEvent('tree_level_viewed', { level }),
   dailyChallengeViewed: () => trackEvent('daily_challenge_viewed'),
   dailyChallengeStarted: () => trackEvent('daily_challenge_started'),
   dailyChallengeCompleted: (correct: boolean) =>
     trackEvent('daily_challenge_completed', { correct }),
-  profileViewed: () => trackEvent('profile_viewed'),
   streakUpdated: (streak: number) => trackEvent('streak_updated', { streak }),
 };
 
@@ -93,6 +92,18 @@ export const SubscriptionEvents = {
   checkoutStarted: (plan: string) => trackEvent('checkout_started', { plan }),
   checkoutCompleted: (plan: string) => trackEvent('checkout_completed', { plan }),
   checkoutAbandoned: (plan: string) => trackEvent('checkout_abandoned', { plan }),
+};
+
+// Tutorial funnel
+export const TutorialEvents = {
+  tutorialStarted: (tutorial: 'basics' | 'checkmate') =>
+    trackEvent('tutorial_started', { tutorial }),
+  tutorialStepCompleted: (tutorial: 'basics' | 'checkmate', stepId: string, stepNumber: number) =>
+    trackEvent('tutorial_step_completed', { tutorial, stepId, stepNumber }),
+  tutorialCompleted: (tutorial: 'basics' | 'checkmate') =>
+    trackEvent('tutorial_completed', { tutorial }),
+  tutorialSkipped: (tutorial: 'basics' | 'checkmate', stepId: string, stepNumber: number) =>
+    trackEvent('tutorial_skipped', { tutorial, stepId, stepNumber }),
 };
 
 // Share/Viral funnel

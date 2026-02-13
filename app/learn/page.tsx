@@ -3,15 +3,16 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LEVELS, getAllLessonIds, getLevelLessonIds, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
+import { LEVELS, getAllLessonIds, getLevelLessonIds, getLevelFromLessonId, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
 import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
+import { EngagementEvents } from '@/lib/analytics/posthog';
 
 // Types
-type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star';
+type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star' | 'lightning' | 'shield';
 // completed-current = completed lesson that is also currentPosition (shows gold + checkmark + ring)
 type LessonStatus = 'completed' | 'completed-current' | 'current' | 'unlocked' | 'locked';
 
@@ -53,7 +54,7 @@ function getLessonStatus(
 }
 
 // Assign piece types to lessons
-const PIECE_CYCLE: PieceType[] = ['knight', 'queen', 'rook', 'bishop', 'pawn', 'star'];
+const PIECE_CYCLE: PieceType[] = ['knight', 'queen', 'rook', 'bishop', 'pawn', 'star', 'lightning', 'shield'];
 
 // Pattern-based tag → icon mapping. Uses string matching so new tags
 // (e.g. mateIn6, bishopEndgame) are handled automatically.
@@ -87,8 +88,8 @@ function getIconForTag(tag: string): PieceType | null {
   // 7. Pawn themes → pawn
   if (t.includes('pawn') || tag === 'promotion' || tag === 'advancedPawn') return 'pawn';
 
-  // 8. Attack themes → queen
-  if (tag === 'crushing' || tag === 'kingsideAttack' || tag === 'queensideAttack' || tag === 'exposedKing' || tag === 'doubleCheck') return 'queen';
+  // 8. Attack themes → lightning
+  if (tag === 'crushing' || tag === 'kingsideAttack' || tag === 'queensideAttack' || tag === 'exposedKing' || tag === 'doubleCheck') return 'lightning';
 
   // 9. Hanging/trapped pieces → rook
   if (tag === 'hangingPiece' || tag === 'trappedPiece') return 'rook';
@@ -96,33 +97,41 @@ function getIconForTag(tag: string): PieceType | null {
   // 10. Tricky/special tactics → star
   if (tag === 'discoveredAttack' || tag === 'deflection' || tag === 'intermezzo' || tag === 'sacrifice' || tag === 'attraction' || tag === 'clearance' || tag === 'interference') return 'star';
 
-  // 11. Defensive/quiet → pawn
-  if (tag === 'defensiveMove' || tag === 'quietMove') return 'pawn';
+  // 11. Defensive/quiet → shield
+  if (tag === 'defensiveMove' || tag === 'quietMove') return 'shield';
 
   return null;
 }
 
-function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionIndex: number): PieceType {
+function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionIndex: number, previousPiece: PieceType | null): PieceType {
+  let result: PieceType;
+
   // 1. Explicit piece filter takes priority
   if (lesson.pieceFilter) {
-    return lesson.pieceFilter as PieceType;
-  }
-
+    result = lesson.pieceFilter as PieceType;
   // 2. Mixed practice / review lessons get star
-  if (lesson.isMixedPractice) {
-    return 'star';
-  }
-
+  } else if (lesson.isMixedPractice) {
+    result = 'star';
   // 3. Pattern-based match on requiredTags
-  if (lesson.requiredTags) {
+  } else if (lesson.requiredTags) {
+    let matched: PieceType | null = null;
     for (const tag of lesson.requiredTags) {
-      const match = getIconForTag(tag);
-      if (match) return match;
+      matched = getIconForTag(tag);
+      if (matched) break;
     }
+    result = matched ?? PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
+  } else {
+    // 4. Fallback: cycle through pieces by position
+    result = PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
   }
 
-  // 4. Fallback: cycle through pieces by position
-  return PIECE_CYCLE[(lessonIndex + sectionIndex * 2) % PIECE_CYCLE.length];
+  // 5. Never show the same icon twice in a row
+  if (result === previousPiece) {
+    const idx = PIECE_CYCLE.indexOf(result);
+    result = PIECE_CYCLE[(idx + 1) % PIECE_CYCLE.length];
+  }
+
+  return result;
 }
 
 function darkenColor(hex: string, amount: number = 0.25): string {
@@ -182,6 +191,18 @@ const PIECE_PATHS: Record<PieceType, { viewBox: string; elements: PieceElement[]
     viewBox: '0 0 24 24',
     elements: [
       { type: 'polygon', points: '12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26' },
+    ],
+  },
+  lightning: {
+    viewBox: '0 0 24 24',
+    elements: [
+      { type: 'polygon', points: '13,2 3,14 12,14 11,22 21,10 12,10 13,2' },
+    ],
+  },
+  shield: {
+    viewBox: '0 0 24 24',
+    elements: [
+      { type: 'path', d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
     ],
   },
 };
@@ -411,6 +432,8 @@ export default function LearnPage() {
   // Wait for serverFetched to ensure currentPosition has merged with server data
   useEffect(() => {
     if (!progressLoaded || !serverFetched || !currentPosition) return;
+
+    EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
 
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
@@ -839,11 +862,14 @@ function SectionView({
       >
         <div ref={contentRef} className="mt-4 px-0 sm:px-2">
           <div className="flex flex-row justify-evenly items-start scale-[0.85] sm:scale-100 origin-top">
-            {section.lessons.map((lesson, lessonIndex) => {
+            {(() => {
+            let prevPiece: PieceType | null = null;
+            return section.lessons.map((lesson, lessonIndex) => {
               // Admins see locked lessons as unlocked (clickable) instead of locked
               const baseStatus = getLessonStatus(lesson.id, completedLessons, allLessonIds, isLessonUnlocked, currentPosition);
               const status = isAdmin && baseStatus === 'locked' ? 'unlocked' : baseStatus;
-              const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex);
+              const piece = getPieceForLesson(lesson, lessonIndex, sectionIndex, prevPiece);
+              prevPiece = piece;
               const totalLessons = section.lessons.length;
 
               return (
@@ -871,7 +897,8 @@ function SectionView({
                   />
                 </div>
               );
-            })}
+            });
+          })()}
           </div>
         </div>
         <div className="h-2" />

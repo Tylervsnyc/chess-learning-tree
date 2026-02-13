@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { AuthEvents, resetUser } from '@/lib/analytics/posthog';
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
@@ -13,6 +14,8 @@ export function NavHeader() {
   const pathname = usePathname();
 
   const handleSignOut = () => {
+    AuthEvents.logout();
+    resetUser();
     window.location.href = '/api/auth/logout';
   };
 
@@ -26,18 +29,18 @@ export function NavHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-        <Link href={user ? '/learn' : '/'} className="flex items-center">
+      <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
+        <Link href={user ? '/learn' : '/'} className="flex items-center flex-shrink-0">
           <Image
             src="/brand/logo-horizontal-light.svg"
             alt="Chess Path"
             width={160}
             height={28}
-            className="flex-shrink-0"
+            className="flex-shrink-0 w-[110px] sm:w-[140px] md:w-[160px] h-auto"
           />
         </Link>
 
-        <nav className="flex items-center gap-1.5">
+        <nav className="flex items-center gap-1 sm:gap-1.5">
           {/* Streak counter - shown on /learn and /daily-challenge */}
           {FEATURE_FLAGS.SHOW_STREAK_COUNTER && showStreakCounter && progressLoaded && currentStreak > 0 && (
             <div
@@ -61,18 +64,19 @@ export function NavHeader() {
             <>
               <Link
                 href="/learn"
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
-                  pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
+                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-chess-green text-white whitespace-nowrap ${
+                  pathname === '/learn' ? 'shadow-[0_2px_0_0_var(--color-chess-green-shadow)]' : 'opacity-70'
                 }`}
               >
                 Path
               </Link>
               <Link
                 href="/daily-challenge"
-                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
-                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
+                className={`relative px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
+                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
                 }`}
                 style={{
+                  // Gradient using brand colors: chess-blue (#1CB0F6) to chess-blue-dark (#0d9ee0)
                   background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
                 }}
               >
@@ -82,8 +86,9 @@ export function NavHeader() {
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
-                  className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
+                  className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                   style={{
+                    // Gradient using brand colors: chess-gold (#FFD700) to chess-orange (#FF9500)
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                     color: '#000',
                   }}
@@ -93,8 +98,11 @@ export function NavHeader() {
               )}
               <button
                 onClick={handleSignOut}
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
+                className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
+                style={{
+                  // Gradient using chess-red (#FF4B4B) - using standard red gradient for logout
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                }}
               >
                 Logout
               </button>
@@ -103,7 +111,7 @@ export function NavHeader() {
             <>
               <Link
                 href="/learn"
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
+                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
                   pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
                 }`}
               >
@@ -111,7 +119,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/daily-challenge"
-                className={`relative px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
+                className={`relative px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
                   pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
                 }`}
                 style={{
@@ -123,7 +131,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/premium-signup"
-                className="px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
+                className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                 style={{
                   background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                   color: '#000',
@@ -133,7 +141,7 @@ export function NavHeader() {
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
+                className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
                 style={{
                   background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                 }}

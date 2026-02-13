@@ -17,6 +17,7 @@ import {
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { TutorialEvents } from '@/lib/analytics/posthog';
 
 // ══════════════════════════════════════════════════
 // TUTORIAL DATA
@@ -137,6 +138,15 @@ const STEPS: TutorialStep[] = [
 export function BasicsTutorial() {
   const router = useRouter();
   useAudioWarmup();
+  const trackedStartRef = useRef(false);
+
+  // Track tutorial start once
+  React.useEffect(() => {
+    if (!trackedStartRef.current) {
+      trackedStartRef.current = true;
+      TutorialEvents.tutorialStarted('basics');
+    }
+  }, []);
 
   // State
   const [stepIndex, setStepIndex] = useState(0);
@@ -266,6 +276,7 @@ export function BasicsTutorial() {
       setSelectedSquare(null);
       setExerciseComplete(false);
     } else if (stepIndex < STEPS.length - 1) {
+      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
       const nextStep = STEPS[stepIndex + 1];
       setStepIndex(stepIndex + 1);
       setExerciseIndex(-1);
@@ -273,6 +284,8 @@ export function BasicsTutorial() {
       setSelectedSquare(null);
       setExerciseComplete(false);
     } else {
+      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
+      TutorialEvents.tutorialCompleted('basics');
       setTutorialDone(true);
     }
 
@@ -479,7 +492,10 @@ export function BasicsTutorial() {
       <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push('/about')}
+            onClick={() => {
+              TutorialEvents.tutorialSkipped('basics', currentStep.id, stepIndex);
+              router.push('/about');
+            }}
             className="text-gray-500 hover:text-gray-700"
           >
             ✕
@@ -543,7 +559,10 @@ export function BasicsTutorial() {
                     <div className={stepIndex === 0 ? 'flex gap-2' : ''}>
                       {stepIndex === 0 && (
                         <button
-                          onClick={() => router.push('/learn')}
+                          onClick={() => {
+                            TutorialEvents.tutorialSkipped('basics', currentStep.id, stepIndex);
+                            router.push('/learn');
+                          }}
                           className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
                         >
                           Skip

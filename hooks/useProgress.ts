@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from './useUser';
 import { mergeProgress, type ServerProgress } from '@/lib/progress-sync';
+import { EngagementEvents } from '@/lib/analytics/posthog';
 
 const STORAGE_KEY = 'chess-learning-progress';
 const PENDING_SYNC_KEY = 'chess-pending-syncs';
@@ -437,6 +438,9 @@ export function useLessonProgress() {
             currentStreak: localProgress.currentStreak,
             lastActivityDate: localProgress.lastActivityDate,
             currentPosition: localProgress.currentPosition,
+            lessonsCompletedToday: localProgress.lessonsCompletedToday,
+            lastLessonDate: localProgress.lastLessonDate,
+            unlockedLevels: localProgress.unlockedLevels,
           }),
           signal: abortController.signal,
         });
@@ -528,6 +532,7 @@ export function useLessonProgress() {
       if (streakResult.extended) {
         setPreviousStreak(streakResult.previousStreak);
         setStreakJustExtended(true);
+        EngagementEvents.streakUpdated(streakResult.newStreak);
       }
 
       const newProgress = {
@@ -762,6 +767,7 @@ export function useLessonProgress() {
       if (streakResult.extended) {
         setPreviousStreak(streakResult.previousStreak);
         setStreakJustExtended(true);
+        EngagementEvents.streakUpdated(streakResult.newStreak);
       }
 
       const newProgress = {

@@ -19,6 +19,7 @@ import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { TutorialEvents } from '@/lib/analytics/posthog';
 
 // ═══════════════════════════════════════════
 // PROPS
@@ -277,6 +278,15 @@ const COMPLETION_MESSAGES = [
 export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowProps) {
   const router = useRouter();
   useAudioWarmup();
+  const trackedStartRef = React.useRef(false);
+
+  // Track tutorial start once
+  React.useEffect(() => {
+    if (!trackedStartRef.current) {
+      trackedStartRef.current = true;
+      TutorialEvents.tutorialStarted('checkmate');
+    }
+  }, []);
 
   // Puzzle state
   const [puzzleIndex, setPuzzleIndex] = useState(0);
@@ -400,10 +410,13 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     // inside setState updaters are unsafe (React StrictMode double-invokes them).
     if (puzzleIndex >= ALL_PUZZLES.length - 1) {
       // All puzzles done — call onComplete instead of showing done screen
+      TutorialEvents.tutorialStepCompleted('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+      TutorialEvents.tutorialCompleted('checkmate');
       onComplete(completedCount, wrongCount);
       return;
     }
 
+    TutorialEvents.tutorialStepCompleted('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
     setIsBoardTransitioning(true);
     setTimeout(() => {
       setPuzzleIndex(prev => prev + 1);
@@ -700,7 +713,10 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
           <div className="flex items-center gap-2">
             <AnimatedLogo theme="light" size={0.28} iconOnly autoPlay={false} />
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => {
+                TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+                router.push('/learn');
+              }}
               className="text-gray-500 hover:text-gray-700"
             >
               ✕
@@ -796,7 +812,10 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                   setGuidedStepIndex(prev => prev + 1);
                 }}
                 buttonText={guidedStep.buttonText}
-                onSkip={guidedStep.id === 'welcome' ? () => router.push('/lesson/1.1.1?skipTutorial=true') : undefined}
+                onSkip={guidedStep.id === 'welcome' ? () => {
+                  TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+                  router.push('/lesson/1.1.1?skipTutorial=true');
+                } : undefined}
                 skipText={guidedStep.id === 'welcome' ? 'Skip Tutorial' : undefined}
               />
             )}
