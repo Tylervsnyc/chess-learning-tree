@@ -271,7 +271,7 @@ const BeatLogoFlash: React.FC = () => {
       >
         {/* Logo — enters big */}
         <div style={{ opacity: logoOpacity, transform: `scale(${logoScale})` }}>
-          <ReelLogo variant="light" />
+          <ReelLogo />
         </div>
 
         {/* Tagline */}
@@ -642,7 +642,7 @@ const BeatCTA: React.FC = () => {
     >
       {/* Logo */}
       <div style={{ opacity: logoOpacity, transform: `scale(${logoScale})` }}>
-        <ReelLogo variant="light" />
+        <ReelLogo />
       </div>
 
       {/* Tagline */}
@@ -870,7 +870,7 @@ const BeatCTALong: React.FC = () => {
     >
       {/* Logo */}
       <div style={{ opacity: logoOpacity, transform: `scale(${logoScale})` }}>
-        <ReelLogo variant="light" />
+        <ReelLogo />
       </div>
 
       {/* Tagline */}
@@ -1227,7 +1227,7 @@ const BeatFeatureCTA: React.FC = () => {
       >
         {/* Logo */}
         <div style={{ opacity: logoOpacity, transform: `scale(${logoScale})`, marginBottom: 16 }}>
-          <ReelLogo variant="light" />
+          <ReelLogo />
         </div>
 
         {/* Feature list with checkmarks */}
