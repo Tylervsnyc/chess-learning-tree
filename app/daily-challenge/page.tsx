@@ -393,7 +393,6 @@ export default function DailyChallengePage() {
 
   // Start the challenge
   const startChallenge = async () => {
-    EngagementEvents.dailyChallengeStarted();
     // Warmup audio NOW - user just clicked, and we have time while puzzles load
     warmupAudio();
 
@@ -425,6 +424,7 @@ export default function DailyChallengePage() {
 
     // Only start the game (and timer) after puzzles are loaded
     if (puzzles.length > 0) {
+      EngagementEvents.dailyChallengeStarted();
       // Animate the first puzzle's setup move
       // Step 1: Instantly snap to starting position
       setAnimationDuration(0);
