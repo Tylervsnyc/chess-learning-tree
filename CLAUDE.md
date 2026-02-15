@@ -70,10 +70,11 @@ RULES.md section: § {number} {name}
 ## Environment & Commands
 
 ```bash
-npm run dev        # Dev server at localhost:3000
+npm run dev        # Dev server with Turbopack at localhost:3000
 npm run build      # Production build
 npm run check      # Lint + type-check (pre-commit)
 npm run validate   # Lint + type-check + build (pre-push)
+./scripts/dev-server.sh  # Resilient dev server (auto-restarts on crash)
 ```
 
 Requires `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`
@@ -84,7 +85,9 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 
 ## Testing Rule
 
-When testing changes: clear `.next` cache, start `npm run dev` (background), and `open http://localhost:3000/{page}` to pull it up in Tyler's browser automatically. Never make Tyler start the server or navigate manually.
+When testing changes, run: `./scripts/ensure-dev.sh && open http://localhost:3000/{page}`
+
+That script checks if the server is already running and only starts it if needed. Never restart, kill, or clear cache on a running server. Never make Tyler start the server or navigate manually.
 
 ---
 
