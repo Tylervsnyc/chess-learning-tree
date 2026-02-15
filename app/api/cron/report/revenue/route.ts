@@ -312,21 +312,27 @@ export async function GET(request: NextRequest) {
   }
 
   // --- Store report ---
-  const { error: upsertError } = await supabase
+  await supabase
     .from('dashboard_reports')
-    .upsert({
+    .delete()
+    .eq('report_type', 'revenue')
+    .eq('period', today);
+
+  const { error: insertError } = await supabase
+    .from('dashboard_reports')
+    .insert({
       report_type: 'revenue',
       generated_at: new Date().toISOString(),
       period: today,
       metrics,
       suggestions,
       raw_data: { errors },
-    }, { onConflict: 'report_type,period' });
+    });
 
-  if (upsertError) {
-    console.error('Revenue report: failed to store:', upsertError);
+  if (insertError) {
+    console.error('Revenue report: failed to store:', insertError);
     return NextResponse.json(
-      { error: `Failed to store report: ${upsertError.message}` },
+      { error: `Failed to store report: ${insertError.message}` },
       { status: 500 }
     );
   }
