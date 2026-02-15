@@ -1404,7 +1404,7 @@ These pages exist for design exploration but aren't production features yet:
 
 When resuming work:
 
-1. **Start dev server:** `npm run dev`
+1. **Start dev server:** `./scripts/ensure-dev.sh` (auto-starts only if not already running)
 2. **Test Daily Rook:** `/daily-challenge` — full flow: start → solve → finish → share
 3. **Test share cards:** `/test-story-cards` — verify OG image renders
 4. **Test puzzle sharing:** `/test-share` — try generating PNG
