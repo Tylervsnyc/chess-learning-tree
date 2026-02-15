@@ -14,41 +14,44 @@ function SuccessContent() {
 
   const sessionId = searchParams.get('session_id');
 
-  // Sync subscription status on mount (fallback if webhook was slow/failed)
-  useEffect(() => {
-    async function syncSubscription() {
-      if (!sessionId) {
-        setSyncing(false);
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/stripe/sync-subscription', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId }),
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          console.error('Sync failed:', data.error);
-          setSyncError(data.error);
-        }
-      } catch (err) {
-        console.error('Sync error:', err);
-        setSyncError('Failed to sync subscription');
-      } finally {
-        setSyncing(false);
-        SubscriptionEvents.checkoutCompleted('monthly');
-      }
+  async function syncSubscription() {
+    if (!sessionId) {
+      setSyncing(false);
+      return;
     }
 
-    syncSubscription();
-  }, [sessionId]);
+    setSyncing(true);
+    setSyncError(null);
+
+    try {
+      const res = await fetch('/api/stripe/sync-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.error('Sync failed:', data.error);
+        setSyncError(data.error || 'Failed to activate subscription');
+      } else {
+        SubscriptionEvents.checkoutCompleted('monthly');
+      }
+    } catch (err) {
+      console.error('Sync error:', err);
+      setSyncError('Failed to sync subscription');
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  // Sync subscription status on mount (fallback if webhook was slow/failed)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { syncSubscription(); }, [sessionId]);
 
   useEffect(() => {
-    // Don't start countdown until sync is complete
-    if (syncing) return;
+    // Don't start countdown until sync is complete AND successful
+    if (syncing || syncError) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -62,7 +65,46 @@ function SuccessContent() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router, syncing]);
+  }, [router, syncing, syncError]);
+
+  if (syncError) {
+    return (
+      <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          {/* Error icon */}
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-amber-500/20 flex items-center justify-center">
+            <svg className="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+
+          <h1 className="text-2xl font-bold text-chess-text mb-2">Issue Activating Subscription</h1>
+          <p className="text-chess-text-muted mb-8">
+            There was a problem activating your subscription. Your payment was received — please try again or contact support.
+          </p>
+
+          <button
+            onClick={() => syncSubscription()}
+            disabled={syncing}
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:opacity-90 mb-4 shadow-sm disabled:opacity-50"
+          >
+            {syncing ? 'Retrying...' : 'Try Again'}
+          </button>
+
+          <button
+            onClick={() => router.push('/learn')}
+            className="w-full py-3 rounded-xl bg-chess-surface text-chess-text-muted font-medium text-sm transition-all hover:opacity-80"
+          >
+            Continue to App
+          </button>
+
+          <p className="text-chess-text-faint text-xs mt-6">
+            If the problem persists, contact support. Your payment is safe.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
@@ -81,7 +123,7 @@ function SuccessContent() {
 
         {/* Features unlocked */}
         <div className="bg-chess-surface rounded-xl p-6 mb-8 text-left shadow-sm">
-          <div className="text-sm font-medium text-chess-green mb-3">What's unlocked:</div>
+          <div className="text-sm font-medium text-chess-green mb-3">What&apos;s unlocked:</div>
           <ul className="space-y-3">
             {[
               'Unlimited puzzles every day',
@@ -109,12 +151,6 @@ function SuccessContent() {
         <p className="text-chess-text-faint text-sm">
           {syncing ? 'Activating your subscription...' : `Redirecting in ${countdown} seconds...`}
         </p>
-
-        {syncError && (
-          <p className="text-amber-600 text-xs mt-4">
-            Note: {syncError}. Contact support if your subscription doesn&apos;t activate.
-          </p>
-        )}
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ async function handleCheckoutComplete(
 
         if (createError) {
           console.error('Error creating user for guest checkout:', createError);
-          return;
+          throw new Error(`Failed to create guest user account: ${createError.message}`);
         }
 
         userId = newUser.user.id;
@@ -132,13 +132,27 @@ async function handleCheckoutComplete(
           });
 
         if (profileError) {
-          // Profile might already exist from trigger, try update instead
+          // Profile might already exist from auth trigger, fall back to update
           console.warn('Profile insert failed, trying update:', profileError.message);
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+              subscription_status: 'premium',
+              stripe_customer_id: session.customer as string,
+              subscription_expires_at: null,
+              email: guestEmail,
+            })
+            .eq('id', userId);
+
+          if (updateError) {
+            console.error('Profile update fallback also failed:', updateError);
+            throw new Error(`Failed to create or update guest profile: ${updateError.message}`);
+          }
         }
       }
     } catch (err) {
       console.error('Error handling guest checkout account creation:', err);
-      return;
+      throw err;
     }
   }
 
@@ -172,6 +186,7 @@ async function handleCheckoutComplete(
 
     if (error) {
       console.error('Error updating profile after checkout:', error);
+      throw new Error(`Failed to update profile after checkout: ${error.message}`);
     }
 
     // Update subscription metadata with user ID for future webhook events

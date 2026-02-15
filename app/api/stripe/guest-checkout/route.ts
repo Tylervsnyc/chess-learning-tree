@@ -36,10 +36,12 @@ export async function POST(request: NextRequest) {
       cancel_url: `${request.nextUrl.origin}/pricing?canceled=true`,
       metadata: {
         guest_email: email,
+        is_guest_checkout: 'true',
       },
       subscription_data: {
         metadata: {
           guest_email: email,
+          is_guest_checkout: 'true',
         },
       },
     });
