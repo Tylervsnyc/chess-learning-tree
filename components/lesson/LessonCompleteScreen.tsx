@@ -7,9 +7,10 @@ import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes';
 import { playCelebrationSound } from '@/lib/sounds';
 import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnimationStyle } from './RookCelebrationAnimation';
 import { generateLessonShareText } from '@/lib/share/generate-share-text';
-import { ShareEvents } from '@/lib/analytics/posthog';
+import { ShareEvents, SubscriptionEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const COLORS = {
   green: 'var(--color-chess-green)',
@@ -51,6 +52,7 @@ export function LessonCompleteScreen({
   const rookRef = useRef<RookCelebrationAnimationRef>(null);
   const [textCopied, setTextCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const { isPremium, loading: subLoading } = useSubscription();
 
   // Pick a random celebration animation style - always celebrate!
   const celebrationStyle: CelebrationAnimationStyle = useMemo(() => {
@@ -262,6 +264,24 @@ export function LessonCompleteScreen({
         >
           <AdSlot position="after-lesson" />
         </div>
+
+        {/* Premium upsell — soft CTA for non-premium, non-guest users */}
+        {!subLoading && !isPremium && !isGuest && (
+          <Link
+            href="/pricing"
+            onClick={() => SubscriptionEvents.paywallViewed('lesson_complete')}
+            className="block mb-4 animate-fadeInUp"
+            style={{ animationDelay: '0.42s', animationFillMode: 'backwards' }}
+          >
+            <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-yellow-500/20 bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">&#9812;</span>
+                <span className="text-sm text-white font-medium">Unlock unlimited lessons</span>
+              </div>
+              <span className="text-xs text-gray-400 font-medium">$4.99/mo &rarr;</span>
+            </div>
+          </Link>
+        )}
 
         {/* Continue button */}
         <button

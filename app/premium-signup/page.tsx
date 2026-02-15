@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
+import { AuthEvents, SubscriptionEvents, identifyUser } from '@/lib/analytics/posthog';
 
 function PremiumSignupContent() {
   const router = useRouter();
@@ -13,6 +13,11 @@ function PremiumSignupContent() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Track premium signup page view for funnel analysis
+  useEffect(() => {
+    SubscriptionEvents.paywallViewed('premium_signup');
+  }, []);
 
   const handleSignupAndCheckout = async (e: React.FormEvent) => {
     e.preventDefault();

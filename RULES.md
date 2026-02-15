@@ -2,7 +2,7 @@
 
 **This document defines how The Chess Path works.** Every behavior, limit, and interaction is documented here. When in doubt, this document is correct.
 
-Last Updated: 2026-02-10
+Last Updated: 2026-02-15
 
 ---
 
@@ -41,6 +41,13 @@ Last Updated: 2026-02-10
 31. [Puzzle Share Feature](#31-puzzle-share-feature)
 32. [SEO & Marketing](#32-seo--marketing)
 33. [Daily Maintenance Check](#33-daily-maintenance-check)
+34. [Failed Payment Recovery](#34-failed-payment-recovery)
+35. [Loading Indicator — Breathing Rook](#35-loading-indicator--breathing-rook)
+35. [Revenue Dashboard](#35-revenue-dashboard)
+36. [Paywall Analytics](#36-paywall-analytics)
+37. [Dynamic Pricing](#37-dynamic-pricing)
+38. [Ad Placement](#38-ad-placement)
+39. [Cron Schedule](#39-cron-schedule)
 
 ---
 
@@ -1052,6 +1059,7 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 |------|-------|-------------|
 | `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on /learn and /daily-challenge |
 | `SHOW_SHARING` | `false` | Show share buttons/cards on lesson complete and daily challenge screens |
+| `SHOW_ADS` | `true` | Show ad slots (self-promo CTAs) for free users |
 
 ### Permissions & Limits (not feature flags)
 
@@ -1109,8 +1117,16 @@ email_preferences
   -- User opt-in/out for different email types
 
 email_log
-  id, user_id, email_type, sent_at
+  id, user_id, email_type, sent_at, metadata
   -- Tracks sent emails to prevent spam
+  -- metadata: jsonb (e.g. attempt_number, stripe_invoice_id for payment_failed)
+
+revenue_snapshots
+  id, snapshot_date, mrr_cents, arr_cents, total_subscribers,
+  monthly_subscribers, yearly_subscribers, churned_last_30d,
+  new_subscribers_last_30d, trial_users, free_users, churn_rate_pct,
+  ltv_cents, created_at
+  -- Nightly snapshot from Stripe. RLS: service_role only.
 ```
 
 ### Columns/Tables to DELETE:
@@ -1627,6 +1643,158 @@ When run with `--fix`, the script can:
 
 ---
 
+## 34. Failed Payment Recovery
+
+### Dunning Flow:
+When a Stripe `invoice.payment_failed` event fires, the system sends up to 3 recovery emails:
+
+| Attempt | Timing | Tone | Subject |
+|---------|--------|------|---------|
+| 1 | Immediate | Calm | "Your payment didn't go through" |
+| 2 | 3 days later | Warning | "Your subscription is at risk" |
+| 3 | 7 days later | Final | "Final notice: subscription cancellation" |
+
+### Key Behaviors:
+- **Transactional emails** — bypass all email preferences (users cannot opt out of payment failure notices)
+- Each email includes a **Stripe billing portal link** for updating payment method
+- Dunning cron checks `email_log` for previous attempts — won't re-send
+- If user's subscription resolves to `premium` between attempts, remaining emails are skipped
+- Webhook logs `attempt_number`, `stripe_invoice_id`, `stripe_customer_id` in `email_log.metadata`
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `app/api/stripe/webhook/route.ts` | Sends attempt 1 on payment failure |
+| `app/api/cron/dunning/route.ts` | Daily cron sends attempts 2 & 3 |
+| `lib/email/templates/PaymentFailed.tsx` | 3-variant email template |
+
+---
+
+## 35. Revenue Dashboard
+
+### What It Shows:
+Nightly Stripe snapshot with key metrics:
+- **MRR** (Monthly Recurring Revenue) in dollars
+- **ARR** (Annual Recurring Revenue)
+- **Total Subscribers** (monthly + yearly + trial)
+- **Churn Rate** (churned last 30d / total)
+- **LTV** (lifetime value estimate)
+- **Subscriber breakdown** (monthly vs yearly)
+- **90-day MRR trend** (SVG chart)
+
+### How It Works:
+1. Nightly cron paginates ALL Stripe subscriptions
+2. Calculates metrics and upserts into `revenue_snapshots`
+3. Admin dashboard queries last 90 days
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `app/api/cron/revenue-snapshot/route.ts` | Nightly cron (02:00 UTC) |
+| `app/api/admin/revenue/route.ts` | Admin API (last 90 days) |
+| `app/admin/revenue/page.tsx` | Dashboard UI |
+
+---
+
+## 36. Paywall Analytics
+
+### What It Shows:
+Conversion rate per paywall trigger point (e.g. `guest_limit`, `daily_limit`), powered by PostHog server-side API.
+
+### Metrics:
+- Views per trigger (from `paywall_viewed` events)
+- Conversions per trigger (from `checkout_completed` events)
+- Conversion rate per trigger
+
+### Known Gap:
+`checkout_completed` events don't currently pass a `trigger` property. Until the checkout flow forwards the trigger value (via URL param or session storage), conversion attribution will be incomplete.
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `lib/posthog-server.ts` | Server-side PostHog API client (HogQL) |
+| `app/api/admin/paywall-analytics/route.ts` | Admin API with period filter |
+| `app/admin/paywall-analytics/page.tsx` | Dashboard UI |
+
+### Env Var:
+`POSTHOG_PERSONAL_API_KEY` — PostHog personal API key for server-side queries
+
+---
+
+## 37. Dynamic Pricing
+
+### How It Works:
+PostHog feature flag `pricing-experiment` assigns users to a pricing variant. Different variants see different Stripe prices.
+
+### Variants:
+| Variant | Description | Stripe Price Env Vars |
+|---------|-------------|----------------------|
+| `control` | Default prices | `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_YEARLY` |
+| `low` | Lower test price | `STRIPE_PRICE_MONTHLY_LOW`, `STRIPE_PRICE_YEARLY_LOW` |
+| `high` | Higher test price | `STRIPE_PRICE_MONTHLY_HIGH`, `STRIPE_PRICE_YEARLY_HIGH` |
+
+### Key Behaviors:
+- PostHog flag evaluation falls back to `control` on any error
+- Anonymous users get a cookie-based distinct ID (`cp_anon_id`)
+- Variant is passed to Stripe checkout and stored in session + subscription metadata as `pricing_variant`
+- Low/high env vars fall back to default prices if not set
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `lib/posthog-flags.ts` | Server-side feature flag evaluation |
+| `lib/stripe.ts` | `EXPERIMENT_PRICES` map (variant → price IDs) |
+| `app/api/stripe/checkout/route.ts` | Accepts `variant`, uses correct price |
+| `app/api/pricing-experiment/route.ts` | Returns user's variant + prices |
+| `app/pricing/page.tsx` | Fetches and displays dynamic price |
+| `app/admin/pricing-experiments/page.tsx` | Experiment results dashboard |
+
+---
+
+## 38. Ad Placement
+
+### What It Does:
+Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium users see nothing.
+
+### Positions:
+| Position | Page | When Shown |
+|----------|------|------------|
+| `learn-page` | `/learn` | Always (bottom of curriculum) |
+| `daily-complete` | `/daily-challenge` | After challenge completion |
+| `after-lesson` | `/lesson/[lessonId]` | After lesson completion |
+
+### Key Behaviors:
+- `AdSlot` component returns `null` for premium/admin users
+- Tracks `ad_impression` (on mount) and `ad_click` (on click) via PostHog
+- Properties: `{ position, ad_type: 'self_promo', variant }`
+- Config in `lib/ad-config.ts` — enable/disable per position
+- Global kill switch: `NEXT_PUBLIC_SHOW_ADS=false` env var
+
+### Files:
+| File | Purpose |
+|------|---------|
+| `components/ads/AdSlot.tsx` | Smart wrapper (checks subscription, tracks events) |
+| `components/ads/SelfPromoCard.tsx` | Upgrade CTA card (3 visual variants) |
+| `lib/ad-config.ts` | Position config + enable/disable |
+| `app/admin/ad-performance/page.tsx` | Impressions/CTR dashboard |
+
+---
+
+## 39. Cron Schedule
+
+All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer token.
+
+| Endpoint | Schedule (UTC) | Purpose |
+|----------|----------------|---------|
+| `/api/cron/streak-check` | Daily 00:00 | Reset broken streaks |
+| `/api/cron/drip` | Daily 01:00 | Drip email campaigns |
+| `/api/cron/revenue-snapshot` | Daily 02:00 | Stripe metrics snapshot |
+| `/api/cron/re-engagement` | Daily 08:00 | Win-back inactive users |
+| `/api/cron/dunning` | Daily 10:00 | Payment failure follow-ups |
+| `/api/cron/weekly-digest` | Sundays 14:00 | Weekly progress digest |
+
+---
+
 ## Appendix A: Quick Reference - Where Things Are Enforced
 
 | Behavior | Enforced In (ONE place) |
@@ -1644,6 +1812,11 @@ When run with `--fix`, the script can:
 | Maintenance checks | `scripts/maintenance-check.ts` |
 | Daily challenge puzzles | `/data/daily-challenge-puzzles.json` |
 | Progress bar (lessons/tests) | `/components/puzzle/ChessProgressBar.tsx` |
+| Dunning emails | `/app/api/cron/dunning/route.ts` |
+| Revenue snapshots | `/app/api/cron/revenue-snapshot/route.ts` |
+| Ad placement | `/components/ads/AdSlot.tsx` + `/lib/ad-config.ts` |
+| Dynamic pricing | `/lib/posthog-flags.ts` + `/lib/stripe.ts` |
+| Cron schedule | `/vercel.json` |
 
 ---
 
@@ -1659,6 +1832,49 @@ Before modifying any behavior:
 - [ ] Test the change
 - [ ] Verify no duplicate implementations exist
 - [ ] **CSS containment check** — Before adding `overflow-hidden`, `max-height`, or `clip` to any container, verify no child uses absolute/fixed positioning that extends beyond bounds (popups, tooltips, dropdowns). Test all interactive flows, not just the visual animation.
+
+---
+
+## 35. Loading Indicator — Breathing Rook
+
+The **Breathing Rook** (`components/ui/BreathingRook.tsx`) is the standard loading indicator across the entire app. It replaces all generic spinners.
+
+### What It Is
+The 22-block rook logo where blocks stay perfectly still but colors pulse with a gentle breathing wave — top-to-bottom, slightly staggered left-to-right. Blocks dim to 45% opacity then brighten to 130% in a 2.4s cycle.
+
+### When to Use It
+- **Any loading state**: page loads, data fetches, OAuth redirects, skeleton screens
+- **Any "please wait" moment**: form submissions, puzzle loading, challenge setup
+- **Splash/boot screens**: app startup, PWA install
+
+### Sizes
+| Size | Block px | Use Case |
+|------|----------|----------|
+| `xs` | 6px | Inline loading (next to text, inside buttons) |
+| `sm` | 10px | Small containers, card loading |
+| `md` | 16px | Default — page loading, modals |
+| `lg` | 24px | Full-page loading, splash screens |
+
+### Usage
+```tsx
+import { BreathingRook } from '@/components/ui/BreathingRook';
+
+// Default (md, no label)
+<BreathingRook />
+
+// Inside a button
+<BreathingRook size="xs" />
+
+// Full-page loading
+<BreathingRook size="lg" label="Loading puzzles..." />
+```
+
+### Rules
+1. **Never use generic spinners.** If something is loading, use the Breathing Rook.
+2. **Blocks don't move.** The shape is static. Only color/opacity animates.
+3. **Wave direction** is top-to-bottom with a subtle left-to-right offset.
+4. **Optional label** appears below in `text-xs text-gray-400 animate-pulse`.
+5. **Uses `ROOK_BLOCKS` from `lib/daily-rook-blocks.ts`** — single source of truth for the rook shape and colors.
 
 ---
 
