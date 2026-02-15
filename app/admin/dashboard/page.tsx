@@ -20,7 +20,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-chess-page text-chess-text">
+    <div className="min-h-screen bg-chess-page text-chess-text overflow-y-auto w-screen relative left-1/2 -translate-x-1/2 max-w-none">
       {/* Sticky Top Bar */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
