@@ -1,0 +1,185 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import DashboardCard from './DashboardCard';
+import StatusBadge from './StatusBadge';
+
+interface CronJob {
+  name: string;
+  status: 'healthy' | 'warning' | 'stale';
+  lastRun: string | null;
+  detail: string;
+}
+
+interface EmailStats {
+  sent24h: number;
+  failed24h: number;
+  sent7d: number;
+  failed7d: number;
+  breakdown: { type: string; count: number }[];
+}
+
+interface HealthData {
+  crons: CronJob[];
+  email: EmailStats;
+}
+
+function timeAgo(dateStr: string | null): string {
+  if (!dateStr) return 'Never';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+// Fallback data when API is not yet built
+const fallbackHealth: HealthData = {
+  crons: [
+    { name: 'Revenue Snapshot', status: 'stale', lastRun: null, detail: 'vercel.json crons empty' },
+    { name: 'Drip Day 3', status: 'stale', lastRun: null, detail: 'Not deployed' },
+    { name: 'Drip Day 5', status: 'stale', lastRun: null, detail: 'Not deployed' },
+    { name: 'Drip Day 7', status: 'stale', lastRun: null, detail: 'Not deployed' },
+    { name: 'Dunning', status: 'stale', lastRun: null, detail: 'Not deployed' },
+    { name: 'Daily Puzzle', status: 'warning', lastRun: null, detail: 'Needs puzzle integration' },
+  ],
+  email: {
+    sent24h: 0,
+    failed24h: 0,
+    sent7d: 0,
+    failed7d: 0,
+    breakdown: [
+      { type: 'Welcome', count: 0 },
+      { type: 'Drip Day 3', count: 0 },
+      { type: 'Drip Day 5', count: 0 },
+      { type: 'Drip Day 7', count: 0 },
+      { type: 'Payment Failed', count: 0 },
+    ],
+  },
+};
+
+export default function HealthPanel({ refreshKey }: { refreshKey: number }) {
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    fetch('/api/admin/dashboard/health')
+      .then((r) => {
+        if (!r.ok) throw new Error('Health API not available');
+        return r.json();
+      })
+      .then((data) => {
+        if (!cancelled) setHealth(data);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          // Use fallback data when API is not yet built
+          setHealth(fallbackHealth);
+          setError('Using fallback data - API not yet deployed');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [refreshKey]);
+
+  return (
+    <DashboardCard
+      title="Health & Ops"
+      icon={
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      }
+    >
+      <div className="space-y-5">
+        {error && (
+          <div className="text-amber-400/70 text-xs bg-amber-500/10 rounded px-2 py-1">{error}</div>
+        )}
+
+        {/* Cron Status Grid */}
+        <div>
+          <h3 className="text-sm font-medium text-zinc-400 mb-2">Cron Jobs</h3>
+          {loading ? (
+            <div className="grid grid-cols-2 gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-20 bg-zinc-700/30 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {(health?.crons || []).map((cron) => (
+                <div key={cron.name} className="bg-zinc-900/40 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-zinc-200 font-medium">{cron.name}</span>
+                    <StatusBadge status={cron.status} />
+                  </div>
+                  <div className="text-xs text-zinc-500">{timeAgo(cron.lastRun)}</div>
+                  <div className="text-xs text-zinc-600 mt-0.5">{cron.detail}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Email Stats */}
+        {health?.email && !loading && (
+          <div>
+            <h3 className="text-sm font-medium text-zinc-400 mb-2">Email Stats</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-zinc-100 tabular-nums">{health.email.sent24h}</div>
+                <div className="text-xs text-zinc-500">Sent (24h)</div>
+              </div>
+              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
+                <div className={`text-lg font-bold tabular-nums ${health.email.failed24h > 0 ? 'text-red-400' : 'text-zinc-100'}`}>
+                  {health.email.failed24h}
+                </div>
+                <div className="text-xs text-zinc-500">Failed (24h)</div>
+              </div>
+              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-zinc-100 tabular-nums">{health.email.sent7d}</div>
+                <div className="text-xs text-zinc-500">Sent (7d)</div>
+              </div>
+              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
+                <div className={`text-lg font-bold tabular-nums ${health.email.failed7d > 0 ? 'text-red-400' : 'text-zinc-100'}`}>
+                  {health.email.failed7d}
+                </div>
+                <div className="text-xs text-zinc-500">Failed (7d)</div>
+              </div>
+            </div>
+
+            {/* Email Breakdown */}
+            <div className="bg-zinc-900/30 rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-800">
+                    <th className="text-left px-3 py-2 text-xs text-zinc-500 font-medium">Type</th>
+                    <th className="text-right px-3 py-2 text-xs text-zinc-500 font-medium">Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {health.email.breakdown.map((row) => (
+                    <tr key={row.type} className="border-b border-zinc-800/50">
+                      <td className="px-3 py-1.5 text-zinc-300">{row.type}</td>
+                      <td className="px-3 py-1.5 text-zinc-400 text-right tabular-nums">{row.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </DashboardCard>
+  );
+}
