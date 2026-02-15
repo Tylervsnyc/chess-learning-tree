@@ -107,8 +107,48 @@ export default function EngagementPanel({ refreshKey }: { refreshKey: number }) 
         if (!r.ok) throw new Error('Engagement API not available');
         return r.json();
       })
-      .then((res) => {
-        if (!cancelled) setData(res);
+      .then((raw) => {
+        if (cancelled) return;
+        // Transform API shape to component shape
+        const au = raw.activeUsers || {};
+        const m = raw.metrics || {};
+        const f = raw.funnels || {};
+        const r = raw.retention || {};
+        const transformed: EngagementData = {
+          activeUsers: { dau: au.daily ?? 0, wau: au.weekly ?? 0, mau: au.monthly ?? 0 },
+          weekActivity: {
+            lessonStarts: m.lessonStarts ?? 0,
+            lessonCompletions: m.lessonCompletions ?? 0,
+            dailyRookStarts: m.dailyRookStarts ?? 0,
+            dailyRookCompletions: m.dailyRookCompletions ?? 0,
+            signups: m.signups ?? 0,
+            puzzlesSolved: m.puzzlesSolved ?? 0,
+          },
+          funnels: [
+            { name: 'Signup', stages: [
+              { label: 'Viewed', count: f.signup?.viewed ?? 0 },
+              { label: 'Started', count: f.signup?.started ?? 0 },
+              { label: 'Completed', count: f.signup?.completed ?? 0 },
+            ]},
+            { name: 'Lesson', stages: [
+              { label: 'Started', count: f.lesson?.started ?? 0 },
+              { label: 'Completed', count: f.lesson?.completed ?? 0 },
+            ]},
+            { name: 'Subscription', stages: [
+              { label: 'Paywall', count: f.subscription?.paywallViewed ?? 0 },
+              { label: 'Pricing', count: f.subscription?.pricingViewed ?? 0 },
+              { label: 'Checkout', count: f.subscription?.checkoutStarted ?? 0 },
+              { label: 'Paid', count: f.subscription?.paid ?? 0 },
+            ]},
+            { name: 'Daily Challenge', stages: [
+              { label: 'Viewed', count: f.dailyChallenge?.viewed ?? 0 },
+              { label: 'Started', count: f.dailyChallenge?.started ?? 0 },
+              { label: 'Completed', count: f.dailyChallenge?.completed ?? 0 },
+            ]},
+          ],
+          retention: { day1: r.day1 ?? 0, day7: r.day7 ?? 0, day30: r.day30 ?? 0 },
+        };
+        setData(transformed);
       })
       .catch(() => {
         if (!cancelled) {

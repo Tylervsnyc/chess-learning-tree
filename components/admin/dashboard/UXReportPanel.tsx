@@ -67,8 +67,24 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
         if (!r.ok) throw new Error('UX API not available');
         return r.json();
       })
-      .then((res) => {
-        if (!cancelled) setData(res);
+      .then((raw) => {
+        if (cancelled) return;
+        // Transform API shape to component shape
+        const transformed: UXData = {
+          issues: raw.issues || [],
+          rageClicks: (raw.rageClicks || []).map((rc: { element: string; url: string; count: number }) => ({
+            element: rc.element,
+            page: rc.url,
+            count: rc.count,
+          })),
+          exitPages: (raw.topExitPages || []).map((ep: { path: string; exitRate: number }) => ({
+            page: ep.path,
+            exitRate: ep.exitRate,
+          })),
+          deviceSplit: raw.deviceBreakdown || { mobile: 0, desktop: 0, tablet: 0 },
+          topEvents: raw.topEvents || [],
+        };
+        setData(transformed);
       })
       .catch(() => {
         if (!cancelled) {

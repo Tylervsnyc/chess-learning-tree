@@ -75,8 +75,28 @@ export default function HealthPanel({ refreshKey }: { refreshKey: number }) {
         if (!r.ok) throw new Error('Health API not available');
         return r.json();
       })
-      .then((data) => {
-        if (!cancelled) setHealth(data);
+      .then((raw) => {
+        if (cancelled) return;
+        // Transform API shape to component shape
+        const transformed: HealthData = {
+          crons: (raw.crons || []).map((c: { name: string; lastActivity: string | null; status: string; detail: string }) => ({
+            name: c.name,
+            lastRun: c.lastActivity,
+            status: c.status as 'healthy' | 'warning' | 'stale',
+            detail: c.detail,
+          })),
+          email: {
+            sent24h: raw.emails?.last24h?.sent ?? 0,
+            failed24h: raw.emails?.last24h?.failed ?? 0,
+            sent7d: raw.emails?.last7d?.sent ?? 0,
+            failed7d: raw.emails?.last7d?.failed ?? 0,
+            breakdown: (raw.emails?.byType || []).map((t: { type: string; sent: number; failed: number }) => ({
+              type: t.type,
+              count: t.sent + t.failed,
+            })),
+          },
+        };
+        setHealth(transformed);
       })
       .catch(() => {
         if (!cancelled) {
