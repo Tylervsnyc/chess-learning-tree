@@ -3,14 +3,14 @@
 type Status = 'healthy' | 'warning' | 'stale' | 'error' | 'ready' | 'wip' | 'on' | 'off';
 
 const statusStyles: Record<Status, string> = {
-  healthy: 'bg-emerald-500/20 text-emerald-400',
-  warning: 'bg-amber-500/20 text-amber-400',
-  stale: 'bg-red-500/20 text-red-400',
-  error: 'bg-red-500/20 text-red-400',
-  ready: 'bg-emerald-500/20 text-emerald-400',
-  wip: 'bg-amber-500/20 text-amber-400',
-  on: 'bg-emerald-500/20 text-emerald-400',
-  off: 'bg-zinc-600/30 text-zinc-400',
+  healthy: 'bg-emerald-50 text-emerald-600 border border-emerald-200',
+  warning: 'bg-amber-50 text-amber-600 border border-amber-200',
+  stale: 'bg-red-50 text-red-600 border border-red-200',
+  error: 'bg-red-50 text-red-600 border border-red-200',
+  ready: 'bg-emerald-50 text-emerald-600 border border-emerald-200',
+  wip: 'bg-amber-50 text-amber-600 border border-amber-200',
+  on: 'bg-emerald-50 text-emerald-600 border border-emerald-200',
+  off: 'bg-slate-50 text-chess-text-faint border border-slate-200',
 };
 
 const statusLabels: Record<Status, string> = {
@@ -32,12 +32,12 @@ export default function StatusBadge({ status }: { status: Status }) {
       <span
         className={`w-1.5 h-1.5 rounded-full ${
           status === 'healthy' || status === 'ready' || status === 'on'
-            ? 'bg-emerald-400'
+            ? 'bg-emerald-500'
             : status === 'warning' || status === 'wip'
-              ? 'bg-amber-400'
+              ? 'bg-amber-500'
               : status === 'off'
-                ? 'bg-zinc-500'
-                : 'bg-red-400'
+                ? 'bg-slate-400'
+                : 'bg-red-500'
         }`}
       />
       {statusLabels[status]}

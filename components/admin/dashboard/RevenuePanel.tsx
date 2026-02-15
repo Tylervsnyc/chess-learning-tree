@@ -40,7 +40,7 @@ function formatCents(cents: number): string {
 }
 
 function MrrSparkline({ data }: { data: RevSnapshot[] }) {
-  if (data.length < 2) return <div className="text-zinc-500 text-sm">Not enough data</div>;
+  if (data.length < 2) return <div className="text-chess-text-muted text-sm">Not enough data</div>;
 
   const last30 = data.slice(-30);
   const values = last30.map((d) => d.mrr_cents);
@@ -66,12 +66,12 @@ function MrrSparkline({ data }: { data: RevSnapshot[] }) {
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-16">
       <defs>
         <linearGradient id="mrr-gradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#58CC02" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#58CC02" stopOpacity="0.02" />
         </linearGradient>
       </defs>
       <path d={areaD} fill="url(#mrr-gradient)" />
-      <path d={pathD} fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="#58CC02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -79,15 +79,15 @@ function MrrSparkline({ data }: { data: RevSnapshot[] }) {
 function SubscriberBar({ data }: { data: RevSnapshot }) {
   const total = data.monthly_subscribers + data.yearly_subscribers + data.trial_users + data.free_users || 1;
   const segments = [
-    { label: 'Monthly', count: data.monthly_subscribers, color: 'bg-emerald-500' },
-    { label: 'Yearly', count: data.yearly_subscribers, color: 'bg-blue-500' },
-    { label: 'Trial', count: data.trial_users, color: 'bg-amber-500' },
-    { label: 'Free', count: data.free_users, color: 'bg-zinc-600' },
+    { label: 'Monthly', count: data.monthly_subscribers, color: 'bg-chess-green' },
+    { label: 'Yearly', count: data.yearly_subscribers, color: 'bg-chess-blue' },
+    { label: 'Trial', count: data.trial_users, color: 'bg-chess-orange' },
+    { label: 'Free', count: data.free_users, color: 'bg-slate-300' },
   ];
 
   return (
     <div>
-      <div className="flex h-3 rounded-full overflow-hidden bg-zinc-900/50">
+      <div className="flex h-3 rounded-full overflow-hidden bg-chess-page border border-slate-100">
         {segments.map((seg) =>
           seg.count > 0 ? (
             <div
@@ -100,9 +100,9 @@ function SubscriberBar({ data }: { data: RevSnapshot }) {
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
         {segments.map((seg) => (
-          <div key={seg.label} className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <div key={seg.label} className="flex items-center gap-1.5 text-xs text-chess-text-muted">
             <span className={`w-2 h-2 rounded-full ${seg.color}`} />
-            {seg.label}: <span className="text-zinc-200 tabular-nums">{seg.count}</span>
+            {seg.label}: <span className="text-chess-text tabular-nums font-medium">{seg.count}</span>
           </div>
         ))}
       </div>
@@ -162,7 +162,7 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
           </svg>
         }
       >
-        <div className="text-red-400 text-sm py-4">{error}</div>
+        <div className="text-chess-red text-sm py-4">{error}</div>
       </DashboardCard>
     );
   }
@@ -188,9 +188,9 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
 
         {/* MRR Sparkline */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">MRR Trend (30d)</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">MRR Trend (30d)</h3>
           {loading ? (
-            <div className="h-16 bg-zinc-700/30 rounded animate-pulse" />
+            <div className="h-16 bg-slate-100 rounded-xl animate-pulse" />
           ) : (
             <MrrSparkline data={snapshots} />
           )}
@@ -199,7 +199,7 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
         {/* Subscriber Mix */}
         {latest && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Subscriber Mix</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Subscriber Mix</h3>
             <SubscriberBar data={latest} />
           </div>
         )}
@@ -207,10 +207,10 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
         {/* Conversion Funnel */}
         {paywallData.length > 0 && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">
               Conversion Funnel
               {paywallTotals && (
-                <span className="ml-2 text-zinc-600 font-normal">
+                <span className="ml-2 text-chess-text-faint font-normal">
                   Overall: {paywallTotals.rate}%
                 </span>
               )}
@@ -218,18 +218,18 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
             <div className="space-y-2">
               {paywallData.slice(0, 8).map((pw) => (
                 <div key={pw.trigger} className="flex items-center gap-3">
-                  <div className="w-28 text-xs text-zinc-400 truncate shrink-0">{pw.trigger}</div>
+                  <div className="w-28 text-xs text-chess-text-muted truncate shrink-0">{pw.trigger}</div>
                   <div className="flex-1 flex items-center gap-2">
-                    <div className="flex-1 h-5 bg-zinc-900/50 rounded-full overflow-hidden flex">
+                    <div className="flex-1 h-5 bg-chess-page rounded-full overflow-hidden flex border border-slate-100">
                       <div
-                        className="h-full bg-emerald-500/40 rounded-full"
+                        className="h-full bg-chess-green/30 rounded-full"
                         style={{ width: `${Math.min(100, (pw.views / (paywallTotals?.views || 1)) * 100)}%` }}
                       />
                     </div>
-                    <span className="text-xs text-zinc-400 tabular-nums w-16 text-right shrink-0">
+                    <span className="text-xs text-chess-text-muted tabular-nums w-16 text-right shrink-0">
                       {pw.views} / {pw.conversions}
                     </span>
-                    <span className="text-xs font-medium text-zinc-300 tabular-nums w-12 text-right shrink-0">
+                    <span className="text-xs font-medium text-chess-text tabular-nums w-12 text-right shrink-0">
                       {pw.rate}%
                     </span>
                   </div>
@@ -242,15 +242,15 @@ export default function RevenuePanel({ refreshKey }: { refreshKey: number }) {
         {/* A/B Results */}
         {variants.length > 0 && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Pricing A/B Results</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Pricing A/B Results</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {variants.map((v) => (
-                <div key={v.variant} className="bg-zinc-900/40 rounded-lg p-3">
-                  <div className="text-sm font-medium text-zinc-200 capitalize mb-1">{v.variant}</div>
-                  <div className="text-xl font-bold text-zinc-100 tabular-nums">
+                <div key={v.variant} className="bg-chess-page rounded-xl p-3 border border-slate-100">
+                  <div className="text-sm font-medium text-chess-text capitalize mb-1">{v.variant}</div>
+                  <div className="text-xl font-bold text-chess-green tabular-nums">
                     {(v.conversionRate * 100).toFixed(1)}%
                   </div>
-                  <div className="text-xs text-zinc-500 mt-1">
+                  <div className="text-xs text-chess-text-muted mt-1">
                     {v.conversions}/{v.usersSeen} seen &middot; Avg {formatCents(v.avgRevenue)}
                   </div>
                 </div>

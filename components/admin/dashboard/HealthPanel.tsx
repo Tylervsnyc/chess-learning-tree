@@ -123,28 +123,28 @@ export default function HealthPanel({ refreshKey }: { refreshKey: number }) {
     >
       <div className="space-y-5">
         {error && (
-          <div className="text-amber-400/70 text-xs bg-amber-500/10 rounded px-2 py-1">{error}</div>
+          <div className="text-amber-700 text-xs bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{error}</div>
         )}
 
         {/* Cron Status Grid */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Cron Jobs</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Cron Jobs</h3>
           {loading ? (
             <div className="grid grid-cols-2 gap-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-20 bg-zinc-700/30 rounded-lg animate-pulse" />
+                <div key={i} className="h-20 bg-slate-100 rounded-xl animate-pulse" />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2">
               {(health?.crons || []).map((cron) => (
-                <div key={cron.name} className="bg-zinc-900/40 rounded-lg p-3">
+                <div key={cron.name} className="bg-chess-page rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-zinc-200 font-medium">{cron.name}</span>
+                    <span className="text-sm text-chess-text font-medium">{cron.name}</span>
                     <StatusBadge status={cron.status} />
                   </div>
-                  <div className="text-xs text-zinc-500">{timeAgo(cron.lastRun)}</div>
-                  <div className="text-xs text-zinc-600 mt-0.5">{cron.detail}</div>
+                  <div className="text-xs text-chess-text-muted">{timeAgo(cron.lastRun)}</div>
+                  <div className="text-xs text-chess-text-faint mt-0.5">{cron.detail}</div>
                 </div>
               ))}
             </div>
@@ -154,44 +154,44 @@ export default function HealthPanel({ refreshKey }: { refreshKey: number }) {
         {/* Email Stats */}
         {health?.email && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Email Stats</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Email Stats</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{health.email.sent24h}</div>
-                <div className="text-xs text-zinc-500">Sent (24h)</div>
+              <div className="bg-chess-page rounded-xl p-3 text-center border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{health.email.sent24h}</div>
+                <div className="text-xs text-chess-text-muted">Sent (24h)</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
-                <div className={`text-lg font-bold tabular-nums ${health.email.failed24h > 0 ? 'text-red-400' : 'text-zinc-100'}`}>
+              <div className="bg-chess-page rounded-xl p-3 text-center border border-slate-100">
+                <div className={`text-lg font-bold tabular-nums ${health.email.failed24h > 0 ? 'text-chess-red' : 'text-chess-text'}`}>
                   {health.email.failed24h}
                 </div>
-                <div className="text-xs text-zinc-500">Failed (24h)</div>
+                <div className="text-xs text-chess-text-muted">Failed (24h)</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{health.email.sent7d}</div>
-                <div className="text-xs text-zinc-500">Sent (7d)</div>
+              <div className="bg-chess-page rounded-xl p-3 text-center border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{health.email.sent7d}</div>
+                <div className="text-xs text-chess-text-muted">Sent (7d)</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-3 text-center">
-                <div className={`text-lg font-bold tabular-nums ${health.email.failed7d > 0 ? 'text-red-400' : 'text-zinc-100'}`}>
+              <div className="bg-chess-page rounded-xl p-3 text-center border border-slate-100">
+                <div className={`text-lg font-bold tabular-nums ${health.email.failed7d > 0 ? 'text-chess-red' : 'text-chess-text'}`}>
                   {health.email.failed7d}
                 </div>
-                <div className="text-xs text-zinc-500">Failed (7d)</div>
+                <div className="text-xs text-chess-text-muted">Failed (7d)</div>
               </div>
             </div>
 
             {/* Email Breakdown */}
-            <div className="bg-zinc-900/30 rounded-lg overflow-hidden">
+            <div className="bg-chess-page rounded-xl overflow-hidden border border-slate-100">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-zinc-800">
-                    <th className="text-left px-3 py-2 text-xs text-zinc-500 font-medium">Type</th>
-                    <th className="text-right px-3 py-2 text-xs text-zinc-500 font-medium">Count</th>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left px-3 py-2 text-xs text-chess-text-muted font-medium">Type</th>
+                    <th className="text-right px-3 py-2 text-xs text-chess-text-muted font-medium">Count</th>
                   </tr>
                 </thead>
                 <tbody>
                   {health.email.breakdown.map((row) => (
-                    <tr key={row.type} className="border-b border-zinc-800/50">
-                      <td className="px-3 py-1.5 text-zinc-300">{row.type}</td>
-                      <td className="px-3 py-1.5 text-zinc-400 text-right tabular-nums">{row.count}</td>
+                    <tr key={row.type} className="border-b border-slate-100 last:border-0">
+                      <td className="px-3 py-1.5 text-chess-text">{row.type}</td>
+                      <td className="px-3 py-1.5 text-chess-text-muted text-right tabular-nums">{row.count}</td>
                     </tr>
                   ))}
                 </tbody>

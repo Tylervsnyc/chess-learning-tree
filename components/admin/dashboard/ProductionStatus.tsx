@@ -46,21 +46,21 @@ export default function ProductionStatus() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Feature Flags Table */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Feature Flags</h3>
-          <div className="bg-zinc-900/30 rounded-lg overflow-hidden">
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Feature Flags</h3>
+          <div className="bg-chess-page rounded-xl overflow-hidden border border-slate-100">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-zinc-800">
-                  <th className="text-left px-3 py-2 text-xs text-zinc-500 font-medium">Flag</th>
-                  <th className="text-left px-3 py-2 text-xs text-zinc-500 font-medium">Description</th>
-                  <th className="text-center px-3 py-2 text-xs text-zinc-500 font-medium">State</th>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left px-3 py-2 text-xs text-chess-text-muted font-medium">Flag</th>
+                  <th className="text-left px-3 py-2 text-xs text-chess-text-muted font-medium">Description</th>
+                  <th className="text-center px-3 py-2 text-xs text-chess-text-muted font-medium">State</th>
                 </tr>
               </thead>
               <tbody>
                 {featureFlags.map((flag) => (
-                  <tr key={flag.name} className="border-b border-zinc-800/50 last:border-0">
-                    <td className="px-3 py-2 text-zinc-200 font-mono text-xs whitespace-nowrap">{flag.name}</td>
-                    <td className="px-3 py-2 text-zinc-400 text-xs">{flag.description}</td>
+                  <tr key={flag.name} className="border-b border-slate-100 last:border-0">
+                    <td className="px-3 py-2 text-chess-text font-mono text-xs whitespace-nowrap">{flag.name}</td>
+                    <td className="px-3 py-2 text-chess-text-muted text-xs">{flag.description}</td>
                     <td className="px-3 py-2 text-center">
                       <StatusBadge status={flag.state ? 'on' : 'off'} />
                     </td>
@@ -73,13 +73,13 @@ export default function ProductionStatus() {
 
         {/* Built Not Deployed */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Built Not Deployed</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Built Not Deployed</h3>
           <div className="space-y-2">
             {builtNotDeployed.map((item) => (
-              <div key={item.name} className="bg-zinc-900/40 rounded-lg p-3 flex items-start justify-between">
+              <div key={item.name} className="bg-chess-page rounded-xl p-3 flex items-start justify-between border border-slate-100">
                 <div>
-                  <div className="text-sm text-zinc-200 font-medium">{item.name}</div>
-                  <div className="text-xs text-zinc-500 mt-0.5">{item.detail}</div>
+                  <div className="text-sm text-chess-text font-medium">{item.name}</div>
+                  <div className="text-xs text-chess-text-muted mt-0.5">{item.detail}</div>
                 </div>
                 <StatusBadge status={item.status} />
               </div>
@@ -89,28 +89,28 @@ export default function ProductionStatus() {
 
         {/* Dead Analytics */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">
             Dead Analytics
             <button
               onClick={() => setShowDeadAnalytics(!showDeadAnalytics)}
-              className="ml-2 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+              className="ml-2 text-xs text-chess-text-faint hover:text-chess-text-muted transition-colors"
             >
               {showDeadAnalytics ? 'Hide' : `Show (${deadAnalytics.length})`}
             </button>
           </h3>
           {showDeadAnalytics && (
-            <div className="bg-zinc-900/30 rounded-lg p-3">
+            <div className="bg-chess-page rounded-xl p-3 border border-slate-100">
               <div className="flex flex-wrap gap-1.5">
                 {deadAnalytics.map((event) => (
                   <span
                     key={event}
-                    className="px-2 py-0.5 bg-zinc-800/80 rounded text-xs font-mono text-zinc-500"
+                    className="px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono text-chess-text-muted"
                   >
                     {event}
                   </span>
                 ))}
               </div>
-              <div className="text-xs text-zinc-600 mt-2">
+              <div className="text-xs text-chess-text-faint mt-2">
                 These events are defined in code but never called. Safe to remove.
               </div>
             </div>
@@ -119,12 +119,12 @@ export default function ProductionStatus() {
 
         {/* Quick Wins */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Quick Wins</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Quick Wins</h3>
           <div className="space-y-1.5">
             {quickWins.map((win, i) => (
-              <div key={i} className="flex items-start gap-2 bg-zinc-900/40 rounded-lg px-3 py-2">
-                <span className="text-xs font-bold text-emerald-500 mt-0.5 shrink-0">{i + 1}.</span>
-                <span className="text-xs text-zinc-300">{win}</span>
+              <div key={i} className="flex items-start gap-2 bg-chess-page rounded-xl px-3 py-2 border border-slate-100">
+                <span className="text-xs font-bold text-chess-green mt-0.5 shrink-0">{i + 1}.</span>
+                <span className="text-xs text-chess-text">{win}</span>
               </div>
             ))}
           </div>

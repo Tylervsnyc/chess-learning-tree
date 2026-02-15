@@ -42,11 +42,11 @@ const fallbackEngagement: EngagementData = {
 
 function FunnelBar({ funnel }: { funnel: EngagementData['funnels'][0] }) {
   const maxCount = Math.max(...funnel.stages.map((s) => s.count), 1);
-  const colors = ['bg-emerald-500', 'bg-emerald-500/70', 'bg-amber-500/70', 'bg-amber-500'];
+  const colors = ['bg-chess-green', 'bg-chess-green/60', 'bg-chess-orange/60', 'bg-chess-orange'];
 
   return (
-    <div className="bg-zinc-900/40 rounded-lg p-3">
-      <div className="text-sm font-medium text-zinc-200 mb-2">{funnel.name}</div>
+    <div className="bg-chess-page rounded-xl p-3 border border-slate-100">
+      <div className="text-sm font-medium text-chess-text mb-2">{funnel.name}</div>
       <div className="space-y-1.5">
         {funnel.stages.map((stage, i) => {
           const widthPct = maxCount > 0 ? (stage.count / maxCount) * 100 : 0;
@@ -58,19 +58,19 @@ function FunnelBar({ funnel }: { funnel: EngagementData['funnels'][0] }) {
           return (
             <div key={stage.label}>
               {dropoff !== null && (
-                <div className="text-[10px] text-zinc-600 ml-1 -mb-0.5">
+                <div className="text-[10px] text-chess-text-faint ml-1 -mb-0.5">
                   -{dropoff}% drop
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <div className="w-20 text-xs text-zinc-400 shrink-0 truncate">{stage.label}</div>
-                <div className="flex-1 h-4 bg-zinc-900/50 rounded-full overflow-hidden">
+                <div className="w-20 text-xs text-chess-text-muted shrink-0 truncate">{stage.label}</div>
+                <div className="flex-1 h-4 bg-slate-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${colors[i] || colors[colors.length - 1]} transition-all`}
                     style={{ width: `${Math.max(widthPct, 2)}%` }}
                   />
                 </div>
-                <span className="text-xs text-zinc-400 tabular-nums w-10 text-right shrink-0">{stage.count}</span>
+                <span className="text-xs text-chess-text-muted tabular-nums w-10 text-right shrink-0">{stage.count}</span>
               </div>
             </div>
           );
@@ -81,13 +81,13 @@ function FunnelBar({ funnel }: { funnel: EngagementData['funnels'][0] }) {
 }
 
 function RetentionBadge({ label, value }: { label: string; value: number }) {
-  const color = value > 40 ? 'text-emerald-400' : value > 20 ? 'text-amber-400' : 'text-red-400';
-  const bg = value > 40 ? 'bg-emerald-500/10' : value > 20 ? 'bg-amber-500/10' : 'bg-red-500/10';
+  const color = value > 40 ? 'text-emerald-600' : value > 20 ? 'text-amber-600' : 'text-red-600';
+  const bg = value > 40 ? 'bg-emerald-50 border-emerald-200' : value > 20 ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
 
   return (
-    <div className={`${bg} rounded-lg p-3 text-center`}>
+    <div className={`${bg} rounded-xl p-3 text-center border`}>
       <div className={`text-xl font-bold tabular-nums ${color}`}>{value}%</div>
-      <div className="text-xs text-zinc-500 mt-0.5">{label}</div>
+      <div className="text-xs text-chess-text-muted mt-0.5">{label}</div>
     </div>
   );
 }
@@ -174,12 +174,12 @@ export default function EngagementPanel({ refreshKey }: { refreshKey: number }) 
     >
       <div className="space-y-5">
         {error && (
-          <div className="text-amber-400/70 text-xs bg-amber-500/10 rounded px-2 py-1">{error}</div>
+          <div className="text-amber-700 text-xs bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{error}</div>
         )}
 
         {/* Active Users */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Active Users</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Active Users</h3>
           <div className="grid grid-cols-3 gap-2">
             <MetricCard label="DAU" value={data?.activeUsers.dau ?? '--'} loading={loading} />
             <MetricCard label="WAU" value={data?.activeUsers.wau ?? '--'} loading={loading} />
@@ -190,31 +190,31 @@ export default function EngagementPanel({ refreshKey }: { refreshKey: number }) 
         {/* 7-Day Activity */}
         {data && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">7-Day Activity</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">7-Day Activity</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.lessonStarts}</div>
-                <div className="text-xs text-zinc-500">Lesson Starts</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.lessonStarts}</div>
+                <div className="text-xs text-chess-text-muted">Lesson Starts</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.lessonCompletions}</div>
-                <div className="text-xs text-zinc-500">Completions</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.lessonCompletions}</div>
+                <div className="text-xs text-chess-text-muted">Completions</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.dailyRookStarts}</div>
-                <div className="text-xs text-zinc-500">Rook Starts</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.dailyRookStarts}</div>
+                <div className="text-xs text-chess-text-muted">Rook Starts</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.dailyRookCompletions}</div>
-                <div className="text-xs text-zinc-500">Rook Completions</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.dailyRookCompletions}</div>
+                <div className="text-xs text-chess-text-muted">Rook Completions</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.signups}</div>
-                <div className="text-xs text-zinc-500">Signups</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.signups}</div>
+                <div className="text-xs text-chess-text-muted">Signups</div>
               </div>
-              <div className="bg-zinc-900/40 rounded-lg p-2.5">
-                <div className="text-lg font-bold text-zinc-100 tabular-nums">{data.weekActivity.puzzlesSolved}</div>
-                <div className="text-xs text-zinc-500">Puzzles Solved</div>
+              <div className="bg-chess-page rounded-xl p-2.5 border border-slate-100">
+                <div className="text-lg font-bold text-chess-text tabular-nums">{data.weekActivity.puzzlesSolved}</div>
+                <div className="text-xs text-chess-text-muted">Puzzles Solved</div>
               </div>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function EngagementPanel({ refreshKey }: { refreshKey: number }) 
         {/* Funnels */}
         {data && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Funnels</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Funnels</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {data.funnels.map((funnel) => (
                 <FunnelBar key={funnel.name} funnel={funnel} />
@@ -235,7 +235,7 @@ export default function EngagementPanel({ refreshKey }: { refreshKey: number }) 
         {/* Retention */}
         {data && !loading && (
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Retention</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Retention</h3>
             <div className="grid grid-cols-3 gap-2">
               <RetentionBadge label="Day 1" value={data.retention.day1} />
               <RetentionBadge label="Day 7" value={data.retention.day7} />

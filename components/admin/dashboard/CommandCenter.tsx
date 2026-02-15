@@ -92,21 +92,21 @@ export default function CommandCenter() {
       <div className="space-y-5">
         {/* Quick Actions */}
         <div>
-          <h3 className="text-sm font-medium text-zinc-400 mb-2">Quick Actions</h3>
+          <h3 className="text-sm font-medium text-chess-text-muted mb-2">Quick Actions</h3>
           <div className="flex flex-wrap gap-2">
             {skillCommands.map((cmd) => (
               <button
                 key={cmd.command}
                 onClick={() => copyCommand(cmd.command)}
-                className="flex items-center gap-2 px-3 py-2 bg-zinc-900/60 border border-zinc-700/50 rounded-lg
-                           hover:border-zinc-600 hover:bg-zinc-800/80 transition-all text-sm group"
+                className="flex items-center gap-2 px-3 py-2 bg-chess-page border border-slate-200 rounded-xl
+                           hover:border-chess-green hover:bg-emerald-50/50 transition-all text-sm group"
               >
                 <span>{cmd.icon}</span>
-                <span className="text-zinc-200 group-hover:text-white">{cmd.name}</span>
+                <span className="text-chess-text group-hover:text-chess-green-dark font-medium">{cmd.name}</span>
                 {copiedCommand === cmd.command ? (
-                  <span className="text-emerald-400 text-xs">Copied!</span>
+                  <span className="text-chess-green text-xs font-medium">Copied!</span>
                 ) : (
-                  <span className="text-zinc-600 text-xs group-hover:text-zinc-400">
+                  <span className="text-chess-text-faint text-xs group-hover:text-chess-text-muted">
                     {cmd.command}
                   </span>
                 )}
@@ -118,7 +118,7 @@ export default function CommandCenter() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* User Search */}
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">User Search</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">User Search</h3>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -126,29 +126,31 @@ export default function CommandCenter() {
                 onChange={(e) => setSearchEmail(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
                 placeholder="Search by email..."
-                className="flex-1 px-3 py-2 bg-zinc-900/60 border border-zinc-700/50 rounded-lg text-sm
-                           text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500"
+                className="flex-1 px-3 py-2 bg-chess-page border border-slate-200 rounded-xl text-sm
+                           text-chess-text placeholder:text-chess-text-faint focus:outline-none focus:ring-2 focus:ring-chess-green/40 focus:border-chess-green"
               />
               <button
                 onClick={searchUsers}
                 disabled={searching}
-                className="px-3 py-2 bg-zinc-700/50 border border-zinc-600/50 rounded-lg text-sm text-zinc-300
-                           hover:bg-zinc-600/50 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-chess-blue text-white font-bold rounded-xl text-sm
+                           shadow-[0_3px_0_var(--color-chess-blue-shadow)]
+                           hover:bg-chess-blue-dark active:translate-y-[1px] active:shadow-[0_1px_0_var(--color-chess-blue-shadow)]
+                           transition-all disabled:opacity-50"
               >
                 {searching ? '...' : 'Search'}
               </button>
             </div>
-            {searchError && <p className="text-red-400 text-xs mt-1">{searchError}</p>}
+            {searchError && <p className="text-chess-red text-xs mt-1">{searchError}</p>}
             {users.length > 0 && (
               <div className="mt-2 space-y-1 max-h-48 overflow-y-auto">
                 {users.map((user) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between px-3 py-2 bg-zinc-900/40 rounded-lg"
+                    className="flex items-center justify-between px-3 py-2 bg-chess-page rounded-xl border border-slate-100"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm text-zinc-200 truncate">{user.email}</div>
-                      <div className="text-xs text-zinc-500">
+                      <div className="text-sm text-chess-text truncate">{user.email}</div>
+                      <div className="text-xs text-chess-text-muted">
                         {user.subscription_status || 'free'} &middot; Joined{' '}
                         {new Date(user.created_at).toLocaleDateString()}
                       </div>
@@ -158,8 +160,8 @@ export default function CommandCenter() {
                         <button
                           onClick={() => updateSubscription(user.id, 'free')}
                           disabled={updatingUser === user.id}
-                          className="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30
-                                     transition-colors disabled:opacity-50"
+                          className="px-2 py-1 text-xs bg-red-50 text-red-600 border border-red-200 rounded-lg
+                                     hover:bg-red-100 transition-colors disabled:opacity-50 font-medium"
                         >
                           Revoke
                         </button>
@@ -167,8 +169,8 @@ export default function CommandCenter() {
                         <button
                           onClick={() => updateSubscription(user.id, 'premium')}
                           disabled={updatingUser === user.id}
-                          className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-400 rounded
-                                     hover:bg-emerald-500/30 transition-colors disabled:opacity-50"
+                          className="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg
+                                     hover:bg-emerald-100 transition-colors disabled:opacity-50 font-medium"
                         >
                           Grant Premium
                         </button>
@@ -182,16 +184,16 @@ export default function CommandCenter() {
 
           {/* Feature Flags */}
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-2">Feature Flags</h3>
+            <h3 className="text-sm font-medium text-chess-text-muted mb-2">Feature Flags</h3>
             <div className="space-y-2">
               {featureFlags.map((flag) => (
                 <div
                   key={flag.name}
-                  className="flex items-center justify-between px-3 py-2 bg-zinc-900/40 rounded-lg"
+                  className="flex items-center justify-between px-3 py-2 bg-chess-page rounded-xl border border-slate-100"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm text-zinc-200 font-mono text-xs">{flag.name}</div>
-                    <div className="text-xs text-zinc-500">{flag.description}</div>
+                    <div className="text-xs text-chess-text font-mono">{flag.name}</div>
+                    <div className="text-xs text-chess-text-muted">{flag.description}</div>
                   </div>
                   <button
                     onClick={() => {
@@ -199,14 +201,14 @@ export default function CommandCenter() {
                       alert(`To toggle ${flag.name}, update the flag in lib/posthog-flags.ts or code config.`);
                     }}
                     className={`relative ml-2 w-10 h-5 rounded-full transition-colors shrink-0 ${
-                      flag.state ? 'bg-emerald-500/40' : 'bg-zinc-700'
+                      flag.state ? 'bg-chess-green' : 'bg-slate-300'
                     }`}
                   >
                     <span
                       className={`absolute top-0.5 w-4 h-4 rounded-full transition-transform ${
                         flag.state
-                          ? 'translate-x-5 bg-emerald-400'
-                          : 'translate-x-0.5 bg-zinc-500'
+                          ? 'translate-x-5 bg-white'
+                          : 'translate-x-0.5 bg-white'
                       }`}
                     />
                   </button>

@@ -49,7 +49,7 @@ const fallbackUX: UXData = {
 const severityMap = {
   high: { badge: 'error' as const, color: 'border-l-red-400' },
   medium: { badge: 'warning' as const, color: 'border-l-amber-400' },
-  low: { badge: 'healthy' as const, color: 'border-l-blue-400' },
+  low: { badge: 'healthy' as const, color: 'border-l-chess-blue' },
 };
 
 export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
@@ -111,13 +111,13 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
     >
       <div className="space-y-5">
         {error && (
-          <div className="text-amber-400/70 text-xs bg-amber-500/10 rounded px-2 py-1">{error}</div>
+          <div className="text-amber-700 text-xs bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{error}</div>
         )}
 
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-16 bg-zinc-700/30 rounded-lg animate-pulse" />
+              <div key={i} className="h-16 bg-slate-100 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : data ? (
@@ -125,7 +125,7 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
             {/* Issues */}
             {data.issues.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-zinc-400 mb-2">Issues ({data.issues.length})</h3>
+                <h3 className="text-sm font-medium text-chess-text-muted mb-2">Issues ({data.issues.length})</h3>
                 <div className="space-y-1.5">
                   {data.issues
                     .sort((a, b) => {
@@ -135,13 +135,13 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
                     .map((issue, i) => (
                       <div
                         key={i}
-                        className={`bg-zinc-900/40 rounded-lg p-3 border-l-2 ${severityMap[issue.severity].color}`}
+                        className={`bg-chess-page rounded-xl p-3 border border-slate-100 border-l-2 ${severityMap[issue.severity].color}`}
                       >
                         <div className="flex items-center gap-2 mb-0.5">
                           <StatusBadge status={severityMap[issue.severity].badge} />
-                          <span className="text-sm text-zinc-200">{issue.title}</span>
+                          <span className="text-sm text-chess-text">{issue.title}</span>
                         </div>
-                        <div className="text-xs text-zinc-500 ml-[70px]">{issue.detail}</div>
+                        <div className="text-xs text-chess-text-muted ml-[70px]">{issue.detail}</div>
                       </div>
                     ))}
                 </div>
@@ -151,15 +151,15 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
             {/* Rage Clicks */}
             {data.rageClicks.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-zinc-400 mb-2">Rage Clicks</h3>
+                <h3 className="text-sm font-medium text-chess-text-muted mb-2">Rage Clicks</h3>
                 <div className="space-y-1">
                   {data.rageClicks.slice(0, 5).map((rc, i) => (
-                    <div key={i} className="flex items-center justify-between bg-zinc-900/40 rounded-lg px-3 py-2">
+                    <div key={i} className="flex items-center justify-between bg-chess-page rounded-xl px-3 py-2 border border-slate-100">
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm text-zinc-200 truncate font-mono text-xs">{rc.element}</div>
-                        <div className="text-xs text-zinc-500 truncate">{rc.page}</div>
+                        <div className="text-xs text-chess-text truncate font-mono">{rc.element}</div>
+                        <div className="text-xs text-chess-text-muted truncate">{rc.page}</div>
                       </div>
-                      <span className="text-sm font-medium text-red-400 tabular-nums ml-2 shrink-0">{rc.count}x</span>
+                      <span className="text-sm font-medium text-chess-red tabular-nums ml-2 shrink-0">{rc.count}x</span>
                     </div>
                   ))}
                 </div>
@@ -169,18 +169,18 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
             {/* Exit Pages */}
             {data.exitPages.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-zinc-400 mb-2">Top Exit Pages</h3>
+                <h3 className="text-sm font-medium text-chess-text-muted mb-2">Top Exit Pages</h3>
                 <div className="space-y-1.5">
                   {data.exitPages.slice(0, 5).map((ep, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <span className="text-xs text-zinc-400 w-32 truncate shrink-0">{ep.page}</span>
-                      <div className="flex-1 h-4 bg-zinc-900/50 rounded-full overflow-hidden">
+                      <span className="text-xs text-chess-text-muted w-32 truncate shrink-0">{ep.page}</span>
+                      <div className="flex-1 h-4 bg-chess-page rounded-full overflow-hidden border border-slate-100">
                         <div
-                          className="h-full bg-red-500/30 rounded-full"
+                          className="h-full bg-chess-red/20 rounded-full"
                           style={{ width: `${ep.exitRate}%` }}
                         />
                       </div>
-                      <span className="text-xs text-zinc-400 tabular-nums w-10 text-right shrink-0">{ep.exitRate}%</span>
+                      <span className="text-xs text-chess-text-muted tabular-nums w-10 text-right shrink-0">{ep.exitRate}%</span>
                     </div>
                   ))}
                 </div>
@@ -189,24 +189,24 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
 
             {/* Device Split */}
             <div>
-              <h3 className="text-sm font-medium text-zinc-400 mb-2">Device Split</h3>
-              <div className="flex h-4 rounded-full overflow-hidden bg-zinc-900/50">
-                <div className="bg-blue-500" style={{ width: `${data.deviceSplit.mobile}%` }} />
-                <div className="bg-emerald-500" style={{ width: `${data.deviceSplit.desktop}%` }} />
-                <div className="bg-amber-500" style={{ width: `${data.deviceSplit.tablet}%` }} />
+              <h3 className="text-sm font-medium text-chess-text-muted mb-2">Device Split</h3>
+              <div className="flex h-4 rounded-full overflow-hidden bg-chess-page border border-slate-100">
+                <div className="bg-chess-blue" style={{ width: `${data.deviceSplit.mobile}%` }} />
+                <div className="bg-chess-green" style={{ width: `${data.deviceSplit.desktop}%` }} />
+                <div className="bg-chess-orange" style={{ width: `${data.deviceSplit.tablet}%` }} />
               </div>
               <div className="flex gap-4 mt-2">
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  Mobile: <span className="text-zinc-200 tabular-nums">{data.deviceSplit.mobile}%</span>
+                <div className="flex items-center gap-1.5 text-xs text-chess-text-muted">
+                  <span className="w-2 h-2 rounded-full bg-chess-blue" />
+                  Mobile: <span className="text-chess-text tabular-nums font-medium">{data.deviceSplit.mobile}%</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Desktop: <span className="text-zinc-200 tabular-nums">{data.deviceSplit.desktop}%</span>
+                <div className="flex items-center gap-1.5 text-xs text-chess-text-muted">
+                  <span className="w-2 h-2 rounded-full bg-chess-green" />
+                  Desktop: <span className="text-chess-text tabular-nums font-medium">{data.deviceSplit.desktop}%</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  Tablet: <span className="text-zinc-200 tabular-nums">{data.deviceSplit.tablet}%</span>
+                <div className="flex items-center gap-1.5 text-xs text-chess-text-muted">
+                  <span className="w-2 h-2 rounded-full bg-chess-orange" />
+                  Tablet: <span className="text-chess-text tabular-nums font-medium">{data.deviceSplit.tablet}%</span>
                 </div>
               </div>
             </div>
@@ -214,14 +214,14 @@ export default function UXReportPanel({ refreshKey }: { refreshKey: number }) {
             {/* Top Events */}
             {data.topEvents.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-zinc-400 mb-2">Top Events</h3>
-                <div className="bg-zinc-900/30 rounded-lg overflow-hidden">
+                <h3 className="text-sm font-medium text-chess-text-muted mb-2">Top Events</h3>
+                <div className="bg-chess-page rounded-xl overflow-hidden border border-slate-100">
                   <table className="w-full text-sm">
                     <tbody>
                       {data.topEvents.slice(0, 10).map((ev, i) => (
-                        <tr key={i} className="border-b border-zinc-800/50 last:border-0">
-                          <td className="px-3 py-1.5 text-zinc-300 text-xs font-mono">{ev.event}</td>
-                          <td className="px-3 py-1.5 text-zinc-400 text-right tabular-nums text-xs">{ev.count.toLocaleString()}</td>
+                        <tr key={i} className="border-b border-slate-100 last:border-0">
+                          <td className="px-3 py-1.5 text-chess-text text-xs font-mono">{ev.event}</td>
+                          <td className="px-3 py-1.5 text-chess-text-muted text-right tabular-nums text-xs">{ev.count.toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>

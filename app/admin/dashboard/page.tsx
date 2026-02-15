@@ -19,27 +19,29 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-chess-page text-chess-text">
       {/* Sticky Top Bar */}
-      <div className="sticky top-0 z-50 bg-zinc-900/95 backdrop-blur-sm border-b border-zinc-800">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="text-zinc-500 hover:text-zinc-300 transition-colors">
+            <Link href="/admin" className="text-chess-text-faint hover:text-chess-text transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
             <div>
-              <h1 className="text-lg font-bold text-zinc-100">Chess Path Dashboard</h1>
-              <p className="text-xs text-zinc-500">
+              <h1 className="text-lg font-bold text-chess-text">Chess Path Dashboard</h1>
+              <p className="text-xs text-chess-text-faint">
                 Last refresh: {lastRefresh.toLocaleTimeString()}
               </p>
             </div>
           </div>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg
-                       text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-chess-green text-white font-bold rounded-xl
+                       shadow-[0_4px_0_var(--color-chess-green-shadow)] hover:bg-chess-green-dark
+                       active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)]
+                       transition-all text-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
