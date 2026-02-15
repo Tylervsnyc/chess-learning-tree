@@ -48,6 +48,7 @@ Last Updated: 2026-02-15
 37. [Dynamic Pricing](#37-dynamic-pricing)
 38. [Ad Placement](#38-ad-placement)
 39. [Cron Schedule](#39-cron-schedule)
+40. [Admin Dashboard](#40-admin-dashboard)
 
 ---
 
@@ -1875,6 +1876,90 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 3. **Wave direction** is top-to-bottom with a subtle left-to-right offset.
 4. **Optional label** appears below in `text-xs text-gray-400 animate-pulse`.
 5. **Uses `ROOK_BLOCKS` from `lib/daily-rook-blocks.ts`** — single source of truth for the rook shape and colors.
+
+---
+
+## 40. Admin Dashboard
+
+The admin dashboard at `/admin/dashboard` is the **operational command center** for Chess Path. Its goal is to **automate as many operational tasks as possible** so Tyler never has to manually check analytics, hunt for bugs, or remember what needs attention.
+
+### Philosophy
+- **Morning briefing, not raw data.** The dashboard surfaces actionable suggestions, not raw numbers to interpret.
+- **Automate everything.** If something can be checked by a cron job, it should be. Every new feature should consider: "Can this report to the dashboard?"
+- **Fun and branded.** This is Chess Path, not a generic admin panel. Use the design system.
+
+### Architecture
+
+| Layer | What | Where |
+|-------|------|-------|
+| **Cron Reports** | 5 daily jobs at 7am UTC analyze data and store suggestions | `app/api/cron/report/{type}/route.ts` |
+| **Reports Table** | `dashboard_reports` stores metrics + suggestions per report type | Supabase, service-role only |
+| **Reports API** | Single endpoint returns latest reports for all types | `app/api/admin/dashboard/reports/route.ts` |
+| **Dashboard Page** | 7 panels read from APIs and reports table | `app/admin/dashboard/page.tsx` |
+| **Components** | 11 files in `components/admin/dashboard/` | Reusable cards, badges, panels |
+
+### Panels (render order)
+
+1. **Morning Briefing** — Time-aware greeting, yesterday's highlights (lessons, daily rooks, signups, puzzles), prioritized suggestion feed from all 5 reports
+2. **Command Center** — Skill command clipboard buttons, user search + grant/revoke premium, feature flag display
+3. **Revenue & Monetization** — MRR/ARR/LTV/Churn cards, MRR sparkline, subscriber mix, paywall conversion funnel, A/B pricing results
+4. **Health & Ops** — 6 cron job status cards (healthy/warning/stale), email sent/failed stats, email type breakdown
+5. **User Engagement** — DAU/WAU/MAU, 7-day activity, 4 funnel visualizations with drop-off %, retention (D1/D7/D30)
+6. **UX Report** — Auto-detected issues by severity, rage clicks, exit pages, device split, top events
+7. **Production Status** — Feature flags table, built-not-deployed items, dead analytics list, quick wins
+
+### Daily Intelligence Crons
+
+All run at `0 7 * * *` (7am UTC). Auth: `CRON_SECRET` header (Vercel auto-injects).
+
+| Report Type | Data Sources | Key Metrics |
+|-------------|-------------|-------------|
+| `engagement` | PostHog | lessons_yesterday, daily_rooks_yesterday, signups, puzzles_solved, DAU, 7d averages + change % |
+| `revenue` | Stripe + revenue_snapshots | MRR, MRR change %, new/churned subscribers, trial conversions, dunning recovery |
+| `ux` | PostHog | rage_clicks_24h, top_rage_element, highest_exit_page, mobile %, error_events |
+| `content` | Supabase puzzle_attempts | hardest/easiest puzzle, avg_accuracy, most_attempted_theme |
+| `growth` | PostHog + Stripe | paywall_conversion_rate, signup→lesson rate, lesson→subscriber rate, shares |
+
+Each cron generates `suggestions[]` with `{ priority, title, detail, action }`. Priority thresholds are defined in each cron file.
+
+### Adding New Automation
+
+When building new features, always ask: **"Should this report to the dashboard?"**
+
+To add a new report type:
+1. Create `app/api/cron/report/{type}/route.ts` following the existing pattern
+2. Query your data sources, compute metrics, generate suggestions
+3. Delete + insert into `dashboard_reports` with `report_type = '{type}'`
+4. Add the cron schedule to `vercel.json`
+5. The Morning Briefing automatically picks up new suggestions — no frontend changes needed
+
+To add a new dashboard panel:
+1. Create `components/admin/dashboard/{PanelName}.tsx`
+2. Accept `refreshKey` prop for the refresh button
+3. Add to `app/admin/dashboard/page.tsx` in the grid
+4. Use `DashboardCard` wrapper for consistent styling
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `app/admin/dashboard/page.tsx` | Main page, grid layout, refresh state |
+| `components/admin/dashboard/MorningBriefing.tsx` | Greeting + highlights + suggestions |
+| `components/admin/dashboard/CommandCenter.tsx` | Actions, user search, feature flags |
+| `components/admin/dashboard/RevenuePanel.tsx` | Revenue metrics + conversion data |
+| `components/admin/dashboard/HealthPanel.tsx` | Cron status + email health |
+| `components/admin/dashboard/EngagementPanel.tsx` | Active users + funnels + retention |
+| `components/admin/dashboard/UXReportPanel.tsx` | UX issues + rage clicks + exits |
+| `components/admin/dashboard/ProductionStatus.tsx` | Flags, deployments, quick wins |
+| `components/admin/dashboard/DashboardCard.tsx` | Collapsible card wrapper |
+| `components/admin/dashboard/MetricCard.tsx` | Stat card with value + delta |
+| `components/admin/dashboard/StatusBadge.tsx` | Colored status pill |
+| `app/api/admin/dashboard/reports/route.ts` | Reads latest reports from table |
+| `app/api/admin/dashboard/health/route.ts` | Live cron + email health queries |
+| `app/api/admin/dashboard/engagement/route.ts` | Live PostHog engagement queries |
+| `app/api/admin/dashboard/ux-report/route.ts` | Live PostHog UX queries |
+| `app/api/cron/report/*.ts` | 5 daily intelligence cron jobs |
+| `supabase/migrations/add-dashboard-reports.sql` | Table schema |
 
 ---
 
