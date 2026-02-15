@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
+import MorningBriefing from '@/components/admin/dashboard/MorningBriefing';
 import CommandCenter from '@/components/admin/dashboard/CommandCenter';
 import RevenuePanel from '@/components/admin/dashboard/RevenuePanel';
 import HealthPanel from '@/components/admin/dashboard/HealthPanel';
@@ -54,6 +55,9 @@ export default function AdminDashboardPage() {
       {/* Dashboard Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Panel 0: Morning Briefing — full width */}
+          <MorningBriefing refreshKey={refreshKey} />
+
           {/* Panel 1: Command Center — full width */}
           <CommandCenter />
 
