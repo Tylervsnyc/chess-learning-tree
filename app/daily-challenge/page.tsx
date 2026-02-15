@@ -20,6 +20,7 @@ import { ShareEvents, EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 interface Puzzle {
   puzzleId: string;
@@ -1354,6 +1355,11 @@ export default function DailyChallengePage() {
 
                 </div>
               )}
+
+              {/* Ad slot after completion */}
+              <div className="mb-2">
+                <AdSlot position="daily-complete" />
+              </div>
 
               {/* Bottom action buttons */}
               {!user ? (

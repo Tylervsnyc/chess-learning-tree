@@ -50,6 +50,30 @@ export const PRICE_DETAILS = {
   },
 };
 
+// Experiment price IDs — each variant maps to Stripe price IDs
+// Falls back to the default price if variant-specific env vars aren't set
+export const EXPERIMENT_PRICES: Record<string, { monthly: string; yearly: string }> = {
+  control: {
+    monthly: process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
+    yearly: process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
+  },
+  low: {
+    monthly: process.env.STRIPE_PRICE_MONTHLY_LOW || process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
+    yearly: process.env.STRIPE_PRICE_YEARLY_LOW || process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
+  },
+  high: {
+    monthly: process.env.STRIPE_PRICE_MONTHLY_HIGH || process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
+    yearly: process.env.STRIPE_PRICE_YEARLY_HIGH || process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
+  },
+};
+
+// Display amounts per variant (cents)
+export const EXPERIMENT_DISPLAY_PRICES: Record<string, { monthly: number; yearly: number }> = {
+  control: { monthly: 999, yearly: 7999 },
+  low: { monthly: 499, yearly: 3999 },
+  high: { monthly: 1499, yearly: 11999 },
+};
+
 // Free tier limits
 export const FREE_TIER = {
   DAILY_PUZZLE_LIMIT: 15,

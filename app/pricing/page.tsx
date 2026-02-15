@@ -1,10 +1,16 @@
 'use client';
-// Compact single-screen pricing layout
+// Compact single-screen pricing layout with dynamic pricing experiment support
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSubscription } from '@/hooks/useSubscription';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
+
+type PricingVariant = 'control' | 'low' | 'high';
+
+function formatPrice(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
 
 function PricingContent() {
   const router = useRouter();
@@ -12,9 +18,36 @@ function PricingContent() {
   const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
+  // Pricing experiment state
+  const [variant, setVariant] = useState<PricingVariant>('control');
+  const [monthlyPrice, setMonthlyPrice] = useState(999);
+  const [yearlyPrice, setYearlyPrice] = useState(7999);
+  const [pricesLoaded, setPricesLoaded] = useState(false);
+
   useEffect(() => {
     SubscriptionEvents.pricingViewed();
   }, []);
+
+  // Fetch pricing variant on mount
+  useEffect(() => {
+    async function fetchPricing() {
+      try {
+        const res = await fetch('/api/pricing-experiment');
+        if (res.ok) {
+          const data = await res.json();
+          setVariant(data.variant);
+          setMonthlyPrice(data.prices.monthly);
+          setYearlyPrice(data.prices.yearly);
+        }
+      } catch {
+        // Fall back to control prices silently
+      } finally {
+        setPricesLoaded(true);
+      }
+    }
+    fetchPricing();
+  }, []);
+
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -52,7 +85,7 @@ function PricingContent() {
 
     setCheckoutLoading(true);
     try {
-      await startCheckout('monthly');
+      await startCheckout('monthly', variant);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Checkout failed');
       setCheckoutLoading(false);
@@ -77,7 +110,7 @@ function PricingContent() {
         </div>
       )}
 
-      {loading ? (
+      {loading || !pricesLoaded ? (
         <div className="flex-1 flex justify-center items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
         </div>
@@ -117,7 +150,7 @@ function PricingContent() {
             <div className="relative z-10 flex items-center justify-between">
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-black">$4.99</span>
+                  <span className="text-4xl font-black text-black">{formatPrice(monthlyPrice)}</span>
                   <span className="text-black/60 font-medium text-sm">/month</span>
                 </div>
                 <p className="text-black/50 text-xs">Cancel anytime</p>

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
+import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
+import { PaymentFailed } from '@/lib/email/templates/PaymentFailed';
 import Stripe from 'stripe';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -299,7 +301,7 @@ async function handlePaymentFailed(
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id')
+    .select('id, email, display_name')
     .eq('stripe_customer_id', customerId)
     .single();
 
@@ -308,7 +310,40 @@ async function handlePaymentFailed(
     return;
   }
 
-  // Optionally: Send notification, mark account, etc.
-  // For now, we just log it - Stripe will retry automatically
-  console.warn(`Payment failed for user ${profile.id}`);
+  if (!profile.email) {
+    console.error(`User ${profile.id} has no email for payment failure notification`);
+    return;
+  }
+
+  try {
+    // Generate Stripe billing portal URL so user can update payment method
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${getAppUrl()}/settings`,
+    });
+
+    const appUrl = getAppUrl();
+    const unsubscribeUrl = getUnsubscribeUrl(profile.id, 'payment_failed');
+
+    await sendEmail({
+      to: profile.email,
+      userId: profile.id,
+      type: 'payment_failed',
+      subject: 'Your payment failed — update your billing info',
+      react: PaymentFailed({
+        displayName: profile.display_name || 'Chess Player',
+        attemptNumber: 1,
+        billingPortalUrl: portalSession.url,
+        appUrl,
+        unsubscribeUrl,
+      }),
+      metadata: {
+        attempt_number: 1,
+        stripe_invoice_id: invoice.id,
+        stripe_customer_id: customerId,
+      },
+    });
+  } catch (error) {
+    console.error(`Failed to send payment failure email for user ${profile.id}:`, error);
+  }
 }

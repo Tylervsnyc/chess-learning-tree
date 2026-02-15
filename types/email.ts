@@ -5,7 +5,11 @@ export type EmailType =
   | 'streak_lost'
   | 'weekly_digest'
   | 'welcome'
-  | 're_engagement';
+  | 're_engagement'
+  | 'drip_day3'
+  | 'drip_day5'
+  | 'drip_day7'
+  | 'payment_failed';
 
 export interface EmailPreferences {
   user_id: string;
@@ -83,6 +87,34 @@ export interface ReEngagementProps {
   displayName: string;
   daysSinceLastPlay: number;
   previousStreak: number;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface DripDay3Props {
+  displayName: string;
+  currentLevel: string;
+  currentLesson: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface DripDay5Props {
+  displayName: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface DripDay7Props {
+  displayName: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface PaymentFailedProps {
+  displayName: string;
+  attemptNumber: 1 | 2 | 3;
+  billingPortalUrl: string;
   appUrl: string;
   unsubscribeUrl: string;
 }

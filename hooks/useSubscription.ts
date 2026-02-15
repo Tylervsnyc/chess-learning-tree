@@ -61,13 +61,13 @@ export function useSubscription() {
     fetchStatus();
   }, [fetchStatus]);
 
-  const startCheckout = async (priceId: 'monthly' | 'yearly') => {
+  const startCheckout = async (priceId: 'monthly' | 'yearly', variant?: string) => {
     SubscriptionEvents.checkoutStarted(priceId);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ priceId, variant }),
       });
 
       const data = await res.json();

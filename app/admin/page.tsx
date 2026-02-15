@@ -128,10 +128,28 @@ function AdminPageContent() {
                 Difficulty Analyzer
               </Link>
               <Link
+                href="/admin/ad-performance"
+                className="text-sm text-gray-400 hover:text-[#FFD700] transition-colors"
+              >
+                Ad Performance
+              </Link>
+              <Link
                 href="/admin/agents"
                 className="text-sm text-gray-400 hover:text-[#CE82FF] transition-colors"
               >
                 Agent Dashboard
+              </Link>
+              <Link
+                href="/admin/revenue"
+                className="text-sm text-gray-400 hover:text-[#58CC02] transition-colors"
+              >
+                Revenue Dashboard
+              </Link>
+              <Link
+                href="/admin/paywall-analytics"
+                className="text-sm text-gray-400 hover:text-[#FFC800] transition-colors"
+              >
+                Paywall Analytics
               </Link>
             </div>
 

@@ -9,6 +9,7 @@ import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnima
 import { generateLessonShareText } from '@/lib/share/generate-share-text';
 import { ShareEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 const COLORS = {
   green: 'var(--color-chess-green)',
@@ -254,6 +255,14 @@ export function LessonCompleteScreen({
           </div>
         )}
 
+        {/* Ad slot after lesson */}
+        <div
+          className="mb-4 animate-fadeInUp"
+          style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}
+        >
+          <AdSlot position="after-lesson" />
+        </div>
+
         {/* Continue button */}
         <button
           onClick={() => {
@@ -265,7 +274,7 @@ export function LessonCompleteScreen({
           style={{
             backgroundColor: COLORS.green,
             boxShadow: '0 4px 0 var(--color-chess-green-shadow)',
-            animationDelay: '0.4s',
+            animationDelay: '0.45s',
             animationFillMode: 'backwards',
           }}
         >
@@ -276,7 +285,7 @@ export function LessonCompleteScreen({
         {isGuest && (
           <div
             className="mt-4 bg-chess-bg-light rounded-xl p-4 animate-fadeInUp"
-            style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
+            style={{ animationDelay: '0.55s', animationFillMode: 'backwards' }}
           >
             <p className="text-gray-400 text-sm mb-3 text-center">Create a free account to save progress</p>
             <div className="flex gap-3">

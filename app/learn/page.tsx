@@ -10,6 +10,7 @@ import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { EngagementEvents } from '@/lib/analytics/posthog';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star' | 'lightning' | 'shield';
@@ -664,6 +665,11 @@ export default function LearnPage() {
             </div>
           );
         })}
+
+        {/* Ad slot at bottom of curriculum */}
+        <div className="mt-4 mb-2">
+          <AdSlot position="learn-page" />
+        </div>
       </div>
 
     </div>

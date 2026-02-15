@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { stripe, PRICES } from '@/lib/stripe';
+import { stripe, PRICES, EXPERIMENT_PRICES } from '@/lib/stripe';
+import type { PricingVariant } from '@/lib/posthog-flags';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { priceId } = await request.json();
+    const { priceId, variant } = await request.json();
 
     if (!priceId || (priceId !== 'monthly' && priceId !== 'yearly')) {
       return NextResponse.json(
@@ -33,7 +34,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const stripePriceId = priceId === 'monthly' ? PRICES.MONTHLY : PRICES.YEARLY;
+    // Resolve Stripe price ID — use experiment variant if provided, otherwise default
+    let stripePriceId: string;
+    const validVariants: PricingVariant[] = ['control', 'low', 'high'];
+    const resolvedVariant: PricingVariant = variant && validVariants.includes(variant) ? variant : 'control';
+
+    if (resolvedVariant !== 'control' && EXPERIMENT_PRICES[resolvedVariant]) {
+      stripePriceId = priceId === 'monthly'
+        ? EXPERIMENT_PRICES[resolvedVariant].monthly
+        : EXPERIMENT_PRICES[resolvedVariant].yearly;
+    } else {
+      stripePriceId = priceId === 'monthly' ? PRICES.MONTHLY : PRICES.YEARLY;
+    }
 
     // Check if price ID is set
     if (!stripePriceId) {
@@ -69,7 +81,7 @@ export async function POST(request: NextRequest) {
         .eq('id', user.id);
     }
 
-    // Create checkout session
+    // Create checkout session with experiment metadata
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
@@ -84,10 +96,12 @@ export async function POST(request: NextRequest) {
       cancel_url: `${request.nextUrl.origin}/subscription/cancelled`,
       metadata: {
         supabase_user_id: user.id,
+        pricing_variant: resolvedVariant,
       },
       subscription_data: {
         metadata: {
           supabase_user_id: user.id,
+          pricing_variant: resolvedVariant,
         },
       },
     });
