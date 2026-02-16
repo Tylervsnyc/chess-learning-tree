@@ -29,7 +29,7 @@ function useBoardSizeFromRef(ref: React.RefObject<HTMLDivElement | null>) {
 
     function measure() {
       const { width, height } = el!.getBoundingClientRect();
-      setSize(Math.max(200, Math.min(360, width, height)));
+      setSize(Math.max(200, Math.min(480, width, height)));
     }
 
     measure();
@@ -189,7 +189,7 @@ function VariantA({ boardContainerRef, boardSize }: {
 }) {
   return (
     <div className="h-full md:max-h-[700px] bg-chess-page flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col items-center px-4 min-h-0 max-w-lg mx-auto w-full">
+      <div className="flex-1 flex flex-col items-center px-4 min-h-0 max-w-lg md:max-w-xl mx-auto w-full">
         {/* Hero copy */}
         <div className="pt-5 pb-2 flex flex-col items-center text-center">
           <div className="mb-3" style={{ transform: 'scale(0.5)', transformOrigin: 'center' }}>
@@ -232,7 +232,7 @@ function VariantB({ boardContainerRef, boardSize }: {
 }) {
   return (
     <div className="h-full md:max-h-[700px] bg-chess-page flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col items-center px-3 min-h-0 max-w-lg mx-auto w-full">
+      <div className="flex-1 flex flex-col items-center px-3 min-h-0 max-w-lg md:max-w-xl mx-auto w-full">
         <div className="pt-4 pb-3 flex flex-col items-center">
           <div className="mb-3" style={{ transform: 'scale(0.6)', transformOrigin: 'center' }}>
             <AnimatedLogo theme="light" size="md" />
@@ -270,7 +270,7 @@ function VariantC({ boardContainerRef, boardSize }: {
 }) {
   return (
     <div className="h-full md:max-h-[700px] bg-chess-page flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col items-center px-4 min-h-0 max-w-lg mx-auto w-full">
+      <div className="flex-1 flex flex-col items-center px-4 min-h-0 max-w-lg md:max-w-xl mx-auto w-full">
         {/* Daily habit pitch */}
         <div className="pt-5 pb-2 flex flex-col items-center text-center">
           <div className="mb-3" style={{ transform: 'scale(0.5)', transformOrigin: 'center' }}>
