@@ -45,20 +45,6 @@ interface ProcessedPuzzle {
   lastMoveTo: string;
 }
 
-interface LeaderboardEntry {
-  rank: number;
-  displayName: string;
-  puzzlesCompleted: number;
-  timeMs: number; // completion time in ms
-  isCurrentUser: boolean;
-}
-
-interface PersonalBestEntry {
-  challengeDate: string;
-  puzzlesCompleted: number;
-  timeMs: number;
-}
-
 const TOTAL_TIME = 5 * 60 * 1000; // 5 minutes in ms
 const MAX_LIVES = 3;
 
@@ -129,26 +115,10 @@ export default function DailyChallengePage() {
   const [reviewMoveIndex, setReviewMoveIndex] = useState(0);
   const [reviewFen, setReviewFen] = useState<string | null>(null);
 
-  // Leaderboard state
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [userEntry, setUserEntry] = useState<LeaderboardEntry | null>(null);
-  const [totalParticipants, setTotalParticipants] = useState(0);
-  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
-
-  // Personal best state
-  const [personalBests, setPersonalBests] = useState<PersonalBestEntry[]>([]);
-  const [totalGames, setTotalGames] = useState(0);
-  const [loadingPersonalBests, setLoadingPersonalBests] = useState(false);
-
   // Track if user already completed today (prevents replay)
   const [alreadyCompletedToday, setAlreadyCompletedToday] = useState(false);
   const [checkingCompletion, setCheckingCompletion] = useState(true);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showResultsSignupModal, setShowResultsSignupModal] = useState(false);
-
-  // Leaderboard view toggle - default to My Standing
-  const [showMyStanding, setShowMyStanding] = useState(true);
-
   // Share state
   const [cardSharing, setCardSharing] = useState(false);
   const shareImageRef = useRef<Blob | null>(null);
@@ -257,7 +227,7 @@ export default function DailyChallengePage() {
         const data = await res.json();
 
         // Check if user has a result - either in userEntry OR in leaderboard with isCurrentUser
-        const userInLeaderboard = (data.leaderboard || []).find((e: LeaderboardEntry) => e.isCurrentUser);
+        const userInLeaderboard = (data.leaderboard || []).find((e: { isCurrentUser: boolean; puzzlesCompleted: number; timeMs: number }) => e.isCurrentUser);
         const existingResult = data.userEntry || userInLeaderboard;
 
         if (existingResult) {
@@ -267,16 +237,10 @@ export default function DailyChallengePage() {
           setTimeLeft(TOTAL_TIME - existingResult.timeMs);
           finalElapsedMsRef.current = existingResult.timeMs;
           hasRecordedRef.current = true; // Don't re-record on revisit
-          setLeaderboard(data.leaderboard || []);
-          setUserEntry(data.userEntry || userInLeaderboard);
-          setTotalParticipants(data.totalParticipants || 0);
 
-          // Also fetch today's puzzles for review and personal bests
+          // Also fetch today's puzzles for review
           try {
-            const [puzzleRes, personalBestRes] = await Promise.all([
-              fetch('/api/daily-challenge/puzzles'),
-              fetch('/api/daily-challenge/personal-best?limit=10'),
-            ]);
+            const puzzleRes = await fetch('/api/daily-challenge/puzzles');
             const puzzleData = await puzzleRes.json();
             if (puzzleData.puzzles) {
               const processed = puzzleData.puzzles.map((p: Puzzle) => processPuzzle(p));
@@ -287,11 +251,6 @@ export default function DailyChallengePage() {
                 results[p.puzzleId] = 'correct';
               });
               setPuzzleResults(results);
-            }
-            const personalBestData = await personalBestRes.json();
-            if (personalBestData.personalBests) {
-              setPersonalBests(personalBestData.personalBests);
-              setTotalGames(personalBestData.totalGames || 0);
             }
           } catch (puzzleError) {
             console.error('Failed to fetch puzzles for review:', puzzleError);
@@ -669,43 +628,13 @@ export default function DailyChallengePage() {
     }
   }, [user]);
 
-  // Fetch leaderboard
-  const fetchLeaderboard = useCallback(async () => {
-    setLoadingLeaderboard(true);
-    try {
-      const res = await fetch('/api/daily-challenge/leaderboard?limit=10');
-      const data = await res.json();
-      if (data.leaderboard) {
-        setLeaderboard(data.leaderboard);
-        setUserEntry(data.userEntry);
-        setTotalParticipants(data.totalParticipants || 0);
-      }
-    } catch (error) {
-      console.error('Failed to fetch leaderboard:', error);
-    }
-    setLoadingLeaderboard(false);
-  }, []);
-
-  // Fetch personal bests
-  const fetchPersonalBests = useCallback(async () => {
-    setLoadingPersonalBests(true);
-    try {
-      const res = await fetch('/api/daily-challenge/personal-best?limit=10');
-      const data = await res.json();
-      if (data.personalBests) {
-        setPersonalBests(data.personalBests);
-        setTotalGames(data.totalGames || 0);
-      }
-    } catch (error) {
-      console.error('Failed to fetch personal bests:', error);
-    }
-    setLoadingPersonalBests(false);
-  }, []);
-
-  // Record when finished and fetch leaderboard
+  // Record when finished
   useEffect(() => {
     if (gameState === 'finished') {
-      EngagementEvents.dailyChallengeCompleted(puzzlesSolved === allPuzzles.length);
+      // Only fire analytics on fresh completion, not revisits
+      if (!hasRecordedRef.current) {
+        EngagementEvents.dailyChallengeCompleted(puzzlesSolved === allPuzzles.length);
+      }
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
 
@@ -715,13 +644,9 @@ export default function DailyChallengePage() {
         recordResult(puzzlesSolved, finalTimeLeft);
         // Update global day streak (per RULES.md Section 11)
         recordDailyActivity();
-        setTimeout(() => {
-          fetchLeaderboard();
-          fetchPersonalBests();
-        }, 500);
       }
     }
-  }, [gameState, puzzlesSolved, recordResult, fetchLeaderboard, fetchPersonalBests, recordDailyActivity, user]);
+  }, [gameState, puzzlesSolved, recordResult, recordDailyActivity, user]);
 
   // Pre-fetch share image when game finishes; re-fetches when rank data arrives
   // Uses paramsKey dedup to avoid redundant fetches, never clears cached image
@@ -735,9 +660,6 @@ export default function DailyChallengePage() {
       time: String(finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft),
       format: 'story',
     });
-    if (userEntry?.rank) ogParams.set('rank', String(userEntry.rank));
-    if (totalParticipants > 0) ogParams.set('total', String(totalParticipants));
-    if (userEntry?.displayName) ogParams.set('name', userEntry.displayName);
     const resultsStr = allPuzzles.map(p => puzzleResults[p.puzzleId] === 'correct' ? '1' : '0').join(',');
     ogParams.set('results', resultsStr);
 
@@ -753,12 +675,12 @@ export default function DailyChallengePage() {
       .then(blob => {
         if (blob) {
           shareImageRef.current = blob;
-          setShareImageReady(true); // enables button + triggers re-render for rank upgrade
+          setShareImageReady(true);
         }
       })
       .catch(() => {})
       .finally(() => { shareImageFetchingRef.current = false; });
-  }, [gameState, allPuzzles, puzzlesSolved, timeLeft, userEntry, totalParticipants, puzzleResults]);
+  }, [gameState, allPuzzles, puzzlesSolved, timeLeft, puzzleResults]);
 
   // Format time display
   const formatTime = (ms: number) => {
@@ -820,19 +742,6 @@ export default function DailyChallengePage() {
 
   // Completion time (time used) — use ref for accuracy, fall back to state calculation
   const completionTimeMs = finalElapsedMsRef.current > 0 ? finalElapsedMsRef.current : TOTAL_TIME - timeLeft;
-
-  // Helper to format date as short month + day (e.g. "Feb 11")
-  const formatShortDate = (dateStr: string) => {
-    const date = new Date(dateStr + 'T12:00:00'); // noon to avoid timezone issues
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  // Today's date string for highlighting
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  const globalPct = userEntry && totalParticipants > 0
-    ? Math.round(((totalParticipants - userEntry.rank) / totalParticipants) * 100)
-    : null;
 
   // Loading state while checking if user already completed today
   if (checkingCompletion || userLoading) {
@@ -1126,18 +1035,7 @@ export default function DailyChallengePage() {
                   <span className="text-5xl font-black text-chess-orange">{puzzlesSolved}</span>
                   <span className="text-lg font-bold text-chess-orange/35">/{allPuzzles.length || 22}</span>
                 </div>
-                {globalPct !== null && globalPct > 0 && (
-                  <div className="inline-block px-3 py-1 rounded-full mt-2" style={{ background: 'rgba(70,163,2,0.12)' }}>
-                    <span className="text-sm font-extrabold text-chess-green-dark">Top {100 - globalPct < 1 ? 1 : 100 - globalPct}%</span>
-                  </div>
-                )}
                 <div className="flex items-center justify-center gap-2 mt-1">
-                  {userEntry?.displayName && (
-                    <>
-                      <span className="text-base font-bold text-chess-text">{userEntry.displayName}</span>
-                      <span className="w-1 h-1 rounded-full bg-black/15 inline-block" />
-                    </>
-                  )}
                   <span className="text-base font-semibold text-chess-text/40">in {formatTime(completionTimeMs)}</span>
                 </div>
               </div>
@@ -1213,114 +1111,6 @@ export default function DailyChallengePage() {
                     </>
                   )}
                 </button>
-              )}
-
-              {/* Leaderboard for logged-in users, Login CTA for guests */}
-              {user ? (
-                <div className="bg-chess-surface rounded-xl p-3 mb-2 shadow-sm">
-                  {/* Toggle buttons */}
-                  <div className="flex rounded-lg bg-chess-page p-1 mb-3">
-                    <button
-                      onClick={() => setShowMyStanding(false)}
-                      className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                        !showMyStanding ? 'bg-chess-surface text-chess-text shadow-sm' : 'text-chess-text-muted'
-                      }`}
-                    >
-                      My Best
-                    </button>
-                    <button
-                      onClick={() => setShowMyStanding(true)}
-                      className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                        showMyStanding ? 'bg-chess-surface text-chess-text shadow-sm' : 'text-chess-text-muted'
-                      }`}
-                    >
-                      My Standing
-                    </button>
-                  </div>
-
-                  {(showMyStanding ? loadingLeaderboard : loadingPersonalBests) ? (
-                    <div className="text-chess-text-muted py-3 text-sm">Loading...</div>
-                  ) : showMyStanding ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-chess-green/10 border border-chess-green/30">
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-full bg-chess-green/20 flex items-center justify-center text-chess-green font-bold text-sm">
-                            #{userEntry?.rank || 1}
-                          </span>
-                          <div className="text-left">
-                            <div className="text-chess-green font-semibold text-sm">Your Rank</div>
-                            <div className="text-chess-text-muted text-xs">
-                              {totalParticipants > 0 ? `out of ${totalParticipants.toLocaleString()} player${totalParticipants === 1 ? '' : 's'} today` : 'First one today!'}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-chess-text font-bold text-lg">{puzzlesSolved}</div>
-                          <div className="text-chess-text-muted text-xs">{formatTime(completionTimeMs)}</div>
-                        </div>
-                      </div>
-                      <div className="text-center text-chess-text-muted text-xs py-1">
-                        {userEntry && userEntry.rank > 1 ? `Beat ${userEntry.rank - 1} player${userEntry.rank - 1 === 1 ? '' : 's'}!` : 'You\'re in the lead!'}
-                      </div>
-                    </div>
-                  ) : personalBests.length === 0 ? (
-                    <div className="text-center text-chess-text-muted text-sm py-4">
-                      Complete your first Daily Rook to see your history here!
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="space-y-1 max-h-48 overflow-y-auto">
-                        {personalBests.map((entry) => {
-                          const isToday = entry.challengeDate === todayStr;
-                          return (
-                            <div
-                              key={entry.challengeDate}
-                              className={`flex items-center justify-between p-2 rounded-lg ${
-                                isToday ? 'bg-chess-green/10 border border-chess-green/30' : 'bg-chess-page'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className={`text-sm font-medium ${isToday ? 'text-chess-green' : 'text-chess-text'}`}>
-                                  {isToday ? 'Today' : formatShortDate(entry.challengeDate)}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className="text-chess-text font-bold text-sm tabular-nums">{entry.puzzlesCompleted}</span>
-                                <span className="text-chess-text-muted text-[10px] tabular-nums w-10 text-right">{formatTime(entry.timeMs)}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div className="text-center text-chess-text-muted text-xs pt-2">
-                        {totalGames} game{totalGames === 1 ? '' : 's'} played
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <div className="bg-chess-surface rounded-xl p-4 mb-2 shadow-sm">
-                    <div className="text-center">
-                      <h2 className="text-chess-text font-bold text-base mb-1">How did you stack up?</h2>
-                      <p className="text-chess-text-muted text-xs mb-3">
-                        Create an account to track your scores and streaks
-                      </p>
-                      <button
-                        onClick={() => setShowResultsSignupModal(true)}
-                        className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
-                        style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
-                      >
-                        Create Free Account
-                      </button>
-                    </div>
-                  </div>
-                  <CreateProfileModal
-                    isOpen={showResultsSignupModal}
-                    onClose={() => setShowResultsSignupModal(false)}
-                    context="daily-rook-results"
-                  />
-                </>
               )}
 
               {/* Puzzle Review Section */}
