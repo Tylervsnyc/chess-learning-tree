@@ -24,18 +24,19 @@ function SignupContent() {
   const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     AuthEvents.signupPageViewed();
   }, []);
 
-  // Auto-clear errors after 5 seconds
+  // Auto-clear errors after 5 seconds (but not duplicate email — user needs time to find the link)
   useEffect(() => {
-    if (!error) return;
+    if (!error || isDuplicateEmail) return;
     const timer = setTimeout(() => setError(null), 5000);
     return () => clearTimeout(timer);
-  }, [error]);
+  }, [error, isDuplicateEmail]);
 
   const handleResendConfirmation = async () => {
     setResending(true);
@@ -156,6 +157,7 @@ function SignupContent() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsDuplicateEmail(false);
     setLoading(true);
     AuthEvents.signupStarted();
 
@@ -175,7 +177,8 @@ function SignupContent() {
 
     // Supabase returns a fake success with empty identities when the email already exists
     if (data.user && data.user.identities?.length === 0) {
-      setError('An account with this email already exists. Try signing in instead.');
+      setError('An account with this email already exists.');
+      setIsDuplicateEmail(true);
       setLoading(false);
       return;
     }
@@ -296,8 +299,16 @@ function SignupContent() {
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm mb-3">
-                {error}
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm mb-3">
+                <p className="text-red-600">{error}</p>
+                {isDuplicateEmail && (
+                  <Link
+                    href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'}
+                    className="inline-flex items-center gap-1 mt-2 text-chess-blue font-bold hover:underline"
+                  >
+                    Sign in instead &rarr;
+                  </Link>
+                )}
               </div>
             )}
 
@@ -309,7 +320,7 @@ function SignupContent() {
             >
               {googleLoading ? (
                 <>
-                  <BreathingRook size="xs" />
+                  <span className="h-5 w-5 border-2 border-slate-300 border-t-chess-blue rounded-full animate-spin" />
                   Redirecting...
                 </>
               ) : (
@@ -342,7 +353,8 @@ function SignupContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
+                  disabled={loading}
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors disabled:opacity-50"
                   placeholder="you@example.com"
                 />
               </div>
@@ -357,8 +369,9 @@ function SignupContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={loading}
                   minLength={6}
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors disabled:opacity-50"
                   placeholder="••••••••"
                 />
                 <p className="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
@@ -367,8 +380,11 @@ function SignupContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none bg-chess-green"
+                className="w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#3d8c01] disabled:opacity-50 disabled:shadow-none bg-chess-green flex items-center justify-center gap-2"
               >
+                {loading && (
+                  <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                )}
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
             </form>
