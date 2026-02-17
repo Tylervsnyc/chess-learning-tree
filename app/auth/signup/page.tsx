@@ -399,6 +399,13 @@ function SignupContent() {
               Sign in
             </Link>
           </p>
+
+          <p className="text-center text-slate-400 text-xs pt-3">
+            By signing up you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-slate-500">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="underline hover:text-slate-500">Privacy Policy</Link>.
+          </p>
         </div>
       </div>
     </div>
