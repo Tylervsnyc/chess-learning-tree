@@ -13,7 +13,7 @@ import {
   vibrateOnCorrect,
   vibrateOnError,
 } from '@/lib/sounds';
-import { BOARD_COLORS } from '@/lib/puzzle-utils';
+import { BOARD_COLORS, getCheckmateSquareHighlights } from '@/lib/puzzle-utils';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { IntroPopup } from '@/components/puzzle/IntroPopup';
@@ -300,6 +300,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
   const [puzzleComplete, setPuzzleComplete] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [isBoardTransitioning, setIsBoardTransitioning] = useState(false);
+  const [showCheckmateHighlights, setShowCheckmateHighlights] = useState(false);
 
   // Progress tracking
   const [streak, setStreak] = useState(0);
@@ -348,6 +349,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     setPuzzleComplete(false);
     setIsSetupDone(false);
     setShowTip(false);
+    setShowCheckmateHighlights(false);
     solvedRef.current = false;
     advancingRef.current = false;
 
@@ -634,8 +636,36 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
       };
     }
 
+    // Layer 6: Checkmate explanation highlights (red = attacked, yellow = blocked by friendly)
+    if (game && game.isCheckmate()) {
+      const kingColor = game.turn(); // The side in checkmate is the one whose turn it is
+      const highlights = getCheckmateSquareHighlights(game, kingColor);
+      const allHighlightSquares = [...highlights.attackedSquares, ...highlights.blockedByFriendlySquares];
+
+      if (showCheckmateHighlights) {
+        highlights.attackedSquares.forEach(sq => {
+          styles[sq] = {
+            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+            boxShadow: 'inset 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.4)',
+          };
+        });
+
+        highlights.blockedByFriendlySquares.forEach(sq => {
+          styles[sq] = {
+            backgroundColor: 'rgba(255, 255, 0, 0.5)',
+            boxShadow: 'inset 0 0 0 3px rgba(255, 200, 0, 0.8), 0 0 12px rgba(255, 255, 0, 0.4)',
+          };
+        });
+      } else {
+        // Explicitly clear highlight squares so react-chessboard removes cached styles
+        allHighlightSquares.forEach(sq => {
+          styles[sq] = {};
+        });
+      }
+    }
+
     return styles;
-  }, [guidedStep, activePuzzle, selectedSquare, game, isSetupDone, hintShown, scaffoldLevel, puzzleComplete]);
+  }, [guidedStep, activePuzzle, selectedSquare, game, isSetupDone, hintShown, scaffoldLevel, puzzleComplete, showCheckmateHighlights]);
 
   // ─── Is board interactive right now? ───
   const boardInteractive = useMemo(() => {
@@ -841,6 +871,9 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
               type="correct"
               message={COMPLETION_MESSAGES[puzzleIndex] || 'Checkmate!'}
               onContinue={nextPuzzle}
+              isCheckmate={game?.isCheckmate()}
+              onShowCheckmateExplain={(show) => setShowCheckmateHighlights(show)}
+              checkmateExplainActive={showCheckmateHighlights}
             />
           )}
 
