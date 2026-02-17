@@ -1,4 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+/**
+ * Verify the requesting user is authenticated and has admin privileges
+ */
+async function verifyAdmin(): Promise<{ isAdmin: boolean; error?: string }> {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { isAdmin: false, error: 'Unauthorized - please log in' };
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return { isAdmin: false, error: 'Could not verify admin status' };
+    }
+
+    if (!profile.is_admin) {
+      return { isAdmin: false, error: 'Forbidden - admin access required' };
+    }
+
+    return { isAdmin: true };
+  } catch {
+    return { isAdmin: false, error: 'Authentication error' };
+  }
+}
 
 const POSTHOG_API_KEY = process.env.POSTHOG_PERSONAL_API_KEY;
 const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID || '107029';
@@ -64,6 +98,14 @@ async function queryPostHogEvents(
 }
 
 export async function GET(request: NextRequest) {
+  const { isAdmin, error: authError } = await verifyAdmin();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: authError },
+      { status: authError?.includes('Unauthorized') ? 401 : 403 }
+    );
+  }
+
   const range = request.nextUrl.searchParams.get('range') || '7d';
   const dateAfter = getDateRange(range);
 
