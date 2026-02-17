@@ -229,7 +229,7 @@ export default function LessonPage() {
   const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[];
   const wrongAnimStyles = Object.keys(WRONG_ANIMATION_STYLES) as WrongAnimationStyle[];
   const [lessonAnimIndex] = useState(() => Math.floor(Math.random() * correctAnimStyles.length));
-  const [wrongAnimCount, setWrongAnimCount] = useState(0);
+  const [wrongAnimCount, setWrongAnimCount] = useState(() => Math.floor(Math.random() * wrongAnimStyles.length));
   const rookCorrectStyle = correctAnimStyles[lessonAnimIndex % correctAnimStyles.length];
   const rookWrongStyle = wrongAnimStyles[wrongAnimCount % wrongAnimStyles.length];
   const rookProgressRef = useRef<RookProgressAnimationRef>(null);
