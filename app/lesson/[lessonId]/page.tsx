@@ -952,7 +952,7 @@ export default function LessonPage() {
             <div className="text-5xl mb-4">⏰</div>
             <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
             <p className="text-white/60 mb-6">
-              You&apos;ve completed your 2 free lessons today. Come back tomorrow or upgrade for unlimited access!
+              You&apos;ve completed your 4 free lessons today. Come back tomorrow or upgrade for unlimited access!
             </p>
             <div className="flex flex-col gap-3">
               <button

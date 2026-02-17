@@ -91,7 +91,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
               Save Your Progress on Chess Path!
             </p>
             <p className="text-gray-400 text-sm text-center mb-4">
-              Create a free account to keep your streak alive. You&apos;ll get 2 free lessons per day — more than enough to level up.
+              Create a free account to keep your streak alive. You&apos;ll get 4 free lessons per day — more than enough to level up.
             </p>
             <button
               onClick={handleSignUpFree}
