@@ -758,7 +758,11 @@ function SectionView({
   currentPosition: string;
 }) {
   const router = useRouter();
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+  // Auto-open popup on first lesson for brand new users (no completed lessons)
+  const autoSelect = completedLessons.length === 0
+    && currentPosition === '1.1.1'
+    && section.lessons.some(l => l.id === '1.1.1');
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(autoSelect ? '1.1.1' : null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const contentRef = useRef<HTMLDivElement>(null);
