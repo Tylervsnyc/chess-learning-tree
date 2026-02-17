@@ -6,11 +6,11 @@ import confetti from 'canvas-confetti';
 import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes';
 import { playCelebrationSound } from '@/lib/sounds';
 import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnimationStyle } from './RookCelebrationAnimation';
+import { RookWrongAnimation, RookWrongAnimationRef, WrongAnimationStyle } from './RookWrongAnimation';
 import { generateLessonShareText } from '@/lib/share/generate-share-text';
-import { ShareEvents, SubscriptionEvents } from '@/lib/analytics/posthog';
+import { ShareEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { AdSlot } from '@/components/ads/AdSlot';
-import { useSubscription } from '@/hooks/useSubscription';
 
 const COLORS = {
   green: 'var(--color-chess-green)',
@@ -48,24 +48,32 @@ export function LessonCompleteScreen({
   puzzleResults,
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
+  const didFail = correctCount <= 3;
   const accuracy = Math.round((correctCount / 6) * 100);
   const rookRef = useRef<RookCelebrationAnimationRef>(null);
+  const wrongRookRef = useRef<RookWrongAnimationRef>(null);
   const [textCopied, setTextCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
-  const { isPremium, loading: subLoading } = useSubscription();
-
-  // Pick a random celebration animation style - always celebrate!
+  // Pick a random celebration animation style (used when passing)
   const celebrationStyle: CelebrationAnimationStyle = useMemo(() => {
     const styles: CelebrationAnimationStyle[] = ['sparkleBurst', 'wave', 'radiate', 'ripple', 'cascade', 'bloom'];
     return styles[Math.floor(Math.random() * styles.length)];
   }, []);
 
+  // Pick a random wrong animation style (used when failing)
+  const wrongStyle: WrongAnimationStyle = useMemo(() => {
+    const styles: WrongAnimationStyle[] = ['powerDown', 'shortCircuit', 'pixelFade', 'shrink', 'signalLoss'];
+    return styles[Math.floor(Math.random() * styles.length)];
+  }, []);
+
   // Get a random quote (memoized so it doesn't change on re-render)
   const quote = useMemo(() => getRandomQuote(correctCount), [correctCount]);
-  const tierLabel = getTierLabel(correctCount);
+  const tierLabel = didFail ? 'Not Quite' : getTierLabel(correctCount);
 
-  // Confetti burst and sound on mount
+  // Confetti burst and sound on mount (only when passing)
   useEffect(() => {
+    if (didFail) return;
+
     // Confetti
     confetti({
       particleCount: isPerfect ? 100 : correctCount >= 5 ? 60 : 40,
@@ -92,7 +100,19 @@ export function LessonCompleteScreen({
 
     // Sound
     playCelebrationSound(correctCount);
-  }, [isPerfect, correctCount]);
+  }, [isPerfect, correctCount, didFail]);
+
+  // Wrong rook animation on mount (only when failing)
+  useEffect(() => {
+    if (!didFail) return;
+
+    wrongRookRef.current?.showFull();
+    const timer = setTimeout(() => {
+      wrongRookRef.current?.triggerAnimation();
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [didFail]);
 
   // Build OG image URL for inline display
   const levelKey = getLevelKeyFromLessonId(lessonId);
@@ -105,17 +125,27 @@ export function LessonCompleteScreen({
   if (streak > 0) ogParams.set('streak', String(streak));
 
   return (
-    <div className="h-full bg-chess-bg text-white flex flex-col items-center overflow-auto px-5 py-6">
+    <div className={`h-full flex flex-col items-center overflow-auto px-5 py-6 ${didFail ? 'bg-chess-page text-chess-text' : 'bg-chess-bg text-white'}`}>
       <style>{celebrationStyles}</style>
       <div className="max-w-sm w-full">
         {/* Animated Rook */}
-        <div className="flex items-center justify-center" style={{ height: '180px' }}>
-          <RookCelebrationAnimation
-            ref={rookRef}
-            style={celebrationStyle}
-            scale={1.6}
-            autoPlay={true}
-          />
+        <div className="flex items-center justify-center" style={{ height: didFail ? '200px' : '180px' }}>
+          {didFail ? (
+            <RookWrongAnimation
+              ref={wrongRookRef}
+              style={wrongStyle}
+              scale={1.6}
+              visibleStages={6}
+              compact
+            />
+          ) : (
+            <RookCelebrationAnimation
+              ref={rookRef}
+              style={celebrationStyle}
+              scale={1.6}
+              autoPlay={true}
+            />
+          )}
         </div>
 
         {/* Score + tier */}
@@ -123,14 +153,14 @@ export function LessonCompleteScreen({
           <div
             className="text-4xl font-black mb-1 animate-fadeInUp"
             style={{
-              color: isPerfect ? '#FFC800' : COLORS.green,
+              color: didFail ? 'var(--color-chess-red)' : isPerfect ? '#FFC800' : COLORS.green,
               animationFillMode: 'backwards',
             }}
           >
             {correctCount}/6
           </div>
           <div
-            className="text-sm text-gray-400 uppercase tracking-wider animate-fadeInUp"
+            className={`text-sm uppercase tracking-wider animate-fadeInUp ${didFail ? 'text-chess-text-muted' : 'text-gray-400'}`}
             style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
           >
             {tierLabel}
@@ -142,7 +172,7 @@ export function LessonCompleteScreen({
           className="text-center mb-4 animate-fadeInUp"
           style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
         >
-          <p className="text-lg text-white font-medium italic">
+          <p className={`text-lg font-medium italic ${didFail ? 'text-chess-text' : 'text-white'}`}>
             &ldquo;{quote}&rdquo;
           </p>
         </div>
@@ -235,8 +265,11 @@ export function LessonCompleteScreen({
                   // Silent fail
                 }
               }}
-              className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
-              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+              className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-[0.98] ${didFail ? 'text-chess-text' : 'text-white'}`}
+              style={didFail
+                ? { background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.12)' }
+                : { background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }
+              }
             >
               {linkCopied ? (
                 <>
@@ -257,7 +290,7 @@ export function LessonCompleteScreen({
           </div>
         )}
 
-        {/* Ad slot after lesson */}
+        {/* Premium upsell / ad slot */}
         <div
           className="mb-4 animate-fadeInUp"
           style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}
@@ -265,49 +298,59 @@ export function LessonCompleteScreen({
           <AdSlot position="after-lesson" />
         </div>
 
-        {/* Premium upsell — soft CTA for non-premium, non-guest users */}
-        {!subLoading && !isPremium && !isGuest && (
-          <Link
-            href="/pricing"
-            onClick={() => SubscriptionEvents.paywallViewed('lesson_complete')}
-            className="block mb-4 animate-fadeInUp"
-            style={{ animationDelay: '0.42s', animationFillMode: 'backwards' }}
+        {/* Buttons */}
+        {didFail ? (
+          <div
+            className="flex flex-col gap-3 animate-fadeInUp"
+            style={{ animationDelay: '0.45s', animationFillMode: 'backwards' }}
           >
-            <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-yellow-500/20 bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">&#9812;</span>
-                <span className="text-sm text-white font-medium">Unlock unlimited lessons</span>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">$4.99/mo &rarr;</span>
-            </div>
-          </Link>
+            <button
+              onClick={() => { window.location.href = `/lesson/${lessonId}`; }}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px]"
+              style={{
+                backgroundColor: COLORS.green,
+                boxShadow: '0 4px 0 var(--color-chess-green-shadow)',
+              }}
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => {
+                window.location.href = isGuest
+                  ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
+                  : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
+              }}
+              className="w-full py-3.5 rounded-xl font-bold text-sm text-chess-text-muted border-2 border-slate-200 bg-white transition-all active:translate-y-[1px] active:bg-slate-50"
+            >
+              Back to Learn
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              window.location.href = isGuest
+                ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
+                : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
+            }}
+            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] animate-fadeInUp"
+            style={{
+              backgroundColor: COLORS.green,
+              boxShadow: '0 4px 0 var(--color-chess-green-shadow)',
+              animationDelay: '0.45s',
+              animationFillMode: 'backwards',
+            }}
+          >
+            Continue
+          </button>
         )}
-
-        {/* Continue button */}
-        <button
-          onClick={() => {
-            window.location.href = isGuest
-              ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
-              : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
-          }}
-          className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all active:translate-y-[2px] animate-fadeInUp"
-          style={{
-            backgroundColor: COLORS.green,
-            boxShadow: '0 4px 0 var(--color-chess-green-shadow)',
-            animationDelay: '0.45s',
-            animationFillMode: 'backwards',
-          }}
-        >
-          Continue
-        </button>
 
         {/* Guest signup prompt */}
         {isGuest && (
           <div
-            className="mt-4 bg-chess-bg-light rounded-xl p-4 animate-fadeInUp"
+            className={`mt-4 rounded-xl p-4 animate-fadeInUp ${didFail ? 'bg-chess-surface border border-slate-200' : 'bg-chess-bg-light'}`}
             style={{ animationDelay: '0.55s', animationFillMode: 'backwards' }}
           >
-            <p className="text-gray-400 text-sm mb-3 text-center">Create a free account to save progress</p>
+            <p className={`text-sm mb-3 text-center ${didFail ? 'text-chess-text-muted' : 'text-gray-400'}`}>Create a free account to save progress</p>
             <div className="flex gap-3">
               <Link
                 href="/auth/signup?from=lesson"

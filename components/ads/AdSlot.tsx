@@ -4,24 +4,10 @@ import { useEffect, useRef } from 'react';
 import { useSubscription } from '@/hooks/useSubscription';
 import { isAdEnabled, getAdType } from '@/lib/ad-config';
 import { trackEvent } from '@/lib/analytics/posthog';
-import { SelfPromoCard, SelfPromoVariant } from './SelfPromoCard';
+import { SelfPromoCard } from './SelfPromoCard';
 
 interface AdSlotProps {
   position: string;
-}
-
-/** Map position to the best visual variant for that context */
-function getVariantForPosition(position: string): SelfPromoVariant {
-  switch (position) {
-    case 'after-lesson':
-      return 'dark'; // Lesson complete screen has dark bg
-    case 'learn-page':
-      return 'compact'; // Inline in the learning tree
-    case 'daily-complete':
-      return 'compact'; // Inside the finished results
-    default:
-      return 'default';
-  }
 }
 
 export function AdSlot({ position }: AdSlotProps) {
@@ -29,7 +15,6 @@ export function AdSlot({ position }: AdSlotProps) {
   const hasTrackedImpression = useRef(false);
 
   const adType = getAdType(position);
-  const variant = getVariantForPosition(position);
 
   // Track impression once per mount
   useEffect(() => {
@@ -40,9 +25,8 @@ export function AdSlot({ position }: AdSlotProps) {
     trackEvent('ad_impression', {
       position,
       ad_type: adType,
-      variant,
     });
-  }, [loading, isPremium, position, adType, variant]);
+  }, [loading, isPremium, position, adType]);
 
   // Don't render while loading, for premium users, or if position is disabled
   if (loading || isPremium || !isAdEnabled(position)) {
@@ -53,7 +37,6 @@ export function AdSlot({ position }: AdSlotProps) {
     trackEvent('ad_click', {
       position,
       ad_type: adType,
-      variant,
     });
   };
 
@@ -61,7 +44,7 @@ export function AdSlot({ position }: AdSlotProps) {
   if (adType === 'self_promo') {
     return (
       <div className="w-full">
-        <SelfPromoCard variant={variant} onClick={handleClick} />
+        <SelfPromoCard onClick={handleClick} />
       </div>
     );
   }

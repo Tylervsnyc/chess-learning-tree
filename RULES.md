@@ -642,16 +642,26 @@ Animated pixel-art rook appears in the result popup for lessons.
 **Test Page:** `/test-rook-animations`
 
 ### Lesson Complete Screen:
-When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
+`LessonCompleteScreen` has two modes based on score:
 
-1. **Animated rook** — random celebration animation at 1.8x scale
+**Pass (4-6 correct) — dark bg, celebration:**
+1. **Animated rook** — random celebration animation at 1.6x scale (`RookCelebrationAnimation`)
 2. **Confetti** — two bursts from left and right corners (gold for perfect, green/blue otherwise)
 3. **Celebration sound** — C Major arpeggio via `playCelebrationSound()`
-4. **Score** — `correctCount/6` with tier label (Perfect / Great / Complete)
+4. **Score** — `correctCount/6` in green (gold for 6/6) with tier label (Perfect / Great)
 5. **Quote** — random funny quote from `/data/celebration-quotes.ts` (300 total, tiered by score)
-6. **Stats cards** — first-try correct count + accuracy percentage
-7. **Continue button** — always returns to `/` (curriculum tree)
-8. **Guest signup prompt** — shown if user is not logged in
+6. **Continue button** — returns to `/learn` (curriculum tree)
+
+**Fail (0-3 correct) — light bg (`chess-page`), falling apart rook:**
+1. **Animated rook** — shows full rook, then plays random disassembly animation (`RookWrongAnimation`)
+2. **No confetti, no celebration sound**
+3. **Score** — `correctCount/6` in red with "Not Quite" tier label
+4. **Quote** — encouraging quote from OKAY_QUOTES pool
+5. **Two buttons** — "Try Again" (replays lesson at `/lesson/{id}`) + "Back to Learn" (returns to curriculum)
+
+**Shared across both modes:**
+- Premium upsell via `AdSlot` (renders `SelfPromoCard` for free users, nothing for premium)
+- Guest signup prompt (if not logged in)
 
 **Animation Styles (6 used randomly):**
 | Style | Description |
@@ -1768,15 +1778,18 @@ Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium use
 ### Key Behaviors:
 - `AdSlot` component returns `null` for premium/admin users
 - Tracks `ad_impression` (on mount) and `ad_click` (on click) via PostHog
-- Properties: `{ position, ad_type: 'self_promo', variant }`
+- Properties: `{ position, ad_type: 'self_promo' }`
 - Config in `lib/ad-config.ts` — enable/disable per position
 - Global kill switch: `NEXT_PUBLIC_SHOW_ADS=false` env var
+
+### ONE Premium Upsell Design:
+**There is exactly ONE premium upsell card used across the entire app: `SelfPromoCard`.** It renders the gold gradient premium card (amber background, crown icon, "BEST VALUE" badge, "$4.99/mo", gold "Start Premium" button). Do NOT create alternative premium upsell designs — always use `SelfPromoCard` via `AdSlot`. The same design from `CreateProfileModal`'s premium tier card is used here for consistency.
 
 ### Files:
 | File | Purpose |
 |------|---------|
 | `components/ads/AdSlot.tsx` | Smart wrapper (checks subscription, tracks events) |
-| `components/ads/SelfPromoCard.tsx` | Upgrade CTA card (3 visual variants) |
+| `components/ads/SelfPromoCard.tsx` | ONE premium upsell card (gold gradient) |
 | `lib/ad-config.ts` | Position config + enable/disable |
 | `app/admin/ad-performance/page.tsx` | Impressions/CTR dashboard |
 
