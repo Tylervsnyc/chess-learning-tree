@@ -82,7 +82,7 @@ export default function LoginPage() {
     }
     AuthEvents.loginCompleted();
 
-    router.push(redirectTo || '/learn');
+    router.push(redirectTo || '/');
     router.refresh();
   };
 

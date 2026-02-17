@@ -42,7 +42,7 @@ export interface LessonLimitConfig {
 
 export const LESSON_LIMITS: LessonLimitConfig = {
   anonymous: {
-    totalLessons: 2,
+    totalLessons: 4,
   },
   free: {
     dailyLimit: 2,

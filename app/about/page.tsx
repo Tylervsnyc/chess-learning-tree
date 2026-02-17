@@ -23,7 +23,7 @@ export default function AboutPage() {
                 <span className="text-white font-black text-base">1</span>
               </div>
               <div>
-                <p className="font-bold text-chess-text text-sm">Try 2 free lessons</p>
+                <p className="font-bold text-chess-text text-sm">Try 4 free lessons</p>
                 <p className="text-xs text-chess-text-muted mt-0.5">No sign-in needed. Jump right in.</p>
               </div>
             </div>
@@ -61,7 +61,7 @@ export default function AboutPage() {
           {/* CTA */}
           <div className="mt-5 space-y-3 pb-6">
             <Link
-              href="/learn"
+              href="/"
               className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_var(--color-chess-green-shadow)] bg-chess-green"
             >
               Begin Learning

@@ -19,7 +19,7 @@ export default function NotFound() {
 
           <div className="flex flex-col gap-3">
             <Link
-              href="/learn"
+              href="/"
               className="w-full py-3 bg-[#58CC02] hover:bg-[#4CAF00] text-white font-semibold rounded-lg transition-colors text-center shadow-[0_4px_0_#3d8c01]"
             >
               Continue Learning

@@ -261,6 +261,6 @@ export async function POST(request: NextRequest) {
     success: true,
     passed,
     unlockedLevel: passed ? testConfig.toLevel : null,
-    redirectTo: passed ? `/learn?level=${testConfig.levelKey}` : '/learn',
+    redirectTo: passed ? `/?level=${testConfig.levelKey}` : '/',
   });
 }

@@ -909,7 +909,7 @@ export default function LessonPage() {
   useEffect(() => {
     // Only check once progress AND auth/profile are fully loaded, and skip for admins
     if (progressLoaded && isFullyLoaded && !lessonUnlocked && !isAdmin) {
-      router.replace('/learn');
+      router.replace('/');
     }
   }, [progressLoaded, isFullyLoaded, lessonUnlocked, isAdmin, router]);
 
@@ -929,7 +929,7 @@ export default function LessonPage() {
       return (
         <CreateProfileModal
           isOpen={true}
-          onClose={() => router.push('/learn')}
+          onClose={() => router.push('/')}
           context="lesson-gate"
         />
       );
@@ -939,7 +939,7 @@ export default function LessonPage() {
         <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push('/')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -962,7 +962,7 @@ export default function LessonPage() {
                 Upgrade to Premium
               </button>
               <button
-                onClick={() => router.push('/learn')}
+                onClick={() => router.push('/')}
                 className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
               >
                 Back to Learn
@@ -1040,7 +1040,7 @@ export default function LessonPage() {
         <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push('/')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -1070,7 +1070,7 @@ export default function LessonPage() {
         <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push('/')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -1081,7 +1081,7 @@ export default function LessonPage() {
           <div className="text-center max-w-md px-4">
             <p className="text-red-400 mb-4">{error}</p>
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push('/')}
               className="text-chess-blue hover:underline"
             >
               ← Back to curriculum
@@ -1101,7 +1101,7 @@ export default function LessonPage() {
           score={firstAttemptCorrectCount}
           totalPuzzles={puzzles.length}
           lessonName={lessonName}
-          onContinue={() => router.push('/learn')}
+          onContinue={() => router.push('/')}
         />
       );
     }
@@ -1153,7 +1153,7 @@ export default function LessonPage() {
         <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <button
-              onClick={() => router.push('/learn')}
+              onClick={() => router.push('/')}
               className="text-gray-400 hover:text-white"
             >
               ✕
@@ -1183,7 +1183,7 @@ export default function LessonPage() {
               if (!lessonComplete && puzzles.length > 0) {
                 LearningEvents.lessonAbandoned(lessonId, currentIndex + 1, totalPuzzles);
               }
-              router.push('/learn');
+              router.push('/');
             }}
             className="text-gray-500 hover:text-gray-700"
           >

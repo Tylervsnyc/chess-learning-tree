@@ -378,7 +378,7 @@ export default function LevelTestPage() {
 
   // Handle going back to learn page (currentPosition is already set by unlockLevel)
   const handleBackToLearn = useCallback(() => {
-    router.push('/learn');
+    router.push('/');
   }, [router]);
 
   // Confetti effect on test passed - wrapped in useEffect
@@ -416,7 +416,7 @@ export default function LevelTestPage() {
     return (
       <CreateProfileModal
         isOpen={true}
-        onClose={() => router.push('/learn')}
+        onClose={() => router.push('/')}
         context="level-test"
       />
     );

@@ -47,7 +47,7 @@ export default function SubscriptionCancelledPage() {
 
         <div className="space-y-3">
           <button
-            onClick={() => router.push('/learn')}
+            onClick={() => router.push('/')}
             className="w-full py-4 rounded-xl bg-chess-blue text-white font-bold text-lg transition-all hover:opacity-90 shadow-sm"
           >
             Continue with Free

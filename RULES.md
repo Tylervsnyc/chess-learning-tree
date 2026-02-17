@@ -12,7 +12,7 @@ Last Updated: 2026-02-15
 2. [Lesson Unlocking](#2-lesson-unlocking)
 3. [Level Unlocking](#3-level-unlocking)
 4. [Navigation After Lesson Complete](#4-navigation-after-lesson-complete)
-5. [Scroll Behavior on /learn](#5-scroll-behavior-on-learn)
+5. [Scroll Behavior on /](#5-scroll-behavior-on-)
 6. [Naming Conventions (Dot Notation)](#6-naming-conventions-dot-notation)
 7. [Daily Limits](#7-daily-limits)
 8. [Premium & Signup Prompts](#8-premium--signup-prompts)
@@ -58,14 +58,14 @@ There are exactly **four** user types:
 
 | Type | Can Do Lessons | Limit | Progress Storage |
 |------|----------------|-------|------------------|
-| **Anonymous** | Yes | 2 total, then signup prompt | localStorage only |
+| **Anonymous** | Yes | 4 total, then signup prompt | localStorage only |
 | **Free** | Yes | Unlimited until March 1, 2026; then 2/day | localStorage + Supabase |
 | **Premium** | Yes | Unlimited | localStorage + Supabase |
 | **Admin** | Yes | Unlimited, ALL lessons unlocked | localStorage + Supabase |
 
 ### Key Behaviors:
 - Anonymous progress transfers to account on signup
-- Signup prompt every 2 lessons for anonymous users (dismissible, not blocking)
+- Signup prompt every 4 lessons for anonymous users (dismissible, not blocking)
 
 ### How to Check User Type (ONE place only):
 ```typescript
@@ -109,7 +109,7 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 ### Lesson Icon Selection (priority order):
 1. **`pieceFilter`** — If the lesson has an explicit piece filter, use that piece as the icon
 2. **`isMixedPractice`** — Mixed practice / review lessons show a star
-3. **Pattern-based tag matching** — `getIconForTag()` in `/app/learn/page.tsx` maps `requiredTags` to icons using string patterns (not a hardcoded map), so new tags auto-match:
+3. **Pattern-based tag matching** — `getIconForTag()` in `/components/learn/LearnPageContent.tsx` maps `requiredTags` to icons using string patterns (not a hardcoded map), so new tags auto-match:
    - `*Endgame` → the piece in the tag name (e.g. `rookEndgame` → rook)
    - `smotheredMate`, `arabian*`, `hook*`, `*fork*` → knight
    - `*mate*` (generic) → queen
@@ -144,24 +144,24 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 1. User completes lesson
 2. `currentPosition` updates to next lesson (stored in DB)
 3. Show completion popup with stats
-4. On "Continue" button click → `/learn`
-5. `/learn` page reads `currentPosition` and auto-scrolls to that lesson
+4. On "Continue" button click → `/`
+5. Home page reads `currentPosition` and auto-scrolls to that lesson
 
 ### Key Point:
-No URL params needed. The `currentPosition` field stored in the database determines where the user lands on `/learn`.
+No URL params needed. The `currentPosition` field stored in the database determines where the user lands on `/`.
 
 ### Enforced In (ONE place only):
 `/components/lesson/LessonCompleteScreen.tsx` → Continue button onClick handler
 
 ---
 
-## 5. Scroll Behavior on /learn
+## 5. Scroll Behavior on /
 
 ### The Rules:
 | Scenario | Behavior |
 |----------|----------|
 | Section expand/collapse | **NO scrolling. Ever.** Animated toggle with staggered children. |
-| Opening /learn | Expand section containing `currentPosition`, scroll to it |
+| Opening `/` | Expand section containing `currentPosition`, scroll to it |
 
 ### Section Expand/Collapse Animation:
 - Lessons are **always rendered** in the DOM (not conditionally mounted) for height measurement
@@ -183,7 +183,7 @@ No URL params needed. The `currentPosition` field stored in the database determi
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
 - **NO URL PARAMS** - Use `currentPosition` from hook, not URL params
 - **WAIT FOR SERVER DATA** - Don't render/scroll until `serverFetched` is true (prevents flash to default position)
-- Enforced in ONE `useEffect` in `/app/learn/page.tsx`
+- Enforced in ONE `useEffect` in `/components/learn/LearnPageContent.tsx`
 
 ### Sticky Headers:
 | Element | Position | Z-Index | Behavior |
@@ -195,7 +195,7 @@ The level header sits just below the nav header with a small gap, keeping both v
 
 ### Implementation:
 ```typescript
-// In /app/learn/page.tsx - the ONLY place this happens
+// In /components/learn/LearnPageContent.tsx - the ONLY place this happens
 useEffect(() => {
   // Wait for BOTH local AND server data before scrolling
   if (!progressLoaded || !serverFetched || !currentPosition) return;
@@ -234,7 +234,7 @@ useEffect(() => {
 ### Current Limits:
 | User Type | Limit | Reset |
 |-----------|-------|-------|
-| Anonymous | 2 total | Never (must sign up) |
+| Anonymous | 4 total | Never (must sign up) |
 | Free | Unlimited until March 1, 2026; then 2 per day | Midnight UTC (after March 1) |
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
@@ -298,7 +298,7 @@ Complete **1 lesson OR 1 Daily Rook** per day
 Miss a full calendar day (UTC) → streak resets to 0
 
 ### Display:
-- Shown in header on `/learn` and `/daily-challenge`
+- Shown in header on `/` and `/daily-challenge` (currently feature-flagged off)
 
 ### Stored In:
 ```sql
@@ -311,7 +311,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 ## 12. The Daily Rook
 
 ### Header Toggle:
-`[Path] [Daily]` toggle - only shown on `/learn` and `/daily-challenge`
+`[Path] [Daily]` toggle - shown on all pages
 
 ### Core Rules:
 | Rule | Value |
@@ -482,7 +482,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 1. Level unlocks
 2. All previous lessons unlock
 3. `currentPosition` set to first lesson of new level
-4. Navigate to `/learn` (auto-scrolls to currentPosition)
+4. Navigate to `/` (auto-scrolls to currentPosition)
 
 ### Enforced In:
 `/app/level-test/[transition]/page.tsx`
@@ -496,9 +496,9 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 | Page | Status | Purpose |
 |------|--------|---------|
-| `/` | KEEP | Landing (new users) or redirect to /learn (returning) |
+| `/` | KEEP | Main curriculum tree (the front door — guests see lesson tree immediately) |
 | `/about` | KEEP | "How It Works" onboarding instructions (3 steps: free lessons, level test, daily rook) |
-| `/learn` | KEEP | Main curriculum tree |
+| `/learn` | KEEP | Redirects to `/` (preserves bookmarks/shared links) |
 | `/lesson/[lessonId]` | KEEP | Puzzle solving |
 | `/level-test/[transition]` | KEEP | Level unlock tests |
 | `/daily-challenge` | KEEP | The Daily Rook mode |
@@ -510,8 +510,9 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | `/profile` | **DELETE** | Not needed yet |
 
 ### User Flows:
-- **New user**: `/` → `/about` → `/learn`
-- **Returning user**: `/` → redirect to `/learn`
+- **New user**: `/` → tap lesson 1.1.1 (pulses as "start here") → play
+- **Returning user**: `/` → auto-scrolls to `currentPosition`
+- **From about**: `/about` → `/` (Begin Learning button)
 
 ---
 
@@ -549,20 +550,20 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ### Page Scrolling Rules:
 - Most pages use `h-full overflow-hidden` (no scrolling)
 - **Exceptions that CAN scroll** (use `h-full overflow-auto`):
-  - `/learn` - curriculum tree needs to scroll
+  - `/` - curriculum tree needs to scroll
   - `/test-*` pages - test pages often have lots of content
 
 ### Elements by Location:
 
 | Element | Where Shown | Links To |
 |---------|-------------|----------|
-| Logo | All pages | `/learn` (logged in), `/` (logged out) |
-| Learn/Path button | All pages | `/learn` |
+| Logo | All pages | `/` (always) |
+| Learn/Path button | All pages | `/` |
 | Daily button | All pages | `/daily-challenge` |
 | Premium button | All pages (non-premium, non-admin) | `/pricing` (logged in), `/premium-signup` (logged out) |
 | Signup button | All pages (logged out) | `/auth/signup` |
 | Logout button | All pages (logged in) | Signs out |
-| Streak counter | `/learn`, `/daily-challenge` (logged in only) | Nothing |
+| Streak counter | `/`, `/daily-challenge` (feature-flagged off) | Nothing |
 
 **Note:** Logged-in users see "Path", logged-out users see "Learn" - same destination, different label.
 
@@ -609,13 +610,13 @@ Both buttons stay their color regardless of active state. The shadow + opacity d
 - Enforced in: `/components/puzzle/ChessProgressBar.tsx`
 
 ### X Button Behavior:
-- Back to `/learn`
+- Back to `/`
 - **No partial save**
 
 ### Completion:
 1. `currentPosition` updates to next lesson
 2. `LessonCompleteScreen` renders with animated rook celebration, confetti, sound, score, quote
-3. Continue button → `/learn` (always returns to curriculum tree)
+3. Continue button → `/` (always returns to curriculum tree)
 
 ### Rook Animations (Lessons Only):
 Animated pixel-art rook appears in the result popup for lessons.
@@ -649,7 +650,7 @@ When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
 4. **Score** — `correctCount/6` with tier label (Perfect / Great / Complete)
 5. **Quote** — random funny quote from `/data/celebration-quotes.ts` (300 total, tiered by score)
 6. **Stats cards** — first-try correct count + accuracy percentage
-7. **Continue button** — always returns to `/learn` (curriculum tree)
+7. **Continue button** — always returns to `/` (curriculum tree)
 8. **Guest signup prompt** — shown if user is not logged in
 
 **Animation Styles (6 used randomly):**
@@ -755,9 +756,9 @@ When a user completes a lesson (any score), `LessonCompleteScreen` renders with:
 
 **Continue Button Behavior:**
 - Text: "Continue" (always)
-- On click: Navigate to `/learn?level={levelKey}` (or with `?guest=true` prefix for guests)
+- On click: Navigate to `/?level={levelKey}` (or with `?guest=true` prefix for guests)
 - Active state: `translateY(2px)` + reduced shadow
-- Does NOT go to next lesson — always returns to curriculum tree
+- Does NOT go to next lesson — always returns to curriculum tree at `/`
 
 **Rook Celebration Animation:**
 - Component: `<RookCelebrationAnimation />`
@@ -1058,7 +1059,7 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 
 | Flag | Value | Description |
 |------|-------|-------------|
-| `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on /learn and /daily-challenge |
+| `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on / and /daily-challenge |
 | `SHOW_SHARING` | `false` | Show share buttons/cards on lesson complete and daily challenge screens |
 | `SHOW_ADS` | `true` | Show ad slots (self-promo CTAs) for free users |
 
@@ -1070,7 +1071,7 @@ Lesson limits and signup prompts are now configured as **constants** in `types/p
 
 | Config | Value | Description |
 |--------|-------|-------------|
-| `anonymous.totalLessons` | `2` | Total lessons before signup required |
+| `anonymous.totalLessons` | `4` | Total lessons before signup required |
 | `free.dailyLimit` | `2` | Daily lesson limit for free users |
 | `premium.dailyLimit` | `null` | Unlimited for premium users |
 | `admin.dailyLimit` | `null` | Unlimited for admin users |
@@ -1557,8 +1558,8 @@ description: 'Chess. Made Simple.'
 
 | Page | Title | Description |
 |------|-------|-------------|
-| `/` | The Chess Path - Chess. Made Simple. | Chess. Made Simple. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
-| `/learn` | Learn Chess Tactics \| Chess Path | Master chess tactics step by step. From beginner to beating your friends. |
+| `/` | The Chess Path - Beat Your Friends at Chess | Chess. Made Simple. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning. |
+| `/learn` | Redirects to `/` | N/A |
 | `/daily-challenge` | The Daily Rook \| The Chess Path | Test your skills with 22 puzzles. Compete on the leaderboard. |
 | `/pricing` | Chess Path Premium - Unlimited Tactics Training | Unlock all lessons, remove limits, accelerate your chess improvement. |
 
@@ -1760,7 +1761,7 @@ Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium use
 ### Positions:
 | Position | Page | When Shown |
 |----------|------|------------|
-| `learn-page` | `/learn` | Always (bottom of curriculum) |
+| `learn-page` | `/` | Always (bottom of curriculum) |
 | `daily-complete` | `/daily-challenge` | After challenge completion |
 | `after-lesson` | `/lesson/[lessonId]` | After lesson completion |
 
@@ -1803,7 +1804,7 @@ All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer t
 | Lesson unlocking | `/hooks/useProgress.ts` → `isLessonUnlocked()` |
 | Level unlocking | `/hooks/useProgress.ts` → `isLevelUnlocked()` |
 | Current position tracking | `/hooks/useProgress.ts` → `currentPosition` + `setCurrentPosition()` |
-| Scroll behavior | `/app/learn/page.tsx` → ONE useEffect |
+| Scroll behavior | `/components/learn/LearnPageContent.tsx` → ONE useEffect |
 | Navigation after lesson | `/components/lesson/LessonCompleteScreen.tsx` → Continue button |
 | Permissions/limits | `/hooks/usePermissions.ts` |
 | Header | `/components/layout/NavHeader.tsx` |

@@ -854,7 +854,7 @@ export default function DailyChallengePage() {
                 Already have an account? Log in
               </button>
               <button
-                onClick={() => router.push('/learn')}
+                onClick={() => router.push('/')}
                 className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-3"
                 style={{ backgroundColor: 'var(--color-chess-green)', boxShadow: '0 3px 0 var(--color-chess-green-shadow)' }}
               >
@@ -978,7 +978,7 @@ export default function DailyChallengePage() {
                   {gameState === 'loading' ? 'Loading...' : 'Begin the Challenge'}
                 </button>
                 <button
-                  onClick={() => router.push('/learn')}
+                  onClick={() => router.push('/')}
                   className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
                   style={{ backgroundColor: 'var(--color-chess-green)', boxShadow: '0 3px 0 var(--color-chess-green-shadow)' }}
                 >
@@ -1155,7 +1155,7 @@ export default function DailyChallengePage() {
               {!user ? (
                 <>
                   <button
-                    onClick={() => router.push('/learn')}
+                    onClick={() => router.push('/')}
                     className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
                     style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
@@ -1168,7 +1168,7 @@ export default function DailyChallengePage() {
               ) : alreadyCompletedToday ? (
                 <>
                   <button
-                    onClick={() => router.push('/learn')}
+                    onClick={() => router.push('/')}
                     className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
                     style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
@@ -1188,7 +1188,7 @@ export default function DailyChallengePage() {
                     Play Again
                   </button>
                   <button
-                    onClick={() => router.push('/learn')}
+                    onClick={() => router.push('/')}
                     className="mt-2 text-chess-text-muted hover:text-chess-text transition-colors block w-full text-sm"
                   >
                     Back to Path

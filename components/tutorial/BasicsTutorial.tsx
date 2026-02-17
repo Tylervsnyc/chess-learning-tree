@@ -462,7 +462,7 @@ export function BasicsTutorial() {
             Time to start solving puzzles!
           </p>
           <button
-            onClick={() => router.push('/learn')}
+            onClick={() => router.push('/')}
             className="w-full py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_var(--color-chess-green-shadow)] bg-chess-green"
             style={{ animation: 'basicsFadeUp 0.5s ease-out 0.2s both' }}
           >
@@ -561,7 +561,7 @@ export function BasicsTutorial() {
                         <button
                           onClick={() => {
                             TutorialEvents.tutorialSkipped('basics', currentStep.id, stepIndex);
-                            router.push('/learn');
+                            router.push('/');
                           }}
                           className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
                         >

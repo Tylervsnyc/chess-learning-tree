@@ -715,7 +715,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
             <button
               onClick={() => {
                 TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
-                router.push('/learn');
+                router.push('/');
               }}
               className="text-gray-500 hover:text-gray-700"
             >

@@ -57,7 +57,7 @@ function SuccessContent() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push('/learn');
+          router.push('/');
           return 0;
         }
         return prev - 1;
@@ -92,7 +92,7 @@ function SuccessContent() {
           </button>
 
           <button
-            onClick={() => router.push('/learn')}
+            onClick={() => router.push('/')}
             className="w-full py-3 rounded-xl bg-chess-surface text-chess-text-muted font-medium text-sm transition-all hover:opacity-80"
           >
             Continue to App
@@ -142,7 +142,7 @@ function SuccessContent() {
         </div>
 
         <button
-          onClick={() => router.push('/learn')}
+          onClick={() => router.push('/')}
           className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:opacity-90 mb-4 shadow-sm"
         >
           Start Learning

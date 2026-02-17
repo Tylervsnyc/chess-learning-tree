@@ -123,7 +123,7 @@ function SignupContent() {
     }
     AuthEvents.signupCompleted('email');
 
-    router.push(redirectTo || '/learn');
+    router.push(redirectTo || '/');
     router.refresh();
   };
 

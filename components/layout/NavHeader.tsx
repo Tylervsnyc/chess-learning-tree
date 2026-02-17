@@ -24,13 +24,13 @@ export function NavHeader() {
     return null;
   }
 
-  // Show streak counter only on /learn and /daily-challenge
-  const showStreakCounter = pathname === '/learn' || pathname === '/daily-challenge';
+  // Show streak counter on / and /daily-challenge (feature-flagged off)
+  const showStreakCounter = pathname === '/' || pathname === '/daily-challenge';
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
-        <Link href={user ? '/learn' : '/'} className="flex items-center flex-shrink-0">
+        <Link href="/" className="flex items-center flex-shrink-0">
           <Image
             src="/brand/logo-horizontal-light.svg"
             alt="Chess Path"
@@ -63,9 +63,9 @@ export function NavHeader() {
           ) : user ? (
             <>
               <Link
-                href="/learn"
+                href="/"
                 className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-chess-green text-white whitespace-nowrap ${
-                  pathname === '/learn' ? 'shadow-[0_2px_0_0_var(--color-chess-green-shadow)]' : 'opacity-70'
+                  pathname === '/' ? 'shadow-[0_2px_0_0_var(--color-chess-green-shadow)]' : 'opacity-70'
                 }`}
               >
                 Path
@@ -110,9 +110,9 @@ export function NavHeader() {
           ) : (
             <>
               <Link
-                href="/learn"
+                href="/"
                 className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
-                  pathname === '/learn' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
+                  pathname === '/' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
                 }`}
               >
                 Learn

@@ -6,7 +6,7 @@
  */
 
 export const FEATURE_FLAGS = {
-  /** Show streak counter in header on /learn and /daily-challenge */
+  /** Show streak counter in header on / and /daily-challenge */
   SHOW_STREAK_COUNTER: false,
   /** Show share buttons/cards on lesson complete and daily challenge screens */
   SHOW_SHARING: false,

@@ -122,7 +122,7 @@ function PricingContent() {
           <h2 className="text-2xl font-bold text-chess-text mb-1">You&apos;re Premium!</h2>
           <p className="text-chess-text-muted mb-4 text-sm">Unlimited access to all features.</p>
           <button
-            onClick={() => router.push('/learn')}
+            onClick={() => router.push('/')}
             className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
             style={{ boxShadow: '0 4px 0 var(--color-chess-green-shadow)' }}
           >

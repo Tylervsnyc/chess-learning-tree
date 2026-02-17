@@ -15,7 +15,7 @@ export function ScrollToTop() {
 
   // Scroll to top on every page navigation (except /learn which handles its own scroll)
   useEffect(() => {
-    if (pathname === '/learn') return;
+    if (pathname === '/') return;
 
     // Scroll everything to top - belt and suspenders approach
     window.scrollTo(0, 0);

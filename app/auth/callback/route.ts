@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/learn';
+  const next = searchParams.get('next') ?? '/';
 
   // Check if OAuth provider returned an error directly
   const oauthError = searchParams.get('error');
