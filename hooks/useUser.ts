@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { createClient, clearAuthTokens } from '@/lib/supabase/client';
+import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 
 interface Profile {
   id: string;
@@ -118,6 +119,22 @@ export function useUser() {
 
         if (sessionUser) {
           fetchProfile(sessionUser.id, sessionUser.email || '');
+
+          // Track Google OAuth completions (signup/login pages set 'auth_method' in localStorage)
+          if (event === 'SIGNED_IN' && localStorage.getItem('auth_method') === 'google') {
+            localStorage.removeItem('auth_method');
+            identifyUser(sessionUser.id, { email: sessionUser.email });
+
+            // If account was created within last 60 seconds, it's a new signup
+            const createdAt = new Date(sessionUser.created_at).getTime();
+            const isNewSignup = Date.now() - createdAt < 60_000;
+
+            if (isNewSignup) {
+              AuthEvents.signupCompleted('google');
+            } else {
+              AuthEvents.loginCompleted();
+            }
+          }
         } else {
           setProfile(null);
         }

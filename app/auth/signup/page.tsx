@@ -130,6 +130,7 @@ function SignupContent() {
   const handleGoogleSignup = async () => {
     setError(null);
     setGoogleLoading(true);
+    AuthEvents.signupStarted();
     const supabase = createClient();
 
     localStorage.setItem('auth_method', 'google');
@@ -195,10 +196,10 @@ function SignupContent() {
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
         <div className="flex-1 flex flex-col items-center justify-center px-3">
           <div className="max-w-sm w-full">
-            <div className="bg-white rounded-2xl p-6 text-center shadow-sm">
-              <div className="text-5xl mb-4">✉️</div>
+            <div className="bg-chess-surface border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
+              <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
               <h1 className="text-2xl font-bold text-chess-text mb-2">Enter verification code</h1>
-              <p className="text-slate-500 mb-6">
+              <p className="text-chess-text-muted mb-6">
                 We sent a code to <strong className="text-chess-text">{email}</strong>
               </p>
 
@@ -233,7 +234,7 @@ function SignupContent() {
               </button>
 
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className="text-slate-400 text-sm mb-3">Didn&apos;t receive the code?</p>
+                <p className="text-chess-text-faint text-sm mb-3">Didn&apos;t receive the code?</p>
                 {resendSuccess ? (
                   <p className="text-chess-green text-sm">New code sent!</p>
                 ) : (
@@ -253,7 +254,7 @@ function SignupContent() {
                   setOtpCode(['', '', '', '', '', '', '', '']);
                   setError(null);
                 }}
-                className="mt-4 text-slate-400 hover:text-slate-600 text-sm"
+                className="mt-4 text-chess-text-faint hover:text-chess-text-muted text-sm"
               >
                 Use a different email
               </button>
@@ -284,17 +285,17 @@ function SignupContent() {
 
         <div className="w-full max-w-sm">
           {/* Card container */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-chess-surface border border-slate-200 rounded-2xl p-5 shadow-sm">
             {/* Congratulatory header for guests who completed a lesson */}
             {fromLesson ? (
               <div className="text-center mb-4">
-                <h1 className="text-xl font-bold text-chess-text mb-1">Nice work! 🎉</h1>
-                <p className="text-slate-500 text-sm">Create an account to save progress</p>
+                <h1 className="text-xl font-bold text-chess-text mb-1">Nice work!</h1>
+                <p className="text-chess-text-muted text-sm">Create an account to save progress</p>
               </div>
             ) : (
               <div className="text-center mb-4">
                 <h1 className="text-xl font-bold text-chess-text mb-1">Create Account</h1>
-                <p className="text-slate-500 text-sm">Start your chess journey</p>
+                <p className="text-chess-text-muted text-sm">Start your chess journey</p>
               </div>
             )}
 
@@ -316,7 +317,7 @@ function SignupContent() {
               type="button"
               onClick={handleGoogleSignup}
               disabled={googleLoading}
-              className="w-full py-3 rounded-2xl font-bold text-gray-700 bg-white border-2 border-slate-200 transition-all active:translate-y-[2px] shadow-[0_4px_0_#e2e8f0] flex items-center justify-center gap-3 hover:border-slate-300 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+              className="w-full py-3 rounded-2xl font-bold text-chess-text bg-white border-2 border-slate-200 transition-all active:translate-y-[2px] shadow-[0_4px_0_#e2e8f0] flex items-center justify-center gap-3 hover:border-slate-300 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
             >
               {googleLoading ? (
                 <>
@@ -338,13 +339,13 @@ function SignupContent() {
 
             <div className="flex items-center gap-3 my-3">
               <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-slate-400 text-xs uppercase">or</span>
+              <span className="text-chess-text-faint text-xs uppercase">or</span>
               <div className="flex-1 h-px bg-slate-200" />
             </div>
 
             <form onSubmit={handleSignup} className="space-y-3">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-600 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-chess-text-muted mb-1">
                   Email
                 </label>
                 <input
@@ -360,7 +361,7 @@ function SignupContent() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-600 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-chess-text-muted mb-1">
                   Password
                 </label>
                 <input
@@ -374,7 +375,7 @@ function SignupContent() {
                   className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors disabled:opacity-50"
                   placeholder="••••••••"
                 />
-                <p className="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
+                <p className="text-xs text-chess-text-faint mt-1">Minimum 6 characters</p>
               </div>
 
               <button
@@ -390,7 +391,7 @@ function SignupContent() {
             </form>
           </div>
 
-          <p className="text-center text-slate-500 text-sm pt-4">
+          <p className="text-center text-chess-text-muted text-sm pt-4">
             Already have an account?{' '}
             <Link
               href={redirectTo ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}` : '/auth/login'}
@@ -400,11 +401,11 @@ function SignupContent() {
             </Link>
           </p>
 
-          <p className="text-center text-slate-400 text-xs pt-3">
+          <p className="text-center text-chess-text-faint text-xs pt-3">
             By signing up you agree to our{' '}
-            <Link href="/terms" className="underline hover:text-slate-500">Terms</Link>
+            <Link href="/terms" className="underline hover:text-chess-text-muted">Terms</Link>
             {' '}and{' '}
-            <Link href="/privacy" className="underline hover:text-slate-500">Privacy Policy</Link>.
+            <Link href="/privacy" className="underline hover:text-chess-text-muted">Privacy Policy</Link>.
           </p>
         </div>
       </div>
