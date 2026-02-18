@@ -160,7 +160,7 @@ export function LessonCompleteScreen({
             {correctCount}/6
           </div>
           <div
-            className={`text-sm uppercase tracking-wider animate-fadeInUp ${didFail ? 'text-chess-text-muted' : 'text-gray-400'}`}
+            className={`text-sm uppercase tracking-wider animate-fadeInUp ${didFail ? 'text-chess-text-muted' : 'text-chess-text-muted'}`}
             style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
           >
             {tierLabel}
@@ -320,7 +320,7 @@ export function LessonCompleteScreen({
                   ? `/learn?guest=true&level=${getLevelKeyFromLessonId(lessonId)}`
                   : `/learn?level=${getLevelKeyFromLessonId(lessonId)}`;
               }}
-              className="w-full py-3.5 rounded-xl font-bold text-sm text-chess-text-muted border-2 border-slate-200 bg-white transition-all active:translate-y-[1px] active:bg-slate-50"
+              className="w-full py-3.5 rounded-xl font-bold text-sm text-chess-text-muted border-2 border-slate-200 bg-chess-surface transition-all active:translate-y-[1px] active:bg-slate-50"
             >
               Back to Learn
             </button>
@@ -347,20 +347,20 @@ export function LessonCompleteScreen({
         {/* Guest signup prompt */}
         {isGuest && (
           <div
-            className={`mt-4 rounded-xl p-4 animate-fadeInUp ${didFail ? 'bg-chess-surface border border-slate-200' : 'bg-chess-bg-light'}`}
+            className={`mt-4 rounded-2xl p-4 animate-fadeInUp ${didFail ? 'bg-chess-surface border border-slate-200' : 'bg-chess-bg-light'}`}
             style={{ animationDelay: '0.55s', animationFillMode: 'backwards' }}
           >
-            <p className={`text-sm mb-3 text-center ${didFail ? 'text-chess-text-muted' : 'text-gray-400'}`}>Create a free account to save progress</p>
+            <p className={`text-sm mb-3 text-center ${didFail ? 'text-chess-text-muted' : 'text-chess-text-muted'}`}>Create a free account to save progress</p>
             <div className="flex gap-3">
               <Link
                 href="/auth/signup?from=lesson"
-                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-chess-text hover:bg-[#3A4C55] transition-colors"
+                className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white text-center bg-chess-text hover:brightness-110 transition-colors"
               >
                 Sign Up
               </Link>
               <Link
                 href="/auth/login"
-                className="flex-1 py-2.5 rounded-lg font-semibold text-sm text-white text-center bg-chess-text hover:bg-[#3A4C55] transition-colors"
+                className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white text-center bg-chess-text hover:brightness-110 transition-colors"
               >
                 Sign In
               </Link>

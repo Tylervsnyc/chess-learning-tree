@@ -51,6 +51,7 @@ import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
 import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
 import { TutorialFlow } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface Puzzle {
   id: string;
@@ -940,7 +941,7 @@ export default function LessonPage() {
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white"
+              className="text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -949,7 +950,7 @@ export default function LessonPage() {
         </div>
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center max-w-md">
-            <div className="text-5xl mb-4">⏰</div>
+            <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
             <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
             <p className="text-white/60 mb-6">
               You&apos;ve completed your 4 free lessons today. Come back tomorrow or upgrade for unlimited access!
@@ -957,13 +958,13 @@ export default function LessonPage() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => router.push('/pricing')}
-                className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-[#4CAF00] transition-colors"
+                className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-chess-green-dark transition-colors"
               >
                 Upgrade to Premium
               </button>
               <button
                 onClick={() => router.push('/')}
-                className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:bg-[#243842] transition-colors"
+                className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:brightness-110 transition-colors"
               >
                 Back to Learn
               </button>
@@ -1041,7 +1042,7 @@ export default function LessonPage() {
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white"
+              className="text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1071,7 +1072,7 @@ export default function LessonPage() {
           <div className="max-w-4xl mx-auto">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white"
+              className="text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1154,14 +1155,14 @@ export default function LessonPage() {
           <div className="max-w-4xl mx-auto">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white"
+              className="text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl text-gray-400">No puzzles found for this lesson.</div>
+          <div className="text-xl text-chess-text-muted">No puzzles found for this lesson.</div>
         </div>
       </div>
     );
@@ -1185,7 +1186,7 @@ export default function LessonPage() {
               }
               router.push('/');
             }}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-chess-text-faint hover:text-chess-text-muted"
           >
             ✕
           </button>
@@ -1293,16 +1294,16 @@ export default function LessonPage() {
               className="w-full rounded-b-2xl py-2.5 px-4"
               style={{
                 animation: 'tutorialSlideUp 0.3s ease-out',
-                backgroundColor: '#FFF3CD',
+                backgroundColor: 'var(--color-chess-hint-bg)',
                 boxShadow: '0 2px 8px rgba(180, 140, 0, 0.15)',
               }}
             >
               {tutorialHint.title && (
-                <div className="font-bold mb-0.5" style={{ color: '#7A6200', fontSize: '15px' }}>
+                <div className="font-bold mb-0.5" style={{ color: 'var(--color-chess-hint-title)', fontSize: '15px' }}>
                   {tutorialHint.title}
                 </div>
               )}
-              <div style={{ color: '#8B7000', fontSize: '14px', lineHeight: '1.4' }}>
+              <div style={{ color: 'var(--color-chess-hint-text)', fontSize: '14px', lineHeight: '1.4' }}>
                 {tutorialHint.message}
               </div>
             </div>

@@ -442,7 +442,7 @@ export default function LevelTestPage() {
           </p>
           <button
             onClick={handleBackToLearn}
-            className="px-6 py-2 bg-chess-blue text-white font-bold rounded-xl hover:bg-blue-600 transition-colors"
+            className="px-6 py-2 bg-chess-blue text-white font-bold rounded-xl hover:bg-chess-blue-dark transition-colors"
           >
             Back to Chess Path
           </button>
@@ -518,7 +518,7 @@ export default function LevelTestPage() {
               warmupAudio(); // Warmup audio NOW - user just clicked
               setTestState('playing');
             }}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all hover:bg-chess-green-dark"
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
           >
             Start Test
           </button>
@@ -556,7 +556,7 @@ export default function LevelTestPage() {
           </p>
           <button
             onClick={handleBackToLearn}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_#3d8c01] active:translate-y-[2px] active:shadow-[0_2px_0_#3d8c01] transition-all hover:bg-chess-green-dark"
+            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
           >
             Continue to Level {targetLevel?.number || 2}
           </button>
@@ -572,7 +572,7 @@ export default function LevelTestPage() {
         <div className="text-center max-w-sm w-full">
           <div className="flex justify-center gap-1 mb-4">
             {[0, 1, 2].map(i => (
-              <svg key={i} className="w-8 h-8 text-[#c5d4de]" fill="currentColor" viewBox="0 0 24 24">
+              <svg key={i} className="w-8 h-8 text-chess-disabled" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
             ))}
@@ -617,7 +617,7 @@ export default function LevelTestPage() {
                     // Error re-fetching puzzles
                   });
               }}
-              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-blue shadow-[0_4px_0_#1487c0] active:translate-y-[2px] active:shadow-[0_2px_0_#1487c0] transition-all hover:bg-blue-600"
+              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-blue shadow-[0_4px_0_var(--color-chess-blue-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-blue-shadow)] transition-all hover:bg-chess-blue-dark"
             >
               Try Again
             </button>
@@ -682,7 +682,7 @@ export default function LevelTestPage() {
               <svg
                 key={i}
                 className={`w-5 h-5 transition-all duration-300 ${
-                  i < (maxWrongAnswers - wrongCount) ? 'text-chess-red' : 'text-[#c5d4de]'
+                  i < (maxWrongAnswers - wrongCount) ? 'text-chess-red' : 'text-chess-disabled'
                 }`}
                 fill="currentColor"
                 viewBox="0 0 24 24"

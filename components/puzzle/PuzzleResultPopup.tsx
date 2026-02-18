@@ -79,7 +79,7 @@ export function PuzzleResultPopup({
         w-full z-50
         py-2.5 pr-4
         rounded-b-2xl
-        ${isCorrect ? 'bg-[#D7FFB8]' : 'bg-[#FFDFE0]'}
+        ${isCorrect ? 'bg-chess-correct-bg' : 'bg-chess-wrong-bg'}
       `}
       style={{
         animation: isCorrect ? 'slideUpBounce 0.3s ease-out' : 'fadeIn 0.2s ease-out',
@@ -166,7 +166,7 @@ export function PuzzleResultPopup({
           {!isCorrect && !showSolution && onShowSolution ? (
             <button
               onClick={onShowSolution}
-              className="w-full py-1.5 bg-chess-red text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#CC3939] active:translate-y-[1px] active:shadow-[0_2px_0_#CC3939] transition-all"
+              className="w-full py-1.5 bg-chess-red text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_var(--color-chess-red-shadow)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-red-shadow)] transition-all"
             >
               Try Again
             </button>
@@ -179,7 +179,7 @@ export function PuzzleResultPopup({
                   active:translate-y-[1px]
                   ${isCorrect
                     ? 'bg-chess-green text-white shadow-[0_3px_0_var(--color-chess-green-dark)] active:shadow-[0_2px_0_var(--color-chess-green-dark)]'
-                    : 'bg-chess-red text-white shadow-[0_3px_0_#CC3939] active:shadow-[0_2px_0_#CC3939]'
+                    : 'bg-chess-red text-white shadow-[0_3px_0_var(--color-chess-red-shadow)] active:shadow-[0_2px_0_var(--color-chess-red-shadow)]'
                   }
                 `}
               >

@@ -14,19 +14,30 @@
   --color-chess-purple: #CE82FF;
   --color-chess-orange: #FF9500;
   --color-chess-red: #FF4B4B;
+  --color-chess-red-shadow: #CC3939;
   --color-chess-gray: #4B4B4B;
   --color-chess-gray-light: #6B6B6B;
 
   /* === Background Colors === */
   --color-chess-bg: #131F24;
+  --color-chess-bg-deep: #0D1A1F;
   --color-chess-bg-light: #1A2C35;
   --color-chess-page: #eef6fc;
   --color-chess-surface: #ffffff;
+
+  /* === Feedback Colors === */
+  --color-chess-correct-bg: #D7FFB8;
+  --color-chess-wrong-bg: #FFDFE0;
+  --color-chess-hint-bg: #FFF3CD;
+  --color-chess-hint-title: #7A6200;
+  --color-chess-hint-text: #8B7000;
+  --color-chess-disabled: #c5d4de;
 
   /* === Text Colors (light theme) === */
   --color-chess-text: #2A3C45;
   --color-chess-text-muted: #6b7c8a;
   --color-chess-text-faint: #94a3b8;
+  --color-chess-text-light: #A3B8C2;
 
   /* === Animations === */
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;

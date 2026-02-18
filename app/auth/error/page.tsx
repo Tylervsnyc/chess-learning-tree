@@ -40,7 +40,7 @@ function ErrorContent() {
           <p className="text-chess-text-muted">{getErrorMessage()}</p>
         </div>
 
-        <div className="bg-chess-surface rounded-xl p-6 space-y-4 border border-slate-200">
+        <div className="bg-chess-surface rounded-2xl p-6 space-y-4 border border-slate-200">
           <p className="text-chess-text-muted text-sm">
             If you clicked a confirmation link from your email, it may have expired.
             Try signing up again to receive a new link.
@@ -49,14 +49,14 @@ function ErrorContent() {
           <div className="flex flex-col gap-3">
             <Link
               href="/auth/login"
-              className="w-full py-3 bg-chess-blue hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors text-center"
+              className="w-full py-3 bg-chess-blue hover:bg-chess-blue-dark text-white font-bold rounded-xl transition-colors text-center"
             >
               Try Signing In
             </Link>
 
             <Link
               href="/auth/signup"
-              className="w-full py-3 bg-chess-page hover:bg-slate-100 text-chess-text font-semibold rounded-lg transition-colors border border-slate-200 text-center"
+              className="w-full py-3 bg-chess-page hover:bg-slate-100 text-chess-text font-bold rounded-xl transition-colors border border-slate-200 text-center"
             >
               Create New Account
             </Link>
