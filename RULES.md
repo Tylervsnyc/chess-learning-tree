@@ -32,7 +32,7 @@ Last Updated: 2026-02-15
 22. [Feature Flags](#22-feature-flags)
 23. [Database Tables](#23-database-tables)
 24. [Puzzle Selection](#24-puzzle-selection)
-25. [Quip System](#25-quip-system)
+25. [Quip System (v3)](#25-quip-system-v3)
 26. [Quip Content Guidelines](#26-quip-content-guidelines)
 27. [Lesson/Level/Block Naming](#27-lessonlevelblock-naming)
 28. [Intro Messages](#28-intro-messages)
@@ -1072,7 +1072,7 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 | Flag | Value | Description |
 |------|-------|-------------|
 | `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on / and /daily-challenge |
-| `SHOW_SHARING` | `false` | Show share buttons/cards on lesson complete and daily challenge screens |
+| `SHOW_SHARING` | `true` | Show tap-rook-to-share on lesson complete (≥4/6) and share card on daily challenge screens |
 | `SHOW_ADS` | `true` | Show ad slots (self-promo CTAs) for free users |
 
 ### Permissions & Limits (not feature flags)
@@ -1170,43 +1170,69 @@ If all 40 seen in last 30 days → include oldest seen
 
 ---
 
-## 25. Quip System
+## 25. Quip System (v3)
 
 ### Data File:
 `/data/staging/v2-puzzle-responses.ts`
 
-### Selection Function:
-`getV2Response(sectionId, themes?, heroPiece?, playerMoveCount?)`
+### Selection Function (v3):
+```ts
+getQuip(sectionId: string, context: {
+  themes?: string[];
+  heroPiece?: string;
+  playerMoveCount?: number;
+  streak?: number;
+  puzzleIndex?: number;
+  totalPuzzles?: number;
+  hadWrongAttempt?: boolean;
+}) => string
+```
 
-### Key Convention:
-- `general` — fallback quips for any puzzle
-- `{theme}` — theme-specific quips (e.g. `fork`, `pin`, `mateIn2`)
-- `{theme}:{piece}` — theme+piece quips (e.g. `fork:N`, `pin:B`)
-- `piece:{piece}` — piece-specific quips (e.g. `piece:N`, `piece:Q`)
-- `moves:{N}` — move-count quips (e.g. `moves:1`, `moves:2`)
+`getV2Response()` is kept during transition but new code should use `getQuip()`.
+
+### Category Keys:
+
+**Context categories** (checked first, in priority order):
+- `first` — puzzle index 0 (first puzzle in section)
+- `last` — last puzzle in section
+- `recovery` — player had a wrong attempt before solving
+- `streak:5` — 5+ consecutive correct answers
+- `streak:3` — 3+ consecutive correct answers
+
+**Theme tiers** (checked after context, in specificity order):
+- Tier 1: `{theme}:{piece}` — most specific (e.g. `fork:N`, `pin:B`)
+- Tier 2: `{theme}` — theme only (e.g. `fork`, `pin`, `mateIn2`)
+- Tier 3: `piece:{piece}` — piece only (e.g. `piece:N`, `piece:Q`)
+- Tier 4: `moves:{count}` — move count (e.g. `moves:1`, `moves:2`)
+- Tier 5: `general` — fallback
 
 ### Piece Values:
 N (knight), B (bishop), R (rook), Q (queen), K (king), P (pawn)
 
+### Theme Mapping:
+Lichess theme names are mapped to quip keys via `THEME_KEY_MAP`. Notable mapping: `discoveredCheck` → `discoveredAttack`. Full list: `fork`, `pin`, `skewer`, `discoveredAttack`, `hangingPiece`, `trappedPiece`, `attraction`, `deflection`, `sacrifice`, `quietMove`, `backRankMate`, `mateIn1`, `mateIn2`.
+
+**META_THEMES** (ignored, never matched): `crushing`, `short`, `long`, `master`, `masterVsMaster`, `superBlitz`, `blitz`, `rapid`, `oneMove`, `veryLong`, `advancedPawn`.
+
 ### Selection Algorithm:
-1. Build candidate pool from matching keys: `piece:{heroPiece}`, `{theme}:{heroPiece}`, `{theme}`, `moves:{N}`
-2. If no candidates, fall back to `general`
-3. Filter out recently used quips (session-level dedup via module-level Map)
-4. If all filtered out, reset dedup for that section and try again
-5. Pick random quip from available pool
+1. **Context categories** — check `first`, `last`, `recovery`, `streak:5`, `streak:3` in order. First match with a non-empty pool wins.
+2. **Tiered theme matching** — for each resolved theme, try Tier 1 → Tier 2. Then try Tier 3, Tier 4, Tier 5 (`general`).
+3. **Nuclear fallback** — if dedup exhausted all bags, pick random from `general` without dedup. If no `general` pool exists, return `"Nice!"`.
+
+### Dedup & Randomization:
+- **Global dedup ring buffer**: 20 items, cross-section. Prevents the same quip text from appearing across different sections.
+- **ShuffleBag per section+key**: cached at module level (`bagCache`), resets on page reload. Ensures all quips in a pool are used before repeating.
+- `drawWithSkip(dedupSet)` draws from the bag but skips anything in the dedup ring.
 
 ### Detection Functions:
 - `getHeroPiece(puzzleFen, movesStr)` — reads puzzle FEN + first player move to identify piece
 - `getPlayerMoveCount(solutionMovesLength)` — counts player moves from solution array
 
-### Dedup Tracking:
-- Session-level: `recentlyUsedMap` (module-level Map, resets on page reload)
-- Database: `quip_history` table exists but is NOT currently used (future enhancement)
-
 ### Minimum Quip Counts Per Section:
-- 6-8 general quips
-- 3-4 quips per theme key
-- 3-4 quips per piece-specific key
+- 40-50 `general` quips
+- 20-25 per theme key (e.g. `fork`, `pin`)
+- 12-15 per `{theme}:{piece}` combo (e.g. `fork:N`)
+- 3-5 per context category (`first`, `last`, `recovery`, `streak:3`, `streak:5`)
 
 ---
 
@@ -1233,10 +1259,11 @@ N (knight), B (bishop), R (rook), Q (queen), K (king), P (pawn)
 suffocated, death, dead, killed, murdered, destroyed (in violent context), die, dies, kill, coffin, tomb, violence
 
 ### Quip Structure Notes:
+- Context quips (`first`, `last`, `recovery`, `streak:3`, `streak:5`) are section-specific and should feel situational — not generic praise.
 - Piece-specific quips go in `{theme}:{piece}` or `piece:{piece}` keys
 - Move-count quips go in `moves:{N}` keys
 - Keep quips short (under 60 characters preferred)
-- Each section should have 6-8 general quips minimum
+- Target pool sizes per section: 40-50 general, 20-25 per theme, 12-15 per theme:piece combo
 
 ---
 
@@ -1347,7 +1374,12 @@ This section tracks features currently being tested on localhost:3000 before pus
 - Pre-fetched on game finish for instant sharing when user taps button
 - Entry points: "Share Card" button, "Copy Rook" (emoji text), link icon (clipboard URL)
 
-**B. Puzzle Share Card** (1:1, 1080×1080)
+**B. Lesson Share Card** (1:1, 1080×1080 — see Section 32 for full spec)
+- Server-side OG image generation for lesson completion results
+- Shows lesson level/number, completion status (Completed! or Perfect!), rook visualization, confetti
+- Entry point: "Share Card" button on lesson complete screen
+
+**C. Puzzle Share Card** (1:1, 1080×1080)
 - Client-side html-to-image generation
 - Shows puzzle position with "I SOLVED this tricky puzzle" + "SWIPE TO SEE THE SOLUTION"
 - Entry point: Puzzle success popup share button
@@ -1357,14 +1389,14 @@ This section tracks features currently being tested on localhost:3000 before pus
 |------|---------|
 | `app/api/og/default/route.tsx` | Default site OG image (server-side) |
 | `app/api/og/daily-challenge/route.tsx` | Daily Rook story card (server-side) |
-| `app/api/og/lesson/route.tsx` | Lesson share card (server-side) |
+| `app/api/og/lesson/route.tsx` | Lesson share card (server-side, see Section 32) |
 | `components/share/ShareButton.tsx` | Puzzle share button + generation trigger |
 | `components/share/PuzzleShareCard.tsx` | Puzzle image card design |
 | `lib/share/generate-puzzle-image.ts` | Puzzle card → PNG (client-side) |
 | `lib/share/generate-share-text.ts` | Emoji rook text for clipboard |
 | `lib/share/piece-svgs.ts` | SVG chess pieces for OG images |
 
-**Test pages:** `/test-share` (puzzles), `/test-story-cards` (Daily Rook)
+**Test pages:** `/test-share` (puzzles), `/test-story-cards` (Daily Rook), `/test-lesson-share` (Lesson share card)
 
 ---
 
@@ -1522,7 +1554,61 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 
 ---
 
-## 32. SEO & Marketing
+## 32. Lesson Share Card
+
+**Status:** ✅ Complete — LOCKED DESIGN (approved 2026-02-18)
+
+**This is THE ONLY share card format for lesson completion results. DO NOT CHANGE this layout without explicit approval.**
+
+### Format
+
+**Size:** 1:1 (1080×1080) — social media / texting / link previews
+
+### Layout (centered, stacked vertically)
+
+1. **Rainbow gradient border** — wrapper with `linear-gradient(135deg, #FF9600, #FFC800, #FF6B6B, #FF4B4B, #A560E8, #CE82FF, #1CB0F6, #2FCBEF, #58CC02)` — 16px padding (at 1080 scale)
+2. **Card background** — `#eef6fc`, rounded corners
+3. **Logo fun-box** — white rounded box (32px radius at 1080 scale), box-shadow, containing: rook mini-logo SVG + "chesspath" wordmark (36px) + tagline "The fun way to learn chess." (22px, `#94a3b8`)
+4. **Level/Result fun-box** — white rounded box, containing: "LEVEL X, LESSON Y" (28px, uppercase, `#6b7c8a`, letterSpacing 3) + result text
+   - "Completed!" — `#58CC02` (green), 76px, font-weight 900
+   - "Perfect!" — `#FFC800` (gold), 76px, font-weight 900 (when score = 6/6)
+5. **Celebration rook** — 22-block rook shape (76px blocks, 100px spacing at 1080 scale), with 3D shadow effect and sparkles
+6. **Confetti** — Seeded random confetti in 5 zones (top burst, left/right cascades, mid-field, bottom scatter)
+   - Regular: 35 pieces (densities: 8, 7, 7, 8, 5)
+   - Perfect (6/6): 55 pieces (densities: 15, 12, 12, 12, 14)
+7. **Watermark** — "chesspath.app" at bottom (20px, `rgba(0,0,0,0.18)`)
+
+### Score Logic
+
+- Query params: `?level=X&lesson=Y&score=N/6`
+- If N === 6 → "Perfect!" with gold color + mega confetti
+- Otherwise → "Completed!" with green color + regular confetti
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `share-card-preview.html` | HTML mockup (approved design reference) |
+| `app/api/og/lesson/route.tsx` | Server-side OG image generation (Satori) |
+| `components/lesson/LessonCompleteScreen.tsx` | Share URL + share buttons |
+
+### Colors (from design system)
+
+- Green (Completed): `#58CC02`
+- Gold (Perfect): `#FFC800`
+- Card background: `#eef6fc`
+- Subtitle text: `#6b7c8a`
+- Tagline: `#94a3b8`
+- Logo text: `#2A3C45`
+- Watermark: `rgba(0,0,0,0.18)`
+
+### Test Page
+
+`/test-lesson-share` — Generate and preview the exact OG lesson share image
+
+---
+
+## 33. SEO & Marketing
 
 ### Target Audience
 
@@ -1615,7 +1701,7 @@ description: 'The Fun Way to Learn Chess.'
 
 ---
 
-## 33. Daily Maintenance Check
+## 34. Daily Maintenance Check
 
 ### What It Does
 Automated health check script that validates curriculum, puzzles, quips, database connectivity, and page rendering.
@@ -1657,7 +1743,7 @@ When run with `--fix`, the script can:
 
 ---
 
-## 34. Failed Payment Recovery
+## 35. Failed Payment Recovery
 
 ### Dunning Flow:
 When a Stripe `invoice.payment_failed` event fires, the system sends up to 3 recovery emails:
@@ -1684,7 +1770,7 @@ When a Stripe `invoice.payment_failed` event fires, the system sends up to 3 rec
 
 ---
 
-## 35. Revenue Dashboard
+## 36. Revenue Dashboard
 
 ### What It Shows:
 Nightly Stripe snapshot with key metrics:
@@ -1710,7 +1796,7 @@ Nightly Stripe snapshot with key metrics:
 
 ---
 
-## 36. Paywall Analytics
+## 37. Paywall Analytics
 
 ### What It Shows:
 Conversion rate per paywall trigger point (e.g. `guest_limit`, `daily_limit`), powered by PostHog server-side API.
@@ -1735,7 +1821,7 @@ Conversion rate per paywall trigger point (e.g. `guest_limit`, `daily_limit`), p
 
 ---
 
-## 37. Dynamic Pricing
+## 38. Dynamic Pricing
 
 ### How It Works:
 PostHog feature flag `pricing-experiment` assigns users to a pricing variant. Different variants see different Stripe prices.
@@ -1765,7 +1851,7 @@ PostHog feature flag `pricing-experiment` assigns users to a pricing variant. Di
 
 ---
 
-## 38. Ad Placement
+## 39. Ad Placement
 
 ### What It Does:
 Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium users see nothing.
@@ -1797,7 +1883,7 @@ Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium use
 
 ---
 
-## 39. Cron Schedule
+## 40. Cron Schedule
 
 All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer token.
 
@@ -1852,7 +1938,7 @@ Before modifying any behavior:
 
 ---
 
-## 35. Loading Indicator — Breathing Rook
+## 41. Loading Indicator — Breathing Rook
 
 The **Breathing Rook** (`components/ui/BreathingRook.tsx`) is the standard loading indicator across the entire app. It replaces all generic spinners.
 
@@ -1895,7 +1981,7 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 
 ---
 
-## 40. Admin Dashboard
+## 42. Admin Dashboard
 
 The admin dashboard at `/admin/dashboard` is the **operational command center** for Chess Path. Its goal is to **automate as many operational tasks as possible** so Tyler never has to manually check analytics, hunt for bugs, or remember what needs attention.
 
@@ -1979,7 +2065,7 @@ To add a new dashboard panel:
 
 ---
 
-## 41. Design System Compliance
+## 43. Design System Compliance
 
 **Every component must follow the design system.** The full reference is in `.claude/design-system.md`. The rendered style guide lives at `/style-guide`.
 
@@ -2069,7 +2155,7 @@ Always use `ChessPathBoard` wrapper, never raw `Chessboard`. Board colors come f
 | `app/style-guide/page.tsx` | Visual rendered reference |
 | `app/style-guide/before-after/page.tsx` | Before/after comparison examples |
 
-## 42. Daily Puzzle Video
+## 44. Daily Puzzle Video
 
 **Status:** Active — renders daily for social media (Instagram Reels, TikTok, Stories)
 

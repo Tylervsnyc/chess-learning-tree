@@ -108,7 +108,7 @@ export const TutorialEvents = {
 
 // Share/Viral funnel
 export const ShareEvents = {
-  shareClicked: (source: 'lesson' | 'daily_challenge', type?: 'text' | 'link' | 'image' | 'card') =>
+  shareClicked: (source: 'lesson' | 'daily_challenge', type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
     trackEvent('share_clicked', { source, type }),
   shareGenerated: (source: 'lesson' | 'daily_challenge') =>
     trackEvent('share_generated', { source }),

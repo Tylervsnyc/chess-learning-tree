@@ -25,6 +25,106 @@ const celebrationStyles = `
   .animate-fadeInUp {
     animation: fadeInUp 0.4s ease-out forwards;
   }
+  @keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 0; }
+    20% { opacity: 0.6; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140px;
+    height: 140px;
+    margin: -70px 0 0 -70px;
+    border-radius: 50%;
+    border: 2px solid;
+    animation: pulseRing 2s ease-out infinite;
+    opacity: 0;
+  }
+  .pulse-ring-green {
+    border-color: rgba(88, 204, 2, 0.4);
+    animation-delay: 1.5s;
+  }
+  .pulse-ring-green:nth-child(2) {
+    animation-delay: 2s;
+  }
+  .pulse-ring-gold {
+    border-color: rgba(255, 200, 0, 0.4);
+    animation-delay: 1.5s;
+  }
+  .pulse-ring-gold:nth-child(2) {
+    animation-delay: 2s;
+  }
+  @keyframes hintFadeIn {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .share-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    animation: hintFadeIn 0.6s ease forwards;
+    animation-delay: 1.8s;
+    letter-spacing: 0.3px;
+  }
+  .share-hint-green {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .share-hint-gold {
+    color: rgba(255, 200, 0, 0.6);
+  }
+  .share-feedback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  .share-feedback.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .share-feedback-green {
+    background: rgba(88, 204, 2, 0.9);
+  }
+  .share-feedback-gold {
+    background: rgba(255, 200, 0, 0.92);
+  }
+  .share-feedback svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+  }
+  .share-feedback span {
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    margin-top: 6px;
+  }
+  .rook-share-button {
+    position: relative;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: transform 0.15s ease;
+  }
+  .rook-share-button:active {
+    transform: scale(0.96);
+  }
 `;
 
 interface LessonCompleteScreenProps {
@@ -49,11 +149,12 @@ export function LessonCompleteScreen({
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
   const didFail = correctCount <= 3;
+  const canShare = !didFail && correctCount >= 4; // Scores 4/6, 5/6, 6/6
   const accuracy = Math.round((correctCount / 6) * 100);
   const rookRef = useRef<RookCelebrationAnimationRef>(null);
   const wrongRookRef = useRef<RookWrongAnimationRef>(null);
-  const [textCopied, setTextCopied] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
+  const shareContainerRef = useRef<HTMLDivElement>(null);
+  const [shareFeedbackVisible, setShareFeedbackVisible] = useState(false);
   // Pick a random celebration animation style (used when passing)
   const celebrationStyle: CelebrationAnimationStyle = useMemo(() => {
     const styles: CelebrationAnimationStyle[] = ['sparkleBurst', 'wave', 'radiate', 'ripple', 'cascade', 'bloom'];
@@ -114,15 +215,49 @@ export function LessonCompleteScreen({
     return () => clearTimeout(timer);
   }, [didFail]);
 
-  // Build OG image URL for inline display
-  const levelKey = getLevelKeyFromLessonId(lessonId);
-  const ogParams = new URLSearchParams({
-    score: `${correctCount}/6`,
-    lesson: lessonName,
-    level: levelKey,
-    accuracy: String(accuracy),
-  });
-  if (streak > 0) ogParams.set('streak', String(streak));
+  // Build share URL for tap-to-share
+  const levelNumber = parseInt(lessonId.split('.')[0], 10);
+  const lessonNumber = parseInt(lessonId.split('.')[1], 10);
+  const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
+
+  // Handle tap on rook to share
+  const handleRookShare = async () => {
+    if (!canShare) return;
+
+    ShareEvents.shareClicked('lesson', 'rook');
+
+    // Show feedback overlay
+    setShareFeedbackVisible(true);
+
+    // Try native share first
+    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+      try {
+        await navigator.share({
+          title: `${lessonName} | Chess Path`,
+          text: `I scored ${correctCount}/6 on "${lessonName}" on Chess Path!`,
+          url: shareUrl,
+        });
+        ShareEvents.shareCompleted('lesson', 'native');
+        setTimeout(() => setShareFeedbackVisible(false), 1500);
+        return;
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          setShareFeedbackVisible(false);
+          return;
+        }
+      }
+    }
+
+    // Fallback to clipboard copy
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      ShareEvents.shareCompleted('lesson', 'clipboard');
+      setTimeout(() => setShareFeedbackVisible(false), 1500);
+    } catch {
+      // Silent fail
+      setShareFeedbackVisible(false);
+    }
+  };
 
   return (
     <div className={`h-full flex flex-col items-center overflow-auto px-5 py-6 ${didFail ? 'bg-chess-page text-chess-text' : 'bg-chess-bg text-white'}`}>
@@ -139,14 +274,58 @@ export function LessonCompleteScreen({
               compact
             />
           ) : (
-            <RookCelebrationAnimation
-              ref={rookRef}
-              style={celebrationStyle}
-              scale={1.6}
-              autoPlay={true}
-            />
+            <div
+              ref={shareContainerRef}
+              className={canShare ? 'rook-share-button relative' : 'relative'}
+              onClick={canShare ? handleRookShare : undefined}
+              role={canShare ? 'button' : undefined}
+              tabIndex={canShare ? 0 : undefined}
+              onKeyDown={canShare ? (e) => e.key === 'Enter' && handleRookShare() : undefined}
+            >
+              {canShare && (
+                <>
+                  <div className={`pulse-ring ${isPerfect ? 'pulse-ring-gold' : 'pulse-ring-green'}`} />
+                  <div className={`pulse-ring ${isPerfect ? 'pulse-ring-gold' : 'pulse-ring-green'}`} />
+                </>
+              )}
+
+              <RookCelebrationAnimation
+                ref={rookRef}
+                style={celebrationStyle}
+                scale={1.6}
+                autoPlay={true}
+              />
+
+              {canShare && (
+                <div
+                  className={`share-feedback ${shareFeedbackVisible ? 'show' : ''} ${
+                    isPerfect ? 'share-feedback-gold' : 'share-feedback-green'
+                  }`}
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Link copied!</span>
+                </div>
+              )}
+            </div>
           )}
         </div>
+
+        {/* "Tap rook to share" hint */}
+        {FEATURE_FLAGS.SHOW_SHARING && canShare && (
+          <div className={`share-hint ${isPerfect ? 'share-hint-gold' : 'share-hint-green'}`}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+              />
+            </svg>
+            Tap rook to share
+          </div>
+        )}
 
         {/* Score + tier */}
         <div className="text-center mb-2">
@@ -177,118 +356,6 @@ export function LessonCompleteScreen({
           </p>
         </div>
 
-        {/* OG Share Card */}
-        {FEATURE_FLAGS.SHOW_SHARING && (
-          <div
-            className="mb-4 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)] animate-fadeInUp"
-            style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
-          >
-            <img
-              src={`/api/og/lesson?${ogParams.toString()}`}
-              alt={`${lessonName} - ${correctCount}/6`}
-              className="w-full h-auto"
-            />
-          </div>
-        )}
-
-        {/* Share buttons */}
-        {FEATURE_FLAGS.SHOW_SHARING && (
-          <div
-            className="flex gap-3 mb-4 animate-fadeInUp"
-            style={{ animationDelay: '0.38s', animationFillMode: 'backwards' }}
-          >
-            {/* Share Results - text share */}
-            <button
-              onClick={async () => {
-                ShareEvents.shareClicked('lesson', 'text');
-                const shareText = generateLessonShareText({
-                  puzzleResults,
-                  correctCount,
-                  lessonName,
-                  streak,
-                });
-                try {
-                  await navigator.clipboard.writeText(shareText);
-                  setTextCopied(true);
-                  ShareEvents.shareCompleted('lesson', 'clipboard');
-                  setTimeout(() => setTextCopied(false), 2000);
-                } catch {
-                  // Silent fail
-                }
-              }}
-              className="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
-              style={{ background: 'linear-gradient(135deg, var(--color-chess-blue), #0A9FE0)', boxShadow: '0 4px 0 #0077A3' }}
-            >
-              {textCopied ? (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                  </svg>
-                  Share Results
-                </>
-              )}
-            </button>
-
-            {/* Share Link */}
-            <button
-              onClick={async () => {
-                ShareEvents.shareClicked('lesson', 'link');
-                const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
-
-                if (typeof navigator !== 'undefined' && 'share' in navigator) {
-                  try {
-                    await navigator.share({
-                      title: `${lessonName} | Chess Path`,
-                      text: `I scored ${correctCount}/6 on "${lessonName}" on Chess Path!`,
-                      url: shareUrl,
-                    });
-                    ShareEvents.shareCompleted('lesson', 'native');
-                    return;
-                  } catch (err) {
-                    if (err instanceof Error && err.name === 'AbortError') return;
-                  }
-                }
-
-                try {
-                  await navigator.clipboard.writeText(shareUrl);
-                  setLinkCopied(true);
-                  ShareEvents.shareCompleted('lesson', 'clipboard');
-                  setTimeout(() => setLinkCopied(false), 2000);
-                } catch {
-                  // Silent fail
-                }
-              }}
-              className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-[0.98] ${didFail ? 'text-chess-text' : 'text-white'}`}
-              style={didFail
-                ? { background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.12)' }
-                : { background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }
-              }
-            >
-              {linkCopied ? (
-                <>
-                  <svg className="w-4 h-4 text-chess-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-chess-green">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                  Share Link
-                </>
-              )}
-            </button>
-          </div>
-        )}
 
         {/* Premium upsell / ad slot */}
         <div

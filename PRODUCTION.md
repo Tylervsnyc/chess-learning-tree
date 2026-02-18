@@ -1,6 +1,6 @@
 # PRODUCTION.md — What's Built vs What's Live
 
-**Last updated:** Feb 11, 2026
+**Last updated:** Feb 15, 2026
 
 This is the single source of truth for features that are built but not yet live. If you build something, it goes here until it ships.
 
@@ -11,7 +11,7 @@ This is the single source of truth for features that are built but not yet live.
 | Flag | Status | Feature | What's hidden | To ship |
 |------|--------|---------|--------------|---------|
 | `SHOW_STREAK_COUNTER` | **OFF** | Streak fire badge in NavHeader | Fire emoji + streak count on `/learn` and `/daily-challenge` | Flip to `true`. Data pipeline fully wired. |
-| `SHOW_SHARING` | **OFF** | Share buttons everywhere | Lesson complete share (text + link), Daily Rook share (image card), puzzle result share button | Flip to `true`. OG images, native share, download fallback all working. QA on iOS/Android. |
+| `SHOW_SHARING` | **ON** | Tap-rook-to-share + Daily Rook card | Lesson complete: tap rook to share (scores ≥4/6, pulse rings, native share sheet). Daily Rook: image share card. OG images for both. | Live. Monitor PostHog `share_clicked` with `type: rook`. |
 | `FREE_UNTIL_MARCH` | **ON** | Free lessons until March 1 | All lessons unlocked without subscription | Auto-expires March 1. Remove flag + `usePermissions.ts` check after. |
 
 **File:** `lib/config/feature-flags.ts`
@@ -102,12 +102,13 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 
 ## Built Systems Not Deployed
 
-### Email System (5 templates, 3 cron jobs)
-- **Templates:** Welcome, Streak Warning, Streak Lost, Weekly Digest, Re-Engagement
-- **Code:** `lib/email/templates/`, `lib/email/send.ts`, `app/api/cron/streak-check/`, `weekly-digest/`, `re-engagement/`
+### Email System (9 templates, 4 cron jobs)
+- **Templates:** Welcome (celebration + feature showcase), Streak Warning, Streak Lost, Weekly Digest, Re-Engagement, Drip Day 3 ("your pieces miss you"), Drip Day 5 (Daily Rook intro), Drip Day 7 (premium pitch), Payment Failed
+- **Drip Campaign (NEW — Feb 15):** 7-day onboarding sequence. Day 1 = existing welcome. Days 3/5/7 via `/api/cron/drip` route. Uses `created_at` from profiles to calculate which day a user is on. Skips premium users on Day 7. All drip emails have gold premium upsell buttons (Days 3/5) or full premium pitch card (Day 7). Brand colors, chess pun copy, pixel-art rook logo in header. Premium upsells use gold Duolingo-style button matching in-app modal.
+- **Code:** `lib/email/templates/`, `lib/email/send.ts`, `app/api/cron/drip/`, `app/api/cron/streak-check/`, `weekly-digest/`, `re-engagement/`
 - **Status:** `vercel.json` has `"crons": []` — explicitly disabled
-- **To ship:** Set `CRON_SECRET` + `RESEND_API_KEY` env vars, add cron schedules to `vercel.json`, test delivery
-- **Effort:** Medium
+- **To ship:** Set `CRON_SECRET` + `RESEND_API_KEY` env vars, add daily cron schedule for `/api/cron/drip` to `vercel.json`, test delivery
+- **Effort:** Low — code complete, just needs env vars + cron config
 
 ### King's Path (fog-of-war minigame)
 - **Code:** `app/test-kings-path/` (uncommitted), `KINGS-PATH-RULES.md`
@@ -177,7 +178,7 @@ All publicly accessible at `/test-*`. Not blocked from crawlers.
 | # | What | Effort | Impact |
 |---|------|--------|--------|
 | 1 | `SHOW_STREAK_COUNTER: true` | 1 line | Retention |
-| 2 | `SHOW_SHARING: true` | 1 line | Growth |
+| 2 | ~~`SHOW_SHARING: true`~~ ✅ Shipped | Done | Growth |
 | 3 | Block `/test-*` from crawlers | ~10 min | SEO |
 | 4 | Commit design token sweep + puzzle re-sorts | `git add` | Visual consistency |
 | 5 | Remove `FREE_UNTIL_MARCH` flag after March 1 | Cleanup | — |
