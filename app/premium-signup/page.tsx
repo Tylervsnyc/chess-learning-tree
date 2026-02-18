@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { AuthEvents, SubscriptionEvents, identifyUser } from '@/lib/analytics/posthog';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 function PremiumSignupContent() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -35,9 +35,6 @@ function PremiumSignupContent() {
       email,
       password,
       options: {
-        data: {
-          display_name: displayName,
-        },
         emailRedirectTo: callbackUrl.toString(),
       },
     });
@@ -51,7 +48,7 @@ function PremiumSignupContent() {
 
     // Identify the user in PostHog
     if (data.user) {
-      identifyUser(data.user.id, { email, displayName });
+      identifyUser(data.user.id, { email });
     }
     AuthEvents.signupCompleted('email');
 
@@ -84,60 +81,47 @@ function PremiumSignupContent() {
       {/* Gradient accent */}
       <div className="h-1 w-full bg-gradient-to-r from-chess-gold via-chess-orange to-chess-gold" />
 
-      <div className="flex-1 flex items-center justify-center px-5 py-6">
-        <div className="max-w-sm w-full">
-          {/* Header with premium badge */}
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-              <span className="text-3xl">👑</span>
+      <div className="flex-1 flex flex-col justify-start px-5 pt-4">
+        <div className="max-w-sm w-full mx-auto">
+          {/* Header with premium rook */}
+          <div className="text-center mb-3">
+            <div className="mx-auto mb-2">
+              <BreathingRook size="lg" />
             </div>
-            <h1 className="text-2xl font-black text-chess-text mb-2">Get Premium Access</h1>
+            <h1 className="text-2xl font-black text-chess-text mb-1">Get Premium Access</h1>
             <p className="text-chess-text-muted text-sm">Create your account and unlock everything</p>
           </div>
 
           {/* Premium benefits */}
-          <div className="bg-chess-surface rounded-xl p-4 mb-6 border border-chess-gold/30 shadow-sm">
-            <ul className="space-y-2 text-sm">
+          <div className="rounded-2xl p-3 mb-4 border border-chess-gold/40 shadow-sm" style={{ background: 'linear-gradient(135deg, #FFF8E1, #FFECB3)' }}>
+            <ul className="space-y-1.5 text-sm">
               <li className="flex items-center gap-2">
-                <span className="text-chess-green">✓</span>
-                <span className="text-chess-text-muted">Unlimited lessons & puzzles</span>
+                <span className="text-chess-green font-bold">✓</span>
+                <span className="text-amber-900/70">Unlimited lessons & puzzles</span>
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-chess-green">✓</span>
-                <span className="text-chess-text-muted">All 6 skill levels unlocked</span>
+                <span className="text-chess-green font-bold">✓</span>
+                <span className="text-amber-900/70">All 6 skill levels unlocked</span>
               </li>
-              <li className="flex items-center gap-2">
-                <span className="text-chess-green">✓</span>
-                <span className="text-chess-text-muted">Track your progress forever</span>
+              <li className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-chess-green font-bold">✓</span>
+                  <span className="text-amber-900/70">Track your progress forever</span>
+                </div>
+                <div className="shrink-0">
+                  <span className="text-amber-700 font-bold text-lg">$4.99</span>
+                  <span className="text-amber-900/50 text-sm">/mo</span>
+                </div>
               </li>
             </ul>
-            <div className="mt-3 pt-3 border-t border-chess-text-faint/10 text-center">
-              <span className="text-chess-gold font-bold text-lg">$4.99</span>
-              <span className="text-chess-text-muted text-sm">/month</span>
-            </div>
           </div>
 
-          <form onSubmit={handleSignupAndCheckout} className="space-y-4">
+          <form onSubmit={handleSignupAndCheckout} className="space-y-3">
             {error && (
               <div className="bg-chess-red/10 border border-chess-red/50 rounded-xl p-3 text-chess-red text-sm">
                 {error}
               </div>
             )}
-
-            <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-chess-text-muted mb-1">
-                Display Name
-              </label>
-              <input
-                id="displayName"
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
-                placeholder="ChessMaster2000"
-              />
-            </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-chess-text-muted mb-1">
@@ -149,7 +133,7 @@ function PremiumSignupContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-chess-surface text-chess-text placeholder:text-chess-text-faint focus:outline-none focus:ring-2 focus:ring-chess-green"
                 placeholder="you@example.com"
               />
             </div>
@@ -165,7 +149,7 @@ function PremiumSignupContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 bg-chess-surface border-2 border-transparent rounded-xl text-chess-text placeholder-chess-text-faint focus:outline-none focus:border-chess-gold transition-colors shadow-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-chess-surface text-chess-text placeholder:text-chess-text-faint focus:outline-none focus:ring-2 focus:ring-chess-green"
                 placeholder="••••••••"
               />
               <p className="text-xs text-chess-text-faint mt-1">Minimum 6 characters</p>
@@ -174,12 +158,7 @@ function PremiumSignupContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-2xl font-bold text-lg transition-all active:translate-y-[2px] disabled:opacity-50"
-              style={{
-                background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                color: '#000',
-                boxShadow: '0 4px 0 #b8860b',
-              }}
+              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold py-4 text-lg rounded-2xl transition-all hover:opacity-90 disabled:opacity-50"
             >
               {loading ? 'Creating account...' : 'Get Premium - $4.99/mo'}
             </button>
@@ -188,7 +167,7 @@ function PremiumSignupContent() {
               Cancel anytime. No questions asked.
             </p>
 
-            <p className="text-center text-chess-text-muted text-sm pt-2">
+            <p className="text-center text-chess-text-muted text-sm">
               Already have an account?{' '}
               <Link href="/auth/login" className="text-chess-blue hover:underline font-medium">
                 Sign in
