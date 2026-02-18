@@ -7,7 +7,6 @@ import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes';
 import { playCelebrationSound } from '@/lib/sounds';
 import { RookCelebrationAnimation, RookCelebrationAnimationRef, CelebrationAnimationStyle } from './RookCelebrationAnimation';
 import { RookWrongAnimation, RookWrongAnimationRef, WrongAnimationStyle } from './RookWrongAnimation';
-import { generateLessonShareText } from '@/lib/share/generate-share-text';
 import { ShareEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { AdSlot } from '@/components/ads/AdSlot';
@@ -145,7 +144,6 @@ export function LessonCompleteScreen({
   isGuest,
   getLevelKeyFromLessonId,
   streak,
-  puzzleResults,
 }: LessonCompleteScreenProps) {
   const isPerfect = correctCount === 6;
   const didFail = correctCount <= 3;
@@ -216,8 +214,6 @@ export function LessonCompleteScreen({
   }, [didFail]);
 
   // Build share URL for tap-to-share
-  const levelNumber = parseInt(lessonId.split('.')[0], 10);
-  const lessonNumber = parseInt(lessonId.split('.')[1], 10);
   const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
 
   // Handle tap on rook to share
