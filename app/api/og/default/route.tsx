@@ -129,7 +129,7 @@ export async function GET() {
                 fontStyle: 'italic',
               }}
             >
-              Chess. Made Simple.
+              The Fun Way to Learn Chess.
             </span>
           </div>
 

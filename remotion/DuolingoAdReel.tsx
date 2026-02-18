@@ -287,7 +287,7 @@ const BeatLogoFlash: React.FC = () => {
               letterSpacing: '-0.01em',
             }}
           >
-            Chess. Made Simple.
+            The Fun Way to Learn Chess.
           </p>
         </div>
       </div>
@@ -658,7 +658,7 @@ const BeatCTA: React.FC = () => {
             letterSpacing: '-0.01em',
           }}
         >
-          Chess. Made Simple.
+          The Fun Way to Learn Chess.
         </p>
       </div>
 
@@ -886,7 +886,7 @@ const BeatCTALong: React.FC = () => {
             letterSpacing: '-0.01em',
           }}
         >
-          Chess. Made Simple.
+          The Fun Way to Learn Chess.
         </p>
       </div>
 
@@ -1270,7 +1270,7 @@ const BeatFeatureCTA: React.FC = () => {
               margin: 0,
             }}
           >
-            Chess. Made Simple.
+            The Fun Way to Learn Chess.
           </p>
         </div>
 

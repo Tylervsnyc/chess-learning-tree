@@ -3,11 +3,11 @@ import LearnPageContent from '@/components/learn/LearnPageContent';
 
 export const metadata: Metadata = {
   title: 'The Chess Path - Beat Your Friends at Chess',
-  description: 'Chess. Made Simple. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning.',
+  description: 'The Fun Way to Learn Chess. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning.',
   keywords: ['chess tactics', 'learn chess', 'chess for beginners', 'beat friends at chess', 'chess training'],
   openGraph: {
     title: 'The Chess Path - Beat Your Friends at Chess',
-    description: 'Chess. Made Simple. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning.',
+    description: 'The Fun Way to Learn Chess. Learn chess tactics in 15 min/day. The fastest way to stop losing and start winning.',
     url: 'https://chesspath.app',
     siteName: 'The Chess Path',
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'The Chess Path - Beat Your Friends at Chess',
-    description: 'Chess. Made Simple. Learn chess tactics in 15 min/day.',
+    description: 'The Fun Way to Learn Chess. Learn chess tactics in 15 min/day.',
     images: ['https://chesspath.app/api/og/default'],
   },
 };
