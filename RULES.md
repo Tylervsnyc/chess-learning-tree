@@ -49,6 +49,8 @@ Last Updated: 2026-02-15
 38. [Ad Placement](#38-ad-placement)
 39. [Cron Schedule](#39-cron-schedule)
 40. [Admin Dashboard](#40-admin-dashboard)
+41. [Design System Compliance](#41-design-system-compliance)
+42. [Daily Puzzle Video](#42-daily-puzzle-video)
 
 ---
 
@@ -551,7 +553,7 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 - Most pages use `h-full overflow-hidden` (no scrolling)
 - **Exceptions that CAN scroll** (use `h-full overflow-auto`):
   - `/` - curriculum tree needs to scroll
-  - `/test-*` pages - test pages often have lots of content
+  - `/test-*` and `/test/**` pages - test pages often have lots of content, always allow scrolling
 
 ### Elements by Location:
 
@@ -1974,6 +1976,247 @@ To add a new dashboard panel:
 | `app/api/admin/dashboard/ux-report/route.ts` | Live PostHog UX queries |
 | `app/api/cron/report/*.ts` | 5 daily intelligence cron jobs |
 | `supabase/migrations/add-dashboard-reports.sql` | Table schema |
+
+---
+
+## 41. Design System Compliance
+
+**Every component must follow the design system.** The full reference is in `.claude/design-system.md`. The rendered style guide lives at `/style-guide`.
+
+### Colors — Always Use Tokens
+
+All colors come from `globals.css` `@theme` tokens. **Never use raw hex values** in components.
+
+| Instead of | Use |
+|------------|-----|
+| `bg-white` | `bg-chess-surface` |
+| `bg-[#131F24]` | `bg-chess-bg` |
+| `bg-[#1A2C35]` | `bg-chess-bg-light` |
+| `bg-[#0D1A1F]` | `bg-chess-bg-deep` |
+| `text-gray-*` / `text-slate-*` (for primary text) | `text-chess-text`, `text-chess-text-muted`, `text-chess-text-faint` |
+| `text-[#A3B8C2]` | `text-chess-text-light` |
+| `bg-[#D7FFB8]` / `bg-[#FFDFE0]` | `bg-chess-correct-bg` / `bg-chess-wrong-bg` |
+| `bg-[#FFF3CD]` | `bg-chess-hint-bg` |
+| `text-[#FF4B4B]` | `text-chess-red` |
+| `bg-[#58CC02]` | `bg-chess-green` |
+| `bg-[#1CB0F6]` | `bg-chess-blue` |
+
+**Exception:** `border-slate-200` is fine for light borders. `bg-slate-200`/`bg-slate-300` are fine for skeleton loaders.
+
+### Buttons — 3D Duolingo Style
+
+Primary and premium buttons use a 3D bottom-shadow effect:
+
+```
+bg-chess-green border-b-4 border-chess-green-dark active:border-b-0 active:mt-1
+  text-white font-bold rounded-xl transition-all hover:brightness-105
+```
+
+| Pattern | Use |
+|---------|-----|
+| `bg-chess-green` + shadow | Primary actions (Start, Continue, Sign Up) |
+| `bg-chess-blue` + shadow | Secondary actions (navigation) |
+| `bg-gradient-to-r from-yellow-500 to-orange-500` + shadow | Premium/upgrade CTAs |
+| `text-chess-text-muted hover:text-chess-text` | Ghost/text-only buttons |
+
+**Never use:** `hover:opacity-90` (use `hover:brightness-105`), `rounded-lg` on buttons (use `rounded-xl`).
+
+### Cards
+
+```
+bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4
+```
+
+**Never use:** `bg-white` (use `bg-chess-surface`), `rounded-lg` or `rounded-xl` on cards (use `rounded-2xl`), `shadow-lg` on cards (use `shadow-sm`).
+
+### Modals
+
+Two themes:
+- **Dark modals** (in-lesson, puzzles): `bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl`
+- **Light modals** (auth, profile): `bg-chess-surface rounded-2xl border border-slate-200 shadow-xl`
+
+Both use `fixed inset-0 z-50` backdrop with `bg-black/80 backdrop-blur-sm`.
+
+### No Emojis
+
+**Never use emoji characters** in the UI. Replace with:
+- Breathing Rook (`<BreathingRook size="xs" />`) for loading/branding
+- AnimatedLogo for premium features
+- Chess unicode (`♔ ♕ ♗ ♘`) only in feature lists where a chess piece is contextually appropriate
+- SVG icons for functional indicators (flame, checkmark, etc.)
+
+### Typography
+
+| Element | Classes |
+|---------|---------|
+| Page titles | `text-xl font-black` or `text-2xl font-bold` |
+| Section headings | `text-lg font-bold` |
+| Body text | `text-sm` or `text-base` |
+| Captions/hints | `text-xs text-chess-text-faint` |
+
+**Never use:** `font-semibold` (use `font-bold`), Tailwind default grays (`text-gray-*`) for primary text.
+
+### Chess Board
+
+Always use `ChessPathBoard` wrapper, never raw `Chessboard`. Board colors come from `BOARD_COLORS` in `lib/puzzle-utils.ts`.
+
+### File Reference
+
+| File | Purpose |
+|------|---------|
+| `app/globals.css` | Token definitions (`@theme` block) |
+| `.claude/design-system.md` | Full written reference |
+| `app/style-guide/page.tsx` | Visual rendered reference |
+| `app/style-guide/before-after/page.tsx` | Before/after comparison examples |
+
+## 42. Daily Puzzle Video
+
+**Status:** Active — renders daily for social media (Instagram Reels, TikTok, Stories)
+
+### Format
+
+**Size:** 1080×1920 (9:16 vertical reel)
+**FPS:** 30
+**Codec:** H.264 (MP4)
+**Font:** DM Sans (loaded via `@remotion/google-fonts`)
+
+### 3-Zone Layout (every stage)
+
+All stages share the same `ReelLayout` — the board never moves.
+
+```
+┌──────────────────────────┐
+│       TOP ZONE (468px)   │
+│  Logo (rook + wordmark)  │
+│  "Daily Puzzle" badge    │
+├──────────────────────────┤
+│     BOARD (936×936px)    │
+│  ChessPathBoard, amber   │
+│  last-move highlights    │
+├──────────────────────────┤
+│    BOTTOM ZONE (468px)   │
+│  3D BottomCard (green)   │
+│  "chesspath.app" footer  │
+└──────────────────────────┘
+```
+
+- **Safe padding:** 72px on all sides (content isn't clipped by Reels UI)
+- **Background:** `#EBF0F5` (light)
+- **Board size:** `1080 - 72×2 = 936px`
+
+### Logo — ReelLogo
+
+Rook icon (22 colored blocks, 2× scale) + "chesspath" wordmark (144px, DM Sans 700).
+
+- **"chess" color:** `#2A3C45` (dark type — light background)
+- **"path" color:** gradient `#FFC800 → #FF6B6B → #1CB0F6`
+- **Rook blocks:** gentle breathe animation (brightness oscillates 1.0–1.25 via sine wave, offset by distance from center)
+
+**DO NOT use light/white text for "chess" — the video background is light.**
+
+### "Daily Puzzle" Badge
+
+Green pill below logo: `linear-gradient(135deg, #58CC02, #46a302)`, white text, 40px, font-700, uppercase, letter-spacing 0.12em.
+
+### Bottom Card — 3D Layered Style
+
+- Dark card: `#1a2a33` background, `#58CC02` (green) 8px border, `border-radius: 32px`
+- Two depth-shadow layers behind (10px and 20px offset, green at 0.2/0.4 opacity)
+- Corner accent: 45° green gradient triangle (top-right)
+- Height: 272px, content padded 48px horizontal
+
+### Footer
+
+"chesspath.app" — 44px, DM Sans 700, `#2A3C45`, centered below the card.
+
+### 4 Stages
+
+| Stage | Name | Duration | Bottom Card Content |
+|-------|------|----------|---------------------|
+| 1 | Initial | 2s (60f) | "Can you find the solution?" (68px) + "{Color} to play" (44px) |
+| 2 | Countdown | 4s (120f) | "Solution in 3" → "2" → "1" → "GO!" (72px) + "(Tap Screen to Pause)" (32px) |
+| 3 | Solution | 1.2s × N moves | "SOLUTION" label (44px, uppercase) + SAN notation (46–80px, auto-sized) |
+| 4 | Celebrate | 3s (90f) | Quip in italic (64px) |
+
+**Total duration:** `2 + 4 + (1.2 × solutionMoves) + 3` seconds
+
+### Stage Details
+
+**Stage 1 (Initial):** Static board showing puzzle position (after opponent's setup move). Opponent's last move highlighted in amber.
+
+**Stage 2 (Countdown):** Same board, 1s per count (30 frames). Text changes: 3 → 2 → 1 → GO!
+
+**Stage 3 (Solution):** Board animates one move every 36 frames (1.2s). SAN notation builds left-to-right (e.g. "1. Qg8+ Rxg8 2. Nf7#"). Font auto-sizes: 80px (≤12 chars) → 68px → 56px → 46px (28+ chars).
+
+**Stage 4 (Celebrate):** Final position with result overlay on board (dark semi-transparent badge, 72px white text). Result is auto-generated: "Checkmate in N!", "Won the Queen!", "Won a Piece!", "Brilliant Move!", etc.
+
+### Result Badge (Board Overlay)
+
+Dark pill on the board center: `rgba(0,0,0,0.75)`, `backdrop-blur: 16px`, `border-radius: 32px`, padding 80px/48px. Text: 72px, white, DM Sans 700.
+
+### Move Highlights
+
+Lichess-style amber squares:
+- From square: `rgba(255, 170, 0, 0.5)`
+- To square: `rgba(255, 170, 0, 0.6)`
+
+### Puzzle Pool & Rendering
+
+**Pool file:** `data/video-puzzle-pool.json` (~200 puzzles)
+**Usage tracker:** `data/video-puzzle-usage.json`
+**Rating range:** 500–1800 (use `--min-rating=N` for harder puzzles)
+**Solution moves:** 3–7 (not too short for video, not too long)
+**Preferred themes:** mateIn1-3, backRankMate, smotheredMate, fork, pin, skewer, sacrifice, discoveredAttack, kingsideAttack, queensideAttack, deflection, attraction
+
+**Render command:**
+```bash
+npx tsx scripts/render-daily-video.ts                  # next unused puzzle
+npx tsx scripts/render-daily-video.ts --min-rating=1700  # hard puzzle
+```
+
+**Refill pool:**
+```bash
+npx tsx scripts/curate-video-puzzles.ts
+```
+
+**Output:** `out/videos/{M.DD.YY}/daily.{M.DD.YY}-{puzzleId}.mp4` + `.txt` caption file
+
+### Caption Format
+
+Auto-generated per puzzle. Theme-specific hook + rating + quip + CTA + hashtags.
+
+```
+{Theme hook}
+
+Rating: {rating} ⭐
+"{quip}"
+
+Play daily puzzles free → chesspath.app
+
+#chess #chesspuzzle #chesspath #dailypuzzle {+2 rotating tags}
+```
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `remotion/DailyPuzzleVideo.tsx` | Main composition — 4 Sequences |
+| `remotion/components/ReelLayout.tsx` | 3-zone layout (logo, board, bottom) |
+| `remotion/components/ReelLogo.tsx` | Rook icon + wordmark (breathe animation) |
+| `remotion/components/BottomCard.tsx` | 3D layered green card |
+| `remotion/components/BoardSlot.tsx` | ChessPathBoard at 936px + highlights |
+| `remotion/components/ResultPopup.tsx` | Dark overlay badge (stage 4) |
+| `remotion/components/FooterTagline.tsx` | "chesspath.app" footer |
+| `remotion/stages/StageInitial.tsx` | Stage 1: prompt |
+| `remotion/stages/StageCountdown.tsx` | Stage 2: countdown |
+| `remotion/stages/StageSolution.tsx` | Stage 3: animated solution |
+| `remotion/stages/StageCelebrate.tsx` | Stage 4: result + quip |
+| `remotion/lib/timing.ts` | FPS, frame counts, layout constants |
+| `remotion/lib/describe-result.ts` | Auto-generates result text from position |
+| `scripts/render-daily-video.ts` | Render pipeline (pick puzzle → render → caption → mark used) |
+| `scripts/curate-video-puzzles.ts` | Pool generation from clean-puzzles-v2 |
+| `data/video-puzzle-pool.json` | Pre-curated puzzle bank |
+| `data/video-puzzle-usage.json` | Tracks which puzzles have been rendered |
 
 ---
 

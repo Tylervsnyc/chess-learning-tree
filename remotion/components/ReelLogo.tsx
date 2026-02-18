@@ -106,7 +106,7 @@ export const ReelLogo: React.FC = () => {
           lineHeight: 1,
         }}
       >
-        <span style={{ color: '#0F172A' }}>chess</span>
+        <span style={{ color: '#2A3C45' }}>chess</span>
         <span
           style={{
             background:
