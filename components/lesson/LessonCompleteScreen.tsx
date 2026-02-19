@@ -180,7 +180,7 @@ export function LessonCompleteScreen({
   }, [didFail]);
 
   // Build share URL for tap-to-share
-  const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
+  const shareUrl = `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`;
 
   // Dismiss the share toast with exit animation
   const dismissShareToast = () => {
@@ -206,7 +206,7 @@ export function LessonCompleteScreen({
       try {
         await navigator.share({
           title: `${lessonName} | Chess Path`,
-          text: `I scored ${correctCount}/6 on "${lessonName}" on Chess Path!`,
+          text: `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`,
           url: shareUrl,
         });
         ShareEvents.shareCompleted('lesson', 'native');

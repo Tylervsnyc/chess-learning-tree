@@ -167,8 +167,8 @@ function renderSmallRookLogo() {
 
 // Render the large celebration rook
 function renderCelebrationRook() {
-  const blockSize = 76; // 38px * 2 scale
-  const spacing = 100; // 50px * 2 scale
+  const blockSize = 68;
+  const spacing = 90;
   const radius = Math.round(blockSize * 0.22);
   const bottomShadow = Math.round(blockSize * 0.08);
 
@@ -260,8 +260,8 @@ export async function GET(request: NextRequest) {
           width: 1080,
           height: 1080,
           display: 'flex',
-          padding: 32, // 16px * 2 scale
-          borderRadius: 32, // 16px * 2 scale
+          padding: 24,
+          borderRadius: 0,
           background: 'linear-gradient(135deg, #FF9600, #FFC800, #FF6B6B, #FF4B4B, #A560E8, #CE82FF, #1CB0F6, #2FCBEF, #58CC02)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
             flexDirection: 'column',
             alignItems: 'center',
             background: '#eef6fc',
-            borderRadius: 16,
+            borderRadius: 32,
             position: 'relative',
             overflow: 'hidden',
             justifyContent: 'center',
@@ -314,15 +314,15 @@ export async function GET(request: NextRequest) {
               alignItems: 'center',
               position: 'relative',
               // zIndex not needed — content is after confetti in DOM order
-              gap: 16,
+              gap: 20,
             }}
           >
             {/* Logo + tagline in white fun-box */}
             <div
               style={{
                 background: 'white',
-                borderRadius: 32, // 16px * 2 scale
-                padding: '28px 64px', // 14px 32px * 2 scale
+                borderRadius: 28,
+                padding: '24px 56px',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.06), 0 0 0 3px rgba(0,0,0,0.04)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -378,8 +378,8 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 background: 'white',
-                borderRadius: 32,
-                padding: '28px 64px',
+                borderRadius: 28,
+                padding: '24px 56px',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.06), 0 0 0 3px rgba(0,0,0,0.04)',
                 display: 'flex',
                 flexDirection: 'column',

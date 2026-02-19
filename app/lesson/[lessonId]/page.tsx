@@ -37,7 +37,7 @@ import { ThemeHelpModal, HelpIconButton } from '@/components/puzzle/ThemeHelpMod
 import { getThemeExplanation } from '@/data/theme-explanations';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { SyncStatus } from '@/components/ui/SyncStatus';
-import { getV2Response, getSectionFromLessonId } from '@/data/staging/v2-puzzle-responses';
+import { getV2Response, getQuip, getSectionFromLessonId } from '@/data/staging/v2-puzzle-responses';
 import { IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
@@ -580,7 +580,15 @@ export default function LessonPage() {
           // Puzzle complete!
           const newStreak = streak + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
+          setFeedbackMessage(getQuip(getSectionFromLessonId(lessonId), {
+            themes: currentPuzzle.themes,
+            heroPiece: getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves),
+            playerMoveCount: getPlayerMoveCount(currentPuzzle.solutionMoves.length),
+            streak: newStreak,
+            puzzleIndex: currentIndex,
+            totalPuzzles,
+            hadWrongAttempt: puzzleHadWrongAttempt,
+          }));
           playCorrectSound(completedPuzzleCount);
           vibrateOnCorrect();
           setStreak(newStreak);
@@ -610,7 +618,15 @@ export default function LessonPage() {
             if (nextMoveIndex + 1 >= currentPuzzle.solutionMoves.length) {
               const newStreak = streak + 1;
               setMoveStatus('correct');
-              setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
+              setFeedbackMessage(getQuip(getSectionFromLessonId(lessonId), {
+                themes: currentPuzzle.themes,
+                heroPiece: getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves),
+                playerMoveCount: getPlayerMoveCount(currentPuzzle.solutionMoves.length),
+                streak: newStreak,
+                puzzleIndex: currentIndex,
+                totalPuzzles,
+                hadWrongAttempt: puzzleHadWrongAttempt,
+              }));
               playCorrectSound(completedPuzzleCount);
               vibrateOnCorrect();
               setStreak(newStreak);
@@ -622,7 +638,15 @@ export default function LessonPage() {
           } catch {
             const newStreak = streak + 1;
             setMoveStatus('correct');
-            setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
+            setFeedbackMessage(getQuip(getSectionFromLessonId(lessonId), {
+              themes: currentPuzzle.themes,
+              heroPiece: getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves),
+              playerMoveCount: getPlayerMoveCount(currentPuzzle.solutionMoves.length),
+              streak: newStreak,
+              puzzleIndex: currentIndex,
+              totalPuzzles,
+              hadWrongAttempt: puzzleHadWrongAttempt,
+            }));
             playCorrectSound(completedPuzzleCount);
             vibrateOnCorrect();
             setStreak(newStreak);
@@ -649,7 +673,15 @@ export default function LessonPage() {
           }
           const newStreak = streak + 1;
           setMoveStatus('correct');
-          setFeedbackMessage(getV2Response(getSectionFromLessonId(lessonId), currentPuzzle.themes, getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves), getPlayerMoveCount(currentPuzzle.solutionMoves.length)));
+          setFeedbackMessage(getQuip(getSectionFromLessonId(lessonId), {
+            themes: currentPuzzle.themes,
+            heroPiece: getHeroPiece(currentPuzzle.puzzleFen, currentPuzzle.moves),
+            playerMoveCount: getPlayerMoveCount(currentPuzzle.solutionMoves.length),
+            streak: newStreak,
+            puzzleIndex: currentIndex,
+            totalPuzzles,
+            hadWrongAttempt: puzzleHadWrongAttempt,
+          }));
           playCorrectSound(completedPuzzleCount);
           vibrateOnCorrect();
           setStreak(newStreak);
@@ -709,7 +741,7 @@ export default function LessonPage() {
     } catch {
       return false;
     }
-  }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint, lessonId, currentIndex]);
+  }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint, lessonId, currentIndex, puzzleHadWrongAttempt, totalPuzzles]);
 
   // Handle square click
   const onSquareClick = useCallback(
