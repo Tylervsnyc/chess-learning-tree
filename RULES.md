@@ -1374,10 +1374,13 @@ This section tracks features currently being tested on localhost:3000 before pus
 - Pre-fetched on game finish for instant sharing when user taps button
 - Entry points: "Share Card" button, "Copy Rook" (emoji text), link icon (clipboard URL)
 
-**B. Lesson Share Card** (1:1, 1080×1080 — see Section 32 for full spec)
-- Server-side OG image generation for lesson completion results
-- Shows lesson level/number, completion status (Completed! or Perfect!), rook visualization, confetti
-- Entry point: "Share Card" button on lesson complete screen
+**B. Lesson Share Certificate** (1:1, 1080×1080 — see Section 32 for full spec)
+- Static share routes: `/lesson/[lessonId]/share/completed` or `/lesson/[lessonId]/share/perfect`
+- Score 4/6 or 5/6 → `/share/completed`, score 6/6 → `/share/perfect`
+- OG metadata on share route serves the certificate image as link preview
+- Clicking the shared link redirects to `/learn`
+- Pre-fetched on lesson complete for instant sharing when user taps rook
+- Entry point: Tap rook on lesson complete screen (scores ≥ 4/6)
 
 **C. Puzzle Share Card** (1:1, 1080×1080)
 - Client-side html-to-image generation
@@ -1390,6 +1393,8 @@ This section tracks features currently being tested on localhost:3000 before pus
 | `app/api/og/default/route.tsx` | Default site OG image (server-side) |
 | `app/api/og/daily-challenge/route.tsx` | Daily Rook story card (server-side) |
 | `app/api/og/lesson/route.tsx` | Lesson share card (server-side, see Section 32) |
+| `app/lesson/[lessonId]/share/[status]/layout.tsx` | OG metadata for lesson share routes |
+| `app/lesson/[lessonId]/share/[status]/page.tsx` | Redirects to `/learn` |
 | `components/share/ShareButton.tsx` | Puzzle share button + generation trigger |
 | `components/share/PuzzleShareCard.tsx` | Puzzle image card design |
 | `lib/share/generate-puzzle-image.ts` | Puzzle card → PNG (client-side) |
@@ -1566,23 +1571,28 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 
 ### Layout (centered, stacked vertically)
 
-1. **Rainbow gradient border** — wrapper with `linear-gradient(135deg, #FF9600, #FFC800, #FF6B6B, #FF4B4B, #A560E8, #CE82FF, #1CB0F6, #2FCBEF, #58CC02)` — 16px padding (at 1080 scale)
-2. **Card background** — `#eef6fc`, rounded corners
-3. **Logo fun-box** — white rounded box (32px radius at 1080 scale), box-shadow, containing: rook mini-logo SVG + "chesspath" wordmark (36px) + tagline "The fun way to learn chess." (22px, `#94a3b8`)
-4. **Level/Result fun-box** — white rounded box, containing: "LEVEL X, LESSON Y" (28px, uppercase, `#6b7c8a`, letterSpacing 3) + result text
+1. **Rainbow gradient border** — wrapper with `linear-gradient(135deg, #FF9600, #FFC800, #FF6B6B, #FF4B4B, #A560E8, #CE82FF, #1CB0F6, #2FCBEF, #58CC02)` — 24px padding, square outer corners (fills to image edge), rounded inner card
+2. **Card background** — `#eef6fc`, rounded corners (32px radius)
+3. **Logo fun-box** — white rounded box (28px radius), padding 24px 56px, box-shadow, containing: rook mini-logo SVG + "chesspath" wordmark (36px) + tagline "The fun way to learn chess." (22px, `#94a3b8`)
+4. **Level/Result fun-box** — white rounded box (28px radius), padding 24px 56px, containing: "LEVEL X, LESSON Y" (28px, uppercase, `#6b7c8a`, letterSpacing 3) + result text
    - "Completed!" — `#58CC02` (green), 76px, font-weight 900
    - "Perfect!" — `#FFC800` (gold), 76px, font-weight 900 (when score = 6/6)
-5. **Celebration rook** — 22-block rook shape (76px blocks, 100px spacing at 1080 scale), with 3D shadow effect and sparkles
+5. **Celebration rook** — 22-block rook shape (68px blocks, 90px spacing), with 3D shadow effect and sparkles
 6. **Confetti** — Seeded random confetti in 5 zones (top burst, left/right cascades, mid-field, bottom scatter)
    - Regular: 35 pieces (densities: 8, 7, 7, 8, 5)
    - Perfect (6/6): 55 pieces (densities: 15, 12, 12, 12, 14)
 7. **Watermark** — "chesspath.app" at bottom (20px, `rgba(0,0,0,0.18)`)
 
-### Score Logic
+### Share Routes
 
-- Query params: `?level=X&lesson=Y&score=N/6`
-- If N === 6 → "Perfect!" with gold color + mega confetti
-- Otherwise → "Completed!" with green color + regular confetti
+- `/lesson/[lessonId]/share/completed` — scores 4/6, 5/6
+- `/lesson/[lessonId]/share/perfect` — score 6/6
+- OG metadata serves certificate image as link preview
+- Clicking shared link redirects to `/learn`
+
+### OG Image Params
+
+- `?level=X&lesson=Y&score=N/6` (score=6/6 → perfect, otherwise → completed)
 
 ### Files
 
@@ -1590,7 +1600,9 @@ Light theme: `#eef6fc` (matches Daily Rook page)
 |------|---------|
 | `share-card-preview.html` | HTML mockup (approved design reference) |
 | `app/api/og/lesson/route.tsx` | Server-side OG image generation (Satori) |
-| `components/lesson/LessonCompleteScreen.tsx` | Share URL + share buttons |
+| `app/lesson/[lessonId]/share/[status]/layout.tsx` | OG metadata for share routes |
+| `app/lesson/[lessonId]/share/[status]/page.tsx` | Redirects to `/learn` |
+| `components/lesson/LessonCompleteScreen.tsx` | Tap-rook-to-share trigger |
 
 ### Colors (from design system)
 
