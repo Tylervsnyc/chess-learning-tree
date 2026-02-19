@@ -10,6 +10,8 @@
  * ~30 quips per section, tagged by theme for piece-specific responses
  */
 
+import { ShuffleBag } from '@/lib/shuffle-bag';
+
 // ═══════════════════════════════════════════════════════════════════════════
 // BLOCK 1: END THE GAME
 // Tone: Savage finishes, try not to gloat, good game energy
@@ -18,6 +20,34 @@
 export const block1Responses = {
   // Section 1: Mate in One - The Basics
   '1.1': {
+    first: [
+      "First puzzle down. Poker face: activated.",
+      "And we're off. Clean start.",
+      "Opening move: nailed it.",
+      "That's how you set the tone. GG to the warm-up.",
+    ],
+    last: [
+      "Final checkmate. Close the curtain.",
+      "That's a wrap on section one. Take a bow.",
+      "Last one down. Try not to gloat on the way out.",
+    ],
+    recovery: [
+      "Missed it, then mashed it. Respect.",
+      "Second attempt, first-class finish.",
+      "The comeback checkmate. Even sweeter.",
+      "Stumble, recover, deliver. That's the script.",
+    ],
+    'streak:3': [
+      "Three in a row. The checkmate machine warms up.",
+      "Hat trick of mates. Keep the streak alive.",
+      "Three straight. They should be worried.",
+    ],
+    'streak:5': [
+      "Five checkmates running. Absolutely clinical.",
+      "Five in a row. Save some GGs for later.",
+      "On a tear. Nobody's safe.",
+      "Five straight. That's not luck, that's pattern recognition.",
+    ],
     general: [
       "Say good game. Try not to smirk.",
       "That's checkmate. Act surprised.",
@@ -68,6 +98,33 @@ export const block1Responses = {
 
   // Section 2: Mating Patterns
   '1.2': {
+    first: [
+      "Pattern recognized on the first try. Nice opener.",
+      "First puzzle, first pattern, first win.",
+      "The warm-up pattern falls. Here we go.",
+    ],
+    last: [
+      "Last pattern locked in. Textbook finish.",
+      "Section complete. The classics are yours now.",
+      "Final pattern executed. Close the playbook.",
+      "That's every pattern in the chapter. Done.",
+    ],
+    recovery: [
+      "Missed the pattern, then found it. Growth.",
+      "Second look, better result. That's learning.",
+      "The pattern hid. You found it anyway.",
+    ],
+    'streak:3': [
+      "Three patterns in a row. The library's growing.",
+      "Pattern, pattern, pattern. You're collecting these.",
+      "Triple pattern recognition. The brain's firing.",
+      "Three for three. The patterns can't hide.",
+    ],
+    'streak:5': [
+      "Five patterns running. Walking encyclopedia.",
+      "Five in a row. The pattern vault is stacked.",
+      "Unstoppable pattern machine. Five straight.",
+    ],
     general: [
       "Pattern recognized. Pattern executed.",
       "You've seen this before. They haven't.",
@@ -97,6 +154,33 @@ export const block1Responses = {
 
   // Section 3: Advanced Mating Patterns
   '1.3': {
+    first: [
+      "Advanced section, instant results. Off to a hot start.",
+      "First advanced pattern spotted. The eye is sharp.",
+      "Big brain activated on puzzle one.",
+    ],
+    last: [
+      "Last advanced pattern crushed. Section complete.",
+      "That's the advanced chapter, done. Mic dropped.",
+      "Final puzzle. The advanced section bows to you.",
+      "Closed out the hard stuff. Respect.",
+    ],
+    recovery: [
+      "Advanced patterns are tricky. You adjusted.",
+      "It hid deeper this time. You dug deeper.",
+      "Missed it, recalculated, delivered.",
+    ],
+    'streak:3': [
+      "Three advanced patterns running. Leveling up.",
+      "Triple advanced streak. The brain's cooking.",
+      "Three in a row on the hard ones. Impressive.",
+    ],
+    'streak:5': [
+      "Five advanced patterns straight. That's elite.",
+      "Five for five on the advanced stuff. Show-off.",
+      "Unstoppable on the hard patterns. Five running.",
+      "Five streak on advanced mates. Just flexing now.",
+    ],
     general: [
       "Big brain checkmate. Act casual.",
       "They didn't see that coming. You did.",
@@ -137,6 +221,33 @@ export const block1Responses = {
 
   // Section 4: Multi-Move Checkmates
   '1.4': {
+    first: [
+      "Multi-move section opens with a clean solve.",
+      "First sequence nailed. The vision is there.",
+      "Calculated from the start. Great opener.",
+      "That's how you open the multi-move chapter.",
+    ],
+    last: [
+      "Final multi-move checkmate. Block 1 conquered.",
+      "Last sequence executed. What a closer.",
+      "The curtain falls on multi-move mates. Standing ovation.",
+    ],
+    recovery: [
+      "The sequence tripped you up. Then you owned it.",
+      "Recalculated and re-delivered. Multi-move resilience.",
+      "Missed a step, found the path. That's depth.",
+      "Second attempt, full sequence. Redemption arc complete.",
+    ],
+    'streak:3': [
+      "Three multi-move solves running. Deep thinker.",
+      "Calculated three in a row. The depth is real.",
+      "Triple multi-move streak. Big brain energy.",
+    ],
+    'streak:5': [
+      "Five multi-move mates in a row. Calculator mode.",
+      "Five deep sequences straight. Can't be touched.",
+      "Five for five on multi-movers. Absolute machine.",
+    ],
     general: [
       "Plan executed. Crown collected.",
       "You saw further. They fell harder.",
@@ -172,6 +283,33 @@ export const block1Responses = {
 export const block2Responses = {
   // Section 5: Free Pieces
   '1.5': {
+    first: [
+      "First piece pocketed. The heist begins.",
+      "Opening score of the section. Clean grab.",
+      "And the collection starts. First freebie claimed.",
+    ],
+    last: [
+      "Last piece swiped. The vault is full.",
+      "Final collection. Walk away clean.",
+      "That's every freebie in the section. Pockets heavy.",
+      "Section swept. Nothing left unclaimed.",
+    ],
+    recovery: [
+      "Almost walked past the loot. Grabbed it on the way back.",
+      "Missed the freebie, then snagged it. Still counts.",
+      "Second grab successful. No piece left behind.",
+    ],
+    'streak:3': [
+      "Three freebies in a row. The shelves are empty.",
+      "Triple grab. They can't leave anything out.",
+      "Three pieces collected. Running a tab now.",
+    ],
+    'streak:5': [
+      "Five straight grabs. Professional looter status.",
+      "Five for five. This is organized collection.",
+      "Five in a row. They should bolt things down.",
+      "Five freebies running. The warehouse is cleared.",
+    ],
     general: [
       "Finders keepers.",
       "Thanks for the donation.",
@@ -203,6 +341,33 @@ export const block2Responses = {
 
   // Section 6: Knight Forks
   '1.6': {
+    first: [
+      "First fork landed. Two targets, zero survivors.",
+      "Opening fork. The horsey means business.",
+      "First puzzle, first double threat. Here we go.",
+      "The fork section opens with a bang.",
+    ],
+    last: [
+      "Final fork of the section. Drop the mic.",
+      "Last double attack. The fork master graduates.",
+      "Section forked and finished. Walk away rich.",
+    ],
+    recovery: [
+      "Missed the fork, then found it. The knight forgives.",
+      "The horse gave you a second chance. You took it.",
+      "Fork attempt two: success. Redemption delivered.",
+    ],
+    'streak:3': [
+      "Three forks running. L-shaped larceny spree.",
+      "Fork, fork, fork. They can't stop the horse.",
+      "Triple fork streak. Pockets overflowing.",
+    ],
+    'streak:5': [
+      "Five forks in a row. The knight's on a rampage.",
+      "Five straight forks. Professional fork artist.",
+      "Five double attacks running. Nobody's safe.",
+      "Fork factory output: five for five.",
+    ],
     general: [
       "The fork master strikes.",
       "They can't guard what they can't predict.",
@@ -241,6 +406,33 @@ export const block2Responses = {
 
   // Section 7: Pins
   '1.7': {
+    first: [
+      "First pin applied. They're not going anywhere.",
+      "Pinned on puzzle one. Setting the tone.",
+      "The pin section starts with a freeze. Theirs.",
+    ],
+    last: [
+      "Final pin in the collection. Section locked down.",
+      "Last pin deployed. Everything's frozen except your progress.",
+      "That's a wrap on pins. They never moved.",
+      "Section pinned shut. Moving on.",
+    ],
+    recovery: [
+      "Missed the pin, then stuck it. Better late than never.",
+      "The geometry clicked on the second try.",
+      "Took another look and found the line. Pinned.",
+    ],
+    'streak:3': [
+      "Three pins running. Everything's stuck.",
+      "Triple pin streak. The board's a parking lot.",
+      "Three in a row. They can't move anywhere.",
+    ],
+    'streak:5': [
+      "Five pins straight. Professional freezer.",
+      "Five for five on pins. The board is a museum. Nothing moves.",
+      "Five pin streak. You see every line.",
+      "Five in a row. The geometry of greed, perfected.",
+    ],
     general: [
       "Pinned and soon to be collected.",
       "Frozen piece. Easy pickings.",
@@ -265,6 +457,32 @@ export const block2Responses = {
 
   // Section 8: Skewers
   '1.8': {
+    first: [
+      "First skewer lands. Through and through.",
+      "Opening kebab of the section. Delicious.",
+      "Skewer section starts with a clean pierce.",
+    ],
+    last: [
+      "Last skewer served. Section complete.",
+      "Final piece threaded. Block 2 conquered.",
+      "That's the skewer section, done. Take your spoils.",
+    ],
+    recovery: [
+      "Missed the line, found the pierce. Second time's the charm.",
+      "The skewer hid. You found it on the retry.",
+      "Almost missed the kebab. Grabbed it anyway.",
+      "Took two tries to thread the needle. Still counts.",
+    ],
+    'streak:3': [
+      "Three skewers running. Everything's on a stick.",
+      "Triple thread. They keep lining up for you.",
+      "Three in a row. The kebab shop is open.",
+    ],
+    'streak:5': [
+      "Five skewers straight. All-you-can-pierce buffet.",
+      "Five for five. Professional skewer artist.",
+      "Five in a row. They should stop lining up.",
+    ],
     general: [
       "Run and leave your friend behind.",
       "Big piece moves, little piece falls.",
@@ -296,6 +514,33 @@ export const block2Responses = {
 export const block3Responses = {
   // Section 9: Rook Endgames
   '1.9': {
+    first: [
+      "First rook endgame converted. The grind begins.",
+      "Rook endgames start now. First one handled.",
+      "Opening endgame solved. Cold efficiency from the start.",
+    ],
+    last: [
+      "Final rook endgame ground out. Section conquered.",
+      "That's the rook endgame chapter closed. Technique proven.",
+      "Last endgame in the section. Crushing complete.",
+      "Rook endgame mastery: confirmed. Section done.",
+    ],
+    recovery: [
+      "The endgame tripped you up. Then you ground it out.",
+      "Rook endgames are tricky. Second attempt was textbook.",
+      "Missed the technique, found the resilience.",
+    ],
+    'streak:3': [
+      "Three rook endgames running. The grind is real.",
+      "Triple endgame conversion. Relentless technique.",
+      "Three in a row. The rook never rests.",
+    ],
+    'streak:5': [
+      "Five endgames straight. Crushing their hope, one rook at a time.",
+      "Five in a row. Endgame machine mode.",
+      "Five rook endgames running. Spirit fully broken.",
+      "Five straight conversions. Cold, efficient, devastating.",
+    ],
     general: [
       "The rook does what rooks do.",
       "Active rook, passive opponent, predictable outcome.",
@@ -320,6 +565,32 @@ export const block3Responses = {
 
   // Section 10: Pawn Endgames
   '1.10': {
+    first: [
+      "First pawn endgame solved. The march begins.",
+      "Pawn endgames start strong. Push forward.",
+      "Opening pawn endgame converted. Every tempo counted.",
+    ],
+    last: [
+      "Last pawn endgame marched home. Section promoted.",
+      "Final push complete. The pawns bow to nobody.",
+      "Section done. Every pawn reached its destiny.",
+    ],
+    recovery: [
+      "The opposition slipped. Then you seized it back.",
+      "Miscounted tempi, then recalculated. Promoted anyway.",
+      "Pawn endgames punish mistakes. You punished yours and moved on.",
+      "Second try, clean promotion. That's the spirit.",
+    ],
+    'streak:3': [
+      "Three pawn endgames running. The march is relentless.",
+      "Triple conversion. Pawns grinding forward.",
+      "Three in a row. Every pawn dreams of this.",
+    ],
+    'streak:5': [
+      "Five pawn endgames straight. Promotion parade.",
+      "Five in a row. The pawns can't be stopped.",
+      "Five consecutive conversions. The eighth rank belongs to you.",
+    ],
     general: [
       "Every pawn dreams of this moment.",
       "March forward. Don't look back.",
@@ -350,6 +621,32 @@ export const block3Responses = {
 
   // Section 11: Advanced Tactics
   '1.11': {
+    first: [
+      "Advanced tactics kick off with a solve. Sharp eye.",
+      "First sneaky tactic found. The subtle stuff works.",
+      "Opening the advanced chapter with style.",
+    ],
+    last: [
+      "Last advanced tactic crushed. Section spirit: broken.",
+      "Advanced tactics section wrapped. They never saw any of it.",
+      "Final subtle blow landed. Section complete.",
+      "That's every trick in the advanced chapter. All yours.",
+    ],
+    recovery: [
+      "The trick hid. You found it on the second pass.",
+      "Advanced tactics are sneaky. So is your resilience.",
+      "Missed the subtlety, caught the point.",
+    ],
+    'streak:3': [
+      "Three advanced tactics running. The sneaky stuff stacks.",
+      "Triple streak on the hard ones. Impressive depth.",
+      "Three in a row. The hidden stuff can't hide from you.",
+    ],
+    'streak:5': [
+      "Five advanced tactics straight. Absolutely ruthless.",
+      "Five in a row on the tricky section. That's dominance.",
+      "Five consecutive advanced solves. They had no chance.",
+    ],
     general: [
       "The sneaky stuff works too.",
       "Distract, deflect, dominate.",
@@ -390,6 +687,32 @@ export const block3Responses = {
 
   // Section 12: Endgames Mix
   '1.12': {
+    first: [
+      "Mixed endgame section opens clean. Technique ready.",
+      "First mixed endgame converted. Versatility on display.",
+      "Endgame mix begins with a win. Set the tone.",
+    ],
+    last: [
+      "Final endgame ground out. Block 3 crushed.",
+      "That's the endgame mix, done. Spirit: fully broken.",
+      "Last mixed endgame handled. Clinical from start to finish.",
+    ],
+    recovery: [
+      "Mixed endgames throw curveballs. You adjusted.",
+      "Different endgame, different technique, same resilience.",
+      "Stumbled on the mix, then found the right tool.",
+      "The recovery grind is real. Technique prevailed.",
+    ],
+    'streak:3': [
+      "Three mixed endgames running. Versatile technique.",
+      "Triple conversion across different endings. Adaptable.",
+      "Three in a row. Every endgame type handled.",
+    ],
+    'streak:5': [
+      "Five mixed endgames straight. Grinding machine.",
+      "Five in a row across all endgame types. Complete player.",
+      "Five consecutive mixed conversions. Their spirit is powder.",
+    ],
     general: [
       "Endgame technique wins another one.",
       "Convert, convert, convert.",
@@ -428,6 +751,33 @@ export const block3Responses = {
 export const block4Responses = {
   // Section 13: Review Checkmates
   '1.13': {
+    first: [
+      "Review starts strong. Still got the touch.",
+      "First review puzzle down. Muscle memory intact.",
+      "Opening the review with a flex. Classic.",
+      "Checkmate review begins. The patterns remember you.",
+    ],
+    last: [
+      "Checkmate review complete. Mastery reaffirmed.",
+      "Last review puzzle handled. Still sharp.",
+      "Final checkmate reviewed. Nothing forgotten.",
+    ],
+    recovery: [
+      "Rusty on that one, but the second attempt was clean.",
+      "Review means dusting off the cobwebs. Done.",
+      "A little shaky, then solid. That's what review is for.",
+    ],
+    'streak:3': [
+      "Three review puzzles running. It all came back.",
+      "Triple streak on review. The patterns are permanent.",
+      "Three in a row. The checkmates never left.",
+    ],
+    'streak:5': [
+      "Five review puzzles straight. Like they never left.",
+      "Five in a row on review. Permanent knowledge.",
+      "Five consecutive reviews aced. The fundamentals are bulletproof.",
+      "Five straight. Review mode, but still flexing.",
+    ],
     general: [
       "Still got it.",
       "Checkmates? Easy. Next.",
@@ -459,6 +809,32 @@ export const block4Responses = {
 
   // Section 14: Review Winning Material
   '1.14': {
+    first: [
+      "Material review opens with a clean grab. Still thieving.",
+      "First review piece taken. The instincts are sharp.",
+      "Review starts and the material flows in. Natural.",
+    ],
+    last: [
+      "Last material review puzzle done. Still sharp, still stealing.",
+      "Material review wrapped. Everything accounted for.",
+      "Final review grab. The tactics don't fade.",
+      "Section complete. The loot is confirmed.",
+    ],
+    recovery: [
+      "Missed the tactic, grabbed it on the retry. Review working.",
+      "That one needed a second look. Review is doing its job.",
+      "Shook off the rust and snatched the piece.",
+    ],
+    'streak:3': [
+      "Three material grabs running. Review mode is still deadly.",
+      "Triple streak on review. The eyes never stopped looking.",
+      "Three in a row. Proven fundamentals.",
+    ],
+    'streak:5': [
+      "Five material wins straight. Review formality at this point.",
+      "Five in a row. Tactical recall: flawless.",
+      "Five consecutive review solves. The skills are permanent.",
+    ],
     general: [
       "Still stealing. Still winning.",
       "The tactics remain sharp.",
@@ -505,11 +881,38 @@ export const block4Responses = {
       "The bishop's diagonal vision pays off.",
       "Long-range sniper on the diagonal.",
       "The bishop sees what others can't.",
+      "I got 99 problems but a bishop ain't one.",
     ],
   },
 
   // Section 15: Review Endgames
   '1.15': {
+    first: [
+      "Endgame review starts clean. The technique remembers.",
+      "First endgame review solved. Still grinding.",
+      "Opening the endgame review with a conversion.",
+    ],
+    last: [
+      "Endgame review locked. Technique: still there.",
+      "Last review endgame handled. Proven and polished.",
+      "Final endgame reviewed. Section sealed.",
+    ],
+    recovery: [
+      "The endgame technique needed a second gear. Found it.",
+      "Missed the conversion, then ground it out. Classic review.",
+      "Second attempt endgame. Still counts as technique.",
+      "The review shook something loose. Back on track.",
+    ],
+    'streak:3': [
+      "Three endgame reviews running. Technique on autopilot.",
+      "Triple endgame streak. The conversion skills are locked.",
+      "Three in a row. Review confirmed: you know endgames.",
+    ],
+    'streak:5': [
+      "Five endgame reviews straight. Machine-level technique.",
+      "Five consecutive endgame conversions on review. Bulletproof.",
+      "Five in a row. The endgame skills are forever.",
+    ],
     general: [
       "Endgame technique: polished.",
       "Converting advantages is what you do.",
@@ -538,6 +941,33 @@ export const block4Responses = {
 
   // Section 16: Level 1 Final
   '1.16': {
+    first: [
+      "Final exam starts strong. First puzzle owned.",
+      "The Level 1 finale opens with a statement.",
+      "First final puzzle solved. Set the pace.",
+    ],
+    last: [
+      "Last puzzle of Level 1. The cap and gown fit perfectly.",
+      "Level 1 Final: done. Graduate with honors.",
+      "That's the final puzzle. Level 1 is yours.",
+      "The finish line crossed. Level 1: complete.",
+    ],
+    recovery: [
+      "Final exams allow retakes. You recovered.",
+      "Stumbled in the final, bounced right back.",
+      "The final pushed back. You pushed harder.",
+    ],
+    'streak:3': [
+      "Three running in the final. Cruising to graduation.",
+      "Triple streak in the final. Making it look easy.",
+      "Three in a row on the big exam. Confidence.",
+      "Final exam streak: three and counting.",
+    ],
+    'streak:5': [
+      "Five straight in the final. Valedictorian material.",
+      "Five in a row on the Level 1 final. Flawless.",
+      "Five consecutive solves in the finale. Untouchable.",
+    ],
     general: [
       "Final boss? More like final flex.",
       "Everything you learned, all at once. Handled.",
@@ -566,6 +996,33 @@ export const block4Responses = {
 export const level2Responses: Record<string, Record<string, string[]>> = {
   // Section 1: Fork Basics
   '2.1': {
+    first: [
+      "First fork of Level 2. The toolkit opens sharp.",
+      "Fork basics begin. First target acquired.",
+      "Opening double attack landed. Here we go.",
+    ],
+    last: [
+      "Final fork basics puzzle. Two targets, one closer.",
+      "Fork basics complete. The weapon is loaded.",
+      "Last double attack of the section. Clean exit.",
+      "Section wrapped. The fork is yours now.",
+    ],
+    recovery: [
+      "Missed the fork, found it on the second scan.",
+      "The targets were hiding. Second attempt exposed them.",
+      "Fork recovery: still two targets, still one win.",
+    ],
+    'streak:3': [
+      "Three forks running. The dual threat is automatic.",
+      "Triple fork streak. Precision forking.",
+      "Three double attacks in a row. Locked in.",
+    ],
+    'streak:5': [
+      "Five forks straight. The assassin's bread and butter.",
+      "Five in a row. Fork detection is second nature.",
+      "Five consecutive double attacks. Professional precision.",
+      "Five for five. The toolkit's sharpest tool.",
+    ],
     general: [
       "Two targets. One move. No survivors.",
       "The fork finds its mark.",
@@ -593,6 +1050,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: Fork Patterns
   '2.2': {
+    first: [
+      "First fork pattern recognized. The eye is trained.",
+      "Pattern section opens with a hit. Geometry loaded.",
+      "Opening fork pattern found and executed.",
+    ],
+    last: [
+      "Last fork pattern solved. The angles are locked in.",
+      "Fork pattern section complete. Every angle covered.",
+      "Final pattern down. The geometry is permanent now.",
+    ],
+    recovery: [
+      "The pattern was subtle. Second look found it.",
+      "Fork geometry tripped you up. Then it clicked.",
+      "Missed the setup, nailed the retry.",
+      "Pattern recognition recalibrated. Fork found.",
+    ],
+    'streak:3': [
+      "Three fork patterns running. Geometry on autopilot.",
+      "Triple pattern streak. The angles reveal themselves.",
+      "Three in a row. Fork pattern library growing.",
+    ],
+    'streak:5': [
+      "Five fork patterns straight. The squares light up for you.",
+      "Five consecutive pattern matches. Professional.",
+      "Five in a row. Fork geometry mastered.",
+    ],
     general: [
       "Pattern recognized. Pattern executed.",
       "The royal fork lands.",
@@ -629,6 +1112,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Forks & More
   '2.3': {
+    first: [
+      "Forks and more begins. First mixed tactic solved.",
+      "Opening the combo section with a clean hit.",
+      "First puzzle down. The tactical web starts here.",
+    ],
+    last: [
+      "Last mixed tactic of the section. Clean sweep.",
+      "Forks and more: done. The combination game is strong.",
+      "Final puzzle handled. Mixed tactics conquered.",
+    ],
+    recovery: [
+      "Mixed tactics are tricky. Second attempt cracked it.",
+      "The combo hid. You uncovered it on the retry.",
+      "Forks plus extras needed an extra look. Solved.",
+    ],
+    'streak:3': [
+      "Three mixed solves running. Versatile and sharp.",
+      "Triple streak. Forks and their friends fall alike.",
+      "Three in a row on mixed tactics. Adaptable.",
+      "Fork plus bonus streak: three and counting.",
+    ],
+    'streak:5': [
+      "Five mixed tactics straight. Complete tactical vision.",
+      "Five in a row. Forks, hanging pieces, all of it.",
+      "Five consecutive solves. The mixed section can't slow you down.",
+    ],
     general: [
       "Fork plus opportunity equals material.",
       "The hanging piece didn't hang for long.",
@@ -650,6 +1159,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - Double Attacks
   '2.4': {
+    first: [
+      "Review opens clean. Double attack instincts intact.",
+      "First review puzzle solved. The forks remember you.",
+      "Double attack review starts with a win.",
+    ],
+    last: [
+      "Double attack review: wrapped. All fundamentals confirmed.",
+      "Last review puzzle done. Fork skills: permanent.",
+      "Final double attack reviewed. Moving on.",
+    ],
+    recovery: [
+      "The review shook out some rust. Cleaned it up.",
+      "Second attempt on review. That's literally what review is for.",
+      "Fork review needed a retry. Now it's locked.",
+      "Recalibrated and solved. Review doing its job.",
+    ],
+    'streak:3': [
+      "Three review solves running. Fundamentals are solid.",
+      "Triple review streak. Double attacks are muscle memory.",
+      "Three in a row on review. No rust here.",
+    ],
+    'streak:5': [
+      "Five review puzzles straight. The skills didn't fade.",
+      "Five in a row. Double attack review is a formality.",
+      "Five consecutive review wins. Permanent toolkit.",
+    ],
     general: [
       "Double attack review: still deadly.",
       "The fork skills remain sharp.",
@@ -666,6 +1201,33 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Absolute Pins
   '2.5': {
+    first: [
+      "Absolute pins begin. First piece frozen solid.",
+      "Opening pin deployed. The line is clear.",
+      "First absolute pin of the section. X-ray activated.",
+      "Pin section starts with a clean lock.",
+    ],
+    last: [
+      "Final absolute pin applied. Section frozen shut.",
+      "Last pin in the chapter. Nothing moves anymore.",
+      "Absolute pin section complete. Precision confirmed.",
+    ],
+    recovery: [
+      "The pin line wasn't obvious. Found it on the second pass.",
+      "Missed the absolute pin, then locked it down.",
+      "The geometry needed another look. Pin applied.",
+    ],
+    'streak:3': [
+      "Three absolute pins running. The x-ray is on.",
+      "Triple pin streak. Everything's frozen.",
+      "Three in a row. Line attacks at will.",
+    ],
+    'streak:5': [
+      "Five absolute pins straight. X-ray vision confirmed.",
+      "Five in a row. They can't move anything near their king.",
+      "Five consecutive pins. The geometry is automatic.",
+      "Five for five on absolute pins. Lethal precision.",
+    ],
     general: [
       "Pinned to the king. Nowhere to go.",
       "The absolute pin locks them down.",
@@ -698,6 +1260,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: Exploiting Pins
   '2.6': {
+    first: [
+      "First pin exploited. Piled on and profited.",
+      "Exploiting pins starts now. First target overwhelmed.",
+      "Opening exploitation: clean and profitable.",
+    ],
+    last: [
+      "Last pin exploited. Section crushed.",
+      "Pin exploitation complete. Every frozen piece collected.",
+      "Final pinned piece piled on. Section done.",
+    ],
+    recovery: [
+      "Piling on needed a second try. The pressure worked.",
+      "Missed the exploitation angle. Found it on the retry.",
+      "The pin was there, the pile-on took a moment. Got it.",
+    ],
+    'streak:3': [
+      "Three pin exploits running. Maximum pressure applied.",
+      "Triple pile-on streak. The pinned pieces don't stand a chance.",
+      "Three in a row. Exploitation is an art form.",
+    ],
+    'streak:5': [
+      "Five pin exploits straight. Relentless pressure.",
+      "Five in a row. Every pin gets punished.",
+      "Five consecutive exploits. Professional pile-on artist.",
+      "Five for five. The pinned pieces never survive.",
+    ],
     general: [
       "Pinned and piled on.",
       "Add attackers. Overwhelm the pin.",
@@ -719,6 +1307,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: The Skewer
   '2.7': {
+    first: [
+      "First skewer pierces through. Section on.",
+      "Skewer section opens with a clean thread.",
+      "Opening pierce deployed. Two targets, one line.",
+    ],
+    last: [
+      "Final skewer served. Section threaded shut.",
+      "Last pierce of the chapter. Clean through.",
+      "Skewer section complete. Every line accounted for.",
+      "Section done. The reverse pins are yours.",
+    ],
+    recovery: [
+      "The skewer hid behind the pieces. Found it second try.",
+      "Missed the line, found the pierce. Recovery skewer.",
+      "Took another look through the position. Skewer found.",
+    ],
+    'streak:3': [
+      "Three skewers running. Threading everything.",
+      "Triple skewer streak. They keep lining up.",
+      "Three in a row. The reverse pin is automatic.",
+    ],
+    'streak:5': [
+      "Five skewers straight. Everything's on a line.",
+      "Five in a row. Professional piercing.",
+      "Five consecutive skewers. Lethal line vision.",
+    ],
     general: [
       "Skewer deployed. Piece collected.",
       "Royal skewer finds its mark.",
@@ -751,6 +1365,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Line Tactics
   '2.8': {
+    first: [
+      "Line tactics review opens clean. Geometry intact.",
+      "First review puzzle solved. Pins and skewers remember.",
+      "Review starts with a line attack. Locked in.",
+    ],
+    last: [
+      "Line tactics review complete. Every line accounted for.",
+      "Final review puzzle done. Geometry confirmed.",
+      "Last line tactic reviewed. The toolkit is sharp.",
+    ],
+    recovery: [
+      "The line hid during review. Found it on retry.",
+      "Review caught a gap. Now it's fixed.",
+      "Geometry needed a refresh. Done.",
+    ],
+    'streak:3': [
+      "Three line reviews running. Automatic geometry.",
+      "Triple review streak. Lines, diagonals, all clear.",
+      "Three in a row. The review is a formality.",
+      "Three straight on line review. Sharp.",
+    ],
+    'streak:5': [
+      "Five line reviews straight. Permanent knowledge.",
+      "Five in a row. Pin and skewer skills: bulletproof.",
+      "Five consecutive review wins. The geometry never fades.",
+    ],
     general: [
       "Pins and skewers: the line attacks.",
       "X-ray tactics review: flawless.",
@@ -767,6 +1407,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Basic Discoveries
   '2.9': {
+    first: [
+      "First discovery revealed. The concealed weapon works.",
+      "Discovery section starts with a reveal. Hidden no more.",
+      "Opening discovery deployed. Behind the curtain: chaos.",
+    ],
+    last: [
+      "Final discovery of the section. All weapons revealed.",
+      "Last hidden attack uncovered. Section complete.",
+      "Discovery section done. Nothing stays hidden from you.",
+    ],
+    recovery: [
+      "The discovery was deeper than expected. Found it second try.",
+      "Hidden attacks need patience. Second attempt delivered.",
+      "Missed the reveal, then pulled back the curtain.",
+    ],
+    'streak:3': [
+      "Three discoveries running. Concealed weapon spree.",
+      "Triple reveal streak. Behind every piece, a threat.",
+      "Three in a row. Discovery vision sharpening.",
+    ],
+    'streak:5': [
+      "Five discoveries straight. Nothing hides from you.",
+      "Five in a row. Discovery detection is instinct now.",
+      "Five consecutive reveals. The curtain never closes.",
+      "Five for five. Every hidden threat exposed.",
+    ],
     general: [
       "Hidden threat revealed.",
       "The discovery strikes.",
@@ -788,6 +1454,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Double Threats
   '2.10': {
+    first: [
+      "Double threat section opens. First combo landed.",
+      "First discovery-plus deployed. Maximum pressure.",
+      "Opening with check and attack. Setting the tone.",
+    ],
+    last: [
+      "Final double threat executed. Section handled.",
+      "Last combo of the chapter. Two threats, one exit.",
+      "Double threat section wrapped. Precision confirmed.",
+    ],
+    recovery: [
+      "The double threat hid. Second attempt found both parts.",
+      "Missed the combo, then connected. Recovery hit.",
+      "Two threats on the retry. Still counts double.",
+      "The discovery plus check needed a second look. Delivered.",
+    ],
+    'streak:3': [
+      "Three double threats running. They can't address any of them.",
+      "Triple combo streak. Checks and captures flowing.",
+      "Three in a row. Double threat detection: online.",
+    ],
+    'streak:5': [
+      "Five double threats straight. Overwhelming force.",
+      "Five in a row. The two-threat game is elite.",
+      "Five consecutive combos. Professional devastation.",
+    ],
     general: [
       "Discovery plus check. Maximum pressure.",
       "Two threats with one move.",
@@ -809,6 +1501,31 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Tactical Checkmates
   '2.11': {
+    first: [
+      "Tactical checkmates begin. First mating net closed.",
+      "Opening the chapter with a forced finish.",
+      "First tactical mate found. The net was tight.",
+    ],
+    last: [
+      "Final tactical checkmate. Section complete.",
+      "Last forced mate of the chapter. Clean close.",
+      "Tactical checkmate section: done. Lethal precision confirmed.",
+    ],
+    recovery: [
+      "The forcing sequence wasn't obvious. Found it on retry.",
+      "Missed the mate, recalculated, delivered.",
+      "The checkmate hid deeper this time. Second attempt found it.",
+    ],
+    'streak:3': [
+      "Three tactical mates running. The nets keep closing.",
+      "Triple checkmate streak. Forcing sequences on point.",
+      "Three in a row. The mating patterns just flow.",
+    ],
+    'streak:5': [
+      "Five tactical mates straight. Every net closes.",
+      "Five in a row. Checkmate detection is automatic.",
+      "Five consecutive forced mates. The finishing weapon is sharp.",
+    ],
     general: [
       "The mating net closes.",
       "The forcing sequence ends in checkmate.",
@@ -833,6 +1550,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - Discoveries & Mates
   '2.12': {
+    first: [
+      "Review opens strong. Discoveries and mates intact.",
+      "First review puzzle nailed. The weapons are sharp.",
+      "Mixed review starts with a solve. Toolkit confirmed.",
+    ],
+    last: [
+      "Discovery and mate review complete. Arsenal ready.",
+      "Final review puzzle handled. All systems go.",
+      "Last mixed review done. The toolkit is polished.",
+      "Review wrapped. Discoveries and mates: permanent.",
+    ],
+    recovery: [
+      "Review found the gap. Second attempt closed it.",
+      "The discovery hid during review. Retry exposed it.",
+      "Mixed review needed a second look. Now it's clean.",
+    ],
+    'streak:3': [
+      "Three review puzzles running. The combo skills hold.",
+      "Triple review streak. Discoveries and mates flowing.",
+      "Three in a row on review. Comprehensive skills.",
+    ],
+    'streak:5': [
+      "Five review puzzles straight. Every weapon accounted for.",
+      "Five in a row. The review is just a victory lap.",
+      "Five consecutive review wins. Complete arsenal confirmed.",
+    ],
     general: [
       "Discoveries, mates, endgames. Covered.",
       "The complete Level 2 toolkit.",
@@ -849,6 +1592,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 2 Review
   '2.13': {
+    first: [
+      "Level 2 review starts. First puzzle shows the skills held.",
+      "Full review begins clean. All weapons ready.",
+      "Opening the Level 2 review with a win. Standard.",
+    ],
+    last: [
+      "Level 2 review complete. Every weapon in the kit confirmed.",
+      "Last review puzzle done. Ready for the final.",
+      "Full review wrapped. Nothing left unchecked.",
+    ],
+    recovery: [
+      "Full review caught something. Second try cleaned it up.",
+      "The mixed review needed a retry. That's what it's for.",
+      "One hiccup in the full review. Resolved.",
+    ],
+    'streak:3': [
+      "Three review puzzles running across all tactics. Sharp.",
+      "Triple streak on the full review. Comprehensive excellence.",
+      "Three in a row. Every tactic from Level 2: confirmed.",
+    ],
+    'streak:5': [
+      "Five review puzzles straight. Level 2 is locked in.",
+      "Five in a row on the full review. Every skill accounted for.",
+      "Five consecutive review wins. The assassin's toolkit is complete.",
+      "Five straight. Level 2 review is a formality.",
+    ],
     general: [
       "Everything from Level 2. Handled.",
       "Forks, pins, skewers, discoveries. All yours.",
@@ -865,6 +1634,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 2 Final
   '2.14': {
+    first: [
+      "The Level 2 final begins. First puzzle handled with precision.",
+      "Final exam opens with a statement. Assassin mode.",
+      "First solve in the finale. Setting the pace.",
+    ],
+    last: [
+      "Level 2 Final: last puzzle solved. Graduation day.",
+      "That's the final puzzle. The assassin graduates.",
+      "Level 2 complete. The toolkit is yours forever.",
+    ],
+    recovery: [
+      "Final exams test everything. Recovered and solved.",
+      "The finale pushed back. You pushed through.",
+      "One retry in the final. Still graduating.",
+      "Stumble in the final, then a clean finish. Character.",
+    ],
+    'streak:3': [
+      "Three running in the Level 2 final. Cruising.",
+      "Triple streak in the finale. Making the exam look easy.",
+      "Three in a row on the final. Assassin precision.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 2 final. Flawless graduation.",
+      "Five in a row on the final exam. Valedictorian.",
+      "Five consecutive solves in the finale. Untouchable.",
+    ],
     general: [
       "Level 2 Final: conquered.",
       "The graduation exam? Easy.",
@@ -890,6 +1685,32 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
 export const level3Responses: Record<string, Record<string, string[]>> = {
   // Section 1: Deflection
   '3.1': {
+    first: [
+      "Deflection section opens. First guard removed.",
+      "First deflection executed. The setup game begins.",
+      "Opening with a guard removal. Sophisticated start.",
+    ],
+    last: [
+      "Final deflection. Section dismantled.",
+      "Last guard pulled from duty. Section complete.",
+      "Deflection chapter closed. Every defender compromised.",
+      "Section wrapped. Nobody guards against you.",
+    ],
+    recovery: [
+      "The deflection was hidden. Second try found the guard.",
+      "Missed the removal, then executed on retry.",
+      "Deflection takes vision. Second attempt had it.",
+    ],
+    'streak:3': [
+      "Three deflections running. Pulling guards left and right.",
+      "Triple deflection streak. The defenders are helpless.",
+      "Three in a row. Nobody stays on their post.",
+    ],
+    'streak:5': [
+      "Five deflections straight. Professional guard removal.",
+      "Five in a row. Every defender is compromised.",
+      "Five consecutive deflections. The setup mastery is real.",
+    ],
     general: [
       "The defender had a job. Had.",
       "Deflected away from what matters.",
@@ -911,6 +1732,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: Attraction
   '3.2': {
+    first: [
+      "First lure set. They walked right in.",
+      "Attraction section opens with a trap sprung.",
+      "Opening bait taken. The section begins.",
+    ],
+    last: [
+      "Final lure of the section. They all fell for it.",
+      "Last attraction puzzle. Section trapped and sealed.",
+      "Attraction chapter closed. Every lure worked.",
+    ],
+    recovery: [
+      "The bait wasn't obvious. Found the lure on retry.",
+      "Missed the attraction, then set the trap perfectly.",
+      "Second attempt, cleaner lure. They came willingly.",
+      "The attraction needed refinement. Delivered on retry.",
+    ],
+    'streak:3': [
+      "Three lures set, three traps sprung.",
+      "Triple attraction streak. Irresistible.",
+      "Three in a row. The bait game is on point.",
+    ],
+    'streak:5': [
+      "Five attractions straight. Every trap set, every trap sprung.",
+      "Five in a row. The lure game is unstoppable.",
+      "Five consecutive attractions. Professional trap-setter.",
+    ],
     general: [
       "Lured to the perfect square.",
       "The attraction was irresistible.",
@@ -932,6 +1779,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Clearance & Interference
   '3.3': {
+    first: [
+      "First path cleared. The attack highway is open.",
+      "Clearance section starts. Obstacles removed.",
+      "Opening interference deployed. Communication cut.",
+    ],
+    last: [
+      "Final clearance move. Section path: wide open.",
+      "Last interference of the chapter. All lines severed.",
+      "Section complete. Every path cleared, every line blocked.",
+    ],
+    recovery: [
+      "The clearance was subtle. Second try opened the path.",
+      "Missed the interference, then cut the line.",
+      "Path unclear at first. Retry cleared the way.",
+    ],
+    'streak:3': [
+      "Three clearances running. Opening highways.",
+      "Triple streak. Paths clear, lines blocked, wins stacked.",
+      "Three in a row. The setup game is surgical.",
+    ],
+    'streak:5': [
+      "Five clearances straight. Every path opened, every line cut.",
+      "Five in a row. The obstacle removal game is elite.",
+      "Five consecutive clears. Nothing stands between you and the win.",
+      "Five for five. Clearance and interference mastered.",
+    ],
     general: [
       "Clear the path. Strike the target.",
       "Interference disrupts their coordination.",
@@ -956,6 +1829,31 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - Enablers
   '3.4': {
+    first: [
+      "Enablers review opens. First setup tactic confirmed.",
+      "Review starts clean. The enabler skills are there.",
+      "Opening the enablers review with a solve.",
+    ],
+    last: [
+      "Enablers review complete. Every setup tactic confirmed.",
+      "Last enabler reviewed. The sophisticated tools are locked.",
+      "Final review puzzle done. Deflection, attraction, clearance: yours.",
+    ],
+    recovery: [
+      "Review found a rough edge. Polished on retry.",
+      "The enabler hid in review. Second pass caught it.",
+      "Setup tactics needed a refresh. Done.",
+    ],
+    'streak:3': [
+      "Three enabler reviews running. Setup skills sharp.",
+      "Triple streak on enabler review. The prep work is solid.",
+      "Three in a row. The setup game is permanent.",
+    ],
+    'streak:5': [
+      "Five enabler reviews straight. Sophisticated skills locked.",
+      "Five in a row. Enabler review: just a formality.",
+      "Five consecutive enabler reviews. The foundation is steel.",
+    ],
     general: [
       "Deflection, attraction, clearance. The enablers.",
       "Setup tactics mastered.",
@@ -972,6 +1870,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: The Sacrifice
   '3.5': {
+    first: [
+      "Sacrifice section opens. First investment pays off.",
+      "First bold move of the chapter. Calculated risk, calculated reward.",
+      "The sacrifice section begins with a win. Bold start.",
+    ],
+    last: [
+      "Final sacrifice of the section. Every investment returned.",
+      "Last calculated risk. Section complete.",
+      "Sacrifice chapter sealed. Give to get: mastered.",
+      "Section done. The bold game is yours.",
+    ],
+    recovery: [
+      "The sacrifice line was deeper than expected. Found it on retry.",
+      "Bold moves need precision. Second attempt was precise.",
+      "Missed the return. Found the payoff on the second try.",
+    ],
+    'streak:3': [
+      "Three sacrifices running. Every investment returning.",
+      "Triple sacrifice streak. Bold and accurate.",
+      "Three in a row. Calculated aggression flowing.",
+    ],
+    'streak:5': [
+      "Five sacrifices straight. Give to get, every time.",
+      "Five in a row. The sacrifice game is automatic.",
+      "Five consecutive calculated risks. All paid off.",
+    ],
     general: [
       "Give a piece, get a position.",
       "The sacrifice paid off handsomely.",
@@ -993,6 +1917,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: Sacrifice for Material
   '3.6': {
+    first: [
+      "Material sacrifice section starts. First trade-up executed.",
+      "Opening sacrifice for profit. The exchange was worth it.",
+      "First material sacrifice solved. Give less, get more.",
+    ],
+    last: [
+      "Final material sacrifice. Section profits collected.",
+      "Last exchange sacrifice of the chapter. All gains banked.",
+      "Section complete. Every sacrifice returned more than it cost.",
+    ],
+    recovery: [
+      "The exchange was tricky. Found the compensation on retry.",
+      "Material sacrifice needed a second calculation. Worth it.",
+      "Missed the return on the sacrifice. Second try balanced the books.",
+    ],
+    'streak:3': [
+      "Three material sacrifices running. Profitable streak.",
+      "Triple exchange streak. Every trade-up works.",
+      "Three in a row. The sacrifice math is on point.",
+      "Three straight material sacrifices. Banking wins.",
+    ],
+    'streak:5': [
+      "Five material sacrifices straight. The exchange game is elite.",
+      "Five in a row. Every sacrifice yields more than it costs.",
+      "Five consecutive profitable sacrifices. The books always balance.",
+    ],
     general: [
       "Temporary sacrifice, permanent advantage.",
       "The calculation justified the sacrifice.",
@@ -1019,6 +1969,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: Advanced Tactics
   '3.7': {
+    first: [
+      "Advanced tactics opened. First sophisticated solve in the bag.",
+      "The advanced section begins. Complexity handled.",
+      "First advanced tactic of Level 3. Rising power.",
+    ],
+    last: [
+      "Final advanced tactic. Section conquered.",
+      "Last sophisticated move of the chapter. Clean close.",
+      "Advanced tactics complete. The evolution continues.",
+    ],
+    recovery: [
+      "Advanced complexity needed a second look. Found it.",
+      "The sophisticated line hid. Retry uncovered it.",
+      "Complex tactic, clean recovery. Growth.",
+    ],
+    'streak:3': [
+      "Three advanced tactics running. Leveling up fast.",
+      "Triple advanced streak. Sophisticated and sharp.",
+      "Three in a row on the hard stuff. Impressive.",
+    ],
+    'streak:5': [
+      "Five advanced tactics straight. Next-level vision.",
+      "Five in a row on advanced problems. That's elite.",
+      "Five consecutive advanced solves. The skills are evolving.",
+      "Five for five on advanced tactics. Rising power confirmed.",
+    ],
     general: [
       "Advanced fork deployed.",
       "The sophisticated tactics emerge.",
@@ -1043,6 +2019,31 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Sacrifice & Tactics
   '3.8': {
+    first: [
+      "Sacrifice and tactics review starts. First solve: clean.",
+      "Review opens with a hit. The bold skills are intact.",
+      "First review puzzle down. Calculated aggression confirmed.",
+    ],
+    last: [
+      "Sacrifice and tactics review done. Everything sharp.",
+      "Last review puzzle solved. Bold play: confirmed.",
+      "Review wrapped. Sacrifices and tactics are locked in.",
+    ],
+    recovery: [
+      "Review found something. Second try sharpened it.",
+      "Bold play needed a retry during review. Now it's locked.",
+      "The sacrifice review tripped up. Then it clicked.",
+    ],
+    'streak:3': [
+      "Three review puzzles running. Sacrifice skills hold.",
+      "Triple review streak. The bold game is permanent.",
+      "Three in a row on sacrifice review. Steady.",
+    ],
+    'streak:5': [
+      "Five review puzzles straight. Calculated aggression: bulletproof.",
+      "Five in a row. Sacrifice and tactics review: ace.",
+      "Five consecutive review wins. The bold play never fades.",
+    ],
     general: [
       "Sacrifices and tactics reviewed.",
       "The combination toolkit: sharp.",
@@ -1059,6 +2060,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Multi-Move Checkmates
   '3.9': {
+    first: [
+      "Multi-move mates begin. First sequence calculated.",
+      "Opening the deep chapter with a forced finish.",
+      "First multi-move mate. The calculation starts now.",
+    ],
+    last: [
+      "Final forced sequence. Multi-move mates: complete.",
+      "Last checkmate of the section. Deep calculation proven.",
+      "Section finished. Every sequence calculated to the end.",
+    ],
+    recovery: [
+      "The forcing line was deep. Found it on the second try.",
+      "Multi-move calculation needed a retry. Found the path.",
+      "Missed a move in the sequence. Recalculated and delivered.",
+      "The checkmate was hiding deeper. Second attempt reached it.",
+    ],
+    'streak:3': [
+      "Three multi-move mates running. Deep calculation flowing.",
+      "Triple forced mate streak. The depth is there.",
+      "Three in a row. Deep vision confirmed.",
+    ],
+    'streak:5': [
+      "Five multi-move mates straight. Calculator mode engaged.",
+      "Five in a row. Every forcing sequence found.",
+      "Five consecutive deep mates. The calculation runs deep.",
+    ],
     general: [
       "The checkmate sequence visualized.",
       "Deep calculation, clean finish.",
@@ -1091,6 +2118,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Endgame Mastery
   '3.10': {
+    first: [
+      "Endgame mastery starts. First conversion: clean.",
+      "The endgame section opens with technique.",
+      "First endgame at Level 3 difficulty. Handled.",
+    ],
+    last: [
+      "Final endgame mastered. Section complete.",
+      "Last conversion of the chapter. Technique proven.",
+      "Endgame mastery section: wrapped. From advantage to victory.",
+    ],
+    recovery: [
+      "Endgame technique needed adjustment. Retry was textbook.",
+      "Conversion stumbled, then smoothed out.",
+      "The ending was tricky. Second approach was cleaner.",
+    ],
+    'streak:3': [
+      "Three endgame conversions running. Technique on point.",
+      "Triple conversion streak. The technique is real.",
+      "Three in a row. Endgame mastery building.",
+    ],
+    'streak:5': [
+      "Five endgame conversions straight. Mastery level technique.",
+      "Five in a row. From advantage to win: automatic.",
+      "Five consecutive conversions. The endgame is your domain.",
+      "Five straight. Endgame mastery isn't a goal, it's a fact.",
+    ],
     general: [
       "Endgame technique on display.",
       "Converting the advantage cleanly.",
@@ -1119,6 +2172,31 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Combined Tactics
   '3.11': {
+    first: [
+      "Combined tactics start. First chain reaction solved.",
+      "Opening the combo section with a multi-tactic solve.",
+      "First combined puzzle down. The tactics compound.",
+    ],
+    last: [
+      "Final combined tactic. Section connected.",
+      "Last chain reaction solved. Every tactic stacks.",
+      "Combined section sealed. Tactical synergy confirmed.",
+    ],
+    recovery: [
+      "Combined tactics are complex. Second attempt connected the dots.",
+      "The chain reaction needed a retry. Now it flows.",
+      "Missed a link in the combination. Found it on the second try.",
+    ],
+    'streak:3': [
+      "Three combined tactics running. The chains keep connecting.",
+      "Triple combo streak. Every tactic enables the next.",
+      "Three in a row. Combination chess at its finest.",
+    ],
+    'streak:5': [
+      "Five combined tactics straight. Tactical synergy on display.",
+      "Five in a row. Every combination connects perfectly.",
+      "Five consecutive chain reactions. Unstoppable combinations.",
+    ],
     general: [
       "Fork plus pin equals destruction.",
       "Combined tactics devastate.",
@@ -1135,6 +2213,31 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - Combinations
   '3.12': {
+    first: [
+      "Combination review starts. First deep solve: clean.",
+      "Review opens with a hit. The combination skills hold.",
+      "First review puzzle solved. Chain reactions intact.",
+    ],
+    last: [
+      "Combination review complete. Depth confirmed.",
+      "Last review puzzle done. The deep skills are locked.",
+      "Final combo reviewed. Checkmates, endgames, combinations: all yours.",
+    ],
+    recovery: [
+      "The combo hid during review. Found it on retry.",
+      "Review caught a gap in the chain. Now it's forged.",
+      "Combination review needed a second pass. Polished now.",
+    ],
+    'streak:3': [
+      "Three combo reviews running. Deep skills confirmed.",
+      "Triple review streak on combinations. Solid foundation.",
+      "Three in a row. The depth doesn't fade in review.",
+    ],
+    'streak:5': [
+      "Five combo reviews straight. Comprehensive depth.",
+      "Five in a row. Combination skills: bulletproof.",
+      "Five consecutive combination reviews aced. The foundation is steel.",
+    ],
     general: [
       "Combination review: excellent.",
       "Multi-move tactics confirmed.",
@@ -1151,6 +2254,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 3 Review
   '3.13': {
+    first: [
+      "Level 3 review opens. First solve across all skills.",
+      "Full review starts strong. The sophistication is there.",
+      "First Level 3 review puzzle handled. Everything intact.",
+    ],
+    last: [
+      "Level 3 review wrapped. Every sophisticated skill confirmed.",
+      "Last review puzzle. Ready for the final exam.",
+      "Full Level 3 review done. The rising power is established.",
+    ],
+    recovery: [
+      "Full review caught an edge. Second try sharpened it.",
+      "The mixed review tripped a wire. Reset and solved.",
+      "Review found something to polish. Polished.",
+      "One hiccup in the full review. Cleaned up.",
+    ],
+    'streak:3': [
+      "Three Level 3 review puzzles running. All skills firing.",
+      "Triple streak on full review. The sophistication is natural.",
+      "Three in a row across mixed skills. Consistent.",
+    ],
+    'streak:5': [
+      "Five Level 3 review puzzles straight. Complete mastery.",
+      "Five in a row. The full review is a victory lap.",
+      "Five consecutive wins across all Level 3 skills. Dominant.",
+    ],
     general: [
       "Level 3 in review: dominant.",
       "Enablers, sacrifices, combinations. Yours.",
@@ -1167,6 +2296,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 3 Final
   '3.14': {
+    first: [
+      "Level 3 final opens. First puzzle: confident.",
+      "The graduation exam begins with a statement.",
+      "First solve in the Level 3 finale. Setting the tone.",
+    ],
+    last: [
+      "Level 3 Final: conquered. Never apologize for that.",
+      "Last puzzle of Level 3. Graduation complete.",
+      "The final closes. Level 3 is yours. Unapologetically.",
+    ],
+    recovery: [
+      "The finale tested you. You came back swinging.",
+      "One stumble in the final. Then a clean recovery. Class.",
+      "Final exam retry. Still graduating with honors.",
+    ],
+    'streak:3': [
+      "Three running in the Level 3 final. Smooth sailing.",
+      "Triple streak in the finale. Making it look effortless.",
+      "Three in a row. The final is a formality.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 3 final. Flawless graduation.",
+      "Five in a row on the final. The sophisticated player emerges.",
+      "Five consecutive solves in the finale. Unapologetic excellence.",
+      "Five for five in the final. Never apologize for being great.",
+    ],
     general: [
       "Level 3 Final: crushed.",
       "Never apologize for being great.",
@@ -1192,6 +2347,32 @@ export const level3Responses: Record<string, Record<string, string[]>> = {
 export const level4Responses: Record<string, Record<string, string[]>> = {
   // Section 1: Sacrifice Patterns
   '4.1': {
+    first: [
+      "Level 4 begins. First sacrifice pattern executed.",
+      "The empire starts here. Opening formula applied.",
+      "First puzzle, first formula. The chemistry begins.",
+    ],
+    last: [
+      "Final sacrifice pattern. The formula is yours.",
+      "Last pattern of the section. Empire foundations laid.",
+      "Section complete. The sacrifice formula works every time.",
+    ],
+    recovery: [
+      "The formula needed recalibration. Second attempt: pure.",
+      "Missed the pattern, then applied the formula. Chemistry.",
+      "The sacrifice hid. The second try found the reaction.",
+    ],
+    'streak:3': [
+      "Three sacrifice patterns running. The formula flows.",
+      "Triple pattern streak. Chemistry in action.",
+      "Three in a row. The sacrifice game is dialed in.",
+    ],
+    'streak:5': [
+      "Five sacrifice patterns straight. Empire chemistry.",
+      "Five in a row. The formula never fails.",
+      "Five consecutive patterns. Pure, uncut precision.",
+      "Five for five. The empire runs on this formula.",
+    ],
     general: [
       "The sacrifice opens everything.",
       "Chemistry is change. So is their position.",
@@ -1213,6 +2394,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: Trapped Pieces
   '4.2': {
+    first: [
+      "First trapped piece collected. The cage works.",
+      "Trapped pieces section opens. First net deployed.",
+      "Opening with a trap. No mercy from the start.",
+    ],
+    last: [
+      "Final trapped piece. Section caged and locked.",
+      "Last piece captured from the trap. Section done.",
+      "Trapping section complete. No escape was ever an option.",
+    ],
+    recovery: [
+      "Missed the trap, then closed the cage on retry.",
+      "The net needed adjustment. Second attempt: sealed tight.",
+      "Took another look and found the cage. Trapped.",
+      "The piece almost escaped. Almost.",
+    ],
+    'streak:3': [
+      "Three trapped pieces running. The nets keep closing.",
+      "Triple trap streak. Everything gets caged.",
+      "Three in a row. No squares left for anyone.",
+    ],
+    'streak:5': [
+      "Five trapped pieces straight. Nobody escapes.",
+      "Five in a row. Professional trapper status.",
+      "Five consecutive traps. The whole board is a cage.",
+    ],
     general: [
       "Trapped. No escape. No mercy.",
       "The cage closes.",
@@ -1234,6 +2441,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Exposed King Hunt
   '4.3': {
+    first: [
+      "King hunt section opens. First exposed king punished.",
+      "Opening attack on an exposed king. You ARE the danger.",
+      "First hunt begins and ends quickly.",
+    ],
+    last: [
+      "Final king hunt. Section conquered. No mercy given.",
+      "Last exposed king chased down. Section sealed.",
+      "King hunt chapter done. The danger is confirmed.",
+    ],
+    recovery: [
+      "The hunt needed a second start. Still caught the king.",
+      "Missed the chase line. Retry ran them down.",
+      "King hunt recovery. They ran, you followed, you won.",
+    ],
+    'streak:3': [
+      "Three king hunts running. Open season.",
+      "Triple hunt streak. Every exposed king falls.",
+      "Three in a row. The danger is relentless.",
+      "Three straight chases. No king is safe.",
+    ],
+    'streak:5': [
+      "Five king hunts straight. You are the danger personified.",
+      "Five in a row. Every exposed king meets its end.",
+      "Five consecutive hunts. The board is your territory.",
+    ],
     general: [
       "That king is in danger. You ARE the danger.",
       "The hunt begins. The hunt ends quickly.",
@@ -1255,6 +2488,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - Attack Training
   '4.4': {
+    first: [
+      "Attack training review starts. First strike: clean.",
+      "Review opens with aggression. The offense is intact.",
+      "First review puzzle down. Still dangerous.",
+    ],
+    last: [
+      "Attack training review complete. Every weapon confirmed.",
+      "Last review puzzle. The offensive skills are permanent.",
+      "Review done. Sacrifices, traps, hunts: all locked.",
+    ],
+    recovery: [
+      "Review found a gap in the attack. Plugged on retry.",
+      "Attack review needed a second pass. Now it's sharp.",
+      "The offense needed recalibration. Done.",
+    ],
+    'streak:3': [
+      "Three attack reviews running. The offense is automatic.",
+      "Triple review streak. The danger never left.",
+      "Three in a row. Attack skills: confirmed and permanent.",
+    ],
+    'streak:5': [
+      "Five attack reviews straight. The empire's offense holds.",
+      "Five in a row. Review? More like victory lap.",
+      "Five consecutive review wins. The danger is forever.",
+    ],
     general: [
       "Attack training complete.",
       "Sacrifices, traps, king hunts. The toolkit.",
@@ -1271,6 +2529,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Mate in 4
   '4.5': {
+    first: [
+      "Mate in 4 section starts. First deep calculation landed.",
+      "Deep chess begins. Opening four-mover solved.",
+      "First long mate of the section. The depth is there.",
+    ],
+    last: [
+      "Final mate in 4. Section calculated to completion.",
+      "Last deep mate of the chapter. Precision confirmed.",
+      "Mate in 4 section done. The calculation depth is locked.",
+    ],
+    recovery: [
+      "Four moves deep and the line was tricky. Found it on retry.",
+      "Deep calculation needed rechecking. Second try was precise.",
+      "The long mate hid. Deeper calculation on retry found it.",
+    ],
+    'streak:3': [
+      "Three deep mates running. Calculating four moves ahead on repeat.",
+      "Triple deep mate streak. The vision runs deep.",
+      "Three in a row. Four-move calculation: on demand.",
+    ],
+    'streak:5': [
+      "Five deep mates straight. Calculator doesn't make errors.",
+      "Five in a row. Deep calculation at will.",
+      "Five consecutive four-movers. Inevitability personified.",
+    ],
     general: [
       "Calculate deep. Execute deeper.",
       "The forcing sequence is beautiful.",
@@ -1296,6 +2579,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: The Quiet Storm
   '4.6': {
+    first: [
+      "The quiet storm begins. First silent move lands.",
+      "No drama. Just the opening quiet move. Devastating.",
+      "First puzzle: no check, no capture, total domination.",
+    ],
+    last: [
+      "Final quiet move. The storm passes. Section done.",
+      "Last silent strike. Nothing louder than a quiet closer.",
+      "Quiet storm section complete. Whispers that won wars.",
+    ],
+    recovery: [
+      "Quiet moves hide. Found the silence on the second try.",
+      "Looked for checks first. The quiet move was the answer all along.",
+      "Missed the subtle move, then whispered the win.",
+      "Second try found the calm in the storm.",
+    ],
+    'streak:3': [
+      "Three quiet moves running. Silent but devastating.",
+      "Triple quiet streak. The subtlety compounds.",
+      "Three in a row. No drama, all results.",
+    ],
+    'streak:5': [
+      "Five quiet moves straight. The silent storm rages.",
+      "Five in a row. No checks, no captures, all wins.",
+      "Five consecutive quiet moves. The deadliest silence in chess.",
+    ],
     general: [
       "No check. No capture. Total destruction.",
       "The quiet move screams loudest.",
@@ -1317,6 +2626,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: Positional Pressure
   '4.7': {
+    first: [
+      "Positional pressure starts. First squeeze applied.",
+      "Opening the grind section. They wish they could pass.",
+      "First positional win. The walls close in.",
+    ],
+    last: [
+      "Final positional squeeze. Section crushed.",
+      "Last puzzle. The pressure section is done. They can breathe now.",
+      "Positional pressure complete. The empire's grip is tight.",
+    ],
+    recovery: [
+      "The squeeze wasn't obvious. Found the pressure on retry.",
+      "Positional play needed a second look. The grip tightened.",
+      "Missed the zugzwang. Second try found the trap of forced moves.",
+    ],
+    'streak:3': [
+      "Three positional wins running. The squeeze is relentless.",
+      "Triple pressure streak. They can't make a good move.",
+      "Three in a row. Positional stranglehold.",
+    ],
+    'streak:5': [
+      "Five positional wins straight. Total domination.",
+      "Five in a row. Every square is wrong for them.",
+      "Five consecutive squeezes. The empire's grip never loosens.",
+      "Five for five. Zugzwang central.",
+    ],
     general: [
       "Squeeze until they break.",
       "Any move makes it worse.",
@@ -1337,6 +2672,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Deep Calculation
   '4.8': {
+    first: [
+      "Deep calculation review opens. First solve: precise.",
+      "Review starts with depth. The calculation is there.",
+      "First review puzzle calculated and conquered.",
+    ],
+    last: [
+      "Deep calculation review done. Precision locked in.",
+      "Last review puzzle. The depth is permanent.",
+      "Review complete. Calculation confirmed at every level.",
+    ],
+    recovery: [
+      "Review found depth to sharpen. Second try polished it.",
+      "Deep calculation review needed a retry. Recalibrated.",
+      "The calculation wasn't deep enough first time. Now it is.",
+    ],
+    'streak:3': [
+      "Three deep reviews running. Precision holds.",
+      "Triple review streak. Depth confirmed across the board.",
+      "Three in a row on deep review. No half measures.",
+    ],
+    'streak:5': [
+      "Five deep reviews straight. The calculation runs pure.",
+      "Five in a row. Deep review is routine at this point.",
+      "Five consecutive deep calculation reviews. Flawless depth.",
+    ],
     general: [
       "Deep calculation review: sharp.",
       "Mate in 4, quiet moves, zugzwang.",
@@ -1353,6 +2713,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Decisive Tactics
   '4.9': {
+    first: [
+      "Decisive tactics begin. First finishing blow: delivered.",
+      "Opening with authority. The decisive section starts now.",
+      "First decisive tactic. Maximum impact from move one.",
+    ],
+    last: [
+      "Final decisive blow. Section ended with authority.",
+      "Last finishing move. The empire expands.",
+      "Decisive tactics complete. Every blow landed.",
+      "Section sealed with a decisive strike.",
+    ],
+    recovery: [
+      "The finishing blow missed. The second one didn't.",
+      "Decisive play needed another attempt. Delivered with authority.",
+      "Missed the decisive moment, then seized it on retry.",
+    ],
+    'streak:3': [
+      "Three decisive tactics running. Finishing blow on repeat.",
+      "Triple decisive streak. They can't survive the impact.",
+      "Three in a row. Every blow lands.",
+    ],
+    'streak:5': [
+      "Five decisive tactics straight. No mercy.",
+      "Five in a row. The finishing game is absolute.",
+      "Five consecutive decisive blows. Empire business.",
+    ],
     general: [
       "Decisive. Final. Absolute.",
       "End them with authority.",
@@ -1377,6 +2763,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Promotion Warfare
   '4.10': {
+    first: [
+      "Promotion warfare starts. First pawn reaches the throne.",
+      "The eighth rank calls. First promotion secured.",
+      "Opening the section with a queen. Brand new.",
+    ],
+    last: [
+      "Final promotion. Section warfare: won.",
+      "Last pawn promoted. The section is yours.",
+      "Promotion warfare done. Every pawn found the eighth rank.",
+    ],
+    recovery: [
+      "The promotion path was blocked. Found a way through on retry.",
+      "Missed the promotion tactic. Second try queened the pawn.",
+      "Pawn got stuck. Then it found the highway.",
+    ],
+    'streak:3': [
+      "Three promotions running. The pawns march in formation.",
+      "Triple promotion streak. New queens everywhere.",
+      "Three in a row. The eighth rank belongs to you.",
+    ],
+    'streak:5': [
+      "Five promotions straight. Pawn factory at full capacity.",
+      "Five in a row. The promotion game is relentless.",
+      "Five consecutive promotions. The empire mints queens on demand.",
+      "Five for five. Every pawn believes in the eighth rank.",
+    ],
     general: [
       "The pawn becomes a queen.",
       "Promotion secured.",
@@ -1398,6 +2810,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Minor Piece Endgames
   '4.11': {
+    first: [
+      "Minor piece endgames start. First conversion: smooth.",
+      "Opening the minor piece chapter. Technique online.",
+      "First bishop vs knight endgame handled. Clean technique.",
+    ],
+    last: [
+      "Final minor piece endgame. Section technique: proven.",
+      "Last conversion of the chapter. Minor pieces, major results.",
+      "Section done. Minor piece mastery confirmed.",
+    ],
+    recovery: [
+      "Minor piece technique needed adjustment. Retry was clean.",
+      "The endgame was tricky. Second approach found the path.",
+      "Bishop vs knight confusion cleared. Solved on retry.",
+    ],
+    'streak:3': [
+      "Three minor piece endgames running. The technique holds.",
+      "Triple conversion streak. Bishops, knights, all handled.",
+      "Three in a row. Minor piece technique on point.",
+    ],
+    'streak:5': [
+      "Five minor piece endgames straight. Technical mastery.",
+      "Five in a row. Every ending converted. Professional technique.",
+      "Five consecutive minor piece conversions. The empire converts everything.",
+    ],
     general: [
       "Minor piece mastery.",
       "Bishop vs knight: classic battle.",
@@ -1422,6 +2859,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - Conversion
   '4.12': {
+    first: [
+      "Conversion review starts. First advantage turned into a win.",
+      "Review opens with a clean conversion. The technique is there.",
+      "First review puzzle converted. Empire building on track.",
+    ],
+    last: [
+      "Conversion review complete. Every advantage converts.",
+      "Last review done. The conversion pipeline is bulletproof.",
+      "Final conversion reviewed. Building the empire, one win at a time.",
+    ],
+    recovery: [
+      "Conversion review found a leak. Plugged on retry.",
+      "The technique needed refreshing. Review did its job.",
+      "Missed the conversion in review. Second try sealed it.",
+    ],
+    'streak:3': [
+      "Three conversion reviews running. The pipeline flows.",
+      "Triple review streak. Every advantage becomes a win.",
+      "Three in a row. Conversion technique: permanent.",
+    ],
+    'streak:5': [
+      "Five conversion reviews straight. The pipeline never leaks.",
+      "Five in a row. Every advantage, every time, every win.",
+      "Five consecutive conversions on review. Empire efficiency.",
+    ],
     general: [
       "Conversion review: flawless.",
       "Decisive tactics, promotion, endgames.",
@@ -1438,6 +2900,31 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 4 Review
   '4.13': {
+    first: [
+      "Level 4 review starts. First full-kit puzzle solved.",
+      "The empire review begins. First solve: dominant.",
+      "Opening the Level 4 review. All systems firing.",
+    ],
+    last: [
+      "Level 4 review complete. The empire stands.",
+      "Last review puzzle. Ready for the final.",
+      "Full Level 4 review done. You're the danger. Confirmed.",
+    ],
+    recovery: [
+      "Full review caught something. Fixed on the second try.",
+      "The empire review found a crack. Now it's sealed.",
+      "One retry across the full review. The formula holds.",
+    ],
+    'streak:3': [
+      "Three Level 4 review puzzles running. The formula works.",
+      "Triple streak on full review. The empire is solid.",
+      "Three in a row across all Level 4 skills. Dominant.",
+    ],
+    'streak:5': [
+      "Five Level 4 review puzzles straight. Total domination.",
+      "Five in a row. The full review is a coronation.",
+      "Five consecutive review wins. The empire doesn't crack.",
+    ],
     general: [
       "Level 4 review: dominant.",
       "I am the one who knocks.",
@@ -1454,6 +2941,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 4 Final
   '4.14': {
+    first: [
+      "The Level 4 final begins. First puzzle: say your name.",
+      "Opening the empire's final exam. First solve: dominant.",
+      "Level 4 finale starts strong. The danger is real.",
+    ],
+    last: [
+      "Level 4 Final: last puzzle. Say your name. You're done.",
+      "The empire is built. Level 4 graduation complete.",
+      "That's the final puzzle. You're goddamn right it's over.",
+    ],
+    recovery: [
+      "The final tested the empire. It held on retry.",
+      "One stumble in the Level 4 final. No half measures on the fix.",
+      "The empire recovered. No half measures.",
+    ],
+    'streak:3': [
+      "Three running in the Level 4 final. The empire cruises.",
+      "Triple streak in the finale. Total control.",
+      "Three in a row. The Level 4 final bows.",
+      "Three straight in the final. No half measures. Full wins.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 4 final. Flawless empire.",
+      "Five in a row. The one who knocks doesn't miss.",
+      "Five consecutive solves in the finale. Pure domination.",
+    ],
     general: [
       "Level 4 Final: conquered.",
       "Say my name.",
@@ -1479,6 +2992,32 @@ export const level4Responses: Record<string, Record<string, string[]>> = {
 export const level5Responses: Record<string, Record<string, string[]>> = {
   // Section 1: Mate in 5+
   '5.1': {
+    first: [
+      "Level 5 opens with a deep mate. The virtuoso arrives.",
+      "First long checkmate solved. Tournament-ready depth.",
+      "Mate in 5+ section starts with a clean calculation.",
+    ],
+    last: [
+      "Final deep mate. The long calculation section is yours.",
+      "Last mate in 5+. Section calculated to completion.",
+      "Deep mates done. The virtuoso showed up.",
+    ],
+    recovery: [
+      "Five moves deep is no joke. Found the line on retry.",
+      "The long calculation stumbled. Second try was flawless.",
+      "Deep mate needed a recalculation. Got there.",
+      "Missed a branch. Re-read the tree. Checkmate.",
+    ],
+    'streak:3': [
+      "Three deep mates running. The depth is effortless now.",
+      "Triple long-mate streak. Virtuoso calculation.",
+      "Three in a row on 5+ moves. Tournament vision.",
+    ],
+    'streak:5': [
+      "Five deep mates straight. The calculation never stops.",
+      "Five in a row. Long-range precision at its finest.",
+      "Five consecutive deep mates. Unstoppable depth.",
+    ],
     general: [
       "The long checkmate visualized.",
       "Deep calculation delivers deep checkmate.",
@@ -1503,6 +3042,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: Double Check
   '5.2': {
+    first: [
+      "Double check section starts. First devastating blow delivered.",
+      "Opening with the most forcing move in chess. Strong start.",
+      "First double check landed. They had zero options.",
+    ],
+    last: [
+      "Final double check. Section complete. Total forcing.",
+      "Last double check of the chapter. Nothing could be blocked.",
+      "Double check section done. The ultimate forcing tool mastered.",
+    ],
+    recovery: [
+      "The double check needed coordination. Found it on retry.",
+      "Missed the double. Second try coordinated both pieces.",
+      "Double check recovery. Two attackers, one king, solved.",
+    ],
+    'streak:3': [
+      "Three double checks running. Maximum force applied.",
+      "Triple double-check streak. Zero defensive options given.",
+      "Three in a row. The most forcing tactic on repeat.",
+    ],
+    'streak:5': [
+      "Five double checks straight. Overwhelming coordination.",
+      "Five in a row. They can only run. Every time.",
+      "Five consecutive double checks. The forcing game is elite.",
+    ],
     general: [
       "Double check. No blocks. No captures. Just run.",
       "Two pieces give check. Zero options.",
@@ -1524,6 +3088,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Windmill of Doom
   '5.3': {
+    first: [
+      "Windmill section starts spinning. First combo devastates.",
+      "Opening windmill deployed. The spin cycle begins.",
+      "First windmill pattern. Check, take, repeat. Beautiful.",
+    ],
+    last: [
+      "Final windmill. Section spun to completion.",
+      "Last spin of the section. Material completely harvested.",
+      "Windmill section done. The most beautiful pattern mastered.",
+    ],
+    recovery: [
+      "The windmill stalled. Restarted on retry. Full spin.",
+      "Missed the discovery loop. Second try caught the rhythm.",
+      "Windmill needed a push to start. Then it was unstoppable.",
+    ],
+    'streak:3': [
+      "Three windmills running. Check, take, check, take, repeat.",
+      "Triple windmill streak. The spin never stops.",
+      "Three in a row. Discovery after discovery.",
+      "Three straight spins. Material flowing in.",
+    ],
+    'streak:5': [
+      "Five windmills straight. The spin cycle of doom.",
+      "Five in a row. Unlimited discovery power.",
+      "Five consecutive windmills. They can only watch and lose.",
+    ],
     general: [
       "The windmill spins. Material falls.",
       "Check, take, check, take. Repeat.",
@@ -1549,6 +3139,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - Multiple Threats
   '5.4': {
+    first: [
+      "Threat review opens. First multi-threat puzzle solved.",
+      "Review starts with pressure. The forcing skills are intact.",
+      "First review puzzle. Deep mates and double checks: confirmed.",
+    ],
+    last: [
+      "Multiple threats reviewed. Every forcing tool confirmed.",
+      "Last review puzzle done. The threat arsenal is stacked.",
+      "Review complete. Deep mates, double checks, windmills: all yours.",
+    ],
+    recovery: [
+      "The review found something. Sharpened on the second try.",
+      "Forcing moves needed a refresh. Review delivered.",
+      "One retry in the threat review. Now it's locked.",
+    ],
+    'streak:3': [
+      "Three threat reviews running. The forcing toolkit holds.",
+      "Triple streak on multiple threat review. All systems go.",
+      "Three in a row. Every forcing move accounted for.",
+    ],
+    'streak:5': [
+      "Five threat reviews straight. Comprehensive forcing skills.",
+      "Five in a row. The review is just a showcase now.",
+      "Five consecutive review wins. The coin always lands your way.",
+    ],
     general: [
       "Multiple threat review: excellent.",
       "Long mates, double checks, discoveries.",
@@ -1565,6 +3180,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Defensive Resources
   '5.5': {
+    first: [
+      "Defense section opens. First saving move found.",
+      "Defensive resources begin. First counter deployed.",
+      "Opening with a save. Not done yet.",
+    ],
+    last: [
+      "Final defensive resource found. Section saved.",
+      "Last saving move of the chapter. Every counter discovered.",
+      "Defense section complete. You find every resource.",
+      "Section done. Nothing catches you off guard.",
+    ],
+    recovery: [
+      "The defense hid deeper. Found the resource on retry.",
+      "Defensive resources are subtle. Second try spotted it.",
+      "Missed the save first time. Found the counter second time.",
+    ],
+    'streak:3': [
+      "Three defensive resources running. Nothing gets past you.",
+      "Triple save streak. The counter-game is strong.",
+      "Three in a row. Every attack has an answer.",
+    ],
+    'streak:5': [
+      "Five defensive saves straight. Untouchable.",
+      "Five in a row. Every threat answered. Every resource found.",
+      "Five consecutive saves. The defense is virtuoso-level.",
+    ],
     general: [
       "The saving move found.",
       "Defense that attacks.",
@@ -1586,6 +3227,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: The Fortress
   '5.6': {
+    first: [
+      "Fortress section starts. First impenetrable position built.",
+      "The wall goes up. First fortress constructed.",
+      "Opening with an unbreakable defense. Tournament steel.",
+    ],
+    last: [
+      "Final fortress built. Section: impenetrable.",
+      "Last fortress puzzle. Every wall held.",
+      "Fortress section done. They can't break in.",
+    ],
+    recovery: [
+      "The fortress had a crack. Second try sealed it.",
+      "Finding the draw took two attempts. The wall holds now.",
+      "Fortress construction needed a redo. Now it's airtight.",
+    ],
+    'streak:3': [
+      "Three fortresses running. The walls don't fall.",
+      "Triple fortress streak. Impenetrable on repeat.",
+      "Three in a row. Material means nothing against your walls.",
+    ],
+    'streak:5': [
+      "Five fortresses straight. Nothing gets through.",
+      "Five in a row. The defensive architecture is perfect.",
+      "Five consecutive fortresses. The walls are eternal.",
+    ],
     general: [
       "The fortress holds.",
       "Impenetrable defense achieved.",
@@ -1607,6 +3273,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: Counterattack
   '5.7': {
+    first: [
+      "Counterattack section starts. First reverse strike landed.",
+      "Opening with a counterpunch. Defense turns to offense.",
+      "First counterattack deployed. The tables turn immediately.",
+    ],
+    last: [
+      "Final counterattack. Section reversed.",
+      "Last reverse strike. From defense to dominance.",
+      "Counterattack section done. Every attack got answered and then some.",
+    ],
+    recovery: [
+      "The counter was hidden. Found the reverse on retry.",
+      "Missed the counterpunch. Second try landed it clean.",
+      "Counterattack timing was off. Retry was perfect.",
+    ],
+    'streak:3': [
+      "Three counterattacks running. They attack, you punish.",
+      "Triple counter streak. Every offense meets a stronger defense.",
+      "Three in a row. Reverse uno deployed repeatedly.",
+    ],
+    'streak:5': [
+      "Five counterattacks straight. Don't bring attacks you can't finish.",
+      "Five in a row. From defense to dominance, every single time.",
+      "Five consecutive counters. The reverse game is elite.",
+      "Five for five. They should stop attacking you.",
+    ],
     general: [
       "Defend and attack. Simultaneously.",
       "The counterattack changes everything.",
@@ -1628,6 +3320,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Defense & Counter
   '5.8': {
+    first: [
+      "Defense review opens. First save confirmed.",
+      "Review starts with a defensive hit. The shield is ready.",
+      "First review: defense and counter skills intact.",
+    ],
+    last: [
+      "Defense and counter review: done. The shield never cracks.",
+      "Last review puzzle. The defensive game is proven.",
+      "Final defense review complete. Unbreakable confirmed.",
+    ],
+    recovery: [
+      "Defense review found a gap. Plugged on retry.",
+      "The shield needed a patch in review. Fixed.",
+      "One defensive retry in review. The wall holds now.",
+    ],
+    'streak:3': [
+      "Three defense reviews running. The shield holds.",
+      "Triple review streak. Defense and counter: solid.",
+      "Three in a row. The defensive game doesn't fade.",
+    ],
+    'streak:5': [
+      "Five defense reviews straight. Unbreakable skills.",
+      "Five in a row. Defense review is a formality.",
+      "Five consecutive defensive reviews. The wall is permanent.",
+    ],
     general: [
       "Defense and counter review: solid.",
       "You can't stop what's coming... from you.",
@@ -1644,6 +3361,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Complex Sacrifices
   '5.9': {
+    first: [
+      "Complex sacrifices begin. First multi-piece investment pays off.",
+      "Opening with a bold sacrifice. Trust the calculation.",
+      "First complex sacrifice solved. The returns are massive.",
+    ],
+    last: [
+      "Final complex sacrifice. Section boldly conquered.",
+      "Last multi-piece sacrifice. Every investment returned.",
+      "Complex sacrifice section done. Give everything, get checkmate.",
+    ],
+    recovery: [
+      "The complex sacrifice needed deeper trust. Found it on retry.",
+      "Multi-piece sacrifice hid the compensation. Second try found it.",
+      "The sacrifice was bold. The retry was bolder.",
+      "Missed the return on the investment. Recalculated and profited.",
+    ],
+    'streak:3': [
+      "Three complex sacrifices running. Bold and accurate.",
+      "Triple sacrifice streak. Every investment returns tenfold.",
+      "Three in a row on complex sacrifices. Trust the calculation.",
+    ],
+    'streak:5': [
+      "Five complex sacrifices straight. Fearless calculation.",
+      "Five in a row. Give everything, win everything.",
+      "Five consecutive complex sacrifices. Virtuoso boldness.",
+    ],
     general: [
       "Multi-piece sacrifice pays off.",
       "Give three pieces, win the game.",
@@ -1665,6 +3408,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Advanced Deflection
   '5.10': {
+    first: [
+      "Advanced deflection starts. First overloaded piece broken.",
+      "Opening the section with a guard removal. Surgical.",
+      "First advanced deflection solved. The technique evolves.",
+    ],
+    last: [
+      "Final advanced deflection. Section disarmed.",
+      "Last overloaded piece exploited. Every guard removed.",
+      "Advanced deflection section done. Nothing stays defended.",
+    ],
+    recovery: [
+      "The deflection was well-hidden. Found it on the second pass.",
+      "Advanced deflection needed deeper analysis. Retry delivered.",
+      "Missed the overload. Second try found the breaking point.",
+    ],
+    'streak:3': [
+      "Three advanced deflections running. Guards dropping everywhere.",
+      "Triple deflection streak. No defender is safe.",
+      "Three in a row. The removal game is surgical.",
+    ],
+    'streak:5': [
+      "Five advanced deflections straight. Every guard compromised.",
+      "Five in a row. Nothing stays defended against you.",
+      "Five consecutive advanced deflections. Virtuoso guard removal.",
+    ],
     general: [
       "The defender is overloaded.",
       "Remove the guard at any cost.",
@@ -1686,6 +3454,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Theoretical Endgames
   '5.11': {
+    first: [
+      "Theoretical endgames start. First textbook position converted.",
+      "The theory section opens. First named position: handled.",
+      "Opening with endgame theory applied perfectly.",
+    ],
+    last: [
+      "Final theoretical endgame. Section theory: mastered.",
+      "Last textbook position solved. The boring stuff that wins tournaments.",
+      "Theory section done. Lucena, Philidor, all of them. Yours.",
+    ],
+    recovery: [
+      "The theory was in there somewhere. Second try applied it.",
+      "Theoretical endgame needed a review. Found the technique.",
+      "Missed the named position. Retry recognized and converted it.",
+    ],
+    'streak:3': [
+      "Three theoretical endgames running. The textbook is open.",
+      "Triple theory streak. Every named position handled.",
+      "Three in a row. Theory applied on demand.",
+      "Three straight textbook conversions. Knowledge is power.",
+    ],
+    'streak:5': [
+      "Five theoretical endgames straight. The theory is permanent.",
+      "Five in a row. Every textbook position: automatic.",
+      "Five consecutive theory positions converted. Expert level.",
+    ],
     general: [
       "Theoretical endgame: converted.",
       "The boring part that wins games.",
@@ -1714,6 +3508,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - Virtuoso Skills
   '5.12': {
+    first: [
+      "Virtuoso review opens. First advanced skill confirmed.",
+      "Review starts with a hit. The elite skills are intact.",
+      "First virtuoso review puzzle solved. All systems go.",
+    ],
+    last: [
+      "Virtuoso review complete. Sacrifices, deflections, theory: all yours.",
+      "Last review puzzle. The advanced toolkit is polished.",
+      "Final virtuoso review done. Tournament-ready confirmed.",
+    ],
+    recovery: [
+      "The virtuoso review found a rough edge. Smoothed on retry.",
+      "Elite skills needed a touch-up. Review delivered.",
+      "One retry in the advanced review. Now it shines.",
+    ],
+    'streak:3': [
+      "Three virtuoso reviews running. The elite skills hold.",
+      "Triple streak on virtuoso review. Advanced and automatic.",
+      "Three in a row. The elite game doesn't fade.",
+    ],
+    'streak:5': [
+      "Five virtuoso reviews straight. Tournament polish.",
+      "Five in a row. The virtuoso review is a concert.",
+      "Five consecutive elite reviews. Standing ovation material.",
+    ],
     general: [
       "Virtuoso skills confirmed.",
       "Sacrifices, deflection, endgames.",
@@ -1730,6 +3549,31 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 5 Review
   '5.13': {
+    first: [
+      "Level 5 review starts. First full-spectrum puzzle solved.",
+      "The comprehensive review opens. First solve: clean.",
+      "Full Level 5 review begins. All skills present.",
+    ],
+    last: [
+      "Level 5 review complete. Tournament-ready across the board.",
+      "Last review puzzle. Ready for the final.",
+      "Full review done. No country for beginners. You're no beginner.",
+    ],
+    recovery: [
+      "Full review caught something. Sharpened on retry.",
+      "The comprehensive review found an edge to hone. Done.",
+      "One retry in the full review. The edge is sharper now.",
+    ],
+    'streak:3': [
+      "Three Level 5 reviews running. Comprehensive excellence.",
+      "Triple streak on the full review. All skills confirmed.",
+      "Three in a row across all Level 5 themes. Consistent.",
+    ],
+    'streak:5': [
+      "Five Level 5 reviews straight. Complete mastery.",
+      "Five in a row. The full review is a celebration.",
+      "Five consecutive wins across all Level 5 skills. Call it.",
+    ],
     general: [
       "Level 5 review: mastery.",
       "No country for beginners.",
@@ -1746,6 +3590,32 @@ export const level5Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 5 Final
   '5.14': {
+    first: [
+      "Level 5 final begins. First puzzle: called it.",
+      "The ultimate test opens. First solve sets the tone.",
+      "Level 5 finale starts strong. You know how this ends.",
+    ],
+    last: [
+      "Level 5 Final: conquered. No country for beginners, and you're not one.",
+      "Last puzzle ever. You made it to the end.",
+      "The finish line. Virtuoso status: achieved.",
+    ],
+    recovery: [
+      "The final pushed you. You pushed back harder.",
+      "One stumble in the Level 5 finale. Then a clean finish.",
+      "The ultimate test allowed a retry. Still graduating.",
+      "Last-level resilience. Recovered and closed.",
+    ],
+    'streak:3': [
+      "Three running in the Level 5 final. Cruising to the end.",
+      "Triple streak in the finale. Making the last exam look easy.",
+      "Three in a row. The final is your victory lap.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 5 final. Flawless finish.",
+      "Five in a row on the ultimate test. Call it. You won.",
+      "Five consecutive solves in the finale. Virtuoso confirmed.",
+    ],
     general: [
       "Level 5 Final: conquered.",
       "No country for beginners. You're no beginner.",
@@ -1777,6 +3647,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 1: Quiet Moves
   '6.1': {
+    first: [
+      "Level 6 begins in silence. First quiet move, loudest result.",
+      "Gotham's quiet section opens. First puzzle whispered to victory.",
+      "Opening with a quiet move. The signal is lit.",
+      "First solve. No check, no capture. Just a plan.",
+    ],
+    last: [
+      "Final quiet move. Gotham's subtlest section: complete.",
+      "Last silent strike. The quiet game is yours.",
+      "Section done. The quietest moves won the loudest victories.",
+    ],
+    recovery: [
+      "Looked for fireworks first. The quiet move was the answer all along. Got it on retry.",
+      "Gotham's subtle game takes a second look sometimes.",
+      "The quiet move hid. You listened harder on retry.",
+    ],
+    'streak:3': [
+      "Three quiet moves running. The silence is deafening.",
+      "Triple quiet streak. Gotham's subtlest weapon on repeat.",
+      "Three in a row. No checks needed. No captures needed.",
+    ],
+    'streak:5': [
+      "Five quiet moves straight. The silent hero of Gotham.",
+      "Five in a row. Not a single check or capture. All wins.",
+      "Five consecutive quiet devastations. Why so serious? Because it works.",
+    ],
     general: [
       "No check. No capture. Just a plan they never saw coming.",
       "Why so serious? Because that quiet move just won the game.",
@@ -1801,6 +3697,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: The Zwischenzug
   '6.2': {
+    first: [
+      "First zwischenzug. The in-between move nobody expected.",
+      "Intermezzo section opens with a plot twist.",
+      "Opening with a detour that wins the highway. Classic.",
+    ],
+    last: [
+      "Final zwischenzug. Section plot-twisted to completion.",
+      "Last in-between move. Every script got rewritten.",
+      "Zwischenzug section done. The detour game is yours.",
+    ],
+    recovery: [
+      "Expected the recapture first. The intermezzo was the play. Got it on retry.",
+      "The zwischenzug hid between the obvious moves. Found it.",
+      "In-between move needed a second pass. Gotham rewards patience.",
+    ],
+    'streak:3': [
+      "Three zwischenzugs running. Every script gets a rewrite.",
+      "Triple intermezzo streak. The plot twists keep coming.",
+      "Three in a row. Non-linear chess at its best.",
+    ],
+    'streak:5': [
+      "Five zwischenzugs straight. The timeline bends to your will.",
+      "Five in a row. Every expected recapture gets a plot twist.",
+      "Five consecutive intermezzos. Gotham's finest script doctor.",
+    ],
     general: [
       "An in-between move that changes everything.",
       "They expected a recapture. You had other plans.",
@@ -1825,6 +3746,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: X-Ray Vision
   '6.3': {
+    first: [
+      "X-ray section starts. First hidden line found.",
+      "Opening with see-through vision. Gotham has a new hero.",
+      "First x-ray puzzle solved. You see through everything.",
+    ],
+    last: [
+      "Final x-ray attack. Section seen through entirely.",
+      "Last hidden line discovered. X-ray mastery confirmed.",
+      "X-ray section done. Nothing is hidden from you.",
+    ],
+    recovery: [
+      "The line was blocked. Second look saw right through it.",
+      "X-ray vision needed a recalibration. Retry pierced through.",
+      "Missed the hidden attack. Second pass found the see-through line.",
+    ],
+    'streak:3': [
+      "Three x-rays running. Seeing through everything.",
+      "Triple x-ray streak. Gotham's tactical sonar on full blast.",
+      "Three in a row. Transparent defenses everywhere.",
+    ],
+    'streak:5': [
+      "Five x-rays straight. Nothing is opaque to you.",
+      "Five in a row. X-ray vision at full power.",
+      "Five consecutive see-throughs. Gotham's hero sees all.",
+      "Five for five. Every hidden line exposed.",
+    ],
     general: [
       "You see through their pieces. They see through nothing.",
       "X-ray vision activated. Gotham has a new hero.",
@@ -1857,6 +3804,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - The Unexpected
   '6.4': {
+    first: [
+      "Unexpected review opens. First subtle skill confirmed.",
+      "Review starts with the element of surprise. Intact.",
+      "First review puzzle. Quiet moves and x-rays: still there.",
+    ],
+    last: [
+      "Unexpected review complete. The subtle arsenal is locked.",
+      "Last review puzzle. The quiet game never fades.",
+      "Block 1 review done. The unexpected remains your advantage.",
+    ],
+    recovery: [
+      "The unexpected review caught something. Polished on retry.",
+      "Subtle skills needed a refresh. Review delivered.",
+      "One retry in the unexpected review. The edge is sharper.",
+    ],
+    'streak:3': [
+      "Three unexpected reviews running. Subtlety confirmed.",
+      "Triple streak on the subtle review. Everything unexpected still works.",
+      "Three in a row. The element of surprise doesn't fade.",
+    ],
+    'streak:5': [
+      "Five unexpected reviews straight. The subtle game is permanent.",
+      "Five in a row. Gotham's unexpected playbook: bulletproof.",
+      "Five consecutive reviews. The unexpected arsenal never dulls.",
+    ],
     general: [
       "Quiet moves, zwischenzugs, x-rays. The unexpected arsenal.",
       "They never see it coming. That's the point.",
@@ -1877,6 +3849,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Deep Sacrifices
   '6.5': {
+    first: [
+      "Deep sacrifice section starts. First bold investment paid off.",
+      "Opening with a sacrifice so deep the engine pauses.",
+      "First deep sacrifice solved. It's about sending a message.",
+    ],
+    last: [
+      "Final deep sacrifice. Section: invested and returned.",
+      "Last bold move of the chapter. Every message sent.",
+      "Deep sacrifice section done. Material is just a suggestion.",
+    ],
+    recovery: [
+      "The deep sacrifice needed deeper trust. Found it on retry.",
+      "Gotham rewards the bold. Second try was bolder.",
+      "The sacrifice line hid the return. Retry found the profit.",
+    ],
+    'streak:3': [
+      "Three deep sacrifices running. Every gift has strings attached.",
+      "Triple sacrifice streak. The returns keep rolling in.",
+      "Three in a row. Gotham's boldest tactician.",
+    ],
+    'streak:5': [
+      "Five deep sacrifices straight. Material is just a number to you.",
+      "Five in a row. Every sacrifice deeper, every return larger.",
+      "Five consecutive deep sacrifices. Gotham rewards the brave.",
+      "Five for five. Not reckless. Calculated. Every time.",
+    ],
     general: [
       "It's not about the material. It's about sending a message.",
       "Give up the piece. Keep the initiative. Win the war.",
@@ -1901,6 +3899,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: Complex Combinations
   '6.6': {
+    first: [
+      "Complex combos begin. First long sequence: calculated.",
+      "Opening the deep chapter. First combination architected.",
+      "First complex combo solved. The vision runs deep.",
+    ],
+    last: [
+      "Final complex combination. Section: architecturally complete.",
+      "Last long sequence. Every branch calculated.",
+      "Complex combination section done. The depth is permanent.",
+    ],
+    recovery: [
+      "The combination branched. Found the right path on retry.",
+      "Complex combos need precision. Second attempt had it.",
+      "Missed a move in the sequence. Recalculated on retry.",
+    ],
+    'streak:3': [
+      "Three complex combos running. The architecture flows.",
+      "Triple combination streak. Deep and clean.",
+      "Three in a row. Gotham's longest night has nothing on your calculation.",
+    ],
+    'streak:5': [
+      "Five complex combinations straight. Every sequence mapped.",
+      "Five in a row. Deep calculation at will.",
+      "Five consecutive complex combos. Gotham's architect of destruction.",
+    ],
     general: [
       "The combination that took vision, nerve, and precision.",
       "Complex? For them. Clean? For you.",
@@ -1938,6 +3961,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: Attraction & Lure
   '6.7': {
+    first: [
+      "Attraction section opens. First lure: irresistible.",
+      "Opening with a trap that worked. Come into the light.",
+      "First lure set and sprung. The section begins.",
+    ],
+    last: [
+      "Final lure of the section. Every trap sprung perfectly.",
+      "Last attraction puzzle. Gotham sends its regards.",
+      "Attraction section done. They always follow the bait.",
+      "Section complete. The lure game is yours.",
+    ],
+    recovery: [
+      "The lure was subtle. Found the bait on the second cast.",
+      "Missed the attraction. Retry set the perfect trap.",
+      "The trap needed a different approach. Second try worked.",
+    ],
+    'streak:3': [
+      "Three lures set, three traps sprung. Gotham's finest.",
+      "Triple attraction streak. Irresistible on repeat.",
+      "Three in a row. They keep walking into the light.",
+    ],
+    'streak:5': [
+      "Five attractions straight. The bait game is flawless.",
+      "Five in a row. Every lure, every trap, every win.",
+      "Five consecutive attractions. Step right up. Into the trap.",
+    ],
     general: [
       "Come into the light. Where the traps are.",
       "Attracted to the wrong square. Gotham sends its regards.",
@@ -1970,6 +4019,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Calculated Justice
   '6.8': {
+    first: [
+      "Calculated justice review opens. First deep solve confirmed.",
+      "Review starts with a sacrifice. The bold skills are intact.",
+      "First review puzzle. Deep play confirmed.",
+    ],
+    last: [
+      "Calculated justice review done. Block 2 mastery confirmed.",
+      "Last review puzzle. Gotham's deep game is proven.",
+      "Review complete. Sacrifices, combos, lures: all accounted for.",
+    ],
+    recovery: [
+      "The review found something to sharpen. Second try honed it.",
+      "Deep play review needed a retry. Gotham is patient.",
+      "Justice review caught a crack. Sealed on retry.",
+    ],
+    'streak:3': [
+      "Three justice reviews running. Deep skills confirmed.",
+      "Triple review streak. The calculated game is permanent.",
+      "Three in a row. Block 2 review: flawless.",
+    ],
+    'streak:5': [
+      "Five justice reviews straight. The hero Gotham deserves.",
+      "Five in a row. Block 2 review is a victory march.",
+      "Five consecutive reviews. Calculated justice: certified.",
+    ],
     general: [
       "Sacrifices, combinations, lures. Calculated justice served.",
       "Block 2 review: deep calculation confirmed.",
@@ -1990,6 +4064,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Kingside Assault
   '6.9': {
+    first: [
+      "Kingside assault begins. First attack launched.",
+      "Opening with a full-scale kingside strike. Gotham burns bright.",
+      "First kingside puzzle. The pressure hits immediately.",
+    ],
+    last: [
+      "Final kingside assault. Section stormed and conquered.",
+      "Last attack on the king's fortress. Section: breached.",
+      "Kingside section done. Some positions just crumbled.",
+    ],
+    recovery: [
+      "The kingside attack missed a line. Retry found the breach.",
+      "Assault plan needed adjustment. Second attack plan worked.",
+      "The fortress had a hidden wall. Second try found the crack.",
+    ],
+    'streak:3': [
+      "Three kingside assaults running. The walls keep falling.",
+      "Triple assault streak. The kingside is burning.",
+      "Three in a row. Storm after storm after storm.",
+    ],
+    'streak:5': [
+      "Five kingside assaults straight. Some boards just want to burn.",
+      "Five in a row. Every king's fortress crumbles.",
+      "Five consecutive kingside storms. Relentless aggression.",
+      "Five for five. Gotham's board is always on fire.",
+    ],
     general: [
       "The kingside is crumbling. You brought the pressure.",
       "Full-scale assault on the king's fortress.",
@@ -2022,6 +4122,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Breaking the Defense
   '6.10': {
+    first: [
+      "Defense-breaking section opens. First chain link removed.",
+      "Opening by dismantling their defense. Gotham's wrecking ball.",
+      "First defensive structure broken. The chain collapses.",
+    ],
+    last: [
+      "Final defense broken. Section dismantled completely.",
+      "Last chain link removed. Every defense crumbled.",
+      "Breaking the defense: section complete. Nothing held.",
+    ],
+    recovery: [
+      "The defense was sturdier than expected. Retry found the flaw.",
+      "Missed the weak link. Second try broke the chain.",
+      "Defensive break needed a second approach. Wrecked it.",
+    ],
+    'streak:3': [
+      "Three defenses broken running. The wrecking ball swings.",
+      "Triple break streak. Every defense has a crack.",
+      "Three in a row. Chains breaking everywhere.",
+    ],
+    'streak:5': [
+      "Five defenses broken straight. Nothing holds against you.",
+      "Five in a row. Every wall, every chain, every defense: broken.",
+      "Five consecutive breaks. Gotham's finest wrecking crew.",
+    ],
     general: [
       "Their defense had a weakness. You found it.",
       "Interference disrupts. Deflection conquers.",
@@ -2054,6 +4179,32 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Complex Endgames
   '6.11': {
+    first: [
+      "Complex endgames begin. First technical position: converted.",
+      "Opening the endgame chapter. Smoother than the Batmobile.",
+      "First complex ending handled. The discipline is there.",
+    ],
+    last: [
+      "Final complex endgame. Section technique: legendary.",
+      "Last endgame of the chapter. Every position converted.",
+      "Complex endgames done. The cape and cowl of chess mastery.",
+    ],
+    recovery: [
+      "The complex ending needed a second approach. Found the path.",
+      "Endgame technique needed recalibrating. Retry was clean.",
+      "Missed the conversion. Second try found the Gotham way.",
+      "Complex endgame stumbled. Then technique took over.",
+    ],
+    'streak:3': [
+      "Three complex endgames running. Technique under pressure.",
+      "Triple endgame streak. The discipline holds.",
+      "Three in a row. Complex endings are just endings to you.",
+    ],
+    'streak:5': [
+      "Five complex endgames straight. Gotham's finest technique.",
+      "Five in a row. Every complex ending converted. Legendary.",
+      "Five consecutive conversions. The endgame is where legends are made.",
+    ],
     general: [
       "The endgame is where legends are made.",
       "Technique smoother than the Batmobile.",
@@ -2094,6 +4245,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - Controlled Chaos
   '6.12': {
+    first: [
+      "Controlled chaos review opens. First aggressive solve confirmed.",
+      "Review starts with chaos. The aggression is intact.",
+      "First review puzzle. Kingside attacks and endgames: both there.",
+    ],
+    last: [
+      "Controlled chaos review complete. Block 3 confirmed.",
+      "Last review puzzle. The chaos was never random.",
+      "Review done. Attack, break, convert: the full arc confirmed.",
+    ],
+    recovery: [
+      "The chaos review found something. Controlled it on retry.",
+      "Aggressive play needed a touch-up in review. Sharpened.",
+      "One chaotic retry. Now it's controlled.",
+    ],
+    'streak:3': [
+      "Three chaos reviews running. Controlled and confirmed.",
+      "Triple streak on the chaos review. Aggressive and disciplined.",
+      "Three in a row. The chaos is always calculated.",
+    ],
+    'streak:5': [
+      "Five chaos reviews straight. Controlled chaos mastery.",
+      "Five in a row. Block 3 review: pure excellence.",
+      "Five consecutive chaos reviews. The board erupts. You control it.",
+    ],
     general: [
       "Kingside attacks, defensive breaks, complex endings. Controlled chaos.",
       "Block 3 review: aggressive play, disciplined results.",
@@ -2114,6 +4290,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 6 Review
   '6.13': {
+    first: [
+      "Level 6 review starts. First full-arsenal puzzle solved.",
+      "Gotham's review opens. First solve: serious.",
+      "Full review begins. Why so serious? Because Level 6 demands it.",
+    ],
+    last: [
+      "Level 6 review complete. Gotham's full tactical package confirmed.",
+      "Last review puzzle. Ready for the final.",
+      "Full review done. The hero the chessboard deserves.",
+    ],
+    recovery: [
+      "Full review caught something. Gotham doesn't leave gaps.",
+      "Level 6 review needed a retry. The signal was answered.",
+      "One fix in the full review. The toolkit is polished.",
+    ],
+    'streak:3': [
+      "Three Level 6 reviews running. All four blocks confirmed.",
+      "Triple streak on the full review. From quiet to chaotic: mastered.",
+      "Three in a row across all Level 6 themes. Gotham approves.",
+    ],
+    'streak:5': [
+      "Five Level 6 reviews straight. The complete hero.",
+      "Five in a row. Gotham's full review is a parade.",
+      "Five consecutive wins across all Level 6 skills. Why so serious? Because you're that good.",
+    ],
     general: [
       "Level 6 review: the whole arsenal deployed.",
       "Quiet moves to king hunts. You do it all.",
@@ -2130,6 +4331,31 @@ export const level6Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 6 Final
   '6.14': {
+    first: [
+      "Level 6 final begins. First puzzle: Gotham's opening act.",
+      "The finale starts. First solve sets the stage.",
+      "Opening the Level 6 final. The signal is lit. You answer.",
+    ],
+    last: [
+      "Level 6 Final: Gotham is yours. The night is over. Dawn arrived.",
+      "Last puzzle of Level 6. The hero graduated.",
+      "The signal dims. Level 6: conquered.",
+    ],
+    recovery: [
+      "The Level 6 final tested you. Gotham tests everyone. You passed.",
+      "One retry in the finale. The night was dark, the dawn still came.",
+      "Final exam stumble. Then a heroic recovery.",
+    ],
+    'streak:3': [
+      "Three running in the Level 6 final. Gotham's finest moment.",
+      "Triple streak in the finale. The hero the board deserves.",
+      "Three in a row. The Level 6 final bows to you.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 6 final. Flawless graduation from Gotham.",
+      "Five in a row. Not the hero they expected. The hero they got.",
+      "Five consecutive solves in the finale. Level 6: complete. Dawn arrived.",
+    ],
     general: [
       "Level 6 Final: Gotham is yours.",
       "Why so serious? Because you just graduated Level 6.",
@@ -2161,6 +4387,32 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 1: Back Rank Mastery
   '7.1': {
+    first: [
+      "Level 7 begins at the back rank. First fortress breached.",
+      "Opening with a back rank strike. The Deeping Wall falls.",
+      "First puzzle: their back rank was a prison. You found the key.",
+    ],
+    last: [
+      "Final back rank. Section sealed tighter than Isengard's gates.",
+      "Last back rank puzzle. Every fortress was a trap in disguise.",
+      "Back rank section done. Rohan rides on.",
+    ],
+    recovery: [
+      "The back rank line hid. Second try found the breach.",
+      "Missed the prison door. Retry opened it.",
+      "Back rank puzzles are subtle. Second attempt delivered.",
+      "The wall looked solid. Looked again and found the crack.",
+    ],
+    'streak:3': [
+      "Three back rank solves running. Every fortress falls.",
+      "Triple back rank streak. No wall is safe.",
+      "Three in a row. The back rank is your specialty now.",
+    ],
+    'streak:5': [
+      "Five back rank solves straight. Every prison opened.",
+      "Five in a row. Back rank mastery: the Helm's Deep of tactics.",
+      "Five consecutive back rank strikes. No fortification holds.",
+    ],
     general: [
       "The Deeping Wall has been breached. Their back rank never stood a chance.",
       "Fortress sealed. No escape through the back door.",
@@ -2185,6 +4437,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: The Promotion Race
   '7.2': {
+    first: [
+      "Promotion race starts. First pawn crosses enemy lines.",
+      "Opening the march. First promotion secured.",
+      "First pawn reaches the throne. Like the Ents reaching Isengard.",
+    ],
+    last: [
+      "Final promotion race won. Section marched to completion.",
+      "Last pawn promoted. Every march ended in coronation.",
+      "Promotion section done. The eighth rank belongs to Rohan.",
+    ],
+    recovery: [
+      "The race was close. Won it on the second attempt.",
+      "Promotion path was blocked. Found the detour on retry.",
+      "The march stumbled. Then it resumed. Unstoppable.",
+    ],
+    'streak:3': [
+      "Three promotions running. The march of the pawns continues.",
+      "Triple promotion streak. Every pawn finds the eighth rank.",
+      "Three in a row. Slow, steady, unstoppable.",
+    ],
+    'streak:5': [
+      "Five promotions straight. The pawn army is relentless.",
+      "Five in a row. Every march ends in a crown.",
+      "Five consecutive promotions. The Ents march. The pawns march. Victory.",
+    ],
     general: [
       "The pawn marches to the eighth rank like the Ents march to Isengard.",
       "Slow. Steady. Unstoppable. That pawn is going all the way.",
@@ -2217,6 +4494,32 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Trapped Pieces
   '7.3': {
+    first: [
+      "Trapped piece section opens. First net deployed.",
+      "Opening with a trap. Like Gollum in the forbidden pools.",
+      "First piece cornered and collected. The hunt begins.",
+    ],
+    last: [
+      "Final trapped piece. Section cornered and sealed.",
+      "Last piece caught. Every adventurer became a prisoner.",
+      "Trapped pieces done. No piece wanders into your territory safely.",
+      "Section complete. Saruman would be proud of these cages.",
+    ],
+    recovery: [
+      "The trap was hidden. Found the net on the second try.",
+      "Missed the corner. Retry sealed every exit.",
+      "The piece almost escaped. Almost only counts in horseshoes.",
+    ],
+    'streak:3': [
+      "Three traps running. Every piece walks into the net.",
+      "Triple trap streak. Fangorn catches everything.",
+      "Three in a row. No squares, no hope, no escape.",
+    ],
+    'streak:5': [
+      "Five trapped pieces straight. Professional warden status.",
+      "Five in a row. Every adventurer becomes a prisoner.",
+      "Five consecutive traps. Isengard's finest jailkeeper.",
+    ],
     general: [
       "Trapped like Gollum in the forbidden pools. Nowhere to swim.",
       "That piece wandered too deep. No way home.",
@@ -2241,6 +4544,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - The Unexpected Arsenal
   '7.4': {
+    first: [
+      "Block 1 review opens. First fortress skill confirmed.",
+      "Review starts with a hit. Back ranks and traps: intact.",
+      "First review puzzle. The Helm's Deep skills hold.",
+    ],
+    last: [
+      "Block 1 review complete. Fortress skills: reinforced.",
+      "Last review puzzle. Every Block 1 weapon confirmed.",
+      "Review done. The wall holds. The pawns march. The traps spring.",
+    ],
+    recovery: [
+      "Review found a crack in the wall. Patched on retry.",
+      "Fortress skills needed a touch-up. Review delivered.",
+      "One retry in the arsenal review. The Deeping Wall stands.",
+    ],
+    'streak:3': [
+      "Three arsenal reviews running. Every weapon ready.",
+      "Triple streak on Block 1 review. The fortress holds.",
+      "Three in a row. Back ranks, promotions, traps: all confirmed.",
+    ],
+    'streak:5': [
+      "Five arsenal reviews straight. Block 1 is bulletproof.",
+      "Five in a row. The unexpected arsenal never dulls.",
+      "Five consecutive reviews. Rohan's toolkit: battle-tested.",
+    ],
     general: [
       "Back ranks, promotions, and trapped pieces. The full arsenal of Helm's Deep.",
       "Block 1 reviewed. Your fortress game is unbreakable.",
@@ -2261,6 +4589,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Deeper Sacrifices
   '7.5': {
+    first: [
+      "Deeper sacrifices begin. First bold investment with Ent-like patience.",
+      "Opening with a sacrifice deeper than Fangorn's roots.",
+      "First deep sacrifice solved. The initiative was worth the material.",
+    ],
+    last: [
+      "Final deep sacrifice. Section planted and bloomed.",
+      "Last bold investment. Every sacrifice bore fruit.",
+      "Deep sacrifice section done. Not hasty. Calculated.",
+    ],
+    recovery: [
+      "The sacrifice ran deep. Found the return on retry.",
+      "Deeper trust needed. Second attempt believed in the calculation.",
+      "The Ents don't rush. Neither did your second attempt.",
+    ],
+    'streak:3': [
+      "Three deep sacrifices running. Every investment compounds.",
+      "Triple sacrifice streak. Patience and precision combined.",
+      "Three in a row. Deep as Fangorn. Calculated as Treebeard.",
+    ],
+    'streak:5': [
+      "Five deep sacrifices straight. Bold and brilliant on repeat.",
+      "Five in a row. The sacrifice game grows like old Fangorn.",
+      "Five consecutive deep investments. The march of the Ents: calculated.",
+    ],
     general: [
       "Treebeard doesn't make hasty decisions. Neither did that sacrifice.",
       "Give up the piece. Gain the position. Win the war.",
@@ -2285,6 +4638,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: Long Combinations
   '7.6': {
+    first: [
+      "Long combo section starts. First extended sequence solved.",
+      "Opening with a combination longer than the road to Mordor.",
+      "First long combination. Every move forced. Every move found.",
+    ],
+    last: [
+      "Final long combination. Section calculated to the end.",
+      "Last extended sequence. Every branch explored.",
+      "Long combo section done. See deep, play deep, win deep.",
+    ],
+    recovery: [
+      "The long line branched. Found the right path on retry.",
+      "Combination stretched further than expected. Retry reached the end.",
+      "Missed a move deep in the sequence. Second try found it.",
+    ],
+    'streak:3': [
+      "Three long combos running. The depth just flows.",
+      "Triple long-combo streak. Patient, powerful, perfect.",
+      "Three in a row. Every sequence lands.",
+    ],
+    'streak:5': [
+      "Five long combinations straight. The calculation never quits.",
+      "Five in a row. Extended sequences solved on demand.",
+      "Five consecutive long combos. The Ents would nod slowly in approval.",
+    ],
     general: [
       "Long calculation. Clean execution. Checkmate.",
       "The combination stretched further than the road to Mordor.",
@@ -2324,6 +4702,32 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: Defensive Resources
   '7.7': {
+    first: [
+      "Defensive resources begin. First save: Helm's Deep-worthy.",
+      "Opening with a defensive find. The line holds.",
+      "First resource discovered. Not today.",
+    ],
+    last: [
+      "Final defensive resource. Section saved and sealed.",
+      "Last saving move. The Riders of Rohan arrived every time.",
+      "Defensive section done. Every position had a resource. You found it.",
+    ],
+    recovery: [
+      "The save was hidden. Second try held the line.",
+      "Defensive resource needed a deeper search. Retry found it.",
+      "Helm's Deep doesn't fall on the first attempt. Neither do you.",
+    ],
+    'streak:3': [
+      "Three defensive saves running. The fortress never falls.",
+      "Triple save streak. Hold the line on repeat.",
+      "Three in a row. Every attack has an answer.",
+    ],
+    'streak:5': [
+      "Five defensive saves straight. Rohan's resilience personified.",
+      "Five in a row. Nothing gets through the wall.",
+      "Five consecutive saves. The Deeping Wall stands eternal.",
+      "Five for five. The Riders always arrive.",
+    ],
     general: [
       "The best defense is a Helm's Deep defense.",
       "Hold the line. The counterattack is coming.",
@@ -2348,6 +4752,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Calculated March
   '7.8': {
+    first: [
+      "Calculated march review opens. First deep skill confirmed.",
+      "Review starts with a sacrifice. The patience holds.",
+      "First review puzzle. Block 2 skills: intact.",
+    ],
+    last: [
+      "Calculated march review done. Every deep skill confirmed.",
+      "Last review puzzle. Sacrifices, combos, defense: all proven.",
+      "Review complete. The march was long. The march was flawless.",
+    ],
+    recovery: [
+      "The march review found a stumble. Fixed on retry.",
+      "Deep skills needed a refresh in review. Done.",
+      "One retry in the calculated march. The Ents don't rush.",
+    ],
+    'streak:3': [
+      "Three march reviews running. Deep calculation holds.",
+      "Triple streak on Block 2 review. The roots run deep.",
+      "Three in a row. Sacrifices, combos, saves: confirmed.",
+    ],
+    'streak:5': [
+      "Five march reviews straight. The Ents would approve.",
+      "Five in a row. Block 2 review: unstoppable march.",
+      "Five consecutive reviews. Deep as Fangorn's roots.",
+    ],
     general: [
       "Sacrifices, combinations, defensive saves. The march continues.",
       "Block 2 review: the patience of Ents, the power of calculation.",
@@ -2368,6 +4797,32 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Pin Mastery
   '7.9': {
+    first: [
+      "Pin mastery begins. First piece frozen like Wormtongue.",
+      "Opening with a pin. The invisible thread holds.",
+      "First pin of the section. Not going anywhere.",
+    ],
+    last: [
+      "Final pin. Section frozen shut.",
+      "Last pin applied. Every piece was held hostage.",
+      "Pin mastery section done. Stuck like Saruman in Orthanc.",
+    ],
+    recovery: [
+      "The pin line hid. Second try found the thread.",
+      "Missed the geometry. Retry caught the line.",
+      "Pin needed a second look. Now the piece is frozen.",
+    ],
+    'streak:3': [
+      "Three pins running. Everything's stuck in place.",
+      "Triple pin streak. The geometry is automatic.",
+      "Three in a row. Pinned and piled on repeatedly.",
+    ],
+    'streak:5': [
+      "Five pins straight. Nothing moves on this board.",
+      "Five in a row. Every line finds a pin.",
+      "Five consecutive pins. The Two Towers of tactics: pin mastery.",
+      "Five for five. The invisible threads hold everything.",
+    ],
     general: [
       "Pinned like Wormtongue to his lies. Not going anywhere.",
       "The pin holds. The pressure builds. The piece falls.",
@@ -2402,6 +4857,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Skewer & Fork Mastery
   '7.10': {
+    first: [
+      "Skewer and fork mastery starts. First double attack landed.",
+      "Opening with a dual threat. Two targets, one move.",
+      "First skewer or fork of the section. Material incoming.",
+    ],
+    last: [
+      "Final skewer or fork. Section plundered.",
+      "Last dual threat. Every alignment exploited.",
+      "Skewer and fork section done. The algebra of winning.",
+    ],
+    recovery: [
+      "The double attack hid. Second try found both targets.",
+      "Missed the alignment. Retry spotted the line.",
+      "Skewer or fork needed another look. Found it.",
+    ],
+    'streak:3': [
+      "Three dual attacks running. Targets falling everywhere.",
+      "Triple streak on skewers and forks. The spoils accumulate.",
+      "Three in a row. Double threats on demand.",
+    ],
+    'streak:5': [
+      "Five dual attacks straight. Professional plunderer.",
+      "Five in a row. Every alignment becomes profit.",
+      "Five consecutive skewers and forks. The Riders take everything.",
+    ],
     general: [
       "Two targets, one move. The algebra of winning.",
       "Skewered or forked? Either way, they lose a piece.",
@@ -2439,6 +4919,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Endgame Mastery
   '7.11': {
+    first: [
+      "Endgame mastery starts. First position: converted with precision.",
+      "Opening the endgame chapter. Technique sharper than Rohan's blade.",
+      "First Level 7 endgame handled. The discipline is there.",
+    ],
+    last: [
+      "Final endgame converted. Section technique: proven.",
+      "Last endgame of the chapter. From chaos to clarity.",
+      "Endgame mastery section done. The crown jewel of chess skill.",
+    ],
+    recovery: [
+      "The endgame needed a second approach. Patience rewarded.",
+      "Conversion stumbled. Then Treebeard's patience kicked in.",
+      "Endgame technique recalibrated on retry. Clean conversion.",
+    ],
+    'streak:3': [
+      "Three endgames running. Technique under pressure.",
+      "Triple endgame streak. The discipline never wavers.",
+      "Three in a row. Endgame mastery is becoming natural.",
+    ],
+    'streak:5': [
+      "Five endgames straight. Fewer pieces, higher stakes, same excellence.",
+      "Five in a row. The final phase is your domain.",
+      "Five consecutive endgame conversions. The patience of Treebeard.",
+    ],
     general: [
       "The endgame is where kings become warriors.",
       "Fewer pieces. Higher stakes. Same precision.",
@@ -2463,6 +4968,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - The Full Stew
   '7.12': {
+    first: [
+      "Full stew review opens. First classic tactic confirmed.",
+      "Review starts with a pin or a fork. Block 3 skills intact.",
+      "First review puzzle. The stew ingredients are all there.",
+    ],
+    last: [
+      "Full stew review done. Every classic tactic elevated.",
+      "Last review puzzle. Pins, forks, endgames: all yours.",
+      "Review complete. The stew is ready. Every ingredient perfect.",
+    ],
+    recovery: [
+      "The stew needed more seasoning. Retry added it.",
+      "Block 3 review found a gap. Filled on the second try.",
+      "One ingredient needed a refresh. Now the stew is complete.",
+    ],
+    'streak:3': [
+      "Three stew reviews running. Every tactic holds.",
+      "Triple streak on the full stew. Classic tactics: elevated.",
+      "Three in a row. Pins, forks, endgames flowing together.",
+    ],
+    'streak:5': [
+      "Five stew reviews straight. The full recipe perfected.",
+      "Five in a row. Block 3 review: every ingredient accounted for.",
+      "Five consecutive reviews. The stew is ready, Precious.",
+    ],
     general: [
       "Pins, skewers, forks, endgames. The full stew, Precious.",
       "Block 3 review: every classic tactic elevated.",
@@ -2483,6 +5013,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 7 Review
   '7.13': {
+    first: [
+      "Level 7 review starts. First full-level puzzle solved.",
+      "The horn sounds. First review solve: answered the call.",
+      "Full Level 7 review begins. All blocks present.",
+    ],
+    last: [
+      "Level 7 review complete. From Helm's Deep to the march: confirmed.",
+      "Last review puzzle. Ready for the final horn blast.",
+      "Full review done. The complete warrior stands ready.",
+    ],
+    recovery: [
+      "Level 7 review caught something. Fixed like a crack in the Deeping Wall.",
+      "Full review needed a patch. The wall holds now.",
+      "One retry in the comprehensive review. There is always hope.",
+    ],
+    'streak:3': [
+      "Three Level 7 reviews running. All four blocks firing.",
+      "Triple streak on full review. The complete warrior's arsenal.",
+      "Three in a row. The horn sounds and all skills answer.",
+    ],
+    'streak:5': [
+      "Five Level 7 reviews straight. The horn of Helm Hammerhand echoes.",
+      "Five in a row. Full Level 7 review: total mastery.",
+      "Five consecutive wins. Every theme, every block, every win.",
+    ],
     general: [
       "Level 7 review: from back rank traps to endgame conversions.",
       "Every theme, every tactic, every block. Reviewed and confirmed.",
@@ -2499,6 +5054,31 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 7 Final
   '7.14': {
+    first: [
+      "Level 7 final begins. First puzzle: hope against the odds.",
+      "The final horn blast. First solve: Rohan answers.",
+      "Opening the Level 7 finale. The towers stand. You stand taller.",
+    ],
+    last: [
+      "Level 7 Final: the towers fell. You still stand.",
+      "Last puzzle of Level 7. There was always hope. You proved it.",
+      "The horn sounds for the last time. Level 7: graduated.",
+    ],
+    recovery: [
+      "The Level 7 final tested your resilience. Rohan endures.",
+      "One stumble in the final. Then the Riders arrived.",
+      "Final exam retry. Helm's Deep held. So did you.",
+    ],
+    'streak:3': [
+      "Three running in the Level 7 final. Rohan rides strong.",
+      "Triple streak in the finale. The horn echoes with each win.",
+      "Three in a row. The Level 7 final bows to the warrior.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 7 final. Not all who wander are lost.",
+      "Five in a row. The Ents would nod in slow approval.",
+      "Five consecutive solves. Level 7: where hope meets calculation.",
+    ],
     general: [
       "Level 7 Final: the towers have fallen. You still stand.",
       "There is always hope. And you just proved it.",
@@ -2530,6 +5110,33 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 1: Zugzwang
   '8.1': {
+    first: [
+      "Level 8 opens. First puzzle had its own soundtrack.",
+      "The Tarantino section begins. First solve: smooth.",
+      "Opening with a Royale with Checkmate. Perfect start.",
+      "First puzzle, maximum cool. The scene is set.",
+    ],
+    last: [
+      "Final zugzwang served. Section: wrapped with style.",
+      "Last puzzle. Cool, calm, done. Credits approaching.",
+      "Zugzwang section complete. Every move they made was wrong.",
+    ],
+    recovery: [
+      "Missed the scene. Replayed it. Nailed the take.",
+      "Second take was cleaner. That's how films get made.",
+      "The move had its own subplot. Found it on retry.",
+    ],
+    'streak:3': [
+      "Three in a row. The jukebox keeps playing.",
+      "Triple streak. Smooth like a diner-booth conversation.",
+      "Three straight. Style points accumulating.",
+    ],
+    'streak:5': [
+      "Five in a row. The whole scene is yours.",
+      "Five straight. Cooler than a jukebox in a diner.",
+      "Five consecutive solves. That's not a streak, that's a montage.",
+      "Five for five. Somebody cue the soundtrack.",
+    ],
     general: [
       "That's what I thought you'd play. Just didn't think you'd play it that COOL.",
       "You just served them a Royale with Checkmate.",
@@ -2562,6 +5169,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 2: Quiet Moves
   '8.2': {
+    first: [
+      "Quiet moves section starts. First one walked in and sat down.",
+      "Opening with silence. The most dangerous kind.",
+      "First quiet move found. No check, no capture, all swagger.",
+    ],
+    last: [
+      "Final quiet move. Section whispered to completion.",
+      "Last silent move. The quietest section is done.",
+      "Quiet moves wrapped. Sometimes the best line has no dialogue.",
+    ],
+    recovery: [
+      "Looked for fireworks. The answer was a whisper. Got it on retry.",
+      "Quiet moves hide in plain sight. Second look heard it.",
+      "Missed the calm. Found the storm on the second take.",
+    ],
+    'streak:3': [
+      "Three quiet moves running. The bass line owns the room.",
+      "Triple quiet streak. Understated. Lethal.",
+      "Three in a row. No checks, no captures, no problems.",
+    ],
+    'streak:5': [
+      "Five quiet moves straight. The silent film of chess mastery.",
+      "Five in a row. Not a single exclamation mark needed.",
+      "Five consecutive quiet moves. Low-key brilliance on repeat.",
+    ],
     general: [
       "The quiet move. The one nobody heard coming.",
       "No check. No capture. Just pure, quiet menace.",
@@ -2586,6 +5218,32 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 3: Intermezzo
   '8.3': {
+    first: [
+      "Intermezzo section opens. First plot twist deployed.",
+      "Opening with a non-linear move. Tarantino approves.",
+      "First intermezzo. They expected Scene 2. You jumped to Scene 5.",
+    ],
+    last: [
+      "Final intermezzo. Section reshuffled to completion.",
+      "Last plot twist landed. Every timeline bent your way.",
+      "Intermezzo section done. Non-linear chess at its finest.",
+    ],
+    recovery: [
+      "Expected the obvious. The intermezzo was the play. Got it on retry.",
+      "Non-linear thinking needed a second take. Nailed it.",
+      "The plot twist hid between the obvious moves. Found it.",
+    ],
+    'streak:3': [
+      "Three intermezzos running. The timeline is yours to shuffle.",
+      "Triple plot twist streak. Every script gets rewritten.",
+      "Three in a row. Non-linear and unstoppable.",
+      "Three straight intermezzos. They never know which scene is next.",
+    ],
+    'streak:5': [
+      "Five intermezzos straight. The whole movie plays out of order.",
+      "Five in a row. Every expected recapture becomes a plot twist.",
+      "Five consecutive intermezzos. Tarantino-level timeline control.",
+    ],
     general: [
       "Non-linear. Unpredictable. Exactly right.",
       "You just rearranged the sequence and they never recovered.",
@@ -2610,6 +5268,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 4: Review - Palate Cleanser
   '8.4': {
+    first: [
+      "Palate cleanser review opens. First refined solve confirmed.",
+      "Review starts with style. The appetizer skills are intact.",
+      "First review puzzle. Zugzwang, quiet moves, intermezzos: all there.",
+    ],
+    last: [
+      "Palate cleanser review done. Block 1: devoured with taste.",
+      "Last review puzzle. The refined palate is confirmed.",
+      "Review complete. Main course incoming.",
+    ],
+    recovery: [
+      "The palate review found a rough edge. Smoothed on retry.",
+      "Refined skills needed a polish. Review delivered.",
+      "One retry in the appetizer review. The taste is sharper now.",
+    ],
+    'streak:3': [
+      "Three palate reviews running. The refined skills hold.",
+      "Triple streak on the Royale with Cheese block. Impeccable taste.",
+      "Three in a row. Sophisticated, precise, confident.",
+    ],
+    'streak:5': [
+      "Five palate reviews straight. The appetizer was flawless.",
+      "Five in a row. Block 1 review: Michelin-star chess.",
+      "Five consecutive refined reviews. The palate is impeccable.",
+    ],
     general: [
       "Zugzwang, quiet moves, intermezzos. The refined palate on full display.",
       "Block 1 review: cool under pressure, sharp in execution.",
@@ -2630,6 +5313,32 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 5: Sacrifices
   '8.5': {
+    first: [
+      "Sacrifice section opens. First investment on the table.",
+      "Opening with a setup. They took the bait. You took the game.",
+      "First sacrifice solved. Cool under pressure from the start.",
+    ],
+    last: [
+      "Final sacrifice. Section: invested and collected.",
+      "Last piece put on the table. Every deal closed.",
+      "Sacrifice section done. The briefcase glows for a reason.",
+    ],
+    recovery: [
+      "The sacrifice line hid. Second take found the payoff.",
+      "The investment needed recalculating. Retry returned tenfold.",
+      "Missed the setup. The follow-through was flawless on retry.",
+    ],
+    'streak:3': [
+      "Three sacrifices running. Every gift has a plan behind it.",
+      "Triple sacrifice streak. Cool, calculated, collected.",
+      "Three in a row. Every piece deployed, not lost.",
+    ],
+    'streak:5': [
+      "Five sacrifices straight. The briefcase keeps getting heavier.",
+      "Five in a row. Material goes out, wins come in.",
+      "Five consecutive sacrifices. That wasn't generosity. That was a setup.",
+      "Five for five. The investment strategy never fails.",
+    ],
     general: [
       "You put something on the table. They took it. Now they owe you everything.",
       "That sacrifice wasn't reckless. That sacrifice was an INVESTMENT.",
@@ -2654,6 +5363,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 6: Long Mates
   '8.6': {
+    first: [
+      "Long mates section starts. First deep sequence choreographed.",
+      "Opening with a long mate. You knew the ending before the first move.",
+      "First long checkmate. The whole movie, visualized.",
+    ],
+    last: [
+      "Final long mate. Section: directed and wrapped.",
+      "Last deep checkmate. Every act played out perfectly.",
+      "Long mates done. Move by move. Beat by beat.",
+    ],
+    recovery: [
+      "The sequence branched. Found the right scene on retry.",
+      "Long mate needed a reshoot. Second take was flawless.",
+      "Missed a beat in the choreography. Retry hit every note.",
+    ],
+    'streak:3': [
+      "Three long mates running. The choreography flows.",
+      "Triple deep mate streak. Every sequence lands.",
+      "Three in a row. The long game is YOUR game.",
+    ],
+    'streak:5': [
+      "Five long mates straight. Deep sight, clean execution.",
+      "Five in a row. The whole line played out exactly as scripted.",
+      "Five consecutive deep mates. That's not calculation. That's choreography.",
+    ],
     general: [
       "You saw the whole movie before the first scene played.",
       "That wasn't calculation. That was choreography.",
@@ -2682,6 +5416,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 7: X-Ray & Interference
   '8.7': {
+    first: [
+      "X-ray and interference section starts. First line cleared.",
+      "Opening with see-through vision. The clutter disappears.",
+      "First x-ray or interference. You see the board differently.",
+    ],
+    last: [
+      "Final x-ray or interference. Section seen through entirely.",
+      "Last line cleared. Every communication cut.",
+      "X-ray and interference done. You see through everything.",
+    ],
+    recovery: [
+      "The line was cluttered. Second look cut through the noise.",
+      "Interference needed a second approach. Communication severed on retry.",
+      "Missed the x-ray. Second pass saw right through.",
+    ],
+    'streak:3': [
+      "Three x-rays and interferences running. Every line accounted for.",
+      "Triple streak on line play. Through the clutter, to the target.",
+      "Three in a row. Lines, diagonals, all clear.",
+    ],
+    'streak:5': [
+      "Five x-rays and interferences straight. Total board transparency.",
+      "Five in a row. Every line seen, every communication cut.",
+      "Five consecutive line plays. The geometry is a superpower.",
+    ],
     general: [
       "You see through pieces like they're not even there.",
       "Lines, diagonals, the geometry of winning.",
@@ -2714,6 +5473,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 8: Review - Full Technique
   '8.8': {
+    first: [
+      "Full technique review opens. First deep skill confirmed.",
+      "Review starts with precision. Block 2 skills: intact.",
+      "First review puzzle. Sacrifices, mates, x-rays: all there.",
+    ],
+    last: [
+      "Full technique review done. Zero plot holes.",
+      "Last review puzzle. The technique block is certified.",
+      "Review complete. From sacrifices to surgical interference: all clean.",
+    ],
+    recovery: [
+      "The technique review found a rough cut. Edited on retry.",
+      "Deep skills needed a reshoot. Second take was perfect.",
+      "One retry in the technique block. Now it's polished.",
+    ],
+    'streak:3': [
+      "Three technique reviews running. Precision confirmed.",
+      "Triple streak on full technique. Cool meets calculated.",
+      "Three in a row. The depth of play is confirmed.",
+    ],
+    'streak:5': [
+      "Five technique reviews straight. Would make any director proud.",
+      "Five in a row. Block 2 review: zero plot holes.",
+      "Five consecutive technique reviews. The Five Point Technique: certified.",
+    ],
     general: [
       "Sacrifices, long mates, x-rays, interference. The full technique.",
       "Block 2 review: precision from start to checkmate.",
@@ -2734,6 +5518,32 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 9: Deflection & Attraction
   '8.9': {
+    first: [
+      "Deflection and attraction starts. First string pulled.",
+      "Opening by redirecting traffic. First piece moved where you wanted.",
+      "First push-pull puzzle solved. You're directing the whole board.",
+    ],
+    last: [
+      "Final deflection or attraction. Section puppeted to completion.",
+      "Last string pulled. Every piece went where you pointed.",
+      "Deflection and attraction done. Traffic director of the board.",
+    ],
+    recovery: [
+      "The pull wasn't obvious. Second try found the strings.",
+      "Misdirection needed a second approach. Retry redirected perfectly.",
+      "Missed the push. Found the pull on retry.",
+    ],
+    'streak:3': [
+      "Three push-pull solves running. The board moves where you want.",
+      "Triple string-pulling streak. Every piece redirected.",
+      "Three in a row. Push here, pull there. Win everywhere.",
+    ],
+    'streak:5': [
+      "Five deflections and attractions straight. Master puppeteer.",
+      "Five in a row. Like pulling strings. Except the strings are rooks.",
+      "Five consecutive misdirections. Professional traffic director.",
+      "Five for five. Every defender moved. Every trap sprung.",
+    ],
     general: [
       "You pulled them where you wanted them. They didn't even argue.",
       "Misdirection is an art. You just painted a masterpiece.",
@@ -2766,6 +5576,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 10: Endgames (Rook + Pawn)
   '8.10': {
+    first: [
+      "Endgame section opens. First rook and pawn position converted.",
+      "The final act begins. First technique puzzle handled.",
+      "Opening the endgame with a clean conversion. The last act matters.",
+    ],
+    last: [
+      "Final endgame. Section converted to completion.",
+      "Last rook and pawn endgame. The technique closes the movie.",
+      "Endgame section done. When the smoke clears, you're standing.",
+    ],
+    recovery: [
+      "The endgame needed a second approach. Found the technique on retry.",
+      "Rook and pawn technique stumbled. Second try was textbook.",
+      "The final act needed a reshoot. Nailed the take.",
+    ],
+    'streak:3': [
+      "Three endgames running. Technique in the final act.",
+      "Triple endgame streak. Every position converted.",
+      "Three in a row. The last act is always the most important.",
+    ],
+    'streak:5': [
+      "Five endgames straight. The final act on repeat.",
+      "Five in a row. Every endgame technique: flawless.",
+      "Five consecutive conversions. Sharper than diner-scene dialogue.",
+    ],
     general: [
       "The final act. Where everything that happened before pays off.",
       "Fewer pieces, higher stakes. This is where it all matters.",
@@ -2798,6 +5633,32 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 11: Kingside & Queenside Attacks
   '8.11': {
+    first: [
+      "Flank attacks section opens. First pressure applied.",
+      "Opening with a flank strike. Both sides of the board: dangerous.",
+      "First kingside or queenside attack landed. Tension everywhere.",
+    ],
+    last: [
+      "Final flank attack. Section pressured from both sides.",
+      "Last attack. Both flanks conquered.",
+      "Flank attacks done. Left side, right side, doesn't matter.",
+      "Section wrapped. Full-board pressure confirmed.",
+    ],
+    recovery: [
+      "The flank attack needed redirection. Retry found the break.",
+      "Missed the breakthrough side. Second try chose correctly.",
+      "Both flanks were options. Found the right one on retry.",
+    ],
+    'streak:3': [
+      "Three flank attacks running. Tension on every square.",
+      "Triple flank streak. They can only defend one side at a time.",
+      "Three in a row. Full-board pressure on demand.",
+    ],
+    'streak:5': [
+      "Five flank attacks straight. Both sides of the board belong to you.",
+      "Five in a row. The Mexican standoff of chess: you always win.",
+      "Five consecutive flank attacks. Pressure from every direction.",
+    ],
     general: [
       "Both flanks. Both lethal. Pick a side — they're both losing.",
       "The Mexican standoff of chess: tension on every side of the board.",
@@ -2830,6 +5691,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 12: Review - The Full Lineup
   '8.12': {
+    first: [
+      "Full lineup review opens. First middle-block skill confirmed.",
+      "Review starts with a hit. Block 3 skills: intact.",
+      "First review puzzle. Deflections, endgames, attacks: all present.",
+    ],
+    last: [
+      "Full lineup review done. Every member accounted for.",
+      "Last review puzzle. Block 3: the full lineup, assembled.",
+      "Review complete. From misdirection to full-board attacks: confirmed.",
+    ],
+    recovery: [
+      "The lineup review found a gap. Filled on retry.",
+      "Block 3 skills needed a touch-up. Review sharpened them.",
+      "One retry in the lineup review. The roster is complete now.",
+    ],
+    'streak:3': [
+      "Three lineup reviews running. Every skill accounted for.",
+      "Triple streak on the full lineup. Tension and technique confirmed.",
+      "Three in a row. The middle block was your showcase.",
+    ],
+    'streak:5': [
+      "Five lineup reviews straight. The full cast: assembled.",
+      "Five in a row. Block 3 review: standing ovation.",
+      "Five consecutive reviews. Every lineup member performing.",
+    ],
     general: [
       "Deflections, endgames, flank attacks. The full lineup, assembled.",
       "Block 3 review: tension on every square, technique on every move.",
@@ -2850,6 +5736,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 13: Level 8 Review
   '8.13': {
+    first: [
+      "Level 8 review starts. First full-level puzzle: solved with swagger.",
+      "The review reel opens. First scene: handled.",
+      "Full Level 8 review begins. Every chapter represented.",
+    ],
+    last: [
+      "Level 8 review complete. From Royale with Cheese to the Final Chapter.",
+      "Last review puzzle. Ready for the finale.",
+      "Full review done. Say checkmate again. SAY. CHECKMATE. AGAIN.",
+    ],
+    recovery: [
+      "Full review caught a rough cut. Edited on retry.",
+      "The Level 8 review needed a second take. Nailed it.",
+      "One reshoot in the full review. The reel is clean now.",
+    ],
+    'streak:3': [
+      "Three Level 8 reviews running. The whole script confirmed.",
+      "Triple streak on the full review. Nothing but highlights.",
+      "Three in a row across all Level 8 themes. Every chapter passed.",
+    ],
+    'streak:5': [
+      "Five Level 8 reviews straight. The highlight reel plays.",
+      "Five in a row. Level 8 review: standing ovation.",
+      "Five consecutive wins across all themes. The full Tarantino: reviewed.",
+    ],
     general: [
       "Level 8 review: every theme, every scene, every move accounted for.",
       "From zugzwang to flank attacks. The whole script, revisited.",
@@ -2866,6 +5777,31 @@ export const level8Responses: Record<string, Record<string, string[]>> = {
 
   // Section 14: Level 8 Final
   '8.14': {
+    first: [
+      "Level 8 final begins. First puzzle: the opening scene of the finale.",
+      "The final chapter opens. First solve: cool under pressure.",
+      "Opening the Level 8 finale. That's a bingo.",
+    ],
+    last: [
+      "Level 8 Final: wrapped. Credits rolling. You directed this.",
+      "Last puzzle of Level 8. Roll credits. You're still standing.",
+      "The briefcase is yours. Don't ask what's inside. Level 8: complete.",
+    ],
+    recovery: [
+      "The Level 8 final tested you. Second take was flawless.",
+      "One reshoot in the finale. The ending is still perfect.",
+      "Cool under pressure even on the retry. That's the Tarantino way.",
+    ],
+    'streak:3': [
+      "Three running in the Level 8 final. The credits are approaching.",
+      "Triple streak in the finale. Making the final exam look stylish.",
+      "Three in a row. The final chapter writes itself.",
+    ],
+    'streak:5': [
+      "Five straight in the Level 8 final. Standing ovation.",
+      "Five in a row. Tarantino would nod. Slowly. With respect.",
+      "Five consecutive solves in the finale. The whole level was a long take. You didn't blink.",
+    ],
     general: [
       "That's a bingo. Checkmate's a bingo.",
       "Level 8: wrapped. Credits rolling. Standing ovation.",
@@ -2915,6 +5851,213 @@ const allLevelResponses: Record<string, Record<string, Record<string, string[]>>
   '7': level7Responses,
   '8': level8Responses,
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// V3 QUIP SYSTEM — getQuip() + supporting infrastructure
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Theme Mapping Table ──────────────────────────────────────────────────
+// Maps Lichess puzzle theme names → quip category keys.
+// Meta themes (crushing, short, long, master, etc.) are intentionally excluded.
+
+const THEME_KEY_MAP: Record<string, string> = {
+  fork: 'fork',
+  pin: 'pin',
+  skewer: 'skewer',
+  discoveredCheck: 'discoveredAttack',
+  discoveredAttack: 'discoveredAttack',
+  hangingPiece: 'hangingPiece',
+  trappedPiece: 'trappedPiece',
+  attraction: 'attraction',
+  deflection: 'deflection',
+  sacrifice: 'sacrifice',
+  quietMove: 'quietMove',
+  backRankMate: 'backRankMate',
+  mateIn1: 'mateIn1',
+  mateIn2: 'mateIn2',
+};
+
+const META_THEMES = new Set([
+  'crushing', 'short', 'long', 'master', 'masterVsMaster',
+  'superBlitz', 'blitz', 'rapid', 'oneMove', 'veryLong', 'advancedPawn',
+]);
+
+// ── resolveThemeKeys() ──────────────────────────────────────────────────
+/** Maps raw Lichess themes through THEME_KEY_MAP, filtering out unmapped/meta themes. */
+function resolveThemeKeys(themes: string[] | undefined): string[] {
+  if (!themes || themes.length === 0) return [];
+  const keys: string[] = [];
+  for (const t of themes) {
+    if (META_THEMES.has(t)) continue;
+    const mapped = THEME_KEY_MAP[t];
+    if (mapped && !keys.includes(mapped)) {
+      keys.push(mapped);
+    }
+  }
+  return keys;
+}
+
+// ── Global Dedup Ring Buffer ─────────────────────────────────────────────
+const DEDUP_MAX = 20;
+const dedupRing: string[] = [];
+
+function addToDedup(quip: string): void {
+  dedupRing.push(quip);
+  if (dedupRing.length > DEDUP_MAX) {
+    dedupRing.shift();
+  }
+}
+
+function getDedupSet(): Set<string> {
+  return new Set(dedupRing);
+}
+
+// ── Bag Cache ────────────────────────────────────────────────────────────
+const bagCache = new Map<string, ShuffleBag<string>>();
+
+function getBag(sectionId: string, key: string, pool: string[]): ShuffleBag<string> {
+  const cacheKey = `${sectionId}:${key}`;
+  let bag = bagCache.get(cacheKey);
+  if (!bag) {
+    bag = new ShuffleBag(pool);
+    bagCache.set(cacheKey, bag);
+  }
+  return bag;
+}
+
+// ── lookupSectionResponses() ─────────────────────────────────────────────
+/** Returns the response map for a section (e.g. '1.5', '3.2', '6.10'). */
+function lookupSectionResponses(sectionId: string): Record<string, string[]> | undefined {
+  const parts = sectionId.split('.');
+  const levelNum = parts[0] || '1';
+  const sectionNum = parts.length >= 2 ? parseInt(parts[1], 10) : 1;
+
+  if (levelNum === '1') {
+    let blockId: string;
+    if (sectionNum <= 4) blockId = 'block-1';
+    else if (sectionNum <= 8) blockId = 'block-2';
+    else if (sectionNum <= 12) blockId = 'block-3';
+    else blockId = 'block-4';
+
+    const blockResponses = level1BlockResponses[blockId];
+    return blockResponses?.[sectionId];
+  }
+
+  const levelResponses = allLevelResponses[levelNum];
+  return levelResponses?.[sectionId] as Record<string, string[]> | undefined;
+}
+
+// ── tryDrawFromBag() — shared helper ─────────────────────────────────────
+/** Try to draw a non-deduped quip from a bag. Returns the quip or null. */
+function tryDrawFromBag(sectionId: string, key: string, pool: string[]): string | null {
+  const bag = getBag(sectionId, key, pool);
+  const skip = getDedupSet();
+  return bag.drawWithSkip(skip);
+}
+
+// ── getQuip() — v3 quip selection algorithm ──────────────────────────────
+/**
+ * Select a context-aware quip for a completed puzzle.
+ *
+ * Selection priority:
+ *   1. Context categories (first, last, recovery, streak:5, streak:3)
+ *   2. Tiered theme matching (theme+piece → theme → piece → moves → general)
+ *   3. Nuclear fallback ("Nice!")
+ */
+export function getQuip(sectionId: string, context: {
+  themes?: string[];
+  heroPiece?: string;
+  playerMoveCount?: number;
+  streak?: number;
+  puzzleIndex?: number;
+  totalPuzzles?: number;
+  hadWrongAttempt?: boolean;
+}): string {
+  const responses = lookupSectionResponses(sectionId);
+  if (!responses) return 'Nice!';
+
+  // ── Step 1: Context categories (checked first, in order) ──
+  const contextKeys: string[] = [];
+
+  if (context.puzzleIndex === 0) contextKeys.push('first');
+  if (
+    context.puzzleIndex !== undefined &&
+    context.totalPuzzles !== undefined &&
+    context.puzzleIndex === context.totalPuzzles - 1
+  ) {
+    contextKeys.push('last');
+  }
+  if (context.hadWrongAttempt) contextKeys.push('recovery');
+  if (context.streak !== undefined && context.streak >= 5) contextKeys.push('streak:5');
+  if (context.streak !== undefined && context.streak >= 3) contextKeys.push('streak:3');
+
+  for (const key of contextKeys) {
+    const pool = responses[key];
+    if (pool && pool.length > 0) {
+      const quip = tryDrawFromBag(sectionId, key, pool);
+      if (quip) {
+        addToDedup(quip);
+        return quip;
+      }
+    }
+  }
+
+  // ── Step 2: Tiered theme matching ──
+  const themeKeys = resolveThemeKeys(context.themes);
+
+  for (const theme of themeKeys) {
+    // Tier 1: {theme}:{heroPiece} — most specific
+    if (context.heroPiece) {
+      const t1Key = `${theme}:${context.heroPiece}`;
+      const t1Pool = responses[t1Key];
+      if (t1Pool && t1Pool.length > 0) {
+        const quip = tryDrawFromBag(sectionId, t1Key, t1Pool);
+        if (quip) { addToDedup(quip); return quip; }
+      }
+    }
+
+    // Tier 2: {theme} — theme only
+    const t2Pool = responses[theme];
+    if (t2Pool && t2Pool.length > 0) {
+      const quip = tryDrawFromBag(sectionId, theme, t2Pool);
+      if (quip) { addToDedup(quip); return quip; }
+    }
+  }
+
+  // Tier 3: piece:{heroPiece} — piece only
+  if (context.heroPiece) {
+    const t3Key = `piece:${context.heroPiece}`;
+    const t3Pool = responses[t3Key];
+    if (t3Pool && t3Pool.length > 0) {
+      const quip = tryDrawFromBag(sectionId, t3Key, t3Pool);
+      if (quip) { addToDedup(quip); return quip; }
+    }
+  }
+
+  // Tier 4: moves:{playerMoveCount} — move count
+  if (context.playerMoveCount) {
+    const t4Key = `moves:${context.playerMoveCount}`;
+    const t4Pool = responses[t4Key];
+    if (t4Pool && t4Pool.length > 0) {
+      const quip = tryDrawFromBag(sectionId, t4Key, t4Pool);
+      if (quip) { addToDedup(quip); return quip; }
+    }
+  }
+
+  // Tier 5: general — fallback
+  const generalPool = responses.general;
+  if (generalPool && generalPool.length > 0) {
+    const quip = tryDrawFromBag(sectionId, 'general', generalPool);
+    if (quip) { addToDedup(quip); return quip; }
+  }
+
+  // ── Step 3: Nuclear fallback ──
+  // If everything failed (dedup exhausted all bags), pick random from general without dedup
+  if (generalPool && generalPool.length > 0) {
+    return pickRandom(generalPool);
+  }
+  return 'Nice!';
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DEDUP TRACKING (session-level, resets on page reload)
