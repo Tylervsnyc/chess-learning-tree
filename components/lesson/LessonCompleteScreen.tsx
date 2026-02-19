@@ -16,81 +16,6 @@ const COLORS = {
   blue: 'var(--color-chess-blue)',
 };
 
-const celebrationStyles = `
-  @keyframes fadeInUp {
-    0% { transform: translateY(20px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-  }
-  .animate-fadeInUp {
-    animation: fadeInUp 0.4s ease-out forwards;
-  }
-  @keyframes floatUp0 {
-    0%   { transform: translateY(0) scale(1); opacity: 0; }
-    20%  { opacity: 0.5; }
-    80%  { opacity: 0.35; }
-    100% { transform: translateY(-80px) scale(0.4); opacity: 0; }
-  }
-  @keyframes floatUp1 {
-    0%   { transform: translateY(0) scale(1); opacity: 0; }
-    25%  { opacity: 0.45; }
-    75%  { opacity: 0.3; }
-    100% { transform: translateY(-90px) scale(0.3); opacity: 0; }
-  }
-  @keyframes floatUp2 {
-    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
-    15%  { opacity: 0.6; }
-    85%  { opacity: 0.25; }
-    100% { transform: translateY(-70px) scale(0.2); opacity: 0; }
-  }
-  @keyframes hintFadeIn {
-    0% { opacity: 0; transform: translateY(6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  .share-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    animation: hintFadeIn 0.6s ease forwards;
-    animation-delay: 1.8s;
-    letter-spacing: 0.3px;
-  }
-  .share-hint-green {
-    color: rgba(255, 255, 255, 0.5);
-  }
-  .share-hint-gold {
-    color: rgba(255, 200, 0, 0.6);
-  }
-  @keyframes toastSlideUp {
-    0% { opacity: 0; transform: translateY(8px) scale(0.96); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes toastFadeOut {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-4px) scale(0.96); }
-  }
-  .share-toast-enter {
-    animation: toastSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-  .share-toast-exit {
-    animation: toastFadeOut 0.25s ease-in forwards;
-  }
-  .rook-share-button {
-    position: relative;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    transition: transform 0.15s ease;
-  }
-  .rook-share-button:active {
-    transform: scale(0.96);
-  }
-`;
-
 interface LessonCompleteScreenProps {
   correctCount: number;
   wrongCount: number;
@@ -233,7 +158,6 @@ export function LessonCompleteScreen({
 
   return (
     <div className={`h-full flex flex-col items-center overflow-auto px-5 py-6 ${didFail ? 'bg-chess-page text-chess-text' : 'bg-chess-bg text-white'}`}>
-      <style>{celebrationStyles}</style>
       <div className="max-w-sm w-full">
         {/* Animated Rook */}
         <div className="flex items-center justify-center" style={{ height: didFail ? '200px' : '180px' }}>
