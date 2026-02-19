@@ -42,6 +42,7 @@ export function LessonCompleteScreen({
   const rookRef = useRef<RookCelebrationAnimationRef>(null);
   const wrongRookRef = useRef<RookWrongAnimationRef>(null);
   const shareContainerRef = useRef<HTMLDivElement>(null);
+  const shareImageRef = useRef<Blob | null>(null);
   const [shareFeedbackVisible, setShareFeedbackVisible] = useState(false);
   const [shareFeedbackDismissing, setShareFeedbackDismissing] = useState(false);
   // Pick a random celebration animation style (used when passing)
@@ -107,6 +108,17 @@ export function LessonCompleteScreen({
   // Build share URL for tap-to-share
   const shareUrl = `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`;
 
+  // Pre-fetch share image on mount so it's instant when user taps rook
+  useEffect(() => {
+    if (!canShare) return;
+    const score = isPerfect ? '6/6' : '5/6';
+    const ogParams = new URLSearchParams({ score, lesson: lessonName, level: getLevelKeyFromLessonId(lessonId) });
+    fetch(`/api/og/lesson?${ogParams.toString()}`)
+      .then(res => res.ok ? res.blob() : null)
+      .then(blob => { if (blob) shareImageRef.current = blob; })
+      .catch(() => {});
+  }, [canShare, isPerfect, lessonName, lessonId, getLevelKeyFromLessonId]);
+
   // Dismiss the share toast with exit animation
   const dismissShareToast = () => {
     setShareFeedbackDismissing(true);
@@ -126,15 +138,21 @@ export function LessonCompleteScreen({
     setShareFeedbackVisible(true);
     setShareFeedbackDismissing(false);
 
-    // Try native share first
+    // Try native share with image file (instant thumbnail in share sheet)
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
-        await navigator.share({
+        const shareData: ShareData = {
           title: `${lessonName} | Chess Path`,
           text: `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`,
           url: shareUrl,
-        });
-        ShareEvents.shareCompleted('lesson', 'native');
+        };
+        // Attach pre-fetched image if available
+        if (shareImageRef.current) {
+          const file = new File([shareImageRef.current], 'chess-path.png', { type: 'image/png' });
+          shareData.files = [file];
+        }
+        await navigator.share(shareData);
+        ShareEvents.shareCompleted('lesson', shareImageRef.current ? 'native_image' : 'native');
         setTimeout(dismissShareToast, 1500);
         return;
       } catch (err) {
