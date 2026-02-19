@@ -7,10 +7,17 @@ export default async function SharePage({
 }) {
   const { status, lessonId } = await params;
 
-  // Validate status, then redirect to /learn
   if (status !== 'completed' && status !== 'perfect') {
     redirect(`/lesson/${lessonId}`);
   }
 
-  redirect('/learn');
+  // Render minimal HTML so crawlers see the OG meta tags from layout.tsx,
+  // then redirect real users to /learn via client-side JS.
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: "window.location.replace('/learn')",
+      }}
+    />
+  );
 }
