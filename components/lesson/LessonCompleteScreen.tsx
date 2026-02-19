@@ -24,36 +24,23 @@ const celebrationStyles = `
   .animate-fadeInUp {
     animation: fadeInUp 0.4s ease-out forwards;
   }
-  @keyframes pulseRing {
-    0% { transform: scale(0.8); opacity: 0; }
-    20% { opacity: 0.6; }
-    100% { transform: scale(1.8); opacity: 0; }
+  @keyframes floatUp0 {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    20%  { opacity: 0.5; }
+    80%  { opacity: 0.35; }
+    100% { transform: translateY(-80px) scale(0.4); opacity: 0; }
   }
-  .pulse-ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 140px;
-    height: 140px;
-    margin: -70px 0 0 -70px;
-    border-radius: 50%;
-    border: 2px solid;
-    animation: pulseRing 2s ease-out infinite;
-    opacity: 0;
+  @keyframes floatUp1 {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    25%  { opacity: 0.45; }
+    75%  { opacity: 0.3; }
+    100% { transform: translateY(-90px) scale(0.3); opacity: 0; }
   }
-  .pulse-ring-green {
-    border-color: rgba(88, 204, 2, 0.4);
-    animation-delay: 1.5s;
-  }
-  .pulse-ring-green:nth-child(2) {
-    animation-delay: 2s;
-  }
-  .pulse-ring-gold {
-    border-color: rgba(255, 200, 0, 0.4);
-    animation-delay: 1.5s;
-  }
-  .pulse-ring-gold:nth-child(2) {
-    animation-delay: 2s;
+  @keyframes floatUp2 {
+    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+    15%  { opacity: 0.6; }
+    85%  { opacity: 0.25; }
+    100% { transform: translateY(-70px) scale(0.2); opacity: 0; }
   }
   @keyframes hintFadeIn {
     0% { opacity: 0; transform: translateY(6px); }
@@ -62,6 +49,7 @@ const celebrationStyles = `
   .share-hint {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     margin-top: 8px;
     font-size: 13px;
@@ -77,42 +65,19 @@ const celebrationStyles = `
   .share-hint-gold {
     color: rgba(255, 200, 0, 0.6);
   }
-  .share-feedback {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
+  @keyframes toastSlideUp {
+    0% { opacity: 0; transform: translateY(8px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
   }
-  .share-feedback.show {
-    opacity: 1;
-    transform: scale(1);
+  @keyframes toastFadeOut {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-4px) scale(0.96); }
   }
-  .share-feedback-green {
-    background: rgba(88, 204, 2, 0.9);
+  .share-toast-enter {
+    animation: toastSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
-  .share-feedback-gold {
-    background: rgba(255, 200, 0, 0.92);
-  }
-  .share-feedback svg {
-    width: 48px;
-    height: 48px;
-    color: white;
-  }
-  .share-feedback span {
-    color: white;
-    font-weight: 800;
-    font-size: 16px;
-    margin-top: 6px;
+  .share-toast-exit {
+    animation: toastFadeOut 0.25s ease-in forwards;
   }
   .rook-share-button {
     position: relative;
@@ -153,6 +118,7 @@ export function LessonCompleteScreen({
   const wrongRookRef = useRef<RookWrongAnimationRef>(null);
   const shareContainerRef = useRef<HTMLDivElement>(null);
   const [shareFeedbackVisible, setShareFeedbackVisible] = useState(false);
+  const [shareFeedbackDismissing, setShareFeedbackDismissing] = useState(false);
   // Pick a random celebration animation style (used when passing)
   const celebrationStyle: CelebrationAnimationStyle = useMemo(() => {
     const styles: CelebrationAnimationStyle[] = ['sparkleBurst', 'wave', 'radiate', 'ripple', 'cascade', 'bloom'];
@@ -216,14 +182,24 @@ export function LessonCompleteScreen({
   // Build share URL for tap-to-share
   const shareUrl = `https://chesspath.app/lesson/${lessonId}?score=${correctCount}%2F6&accuracy=${accuracy}${streak > 0 ? `&streak=${streak}` : ''}`;
 
+  // Dismiss the share toast with exit animation
+  const dismissShareToast = () => {
+    setShareFeedbackDismissing(true);
+    setTimeout(() => {
+      setShareFeedbackVisible(false);
+      setShareFeedbackDismissing(false);
+    }, 250); // matches toastFadeOut duration
+  };
+
   // Handle tap on rook to share
   const handleRookShare = async () => {
     if (!canShare) return;
 
     ShareEvents.shareClicked('lesson', 'rook');
 
-    // Show feedback overlay
+    // Show feedback toast
     setShareFeedbackVisible(true);
+    setShareFeedbackDismissing(false);
 
     // Try native share first
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
@@ -234,11 +210,11 @@ export function LessonCompleteScreen({
           url: shareUrl,
         });
         ShareEvents.shareCompleted('lesson', 'native');
-        setTimeout(() => setShareFeedbackVisible(false), 1500);
+        setTimeout(dismissShareToast, 1500);
         return;
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
-          setShareFeedbackVisible(false);
+          dismissShareToast();
           return;
         }
       }
@@ -248,10 +224,10 @@ export function LessonCompleteScreen({
     try {
       await navigator.clipboard.writeText(shareUrl);
       ShareEvents.shareCompleted('lesson', 'clipboard');
-      setTimeout(() => setShareFeedbackVisible(false), 1500);
+      setTimeout(dismissShareToast, 1500);
     } catch {
       // Silent fail
-      setShareFeedbackVisible(false);
+      dismissShareToast();
     }
   };
 
@@ -280,8 +256,41 @@ export function LessonCompleteScreen({
             >
               {canShare && (
                 <>
-                  <div className={`pulse-ring ${isPerfect ? 'pulse-ring-gold' : 'pulse-ring-green'}`} />
-                  <div className={`pulse-ring ${isPerfect ? 'pulse-ring-gold' : 'pulse-ring-green'}`} />
+                  {(isPerfect
+                    ? [
+                        { left: '30%', size: 7, color: '#58CC02', delay: '0s', anim: 'floatUp0', duration: '4.2s' },
+                        { left: '55%', size: 6, color: '#FFC800', delay: '0.6s', anim: 'floatUp1', duration: '4.8s' },
+                        { left: '70%', size: 7, color: '#1CB0F6', delay: '1.2s', anim: 'floatUp2', duration: '4s' },
+                        { left: '40%', size: 6, color: '#FFC800', delay: '1.8s', anim: 'floatUp0', duration: '4.5s' },
+                        { left: '60%', size: 8, color: '#FFC800', delay: '0.3s', anim: 'floatUp1', duration: '4.3s' },
+                        { left: '25%', size: 6, color: '#1CB0F6', delay: '1.5s', anim: 'floatUp2', duration: '5s' },
+                      ]
+                    : [
+                        { left: '30%', size: 7, color: '#58CC02', delay: '0s', anim: 'floatUp0', duration: '4.2s' },
+                        { left: '55%', size: 6, color: '#FFC800', delay: '0.6s', anim: 'floatUp1', duration: '4.8s' },
+                        { left: '70%', size: 7, color: '#1CB0F6', delay: '1.2s', anim: 'floatUp2', duration: '4s' },
+                        { left: '40%', size: 6, color: '#58CC02', delay: '1.8s', anim: 'floatUp0', duration: '4.5s' },
+                        { left: '60%', size: 6, color: '#FFC800', delay: '0.3s', anim: 'floatUp1', duration: '4.3s' },
+                        { left: '25%', size: 6, color: '#1CB0F6', delay: '1.5s', anim: 'floatUp2', duration: '5s' },
+                      ]
+                  ).map((p, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        position: 'absolute',
+                        bottom: '20%',
+                        left: p.left,
+                        width: p.size,
+                        height: p.size,
+                        borderRadius: '50%',
+                        backgroundColor: p.color,
+                        animation: `${p.anim} ${p.duration} ease-in-out infinite`,
+                        animationDelay: p.delay,
+                        opacity: 0,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  ))}
                 </>
               )}
 
@@ -291,27 +300,33 @@ export function LessonCompleteScreen({
                 scale={1.6}
                 autoPlay={true}
               />
-
-              {canShare && (
-                <div
-                  className={`share-feedback ${shareFeedbackVisible ? 'show' : ''} ${
-                    isPerfect ? 'share-feedback-gold' : 'share-feedback-green'
-                  }`}
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Link copied!</span>
-                </div>
-              )}
             </div>
           )}
         </div>
 
-        {/* "Tap rook to share" hint */}
-        {FEATURE_FLAGS.SHOW_SHARING && canShare && (
+        {/* Share toast pill (below the rook, not covering it) */}
+        {FEATURE_FLAGS.SHOW_SHARING && canShare && shareFeedbackVisible && (
+          <div className="flex justify-center -mt-1 mb-1">
+            <div
+              className={`
+                inline-flex items-center gap-2 px-4 py-2 rounded-full
+                font-bold text-sm text-white shadow-lg
+                ${shareFeedbackDismissing ? 'share-toast-exit' : 'share-toast-enter'}
+                ${isPerfect ? 'bg-chess-gold-dark' : 'bg-chess-green-dark'}
+              `}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Link Copied!
+            </div>
+          </div>
+        )}
+
+        {/* "Tap rook to share" hint — hidden when toast is showing */}
+        {FEATURE_FLAGS.SHOW_SHARING && canShare && !shareFeedbackVisible && (
           <div className={`share-hint ${isPerfect ? 'share-hint-gold' : 'share-hint-green'}`}>
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
