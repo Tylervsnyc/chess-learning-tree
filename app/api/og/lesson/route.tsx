@@ -253,7 +253,7 @@ export async function GET(request: NextRequest) {
     { x: 270, y: 680, size: 32, color: '#FFC800', rotation: 10 },
   ];
 
-  return new ImageResponse(
+  const response = new ImageResponse(
     (
       <div
         style={{
@@ -452,4 +452,6 @@ export async function GET(request: NextRequest) {
       height: 1080,
     }
   );
+  response.headers.set('Cache-Control', 'public, s-maxage=31536000, immutable');
+  return response;
 }
