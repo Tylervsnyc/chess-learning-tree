@@ -140,14 +140,9 @@ The share hint and toast pill worked perfectly on localhost but were invisible o
 
 ---
 
-### Lesson: 2026-02-20 - PostHog API key rate-limited by parallel requests
-Tried to fire 24 parallel HogQL queries to PostHog's `/api/projects/{id}/query/` endpoint. After the burst, the personal API key got temporarily blocked (403 "invalid"). Individual requests worked fine before the burst.
--> **New rule:** When querying PostHog programmatically, batch queries sequentially or in small parallel groups (max 3-5). The HogQL query endpoint rate-limits aggressively on personal API keys. Also: the query endpoint uses `us.posthog.com`, NOT `us.i.posthog.com` (that's the ingestion host). Script is at `scripts/funnel-query.mjs`.
-
----
-
-### Lesson: 2026-02-20 - PostHog personal API key needs explicit scopes
-PostHog personal API keys can be scoped. The key must have "query" scope enabled to use the HogQL `/query/` endpoint. The `/api/projects/` list endpoint works with minimal scopes, so a key can appear valid but still fail on queries. When creating a new key, enable all scopes or at minimum: query, event, project.
+### Lesson: 2026-02-20 - `import 'dotenv/config'` loads `.env`, not `.env.local`
+Spent 20 minutes debugging PostHog API "invalid key" errors. The key was fine — `import 'dotenv/config'` loads `.env` by default, but our secrets are in `.env.local`. The key was `undefined`, so we were sending `Bearer undefined`. Fix: `import dotenv from 'dotenv'; dotenv.config({ path: '.env.local' });`
+-> **New rule:** In standalone scripts, always use explicit path: `dotenv.config({ path: '.env.local' })`. Never use `import 'dotenv/config'` shorthand. PostHog query API base is `us.posthog.com` (not `us.i.posthog.com` — that's ingestion). Funnel script at `scripts/funnel-query.mjs`.
 
 ---
 
