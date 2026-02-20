@@ -1,4 +1,4 @@
-import { Section, Text, Hr } from '@react-email/components';
+import { Section, Text, Hr, Link } from '@react-email/components';
 import * as React from 'react';
 import { EmailLayout } from './components/EmailLayout';
 import { ChessButton } from './components/ChessButton';
@@ -11,54 +11,47 @@ export function Welcome({
 }: WelcomeProps) {
   return (
     <EmailLayout
-      preview="Welcome to The Chess Path — your opening move starts here."
+      preview="You're in! Here's everything waiting for you on Chess Path."
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={heading}>
-        Your opening move starts now
-      </Text>
+      <Text style={heading}>You&apos;re in!</Text>
 
       <Text style={paragraph}>
-        Hey {displayName},
-      </Text>
-
-      <Text style={paragraph}>
-        Welcome to The Chess Path! We teach chess tactics through puzzles —
-        think Duolingo, but instead of Spanish you learn how to fork a king
-        and rook at the same time.
-      </Text>
-
-      <Text style={paragraph}>
-        No boring lectures. No 400-page opening theory. Just you, a board,
-        and that satisfying feeling when you spot the winning move.
+        Welcome {displayName} — you just joined a chess tactics app that&apos;s
+        basically Duolingo for not blundering your pieces. Here&apos;s what&apos;s
+        waiting for you:
       </Text>
 
       <Hr style={divider} />
 
-      <Text style={sectionTitle}>Three moves to get started:</Text>
-
-      <Section style={stepBox}>
-        <Text style={stepNumber}>1</Text>
-        <Text style={stepText}>
-          <strong>Take the diagnostic test</strong> — We&apos;ll figure out
-          your level so you&apos;re not stuck learning how the horsey moves.
+      <Section style={featureCard}>
+        <Text style={featureEmoji}>&#x265F;</Text>
+        <Text style={featureTitle}>Structured Lessons</Text>
+        <Text style={featureDesc}>
+          Forks, pins, skewers, discovered attacks — learn them step by step.
+          Each lesson is a set of puzzles that gets progressively harder.
         </Text>
+        <Link href={`${appUrl}/learn`} style={featureLink}>Start learning →</Link>
       </Section>
 
-      <Section style={stepBox}>
-        <Text style={stepNumber}>2</Text>
-        <Text style={stepText}>
-          <strong>Solve daily puzzles</strong> — 5 minutes a day keeps the
-          blunders away. (We made that up, but it&apos;s true.)
+      <Section style={featureCard}>
+        <Text style={featureEmoji}>&#x265C;</Text>
+        <Text style={featureTitle}>The Daily Rook</Text>
+        <Text style={featureDesc}>
+          22 fresh puzzles every day, climbing from 400 to 2300 ELO.
+          A mini boss fight for your brain. New set drops at midnight.
         </Text>
+        <Link href={`${appUrl}/daily-challenge`} style={featureLink}>Try today&apos;s →</Link>
       </Section>
 
-      <Section style={stepBox}>
-        <Text style={stepNumber}>3</Text>
-        <Text style={stepText}>
-          <strong>Climb the skill tree</strong> — Forks, pins, skewers —
-          learn the tactics that make your opponents say &ldquo;wait, what?&rdquo;
+      <Section style={featureCard}>
+        <Text style={featureEmoji}>&#x265A;</Text>
+        <Text style={featureTitle}>Diagnostic Test</Text>
+        <Text style={featureDesc}>
+          Find your level so you&apos;re not stuck learning how the horsey
+          moves. Skip ahead to where it actually gets challenging.
         </Text>
+        <Link href={`${appUrl}/learn`} style={featureLink}>Take the test →</Link>
       </Section>
 
       <Section style={buttonContainer}>
@@ -67,13 +60,12 @@ export function Welcome({
         </ChessButton>
       </Section>
 
-      <Hr style={divider} />
-
       <Section style={tipBox}>
-        <Text style={tipTitle}>Fun fact</Text>
         <Text style={tipText}>
-          The word &ldquo;checkmate&rdquo; comes from the Persian &ldquo;shāh māt&rdquo;
-          — meaning &ldquo;the king is helpless.&rdquo; Don&apos;t worry, yours won&apos;t be.
+          <strong style={{ color: '#1CB0F6' }}>Pro tip:</strong> Even 5 minutes
+          a day adds up to 30 hours a year of tactics training. That&apos;s enough
+          to go from &ldquo;is that a horse?&rdquo; to &ldquo;actually it&apos;s
+          called a knight.&rdquo;
         </Text>
       </Section>
 
@@ -86,94 +78,75 @@ export function Welcome({
 }
 
 const heading = {
-  color: '#131F24',
+  color: '#2A3C45',
   fontSize: '28px',
   fontWeight: 'bold',
-  margin: '0 0 24px 0',
+  margin: '0 0 16px 0',
   textAlign: 'center' as const,
 };
 
 const paragraph = {
-  color: '#4B5563',
-  fontSize: '16px',
-  lineHeight: '26px',
-  margin: '0 0 16px 0',
-};
-
-const sectionTitle = {
-  color: '#131F24',
-  fontSize: '18px',
-  fontWeight: 'bold',
-  margin: '0 0 16px 0',
-};
-
-const stepBox = {
-  backgroundColor: '#F9FAFB',
-  borderRadius: '8px',
-  border: '1px solid #E5E7EB',
-  display: 'flex',
-  margin: '0 0 12px 0',
-  padding: '16px',
-};
-
-const stepNumber = {
-  backgroundColor: '#58CC02',
-  borderRadius: '50%',
-  color: '#FFFFFF',
-  display: 'inline-block',
-  fontSize: '14px',
-  fontWeight: 'bold',
-  height: '24px',
+  color: '#2A3C45',
+  fontSize: '15px',
   lineHeight: '24px',
-  marginRight: '12px',
-  textAlign: 'center' as const,
-  width: '24px',
-  flexShrink: 0,
-};
-
-const stepText = {
-  color: '#4B5563',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '0',
-};
-
-const buttonContainer = {
-  margin: '32px 0',
-  textAlign: 'center' as const,
-};
-
-const divider = {
-  borderColor: '#E5E7EB',
-  margin: '24px 0',
-};
-
-const tipBox = {
-  backgroundColor: '#EFF6FF',
-  borderLeft: '4px solid #1CB0F6',
-  borderRadius: '0 8px 8px 0',
-  padding: '16px 20px',
-  margin: '0 0 24px 0',
-};
-
-const tipTitle = {
-  color: '#1CB0F6',
-  fontSize: '14px',
-  fontWeight: 'bold',
   margin: '0 0 8px 0',
 };
 
-const tipText = {
-  color: '#4B5563',
+const divider = { borderColor: '#EEF6FC', margin: '20px 0' };
+
+const featureCard = {
+  backgroundColor: '#EEF6FC',
+  borderRadius: '10px',
+  padding: '16px',
+  margin: '0 0 10px 0',
+};
+
+const featureEmoji = {
+  fontSize: '24px',
+  margin: '0 0 6px 0',
+};
+
+const featureTitle = {
+  color: '#2A3C45',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  margin: '0 0 4px 0',
+};
+
+const featureDesc = {
+  color: '#6B7C8A',
   fontSize: '14px',
-  lineHeight: '22px',
+  lineHeight: '21px',
+  margin: '0 0 8px 0',
+};
+
+const featureLink = {
+  color: '#1CB0F6',
+  fontSize: '14px',
+  fontWeight: 'bold' as const,
+  textDecoration: 'none' as const,
+};
+
+const buttonContainer = { margin: '24px 0', textAlign: 'center' as const };
+
+const tipBox = {
+  backgroundColor: '#EEF6FC',
+  borderRadius: '8px',
+  padding: '12px 16px',
+  margin: '0 0 20px 0',
+};
+
+const tipText = {
+  color: '#6B7C8A',
+  fontSize: '13px',
+  lineHeight: '20px',
   margin: '0',
 };
 
 const signoff = {
-  color: '#6B7280',
-  fontSize: '16px',
-  lineHeight: '24px',
+  color: '#6B7C8A',
+  fontSize: '14px',
+  lineHeight: '22px',
   margin: '0',
 };
 

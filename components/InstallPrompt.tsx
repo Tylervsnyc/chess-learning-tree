@@ -89,7 +89,7 @@ export function InstallPrompt() {
       style={{ animation: 'slideUp 0.3s ease-out' }}
     >
       <div className="max-w-lg mx-auto px-4 pb-4">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+        <div className="bg-chess-surface rounded-2xl shadow-sm border border-slate-200 p-5">
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0 w-[42px] h-[50px]">
               <AnimatedLogo iconOnly size={0.44} theme="light" />

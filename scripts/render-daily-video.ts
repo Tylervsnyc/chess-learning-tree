@@ -82,7 +82,20 @@ Play daily puzzles free → chesspath.app
 ${tags}`;
 }
 
+function parseArgs() {
+  const args: Record<string, string> = {};
+  for (const arg of process.argv.slice(2)) {
+    const match = arg.match(/^--(\w[\w-]*)=(.+)$/);
+    if (match) args[match[1]] = match[2];
+  }
+  return args;
+}
+
 function main() {
+  const args = parseArgs();
+  const minRating = args['min-rating'] ? parseInt(args['min-rating'], 10) : 0;
+  const dateOverride = args['date']; // e.g. "2.14.26"
+
   // Load pool
   if (!fs.existsSync(POOL_FILE)) {
     console.error('Pool file not found. Run: npx tsx scripts/curate-video-puzzles.ts');
@@ -96,19 +109,19 @@ function main() {
     usage = JSON.parse(fs.readFileSync(USAGE_FILE, 'utf-8'));
   }
 
-  // Find next unused puzzle
+  // Find next unused puzzle (with optional min rating filter)
   const usedSet = new Set(usage.usedPuzzleIds);
-  const puzzle = pool.puzzles.find((p) => !usedSet.has(p.puzzleId));
+  const puzzle = pool.puzzles.find((p) => !usedSet.has(p.puzzleId) && p.rating >= minRating);
 
   if (!puzzle) {
-    console.error('All puzzles have been used! Re-run curation script to refill the pool.');
+    console.error(`No unused puzzles found${minRating ? ` with rating >= ${minRating}` : ''}! Re-run curation script to refill the pool.`);
     process.exit(1);
   }
 
   console.log(`Selected puzzle: ${puzzle.puzzleId} (${puzzle.theme}, rating ${puzzle.rating})`);
 
   const now = new Date();
-  const dateStr = `${now.getMonth() + 1}.${now.getDate()}.${String(now.getFullYear()).slice(-2)}`;
+  const dateStr = dateOverride || `${now.getMonth() + 1}.${now.getDate()}.${String(now.getFullYear()).slice(-2)}`;
   const dayDir = path.join(OUTPUT_DIR, dateStr);
   fs.mkdirSync(dayDir, { recursive: true });
 
@@ -117,36 +130,44 @@ function main() {
   // Build Remotion input props
   const rawMoves = puzzle.moves.split(' ');
 
-  // Import quip function inline (can't import TS at runtime easily)
-  // Use a simple hash to pick a quip
-  const QUIPS = [
-    'That piece never saw it coming!',
-    'Chess is a series of surprises.',
-    'The board whispers if you listen.',
-    'Attack is the best defense!',
-    'The king has nowhere to hide.',
-    'Checkmate is the ultimate argument.',
-    'The quiet move speaks loudest.',
-    'That rook had places to be!',
-    'Rooks belong on open files.',
-    'GG, well played!',
+  // Theme-aware quips — match the quip to what actually happens in the puzzle
+  const THEME_QUIPS: Record<string, string[]> = {
+    mateIn1: ['One move. Game over.', 'Checkmate in one — clinical.', 'The simplest mates hit hardest.'],
+    mateIn2: ['Two moves, no escape.', 'A forced mate is pure art.', 'Calculated to the end.'],
+    mateIn3: ['Three moves deep — beautiful.', 'The king never had a chance.', 'Mating nets are beautiful.'],
+    backRankMate: ['Back rank = no escape.', 'That back rank was asking for it.', 'Never forget your back rank!'],
+    smotheredMate: ['Smothered by the knight!', 'The knight closes the coffin.', 'Nowhere to run, nowhere to hide.'],
+    fork: ['Two targets, one move. Ouch.', 'Fork it over!', 'Double attack, double trouble.'],
+    pin: ['Pinned and helpless.', 'Can\'t move, won\'t move.', 'That pin is devastating.'],
+    skewer: ['Skewered right through!', 'Step aside, lose the piece behind.', 'X-ray vision wins again.'],
+    sacrifice: ['Sometimes you gotta give to get.', 'Sacrifice accepted… checkmate incoming.', 'Material is temporary, checkmate is forever.'],
+    discoveredAttack: ['The hidden threat reveals itself!', 'Move one piece, attack with another.', 'Discovered attacks are sneaky.'],
+    kingsideAttack: ['The king is under siege!', 'Kingside assault — no mercy.', 'Storm the castle!'],
+    queensideAttack: ['Queenside pressure cracks through!', 'The attack comes from the flank.', 'Queenside demolition.'],
+    deflection: ['Deflect the defender, win the game.', 'That defender had one job.', 'Remove the guard!'],
+    attraction: ['Lured right into the trap.', 'Come closer… checkmate.', 'The perfect bait.'],
+    hangingPiece: ['Free piece? Yes please!', 'That piece was just hanging there.', 'Always check for hanging pieces.'],
+    trappedPiece: ['Nowhere to go!', 'That piece is stuck.', 'Trapped and captured.'],
+    clearance: ['Clear the path, deliver the blow.', 'Make way for the real threat!', 'Clearance sacrifice — beautiful.'],
+    intermezzo: ['In-between move changes everything!', 'The zwischenzug strikes!', 'Surprise — not done yet.'],
+    quietMove: ['The quiet move speaks loudest.', 'Subtle but deadly.', 'Sometimes the best move looks boring.'],
+    endgame: ['Endgame technique wins games.', 'Clean conversion.', 'Technique over tactics.'],
+  };
+  const FALLBACK_QUIPS = [
     'Calculated, not lucky.',
     'Every puzzle makes you stronger.',
-    'Think twice, move once.',
-    'Free piece? Yes please!',
-    'Mating nets are beautiful.',
-    'A forced mate is pure art.',
-    'Pins win pieces.',
-    'The discovered attack strikes!',
-    'Clean technique wins games.',
     'Pattern recognition is a superpower.',
+    'Think twice, move once.',
+    'GG, well played!',
+    'Clean technique wins games.',
   ];
+  const themeQuips = THEME_QUIPS[puzzle.theme] || FALLBACK_QUIPS;
   let hash = 0;
   for (let i = 0; i < puzzle.puzzleId.length; i++) {
     hash = ((hash << 5) - hash) + puzzle.puzzleId.charCodeAt(i);
     hash = hash & hash;
   }
-  const quip = QUIPS[Math.abs(hash) % QUIPS.length];
+  const quip = themeQuips[Math.abs(hash) % themeQuips.length];
 
   const inputProps = {
     puzzleId: puzzle.puzzleId,

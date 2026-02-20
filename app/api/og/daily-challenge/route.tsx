@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 export const runtime = 'edge';
 
@@ -71,34 +72,20 @@ function renderLogoGrid(results: boolean[], blockSize: number, spacing: number) 
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: correct ? color : '#e2e8f0',
+              background: correct ? getMatteBackground(color) : '#e2e8f0',
               boxShadow: correct
-                ? `0 ${bottomShadow}px 0 rgba(0,0,0,0.2)`
+                ? getMatteBoxShadow(color, blockSize / 14)
                 : `0 ${bottomShadow}px 0 rgba(0,0,0,0.06)`,
             }}
           >
-            {/* Inner face — slightly inset for 3D depth */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: blockSize,
-              height: blockSize - bottomShadow,
-              borderRadius: radius,
-              backgroundColor: correct ? color : '#e2e8f0',
-              backgroundImage: correct
-                ? 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.08) 100%)'
-                : 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.03) 100%)',
+            <span style={{
+              fontSize: Math.round(blockSize * 0.32),
+              fontWeight: 900,
+              color: correct ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.1)',
+              textShadow: correct ? '0 1px 2px rgba(0,0,0,0.25)' : 'none',
             }}>
-              <span style={{
-                fontSize: Math.round(blockSize * 0.32),
-                fontWeight: 900,
-                color: correct ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.1)',
-                textShadow: correct ? '0 1px 2px rgba(0,0,0,0.25)' : 'none',
-              }}>
-                {i + 1}
-              </span>
-            </div>
+              {i + 1}
+            </span>
           </div>
         );
       })}
@@ -127,7 +114,8 @@ function renderSmallLogo(iconSize: number = 8, fontSize: number = 20) {
               width: iconSize,
               height: iconSize,
               borderRadius: Math.max(2, Math.round(iconSize * 0.2)),
-              backgroundColor: b.color,
+              background: getMatteBackground(b.color),
+              boxShadow: getMatteBoxShadow(b.color, iconSize / 14),
               display: 'flex',
             }}
           />

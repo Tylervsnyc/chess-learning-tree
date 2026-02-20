@@ -19,7 +19,7 @@ export default function AboutPage() {
           <div className="space-y-3">
             {/* Step 1 */}
             <div className="bg-chess-surface rounded-2xl p-3 flex gap-3 items-center">
-              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#58CC02] shadow-[0_4px_0_#3d8c01] flex items-center justify-center">
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] flex items-center justify-center">
                 <span className="text-white font-black text-base">1</span>
               </div>
               <div>
@@ -30,7 +30,7 @@ export default function AboutPage() {
 
             {/* Step 2 */}
             <div className="bg-chess-surface rounded-2xl p-3 flex gap-3 items-center">
-              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#1CB0F6] shadow-[0_4px_0_#1489bd] flex items-center justify-center">
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-chess-blue shadow-[0_4px_0_var(--color-chess-blue-shadow)] flex items-center justify-center">
                 <span className="text-white font-black text-base">2</span>
               </div>
               <div>
@@ -41,7 +41,7 @@ export default function AboutPage() {
 
             {/* Step 3 */}
             <div className="bg-chess-surface rounded-2xl p-3 flex gap-3 items-center">
-              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#FF9600] shadow-[0_4px_0_#cc7800] flex items-center justify-center">
+              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-chess-orange shadow-[0_4px_0_var(--color-chess-gold-dark)] flex items-center justify-center">
                 <span className="text-white font-black text-base">3</span>
               </div>
               <div>
@@ -52,7 +52,7 @@ export default function AboutPage() {
           </div>
 
           {/* Free info */}
-          <div className="bg-chess-surface rounded-xl p-3 mt-4 shadow-sm">
+          <div className="bg-chess-surface rounded-2xl p-3 mt-4 shadow-sm">
             <p className="text-chess-text-muted text-sm leading-relaxed text-center">
               <span className="font-semibold text-chess-green">Free forever.</span> Premium members help keep it that way.
             </p>
@@ -68,7 +68,7 @@ export default function AboutPage() {
             </Link>
             <Link
               href="/tutorial/basics"
-              className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_#1489bd] bg-[#1CB0F6]"
+              className="block w-full py-4 text-center font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_var(--color-chess-blue-shadow)] bg-chess-blue"
             >
               Learn Chess Basics
             </Link>

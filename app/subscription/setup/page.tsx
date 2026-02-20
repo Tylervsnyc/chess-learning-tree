@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 function SetupContent() {
   const router = useRouter();
@@ -120,7 +121,7 @@ function SetupContent() {
           </p>
           <button
             onClick={() => router.push('/auth/login')}
-            className="w-full py-4 rounded-xl bg-chess-green text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-sm"
+            className="w-full py-4 rounded-xl bg-chess-green text-white font-bold text-lg hover:bg-chess-green-dark transition-opacity shadow-sm"
           >
             Sign In
           </button>
@@ -138,7 +139,7 @@ function SetupContent() {
           {/* Success header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-              <span className="text-4xl">👑</span>
+              <BreathingRook size="sm" />
             </div>
             <h1 className="text-2xl font-bold text-chess-text mb-2">Payment Successful!</h1>
             <p className="text-chess-text-muted">
@@ -216,7 +217,7 @@ function SetupContent() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 disabled:opacity-50 shadow-sm"
+              className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:brightness-105 disabled:opacity-50 shadow-sm"
               style={{
                 background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                 color: '#000',

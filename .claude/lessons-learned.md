@@ -134,6 +134,21 @@ When toggling custom square highlights off, omitting a square key from the `squa
 Every test page that uses `<Chessboard>` directly from `react-chessboard` must manually configure `darkSquareStyle`, `lightSquareStyle`, and `boardStyle`. Agents consistently forget to import `BOARD_COLORS` or hardcode wrong values, producing boards that look wrong. The fix: a wrapper component `ChessPathBoard` that bakes in defaults. NEVER import `Chessboard` from `react-chessboard` directly — always use `ChessPathBoard` from `@/components/puzzle/ChessPathBoard`.
 -> **New rule:** Use `ChessPathBoard` wrapper for all chessboards. See RULES.md §18d.
 
+### Lesson: 2026-02-19 - Share UI worked locally but not in production — feature flag never committed
+The share hint and toast pill worked perfectly on localhost but were invisible on the live site. We spent significant time investigating CSS pipelines, inline `<style>` tag behavior, Tailwind purging, and React 19 hydration — when the real cause was that `SHOW_SHARING: true` only existed in the working tree. The committed value was still `false`. When we pushed "just the 2 files" (CSS + component), we missed the feature flag file they depended on.
+-> **New rule:** When committing a subset of changed files, always check if those files depend on other uncommitted changes (feature flags, config, env). Run `git diff --stat` and verify no dependency is left behind. Feature flags are the #1 silent killer — they work locally but gate features in production.
+
+---
+
+### Lesson: 2026-02-20 - PostHog API key rate-limited by parallel requests
+Tried to fire 24 parallel HogQL queries to PostHog's `/api/projects/{id}/query/` endpoint. After the burst, the personal API key got temporarily blocked (403 "invalid"). Individual requests worked fine before the burst.
+-> **New rule:** When querying PostHog programmatically, batch queries sequentially or in small parallel groups (max 3-5). The HogQL query endpoint rate-limits aggressively on personal API keys. Also: the query endpoint uses `us.posthog.com`, NOT `us.i.posthog.com` (that's the ingestion host). Script is at `scripts/funnel-query.mjs`.
+
+---
+
+### Lesson: 2026-02-20 - PostHog personal API key needs explicit scopes
+PostHog personal API keys can be scoped. The key must have "query" scope enabled to use the HogQL `/query/` endpoint. The `/api/projects/` list endpoint works with minimal scopes, so a key can appear valid but still fail on queries. When creating a new key, enable all scopes or at minimum: query, event, project.
+
 ---
 
 *Add new lessons at the bottom. Follow the format above.*

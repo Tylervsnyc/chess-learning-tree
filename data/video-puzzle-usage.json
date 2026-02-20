@@ -3,7 +3,16 @@
     "4qhmT",
     "vY5aW",
     "LzdCJ",
-    "hZvvo"
+    "hZvvo",
+    "pbZPO",
+    "vlFqE",
+    "t70l5",
+    "GQZbZ",
+    "crLTa",
+    "cmlTb",
+    "1UGFo",
+    "o7zDv",
+    "dHq8r"
   ],
   "renders": [
     {
@@ -25,6 +34,51 @@
       "puzzleId": "hZvvo",
       "date": "2.13.26",
       "file": "daily.2.13.26-hZvvo.mp4"
+    },
+    {
+      "puzzleId": "pbZPO",
+      "date": "2.14.26",
+      "file": "daily.2.14.26-pbZPO.mp4"
+    },
+    {
+      "puzzleId": "vlFqE",
+      "date": "2.15.26",
+      "file": "daily.2.15.26-vlFqE.mp4"
+    },
+    {
+      "puzzleId": "t70l5",
+      "date": "2.16.26",
+      "file": "daily.2.16.26-t70l5.mp4"
+    },
+    {
+      "puzzleId": "GQZbZ",
+      "date": "2.17.26",
+      "file": "daily.2.17.26-GQZbZ.mp4"
+    },
+    {
+      "puzzleId": "crLTa",
+      "date": "2.18.26",
+      "file": "daily.2.18.26-crLTa.mp4"
+    },
+    {
+      "puzzleId": "cmlTb",
+      "date": "2.19.26",
+      "file": "daily.2.19.26-cmlTb.mp4"
+    },
+    {
+      "puzzleId": "1UGFo",
+      "date": "2.19.26",
+      "file": "daily.2.19.26-1UGFo.mp4"
+    },
+    {
+      "puzzleId": "o7zDv",
+      "date": "2.19.26",
+      "file": "daily.2.19.26-o7zDv.mp4"
+    },
+    {
+      "puzzleId": "dHq8r",
+      "date": "2.20.26",
+      "file": "daily.2.20.26-dHq8r.mp4"
     }
   ]
 }

@@ -525,6 +525,11 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 ### Logo Rules:
 - **Icon**: Colorful rook made of 22 dots (5 columns × 6 rows)
+- **Block style: Matte** — every rook block uses a top-to-bottom gradient + inset shadow for a polished 3D look:
+  - Gradient: `linear-gradient(to bottom, lighten(color,18%) 0%, lighten(color,12%) 20%, color 40%, darken(color,12%) 100%)`
+  - Shadow: `inset 0 0.75px 0 darken(color,6%), inset 0 -0.75px 0 lighten(color,6%), 0 0.5px 0 rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.15)` (scale shadow values by blockSize/14)
+  - Utility functions: `getMatteBackground(color)` and `getMatteBoxShadow(color, scale?)` in `lib/daily-rook-blocks.ts`
+  - SVG assets use `<linearGradient>` defs (no inset shadows in SVG — gradient-only is fine)
 - **Text**: "chess" in white/dark + "path" with yellow→coral→blue gradient
 - **"chess" and "path" must NEVER overlap or touch** - this looks unprofessional
 - SVG logos must use inline `<tspan>` elements (not separate `<text>` elements with fixed positions)

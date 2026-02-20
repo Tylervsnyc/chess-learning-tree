@@ -4,20 +4,34 @@ import * as React from 'react';
 interface ChessButtonProps {
   href: string;
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'premium';
 }
 
-export function ChessButton({ href, children, variant = 'primary' }: ChessButtonProps) {
-  const isPrimary = variant === 'primary';
+const STYLES: Record<string, React.CSSProperties> = {
+  primary: {
+    backgroundColor: '#58CC02',
+    borderBottom: '4px solid #46A302',
+    color: '#FFFFFF',
+  },
+  secondary: {
+    backgroundColor: 'transparent',
+    border: '2px solid #58CC02',
+    color: '#58CC02',
+  },
+  premium: {
+    backgroundColor: '#F59E0B',
+    borderBottom: '4px solid #C2410C',
+    color: '#FFFFFF',
+  },
+};
 
+export function ChessButton({ href, children, variant = 'primary' }: ChessButtonProps) {
   return (
     <Button
       href={href}
       style={{
-        backgroundColor: isPrimary ? '#58CC02' : 'transparent',
+        ...STYLES[variant],
         borderRadius: '12px',
-        border: isPrimary ? 'none' : '2px solid #58CC02',
-        color: isPrimary ? '#131F24' : '#58CC02',
         display: 'inline-block',
         fontSize: '16px',
         fontWeight: 'bold',

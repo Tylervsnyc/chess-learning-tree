@@ -30,12 +30,12 @@ export function IntroPopup({
       }}
     >
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/70 rounded-md" />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-md" />
 
       {/* Content card */}
-      <div className="relative mx-4 max-w-sm w-full bg-[#1A2C35] rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+      <div className="relative mx-4 max-w-sm w-full bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
         {/* Header accent bar */}
-        <div className="h-1.5 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6]" />
+        <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
 
         <div className="px-3 py-2">
           {/* Title */}
@@ -46,7 +46,7 @@ export function IntroPopup({
           {/* Message paragraphs */}
           <div className="space-y-1 mb-2">
             {paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-[#A3B8C2] text-sm leading-snug">
+              <p key={index} className="text-chess-text-light text-sm leading-snug">
                 {paragraph}
               </p>
             ))}
@@ -57,14 +57,14 @@ export function IntroPopup({
             {onSkip && skipText && (
               <button
                 onClick={onSkip}
-                className="flex-1 py-2.5 text-center text-sm font-semibold text-[#A3B8C2] border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
+                className="flex-1 py-2.5 text-center text-sm font-semibold text-chess-text-light border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
               >
                 {skipText}
               </button>
             )}
             <button
               onClick={onStart}
-              className={`${onSkip && skipText ? 'flex-[2]' : 'w-full'} py-2.5 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all hover:bg-[#5ED406]`}
+              className={`${onSkip && skipText ? 'flex-[2]' : 'w-full'} py-2.5 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all hover:brightness-105`}
             >
               {buttonText}
             </button>

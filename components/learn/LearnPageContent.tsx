@@ -293,13 +293,13 @@ function LockedLevelCard({
     <div className="my-8">
       {/* Connector line */}
       <div className="flex justify-center mb-4">
-        <div className="w-1 h-8 bg-gray-300 rounded-full" />
+        <div className="w-1 h-8 bg-slate-300 rounded-full" />
       </div>
 
       {/* Level card */}
       <div
         className="mx-4 rounded-2xl p-6 text-center relative overflow-hidden"
-        style={{ backgroundColor: '#E5E7EB' }}
+        style={{ backgroundColor: 'var(--color-chess-disabled)' }}
       >
         {/* Lock overlay pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -318,10 +318,10 @@ function LockedLevelCard({
           </div>
 
           {/* Level name */}
-          <h3 className="text-xl font-black text-gray-500 mb-1">
+          <h3 className="text-xl font-black text-chess-text-muted mb-1">
             {levelData.name}
           </h3>
-          <p className="text-xs text-gray-400 mb-4">
+          <p className="text-xs text-chess-text-faint mb-4">
             {levelData.ratingRange} ELO
           </p>
 
@@ -330,11 +330,11 @@ function LockedLevelCard({
             {isLoggedIn ? (
               <>
                 {prevLevelCompleted ? (
-                  <p className="text-sm text-gray-500 mb-3">
+                  <p className="text-sm text-chess-text-muted mb-3">
                     Complete Level {levelNum - 1} to unlock, or take the test
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-500 mb-3">
+                  <p className="text-sm text-chess-text-muted mb-3">
                     Complete Level {levelNum - 1} or take the placement test
                   </p>
                 )}
@@ -352,7 +352,7 @@ function LockedLevelCard({
               </>
             ) : (
               <>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-chess-text-muted mb-3">
                   Sign in to take the placement test and unlock this level
                 </p>
 
@@ -485,14 +485,14 @@ export default function LearnPageContent() {
       <div className="h-full overflow-auto bg-chess-page text-chess-text pb-20">
         <div className="max-w-lg mx-auto px-4 py-6">
           {/* Skeleton level header */}
-          <div className="h-24 bg-gray-200 rounded-2xl animate-pulse mb-6" />
+          <div className="h-24 bg-slate-200 rounded-2xl animate-pulse mb-6" />
           {/* Skeleton sections */}
           {[1, 2, 3].map(i => (
             <div key={i} className="mb-4">
-              <div className="h-16 bg-gray-200 rounded-2xl animate-pulse mb-2" />
+              <div className="h-16 bg-slate-200 rounded-2xl animate-pulse mb-2" />
               <div className="flex justify-center gap-4 mt-4">
                 {[1, 2, 3].map(j => (
-                  <div key={j} className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" />
+                  <div key={j} className="w-16 h-16 bg-slate-200 rounded-full animate-pulse" />
                 ))}
               </div>
             </div>
@@ -1110,10 +1110,10 @@ function LessonButton({
             <div className="p-4">
               {isLocked ? (
                 <div className="text-center">
-                  <div className="text-gray-400 text-xs mb-3">
+                  <div className="text-chess-text-faint text-xs mb-3">
                     Complete previous lessons to unlock
                   </div>
-                  <div className="w-full py-2.5 rounded-xl font-bold text-sm bg-gray-600 text-gray-400 cursor-not-allowed">
+                  <div className="w-full py-2.5 rounded-xl font-bold text-sm bg-chess-gray text-chess-text-faint cursor-not-allowed">
                     Locked
                   </div>
                 </div>

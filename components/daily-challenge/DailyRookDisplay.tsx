@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { ROOK_BLOCKS, ROOK_FILL_ORDER } from '@/lib/daily-rook-blocks';
+import { ROOK_BLOCKS, ROOK_FILL_ORDER, getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 export type BlockResult = 'correct' | 'wrong' | 'pending';
 
@@ -180,10 +180,10 @@ export function DailyRookDisplay({
           )}
 
           {/* Timer card */}
-          <div className="bg-white rounded-xl px-4 py-2 shadow-sm">
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 px-4 py-2 shadow-sm">
             <div
               className={`text-2xl font-black tabular-nums transition-colors ${
-                isTimeLow ? 'text-[#FF4B4B] animate-pulse' : 'text-[#2A3C45]'
+                isTimeLow ? 'text-chess-red animate-pulse' : 'text-chess-text'
               }`}
             >
               {formatTime(activeTime)}
@@ -191,7 +191,7 @@ export function DailyRookDisplay({
           </div>
 
           {/* Lives card */}
-          <div className="bg-white rounded-xl px-3 py-2 shadow-sm flex items-center gap-1.5">
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 px-3 py-2 shadow-sm flex items-center gap-1.5">
             {Array.from({ length: maxLives }).map((_, i) => {
               const isFilled = i < activeLives;
               const isShaking = shakingHeartIndex === i;
@@ -199,7 +199,7 @@ export function DailyRookDisplay({
                 <svg
                   key={i}
                   className={`w-7 h-7 transition-all duration-300 ${
-                    isFilled ? 'text-[#FF4B4B]' : 'text-[#c5d4de]'
+                    isFilled ? 'text-chess-red' : 'text-chess-disabled'
                   } ${isShaking ? 'animate-heart-shake' : ''}`}
                   fill="currentColor"
                   viewBox="0 0 24 24"
@@ -226,10 +226,10 @@ export function DailyRookDisplay({
       {/* Stats — right */}
       <div className="flex flex-col items-center gap-2 flex-1">
         {/* Timer card */}
-        <div className="bg-white rounded-xl px-4 py-2 shadow-sm">
+        <div className="bg-chess-surface rounded-2xl border border-slate-200 px-4 py-2 shadow-sm">
           <div
             className={`text-2xl font-black tabular-nums transition-colors ${
-              isTimeLow ? 'text-[#FF4B4B] animate-pulse' : 'text-[#2A3C45]'
+              isTimeLow ? 'text-chess-red animate-pulse' : 'text-chess-text'
             }`}
           >
             {mode === 'finished' && totalTime != null
@@ -239,7 +239,7 @@ export function DailyRookDisplay({
         </div>
 
         {/* Lives card */}
-        <div className="bg-white rounded-xl px-3 py-2 shadow-sm flex items-center gap-1.5">
+        <div className="bg-chess-surface rounded-2xl border border-slate-200 px-3 py-2 shadow-sm flex items-center gap-1.5">
           {Array.from({ length: maxLives }).map((_, i) => {
             const isFilled = i < activeLives;
             const isShaking = shakingHeartIndex === i;
@@ -247,7 +247,7 @@ export function DailyRookDisplay({
               <svg
                 key={i}
                 className={`w-7 h-7 transition-all duration-300 ${
-                  isFilled ? 'text-[#FF4B4B]' : 'text-[#c5d4de]'
+                  isFilled ? 'text-chess-red' : 'text-chess-disabled'
                 } ${isShaking ? 'animate-heart-shake' : ''}`}
                 fill="currentColor"
                 viewBox="0 0 24 24"
@@ -331,23 +331,26 @@ function RookBlockCell({
   const isWrong = result === 'wrong';
   const isPending = result === 'pending';
 
-  let bgColor: string;
+  let background: string;
   let borderStyle: string;
   let shadowStyle: string;
   let numberColor: string;
 
+  // Scale for matte shadows: blockSize ranges ~24-42px, base is 14px. ~2.5 is a good midpoint.
+  const matteScale = 2.5;
+
   if (isCorrect) {
-    bgColor = color;
+    background = getMatteBackground(color);
     borderStyle = 'none';
-    shadowStyle = `0 3px 0 rgba(0,0,0,0.2), 0 4px 12px ${color}40`;
+    shadowStyle = getMatteBoxShadow(color, matteScale);
     numberColor = 'rgba(255,255,255,0.9)';
   } else if (isWrong) {
-    bgColor = WRONG_BG;
+    background = WRONG_BG;
     borderStyle = `1px solid ${PENDING_BORDER}`;
     shadowStyle = '0 2px 0 rgba(0,0,0,0.06)';
     numberColor = 'rgba(0,0,0,0.15)';
   } else {
-    bgColor = PENDING_BG;
+    background = PENDING_BG;
     borderStyle = `1px solid ${PENDING_BORDER}`;
     shadowStyle = 'none';
     numberColor = 'rgba(0,0,0,0.12)';
@@ -370,15 +373,9 @@ function RookBlockCell({
         width: blockSize,
         height: blockSize,
         borderRadius: 'clamp(4px, 1vw, 8px)',
-        backgroundColor: bgColor,
+        background,
         border: borderStyle,
         boxShadow: shadowStyle,
-        // 3D depth gradient for correct blocks (matching OG route style)
-        backgroundImage: isCorrect
-          ? 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.08) 100%)'
-          : isPending
-            ? 'none'
-            : 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.03) 100%)',
       }}
     >
       <span

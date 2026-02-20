@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSubscription } from '@/hooks/useSubscription';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 type PricingVariant = 'control' | 'low' | 'high';
@@ -117,13 +118,13 @@ function PricingContent() {
       ) : isPremium ? (
         <div className="flex-1 flex flex-col justify-center items-center px-4">
           <div className="w-16 h-16 mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-            <span className="text-3xl">👑</span>
+            <BreathingRook size="xs" />
           </div>
           <h2 className="text-2xl font-bold text-chess-text mb-1">You&apos;re Premium!</h2>
           <p className="text-chess-text-muted mb-4 text-sm">Unlimited access to all features.</p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+            className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:brightness-105 transition-opacity"
             style={{ boxShadow: '0 4px 0 var(--color-chess-green-shadow)' }}
           >
             Continue Learning
@@ -155,22 +156,22 @@ function PricingContent() {
                 </div>
                 <p className="text-black/50 text-xs">Cancel anytime</p>
               </div>
-              <div className="text-3xl">👑</div>
+              <AnimatedLogo theme="light" size={0.4} iconOnly perpetual />
             </div>
           </div>
 
           {/* Features — compact grid */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-3 divide-y divide-slate-100">
-            <FeatureRow icon="♟️" title="Unlimited lessons" free="2/day" />
-            <FeatureRow icon="🏰" title="All levels unlocked" free="Current only" />
-            <FeatureRow icon="🧩" title="Unlimited puzzles" free="15/day" />
-            <FeatureRow icon="🔥" title="Daily challenges" free="—" />
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm mb-3 divide-y divide-slate-100">
+            <FeatureRow icon="♞" title="Unlimited lessons" free="2/day" />
+            <FeatureRow icon="♜" title="All levels unlocked" free="Current only" />
+            <FeatureRow icon="♛" title="Unlimited puzzles" free="15/day" />
+            <FeatureRow icon="♚" title="Daily challenges" free="—" />
           </div>
 
           {/* Checkout — pushed to bottom */}
           <div className="mt-auto">
             {checkoutError && (
-              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">
+              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs">
                 {checkoutError}
               </div>
             )}

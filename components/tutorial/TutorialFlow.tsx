@@ -747,7 +747,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
                 router.push('/');
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-chess-text-faint hover:text-chess-text-muted"
             >
               ✕
             </button>
@@ -884,7 +884,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
               className="w-full rounded-b-2xl py-2.5 px-4"
               style={{
                 animation: 'tutSlideUp 0.3s ease-out',
-                backgroundColor: '#FFF3CD',
+                backgroundColor: 'var(--color-chess-hint-bg)',
                 boxShadow: '0 2px 8px rgba(180, 140, 0, 0.15)',
               }}
             >
@@ -892,7 +892,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 {bottomHintCard.title && (
                   <p
                     className="font-bold leading-tight mb-1"
-                    style={{ fontSize: 15, color: '#7A6200' }}
+                    style={{ fontSize: 15, color: 'var(--color-chess-hint-title)' }}
                   >
                     {bottomHintCard.title}
                   </p>
@@ -900,7 +900,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
                 <div className="space-y-1">
                   {bottomHintCard.message.split('\n\n').map((p, i) => (
-                    <p key={i} className="leading-snug" style={{ fontSize: 14, color: '#8B7000' }}>
+                    <p key={i} className="leading-snug" style={{ fontSize: 14, color: 'var(--color-chess-hint-text)' }}>
                       {p}
                     </p>
                   ))}

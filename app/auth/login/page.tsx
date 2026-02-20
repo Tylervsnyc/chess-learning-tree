@@ -106,9 +106,9 @@ export default function LoginPage() {
 
         <div className="w-full max-w-sm">
           {/* Card container */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-chess-surface border border-slate-200 rounded-2xl p-5 shadow-sm">
             <h1 className="text-xl font-bold text-chess-text text-center mb-1">Welcome back</h1>
-            <p className="text-slate-500 text-sm text-center mb-4">Sign in to continue</p>
+            <p className="text-chess-text-muted text-sm text-center mb-4">Sign in to continue</p>
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm mb-3">
@@ -120,7 +120,7 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleLogin}
               disabled={googleLoading}
-              className="w-full py-3 rounded-2xl font-bold text-gray-700 bg-white border-2 border-slate-200 transition-all active:translate-y-[2px] shadow-[0_4px_0_#e2e8f0] flex items-center justify-center gap-3 hover:border-slate-300 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+              className="w-full py-3 rounded-2xl font-bold text-chess-text bg-white border-2 border-slate-200 transition-all active:translate-y-[2px] shadow-[0_4px_0_#e2e8f0] flex items-center justify-center gap-3 hover:border-slate-300 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
             >
               {googleLoading ? (
                 <>
@@ -142,13 +142,13 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-3 my-3">
               <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-slate-400 text-xs uppercase">or</span>
+              <span className="text-chess-text-faint text-xs uppercase">or</span>
               <div className="flex-1 h-px bg-slate-200" />
             </div>
 
             <form onSubmit={handleLogin} className="space-y-3">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-600 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-chess-text-muted mb-1">
                   Email
                 </label>
                 <input
@@ -163,7 +163,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-600 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-chess-text-muted mb-1">
                   Password
                 </label>
                 <input
@@ -187,7 +187,7 @@ export default function LoginPage() {
             </form>
           </div>
 
-          <p className="text-center text-slate-500 text-sm pt-4">
+          <p className="text-center text-chess-text-muted text-sm pt-4">
             Don&apos;t have an account?{' '}
             <Link
               href={redirectTo ? `/auth/signup?redirect=${encodeURIComponent(redirectTo)}` : '/auth/signup'}
@@ -197,10 +197,10 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <p className="text-center text-slate-400 text-xs pt-3">
-            <Link href="/terms" className="underline hover:text-slate-500">Terms</Link>
+          <p className="text-center text-chess-text-faint text-xs pt-3">
+            <Link href="/terms" className="underline hover:text-chess-text-muted">Terms</Link>
             {' '}&middot;{' '}
-            <Link href="/privacy" className="underline hover:text-slate-500">Privacy Policy</Link>
+            <Link href="/privacy" className="underline hover:text-chess-text-muted">Privacy Policy</Link>
           </p>
         </div>
       </div>

@@ -19,16 +19,16 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-[#1A2C35] rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10">
+      <div className="relative bg-chess-bg-light rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10">
         {/* Header */}
-        <div className="sticky top-0 bg-[#1A2C35] px-4 py-3 border-b border-white/10 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-chess-bg-light px-4 py-3 border-b border-white/10 flex items-center justify-between rounded-t-2xl z-10">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-[#1CB0F6]/20 border border-[#1CB0F6]/50 text-[#1CB0F6] text-sm">
+            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-chess-blue/20 border border-chess-blue/50 text-chess-blue text-sm">
               ?
             </span>
             {theme.name}
@@ -51,8 +51,8 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
           </p>
 
           {/* Example Position */}
-          <div className="bg-[#131F24] rounded-xl p-3">
-            <p className="text-[#1CB0F6] text-sm font-semibold mb-2">Example Position</p>
+          <div className="bg-chess-bg rounded-xl p-3">
+            <p className="text-chess-blue text-sm font-semibold mb-2">Example Position</p>
             <p className="text-white/50 text-xs mb-2">{theme.toMove}</p>
             <div className="w-full aspect-square max-w-[280px] mx-auto">
               <ChessPathBoard
@@ -70,11 +70,11 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
 
           {/* Key Points */}
           <div>
-            <p className="text-[#58CC02] text-sm font-semibold mb-2">Key Points</p>
+            <p className="text-chess-green text-sm font-semibold mb-2">Key Points</p>
             <ul className="space-y-2">
               {theme.keyPoints.map((point, index) => (
                 <li key={index} className="flex items-start gap-2 text-white/80 text-sm">
-                  <span className="text-[#58CC02] mt-0.5">•</span>
+                  <span className="text-chess-green mt-0.5">•</span>
                   {point}
                 </li>
               ))}
@@ -83,10 +83,10 @@ export function ThemeHelpModal({ isOpen, onClose, themeId }: ThemeHelpModalProps
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-[#1A2C35] px-4 py-3 border-t border-white/10">
+        <div className="sticky bottom-0 bg-chess-bg-light px-4 py-3 border-t border-white/10">
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#58CC02] text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_#46A302] active:translate-y-[2px] active:shadow-[0_2px_0_#46A302] transition-all"
+            className="w-full py-3 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
           >
             Got It!
           </button>
@@ -106,7 +106,7 @@ export function HelpIconButton({ onClick, className = '' }: HelpIconButtonProps)
   return (
     <button
       onClick={onClick}
-      className={`w-6 h-6 flex items-center justify-center rounded-full bg-[#1CB0F6]/20 border border-[#1CB0F6]/50 text-[#1CB0F6] text-xs font-bold hover:bg-[#1CB0F6]/30 transition-colors ${className}`}
+      className={`w-6 h-6 flex items-center justify-center rounded-full bg-chess-blue/20 border border-chess-blue/50 text-chess-blue text-xs font-bold hover:bg-chess-blue/30 transition-colors ${className}`}
       title="What is this tactic?"
     >
       ?

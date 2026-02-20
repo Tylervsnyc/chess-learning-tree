@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 // Block data: position and color
 const BLOCKS = [
@@ -168,8 +169,8 @@ export function AnimatedLogo({
               width: blockSize,
               height: blockSize,
               borderRadius: 2 * scale,
-              backgroundColor: block.color,
-              boxShadow: `0 ${4 * scale}px ${12 * scale}px ${block.color}40`,
+              background: getMatteBackground(block.color),
+              boxShadow: getMatteBoxShadow(block.color, scale),
               opacity: isVisible ? 1 : CONFIG.initialOpacity,
               transform: isVisible ? 'scale(1)' : `scale(${CONFIG.initialScale})`,
               transition:

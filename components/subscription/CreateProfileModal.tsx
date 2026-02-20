@@ -120,13 +120,13 @@ export function CreateProfileModal({ isOpen, onClose, context = 'lesson-limit', 
             </div>
             <button
               onClick={handleSignUp}
-              className="w-full py-3 rounded-xl font-bold text-white bg-chess-green active:translate-y-[2px] shadow-[0_3px_0_#3d8c01] transition-all text-sm"
+              className="w-full py-3 rounded-xl font-bold text-white bg-chess-green active:translate-y-[2px] shadow-[0_3px_0_var(--color-chess-green-shadow)] transition-all text-sm"
             >
               Sign Up Free
             </button>
             <button
               onClick={handleSignUp}
-              className="w-full mt-2 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-slate-200 flex items-center justify-center gap-2 active:translate-y-[1px] transition-all text-sm"
+              className="w-full mt-2 py-2.5 rounded-xl font-bold text-chess-text bg-white border border-slate-200 flex items-center justify-center gap-2 active:translate-y-[1px] transition-all text-sm"
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />

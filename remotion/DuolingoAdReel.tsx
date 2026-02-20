@@ -36,6 +36,39 @@ import {
 
 const { fontFamily } = loadFont();
 
+// ── Matte block styling utilities (duplicated for Remotion bundling) ──
+function hexToRgb(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return [r, g, b];
+}
+function rgbToHex(r: number, g: number, b: number): string {
+  return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+function lighten(hex: string, amount: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const factor = amount / 100;
+  return rgbToHex(r + (255 - r) * factor, g + (255 - g) * factor, b + (255 - b) * factor);
+}
+function darken(hex: string, amount: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const factor = 1 - amount / 100;
+  return rgbToHex(r * factor, g * factor, b * factor);
+}
+function getMatteBackground(color: string): string {
+  return `linear-gradient(to bottom, ${lighten(color, 18)} 0%, ${lighten(color, 12)} 20%, ${color} 40%, ${darken(color, 12)} 100%)`;
+}
+function getMatteBoxShadow(color: string, scale: number = 1): string {
+  const s = (v: number) => `${(v * scale).toFixed(2)}px`;
+  return [
+    `inset 0 ${s(0.75)} 0 ${darken(color, 6)}`,
+    `inset 0 -${s(0.75)} 0 ${lighten(color, 6)}`,
+    `0 ${s(0.5)} 0 rgba(0,0,0,0.25)`,
+    `0 0 0 ${s(0.5)} rgba(0,0,0,0.15)`,
+  ].join(', ');
+}
+
 /* ── Constants ──────────────────────────────────────────────────────── */
 
 const BG_DARK = '#0a0a0a';
@@ -248,7 +281,8 @@ const BeatLogoFlash: React.FC = () => {
                 width: BG_ROOK_BLOCK,
                 height: BG_ROOK_BLOCK,
                 borderRadius: BG_ROOK_RADIUS,
-                backgroundColor: block.color,
+                background: getMatteBackground(block.color),
+                boxShadow: getMatteBoxShadow(block.color, BG_ROOK_SCALE),
                 filter: `brightness(${brightness})`,
               }}
             />
@@ -1203,7 +1237,8 @@ const BeatFeatureCTA: React.FC = () => {
                 width: BG_ROOK_BLOCK,
                 height: BG_ROOK_BLOCK,
                 borderRadius: BG_ROOK_RADIUS,
-                backgroundColor: block.color,
+                background: getMatteBackground(block.color),
+                boxShadow: getMatteBoxShadow(block.color, BG_ROOK_SCALE),
                 filter: `brightness(${brightness})`,
               }}
             />

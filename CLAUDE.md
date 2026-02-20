@@ -12,6 +12,7 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 - Don't over-explain. If the fix is obvious, just do it (or dispatch it).
 - When Tyler asks "how does X work?" — answer directly, don't launch an agent.
 - Celebrate wins briefly. Tyler likes to see progress.
+- **Use Linear for task tracking.** All bugs, features, and improvements flow through Linear. Check issues before starting work, update status as you go.
 
 ---
 
@@ -88,6 +89,8 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 When testing changes, run: `./scripts/ensure-dev.sh && open http://localhost:3000/{page}`
 
 That script checks if the server is already running and only starts it if needed. Never restart, kill, or clear cache on a running server. Never make Tyler start the server or navigate manually.
+
+**Test pages (`/test/*`, `/test-*`) MUST always have `overflow-auto` on their container.** Body has `overflow: hidden` globally — test pages need scrolling. Never create a test page without it.
 
 ---
 

@@ -5,6 +5,39 @@ import { FPS } from '../lib/timing';
 
 const { fontFamily } = loadFont();
 
+// ── Matte block styling utilities (duplicated from lib/daily-rook-blocks.ts for Remotion bundling) ──
+function hexToRgb(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return [r, g, b];
+}
+function rgbToHex(r: number, g: number, b: number): string {
+  return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+function lighten(hex: string, amount: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const factor = amount / 100;
+  return rgbToHex(r + (255 - r) * factor, g + (255 - g) * factor, b + (255 - b) * factor);
+}
+function darken(hex: string, amount: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const factor = 1 - amount / 100;
+  return rgbToHex(r * factor, g * factor, b * factor);
+}
+function getMatteBackground(color: string): string {
+  return `linear-gradient(to bottom, ${lighten(color, 18)} 0%, ${lighten(color, 12)} 20%, ${color} 40%, ${darken(color, 12)} 100%)`;
+}
+function getMatteBoxShadow(color: string, scale: number = 1): string {
+  const s = (v: number) => `${(v * scale).toFixed(2)}px`;
+  return [
+    `inset 0 ${s(0.75)} 0 ${darken(color, 6)}`,
+    `inset 0 -${s(0.75)} 0 ${lighten(color, 6)}`,
+    `0 ${s(0.5)} 0 rgba(0,0,0,0.25)`,
+    `0 0 0 ${s(0.5)} rgba(0,0,0,0.15)`,
+  ].join(', ');
+}
+
 /**
  * Rook icon + "chesspath" wordmark at 4x scale.
  * Rook blocks breathe gently (brightness oscillation) throughout the video.
@@ -52,7 +85,7 @@ const GAP = 32;
 
 export const LOGO_H = 240;
 
-export const ReelLogo: React.FC = () => {
+export const ReelLogo: React.FC<{ darkBg?: boolean }> = ({ darkBg }) => {
   const frame = useCurrentFrame();
   const t = frame / FPS; // time in seconds
 
@@ -87,8 +120,8 @@ export const ReelLogo: React.FC = () => {
                 width: BLOCK_SIZE,
                 height: BLOCK_SIZE,
                 borderRadius: BLOCK_RADIUS,
-                backgroundColor: block.color,
-                boxShadow: `0 ${4 * SCALE}px ${12 * SCALE}px ${block.color}40`,
+                background: getMatteBackground(block.color),
+                boxShadow: getMatteBoxShadow(block.color, SCALE),
                 filter: `brightness(${brightness})`,
               }}
             />
@@ -106,7 +139,7 @@ export const ReelLogo: React.FC = () => {
           lineHeight: 1,
         }}
       >
-        <span style={{ color: '#2A3C45' }}>chess</span>
+        <span style={{ color: darkBg ? '#ffffff' : '#2A3C45' }}>chess</span>
         <span
           style={{
             background:

@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 export const runtime = 'edge';
 
@@ -156,7 +157,8 @@ function renderSmallRookLogo() {
             width: iconSize,
             height: iconSize,
             borderRadius: 4,
-            backgroundColor: b.color,
+            background: getMatteBackground(b.color),
+            boxShadow: getMatteBoxShadow(b.color, iconSize / 14),
             display: 'flex',
           }}
         />
@@ -199,24 +201,13 @@ function renderCelebrationRook() {
               width: blockSize,
               height: blockSize,
               borderRadius: radius,
-              backgroundColor: b.color,
-              boxShadow: `0 ${bottomShadow}px 0 rgba(0,0,0,0.18)`,
+              background: getMatteBackground(b.color),
+              boxShadow: getMatteBoxShadow(b.color, blockSize / 14),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
-          >
-            {/* Inner highlight for 3D depth */}
-            <div
-              style={{
-                display: 'flex',
-                width: blockSize,
-                height: blockSize - bottomShadow,
-                borderRadius: radius,
-                backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.08) 100%)',
-              }}
-            />
-          </div>
+          />
         ))}
       </div>
     </div>

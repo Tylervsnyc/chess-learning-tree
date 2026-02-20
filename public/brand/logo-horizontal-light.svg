@@ -6,42 +6,90 @@
       <stop offset="75%" stop-color="#FF6B6B"/>
       <stop offset="100%" stop-color="#1CB0F6"/>
     </linearGradient>
+      <linearGradient id="g-1CB0F6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#45bef8"/>
+      <stop offset="20%" stop-color="#37b9f7"/>
+      <stop offset="40%" stop-color="#1CB0F6"/>
+      <stop offset="100%" stop-color="#199bd8"/>
+    </linearGradient>
+    <linearGradient id="g-2FCBEF" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#54d4f2"/>
+      <stop offset="20%" stop-color="#48d1f1"/>
+      <stop offset="40%" stop-color="#2FCBEF"/>
+      <stop offset="100%" stop-color="#29b3d2"/>
+    </linearGradient>
+    <linearGradient id="g-A560E8" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b57dec"/>
+      <stop offset="20%" stop-color="#b073eb"/>
+      <stop offset="40%" stop-color="#A560E8"/>
+      <stop offset="100%" stop-color="#9154cc"/>
+    </linearGradient>
+    <linearGradient id="g-58CC02" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#76d530"/>
+      <stop offset="20%" stop-color="#6cd220"/>
+      <stop offset="40%" stop-color="#58CC02"/>
+      <stop offset="100%" stop-color="#4db402"/>
+    </linearGradient>
+    <linearGradient id="g-FFC800" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd22e"/>
+      <stop offset="20%" stop-color="#ffcf1f"/>
+      <stop offset="40%" stop-color="#FFC800"/>
+      <stop offset="100%" stop-color="#e0b000"/>
+    </linearGradient>
+    <linearGradient id="g-FF9600" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffa92e"/>
+      <stop offset="20%" stop-color="#ffa31f"/>
+      <stop offset="40%" stop-color="#FF9600"/>
+      <stop offset="100%" stop-color="#e08400"/>
+    </linearGradient>
+    <linearGradient id="g-FF6B6B" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8686"/>
+      <stop offset="20%" stop-color="#ff7d7d"/>
+      <stop offset="40%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#e05e5e"/>
+    </linearGradient>
+    <linearGradient id="g-FF4B4B" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="20%" stop-color="#ff6161"/>
+      <stop offset="40%" stop-color="#FF4B4B"/>
+      <stop offset="100%" stop-color="#e04242"/>
+    </linearGradient>
   </defs>
 
   <!-- Queen Icon - 22 dots -->
   <!-- Row 0: Crown points (y=8) -->
-  <rect x="8" y="8" width="14" height="14" rx="2" fill="#1CB0F6"/>
-  <rect x="44" y="8" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="80" y="8" width="14" height="14" rx="2" fill="#A560E8"/>
+  <rect x="8" y="8" width="14" height="14" rx="2" fill="url(#g-1CB0F6)"/>
+  <rect x="44" y="8" width="14" height="14" rx="2" fill="url(#g-2FCBEF)"/>
+  <rect x="80" y="8" width="14" height="14" rx="2" fill="url(#g-A560E8)"/>
 
   <!-- Row 1: Crown rim (y=26) -->
-  <rect x="8" y="26" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="26" y="26" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="44" y="26" width="14" height="14" rx="2" fill="#FF9600"/>
-  <rect x="62" y="26" width="14" height="14" rx="2" fill="#FF6B6B"/>
-  <rect x="80" y="26" width="14" height="14" rx="2" fill="#FF4B4B"/>
+  <rect x="8" y="26" width="14" height="14" rx="2" fill="url(#g-58CC02)"/>
+  <rect x="26" y="26" width="14" height="14" rx="2" fill="url(#g-FFC800)"/>
+  <rect x="44" y="26" width="14" height="14" rx="2" fill="url(#g-FF9600)"/>
+  <rect x="62" y="26" width="14" height="14" rx="2" fill="url(#g-FF6B6B)"/>
+  <rect x="80" y="26" width="14" height="14" rx="2" fill="url(#g-FF4B4B)"/>
 
   <!-- Row 2: Head (y=44) -->
-  <rect x="26" y="44" width="14" height="14" rx="2" fill="#1CB0F6"/>
-  <rect x="44" y="44" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="62" y="44" width="14" height="14" rx="2" fill="#A560E8"/>
+  <rect x="26" y="44" width="14" height="14" rx="2" fill="url(#g-1CB0F6)"/>
+  <rect x="44" y="44" width="14" height="14" rx="2" fill="url(#g-2FCBEF)"/>
+  <rect x="62" y="44" width="14" height="14" rx="2" fill="url(#g-A560E8)"/>
 
   <!-- Row 3: Neck (y=62) -->
-  <rect x="26" y="62" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="44" y="62" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="62" y="62" width="14" height="14" rx="2" fill="#FF9600"/>
+  <rect x="26" y="62" width="14" height="14" rx="2" fill="url(#g-58CC02)"/>
+  <rect x="44" y="62" width="14" height="14" rx="2" fill="url(#g-FFC800)"/>
+  <rect x="62" y="62" width="14" height="14" rx="2" fill="url(#g-FF9600)"/>
 
   <!-- Row 4: Body (y=80) -->
-  <rect x="26" y="80" width="14" height="14" rx="2" fill="#FF6B6B"/>
-  <rect x="44" y="80" width="14" height="14" rx="2" fill="#FF4B4B"/>
-  <rect x="62" y="80" width="14" height="14" rx="2" fill="#1CB0F6"/>
+  <rect x="26" y="80" width="14" height="14" rx="2" fill="url(#g-FF6B6B)"/>
+  <rect x="44" y="80" width="14" height="14" rx="2" fill="url(#g-FF4B4B)"/>
+  <rect x="62" y="80" width="14" height="14" rx="2" fill="url(#g-1CB0F6)"/>
 
   <!-- Row 5: Base (y=98) -->
-  <rect x="8" y="98" width="14" height="14" rx="2" fill="#2FCBEF"/>
-  <rect x="26" y="98" width="14" height="14" rx="2" fill="#A560E8"/>
-  <rect x="44" y="98" width="14" height="14" rx="2" fill="#58CC02"/>
-  <rect x="62" y="98" width="14" height="14" rx="2" fill="#FFC800"/>
-  <rect x="80" y="98" width="14" height="14" rx="2" fill="#FF9600"/>
+  <rect x="8" y="98" width="14" height="14" rx="2" fill="url(#g-2FCBEF)"/>
+  <rect x="26" y="98" width="14" height="14" rx="2" fill="url(#g-A560E8)"/>
+  <rect x="44" y="98" width="14" height="14" rx="2" fill="url(#g-58CC02)"/>
+  <rect x="62" y="98" width="14" height="14" rx="2" fill="url(#g-FFC800)"/>
+  <rect x="80" y="98" width="14" height="14" rx="2" fill="url(#g-FF9600)"/>
 
   <!-- Wordmark: "chess" dark, "path" gradient -->
   <text x="120" y="82" font-family="DM Sans, Inter, system-ui, sans-serif" font-size="72" font-weight="700">

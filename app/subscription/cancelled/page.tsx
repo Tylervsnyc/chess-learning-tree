@@ -27,7 +27,7 @@ export default function SubscriptionCancelledPage() {
         </p>
 
         {/* Free tier reminder */}
-        <div className="bg-chess-surface rounded-xl p-6 mb-8 shadow-sm">
+        <div className="bg-chess-surface rounded-2xl p-6 mb-8 shadow-sm">
           <div className="text-sm font-medium text-chess-text-muted mb-3">Free tier includes:</div>
           <ul className="space-y-2 text-left">
             {[
@@ -48,7 +48,7 @@ export default function SubscriptionCancelledPage() {
         <div className="space-y-3">
           <button
             onClick={() => router.push('/')}
-            className="w-full py-4 rounded-xl bg-chess-blue text-white font-bold text-lg transition-all hover:opacity-90 shadow-sm"
+            className="w-full py-4 rounded-xl bg-chess-blue text-white font-bold text-lg transition-all hover:bg-chess-blue-dark shadow-sm"
           >
             Continue with Free
           </button>

@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { BOARD_COLORS } from '@/lib/puzzle-utils';
 import { getPieceDataUri } from '@/lib/share/piece-svgs';
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 export const runtime = 'edge';
 
@@ -93,8 +94,8 @@ export async function GET() {
                     width: BLOCK_SIZE,
                     height: BLOCK_SIZE,
                     borderRadius: 5,
-                    backgroundColor: b.color,
-                    boxShadow: `0 2px 0 rgba(0,0,0,0.15)`,
+                    background: getMatteBackground(b.color),
+                    boxShadow: getMatteBoxShadow(b.color, BLOCK_SIZE / 14),
                     display: 'flex',
                   }}
                 />

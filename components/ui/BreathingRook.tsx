@@ -1,6 +1,6 @@
 'use client';
 
-import { ROOK_BLOCKS } from '@/lib/daily-rook-blocks';
+import { ROOK_BLOCKS, getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 /**
  * BreathingRook — The standard loading indicator for Chess Path.
@@ -58,8 +58,8 @@ export function BreathingRook({ size = 'md', label, className = '' }: BreathingR
                 width: blockSize,
                 height: blockSize,
                 borderRadius: Math.max(1, Math.round(blockSize * 0.14)),
-                backgroundColor: block.color,
-                boxShadow: `0 0 ${Math.round(blockSize * 0.5)}px ${block.color}50`,
+                background: getMatteBackground(block.color),
+                boxShadow: getMatteBoxShadow(block.color, blockSize / 14),
                 animation: `rookBreathe 2.4s ease-in-out ${waveDelay}s infinite`,
               }}
             />
@@ -67,7 +67,7 @@ export function BreathingRook({ size = 'md', label, className = '' }: BreathingR
         })}
       </div>
       {label && (
-        <span className="text-xs text-gray-400 animate-pulse">{label}</span>
+        <span className="text-xs text-chess-text-faint animate-pulse">{label}</span>
       )}
     </div>
   );

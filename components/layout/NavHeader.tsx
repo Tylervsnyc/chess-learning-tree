@@ -28,7 +28,7 @@ export function NavHeader() {
   const showStreakCounter = pathname === '/' || pathname === '/daily-challenge';
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-chess-surface border-b border-slate-200 shadow-sm">
       <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
         <Link href="/" className="flex items-center flex-shrink-0">
           <Image
@@ -50,7 +50,7 @@ export function NavHeader() {
                 boxShadow: '0 0 8px rgba(255, 107, 0, 0.4)',
               }}
             >
-              <span>🔥</span>
+              <svg className="w-4 h-4 text-chess-orange" fill="currentColor" viewBox="0 0 24 24"><path d="M12 23c-4.97 0-9-3.58-9-8 0-2.52 1.17-5.13 3.08-7.46.58-.71 1.26-1.39 1.92-2.04.24-.24.65-.04.6.3-.24 1.68.18 3.04 1.15 4.08.1.1.26.08.33-.05.47-.84.68-2.07.53-3.64-.02-.24.27-.38.44-.21C13.93 8.6 16 11.65 16 15c0 .55-.06 1.08-.17 1.58-.04.16.12.3.27.21.88-.52 1.57-1.32 2.02-2.25.1-.2.38-.2.44.02.36 1.1.44 2.34.44 2.94 0 4.42-4.03 8-9 8h2z"/></svg>
               <span>{currentStreak}</span>
             </div>
           )}
@@ -83,6 +83,16 @@ export function NavHeader() {
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
                 <span className="relative">Daily</span>
               </Link>
+              <Link
+                href="/repertoire"
+                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
+                  pathname === '/repertoire'
+                    ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
+                    : 'bg-chess-purple/70 text-white opacity-70'
+                }`}
+              >
+                Openings
+              </Link>
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
@@ -111,7 +121,7 @@ export function NavHeader() {
             <>
               <Link
                 href="/"
-                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-[#58CC02] text-white whitespace-nowrap ${
+                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-chess-green text-white whitespace-nowrap ${
                   pathname === '/' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
                 }`}
               >

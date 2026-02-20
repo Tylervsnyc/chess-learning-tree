@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 /**
  * ChessPath Rook Progress Animation Component
@@ -152,6 +153,13 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
 
     const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
+    // Restore matte base appearance on a block element
+    const restoreMatte = (el: HTMLDivElement) => {
+      const color = el.dataset.color || '#58CC02';
+      el.style.boxShadow = getMatteBoxShadow(color);
+      el.style.filter = 'brightness(1)';
+    };
+
     // On mount, make previous stages visible (for when currentStage > 0)
     useEffect(() => {
       if (stage > 0) {
@@ -161,6 +169,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
           blocks?.forEach(el => {
             if (el) {
               el.style.opacity = '1';
+              restoreMatte(el);
             }
           });
         }
@@ -206,8 +215,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.25s ease-out';
               el.style.transform = 'scale(1)';
-              el.style.boxShadow = 'none';
-              el.style.filter = 'brightness(1)';
+              restoreMatte(el);
             }, 80);
           }, 100 + rand(0, 100));
         });
@@ -228,8 +236,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
           setTimeout(() => {
             el.style.transition = 'all 0.3s ease-out';
             el.style.opacity = '1';
-            el.style.filter = 'brightness(1)';
-            el.style.boxShadow = 'none';
+            restoreMatte(el);
           }, i * 70 + 380);
         });
       },
@@ -245,8 +252,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
               el.style.transform = 'scale(1) rotate(0deg)';
-              el.style.filter = 'brightness(1) hue-rotate(0deg)';
-              el.style.boxShadow = 'none';
+              restoreMatte(el);
             }, 50);
           }, 150 + i * 60);
         });
@@ -259,6 +265,10 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
           setTimeout(() => {
             el.style.opacity = '1';
             el.style.boxShadow = `0 0 15px ${el.dataset.color}, inset 0 0 10px rgba(255,255,255,0.3)`;
+            setTimeout(() => {
+              el.style.transition = 'all 0.3s ease-out';
+              restoreMatte(el);
+            }, 300);
           }, i * 80 + 250);
         });
       },
@@ -276,8 +286,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.2s ease-out';
               el.style.transform = 'scale(1)';
-              el.style.boxShadow = 'none';
-              el.style.filter = 'brightness(1)';
+              restoreMatte(el);
             }, 150);
           }, i * 100 + 150);
         });
@@ -295,8 +304,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             if (count > 8) {
               clearInterval(flickerInt);
               el.style.opacity = '1';
-              el.style.filter = 'brightness(1) hue-rotate(0deg)';
-              el.style.boxShadow = 'none';
+              restoreMatte(el);
             }
           }, 50);
         });
@@ -314,8 +322,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
               el.style.transform = 'scale(1)';
-              el.style.filter = 'brightness(1) saturate(1)';
-              el.style.boxShadow = 'none';
+              restoreMatte(el);
             }, 50);
           }, 200 + i * 50);
         });
@@ -334,8 +341,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.2s ease-out';
               el.style.transform = 'scale(1)';
-              el.style.boxShadow = 'none';
-              el.style.filter = 'brightness(1)';
+              restoreMatte(el);
             }, 100);
           }, i * 100 + 150);
         });
@@ -356,8 +362,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.25s ease-out';
               el.style.transform = 'scale(1) skewX(0deg)';
-              el.style.boxShadow = 'none';
-              el.style.filter = 'brightness(1)';
+              restoreMatte(el);
             }, 150);
           }, i * 80);
         });
@@ -374,8 +379,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             setTimeout(() => {
               el.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
               el.style.transform = 'scale(1) rotate(0deg)';
-              el.style.boxShadow = 'none';
-              el.style.filter = 'brightness(1) hue-rotate(0deg)';
+              restoreMatte(el);
             }, 50);
           }, 150 + i * 60);
         });
@@ -421,7 +425,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             { transform: 'scale(1)', filter: 'brightness(1)' }
           ], { duration: 400 });
           setTimeout(() => {
-            el.style.boxShadow = 'none';
+            restoreMatte(el);
           }, 400);
         }, i * 20);
       });
@@ -437,6 +441,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
         el.style.boxShadow = '';
         el.style.filter = '';
         el.style.transition = '';
+        el.style.background = '';
       });
     }, []);
 
@@ -455,9 +460,9 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
               color: 'rgba(255,255,255,0.5)',
               fontSize: '14px',
               fontWeight: 600,
-              fontFamily: 'system-ui, sans-serif'
+              fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif"
             }}>
-              Stage <span style={{ color: '#58CC02', fontSize: '18px', textShadow: '0 0 8px #58CC02' }}>{stage}</span> / 6
+              Stage <span style={{ color: 'var(--color-chess-green)', fontSize: '18px', textShadow: '0 0 8px var(--color-chess-green)' }}>{stage}</span> / 6
             </div>
             <div style={{
               width: '200px',
@@ -504,9 +509,9 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
                   borderRadius: '2px',
                   left: `${block.x}px`,
                   top: `${block.y}px`,
-                  backgroundColor: block.color,
+                  background: getMatteBackground(block.color),
                   opacity: 0,
-                  boxShadow: 'none'
+                  boxShadow: getMatteBoxShadow(block.color)
                 }}
               />
             ))
@@ -522,7 +527,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
             color: stage === 6 ? '#FFC800' : 'rgba(255,255,255,0.4)',
             fontSize: '12px',
             textShadow: stage === 6 ? '0 0 8px #FFC800' : 'none',
-            fontFamily: 'system-ui, sans-serif'
+            fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif"
           }}>
             {stage === 0 ? 'Answer to build!' : stage < 6 ? `${STAGES[stage - 1].name} ⚡` : 'COMPLETE!'}
           </div>

@@ -40,17 +40,30 @@ Every color in the app should come from these tokens (defined in `globals.css` u
 | `chess-red` | `#FF4B4B` | Errors, wrong answers, destructive actions |
 | `chess-purple` | `#CE82FF` | Achievements, special content |
 
+### Feedback Colors
+| Token | Value | Use For |
+|-------|-------|---------|
+| `chess-correct-bg` | `#D7FFB8` | Correct answer background (puzzle result) |
+| `chess-wrong-bg` | `#FFDFE0` | Wrong answer background (puzzle result) |
+| `chess-hint-bg` | `#FFF3CD` | Tutorial hint card background |
+| `chess-hint-title` | `#7A6200` | Tutorial hint title text |
+| `chess-hint-text` | `#8B7000` | Tutorial hint body text |
+| `chess-red-shadow` | `#CC3939` | Red button 3D shadow |
+| `chess-disabled` | `#c5d4de` | Empty/disabled icons (hearts, stars) |
+
 ### Utility
 | Token | Value | Use For |
 |-------|-------|---------|
 | `chess-gray` | `#4B4B4B` | Disabled states, dividers |
 | `chess-gray-light` | `#6B6B6B` | Secondary disabled text |
 
-### Legacy Dark Tokens (avoid in new code)
-| Token | Value | Note |
-|-------|-------|------|
-| `chess-bg` | `#131F24` | Old dark background — only for special sections like landing hero |
-| `chess-bg-light` | `#1A2C35` | Old dark card bg — avoid |
+### Dark Theme Tokens
+| Token | Value | Use For |
+|-------|-------|---------|
+| `chess-bg` | `#131F24` | Dark page backgrounds (error pages, lesson complete) |
+| `chess-bg-deep` | `#0D1A1F` | Darker card backgrounds inside dark modals |
+| `chess-bg-light` | `#1A2C35` | Dark modal cards, dark theme containers |
+| `chess-text-light` | `#A3B8C2` | Muted text on dark backgrounds (popups, modals) |
 
 ---
 
@@ -78,6 +91,16 @@ Every color in the app should come from these tokens (defined in `globals.css` u
 <div className="shadow-sm">   // subtle
 <div className="shadow-md">   // cards
 ```
+
+---
+
+## Node / Tree Visualizations
+
+When building tree or graph visualizations (opening trees, skill trees, etc.):
+- **Minimum 90px horizontal gap** between node columns
+- **Minimum 80px vertical spread** between sibling nodes
+- Nodes must have clear breathing room — never pack them tight. If it looks cramped, increase spacing.
+- Use `overflow-x-auto` on the container so wide trees scroll horizontally
 
 ---
 
@@ -191,9 +214,67 @@ className="w-full px-4 py-3 rounded-xl border border-slate-200
 
 ---
 
+## Matte Block Style
+
+Every rook block in Chess Path uses a **matte 3D** rendering style — a vertical gradient + inset shadows that give each block a polished, tactile look.
+
+### Formula
+
+```
+background: linear-gradient(to bottom,
+  lighten(color, 18%) 0%,
+  lighten(color, 12%) 20%,
+  color 40%,
+  darken(color, 12%) 100%
+)
+
+boxShadow:
+  inset 0 0.75px 0 darken(color, 6%),
+  inset 0 -0.75px 0 lighten(color, 6%),
+  0 0.5px 0 rgba(0,0,0,0.25),
+  0 0 0 0.5px rgba(0,0,0,0.15)
+```
+
+### Utility Functions
+
+Import from `lib/daily-rook-blocks.ts`:
+
+```ts
+import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
+
+// Usage
+style={{
+  background: getMatteBackground(block.color),
+  boxShadow: getMatteBoxShadow(block.color, blockSize / 14),
+}}
+```
+
+- `getMatteBackground(color)` — returns the CSS gradient string
+- `getMatteBoxShadow(color, scale?)` — returns the CSS shadow string. Scale adjusts shadow size proportionally (base = 14px blocks, so pass `blockSize / 14`)
+
+### When to Apply
+
+- **Always** on rook blocks in React components (AnimatedLogo, BreathingRook, DailyRookDisplay, RookProgressAnimation)
+- **Always** on rook blocks in OG image routes (Satori supports linear-gradient + boxShadow)
+- **SVG assets**: Use `<linearGradient>` defs per block color (no inset shadows — gradient-only is fine at small sizes)
+- **Email templates**: Use gradient with flat-color fallback (`backgroundColor` for Outlook)
+- **Remotion videos**: Import utilities or duplicate inline (Remotion bundles separately)
+
+### Scale Behavior
+
+Shadow values scale linearly with block size:
+- 6px blocks (BreathingRook xs): scale = 0.43
+- 10px blocks (email): scale = 0.71
+- 14px blocks (base): scale = 1.0
+- 28px blocks (OG default): scale = 2.0
+- 74px blocks (OG daily-challenge): scale = 5.3
+
+---
+
 ## File Reference
 
 - Tokens defined in: `app/globals.css` (under `@theme`)
+- Matte utilities: `lib/daily-rook-blocks.ts`
 - Animated logo: `components/brand/AnimatedLogo.tsx`
 - Nav header: `components/layout/NavHeader.tsx`
 - This guide: `.claude/design-system.md`

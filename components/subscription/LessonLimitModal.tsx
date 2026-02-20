@@ -71,7 +71,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
         />
 
         {/* Modal */}
-        <div className="relative bg-[#1A2C35] rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
+        <div className="relative bg-chess-bg-light rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
           {/* Icon */}
           <div className="text-center mb-5">
             {breathingLogo}
@@ -80,22 +80,22 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
               Save Your Progress!
             </h2>
 
-            <p className="text-gray-400">
+            <p className="text-chess-text-muted">
               {quip}
             </p>
           </div>
 
           {/* Sign up to save progress */}
-          <div className="bg-[#0D1A1F] rounded-xl p-4 mb-4">
+          <div className="bg-chess-bg-deep rounded-xl p-4 mb-4">
             <p className="text-white font-bold text-center mb-2">
               Save Your Progress on Chess Path!
             </p>
-            <p className="text-gray-400 text-sm text-center mb-4">
+            <p className="text-chess-text-muted text-sm text-center mb-4">
               Create a free account to keep your streak alive. You&apos;ll get 4 free lessons per day — more than enough to level up.
             </p>
             <button
               onClick={handleSignUpFree}
-              className="w-full py-3 rounded-xl bg-[#58CC02] border-b-4 border-[#46a302] active:border-b-0 active:mt-1 text-white font-bold text-lg transition-all hover:bg-[#4CAF00]"
+              className="w-full py-3 rounded-xl bg-chess-green border-b-4 border-chess-green-dark active:border-b-0 active:mt-1 text-white font-bold text-lg transition-all hover:brightness-105"
             >
               Sign Up Free
             </button>
@@ -106,12 +106,12 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
             <p className="text-white font-bold text-center mb-2">
               Want unlimited lessons?
             </p>
-            <p className="text-gray-400 text-sm text-center mb-3">
-              Become a Premium member for <span className="text-[#58CC02] font-bold">$4.99/month</span> and practice as much as you want, every day.
+            <p className="text-chess-text-muted text-sm text-center mb-3">
+              Become a Premium member for <span className="text-chess-green font-bold">$4.99/month</span> and practice as much as you want, every day.
             </p>
             <button
               onClick={handleUpgradePremium}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:opacity-90"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:brightness-105"
             >
               Sign Up for Premium
             </button>
@@ -119,7 +119,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
 
           <button
             onClick={handleMaybeLater}
-            className="w-full py-3 mt-4 rounded-xl bg-transparent text-gray-400 font-medium text-sm hover:text-white transition-colors"
+            className="w-full py-3 mt-4 rounded-xl bg-transparent text-chess-text-muted font-medium text-sm hover:text-white transition-colors"
           >
             Maybe Later
           </button>
@@ -138,7 +138,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
       />
 
       {/* Modal */}
-      <div className="relative bg-[#1A2C35] rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
+      <div className="relative bg-chess-bg-light rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
         {/* Celebration icon */}
         <div className="text-center mb-5">
           {breathingLogo}
@@ -147,17 +147,17 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
             Congratulations!
           </h2>
 
-          <p className="text-gray-400">
+          <p className="text-chess-text-muted">
             You&apos;ve completed your chess learning for today
           </p>
         </div>
 
         {/* Daily completion message */}
-        <div className="bg-[#0D1A1F] rounded-xl p-4 mb-5 text-center">
+        <div className="bg-chess-bg-deep rounded-xl p-4 mb-5 text-center">
           <p className="text-white font-bold mb-1">
             {lessonsCompleted} lessons done today
           </p>
-          <p className="text-gray-400 text-sm">
+          <p className="text-chess-text-muted text-sm">
             Great job staying consistent! Come back tomorrow for more.
           </p>
         </div>
@@ -167,16 +167,16 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
           <p className="text-white font-bold text-center mb-2">
             Want to keep going?
           </p>
-          <p className="text-gray-400 text-sm text-center mb-1">
+          <p className="text-chess-text-muted text-sm text-center mb-1">
             Upgrade to Premium for unlimited lessons every day.
           </p>
           <div className="flex items-baseline justify-center gap-1 mb-3">
-            <span className="text-2xl font-black text-[#58CC02]">$4.99</span>
-            <span className="text-gray-400 text-sm">/month</span>
+            <span className="text-2xl font-black text-chess-green">$4.99</span>
+            <span className="text-chess-text-muted text-sm">/month</span>
           </div>
           <button
             onClick={handleUpgradePremium}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:opacity-90"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:brightness-105"
           >
             Upgrade to Premium
           </button>
@@ -184,12 +184,12 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
 
         <button
           onClick={handleMaybeLater}
-          className="w-full py-3 rounded-xl bg-transparent text-gray-400 font-medium text-sm hover:text-white transition-colors"
+          className="w-full py-3 rounded-xl bg-transparent text-chess-text-muted font-medium text-sm hover:text-white transition-colors"
         >
           Done for Today
         </button>
 
-        <p className="text-center text-gray-500 text-xs mt-3">
+        <p className="text-center text-chess-text-faint text-xs mt-3">
           Cancel anytime
         </p>
       </div>

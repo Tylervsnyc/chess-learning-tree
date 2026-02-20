@@ -86,14 +86,14 @@ function SuccessContent() {
           <button
             onClick={() => syncSubscription()}
             disabled={syncing}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:opacity-90 mb-4 shadow-sm disabled:opacity-50"
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:brightness-105 mb-4 shadow-sm disabled:opacity-50"
           >
             {syncing ? 'Retrying...' : 'Try Again'}
           </button>
 
           <button
             onClick={() => router.push('/')}
-            className="w-full py-3 rounded-xl bg-chess-surface text-chess-text-muted font-medium text-sm transition-all hover:opacity-80"
+            className="w-full py-3 rounded-xl bg-chess-surface text-chess-text-muted font-medium text-sm transition-all hover:text-chess-text"
           >
             Continue to App
           </button>
@@ -122,7 +122,7 @@ function SuccessContent() {
         </p>
 
         {/* Features unlocked */}
-        <div className="bg-chess-surface rounded-xl p-6 mb-8 text-left shadow-sm">
+        <div className="bg-chess-surface rounded-2xl p-6 mb-8 text-left shadow-sm">
           <div className="text-sm font-medium text-chess-green mb-3">What&apos;s unlocked:</div>
           <ul className="space-y-3">
             {[
@@ -143,7 +143,7 @@ function SuccessContent() {
 
         <button
           onClick={() => router.push('/')}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:opacity-90 mb-4 shadow-sm"
+          className="w-full py-4 rounded-xl bg-gradient-to-r from-chess-green to-chess-green-dark text-white font-bold text-lg transition-all hover:brightness-105 mb-4 shadow-sm"
         >
           Start Learning
         </button>

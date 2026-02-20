@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
 import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
+import { StrategyReel } from './StrategyReel';
 import {
   FPS,
   FRAME_W,
@@ -10,6 +11,7 @@ import {
   AD_TOTAL_FRAMES,
   AD_SHORT_TOTAL_FRAMES,
   AD_LONG_TOTAL_FRAMES,
+  STRAT_TOTAL_FRAMES,
 } from './lib/timing';
 
 const defaultProps: DailyPuzzleVideoProps = {
@@ -73,6 +75,15 @@ export const Root: React.FC = () => {
         id="DuolingoAdReel-Long"
         component={DuolingoAdReelLong as any} // eslint-disable-line
         durationInFrames={AD_LONG_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="StrategyReel"
+        component={StrategyReel as any} // eslint-disable-line
+        durationInFrames={STRAT_TOTAL_FRAMES}
         fps={FPS}
         width={FRAME_W}
         height={FRAME_H}

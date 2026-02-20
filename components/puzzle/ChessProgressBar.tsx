@@ -966,7 +966,7 @@ export function ChessProgressBar({
           />
           {/* Falling streak number */}
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#FF4B4B] font-bold text-lg pointer-events-none z-30"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-chess-red font-bold text-lg pointer-events-none z-30"
             style={{
               animation: 'streakLossFall 0.8s ease-out forwards',
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',

@@ -54,6 +54,13 @@ export const AD_LONG_TOTAL_FRAMES =
   AD_LONG_BEAT1 + AD_LONG_BEAT2 + AD_LONG_BEAT3 +
   AD_LONG_BEAT4 + AD_LONG_BEAT5 + AD_LONG_BEAT6; // 900
 
+// ── Strategy Reel — "You Never Learned Strategy" (19s = 570 frames) ──
+export const STRAT_BEAT1 = 90;  // 3.0s — Hook: board + "You learned chess / never learned STRATEGY"
+export const STRAT_BEAT2 = 300; // 10.0s — Chess Path + gameplay video
+export const STRAT_BEAT3 = 120; // 4.0s — CTA
+export const STRAT_TOTAL_FRAMES =
+  STRAT_BEAT1 + STRAT_BEAT2 + STRAT_BEAT3; // 570
+
 // Layout constants (1080x1920 — 4x scale from 270x480 test page)
 export const FRAME_W = 1080;
 export const FRAME_H = 1920;
