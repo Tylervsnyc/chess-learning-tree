@@ -12,4 +12,6 @@ export const FEATURE_FLAGS = {
   SHOW_SHARING: true,
   /** Show block intro popups (the "Welcome to Forks!" style popups at block boundaries) */
   SHOW_BLOCK_INTROS: false,
+  /** Show Openings nav link and /repertoire route */
+  SHOW_OPENINGS: false,
 } as const;

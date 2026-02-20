@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { AuthEvents, resetUser } from '@/lib/analytics/posthog';
+import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
@@ -31,13 +31,7 @@ export function NavHeader() {
     <header className="sticky top-0 z-50 bg-chess-surface border-b border-slate-200 shadow-sm">
       <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
         <Link href="/" className="flex items-center flex-shrink-0">
-          <Image
-            src="/brand/logo-horizontal-light.svg"
-            alt="Chess Path"
-            width={160}
-            height={28}
-            className="flex-shrink-0 w-[110px] sm:w-[140px] md:w-[160px] h-auto"
-          />
+          <BreathingHeaderLogo />
         </Link>
 
         <nav className="flex items-center gap-1 sm:gap-1.5">
@@ -83,16 +77,18 @@ export function NavHeader() {
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
                 <span className="relative">Daily</span>
               </Link>
-              <Link
-                href="/repertoire"
-                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
-                  pathname === '/repertoire'
-                    ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
-                    : 'bg-chess-purple/70 text-white opacity-70'
-                }`}
-              >
-                Openings
-              </Link>
+              {FEATURE_FLAGS.SHOW_OPENINGS && (
+                <Link
+                  href="/repertoire"
+                  className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
+                    pathname === '/repertoire'
+                      ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
+                      : 'bg-chess-purple/70 text-white opacity-70'
+                  }`}
+                >
+                  Openings
+                </Link>
+              )}
               {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
