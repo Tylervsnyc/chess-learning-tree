@@ -48,7 +48,6 @@ import { LearningEvents } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
-import { LessonTryAgainScreen } from '@/components/lesson/LessonTryAgainScreen';
 import { TutorialFlow } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -1127,20 +1126,8 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
-    // Show try-again screen if user didn't pass (score <= 3)
-    if (lessonPassed === false) {
-      return (
-        <LessonTryAgainScreen
-          score={firstAttemptCorrectCount}
-          totalPuzzles={puzzles.length}
-          lessonName={lessonName}
-          onContinue={() => router.push('/')}
-        />
-      );
-    }
-
-    // Show celebration screen if user passed (score >= 4)
-    if (lessonPassed === true) {
+    // LessonCompleteScreen handles both pass (score >= 4) and fail (score <= 3) states
+    if (lessonPassed === false || lessonPassed === true) {
       return (
         <>
           <LessonCompleteScreen
