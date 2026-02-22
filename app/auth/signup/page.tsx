@@ -184,6 +184,18 @@ function SignupContent() {
       return;
     }
 
+    // If email confirmation is disabled, Supabase returns a session directly
+    if (data.session) {
+      if (data.user) {
+        identifyUser(data.user.id, { email });
+      }
+      AuthEvents.signupCompleted('email');
+      router.push(redirectTo || '/');
+      router.refresh();
+      return;
+    }
+
+    // Email confirmation enabled — show OTP verification screen
     setPendingVerification(true);
     setLoading(false);
     // Focus first OTP input after render
