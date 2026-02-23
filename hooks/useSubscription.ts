@@ -61,8 +61,8 @@ export function useSubscription() {
     fetchStatus();
   }, [fetchStatus]);
 
-  const startCheckout = async (priceId: 'monthly' | 'yearly', variant?: string) => {
-    SubscriptionEvents.checkoutStarted(priceId);
+  const startCheckout = async (priceId: 'monthly' | 'yearly', variant?: string, trigger?: string) => {
+    SubscriptionEvents.checkoutStarted(priceId, trigger);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',

@@ -89,8 +89,8 @@ export const EngagementEvents = {
 export const SubscriptionEvents = {
   paywallViewed: (trigger: string) => trackEvent('paywall_viewed', { trigger }),
   pricingViewed: () => trackEvent('pricing_viewed'),
-  checkoutStarted: (plan: string) => trackEvent('checkout_started', { plan }),
-  checkoutCompleted: (plan: string) => trackEvent('checkout_completed', { plan }),
+  checkoutStarted: (plan: string, trigger?: string) => trackEvent('checkout_started', { plan, trigger }),
+  checkoutCompleted: (plan: string, trigger?: string) => trackEvent('checkout_completed', { plan, trigger }),
   checkoutAbandoned: (plan: string) => trackEvent('checkout_abandoned', { plan }),
 };
 

@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const GUEST_QUIPS = [
   'Your chess moves are too good to lose!',
@@ -22,11 +23,33 @@ interface LessonLimitModalProps {
 
 export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn }: LessonLimitModalProps) {
   const router = useRouter();
+  const { startCheckout } = useSubscription();
+  const [variant, setVariant] = useState('control');
+  const [monthlyPrice, setMonthlyPrice] = useState<number | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       SubscriptionEvents.paywallViewed(isLoggedIn ? 'daily_limit' : 'guest_limit');
     }
+  }, [isOpen, isLoggedIn]);
+
+  // Fetch dynamic pricing for logged-in users
+  useEffect(() => {
+    if (!isOpen || !isLoggedIn) return;
+    setMonthlyPrice(null);
+    setCheckoutError(null);
+    fetch('/api/pricing-experiment')
+      .then(res => res.json())
+      .then(data => {
+        setVariant(data.variant || 'control');
+        setMonthlyPrice(data.monthlyPrice ?? 499);
+      })
+      .catch(() => {
+        setVariant('control');
+        setMonthlyPrice(499);
+      });
   }, [isOpen, isLoggedIn]);
 
   // Pick a random quip once when modal opens (stable across re-renders)
@@ -39,11 +62,18 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
     router.push('/auth/signup');
   };
 
-  const handleUpgradePremium = () => {
+  const handleUpgradePremium = async () => {
     if (!isLoggedIn) {
       router.push('/auth/signup?redirect=/pricing');
-    } else {
-      router.push('/pricing');
+      return;
+    }
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      await startCheckout('monthly', variant, 'daily_limit');
+    } catch {
+      setCheckoutError('Something went wrong. Please try again.');
+      setCheckoutLoading(false);
     }
   };
 
@@ -171,14 +201,22 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
             Upgrade to Premium for unlimited lessons every day.
           </p>
           <div className="flex items-baseline justify-center gap-1 mb-3">
-            <span className="text-2xl font-black text-chess-green">$4.99</span>
+            {monthlyPrice === null ? (
+              <span className="inline-block w-16 h-8 rounded bg-white/10 animate-pulse" />
+            ) : (
+              <span className="text-2xl font-black text-chess-green">${(monthlyPrice / 100).toFixed(2)}</span>
+            )}
             <span className="text-chess-text-muted text-sm">/month</span>
           </div>
+          {checkoutError && (
+            <p className="text-red-400 text-sm text-center mb-2">{checkoutError}</p>
+          )}
           <button
             onClick={handleUpgradePremium}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:brightness-105"
+            disabled={checkoutLoading || monthlyPrice === null}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 active:border-b-0 active:mt-1 text-white font-bold transition-all hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Upgrade to Premium
+            {checkoutLoading ? 'Loading...' : 'Upgrade to Premium'}
           </button>
         </div>
 
