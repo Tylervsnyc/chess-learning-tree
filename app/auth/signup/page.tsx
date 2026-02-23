@@ -34,7 +34,7 @@ function SignupContent() {
   // Auto-clear errors after 5 seconds (but not duplicate email — user needs time to find the link)
   useEffect(() => {
     if (!error || isDuplicateEmail) return;
-    const timer = setTimeout(() => setError(null), 5000);
+    const timer = setTimeout(() => setError(null), 8000);
     return () => clearTimeout(timer);
   }, [error, isDuplicateEmail]);
 
@@ -221,7 +221,7 @@ function SignupContent() {
                 </div>
               )}
 
-              <div className="flex justify-center gap-1.5 mb-6" onPaste={handleOtpPaste}>
+              <div className="flex justify-center gap-1 mb-6" onPaste={handleOtpPaste}>
                 {otpCode.map((digit, index) => (
                   <input
                     key={index}
@@ -232,7 +232,7 @@ function SignupContent() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    className="w-10 h-14 text-center text-lg font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-chess-text focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
+                    className="w-11 h-14 text-center text-lg font-bold bg-slate-50 border-2 border-slate-200 rounded-lg text-chess-text focus:outline-none focus:border-chess-blue focus:ring-2 focus:ring-chess-blue focus:bg-white transition-colors"
                   />
                 ))}
               </div>
@@ -308,6 +308,7 @@ function SignupContent() {
               <div className="text-center mb-4">
                 <h1 className="text-xl font-bold text-chess-text mb-1">Create Account</h1>
                 <p className="text-chess-text-muted text-sm">Start your chess journey</p>
+                <p className="text-sm text-chess-text-light mt-1">Join thousands of chess learners</p>
               </div>
             )}
 
