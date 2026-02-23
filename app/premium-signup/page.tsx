@@ -101,7 +101,7 @@ function PremiumSignupContent() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-chess-green font-bold">✓</span>
-                <span className="text-amber-900/70">All 6 skill levels unlocked</span>
+                <span className="text-amber-900/70">All 8 skill levels unlocked</span>
               </li>
               <li className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
