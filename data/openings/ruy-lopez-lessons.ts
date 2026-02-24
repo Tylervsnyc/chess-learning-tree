@@ -29,7 +29,7 @@ const FEN = {
   after_OO_b: 'r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 1 9',
   after_h3:   'r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1 b - - 0 9',
 
-  // Bb5 vs Bd3 comparison (rl-1 WhyStep)
+  // Bb5 vs Bd3 comparison
   after_Bd3: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/3B1N2/PPPP1PPP/RNBQK2R b KQkq - 3 3',
   after_Bd3_d5: 'r1bqkbnr/ppp2ppp/2n5/3pp3/4P3/3B1N2/PPPP1PPP/RNBQK2R w KQkq d6 0 4',
 
