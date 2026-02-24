@@ -35,17 +35,17 @@ export const PRICES = {
 export const PRICE_DETAILS = {
   MONTHLY: {
     id: 'monthly',
-    amount: 999, // $9.99 in cents
+    amount: 499, // $4.99 in cents
     interval: 'month' as const,
     label: 'Monthly',
-    description: '$9.99/month',
+    description: '$4.99/month',
   },
   YEARLY: {
     id: 'yearly',
-    amount: 7999, // $79.99 in cents
+    amount: 3999, // $39.99 in cents
     interval: 'year' as const,
     label: 'Yearly',
-    description: '$79.99/year',
+    description: '$39.99/year',
     savings: 'Save 33%',
   },
 };
@@ -69,7 +69,7 @@ export const EXPERIMENT_PRICES: Record<string, { monthly: string; yearly: string
 
 // Display amounts per variant (cents)
 export const EXPERIMENT_DISPLAY_PRICES: Record<string, { monthly: number; yearly: number }> = {
-  control: { monthly: 999, yearly: 7999 },
+  control: { monthly: 499, yearly: 3999 },
   low: { monthly: 499, yearly: 3999 },
   high: { monthly: 1499, yearly: 11999 },
 };
