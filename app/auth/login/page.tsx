@@ -1,27 +1,48 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
-import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
+import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
+  const resetSuccess = searchParams.get('reset') === 'success';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showResetBanner, setShowResetBanner] = useState(resetSuccess);
+
+  const humanizeError = (msg: string): string => {
+    if (msg.includes('Invalid login credentials')) return 'Wrong email or password. Please try again.';
+    if (msg.includes('Email not confirmed')) return 'Please check your email to confirm your account.';
+    if (msg.includes('Password should be at least')) return 'Password must be at least 6 characters.';
+    if (msg.includes('Unable to validate email')) return 'Please enter a valid email address.';
+    if (msg.includes('User already registered')) return 'An account with this email already exists.';
+    if (msg.includes('Email rate limit exceeded')) return 'Too many attempts. Please wait a minute and try again.';
+    if (msg.includes('For security purposes')) return 'Too many attempts. Please wait a moment and try again.';
+    return msg;
+  };
 
   useEffect(() => {
-    AuthEvents.loginPageViewed();
+    trackEvent('login_page_viewed', { version: 'v2' });
   }, []);
+
+  // Auto-clear reset banner after 5 seconds
+  useEffect(() => {
+    if (!showResetBanner) return;
+    const timer = setTimeout(() => setShowResetBanner(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showResetBanner]);
 
   // Auto-clear errors after 5 seconds
   useEffect(() => {
@@ -50,8 +71,8 @@ export default function LoginPage() {
     });
 
     if (error) {
-      AuthEvents.loginFailed(error.message);
-      setError(error.message);
+      trackEvent('login_failed', { error: error.message, version: 'v2' });
+      setError(humanizeError(error.message));
       setGoogleLoading(false);
     }
     // Don't reset googleLoading on success — browser is redirecting
@@ -70,8 +91,8 @@ export default function LoginPage() {
     });
 
     if (error) {
-      AuthEvents.loginFailed(error.message);
-      setError(error.message);
+      trackEvent('login_failed', { error: error.message, version: 'v2' });
+      setError(humanizeError(error.message));
       setLoading(false);
       return;
     }
@@ -80,7 +101,7 @@ export default function LoginPage() {
     if (data.user) {
       identifyUser(data.user.id, { email: data.user.email });
     }
-    AuthEvents.loginCompleted();
+    trackEvent('login_completed', { version: 'v2' });
 
     router.push(redirectTo || '/');
     router.refresh();
@@ -109,6 +130,12 @@ export default function LoginPage() {
           <div className="bg-chess-surface border border-slate-200 rounded-2xl p-5 shadow-sm">
             <h1 className="text-xl font-bold text-chess-text text-center mb-1">Welcome back</h1>
             <p className="text-chess-text-muted text-sm text-center mb-4">Sign in to continue</p>
+
+            {showResetBanner && (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-green-700 text-sm mb-3">
+                Password updated! Sign in with your new password.
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm mb-3">
@@ -157,6 +184,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  autoComplete="email"
                   className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
                   placeholder="you@example.com"
                 />
@@ -166,15 +194,36 @@ export default function LoginPage() {
                 <label htmlFor="password" className="block text-sm font-medium text-chess-text-muted mb-1">
                   Password
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    className="w-full px-4 py-3 pr-12 bg-slate-50 border-2 border-slate-200 rounded-xl text-chess-text placeholder-slate-400 focus:outline-none focus:border-chess-blue focus:bg-white transition-colors"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-chess-text-faint hover:text-chess-text-muted transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Link href="/auth/forgot-password" className="text-chess-blue hover:underline text-sm font-medium">
+                  Forgot password?
+                </Link>
               </div>
 
               <button
@@ -205,5 +254,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-chess-page flex items-center justify-center">
+        <BreathingRook label="Loading..." />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
