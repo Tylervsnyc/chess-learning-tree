@@ -30,7 +30,9 @@ import {
 } from '@/lib/sounds'
 import { useAudioWarmup } from '@/hooks/useAudioWarmup'
 import { getRuyLopezLesson } from '@/data/openings/ruy-lopez-lessons'
-import type { LessonStep, PlayMoveStep, QuizStep, WhyStep } from '@/types/opening-lesson'
+import { getPircLesson } from '@/data/openings/pirc-lessons'
+import { getItalianLesson } from '@/data/openings/italian-lessons'
+import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -143,7 +145,14 @@ export default function OpeningLessonPage() {
 
   useAudioWarmup()
 
-  const lesson = useMemo(() => getRuyLopezLesson(lessonId), [lessonId])
+  const lesson = useMemo((): OpeningLesson | undefined => {
+    const lookups: Record<string, (id: string) => OpeningLesson | undefined> = {
+      'ruy-lopez': getRuyLopezLesson,
+      'pirc-defense': getPircLesson,
+      'italian': getItalianLesson,
+    }
+    return lookups[slug]?.(lessonId)
+  }, [slug, lessonId])
 
   // ─── State ───
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -159,10 +168,6 @@ export default function OpeningLessonPage() {
   // For puzzle steps
   const [puzzleMoveIndex, setPuzzleMoveIndex] = useState(0)
   const [puzzleFen, setPuzzleFen] = useState('')
-
-  // For "why" steps — lets the WhyStepContent control the board
-  const [whyArrowOverride, setWhyArrowOverride] = useState<[Square, Square] | null>(null)
-  const [whyHighlightOverride, setWhyHighlightOverride] = useState<Square[] | null>(null)
 
   const advancingRef = useRef(false)
   const prevOrientationRef = useRef(boardOrientation)
@@ -215,8 +220,6 @@ export default function OpeningLessonPage() {
     setSelectedSquare(null)
     setMoveStatus('waiting')
     setActivePostMoveArrow(null)
-    setWhyArrowOverride(null)
-    setWhyHighlightOverride(null)
     setPuzzleMoveIndex(0)
     setPuzzleFen('')
     advancingRef.current = false
@@ -461,15 +464,8 @@ export default function OpeningLessonPage() {
       }
     }
 
-    // Why step highlight override
-    if (whyHighlightOverride) {
-      for (const sq of whyHighlightOverride) {
-        styles[sq] = { backgroundColor: 'rgba(255, 160, 0, 0.4)', ...styles[sq] }
-      }
-    }
-
     return styles
-  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts, whyHighlightOverride])
+  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts])
 
   // ─── Arrows (library — for attack/instruction arrows) ───
   const arrows = useMemo(() => {
@@ -488,16 +484,8 @@ export default function OpeningLessonPage() {
         color: attackColor,
       }]
     }
-    // Why step arrow override
-    if (whyArrowOverride) {
-      return [{
-        startSquare: whyArrowOverride[0],
-        endSquare: whyArrowOverride[1],
-        color: attackColor,
-      }]
-    }
     return []
-  }, [currentStep, activePostMoveArrow, whyArrowOverride])
+  }, [currentStep, activePostMoveArrow])
 
   // ─── Guide arrow (custom animated blue) ───
   const guideArrow = useMemo(() => {
@@ -635,23 +623,6 @@ export default function OpeningLessonPage() {
     // ── Quiz step ──
     if (currentStep.type === 'quiz') {
       return <QuizStepContent step={currentStep} onComplete={advanceStep} />
-    }
-
-    // ── Why step ──
-    if (currentStep.type === 'why') {
-      return (
-        <WhyStepContent
-          step={currentStep}
-          onBoardUpdate={(fen, arrowOverride, highlightOverride) => {
-            setBoardFen(fen)
-            if (arrowOverride) setWhyArrowOverride(arrowOverride)
-            else setWhyArrowOverride(null)
-            if (highlightOverride) setWhyHighlightOverride(highlightOverride)
-            else setWhyHighlightOverride(null)
-          }}
-          onComplete={advanceStep}
-        />
-      )
     }
 
     // ── Puzzle step ──
@@ -821,172 +792,3 @@ function QuizStepContent({ step, onComplete }: { step: QuizStep; onComplete: () 
   )
 }
 
-// ═══════════════════════════════════════════
-// WHY STEP (inline component)
-// Auto-plays wrong line, then correct line
-// ═══════════════════════════════════════════
-
-type WhyPhase =
-  | 'intro'           // Show label, "Let's see what happens..."
-  | 'wrong-move'      // Auto-play wrong move
-  | 'wrong-response'  // Auto-play opponent punishment
-  | 'wrong-explain'   // Show why it's bad
-  | 'rewind'          // "Now let's try the right way"
-  | 'correct-move'    // Auto-play correct move
-  | 'correct-response'// Opponent tries same trick
-  | 'correct-refute'  // Show the refutation
-  | 'correct-explain' // Show why it works
-
-function WhyStepContent({
-  step,
-  onBoardUpdate,
-  onComplete,
-}: {
-  step: WhyStep
-  onBoardUpdate: (fen: string, arrow?: [Square, Square] | null, highlights?: Square[] | null) => void
-  onComplete: () => void
-}) {
-  const [phase, setPhase] = useState<WhyPhase>('intro')
-
-  useEffect(() => {
-    // Reset board to starting position on mount
-    onBoardUpdate(step.fen, null, null)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const advance = (nextPhase: WhyPhase, delay?: number) => {
-    if (delay) {
-      setTimeout(() => setPhase(nextPhase), delay)
-    } else {
-      setPhase(nextPhase)
-    }
-  }
-
-  // Auto-advance phases with board updates
-  useEffect(() => {
-    const w = step.wrongLine
-    const c = step.correctLine
-
-    switch (phase) {
-      case 'wrong-move':
-        playMoveSound()
-        onBoardUpdate(w.fenAfterMove, null, null)
-        advance('wrong-response', 1200)
-        break
-      case 'wrong-response':
-        playMoveSound()
-        onBoardUpdate(w.fenAfterResponse, w.arrow || null, w.highlightSquares || null)
-        advance('wrong-explain', 800)
-        break
-      case 'rewind':
-        onBoardUpdate(step.fen, null, null)
-        advance('correct-move', 1000)
-        break
-      case 'correct-move':
-        playMoveSound()
-        onBoardUpdate(c.fenAfterMove, null, null)
-        advance('correct-response', 1200)
-        break
-      case 'correct-response':
-        playMoveSound()
-        onBoardUpdate(c.fenAfterResponse, null, null)
-        advance('correct-refute', 1200)
-        break
-      case 'correct-refute':
-        playCorrectSound(0)
-        vibrateOnCorrect()
-        onBoardUpdate(c.fenAfterRefutation, c.arrow || null, c.highlightSquares || null)
-        advance('correct-explain', 800)
-        break
-    }
-  }, [phase]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const w = step.wrongLine
-  const c = step.correctLine
-
-  // ── Render based on phase ──
-  switch (phase) {
-    case 'intro':
-      return (
-        <div className="w-full py-3 px-4 rounded-b-2xl bg-amber-50 border-t-2 border-amber-400" style={{ animation: 'slideUpBounce 0.3s ease-out' }}>
-          <div className="max-w-lg mx-auto">
-            <p className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-1">The Why</p>
-            <p className="font-bold text-sm text-chess-text mb-3">{step.label}</p>
-            <p className="text-xs text-chess-text-muted mb-3">Your instinct says <strong>{w.move}</strong> — capture toward the center. Let&apos;s see what happens...</p>
-            <button
-              onClick={() => advance('wrong-move')}
-              className="w-full py-1.5 bg-amber-500 text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#b45309] active:translate-y-[1px] active:shadow-[0_2px_0_#b45309] transition-all"
-            >
-              Show Me
-            </button>
-          </div>
-        </div>
-      )
-
-    case 'wrong-move':
-    case 'wrong-response':
-      return (
-        <div className="w-full py-3 px-4 rounded-b-2xl bg-chess-wrong-bg">
-          <div className="max-w-lg mx-auto">
-            <p className="text-xs font-bold text-chess-red uppercase tracking-wide mb-1">Wrong Path</p>
-            <p className="text-sm text-chess-text">
-              {phase === 'wrong-move' ? `Black plays ${w.move}...` : `White punishes with ${w.response}!`}
-            </p>
-          </div>
-        </div>
-      )
-
-    case 'wrong-explain':
-      return (
-        <div className="w-full py-3 px-4 rounded-b-2xl bg-chess-wrong-bg" style={{ animation: 'slideUpBounce 0.3s ease-out' }}>
-          <div className="max-w-lg mx-auto">
-            <p className="text-xs font-bold text-chess-red uppercase tracking-wide mb-1">Wrong Path</p>
-            <p className="text-sm text-chess-text mb-3">{w.explanation}</p>
-            <button
-              onClick={() => advance('rewind')}
-              className="w-full py-1.5 bg-amber-500 text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_#b45309] active:translate-y-[1px] active:shadow-[0_2px_0_#b45309] transition-all"
-            >
-              Now The Right Way
-            </button>
-          </div>
-        </div>
-      )
-
-    case 'rewind':
-    case 'correct-move':
-    case 'correct-response':
-    case 'correct-refute':
-      return (
-        <div className="w-full py-3 px-4 rounded-b-2xl bg-chess-correct-bg">
-          <div className="max-w-lg mx-auto">
-            <p className="text-xs font-bold text-chess-green-dark uppercase tracking-wide mb-1">Right Path</p>
-            <p className="text-sm text-chess-text">
-              {phase === 'rewind' && 'Rewinding...'}
-              {phase === 'correct-move' && `Black plays ${c.move} instead...`}
-              {phase === 'correct-response' && `White tries ${c.response} again...`}
-              {phase === 'correct-refute' && `${c.refutation}!`}
-            </p>
-          </div>
-        </div>
-      )
-
-    case 'correct-explain':
-      return (
-        <div className="w-full py-3 px-4 rounded-b-2xl bg-chess-correct-bg" style={{ animation: 'slideUpBounce 0.3s ease-out' }}>
-          <div className="max-w-lg mx-auto">
-            <p className="text-xs font-bold text-chess-green-dark uppercase tracking-wide mb-1">The Why</p>
-            <p className="text-sm text-chess-text mb-3">{c.explanation}</p>
-            <button
-              onClick={() => {
-                // Rewind board to starting position first, then advance after animation settles
-                onBoardUpdate(step.fen, null, null)
-                setTimeout(onComplete, 400)
-              }}
-              className="w-full py-1.5 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
-            >
-              Got It
-            </button>
-          </div>
-        </div>
-      )
-  }
-}
