@@ -110,6 +110,7 @@ function SignupContent() {
     });
 
     if (error) {
+      AuthEvents.signupFailed(error.message);
       setError(error.message);
       setVerifying(false);
       setOtpCode(['', '', '', '', '', '', '', '']);
@@ -178,6 +179,7 @@ function SignupContent() {
 
     // Supabase returns a fake success with empty identities when the email already exists
     if (data.user && data.user.identities?.length === 0) {
+      AuthEvents.signupFailed('duplicate_email');
       setError('An account with this email already exists.');
       setIsDuplicateEmail(true);
       setLoading(false);
