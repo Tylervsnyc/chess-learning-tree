@@ -1008,6 +1008,7 @@ export default function DailyChallengePage() {
                       boardOrientation: boardOrientation,
                       squareStyles: squareStyles,
                       animationDurationInMs: animationDuration,
+                      draggingPieceGhostStyle: { opacity: 1 },
                       boardStyle: {
                         borderRadius: '8px',
                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

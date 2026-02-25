@@ -530,6 +530,7 @@ export function BasicsTutorial() {
                 allowDragging: boardInteractive && currentExercise?.type !== 'tap',
                 squareStyles,
                 animationDurationInMs: animationDuration,
+                draggingPieceGhostStyle: { opacity: 1 },
                 boardStyle: {
                   borderRadius: exerciseIndex === -1 ? '8px' : '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

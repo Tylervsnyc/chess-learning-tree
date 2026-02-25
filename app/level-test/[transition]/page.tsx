@@ -715,12 +715,12 @@ export default function LevelTestPage() {
                 boardOrientation: currentPuzzle.playerColor,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onPieceDrop: isAnimatingSetup ? undefined : (args: any) => {
-                  tryMove(args.sourceSquare as Square, args.targetSquare as Square);
-                  return true;
+                  return tryMove(args.sourceSquare as Square, args.targetSquare as Square);
                 },
                 onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
                 squareStyles: squareStyles,
                 animationDurationInMs: animationDuration,
+                draggingPieceGhostStyle: { opacity: 1 },
                 boardStyle: {
                   borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',

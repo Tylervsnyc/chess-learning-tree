@@ -726,6 +726,7 @@ export default function OpeningLessonPage() {
               squareStyles,
               arrows,
               animationDurationInMs: orientationJustChanged ? 0 : 300,
+              draggingPieceGhostStyle: { opacity: 1 },
               boardStyle: {
                 borderRadius: '8px 8px 0 0',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
