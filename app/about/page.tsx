@@ -2,8 +2,18 @@
 
 import Link from 'next/link';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { useUser } from '@/hooks/useUser';
+import { AuthEvents, resetUser } from '@/lib/analytics/posthog';
 
 export default function AboutPage() {
+  const { user } = useUser();
+
+  const handleSignOut = () => {
+    AuthEvents.logout();
+    resetUser();
+    window.location.href = '/api/auth/logout';
+  };
+
   return (
     <div className="h-full md:h-auto bg-chess-page text-chess-text flex flex-col overflow-hidden">
       {/* Content */}
@@ -72,6 +82,14 @@ export default function AboutPage() {
             >
               Learn Chess Basics
             </Link>
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className="block w-full py-3 text-center font-semibold text-sm rounded-2xl text-chess-text-muted transition-all hover:text-chess-text"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
         </div>
       </div>

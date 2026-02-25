@@ -567,12 +567,14 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | Logo | All pages | `/` (always) |
 | Learn/Path button | All pages | `/` |
 | Daily button | All pages | `/daily-challenge` |
-| Premium button | All pages (non-premium, non-admin) | `/pricing` (logged in), `/premium-signup` (logged out) |
-| Signup button | All pages (logged out) | `/auth/signup` |
-| Logout button | All pages (logged in) | Signs out |
+| Openings button | All pages (behind `SHOW_OPENINGS` flag) | `/openings` |
+| Premium button | Logged in, non-premium only | `/pricing` |
+| Sign Up button | Logged out only | `/auth/signup` |
 | Streak counter | `/`, `/daily-challenge` (feature-flagged off) | Nothing |
 
 **Note:** Logged-in users see "Path", logged-out users see "Learn" - same destination, different label.
+
+**Logout** lives on the `/about` page — not in the header. Keeps nav clean on mobile.
 
 ### Learn/Daily Button Styling:
 
@@ -1079,6 +1081,7 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 | `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on / and /daily-challenge |
 | `SHOW_SHARING` | `true` | Show tap-rook-to-share on lesson complete (≥4/6) and share card on daily challenge screens |
 | `SHOW_ADS` | `true` | Show ad slots (self-promo CTAs) for free users |
+| `SHOW_OPENINGS` | `false` | Show Openings nav link and /repertoire route (redirects to / when off) |
 
 ### Permissions & Limits (not feature flags)
 

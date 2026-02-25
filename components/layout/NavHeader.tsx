@@ -5,19 +5,12 @@ import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { AuthEvents, resetUser } from '@/lib/analytics/posthog';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 
 export function NavHeader() {
   const { user, profile, loading } = useUser();
   const { currentStreak, loaded: progressLoaded } = useLessonProgress();
   const pathname = usePathname();
-
-  const handleSignOut = () => {
-    AuthEvents.logout();
-    resetUser();
-    window.location.href = '/api/auth/logout';
-  };
 
   // Don't show header on auth pages
   if (pathname?.startsWith('/auth/')) {
@@ -70,7 +63,6 @@ export function NavHeader() {
                   pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
                 }`}
                 style={{
-                  // Gradient using brand colors: chess-blue (#1CB0F6) to chess-blue-dark (#0d9ee0)
                   background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
                 }}
               >
@@ -79,9 +71,9 @@ export function NavHeader() {
               </Link>
               {FEATURE_FLAGS.SHOW_OPENINGS && (
                 <Link
-                  href="/repertoire"
+                  href="/openings"
                   className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
-                    pathname === '/repertoire'
+                    pathname?.startsWith('/openings')
                       ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
                       : 'bg-chess-purple/70 text-white opacity-70'
                   }`}
@@ -94,7 +86,6 @@ export function NavHeader() {
                   href="/pricing"
                   className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
                   style={{
-                    // Gradient using brand colors: chess-gold (#FFD700) to chess-orange (#FF9500)
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                     color: '#000',
                   }}
@@ -102,16 +93,6 @@ export function NavHeader() {
                   Premium
                 </Link>
               )}
-              <button
-                onClick={handleSignOut}
-                className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
-                style={{
-                  // Gradient using chess-red (#FF4B4B) - using standard red gradient for logout
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                }}
-              >
-                Logout
-              </button>
             </>
           ) : (
             <>
@@ -135,16 +116,18 @@ export function NavHeader() {
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
                 <span className="relative">Daily</span>
               </Link>
-              <Link
-                href="/premium-signup"
-                className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                  color: '#000',
-                }}
-              >
-                Premium
-              </Link>
+              {FEATURE_FLAGS.SHOW_OPENINGS && (
+                <Link
+                  href="/openings"
+                  className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
+                    pathname?.startsWith('/openings')
+                      ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
+                      : 'bg-chess-purple/70 text-white opacity-70'
+                  }`}
+                >
+                  Openings
+                </Link>
+              )}
               <Link
                 href="/auth/signup"
                 className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
@@ -152,7 +135,7 @@ export function NavHeader() {
                   background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                 }}
               >
-                Signup
+                Sign Up
               </Link>
             </>
           )}
