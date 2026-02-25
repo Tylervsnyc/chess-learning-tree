@@ -60,7 +60,7 @@ export function usePermissions() {
   const determineTier = (): UserTier => {
     if (!user) return 'anonymous';
     if (profile?.is_admin) return 'admin';
-    if (profile?.subscription_status === 'premium') return 'premium';
+    if (profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial') return 'premium';
     return 'free';
   };
   const tier = determineTier();
