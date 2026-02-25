@@ -298,11 +298,10 @@ export const SC_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_e4,
       correctMove: 'c5',
-      prompt: "The Sicilian move.",
-      hint: "c-pawn, two squares.",
-      correctFeedback: "c5!",
-      wrongFeedback: "The Sicilian starts with c5.",
-      highlightSquares: ['c7', 'c5'],
+      prompt: "Your move.",
+      hint: "c5.",
+      correctFeedback: "c5.",
+      wrongFeedback: "c5.",
     },
     // 2.Nf3
     { type: 'instruction', fen: FEN.after_Nf3, text: "2.Nf3.", autoAdvance: 800 },
@@ -311,11 +310,10 @@ export const SC_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_Nf3,
       correctMove: 'd6',
-      prompt: "Solid and flexible.",
-      hint: "d-pawn, one square.",
+      prompt: "Your move.",
+      hint: "d6.",
       correctFeedback: "d6.",
-      wrongFeedback: "Play d6.",
-      highlightSquares: ['d7', 'd6'],
+      wrongFeedback: "d6.",
     },
     // 3.d4
     { type: 'instruction', fen: FEN.after_d4, text: "3.d4.", autoAdvance: 800 },
@@ -324,11 +322,10 @@ export const SC_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_d4,
       correctMove: 'cxd4',
-      prompt: "The exchange — open the c-file.",
-      hint: "Capture on d4.",
-      correctFeedback: "cxd4 — the Sicilian is on the board!",
-      wrongFeedback: "Take on d4.",
-      highlightSquares: ['c5', 'd4'],
+      prompt: "Your move.",
+      hint: "cxd4.",
+      correctFeedback: "cxd4.",
+      wrongFeedback: "cxd4.",
     },
   ],
 }
@@ -534,32 +531,32 @@ export const SC_LESSON_2: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e4, text: "1.e4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_e4, correctMove: 'c5',
-      prompt: "The Sicilian.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5.",
+      prompt: "Your move.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5.",
     },
     { type: 'instruction', fen: FEN.after_Nf3, text: "2.Nf3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6',
-      prompt: "Solid.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6.",
+      prompt: "Your move.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6.",
     },
     { type: 'instruction', fen: FEN.after_d4, text: "3.d4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4',
-      prompt: "Exchange.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
+      prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
     },
     { type: 'instruction', fen: FEN.after_Nxd4, text: "4.Nxd4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6',
-      prompt: "Attack e4.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
+      prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
     },
     { type: 'instruction', fen: FEN.after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6',
-      prompt: "The Najdorf.", hint: "a6.", correctFeedback: "a6!", wrongFeedback: "a6.",
+      prompt: "Your move.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6.",
     },
     { type: 'instruction', fen: FEN.after_Be3, text: "6.Be3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5',
-      prompt: "Strike the center.", hint: "e5.", correctFeedback: "e5! The Najdorf is complete.", wrongFeedback: "e5.",
+      prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5.",
     },
   ],
 }
@@ -719,23 +716,23 @@ export const SC_LESSON_3: OpeningLesson = {
       buttonText: "LET'S GO",
     },
     { type: 'instruction', fen: FEN.after_e4, text: "1.e4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_e4, correctMove: 'c5', prompt: "Sicilian.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5." },
+    { type: 'play-move', fen: FEN.after_e4, correctMove: 'c5', prompt: "Your move.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5." },
     { type: 'instruction', fen: FEN.after_Nf3, text: "2.Nf3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6', prompt: "Solid.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6." },
+    { type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6', prompt: "Your move.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6." },
     { type: 'instruction', fen: FEN.after_d4, text: "3.d4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4', prompt: "Exchange.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4." },
+    { type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4', prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4." },
     { type: 'instruction', fen: FEN.after_Nxd4, text: "4.Nxd4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6', prompt: "Attack e4.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6." },
+    { type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6', prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6." },
     { type: 'instruction', fen: FEN.after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6', prompt: "Najdorf.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6." },
+    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6', prompt: "Your move.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6." },
     { type: 'instruction', fen: FEN.after_Be3, text: "6.Be3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5', prompt: "Center.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5." },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5', prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5." },
     { type: 'instruction', fen: FEN.after_Nb3, text: "7.Nb3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nb3, correctMove: 'Be7', prompt: "Develop.", hint: "Be7.", correctFeedback: "Be7.", wrongFeedback: "Be7." },
+    { type: 'play-move', fen: FEN.after_Nb3, correctMove: 'Be7', prompt: "Your move.", hint: "Be7.", correctFeedback: "Be7.", wrongFeedback: "Be7." },
     { type: 'instruction', fen: FEN.after_Qd2, text: "8.Qd2.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Qd2, correctMove: 'O-O', prompt: "King safety.", hint: "Castle.", correctFeedback: "O-O.", wrongFeedback: "Castle kingside." },
+    { type: 'play-move', fen: FEN.after_Qd2, correctMove: 'O-O', prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O." },
     { type: 'instruction', fen: FEN.after_OOO, text: "9.O-O-O.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_OOO, correctMove: 'b5', prompt: "STORM!", hint: "b5.", correctFeedback: "b5! The attack begins.", wrongFeedback: "b5 — launch the pawn storm." },
+    { type: 'play-move', fen: FEN.after_OOO, correctMove: 'b5', prompt: "Your move.", hint: "b5.", correctFeedback: "b5.", wrongFeedback: "b5." },
   ],
 }
 
@@ -915,29 +912,29 @@ export const SC_LESSON_4: OpeningLesson = {
       buttonText: "LET'S GO",
     },
     { type: 'instruction', fen: FEN.after_e4, text: "1.e4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_e4, correctMove: 'c5', prompt: "Sicilian.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5." },
+    { type: 'play-move', fen: FEN.after_e4, correctMove: 'c5', prompt: "Your move.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5." },
     { type: 'instruction', fen: FEN.after_Nf3, text: "2.Nf3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6', prompt: "Solid.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6." },
+    { type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6', prompt: "Your move.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6." },
     { type: 'instruction', fen: FEN.after_d4, text: "3.d4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4', prompt: "Exchange.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4." },
+    { type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4', prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4." },
     { type: 'instruction', fen: FEN.after_Nxd4, text: "4.Nxd4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6', prompt: "Attack.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6." },
+    { type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6', prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6." },
     { type: 'instruction', fen: FEN.after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6', prompt: "Najdorf.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6." },
+    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6', prompt: "Your move.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6." },
     { type: 'instruction', fen: FEN.after_Be3, text: "6.Be3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5', prompt: "Center.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5." },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5', prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5." },
     { type: 'instruction', fen: FEN.after_Nb3, text: "7.Nb3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Nb3, correctMove: 'Be7', prompt: "Develop.", hint: "Be7.", correctFeedback: "Be7.", wrongFeedback: "Be7." },
+    { type: 'play-move', fen: FEN.after_Nb3, correctMove: 'Be7', prompt: "Your move.", hint: "Be7.", correctFeedback: "Be7.", wrongFeedback: "Be7." },
     { type: 'instruction', fen: FEN.after_Qd2, text: "8.Qd2.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Qd2, correctMove: 'O-O', prompt: "Castle.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "Castle." },
+    { type: 'play-move', fen: FEN.after_Qd2, correctMove: 'O-O', prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O." },
     { type: 'instruction', fen: FEN.after_OOO, text: "9.O-O-O.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_OOO, correctMove: 'b5', prompt: "Storm!", hint: "b5.", correctFeedback: "b5.", wrongFeedback: "b5." },
+    { type: 'play-move', fen: FEN.after_OOO, correctMove: 'b5', prompt: "Your move.", hint: "b5.", correctFeedback: "b5.", wrongFeedback: "b5." },
     { type: 'instruction', fen: FEN.after_f3, text: "10.f3.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_f3, correctMove: 'Bb7', prompt: "Long diagonal.", hint: "Bb7.", correctFeedback: "Bb7.", wrongFeedback: "Bb7." },
+    { type: 'play-move', fen: FEN.after_f3, correctMove: 'Bb7', prompt: "Your move.", hint: "Bb7.", correctFeedback: "Bb7.", wrongFeedback: "Bb7." },
     { type: 'instruction', fen: FEN.after_Kb1, text: "11.Kb1.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_Kb1, correctMove: 'Nbd7', prompt: "Last piece.", hint: "Nbd7.", correctFeedback: "Nbd7.", wrongFeedback: "Nbd7." },
+    { type: 'play-move', fen: FEN.after_Kb1, correctMove: 'Nbd7', prompt: "Your move.", hint: "Nbd7.", correctFeedback: "Nbd7.", wrongFeedback: "Nbd7." },
     { type: 'instruction', fen: FEN.after_g4, text: "12.g4.", autoAdvance: 800 },
-    { type: 'play-move', fen: FEN.after_g4, correctMove: 'Rc8', prompt: "Own the c-file!", hint: "Rc8.", correctFeedback: "Rc8! The Najdorf is complete. You're a Sicilian player now.", wrongFeedback: "Rc8 — the c-file is yours." },
+    { type: 'play-move', fen: FEN.after_g4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
   ],
 }
 
@@ -1083,12 +1080,12 @@ export const SC_PUNISH_QD4: OpeningLesson = {
     { type: 'instruction', fen: FEN.pqd4_after_d4, text: "2.d4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pqd4_after_d4, correctMove: 'cxd4',
-      prompt: "Take.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
+      prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
     },
     { type: 'instruction', fen: FEN.pqd4_after_Qxd4, text: "3.Qxd4?", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pqd4_after_Qxd4, correctMove: 'Nc6',
-      prompt: "Develop with tempo!", hint: "Nc6.", correctFeedback: "Nc6! The queen runs.", wrongFeedback: "Nc6 attacks the queen.",
+      prompt: "Your move.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
     },
   ],
 }
@@ -1257,12 +1254,12 @@ export const SC_PUNISH_BC4: OpeningLesson = {
     { type: 'instruction', fen: FEN.pbc4_after_Bc4, text: "2.Bc4?!", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pbc4_after_Bc4, correctMove: 'e6',
-      prompt: "Block the diagonal.", hint: "e6.", correctFeedback: "e6!", wrongFeedback: "e6.",
+      prompt: "Your move.", hint: "e6.", correctFeedback: "e6.", wrongFeedback: "e6.",
     },
     { type: 'instruction', fen: FEN.pbc4_after_Nc3, text: "3.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pbc4_after_Nc3, correctMove: 'd5',
-      prompt: "Seize the center!", hint: "d5.", correctFeedback: "d5! The bishop retreats in shame.", wrongFeedback: "d5.",
+      prompt: "Your move.", hint: "d5.", correctFeedback: "d5.", wrongFeedback: "d5.",
     },
   ],
 }
@@ -1409,17 +1406,17 @@ export const SC_DRAGON_1: OpeningLesson = {
     },
     {
       type: 'play-move', fen: FEN.after_Nc3, correctMove: 'g6',
-      prompt: "The Dragon.", hint: "g6.", correctFeedback: "g6!", wrongFeedback: "g6.",
+      prompt: "Your move.", hint: "g6.", correctFeedback: "g6.", wrongFeedback: "g6.",
     },
     { type: 'instruction', fen: FEN.dragon_after_Be3, text: "6.Be3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon_after_Be3, correctMove: 'Bg7',
-      prompt: "Dragon Bishop.", hint: "Bg7.", correctFeedback: "Bg7!", wrongFeedback: "Bg7.",
+      prompt: "Your move.", hint: "Bg7.", correctFeedback: "Bg7.", wrongFeedback: "Bg7.",
     },
     { type: 'instruction', fen: FEN.dragon_after_f3, text: "7.f3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon_after_f3, correctMove: 'O-O',
-      prompt: "Castle.", hint: "O-O.", correctFeedback: "O-O — the Dragon is ready.", wrongFeedback: "Castle.",
+      prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O.",
     },
   ],
 }
@@ -1579,17 +1576,17 @@ export const SC_DRAGON_2: OpeningLesson = {
     { type: 'instruction', fen: FEN.dragon2_after_Qd2, text: "8.Qd2.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon2_after_Qd2, correctMove: 'Nc6',
-      prompt: "Challenge d4.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
+      prompt: "Your move.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
     },
     { type: 'instruction', fen: FEN.dragon2_after_Bc4, text: "9.Bc4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon2_after_Bc4, correctMove: 'Bd7',
-      prompt: "Connect rooks.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7.",
+      prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7.",
     },
     { type: 'instruction', fen: FEN.dragon2_after_OOO, text: "10.O-O-O.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon2_after_OOO, correctMove: 'Rc8',
-      prompt: "C-file!", hint: "Rc8.", correctFeedback: "Rc8! The Dragon is breathing fire.", wrongFeedback: "Rc8.",
+      prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8.",
     },
   ],
 }
@@ -1746,17 +1743,17 @@ export const SC_CLASSICAL_1: OpeningLesson = {
     },
     {
       type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nc6',
-      prompt: "Classical.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
+      prompt: "Your move.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
     },
     { type: 'instruction', fen: FEN.classical_after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.classical_after_Nc3, correctMove: 'Nf6',
-      prompt: "Both knights.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
+      prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
     },
     { type: 'instruction', fen: FEN.classical_after_Be2, text: "6.Be2.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.classical_after_Be2, correctMove: 'e5',
-      prompt: "Strike!", hint: "e5.", correctFeedback: "e5! The Classical Sicilian.", wrongFeedback: "e5.",
+      prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5.",
     },
   ],
 }
@@ -1787,84 +1784,84 @@ export const SC_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e4, text: "1.e4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_e4, correctMove: 'c5',
-      prompt: "Your move.", hint: "The Sicilian move.", correctFeedback: "c5.", wrongFeedback: "Start with c5.",
+      prompt: "Your move.", hint: "c5.", correctFeedback: "c5.", wrongFeedback: "c5.",
     },
 
     // Move 2: d6
     { type: 'instruction', fen: FEN.after_Nf3, text: "2.Nf3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nf3, correctMove: 'd6',
-      prompt: "Your move.", hint: "Solid and flexible.", correctFeedback: "d6.", wrongFeedback: "d6.",
+      prompt: "Your move.", hint: "d6.", correctFeedback: "d6.", wrongFeedback: "d6.",
     },
 
     // Move 3: cxd4
     { type: 'instruction', fen: FEN.after_d4, text: "3.d4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_d4, correctMove: 'cxd4',
-      prompt: "Your move.", hint: "The exchange.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
+      prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
     },
 
     // Move 4: Nf6
     { type: 'instruction', fen: FEN.after_Nxd4, text: "4.Nxd4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nf6',
-      prompt: "Your move.", hint: "Attack e4.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
+      prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
     },
 
     // Move 5: a6
     { type: 'instruction', fen: FEN.after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nc3, correctMove: 'a6',
-      prompt: "What's the plan?", hint: "The Najdorf signature.", correctFeedback: "a6! The Najdorf.", wrongFeedback: "a6.",
+      prompt: "Your move.", hint: "a6.", correctFeedback: "a6.", wrongFeedback: "a6.",
     },
 
     // Move 6: e5
     { type: 'instruction', fen: FEN.after_Be3, text: "6.Be3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Be3, correctMove: 'e5',
-      prompt: "Your move.", hint: "Strike the center.", correctFeedback: "e5!", wrongFeedback: "e5.",
+      prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5.",
     },
 
     // Move 7: Be7
     { type: 'instruction', fen: FEN.after_Nb3, text: "7.Nb3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nb3, correctMove: 'Be7',
-      prompt: "Your move.", hint: "Prepare to castle.", correctFeedback: "Be7.", wrongFeedback: "Be7.",
+      prompt: "Your move.", hint: "Be7.", correctFeedback: "Be7.", wrongFeedback: "Be7.",
     },
 
     // Move 8: O-O
     { type: 'instruction', fen: FEN.after_Qd2, text: "8.Qd2.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Qd2, correctMove: 'O-O',
-      prompt: "Your move.", hint: "King safety first.", correctFeedback: "O-O.", wrongFeedback: "Castle.",
+      prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O.",
     },
 
     // Move 9: b5
     { type: 'instruction', fen: FEN.after_OOO, text: "9.O-O-O.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_OOO, correctMove: 'b5',
-      prompt: "Your move.", hint: "Launch the storm.", correctFeedback: "b5! The attack begins.", wrongFeedback: "b5.",
+      prompt: "Your move.", hint: "b5.", correctFeedback: "b5.", wrongFeedback: "b5.",
     },
 
     // Move 10: Bb7
     { type: 'instruction', fen: FEN.after_f3, text: "10.f3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_f3, correctMove: 'Bb7',
-      prompt: "Your move.", hint: "Long diagonal.", correctFeedback: "Bb7.", wrongFeedback: "Bb7.",
+      prompt: "Your move.", hint: "Bb7.", correctFeedback: "Bb7.", wrongFeedback: "Bb7.",
     },
 
     // Move 11: Nbd7
     { type: 'instruction', fen: FEN.after_Kb1, text: "11.Kb1.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Kb1, correctMove: 'Nbd7',
-      prompt: "Your move.", hint: "Last minor piece.", correctFeedback: "Nbd7.", wrongFeedback: "Nbd7.",
+      prompt: "Your move.", hint: "Nbd7.", correctFeedback: "Nbd7.", wrongFeedback: "Nbd7.",
     },
 
     // Move 12: Rc8
     { type: 'instruction', fen: FEN.after_g4, text: "12.g4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_g4, correctMove: 'Rc8',
-      prompt: "Your move.", hint: "The c-file.", correctFeedback: "Rc8! The Najdorf is complete.", wrongFeedback: "Rc8.",
+      prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8.",
     },
 
     // ═══════════════════════════════════════════
@@ -1881,21 +1878,21 @@ export const SC_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.pqd4_after_d4, text: "2.d4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pqd4_after_d4, correctMove: 'cxd4',
-      prompt: "Your move.", hint: "Take.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
+      prompt: "Your move.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4.",
     },
 
     // 3.Qxd4? (auto-advance)
     { type: 'instruction', fen: FEN.pqd4_after_Qxd4, text: "3.Qxd4? Queen grabs the pawn.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pqd4_after_Qxd4, correctMove: 'Nc6',
-      prompt: "Punish it.", hint: "Develop with tempo.", correctFeedback: "Nc6! The queen runs.", wrongFeedback: "Nc6 — attack the queen.",
+      prompt: "Your move.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
     },
 
     // 4.Qe3 (auto-advance)
     { type: 'instruction', fen: FEN.pqd4_after_Qe3, text: "4.Qe3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pqd4_after_Qe3, correctMove: 'Nf6',
-      prompt: "Keep developing.", hint: "Nf6.", correctFeedback: "Nf6! You're ahead in development.", wrongFeedback: "Nf6.",
+      prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
     },
 
     // ═══════════════════════════════════════════
@@ -1912,14 +1909,14 @@ export const SC_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.pbc4_after_Bc4, text: "2.Bc4?!", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pbc4_after_Bc4, correctMove: 'e6',
-      prompt: "Block the diagonal.", hint: "e6.", correctFeedback: "e6!", wrongFeedback: "e6.",
+      prompt: "Your move.", hint: "e6.", correctFeedback: "e6.", wrongFeedback: "e6.",
     },
 
     // 3.Nc3 (auto-advance)
     { type: 'instruction', fen: FEN.pbc4_after_Nc3, text: "3.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pbc4_after_Nc3, correctMove: 'd5',
-      prompt: "Seize the center!", hint: "d5.", correctFeedback: "d5! The bishop retreats.", wrongFeedback: "d5.",
+      prompt: "Your move.", hint: "d5.", correctFeedback: "d5.", wrongFeedback: "d5.",
     },
 
     // ═══════════════════════════════════════════
@@ -1934,17 +1931,17 @@ export const SC_TEST_1: OpeningLesson = {
 
     {
       type: 'play-move', fen: FEN.after_Nc3, correctMove: 'g6',
-      prompt: "Enter the Dragon.", hint: "Fianchetto.", correctFeedback: "g6!", wrongFeedback: "g6.",
+      prompt: "Your move.", hint: "g6.", correctFeedback: "g6.", wrongFeedback: "g6.",
     },
     { type: 'instruction', fen: FEN.dragon_after_Be3, text: "6.Be3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon_after_Be3, correctMove: 'Bg7',
-      prompt: "The Dragon Bishop.", hint: "Bg7.", correctFeedback: "Bg7!", wrongFeedback: "Bg7.",
+      prompt: "Your move.", hint: "Bg7.", correctFeedback: "Bg7.", wrongFeedback: "Bg7.",
     },
     { type: 'instruction', fen: FEN.dragon_after_f3, text: "7.f3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.dragon_after_f3, correctMove: 'O-O',
-      prompt: "Your move.", hint: "Castle.", correctFeedback: "O-O! Dragon complete.", wrongFeedback: "Castle.",
+      prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O.",
     },
 
     // ═══════════════════════════════════════════
@@ -1959,17 +1956,17 @@ export const SC_TEST_1: OpeningLesson = {
 
     {
       type: 'play-move', fen: FEN.after_Nxd4, correctMove: 'Nc6',
-      prompt: "Classical.", hint: "Challenge d4.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
+      prompt: "Your move.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6.",
     },
     { type: 'instruction', fen: FEN.classical_after_Nc3, text: "5.Nc3.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.classical_after_Nc3, correctMove: 'Nf6',
-      prompt: "Both knights.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
+      prompt: "Your move.", hint: "Nf6.", correctFeedback: "Nf6.", wrongFeedback: "Nf6.",
     },
     { type: 'instruction', fen: FEN.classical_after_Be2, text: "6.Be2.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.classical_after_Be2, correctMove: 'e5',
-      prompt: "Strike!", hint: "e5.", correctFeedback: "e5! You know the Sicilian Defense. All of it.", wrongFeedback: "e5.",
+      prompt: "Your move.", hint: "e5.", correctFeedback: "e5.", wrongFeedback: "e5.",
     },
   ],
 }

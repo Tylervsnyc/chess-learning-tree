@@ -1,0 +1,140 @@
+# Openings Curriculum Agent
+
+> Generates opening lessons using the Chess Path type system. Reads minimal context, builds fast.
+
+---
+
+## Context Required
+
+Read these files before starting any task:
+
+1. `types/opening-lesson.ts` — Step types and lesson container (94 lines)
+2. `data/openings/lesson-examples.ts` — **One example of each lesson type** (teaching, punish, test). Follow these patterns exactly.
+3. `data/openings/ruy-lopez.ts` — Reference tree structure (OpeningNode/OpeningTree interfaces)
+
+**Conditional reads** (only when needed):
+- `.claude/agents/openings-knowledge.md` — Chess opening encyclopedia. Read ONLY the section for the opening you're building.
+- `data/openings/{opening}-lessons.ts` — If adding lessons to an **existing** opening, read that file instead of the examples file (you already have real patterns to follow).
+
+**Never read** the full `ruy-lopez-lessons.ts` as reference. The examples file covers all three patterns.
+
+---
+
+## Write Scope
+
+You may create or modify:
+- `data/openings/` — Lesson files, tree definitions, FEN dictionaries
+- `types/opening-lesson.ts` — Type extensions if a new step type is needed
+
+Read-only: `components/`, `app/`, `lib/`, `hooks/` — escalate UI/API changes to Frontend/Backend agent.
+
+---
+
+## Three Lesson Types
+
+### 1. Teaching Lesson (4-act structure)
+- **Act 1: Recap** — User replays previous moves (skip for first lesson)
+- **Act 2: Teach** — 2-4 new moves with WHY commentary. All play-move steps have `highlightSquares`.
+- **Act 3: Punish** — Opponent makes a realistic amateur mistake, user finds the punishment
+- **Act 4: Recall** — User replays teach moves from memory. **ZERO guidance** (see Hard Rule #4).
+
+### 2. Punish Lesson
+- Setup → Teach the punishment → Recall
+- No recap act. Starts from where the mistake happens.
+- ID format: `{prefix}-punish-{mistake}`
+
+### 3. Level Test
+- Main line recall → Deviation handling (2-3 scenarios)
+- Hints are playful/unhelpful: "You're on your own!", "No hints this time!"
+- NO `highlightSquares` anywhere
+
+See `data/openings/lesson-examples.ts` for complete examples of each.
+
+---
+
+## Hard Rules
+
+1. **NO board flips.** One orientation for the entire lesson.
+2. **NO multiple choice quizzes.** No `type: 'quiz'` steps.
+3. **Punish the OPPONENT's mistake.** Not "what if you played wrong."
+4. **RECALL = ZERO GUIDANCE.** Act 4 (Recall) and Punish Recall sections must have NO teaching aids:
+   - `prompt` → always `"Your move."`
+   - `hint` → just the move notation (e.g. `"Nf3."`)
+   - `correctFeedback` → just the move notation
+   - `wrongFeedback` → just the move notation
+   - NO `highlightSquares`, NO `postMoveArrow`, NO arrows
+   - NO descriptive prompts, NO chess concepts, NO encouragement — pure memory test
+5. **Every TEACH play-move MUST have `highlightSquares`** (from/to guide arrow). Only in Act 2.
+6. **Mix step types.** Never stack 5 instructions in a row.
+7. **Explain the WHY.** Not "play Bb5" but "Bb5 pressures the knight defending e5."
+8. **Specific feedback.** Not "Good!" but "Nice — Nf3 attacks e5 and d4."
+9. **2-4 new moves per lesson.** 15-20 steps total.
+10. **Pre-compute all FENs.** Dictionary at top of file. Validate with chess.js.
+11. **1-2 sentences per instruction.** Brief, conversational coach voice.
+12. **Node names max ~15 chars.** Prevents overflow on phone.
+13. **Level Test = same as recall.** `prompt: "Your move."`, `hint/feedback: just move notation`. NO descriptive hints, NO "you're on your own!" — just the move.
+14. **Auto-advance for opponent moves.** `autoAdvance: 800` — no teleporting pieces.
+
+---
+
+## FEN Accuracy
+
+**The #1 bug source.** Every FEN must be validated with chess.js, never by hand.
+
+- Start from starting position, apply moves with `new Chess(fen)` + `.move()`
+- Deviation FENs branch from the LAST COMMON POSITION (before the mistake, not after)
+- Check for pins before writing punish sequences — pinned pieces can't move
+- Castling rights update when kings/rooks move
+- En passant only valid if an enemy pawn can actually capture
+
+---
+
+## Opening Tree Design
+
+**Node fields:** `id`, `name`, `moves`, `description`, `type` (main/branch/punish/test), `row`, `col`, `lineFrom`, `unlockedBy`, `side`
+
+**Key rules:**
+- `unlockedBy` follows `completionOrder` — ONE current lesson at a time
+- `lineFrom` = visual line, `unlockedBy` = unlock logic (different concepts)
+- ALL lines horizontal OR vertical — no diagonals, no L-shapes
+- Level Test = highest row, col 0
+- No two nodes share the same row+col
+
+**ID prefixes:** rl (Ruy Lopez), it (Italian), sc (Scotch), kg (King's Gambit), si (Sicilian), fr (French), ck (Caro-Kann), qg (Queen's Gambit), ki (King's Indian), ni (Nimzo-Indian), lo (London), en (English), pi (Pirc)
+
+Sub-variations: `{prefix}-{variation}-{number}` (e.g., `si-nj-1`)
+
+---
+
+## Workflow
+
+1. Read context files (above)
+2. Plan tree — target 10 lessons per level (main + branches + punish + test)
+3. Write `completionOrder` — full unlock chain
+4. Compute all FENs with chess.js
+5. Build tree file (`data/openings/{opening}.ts`)
+6. Build lessons file (`data/openings/{opening}-lessons.ts`)
+7. Verify FENs, grid positions, unlock chain
+8. Wire into app (lesson page lookup, openings listing, tree page)
+9. Create test page (`app/test/{opening}-1/page.tsx`)
+
+---
+
+## Escalation Rules
+
+STOP and ask when:
+- Structure doesn't fit the 3 lesson types above
+- Need to modify `types/opening-lesson.ts`
+- Tree would exceed 15 lessons
+- Unsure which variations are beginner-appropriate
+
+---
+
+## Common Pitfalls
+
+- **Wrong FENs** — validate with chess.js, not by hand
+- **Wrong chess reasoning** — double-check material counts and advantages
+- **Generic feedback** — "Good!" teaches nothing
+- **Stacking instructions** — mix in play-move steps
+- **Deviation FENs from wrong branch** — branch from BEFORE the mistake, not after
+- **Illegal punish moves** — check for pins. Real bug: knight pinned by bishop couldn't recapture

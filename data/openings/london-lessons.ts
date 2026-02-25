@@ -236,10 +236,10 @@ export const LN_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.start,
       correctMove: 'd4',
-      prompt: "Control the center.",
-      hint: "The d-pawn.",
+      prompt: "Your move.",
+      hint: "d4.",
       correctFeedback: "d4.",
-      wrongFeedback: "Start with d4.",
+      wrongFeedback: "d4.",
     },
     // 1...d5
     {
@@ -253,10 +253,10 @@ export const LN_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_d5,
       correctMove: 'Bf4',
-      prompt: "The signature move — bishop before e3.",
-      hint: "Bishop to f4.",
-      correctFeedback: "Bf4 — the London trademark.",
-      wrongFeedback: "Bishop to f4.",
+      prompt: "Your move.",
+      hint: "Bf4.",
+      correctFeedback: "Bf4.",
+      wrongFeedback: "Bf4.",
     },
     // 2...Nf6
     {
@@ -270,9 +270,9 @@ export const LN_LESSON_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_Nf6,
       correctMove: 'e3',
-      prompt: "Complete the triangle.",
-      hint: "e3 supports d4.",
-      correctFeedback: "e3 — the London triangle is locked in.",
+      prompt: "Your move.",
+      hint: "e3.",
+      correctFeedback: "e3.",
       wrongFeedback: "e3.",
     },
   ],
@@ -434,8 +434,8 @@ export const LN_LESSON_2: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_e6,
       correctMove: 'Nf3',
-      prompt: "Develop.",
-      hint: "Knight to f3.",
+      prompt: "Your move.",
+      hint: "Nf3.",
       correctFeedback: "Nf3.",
       wrongFeedback: "Nf3.",
     },
@@ -446,9 +446,9 @@ export const LN_LESSON_2: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_c5,
       correctMove: 'c3',
-      prompt: "Build the pyramid.",
-      hint: "c3 supports d4.",
-      correctFeedback: "c3 — the pyramid is complete.",
+      prompt: "Your move.",
+      hint: "c3.",
+      correctFeedback: "c3.",
       wrongFeedback: "c3.",
     },
   ],
@@ -562,17 +562,17 @@ export const LN_PUNISH_E5: OpeningLesson = {
     { type: 'instruction', fen: FEN.pe_after_e5, text: "1...e5?", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pe_after_e5, correctMove: 'dxe5',
-      prompt: "Take it.", hint: "dxe5.", correctFeedback: "dxe5.", wrongFeedback: "dxe5.",
+      prompt: "Your move.", hint: "dxe5.", correctFeedback: "dxe5.", wrongFeedback: "dxe5.",
     },
     { type: 'instruction', fen: FEN.pe_after_d6, text: "2...d6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pe_after_d6, correctMove: 'exd6',
-      prompt: "Keep going.", hint: "exd6.", correctFeedback: "exd6.", wrongFeedback: "exd6.",
+      prompt: "Your move.", hint: "exd6.", correctFeedback: "exd6.", wrongFeedback: "exd6.",
     },
     { type: 'instruction', fen: FEN.pe_after_Bxd6, text: "3...Bxd6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pe_after_Bxd6, correctMove: 'Nf3',
-      prompt: "Develop.", hint: "Nf3.", correctFeedback: "Nf3 — you're ahead.", wrongFeedback: "Nf3.",
+      prompt: "Your move.", hint: "Nf3.", correctFeedback: "Nf3.", wrongFeedback: "Nf3.",
     },
   ],
 }
@@ -665,12 +665,12 @@ export const LN_PUNISH_C5: OpeningLesson = {
     { type: 'instruction', fen: FEN.pc_after_c5, text: "2...c5?", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pc_after_c5, correctMove: 'e3',
-      prompt: "Your move.", hint: "Support d4.", correctFeedback: "e3.", wrongFeedback: "e3.",
+      prompt: "Your move.", hint: "e3.", correctFeedback: "e3.", wrongFeedback: "e3.",
     },
     { type: 'instruction', fen: FEN.pc_after_cxd4, text: "3...cxd4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.pc_after_cxd4, correctMove: 'exd4',
-      prompt: "Take back.", hint: "exd4.", correctFeedback: "exd4 — the center is yours.", wrongFeedback: "exd4.",
+      prompt: "Your move.", hint: "exd4.", correctFeedback: "exd4.", wrongFeedback: "exd4.",
     },
   ],
 }
@@ -819,12 +819,12 @@ export const LN_LESSON_3: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Nc6, text: "5...Nc6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Nc6, correctMove: 'Nbd2',
-      prompt: "Your move.", hint: "Knight to d2.", correctFeedback: "Nbd2.", wrongFeedback: "Nbd2.",
+      prompt: "Your move.", hint: "Nbd2.", correctFeedback: "Nbd2.", wrongFeedback: "Nbd2.",
     },
     { type: 'instruction', fen: FEN.after_Bd6, text: "6...Bd6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_Bd6, correctMove: 'Bg3',
-      prompt: "What's the retreat?", hint: "Bg3.", correctFeedback: "Bg3 — safe and active.", wrongFeedback: "Bg3.",
+      prompt: "Your move.", hint: "Bg3.", correctFeedback: "Bg3.", wrongFeedback: "Bg3.",
     },
   ],
 }
@@ -946,12 +946,12 @@ export const LN_JOBAVA_1: OpeningLesson = {
     },
     {
       type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Nc3',
-      prompt: "The Jobava move.", hint: "Nc3.", correctFeedback: "Nc3!", wrongFeedback: "Nc3.",
+      prompt: "Your move.", hint: "Nc3.", correctFeedback: "Nc3.", wrongFeedback: "Nc3.",
     },
     { type: 'instruction', fen: FEN.jb_after_e6, text: "3...e6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.jb_after_e6, correctMove: 'e3',
-      prompt: "Complete it.", hint: "e3.", correctFeedback: "e3 — Jobava London complete.", wrongFeedback: "e3.",
+      prompt: "Your move.", hint: "e3.", correctFeedback: "e3.", wrongFeedback: "e3.",
     },
   ],
 }
@@ -1116,7 +1116,7 @@ export const LN_LESSON_4: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_b6, text: "8...b6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.after_b6, correctMove: 'O-O',
-      prompt: "Get safe.", hint: "Castle.", correctFeedback: "O-O — the setup is complete.", wrongFeedback: "O-O.",
+      prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O.",
     },
   ],
 }
@@ -1250,12 +1250,12 @@ export const LN_ANTI_BF5: OpeningLesson = {
     { type: 'instruction', fen: FEN.ab_after_Bf5, text: "3...Bf5.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.ab_after_Bf5, correctMove: 'c4',
-      prompt: "Strike!", hint: "c4.", correctFeedback: "c4!", wrongFeedback: "c4.",
+      prompt: "Your move.", hint: "c4.", correctFeedback: "c4.", wrongFeedback: "c4.",
     },
     { type: 'instruction', fen: FEN.ab_after_dxc4, text: "4...dxc4.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.ab_after_dxc4, correctMove: 'Bxc4',
-      prompt: "Recapture.", hint: "Bxc4.", correctFeedback: "Bxc4 — developing and recapturing.", wrongFeedback: "Bxc4.",
+      prompt: "Your move.", hint: "Bxc4.", correctFeedback: "Bxc4.", wrongFeedback: "Bxc4.",
     },
   ],
 }
@@ -1395,12 +1395,12 @@ export const LN_BD6_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.bd_after_Bd6, text: "4...Bd6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.bd_after_Bd6, correctMove: 'Bxd6',
-      prompt: "Trade.", hint: "Bxd6.", correctFeedback: "Bxd6.", wrongFeedback: "Bxd6.",
+      prompt: "Your move.", hint: "Bxd6.", correctFeedback: "Bxd6.", wrongFeedback: "Bxd6.",
     },
     { type: 'instruction', fen: FEN.bd_after_Qxd6, text: "5...Qxd6.", autoAdvance: 800 },
     {
       type: 'play-move', fen: FEN.bd_after_Qxd6, correctMove: 'Bd3',
-      prompt: "Develop.", hint: "Bd3.", correctFeedback: "Bd3 — aiming at h7.", wrongFeedback: "Bd3.",
+      prompt: "Your move.", hint: "Bd3.", correctFeedback: "Bd3.", wrongFeedback: "Bd3.",
     },
   ],
 }
@@ -1426,7 +1426,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 1: d4
     {
       type: 'play-move', fen: FEN.start, correctMove: 'd4',
-      prompt: "Your move.", hint: "The London starts with d4.", correctFeedback: "d4.", wrongFeedback: "d4.",
+      prompt: "Your move.", hint: "d4.", correctFeedback: "d4.", wrongFeedback: "d4.",
     },
     // 1...d5
     { type: 'instruction', fen: FEN.after_d5, text: "1...d5.", autoAdvance: 800 },
@@ -1434,7 +1434,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 2: Bf4
     {
       type: 'play-move', fen: FEN.after_d5, correctMove: 'Bf4',
-      prompt: "Your move.", hint: "Bishop before e3.", correctFeedback: "Bf4.", wrongFeedback: "Bf4.",
+      prompt: "Your move.", hint: "Bf4.", correctFeedback: "Bf4.", wrongFeedback: "Bf4.",
     },
     // 2...Nf6
     { type: 'instruction', fen: FEN.after_Nf6, text: "2...Nf6.", autoAdvance: 800 },
@@ -1442,7 +1442,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 3: e3
     {
       type: 'play-move', fen: FEN.after_Nf6, correctMove: 'e3',
-      prompt: "Your move.", hint: "The triangle.", correctFeedback: "e3.", wrongFeedback: "e3.",
+      prompt: "Your move.", hint: "e3.", correctFeedback: "e3.", wrongFeedback: "e3.",
     },
     // 3...e6
     { type: 'instruction', fen: FEN.after_e6, text: "3...e6.", autoAdvance: 800 },
@@ -1450,7 +1450,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 4: Nf3
     {
       type: 'play-move', fen: FEN.after_e6, correctMove: 'Nf3',
-      prompt: "Your move.", hint: "Develop a knight.", correctFeedback: "Nf3.", wrongFeedback: "Nf3.",
+      prompt: "Your move.", hint: "Nf3.", correctFeedback: "Nf3.", wrongFeedback: "Nf3.",
     },
     // 4...c5
     { type: 'instruction', fen: FEN.after_c5, text: "4...c5.", autoAdvance: 800 },
@@ -1458,7 +1458,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 5: c3
     {
       type: 'play-move', fen: FEN.after_c5, correctMove: 'c3',
-      prompt: "Your move.", hint: "Support the center.", correctFeedback: "c3.", wrongFeedback: "c3.",
+      prompt: "Your move.", hint: "c3.", correctFeedback: "c3.", wrongFeedback: "c3.",
     },
     // 5...Nc6
     { type: 'instruction', fen: FEN.after_Nc6, text: "5...Nc6.", autoAdvance: 800 },
@@ -1466,7 +1466,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 6: Nbd2
     {
       type: 'play-move', fen: FEN.after_Nc6, correctMove: 'Nbd2',
-      prompt: "Your move.", hint: "The other knight.", correctFeedback: "Nbd2.", wrongFeedback: "Nbd2.",
+      prompt: "Your move.", hint: "Nbd2.", correctFeedback: "Nbd2.", wrongFeedback: "Nbd2.",
     },
     // 6...Bd6
     { type: 'instruction', fen: FEN.after_Bd6, text: "6...Bd6.", autoAdvance: 800 },
@@ -1474,7 +1474,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 7: Bg3
     {
       type: 'play-move', fen: FEN.after_Bd6, correctMove: 'Bg3',
-      prompt: "Your move.", hint: "The retreat.", correctFeedback: "Bg3.", wrongFeedback: "Bg3.",
+      prompt: "Your move.", hint: "Bg3.", correctFeedback: "Bg3.", wrongFeedback: "Bg3.",
     },
     // 7...O-O
     { type: 'instruction', fen: FEN.after_OO, text: "7...O-O.", autoAdvance: 800 },
@@ -1482,7 +1482,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 8: Bd3
     {
       type: 'play-move', fen: FEN.after_OO, correctMove: 'Bd3',
-      prompt: "Your move.", hint: "Light-squared bishop.", correctFeedback: "Bd3.", wrongFeedback: "Bd3.",
+      prompt: "Your move.", hint: "Bd3.", correctFeedback: "Bd3.", wrongFeedback: "Bd3.",
     },
     // 8...b6
     { type: 'instruction', fen: FEN.after_b6, text: "8...b6.", autoAdvance: 800 },
@@ -1490,7 +1490,7 @@ export const LN_TEST_1: OpeningLesson = {
     // Move 9: O-O
     {
       type: 'play-move', fen: FEN.after_b6, correctMove: 'O-O',
-      prompt: "Your move.", hint: "King safety.", correctFeedback: "O-O — the London System is on the board.", wrongFeedback: "O-O.",
+      prompt: "Your move.", hint: "O-O.", correctFeedback: "O-O.", wrongFeedback: "O-O.",
     },
   ],
 }
