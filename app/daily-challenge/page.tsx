@@ -1090,6 +1090,7 @@ export default function DailyChallengePage() {
                       }
                     } catch (err) {
                       console.error('Share failed:', err);
+                      ShareEvents.shareFailed('daily_challenge', err instanceof Error ? err.message : 'unknown');
                     } finally {
                       setCardSharing(false);
                     }

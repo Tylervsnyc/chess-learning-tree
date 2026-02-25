@@ -19,6 +19,7 @@ import {
   WrongAnimationStyle,
 } from '@/components/lesson/RookWrongAnimation'
 import { BOARD_COLORS } from '@/lib/puzzle-utils'
+import { LearningEvents } from '@/lib/analytics/posthog'
 import {
   playCorrectSound,
   playMoveSound,
@@ -32,6 +33,10 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup'
 import { getRuyLopezLesson } from '@/data/openings/ruy-lopez-lessons'
 import { getPircLesson } from '@/data/openings/pirc-lessons'
 import { getItalianLesson } from '@/data/openings/italian-lessons'
+import { getSicilianLesson } from '@/data/openings/sicilian-lessons'
+import { getLondonLesson } from '@/data/openings/london-lessons'
+import { getFrenchLesson } from '@/data/openings/french-lessons'
+import { getCaroKannLesson } from '@/data/openings/caro-kann-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 
 // ═══════════════════════════════════════════
@@ -150,6 +155,10 @@ export default function OpeningLessonPage() {
       'ruy-lopez': getRuyLopezLesson,
       'pirc-defense': getPircLesson,
       'italian': getItalianLesson,
+      'sicilian': getSicilianLesson,
+      'london': getLondonLesson,
+      'french': getFrenchLesson,
+      'caro-kann': getCaroKannLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
@@ -169,6 +178,7 @@ export default function OpeningLessonPage() {
   const [puzzleMoveIndex, setPuzzleMoveIndex] = useState(0)
   const [puzzleFen, setPuzzleFen] = useState('')
 
+  const lessonStartTimeRef = useRef(Date.now())
   const advancingRef = useRef(false)
   const prevOrientationRef = useRef(boardOrientation)
   // Disable animation when orientation flips so pieces don't glitch
@@ -191,7 +201,9 @@ export default function OpeningLessonPage() {
     const step = lesson.steps[0]
     setBoardFen(step.fen)
     setBoardOrientation(step.orientation || lesson.defaultOrientation)
-  }, [lesson])
+    lessonStartTimeRef.current = Date.now()
+    LearningEvents.lessonStarted(lessonId, lesson.title)
+  }, [lesson, lessonId])
 
   const currentStep = lesson?.steps[currentStepIndex]
 
@@ -208,6 +220,10 @@ export default function OpeningLessonPage() {
     if (nextIndex >= lesson.steps.length) {
       playCelebrationSound()
       setShowComplete(true)
+      const timeSpent = Math.round((Date.now() - lessonStartTimeRef.current) / 1000)
+      const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
+      const accuracy = interactiveCount > 0 ? Math.round((correctCount / interactiveCount) * 100) : 100
+      LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent)
       advancingRef.current = false
       return
     }
@@ -223,7 +239,7 @@ export default function OpeningLessonPage() {
     setPuzzleMoveIndex(0)
     setPuzzleFen('')
     advancingRef.current = false
-  }, [lesson, currentStepIndex, getStepOrientation])
+  }, [lesson, currentStepIndex, getStepOrientation, correctCount, lessonId])
 
   // ─── Auto-advance for instruction steps with autoAdvance ───
   useEffect(() => {
@@ -261,6 +277,7 @@ export default function OpeningLessonPage() {
         (currentStep.acceptMoves?.includes(move.san) ?? false)
 
       if (isCorrect) {
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0)
         setBoardFen(game.fen())
         setSelectedSquare(null)
         setMoveStatus('correct')
@@ -280,6 +297,7 @@ export default function OpeningLessonPage() {
         }
         return true
       } else {
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0)
         setBoardFen(game.fen())
         playErrorSound()
         vibrateOnError()
@@ -303,7 +321,7 @@ export default function OpeningLessonPage() {
     } catch {
       return false
     }
-  }, [currentStep, moveStatus, correctCount, wrongAttempts, advanceStep])
+  }, [currentStep, moveStatus, correctCount, wrongAttempts, advanceStep, lessonId, currentStepIndex])
 
   // ─── Handle puzzle move ───
   const handlePuzzleMove = useCallback((from: Square, to: Square) => {
@@ -326,6 +344,7 @@ export default function OpeningLessonPage() {
 
         const nextIdx = puzzleMoveIndex + 1
         if (nextIdx >= currentStep.solutionMoves.length) {
+          LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0)
           setCorrectCount(prev => prev + 1)
           playCorrectSound(correctCount)
           setMoveStatus('correct')
@@ -346,6 +365,7 @@ export default function OpeningLessonPage() {
         }, 300)
         return true
       } else {
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0)
         setBoardFen(game.fen())
         playErrorSound()
         vibrateOnError()
@@ -363,7 +383,7 @@ export default function OpeningLessonPage() {
     } catch {
       return false
     }
-  }, [currentStep, moveStatus, puzzleFen, puzzleMoveIndex, correctCount])
+  }, [currentStep, moveStatus, puzzleFen, puzzleMoveIndex, correctCount, lessonId, currentStepIndex])
 
   // ─── Square click ───
   const handleSquareClick = useCallback((square: Square) => {
@@ -672,7 +692,11 @@ export default function OpeningLessonPage() {
       <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push(`/openings/${slug}`)}
+            onClick={() => {
+              const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
+              LearningEvents.lessonAbandoned(lessonId, currentStepIndex + 1, interactiveCount)
+              router.push(`/openings/${slug}`)
+            }}
             className="text-chess-text-faint hover:text-chess-text-muted"
           >
             ✕

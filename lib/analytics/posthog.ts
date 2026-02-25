@@ -11,6 +11,11 @@ export function initPostHog() {
     capture_pageview: true,
     capture_pageleave: true,
     autocapture: true, // Automatically capture clicks, form submissions, etc.
+    disable_session_recording: false,
+    session_recording: {
+      maskAllInputs: true,
+      maskTextSelector: '[data-mask]',
+    },
   });
 }
 

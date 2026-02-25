@@ -169,7 +169,7 @@ export function LessonCompleteScreen({
       ShareEvents.shareCompleted('lesson', 'clipboard');
       setTimeout(dismissShareToast, 1500);
     } catch {
-      // Silent fail
+      ShareEvents.shareFailed('lesson', 'clipboard_failed');
       dismissShareToast();
     }
   };

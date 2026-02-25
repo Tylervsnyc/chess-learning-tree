@@ -35,7 +35,9 @@ function SuccessContent() {
         console.error('Sync failed:', data.error);
         setSyncError(data.error || 'Failed to activate subscription');
       } else {
-        SubscriptionEvents.checkoutCompleted('monthly');
+        const trigger = sessionStorage.getItem('checkout_trigger') || undefined;
+        SubscriptionEvents.checkoutCompleted('monthly', trigger);
+        sessionStorage.removeItem('checkout_trigger');
       }
     } catch (err) {
       console.error('Sync error:', err);
