@@ -47,7 +47,7 @@ import { CreateProfileModal } from '@/components/subscription/CreateProfileModal
 import { LearningEvents } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { LessonCompleteScreen } from '@/components/lesson/LessonCompleteScreen';
+import { LessonComplete } from '@/components/shared/LessonComplete';
 import { TutorialFlow } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -1011,15 +1011,18 @@ export default function LessonPage() {
     if (lessonComplete) {
       return (
         <>
-          <LessonCompleteScreen
+          <LessonComplete
             correctCount={tutorialCorrectCount}
-            wrongCount={6 - tutorialCorrectCount}
             lessonName="Queen Checkmate: Easy"
             lessonId={lessonId}
             isGuest={!user}
             getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
-            streak={currentStreak}
-            puzzleResults={Array.from({ length: 6 }, (_, i) => i < tutorialCorrectCount ? 'correct' : 'wrong') as ('correct' | 'wrong')[]}
+            onContinue={() => {
+              window.location.href = !user
+                ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
+                : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+            }}
+            onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
           />
           <CreateProfileModal
             isOpen={showCreateProfileModal}
@@ -1130,15 +1133,18 @@ export default function LessonPage() {
     if (lessonPassed === false || lessonPassed === true) {
       return (
         <>
-          <LessonCompleteScreen
+          <LessonComplete
             correctCount={firstAttemptCorrectCount}
-            wrongCount={puzzles.length - firstAttemptCorrectCount}
             lessonName={lessonName}
             lessonId={lessonId}
             isGuest={!user}
             getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
-            streak={currentStreak}
-            puzzleResults={puzzles.map(p => firstAttemptResults[p.puzzleId] === 'correct' ? 'correct' : 'wrong')}
+            onContinue={() => {
+              window.location.href = !user
+                ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
+                : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+            }}
+            onRetry={firstAttemptCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
           />
           <CreateProfileModal
             isOpen={showCreateProfileModal}
