@@ -13,6 +13,7 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 - When Tyler asks "how does X work?" — answer directly, don't launch an agent.
 - Celebrate wins briefly. Tyler likes to see progress.
 - **Use Linear for task tracking.** All bugs, features, and improvements flow through Linear. Check issues before starting work, update status as you go.
+- **Always show changes in the app.** When working in Cowork/Claude app, present updated files so Tyler can see changes rendered directly — don't just describe what changed.
 
 ---
 
@@ -96,7 +97,19 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 | `.claude/design-system.md` | Colors, tokens, layout rules, component patterns |
 | `.claude/standards/development.md` | Naming conventions, PR format, error handling patterns |
 | `.claude/lessons-learned.md` | 24 battle-tested debugging insights from real sessions |
-| `.claude/commands/` | Skill commands: code-review, bug-triage, feature-scaffold, migration-plan, dependency-audit |
+| `.claude/commands/` | Skill commands: code-review, bug-triage, feature-scaffold, migration-plan, dependency-audit, **work-task** |
+| **PROGRESS.md** | Session memory — read at start of every session, update at end. Current state of all active work. |
+
+---
+
+## Session Startup
+
+Every new session, before doing any work:
+1. **Read `PROGRESS.md`** — know what's in flight, what was recently done, key context
+2. **Check Linear** — see if priorities have shifted since last session
+3. **Pick up where we left off** — or ask Tyler what's next
+
+At session end: **update PROGRESS.md** with what was accomplished and any new context.
 
 ---
 
@@ -126,8 +139,9 @@ That script checks if the server is already running and only starts it if needed
 
 ---
 
-## Three Rules
+## Four Rules
 
 1. **Search before changing.** Search ALL code touching a feature before modifying any of it. Delete competing implementations first.
 2. **RULES.md is the source of truth.** When in doubt, read RULES.md — not your memory, not this file.
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
+4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Don't add workarounds that fight how the app works — change how the app works. Remove the thing causing the problem instead of adding code to counteract it.

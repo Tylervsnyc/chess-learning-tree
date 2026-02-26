@@ -51,8 +51,8 @@ The lesson info popup was positioned relative to the button but could overflow o
 → **New rule:** Any popup/tooltip needs boundary detection. Check if it would overflow left/right edges and flip positioning accordingly. Use `getBoundingClientRect()` to detect.
 
 ### Lesson: 2026-02-04 - Pages scrolled on mobile because NavHeader + h-screen > viewport
-Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.tsx. Total height = NavHeader + 100vh = scrollable body. Using JavaScript (ScrollToTop) to fix a CSS problem is a band-aid.
-→ **New rule:** Page layout is controlled in `globals.css` (body flex) + `layout.tsx` (main wrapper). Pages use `h-full` not `h-screen`. Only `/learn` has `overflow-auto` for scrolling. Never use `h-screen` in pages.
+Pages used `h-screen` (100vh) but NavHeader was rendered outside them in layout.tsx. Total height = NavHeader + 100vh = scrollable body. Using JavaScript (ScrollToTop) to fix a CSS problem is a band-aid. **Update 2026-02-26:** ScrollToTop was finally deleted after we realized it was the root cause of CHE-77 (scroll-to-current-lesson never working). The original CSS bug was already fixed with `overflow-hidden` on lesson pages — ScrollToTop was solving a problem that no longer existed while creating a new one.
+→ **New rule:** Page layout is controlled in `globals.css` (body flex) + `layout.tsx` (main wrapper). Pages use `h-full` not `h-screen`. Only `/learn` has `overflow-auto` for scrolling. Never use `h-screen` in pages. No global scroll managers — each page owns its own scroll behavior.
 
 ### Lesson: 2026-02-05 - Early returns in state updates skipped side effects
 The `completeLesson` function returned early for already-completed lessons, which meant `currentPosition` never got updated when replaying a lesson. The user's position appeared stuck at an old value because the server had stale data and server wins on merge.
