@@ -130,6 +130,36 @@ STOP and ask when:
 
 ---
 
+## Token Budget — CRITICAL
+
+This is a **MECHANICAL, pattern-matching task**. Do NOT think deeply about chess.
+
+### DO:
+- Copy structure from an existing lesson file (london-lessons.ts is cleanest)
+- Generate FENs by running chess.js moves mechanically
+- Write files directly — no drafts, no outlines, no "let me think about this"
+- Keep commentary to 1-2 sentences per step (you already know this)
+
+### DO NOT:
+- Reason about chess theory, strategy, or position evaluation
+- Debate which variations are "best" for beginners — just follow the knowledge file
+- Explore alternative move orders or lesson sequences
+- Write long internal narratives about your approach
+- Plan the tree in prose before writing code — go straight to code
+- Second-guess your FEN computations — compute once, verify once, move on
+
+### The job is:
+1. Read the 3 context files
+2. Pick moves from the knowledge file
+3. Compute FENs mechanically with chess.js
+4. Fill in the template (tree file + lessons file)
+5. Wire it up
+6. Done
+
+**80% of this is find-and-replace on an existing lesson file.** Treat it that way.
+
+---
+
 ## Common Pitfalls
 
 - **Wrong FENs** — validate with chess.js, not by hand

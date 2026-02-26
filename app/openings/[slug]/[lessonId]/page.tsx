@@ -5,20 +5,19 @@ import { useRouter, useParams } from 'next/navigation'
 import { Chess, Square } from 'chess.js'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
 import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
-import { OpeningLessonComplete } from '@/components/openings/OpeningLessonComplete'
+import { LessonComplete } from '@/components/shared/LessonComplete'
+import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup'
 import {
-  RookProgressAnimation,
   RookProgressAnimationRef,
   ANIMATION_STYLES,
   AnimationStyle,
 } from '@/components/lesson/RookProgressAnimation'
 import {
-  RookWrongAnimation,
   RookWrongAnimationRef,
   WRONG_ANIMATION_STYLES,
   WrongAnimationStyle,
 } from '@/components/lesson/RookWrongAnimation'
-import { BOARD_COLORS } from '@/lib/puzzle-utils'
+import { BOARD_COLORS, MOVE_INDICATOR } from '@/lib/puzzle-utils'
 import { LearningEvents } from '@/lib/analytics/posthog'
 import {
   playCorrectSound,
@@ -37,7 +36,11 @@ import { getSicilianLesson } from '@/data/openings/sicilian-lessons'
 import { getLondonLesson } from '@/data/openings/london-lessons'
 import { getFrenchLesson } from '@/data/openings/french-lessons'
 import { getCaroKannLesson } from '@/data/openings/caro-kann-lessons'
+import { getKingsGambitLesson } from '@/data/openings/kings-gambit-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
+import { getOpeningBySlug } from '@/data/openings/registry'
+import { TREE_LOOKUP } from '@/lib/opening-trees'
+import { useOpeningProgress } from '@/hooks/useOpeningProgress'
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -54,11 +57,12 @@ function getCorrectMoveSquares(step: PlayMoveStep): { from: Square; to: Square }
   }
 }
 
+
 // ═══════════════════════════════════════════
-// ANIMATED GUIDE ARROW (blue flowing rectangles)
+// GUIDE ARROW — single unified path, no overlap artifacts
 // ═══════════════════════════════════════════
 
-function AnimatedGuideArrow({
+function GuideArrow({
   from,
   to,
   orientation,
@@ -85,55 +89,33 @@ function AnimatedGuideArrow({
   const px = -ny
   const py = nx
 
-  // Arrowhead
-  const headSize = 5
-  const stemEnd = { x: e.x - nx * headSize, y: e.y - ny * headSize }
-  const tip = e
-  const hL = { x: stemEnd.x + px * headSize * 0.7, y: stemEnd.y + py * headSize * 0.7 }
-  const hR = { x: stemEnd.x - px * headSize * 0.7, y: stemEnd.y - py * headSize * 0.7 }
+  // Stem width and arrowhead sizing
+  const stemHalf = 1.4
+  const headWidth = 3.8
+  const headLength = 5
 
-  const headGradId = `matte-head-${from}-${to}`
-  const stemGradId = `matte-stem-${from}-${to}`
+  // Points along the arrow
+  const stemEnd = { x: e.x - nx * headLength, y: e.y - ny * headLength }
+
+  // Single closed path: left stem → left head → tip → right head → right stem → back
+  const d = [
+    `M ${s.x + px * stemHalf} ${s.y + py * stemHalf}`,
+    `L ${stemEnd.x + px * stemHalf} ${stemEnd.y + py * stemHalf}`,
+    `L ${stemEnd.x + px * headWidth} ${stemEnd.y + py * headWidth}`,
+    `L ${e.x} ${e.y}`,
+    `L ${stemEnd.x - px * headWidth} ${stemEnd.y - py * headWidth}`,
+    `L ${stemEnd.x - px * stemHalf} ${stemEnd.y - py * stemHalf}`,
+    `L ${s.x - px * stemHalf} ${s.y - py * stemHalf}`,
+    'Z',
+  ].join(' ')
 
   return (
     <svg
       viewBox="0 0 100 100"
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 10 }}
+      className="absolute inset-0 w-full h-full pointer-events-none guide-arrow-breathe"
+      style={{ zIndex: 15 }}
     >
-      <defs>
-        {/* Matte gradient along the stem direction (light→base→dark) */}
-        <linearGradient id={stemGradId} x1={s.x} y1={s.y} x2={stemEnd.x} y2={stemEnd.y} gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#6BA3E8" />
-          <stop offset="20%" stopColor="#4A82C7" />
-          <stop offset="100%" stopColor="#3568A6" />
-        </linearGradient>
-        {/* Matte gradient for arrowhead */}
-        <linearGradient id={headGradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6BA3E8" />
-          <stop offset="30%" stopColor="#4A82C7" />
-          <stop offset="100%" stopColor="#2A5590" />
-        </linearGradient>
-      </defs>
-
-      {/* Animated flowing dashes (matte blue, solid) */}
-      <line
-        x1={s.x} y1={s.y} x2={stemEnd.x} y2={stemEnd.y}
-        stroke={`url(#${stemGradId})`}
-        strokeWidth="3.5"
-        strokeLinecap="square"
-        strokeDasharray="4 6"
-        className="opening-arrow-flow"
-      />
-
-      {/* Solid matte arrowhead */}
-      <polygon
-        points={`${tip.x},${tip.y} ${hL.x},${hL.y} ${hR.x},${hR.y}`}
-        fill={`url(#${headGradId})`}
-        stroke="#2A5590"
-        strokeWidth={0.4}
-        strokeLinejoin="round"
-      />
+      <path d={d} fill="#1DA1F2" opacity={0.7} />
     </svg>
   )
 }
@@ -149,6 +131,7 @@ export default function OpeningLessonPage() {
   const lessonId = params.lessonId as string
 
   useAudioWarmup()
+  const { completeLesson } = useOpeningProgress()
 
   const lesson = useMemo((): OpeningLesson | undefined => {
     const lookups: Record<string, (id: string) => OpeningLesson | undefined> = {
@@ -159,6 +142,7 @@ export default function OpeningLessonPage() {
       'london': getLondonLesson,
       'french': getFrenchLesson,
       'caro-kann': getCaroKannLesson,
+      'kings-gambit': getKingsGambitLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
@@ -185,12 +169,12 @@ export default function OpeningLessonPage() {
   const orientationJustChanged = prevOrientationRef.current !== boardOrientation
   useEffect(() => { prevOrientationRef.current = boardOrientation }, [boardOrientation])
 
-  // ─── Rook animation ───
+  // ─── Rook animation (same as PuzzleResultPopup in /learn) ───
   const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[]
   const wrongAnimStyles = Object.keys(WRONG_ANIMATION_STYLES) as WrongAnimationStyle[]
-  const [lessonAnimIndex] = useState(() => Math.floor(Math.random() * correctAnimStyles.length))
+  const [correctAnimCount, setCorrectAnimCount] = useState(() => Math.floor(Math.random() * correctAnimStyles.length))
   const [wrongAnimCount, setWrongAnimCount] = useState(() => Math.floor(Math.random() * wrongAnimStyles.length))
-  const rookCorrectStyle = correctAnimStyles[lessonAnimIndex % correctAnimStyles.length]
+  const rookCorrectStyle = correctAnimStyles[correctAnimCount % correctAnimStyles.length]
   const rookWrongStyle = wrongAnimStyles[wrongAnimCount % wrongAnimStyles.length]
   const rookProgressRef = useRef<RookProgressAnimationRef>(null)
   const rookWrongRef = useRef<RookWrongAnimationRef>(null)
@@ -224,6 +208,7 @@ export default function OpeningLessonPage() {
       const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
       const accuracy = interactiveCount > 0 ? Math.round((correctCount / interactiveCount) * 100) : 100
       LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent)
+      completeLesson(slug, lessonId)
       advancingRef.current = false
       return
     }
@@ -239,7 +224,7 @@ export default function OpeningLessonPage() {
     setPuzzleMoveIndex(0)
     setPuzzleFen('')
     advancingRef.current = false
-  }, [lesson, currentStepIndex, getStepOrientation, correctCount, lessonId])
+  }, [lesson, currentStepIndex, getStepOrientation, correctCount, lessonId, slug, completeLesson])
 
   // ─── Auto-advance for instruction steps with autoAdvance ───
   useEffect(() => {
@@ -285,8 +270,8 @@ export default function OpeningLessonPage() {
         playCorrectSound(correctCount)
         vibrateOnCorrect()
 
-        // Trigger rook progress
-        setTimeout(() => rookProgressRef.current?.triggerNextStage(), 150)
+        // Rook animation triggered by PuzzleResultPopup on mount
+        setCorrectAnimCount(prev => prev + 1)
 
         if (currentStep.postMoveArrow) {
           const arrow = currentStep.postMoveArrow
@@ -348,7 +333,8 @@ export default function OpeningLessonPage() {
           setCorrectCount(prev => prev + 1)
           playCorrectSound(correctCount)
           setMoveStatus('correct')
-          setTimeout(() => rookProgressRef.current?.triggerNextStage(), 150)
+          setCorrectAnimCount(prev => prev + 1)
+          // Rook animation triggered by PuzzleResultPopup on mount
           return true
         }
 
@@ -437,16 +423,16 @@ export default function OpeningLessonPage() {
     if (currentStep?.type === 'play-move' && moveStatus === 'waiting') {
       if (currentStep.highlightSquares && wrongAttempts === 0) {
         for (const sq of currentStep.highlightSquares) {
-          styles[sq] = { backgroundColor: 'rgba(255, 160, 0, 0.45)' }
+          styles[sq] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
         }
       }
 
       if (wrongAttempts >= 1 && !currentStep.highlightSquares) {
         const correct = getCorrectMoveSquares(currentStep)
         if (correct) {
-          styles[correct.from] = { backgroundColor: 'rgba(255, 160, 0, 0.45)' }
+          styles[correct.from] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
           if (wrongAttempts >= 2) {
-            styles[correct.to] = { backgroundColor: 'rgba(255, 160, 0, 0.45)' }
+            styles[correct.to] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
           }
         }
       }
@@ -454,14 +440,14 @@ export default function OpeningLessonPage() {
       if (wrongAttempts >= 1 && currentStep.highlightSquares) {
         const correct = getCorrectMoveSquares(currentStep)
         if (correct) {
-          styles[correct.from] = { backgroundColor: 'rgba(255, 160, 0, 0.45)' }
+          styles[correct.from] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
           styles[correct.to] = { backgroundColor: 'rgba(255, 160, 0, 0.45)' }
         }
       }
     }
 
     if (selectedSquare && moveStatus === 'waiting') {
-      styles[selectedSquare] = { backgroundColor: 'rgba(255, 160, 0, 0.5)' }
+      styles[selectedSquare] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
 
       if (currentStep && (currentStep.type === 'play-move' || currentStep.type === 'puzzle')) {
         const fen = currentStep.type === 'puzzle' ? (puzzleFen || currentStep.fen) : currentStep.fen
@@ -470,8 +456,7 @@ export default function OpeningLessonPage() {
           const moves = game.moves({ square: selectedSquare, verbose: true })
           for (const m of moves) {
             styles[m.to] = {
-              background: 'radial-gradient(circle, rgba(0,0,0,0.15) 25%, transparent 25%)',
-              borderRadius: '50%',
+              background: m.captured ? MOVE_INDICATOR.capture : MOVE_INDICATOR.quiet,
             }
           }
         } catch { /* ignore */ }
@@ -480,7 +465,7 @@ export default function OpeningLessonPage() {
 
     if (currentStep?.type === 'instruction' && currentStep.highlightSquares) {
       for (const sq of currentStep.highlightSquares) {
-        styles[sq] = { backgroundColor: 'rgba(255, 160, 0, 0.4)', ...styles[sq] }
+        styles[sq] = { backgroundColor: 'rgba(255, 230, 50, 0.4)', ...styles[sq] }
       }
     }
 
@@ -489,7 +474,7 @@ export default function OpeningLessonPage() {
 
   // ─── Arrows (library — for attack/instruction arrows) ───
   const arrows = useMemo(() => {
-    const attackColor = 'rgba(239, 68, 68, 0.8)'
+    const attackColor = 'rgba(29, 161, 242, 0.9)'
     if (activePostMoveArrow) {
       return [{
         startSquare: activePostMoveArrow[0],
@@ -539,95 +524,56 @@ export default function OpeningLessonPage() {
     (currentStep.type === 'play-move' || currentStep.type === 'quiz' || currentStep.type === 'puzzle')
   const progressCurrent = completedInteractive + (isCurrentInteractive && isCurrentDone ? 1 : 0)
 
-  // ─── Render feedback popup (matches PuzzleResultPopup exactly) ───
-  const renderCorrectPopup = (message: string, showButton: boolean, buttonText = 'Continue', onContinue?: () => void) => (
-    <div
-      className="w-full py-2.5 pr-4 rounded-b-2xl bg-chess-correct-bg"
-      style={{ animation: 'slideUpBounce 0.3s ease-out', paddingLeft: 16 }}
-    >
-      <div className="max-w-lg mx-auto flex items-center" style={{ gap: 12 }}>
-        <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 66, height: 80 }}>
-          <RookProgressAnimation
-            ref={rookProgressRef}
-            style={rookCorrectStyle}
-            currentStage={correctCount > 0 ? correctCount - 1 : 0}
-            scale={0.7}
-            showProgress={false}
-            showLabel={false}
-            compact
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5">
-            <p className="font-bold leading-tight flex-1 text-chess-green-dark" style={{ fontSize: 15 }}>
-              {message}
-            </p>
-          </div>
-          {showButton && (
-            <button
-              onClick={onContinue}
-              className="w-full py-1.5 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
-            >
-              {buttonText}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-
-  const renderWrongPopup = (message: string) => (
-    <div
-      className="w-full py-2.5 rounded-b-2xl bg-chess-wrong-bg"
-      style={{ animation: 'fadeIn 0.2s ease-out', paddingLeft: 6, paddingRight: 16 }}
-    >
-      <div className="max-w-lg mx-auto flex items-center" style={{ gap: 22 }}>
-        <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 66, height: 80 }}>
-          <RookWrongAnimation
-            ref={rookWrongRef}
-            style={rookWrongStyle}
-            scale={0.7}
-            visibleStages={6}
-            compact
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-bold leading-tight text-chess-red" style={{ fontSize: 15 }}>
-            {message}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-
   // ─── Render step content below board ───
   const renderStepContent = () => {
     if (!currentStep) return null
 
     // ── Instruction step ──
     if (currentStep.type === 'instruction') {
-      if (currentStep.autoAdvance) {
-        return renderCorrectPopup(currentStep.text, false)
-      }
-      return renderCorrectPopup(
-        currentStep.text,
-        true,
-        currentStep.buttonText || 'Continue',
-        advanceStep,
+      return (
+        <PuzzleResultPopup
+          type="correct"
+          message={currentStep.text}
+          onContinue={currentStep.autoAdvance ? () => {} : advanceStep}
+          hideButton={!!currentStep.autoAdvance}
+          rookAnimationStyle={rookCorrectStyle}
+          rookProgressRef={rookProgressRef}
+          rookCurrentStage={correctCount}
+        />
       )
     }
 
     // ── Play-move step ──
     if (currentStep.type === 'play-move') {
       if (moveStatus === 'correct') {
-        return renderCorrectPopup(currentStep.correctFeedback, false)
+        return (
+          <PuzzleResultPopup
+            type="correct"
+            message={currentStep.correctFeedback}
+            onContinue={advanceStep}
+            hideButton
+            rookAnimationStyle={rookCorrectStyle}
+            rookProgressRef={rookProgressRef}
+            rookCurrentStage={correctCount}
+          />
+        )
       }
-      // Waiting or wrong — show prompt with "Try again" after a wrong attempt
+      if (moveStatus === 'wrong') {
+        return (
+          <PuzzleResultPopup
+            key={`wrong-${wrongAnimCount}`}
+            type="incorrect"
+            message="Not quite — try again"
+            onContinue={() => {}}
+            hideButton
+            showSolution={false}
+            rookWrongStyle={rookWrongStyle}
+            rookWrongRef={rookWrongRef}
+          />
+        )
+      }
       return (
         <div className="w-full max-w-lg mx-auto px-4 py-4 flex flex-col flex-1">
-          {wrongAttempts > 0 && (
-            <p className="text-sm font-semibold text-chess-red mb-1">Try again</p>
-          )}
           <p className="text-sm font-semibold text-chess-text mb-1">
             {currentStep.prompt}
           </p>
@@ -648,7 +594,31 @@ export default function OpeningLessonPage() {
     // ── Puzzle step ──
     if (currentStep.type === 'puzzle') {
       if (moveStatus === 'correct') {
-        return renderCorrectPopup(currentStep.correctFeedback, true, 'Continue', advanceStep)
+        return (
+          <PuzzleResultPopup
+            type="correct"
+            message={currentStep.correctFeedback}
+            onContinue={advanceStep}
+            hideButton
+            rookAnimationStyle={rookCorrectStyle}
+            rookProgressRef={rookProgressRef}
+            rookCurrentStage={correctCount}
+          />
+        )
+      }
+      if (moveStatus === 'wrong') {
+        return (
+          <PuzzleResultPopup
+            key={`wrong-${wrongAnimCount}`}
+            type="incorrect"
+            message="Not quite — try again"
+            onContinue={() => {}}
+            hideButton
+            showSolution={false}
+            rookWrongStyle={rookWrongStyle}
+            rookWrongRef={rookWrongRef}
+          />
+        )
       }
       return (
         <div className="w-full max-w-lg mx-auto px-4 py-4 flex flex-col flex-1">
@@ -678,13 +648,6 @@ export default function OpeningLessonPage() {
         @keyframes fadeIn {
           0% { opacity: 0; }
           100% { opacity: 1; }
-        }
-        @keyframes arrowFlow {
-          0% { stroke-dashoffset: 20; }
-          100% { stroke-dashoffset: 0; }
-        }
-        .opening-arrow-flow {
-          animation: arrowFlow 2.5s linear infinite;
         }
       `}</style>
 
@@ -736,7 +699,7 @@ export default function OpeningLessonPage() {
             }}
           />
           {guideArrow && (
-            <AnimatedGuideArrow
+            <GuideArrow
               from={guideArrow.from}
               to={guideArrow.to}
               orientation={boardOrientation}
@@ -748,13 +711,28 @@ export default function OpeningLessonPage() {
         </div>
       </div>
 
-      {showComplete && (
-        <OpeningLessonComplete
-          lessonTitle={lesson.title}
-          accentColor="#FF9600"
-          onContinue={() => router.push(`/openings/${slug}`)}
-        />
-      )}
+      {showComplete && (() => {
+        const tree = TREE_LOOKUP[slug]
+        const node = tree?.nodes.find(n => n.id === lessonId)
+        const moves = node?.moves?.join(' ') || ''
+        const finalFen = lesson.steps[lesson.steps.length - 1]?.fen || ''
+        return (
+          <LessonComplete
+            title="Lesson Complete!"
+            subtitle={lesson.title}
+            lessonName={lesson.title}
+            lessonId={lessonId}
+            correctCount={correctCount}
+            totalPuzzles={lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length}
+            accentColor={getOpeningBySlug(slug)?.color ?? '#FF9600'}
+            openingName={getOpeningBySlug(slug)?.name}
+            openingSlug={slug}
+            openingMoves={moves}
+            openingFinalFen={finalFen}
+            onContinue={() => router.push(`/openings/${slug}/tree`)}
+          />
+        )
+      })()}
     </div>
   )
 }
