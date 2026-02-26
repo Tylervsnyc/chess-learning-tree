@@ -185,7 +185,8 @@ No URL params needed. The `currentPosition` field stored in the database determi
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
 - **NO URL PARAMS** - Use `currentPosition` from hook, not URL params
 - **WAIT FOR SERVER DATA** - Don't render/scroll until `serverFetched` is true (prevents flash to default position)
-- Enforced in ONE `useEffect` in `/components/learn/LearnPageContent.tsx`
+- **NO GLOBAL SCROLL MANAGERS** - Each page owns its own scroll. No ScrollToTop, no `scrollRestoration = 'manual'`. Browser handles scroll restoration naturally. Lesson pages use `overflow-hidden` to prevent scrolling.
+- Scroll logic lives in ONE `useCallback` + ONE `useEffect` in `/components/learn/LearnPageContent.tsx`, with a `pageshow` backup for mobile bfcache restores.
 
 ### Sticky Headers:
 | Element | Position | Z-Index | Behavior |
@@ -198,13 +199,20 @@ The level header sits just below the nav header with a small gap, keeping both v
 ### Implementation:
 ```typescript
 // In /components/learn/LearnPageContent.tsx - the ONLY place this happens
-useEffect(() => {
-  // Wait for BOTH local AND server data before scrolling
+const scrollToCurrentLesson = useCallback(() => {
   if (!progressLoaded || !serverFetched || !currentPosition) return;
-
-  // Expand the section containing currentPosition
-  // Poll for element existence, then scroll
+  // Expand section, poll for element, scrollIntoView
 }, [progressLoaded, serverFetched, currentPosition]);
+
+// Fires on mount + when data becomes ready
+useEffect(() => { scrollToCurrentLesson(); }, [...]);
+
+// Backup: bfcache restore on mobile
+useEffect(() => {
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) scrollToCurrentLesson();
+  });
+}, [...]);
 ```
 
 ---
