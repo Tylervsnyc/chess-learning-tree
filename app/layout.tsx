@@ -4,7 +4,6 @@ import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
-import { ScrollToTop } from '@/components/providers/ScrollToTop';
 import { InstallPrompt } from '@/components/InstallPrompt';
 
 export const metadata: Metadata = {
@@ -60,7 +59,6 @@ export default function RootLayout({
       <body className="antialiased">
         <Suspense fallback={null}>
           <AbortErrorSuppressor />
-          <ScrollToTop />
           <PostHogProvider>
             <NavHeader />
             <main className="flex-1 min-h-0 flex flex-col max-w-3xl mx-auto w-full">

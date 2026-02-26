@@ -428,21 +428,18 @@ export default function LearnPageContent() {
   const isAdmin = profile?.is_admin ?? false;
 
   // SCROLL BEHAVIOR (RULES.md Section 5) - ONE useEffect, ONE place
-  // currentPosition is the source of truth - no computation needed
-  // Section expand/collapse: NO scrolling (handled by toggleSection)
-  // Wait for serverFetched to ensure currentPosition has merged with server data
-  useEffect(() => {
+  // Scroll to currentPosition every time this page appears.
+  // Trigger: data readiness (mount + server fetch). Guards: data loaded.
+  // Backup: pageshow event catches bfcache restores on mobile browsers.
+  const scrollToCurrentLesson = useCallback(() => {
     if (!progressLoaded || !serverFetched || !currentPosition) return;
-
-    EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
 
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
       setExpandedSections(prev => ({ ...prev, [sectionId]: true }));
     }
 
-    // Wait for the element to exist (section needs to expand and render)
-    // Poll every 50ms for up to 500ms
+    // Poll for element (section may need to expand first)
     let attempts = 0;
     const maxAttempts = 10;
     const pollForElement = () => {
@@ -456,6 +453,22 @@ export default function LearnPageContent() {
     };
     setTimeout(pollForElement, 50);
   }, [progressLoaded, serverFetched, currentPosition]);
+
+  // Scroll on mount + when data becomes ready
+  useEffect(() => {
+    if (!progressLoaded || !serverFetched || !currentPosition) return;
+    EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
+    scrollToCurrentLesson();
+  }, [progressLoaded, serverFetched, currentPosition, scrollToCurrentLesson]);
+
+  // Backup: scroll on bfcache restore (mobile back button)
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) scrollToCurrentLesson();
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [scrollToCurrentLesson]);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
