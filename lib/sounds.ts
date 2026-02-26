@@ -207,24 +207,37 @@ export async function playErrorSound(): Promise<void> {
   osc2.stop(ctx.currentTime + 0.3);
 }
 
-// Celebration sound - warm C Major arpeggio with reverb-like decay
+// Celebration sound - bright C Major arpeggio with compressor to prevent clipping
 async function playCelebration(): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
 
-  const notes = [262, 330, 392, 523]; // C4, E4, G4, C5
+  // Compressor prevents distortion when oscillators overlap
+  const compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = -8;
+  compressor.knee.value = 10;
+  compressor.ratio.value = 12;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.1;
+  compressor.connect(ctx.destination);
+
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = 0.5;
+  masterGain.connect(compressor);
+
+  const notes = [262, 330, 392, 523]; // C4, E4, G4, C5 — warm register
   notes.forEach((freq, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.value = freq;
-    const t = ctx.currentTime + i * 0.09;
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+    const t = ctx.currentTime + i * 0.11;
+    gain.gain.setValueAtTime(0.1, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(masterGain);
     osc.start(t);
-    osc.stop(t + 0.6);
+    osc.stop(t + 0.45);
   });
 }
 
