@@ -1,25 +1,7 @@
 {
-  "generatedAt": "2026-02-11T15:41:17.099Z",
-  "count": 201,
+  "generatedAt": "2026-02-24T14:19:49.619Z",
+  "count": 200,
   "puzzles": [
-    {
-      "puzzleId": "crLTa",
-      "fen": "r2q1rk1/pb4pp/1p2Q3/2p2pN1/8/P1nP4/Bb1B1PPP/3R1RK1 b - - 0 17",
-      "moves": "g8h8 e6g8 f8g8 g5f7",
-      "rating": 1681,
-      "theme": "smotheredMate",
-      "allThemes": [
-        "kingsideAttack",
-        "master",
-        "mate",
-        "mateIn2",
-        "middlegame",
-        "sacrifice",
-        "short",
-        "smotheredMate"
-      ],
-      "gameUrl": "https://lichess.org/bVEkCnlF/black#34"
-    },
     {
       "puzzleId": "4qhmT",
       "fen": "8/7p/4kpp1/pN2p3/6P1/PP5r/8/4RK2 w - - 1 34",

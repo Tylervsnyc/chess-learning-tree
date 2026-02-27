@@ -1,91 +1,248 @@
 /**
- * ~50 themed quips for daily puzzle videos.
- * Deterministically selected based on puzzle ID.
+ * Context-aware quips for daily puzzle videos.
+ *
+ * Tone: Playful, witty, confident. Friendly trash talk, chess puns,
+ * pop culture refs, heist/thievery metaphors. Kid-friendly. No violence.
+ * See RULES.md §26 for full guidelines.
+ *
+ * Selected based on result category + puzzle theme.
  */
 
-const QUIPS = [
-  // General tactical
-  'That piece never saw it coming!',
-  'Chess is a series of surprises.',
-  'The board whispers if you listen.',
-  'Patience wins the position.',
-  'Every pawn dreams of promotion.',
+import type { PuzzleResult } from './describe-result';
 
-  // Aggressive
-  'Attack is the best defense!',
-  'The king has nowhere to hide.',
-  'Checkmate is the ultimate argument.',
-  'No retreat, no surrender.',
-  'A sacrifice today, a victory tomorrow.',
+// ─── Result-specific quips ─────────────────────────────────────────
 
-  // Clever
-  'The quiet move speaks loudest.',
-  'Sometimes the best move is waiting.',
-  'Chess: where time is measured in tempi.',
-  'The knight always finds a way.',
-  'Bishops love open diagonals.',
+const RESULT_QUIPS: Record<string, string[]> = {
+  checkmate: [
+    'Game. Set. Checkmate.',
+    'And just like that… it\'s over.',
+    'Nowhere left to run, Your Majesty.',
+    'The king has been officially retired.',
+    'Check please. Actually, checkMATE.',
+    'That king needed GPS and it still wouldn\'t help.',
+    'Checkmate. No takebacks.',
+    'The audacity of that checkmate.',
+    'I believe the technical term is "got \'em."',
+    'Another king bites the dust.',
+  ],
+  'won-queen': [
+    'One queen, coming right up.',
+    'Their queen just got repossessed.',
+    'Grand theft queen.',
+    'The queen has left the chat.',
+    'That queen had a whole life ahead of her.',
+    'Imagine losing your queen like that.',
+    'Queen heist: successful.',
+    'Down a queen? That\'s a wrap.',
+    'The queen vanished. Nothing to see here.',
+    'Smooth queen snag.',
+  ],
+  'won-rook': [
+    'That rook just got pickpocketed.',
+    'One rook lighter. Tough scene.',
+    'Rook? What rook? I don\'t see a rook.',
+    'That rook had somewhere to be. Too bad.',
+    'Clean rook snag. In and out.',
+    'Grand theft rook.',
+    'The rook has been relocated. Permanently.',
+  ],
+  'won-piece': [
+    'Yoink. That piece is mine now.',
+    'Free piece? Don\'t mind if I do.',
+    'That piece was basically gift-wrapped.',
+    'Piece acquired. Moving on.',
+    'A little piece goes a long way.',
+    'That piece had one job. Guard duty failed.',
+    'Thank you for the generous donation.',
+  ],
+  'won-pawn': [
+    'Every pawn dreams of becoming a queen.',
+    'Small heist, big consequences.',
+    'A pawn today, a queen tomorrow.',
+    'That pawn was load-bearing.',
+    'Never underestimate a missing pawn.',
+  ],
+  brilliant: [
+    'The best move is the one you find.',
+    'Quiet confidence wins loud games.',
+    'That was smooth. Real smooth.',
+    'Sometimes the best move looks boring.',
+    'Calculated. Every single square.',
+    'Chef\'s kiss. Immaculate technique.',
+  ],
+};
 
-  // Rook-themed
-  'That rook had places to be!',
-  'Rooks belong on open files.',
-  'Double rooks, double trouble.',
-  'The rook lift strikes again.',
-  'Back rank: the ultimate blind spot.',
+// ─── Theme-specific quips ──────────────────────────────────────────
 
-  // Fun/casual
-  'GG, well played!',
-  "Didn't see that one coming!",
-  'Calculated, not lucky.',
-  'The position played itself!',
-  'Clean technique wins games.',
+const THEME_QUIPS: Record<string, string[]> = {
+  fork: [
+    'Two pieces, one move. Pick your favorite.',
+    'That fork was chef\'s kiss.',
+    'Double trouble incoming.',
+    'Fork in the road: both paths are bad.',
+    'Two targets, one very bad day.',
+    'Dinner is served. Fork and all.',
+  ],
+  pin: [
+    'That piece isn\'t going anywhere.',
+    'Pinned. Stuck. Out of options.',
+    'The definition of "between a rock and a hard place."',
+    'That pin is doing heavy lifting.',
+    'Can\'t move, won\'t move, shouldn\'t move.',
+  ],
+  skewer: [
+    'Step aside or lose what\'s behind you.',
+    'The X-ray sees everything.',
+    'Skewered right through. Like a kebab.',
+    'Front piece or back piece — your call.',
+  ],
+  sacrifice: [
+    'Give a piece, take the whole game.',
+    'Material is temporary. Victory is forever.',
+    'Sometimes you gotta spend pieces to make pieces.',
+    'The ol\' bait and switch.',
+    'Sacrifice now, celebrate later.',
+  ],
+  discoveredAttack: [
+    'Surprise! There was another piece behind that one.',
+    'The hidden threat was there all along.',
+    'Move one piece, reveal another. Sneaky.',
+    'Two-for-one special.',
+  ],
+  backRankMate: [
+    'That back rank was wide open. Oops.',
+    'Should\'ve made luft.',
+    'Back rank awareness: zero.',
+    'Note to self: push that h-pawn.',
+    'Classic back rank. Never gets old.',
+  ],
+  smotheredMate: [
+    'Surrounded by friends, still got mated.',
+    'The knight delivers. Special delivery.',
+    'Smothered mate. The fanciest finish.',
+    'That knight just walked in and ended it.',
+  ],
+  kingsideAttack: [
+    'Kingside: breached.',
+    'That king was never safe over there.',
+    'Kingside assault. No survivors (pieces, that is).',
+    'Storm the kingside. Works every time.',
+  ],
+  queensideAttack: [
+    'Queenside pressure finally pays off.',
+    'The flank attack lands.',
+    'Came from the side. Didn\'t see it coming.',
+  ],
+  deflection: [
+    'That defender had one job. ONE JOB.',
+    'Lure the guard away, grab the goods.',
+    'The key defender got pulled off duty.',
+    'Classic misdirection.',
+  ],
+  attraction: [
+    'Took the bait. Hook, line, and sinker.',
+    'Come a little closer… gotcha.',
+    'The perfect trap. They walked right in.',
+    'Lured in like a moth to a flame.',
+  ],
+  hangingPiece: [
+    'That piece was just… sitting there. Unguarded.',
+    'Free real estate.',
+    'Finders keepers.',
+    'Always check for undefended pieces. Always.',
+  ],
+  trappedPiece: [
+    'Nowhere to go. Nowhere to hide.',
+    'That piece is stuck. Completely stuck.',
+    'Trapped like a chess piece in a corner. Wait.',
+  ],
+  intermezzo: [
+    'Wait — not done yet!',
+    'The in-between move changes everything.',
+    'Zwischenzug! (Fun to say. Brutal to face.)',
+  ],
+  quietMove: [
+    'The quiet move speaks loudest.',
+    'Subtle but devastating.',
+    'Not flashy. Just correct.',
+  ],
+  clearance: [
+    'Clear the lane, make the play.',
+    'Make way for the real threat!',
+  ],
+  endgame: [
+    'Endgame technique: flawless.',
+    'Clean conversion. Textbook.',
+    'Technique over fireworks.',
+  ],
+  mateIn1: [
+    'One move. Lights out.',
+    'Mate in one. Blink and you miss it.',
+    'The simplest mates hit hardest.',
+  ],
+  mateIn2: [
+    'Two moves. No escape route.',
+    'Forced mate. Nothing they can do.',
+    'Calculated two moves ahead. Just enough.',
+  ],
+  mateIn3: [
+    'Three moves deep. Beautiful.',
+    'Saw it coming from three moves away.',
+    'Long calculation, sweet payoff.',
+  ],
+};
 
-  // Motivational
-  'Every puzzle makes you stronger.',
-  'Pattern recognition is a superpower.',
-  'Think twice, move once.',
-  'The best move is the one you find.',
-  'Tactics flow from a strong position.',
+// ─── Quip selection ────────────────────────────────────────────────
 
-  // Material
-  'Free piece? Yes please!',
-  'Material advantage = winning advantage.',
-  'That trade was not equal!',
-  'Winning material, one tactic at a time.',
-  'The exchange was NOT fair.',
+// Generic Lichess meta-themes that don't describe the actual tactic
+const IGNORE_THEMES = new Set([
+  'crushing', 'advantage', 'short', 'long', 'veryLong', 'oneMove',
+  'master', 'masterVsMaster', 'superGM', 'opening', 'middlegame', 'endgame',
+]);
 
-  // Checkmate patterns
-  "The king's safety is everything.",
-  'Mating nets are beautiful.',
-  'A forced mate is pure art.',
-  'The king walks into a trap.',
-  'Checkmate patterns never go out of style.',
-
-  // Endgame
-  'Endgame technique on display.',
-  'Pawns are the soul of chess.',
-  'In the endgame, the king is a fighter.',
-  'Converting advantage like a GM.',
-  'Precision when it matters most.',
-
-  // Discovery/surprise
-  'The discovered attack strikes!',
-  'Deflection is an underrated weapon.',
-  'Pins win pieces.',
-  'Forks: feeding two birds with one hand.',
-  'The skewer slices through.',
-];
-
-/**
- * Pick a quip deterministically from puzzle ID.
- */
-export function getQuip(puzzleId: string): string {
+function hashString(str: string): number {
   let hash = 0;
-  for (let i = 0; i < puzzleId.length; i++) {
-    const char = puzzleId.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
     hash = hash & hash;
   }
-  return QUIPS[Math.abs(hash) % QUIPS.length];
+  return Math.abs(hash);
 }
 
-export { QUIPS };
+/**
+ * Pick a quip that matches the puzzle's theme and result.
+ *
+ * Priority:
+ * 1. Theme-specific quip (skips generic meta-themes like "crushing", "short")
+ * 2. Result-specific quip (always matches — accurate to what happened)
+ *
+ * Pass `primaryTheme` to prioritize a specific theme.
+ */
+export function getVideoQuip(
+  puzzleId: string,
+  result: PuzzleResult,
+  themes: string[],
+  primaryTheme?: string,
+): string {
+  const hash = hashString(puzzleId);
+
+  // Put primary theme first if provided
+  const orderedThemes = primaryTheme
+    ? [primaryTheme, ...themes.filter(t => t !== primaryTheme)]
+    : themes;
+
+  // Try theme-specific quips (skip generic meta-themes)
+  for (const theme of orderedThemes) {
+    if (IGNORE_THEMES.has(theme)) continue;
+    const quips = THEME_QUIPS[theme];
+    if (quips && quips.length > 0) {
+      return quips[(hash + theme.length) % quips.length];
+    }
+  }
+
+  // Fall back to result-specific quips (always accurate)
+  const resultQuips = RESULT_QUIPS[result.category] || RESULT_QUIPS.brilliant;
+  return resultQuips[hash % resultQuips.length];
+}
+
+export { RESULT_QUIPS, THEME_QUIPS };

@@ -11,6 +11,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { Chess } from 'chess.js';
+import { describeResult } from '../remotion/lib/describe-result';
+import { getVideoQuip } from '../remotion/lib/video-quips';
 
 const POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool.json');
 const USAGE_FILE = path.join(process.cwd(), 'data', 'video-puzzle-usage.json');
@@ -130,44 +133,24 @@ function main() {
   // Build Remotion input props
   const rawMoves = puzzle.moves.split(' ');
 
-  // Theme-aware quips — match the quip to what actually happens in the puzzle
-  const THEME_QUIPS: Record<string, string[]> = {
-    mateIn1: ['One move. Game over.', 'Checkmate in one — clinical.', 'The simplest mates hit hardest.'],
-    mateIn2: ['Two moves, no escape.', 'A forced mate is pure art.', 'Calculated to the end.'],
-    mateIn3: ['Three moves deep — beautiful.', 'The king never had a chance.', 'Mating nets are beautiful.'],
-    backRankMate: ['Back rank = no escape.', 'That back rank was asking for it.', 'Never forget your back rank!'],
-    smotheredMate: ['Smothered by the knight!', 'The knight closes the coffin.', 'Nowhere to run, nowhere to hide.'],
-    fork: ['Two targets, one move. Ouch.', 'Fork it over!', 'Double attack, double trouble.'],
-    pin: ['Pinned and helpless.', 'Can\'t move, won\'t move.', 'That pin is devastating.'],
-    skewer: ['Skewered right through!', 'Step aside, lose the piece behind.', 'X-ray vision wins again.'],
-    sacrifice: ['Sometimes you gotta give to get.', 'Sacrifice accepted… checkmate incoming.', 'Material is temporary, checkmate is forever.'],
-    discoveredAttack: ['The hidden threat reveals itself!', 'Move one piece, attack with another.', 'Discovered attacks are sneaky.'],
-    kingsideAttack: ['The king is under siege!', 'Kingside assault — no mercy.', 'Storm the castle!'],
-    queensideAttack: ['Queenside pressure cracks through!', 'The attack comes from the flank.', 'Queenside demolition.'],
-    deflection: ['Deflect the defender, win the game.', 'That defender had one job.', 'Remove the guard!'],
-    attraction: ['Lured right into the trap.', 'Come closer… checkmate.', 'The perfect bait.'],
-    hangingPiece: ['Free piece? Yes please!', 'That piece was just hanging there.', 'Always check for hanging pieces.'],
-    trappedPiece: ['Nowhere to go!', 'That piece is stuck.', 'Trapped and captured.'],
-    clearance: ['Clear the path, deliver the blow.', 'Make way for the real threat!', 'Clearance sacrifice — beautiful.'],
-    intermezzo: ['In-between move changes everything!', 'The zwischenzug strikes!', 'Surprise — not done yet.'],
-    quietMove: ['The quiet move speaks loudest.', 'Subtle but deadly.', 'Sometimes the best move looks boring.'],
-    endgame: ['Endgame technique wins games.', 'Clean conversion.', 'Technique over tactics.'],
-  };
-  const FALLBACK_QUIPS = [
-    'Calculated, not lucky.',
-    'Every puzzle makes you stronger.',
-    'Pattern recognition is a superpower.',
-    'Think twice, move once.',
-    'GG, well played!',
-    'Clean technique wins games.',
-  ];
-  const themeQuips = THEME_QUIPS[puzzle.theme] || FALLBACK_QUIPS;
-  let hash = 0;
-  for (let i = 0; i < puzzle.puzzleId.length; i++) {
-    hash = ((hash << 5) - hash) + puzzle.puzzleId.charCodeAt(i);
-    hash = hash & hash;
+  // Analyze the puzzle to get accurate result + context-aware quip
+  const setupUci = rawMoves[0];
+  const chess = new Chess(puzzle.fen);
+  chess.move({ from: setupUci.slice(0, 2), to: setupUci.slice(2, 4), promotion: setupUci.length > 4 ? setupUci[4] : undefined });
+  const puzzleFen = chess.fen();
+  const playerColor = chess.turn() === 'w' ? 'white' : 'black';
+  const solutionUciMoves = rawMoves.slice(1);
+
+  // Play through to get final position
+  const finalChess = new Chess(puzzleFen);
+  for (const uci of solutionUciMoves) {
+    try { finalChess.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci.length > 4 ? uci[4] : undefined }); } catch { break; }
   }
-  const quip = themeQuips[Math.abs(hash) % themeQuips.length];
+
+  const result = describeResult(puzzleFen, finalChess.fen(), playerColor as 'white' | 'black', puzzle.allThemes, solutionUciMoves);
+  const quip = getVideoQuip(puzzle.puzzleId, result, puzzle.allThemes, puzzle.theme);
+
+  console.log(`  Result: "${result.text}" (${result.category})`);
 
   const inputProps = {
     puzzleId: puzzle.puzzleId,

@@ -58,7 +58,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
     }
     const finalFen = finalChess.fen();
 
-    const result = describeResult(puzzleFen, finalFen, playerColor, themes);
+    const { text: result } = describeResult(puzzleFen, finalFen, playerColor, themes, solutionUciMoves);
 
     // Setup move highlight (the opponent's last move that created the tactic)
     const setupFrom = setup.from;
