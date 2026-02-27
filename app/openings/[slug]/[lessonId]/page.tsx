@@ -8,10 +8,10 @@ import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
 import { LessonComplete } from '@/components/shared/LessonComplete'
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup'
 import {
-  RookProgressAnimationRef,
-  ANIMATION_STYLES,
-  AnimationStyle,
-} from '@/components/lesson/RookProgressAnimation'
+  RookCelebrationAnimationRef,
+  CELEBRATION_ANIMATION_STYLES,
+  CelebrationAnimationStyle,
+} from '@/components/lesson/RookCelebrationAnimation'
 import {
   RookWrongAnimationRef,
   WRONG_ANIMATION_STYLES,
@@ -37,6 +37,8 @@ import { getLondonLesson } from '@/data/openings/london-lessons'
 import { getFrenchLesson } from '@/data/openings/french-lessons'
 import { getCaroKannLesson } from '@/data/openings/caro-kann-lessons'
 import { getKingsGambitLesson } from '@/data/openings/kings-gambit-lessons'
+import { getKingsIndianLesson } from '@/data/openings/kings-indian-lessons'
+import { getScotchLesson } from '@/data/openings/scotch-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { TREE_LOOKUP } from '@/lib/opening-trees'
@@ -143,6 +145,8 @@ export default function OpeningLessonPage() {
       'french': getFrenchLesson,
       'caro-kann': getCaroKannLesson,
       'kings-gambit': getKingsGambitLesson,
+      'kings-indian': getKingsIndianLesson,
+      'scotch': getScotchLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
@@ -169,14 +173,14 @@ export default function OpeningLessonPage() {
   const orientationJustChanged = prevOrientationRef.current !== boardOrientation
   useEffect(() => { prevOrientationRef.current = boardOrientation }, [boardOrientation])
 
-  // ─── Rook animation (same as PuzzleResultPopup in /learn) ───
-  const correctAnimStyles = Object.keys(ANIMATION_STYLES) as AnimationStyle[]
+  // ─── Rook animation (celebration mode — full rook reacts, no building) ───
+  const celebrationStyles = Object.keys(CELEBRATION_ANIMATION_STYLES) as CelebrationAnimationStyle[]
   const wrongAnimStyles = Object.keys(WRONG_ANIMATION_STYLES) as WrongAnimationStyle[]
-  const [correctAnimCount, setCorrectAnimCount] = useState(() => Math.floor(Math.random() * correctAnimStyles.length))
+  const [correctAnimCount, setCorrectAnimCount] = useState(() => Math.floor(Math.random() * celebrationStyles.length))
   const [wrongAnimCount, setWrongAnimCount] = useState(() => Math.floor(Math.random() * wrongAnimStyles.length))
-  const rookCorrectStyle = correctAnimStyles[correctAnimCount % correctAnimStyles.length]
+  const rookCelebrationStyle = celebrationStyles[correctAnimCount % celebrationStyles.length]
   const rookWrongStyle = wrongAnimStyles[wrongAnimCount % wrongAnimStyles.length]
-  const rookProgressRef = useRef<RookProgressAnimationRef>(null)
+  const rookCelebrationRef = useRef<RookCelebrationAnimationRef>(null)
   const rookWrongRef = useRef<RookWrongAnimationRef>(null)
 
   // ─── Init first step ───
@@ -186,8 +190,8 @@ export default function OpeningLessonPage() {
     setBoardFen(step.fen)
     setBoardOrientation(step.orientation || lesson.defaultOrientation)
     lessonStartTimeRef.current = Date.now()
-    LearningEvents.lessonStarted(lessonId, lesson.title)
-  }, [lesson, lessonId])
+    LearningEvents.lessonStarted(lessonId, lesson.title, { source: 'opening', openingSlug: slug })
+  }, [lesson, lessonId, slug])
 
   const currentStep = lesson?.steps[currentStepIndex]
 
@@ -207,7 +211,7 @@ export default function OpeningLessonPage() {
       const timeSpent = Math.round((Date.now() - lessonStartTimeRef.current) / 1000)
       const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
       const accuracy = interactiveCount > 0 ? Math.round((correctCount / interactiveCount) * 100) : 100
-      LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent)
+      LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent, { source: 'opening', openingSlug: slug })
       completeLesson(slug, lessonId)
       advancingRef.current = false
       return
@@ -262,7 +266,7 @@ export default function OpeningLessonPage() {
         (currentStep.acceptMoves?.includes(move.san) ?? false)
 
       if (isCorrect) {
-        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0)
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0, { source: 'opening', openingSlug: slug })
         setBoardFen(game.fen())
         setSelectedSquare(null)
         setMoveStatus('correct')
@@ -276,13 +280,10 @@ export default function OpeningLessonPage() {
         if (currentStep.postMoveArrow) {
           const arrow = currentStep.postMoveArrow
           setTimeout(() => setActivePostMoveArrow(arrow), 350)
-          setTimeout(() => advanceStep(), 2000)
-        } else {
-          setTimeout(() => advanceStep(), 1000)
         }
         return true
       } else {
-        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0)
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0, { source: 'opening', openingSlug: slug })
         setBoardFen(game.fen())
         playErrorSound()
         vibrateOnError()
@@ -306,7 +307,7 @@ export default function OpeningLessonPage() {
     } catch {
       return false
     }
-  }, [currentStep, moveStatus, correctCount, wrongAttempts, advanceStep, lessonId, currentStepIndex])
+  }, [currentStep, moveStatus, correctCount, wrongAttempts, advanceStep, lessonId, currentStepIndex, slug])
 
   // ─── Handle puzzle move ───
   const handlePuzzleMove = useCallback((from: Square, to: Square) => {
@@ -329,7 +330,7 @@ export default function OpeningLessonPage() {
 
         const nextIdx = puzzleMoveIndex + 1
         if (nextIdx >= currentStep.solutionMoves.length) {
-          LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0)
+          LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0, { source: 'opening', openingSlug: slug })
           setCorrectCount(prev => prev + 1)
           playCorrectSound(correctCount)
           setMoveStatus('correct')
@@ -351,7 +352,7 @@ export default function OpeningLessonPage() {
         }, 300)
         return true
       } else {
-        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0)
+        LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, false, 0, { source: 'opening', openingSlug: slug })
         setBoardFen(game.fen())
         playErrorSound()
         vibrateOnError()
@@ -369,7 +370,7 @@ export default function OpeningLessonPage() {
     } catch {
       return false
     }
-  }, [currentStep, moveStatus, puzzleFen, puzzleMoveIndex, correctCount, lessonId, currentStepIndex])
+  }, [currentStep, moveStatus, puzzleFen, puzzleMoveIndex, correctCount, lessonId, currentStepIndex, slug])
 
   // ─── Square click ───
   const handleSquareClick = useCallback((square: Square) => {
@@ -505,8 +506,14 @@ export default function OpeningLessonPage() {
 
   if (!lesson) {
     return (
-      <div className="min-h-full bg-chess-page flex items-center justify-center">
+      <div className="min-h-full bg-chess-page flex flex-col items-center justify-center gap-4">
         <p className="text-chess-text-muted">Lesson not found</p>
+        <button
+          onClick={() => router.push('/openings')}
+          className="text-sm font-medium text-chess-green hover:underline"
+        >
+          ← Back to Openings
+        </button>
       </div>
     )
   }
@@ -536,9 +543,9 @@ export default function OpeningLessonPage() {
           message={currentStep.text}
           onContinue={currentStep.autoAdvance ? () => {} : advanceStep}
           hideButton={!!currentStep.autoAdvance}
-          rookAnimationStyle={rookCorrectStyle}
-          rookProgressRef={rookProgressRef}
-          rookCurrentStage={correctCount}
+          celebrationMode
+          rookCelebrationStyle={rookCelebrationStyle}
+          rookCelebrationRef={rookCelebrationRef}
         />
       )
     }
@@ -551,10 +558,9 @@ export default function OpeningLessonPage() {
             type="correct"
             message={currentStep.correctFeedback}
             onContinue={advanceStep}
-            hideButton
-            rookAnimationStyle={rookCorrectStyle}
-            rookProgressRef={rookProgressRef}
-            rookCurrentStage={correctCount}
+            celebrationMode
+            rookCelebrationStyle={rookCelebrationStyle}
+            rookCelebrationRef={rookCelebrationRef}
           />
         )
       }
@@ -599,10 +605,9 @@ export default function OpeningLessonPage() {
             type="correct"
             message={currentStep.correctFeedback}
             onContinue={advanceStep}
-            hideButton
-            rookAnimationStyle={rookCorrectStyle}
-            rookProgressRef={rookProgressRef}
-            rookCurrentStage={correctCount}
+            celebrationMode
+            rookCelebrationStyle={rookCelebrationStyle}
+            rookCelebrationRef={rookCelebrationRef}
           />
         )
       }
@@ -657,7 +662,7 @@ export default function OpeningLessonPage() {
           <button
             onClick={() => {
               const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
-              LearningEvents.lessonAbandoned(lessonId, currentStepIndex + 1, interactiveCount)
+              LearningEvents.lessonAbandoned(lessonId, currentStepIndex + 1, interactiveCount, { source: 'opening', openingSlug: slug })
               router.push(`/openings/${slug}`)
             }}
             className="text-chess-text-faint hover:text-chess-text-muted"

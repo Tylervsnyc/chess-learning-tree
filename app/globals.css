@@ -175,11 +175,11 @@
 }
 
 .share-hint-green {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(88, 204, 2, 0.7);
 }
 
 .share-hint-gold {
-  color: rgba(255, 200, 0, 0.8);
+  color: rgba(180, 140, 0, 0.8);
 }
 
 .share-toast-enter {
@@ -293,4 +293,43 @@ body {
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* Opening tree: node pop-in (Duolingo style — no opacity fade, pure scale) */
+@keyframes treeGrowIn {
+  0%   { transform: scale(0.12); }
+  65%  { transform: scale(1.18); }
+  82%  { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.tree-grow-in {
+  animation: treeGrowIn 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  transform-origin: center center;
+}
+
+/* Opening tree: label window fade-in after node pop */
+@keyframes treeLabelFadeIn {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.tree-label-fade-in {
+  animation: treeLabelFadeIn 0.35s ease-out both;
+}
+
+/* Opening tree: pulse ring around current node */
+@keyframes treePulseRing {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(1.1); }
+}
+.tree-pulse-ring {
+  animation: treePulseRing 1.5s ease-in-out infinite;
+}
+
+/* Guide arrow: gentle breathing opacity */
+@keyframes guideArrowBreathe {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 0.45; }
+}
+.guide-arrow-breathe {
+  animation: guideArrowBreathe 2s ease-in-out infinite;
 }

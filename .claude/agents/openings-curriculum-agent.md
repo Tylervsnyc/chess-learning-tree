@@ -68,7 +68,7 @@ See `data/openings/lesson-examples.ts` for complete examples of each.
 6. **Mix step types.** Never stack 5 instructions in a row.
 7. **Explain the WHY.** Not "play Bb5" but "Bb5 pressures the knight defending e5."
 8. **Specific feedback.** Not "Good!" but "Nice — Nf3 attacks e5 and d4."
-9. **2-4 new moves per lesson.** 15-20 steps total.
+9. **3-4 new moves per teaching lesson.** Each Teach section must introduce at least 3 White moves. 2 is too thin — users feel like they learned nothing. 15-20 steps total.
 10. **Pre-compute all FENs.** Dictionary at top of file. Validate with chess.js.
 11. **1-2 sentences per instruction.** Brief, conversational coach voice.
 12. **Node names max ~15 chars.** Prevents overflow on phone.

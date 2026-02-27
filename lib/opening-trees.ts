@@ -10,6 +10,8 @@ import { LONDON_SYSTEM } from '@/data/openings/london'
 import { FRENCH_DEFENSE } from '@/data/openings/french'
 import { CARO_KANN } from '@/data/openings/caro-kann'
 import { KINGS_GAMBIT } from '@/data/openings/kings-gambit'
+import { KINGS_INDIAN } from '@/data/openings/kings-indian'
+import { SCOTCH_GAME } from '@/data/openings/scotch'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -20,6 +22,8 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'french': FRENCH_DEFENSE,
   'caro-kann': CARO_KANN,
   'kings-gambit': KINGS_GAMBIT,
+  'kings-indian': KINGS_INDIAN,
+  'scotch': SCOTCH_GAME,
 }
 
 /** Get total lesson count for an opening */

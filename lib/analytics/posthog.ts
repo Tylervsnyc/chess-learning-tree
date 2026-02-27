@@ -69,15 +69,16 @@ export const AuthEvents = {
 };
 
 // Learning funnel
+// Optional `opts` adds source/openingSlug for opening lessons (omit for main path)
 export const LearningEvents = {
-  lessonStarted: (lessonId: string, lessonName: string) =>
-    trackEvent('lesson_started', { lessonId, lessonName }),
-  puzzleAttempted: (lessonId: string, puzzleNum: number, correct: boolean, rating: number) =>
-    trackEvent('puzzle_attempted', { lessonId, puzzleNum, correct, rating }),
-  lessonCompleted: (lessonId: string, accuracy: number, timeSpent: number) =>
-    trackEvent('lesson_completed', { lessonId, accuracy, timeSpent }),
-  lessonAbandoned: (lessonId: string, puzzleNum: number, totalPuzzles: number) =>
-    trackEvent('lesson_abandoned', { lessonId, puzzleNum, totalPuzzles }),
+  lessonStarted: (lessonId: string, lessonName: string, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_started', { lessonId, lessonName, ...opts }),
+  puzzleAttempted: (lessonId: string, puzzleNum: number, correct: boolean, rating: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('puzzle_attempted', { lessonId, puzzleNum, correct, rating, ...opts }),
+  lessonCompleted: (lessonId: string, accuracy: number, timeSpent: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_completed', { lessonId, accuracy, timeSpent, ...opts }),
+  lessonAbandoned: (lessonId: string, puzzleNum: number, totalPuzzles: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_abandoned', { lessonId, puzzleNum, totalPuzzles, ...opts }),
 };
 
 // Engagement events
@@ -113,13 +114,13 @@ export const TutorialEvents = {
 
 // Share/Viral funnel
 export const ShareEvents = {
-  shareClicked: (source: 'lesson' | 'daily_challenge', type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
+  shareClicked: (source: 'lesson' | 'daily_challenge' | 'opening', type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
     trackEvent('share_clicked', { source, type }),
-  shareGenerated: (source: 'lesson' | 'daily_challenge') =>
+  shareGenerated: (source: 'lesson' | 'daily_challenge' | 'opening') =>
     trackEvent('share_generated', { source }),
-  shareCompleted: (source: 'lesson' | 'daily_challenge', method: 'native' | 'native_image' | 'download' | 'clipboard' | 'clipboard_link') =>
+  shareCompleted: (source: 'lesson' | 'daily_challenge' | 'opening', method: 'native' | 'native_image' | 'download' | 'clipboard' | 'clipboard_link') =>
     trackEvent('share_completed', { source, method }),
-  shareFailed: (source: 'lesson' | 'daily_challenge', error: string) =>
+  shareFailed: (source: 'lesson' | 'daily_challenge' | 'opening', error: string) =>
     trackEvent('share_failed', { source, error }),
 };
 

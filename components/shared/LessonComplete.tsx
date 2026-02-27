@@ -44,6 +44,12 @@ interface LessonCompleteProps {
   isGuest?: boolean
   getLevelKeyFromLessonId?: (id: string) => string
   accentColor?: string
+
+  // ─── Opening share data ───
+  openingName?: string
+  openingSlug?: string
+  openingMoves?: string   // e.g., "1.e4 c5 2.Nf3 d6 3.d4 cxd4"
+  openingFinalFen?: string // FEN of the final position
 }
 
 const PARTICLES = [
@@ -67,11 +73,16 @@ export function LessonComplete({
   isGuest = false,
   getLevelKeyFromLessonId,
   accentColor,
+  openingName,
+  openingSlug,
+  openingMoves,
+  openingFinalFen,
 }: LessonCompleteProps) {
   const hasScore = correctCount !== undefined
   const isPerfect = hasScore && correctCount === totalPuzzles
   const didFail = hasScore && correctCount <= Math.floor(totalPuzzles / 2)
-  const canShare = hasScore && !didFail && correctCount >= 4
+  const isOpening = !!openingName
+  const canShare = hasScore && !didFail && (isOpening || correctCount! >= 4)
 
   const rookRef = useRef<RookCelebrationAnimationRef>(null)
   const wrongRookRef = useRef<RookWrongAnimationRef>(null)
@@ -142,14 +153,26 @@ export function LessonComplete({
 
   // ─── Share pre-fetch ───
   useEffect(() => {
-    if (!canShare || !getLevelKeyFromLessonId) return
-    const score = isPerfect ? '6/6' : '5/6'
-    const ogParams = new URLSearchParams({ score, lesson: lessonName, level: getLevelKeyFromLessonId(lessonId) })
-    fetch(`/api/og/lesson?${ogParams.toString()}`)
+    if (!canShare) return
+    let ogUrl: string
+    if (isOpening && openingName && openingSlug) {
+      const score = `${correctCount}/${totalPuzzles}`
+      const ogParams = new URLSearchParams({ opening: openingName, lesson: lessonName, score, color: accentColor || '#FF9600' })
+      if (openingMoves) ogParams.set('moves', openingMoves)
+      if (openingFinalFen) ogParams.set('fen', openingFinalFen)
+      ogUrl = `/api/og/opening?${ogParams.toString()}`
+    } else if (getLevelKeyFromLessonId) {
+      const score = isPerfect ? '6/6' : '5/6'
+      const ogParams = new URLSearchParams({ score, lesson: lessonName, level: getLevelKeyFromLessonId(lessonId) })
+      ogUrl = `/api/og/lesson?${ogParams.toString()}`
+    } else {
+      return
+    }
+    fetch(ogUrl)
       .then(res => res.ok ? res.blob() : null)
       .then(blob => { if (blob) shareImageRef.current = blob })
       .catch(() => {})
-  }, [canShare, isPerfect, lessonName, lessonId, getLevelKeyFromLessonId])
+  }, [canShare, isPerfect, lessonName, lessonId, getLevelKeyFromLessonId, isOpening, openingName, openingSlug, accentColor, correctCount, totalPuzzles])
 
   const dismissShareToast = () => {
     setShareFeedbackDismissing(true)
@@ -158,23 +181,31 @@ export function LessonComplete({
 
   const handleRookShare = async () => {
     if (!canShare) return
-    ShareEvents.shareClicked('lesson', 'rook')
+    const source = isOpening ? 'opening' : 'lesson' as const
+    ShareEvents.shareClicked(source, 'rook')
     setShareFeedbackVisible(true)
     setShareFeedbackDismissing(false)
-    const shareUrl = `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`
+
+    const shareUrl = isOpening
+      ? `https://chesspath.app/openings/${openingSlug}`
+      : `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`
+
+    const shareText = isOpening
+      ? `I ${isPerfect ? 'aced' : 'completed'} "${lessonName}" in the ${openingName} on Chess Path!`
+      : `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`
 
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         const shareData: ShareData = {
           title: `${lessonName} | Chess Path`,
-          text: `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`,
+          text: shareText,
           url: shareUrl,
         }
         if (shareImageRef.current) {
           shareData.files = [new File([shareImageRef.current], 'chess-path.png', { type: 'image/png' })]
         }
         await navigator.share(shareData)
-        ShareEvents.shareCompleted('lesson', shareImageRef.current ? 'native_image' : 'native')
+        ShareEvents.shareCompleted(source, shareImageRef.current ? 'native_image' : 'native')
         setTimeout(dismissShareToast, 1500)
         return
       } catch (err) {
@@ -184,10 +215,10 @@ export function LessonComplete({
 
     try {
       await navigator.clipboard.writeText(shareUrl)
-      ShareEvents.shareCompleted('lesson', 'clipboard')
+      ShareEvents.shareCompleted(source, 'clipboard')
       setTimeout(dismissShareToast, 1500)
     } catch {
-      ShareEvents.shareFailed('lesson', 'clipboard_failed')
+      ShareEvents.shareFailed(source, 'clipboard_failed')
       dismissShareToast()
     }
   }

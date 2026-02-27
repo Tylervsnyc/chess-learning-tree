@@ -20,6 +20,14 @@ export const BOARD_COLORS = {
 } as const;
 
 /**
+ * Move indicator styles for legal move dots (Lichess-style)
+ */
+export const MOVE_INDICATOR = {
+  quiet: 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
+  capture: 'radial-gradient(circle, transparent 0%, transparent 79%, rgba(0, 0, 0, 0.3) 80%)',
+} as const;
+
+/**
  * Raw puzzle from API (Lichess format)
  */
 export interface RawPuzzle {

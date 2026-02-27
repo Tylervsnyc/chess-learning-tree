@@ -267,6 +267,22 @@ const KG_2: OpeningLesson = {
       wrongFeedback: "Play h4 to undermine the g5 pawn.",
       highlightSquares: ['h2', 'h4'],
     },
+    { type: 'instruction', fen: FEN.after_g4, text: 'g4 — Black chases your knight away.', autoAdvance: 800 },
+    {
+      type: 'instruction',
+      fen: FEN.after_g4,
+      text: "Your knight is under attack. The bold move: retreat all the way back to g1. You'll redeploy through c3 next.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_g4,
+      correctMove: 'Ng1',
+      prompt: "Retreat the knight. Trust the plan.",
+      hint: "Ng1 — it looks strange, but Nc3 is coming.",
+      correctFeedback: "Ng1! It looks bizarre, but the knight comes back stronger via c3. Black's kingside is overextended.",
+      wrongFeedback: 'Retreat to g1 — the knight redeploys through c3.',
+      highlightSquares: ['f3', 'g1'],
+    },
 
     // ── ACT 3: PUNISH ──
     {
@@ -317,6 +333,16 @@ const KG_2: OpeningLesson = {
       hint: 'h4.',
       correctFeedback: 'h4.',
       wrongFeedback: 'h4.',
+    },
+    { type: 'instruction', fen: FEN.after_g4, text: 'g4.', autoAdvance: 800 },
+    {
+      type: 'play-move',
+      fen: FEN.after_g4,
+      correctMove: 'Ng1',
+      prompt: 'Your move.',
+      hint: 'Ng1.',
+      correctFeedback: 'Ng1.',
+      wrongFeedback: 'Ng1.',
     },
   ],
 }
@@ -516,24 +542,19 @@ const KG_3: OpeningLesson = {
       wrongFeedback: 'h4.',
       highlightSquares: ['h2', 'h4'],
     },
-
-    // ── ACT 2: TEACH ──
-    { type: 'instruction', fen: FEN.after_g4, text: 'g4 — Black chases your knight away.', autoAdvance: 800 },
-    {
-      type: 'instruction',
-      fen: FEN.after_g4,
-      text: "Your knight is attacked by g4. The bold move: retreat it all the way back to g1. Trust the plan — you'll redeploy through c3.",
-    },
+    { type: 'instruction', fen: FEN.after_g4, text: 'g4.', autoAdvance: 800 },
     {
       type: 'play-move',
       fen: FEN.after_g4,
       correctMove: 'Ng1',
-      prompt: "Retreat the knight. Trust the plan.",
-      hint: "Ng1 — it looks strange, but Nc3 is coming next.",
-      correctFeedback: "Ng1! It looks bizarre, but the knight will come back stronger via c3. Meanwhile, Black's kingside pawns are overextended.",
-      wrongFeedback: 'Retreat to g1 — the knight will redeploy through c3.',
+      prompt: 'Retreat.',
+      hint: 'Ng1.',
+      correctFeedback: 'Ng1!',
+      wrongFeedback: 'Ng1.',
       highlightSquares: ['f3', 'g1'],
     },
+
+    // ── ACT 2: TEACH ──
     { type: 'instruction', fen: FEN.after_Bh6, text: 'Bh6 — Black develops the bishop to the only open diagonal.', autoAdvance: 800 },
     {
       type: 'instruction',
@@ -577,19 +598,9 @@ const KG_3: OpeningLesson = {
     // ── ACT 4: RECALL ──
     {
       type: 'instruction',
-      fen: FEN.after_h4,
-      text: "Play the next moves from memory.",
+      fen: FEN.after_Ng1,
+      text: "Play the next move from memory.",
       buttonText: "LET'S GO",
-    },
-    { type: 'instruction', fen: FEN.after_g4, text: 'g4.', autoAdvance: 800 },
-    {
-      type: 'play-move',
-      fen: FEN.after_g4,
-      correctMove: 'Ng1',
-      prompt: 'Your move.',
-      hint: 'Ng1.',
-      correctFeedback: 'Ng1.',
-      wrongFeedback: 'Ng1.',
     },
     { type: 'instruction', fen: FEN.after_Bh6, text: 'Bh6.', autoAdvance: 800 },
     {

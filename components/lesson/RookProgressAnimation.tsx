@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
+import { ROOK_BLOCKS_PIXEL, ROOK_FILL_ORDER, getMatteBackground, getMatteBoxShadow, lighten } from '@/lib/daily-rook-blocks';
 
 /**
  * ChessPath Rook Progress Animation Component
  *
  * A 6-stage rook assembly animation for chess lessons.
  * Each stage is triggered when a user answers correctly.
+ * Block data is derived from the canonical ROOK_BLOCKS_PIXEL source.
  *
  * Animation Styles Available:
  * - lightning: Electric bolt strike effect
@@ -33,61 +34,22 @@ interface Stage {
   blocks: Block[];
 }
 
-// The 22 blocks that form the rook, organized by assembly stage
-const STAGES: Stage[] = [
-  {
-    name: "Foundation",
-    blocks: [
-      { x: 8, y: 98, color: '#2FCBEF' },
-      { x: 26, y: 98, color: '#A560E8' },
-      { x: 44, y: 98, color: '#58CC02' },
-      { x: 62, y: 98, color: '#FFC800' },
-      { x: 80, y: 98, color: '#FF9600' }
-    ]
-  },
-  {
-    name: "Body",
-    blocks: [
-      { x: 26, y: 80, color: '#FF6B6B' },
-      { x: 44, y: 80, color: '#FF4B4B' },
-      { x: 62, y: 80, color: '#1CB0F6' }
-    ]
-  },
-  {
-    name: "Neck",
-    blocks: [
-      { x: 26, y: 62, color: '#58CC02' },
-      { x: 44, y: 62, color: '#FFC800' },
-      { x: 62, y: 62, color: '#FF9600' }
-    ]
-  },
-  {
-    name: "Head",
-    blocks: [
-      { x: 26, y: 44, color: '#1CB0F6' },
-      { x: 44, y: 44, color: '#2FCBEF' },
-      { x: 62, y: 44, color: '#A560E8' }
-    ]
-  },
-  {
-    name: "Crown Rim",
-    blocks: [
-      { x: 8, y: 26, color: '#58CC02' },
-      { x: 26, y: 26, color: '#FFC800' },
-      { x: 44, y: 26, color: '#FF9600' },
-      { x: 62, y: 26, color: '#FF6B6B' },
-      { x: 80, y: 26, color: '#FF4B4B' }
-    ]
-  },
-  {
-    name: "Crown Points",
-    blocks: [
-      { x: 8, y: 8, color: '#1CB0F6' },
-      { x: 44, y: 8, color: '#2FCBEF' },
-      { x: 80, y: 8, color: '#A560E8' }
-    ]
+// The 22 blocks that form the rook, organized by assembly stage.
+// Derived from the canonical ROOK_BLOCKS_PIXEL + ROOK_FILL_ORDER source of truth.
+const STAGE_NAMES = ['Foundation', 'Body', 'Neck', 'Head', 'Crown Rim', 'Crown Points'];
+const STAGE_SIZES = [5, 3, 3, 3, 5, 3]; // blocks per stage
+
+const STAGES: Stage[] = (() => {
+  const stages: Stage[] = [];
+  let offset = 0;
+  for (let i = 0; i < STAGE_NAMES.length; i++) {
+    const size = STAGE_SIZES[i];
+    const blocks: Block[] = ROOK_FILL_ORDER.slice(offset, offset + size).map(idx => ROOK_BLOCKS_PIXEL[idx]);
+    stages.push({ name: STAGE_NAMES[i], blocks });
+    offset += size;
   }
-];
+  return stages;
+})();
 
 export type AnimationStyle =
   | 'lightning'
@@ -207,11 +169,12 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
+            const c = el.dataset.color || '#58CC02';
             el.style.opacity = '1';
             el.style.transform = 'scale(1.5)';
-            el.style.boxShadow = `0 0 30px ${el.dataset.color}, 0 0 60px #fff`;
+            el.style.boxShadow = `0 0 30px ${lighten(c, 18)}, 0 0 60px #fff`;
             el.style.filter = 'brightness(3)';
-            sparks(el, 6, '#fff');
+            sparks(el, 6, lighten(c, 30));
             setTimeout(() => {
               el.style.transition = 'all 0.25s ease-out';
               el.style.transform = 'scale(1)';
@@ -224,7 +187,9 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       neon: (blocks) => {
         blocks.forEach((el, i) => {
           if (!el) return;
-          el.style.boxShadow = `0 0 25px ${el.dataset.color}, 0 0 50px ${el.dataset.color}`;
+          const c = el.dataset.color || '#1CB0F6';
+          const glow = lighten(c, 18);
+          el.style.boxShadow = `0 0 25px ${glow}, 0 0 50px ${c}`;
           const flickers = [0, 40, 90, 150, 200, 280];
           const states = [1, 0, 1, 0, 0.4, 1];
           flickers.forEach((t, fi) => {
@@ -242,7 +207,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       emp: (blocks) => {
-        flash('#1CB0F6', 0.4);
+        flash(lighten('#1CB0F6', 18), 0.4);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -261,10 +226,11 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       hologram: (blocks) => {
         blocks.forEach((el, i) => {
           if (!el) return;
+          const c = el.dataset.color || '#2FCBEF';
           el.style.opacity = '0';
           setTimeout(() => {
             el.style.opacity = '1';
-            el.style.boxShadow = `0 0 15px ${el.dataset.color}, inset 0 0 10px rgba(255,255,255,0.3)`;
+            el.style.boxShadow = `0 0 15px ${lighten(c, 18)}, inset 0 0 10px rgba(255,255,255,0.3)`;
             setTimeout(() => {
               el.style.transition = 'all 0.3s ease-out';
               restoreMatte(el);
@@ -274,15 +240,17 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       grid: (blocks) => {
-        flash('#58CC02', 0.3);
+        const glowGreen = lighten('#58CC02', 18);
+        flash(glowGreen, 0.3);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
+            const c = el.dataset.color || '#58CC02';
             el.style.opacity = '1';
             el.style.transform = 'scale(1.3)';
-            el.style.boxShadow = `0 0 30px #58CC02, 0 0 15px ${el.dataset.color}`;
+            el.style.boxShadow = `0 0 30px ${lighten(c, 18)}, 0 0 15px ${c}`;
             el.style.filter = 'brightness(2)';
-            sparks(el, 4, '#58CC02');
+            sparks(el, 4, lighten(c, 30));
             setTimeout(() => {
               el.style.transition = 'all 0.2s ease-out';
               el.style.transform = 'scale(1)';
@@ -311,14 +279,16 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       fusion: (blocks) => {
-        flash('#FFC800', 0.5);
+        const glowGold = lighten('#FFC800', 18);
+        flash(glowGold, 0.5);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
+            const c = el.dataset.color || '#FFC800';
             el.style.opacity = '1';
             el.style.transform = 'scale(0)';
             el.style.filter = 'brightness(3) saturate(2)';
-            el.style.boxShadow = `0 0 30px #FFC800`;
+            el.style.boxShadow = `0 0 30px ${lighten(c, 18)}`;
             setTimeout(() => {
               el.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
               el.style.transform = 'scale(1)';
@@ -329,15 +299,17 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       tesla: (blocks) => {
+        const glowPurple = lighten('#A560E8', 18);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
-            flash('#A560E8', 0.2);
+            const c = el.dataset.color || '#A560E8';
+            flash(glowPurple, 0.2);
             el.style.opacity = '1';
             el.style.transform = 'scale(1.4)';
-            el.style.boxShadow = `0 0 40px #A560E8, 0 0 20px ${el.dataset.color}`;
+            el.style.boxShadow = `0 0 40px ${lighten(c, 18)}, 0 0 20px ${c}`;
             el.style.filter = 'brightness(2.5)';
-            sparks(el, 8, '#A560E8');
+            sparks(el, 8, lighten(c, 30));
             setTimeout(() => {
               el.style.transition = 'all 0.2s ease-out';
               el.style.transform = 'scale(1)';
@@ -348,16 +320,18 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       voltage: (blocks) => {
-        flash('#FFC800', 0.4);
+        const glowGold = lighten('#FFC800', 18);
+        flash(glowGold, 0.4);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
+            const c = el.dataset.color || '#FFC800';
             el.style.opacity = '1';
             el.style.transform = 'scale(1.2) skewX(-10deg)';
-            el.style.boxShadow = `0 0 30px #FFC800, -5px 0 20px #FF4B4B, 5px 0 20px #58CC02`;
+            el.style.boxShadow = `0 0 30px ${lighten(c, 18)}, -5px 0 20px ${lighten('#FF4B4B', 12)}, 5px 0 20px ${lighten('#58CC02', 12)}`;
             el.style.filter = 'brightness(2.5)';
-            for (let c = 0; c < 3; c++) {
-              setTimeout(() => sparks(el, 3, '#FFC800'), c * 40);
+            for (let j = 0; j < 3; j++) {
+              setTimeout(() => sparks(el, 3, lighten(c, 30)), j * 40);
             }
             setTimeout(() => {
               el.style.transition = 'all 0.25s ease-out';
@@ -372,9 +346,10 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
+            const c = el.dataset.color || '#1CB0F6';
             el.style.opacity = '1';
             el.style.transform = 'scale(0) rotate(180deg)';
-            el.style.boxShadow = `0 0 30px #1CB0F6`;
+            el.style.boxShadow = `0 0 30px ${lighten(c, 18)}`;
             el.style.filter = 'brightness(2) hue-rotate(20deg)';
             setTimeout(() => {
               el.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -409,16 +384,17 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
     }, [stage, animating, style, onStageComplete, onAllComplete, flash, sparks]);
 
     const celebrate = useCallback(() => {
-      const colors = ['#1CB0F6', '#A560E8', '#FFC800', '#58CC02', '#FF6B6B'];
+      const glowColors = ['#1CB0F6', '#A560E8', '#FFC800', '#58CC02', '#FF6B6B'].map(c => lighten(c, 18));
       for (let i = 0; i < 5; i++) {
-        setTimeout(() => flash(colors[i], 0.25), i * 100);
+        setTimeout(() => flash(glowColors[i], 0.25), i * 100);
       }
 
       // Pulse all blocks
       blockRefs.current.flat().forEach((el, i) => {
         if (!el) return;
         setTimeout(() => {
-          el.style.boxShadow = `0 0 40px ${el.dataset.color}`;
+          const c = el.dataset.color || '#58CC02';
+          el.style.boxShadow = `0 0 40px ${lighten(c, 18)}`;
           el.animate([
             { transform: 'scale(1)', filter: 'brightness(1)' },
             { transform: 'scale(1.3)', filter: 'brightness(2.5)' },
@@ -474,10 +450,10 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
               <div style={{
                 height: '100%',
                 width: `${(stage / 6) * 100}%`,
-                background: 'linear-gradient(90deg, #58CC02, #7ED321)',
+                background: `linear-gradient(90deg, ${lighten('#58CC02', 12)}, #58CC02, ${lighten('#1CB0F6', 8)})`,
                 borderRadius: '2px',
                 transition: 'width 0.4s',
-                boxShadow: '0 0 8px #58CC02'
+                boxShadow: `0 0 8px ${lighten('#58CC02', 10)}`
               }} />
             </div>
           </>
@@ -524,9 +500,9 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
 
         {showLabel && (
           <div style={{
-            color: stage === 6 ? '#FFC800' : 'rgba(255,255,255,0.4)',
+            color: stage === 6 ? lighten('#FFC800', 18) : 'rgba(255,255,255,0.4)',
             fontSize: '12px',
-            textShadow: stage === 6 ? '0 0 8px #FFC800' : 'none',
+            textShadow: stage === 6 ? `0 0 8px ${lighten('#FFC800', 12)}` : 'none',
             fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif"
           }}>
             {stage === 0 ? 'Answer to build!' : stage < 6 ? `${STAGES[stage - 1].name} ⚡` : 'COMPLETE!'}
