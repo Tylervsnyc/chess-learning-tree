@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import confetti from 'canvas-confetti'
 import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes'
-import { getRandomOpeningQuote } from '@/data/openings/opening-celebration-quotes'
 import { playCelebrationSound } from '@/lib/sounds'
 import {
   RookCelebrationAnimation,
@@ -92,7 +91,7 @@ export function LessonComplete({
   }, [])
 
   const quote = useMemo(
-    () => hasScore ? getRandomQuote(correctCount) : getRandomOpeningQuote(),
+    () => getRandomQuote(correctCount ?? 6),
     [hasScore, correctCount],
   )
   const tierLabel = hasScore ? (didFail ? 'Not Quite' : getTierLabel(correctCount!)) : undefined
