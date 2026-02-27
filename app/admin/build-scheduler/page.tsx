@@ -3,53 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { OpeningBuildItem, BuildStatus, BuildPriority } from '@/types/build-queue'
 
-// --- Admin Auth ---
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'chesspath2024'
-
-function AdminAuth({ children }: { children: React.ReactNode }) {
-  const [isAuthed, setIsAuthed] = useState(false)
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem('admin-auth')
-    if (stored === 'true') setIsAuthed(true)
-  }, [])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin-auth', 'true')
-      setIsAuthed(true)
-    } else {
-      setError('Incorrect password')
-    }
-  }
-
-  if (!isAuthed) {
-    return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <form onSubmit={handleSubmit} className="bg-[#1A2C35] p-6 rounded-xl max-w-sm w-full mx-4">
-          <h1 className="text-xl font-bold text-white mb-4">Admin Access</h1>
-          {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter admin password"
-            className="w-full px-4 py-2 bg-[#131F24] border border-gray-600 rounded-lg text-white mb-4"
-          />
-          <button type="submit" className="w-full py-2 bg-[#58CC02] text-white font-bold rounded-lg">
-            Enter
-          </button>
-        </form>
-      </div>
-    )
-  }
-
-  return <>{children}</>
-}
-
 // --- Status Badge ---
 const STATUS_COLORS: Record<BuildStatus, { bg: string; text: string; label: string }> = {
   pending:        { bg: 'bg-gray-600',   text: 'text-gray-200',   label: 'Pending' },
@@ -449,9 +402,5 @@ function BuildSchedulerPage() {
 }
 
 export default function Page() {
-  return (
-    <AdminAuth>
-      <BuildSchedulerPage />
-    </AdminAuth>
-  )
+  return <BuildSchedulerPage />
 }
