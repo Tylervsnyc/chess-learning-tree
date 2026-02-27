@@ -110,8 +110,8 @@ export function usePermissions() {
       }
 
       case 'free': {
-        // Free users get unlimited lessons until March 1, 2026
-        const freeLimitActive = new Date() >= new Date('2026-03-01T00:00:00');
+        // Free users get unlimited lessons until March 15, 2026
+        const freeLimitActive = new Date() >= new Date('2026-03-15T00:00:00');
         const limit = freeLimitActive ? LESSON_LIMITS.free.dailyLimit : null;
         const remaining = limit !== null ? Math.max(0, limit - data.lessonsCompletedToday) : null;
         const tomorrow = new Date();

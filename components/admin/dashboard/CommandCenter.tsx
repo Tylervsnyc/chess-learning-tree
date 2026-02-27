@@ -13,7 +13,7 @@ const skillCommands = [
 const featureFlags = [
   { name: 'SHOW_STREAK_COUNTER', description: 'Fire emoji + streak badge on learn/daily pages', state: false },
   { name: 'SHOW_SHARING', description: 'Share buttons on lesson complete + Daily Rook', state: false },
-  { name: 'FREE_UNTIL_MARCH', description: 'Free access until March 1, 2026', state: true },
+  { name: 'FREE_UNTIL_MARCH', description: 'Free access until March 15, 2026', state: true },
 ];
 
 interface UserResult {

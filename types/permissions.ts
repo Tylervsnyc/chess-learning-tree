@@ -45,7 +45,7 @@ export const LESSON_LIMITS: LessonLimitConfig = {
     totalLessons: 4,
   },
   free: {
-    dailyLimit: 2,
+    dailyLimit: 4,
   },
   premium: {
     dailyLimit: null,

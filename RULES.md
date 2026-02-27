@@ -245,7 +245,7 @@ useEffect(() => {
 | User Type | Limit | Reset |
 |-----------|-------|-------|
 | Anonymous | 4 total | Never (must sign up) |
-| Free | Unlimited until March 1, 2026; then 2 per day | Midnight UTC (after March 1) |
+| Free | Unlimited until March 15, 2026; then 4 per day | Midnight UTC (after March 15) |
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
 
@@ -2331,6 +2331,28 @@ Play daily puzzles free → chesspath.app
 | `scripts/curate-video-puzzles.ts` | Pool generation from clean-puzzles-v2 |
 | `data/video-puzzle-pool.json` | Pre-curated puzzle bank |
 | `data/video-puzzle-usage.json` | Tracks which puzzles have been rendered |
+
+---
+
+## 45. Opening Lessons
+
+### Minimum Interactive Steps
+**6 interactive steps per opening lesson** (play-move, quiz, or puzzle). No lesson should feel like a slideshow — the player must always have enough hands-on practice.
+
+### Lesson Structure
+- 2–4 new moves per lesson
+- Instruction steps set up context; play-move steps are the core
+- Every lesson needs at least one recall section (replay moves without hints)
+- Punish lessons can be shorter on new content but must still hit the 6-step minimum through recall
+
+### Key Files
+| File | Purpose |
+|------|---------|
+| `data/openings/{slug}.ts` | Tree data (nodes, grid, completion order) |
+| `data/openings/{slug}-lessons.ts` | Lesson steps (FENs, moves, quips) |
+| `data/openings/registry.ts` | Master registry (slug, name, colors, hasData flag) |
+| `lib/opening-trees.ts` | Tree lookup map |
+| `app/openings/[slug]/[lessonId]/page.tsx` | Shared lesson player |
 
 ---
 
