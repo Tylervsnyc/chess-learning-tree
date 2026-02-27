@@ -1,37 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
-import type { BuildQueueData, OpeningBuildItem } from '@/types/build-queue'
-
-const QUEUE_PATH = join(process.cwd(), 'data/build-queue.json')
-
-function readQueue(): BuildQueueData {
-  return JSON.parse(readFileSync(QUEUE_PATH, 'utf-8'))
-}
-
-function writeQueue(data: BuildQueueData) {
-  writeFileSync(QUEUE_PATH, JSON.stringify(data, null, 2) + '\n')
-}
+import type { OpeningBuildItem } from '@/types/build-queue'
+import queueData from '@/data/build-queue.json'
 
 /**
  * GET /api/build-queue
- * Returns the full build queue with summary stats.
+ * Returns the build queue with summary stats.
+ * Reads from the committed JSON file (static on Vercel, live on local).
  */
 export async function GET() {
   try {
-    const queue = readQueue()
+    const items = queueData.items as OpeningBuildItem[]
 
     const stats = {
-      total: queue.items.length,
-      pending: queue.items.filter(i => i.status === 'pending').length,
-      building: queue.items.filter(i => i.status === 'building').length,
-      needsReview: queue.items.filter(i => i.status === 'needs-review').length,
-      completed: queue.items.filter(i => i.status === 'completed').length,
-      failed: queue.items.filter(i => i.status === 'failed').length,
-      verified: queue.items.filter(i => i.verified).length,
+      total: items.length,
+      pending: items.filter(i => i.status === 'pending').length,
+      building: items.filter(i => i.status === 'building').length,
+      needsReview: items.filter(i => i.status === 'needs-review').length,
+      completed: items.filter(i => i.status === 'completed').length,
+      failed: items.filter(i => i.status === 'failed').length,
+      verified: items.filter(i => i.verified).length,
     }
 
-    return NextResponse.json({ queue, stats })
+    return NextResponse.json({ queue: queueData, stats })
   } catch {
     return NextResponse.json({ error: 'Failed to read queue' }, { status: 500 })
   }
@@ -39,11 +29,15 @@ export async function GET() {
 
 /**
  * POST /api/build-queue
- * Add a new build item to the queue.
- * Body: Partial<OpeningBuildItem> with required fields
+ * Add a new build item. Local-only (filesystem write).
  */
 export async function POST(request: NextRequest) {
   try {
+    // Dynamic import — only works locally, not on Vercel
+    const { readFileSync, writeFileSync } = await import('fs')
+    const { join } = await import('path')
+    const QUEUE_PATH = join(process.cwd(), 'data/build-queue.json')
+
     const body = await request.json()
     const { id, name, slug, type, side, category, mainLine, priority } = body
 
@@ -51,35 +45,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const queue = readQueue()
+    const queue = JSON.parse(readFileSync(QUEUE_PATH, 'utf-8'))
 
-    // Check for duplicate
-    if (queue.items.some(i => i.id === id)) {
+    if (queue.items.some((i: OpeningBuildItem) => i.id === id)) {
       return NextResponse.json({ error: `Item "${id}" already exists` }, { status: 409 })
     }
 
     const newItem: OpeningBuildItem = {
-      id,
-      name,
-      slug,
-      type,
+      id, name, slug, type, side, category, mainLine, priority,
       level: body.level,
       variationName: body.variationName,
-      side,
-      category,
-      mainLine,
       extendsFrom: body.extendsFrom,
-      priority,
       status: 'pending',
       addedAt: new Date().toISOString(),
       verified: false,
     }
 
     queue.items.push(newItem)
-    writeQueue(queue)
+    writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2) + '\n')
 
     return NextResponse.json({ success: true, item: newItem })
   } catch {
-    return NextResponse.json({ error: 'Failed to add item' }, { status: 500 })
+    return NextResponse.json({ error: 'Write operations only work locally' }, { status: 500 })
   }
 }
