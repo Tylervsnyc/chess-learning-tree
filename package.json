@@ -14,7 +14,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "video:studio": "remotion studio remotion/index.ts",
-    "video:render": "npx tsx scripts/render-daily-video.ts"
+    "video:render": "npx tsx scripts/render-daily-video.ts",
+    "build-openings": "npx tsx scripts/run-opening-builds.ts"
   },
   "dependencies": {
     "@react-email/components": "^1.0.6",

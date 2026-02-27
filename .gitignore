@@ -42,3 +42,6 @@ data/puzzles-by-rating/*/*.csv
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Build scheduler logs
+logs/builds/*.log
