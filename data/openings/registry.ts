@@ -101,7 +101,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'italian',
     name: 'Italian Game',
-    subtitle: 'The Giuoco Piano',
+    subtitle: 'A natural attacking e4 opening for White',
     moves: '1.e4 e5 2.Nf3 Nc6 3.Bc4',
     description: 'The natural attacking opening. Develop, control the center, and target f7.',
     side: 'white',
@@ -126,7 +126,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'pirc-defense',
     name: 'Pirc Defense',
-    subtitle: 'The Hypermodern',
+    subtitle: 'A flexible hypermodern defense against e4',
     moves: '1.e4 d6 2.d4 Nf6',
     description: 'One setup against everything. Fianchetto, stay flexible, and strike back.',
     side: 'black',
@@ -150,7 +150,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'ruy-lopez',
     name: 'Ruy Lopez',
-    subtitle: 'The Spanish Game',
+    subtitle: 'The classic positional e4 opening for White',
     moves: '1.e4 e5 2.Nf3 Nc6 3.Bb5',
     description: 'The Spanish Game. 500 years old, still the king of openings.',
     side: 'white',
@@ -175,7 +175,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'sicilian',
     name: 'Sicilian Defense',
-    subtitle: 'The Fighting Defense',
+    subtitle: 'The sharpest counter-fighting defense against e4',
     moves: '1.e4 c5',
     description: 'The fighting choice against 1.e4. Each variation is its own world.',
     side: 'black',
@@ -192,7 +192,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '2.Nf3 d6 3.d4 — the main battlefield · 9 lessons',
     },
     variations: [
-      { name: 'Dragon Variation', subtitle: '5...g6 — fianchetto the bishop', icon: 'knight', hasData: true },
+      { name: 'Dragon Variation', subtitle: '5...g6 — fianchetto the bishop', icon: 'knight', hasData: false },
       { name: 'Najdorf Variation', subtitle: '5...a6 — the most popular', icon: 'lightning', hasData: false },
       { name: 'Sveshnikov Variation', subtitle: '5...e5 — fight for d5', icon: 'knight', hasData: false },
       { name: 'Alapin Variation', subtitle: '2.c3 — solid alternative', icon: 'shield', hasData: false },
@@ -201,7 +201,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'french',
     name: 'French Defense',
-    subtitle: 'The Solid Fortress',
+    subtitle: 'A solid, strategic defense against e4',
     moves: '1.e4 e6 2.d4 d5',
     description: 'Build a wall with e6, fight for the center with d5. Solid, strategic, and full of counterattacking chances.',
     side: 'black',
@@ -226,7 +226,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'scotch',
     name: 'Scotch Game',
-    subtitle: 'Open the Center',
+    subtitle: 'An aggressive center-opening system for White',
     moves: '1.e4 e5 2.Nf3 Nc6 3.d4',
     description: 'Open the center immediately and fight for the initiative.',
     side: 'white',
@@ -236,15 +236,18 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     colorLight: '#ffd22e',
     ghostPiece: '♖',
     icon: 'rook',
-    hasData: false,
+    hasData: true,
     order: 7,
-    mainLine: { name: 'Classical Scotch', subtitle: '3...exd4 4.Nxd4' },
-    variations: [],
+    mainLine: { name: 'Classical Scotch', subtitle: '3...exd4 4.Nxd4 — open the center · 9 lessons' },
+    variations: [
+      { name: 'Schmidt Variation', subtitle: '4...d5 — counter-gambit the center', icon: 'knight', hasData: false },
+      { name: 'Steinitz Variation', subtitle: '4...Qh4 — queen sortie', icon: 'queen', hasData: false },
+    ],
   },
   {
     slug: 'caro-kann',
     name: 'Caro-Kann',
-    subtitle: 'The Solid Defense',
+    subtitle: 'A rock-solid low-theory defense against e4',
     moves: '1.e4 c6',
     description: 'Rock-solid defense with a clear plan. Easy to learn, hard to crack.',
     side: 'black',
@@ -262,7 +265,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'kings-gambit',
     name: "King's Gambit",
-    subtitle: 'The Romantic Attack',
+    subtitle: 'The most aggressive gambit opening for White',
     moves: '1.e4 e5 2.f4',
     description: 'The most aggressive opening. Sacrifice f4 to rip open the center.',
     side: 'white',
@@ -276,15 +279,15 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     order: 10,
     mainLine: { name: 'King\'s Knight Gambit', subtitle: '2...exf4 3.Nf3 — the romantic attack · 9 lessons' },
     variations: [
-      { name: 'Fischer Defense', subtitle: '3...d5 — counter-gambit the center', icon: 'knight', hasData: true },
-      { name: 'Cunningham Defense', subtitle: '3...Be7 — tricky bishop check', icon: 'bishop', hasData: true },
+      { name: 'Fischer Defense', subtitle: '3...d5 — counter-gambit the center', icon: 'knight', hasData: false },
+      { name: 'Cunningham Defense', subtitle: '3...Be7 — tricky bishop check', icon: 'bishop', hasData: false },
     ],
   },
   // === 1.d4 OPENINGS ===
   {
     slug: 'london',
     name: 'London System',
-    subtitle: 'The Solid System',
+    subtitle: 'A simple, reliable d4 system for White',
     moves: '1.d4 d5 2.Bf4',
     description: 'Simple, solid, and reliable. One setup to handle anything.',
     side: 'white',
@@ -308,7 +311,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'queens-gambit',
     name: "Queen's Gambit Declined",
-    subtitle: 'The Classical Response',
+    subtitle: 'The principled classical defense against d4',
     moves: '1.d4 d5 2.c4 e6',
     description: 'The most principled response to 1.d4. Solid, strategic, timeless.',
     side: 'black',
@@ -326,7 +329,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   {
     slug: 'kings-indian',
     name: "King's Indian",
-    subtitle: 'The Counterattacker',
+    subtitle: 'A dynamic counterattacking defense against d4',
     moves: '1.d4 Nf6 2.c4 g6',
     description: 'Let White build the center, then blow it up. The ultimate counterattack.',
     side: 'black',
@@ -336,7 +339,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     colorLight: '#45bef8',
     ghostPiece: '♞',
     icon: 'knight',
-    hasData: false,
+    hasData: true,
     order: 9,
     mainLine: { name: 'Classical Variation', subtitle: '5...0-0 6.Be2 e5' },
     variations: [],

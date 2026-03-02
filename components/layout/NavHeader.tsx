@@ -12,10 +12,9 @@ export function NavHeader() {
   const { currentStreak, loaded: progressLoaded } = useLessonProgress();
   const pathname = usePathname();
 
-  // Don't show header on auth pages
-  if (pathname?.startsWith('/auth/')) {
-    return null;
-  }
+  // Don't show header on auth pages or opening lesson pages (they have their own close button)
+  if (pathname?.startsWith('/auth/')) return null;
+  if (pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')) return null;
 
   // Show streak counter on / and /daily-challenge (feature-flagged off)
   const showStreakCounter = pathname === '/' || pathname === '/daily-challenge';

@@ -7,6 +7,11 @@ import {
   AnimationStyle,
 } from '@/components/lesson/RookProgressAnimation';
 import {
+  RookCelebrationAnimation,
+  RookCelebrationAnimationRef,
+  CelebrationAnimationStyle,
+} from '@/components/lesson/RookCelebrationAnimation';
+import {
   RookWrongAnimation,
   RookWrongAnimationRef,
   WrongAnimationStyle,
@@ -24,6 +29,12 @@ interface PuzzleResultPopupProps {
   rookProgressRef?: React.RefObject<RookProgressAnimationRef | null>;
   rookWrongRef?: React.RefObject<RookWrongAnimationRef | null>;
   rookCurrentStage?: number; // Pass current stage to maintain progress across popup mounts
+  // Celebration mode: full rook with color animations instead of building layer by layer
+  celebrationMode?: boolean;
+  rookCelebrationStyle?: CelebrationAnimationStyle;
+  rookCelebrationRef?: React.RefObject<RookCelebrationAnimationRef | null>;
+  // Hide the continue/try-again button (auto-advance or auto-reset handles it)
+  hideButton?: boolean;
   // Checkmate explanation props
   isCheckmate?: boolean;
   onShowCheckmateExplain?: (show: boolean) => void;
@@ -41,6 +52,10 @@ export function PuzzleResultPopup({
   rookProgressRef,
   rookWrongRef,
   rookCurrentStage = 0,
+  celebrationMode = false,
+  rookCelebrationStyle,
+  rookCelebrationRef,
+  hideButton = false,
   isCheckmate,
   onShowCheckmateExplain,
   checkmateExplainActive,
@@ -50,18 +65,22 @@ export function PuzzleResultPopup({
 
   // Local refs if external ones not provided
   const localCorrectRef = useRef<RookProgressAnimationRef>(null);
+  const localCelebrationRef = useRef<RookCelebrationAnimationRef>(null);
   const localWrongRef = useRef<RookWrongAnimationRef>(null);
   const correctRef = rookProgressRef || localCorrectRef;
+  const celebrationRef = rookCelebrationRef || localCelebrationRef;
   const wrongRef = rookWrongRef || localWrongRef;
 
   // Trigger animation when popup mounts
   useEffect(() => {
-    if (isCorrect && rookAnimationStyle) {
+    if (isCorrect && celebrationMode && rookCelebrationStyle) {
+      setTimeout(() => celebrationRef.current?.triggerAnimation(), 150);
+    } else if (isCorrect && rookAnimationStyle) {
       setTimeout(() => correctRef.current?.triggerNextStage(), 150);
     } else if (!isCorrect && rookWrongStyle) {
       setTimeout(() => wrongRef.current?.triggerAnimation(), 250);
     }
-  }, [isCorrect, rookAnimationStyle, rookWrongStyle, correctRef, wrongRef]);
+  }, [isCorrect, celebrationMode, rookCelebrationStyle, rookAnimationStyle, rookWrongStyle, correctRef, celebrationRef, wrongRef]);
 
   // Auto-show checkmate highlights on mount (parent controls initial state)
   useEffect(() => {
@@ -71,7 +90,7 @@ export function PuzzleResultPopup({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only on mount — parent owns the state after that
 
-  const showRook = (isCorrect && rookAnimationStyle) || (!isCorrect && rookWrongStyle);
+  const showRook = (isCorrect && (rookAnimationStyle || rookCelebrationStyle)) || (!isCorrect && rookWrongStyle);
 
   return (
     <div
@@ -96,7 +115,16 @@ export function PuzzleResultPopup({
             className="flex-shrink-0 flex items-center justify-center"
             style={{ width: 66, height: 80 }}
           >
-            {isCorrect && rookAnimationStyle ? (
+            {isCorrect && celebrationMode && rookCelebrationStyle ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <RookCelebrationAnimation
+                  ref={celebrationRef}
+                  style={rookCelebrationStyle}
+                  scale={0.7}
+                  autoPlay={false}
+                />
+              </div>
+            ) : isCorrect && rookAnimationStyle ? (
               <RookProgressAnimation
                 ref={correctRef}
                 style={rookAnimationStyle}
@@ -163,29 +191,33 @@ export function PuzzleResultPopup({
           )}
 
           {/* Button row */}
-          {!isCorrect && !showSolution && onShowSolution ? (
-            <button
-              onClick={onShowSolution}
-              className="w-full py-1.5 bg-chess-red text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_var(--color-chess-red-shadow)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-red-shadow)] transition-all"
-            >
-              Try Again
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={onContinue}
-                className={`
-                  flex-1 py-1.5 font-bold rounded-xl uppercase tracking-wide text-[13px] transition-all
-                  active:translate-y-[1px]
-                  ${isCorrect
-                    ? 'bg-chess-green text-white shadow-[0_3px_0_var(--color-chess-green-dark)] active:shadow-[0_2px_0_var(--color-chess-green-dark)]'
-                    : 'bg-chess-red text-white shadow-[0_3px_0_var(--color-chess-red-shadow)] active:shadow-[0_2px_0_var(--color-chess-red-shadow)]'
-                  }
-                `}
-              >
-                Continue
-              </button>
-            </div>
+          {!hideButton && (
+            <>
+              {!isCorrect && !showSolution && onShowSolution ? (
+                <button
+                  onClick={onShowSolution}
+                  className="w-full py-1.5 bg-chess-red text-white font-bold rounded-xl uppercase tracking-wide text-[13px] shadow-[0_3px_0_var(--color-chess-red-shadow)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-red-shadow)] transition-all"
+                >
+                  Try Again
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={onContinue}
+                    className={`
+                      flex-1 py-1.5 font-bold rounded-xl uppercase tracking-wide text-[13px] transition-all
+                      active:translate-y-[1px]
+                      ${isCorrect
+                        ? 'bg-chess-green text-white shadow-[0_3px_0_var(--color-chess-green-dark)] active:shadow-[0_2px_0_var(--color-chess-green-dark)]'
+                        : 'bg-chess-red text-white shadow-[0_3px_0_var(--color-chess-red-shadow)] active:shadow-[0_2px_0_var(--color-chess-red-shadow)]'
+                      }
+                    `}
+                  >
+                    Continue
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

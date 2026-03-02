@@ -69,15 +69,16 @@ export const AuthEvents = {
 };
 
 // Learning funnel
+// Optional `opts` adds source/openingSlug for opening lessons (omit for main path)
 export const LearningEvents = {
-  lessonStarted: (lessonId: string, lessonName: string) =>
-    trackEvent('lesson_started', { lessonId, lessonName }),
-  puzzleAttempted: (lessonId: string, puzzleNum: number, correct: boolean, rating: number) =>
-    trackEvent('puzzle_attempted', { lessonId, puzzleNum, correct, rating }),
-  lessonCompleted: (lessonId: string, accuracy: number, timeSpent: number) =>
-    trackEvent('lesson_completed', { lessonId, accuracy, timeSpent }),
-  lessonAbandoned: (lessonId: string, puzzleNum: number, totalPuzzles: number) =>
-    trackEvent('lesson_abandoned', { lessonId, puzzleNum, totalPuzzles }),
+  lessonStarted: (lessonId: string, lessonName: string, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_started', { lessonId, lessonName, ...opts }),
+  puzzleAttempted: (lessonId: string, puzzleNum: number, correct: boolean, rating: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('puzzle_attempted', { lessonId, puzzleNum, correct, rating, ...opts }),
+  lessonCompleted: (lessonId: string, accuracy: number, timeSpent: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_completed', { lessonId, accuracy, timeSpent, ...opts }),
+  lessonAbandoned: (lessonId: string, puzzleNum: number, totalPuzzles: number, opts?: { source?: string; openingSlug?: string }) =>
+    trackEvent('lesson_abandoned', { lessonId, puzzleNum, totalPuzzles, ...opts }),
 };
 
 // Engagement events
