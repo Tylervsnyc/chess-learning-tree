@@ -2393,6 +2393,13 @@ Play daily puzzles free → chesspath.app
 - Every lesson needs at least one recall section (replay moves without hints)
 - Punish lessons can be shorter on new content but must still hit the 6-step minimum through recall
 
+### Play-Through Auto-Advance
+In recall/play-through sections, the user's correct moves **auto-advance without a Continue popup**. This makes the section feel like a real game — user plays, opponent responds, user plays again.
+
+**Detection rule:** If the NEXT step after a `play-move` is an `instruction` with `autoAdvance`, the current move is in play-through mode. On correct: play move sound (not celebration), skip the popup, auto-advance after 400ms into the opponent's auto-advancing instruction.
+
+Teaching sections (where the next step is NOT an auto-advance instruction) still show the "Correct!" popup with feedback.
+
 ### Key Files
 | File | Purpose |
 |------|---------|

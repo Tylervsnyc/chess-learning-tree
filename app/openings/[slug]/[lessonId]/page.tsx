@@ -270,15 +270,24 @@ export default function OpeningLessonPage() {
         setSelectedSquare(null)
         setMoveStatus('correct')
         setCorrectCount(prev => prev + 1)
-        playCorrectSound(correctCount)
-        vibrateOnCorrect()
 
-        // Rook animation triggered by PuzzleResultPopup on mount
-        setCorrectAnimCount(prev => prev + 1)
+        // Play-through mode: if the next step is an auto-advancing opponent
+        // move, skip the "Correct!" popup and flow straight into it
+        const nextStep = lesson.steps[currentStepIndex + 1]
+        const isPlayThrough = nextStep?.type === 'instruction' && nextStep.autoAdvance
 
-        if (currentStep.postMoveArrow) {
-          const arrow = currentStep.postMoveArrow
-          setTimeout(() => setActivePostMoveArrow(arrow), 350)
+        if (isPlayThrough) {
+          playMoveSound()
+          vibrateOnCorrect()
+          setTimeout(() => advanceStep(), 400)
+        } else {
+          playCorrectSound(correctCount)
+          vibrateOnCorrect()
+          setCorrectAnimCount(prev => prev + 1)
+          if (currentStep.postMoveArrow) {
+            const arrow = currentStep.postMoveArrow
+            setTimeout(() => setActivePostMoveArrow(arrow), 350)
+          }
         }
         return true
       } else {
@@ -552,6 +561,12 @@ export default function OpeningLessonPage() {
     // ── Play-move step ──
     if (currentStep.type === 'play-move') {
       if (moveStatus === 'correct') {
+        // In play-through mode (next step is auto-advancing opponent move),
+        // skip the popup — the move auto-advances to feel like a real game
+        const nextStep = lesson.steps[currentStepIndex + 1]
+        const isPlayThrough = nextStep?.type === 'instruction' && nextStep.autoAdvance
+        if (isPlayThrough) return null
+
         return (
           <PuzzleResultPopup
             type="correct"
