@@ -20,6 +20,14 @@ export const BOARD_COLORS = {
 } as const;
 
 /**
+ * Move indicator styles (dot for quiet moves, ring for captures)
+ */
+export const MOVE_INDICATOR = {
+  quiet: 'radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 25%)',
+  capture: 'radial-gradient(circle, transparent 55%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.2) 68%, transparent 68%)',
+} as const;
+
+/**
  * Raw puzzle from API (Lichess format)
  */
 export interface RawPuzzle {

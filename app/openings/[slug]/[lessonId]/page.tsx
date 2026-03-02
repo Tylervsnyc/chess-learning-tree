@@ -534,7 +534,6 @@ export default function OpeningLessonPage() {
           type="correct"
           message={currentStep.text}
           onContinue={currentStep.autoAdvance ? () => {} : advanceStep}
-          hideButton={!!currentStep.autoAdvance}
           rookAnimationStyle={rookCorrectStyle}
           rookProgressRef={rookProgressRef}
           rookCurrentStage={correctCount}
@@ -550,7 +549,6 @@ export default function OpeningLessonPage() {
             type="correct"
             message={currentStep.correctFeedback}
             onContinue={advanceStep}
-            hideButton
             rookAnimationStyle={rookCorrectStyle}
             rookProgressRef={rookProgressRef}
             rookCurrentStage={correctCount}
@@ -564,7 +562,6 @@ export default function OpeningLessonPage() {
             type="incorrect"
             message="Not quite — try again"
             onContinue={() => {}}
-            hideButton
             showSolution={false}
             rookWrongStyle={rookWrongStyle}
             rookWrongRef={rookWrongRef}
@@ -598,7 +595,6 @@ export default function OpeningLessonPage() {
             type="correct"
             message={currentStep.correctFeedback}
             onContinue={advanceStep}
-            hideButton
             rookAnimationStyle={rookCorrectStyle}
             rookProgressRef={rookProgressRef}
             rookCurrentStage={correctCount}
@@ -612,7 +608,6 @@ export default function OpeningLessonPage() {
             type="incorrect"
             message="Not quite — try again"
             onContinue={() => {}}
-            hideButton
             showSolution={false}
             rookWrongStyle={rookWrongStyle}
             rookWrongRef={rookWrongRef}
