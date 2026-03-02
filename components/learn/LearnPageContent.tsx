@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LEVELS, getAllLessonIds, getLevelLessonIds, getLevelFromLessonId, Block, Section, LessonCriteria } from '@/lib/curriculum-registry';
@@ -410,13 +410,9 @@ export default function LearnPageContent() {
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
-  // SINGLE SOURCE OF TRUTH: expandedSections derives from currentPosition
-  // Initial value comes from localStorage (synchronous), so correct section opens instantly
-  // (no animation on first render because hasMeasured is false in SectionView)
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
-    const sectionId = findSectionForLesson(currentPosition);
-    return sectionId ? { [sectionId]: true } : {};
-  });
+  // Starts empty — useLayoutEffect sets the correct section after serverFetched,
+  // BEFORE the browser paints. This prevents flash of wrong section.
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
@@ -430,31 +426,31 @@ export default function LearnPageContent() {
   const isAdmin = profile?.is_admin ?? false;
 
   // SCROLL BEHAVIOR (RULES.md Section 5) - currentPosition is the SINGLE source of truth
-  // expandedSections and scroll position are consequences of currentPosition, not independent state.
-  // ONE effect: expand correct section → wait for React to commit → scroll to element
-  useEffect(() => {
-    if (!serverFetched || !currentPosition) return;
+  // Two-phase approach:
+  //   1. useLayoutEffect expands the correct section BEFORE browser paint (no flash)
+  //   2. useEffect scrolls AFTER paint (element must be visible to get correct position)
+  // Both gate on loading states so they fire when sections are actually in the DOM
+  // (the skeleton at line 488 hides sections while userLoading/isProfileLoading)
+  const dataReady = serverFetched && !userLoading && !isProfileLoading;
 
-    // 1. Expand the correct section (replace, don't merge)
+  // Phase 1: Expand section synchronously before paint
+  useLayoutEffect(() => {
+    if (!dataReady || !currentPosition) return;
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
       setExpandedSections({ [sectionId]: true });
     }
+  }, [dataReady, currentPosition]);
 
-    // 2. Analytics
+  // Phase 2: Scroll after paint + analytics
+  useEffect(() => {
+    if (!dataReady || !currentPosition) return;
     EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
-
-    // 3. Scroll after React commits the section expansion
-    //    setTimeout(0) defers past React's re-render, rAF waits for paint
-    const scrollTimer = setTimeout(() => {
-      requestAnimationFrame(() => {
-        document.getElementById(`lesson-${currentPosition}`)
-          ?.scrollIntoView({ behavior: 'instant', block: 'center' });
-      });
-    }, 0);
-
-    return () => clearTimeout(scrollTimer);
-  }, [serverFetched, currentPosition]);
+    requestAnimationFrame(() => {
+      document.getElementById(`lesson-${currentPosition}`)
+        ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+  }, [dataReady, currentPosition]);
 
   // Backup: scroll on bfcache restore (mobile back button)
   useEffect(() => {
@@ -787,10 +783,13 @@ function SectionView({
     : CURRICULUM_V2_CONFIG.moduleColors[sectionIndex % CURRICULUM_V2_CONFIG.moduleColors.length];
 
   // Measure content height for smooth expand/collapse animation
+  // Only mark hasMeasured on actual expand — ensures first expand is instant (transition: none)
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
-      hasMeasured.current = true;
+      if (isExpanded) {
+        hasMeasured.current = true;
+      }
     }
   }, [isExpanded]);
 

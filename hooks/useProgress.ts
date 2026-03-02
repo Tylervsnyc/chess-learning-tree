@@ -167,7 +167,7 @@ export function useLessonProgress() {
   // Streak popup state
   const [streakJustExtended, setStreakJustExtended] = useState(false);
   const [previousStreak, setPreviousStreak] = useState(0);
-  const { user, profile } = useUser();
+  const { user, profile, loading: userLoading } = useUser();
   const hasSyncedRef = useRef(false);
   const previousUserIdRef = useRef<string | null>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -345,12 +345,16 @@ export function useLessonProgress() {
 
   // Fetch and merge server data when authenticated
   useEffect(() => {
-    // If no user, we don't fetch server data - mark as "fetched" immediately
-    if (!loaded) return;
+    // Wait for auth to fully resolve before deciding — prevents premature serverFetched
+    // when user is null only because auth is still loading
+    if (!loaded || userLoading) return;
     if (!user) {
       setServerFetched(true);
       return;
     }
+
+    // Logged-in user: reset serverFetched until fresh data arrives
+    setServerFetched(false);
 
     const abortController = new AbortController();
 
@@ -405,7 +409,7 @@ export function useLessonProgress() {
     fetchServerProgress();
 
     return () => abortController.abort();
-  }, [loaded, user?.id]);
+  }, [loaded, user?.id, userLoading]);
 
   // Sync localStorage data to server on login
   useEffect(() => {

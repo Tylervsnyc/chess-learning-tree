@@ -184,9 +184,11 @@ No URL params needed. The `currentPosition` field stored in the database determi
 ### Critical:
 - **NO FALLBACK BEHAVIOR** - Code must guarantee target exists
 - **NO URL PARAMS** - Use `currentPosition` from hook, not URL params
-- **WAIT FOR SERVER DATA** - Don't render/scroll until `serverFetched` is true (prevents flash to default position)
+- **WAIT FOR ALL DATA** - Don't expand/scroll until `serverFetched` AND `!userLoading` AND `!isProfileLoading`. The skeleton gate and the scroll effects must use the **same condition** (`dataReady`). If the skeleton is showing, sections aren't in the DOM — scroll would find nothing.
 - **NO GLOBAL SCROLL MANAGERS** - Each page owns its own scroll. No ScrollToTop, no `scrollRestoration = 'manual'`. Browser handles scroll restoration naturally. Lesson pages use `overflow-hidden` to prevent scrolling.
-- Scroll logic lives in ONE `useCallback` + ONE `useEffect` in `/components/learn/LearnPageContent.tsx`, with a `pageshow` backup for mobile bfcache restores.
+- **TWO HOOKS, NOT ONE** - Section expand needs `useLayoutEffect` (before paint), scroll needs `useEffect` (after paint). A single `useEffect` can't do both because `setExpandedSections` triggers a 500ms CSS transition — the scroll fires before the section finishes expanding and gets the wrong position.
+- **`serverFetched` must wait for auth** - In `useProgress.ts`, don't set `serverFetched=true` until `userLoading` is false. Otherwise `user=null` (auth still loading) is mistaken for "no user" and the scroll fires with localStorage's default `'1.1.1'`.
+- **First expand must be instant** - `hasMeasured` in SectionView must only be set to `true` when `isExpanded` is true. If set on mount (when collapsed), the first expand gets a 500ms transition instead of instant.
 
 ### Sticky Headers:
 | Element | Position | Z-Index | Behavior |
@@ -199,21 +201,67 @@ The level header sits just below the nav header with a small gap, keeping both v
 ### Implementation:
 ```typescript
 // In /components/learn/LearnPageContent.tsx - the ONLY place this happens
-const scrollToCurrentLesson = useCallback(() => {
-  if (!progressLoaded || !serverFetched || !currentPosition) return;
-  // Expand section, poll for element, scrollIntoView
-}, [progressLoaded, serverFetched, currentPosition]);
+// dataReady must match the skeleton gate exactly
+const dataReady = serverFetched && !userLoading && !isProfileLoading;
 
-// Fires on mount + when data becomes ready
-useEffect(() => { scrollToCurrentLesson(); }, [...]);
+// Phase 1: Expand correct section BEFORE browser paint (no flash)
+useLayoutEffect(() => {
+  if (!dataReady || !currentPosition) return;
+  const sectionId = findSectionForLesson(currentPosition);
+  if (sectionId) {
+    setExpandedSections({ [sectionId]: true });
+  }
+}, [dataReady, currentPosition]);
+
+// Phase 2: Scroll AFTER paint (element must be visible for correct position)
+useEffect(() => {
+  if (!dataReady || !currentPosition) return;
+  requestAnimationFrame(() => {
+    document.getElementById(`lesson-${currentPosition}`)
+      ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+  });
+}, [dataReady, currentPosition]);
 
 // Backup: bfcache restore on mobile
 useEffect(() => {
   window.addEventListener('pageshow', (e) => {
-    if (e.persisted) scrollToCurrentLesson();
+    if (e.persisted) {
+      document.getElementById(`lesson-${currentPosition}`)
+        ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+    }
   });
 }, [...]);
 ```
+
+### Why two hooks (not one):
+The section expand MUST happen before browser paint (`useLayoutEffect`) so the element
+is at its final position when scroll fires (`useEffect`). A single `useEffect` fires
+after paint — `setExpandedSections` inside it triggers a 500ms CSS `maxHeight` transition,
+and `scrollIntoView` fires before the transition completes, scrolling to the wrong position.
+
+### The `serverFetched` auth gate:
+In `useProgress.ts`, the server fetch effect must check `userLoading`:
+```typescript
+if (!loaded || userLoading) return;  // Wait for auth to resolve
+if (!user) { setServerFetched(true); return; }  // Genuinely no user
+setServerFetched(false);  // Reset until fresh data arrives
+// ... fetch /api/progress
+```
+Without `userLoading`, the hook sees `user=null` (auth still loading) and immediately
+sets `serverFetched=true` with localStorage's default `currentPosition='1.1.1'`.
+
+### The `hasMeasured` rule:
+In SectionView, only set `hasMeasured = true` when `isExpanded` is true:
+```typescript
+useEffect(() => {
+  if (contentRef.current) {
+    setContentHeight(contentRef.current.scrollHeight);
+    if (isExpanded) { hasMeasured.current = true; }  // NOT on mount when collapsed
+  }
+}, [isExpanded]);
+```
+If `hasMeasured` is set on mount (collapsed), the first expand gets `transition: 500ms`
+instead of `transition: none`. The scroll fires 16ms later into a still-animating section.
 
 ---
 
@@ -2353,6 +2401,93 @@ Play daily puzzles free → chesspath.app
 | `data/openings/registry.ts` | Master registry (slug, name, colors, hasData flag) |
 | `lib/opening-trees.ts` | Tree lookup map |
 | `app/openings/[slug]/[lessonId]/page.tsx` | Shared lesson player |
+
+---
+
+## 46. Social Media Sales Funnel
+
+Automated social media engagement pipeline via **Late.dev** API. Covers Instagram, Twitter, and YouTube. All automation saves as **drafts for Tyler to approve** — nothing posts automatically without review.
+
+### Architecture
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Late.dev client | `lib/late.ts` | Unified API client for posts, DMs, comments, media, webhooks, analytics |
+| ELO parser | `lib/social/elo-mapper.ts` | Extracts rating from free text, maps to tier + personalized level-test link |
+| Response templates | `lib/social/response-templates.ts` | DM replies, comment replies, engagement posts — Tyler's voice, randomly rotated |
+| Funnel tracker | `lib/social/funnel-tracker.ts` | Supabase logging + dedup on conversation/comment/post IDs |
+| Video poster | `lib/social/video-poster.ts` | Reads rendered puzzle video, uploads to Late.dev as draft |
+| Webhook route | `app/api/webhooks/social/route.ts` | Late.dev post lifecycle events (no DM webhooks available) |
+
+### Cron Schedule
+
+| Cron | Schedule | Route | What it does |
+|------|----------|-------|-------------|
+| DM polling | Every 30 min | `/api/cron/social-dm` | Polls Instagram/Twitter/YouTube for unread DMs, auto-replies with personalized level-test links |
+| Comment engagement | Every 2 hours | `/api/cron/social-comments` | Auto-likes all comments, replies to ELO mentions publicly, sends Instagram private DMs with links |
+| Daily video | Daily noon UTC | `/api/cron/social-video` | Uploads latest rendered puzzle video as draft to Late.dev |
+| Engagement post | Daily 6pm UTC | `/api/cron/social-post` | Picks non-recently-used post template, saves as draft |
+
+### ELO Tiers & Personalization
+
+The funnel personalizes responses based on detected ELO rating:
+
+| Tier | ELO Range | Level Test Link | DM Tone |
+|------|-----------|----------------|---------|
+| Beginner | < 800 | `/` (homepage) | Welcoming, encouraging |
+| Intermediate | 800–1199 | `/level-test/1-2` | "Sweet spot for improvement" |
+| Advancing | 1200–1399 | `/level-test/2-3` | "Getting serious" |
+| Advanced | 1400–1599 | `/level-test/3-4` | Respectful, targeted |
+| Expert | 1600+ | `/level-test/5-6` | "Beast mode", challenge them |
+| Unknown | No ELO detected | `/` (homepage) | General invite |
+
+ELO parser handles: "1200", "~1.2k", "rated 800 on lichess", "my elo is 1200", etc.
+
+### Comment Engagement Rules
+
+1. **Auto-like** all comments on our posts (dedup by comment ID)
+2. **Public reply** to comments mentioning an ELO — encouraging, no link (keeps it organic)
+3. **Instagram private DM** to ELO commenters — personalized link with UTM tracking (7-day window, one per comment)
+4. All actions logged to `social_funnel_log` for dedup and analytics
+
+### Engagement Post Templates
+
+15 rotating templates covering: ELO polls, chess tips (openings, tactics, blunders, endgame, time management, analysis), milestones, challenges, motivation, teasers, behind-the-scenes, daily promo. Each has platform targets (Instagram/Twitter/YouTube). Rotation avoids repeating the same type within 3 days.
+
+### UTM Tracking
+
+All links include UTM params: `utm_source` (platform), `utm_medium` (social_dm/social_comment), `utm_campaign` (elo_funnel), `utm_content` (tier name).
+
+### Database
+
+Table: `social_funnel_log` (service-role only, RLS enabled)
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| event_type | TEXT | dm_reply, comment_like, comment_reply, comment_dm, video_post, engagement_post |
+| platform | TEXT | instagram, twitter, youtube |
+| conversation_id | TEXT | Late.dev conversation ID (DM dedup) |
+| comment_id | TEXT | Late.dev comment ID (comment dedup) |
+| post_id | TEXT | Puzzle ID or post ID |
+| elo_detected | INTEGER | Parsed ELO (null if none) |
+| link_sent | TEXT | Personalized link sent |
+| content_type | TEXT | Engagement post type (rotation dedup) |
+| metadata | JSONB | Extra context |
+
+Indexes on conversation_id, comment_id, post_id, and engagement_type for fast dedup lookups.
+
+### Environment Variables
+
+- `LATE_API_KEY` — Late.dev API key (required)
+- Late.dev account IDs are hardcoded in `lib/late.ts`
+
+### Key Rules
+
+1. **Nothing auto-publishes.** Videos and engagement posts save as drafts. Tyler approves.
+2. **DMs and comment replies send automatically** — they're responses, not content.
+3. **Dedup everything.** Every action checks `social_funnel_log` before executing.
+4. **Tyler's voice.** All templates written as Tyler, not a brand. Casual, encouraging, real.
+5. **No link in public comments.** Links only go in DMs to keep engagement organic.
 
 ---
 
