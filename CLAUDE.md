@@ -71,6 +71,8 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 §12 Daily Rook           L313   §27 Lesson Naming       L1275  §42 Admin Dashboard      L2001
 §13 Leaderboard          L430   §28 Intro Messages      L1303  §43 Design System        L2085
 §14 Level Tests          L457   §29 New Levels Checklist L1317 §44 Daily Puzzle Video   L2175
+                                                              §45 Opening Lessons      L2337
+                                                              §46 Social Funnel        L2360
 §15 Pages                L497   §30 Work In Progress    L1365
 ```
 
@@ -142,6 +144,7 @@ That script checks if the server is already running and only starts it if needed
 ## Four Rules
 
 1. **Search before changing.** Search ALL code touching a feature before modifying any of it. Delete competing implementations first.
-2. **RULES.md is the source of truth.** When in doubt, read RULES.md — not your memory, not this file.
+2. **RULES.md behavior rules are the source of truth. Implementation examples are not.** RULES.md says *what* should happen (e.g., "scroll to current lesson"). It also shows *how* (code examples). If a feature keeps breaking, the behavior rule is correct but the implementation example may be wrong. Question the code pattern, not the goal. Update RULES.md when you find the right pattern.
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
 4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Don't add workarounds that fight how the app works — change how the app works. Remove the thing causing the problem instead of adding code to counteract it.
+5. **If it's failed 3+ times, question the rules.** Repeated failures on the same feature likely mean RULES.md is prescribing a broken pattern. Read the actual code, trace the actual timing/data flow, and figure out why the prescribed approach can't work — then fix RULES.md.
