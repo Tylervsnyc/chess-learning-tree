@@ -1,9 +1,36 @@
 'use client'
 
-import { use } from 'react'
+import { use, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { Chess } from 'chess.js'
 import { getOpeningBySlug, PIECE_SVGS } from '@/data/openings/registry'
 import type { OpeningConfig } from '@/data/openings/registry'
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
+
+/** Parse registry moves like "1.e4 e5 2.Nf3 Nc6 3.Bc4" → FEN + last move squares */
+function parseOpeningMoves(movesStr: string) {
+  const chess = new Chess()
+  let lastFrom = ''
+  let lastTo = ''
+
+  const tokens = movesStr.split(/\s+/)
+  for (const token of tokens) {
+    // Strip move numbers like "1." "2." etc.
+    const san = token.replace(/^\d+\.+/, '')
+    if (!san) continue
+    try {
+      const result = chess.move(san)
+      if (result) {
+        lastFrom = result.from
+        lastTo = result.to
+      }
+    } catch {
+      // skip unparseable tokens
+    }
+  }
+
+  return { fen: chess.fen(), lastFrom, lastTo }
+}
 
 // SVG Piece Icon Component
 function PieceIcon({
@@ -115,6 +142,11 @@ export default function OpeningDetailPage({
   const router = useRouter()
   const opening = getOpeningBySlug(slug)
 
+  const board = useMemo(
+    () => (opening ? parseOpeningMoves(opening.moves) : null),
+    [opening],
+  )
+
   if (!opening) {
     return (
       <div className="min-h-screen bg-chess-page flex flex-col items-center justify-center p-6">
@@ -142,48 +174,105 @@ export default function OpeningDetailPage({
         backgroundColor: '#eef6fc',
       }}
     >
-      {/* Hero Section */}
-      <div
-        style={{
-          background: `linear-gradient(135deg, ${opening.colorDark} 0%, ${opening.color} 40%, ${opening.colorLight} 100%)`,
-        }}
-        className="relative px-6 py-6 text-white"
-      >
-        {/* Ghost piece background */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 30,
-            fontSize: '100px',
-            opacity: 0.06,
-            pointerEvents: 'none',
-            lineHeight: 1,
-          }}
-        >
-          {opening.ghostPiece}
-        </div>
-
-        {/* Back button */}
+      {/* Back button */}
+      <div className="px-4 pt-4 pb-2">
         <button
           onClick={() => router.push('/openings')}
-          className="relative z-10 inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
         >
-          <span className="text-xl">←</span>
-          <span className="text-sm font-medium">Back</span>
+          <span className="text-lg text-chess-text">←</span>
+          <span className="text-xs font-medium text-chess-text/60">Back</span>
         </button>
+      </div>
 
-        {/* Content */}
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="text-[28px] font-[900] mb-4 leading-tight">
-            {opening.name}
-          </h1>
-          <div className="font-mono text-white/70 mb-6 text-sm tracking-wider">
-            {opening.moves}
+      {/* Sticky 3D Floating Header */}
+      <div className="sticky top-2 z-40 px-4 py-2 mb-6">
+        <div className="relative">
+          {/* Back layers for 3D depth */}
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              backgroundColor: opening.color,
+              transform: 'translate(8px, 8px)',
+              opacity: 0.25,
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              backgroundColor: opening.color,
+              transform: 'translate(4px, 4px)',
+              opacity: 0.45,
+            }}
+          />
+
+          {/* Main card */}
+          <div
+            className="relative rounded-2xl p-4 border-2 overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${opening.colorDark} 0%, ${opening.color} 40%, ${opening.colorLight} 100%)`,
+              borderColor: opening.colorDark,
+              boxShadow: '0 12px 24px rgba(0,0,0,0.3)',
+            }}
+          >
+            {/* Corner accent */}
+            <div
+              className="absolute top-0 right-0 w-20 h-20 pointer-events-none"
+              style={{
+                background: `linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.08) 50%)`,
+                borderTopRightRadius: '1rem',
+              }}
+            />
+
+            <div className="flex items-center gap-4 relative z-10">
+              {/* Board preview */}
+              {board && (
+                <div
+                  className="flex-shrink-0"
+                  style={{
+                    width: 140,
+                    height: 140,
+                  }}
+                >
+                  <ChessPathBoard
+                    options={{
+                      position: board.fen,
+                      allowDragging: false,
+                      showAnimations: false,
+                      showNotation: false,
+                      boardOrientation: opening.side === 'black' ? 'black' : 'white',
+                      squareStyles: {
+                        [board.lastFrom]: { backgroundColor: 'rgba(255, 170, 0, 0.5)' },
+                        [board.lastTo]: { backgroundColor: 'rgba(255, 170, 0, 0.6)' },
+                      },
+                      boardStyle: {
+                        borderRadius: '0px',
+                        boxShadow: 'none',
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Copy */}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-[20px] font-[900] leading-tight mb-1.5 text-white">
+                  {opening.name}
+                </h1>
+                <div
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 mb-2"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
+                >
+                  <span className="font-mono text-[10px] text-white/80 tracking-wider">
+                    {opening.moves}
+                  </span>
+                </div>
+                <p className="text-[12px] text-white/80 leading-relaxed">
+                  {opening.description}
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-white/55 leading-relaxed max-w-lg">
-            {opening.description}
-          </p>
         </div>
       </div>
 

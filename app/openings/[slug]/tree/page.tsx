@@ -59,20 +59,45 @@ export default function OpeningTreePage({
       className="h-full flex flex-col"
       style={{ backgroundColor: '#eef6fc' }}
     >
-      {/* Header */}
-      <div
-        className="flex-shrink-0 z-20 px-4 py-3 flex items-center gap-3"
-        style={{
-          background: `linear-gradient(135deg, ${tree.colorDark} 0%, ${tree.color} 100%)`,
-        }}
-      >
-        <button
-          onClick={() => router.push(`/openings/${slug}`)}
-          className="p-1 rounded-lg hover:bg-white/10 transition-colors"
-        >
-          <span className="text-white text-xl">←</span>
-        </button>
-        <h1 className="text-white font-bold text-lg truncate">{tree.name}</h1>
+      {/* Sticky 3D Floating Header */}
+      <div className="flex-shrink-0 z-20 px-4 pt-3 pb-2">
+        <div className="relative">
+          {/* Back layers for 3D depth */}
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              backgroundColor: tree.color,
+              transform: 'translate(6px, 6px)',
+              opacity: 0.25,
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              backgroundColor: tree.color,
+              transform: 'translate(3px, 3px)',
+              opacity: 0.45,
+            }}
+          />
+
+          {/* Main card */}
+          <div
+            className="relative rounded-2xl px-4 py-3 border-2 overflow-hidden flex items-center gap-3"
+            style={{
+              background: `linear-gradient(135deg, ${tree.colorDark} 0%, ${tree.color} 100%)`,
+              borderColor: tree.colorDark,
+              boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
+            }}
+          >
+            <button
+              onClick={() => router.push(`/openings/${slug}`)}
+              className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <span className="text-white text-xl">←</span>
+            </button>
+            <h1 className="text-white font-bold text-lg truncate">{tree.name}</h1>
+          </div>
+        </div>
       </div>
 
       {/* Tree View */}
