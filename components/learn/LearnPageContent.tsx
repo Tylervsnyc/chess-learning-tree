@@ -404,16 +404,18 @@ export default function LearnPageContent() {
     unlockLevel,
     currentPosition,
     isLessonUnlocked,
-    loaded: progressLoaded,
     serverFetched,
   } = useLessonProgress();
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
-  // Initialize expanded sections with the target section
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    '1.1': true, // First section of level 1
+  // SINGLE SOURCE OF TRUTH: expandedSections derives from currentPosition
+  // Initial value comes from localStorage (synchronous), so correct section opens instantly
+  // (no animation on first render because hasMeasured is false in SectionView)
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
+    const sectionId = findSectionForLesson(currentPosition);
+    return sectionId ? { [sectionId]: true } : {};
   });
 
   // Check if user is logged in - wait for loading to complete
@@ -427,39 +429,35 @@ export default function LearnPageContent() {
   // While loading, default to false (secure default) - show loading state instead of flash
   const isAdmin = profile?.is_admin ?? false;
 
-  // SCROLL BEHAVIOR (RULES.md Section 5) - ONE useEffect, ONE place
-  // Scroll to currentPosition every time this page appears.
-  // Trigger: data readiness (mount + server fetch). Guards: data loaded.
-  // Backup: pageshow event catches bfcache restores on mobile browsers.
-  const scrollToCurrentLesson = useCallback(() => {
-    if (!progressLoaded || !serverFetched || !currentPosition) return;
+  // SCROLL BEHAVIOR (RULES.md Section 5) - currentPosition is the SINGLE source of truth
+  // expandedSections and scroll position are consequences of currentPosition, not independent state.
+  // Flow: currentPosition known → expand correct section → scroll to element
 
+  // When server data arrives, REPLACE expanded sections (don't merge)
+  // This handles: new device (localStorage had 1.1.1, server has real position)
+  useEffect(() => {
+    if (!serverFetched || !currentPosition) return;
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
-      setExpandedSections(prev => ({ ...prev, [sectionId]: true }));
+      setExpandedSections({ [sectionId]: true });
     }
+  }, [serverFetched, currentPosition]);
 
-    // Poll for element (section may need to expand first)
-    let attempts = 0;
-    const maxAttempts = 10;
-    const pollForElement = () => {
-      const element = document.getElementById(`lesson-${currentPosition}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'instant', block: 'center' });
-      } else if (attempts < maxAttempts) {
-        attempts++;
-        setTimeout(pollForElement, 50);
-      }
-    };
-    setTimeout(pollForElement, 50);
-  }, [progressLoaded, serverFetched, currentPosition]);
+  // Scroll to currentPosition after section is expanded
+  const scrollToCurrentLesson = useCallback(() => {
+    if (!serverFetched || !currentPosition) return;
+    requestAnimationFrame(() => {
+      document.getElementById(`lesson-${currentPosition}`)
+        ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+  }, [serverFetched, currentPosition]);
 
   // Scroll on mount + when data becomes ready
   useEffect(() => {
-    if (!progressLoaded || !serverFetched || !currentPosition) return;
+    if (!serverFetched || !currentPosition) return;
     EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
     scrollToCurrentLesson();
-  }, [progressLoaded, serverFetched, currentPosition, scrollToCurrentLesson]);
+  }, [serverFetched, currentPosition, scrollToCurrentLesson]);
 
   // Backup: scroll on bfcache restore (mobile back button)
   useEffect(() => {
@@ -491,9 +489,9 @@ export default function LearnPageContent() {
     }));
   };
 
-  // Show loading skeleton while auth, progress, or server fetch is loading to prevent flash
+  // Show loading skeleton while auth or server fetch is loading to prevent flash
   // serverFetched ensures currentPosition has merged with server data before render
-  if (userLoading || isProfileLoading || !progressLoaded || !serverFetched) {
+  if (userLoading || isProfileLoading || !serverFetched) {
     return (
       <div className="h-full overflow-auto bg-chess-page text-chess-text pb-20">
         <div className="max-w-lg mx-auto px-4 py-6">
