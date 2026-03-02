@@ -334,10 +334,10 @@ export const OKAY_QUOTES = [
 ];
 
 // Helper function to get a random quote for a score
-export function getRandomQuote(correctCount: number): string {
-  if (correctCount === 6) {
+export function getRandomQuote(correctCount: number, totalPuzzles: number = 6): string {
+  if (correctCount === totalPuzzles) {
     return PERFECT_QUOTES[Math.floor(Math.random() * PERFECT_QUOTES.length)];
-  } else if (correctCount >= 5) {
+  } else if (correctCount >= totalPuzzles - 1) {
     return GREAT_QUOTES[Math.floor(Math.random() * GREAT_QUOTES.length)];
   } else {
     return OKAY_QUOTES[Math.floor(Math.random() * OKAY_QUOTES.length)];
@@ -345,8 +345,8 @@ export function getRandomQuote(correctCount: number): string {
 }
 
 // Get tier label for a score
-export function getTierLabel(correctCount: number): string {
-  if (correctCount === 6) return 'Perfect';
-  if (correctCount >= 5) return 'Great';
+export function getTierLabel(correctCount: number, totalPuzzles: number = 6): string {
+  if (correctCount === totalPuzzles) return 'Perfect';
+  if (correctCount >= totalPuzzles - 1) return 'Great';
   return 'Complete';
 }

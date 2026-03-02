@@ -100,10 +100,10 @@ export function LessonComplete({
   }, [])
 
   const quote = useMemo(
-    () => getRandomQuote(correctCount ?? 6),
-    [hasScore, correctCount],
+    () => getRandomQuote(correctCount ?? totalPuzzles, totalPuzzles),
+    [hasScore, correctCount, totalPuzzles],
   )
-  const tierLabel = hasScore ? (didFail ? 'Not Quite' : getTierLabel(correctCount!)) : undefined
+  const tierLabel = hasScore ? (didFail ? 'Not Quite' : getTierLabel(correctCount!, totalPuzzles)) : undefined
 
   // ─── Confetti + sound (pass only) ───
   useEffect(() => {
