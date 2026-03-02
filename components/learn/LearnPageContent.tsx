@@ -431,42 +431,43 @@ export default function LearnPageContent() {
 
   // SCROLL BEHAVIOR (RULES.md Section 5) - currentPosition is the SINGLE source of truth
   // expandedSections and scroll position are consequences of currentPosition, not independent state.
-  // Flow: currentPosition known → expand correct section → scroll to element
-
-  // When server data arrives, REPLACE expanded sections (don't merge)
-  // This handles: new device (localStorage had 1.1.1, server has real position)
+  // ONE effect: expand correct section → wait for React to commit → scroll to element
   useEffect(() => {
     if (!serverFetched || !currentPosition) return;
+
+    // 1. Expand the correct section (replace, don't merge)
     const sectionId = findSectionForLesson(currentPosition);
     if (sectionId) {
       setExpandedSections({ [sectionId]: true });
     }
-  }, [serverFetched, currentPosition]);
 
-  // Scroll to currentPosition after section is expanded
-  const scrollToCurrentLesson = useCallback(() => {
-    if (!serverFetched || !currentPosition) return;
-    requestAnimationFrame(() => {
-      document.getElementById(`lesson-${currentPosition}`)
-        ?.scrollIntoView({ behavior: 'instant', block: 'center' });
-    });
-  }, [serverFetched, currentPosition]);
-
-  // Scroll on mount + when data becomes ready
-  useEffect(() => {
-    if (!serverFetched || !currentPosition) return;
+    // 2. Analytics
     EngagementEvents.treeLevelViewed(getLevelFromLessonId(currentPosition));
-    scrollToCurrentLesson();
-  }, [serverFetched, currentPosition, scrollToCurrentLesson]);
+
+    // 3. Scroll after React commits the section expansion
+    //    setTimeout(0) defers past React's re-render, rAF waits for paint
+    const scrollTimer = setTimeout(() => {
+      requestAnimationFrame(() => {
+        document.getElementById(`lesson-${currentPosition}`)
+          ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+      });
+    }, 0);
+
+    return () => clearTimeout(scrollTimer);
+  }, [serverFetched, currentPosition]);
 
   // Backup: scroll on bfcache restore (mobile back button)
   useEffect(() => {
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) scrollToCurrentLesson();
+      if (!e.persisted || !serverFetched || !currentPosition) return;
+      requestAnimationFrame(() => {
+        document.getElementById(`lesson-${currentPosition}`)
+          ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+      });
     };
     window.addEventListener('pageshow', handlePageShow);
     return () => window.removeEventListener('pageshow', handlePageShow);
-  }, [scrollToCurrentLesson]);
+  }, [serverFetched, currentPosition]);
 
   // Auto-unlock next level when current level is completed
   useEffect(() => {
