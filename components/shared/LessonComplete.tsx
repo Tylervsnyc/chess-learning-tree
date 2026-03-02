@@ -24,6 +24,13 @@ import { AdSlot } from '@/components/ads/AdSlot'
 // Used by both /learn and /openings
 // ═══════════════════════════════════════════
 
+interface ShareConfig {
+  shareUrl: string           // e.g. https://chesspath.app/openings/italian/it-1/share/completed
+  ogEndpoint: string         // e.g. '/api/og/opening'
+  ogParams: Record<string, string>
+  source: 'lesson' | 'daily_challenge' | 'opening'
+}
+
 interface LessonCompleteProps {
   // ─── Score (pass correctCount to show score + confetti) ───
   correctCount?: number
@@ -43,6 +50,7 @@ interface LessonCompleteProps {
   isGuest?: boolean
   getLevelKeyFromLessonId?: (id: string) => string
   accentColor?: string
+  shareConfig?: ShareConfig
 }
 
 const PARTICLES = [
@@ -66,6 +74,7 @@ export function LessonComplete({
   isGuest = false,
   getLevelKeyFromLessonId,
   accentColor,
+  shareConfig,
 }: LessonCompleteProps) {
   const hasScore = correctCount !== undefined
   const isPerfect = hasScore && correctCount === totalPuzzles
@@ -141,14 +150,26 @@ export function LessonComplete({
 
   // ─── Share pre-fetch ───
   useEffect(() => {
-    if (!canShare || !getLevelKeyFromLessonId) return
-    const score = isPerfect ? '6/6' : '5/6'
-    const ogParams = new URLSearchParams({ score, lesson: lessonName, level: getLevelKeyFromLessonId(lessonId) })
-    fetch(`/api/og/lesson?${ogParams.toString()}`)
+    if (!canShare) return
+    let endpoint: string
+    let params: URLSearchParams
+
+    if (shareConfig) {
+      endpoint = shareConfig.ogEndpoint
+      params = new URLSearchParams(shareConfig.ogParams)
+    } else if (getLevelKeyFromLessonId) {
+      endpoint = '/api/og/lesson'
+      const score = isPerfect ? '6/6' : '5/6'
+      params = new URLSearchParams({ score, lesson: lessonName, level: getLevelKeyFromLessonId(lessonId) })
+    } else {
+      return
+    }
+
+    fetch(`${endpoint}?${params.toString()}`)
       .then(res => res.ok ? res.blob() : null)
       .then(blob => { if (blob) shareImageRef.current = blob })
       .catch(() => {})
-  }, [canShare, isPerfect, lessonName, lessonId, getLevelKeyFromLessonId])
+  }, [canShare, isPerfect, lessonName, lessonId, getLevelKeyFromLessonId, shareConfig])
 
   const dismissShareToast = () => {
     setShareFeedbackDismissing(true)
@@ -157,23 +178,25 @@ export function LessonComplete({
 
   const handleRookShare = async () => {
     if (!canShare) return
-    ShareEvents.shareClicked('lesson', 'rook')
+    const source = shareConfig?.source ?? 'lesson'
+    ShareEvents.shareClicked(source, 'rook')
     setShareFeedbackVisible(true)
     setShareFeedbackDismissing(false)
-    const shareUrl = `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`
+    const url = shareConfig?.shareUrl
+      ?? `https://chesspath.app/lesson/${lessonId}/share/${isPerfect ? 'perfect' : 'completed'}`
 
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         const shareData: ShareData = {
           title: `${lessonName} | Chess Path`,
           text: `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`,
-          url: shareUrl,
+          url,
         }
         if (shareImageRef.current) {
           shareData.files = [new File([shareImageRef.current], 'chess-path.png', { type: 'image/png' })]
         }
         await navigator.share(shareData)
-        ShareEvents.shareCompleted('lesson', shareImageRef.current ? 'native_image' : 'native')
+        ShareEvents.shareCompleted(source, shareImageRef.current ? 'native_image' : 'native')
         setTimeout(dismissShareToast, 1500)
         return
       } catch (err) {
@@ -182,11 +205,11 @@ export function LessonComplete({
     }
 
     try {
-      await navigator.clipboard.writeText(shareUrl)
-      ShareEvents.shareCompleted('lesson', 'clipboard')
+      await navigator.clipboard.writeText(url)
+      ShareEvents.shareCompleted(source, 'clipboard')
       setTimeout(dismissShareToast, 1500)
     } catch {
-      ShareEvents.shareFailed('lesson', 'clipboard_failed')
+      ShareEvents.shareFailed(source, 'clipboard_failed')
       dismissShareToast()
     }
   }
