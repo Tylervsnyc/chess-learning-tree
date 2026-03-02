@@ -71,26 +71,6 @@ function renderSparkle(x: number, y: number, size: number, color: string, rotati
   );
 }
 
-function renderSmallRookLogo() {
-  const iconSize = 18;
-  const iconSpacing = Math.round(iconSize * 1.14);
-
-  return (
-    <div style={{ display: 'flex', position: 'relative', width: iconSpacing * 4 + iconSize, height: iconSpacing * 5 + iconSize }}>
-      {ROOK_BLOCKS.map((b, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute', left: b.x * iconSpacing, top: b.y * iconSpacing,
-            width: iconSize, height: iconSize, borderRadius: 4,
-            background: getMatteBackground(b.color), boxShadow: getMatteBoxShadow(b.color, iconSize / 14), display: 'flex',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function renderCelebrationRook() {
   const blockSize = 68;
   const spacing = 90;
@@ -128,7 +108,7 @@ export async function GET(request: NextRequest) {
   const [numerator, denominator] = score.split('/').map(Number);
   const isPerfect = numerator === denominator && numerator === 6;
 
-  const densities = isPerfect ? [15, 12, 12, 12, 14] : [8, 7, 7, 8, 5];
+  const densities = isPerfect ? [5, 4, 4, 4, 5] : [3, 3, 3, 3, 2];
   const confetti = densities.flatMap((count, zoneIndex) => generateConfetti(zoneIndex, count));
 
   const sparkles = [
@@ -136,10 +116,6 @@ export async function GET(request: NextRequest) {
     { x: 280, y: -30, size: 32, color: '#FF9600', rotation: -20 },
     { x: 300, y: 220, size: 40, color: '#A560E8', rotation: 30 },
     { x: -50, y: 360, size: 32, color: '#1CB0F6', rotation: -10 },
-    { x: 310, y: 520, size: 24, color: '#58CC02', rotation: 45 },
-    { x: -30, y: 580, size: 28, color: '#FF6B6B', rotation: -25 },
-    { x: 130, y: -80, size: 20, color: '#2FCBEF', rotation: 60 },
-    { x: 270, y: 680, size: 32, color: '#FFC800', rotation: 10 },
   ];
 
   const response = new ImageResponse(
@@ -181,12 +157,9 @@ export async function GET(request: NextRequest) {
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                {renderSmallRookLogo()}
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <div style={{ display: 'flex', fontWeight: 700, fontSize: 36, color: '#2A3C45' }}>chess</div>
-                  <div style={{ display: 'flex', fontWeight: 700, fontSize: 36, color: '#FFC800' }}>path</div>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                <div style={{ display: 'flex', fontWeight: 700, fontSize: 36, color: '#2A3C45' }}>chess</div>
+                <div style={{ display: 'flex', fontWeight: 700, fontSize: 36, color: '#FFC800' }}>path</div>
               </div>
               <div style={{ display: 'flex', fontSize: 22, fontWeight: 600, color: '#94a3b8', letterSpacing: 0.6 }}>
                 The fun way to learn chess.
