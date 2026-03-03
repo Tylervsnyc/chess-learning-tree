@@ -60,7 +60,7 @@ export async function createPost({
     accountId: ACCOUNTS[p],
   }));
 
-  return lateRequest('/posts/create-post', {
+  return lateRequest('/posts', {
     method: 'POST',
     body: JSON.stringify({
       content,
@@ -73,7 +73,7 @@ export async function createPost({
 }
 
 export async function getPosts(limit = 20) {
-  return lateRequest(`/posts/list-posts?limit=${limit}`);
+  return lateRequest(`/posts?limit=${limit}`);
 }
 
 export async function deletePost(postId: string) {
