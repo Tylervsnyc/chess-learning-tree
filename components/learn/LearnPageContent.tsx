@@ -11,6 +11,7 @@ import { useUser } from '@/hooks/useUser';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star' | 'lightning' | 'shield';
@@ -410,6 +411,29 @@ export default function LearnPageContent() {
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
 
+  const router = useRouter();
+
+  // Direct Onboarding Pipeline: new visitors skip the learn page entirely
+  // and go straight to lesson 1.1.1. localStorage flag prevents re-redirect
+  // for returning visitors with cleared cookies.
+  useEffect(() => {
+    if (completedLessons.length > 0) return;
+    if (typeof window === 'undefined') return;
+    if (localStorage.getItem('chesspath_has_visited')) return;
+    localStorage.setItem('chesspath_has_visited', '1');
+    router.replace('/lesson/1.1.1');
+  }, [completedLessons, router]);
+
+  // "Next lesson" nudge — show after completing 1.1.1 for the first time
+  const [showNextLessonNudge, setShowNextLessonNudge] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!completedLessons.includes('1.1.1')) return;
+    if (localStorage.getItem('chesspath_seen_next_nudge')) return;
+    localStorage.setItem('chesspath_seen_next_nudge', '1');
+    setShowNextLessonNudge(true);
+  }, [completedLessons]);
+
   // Starts empty — useLayoutEffect sets the correct section after serverFetched,
   // BEFORE the browser paints. This prevents flash of wrong section.
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -546,8 +570,16 @@ export default function LearnPageContent() {
         .level-card-hover:hover .shimmer-effect {
           animation: shimmer 1.5s ease-in-out;
         }
+        @keyframes pop-in {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+          50% { transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes fade-in-bg {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
       `}</style>
-
 
       {/* Curriculum Path - All Levels */}
       <div className="max-w-lg mx-auto px-4 pt-2 pb-6">
@@ -679,6 +711,44 @@ export default function LearnPageContent() {
           <AdSlot position="learn-page" />
         </div>
       </div>
+
+      {/* Next lesson nudge — shows after completing tutorial (1.1.1) */}
+      {showNextLessonNudge && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ animation: 'fade-in-bg 0.2s ease-out' }}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-xs bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+            style={{ animation: 'popup-enter 0.35s ease-out' }}
+          >
+            <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
+            <div className="px-4 py-3">
+              <div className="flex items-center gap-2 mb-2">
+                <BreathingRook size="xs" />
+                <span className="text-xs font-bold text-chess-green uppercase tracking-wider">Rookie</span>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1">Nice work!</h3>
+              <p className="text-sm text-chess-text-light leading-snug mb-3">
+                Your next lesson is the green circle. Tap it to keep learning!
+              </p>
+              <button
+                onClick={() => {
+                  setShowNextLessonNudge(false);
+                  // Scroll to the current lesson so they can see it
+                  setTimeout(() => {
+                    document.getElementById(`lesson-${currentPosition}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 100);
+                }}
+                className="w-full py-2.5 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all hover:brightness-105 text-sm"
+              >
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

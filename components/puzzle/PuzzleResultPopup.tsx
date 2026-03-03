@@ -16,6 +16,7 @@ import {
   RookWrongAnimationRef,
   WrongAnimationStyle,
 } from '@/components/lesson/RookWrongAnimation';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface PuzzleResultPopupProps {
   type: 'correct' | 'incorrect';
@@ -39,6 +40,8 @@ interface PuzzleResultPopupProps {
   isCheckmate?: boolean;
   onShowCheckmateExplain?: (show: boolean) => void;
   checkmateExplainActive?: boolean;
+  // Show BreathingRook (Rookie) as fallback when no rook animation provided
+  showRookie?: boolean;
 }
 
 export function PuzzleResultPopup({
@@ -59,6 +62,7 @@ export function PuzzleResultPopup({
   isCheckmate,
   onShowCheckmateExplain,
   checkmateExplainActive,
+  showRookie = false,
 }: PuzzleResultPopupProps) {
   const isCorrect = type === 'correct';
   const displayMessage = message || (isCorrect ? 'Excellent!' : "Oops, that's not correct");
@@ -90,7 +94,8 @@ export function PuzzleResultPopup({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only on mount — parent owns the state after that
 
-  const showRook = (isCorrect && (rookAnimationStyle || rookCelebrationStyle)) || (!isCorrect && rookWrongStyle);
+  const showRookAnimation = (isCorrect && (rookAnimationStyle || rookCelebrationStyle)) || (!isCorrect && rookWrongStyle);
+  const showRook = showRookAnimation || showRookie;
 
   return (
     <div
@@ -134,7 +139,7 @@ export function PuzzleResultPopup({
                 showLabel={false}
                 compact
               />
-            ) : rookWrongStyle ? (
+            ) : !isCorrect && rookWrongStyle ? (
               <RookWrongAnimation
                 ref={wrongRef}
                 style={rookWrongStyle}
@@ -142,6 +147,8 @@ export function PuzzleResultPopup({
                 visibleStages={6}
                 compact
               />
+            ) : showRookie ? (
+              <BreathingRook size="sm" />
             ) : null}
           </div>
         )}

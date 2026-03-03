@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface IntroPopupProps {
   title: string;
@@ -9,6 +10,7 @@ interface IntroPopupProps {
   buttonText?: string;
   onSkip?: () => void;
   skipText?: string;
+  showRookie?: boolean;
 }
 
 export function IntroPopup({
@@ -18,6 +20,7 @@ export function IntroPopup({
   buttonText = "Let's Go",
   onSkip,
   skipText,
+  showRookie = false,
 }: IntroPopupProps) {
   // Split message by newlines to create paragraphs
   const paragraphs = message.split('\n\n').filter(p => p.trim());
@@ -38,6 +41,13 @@ export function IntroPopup({
         <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
 
         <div className="px-3 py-2">
+          {showRookie && (
+            <div className="flex items-center gap-2 mb-1.5">
+              <BreathingRook size="xs" />
+              <span className="text-xs font-bold text-chess-green uppercase tracking-wider">Rookie</span>
+            </div>
+          )}
+
           {/* Title */}
           <h2 className="text-base font-bold text-white mb-1">
             {title}
