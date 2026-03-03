@@ -31,6 +31,7 @@ import {
 import { useAudioWarmup } from '@/hooks/useAudioWarmup'
 import { getRuyLopezLesson } from '@/data/openings/ruy-lopez-lessons'
 import { getPircLesson } from '@/data/openings/pirc-lessons'
+import { getPircAustrianLesson } from '@/data/openings/pirc-austrian-lessons'
 import { getItalianLesson } from '@/data/openings/italian-lessons'
 import { getSicilianLesson } from '@/data/openings/sicilian-lessons'
 import { getLondonLesson } from '@/data/openings/london-lessons'
@@ -138,6 +139,7 @@ export default function OpeningLessonPage() {
     const lookups: Record<string, (id: string) => OpeningLesson | undefined> = {
       'ruy-lopez': getRuyLopezLesson,
       'pirc-defense': getPircLesson,
+      'pirc-austrian': getPircAustrianLesson,
       'italian': getItalianLesson,
       'sicilian': getSicilianLesson,
       'london': getLondonLesson,

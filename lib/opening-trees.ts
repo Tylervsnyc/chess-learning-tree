@@ -6,6 +6,7 @@ import { RUY_LOPEZ } from '@/data/openings/ruy-lopez'
 import { ITALIAN_GAME } from '@/data/openings/italian'
 import { SICILIAN_DEFENSE } from '@/data/openings/sicilian'
 import { PIRC_DEFENSE } from '@/data/openings/pirc'
+import { PIRC_AUSTRIAN } from '@/data/openings/pirc-austrian'
 import { LONDON_SYSTEM } from '@/data/openings/london'
 import { FRENCH_DEFENSE } from '@/data/openings/french'
 import { CARO_KANN } from '@/data/openings/caro-kann'
@@ -18,6 +19,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'italian': ITALIAN_GAME,
   'sicilian': SICILIAN_DEFENSE,
   'pirc-defense': PIRC_DEFENSE,
+  'pirc-austrian': PIRC_AUSTRIAN,
   'london': LONDON_SYSTEM,
   'french': FRENCH_DEFENSE,
   'caro-kann': CARO_KANN,

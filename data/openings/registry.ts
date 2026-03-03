@@ -143,7 +143,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '4.Nf3 Bg7 — develop and fianchetto · 9 lessons',
     },
     variations: [
-      { name: 'Austrian Attack', subtitle: '4.f4 — White goes all-in', icon: 'lightning', hasData: false },
+      { name: 'Austrian Attack', subtitle: '4.f4 — White goes all-in', icon: 'lightning', hasData: true },
       { name: '150 Attack', subtitle: '4.Be3 — quiet but dangerous', icon: 'shield', hasData: false },
     ],
   },
