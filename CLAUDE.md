@@ -89,29 +89,15 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 
 ---
 
-## Reference Docs (don't inline — just read when needed)
+## Reference Docs (read when needed)
 
 | Doc | What's in it |
 |-----|-------------|
 | **RULES.md** | Source of truth for ALL app behavior. Read the relevant section before coding. |
-| **AGENTS.md** | Parallel safety matrix, branching strategy, agent ownership maps |
-| **PRODUCTION.md** | What's built vs. what's live. Feature tracker. |
+| **OPENING-RULES.md** | Standalone rules for opening lessons. |
+| **AGENTS.md** | Agent roster + WARN pairs for parallel dispatch. |
 | `.claude/design-system.md` | Colors, tokens, layout rules, component patterns |
-| `.claude/standards/development.md` | Naming conventions, PR format, error handling patterns |
-| `.claude/lessons-learned.md` | 24 battle-tested debugging insights from real sessions |
-| `.claude/commands/` | Skill commands: code-review, bug-triage, feature-scaffold, migration-plan, dependency-audit, **work-task** |
-| **PROGRESS.md** | Session memory — read at start of every session, update at end. Current state of all active work. |
-
----
-
-## Session Startup
-
-Every new session, before doing any work:
-1. **Read `PROGRESS.md`** — know what's in flight, what was recently done, key context
-2. **Check Linear** — see if priorities have shifted since last session
-3. **Pick up where we left off** — or ask Tyler what's next
-
-At session end: **update PROGRESS.md** with what was accomplished and any new context.
+| `.claude/standards/development.md` | Naming conventions, mobile-first rules |
 
 ---
 
@@ -141,10 +127,10 @@ That script checks if the server is already running and only starts it if needed
 
 ---
 
-## Four Rules
+## Five Rules
 
 1. **Search before changing.** Search ALL code touching a feature before modifying any of it. Delete competing implementations first.
-2. **RULES.md behavior rules are the source of truth. Implementation examples are not.** RULES.md says *what* should happen (e.g., "scroll to current lesson"). It also shows *how* (code examples). If a feature keeps breaking, the behavior rule is correct but the implementation example may be wrong. Question the code pattern, not the goal. Update RULES.md when you find the right pattern.
+2. **RULES.md is the source of truth.** If a feature keeps breaking, the behavior rule is correct but the implementation example may be wrong. Question the code pattern, not the goal.
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
-4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Don't add workarounds that fight how the app works — change how the app works. Remove the thing causing the problem instead of adding code to counteract it.
-5. **If it's failed 3+ times, question the rules.** Repeated failures on the same feature likely mean RULES.md is prescribing a broken pattern. Read the actual code, trace the actual timing/data flow, and figure out why the prescribed approach can't work — then fix RULES.md.
+4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Remove the thing causing the problem instead of adding code to counteract it.
+5. **If it's failed 3+ times, question the rules.** Repeated failures likely mean RULES.md is prescribing a broken pattern. Trace the actual code and fix RULES.md.
