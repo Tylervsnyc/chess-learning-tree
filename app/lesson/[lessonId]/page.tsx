@@ -48,7 +48,7 @@ import { LearningEvents } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonComplete } from '@/components/shared/LessonComplete';
-import { TutorialFlow } from '@/components/tutorial/TutorialFlow';
+import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 
@@ -138,7 +138,7 @@ export default function LessonPage() {
   const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
   const skipTutorial = searchParams.get('skipTutorial') === 'true';
-  const isTutorial = lessonId === '1.1.1' && !skipTutorial;
+  const isTutorial = (lessonId === '1.1.1' || lessonId === '1.1.2') && !skipTutorial;
   const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)
@@ -1046,9 +1046,12 @@ export default function LessonPage() {
         </>
       );
     }
+    const isRookTutorial = lessonId === '1.1.2';
     return (
       <TutorialFlow
         lessonId={lessonId}
+        puzzles={isRookTutorial ? ROOK_PUZZLES : undefined}
+        config={isRookTutorial ? ROOK_TUTORIAL_CONFIG : undefined}
         onComplete={(correctCount) => {
           setTutorialCorrectCount(correctCount);
           completeLesson(lessonId, allLessonIds);

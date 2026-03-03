@@ -27,27 +27,42 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { TutorialEvents } from '@/lib/analytics/posthog';
 
 // ═══════════════════════════════════════════
-// PROPS
+// PROPS & TYPES
 // ═══════════════════════════════════════════
 
-interface TutorialFlowProps {
-  onComplete: (correctCount: number, wrongCount: number) => void;
-  lessonId: string;
-}
-
-// ═══════════════════════════════════════════
-// FIXED TUTORIAL PUZZLES (6 total)
-// ═══════════════════════════════════════════
-
-interface TutorialPuzzle {
+export interface TutorialPuzzle {
   fen: string;
   puzzleFen: string;
   setupFrom: Square;
   setupTo: Square;
-  queenSquare: Square;
+  pieceSquare: Square;
   checkmateSquare: Square;
   playerColor: 'white' | 'black';
   description: string;
+}
+
+export interface TutorialConfig {
+  /** Display name of the mating piece, e.g. "queen" or "rook" */
+  pieceName: string;
+  /** Lesson display name shown in the header */
+  lessonDisplayName: string;
+  /** Analytics key for TutorialEvents */
+  analyticsKey: 'checkmate' | 'rook-checkmate';
+  /** Welcome popup title (first puzzle only) */
+  welcomeTitle: string;
+  /** Welcome popup message */
+  welcomeMessage: string;
+  /** Skip tutorial redirect URL */
+  skipUrl: string;
+}
+
+interface TutorialFlowProps {
+  onComplete: (correctCount: number, wrongCount: number) => void;
+  lessonId: string;
+  /** Custom puzzles — defaults to QUEEN_PUZZLES if not provided */
+  puzzles?: TutorialPuzzle[];
+  /** Custom config — defaults to queen checkmate config if not provided */
+  config?: TutorialConfig;
 }
 
 // P1: Qd3→h7 mate (26 pieces, rating 400) — FULLY GUIDED
@@ -57,7 +72,7 @@ const PUZZLE_1: TutorialPuzzle = {
   puzzleFen: 'r1b2rk1/4qpp1/p2np2p/1p1p4/3P4/1PPQ1N2/P1B2PPP/R4RK1 w - - 0 19',
   setupFrom: 'a7' as Square,
   setupTo: 'a6' as Square,
-  queenSquare: 'd3' as Square,
+  pieceSquare: 'd3' as Square,
   checkmateSquare: 'h7' as Square,
   playerColor: 'white',
   description: 'Queen delivers classic h7 checkmate',
@@ -70,7 +85,7 @@ const PUZZLE_2: TutorialPuzzle = {
   puzzleFen: 'r3k1nr/pppq1ppp/2n1p3/1B2P3/Q3P1b1/1N6/PP3PPP/R1B1K2R b KQkq - 2 12',
   setupFrom: 'd2' as Square,
   setupTo: 'b3' as Square,
-  queenSquare: 'd7' as Square,
+  pieceSquare: 'd7' as Square,
   checkmateSquare: 'd1' as Square,
   playerColor: 'black',
   description: 'Black queen infiltrates the back rank',
@@ -83,7 +98,7 @@ const PUZZLE_3: TutorialPuzzle = {
   puzzleFen: 'rnbqkb1r/pp3ppp/2p2n2/4p1N1/4p3/1QP5/PP1P1PPP/RNB1KB1R w KQkq - 0 6',
   setupFrom: 'e7' as Square,
   setupTo: 'e5' as Square,
-  queenSquare: 'b3' as Square,
+  pieceSquare: 'b3' as Square,
   checkmateSquare: 'f7' as Square,
   playerColor: 'white',
   description: 'Queen exploits the f7 weakness',
@@ -96,7 +111,7 @@ const PUZZLE_4: TutorialPuzzle = {
   puzzleFen: '3rr3/2p2ppk/p1npq2p/1p2pN2/4P1QP/P1PP4/1P3PP1/R4RK1 w - - 0 21',
   setupFrom: 'd7' as Square,
   setupTo: 'e6' as Square,
-  queenSquare: 'g4' as Square,
+  pieceSquare: 'g4' as Square,
   checkmateSquare: 'g7' as Square,
   playerColor: 'white',
   description: 'Queen crashes through on the g-file',
@@ -109,7 +124,7 @@ const PUZZLE_5: TutorialPuzzle = {
   puzzleFen: '1r2k2r/ppb2ppp/2pq1n2/P2p4/1P1P4/4P2P/2QBNPP1/R4RK1 b k - 0 17',
   setupFrom: 'b2' as Square,
   setupTo: 'b4' as Square,
-  queenSquare: 'd6' as Square,
+  pieceSquare: 'd6' as Square,
   checkmateSquare: 'h2' as Square,
   playerColor: 'black',
   description: 'Black queen finds h2 checkmate',
@@ -122,13 +137,119 @@ const PUZZLE_6: TutorialPuzzle = {
   puzzleFen: 'r1bqk2r/ppp2pb1/2np2p1/4p1Pn/2B1P3/2P2Q1P/PP1P1P2/RNB1K1NR w KQkq - 1 8',
   setupFrom: 'f6' as Square,
   setupTo: 'h5' as Square,
-  queenSquare: 'f3' as Square,
+  pieceSquare: 'f3' as Square,
   checkmateSquare: 'f7' as Square,
   playerColor: 'white',
   description: 'Queen strikes f7 in a crowded position',
 };
 
-const ALL_PUZZLES: TutorialPuzzle[] = [PUZZLE_1, PUZZLE_2, PUZZLE_3, PUZZLE_4, PUZZLE_5, PUZZLE_6];
+const QUEEN_PUZZLES: TutorialPuzzle[] = [PUZZLE_1, PUZZLE_2, PUZZLE_3, PUZZLE_4, PUZZLE_5, PUZZLE_6];
+
+const DEFAULT_CONFIG: TutorialConfig = {
+  pieceName: 'queen',
+  lessonDisplayName: 'Queen Checkmate: Easy',
+  analyticsKey: 'checkmate',
+  welcomeTitle: 'Welcome to Chess Path!',
+  welcomeMessage: "I'm Rookie! I'll help you learn chess.\n\nLet's jump into a puzzle!",
+  skipUrl: '/lesson/1.1.1?skipTutorial=true',
+};
+
+// ═══════════════════════════════════════════
+// ROOK MATE-IN-1 PUZZLES (lesson 1.1.2)
+// All verified back-rank mates, rating 400-445
+// ═══════════════════════════════════════════
+
+// R1: Rd1→d8 mate (rating 400) — FULLY GUIDED
+// White rook slides to d8 for a classic back-rank mate.
+const ROOK_PUZZLE_1: TutorialPuzzle = {
+  fen: '1k4nr/ppp2p2/5q2/1P6/2P3p1/P5Pp/1Q3P1K/3R3R b - - 3 26',
+  puzzleFen: '1k4nr/ppp2p2/8/1P6/2P3p1/P5Pp/1q3P1K/3R3R w - - 0 27',
+  setupFrom: 'f6' as Square,
+  setupTo: 'b2' as Square,
+  pieceSquare: 'd1' as Square,
+  checkmateSquare: 'd8' as Square,
+  playerColor: 'white',
+  description: 'Rook delivers back rank checkmate',
+};
+
+// R2: Rd7→d1 mate (rating 400) — SEMI-GUIDED
+// Black rook infiltrates to the back rank while white's pieces can't defend.
+const ROOK_PUZZLE_2: TutorialPuzzle = {
+  fen: '6k1/3r1p1p/4p1p1/1R6/8/P1P5/1P3PPP/6K1 w - - 0 29',
+  puzzleFen: '6k1/3r1p1p/4p1p1/1R6/P7/2P5/1P3PPP/6K1 b - - 0 29',
+  setupFrom: 'a3' as Square,
+  setupTo: 'a4' as Square,
+  pieceSquare: 'd7' as Square,
+  checkmateSquare: 'd1' as Square,
+  playerColor: 'black',
+  description: 'Rook sneaks to the back rank',
+};
+
+// R3: Rc3→c1 mate (rating 414) — SEMI-GUIDED
+// Black rook drops to c1 for a clean back-rank mate.
+const ROOK_PUZZLE_3: TutorialPuzzle = {
+  fen: '5k2/p4p1p/1p4p1/8/4P3/2r5/P4PPP/1R4K1 w - - 0 23',
+  puzzleFen: '5k2/p4p1p/1p4p1/8/4P3/2r5/PR3PPP/6K1 b - - 1 23',
+  setupFrom: 'b1' as Square,
+  setupTo: 'b2' as Square,
+  pieceSquare: 'c3' as Square,
+  checkmateSquare: 'c1' as Square,
+  playerColor: 'black',
+  description: 'Rook drops to the back rank',
+};
+
+// R4: Rc1→c8 mate (rating 412) — FREE PLAY
+// White rook strikes the back rank after black's knight moves away.
+const ROOK_PUZZLE_4: TutorialPuzzle = {
+  fen: '6k1/5ppp/4p1b1/1N1pP3/1P1n4/r7/5PPP/2R2BK1 b - - 0 25',
+  puzzleFen: '6k1/5ppp/4p1b1/1n1pP3/1P6/r7/5PPP/2R2BK1 w - - 0 26',
+  setupFrom: 'd4' as Square,
+  setupTo: 'b5' as Square,
+  pieceSquare: 'c1' as Square,
+  checkmateSquare: 'c8' as Square,
+  playerColor: 'white',
+  description: 'Rook punishes the undefended back rank',
+};
+
+// R5: Rf1→f8 mate (rating 437) — FREE PLAY
+// White rook uses the open f-file to deliver mate on the back rank.
+const ROOK_PUZZLE_5: TutorialPuzzle = {
+  fen: '7k/6p1/2p4p/p3P3/P7/1P1Bq2P/2P3P1/5R1K b - - 0 32',
+  puzzleFen: '7k/6p1/2p4p/p3q3/P7/1P1B3P/2P3P1/5R1K w - - 0 33',
+  setupFrom: 'e3' as Square,
+  setupTo: 'e5' as Square,
+  pieceSquare: 'f1' as Square,
+  checkmateSquare: 'f8' as Square,
+  playerColor: 'white',
+  description: 'Rook crashes through on the f-file',
+};
+
+// R6: Re6→e1 mate (rating 445) — FREE PLAY
+// Black rook races to the back rank in a busy position.
+const ROOK_PUZZLE_6: TutorialPuzzle = {
+  fen: '8/ppR3pp/4rk2/n4p2/3q4/1P6/P4PPP/3R2K1 w - - 6 29',
+  puzzleFen: '8/ppR3pp/4rk2/n4p2/3R4/1P6/P4PPP/6K1 b - - 0 29',
+  setupFrom: 'd1' as Square,
+  setupTo: 'd4' as Square,
+  pieceSquare: 'e6' as Square,
+  checkmateSquare: 'e1' as Square,
+  playerColor: 'black',
+  description: 'Rook finds the back rank mate',
+};
+
+export const ROOK_PUZZLES: TutorialPuzzle[] = [
+  ROOK_PUZZLE_1, ROOK_PUZZLE_2, ROOK_PUZZLE_3,
+  ROOK_PUZZLE_4, ROOK_PUZZLE_5, ROOK_PUZZLE_6,
+];
+
+export const ROOK_TUTORIAL_CONFIG: TutorialConfig = {
+  pieceName: 'rook',
+  lessonDisplayName: 'Rook Checkmate: Easy',
+  analyticsKey: 'rook-checkmate',
+  welcomeTitle: "Now let's try rook checkmates!",
+  welcomeMessage: "The rook is great at back-rank mates.\n\nSlide your rook to deliver checkmate!",
+  skipUrl: '/lesson/1.1.2?skipTutorial=true',
+};
 
 // All 64 squares for dimming
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -144,7 +265,7 @@ const ALL_SQUARES: Square[] = FILES.flatMap(f =>
 //   Puzzles 4-6: free play
 // ═══════════════════════════════════════════
 
-type GuidedStepId = 'welcome' | 'tap-queen' | 'tap-mate';
+type GuidedStepId = 'welcome' | 'tap-piece' | 'tap-mate';
 
 interface GuidedStep {
   id: GuidedStepId;
@@ -157,34 +278,37 @@ interface GuidedStep {
   highlightSquares?: Square[];
 }
 
-const GUIDED_STEPS: GuidedStep[] = [
-  {
-    id: 'welcome',
-    title: 'Welcome to Chess Path!',
-    message: "I'm Rookie! I'll help you learn chess.\n\nLet's jump into a puzzle!",
-    buttonText: "Let's Go!",
-    useIntroPopup: true,
-    boardInteractive: false,
-  },
-  {
-    id: 'tap-queen',
-    message: 'Checkmate with your queen! Tap your queen!',
-    useIntroPopup: false,
-    boardInteractive: true,
-    dimExcept: [PUZZLE_1.queenSquare],
-    highlightSquares: [PUZZLE_1.queenSquare],
-  },
-  {
-    id: 'tap-mate',
-    message: 'Now tap this square!',
-    useIntroPopup: false,
-    boardInteractive: true,
-    highlightSquares: [PUZZLE_1.checkmateSquare],
-  },
-];
+function buildGuidedSteps(firstPuzzle: TutorialPuzzle, config: TutorialConfig): GuidedStep[] {
+  const capPiece = config.pieceName.charAt(0).toUpperCase() + config.pieceName.slice(1);
+  return [
+    {
+      id: 'welcome',
+      title: config.welcomeTitle,
+      message: config.welcomeMessage,
+      buttonText: "Let's Go!",
+      useIntroPopup: true,
+      boardInteractive: false,
+    },
+    {
+      id: 'tap-piece',
+      message: `Checkmate with your ${config.pieceName}! Tap your ${config.pieceName}!`,
+      useIntroPopup: false,
+      boardInteractive: true,
+      dimExcept: [firstPuzzle.pieceSquare],
+      highlightSquares: [firstPuzzle.pieceSquare],
+    },
+    {
+      id: 'tap-mate',
+      message: 'Now tap this square!',
+      useIntroPopup: false,
+      boardInteractive: true,
+      highlightSquares: [firstPuzzle.checkmateSquare],
+    },
+  ];
+}
 
 // Semi-guided state for puzzles 2-3
-type SemiPhase = 'tap-queen' | 'find-mate' | 'show-hint';
+type SemiPhase = 'tap-piece' | 'find-mate' | 'show-hint';
 
 function getHintDelay(puzzleIndex: number): number {
   if (puzzleIndex === 1) return 3000;
@@ -206,22 +330,27 @@ const COMPLETION_MESSAGES = [
 // MAIN COMPONENT
 // ═══════════════════════════════════════════
 
-export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowProps) {
+export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, config: customConfig }: TutorialFlowProps) {
   const router = useRouter();
   useAudioWarmup();
   const trackedStartRef = React.useRef(false);
+
+  const allPuzzles = customPuzzles || QUEEN_PUZZLES;
+  const config = customConfig || DEFAULT_CONFIG;
+  const guidedSteps = useMemo(() => buildGuidedSteps(allPuzzles[0], config), [allPuzzles, config]);
 
   // Track tutorial start once
   React.useEffect(() => {
     if (!trackedStartRef.current) {
       trackedStartRef.current = true;
-      TutorialEvents.tutorialStarted('checkmate');
+      TutorialEvents.tutorialStarted(config.analyticsKey);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Puzzle state
   const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const [currentFen, setCurrentFen] = useState<string>(ALL_PUZZLES[0].fen);
+  const [currentFen, setCurrentFen] = useState<string>(allPuzzles[0].fen);
   const [animationDuration, setAnimationDuration] = useState(0);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [isSetupDone, setIsSetupDone] = useState(false);
@@ -248,8 +377,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
   // Guided tutorial state (puzzle 1 only)
   const [guidedStepIndex, setGuidedStepIndex] = useState(-1);
-  const guidedStep = guidedStepIndex >= 0 && guidedStepIndex < GUIDED_STEPS.length
-    ? GUIDED_STEPS[guidedStepIndex]
+  const guidedStep = guidedStepIndex >= 0 && guidedStepIndex < guidedSteps.length
+    ? guidedSteps[guidedStepIndex]
     : null;
 
   // Semi-guided state (puzzles 2-3)
@@ -257,7 +386,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null);
   const rookProgressRef = useRef<RookProgressAnimationRef>(null);
 
-  const activePuzzle = ALL_PUZZLES[puzzleIndex];
+  const activePuzzle = allPuzzles[puzzleIndex];
   const isGuided = puzzleIndex === 0;
   const isSemiGuided = puzzleIndex === 1 || puzzleIndex === 2;
 
@@ -272,7 +401,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
   // ─── Setup animation (runs on mount and puzzle change) ───
   useEffect(() => {
-    const puzzle = ALL_PUZZLES[puzzleIndex];
+    const puzzle = allPuzzles[puzzleIndex];
     setSelectedSquare(null);
     setWrongAttempts(0);
     setHintShown(false);
@@ -302,7 +431,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
         if (puzzleIndex === 0) {
           setGuidedStepIndex(0); // Start guided flow
         } else if (puzzleIndex <= 2) {
-          setSemiPhase('tap-queen'); // Start semi-guided
+          setSemiPhase('tap-piece'); // Start semi-guided
         }
         // Puzzles 3-5: free play, no prompts
       }, 450);
@@ -335,7 +464,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
   // Auto-select queen when hint timer fires so user can just tap mate square
   useEffect(() => {
     if (semiPhase === 'show-hint') {
-      setSelectedSquare(activePuzzle.queenSquare);
+      setSelectedSquare(activePuzzle.pieceSquare);
     }
   }, [semiPhase, activePuzzle]);
 
@@ -352,21 +481,21 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
     // Check completion BEFORE entering any state updater — side effects
     // inside setState updaters are unsafe (React StrictMode double-invokes them).
-    if (puzzleIndex >= ALL_PUZZLES.length - 1) {
+    if (puzzleIndex >= allPuzzles.length - 1) {
       // All puzzles done — call onComplete instead of showing done screen
-      TutorialEvents.tutorialStepCompleted('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
-      TutorialEvents.tutorialCompleted('checkmate');
+      TutorialEvents.tutorialStepCompleted(config.analyticsKey, `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+      TutorialEvents.tutorialCompleted(config.analyticsKey);
       onComplete(completedCount, wrongCount);
       return;
     }
 
-    TutorialEvents.tutorialStepCompleted('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+    TutorialEvents.tutorialStepCompleted(config.analyticsKey, `puzzle_${puzzleIndex + 1}`, puzzleIndex);
     setIsBoardTransitioning(true);
     setTimeout(() => {
       setPuzzleIndex(prev => prev + 1);
       setTimeout(() => setIsBoardTransitioning(false), 50);
     }, 150);
-  }, [puzzleIndex, onComplete, completedCount, wrongCount]);
+  }, [puzzleIndex, onComplete, completedCount, wrongCount, config, allPuzzles]);
 
   // ─── Try a move (free play, puzzles 2-6) ───
   const tryFreeMove = useCallback((from: Square, to: Square) => {
@@ -453,8 +582,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     if (!game || !guidedStep?.boardInteractive || solvedRef.current) return;
     const sq = square as Square;
 
-    if (guidedStep.id === 'tap-queen') {
-      if (sq === activePuzzle.queenSquare) {
+    if (guidedStep.id === 'tap-piece') {
+      if (sq === activePuzzle.pieceSquare) {
         setSelectedSquare(sq);
         // Show moves briefly, then advance to tap-mate with checkmate highlighted
         setTimeout(() => setGuidedStepIndex(prev => prev + 1), 1000);
@@ -464,7 +593,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
     if (guidedStep.id === 'tap-mate') {
       // Allow re-selecting queen if deselected
-      if (sq === activePuzzle.queenSquare) {
+      if (sq === activePuzzle.pieceSquare) {
         setSelectedSquare(sq);
         return;
       }
@@ -503,8 +632,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     if (!game || puzzleComplete || solvedRef.current) return;
     const sq = square as Square;
 
-    if (semiPhase === 'tap-queen') {
-      if (sq === activePuzzle.queenSquare) {
+    if (semiPhase === 'tap-piece') {
+      if (sq === activePuzzle.pieceSquare) {
         setSelectedSquare(sq);
         setSemiPhase('find-mate');
       }
@@ -605,8 +734,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     }
 
     // Layer 4b: Semi-guided queen highlight (puzzles 2-3)
-    if (isSemiGuided && semiPhase === 'tap-queen') {
-      styles[activePuzzle.queenSquare] = {
+    if (isSemiGuided && semiPhase === 'tap-piece') {
+      styles[activePuzzle.pieceSquare] = {
         backgroundColor: 'rgba(88, 204, 2, 0.45)',
         boxShadow: 'inset 0 0 0 3px #58CC02, 0 0 18px rgba(88, 204, 2, 0.7)',
       };
@@ -679,10 +808,10 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
 
     // Semi-guided (puzzles 2-3): phase-based messages
     if (isSemiGuided && !puzzleComplete && isSetupDone) {
-      if (semiPhase === 'tap-queen') {
+      if (semiPhase === 'tap-piece') {
         return puzzleIndex === 2
-          ? { message: "Now you're on your own! Tap the queen and find checkmate!" }
-          : { message: 'Tap the queen again!' };
+          ? { message: `Now you're on your own! Tap the ${config.pieceName} and find checkmate!` }
+          : { message: `Tap the ${config.pieceName} again!` };
       }
       if (semiPhase === 'find-mate') return { message: 'Can you find the checkmate?' };
       if (semiPhase === 'show-hint') return { message: 'Tap here!' };
@@ -694,17 +823,17 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
     }
 
     return null;
-  }, [isGuided, isSemiGuided, guidedStep, semiPhase, puzzleComplete, hintShown, isSetupDone, puzzleIndex]);
+  }, [isGuided, isSemiGuided, guidedStep, semiPhase, puzzleComplete, hintShown, isSetupDone, puzzleIndex, config]);
 
   // ─── Blue arrow showing the checkmate move ───
   const boardArrows = useMemo(() => {
     // Puzzle 1: show arrow immediately on tap-mate step
     if (isGuided && guidedStep?.id === 'tap-mate') {
-      return [{ startSquare: activePuzzle.queenSquare, endSquare: activePuzzle.checkmateSquare, color: 'rgba(28, 176, 246, 0.85)' }];
+      return [{ startSquare: activePuzzle.pieceSquare, endSquare: activePuzzle.checkmateSquare, color: 'rgba(28, 176, 246, 0.85)' }];
     }
     // Puzzles 2-3: show arrow when hint timer expires
     if (isSemiGuided && semiPhase === 'show-hint') {
-      return [{ startSquare: activePuzzle.queenSquare, endSquare: activePuzzle.checkmateSquare, color: 'rgba(28, 176, 246, 0.85)' }];
+      return [{ startSquare: activePuzzle.pieceSquare, endSquare: activePuzzle.checkmateSquare, color: 'rgba(28, 176, 246, 0.85)' }];
     }
     return [];
   }, [isGuided, isSemiGuided, guidedStep, semiPhase, activePuzzle]);
@@ -725,7 +854,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
             <AnimatedLogo theme="light" size={0.28} iconOnly autoPlay={false} />
             <button
               onClick={() => {
-                TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+                TutorialEvents.tutorialSkipped(config.analyticsKey, `puzzle_${puzzleIndex + 1}`, puzzleIndex);
                 router.push('/');
               }}
               className="text-chess-text-faint hover:text-chess-text-muted"
@@ -738,7 +867,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
           <div className="flex-1 mx-4 ml-3">
             <ChessProgressBar
               current={completedCount}
-              total={ALL_PUZZLES.length}
+              total={allPuzzles.length}
               streak={streak}
               hadWrongAnswer={hadWrongAnswer}
             />
@@ -752,7 +881,7 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
           {/* Lesson name + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <h1 className="text-base font-semibold text-chess-text">
-              Queen Checkmate: Easy
+              {config.lessonDisplayName}
             </h1>
             <span className="text-base font-bold text-chess-text">
               {activePuzzle.playerColor === 'white' ? 'White' : 'Black'} to move
@@ -802,8 +931,8 @@ export function TutorialFlow({ onComplete, lessonId: _lessonId }: TutorialFlowPr
                 }}
                 buttonText={guidedStep.buttonText}
                 onSkip={() => {
-                  TutorialEvents.tutorialSkipped('checkmate', `puzzle_${puzzleIndex + 1}`, puzzleIndex);
-                  router.push('/lesson/1.1.1?skipTutorial=true');
+                  TutorialEvents.tutorialSkipped(config.analyticsKey, `puzzle_${puzzleIndex + 1}`, puzzleIndex);
+                  router.push(config.skipUrl);
                 }}
                 skipText="Skip Tutorial"
               />

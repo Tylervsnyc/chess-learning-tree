@@ -101,14 +101,15 @@ export const SubscriptionEvents = {
 };
 
 // Tutorial funnel
+type TutorialKey = 'basics' | 'checkmate' | 'rook-checkmate';
 export const TutorialEvents = {
-  tutorialStarted: (tutorial: 'basics' | 'checkmate') =>
+  tutorialStarted: (tutorial: TutorialKey) =>
     trackEvent('tutorial_started', { tutorial }),
-  tutorialStepCompleted: (tutorial: 'basics' | 'checkmate', stepId: string, stepNumber: number) =>
+  tutorialStepCompleted: (tutorial: TutorialKey, stepId: string, stepNumber: number) =>
     trackEvent('tutorial_step_completed', { tutorial, stepId, stepNumber }),
-  tutorialCompleted: (tutorial: 'basics' | 'checkmate') =>
+  tutorialCompleted: (tutorial: TutorialKey) =>
     trackEvent('tutorial_completed', { tutorial }),
-  tutorialSkipped: (tutorial: 'basics' | 'checkmate', stepId: string, stepNumber: number) =>
+  tutorialSkipped: (tutorial: TutorialKey, stepId: string, stepNumber: number) =>
     trackEvent('tutorial_skipped', { tutorial, stepId, stepNumber }),
 };
 
