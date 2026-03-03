@@ -78,14 +78,16 @@ const FEN = {
   punishBc4_after_d5:         'rnbqk2r/ppp1ppbp/6p1/3p4/2BPN3/5N2/PPP2PPP/R1BQK2R w KQkq - 0 7',
 
   // ─── pi-4: After ...c5, main line continues ───
-  // From after_c5: 7.Be3 Nc6 8.Qd2 e5
-  pi4_after_Be3:  'rnbq1rk1/pp2ppbp/3p1np1/2p5/3PP3/2N1BN2/PPP1BPPP/R2Q1RK1 b - - 1 7',
-  pi4_after_Nc6:  'r1bq1rk1/pp2ppbp/2np1np1/2p5/3PP3/2N1BN2/PPP1BPPP/R2Q1RK1 w - - 2 8',
-  pi4_after_Qd2:  'r1bq1rk1/pp2ppbp/2np1np1/2p5/3PP3/2N1BN2/PPPQBPPP/R4RK1 b - - 3 8',
-  pi4_after_e5:   'r1bq1rk1/pp3pbp/2np1np1/2p1p3/3PP3/2N1BN2/PPPQBPPP/R4RK1 w - - 0 9',
-  // pi-4 punish: After 7.Be3 Nc6, White plays 8.d5? Na jumps to d4
-  pi4_punish_after_d5:  'r1bq1rk1/pp2ppbp/2np1np1/2pP4/4P3/2N1BN2/PPP1BPPP/R2Q1RK1 b - - 0 8',
-  pi4_punish_after_Nd4: 'r1bq1rk1/pp2ppbp/3p1np1/2pP4/3nP3/2N1BN2/PPP1BPPP/R2Q1RK1 w - - 1 9',
+  // From after_c5: 7.Be3 cxd4! 8.Nxd4 Nc6 9.Nb3 Be6 (cxd4 is engine #1)
+  pi4_after_Be3:   'rnbq1rk1/pp2ppbp/3p1np1/2p5/3PP3/2N1BN2/PPP1BPPP/R2Q1RK1 b - - 1 7',
+  pi4_after_cxd4:  'rnbq1rk1/pp2ppbp/3p1np1/8/3pP3/2N1BN2/PPP1BPPP/R2Q1RK1 w - - 0 8',
+  pi4_after_Nxd4:  'rnbq1rk1/pp2ppbp/3p1np1/8/3NP3/2N1B3/PPP1BPPP/R2Q1RK1 b - - 0 8',
+  pi4_after_Nc6:   'r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1B3/PPP1BPPP/R2Q1RK1 w - - 1 9',
+  pi4_after_Nb3:   'r1bq1rk1/pp2ppbp/2np1np1/8/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 b - - 2 9',
+  pi4_after_Be6:   'r2q1rk1/pp2ppbp/2npbnp1/8/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 3 10',
+  // pi-4 punish: After 7.Be3 cxd4 8.Nxd4 Nc6, White plays 9.Nxc6?! (trading away the strong knight)
+  pi4_punish_after_Nxc6:  'r1bq1rk1/pp2ppbp/2Np1np1/8/4P3/2N1B3/PPP1BPPP/R2Q1RK1 b - - 0 9',
+  pi4_punish_after_bxc6:  'r1bq1rk1/p3ppbp/2pp1np1/8/4P3/2N1B3/PPP1BPPP/R2Q1RK1 w - - 0 10',
 
   // ─── pi-austrian-2: Austrian deeper — 6.Bd3 c5 ───
   // From austrian_after_OO: 6.Bd3 c5
@@ -99,14 +101,17 @@ const FEN = {
   austrian2_punish_after_fxe5: 'rnbq1rk1/pp2ppbp/5np1/2p1P3/3P4/2NB1N2/PPP3PP/R1BQK2R b KQ - 0 8',
   austrian2_punish_after_Ng4:  'rnbq1rk1/pp2ppbp/6p1/2p1P3/3P2n1/2NB1N2/PPP3PP/R1BQK2R w KQ - 1 9',
 
-  // ─── pi-classical-1: Classical Be3 — 7.Be3 Nc6 8.d5 Na5 ───
-  // Uses pi4_after_Be3 and pi4_after_Nc6 from above (same position)
-  // Teach: 8.d5 Na5 (reroute knight)
-  classical1_after_d5:  'r1bq1rk1/pp2ppbp/2np1np1/2pP4/4P3/2N1BN2/PPP1BPPP/R2Q1RK1 b - - 0 8',
-  classical1_after_Na5: 'r1bq1rk1/pp2ppbp/3p1np1/n1pP4/4P3/2N1BN2/PPP1BPPP/R2Q1RK1 w - - 1 9',
-  // Classical-1 punish: After Be3 Nc6, White plays dxc5? giving up center
-  classical1_punish_after_dxc5:   'r1bq1rk1/pp2ppbp/2np1np1/2P5/4P3/2N1BN2/PPP1BPPP/R2Q1RK1 b - - 0 8',
-  classical1_punish_after_dxc5_b: 'r1bq1rk1/pp2ppbp/2n2np1/2p5/4P3/2N1BN2/PPP1BPPP/R2Q1RK1 w - - 0 9',
+  // ─── pi-classical-1: Classical continuation after 7.Be3 cxd4 8.Nxd4 Nc6 ───
+  // Teach: 9.Nb3 Be6 10.f4 Na5 (knight reroute to c4)
+  classical1_after_Nb3:  'r1bq1rk1/pp2ppbp/2np1np1/8/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 b - - 2 9',
+  classical1_after_Be6:  'r2q1rk1/pp2ppbp/2npbnp1/8/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 3 10',
+  classical1_after_f4:   'r2q1rk1/pp2ppbp/2npbnp1/8/4PP2/1NN1B3/PPP1B1PP/R2Q1RK1 b - - 0 10',
+  classical1_after_Na5:  'r2q1rk1/pp2ppbp/3pbnp1/n7/4PP2/1NN1B3/PPP1B1PP/R2Q1RK1 w - - 1 11',
+  // Classical-1 punish: After 9.Nb3 Be6, White plays 10.Nd5?! (premature knight jump)
+  classical1_punish_after_Nd5:    'r2q1rk1/pp2ppbp/2npbnp1/3N4/4P3/1N2B3/PPP1BPPP/R2Q1RK1 b - - 4 10',
+  classical1_punish_after_Bxd5:   'r2q1rk1/pp2ppbp/2np1np1/3b4/4P3/1N2B3/PPP1BPPP/R2Q1RK1 w - - 0 11',
+  classical1_punish_after_exd5:   'r2q1rk1/pp2ppbp/2np1np1/3P4/8/1N2B3/PPP1BPPP/R2Q1RK1 b - - 0 11',
+  classical1_punish_after_Nb4:    'r2q1rk1/pp2ppbp/3p1np1/3P4/1n6/1N2B3/PPP1BPPP/R2Q1RK1 w - - 1 12',
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1447,7 +1452,7 @@ export const PI_PUNISH_BC4: OpeningLesson = {
 
 // ═══════════════════════════════════════════════════════════
 // LESSON: After ...c5 (pi-4)
-// Teaches: 7.Be3 Nc6 8.Qd2 e5 — develop then break
+// Teaches: 7.Be3 cxd4! 8.Nxd4 Nc6 9.Nb3 Be6 — trade the center, develop actively
 // Recap: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O c5
 // ═══════════════════════════════════════════════════════════
 
@@ -1565,111 +1570,137 @@ export const PI_LESSON_4: OpeningLesson = {
     },
 
     // ═══════════════════════════════════════════
-    // ACT 2: TEACH (7.Be3 Nc6 8.Qd2 e5)
+    // ACT 2: TEACH (7.Be3 cxd4! 8.Nxd4 Nc6 9.Nb3 Be6)
     // ═══════════════════════════════════════════
 
     {
       type: 'instruction',
       fen: FEN.after_c5,
-      text: "You've struck at the center with ...c5. Now White develops the bishop to e3, supporting d4. What's your next step? Bring in more pieces!",
+      text: "Your c5 pawn is now challenging White's d4. When White plays Be3, the best move isn't to develop — it's to trade off that center pawn immediately.",
     },
 
     // 7.Be3 (auto-advance)
     {
       type: 'instruction',
       fen: FEN.pi4_after_Be3,
-      text: "7.Be3 — White bolsters the d4 pawn. A solid, common move.",
+      text: "7.Be3 — White defends d4 with the bishop. Now is the perfect time to strike.",
       autoAdvance: 800,
     },
 
-    // 7...Nc6 (user plays)
+    // 7...cxd4! (user plays)
     {
       type: 'instruction',
       fen: FEN.pi4_after_Be3,
-      text: "Develop your knight to c6. It adds pressure on d4 and controls key central squares.",
+      text: "Take on d4 with cxd4! You destroy White's strong center pawn and force the knight to recapture — landing on a square where you can immediately challenge it.",
+      highlightSquares: ['c5', 'd4'],
     },
     {
       type: 'play-move',
       fen: FEN.pi4_after_Be3,
+      correctMove: 'cxd4',
+      prompt: "Strike at White's center pawn.",
+      hint: "Your c5 pawn captures on d4.",
+      correctFeedback: "cxd4! The center opens up. White must recapture — and the knight comes to d4 where it can be challenged.",
+      wrongFeedback: "Capture on d4 — cxd4 tears apart White's center.",
+      highlightSquares: ['c5', 'd4'],
+    },
+
+    // 8.Nxd4 (auto-advance)
+    {
+      type: 'instruction',
+      fen: FEN.pi4_after_Nxd4,
+      text: "8.Nxd4 — the knight recaptures. It looks strong in the center, but your next moves will put it under pressure.",
+      autoAdvance: 800,
+    },
+
+    // 8...Nc6 (user plays)
+    {
+      type: 'instruction',
+      fen: FEN.pi4_after_Nxd4,
+      text: "Develop the knight to c6. It immediately attacks the Nd4 and demands White respond.",
+      highlightSquares: ['b8', 'c6'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.pi4_after_Nxd4,
       correctMove: 'Nc6',
-      prompt: "Add more pressure to the center.",
-      hint: "Your knight from b8 can go to c6, attacking d4.",
-      correctFeedback: "Nc6! Now d4 is under fire from three pieces — your c5 pawn, Nc6, and Bg7. White has to be careful.",
-      wrongFeedback: "Develop your knight to c6 — it pressures d4.",
+      prompt: "Develop a piece and pressure the knight.",
+      hint: "Your knight from b8 goes to c6, attacking Nd4.",
+      correctFeedback: "Nc6! The knight is under attack. White typically retreats to b3.",
+      wrongFeedback: "Develop your knight to c6 — it attacks the Nd4.",
       highlightSquares: ['b8', 'c6'],
       postMoveArrow: ['c6', 'd4'],
     },
 
-    // 8.Qd2 (auto-advance)
+    // 9.Nb3 (auto-advance)
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Qd2,
-      text: "8.Qd2 — White connects the rooks and eyes a future Bh6 trade. But the center is ripe for action.",
+      fen: FEN.pi4_after_Nb3,
+      text: "9.Nb3 — White retreats the knight to safety. Now you develop your bishop with tempo.",
       autoAdvance: 800,
     },
 
-    // 8...e5! (user plays the break)
+    // 9...Be6 (user plays)
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Qd2,
-      text: "Now for the big moment — push ...e5! This challenges d4 directly and opens lines for your pieces. The Pirc payoff!",
-      highlightSquares: ['e7', 'e5', 'd4'],
+      fen: FEN.pi4_after_Nb3,
+      text: "Play Be6 — the bishop develops actively, eyeing the b3 knight and supporting your queenside pawns. A natural, strong square.",
+      highlightSquares: ['c8', 'e6'],
     },
     {
       type: 'play-move',
-      fen: FEN.pi4_after_Qd2,
-      correctMove: 'e5',
-      prompt: "Time for the big center break!",
-      hint: "Push e5 — blow open the center while your pieces are ready.",
-      correctFeedback: "e5! The center explodes. White's d4 pawn is under huge pressure, and your Bg7 is now an absolute monster on the diagonal.",
-      wrongFeedback: "Push e5 — the Pirc counterattack reaches full power!",
-      highlightSquares: ['e7', 'e5'],
-      postMoveArrow: ['g7', 'a1'],
+      fen: FEN.pi4_after_Nb3,
+      correctMove: 'Be6',
+      prompt: "Develop your bishop to a strong diagonal.",
+      hint: "Bishop to e6 — threatens the b3 knight's support and activates your piece.",
+      correctFeedback: "Be6! Active development. Your bishop eyes b3, and you're already thinking about Na5 next to target that knight.",
+      wrongFeedback: "Play Be6 — develop your bishop actively.",
+      highlightSquares: ['c8', 'e6'],
+      postMoveArrow: ['e6', 'b3'],
     },
 
     {
       type: 'instruction',
-      fen: FEN.pi4_after_e5,
-      text: "This is the dream Pirc position. You let White build the center, developed calmly, and now the center is cracking open in your favor. The bishop on g7 is devastating.",
-      highlightSquares: ['g7', 'e5', 'c6'],
+      fen: FEN.pi4_after_Be6,
+      text: "You traded the center pawn, developed both knights and a bishop, and have the Bg7 still aiming down the long diagonal. Great position.",
+      highlightSquares: ['g7', 'e6', 'c6'],
     },
 
     // ═══════════════════════════════════════════
-    // ACT 3: PUNISH — White plays 8.d5? locking the center
+    // ACT 3: PUNISH — White plays 9.Nxc6?! (trades strong knight)
     // ═══════════════════════════════════════════
 
     {
       type: 'instruction',
       fen: FEN.pi4_after_Nc6,
-      text: "What if White panics and pushes 8.d5? It looks like it gains space, but it gives your knight a juicy square.",
+      text: "What if White trades with 9.Nxc6?! That knight on d4 is strong — giving it up is a mistake.",
     },
 
-    // 8.d5? (auto-advance)
+    // 9.Nxc6?! (auto-advance)
     {
       type: 'instruction',
-      fen: FEN.pi4_punish_after_d5,
-      text: "8.d5? White closes the center, but your knight on c6 is kicked — and it has a perfect detour.",
+      fen: FEN.pi4_punish_after_Nxc6,
+      text: "9.Nxc6?! White gives up the strong central knight. Now you recapture and get a great pawn structure.",
       autoAdvance: 800,
     },
 
-    // 8...Nd4! (user punishes)
+    // 9...bxc6! (user punishes)
     {
       type: 'play-move',
-      fen: FEN.pi4_punish_after_d5,
-      correctMove: 'Nd4',
-      prompt: "Your knight got pushed — find the best square!",
-      hint: "Instead of retreating, jump forward! Nd4 is a powerful outpost.",
-      correctFeedback: "Nd4! A monster knight on d4. It can't be chased by pawns, attacks the e2 bishop, and dominates the center. White's d5 push just made your knight stronger.",
-      wrongFeedback: "Jump forward to d4 — your knight becomes a monster there!",
-      highlightSquares: ['c6', 'd4'],
-      postMoveArrow: ['d4', 'e2'],
+      fen: FEN.pi4_punish_after_Nxc6,
+      correctMove: 'bxc6',
+      prompt: "Recapture — but choose wisely!",
+      hint: "Take back with bxc6 — it opens the b-file for your rook.",
+      correctFeedback: "bxc6! The b-file opens, your d6 and e7 pawns form a solid chain, and your Bg7 breathes down the long diagonal. White gave up the d4 knight for nothing.",
+      wrongFeedback: "Recapture with bxc6 to open the b-file.",
+      highlightSquares: ['b7', 'c6'],
     },
 
     {
       type: 'instruction',
-      fen: FEN.pi4_punish_after_Nd4,
-      text: "The knight on d4 is untouchable by pawns and attacks White's bishop. White's space grab backfired — you're better here.",
-      highlightSquares: ['d4', 'e2'],
+      fen: FEN.pi4_punish_after_bxc6,
+      text: "Look at this position — open b-file for your rook, two center pawns on c6 and d6, and the bishop on g7 dominates. White traded their best piece for nothing.",
+      highlightSquares: ['g7', 'c6', 'd6'],
     },
 
     // ═══════════════════════════════════════════
@@ -1679,7 +1710,7 @@ export const PI_LESSON_4: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_c5,
-      text: "Run it back — play the two new Black moves.",
+      text: "Run it back — play the three new Black moves.",
       buttonText: "LET'S GO",
     },
     // 7.Be3
@@ -1692,27 +1723,43 @@ export const PI_LESSON_4: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.pi4_after_Be3,
+      correctMove: 'cxd4',
+      prompt: "Your move.",
+      hint: "cxd4.",
+      correctFeedback: "cxd4.",
+      wrongFeedback: "cxd4.",
+    },
+    // 8.Nxd4
+    {
+      type: 'instruction',
+      fen: FEN.pi4_after_Nxd4,
+      text: "8.Nxd4.",
+      autoAdvance: 800,
+    },
+    {
+      type: 'play-move',
+      fen: FEN.pi4_after_Nxd4,
       correctMove: 'Nc6',
       prompt: "Your move.",
       hint: "Nc6.",
       correctFeedback: "Nc6.",
       wrongFeedback: "Nc6.",
     },
-    // 8.Qd2
+    // 9.Nb3
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Qd2,
-      text: "8.Qd2.",
+      fen: FEN.pi4_after_Nb3,
+      text: "9.Nb3.",
       autoAdvance: 800,
     },
     {
       type: 'play-move',
-      fen: FEN.pi4_after_Qd2,
-      correctMove: 'e5',
+      fen: FEN.pi4_after_Nb3,
+      correctMove: 'Be6',
       prompt: "Your move.",
-      hint: "e5.",
-      correctFeedback: "e5.",
-      wrongFeedback: "e5.",
+      hint: "Be6.",
+      correctFeedback: "Be6.",
+      wrongFeedback: "Be6.",
     },
   ],
 }
@@ -1956,8 +2003,8 @@ export const PI_AUSTRIAN_2: OpeningLesson = {
 
 // ═══════════════════════════════════════════════════════════
 // LESSON: Classical Be3 (pi-classical-1)
-// Teaches: 7.Be3 Nc6 8.d5 Na5 — knight reroute when center locks
-// Recap: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O c5
+// Teaches: 9.Nb3 Be6 10.f4 Na5 — reroute to c4 outpost
+// Recap: ...through 7.Be3 cxd4 8.Nxd4 Nc6 (pi-4 line)
 // ═══════════════════════════════════════════════════════════
 
 export const PI_CLASSICAL_1: OpeningLesson = {
@@ -1967,13 +2014,13 @@ export const PI_CLASSICAL_1: OpeningLesson = {
   steps: [
 
     // ═══════════════════════════════════════════
-    // ACT 1: RECAP (full Classical line through ...c5, plus Be3 Nc6)
+    // ACT 1: RECAP (through pi-4: Be3 cxd4 Nxd4 Nc6)
     // ═══════════════════════════════════════════
 
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Full recap — play through to the ...c5 counterattack, then the Nc6 development.",
+      text: "Replay the full Classical line through pi-4.",
       buttonText: "LET'S GO",
     },
     {
@@ -2082,8 +2129,25 @@ export const PI_CLASSICAL_1: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.pi4_after_Be3,
+      correctMove: 'cxd4',
+      prompt: "Trade the center.",
+      hint: "cxd4.",
+      correctFeedback: "cxd4.",
+      wrongFeedback: "cxd4.",
+      highlightSquares: ['c5', 'd4'],
+    },
+    // 8.Nxd4
+    {
+      type: 'instruction',
+      fen: FEN.pi4_after_Nxd4,
+      text: "8.Nxd4.",
+      autoAdvance: 800,
+    },
+    {
+      type: 'play-move',
+      fen: FEN.pi4_after_Nxd4,
       correctMove: 'Nc6',
-      prompt: "Develop and pressure d4.",
+      prompt: "Attack the knight.",
       hint: "Nc6.",
       correctFeedback: "Nc6.",
       wrongFeedback: "Nc6.",
@@ -2091,38 +2155,65 @@ export const PI_CLASSICAL_1: OpeningLesson = {
     },
 
     // ═══════════════════════════════════════════
-    // ACT 2: TEACH (8.d5 Na5 — knight reroute)
+    // ACT 2: TEACH (9.Nb3 Be6 10.f4 Na5)
     // ═══════════════════════════════════════════
 
     {
       type: 'instruction',
       fen: FEN.pi4_after_Nc6,
-      text: "White wants to lock down the center by pushing d5. It kicks your knight — but in the Pirc, being kicked isn't always bad.",
+      text: "You've forced the knight back. Now White retreats to b3 and starts pushing f4. This is where things get interesting — you have a concrete plan.",
     },
 
-    // 8.d5 (auto-advance)
+    // 9.Nb3 (auto-advance)
     {
       type: 'instruction',
-      fen: FEN.classical1_after_d5,
-      text: "8.d5 — White closes the center and attacks your knight. Where should it go?",
+      fen: FEN.classical1_after_Nb3,
+      text: "9.Nb3 — White saves the knight. Now develop your bishop with tempo.",
       autoAdvance: 800,
     },
 
-    // 8...Na5 (user plays)
+    // 9...Be6 (user plays)
     {
       type: 'instruction',
-      fen: FEN.classical1_after_d5,
-      text: "The knight goes to a5! It looks weird on the rim, but from a5 it's heading to c4 — one of the best outpost squares in chess. The c4 square attacks b2, d2, and e3.",
+      fen: FEN.classical1_after_Nb3,
+      text: "Play Be6! Your bishop develops actively and eyes the b3 knight. This is the correct response — active development.",
+      highlightSquares: ['c8', 'e6'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.classical1_after_Nb3,
+      correctMove: 'Be6',
+      prompt: "Develop and put the knight on notice.",
+      hint: "Bishop to e6 — it eyes the b3 knight.",
+      correctFeedback: "Be6! The bishop is active, and already eyeing b3. If White isn't careful, you'll win the bishop pair.",
+      wrongFeedback: "Play Be6 — develop your bishop actively.",
+      highlightSquares: ['c8', 'e6'],
+      postMoveArrow: ['e6', 'b3'],
+    },
+
+    // 10.f4 (auto-advance)
+    {
+      type: 'instruction',
+      fen: FEN.classical1_after_f4,
+      text: "10.f4 — White pushes f4, trying to gain space and attack your kingside. But you have a powerful knight maneuver in mind.",
+      autoAdvance: 800,
+    },
+
+    // 10...Na5 (user plays)
+    {
+      type: 'instruction',
+      fen: FEN.classical1_after_f4,
+      text: "Na5! The knight goes to the edge — but it's heading straight for c4, the best outpost square on the board. From c4 it attacks b2, d2, and e3.",
       highlightSquares: ['c6', 'a5', 'c4'],
     },
     {
       type: 'play-move',
-      fen: FEN.classical1_after_d5,
+      fen: FEN.classical1_after_f4,
       correctMove: 'Na5',
-      prompt: "Reroute the knight toward a powerful square.",
-      hint: "Go to a5 — it's a stepping stone to c4, one of the best outposts.",
-      correctFeedback: "Na5! The knight is heading to c4 via a5. It looks strange on the edge, but c4 will be devastating — attacking b2, d2, and e3.",
-      wrongFeedback: "Play Na5 — the knight reroutes through the side to reach c4.",
+      prompt: "Start the knight reroute to c4.",
+      hint: "Knight to a5 — it's a stepping stone to c4.",
+      correctFeedback: "Na5! Next stop: c4. Once there, the knight attacks b2, d2, and e3 simultaneously. White can't keep you out.",
+      wrongFeedback: "Play Na5 — the knight is heading for the c4 outpost.",
       highlightSquares: ['c6', 'a5'],
       postMoveArrow: ['a5', 'c4'],
     },
@@ -2130,45 +2221,66 @@ export const PI_CLASSICAL_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.classical1_after_Na5,
-      text: "Next move, your knight hops to c4 and becomes a monster. White's d5 push gave you a clear plan — and the Bg7 still controls the long diagonal behind the locked center.",
-      highlightSquares: ['a5', 'g7'],
+      text: "Na5 is heading to c4. The Bg7 still controls the long diagonal. Your pieces all have a purpose — this is the Pirc dream.",
+      highlightSquares: ['a5', 'g7', 'e6'],
     },
 
     // ═══════════════════════════════════════════
-    // ACT 3: PUNISH — White plays dxc5? giving up the center
+    // ACT 3: PUNISH — White plays Nd5?! (premature jump)
     // ═══════════════════════════════════════════
 
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Nc6,
-      text: "What if White trades with dxc5 instead? That's a mistake — it gives up the center tension and opens lines for YOUR pieces.",
+      fen: FEN.classical1_after_Be6,
+      text: "What if White gets impatient after 9.Nb3 Be6 and plays Nd5?! Jumping into your position looks scary, but the knight is overstepping.",
     },
 
-    // 8.dxc5? (auto-advance)
+    // 10.Nd5?! (auto-advance)
     {
       type: 'instruction',
-      fen: FEN.classical1_punish_after_dxc5,
-      text: "8.dxc5? White gives up the d4 pawn. Now the d-file opens and your pieces feast.",
+      fen: FEN.classical1_punish_after_Nd5,
+      text: "10.Nd5?! White tries to use the outpost. But that knight can be taken — and taking it leaves a passed pawn you can use.",
       autoAdvance: 800,
     },
 
-    // 8...dxc5 (user recaptures)
+    // 10...Bxd5! (user punishes)
     {
       type: 'play-move',
-      fen: FEN.classical1_punish_after_dxc5,
-      correctMove: 'dxc5',
-      prompt: "Recapture and open the position.",
-      hint: "Take back on c5 with your d-pawn — it opens the d-file.",
-      correctFeedback: "dxc5! The d-file is open for your queen, your Bg7 has no pawns blocking it, and your Nc6 is beautifully placed. White gave up the center for nothing.",
-      wrongFeedback: "Recapture with dxc5 — open the position!",
-      highlightSquares: ['d6', 'c5'],
+      fen: FEN.classical1_punish_after_Nd5,
+      correctMove: 'Bxd5',
+      prompt: "Capture the overextended knight!",
+      hint: "Take on d5 with your bishop — Bxd5.",
+      correctFeedback: "Bxd5! Now White recaptures with the e-pawn, and you follow with Nb4 — forking the queen and b2.",
+      wrongFeedback: "Capture with Bxd5 — the knight overstepped.",
+      highlightSquares: ['e6', 'd5'],
+    },
+
+    // 11.exd5 (auto-advance)
+    {
+      type: 'instruction',
+      fen: FEN.classical1_punish_after_exd5,
+      text: "11.exd5 — White recaptures with the pawn. Now you have a passed d-pawn to deal with, but your knight has a devastating fork.",
+      autoAdvance: 800,
+    },
+
+    // 11...Nb4! (user plays the fork)
+    {
+      type: 'play-move',
+      fen: FEN.classical1_punish_after_exd5,
+      correctMove: 'Nb4',
+      prompt: "Find the fork!",
+      hint: "Your knight jumps to b4 — it threatens c2 and the d5 pawn.",
+      correctFeedback: "Nb4! Forking c2 and threatening the d5 pawn. White's Nd5 adventure backfired completely.",
+      wrongFeedback: "Jump to Nb4 — it forks c2 and the d5 pawn.",
+      highlightSquares: ['c6', 'b4'],
+      postMoveArrow: ['b4', 'c2'],
     },
 
     {
       type: 'instruction',
-      fen: FEN.classical1_punish_after_dxc5_b,
-      text: "Look at this position — open d-file, active Bg7, strong Nc6, and White has nothing to show for it. Trading dxc5 was a gift.",
-      highlightSquares: ['c6', 'g7'],
+      fen: FEN.classical1_punish_after_Nb4,
+      text: "Nb4 is a monster — threatening c2 and putting pressure on d5. White's premature Nd5 gave you a concrete tactical advantage.",
+      highlightSquares: ['b4', 'c2', 'd5'],
     },
 
     // ═══════════════════════════════════════════
@@ -2178,19 +2290,35 @@ export const PI_CLASSICAL_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.pi4_after_Nc6,
-      text: "Run it back — White pushes d5, find the reroute.",
+      text: "Run it back — White retreats the knight, you develop and reroute.",
       buttonText: "LET'S GO",
     },
-    // 8.d5
+    // 9.Nb3
     {
       type: 'instruction',
-      fen: FEN.classical1_after_d5,
-      text: "8.d5.",
+      fen: FEN.classical1_after_Nb3,
+      text: "9.Nb3.",
       autoAdvance: 800,
     },
     {
       type: 'play-move',
-      fen: FEN.classical1_after_d5,
+      fen: FEN.classical1_after_Nb3,
+      correctMove: 'Be6',
+      prompt: "Your move.",
+      hint: "Be6.",
+      correctFeedback: "Be6.",
+      wrongFeedback: "Be6.",
+    },
+    // 10.f4
+    {
+      type: 'instruction',
+      fen: FEN.classical1_after_f4,
+      text: "10.f4.",
+      autoAdvance: 800,
+    },
+    {
+      type: 'play-move',
+      fen: FEN.classical1_after_f4,
       correctMove: 'Na5',
       prompt: "Your move.",
       hint: "Na5.",
@@ -2218,7 +2346,7 @@ export const PI_TEST_1: OpeningLesson = {
       buttonText: "BRING IT ON",
     },
 
-    // --- Full Classical line: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O c5 7.Be3 Nc6 8.Qd2 e5 ---
+    // --- Full Classical line: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O c5 7.Be3 cxd4 8.Nxd4 Nc6 9.Nb3 Be6 ---
 
     // 1.e4
     {
@@ -2326,45 +2454,55 @@ export const PI_TEST_1: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.pi4_after_Be3,
+      correctMove: 'cxd4',
+      prompt: "Your move.",
+      hint: "cxd4.",
+      correctFeedback: "cxd4.",
+      wrongFeedback: "cxd4.",
+    },
+    // 8.Nxd4
+    {
+      type: 'instruction',
+      fen: FEN.pi4_after_Nxd4,
+      text: "8.Nxd4.",
+      autoAdvance: 800,
+    },
+    {
+      type: 'play-move',
+      fen: FEN.pi4_after_Nxd4,
       correctMove: 'Nc6',
       prompt: "Your move.",
       hint: "Nc6.",
       correctFeedback: "Nc6.",
       wrongFeedback: "Nc6.",
     },
-    // 8.Qd2
+    // 9.Nb3
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Qd2,
-      text: "8.Qd2.",
+      fen: FEN.pi4_after_Nb3,
+      text: "9.Nb3.",
       autoAdvance: 800,
     },
     {
       type: 'play-move',
-      fen: FEN.pi4_after_Qd2,
-      correctMove: 'e5',
+      fen: FEN.pi4_after_Nb3,
+      correctMove: 'Be6',
       prompt: "Your move.",
-      hint: "e5.",
-      correctFeedback: "e5.",
-      wrongFeedback: "e5.",
+      hint: "Be6.",
+      correctFeedback: "Be6.",
+      wrongFeedback: "Be6.",
     },
 
-    // --- Classical: d5 Na5 ---
+    // --- Classical: 10.f4 Na5 ---
     {
       type: 'instruction',
-      fen: FEN.pi4_after_Nc6,
-      text: "White locks the center. You know the trick.",
-    },
-    // 8.d5
-    {
-      type: 'instruction',
-      fen: FEN.classical1_after_d5,
-      text: "8.d5.",
+      fen: FEN.classical1_after_f4,
+      text: "10.f4. White pushes. You know the reroute.",
       autoAdvance: 800,
     },
     {
       type: 'play-move',
-      fen: FEN.classical1_after_d5,
+      fen: FEN.classical1_after_f4,
       correctMove: 'Na5',
       prompt: "Your move.",
       hint: "Na5.",

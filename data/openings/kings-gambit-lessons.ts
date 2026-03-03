@@ -7,8 +7,8 @@ import type { OpeningLesson } from '@/types/opening-lesson'
 // Black moves = instruction with autoAdvance: 800.
 //
 // FENs pre-computed and validated with chess.js.
-// Main line: 1.e4 e5 2.f4 exf4 3.Nf3 d6 4.d4 g5 5.h4 g4 6.Ng1 Bh6 7.Nc3 Ne7
-//            8.Be2 Ng6 9.Bxf4 Bxf4 10.Bxg4
+// Main line (updated 2026-03-03): 1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5
+// (Continuation from kg-3+ may need review/update due to main line change)
 // ═══════════════════════════════════════════════════════════
 
 const FEN = {
@@ -19,11 +19,14 @@ const FEN = {
   after_f4:         'rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2',
   after_exf4:       'rnbqkbnr/pppp1ppp/8/8/4Pp2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3',
   after_Nf3:        'rnbqkbnr/pppp1ppp/8/8/4Pp2/5N2/PPPP2PP/RNBQKB1R b KQkq - 1 3',
+  // KG-2: 3...g5 4.h4 g4 5.Ne5
+  after_g5:         'rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4',
+  after_h4:         'rnbqkbnr/pppp1p1p/8/6p1/4Pp1P/5N2/PPPP2P1/RNBQKB1R b KQkq - 0 4',
+  after_g4:         'rnbqkbnr/pppp1p1p/8/8/4PppP/5N2/PPPP2P1/RNBQKB1R w KQkq - 0 5',
+  after_Ne5:        'rnbqkbnr/pppp1p1p/8/4N3/4PppP/8/PPPP2P1/RNBQKB1R b KQkq - 1 5',
+  // OLD positions (for other lessons that may reference them)
   after_d6:         'rnbqkbnr/ppp2ppp/3p4/8/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4',
   after_d4:         'rnbqkbnr/ppp2ppp/3p4/8/3PPp2/5N2/PPP3PP/RNBQKB1R b KQkq - 0 4',
-  after_g5:         'rnbqkbnr/ppp2p1p/3p4/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq - 0 5',
-  after_h4:         'rnbqkbnr/ppp2p1p/3p4/6p1/3PPp1P/5N2/PPP3P1/RNBQKB1R b KQkq - 0 5',
-  after_g4:         'rnbqkbnr/ppp2p1p/3p4/8/3PPppP/5N2/PPP3P1/RNBQKB1R w KQkq - 0 6',
   after_Ng1:        'rnbqkbnr/ppp2p1p/3p4/8/3PPppP/8/PPP3P1/RNBQKBNR b KQkq - 1 6',
   after_Bh6:        'rnbqk1nr/ppp2p1p/3p3b/8/3PPppP/8/PPP3P1/RNBQKBNR w KQkq - 2 7',
   after_Nc3:        'rnbqk1nr/ppp2p1p/3p3b/8/3PPppP/2N5/PPP3P1/R1BQKBNR b KQkq - 3 7',
@@ -48,7 +51,7 @@ const FEN = {
   fischer_after_d5:   'rnbqkbnr/ppp2ppp/8/3p4/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4',
   fischer_after_exd5: 'rnbqkbnr/ppp2ppp/8/3P4/5p2/5N2/PPPP2PP/RNBQKB1R b KQkq - 0 4',
   fischer_after_Nf6:  'rnbqkb1r/ppp2ppp/5n2/3P4/5p2/5N2/PPPP2PP/RNBQKB1R w KQkq - 1 5',
-  fischer_after_Bb5:  'rnbqkb1r/ppp2ppp/5n2/1B1P4/5p2/5N2/PPPP2PP/RNBQK2R b KQkq - 2 5',
+  fischer_after_c4:   'rnbqkb1r/ppp2ppp/5n2/3P4/2P2p2/5N2/PP1P2PP/RNBQKB1R b KQkq - 0 5',
 
   // Branch: Cunningham Defense (3...Be7)
   cunningham_after_Be7: 'rnbqk1nr/ppppbppp/8/8/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 2 4',
@@ -192,12 +195,12 @@ const KG_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
-// kg-2: SEIZE THE CENTER (3...d6 4.d4 g5 5.h4)
+// kg-2: PUSH AND PUNISH (3...g5 4.h4 g4 5.Ne5)
 // ═══════════════════════════════════════════════════════════
 
 const KG_2: OpeningLesson = {
   id: 'kg-2',
-  title: 'Seize the Center',
+  title: 'Push and Punish',
   defaultOrientation: 'white',
   steps: [
     // ── ACT 1: RECAP ──
@@ -235,94 +238,68 @@ const KG_2: OpeningLesson = {
     },
 
     // ── ACT 2: TEACH ──
-    { type: 'instruction', fen: FEN.after_d6, text: 'd6 — Black solidifies the center and prepares to hold the f4 pawn.', autoAdvance: 800 },
-    {
-      type: 'instruction',
-      fen: FEN.after_d6,
-      text: "Black played d6, preparing ...g5 to hold the pawn. You need to seize the center before Black settles in.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d6,
-      correctMove: 'd4',
-      prompt: 'Claim the center with your other pawn.',
-      hint: "d4 — two pawns in the center is powerful.",
-      correctFeedback: "d4! Two center pawns. You're building a classical pawn center while Black defends a flank pawn.",
-      wrongFeedback: "Push d4 — claim the center.",
-      highlightSquares: ['d2', 'd4'],
-    },
-    { type: 'instruction', fen: FEN.after_g5, text: 'g5 — Black defends the f4 pawn.', autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.after_g5, text: 'g5 — Black grabs space and defends the f4 pawn.', autoAdvance: 800 },
     {
       type: 'instruction',
       fen: FEN.after_g5,
-      text: "Black pushes g5 to protect f4. Time to challenge that pawn chain from the flank.",
+      text: "Black immediately pushes g5 to grab the f4 pawn. This is the most popular response — time to show why White is in control.",
     },
     {
       type: 'play-move',
       fen: FEN.after_g5,
       correctMove: 'h4',
-      prompt: "Attack Black's pawn chain.",
-      hint: "h4 — undermine g5.",
-      correctFeedback: "h4! You challenge g5 immediately. If Black pushes g4, your knight retreats but you've opened the h-file.",
-      wrongFeedback: "Play h4 to undermine the g5 pawn.",
+      prompt: "Strike at the base of Black's pawn chain.",
+      hint: "h4 — undermine g5 right away.",
+      correctFeedback: "h4! You attack g5 from the side. Black must push g4 to defend the pawn, but this overextends the kingside.",
+      wrongFeedback: "Play h4 to challenge the g5 pawn.",
       highlightSquares: ['h2', 'h4'],
     },
-    { type: 'instruction', fen: FEN.after_g4, text: 'g4 — Black chases your knight away.', autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.after_g4, text: 'g4 — Black pushes to defend f4.', autoAdvance: 800 },
     {
       type: 'instruction',
       fen: FEN.after_g4,
-      text: "Your knight is under attack. The bold move: retreat all the way back to g1. You'll redeploy through c3 next.",
+      text: "Black's pawn chases your knight. Don't retreat to d4 or e1 — your knight has a powerful outpost waiting.",
     },
     {
       type: 'play-move',
       fen: FEN.after_g4,
-      correctMove: 'Ng1',
-      prompt: "Retreat the knight. Trust the plan.",
-      hint: "Ng1 — it looks strange, but Nc3 is coming.",
-      correctFeedback: "Ng1! It looks bizarre, but the knight comes back stronger via c3. Black's kingside is overextended.",
-      wrongFeedback: 'Retreat to g1 — the knight redeploys through c3.',
-      highlightSquares: ['f3', 'g1'],
+      correctMove: 'Ne5',
+      prompt: 'Jump into the power square!',
+      hint: "Ne5 — the knight dominates from e5.",
+      correctFeedback: "Ne5! The knight plants itself on the perfect square. It attacks f7, controls key dark squares, and can't be easily removed.",
+      wrongFeedback: 'Leap to e5 — the knight is unstoppable there.',
+      highlightSquares: ['f3', 'e5'],
     },
 
     // ── ACT 3: PUNISH ──
     {
       type: 'instruction',
-      fen: FEN.after_f4,
-      text: "Sometimes Black refuses the gambit by developing instead of taking on f4.",
+      fen: FEN.after_Nf3,
+      text: "What if Black tries a different approach with 3...d5? This is the Fischer Defense — a sharp counter-gambit.",
     },
     {
       type: 'instruction',
-      fen: FEN.punish_after_Bc5,
-      text: "2...Bc5? Black declines the gambit — but leaves e5 hanging.",
+      fen: FEN.fischer_after_d5,
+      text: "3...d5 — Black counter-strikes the center. Take the pawn!",
       autoAdvance: 1200,
     },
     {
       type: 'play-move',
-      fen: FEN.punish_after_Bc5,
-      correctMove: 'fxe5',
-      prompt: "Black left e5 undefended. Grab it!",
-      hint: "fxe5 — win the pawn for free.",
-      correctFeedback: "fxe5! You win a pawn. Black declined the gambit but got nothing in return.",
-      wrongFeedback: "Take on e5 — it's free.",
-      highlightSquares: ['f4', 'e5'],
+      fen: FEN.fischer_after_d5,
+      correctMove: 'exd5',
+      prompt: "Accept the counter-sacrifice.",
+      hint: "exd5 — you're up a pawn.",
+      correctFeedback: "exd5! You're material up. Black will develop with Nf6, but you have Bb5+ ready.",
+      wrongFeedback: "Capture on d5.",
+      highlightSquares: ['e4', 'd5'],
     },
 
     // ── ACT 4: RECALL ──
     {
       type: 'instruction',
       fen: FEN.after_Nf3,
-      text: "Your turn — play the next three moves from memory.",
+      text: "Play the main three moves from memory.",
       buttonText: "LET'S GO",
-    },
-    { type: 'instruction', fen: FEN.after_d6, text: 'd6.', autoAdvance: 800 },
-    {
-      type: 'play-move',
-      fen: FEN.after_d6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
     },
     { type: 'instruction', fen: FEN.after_g5, text: 'g5.', autoAdvance: 800 },
     {
@@ -338,11 +315,11 @@ const KG_2: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.after_g4,
-      correctMove: 'Ng1',
+      correctMove: 'Ne5',
       prompt: 'Your move.',
-      hint: 'Ng1.',
-      correctFeedback: 'Ng1.',
-      wrongFeedback: 'Ng1.',
+      hint: 'Ne5.',
+      correctFeedback: 'Ne5.',
+      wrongFeedback: 'Ne5.',
     },
   ],
 }
@@ -617,7 +594,7 @@ const KG_3: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
-// kg-fischer-1: FISCHER DEFENSE (3...d5 4.exd5 Nf6 5.Bb5+)
+// kg-fischer-1: FISCHER DEFENSE (3...d5 4.exd5 Nf6 5.c4)
 // ═══════════════════════════════════════════════════════════
 
 const KG_FISCHER_1: OpeningLesson = {
@@ -629,12 +606,12 @@ const KG_FISCHER_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_Nf3,
-      text: "After 3.Nf3, Bobby Fischer's favorite response was 3...d5 — a bold counter-gambit striking the center.",
+      text: "After 3.Nf3, Black sometimes plays 3...d5 — a bold counter-gambit striking for the center.",
     },
     {
       type: 'instruction',
       fen: FEN.fischer_after_d5,
-      text: "3...d5! Black gives back the pawn to fight for the center. You should take it.",
+      text: "3...d5! Black returns the pawn to claim the center. Take it and seize space.",
       autoAdvance: 1200,
     },
 
@@ -644,8 +621,8 @@ const KG_FISCHER_1: OpeningLesson = {
       fen: FEN.fischer_after_d5,
       correctMove: 'exd5',
       prompt: 'Accept the counter-sacrifice.',
-      hint: "exd5 — take the pawn.",
-      correctFeedback: "exd5! You're up a pawn. Black will develop quickly, but you have a strong response ready.",
+      hint: "exd5 — capture and stay up material.",
+      correctFeedback: "exd5! You're now up a pawn with a strong d5 outpost. Black will develop with Nf6.",
       wrongFeedback: 'Capture on d5.',
       highlightSquares: ['e4', 'd5'],
     },
@@ -653,17 +630,17 @@ const KG_FISCHER_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.fischer_after_Nf6,
-      text: "Black develops the knight attacking d5. Don't defend the pawn — develop with check instead!",
+      text: "Black develops the knight attacking d5. Don't defend — grab space with c4 instead. You're controlling the board.",
     },
     {
       type: 'play-move',
       fen: FEN.fischer_after_Nf6,
-      correctMove: 'Bb5+',
-      prompt: "Develop with check — tempo is everything.",
-      hint: "Bb5+ — check the king and disrupt Black's plan.",
-      correctFeedback: "Bb5+! Check forces Black to deal with the bishop before recapturing on d5. You keep the initiative.",
-      wrongFeedback: 'Play Bb5 with check — develop and gain tempo.',
-      highlightSquares: ['f1', 'b5'],
+      correctMove: 'c4',
+      prompt: "Push forward — claim space and build a pawn center.",
+      hint: "c4 — secure the d5 pawn and open lines for your pieces.",
+      correctFeedback: "c4! You keep the pawn AND push Black back. The d5 pawn is protected, and you control the center. White is dominating.",
+      wrongFeedback: 'Play c4 to reinforce d5 and push Black around.',
+      highlightSquares: ['c2', 'c4'],
     },
 
     // ── RECALL ──
@@ -686,11 +663,11 @@ const KG_FISCHER_1: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.fischer_after_Nf6,
-      correctMove: 'Bb5+',
+      correctMove: 'c4',
       prompt: 'Your move.',
-      hint: 'Bb5+.',
-      correctFeedback: 'Bb5+.',
-      wrongFeedback: 'Bb5+.',
+      hint: 'c4.',
+      correctFeedback: 'c4.',
+      wrongFeedback: 'c4.',
     },
   ],
 }

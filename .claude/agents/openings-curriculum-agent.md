@@ -54,6 +54,7 @@ See `data/openings/lesson-examples.ts` for complete examples of each.
 
 ## Hard Rules
 
+0. **ALWAYS TEACH THE #1 DATABASE MOVE.** Every move we teach the user MUST be the most-played move in the Lichess masters database at that position. No exceptions. The ONLY time the line deviates from the #1 move is when the OPPONENT plays something wrong (punish lessons). Our side always plays the best. If you're unsure which move is #1, look it up — don't guess.
 1. **NO board flips.** One orientation for the entire lesson.
 2. **NO multiple choice quizzes.** No `type: 'quiz'` steps.
 3. **Punish the OPPONENT's mistake.** Not "what if you played wrong."

@@ -72,8 +72,8 @@ export const PIRC_DEFENSE: OpeningTree = {
     {
       id: 'pi-4',
       name: 'After ...c5',
-      moves: ['7.Be3 Nc6', '8.Qd2 e5'],
-      description: 'Develop your knight, then break open the center with ...e5!',
+      moves: ['7.Be3 cxd4', '8.Nxd4 Nc6', '9.Nb3 Be6'],
+      description: 'Trade the center pawn immediately with cxd4, then develop your knight and bishop actively.',
       type: 'main',
       row: 3,
       col: 0,
@@ -142,8 +142,8 @@ export const PIRC_DEFENSE: OpeningTree = {
     {
       id: 'pi-classical-1',
       name: 'Classical Be3',
-      moves: ['7.Be3 Nc6', '8.d5 Na5'],
-      description: 'When White locks the center, reroute your knight to attack from the side.',
+      moves: ['9.Nb3 Be6', '10.f4 Na5'],
+      description: 'Develop your bishop actively after Nb3, then reroute your knight toward the c4 outpost.',
       type: 'branch',
       row: 3,
       col: 1,

@@ -2,6 +2,8 @@
 
 > Read ONLY the section for the opening you're building. Don't read the whole file.
 
+> **CRITICAL: We always teach the #1 most-played move from the Lichess masters database. Our side never plays a sideline. The only deviations are OPPONENT mistakes (punish lessons). If a move listed below is not the #1 database move, verify and use the database move instead.**
+
 ---
 
 ## 1.e4 Openings

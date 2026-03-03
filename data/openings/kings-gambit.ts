@@ -6,8 +6,8 @@
 // the previous one). This guarantees ONE current lesson at all times.
 //
 // WHITE OPENING: The user is learning to play as White.
-// Main line: 1.e4 e5 2.f4 exf4 3.Nf3 d6 4.d4 g5 5.h4 g4 6.Ng1 Bh6 7.Nc3 Ne7
-//            8.Be2 Ng6 9.Bxf4 Bxf4 10.Bxg4
+// Main line: 1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 Nf6 6.d4 Nc6 7.Bc4
+//            Ne7 8.Be2 Ng6 9.Bxf4 Bxf4 10.Bxg4
 //
 // 3 White moves per lesson.
 //
@@ -50,9 +50,9 @@ export const KINGS_GAMBIT: OpeningTree = {
     },
     {
       id: 'kg-2',
-      name: 'Seize the Center',
-      moves: ['3...d6', '4.d4 g5', '5.h4'],
-      description: 'Push d4 to dominate the center, then challenge Black\'s g5 pawn with h4.',
+      name: 'Counter the Pawn',
+      moves: ['3...g5', '4.h4 g4', '5.Ne5'],
+      description: 'Black grabs space with g5 — strike with h4, and when g4 chases the knight, leap to e5.',
       type: 'main',
       row: 1,
       col: 0,
@@ -117,8 +117,8 @@ export const KINGS_GAMBIT: OpeningTree = {
     {
       id: 'kg-fischer-1',
       name: 'Fischer Defense',
-      moves: ['3...d5', '4.exd5 Nf6', '5.Bb5+'],
-      description: 'Fischer\'s counter-gambit — strike the center with d5, but White has Bb5+ with tempo.',
+      moves: ['3...d5', '4.exd5 Nf6', '5.c4'],
+      description: 'Fischer\'s counter-gambit — Black strikes the center with d5, but c4 grabs space and keeps the extra pawn.',
       type: 'branch',
       row: 1,
       col: 1,

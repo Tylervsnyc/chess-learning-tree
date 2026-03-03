@@ -6,7 +6,7 @@
 // the previous one). This guarantees ONE current lesson at all times.
 //
 // BLACK OPENING: The user is learning to play as Black against 1.e4.
-// Main line: 1.e4 e6 2.d4 d5 3.Nc3 Nf6 4.Bg5 Be7 5.e5 Nfd7 6.Bxe7 Qxe7 7.f4 O-O 8.Nf3 c5 9.dxc5 Nc6 10.Qd2 Qxc5 11.O-O-O f6 12.exf6 Nxf6
+// Main line (Burn Variation): 1.e4 e6 2.d4 d5 3.Nc3 Nf6 4.Bg5 dxe4 5.Nxe4 Be7 6.Nxf6+ Bxf6 7.Bxf6 Qxf6 8.Nf3 O-O 9.Qd3 c5 10.O-O-O Nc6
 //
 // GRID LAYOUT (10 nodes):
 //   Row 4:                              fr-test-1 (col 0)
@@ -47,9 +47,9 @@ export const FRENCH_DEFENSE: OpeningTree = {
     },
     {
       id: 'fr-2',
-      name: 'Pin & Resolve',
-      moves: ['4.Bg5 Be7', '5.e5 Nfd7', '6.Bxe7 Qxe7'],
-      description: 'Handle the Bg5 pin — play Be7, then retreat the knight after e5.',
+      name: 'The Burn Variation',
+      moves: ['4.Bg5 dxe4', '5.Nxe4 Be7', '6.Nxf6+ Bxf6', '7.Bxf6 Qxf6'],
+      description: 'Grab the center with dxe4 — the Burn Variation. Trade off the bishops and emerge with active queen play.',
       type: 'main',
       row: 1,
       col: 0,
@@ -59,9 +59,9 @@ export const FRENCH_DEFENSE: OpeningTree = {
     },
     {
       id: 'fr-3',
-      name: 'Castle & Counter',
-      moves: ['7.f4 O-O', '8.Nf3 c5', '9.dxc5 Nc6'],
-      description: 'Castle to safety, then strike the center with c5! Open the position.',
+      name: 'Castle & Strike',
+      moves: ['8.Nf3 O-O', '9.Qd3 c5', '10.O-O-O Nc6'],
+      description: 'Castle quickly, then hit with c5 — undermine White\'s d4 pawn and develop with tempo.',
       type: 'main',
       row: 2,
       col: 0,
@@ -72,8 +72,8 @@ export const FRENCH_DEFENSE: OpeningTree = {
     {
       id: 'fr-4',
       name: 'Break Through',
-      moves: ['10.Qd2 Qxc5', '11.O-O-O f6', '12.exf6 Nxf6'],
-      description: 'Win the pawn back, then smash through with f6 — open the position for your pieces.',
+      moves: ['11.dxc5 Rfd8', '12.Qe2 e5', '13.Kb1 Qf5'],
+      description: 'Win back the pawn, activate the rook, and launch a kingside attack with Qf5.',
       type: 'main',
       row: 3,
       col: 0,
@@ -157,7 +157,7 @@ export const FRENCH_DEFENSE: OpeningTree = {
       id: 'fr-test-1',
       name: 'Lvl 1 Test',
       moves: [],
-      description: 'Prove you know the French — play the full Classical variation and handle every sideline.',
+      description: 'Prove you know the French — play the Burn Variation from memory and handle every sideline.',
       type: 'test',
       row: 4,
       col: 0,
