@@ -109,10 +109,34 @@ Sub-variations: `{prefix}-{variation}-{number}` (e.g., `si-nj-1`)
 
 ## Workflow
 
+### BEFORE dispatching the agent (done by the main model):
+
+**Step 0: Look up all moves via Lichess.** Query the Lichess cloud eval API for every position in the lesson line. Build the complete move list with engine verification BEFORE dispatching.
+
+API: `https://lichess.org/api/cloud-eval?fen={ENCODED_FEN}&multiPv=3`
+
+Process:
+1. Start from the opening's starting position
+2. For each move in the line, compute the FEN with chess.js
+3. Query the cloud eval API to get the engine's #1 move
+4. Our side ALWAYS plays the engine #1. Opponent plays #1 too (for main lines).
+5. Continue until you have 3-4 new moves per lesson
+6. Record the full move sequence + FENs
+7. Pass the EXACT moves and FENs to the agent — the agent does NOT pick moves
+
+**Dispatch format:**
+```
+Build [opening] [lesson-id]. [WHITE/BLACK].
+Moves (verified via Lichess): [full move sequence with FENs]
+Follow [reference]-lessons.ts patterns. Create all files, update lookups, npm run check.
+```
+
+### Agent workflow (mechanical — use haiku):
+
 1. Read context files (above)
 2. Plan tree — target 10 lessons per level (main + branches + punish + test)
 3. Write `completionOrder` — full unlock chain
-4. Compute all FENs with chess.js
+4. Use the pre-computed FENs from Step 0 (verify with chess.js, don't recompute from scratch)
 5. Build tree file (`data/openings/{opening}.ts`)
 6. Build lessons file (`data/openings/{opening}-lessons.ts`)
 7. Verify FENs, grid positions, unlock chain
@@ -151,8 +175,8 @@ This is a **MECHANICAL, pattern-matching task**. Do NOT think deeply about chess
 
 ### The job is:
 1. Read the 3 context files
-2. Pick moves from the knowledge file
-3. Compute FENs mechanically with chess.js
+2. Use the EXACT moves provided in the dispatch prompt (already verified via Lichess)
+3. Compute FENs mechanically with chess.js (to validate what was provided)
 4. Fill in the template (tree file + lessons file)
 5. Wire it up
 6. Done
