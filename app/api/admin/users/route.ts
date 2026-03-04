@@ -1,41 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
-
-/**
- * Verify the requesting user is authenticated and has admin privileges
- */
-async function verifyAdmin(): Promise<{ isAdmin: boolean; error?: string }> {
-  try {
-    const supabase = await createClient();
-
-    // Get the current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { isAdmin: false, error: 'Unauthorized - please log in' };
-    }
-
-    // Check if user has admin flag
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile) {
-      return { isAdmin: false, error: 'Could not verify admin status' };
-    }
-
-    if (!profile.is_admin) {
-      return { isAdmin: false, error: 'Forbidden - admin access required' };
-    }
-
-    return { isAdmin: true };
-  } catch {
-    return { isAdmin: false, error: 'Authentication error' };
-  }
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
   // First verify the user is an admin

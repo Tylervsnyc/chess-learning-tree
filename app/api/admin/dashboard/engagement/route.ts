@@ -1,35 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { queryPostHog } from '@/lib/posthog-server';
-
-async function verifyAdmin(): Promise<{ isAdmin: boolean; error?: string }> {
-  try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { isAdmin: false, error: 'Unauthorized - please log in' };
-    }
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile) {
-      return { isAdmin: false, error: 'Could not verify admin status' };
-    }
-
-    if (!profile.is_admin) {
-      return { isAdmin: false, error: 'Forbidden - admin access required' };
-    }
-
-    return { isAdmin: true };
-  } catch {
-    return { isAdmin: false, error: 'Authentication error' };
-  }
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 const VALID_PERIODS: Record<string, number> = {
   '1d': 1,

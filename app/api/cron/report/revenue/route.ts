@@ -232,7 +232,6 @@ export async function GET(request: NextRequest) {
 
   // --- Refine LTV with churn data ---
   if (metrics.mrr_current != null && metrics.churned_7d != null && metrics.new_subscribers_7d != null) {
-    const totalSubs = (metrics.new_subscribers_7d || 0) + 10; // rough estimate of total base
     const { data: latestSnapshot } = await supabase
       .from('revenue_snapshots')
       .select('total_subscribers, churn_rate_pct')
