@@ -597,10 +597,281 @@ export const PA_TEST_1: OpeningLesson = {
 }
 
 // ═══════════════════════════════════════════════════════════
+// LEVEL 2 — Austrian Attack (6.e5 line)
+// Main line: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.f4 Bg7 5.Nf3 O-O
+//            6.e5 Nfd7 7.Be2 c5 8.Be3 cxd4 9.Nxd4 Nc6
+// ═══════════════════════════════════════════════════════════
+
+const FEN_L2 = {
+  // ─── SHARED (from L1) ───
+  start:       'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+  after_e4:    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+  after_d4:    'rnbqkbnr/ppp1pppp/3p4/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
+  after_Nc3:   'rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 2 3',
+  after_f4:    'rnbqkb1r/ppp1pp1p/3p1np1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq - 0 4',
+  after_Nf3:   'rnbqk2r/ppp1ppbp/3p1np1/8/3PPP2/2N2N2/PPP3PP/R1BQKB1R b KQkq - 2 5',
+
+  // ─── pa-8: Survive the Storm ───
+  after_OO_b:  'rnbq1rk1/ppp1ppbp/3p1np1/8/3PPP2/2N2N2/PPP3PP/R1BQKB1R w KQ - 3 6',
+  after_e5_w:  'rnbq1rk1/ppp1ppbp/3p1np1/4P3/3P1P2/2N2N2/PPP3PP/R1BQKB1R b KQ - 0 6',
+  after_Nfd7:  'rnbq1rk1/pppnppbp/3p2p1/4P3/3P1P2/2N2N2/PPP3PP/R1BQKB1R w KQ - 1 7',
+
+  // ─── pa-9: Counter ...c5! ───
+  after_Be2:   'rnbq1rk1/pppnppbp/3p2p1/4P3/3P1P2/2N2N2/PPP1B1PP/R1BQK2R b KQ - 2 7',
+  after_c5:    'rnbq1rk1/pp1nppbp/3p2p1/2p1P3/3P1P2/2N2N2/PPP1B1PP/R1BQK2R w KQ - 0 8',
+  after_Be3:   'rnbq1rk1/pp1nppbp/3p2p1/2p1P3/3P1P2/2N1BN2/PPP1B1PP/R2QK2R b KQ - 1 8',
+  after_cxd4:  'rnbq1rk1/pp1nppbp/3p2p1/4P3/3p1P2/2N1BN2/PPP1B1PP/R2QK2R w KQ - 0 9',
+  after_Nxd4:  'rnbq1rk1/pp1nppbp/3p2p1/4P3/3N1P2/2N1B3/PPP1B1PP/R2QK2R b KQ - 0 9',
+  after_Nc6_9: 'r1bq1rk1/pp1nppbp/2np2p1/4P3/3N1P2/2N1B3/PPP1B1PP/R2QK2R w KQ - 1 10',
+
+  // ─── pa-var-7: 2...g6 Early ───
+  v7_after_g6:    'rnbqkbnr/ppp1pp1p/3p2p1/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
+  v7_after_c4:    'rnbqkbnr/ppp1pp1p/3p2p1/8/2PPP3/8/PP3PPP/RNBQKBNR b KQkq - 0 3',
+  v7_after_Bg7:   'rnbqk1nr/ppp1ppbp/3p2p1/8/2PPP3/8/PP3PPP/RNBQKBNR w KQkq - 1 4',
+  v7_after_Nc3:   'rnbqk1nr/ppp1ppbp/3p2p1/8/2PPP3/2N5/PP3PPP/R1BQKBNR b KQkq - 2 4',
+  v7_after_Nf6:   'rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQkq - 3 5',
+  v7_after_h3:    'rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N4P/PP3PP1/R1BQKBNR b KQkq - 0 5',
+  v7_after_Nbd7:  'r1bqk2r/pppnppbp/3p1np1/8/2PPP3/2N4P/PP3PP1/R1BQKBNR w KQkq - 1 6',
+
+  // ─── pa-var-8: Caro Setup ───
+  v8_after_c6:    'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+  v8_after_d4:    'rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
+  v8_after_d5:    'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
+  v8_after_Nd2:   'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPPN1PPP/R1BQKBNR b KQkq - 1 3',
+  v8_after_dxe4:  'rnbqkbnr/pp2pppp/2p5/8/3Pn3/8/PPPN1PPP/R1BQKBNR w KQkq - 0 4',
+  v8_after_Nxe4:  'rnbqkbnr/pp2pppp/2p5/8/3PN3/8/PPP2PPP/R1BQKBNR b KQkq - 0 4',
+  v8_after_Bf5:   'rn1qkbnr/pp2pppp/2p5/5b2/3PN3/8/PPP2PPP/R1BQKBNR w KQkq - 1 5',
+
+  // ─── pa-var-9: 2...e5 Counter ───
+  v9_after_e5:    'rnbqkbnr/ppp2ppp/3p4/4p3/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
+  v9_after_Nf3:   'rnbqkbnr/ppp2ppp/3p4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 3',
+  v9_after_exd4:  'rnbqkbnr/ppp2ppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4',
+  v9_after_Nxd4:  'rnbqkbnr/ppp2ppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4',
+  v9_after_Be7:   'rnbqk1nr/ppp1bppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5',
+  v9_after_Nc3:   'rnbqk1nr/ppp1bppp/3p4/8/3NP3/2N5/PPP2PPP/R1BQKB1R b KQkq - 2 5',
+  v9_after_Nf6:   'rnbqk2r/ppp1bppp/3p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 3 6',
+
+  // ─── pa-var-10: Sicilian Twist ───
+  v10_after_c5:    'rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+  v10_after_Nf3:   'rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2',
+  v10_after_d6:    'rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3',
+  v10_after_Nc3:   'rnbqkbnr/pp2pppp/3p4/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 3',
+  v10_after_a6:    'rnbqkbnr/1p2pppp/p2p4/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 4',
+  v10_after_d4:    'rnbqkbnr/1p2pppp/p2p4/2p5/3PP3/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 0 4',
+  v10_after_cxd4:  'rnbqkbnr/1p2pppp/p2p4/8/3pP3/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 5',
+
+  // ─── pa-var-11: Solid ...e6 ───
+  v11_after_e6:    'rnbqkb1r/ppp2ppp/3ppn2/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4',
+  v11_after_Nf3:   'rnbqkb1r/ppp2ppp/3ppn2/8/3PP3/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 4',
+  v11_after_Nbd7:  'r1bqkb1r/pppn1ppp/3ppn2/8/3PP3/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 2 5',
+  v11_after_Be2:   'r1bqkb1r/pppn1ppp/3ppn2/8/3PP3/2N2N2/PPP1BPPP/R1BQK2R b KQkq - 3 5',
+  v11_after_a6:    'r1bqkb1r/1ppn1ppp/p2ppn2/8/3PP3/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 0 6',
+  v11_after_a4:    'r1bqkb1r/1ppn1ppp/p2ppn2/8/P2PP3/2N2N2/1PP1BPPP/R1BQK2R b KQkq - 0 6',
+  v11_after_Be7:   'r1bqk2r/1ppnbppp/p2ppn2/8/P2PP3/2N2N2/1PP1BPPP/R1BQK2R w KQkq - 1 7',
+
+  // ─── pa-var-12: 3...Nc6 Active ───
+  v12_after_Nc6:   'r1bqkb1r/ppp1pp1p/2np1np1/8/3PPP2/2N5/PPP3PP/R1BQKBNR w KQkq - 1 5',
+  v12_after_Be2:   'r1bqkb1r/ppp1pp1p/2np1np1/8/3PPP2/2N5/PPP1B1PP/R1BQK1NR b KQkq - 2 5',
+  v12_after_Bg7:   'r1bqk2r/ppp1ppbp/2np1np1/8/3PPP2/2N5/PPP1B1PP/R1BQK1NR w KQkq - 3 6',
+  v12_after_Nf3:   'r1bqk2r/ppp1ppbp/2np1np1/8/3PPP2/2N2N2/PPP1B1PP/R1BQK2R b KQkq - 4 6',
+  v12_after_d5:    'r1bqk2r/ppp1ppbp/2n2np1/3pP3/3P1P2/2N2N2/PPP1B1PP/R1BQK2R w KQkq - 0 7',
+  v12_after_e5_w:  'r1bqk2r/ppp1ppbp/2n2np1/3pP3/3P1P2/2N2N2/PPP1B1PP/R1BQK2R b KQkq - 0 7',
+  v12_after_Ne4:   'r1bqk2r/ppp1ppbp/2n3p1/3pP3/3PnP2/2N2N2/PPP1B1PP/R1BQK2R w KQkq - 1 8',
+}
+
+// ═══════════════════════════════════════════════════════════
+// LESSON 7: Pirc Foundations (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_LESSON_7: OpeningLesson = {
+  id: 'pa-7',
+  title: 'Pirc Foundations',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_e4, text: "Welcome to the Pirc Defense! You'll let White build a big center, then tear it apart from the flanks. The plan: d6, Nf6, g6 — fianchetto your dark-squared bishop." },
+    { type: 'play-move', fen: FEN_L2.after_e4, correctMove: 'd6', prompt: "Start with d6 — hold back and prepare.", hint: "Push the d-pawn one square.", correctFeedback: "d6! You signal the Pirc. White has the center for now.", wrongFeedback: "In the Pirc, we start with d6 — a flexible, hypermodern move.", highlightSquares: ['d7', 'd6'] },
+    { type: 'instruction', fen: FEN_L2.after_d4, text: "2.d4 — White grabs more space.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.after_d4, correctMove: 'Nf6', prompt: "Develop a knight and attack e4!", hint: "Knight to f6 — it eyes the center.", correctFeedback: "Nf6! Your knight pressures e4 immediately.", wrongFeedback: "Play Nf6 — develop and attack White's e4 pawn.", highlightSquares: ['g8', 'f6'] },
+    { type: 'instruction', fen: FEN_L2.after_Nc3, text: "3.Nc3 — White defends e4.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN_L2.after_Nc3, text: "Now g6 — prepare to fianchetto your bishop to g7. From there it'll be a monster on the long diagonal." },
+    { type: 'play-move', fen: FEN_L2.after_Nc3, correctMove: 'g6', prompt: "Prepare the fianchetto!", hint: "Push g6 to make room for your bishop on g7.", correctFeedback: "g6! The fianchetto is coming. Your bishop will dominate the long diagonal.", wrongFeedback: "Play g6 — it's the heart of the Pirc setup.", highlightSquares: ['g7', 'g6'] },
+    { type: 'instruction', fen: FEN_L2.after_f4, text: "The Pirc foundation is set — d6, Nf6, g6. White has a big center, but you're about to undermine it!" },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// LESSON 8: Survive the Storm (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_LESSON_8: OpeningLesson = {
+  id: 'pa-8',
+  title: 'Survive the Storm',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_f4, text: "White plays f4 — the Austrian Attack! Aggressive, but don't panic. Fianchetto, castle, and prepare to strike back." },
+    { type: 'play-move', fen: FEN_L2.after_f4, correctMove: 'Bg7', prompt: "Complete the fianchetto!", hint: "Bishop to g7 — the dragon bishop.", correctFeedback: "Bg7! Your bishop is a beast on the long diagonal, aiming at White's center.", wrongFeedback: "Play Bg7 — get that bishop to its ideal square.", highlightSquares: ['f8', 'g7'] },
+    { type: 'instruction', fen: FEN_L2.after_Nf3, text: "5.Nf3 — White develops naturally.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.after_Nf3, correctMove: 'O-O', prompt: "Get your king safe!", hint: "Castle kingside.", correctFeedback: "Castled! Your king is safe and your rook is connected.", wrongFeedback: "Castle now — king safety first, then counterattack." },
+    { type: 'instruction', fen: FEN_L2.after_e5_w, text: "6.e5 — here comes the storm! White advances aggressively.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN_L2.after_e5_w, text: "Don't panic — retreat the knight. Nfd7 keeps it active and prepares ...c5 to strike back." },
+    { type: 'play-move', fen: FEN_L2.after_e5_w, correctMove: 'Nfd7', prompt: "Retreat the knight — regroup!", hint: "The knight on f6 is attacked. Move it to d7.", correctFeedback: "Nfd7! Smart retreat. The knight supports a future ...c5 counterattack.", wrongFeedback: "Play Nfd7 — retreat to d7 and prepare ...c5.", highlightSquares: ['f6', 'd7'] },
+    { type: 'instruction', fen: FEN_L2.after_Nfd7, text: "You've survived the Austrian storm. The knight is safe on d7, the bishop dominates g7, and ...c5 is coming next!" },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// LESSON 9: Counter ...c5! (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_LESSON_9: OpeningLesson = {
+  id: 'pa-9',
+  title: 'Counter ...c5!',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_Be2, text: "White plays Be2, preparing to castle. Time for the key counterattack — ...c5! Strike at White's d4 pawn." },
+    { type: 'play-move', fen: FEN_L2.after_Be2, correctMove: 'c5', prompt: "Strike back at the center!", hint: "Push c5 — attack White's d4 pawn.", correctFeedback: "c5! The counterattack begins. White's center is under pressure.", wrongFeedback: "Play c5 — it's the key break in the Austrian Attack.", highlightSquares: ['c7', 'c5'] },
+    { type: 'instruction', fen: FEN_L2.after_Be3, text: "8.Be3 — White defends d4.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN_L2.after_Be3, text: "Capture on d4 — open the position and activate your pieces." },
+    { type: 'play-move', fen: FEN_L2.after_Be3, correctMove: 'cxd4', prompt: "Take the pawn!", hint: "Capture on d4 with your c-pawn.", correctFeedback: "cxd4! The center opens up and your pieces come alive.", wrongFeedback: "Capture cxd4 — open the center while you can.", highlightSquares: ['c5', 'd4'] },
+    { type: 'instruction', fen: FEN_L2.after_Nxd4, text: "9.Nxd4 — White recaptures with the knight.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.after_Nxd4, correctMove: 'Nc6', prompt: "Develop and challenge the knight!", hint: "Nc6 — attack the knight on d4.", correctFeedback: "Nc6! Your knight develops with tempo, attacking d4. Excellent counterplay!", wrongFeedback: "Play Nc6 — develop with tempo by attacking the knight.", highlightSquares: ['b8', 'c6'] },
+    { type: 'instruction', fen: FEN_L2.after_Nc6_9, text: "Brilliant! You've survived the Austrian Attack and struck back. Your pieces are active, the center is open, and you have full counterplay." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 7: 2...g6 Early (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_7: OpeningLesson = {
+  id: 'pa-var-7',
+  title: '2...g6 Early',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_d4, text: "A flexible move order — play g6 before Nf6. This commits less early." },
+    { type: 'play-move', fen: FEN_L2.after_d4, correctMove: 'g6', prompt: "Play the flexible fianchetto move.", hint: "Push the g-pawn one square to prepare Bg7.", correctFeedback: "Nice! g6 keeps your options open before committing the knight.", wrongFeedback: "Try g6 — fianchetto first, knight later.", highlightSquares: ['g7', 'g6'] },
+    { type: 'instruction', fen: FEN_L2.v7_after_c4, text: "3.c4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v7_after_c4, correctMove: 'Bg7', prompt: "Develop your dark-squared bishop.", hint: "The bishop belongs on g7, controlling the long diagonal.", correctFeedback: "Perfect! The bishop on g7 is a powerhouse on the long diagonal.", wrongFeedback: "Develop the bishop to g7 — complete the fianchetto.", highlightSquares: ['f8', 'g7'] },
+    { type: 'instruction', fen: FEN_L2.v7_after_Nc3, text: "4.Nc3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v7_after_Nc3, correctMove: 'Nf6', prompt: "Bring out a knight to attack the center.", hint: "The king's knight targets e4.", correctFeedback: "Great! Nf6 puts pressure on White's e4 pawn.", wrongFeedback: "Develop Nf6 — the knight eyes the e4 pawn.", highlightSquares: ['g8', 'f6'] },
+    { type: 'instruction', fen: FEN_L2.v7_after_h3, text: "5.h3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v7_after_h3, correctMove: 'Nbd7', prompt: "Develop the other knight.", hint: "The queen's knight goes to d7, supporting e5 and c5 breaks.", correctFeedback: "Excellent! Nbd7 supports both ...e5 and ...c5 pawn breaks.", wrongFeedback: "Play Nbd7 — the knight supports future central breaks.", highlightSquares: ['b8', 'd7'] },
+    { type: 'instruction', fen: FEN_L2.v7_after_Nbd7, text: "Solid setup! You've kept maximum flexibility." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 8: Caro Setup (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_8: OpeningLesson = {
+  id: 'pa-var-8',
+  title: 'Caro Setup',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_e4, text: "A Caro-Kann approach! Play c6 and d5 for a solid center." },
+    { type: 'play-move', fen: FEN_L2.after_e4, correctMove: 'c6', prompt: "Start with the Caro-Kann move.", hint: "Push the c-pawn one square to prepare d5.", correctFeedback: "Solid! c6 prepares a strong d5 push.", wrongFeedback: "Play c6 — it sets up d5 next move.", highlightSquares: ['c7', 'c6'] },
+    { type: 'instruction', fen: FEN_L2.v8_after_d4, text: "2.d4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v8_after_d4, correctMove: 'd5', prompt: "Challenge the center directly.", hint: "Push d5 — your c6 pawn supports it.", correctFeedback: "That's the idea! d5 strikes at White's e4 pawn with full support.", wrongFeedback: "Play d5 — it's the whole point of c6.", highlightSquares: ['d7', 'd5'] },
+    { type: 'instruction', fen: FEN_L2.v8_after_Nd2, text: "3.Nd2", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v8_after_Nd2, correctMove: 'dxe4', prompt: "Capture the e4 pawn.", hint: "Take on e4 — White's knight will recapture, but you'll develop your bishop next.", correctFeedback: "Good exchange! You'll get your bishop out with tempo.", wrongFeedback: "Capture dxe4 — it opens lines for your bishop.", highlightSquares: ['d5', 'e4'] },
+    { type: 'instruction', fen: FEN_L2.v8_after_Nxe4, text: "4.Nxe4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v8_after_Nxe4, correctMove: 'Bf5', prompt: "Develop your light-squared bishop actively.", hint: "The bishop goes to f5 — outside the pawn chain!", correctFeedback: "Beautiful! The bishop is active on f5, outside the pawn chain.", wrongFeedback: "Play Bf5 — get the bishop out before closing it in with e6.", highlightSquares: ['c8', 'f5'] },
+    { type: 'instruction', fen: FEN_L2.v8_after_Bf5, text: "A rock-solid Caro-Kann structure! Your bishop is active on f5 and your center is secure." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 9: 2...e5 Counter (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_9: OpeningLesson = {
+  id: 'pa-var-9',
+  title: '2...e5 Counter',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_d4, text: "Challenge the center immediately with e5!" },
+    { type: 'play-move', fen: FEN_L2.after_d4, correctMove: 'e5', prompt: "Strike at White's d4 pawn.", hint: "Push e5 to challenge the center head-on.", correctFeedback: "Bold! e5 fights for central space immediately.", wrongFeedback: "Play e5 — challenge White's center directly.", highlightSquares: ['e7', 'e5'] },
+    { type: 'instruction', fen: FEN_L2.v9_after_Nf3, text: "3.Nf3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v9_after_Nf3, correctMove: 'exd4', prompt: "Capture the d4 pawn.", hint: "Take on d4 — open the position while White's pieces are still developing.", correctFeedback: "Good trade! You've opened the center on your terms.", wrongFeedback: "Capture exd4 — exchange in the center now.", highlightSquares: ['e5', 'd4'] },
+    { type: 'instruction', fen: FEN_L2.v9_after_Nxd4, text: "4.Nxd4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v9_after_Nxd4, correctMove: 'Be7', prompt: "Develop a piece and prepare to castle.", hint: "The bishop to e7 is quiet but solid — kingside castling comes next.", correctFeedback: "Smooth development! Be7 prepares quick castling.", wrongFeedback: "Play Be7 — develop toward castling.", highlightSquares: ['f8', 'e7'] },
+    { type: 'instruction', fen: FEN_L2.v9_after_Nc3, text: "5.Nc3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v9_after_Nc3, correctMove: 'Nf6', prompt: "Bring out the knight and attack e4.", hint: "Nf6 develops and pressures the e4 pawn.", correctFeedback: "The knight is perfectly placed on f6, eyeing e4.", wrongFeedback: "Play Nf6 — develop and put pressure on e4.", highlightSquares: ['g8', 'f6'] },
+    { type: 'instruction', fen: FEN_L2.v9_after_Nf6, text: "You've reached a Philidor-like position with active development." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 10: Sicilian Twist (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_10: OpeningLesson = {
+  id: 'pa-var-10',
+  title: 'Sicilian Twist',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_e4, text: "The Sicilian Defense! A fighting weapon against 1.e4." },
+    { type: 'play-move', fen: FEN_L2.after_e4, correctMove: 'c5', prompt: "Play the Sicilian move.", hint: "Push c5 — fight for the center asymmetrically.", correctFeedback: "The Sicilian! Black's most popular and combative reply to 1.e4.", wrongFeedback: "Play c5 — the Sicilian Defense.", highlightSquares: ['c7', 'c5'] },
+    { type: 'instruction', fen: FEN_L2.v10_after_Nf3, text: "2.Nf3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v10_after_Nf3, correctMove: 'd6', prompt: "Support your center and prepare development.", hint: "d6 controls e5 and opens a path for the dark-squared bishop.", correctFeedback: "Solid! d6 holds the center and prepares piece development.", wrongFeedback: "Play d6 — control e5 and prepare your bishops.", highlightSquares: ['d7', 'd6'] },
+    { type: 'instruction', fen: FEN_L2.v10_after_Nc3, text: "3.Nc3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v10_after_Nc3, correctMove: 'a6', prompt: "A key prophylactic move.", hint: "a6 prevents Bb5 and prepares queenside expansion with b5.", correctFeedback: "The Najdorf move! a6 is one of the most important moves in chess theory.", wrongFeedback: "Play a6 — prevent Bb5 and prepare b5.", highlightSquares: ['a7', 'a6'] },
+    { type: 'instruction', fen: FEN_L2.v10_after_d4, text: "4.d4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v10_after_d4, correctMove: 'cxd4', prompt: "Capture the d4 pawn.", hint: "Take on d4 — open the c-file for your rook later.", correctFeedback: "The c-file is open! Your rook will love it.", wrongFeedback: "Capture cxd4 — open the c-file for counterplay.", highlightSquares: ['c5', 'd4'] },
+    { type: 'instruction', fen: FEN_L2.v10_after_cxd4, text: "The Najdorf setup! a6 prepares b5 expansion and you've opened the c-file." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 11: Solid ...e6 (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_11: OpeningLesson = {
+  id: 'pa-var-11',
+  title: 'Solid ...e6',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_Nc3, text: "A solid French-like setup with e6. Less flashy but very reliable." },
+    { type: 'play-move', fen: FEN_L2.after_Nc3, correctMove: 'e6', prompt: "Set up a solid pawn structure.", hint: "e6 creates a strong pawn chain and keeps things solid.", correctFeedback: "Rock solid! e6 gives you a reliable, flexible structure.", wrongFeedback: "Play e6 — build a sturdy pawn chain.", highlightSquares: ['e7', 'e6'] },
+    { type: 'instruction', fen: FEN_L2.v11_after_Nf3, text: "4.Nf3", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v11_after_Nf3, correctMove: 'Nbd7', prompt: "Develop the queen's knight.", hint: "Nbd7 supports the e5 and c5 pawn breaks.", correctFeedback: "Flexible! Nbd7 keeps both central breaks available.", wrongFeedback: "Play Nbd7 — it supports both ...e5 and ...c5.", highlightSquares: ['b8', 'd7'] },
+    { type: 'instruction', fen: FEN_L2.v11_after_Be2, text: "5.Be2", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v11_after_Be2, correctMove: 'a6', prompt: "A useful prophylactic move.", hint: "a6 prevents Bb5 ideas and prepares queenside expansion.", correctFeedback: "Smart! a6 stops any Bb5 tricks and sets up b5 later.", wrongFeedback: "Play a6 — prevent Bb5 and prepare b5.", highlightSquares: ['a7', 'a6'] },
+    { type: 'instruction', fen: FEN_L2.v11_after_a4, text: "6.a4", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v11_after_a4, correctMove: 'Be7', prompt: "Develop the bishop and prepare castling.", hint: "Be7 is calm and solid — castle next.", correctFeedback: "Smooth! Be7 completes development and you're ready to castle.", wrongFeedback: "Play Be7 — get the bishop out and prepare to castle.", highlightSquares: ['f8', 'e7'] },
+    { type: 'instruction', fen: FEN_L2.v11_after_Be7, text: "A Scheveningen-like setup! Flexible and ready for ...b6, ...Bb7, or ...c5." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// VARIATION 12: 3...Nc6 Active (L2)
+// ═══════════════════════════════════════════════════════════
+
+const PA_VAR_12: OpeningLesson = {
+  id: 'pa-var-12',
+  title: '3...Nc6 Active',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN_L2.after_f4, text: "Develop Nc6 early — more active, challenging White's center directly." },
+    { type: 'play-move', fen: FEN_L2.after_f4, correctMove: 'Nc6', prompt: "Develop the knight actively.", hint: "Nc6 eyes the d4 pawn and develops with purpose.", correctFeedback: "Active development! The knight pressures d4.", wrongFeedback: "Play Nc6 — put pressure on White's center.", highlightSquares: ['b8', 'c6'] },
+    { type: 'instruction', fen: FEN_L2.v12_after_Be2, text: "5.Be2", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v12_after_Be2, correctMove: 'Bg7', prompt: "Complete the fianchetto.", hint: "The bishop belongs on g7 — it's the heart of the Pirc.", correctFeedback: "The dragon bishop! g7 is its natural home.", wrongFeedback: "Play Bg7 — complete the fianchetto.", highlightSquares: ['f8', 'g7'] },
+    { type: 'instruction', fen: FEN_L2.v12_after_Nf3, text: "6.Nf3", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN_L2.v12_after_Nf3, text: "Time for the central break — d5 challenges White's center head-on!" },
+    { type: 'play-move', fen: FEN_L2.v12_after_Nf3, correctMove: 'd5', prompt: "Strike in the center!", hint: "d5 breaks open the center when White is overextended.", correctFeedback: "The central break! d5 challenges White's entire setup.", wrongFeedback: "Play d5 — now is the time to break in the center.", highlightSquares: ['d6', 'd5'] },
+    { type: 'instruction', fen: FEN_L2.v12_after_e5_w, text: "7.e5 — White advances", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN_L2.v12_after_e5_w, correctMove: 'Ne4', prompt: "Jump into the outpost!", hint: "The knight leaps to e4 — a powerful central square.", correctFeedback: "Dominant! The knight on e4 is untouchable and powerful.", wrongFeedback: "Play Ne4 — the knight lands on a perfect outpost.", highlightSquares: ['f6', 'e4'] },
+    { type: 'instruction', fen: FEN_L2.v12_after_Ne4, text: "The knight lands on e4 — a powerful outpost! Active and aggressive." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
 // EXPORTS
 // ═══════════════════════════════════════════════════════════
 
 const PIRC_AUSTRIAN_LESSONS: Record<string, OpeningLesson> = {
+  // L1
   'pa-1': PA_LESSON_1,
   'pa-2': PA_LESSON_2,
   'pa-punish-e5': PA_PUNISH_E5,
@@ -611,6 +882,16 @@ const PIRC_AUSTRIAN_LESSONS: Record<string, OpeningLesson> = {
   'pa-punish-Nxe5': PA_PUNISH_NXE5,
   'pa-6': PA_LESSON_6,
   'pa-test-1': PA_TEST_1,
+  // L2
+  'pa-7': PA_LESSON_7,
+  'pa-8': PA_LESSON_8,
+  'pa-9': PA_LESSON_9,
+  'pa-var-7': PA_VAR_7,
+  'pa-var-8': PA_VAR_8,
+  'pa-var-9': PA_VAR_9,
+  'pa-var-10': PA_VAR_10,
+  'pa-var-11': PA_VAR_11,
+  'pa-var-12': PA_VAR_12,
 }
 
 export function getPircAustrianLesson(id: string): OpeningLesson | undefined {
