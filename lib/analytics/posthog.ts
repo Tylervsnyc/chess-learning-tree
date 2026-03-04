@@ -84,6 +84,7 @@ export const LearningEvents = {
 // Engagement events
 export const EngagementEvents = {
   treeLevelViewed: (level: number) => trackEvent('tree_level_viewed', { level }),
+  levelTestCardViewed: (level: number) => trackEvent('level_test_card_viewed', { level }),
   dailyChallengeViewed: () => trackEvent('daily_challenge_viewed'),
   dailyChallengeStarted: () => trackEvent('daily_challenge_started'),
   dailyChallengeCompleted: (correct: boolean) =>
@@ -94,6 +95,7 @@ export const EngagementEvents = {
 // Subscription funnel
 export const SubscriptionEvents = {
   paywallViewed: (trigger: string) => trackEvent('paywall_viewed', { trigger }),
+  paywallDismissed: (trigger: string) => trackEvent('paywall_dismissed', { trigger }),
   pricingViewed: () => trackEvent('pricing_viewed'),
   checkoutStarted: (plan: string, trigger?: string) => trackEvent('checkout_started', { plan, trigger }),
   checkoutCompleted: (plan: string, trigger?: string) => trackEvent('checkout_completed', { plan, trigger }),
