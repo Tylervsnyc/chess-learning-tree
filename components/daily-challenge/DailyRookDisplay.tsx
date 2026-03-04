@@ -160,61 +160,7 @@ export function DailyRookDisplay({
   const activeTime = mode === 'demo' ? demoTime : (mode === 'finished' && totalTime != null ? totalTime : timeLeft);
   const isTimeLow = mode === 'playing' && timeLeft < 30000;
 
-  // Playing mode: side-by-side layout (rook left, stats right)
-  if (mode === 'playing') {
-    return (
-      <div className="flex items-center justify-center gap-3 px-3 pb-1 pt-1 flex-shrink-0">
-        {/* Rook grid — left */}
-        <RookGrid
-          results={activeResults}
-          animatingBlocks={animatingBlocks}
-        />
-
-        {/* Stats — right */}
-        <div className="flex flex-col items-center gap-2 flex-1">
-          {/* Status text */}
-          {statusNode && (
-            <div className="text-center text-base font-bold">
-              {statusNode}
-            </div>
-          )}
-
-          {/* Timer card */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 px-4 py-2 shadow-sm">
-            <div
-              className={`text-2xl font-black tabular-nums transition-colors ${
-                isTimeLow ? 'text-chess-red animate-pulse' : 'text-chess-text'
-              }`}
-            >
-              {formatTime(activeTime)}
-            </div>
-          </div>
-
-          {/* Lives card */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 px-3 py-2 shadow-sm flex items-center gap-1.5">
-            {Array.from({ length: maxLives }).map((_, i) => {
-              const isFilled = i < activeLives;
-              const isShaking = shakingHeartIndex === i;
-              return (
-                <svg
-                  key={i}
-                  className={`w-7 h-7 transition-all duration-300 ${
-                    isFilled ? 'text-chess-red' : 'text-chess-disabled'
-                  } ${isShaking ? 'animate-heart-shake' : ''}`}
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Demo + Finished: side-by-side layout (same as playing — rook left, stats right)
+  // All modes use the same side-by-side layout (rook left, stats right)
   return (
     <div className="flex items-center justify-center gap-3 px-3 pb-1 pt-1 flex-shrink-0">
       {/* Rook grid — left */}
@@ -225,6 +171,13 @@ export function DailyRookDisplay({
 
       {/* Stats — right */}
       <div className="flex flex-col items-center gap-2 flex-1">
+        {/* Status text (playing mode only) */}
+        {mode === 'playing' && statusNode && (
+          <div className="text-center text-base font-bold">
+            {statusNode}
+          </div>
+        )}
+
         {/* Timer card */}
         <div className="bg-chess-surface rounded-2xl border border-slate-200 px-4 py-2 shadow-sm">
           <div
@@ -232,9 +185,7 @@ export function DailyRookDisplay({
               isTimeLow ? 'text-chess-red animate-pulse' : 'text-chess-text'
             }`}
           >
-            {mode === 'finished' && totalTime != null
-              ? formatTime(totalTime)
-              : formatTime(activeTime)}
+            {formatTime(activeTime)}
           </div>
         </div>
 
@@ -329,7 +280,6 @@ function RookBlockCell({
 }) {
   const isCorrect = result === 'correct';
   const isWrong = result === 'wrong';
-  const isPending = result === 'pending';
 
   let background: string;
   let borderStyle: string;
