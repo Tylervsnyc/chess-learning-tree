@@ -14,4 +14,4 @@ export function getResendClient(): Resend {
   return resendClient;
 }
 
-export const EMAIL_FROM = process.env.EMAIL_FROM_ADDRESS || 'The Chess Path <noreply@chesspath.app>';
+export const EMAIL_FROM = process.env.EMAIL_FROM_ADDRESS || 'Rookie from Chess Path <noreply@chesspath.app>';

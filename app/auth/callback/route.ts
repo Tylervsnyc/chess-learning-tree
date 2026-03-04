@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
+import { createServiceClient } from '@/lib/supabase/service';
+import { Welcome } from '@/lib/email/templates/Welcome';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -55,6 +58,14 @@ export async function GET(request: Request) {
       return NextResponse.redirect(errorUrl.toString());
     }
 
+    // Send welcome email to new users (fire-and-forget)
+    if (data.user) {
+      const user = data.user;
+      sendWelcomeIfNew(user.id, user.email ?? '', user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? 'Chess Player').catch(
+        (err) => console.error('[Auth Callback] Welcome email error:', err)
+      );
+    }
+
     // Return the response with cookies attached
     return response;
   }
@@ -65,4 +76,32 @@ export async function GET(request: Request) {
   errorUrl.searchParams.set('error', 'invalid_request');
   errorUrl.searchParams.set('error_description', 'No authorization code received');
   return NextResponse.redirect(errorUrl.toString());
+}
+
+async function sendWelcomeIfNew(userId: string, email: string, displayName: string) {
+  if (!email) return;
+
+  const supabase = createServiceClient();
+
+  // Check if we already sent a welcome email to this user
+  const { data: existing } = await supabase
+    .from('email_log')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('email_type', 'welcome')
+    .eq('status', 'sent')
+    .limit(1);
+
+  if (existing && existing.length > 0) return;
+
+  const appUrl = getAppUrl();
+  const unsubscribeUrl = getUnsubscribeUrl(userId);
+
+  await sendEmail({
+    to: email,
+    userId,
+    type: 'welcome',
+    subject: 'Welcome to Chess Path!',
+    react: Welcome({ displayName, appUrl, unsubscribeUrl }),
+  });
 }

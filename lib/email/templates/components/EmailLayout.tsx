@@ -31,16 +31,16 @@ const ROOK_GRID = [
 const CELL = 10;
 const GAP = 2;
 
-function RookIcon() {
+function RookIcon({ cellSize = CELL }: { cellSize?: number } = {}) {
   return (
     <table cellPadding="0" cellSpacing="0" role="presentation" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
       <tbody>
         {ROOK_GRID.map((row, ri) => (
           <tr key={ri}>
             {row.map((color, ci) => (
-              <td key={ci} style={{ width: CELL, height: CELL, padding: GAP / 2 }}>
+              <td key={ci} style={{ width: cellSize, height: cellSize, padding: GAP / 2 }}>
                 {color && (
-                  <div style={{ width: CELL, height: CELL, borderRadius: 2, backgroundColor: color, background: getMatteBackground(color) }} />
+                  <div style={{ width: cellSize, height: cellSize, borderRadius: 2, backgroundColor: color, background: getMatteBackground(color) }} />
                 )}
               </td>
             ))}
@@ -49,6 +49,10 @@ function RookIcon() {
       </tbody>
     </table>
   );
+}
+
+export function MiniRookIcon() {
+  return <RookIcon cellSize={5} />;
 }
 
 function GradientPath() {
@@ -84,8 +88,13 @@ export function EmailLayout({ preview, children, unsubscribeUrl }: EmailLayoutPr
                         <RookIcon />
                       </td>
                       <td style={{ verticalAlign: 'middle' }}>
-                        <span style={{ ...wordmarkBase, color: '#2A3C45' }}>chess</span>
-                        <GradientPath />
+                        <div>
+                          <span style={{ ...wordmarkBase, color: '#2A3C45' }}>chess</span>
+                          <GradientPath />
+                        </div>
+                        <div style={{ marginTop: '2px' }}>
+                          <span style={tagline}>The Fun Way To Learn Chess</span>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -138,6 +147,13 @@ const wordmarkBase = {
   fontSize: '28px',
   fontWeight: 700 as const,
   letterSpacing: '-0.5px',
+};
+
+const tagline = {
+  color: '#6B7C8A',
+  fontSize: '10px',
+  fontWeight: 500 as const,
+  letterSpacing: '0.3px',
 };
 
 const content = {
