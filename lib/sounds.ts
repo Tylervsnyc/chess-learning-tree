@@ -243,51 +243,33 @@ async function playCelebration(): Promise<void> {
 
 /**
  * Play celebration sound - warm ascending C Major chord
- * @param _correctCount - unused, kept for backwards compatibility
  */
-export function playCelebrationSound(_correctCount?: number): void {
+export function playCelebrationSound(): void {
   if (typeof window === 'undefined') return;
   playCelebration();
 }
 
-/**
- * Play move sound - uses preloaded mp3 file
- */
-export async function playMoveSound(): Promise<void> {
+// Play a preloaded buffer sound
+async function playBuffer(buffer: AudioBuffer | null): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
-
-  // Ensure sounds are preloaded
-  if (!buffersLoaded) {
-    await preloadSounds();
-  }
-
-  if (!moveBuffer) return;
+  if (!buffersLoaded) await preloadSounds();
+  if (!buffer) return;
 
   const source = ctx.createBufferSource();
-  source.buffer = moveBuffer;
+  source.buffer = buffer;
   source.connect(ctx.destination);
   source.start();
 }
 
-/**
- * Play capture sound - uses preloaded mp3 file
- */
+/** Play move sound - uses preloaded mp3 file */
+export async function playMoveSound(): Promise<void> {
+  return playBuffer(moveBuffer);
+}
+
+/** Play capture sound - uses preloaded mp3 file */
 export async function playCaptureSound(): Promise<void> {
-  const ctx = await ensureAudioReady();
-  if (!ctx) return;
-
-  // Ensure sounds are preloaded
-  if (!buffersLoaded) {
-    await preloadSounds();
-  }
-
-  if (!captureBuffer) return;
-
-  const source = ctx.createBufferSource();
-  source.buffer = captureBuffer;
-  source.connect(ctx.destination);
-  source.start();
+  return playBuffer(captureBuffer);
 }
 
 /**
