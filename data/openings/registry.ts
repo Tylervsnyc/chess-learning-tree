@@ -346,29 +346,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   },
 ]
 
-// Helper: get openings for a category
-export function getOpeningsByCategory(category: '1.e4' | '1.d4') {
-  return OPENINGS_REGISTRY.filter(o => o.category === category)
-}
-
-// Helper: get first 5 (available) openings
-export function getAvailableOpenings() {
-  return OPENINGS_REGISTRY.filter(o => o.hasData).sort((a, b) => a.order - b.order)
-}
-
-// Helper: get coming soon openings
-export function getComingSoonOpenings() {
-  return OPENINGS_REGISTRY.filter(o => !o.hasData).sort((a, b) => a.order - b.order)
-}
-
 // Helper: find opening by slug
 export function getOpeningBySlug(slug: string) {
   return OPENINGS_REGISTRY.find(o => o.slug === slug)
-}
-
-// Helper: get openings sorted by curriculum order within their category
-export function getOpeningsForLibrary() {
-  const e4 = OPENINGS_REGISTRY.filter(o => o.category === '1.e4').sort((a, b) => a.order - b.order)
-  const d4 = OPENINGS_REGISTRY.filter(o => o.category === '1.d4').sort((a, b) => a.order - b.order)
-  return { e4, d4 }
 }
