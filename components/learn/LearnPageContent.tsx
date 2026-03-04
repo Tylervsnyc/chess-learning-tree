@@ -8,7 +8,6 @@ import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
-import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -267,7 +266,6 @@ function LockedLevelCard({
   darkColor,
   isUnlocked,
   prevLevelCompleted,
-  isLoggedIn,
 }: {
   levelNum: number;
   levelData: typeof level1V2;
@@ -275,17 +273,34 @@ function LockedLevelCard({
   darkColor: string;
   isUnlocked: boolean;
   prevLevelCompleted: boolean;
-  isLoggedIn: boolean;
 }) {
-  const [showSignupModal, setShowSignupModal] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasFiredRef = useRef(false);
   const testTransition = `${levelNum - 1}-${levelNum}`;
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || isUnlocked || hasFiredRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasFiredRef.current) {
+          hasFiredRef.current = true;
+          EngagementEvents.levelTestCardViewed(levelNum);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isUnlocked, levelNum]);
 
   if (isUnlocked) {
     return null; // Don't show card if level is unlocked
   }
 
   return (
-    <div className="my-8">
+    <div ref={cardRef} className="my-8">
       {/* Connector line */}
       <div className="flex justify-center mb-4">
         <div className="w-1 h-8 bg-slate-300 rounded-full" />
@@ -322,56 +337,29 @@ function LockedLevelCard({
 
           {/* Unlock options */}
           <div className="space-y-2">
-            {isLoggedIn ? (
-              <>
-                {prevLevelCompleted ? (
-                  <p className="text-sm text-chess-text-muted mb-3">
-                    Complete Level {levelNum - 1} to unlock, or take the test
-                  </p>
-                ) : (
-                  <p className="text-sm text-chess-text-muted mb-3">
-                    Complete Level {levelNum - 1} or take the placement test
-                  </p>
-                )}
-
-                <Link
-                  href={`/level-test/${testTransition}`}
-                  className="inline-block px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105"
-                  style={{
-                    backgroundColor: levelColor,
-                    boxShadow: `0 4px 0 ${darkColor}`,
-                  }}
-                >
-                  Take Level {levelNum} Test
-                </Link>
-              </>
+            {prevLevelCompleted ? (
+              <p className="text-sm text-chess-text-muted mb-3">
+                Complete Level {levelNum - 1} to unlock, or take the test
+              </p>
             ) : (
-              <>
-                <p className="text-sm text-chess-text-muted mb-3">
-                  Sign in to take the placement test and unlock this level
-                </p>
-
-                <button
-                  onClick={() => setShowSignupModal(true)}
-                  className="px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105"
-                  style={{
-                    backgroundColor: levelColor,
-                    boxShadow: `0 4px 0 ${darkColor}`,
-                  }}
-                >
-                  Sign In to Take Test
-                </button>
-              </>
+              <p className="text-sm text-chess-text-muted mb-3">
+                Complete Level {levelNum - 1} or take the placement test
+              </p>
             )}
+
+            <Link
+              href={`/level-test/${testTransition}`}
+              className="inline-block px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105"
+              style={{
+                backgroundColor: levelColor,
+                boxShadow: `0 4px 0 ${darkColor}`,
+              }}
+            >
+              Take Level {levelNum} Test
+            </Link>
           </div>
         </div>
       </div>
-
-      <CreateProfileModal
-        isOpen={showSignupModal}
-        onClose={() => setShowSignupModal(false)}
-        context="level-test"
-      />
     </div>
   );
 }
@@ -438,8 +426,6 @@ export default function LearnPageContent() {
 
   // Check if user is logged in - wait for loading to complete
   const { user, profile, loading: userLoading } = useUser();
-  // While loading, assume logged in to avoid flash of "sign in" text
-  const isLoggedIn = userLoading ? true : !!user;
   // Wait for profile to load before checking admin status
   // If user exists but profile is null, profile is still loading
   const isProfileLoading = !!user && !profile;
@@ -597,7 +583,6 @@ export default function LearnPageContent() {
                 darkColor={darkColor}
                 isUnlocked={isLevelUnlocked}
                 prevLevelCompleted={prevLevelCompleted}
-                isLoggedIn={isLoggedIn}
               />
             );
           }

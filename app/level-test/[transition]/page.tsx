@@ -63,6 +63,9 @@ export default function LevelTestPage() {
   // Confetti ref to prevent re-firing
   const confettiFired = useRef(false);
 
+  // Auth modal shown after test completion for unauthenticated users
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const { puzzleCount, maxWrongAnswers, passingScore } = LEVEL_TEST_CONFIG;
 
   // Warmup audio on first user interaction (unlocks audio on mobile)
@@ -362,13 +365,21 @@ export default function LevelTestPage() {
       if (newCorrectCount >= passingScore) {
         setTestState('passed');
         playCelebrationSound(newCorrectCount);
-        // Unlock the level (which also sets currentPosition to first lesson)
-        if (targetLevel) {
+        // Unlock the level only if logged in
+        if (user && targetLevel) {
           const firstLessonId = getFirstLessonIdForLevel(targetLevel.number);
           unlockLevel(targetLevel.number, firstLessonId || undefined);
         }
+        // Show auth modal for unauthenticated users
+        if (!user && !userLoading) {
+          setShowAuthModal(true);
+        }
       } else {
         setTestState('failed');
+        // Show auth modal for unauthenticated users
+        if (!user && !userLoading) {
+          setShowAuthModal(true);
+        }
       }
       return;
     }
@@ -401,26 +412,6 @@ export default function LevelTestPage() {
       });
     }
   }, [testState]);
-
-  // Loading state while checking auth
-  if (userLoading) {
-    return (
-      <div className="h-full bg-chess-page flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  // Auth check - must be logged in to take level tests
-  if (!user) {
-    return (
-      <CreateProfileModal
-        isOpen={true}
-        onClose={() => router.push('/')}
-        context="level-test"
-      />
-    );
-  }
 
   // Loading state while validating transition
   if (isValid === null) {
@@ -552,15 +543,33 @@ export default function LevelTestPage() {
             You scored {correctCount}/{puzzleCount}
           </p>
           <p className="text-chess-text font-semibold mb-8">
-            {targetLevel ? `Level ${targetLevel.number} is now unlocked` : 'Great job!'}
+            {user
+              ? (targetLevel ? `Level ${targetLevel.number} is now unlocked` : 'Great job!')
+              : 'Sign in to unlock this level'}
           </p>
-          <button
-            onClick={handleBackToLearn}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
-          >
-            Continue to Level {targetLevel?.number || 2}
-          </button>
+          {user ? (
+            <button
+              onClick={handleBackToLearn}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
+            >
+              Continue to Level {targetLevel?.number || 2}
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
+            >
+              Sign In to Unlock Level {targetLevel?.number || 2}
+            </button>
+          )}
         </div>
+        {showAuthModal && (
+          <CreateProfileModal
+            isOpen={true}
+            onClose={() => setShowAuthModal(false)}
+            context="level-test-passed"
+          />
+        )}
       </div>
     );
   }
@@ -629,6 +638,13 @@ export default function LevelTestPage() {
             </button>
           </div>
         </div>
+        {showAuthModal && (
+          <CreateProfileModal
+            isOpen={true}
+            onClose={() => setShowAuthModal(false)}
+            context="level-test-failed"
+          />
+        )}
       </div>
     );
   }

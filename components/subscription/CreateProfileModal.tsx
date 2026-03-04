@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
-export type SignupContext = 'lesson-limit' | 'level-test' | 'daily-rook' | 'daily-rook-results' | 'lesson-gate' | 'skip-quiz';
+export type SignupContext = 'lesson-limit' | 'level-test' | 'level-test-passed' | 'level-test-failed' | 'daily-rook' | 'daily-rook-results' | 'lesson-gate' | 'skip-quiz';
 
 const CONTEXT_COPY: Record<SignupContext, { heading: string; subtext: string; analytics: string }> = {
   'lesson-limit': {
@@ -17,6 +17,16 @@ const CONTEXT_COPY: Record<SignupContext, { heading: string; subtext: string; an
     heading: 'Ready to test your skills?',
     subtext: 'Sign in to take the level test and skip ahead.',
     analytics: 'level_test_gate',
+  },
+  'level-test-passed': {
+    heading: 'You passed! 🎉',
+    subtext: 'Sign in to unlock this level and save your progress.',
+    analytics: 'level_test_passed_gate',
+  },
+  'level-test-failed': {
+    heading: 'Good effort!',
+    subtext: 'Sign in to track your progress and try again later.',
+    analytics: 'level_test_failed_gate',
   },
   'daily-rook': {
     heading: 'The Daily Rook awaits!',
@@ -50,9 +60,11 @@ interface CreateProfileModalProps {
 export function CreateProfileModal({ isOpen, onClose, context = 'lesson-limit', lessonsCompleted }: CreateProfileModalProps) {
   const router = useRouter();
   const copy = CONTEXT_COPY[context];
+  const didNavigateRef = useRef(false);
 
   useEffect(() => {
     if (isOpen) {
+      didNavigateRef.current = false;
       SubscriptionEvents.paywallViewed(copy.analytics);
     }
   }, [isOpen, copy.analytics]);
@@ -66,11 +78,20 @@ export function CreateProfileModal({ isOpen, onClose, context = 'lesson-limit', 
 
   if (!isOpen) return null;
 
+  const handleDismiss = () => {
+    if (!didNavigateRef.current) {
+      SubscriptionEvents.paywallDismissed(copy.analytics);
+    }
+    onClose();
+  };
+
   const handleSignUp = () => {
+    didNavigateRef.current = true;
     router.push('/auth/signup');
   };
 
   const handlePremium = () => {
+    didNavigateRef.current = true;
     router.push('/auth/signup?redirect=/pricing');
   };
 
@@ -88,7 +109,7 @@ export function CreateProfileModal({ isOpen, onClose, context = 'lesson-limit', 
       <div
         className="absolute inset-0 bg-black/50"
         style={{ animation: 'cpm-fade 0.3s ease-out' }}
-        onClick={onClose}
+        onClick={handleDismiss}
       />
 
       {/* Card */}
