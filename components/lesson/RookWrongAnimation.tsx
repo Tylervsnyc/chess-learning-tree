@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { ROOK_BLOCKS_PIXEL } from '@/lib/daily-rook-blocks';
 
 /**
  * ChessPath Rook Wrong Animation Component
@@ -16,21 +17,8 @@ import React, { useRef, useCallback, forwardRef, useImperativeHandle } from 'rea
  * - signalLoss: Glitchy RGB effect, blocks disappear
  */
 
-interface Block {
-  x: number;
-  y: number;
-  color: string;
-}
-
-// The 22 blocks that form the rook
-const BLOCKS: Block[] = [
-  { x: 8, y: 98, color: '#2FCBEF' }, { x: 26, y: 98, color: '#A560E8' }, { x: 44, y: 98, color: '#58CC02' }, { x: 62, y: 98, color: '#FFC800' }, { x: 80, y: 98, color: '#FF9600' },
-  { x: 26, y: 80, color: '#FF6B6B' }, { x: 44, y: 80, color: '#FF4B4B' }, { x: 62, y: 80, color: '#1CB0F6' },
-  { x: 26, y: 62, color: '#58CC02' }, { x: 44, y: 62, color: '#FFC800' }, { x: 62, y: 62, color: '#FF9600' },
-  { x: 26, y: 44, color: '#1CB0F6' }, { x: 44, y: 44, color: '#2FCBEF' }, { x: 62, y: 44, color: '#A560E8' },
-  { x: 8, y: 26, color: '#58CC02' }, { x: 26, y: 26, color: '#FFC800' }, { x: 44, y: 26, color: '#FF9600' }, { x: 62, y: 26, color: '#FF6B6B' }, { x: 80, y: 26, color: '#FF4B4B' },
-  { x: 8, y: 8, color: '#1CB0F6' }, { x: 44, y: 8, color: '#2FCBEF' }, { x: 80, y: 8, color: '#A560E8' },
-];
+// Use the shared rook block pixel data (same source as RookProgressAnimation, RookCelebrationAnimation, etc.)
+const BLOCKS = ROOK_BLOCKS_PIXEL;
 
 // Rows for row-based animations (top to bottom)
 const ROWS = [

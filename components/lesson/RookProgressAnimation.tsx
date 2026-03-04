@@ -138,11 +138,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       }
     }, []); // Only run on mount
 
-    const flash = useCallback((_color: string, _intensity = 0.5) => {
-      // Disabled - was causing visible box flash
-      return;
-    }, []);
-
     const sparks = useCallback((el: HTMLDivElement | null, count: number, color: string) => {
       if (!fxRef.current || !el || !containerRef.current) return;
       const r = el.getBoundingClientRect();
@@ -165,7 +160,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
     // Animation implementations
     const animations: Record<AnimationStyle, (blocks: (HTMLDivElement | null)[]) => void> = {
       lightning: (blocks) => {
-        flash('#fff', 0.6);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -207,7 +201,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       emp: (blocks) => {
-        flash(lighten('#1CB0F6', 18), 0.4);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -240,8 +233,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       grid: (blocks) => {
-        const glowGreen = lighten('#58CC02', 18);
-        flash(glowGreen, 0.3);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -279,8 +270,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       fusion: (blocks) => {
-        const glowGold = lighten('#FFC800', 18);
-        flash(glowGold, 0.5);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -299,12 +288,10 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       tesla: (blocks) => {
-        const glowPurple = lighten('#A560E8', 18);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
             const c = el.dataset.color || '#A560E8';
-            flash(glowPurple, 0.2);
             el.style.opacity = '1';
             el.style.transform = 'scale(1.4)';
             el.style.boxShadow = `0 0 40px ${lighten(c, 18)}, 0 0 20px ${c}`;
@@ -320,8 +307,6 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
       },
 
       voltage: (blocks) => {
-        const glowGold = lighten('#FFC800', 18);
-        flash(glowGold, 0.4);
         blocks.forEach((el, i) => {
           setTimeout(() => {
             if (!el) return;
@@ -381,14 +366,9 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
           onAllComplete?.();
         }
       }, 1000);
-    }, [stage, animating, style, onStageComplete, onAllComplete, flash, sparks]);
+    }, [stage, animating, style, onStageComplete, onAllComplete, sparks]);
 
     const celebrate = useCallback(() => {
-      const glowColors = ['#1CB0F6', '#A560E8', '#FFC800', '#58CC02', '#FF6B6B'].map(c => lighten(c, 18));
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => flash(glowColors[i], 0.25), i * 100);
-      }
-
       // Pulse all blocks
       blockRefs.current.flat().forEach((el, i) => {
         if (!el) return;
@@ -405,7 +385,7 @@ export const RookProgressAnimation = forwardRef<RookProgressAnimationRef, RookPr
           }, 400);
         }, i * 20);
       });
-    }, [flash]);
+    }, []);
 
     const reset = useCallback(() => {
       setStage(0);

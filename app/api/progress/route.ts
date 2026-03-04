@@ -1,6 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 import { getAllLessonIds, getTreeIdFromLessonId } from '@/lib/curriculum-registry';
+
+/**
+ * Calculate new streak value based on last activity date.
+ * Per RULES.md Section 11: streak tracks daily activity.
+ */
+function calculateStreak(currentStreak: number, lastActivityDate: string | null): number {
+  const today = new Date().toISOString().split('T')[0];
+  if (lastActivityDate === today) return currentStreak;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (lastActivityDate === yesterday.toISOString().split('T')[0]) return currentStreak + 1;
+
+  return 1;
+}
+
+/**
+ * Ensure a user profile exists (for foreign key constraints).
+ * Creates one if missing (e.g., Google OAuth users where trigger didn't fire).
+ */
+async function ensureProfileExists(supabase: SupabaseClient, user: User) {
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!existing) {
+    await supabase.from('profiles').insert({
+      id: user.id,
+      email: user.email,
+      display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
+    });
+  }
+}
 
 /**
  * GET /api/progress
@@ -148,20 +185,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid lessonId' }, { status: 400 });
     }
 
-    // Ensure profile exists (for foreign key constraints and streak updates below)
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (!existingProfile) {
-      await supabase.from('profiles').insert({
-        id: user.id,
-        email: user.email,
-        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
-      });
-    }
+    await ensureProfileExists(supabase, user);
 
     // No unlock validation here — client UI enforces sequential order.
     // Server trusts the client and just stores the data. This prevents
@@ -205,23 +229,10 @@ export async function POST(request: NextRequest) {
       const isNewLessonDay = profileData?.last_lesson_date !== today;
       const newLessonCount = isNewLessonDay ? 1 : (profileData?.lessons_completed_today ?? 0) + 1;
 
-      // Calculate streak using day-based logic (per RULES.md Section 11)
-      const currentStreak = profileData?.current_streak ?? 0;
-      const lastActivityDate = profileData?.last_activity_date;
-
-      // Calculate yesterday's date
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-      let newStreak: number;
-      if (lastActivityDate === today) {
-        newStreak = currentStreak;
-      } else if (lastActivityDate === yesterdayStr) {
-        newStreak = currentStreak + 1;
-      } else {
-        newStreak = 1;
-      }
+      const newStreak = calculateStreak(
+        profileData?.current_streak ?? 0,
+        profileData?.last_activity_date ?? null,
+      );
 
       updateData.lessons_completed_today = newLessonCount;
       updateData.last_lesson_date = today;
@@ -285,20 +296,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required puzzle data' }, { status: 400 });
     }
 
-    // Ensure profile exists (required for foreign key constraint)
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (!existingProfile) {
-      await supabase.from('profiles').insert({
-        id: user.id,
-        email: user.email,
-        display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Player',
-      });
-    }
+    await ensureProfileExists(supabase, user);
 
     // Insert puzzle attempt (schema has minimal columns)
     const { error: puzzleError } = await supabase.from('puzzle_attempts').insert({
@@ -325,25 +323,10 @@ export async function POST(request: NextRequest) {
         .eq('id', user.id)
         .maybeSingle();
 
-      const currentStreak = streakProfile?.current_streak ?? 0;
-      const lastActivityDate = streakProfile?.last_activity_date;
-
-      // Calculate yesterday's date
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-      let newStreak: number;
-      if (lastActivityDate === today) {
-        // Already played today - don't change streak
-        newStreak = currentStreak;
-      } else if (lastActivityDate === yesterdayStr) {
-        // Continuing streak from yesterday - increment
-        newStreak = currentStreak + 1;
-      } else {
-        // Missed day(s) or first time - start fresh at 1
-        newStreak = 1;
-      }
+      const newStreak = calculateStreak(
+        streakProfile?.current_streak ?? 0,
+        streakProfile?.last_activity_date ?? null,
+      );
 
       const { error: streakError } = await supabase
         .from('profiles')
