@@ -1975,19 +1975,19 @@ export const SC_TEST_1: OpeningLesson = {
 // EXPORT ALL LESSONS
 // ═══════════════════════════════════════════════════════════
 
-export const SICILIAN_LESSONS: OpeningLesson[] = [
-  SC_LESSON_1,
-  SC_LESSON_2,
-  SC_PUNISH_QD4,
-  SC_PUNISH_BC4,
-  SC_LESSON_3,
-  SC_DRAGON_1,
-  SC_LESSON_4,
-  SC_DRAGON_2,
-  SC_CLASSICAL_1,
-  SC_TEST_1,
-]
+const SICILIAN_LESSONS: Record<string, OpeningLesson> = {
+  'sc-1': SC_LESSON_1,
+  'sc-2': SC_LESSON_2,
+  'sc-punish-qd4': SC_PUNISH_QD4,
+  'sc-punish-bc4': SC_PUNISH_BC4,
+  'sc-3': SC_LESSON_3,
+  'sc-dragon-1': SC_DRAGON_1,
+  'sc-4': SC_LESSON_4,
+  'sc-dragon-2': SC_DRAGON_2,
+  'sc-classical-1': SC_CLASSICAL_1,
+  'sc-test-1': SC_TEST_1,
+}
 
 export function getSicilianLesson(id: string): OpeningLesson | undefined {
-  return SICILIAN_LESSONS.find(l => l.id === id)
+  return SICILIAN_LESSONS[id]
 }

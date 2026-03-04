@@ -12,6 +12,7 @@ import { CreateProfileModal } from '@/components/subscription/CreateProfileModal
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { darkenColor } from '@/lib/color-utils';
 
 // Types
 type PieceType = 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn' | 'star' | 'lightning' | 'shield';
@@ -134,13 +135,6 @@ function getPieceForLesson(lesson: LessonCriteria, lessonIndex: number, sectionI
   }
 
   return result;
-}
-
-function darkenColor(hex: string, amount: number = 0.25): string {
-  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) * (1 - amount));
-  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) * (1 - amount));
-  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) * (1 - amount));
-  return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
 }
 
 // Chess piece icon paths

@@ -1499,19 +1499,19 @@ export const LN_TEST_1: OpeningLesson = {
 // EXPORT ALL LESSONS
 // ═══════════════════════════════════════════════════════════
 
-export const LONDON_LESSONS: OpeningLesson[] = [
-  LN_LESSON_1,
-  LN_LESSON_2,
-  LN_PUNISH_E5,
-  LN_PUNISH_C5,
-  LN_LESSON_3,
-  LN_JOBAVA_1,
-  LN_LESSON_4,
-  LN_ANTI_BF5,
-  LN_BD6_1,
-  LN_TEST_1,
-]
+const LONDON_LESSONS: Record<string, OpeningLesson> = {
+  'ln-1': LN_LESSON_1,
+  'ln-2': LN_LESSON_2,
+  'ln-punish-e5': LN_PUNISH_E5,
+  'ln-punish-c5': LN_PUNISH_C5,
+  'ln-3': LN_LESSON_3,
+  'ln-jobava-1': LN_JOBAVA_1,
+  'ln-4': LN_LESSON_4,
+  'ln-anti-bf5': LN_ANTI_BF5,
+  'ln-bd6-1': LN_BD6_1,
+  'ln-test-1': LN_TEST_1,
+}
 
 export function getLondonLesson(id: string): OpeningLesson | undefined {
-  return LONDON_LESSONS.find(l => l.id === id)
+  return LONDON_LESSONS[id]
 }

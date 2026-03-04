@@ -1716,19 +1716,19 @@ export const CK_TEST_1: OpeningLesson = {
 // EXPORT ALL LESSONS
 // ═══════════════════════════════════════════════════════════
 
-export const CARO_KANN_LESSONS: OpeningLesson[] = [
-  CK_LESSON_1,
-  CK_LESSON_2,
-  CK_PUNISH_NF3,
-  CK_PUNISH_E5,
-  CK_LESSON_3,
-  CK_ADVANCE_1,
-  CK_LESSON_4,
-  CK_EXCHANGE_1,
-  CK_TWOKNIGHT_1,
-  CK_TEST_1,
-]
+const CARO_KANN_LESSONS: Record<string, OpeningLesson> = {
+  'ck-1': CK_LESSON_1,
+  'ck-2': CK_LESSON_2,
+  'ck-punish-nf3': CK_PUNISH_NF3,
+  'ck-punish-e5': CK_PUNISH_E5,
+  'ck-3': CK_LESSON_3,
+  'ck-advance-1': CK_ADVANCE_1,
+  'ck-4': CK_LESSON_4,
+  'ck-exchange-1': CK_EXCHANGE_1,
+  'ck-twoknight-1': CK_TWOKNIGHT_1,
+  'ck-test-1': CK_TEST_1,
+}
 
 export function getCaroKannLesson(id: string): OpeningLesson | undefined {
-  return CARO_KANN_LESSONS.find(l => l.id === id)
+  return CARO_KANN_LESSONS[id]
 }

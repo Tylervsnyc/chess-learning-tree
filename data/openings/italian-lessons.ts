@@ -1852,19 +1852,19 @@ export const IT_TEST_1: OpeningLesson = {
 // EXPORT ALL LESSONS
 // ═══════════════════════════════════════════════════════════
 
-export const ITALIAN_LESSONS: OpeningLesson[] = [
-  IT_LESSON_1,
-  IT_LESSON_2,
-  IT_PUNISH_F6,
-  IT_FRIED_1,
-  IT_LESSON_3,
-  IT_TWO_KNIGHTS,
-  IT_FRIED_2,
-  IT_LESSON_4,
-  IT_EVANS_1,
-  IT_TEST_1,
-]
+const ITALIAN_LESSONS: Record<string, OpeningLesson> = {
+  'it-1': IT_LESSON_1,
+  'it-2': IT_LESSON_2,
+  'it-punish-f6': IT_PUNISH_F6,
+  'it-fried-1': IT_FRIED_1,
+  'it-3': IT_LESSON_3,
+  'it-two-knights': IT_TWO_KNIGHTS,
+  'it-fried-2': IT_FRIED_2,
+  'it-4': IT_LESSON_4,
+  'it-evans-1': IT_EVANS_1,
+  'it-test-1': IT_TEST_1,
+}
 
 export function getItalianLesson(id: string): OpeningLesson | undefined {
-  return ITALIAN_LESSONS.find(l => l.id === id)
+  return ITALIAN_LESSONS[id]
 }

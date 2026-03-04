@@ -2390,21 +2390,21 @@ export const RL_TEST_1: OpeningLesson = {
 // ALL LESSONS (for lookup)
 // ═══════════════════════════════════════════════════════════
 
-export const RUY_LOPEZ_LESSONS: OpeningLesson[] = [
-  RL_LESSON_1,
-  RL_LESSON_2,
-  RL_LESSON_3,
-  RL_LESSON_4,
-  RL_OPEN_1,
-  RL_PUNISH_F6,
-  RL_EXCHANGE_1,
-  RL_EXCHANGE_2,
-  RL_BERLIN_1,
-  RL_BERLIN_2,
-  RL_MARSHALL_1,
-  RL_TEST_1,
-]
+const RUY_LOPEZ_LESSONS: Record<string, OpeningLesson> = {
+  'rl-1': RL_LESSON_1,
+  'rl-2': RL_LESSON_2,
+  'rl-3': RL_LESSON_3,
+  'rl-4': RL_LESSON_4,
+  'rl-open-1': RL_OPEN_1,
+  'rl-punish-f6': RL_PUNISH_F6,
+  'rl-exchange-1': RL_EXCHANGE_1,
+  'rl-exchange-2': RL_EXCHANGE_2,
+  'rl-berlin-1': RL_BERLIN_1,
+  'rl-berlin-2': RL_BERLIN_2,
+  'rl-marshall-1': RL_MARSHALL_1,
+  'rl-test-1': RL_TEST_1,
+}
 
 export function getRuyLopezLesson(id: string): OpeningLesson | undefined {
-  return RUY_LOPEZ_LESSONS.find(l => l.id === id)
+  return RUY_LOPEZ_LESSONS[id]
 }

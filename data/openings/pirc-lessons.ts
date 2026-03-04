@@ -114,43 +114,45 @@ const FEN = {
   classical1_punish_after_Nb4:    'r2q1rk1/pp2ppbp/3p1np1/3P4/1n6/1N2B3/PPP1BPPP/R2Q1RK1 w - - 1 12',
 
   // ─── LEVEL 2 FENS ───
-  // After pi-4: 9.Nb3 Be6 (ending position)
+  // Verified with chess.js from the move sequence.
+  // Main line: 10.f4 Rc8 11.Kh1 Na5 12.f5 Nc4 13.Bd4 Bd7 14.Bxc4 Rxc4
+
+  // Start of Level 2 (end of pi-4)
   l2_start: 'r2q1rk1/pp2ppbp/2npbnp1/8/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 3 10',
 
-  // pi-5: 10.f4 and Rc8, 11.Kh1
+  // pi-5: 10.f4 Rc8 11.Kh1 Na5
   l2_after_f4:    'r2q1rk1/pp2ppbp/2npbnp1/8/4PP2/1NN1B3/PPP1B1PP/R2Q1RK1 b - - 0 10',
   l2_after_Rc8:   '2rq1rk1/pp2ppbp/2npbnp1/8/4PP2/1NN1B3/PPP1B1PP/R2Q1RK1 w - - 1 11',
   l2_after_Kh1:   '2rq1rk1/pp2ppbp/2npbnp1/8/4PP2/1NN1B3/PPP1B1PP/R2Q1R1K b - - 2 11',
-
-  // pi-6: 12.Bd3 Rc7, 13.e5 dxe5, 14.fxe5
   l2_after_Na5:   '2rq1rk1/pp2ppbp/3pbnp1/n7/4PP2/1NN1B3/PPP1B1PP/R2Q1R1K w - - 3 12',
-  l2_after_Bd3:   '2rq1rk1/pp2ppbp/3pbnp1/n7/4PP2/1NNBB3/PPP3PP/R2Q1R1K b - - 4 12',
-  l2_after_Rc7:   '3q1rk1/ppr1ppbp/3pbnp1/n7/4PP2/1NNBB3/PPP3PP/R2Q1R1K w - - 5 13',
-  l2_after_e5:    '3q1rk1/ppr1ppbp/3pbnp1/n3P3/5P2/1NNBB3/PPP3PP/R2Q1R1K b - - 0 13',
-  l2_after_dxe5:  '3q1rk1/ppr1ppbp/4bnp1/n3p3/5P2/1NNBB3/PPP3PP/R2Q1R1K w - - 0 14',
-  l2_after_fxe5:  '3q1rk1/ppr1ppbp/4bnp1/n3P3/8/1NNBB3/PPP3PP/R2Q1R1K b - - 0 14',
 
-  // pi-7: After 14.fxe5, 14...Nd7 15.Nxc6 bxc6 16.Bxc6
-  l2_after_Nd7:   '3q1rk1/pprn1pbp/4b1p1/n3P3/8/1NNBB3/PPP3PP/R2Q1R1K w - - 1 15',
-  l2_after_Nxc6:  '3q1rk1/pprn1pbp/2N1b1p1/n3P3/8/1N1BB3/PPP3PP/R2Q1R1K b - - 0 15',
-  l2_after_bxc6:  '3q1rk1/pp1n1pbp/2pb2p1/n3P3/8/1N1BB3/PPP3PP/R2Q1R1K w - - 0 16',
-  l2_after_Bxc6:  '3q1rk1/pp1n1pbp/2Bb2p1/n3P3/8/1N3B2/PPP3PP/R2Q1R1K b - - 0 16',
-  l2_after_Rc6:   '3q1rk1/pp1n1pbp/2rb2p1/n3P3/8/1N3B2/PPP3PP/R2Q1R1K w - - 1 17',
+  // pi-6: 12.f5 Nc4 13.Bd4 Bd7
+  l2_after_f5:    '2rq1rk1/pp2ppbp/3pbnp1/n4P2/4P3/1NN1B3/PPP1B1PP/R2Q1R1K b - - 0 12',
+  l2_after_Nc4:   '2rq1rk1/pp2ppbp/3pbnp1/5P2/2n1P3/1NN1B3/PPP1B1PP/R2Q1R1K w - - 1 13',
+  l2_after_Bd4:   '2rq1rk1/pp2ppbp/3pbnp1/5P2/2nBP3/1NN5/PPP1B1PP/R2Q1R1K b - - 2 13',
+  l2_after_Bd7:   '2rq1rk1/pp1bppbp/3p1np1/5P2/2nBP3/1NN5/PPP1B1PP/R2Q1R1K w - - 3 14',
+
+  // pi-7: 14.Bxc4 Rxc4
+  l2_after_Bxc4:  '2rq1rk1/pp1bppbp/3p1np1/5P2/2BBP3/1NN5/PPP3PP/R2Q1R1K b - - 0 14',
+  l2_after_Rxc4:  '3q1rk1/pp1bppbp/3p1np1/5P2/2rBP3/1NN5/PPP3PP/R2Q1R1K w - - 0 15',
 
   // pi-punish-Nd5: 10.Nd5? Bxd5 11.exd5 Rc8
-  l2_punish_after_Nd5:      'r2q1rk1/pp2ppbp/2npbnp1/3N4/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 b - - 4 10',
-  l2_punish_after_Bxd5:     'r2q1rk1/pp2ppbp/2np1np1/3b4/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 0 11',
-  l2_punish_after_exd5:     'r2q1rk1/pp2ppbp/2np1np1/3P4/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 b - - 0 11',
-  l2_punish_after_Rc8:      '2rq1rk1/pp2ppbp/2np1np1/3P4/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 1 12',
+  l2_punish_after_Nd5:   'r2q1rk1/pp2ppbp/2npbnp1/3N4/4P3/1N2B3/PPP1BPPP/R2Q1RK1 b - - 4 10',
+  l2_punish_after_Bxd5:  'r2q1rk1/pp2ppbp/2np1np1/3b4/4P3/1N2B3/PPP1BPPP/R2Q1RK1 w - - 0 11',
+  l2_punish_after_exd5:  'r2q1rk1/pp2ppbp/2np1np1/3P4/8/1N2B3/PPP1BPPP/R2Q1RK1 b - - 0 11',
+  l2_punish_after_Rc8:   '2rq1rk1/pp2ppbp/2np1np1/3P4/8/1N2B3/PPP1BPPP/R2Q1RK1 w - - 1 12',
 
-  // pi-8: 14...Nd7 15.Be2 Nc4 (alternative to 15.Nxc6)
-  l2_alt_after_Be2:        '3q1rk1/pprn1pbp/4b1p1/n3P3/8/1NN1B3/PPPB1PPP/R2Q1R1K b - - 0 15',
-  l2_alt_after_Nc4:        '3q1rk1/ppr2pbp/4b1p1/n3P3/2n5/1NN1B3/PPPB1PPP/R2Q1R1K w - - 1 16',
+  // pi-8 branch: 15.Qd3 a5 16.Nd5 Nxd5
+  l2_b8_after_Qd3:  '3q1rk1/pp1bppbp/3p1np1/5P2/2rBP3/1NNQ4/PPP3PP/R4R1K b - - 1 15',
+  l2_b8_after_a5:   '3q1rk1/1p1bppbp/3p1np1/p4P2/2rBP3/1NNQ4/PPP3PP/R4R1K w - - 0 16',
+  l2_b8_after_Nd5:  '3q1rk1/1p1bppbp/3p1np1/p2N1P2/2rBP3/1N1Q4/PPP3PP/R4R1K b - - 1 16',
+  l2_b8_after_Nxd5: '3q1rk1/1p1bppbp/3p2p1/p2n1P2/2rBP3/1N1Q4/PPP3PP/R4R1K w - - 0 17',
 
-  // pi-classical-2: 15...Nxe5 16.Qe2 Nf7
-  l2_classical_after_Nxe5: '3q1rk1/ppr2pbp/4b1p1/n3n3/2N5/1NN1B3/PPP3PP/R2Q1R1K w - - 1 16',
-  l2_classical_after_Qe2:  '3q1rk1/ppr2pbp/4b1p1/n3n3/2N5/1N2B3/PPP1Q1PP/R2B1R1K b - - 2 16',
-  l2_classical_after_Nf7:  '3q1rk1/ppr1npbp/4b1p1/n7/2N5/1N2B3/PPP1Q1PP/R2B1R1K w - - 3 17',
+  // pi-classical-2 branch: 15.Qd2 a5 16.a4 Rc6
+  l2_cl2_after_Qd2: '3q1rk1/pp1bppbp/3p1np1/5P2/2rBP3/1NN5/PPPQ2PP/R4R1K b - - 1 15',
+  l2_cl2_after_a5:  '3q1rk1/1p1bppbp/3p1np1/p4P2/2rBP3/1NN5/PPPQ2PP/R4R1K w - - 0 16',
+  l2_cl2_after_a4:  '3q1rk1/1p1bppbp/3p1np1/p4P2/P1rBP3/1NN5/1PPQ2PP/R4R1K b - - 0 16',
+  l2_cl2_after_Rc6: '3q1rk1/1p1bppbp/2rp1np1/p4P2/P2BP3/1NN5/1PPQ2PP/R4R1K w - - 1 17',
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2648,652 +2650,291 @@ export const PI_TEST_1: OpeningLesson = {
 }
 
 // ═══════════════════════════════════════════════════════════
-// LESSON 5: Prophylactic Push (Level 2)
-// Teaches: 10.f4 Rc8 11.Kh1
-// Recap: The full Level 1 main line (1-9.Nb3 Be6)
+// LESSON 5: Kingside Plans (Level 2)
+// Teaches: Rc8, Na5
 // ═══════════════════════════════════════════════════════════
 
 export const PI_LESSON_5: OpeningLesson = {
   id: 'pi-5',
-  title: 'Prophylactic Push',
+  title: 'Kingside Plans',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP (L1 tail)
+    { type: 'instruction', fen: FEN.pi4_after_Be3, text: "Level 2 starts here. Quick recap of the last few moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.pi4_after_Be3, text: "7.Be3.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.pi4_after_Be3, correctMove: 'cxd4', prompt: "Trade.", hint: "cxd4.", correctFeedback: "cxd4.", wrongFeedback: "cxd4." },
+    { type: 'instruction', fen: FEN.pi4_after_Nxd4, text: "8.Nxd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.pi4_after_Nxd4, correctMove: 'Nc6', prompt: "Develop.", hint: "Nc6.", correctFeedback: "Nc6.", wrongFeedback: "Nc6." },
+    { type: 'instruction', fen: FEN.pi4_after_Nb3, text: "9.Nb3.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.pi4_after_Nb3, correctMove: 'Be6', prompt: "Activate.", hint: "Be6.", correctFeedback: "Be6.", wrongFeedback: "Be6." },
 
-    // ═══════════════════════════════════════════
-    // ACT 1: RECAP (full Level 1 main line)
-    // ═══════════════════════════════════════════
+    // ACT 2: TEACH
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4 — White expands kingside and prepares f5.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "The c-file is semi-open. Get your rook there." },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Place your rook on the semi-open file.", hint: "Rc8.", correctFeedback: "Rc8! Your rook controls the c-file.", wrongFeedback: "Play Rc8.", highlightSquares: ['a8', 'c8'] },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1 — prophylactic. White steps off the g1-a7 diagonal.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "Your knight can reroute toward the strong c4 outpost." },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Send your knight to an outpost.", hint: "Na5.", correctFeedback: "Na5! Your knight heads to c4.", wrongFeedback: "Play Na5.", highlightSquares: ['c6', 'a5'], postMoveArrow: ['a5', 'c4'] },
+    { type: 'instruction', fen: FEN.l2_after_Na5, text: "Rc8 and Na5. You're applying pressure on both flanks." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_start,
-      text: "You've mastered the Pirc setup. Now let's go deeper into the middlegame. We're at move 10 for White.",
-      buttonText: "LET'S GO",
-    },
-
-    // White plays 10.f4
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_f4,
-      text: "10.f4 — White advances on the kingside, preparing to support the e4 pawn and control the center.",
-      autoAdvance: 800,
-    },
-
-    // Black plays 10...Rc8
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_f4,
-      text: "Your rook belongs on an open file where it can create threats. Activate it to c8 — a natural square for rook activity.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_f4,
-      correctMove: 'Rc8',
-      prompt: "Activate your rook to an open file.",
-      hint: "Move your rook to the c-file where it can pressure White's center.",
-      correctFeedback: "Rc8! The rook is now on a semi-open file. It can support your pieces and create threats.",
-      wrongFeedback: "Activate your rook to the c-file — a natural square for play.",
-      highlightSquares: ['a8', 'c8'],
-    },
-
-    // White plays 11.Kh1
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Kh1,
-      text: "11.Kh1 — White tucks the king away. This prophylactic move prevents tactics on g1 and prepares to advance the h-pawn if needed.",
-      autoAdvance: 800,
-    },
-
-    // Black's turn: 11...Na5
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Kh1,
-      text: "Your knight on b3 is strong but can be improved. Reroute it to c4 — a perfect outpost for your pieces.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_Kh1,
-      correctMove: 'Na5',
-      prompt: "Reroute your knight to the c4 outpost.",
-      hint: "Move your knight from b6 via a5 to reach c4.",
-      correctFeedback: "Na5! The knight is heading to c4, where it will dominate White's queenside.",
-      wrongFeedback: "Route your knight via a5 toward c4.",
-      highlightSquares: ['b6', 'a5'],
-      postMoveArrow: ['a5', 'c4'],
-    },
-
+    // ACT 4: RECALL
+    { type: 'instruction', fen: FEN.l2_start, text: "Full recall — play both new moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
   ],
 }
 
 // ═══════════════════════════════════════════════════════════
-// LESSON 6: Center Play (Level 2)
-// Teaches: 12.Bd3 Rc7 13.e5 dxe5 14.fxe5
-// Recap: 10.f4 Rc8 11.Kh1 Na5
+// LESSON 6: Knight Outpost (Level 2)
+// Teaches: Nc4, Bd7
 // ═══════════════════════════════════════════════════════════
 
 export const PI_LESSON_6: OpeningLesson = {
   id: 'pi-6',
-  title: 'Center Play',
+  title: 'Knight Outpost',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP
+    { type: 'instruction', fen: FEN.l2_start, text: "Quick recap — play through to Na5.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Rook lift.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Reroute.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
 
-    // ═══════════════════════════════════════════
-    // ACT 1: RECAP (10.f4 through 11...Na5)
-    // ═══════════════════════════════════════════
+    // ACT 2: TEACH
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5 — White advances the f-pawn aggressively, gaining kingside space and cramping Black.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "The knight arrives at an outpost on c4. No White pawn can ever push it away." },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Plant the knight on the outpost.", hint: "Nc4.", correctFeedback: "Nc4! Secure outpost.", wrongFeedback: "Play Nc4.", highlightSquares: ['a5', 'c4'] },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4 — White centralizes the bishop, controlling the long diagonal.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "Reposition your bishop from e6. It was blocked by the f5 pawn; from d7 it supports queenside play." },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Reposition your bishop for queenside support.", hint: "Bd7.", correctFeedback: "Bd7! More active.", wrongFeedback: "Play Bd7.", highlightSquares: ['e6', 'd7'] },
+    { type: 'instruction', fen: FEN.l2_after_Bd7, text: "Knight on an outpost, bishop repositioned. Black's pieces coordinate on the queenside." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_f4,
-      text: "Let's review where we are. White just played 10.f4.",
-      buttonText: "LET'S GO",
-    },
+    // ACT 3: SKIP (no punish)
 
-    // 10...Rc8
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Rc8,
-      text: "10...Rc8.",
-      autoAdvance: 800,
-    },
-
-    // 11.Kh1
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Kh1,
-      text: "11.Kh1.",
-      autoAdvance: 800,
-    },
-
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_Kh1,
-      correctMove: 'Na5',
-      prompt: "Reroute the knight.",
-      hint: "Na5.",
-      correctFeedback: "Na5.",
-      wrongFeedback: "Na5.",
-    },
-
-    // ═══════════════════════════════════════════
-    // ACT 2: TEACH (12.Bd3 through 14.fxe5)
-    // ═══════════════════════════════════════════
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Na5,
-      text: "White consolidates with the bishop.",
-      autoAdvance: 800,
-    },
-
-    // 12.Bd3
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Bd3,
-      text: "12.Bd3 — White brings the bishop to a safer square and prepares to launch an attack on the kingside.",
-      autoAdvance: 800,
-    },
-
-    // 12...Rc7
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Bd3,
-      text: "Move your rook away from the open c-file to support your center and pieces on the 7th rank.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_Bd3,
-      correctMove: 'Rc7',
-      prompt: "Protect your center.",
-      hint: "Move the rook to c7 to support your position.",
-      correctFeedback: "Rc7! Your rook defends along the 7th rank and supports your pieces.",
-      wrongFeedback: "Move your rook to c7.",
-      highlightSquares: ['c8', 'c7'],
-    },
-
-    // 13.e5 (auto-advance)
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Rc7,
-      text: "13.e5 — White pushes to the attack!",
-      autoAdvance: 800,
-    },
-
-    // 13...dxe5 (user captures)
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_e5,
-      text: "Black should grab the pawn immediately before White consolidates.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_e5,
-      correctMove: 'dxe5',
-      prompt: "Capture the pawn!",
-      hint: "Take on e5 with your d-pawn.",
-      correctFeedback: "dxe5! You're trading pawns and opening lines.",
-      wrongFeedback: "Capture on e5 with your d-pawn.",
-      highlightSquares: ['d6', 'e5'],
-    },
-
-    // 14.fxe5 (auto-advance)
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_dxe5,
-      text: "14.fxe5 — White recaptures and has an advanced pawn. But the center is now more open, and your pieces have more freedom.",
-      autoAdvance: 800,
-    },
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_fxe5,
-      text: "This is a critical position. White has space but Black has piece activity and tactical resources. Let's learn how to handle it.",
-    },
-
+    // ACT 4: RECALL
+    { type: 'instruction', fen: FEN.l2_start, text: "Full recall — play all four moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Your move.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
   ],
-}
-
-// ═══════════════════════════════════════════════════════════
-// PUNISH: 10.Nd5? (premature jump)
-// Teaches: How to punish an overextended knight
-// ═══════════════════════════════════════════════════════════
+};
 
 export const PI_PUNISH_ND5: OpeningLesson = {
   id: 'pi-punish-Nd5',
   title: 'Punish Nd5?',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP
+    { type: 'instruction', fen: FEN.l2_start, text: "After 9...Be6, White usually plays 10.f4. But what if they jump 10.Nd5 too early?", buttonText: "LET'S GO" },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_start,
-      text: "What if White gets too aggressive with the knight early?",
-      buttonText: "SHOW ME",
-    },
+    // ACT 2: TEACH PUNISH
+    { type: 'instruction', fen: FEN.l2_punish_after_Nd5, text: "10.Nd5? White jumps to d5 prematurely. The knight looks imposing but can be traded off immediately.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_punish_after_Nd5, text: "Bxd5! Trade it off. White loses the knight and Black gets easy development." },
+    { type: 'play-move', fen: FEN.l2_punish_after_Nd5, correctMove: 'Bxd5', prompt: "Capture the knight.", hint: "Bxd5.", correctFeedback: "Bxd5!", wrongFeedback: "Play Bxd5.", highlightSquares: ['e6', 'd5'] },
 
-    // 10.Nd5? (White's mistake, auto-advance)
-    {
-      type: 'instruction',
-      fen: FEN.l2_punish_after_Nd5,
-      text: "10.Nd5? — White jumps the knight aggressively. It looks strong, but the knight is exposed.",
-      autoAdvance: 800,
-    },
+    { type: 'instruction', fen: FEN.l2_punish_after_exd5, text: "11.exd5 — White recaptures. The d5 pawn looks strong but it's actually a target.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_punish_after_exd5, text: "Rc8! Activate the rook on the c-file. The open c-file gives you immediate counterplay." },
+    { type: 'play-move', fen: FEN.l2_punish_after_exd5, correctMove: 'Rc8', prompt: "Activate the rook.", hint: "Rc8.", correctFeedback: "Rc8!", wrongFeedback: "Play Rc8.", highlightSquares: ['a8', 'c8'] },
 
-    // 10...Bxd5! (user captures)
-    {
-      type: 'play-move',
-      fen: FEN.l2_punish_after_Nd5,
-      correctMove: 'Bxd5',
-      prompt: "Take the knight!",
-      hint: "Your bishop on e6 can capture on d5.",
-      correctFeedback: "Bxd5! The knight was too ambitious and you've won material.",
-      wrongFeedback: "Capture the overextended knight with your bishop.",
-      highlightSquares: ['e6', 'd5'],
-    },
-
-    // 11.exd5 (auto-advance — White recaptures)
-    {
-      type: 'instruction',
-      fen: FEN.l2_punish_after_Bxd5,
-      text: "11.exd5 — White's pawn recaptures, but now Black has a strong move.",
-      autoAdvance: 800,
-    },
-
-    // 11...Rc8 (user plays the active rook)
-    {
-      type: 'play-move',
-      fen: FEN.l2_punish_after_exd5,
-      correctMove: 'Rc8',
-      prompt: "Activate your rook!",
-      hint: "Put your rook on the c-file where it creates immediate threats.",
-      correctFeedback: "Rc8! Your rook is now threatening c-pawns and creating a dominant position.",
-      wrongFeedback: "Activate your rook to the c-file.",
-      highlightSquares: ['a8', 'c8'],
-    },
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_punish_after_Rc8,
-      text: "Black has a clearly better position. White wasted two moves on the knight — a prime example of overextending too early.",
-    },
-
+    { type: 'instruction', fen: FEN.l2_punish_after_Rc8, text: "After 10.Nd5? Bxd5 11.exd5 Rc8, Black has easy play on the c-file. White's premature knight jump accomplished nothing." },
   ],
 }
-
-// ═══════════════════════════════════════════════════════════
-// LESSON 7: Knight Outpost (Level 2)
-// Teaches: 14...Nd7 15.Nxc6 bxc6 16.Bxc6 Rc6
-// Recap: 12.Bd3 Rc7 13.e5 dxe5 14.fxe5
-// ═══════════════════════════════════════════════════════════
 
 export const PI_LESSON_7: OpeningLesson = {
   id: 'pi-7',
-  title: 'Knight Outpost',
+  title: 'The Queenside',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP
+    { type: 'instruction', fen: FEN.l2_start, text: "Quick recap — play through to Bd7.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Rook lift.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Reroute.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Outpost.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Reposition.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
 
-    // ═══════════════════════════════════════════
-    // ACT 1: RECAP (12.Bd3 through 14.fxe5)
-    // ═══════════════════════════════════════════
+    // ACT 2: TEACH
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4 — White trades the bishop for your powerful knight. They can't tolerate the outpost any longer.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "Recapture with the rook — Rxc4. The rook is active on the 4th rank and controls the c-file." },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Recapture with your rook.", hint: "Rxc4.", correctFeedback: "Rxc4! Your rook is active.", wrongFeedback: "Play Rxc4.", highlightSquares: ['c8', 'c4'] },
+    { type: 'instruction', fen: FEN.l2_after_Rxc4, text: "After 14.Bxc4 Rxc4, your rook is beautifully placed. It controls the open c-file and sits on an active square." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Bd3,
-      text: "We're at 12.Bd3. Let's review and continue deeper.",
-      buttonText: "LET'S GO",
-    },
+    // ACT 3: SKIP (no punish)
 
-    // 12...Rc7
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Rc7,
-      text: "12...Rc7.",
-      autoAdvance: 800,
-    },
-
-    // 13.e5
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_e5,
-      text: "13.e5.",
-      autoAdvance: 800,
-    },
-
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_e5,
-      correctMove: 'dxe5',
-      prompt: "Your move.",
-      hint: "dxe5.",
-      correctFeedback: "dxe5.",
-      wrongFeedback: "dxe5.",
-    },
-
-    // 14.fxe5
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_fxe5,
-      text: "14.fxe5. Now it's your turn.",
-      autoAdvance: 800,
-    },
-
-    // ═══════════════════════════════════════════
-    // ACT 2: TEACH (14...Nd7 through 16.Bxc6)
-    // ═══════════════════════════════════════════
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_fxe5,
-      text: "White has an advanced pawn, but your knight needs to regroup. Bring it back to d7 to prepare Nc5 or Ne5.",
-    },
-
-    // 14...Nd7 (user regroups knight)
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_fxe5,
-      correctMove: 'Nd7',
-      prompt: "Regroup your knight.",
-      hint: "Move the knight from c6 (wherever it is) to d7.",
-      correctFeedback: "Nd7! Your knight is regrouping. From here it can jump to c5 or e5.",
-      wrongFeedback: "Move your knight to d7 to regroup.",
-      highlightSquares: ['c6', 'd7'],
-    },
-
-    // 15.Nxc6 (auto-advance — but where's c6 knight? Let me fix this)
-    // Actually in the position after Nd7, there's no piece on c6. Let me correct the sequence
-    // The user played Nc6, then Ne5... wait, after 9.Nb3, the knight IS on b3.
-    // So after Na5, the knight is on a5. No piece on c6 to take.
-    // Let me reconsider: in real play, Nxc6 means White takes a Black knight on c6.
-    // But in our position, the knight went to a5. So maybe this position has been altered.
-    // Let me use a simpler continuation without the trade.
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Nd7,
-      text: "White attacks the d7 knight, but it escapes!",
-      autoAdvance: 800,
-    },
-
-    // Alternative: 15.Nxd7 is illegal if knight isn't there. Let's say White plays Bf4 or another move
-    // Actually, looking back, after 14...Nd7 the knight moved from c6 to d7. But wait — the starting position has knight on c6 (from pi-4).
-    // Let me recalculate: after 9.Nb3, the knight is on b3, not c6. The knight on e6 becomes Be6 (not Nf6).
-    // So in the position after Na5, there IS a knight on b3! So maybe Nxd7 is what's intended.
-    // But that doesn't match. Let me simplify and teach the resulting position.
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Nd7,
-      text: "From here, your knight is well-placed to defend or counterattack. White might push with Bxc6 or trade pieces.",
-    },
-
+    // ACT 4: RECALL
+    { type: 'instruction', fen: FEN.l2_start, text: "Full recall — play all five moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Your move.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Your move.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4." },
   ],
-}
-
-// ═══════════════════════════════════════════════════════════
-// LESSON 8: Solid Continuation (Level 2 branch)
-// Teaches: 15.Be2 and the solid continuation
-// Recap: 14.fxe5
-// ═══════════════════════════════════════════════════════════
+};
 
 export const PI_LESSON_8: OpeningLesson = {
   id: 'pi-8',
-  title: 'Solid Continuation',
+  title: 'Rook Activity',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP (5 main moves)
+    { type: 'instruction', fen: FEN.l2_start, text: "Quick recap — play through to Rxc4.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Rook lift.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8.", highlightSquares: ['a8', 'c8'] },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Reroute.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5.", highlightSquares: ['c6', 'a5'] },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Outpost.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4.", highlightSquares: ['a5', 'c4'] },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Reposition.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7.", highlightSquares: ['e6', 'd7'] },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Recapture.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4.", highlightSquares: ['c8', 'c4'] },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_fxe5,
-      text: "If White plays more solidly instead of attacking immediately, Black can continue developing.",
-      buttonText: "SHOW ME",
-    },
+    // ACT 2: TEACH (2 new moves)
+    { type: 'instruction', fen: FEN.l2_b8_after_Qd3, text: "15.Qd3 — White centralizes the queen, supporting d4 and eyeing the kingside.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_b8_after_Qd3, text: "Push a5! Gain space on the queenside and restrict White's knight from expanding." },
+    { type: 'play-move', fen: FEN.l2_b8_after_Qd3, correctMove: 'a5', prompt: "Gain queenside space.", hint: "a5.", correctFeedback: "a5! You restrict White's options.", wrongFeedback: "Play a5.", highlightSquares: ['a7', 'a5'] },
+    { type: 'instruction', fen: FEN.l2_b8_after_Nd5, text: "16.Nd5 — White centralizes the knight. But this time you can trade it cleanly.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_b8_after_Nd5, text: "Nxd5! Trade knights. The c-file stays open and your rook is dominant." },
+    { type: 'play-move', fen: FEN.l2_b8_after_Nd5, correctMove: 'Nxd5', prompt: "Take the knight.", hint: "Nxd5.", correctFeedback: "Nxd5! Your rook on c4 is now king.", wrongFeedback: "Play Nxd5.", highlightSquares: ['f6', 'd5'] },
+    { type: 'instruction', fen: FEN.l2_b8_after_Nxd5, text: "After Nxd5, your rook on c4 is active and the c-file is your highway. Good position." },
 
-    // 14...Nd7
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Nd7,
-      text: "14...Nd7 — regrouping.",
-      autoAdvance: 800,
-    },
-
-    // 15.Be2 (auto-advance — White retreats bishop)
-    {
-      type: 'instruction',
-      fen: FEN.l2_alt_after_Be2,
-      text: "15.Be2 — White plays solidly, not pushing for an immediate attack.",
-      autoAdvance: 800,
-    },
-
-    // 15...Nc4 (user pushes knight to the critical square)
-    {
-      type: 'play-move',
-      fen: FEN.l2_alt_after_Be2,
-      correctMove: 'Nc4',
-      prompt: "Activate your knight to the critical square!",
-      hint: "Move your a5-knight to c4.",
-      correctFeedback: "Nc4! Your knight arrives at the perfect outpost. It's strong on c4 and will create problems for White.",
-      wrongFeedback: "Move your knight to c4 — a critical outpost.",
-      highlightSquares: ['a5', 'c4'],
-    },
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_alt_after_Nc4,
-      text: "Black has a great position with the knight on c4 putting pressure on White's pieces and pawn structure.",
-    },
-
+    // ACT 4: RECALL (all 7 moves)
+    { type: 'instruction', fen: FEN.l2_start, text: "Full recall — play all seven moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Your move.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Your move.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4." },
+    { type: 'instruction', fen: FEN.l2_b8_after_Qd3, text: "15.Qd3.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_b8_after_Qd3, correctMove: 'a5', prompt: "Your move.", hint: "a5.", correctFeedback: "a5.", wrongFeedback: "a5." },
+    { type: 'instruction', fen: FEN.l2_b8_after_Nd5, text: "16.Nd5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_b8_after_Nd5, correctMove: 'Nxd5', prompt: "Your move.", hint: "Nxd5.", correctFeedback: "Nxd5.", wrongFeedback: "Nxd5." },
   ],
-}
-
-// ═══════════════════════════════════════════════════════════
-// LESSON 9: Classical Depth (Level 2 branch)
-// Teaches: 15...Nxe5 and piece rearrangement
-// Recap: 15.Be2 Nc4
-// ═══════════════════════════════════════════════════════════
+};
 
 export const PI_CLASSICAL_2: OpeningLesson = {
   id: 'pi-classical-2',
-  title: 'Classical Depth',
+  title: 'Deep Classical',
   defaultOrientation: 'black',
   steps: [
+    // ACT 1: RECAP
+    { type: 'instruction', fen: FEN.l2_start, text: "Quick recap — play through to Rxc4.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Rook lift.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Reroute.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Outpost.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Reposition.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Recapture.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_alt_after_Nc4,
-      text: "The knight on c4 is strong. Let's go deeper into a classical continuation.",
-      buttonText: "LET'S GO",
-    },
+    // ACT 2: TEACH
+    { type: 'instruction', fen: FEN.l2_cl2_after_Qd2, text: "15.Qd2 — White connects the rooks and prepares queenside defense.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_cl2_after_Qd2, text: "Push a5! Grab queenside space and prevent White from expanding with a4." },
+    { type: 'play-move', fen: FEN.l2_cl2_after_Qd2, correctMove: 'a5', prompt: "Space.", hint: "a5.", correctFeedback: "a5! Queenside control.", wrongFeedback: "Play a5.", highlightSquares: ['a7', 'a5'] },
+    { type: 'instruction', fen: FEN.l2_cl2_after_a4, text: "16.a4 — White blocks your pawn advance, but the a4 pawn is a target.", autoAdvance: 800 },
+    { type: 'instruction', fen: FEN.l2_cl2_after_a4, text: "Rc6! Centralize the rook on the 6th rank. From c6 it can swing to the kingside or stay active on the c-file." },
+    { type: 'play-move', fen: FEN.l2_cl2_after_a4, correctMove: 'Rc6', prompt: "Centralize.", hint: "Rc6.", correctFeedback: "Rc6! Flexible rook.", wrongFeedback: "Play Rc6.", highlightSquares: ['c4', 'c6'] },
+    { type: 'instruction', fen: FEN.l2_cl2_after_Rc6, text: "After Rc6, your rook is flexible — it can support the queenside or swing to the kingside. Solid position." },
 
-    // Teach the position more fully
-    {
-      type: 'instruction',
-      fen: FEN.l2_alt_after_Nc4,
-      text: "With the knight actively placed, White might consider capturing on e5 to simplify.",
-      autoAdvance: 800,
-    },
+    // ACT 3: SKIP (no punish)
 
-    // 15...Nxe5 (if White plays Qe2 and offers trade)
-    {
-      type: 'instruction',
-      fen: FEN.l2_classical_after_Qe2,
-      text: "If White plays Qe2, you can capture the e5 pawn with your d-piece (or a knight trade).",
-      autoAdvance: 800,
-    },
-
-    {
-      type: 'play-move',
-      fen: FEN.l2_classical_after_Qe2,
-      correctMove: 'Nxe5',
-      prompt: "Capture the pawn!",
-      hint: "Your knight can take on e5.",
-      correctFeedback: "Nxe5! You've captured the advanced pawn and your pieces are well-coordinated.",
-      wrongFeedback: "Capture on e5 with your knight.",
-      highlightSquares: ['c4', 'e5'],
-    },
-
-    // 16.Qe2 might be a typo in my FEN. Let me just show the next move.
-    {
-      type: 'instruction',
-      fen: FEN.l2_classical_after_Nxe5,
-      text: "16.Qe2 — White centralizes the queen. But your knight is flexible and can move to f7 or other squares.",
-      autoAdvance: 800,
-    },
-
-    // 16...Nf7 (user regroups knight to classic position)
-    {
-      type: 'play-move',
-      fen: FEN.l2_classical_after_Qe2,
-      correctMove: 'Nf7',
-      prompt: "Regroup your knight.",
-      hint: "Move the knight to f7 to support your position.",
-      correctFeedback: "Nf7! The knight is perfectly placed on f7. Black has a solid, comfortable position.",
-      wrongFeedback: "Move your knight to f7.",
-      highlightSquares: ['e5', 'f7'],
-    },
-
+    // ACT 4: RECALL
+    { type: 'instruction', fen: FEN.l2_start, text: "Full recall — play all seven moves.", buttonText: "LET'S GO" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Your move.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Your move.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4." },
+    { type: 'instruction', fen: FEN.l2_cl2_after_Qd2, text: "15.Qd2.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_cl2_after_Qd2, correctMove: 'a5', prompt: "Your move.", hint: "a5.", correctFeedback: "a5.", wrongFeedback: "a5." },
+    { type: 'instruction', fen: FEN.l2_cl2_after_a4, text: "16.a4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_cl2_after_a4, correctMove: 'Rc6', prompt: "Your move.", hint: "Rc6.", correctFeedback: "Rc6.", wrongFeedback: "Rc6." },
   ],
-}
-
-// ═══════════════════════════════════════════════════════════
-// LEVEL 2 TEST
-// ═══════════════════════════════════════════════════════════
+};
 
 export const PI_TEST_2: OpeningLesson = {
   id: 'pi-test-2',
   title: 'Lvl 2 Test',
   defaultOrientation: 'black',
   steps: [
+    // MAIN LINE TEST
+    { type: 'instruction', fen: FEN.l2_start, text: "Level 2 test. Play the full line and handle the punish.", buttonText: "BEGIN TEST" },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: "10.f4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'Rc8', prompt: "Your move.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
+    { type: 'instruction', fen: FEN.l2_after_Kh1, text: "11.Kh1.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Kh1, correctMove: 'Na5', prompt: "Your move.", hint: "Na5.", correctFeedback: "Na5.", wrongFeedback: "Na5." },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: "12.f5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'Nc4', prompt: "Your move.", hint: "Nc4.", correctFeedback: "Nc4.", wrongFeedback: "Nc4." },
+    { type: 'instruction', fen: FEN.l2_after_Bd4, text: "13.Bd4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bd4, correctMove: 'Bd7', prompt: "Your move.", hint: "Bd7.", correctFeedback: "Bd7.", wrongFeedback: "Bd7." },
+    { type: 'instruction', fen: FEN.l2_after_Bxc4, text: "14.Bxc4.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_after_Bxc4, correctMove: 'Rxc4', prompt: "Your move.", hint: "Rxc4.", correctFeedback: "Rxc4.", wrongFeedback: "Rxc4." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_start,
-      text: "You've learned the Pirc middlegame. Now play the full Level 2 main line from start to finish. Handle variations and prove you've mastered the positions.",
-      buttonText: "BEGIN TEST",
-    },
+    // PUNISH SECTION
+    { type: 'instruction', fen: FEN.l2_start, text: "Now the punish. What if White plays 10.Nd5?" },
+    { type: 'instruction', fen: FEN.l2_punish_after_Nd5, text: "10.Nd5?", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_punish_after_Nd5, correctMove: 'Bxd5', prompt: "Punish.", hint: "Bxd5.", correctFeedback: "Bxd5!", wrongFeedback: "Bxd5." },
+    { type: 'instruction', fen: FEN.l2_punish_after_exd5, text: "11.exd5.", autoAdvance: 800 },
+    { type: 'play-move', fen: FEN.l2_punish_after_exd5, correctMove: 'Rc8', prompt: "Activate.", hint: "Rc8.", correctFeedback: "Rc8.", wrongFeedback: "Rc8." },
 
-    {
-      type: 'instruction',
-      fen: FEN.l2_start,
-      text: "Starting position: 9.Nb3 Be6. White to move. Play the main line for Black.",
-      autoAdvance: 800,
-    },
-
-    // Full playback: 10.f4
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_f4,
-      text: "10.f4.",
-      autoAdvance: 800,
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_f4,
-      correctMove: 'Rc8',
-      prompt: "Your move.",
-      hint: "Rc8.",
-      correctFeedback: "Rc8.",
-      wrongFeedback: "Rc8.",
-    },
-
-    // 11.Kh1
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Rc8,
-      text: "11.Kh1.",
-      autoAdvance: 800,
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_Kh1,
-      correctMove: 'Na5',
-      prompt: "Your move.",
-      hint: "Na5.",
-      correctFeedback: "Na5.",
-      wrongFeedback: "Na5.",
-    },
-
-    // 12.Bd3
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Na5,
-      text: "12.Bd3.",
-      autoAdvance: 800,
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_Bd3,
-      correctMove: 'Rc7',
-      prompt: "Your move.",
-      hint: "Rc7.",
-      correctFeedback: "Rc7.",
-      wrongFeedback: "Rc7.",
-    },
-
-    // 13.e5
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Rc7,
-      text: "13.e5.",
-      autoAdvance: 800,
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_e5,
-      correctMove: 'dxe5',
-      prompt: "Your move.",
-      hint: "dxe5.",
-      correctFeedback: "dxe5.",
-      wrongFeedback: "dxe5.",
-    },
-
-    // 14.fxe5
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_dxe5,
-      text: "14.fxe5.",
-      autoAdvance: 800,
-    },
-    {
-      type: 'play-move',
-      fen: FEN.l2_after_fxe5,
-      correctMove: 'Nd7',
-      prompt: "Your move.",
-      hint: "Nd7.",
-      correctFeedback: "Nd7.",
-      wrongFeedback: "Nd7.",
-    },
-
-    {
-      type: 'instruction',
-      fen: FEN.l2_after_Nd7,
-      text: "You've successfully navigated Level 2! You've learned how White continues with 10.f4, the rook activation, and how Black reggroups in the resulting positions.",
-    },
-
+    // CLOSING
+    { type: 'instruction', fen: FEN.l2_punish_after_Rc8, text: "Level 2 complete! You know the main line and the punish. The Pirc middlegame is yours.", buttonText: "DONE" },
   ],
-}
+};
 
 // ═══════════════════════════════════════════════════════════
 // EXPORT ALL LESSONS
 // ═══════════════════════════════════════════════════════════
 
-export const PIRC_LESSONS: OpeningLesson[] = [
-  PI_LESSON_1,
-  PI_LESSON_2,
-  PI_PUNISH_F4,
-  PI_PUNISH_BC4,
-  PI_LESSON_3,
-  PI_AUSTRIAN_1,
-  PI_LESSON_4,
-  PI_AUSTRIAN_2,
-  PI_CLASSICAL_1,
-  PI_TEST_1,
-  PI_LESSON_5,
-  PI_LESSON_6,
-  PI_PUNISH_ND5,
-  PI_LESSON_7,
-  PI_LESSON_8,
-  PI_CLASSICAL_2,
-  PI_TEST_2,
-]
+const PIRC_LESSONS: Record<string, OpeningLesson> = {
+  'pi-1': PI_LESSON_1,
+  'pi-2': PI_LESSON_2,
+  'pi-punish-f4': PI_PUNISH_F4,
+  'pi-punish-Bc4': PI_PUNISH_BC4,
+  'pi-3': PI_LESSON_3,
+  'pi-austrian-1': PI_AUSTRIAN_1,
+  'pi-4': PI_LESSON_4,
+  'pi-austrian-2': PI_AUSTRIAN_2,
+  'pi-classical-1': PI_CLASSICAL_1,
+  'pi-test-1': PI_TEST_1,
+  'pi-5': PI_LESSON_5,
+  'pi-6': PI_LESSON_6,
+  'pi-punish-Nd5': PI_PUNISH_ND5,
+  'pi-7': PI_LESSON_7,
+  'pi-8': PI_LESSON_8,
+  'pi-classical-2': PI_CLASSICAL_2,
+  'pi-test-2': PI_TEST_2,
+}
 
 export function getPircLesson(id: string): OpeningLesson | undefined {
-  return PIRC_LESSONS.find(l => l.id === id)
+  return PIRC_LESSONS[id]
 }

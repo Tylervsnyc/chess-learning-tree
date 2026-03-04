@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { OpeningTree, OpeningNode } from '@/data/openings/ruy-lopez'
+import { lightenColor } from '@/lib/color-utils'
 
 // ============================================================
 // CONSTANTS
@@ -137,13 +138,6 @@ function buildLinePath(x1: number, y1: number, x2: number, y2: number, r: number
     d: `M ${x1} ${startY} L ${cornerX} ${cornerY} L ${endX} ${cornerY}`,
     len: vLen + hLen,
   }
-}
-
-function lightenColor(hex: string, amt: number) {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgb(${Math.round(r + (255 - r) * amt)},${Math.round(g + (255 - g) * amt)},${Math.round(b + (255 - b) * amt)})`
 }
 
 // ============================================================
@@ -437,7 +431,30 @@ export default function OpeningTreeView({
     onLessonTap?.(nodeId)
   }, [onLessonTap])
 
-  // Center the tree on visible nodes, slide smoothly when new columns appear
+  // Arrow overlay pointing at first node of the next level after completing a test
+  const levelArrows = useMemo(() => {
+    if (!grid) return []
+    const arrows: { targetCx: number; targetCy: number; nodeSize: number; level: number; targetId: string }[] = []
+    // Find completed test nodes that unlock a next level
+    const testNodes = grid.positioned.filter(p => p.node.type === 'test' && completedSet.has(p.node.id))
+    for (const tn of testNodes) {
+      // Find the node unlocked by this test (first node of next level)
+      const nextNode = grid.positioned.find(p =>
+        p.node.unlockedBy === tn.node.id && !completedSet.has(p.node.id)
+      )
+      if (!nextNode) continue
+      const level = Math.floor(tn.node.row / 5) + 2
+      arrows.push({
+        targetCx: nextNode.cx,
+        targetCy: nextNode.cy,
+        nodeSize: grid.nodeSize,
+        level,
+        targetId: nextNode.node.id,
+      })
+    }
+    return arrows
+  }, [grid, completedSet, tree.nodes])
+
   const centerOffsetX = useMemo(() => {
     if (!grid || grid.positioned.length === 0) return 0
     const xs = grid.positioned.map(p => p.cx)
@@ -624,6 +641,39 @@ export default function OpeningTreeView({
           frameH={grid.frameH}
           excludeIds={pendingIds}
         />
+
+        {levelArrows.map((arrow, i) => (
+          <div
+            key={`level-arrow-${i}`}
+            className="tree-level-arrow absolute pointer-events-none"
+            style={{
+              left: arrow.targetCx - 20,
+              top: arrow.targetCy - arrow.nodeSize - 48,
+              width: 40,
+              zIndex: 10,
+              textAlign: 'center',
+            }}
+            onClick={() => onLessonTap?.(arrow.targetId)}
+          >
+            <div
+              style={{
+                fontSize: 9,
+                fontWeight: 800,
+                color: COLOR,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                marginBottom: 4,
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Level {arrow.level}
+            </div>
+            <svg width="20" height="18" viewBox="0 0 20 18" style={{ margin: '0 auto', display: 'block' }}>
+              <path d="M10 18 L2 6 L7 6 L7 0 L13 0 L13 6 L18 6 Z" fill={COLOR} />
+            </svg>
+          </div>
+        ))}
 
         {grid.positioned.map(pos => (
           <TreeNodeEl
