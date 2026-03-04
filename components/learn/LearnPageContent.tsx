@@ -424,11 +424,15 @@ export default function LearnPageContent() {
     router.replace('/lesson/1.1.1');
   }, [completedLessons, router]);
 
-  // "Next lesson" nudge — show after completing 1.1.1 for the first time
+  // "Next lesson" nudge — show after completing 1.1.1 via onboarding pipeline
+  // Only shows when user has ONLY completed 1.1.1 (not returning users who've progressed further)
   const [showNextLessonNudge, setShowNextLessonNudge] = useState(false);
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (!completedLessons.includes('1.1.1')) return;
+    // Only show for users who just finished 1.1.1 — not returning users
+    // If they've completed more than just 1.1.1, they don't need the nudge
+    if (completedLessons.length > 1) return;
     if (localStorage.getItem('chesspath_seen_next_nudge')) return;
     localStorage.setItem('chesspath_seen_next_nudge', '1');
     setShowNextLessonNudge(true);
