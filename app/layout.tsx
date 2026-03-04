@@ -4,7 +4,6 @@ import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
-import { InstallPrompt } from '@/components/InstallPrompt';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
@@ -64,7 +63,6 @@ export default function RootLayout({
             <main className="flex-1 min-h-0 flex flex-col max-w-3xl mx-auto w-full">
               {children}
             </main>
-            <InstallPrompt />
           </PostHogProvider>
         </Suspense>
       </body>
