@@ -46,7 +46,7 @@ export function NavHeader() {
               <div className="w-14 h-6 bg-slate-200 rounded-md animate-pulse" />
               <div className="w-12 h-6 bg-slate-200 rounded-md animate-pulse" />
             </>
-          ) : user ? (
+          ) : (
             <>
               <Link
                 href="/"
@@ -54,7 +54,7 @@ export function NavHeader() {
                   pathname === '/' ? 'shadow-[0_2px_0_0_var(--color-chess-green-shadow)]' : 'opacity-70'
                 }`}
               >
-                Path
+                {user ? 'Path' : 'Learn'}
               </Link>
               <Link
                 href="/daily-challenge"
@@ -80,62 +80,30 @@ export function NavHeader() {
                   Openings
                 </Link>
               )}
-              {profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+              {user ? (
+                profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+                  <Link
+                    href="/pricing"
+                    className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
+                    style={{
+                      background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                      color: '#000',
+                    }}
+                  >
+                    Premium
+                  </Link>
+                )
+              ) : (
                 <Link
-                  href="/pricing"
-                  className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap"
+                  href="/auth/signup"
+                  className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
                   style={{
-                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                    color: '#000',
+                    background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
                   }}
                 >
-                  Premium
+                  Sign Up
                 </Link>
               )}
-            </>
-          ) : (
-            <>
-              <Link
-                href="/"
-                className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 bg-chess-green text-white whitespace-nowrap ${
-                  pathname === '/' ? 'shadow-[0_2px_0_0_#2d7a01]' : 'opacity-70'
-                }`}
-              >
-                Learn
-              </Link>
-              <Link
-                href="/daily-challenge"
-                className={`relative px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
-                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_#0a6e99]' : 'opacity-70'
-                }`}
-                style={{
-                  background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
-                }}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
-                <span className="relative">Daily</span>
-              </Link>
-              {FEATURE_FLAGS.SHOW_OPENINGS && (
-                <Link
-                  href="/openings"
-                  className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
-                    pathname?.startsWith('/openings')
-                      ? 'bg-chess-purple text-white shadow-[0_2px_0_0_#a855f7]'
-                      : 'bg-chess-purple/70 text-white opacity-70'
-                  }`}
-                >
-                  Openings
-                </Link>
-              )}
-              <Link
-                href="/auth/signup"
-                className="px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-opacity hover:opacity-90 whitespace-nowrap"
-                style={{
-                  background: 'linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)',
-                }}
-              >
-                Sign Up
-              </Link>
             </>
           )}
         </nav>
