@@ -94,13 +94,6 @@ function parseFEN(fen: string): Record<string, string> {
 }
 
 /**
- * Get piece type from FEN character (uppercase)
- */
-function getPieceType(fenChar: string): string {
-  return fenChar.toUpperCase();
-}
-
-/**
  * Extract metadata about the first move in a puzzle solution
  * Note: In Lichess puzzles, moves[0] is opponent's last move, moves[1] is player's first move
  */
@@ -131,12 +124,12 @@ export function extractSolutionMetadata(puzzle: Puzzle): SolutionMetadata {
   const capturedPiece = pieces[to];
 
   return {
-    firstMovePiece: getPieceType(movingPiece),
+    firstMovePiece: movingPiece.toUpperCase(),
     firstMoveFrom: from,
     firstMoveTo: to,
     firstMoveFile: to[0],
     firstMoveIsCapture: !!capturedPiece,
-    capturedPiece: capturedPiece ? getPieceType(capturedPiece) : undefined,
+    capturedPiece: capturedPiece ? capturedPiece.toUpperCase() : undefined,
   };
 }
 
@@ -362,15 +355,10 @@ export function selectPuzzlesForLesson(
   }
 
   // Determine theme order for mixed practice (interleave themes)
-  let themeOrder: (string | undefined)[] = [undefined, undefined, undefined, undefined, undefined, undefined];
-
-  if (criteria.isMixedPractice && criteria.themes.length > 1) {
-    // Interleave themes: [A, B, C, A, B, C] or similar
-    themeOrder = [];
-    for (let i = 0; i < 6; i++) {
-      themeOrder.push(criteria.themes[i % criteria.themes.length]);
-    }
-  }
+  const themeOrder: (string | undefined)[] =
+    criteria.isMixedPractice && criteria.themes.length > 1
+      ? Array.from({ length: 6 }, (_, i) => criteria.themes[i % criteria.themes.length])
+      : Array(6).fill(undefined);
 
   // Selection pattern: 2 from tier1, 2 from tier2, 2 from tier3
   const selectionPattern: [Puzzle[], number][] = [

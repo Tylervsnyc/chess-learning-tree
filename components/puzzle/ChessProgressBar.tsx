@@ -571,6 +571,16 @@ function MagicStreakCelebration({ endPosition, onComplete }: MagicStreakProps) {
           })}
 
           {/* Lightning mini-bolts shooting out - 8 directions */}
+          {/* Shared gradient definition */}
+          <svg width="0" height="0" className="absolute">
+            <defs>
+              <linearGradient id="miniBoltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#FFF" />
+                <stop offset="50%" stopColor="#FFE566" />
+                <stop offset="100%" stopColor="var(--color-chess-gold)" />
+              </linearGradient>
+            </defs>
+          </svg>
           {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
             <svg
               key={`bolt-${i}`}
@@ -603,13 +613,6 @@ function MagicStreakCelebration({ endPosition, onComplete }: MagicStreakProps) {
                 points="14,0 8,14 12,14 10,36 16,12 12,12"
                 fill="url(#miniBoltGradient)"
               />
-              <defs>
-                <linearGradient id="miniBoltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#FFF" />
-                  <stop offset="50%" stopColor="#FFE566" />
-                  <stop offset="100%" stopColor="var(--color-chess-gold)" />
-                </linearGradient>
-              </defs>
             </svg>
           ))}
 
@@ -687,7 +690,7 @@ export function ChessProgressBar({
   const progress = (current / total) * 100;
   const [showMagicStreak, setShowMagicStreak] = useState(false);
   const [showStreakLoss, setShowStreakLoss] = useState(false);
-  const [lostStreakValue, setLostStreakValue] = useState(0);
+  const lostStreakValueRef = useRef(0);
   const prevStreakRef = useRef(streak);
 
   // Trigger magic streak celebration when streak hits 5
@@ -701,7 +704,7 @@ export function ChessProgressBar({
 
     // Detect streak loss (went from 2+ to 0)
     if (streak === 0 && prevStreak >= 2) {
-      setLostStreakValue(prevStreak);
+      lostStreakValueRef.current = prevStreak;
       setShowStreakLoss(true);
       setTimeout(() => setShowStreakLoss(false), 800);
     }
@@ -719,11 +722,11 @@ export function ChessProgressBar({
   const isOnFire = streak >= 4 && !hadWrongAnswer;
 
   // Generate segment markers
-  const segmentMarkers = [];
-  for (let i = 1; i < total; i++) {
+  const segmentMarkers = Array.from({ length: total - 1 }, (_, idx) => {
+    const i = idx + 1;
     const position = (i / total) * 100;
     const isCompleted = i <= current;
-    segmentMarkers.push(
+    return (
       <div
         key={i}
         className="absolute top-0 bottom-0 w-[2px] z-10"
@@ -735,7 +738,7 @@ export function ChessProgressBar({
         }}
       />
     );
-  }
+  });
 
   // Get lava fill gradient based on state
   const getFillStyle = (): React.CSSProperties => {
@@ -972,7 +975,7 @@ export function ChessProgressBar({
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
             }}
           >
-            -{lostStreakValue}
+            -{lostStreakValueRef.current}
           </div>
         </>
       )}

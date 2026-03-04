@@ -243,14 +243,6 @@ export function PuzzleResultPopup({
             transform: translateY(0);
           }
         }
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
         @keyframes legendFadeIn {
           0% {
             opacity: 0;

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   Puzzle,
   LessonSelectionCriteria,
   selectPuzzlesForLesson,
 } from '@/lib/puzzle-selector';
+import { CleanPuzzle, loadPuzzleFile, listAvailableThemes } from '@/lib/puzzle-file-loader';
 
 /**
  * Lesson Puzzles API
@@ -30,66 +29,6 @@ import {
  *   - excludeThemes: Comma-separated themes to exclude
  *   - excludeIds: Comma-separated puzzle IDs to exclude
  */
-
-interface CleanPuzzle {
-  puzzleId: string;
-  fen: string;
-  moves: string;
-  rating: number;
-  popularity: number;
-  nbPlays: number;
-  theme: string;
-  allThemes: string[];
-  gameUrl: string;
-}
-
-interface CleanPuzzleFile {
-  level: number;
-  ratingRange: string;
-  theme: string;
-  count: number;
-  puzzles: CleanPuzzle[];
-}
-
-// Cache loaded files
-const fileCache: Record<string, CleanPuzzleFile> = {};
-
-function loadPuzzleFile(level: number, theme: string): CleanPuzzleFile | null {
-  const cacheKey = `level${level}-${theme}`;
-
-  if (fileCache[cacheKey]) {
-    return fileCache[cacheKey];
-  }
-
-  const filePath = path.join(process.cwd(), 'data', 'clean-puzzles-v2', `${cacheKey}.json`);
-
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const data = JSON.parse(content) as CleanPuzzleFile;
-    fileCache[cacheKey] = data;
-    return data;
-  } catch (e) {
-    console.error(`Error loading puzzle file ${filePath}:`, e);
-    return null;
-  }
-}
-
-function listAvailableThemes(level: number): string[] {
-  const dir = path.join(process.cwd(), 'data', 'clean-puzzles-v2');
-
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const prefix = `level${level}-`;
-  const files = fs.readdirSync(dir).filter(f => f.startsWith(prefix) && f.endsWith('.json'));
-
-  return files.map(f => f.replace(prefix, '').replace('.json', ''));
-}
 
 function transformToPuzzle(p: CleanPuzzle): Puzzle {
   return {

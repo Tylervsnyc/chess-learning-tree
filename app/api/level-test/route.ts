@@ -1,55 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getLevelTestConfig, LEVEL_TEST_CONFIG } from '@/data/level-unlock-tests';
-import * as fs from 'fs';
-import * as path from 'path';
-
-interface CleanPuzzle {
-  puzzleId: string;
-  fen: string;
-  moves: string;
-  rating: number;
-  popularity: number;
-  nbPlays: number;
-  theme: string;
-  allThemes: string[];
-  gameUrl: string;
-}
-
-interface CleanPuzzleFile {
-  level: number;
-  ratingRange: string;
-  theme: string;
-  count: number;
-  puzzles: CleanPuzzle[];
-}
-
-// Cache loaded files
-const fileCache: Record<string, CleanPuzzleFile> = {};
-
-function loadPuzzleFile(level: number, theme: string): CleanPuzzleFile | null {
-  const cacheKey = `level${level}-${theme}`;
-
-  if (fileCache[cacheKey]) {
-    return fileCache[cacheKey];
-  }
-
-  const filePath = path.join(process.cwd(), 'data', 'clean-puzzles-v2', `${cacheKey}.json`);
-
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const data = JSON.parse(content) as CleanPuzzleFile;
-    fileCache[cacheKey] = data;
-    return data;
-  } catch (e) {
-    console.error(`Error loading puzzle file ${filePath}:`, e);
-    return null;
-  }
-}
+import { loadPuzzleFile } from '@/lib/puzzle-file-loader';
 
 /**
  * GET /api/level-test?transition=1-2
