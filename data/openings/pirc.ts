@@ -169,14 +169,14 @@ export const PIRC_DEFENSE: OpeningTree = {
     },
 
     // === LEVEL 2 (rows 5+) ===
-    // Extends from pi-4 after 9.Nb3 Be6, continues with 10.f4 Rc8 11.Kh1 Na5 12.Bd3 Rc7
+    // Extends from pi-4 after 9.Nb3 Be6, continues with 10.f4 Rc8 11.Kh1 Na5 12.f5 Nc4 13.Bd4 Bd7
 
-    // MAIN LINE: 10.f4, 11.Kh1, 12.Bd3
+    // MAIN LINE: 10.f4 Rc8 11.Kh1 Na5
     {
       id: 'pi-5',
-      name: 'Prophylactic Push',
-      moves: ['10.f4 Rc8', '11.Kh1'],
-      description: 'White pushes f4 to control the center. Black activates the rook. White tucks the king away prophylactically.',
+      name: 'Kingside Plans',
+      moves: ['10.f4 Rc8', '11.Kh1 Na5'],
+      description: 'White expands on the kingside. Black activates the rook and reroutes the knight toward c4.',
       type: 'main',
       row: 5,
       col: 0,
@@ -185,12 +185,12 @@ export const PIRC_DEFENSE: OpeningTree = {
       side: 'black',
     },
 
-    // MAIN LINE: 12.Bd3 and beyond
+    // MAIN LINE: 12.f5 Nc4 13.Bd4 Bd7
     {
       id: 'pi-6',
-      name: 'Center Play',
-      moves: ['12.Bd3 Rc7', '13.e5 dxe5', '14.fxe5'],
-      description: 'Consolidate with Bd3, then White pushes e5. Trading pawns, the position opens up.',
+      name: 'Knight Outpost',
+      moves: ['12.f5 Nc4', '13.Bd4 Bd7'],
+      description: 'White advances f5 aggressively. The knight lands on c4, a powerful outpost. Black repositions the bishop to d7.',
       type: 'main',
       row: 6,
       col: 0,
@@ -203,8 +203,8 @@ export const PIRC_DEFENSE: OpeningTree = {
     {
       id: 'pi-punish-Nd5',
       name: 'Punish Nd5?',
-      moves: ['10.Nd5? Bxd5', '11.exd5 Rc8!'],
-      description: 'White jumps the knight to d5 too early. Black trades it off and activates the rook with a strong position.',
+      moves: ['10.Nd5? Bxd5', '11.exd5 Rc8'],
+      description: 'White leaps to d5 too early. Black trades the knight off and activates the rook immediately.',
       type: 'punish',
       row: 5,
       col: -1,
@@ -213,12 +213,12 @@ export const PIRC_DEFENSE: OpeningTree = {
       side: 'black',
     },
 
-    // MAIN LINE: Knight continues with Na5 → Nc4
+    // MAIN LINE: 14.Bxc4 Rxc4 (queenside activity)
     {
       id: 'pi-7',
-      name: 'Knight Outpost',
-      moves: ['14...Nd7', '15.Nxc6! bxc6', '16.Bxc6 Rc6'],
-      description: 'After center trading, Black regroups the knight. White trades and invades on c6 — but Black has active rooks.',
+      name: 'The Queenside',
+      moves: ['14.Bxc4 Rxc4'],
+      description: 'White trades the bishop for the active knight on c4. Black recaptures with the rook, gaining queenside control.',
       type: 'main',
       row: 7,
       col: 0,
@@ -227,12 +227,12 @@ export const PIRC_DEFENSE: OpeningTree = {
       side: 'black',
     },
 
-    // Alternative branch: Classical development (similar to Level 1's pi-classical-1)
+    // BRANCH: Queenside pressure after Rxc4
     {
       id: 'pi-8',
-      name: 'Solid Continuation',
-      moves: ['14...Nd7', '15.Be2 Nc4'],
-      description: 'If White doesn\'t push immediately, Black has time to reroute the knight to c4 — a strong outpost.',
+      name: 'Rook Activity',
+      moves: ['15.Qd3 a5', '16.Nd5 Nxd5'],
+      description: 'White centralizes the queen. Black advances a5 to gain space, then trades knight on d5 to open the c-file.',
       type: 'branch',
       row: 6,
       col: 1,
@@ -241,12 +241,12 @@ export const PIRC_DEFENSE: OpeningTree = {
       side: 'black',
     },
 
-    // Classical variation: More solid, less forcing
+    // CLASSICAL BRANCH: Deeper queenside play
     {
       id: 'pi-classical-2',
-      name: 'Classical Depth',
-      moves: ['15...Nxe5', '16.Qe2 Nf7'],
-      description: 'Black captures on e5 and reggroups, maintaining the fianchetto structure and piece coordination.',
+      name: 'Deep Classical',
+      moves: ['15.Qd2 a5', '16.a4 Rc6'],
+      description: 'White develops the queen to d2. Black advances a5 to stop queenside expansion, then centralizes the rook.',
       type: 'branch',
       row: 7,
       col: 1,
@@ -260,7 +260,7 @@ export const PIRC_DEFENSE: OpeningTree = {
       id: 'pi-test-2',
       name: 'Lvl 2 Test',
       moves: [],
-      description: 'Master the Pirc middlegame — navigate after 10.f4 and handle all the critical positions.',
+      description: 'Master the Level 2 line — play through 10.f4 Rc8 11.Kh1 Na5 12.f5 Nc4 13.Bd4 Bd7 and the key punish.',
       type: 'test',
       row: 8,
       col: 0,

@@ -325,6 +325,17 @@ body {
   animation: treePulseRing 1.5s ease-in-out infinite;
 }
 
+/* Opening tree: level arrow bouncing down toward next node */
+@keyframes treeLevelArrowBounce {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(6px); opacity: 0.8; }
+}
+.tree-level-arrow {
+  animation: treeLevelArrowBounce 1.2s ease-in-out infinite;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
 /* Guide arrow: gentle breathing opacity */
 @keyframes guideArrowBreathe {
   0%, 100% { opacity: 0.75; }

@@ -43,22 +43,6 @@
     {
       "path": "/api/cron/report/growth",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/social-dm",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/cron/social-comments",
-      "schedule": "0 */2 * * *"
-    },
-    {
-      "path": "/api/cron/social-video",
-      "schedule": "0 12 * * *"
-    },
-    {
-      "path": "/api/cron/social-post",
-      "schedule": "0 18 * * *"
     }
   ]
 }
