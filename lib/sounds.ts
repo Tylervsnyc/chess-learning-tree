@@ -244,7 +244,7 @@ async function playCelebration(): Promise<void> {
 /**
  * Play celebration sound - warm ascending C Major chord
  */
-export function playCelebrationSound(): void {
+export function playCelebrationSound(_correctCount?: number): void {
   if (typeof window === 'undefined') return;
   playCelebration();
 }
