@@ -1,64 +1,198 @@
-import { Section, Text, Hr } from '@react-email/components';
+import { Section, Text, Hr, Img, Link } from '@react-email/components';
 import * as React from 'react';
-import { EmailLayout } from './components/EmailLayout';
+import { EmailLayout, SmallRookIcon } from './components/EmailLayout';
 import { ChessButton } from './components/ChessButton';
 import type { DripDay3Props } from '@/types/email';
 
+const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day3';
+
+const FEATURE_IMAGES = {
+  path: 'https://chesspath.app/email/chesspath.png',
+  openings: 'https://chesspath.app/email/openingtree.png',
+  dailyRook: 'https://chesspath.app/email/dailyrook.png',
+};
+
+const PILL_COLORS: Record<string, { bg: string; shadow: string }> = {
+  green: { bg: '#58CC02', shadow: '#3d8c01' },
+  purple: { bg: '#CE82FF', shadow: '#a855f7' },
+  blue: { bg: '#1CB0F6', shadow: '#0d7ec4' },
+};
+
+function PillTitle({ text, color, href }: { text: string; color: keyof typeof PILL_COLORS; href: string }) {
+  const c = PILL_COLORS[color];
+  return (
+    <table cellPadding="0" cellSpacing="0" role="presentation">
+      <tbody>
+        <tr>
+          <td
+            style={{
+              backgroundColor: c.bg,
+              borderRadius: '8px',
+              padding: '4px 12px',
+              boxShadow: `0 2px 0 0 ${c.shadow}`,
+            }}
+          >
+            <Link href={href} style={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 'bold', textDecoration: 'none' }}>
+              {text}
+            </Link>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+function FeatureCard({
+  title,
+  titleColor,
+  tagline,
+  description,
+  href,
+  cta,
+  imageUrl,
+  imageAlt,
+}: {
+  title: string;
+  titleColor: keyof typeof PILL_COLORS;
+  tagline: string;
+  description: string;
+  href: string;
+  cta: string;
+  imageUrl: string;
+  imageAlt: string;
+}) {
+  const c = PILL_COLORS[titleColor];
+  return (
+    <Section style={featureCard}>
+      <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
+        <tbody>
+          <tr>
+            <td style={textCell}>
+              <div style={{ marginBottom: '6px' }}>
+                <PillTitle text={title} color={titleColor} href={href} />
+              </div>
+              <Text style={featureTagline}>{tagline}</Text>
+              <Text style={featureDesc}>{description}</Text>
+              <table cellPadding="0" cellSpacing="0" role="presentation">
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        backgroundColor: c.bg,
+                        borderRadius: '10px',
+                        padding: '10px 20px',
+                        boxShadow: `0 3px 0 0 ${c.shadow}`,
+                      }}
+                    >
+                      <Link
+                        href={href}
+                        style={{
+                          color: '#FFFFFF',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {cta}
+                      </Link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style={imageCell}>
+              <Link href={href}>
+                <Img
+                  src={imageUrl}
+                  alt={imageAlt}
+                  width={200}
+                  height={200}
+                  style={featureImage}
+                />
+              </Link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </Section>
+  );
+}
+
 export function DripDay3LeftOff({
   displayName,
-  currentLevel,
-  currentLesson,
   appUrl,
   unsubscribeUrl,
 }: DripDay3Props) {
   return (
     <EmailLayout
-      preview={`Your pieces miss you — ${currentLesson}`}
+      preview="You made Rookie cry. Come back!"
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={heading}>Your pieces miss you</Text>
+      <Text style={heading}>You Made Rookie Cry!</Text>
 
-      <Text style={paragraph}>
-        Hey {displayName} — the rook&apos;s been pacing back and forth
-        (straight lines only, so it&apos;s not great at pacing). The bishop
-        keeps walking diagonally into walls. They need you back.
-      </Text>
+      <Section style={rookQuote}>
+        <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
+          <tbody>
+            <tr>
+              <td style={{ verticalAlign: 'top', width: '48px', paddingRight: '10px', paddingTop: '4px' }}>
+                <SmallRookIcon />
+              </td>
+              <td style={{ verticalAlign: 'top' }}>
+                <Text style={quoteText}>
+                  &ldquo;I haven&apos;t seen you in 3 days! I thought we had
+                  something special! Come back to me -- here are three ways
+                  to do it:&rdquo;
+                </Text>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Section>
 
       <Hr style={divider} />
 
-      <Section style={progressBox}>
-        <Text style={progressLabel}>Where you left off</Text>
-        <Text style={progressValue}>{currentLevel}</Text>
-        <Text style={progressLesson}>{currentLesson}</Text>
-      </Section>
+      <FeatureCard
+        title="Path"
+        titleColor="green"
+        tagline="Tactical Trainer"
+        description="Pick up right where you left off. The puzzles are still there, getting progressively harder as you level up."
+        href={`${appUrl}/learn?${UTM_BASE}&utm_content=path`}
+        cta="Continue Training"
+        imageUrl={FEATURE_IMAGES.path}
+        imageAlt="The Path -- structured chess lessons"
+      />
+
+      <FeatureCard
+        title="Openings"
+        titleColor="purple"
+        tagline="Opening Theory Trainer"
+        description="Learn real opening lines move by move. The Italian Game, Sicilian Defense, London System, and more are waiting."
+        href={`${appUrl}/openings?${UTM_BASE}&utm_content=openings`}
+        cta="Learn An Opening"
+        imageUrl={FEATURE_IMAGES.openings}
+        imageAlt="Openings -- interactive opening trainer"
+      />
+
+      <FeatureCard
+        title="Daily"
+        titleColor="blue"
+        tagline="Wordle, But For Chess"
+        description="Today&apos;s 22 puzzles are live right now. From 400 to 2300 ELO -- see how far you can climb before midnight."
+        href={`${appUrl}/daily-challenge?${UTM_BASE}&utm_content=daily_rook`}
+        cta="Play Today's"
+        imageUrl={FEATURE_IMAGES.dailyRook}
+        imageAlt="The Daily Rook -- daily puzzle challenge"
+      />
 
       <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/learn`}>
-          Rescue Your Pieces
+        <ChessButton href={`${appUrl}/learn?${UTM_BASE}&utm_content=cta`}>
+          Come Back To Rookie
         </ChessButton>
       </Section>
 
-      <Section style={tipBox}>
-        <Text style={tipText}>
-          <strong style={{ color: '#1CB0F6' }}>30 seconds.</strong> That&apos;s
-          one puzzle. Less time than reading this email.
-        </Text>
-      </Section>
-
-      <Section style={upsellBox}>
-        <Text style={upsellText}>
-          <strong>Want unlimited puzzles?</strong> Premium removes daily limits.
-        </Text>
-        <Section style={upsellButtonRow}>
-          <ChessButton href={`${appUrl}/pricing`} variant="premium">
-            See Premium Plans
-          </ChessButton>
-        </Section>
-      </Section>
-
       <Text style={signoff}>
-        Your move,<br />
-        The Chess Path Team
+        Waiting on the board for you,<br />
+        Rookie
       </Text>
     </EmailLayout>
   );
@@ -66,85 +200,72 @@ export function DripDay3LeftOff({
 
 const heading = {
   color: '#2A3C45',
-  fontSize: '26px',
+  fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 16px 0',
   textAlign: 'center' as const,
 };
 
-const paragraph = {
+const rookQuote = {
+  backgroundColor: '#EEF6FC',
+  borderRadius: '10px',
+  borderLeft: '3px solid #1CB0F6',
+  padding: '12px 14px',
+  margin: '0 0 8px 0',
+};
+
+const quoteText = {
   color: '#2A3C45',
   fontSize: '15px',
   lineHeight: '24px',
-  margin: '0 0 8px 0',
+  fontStyle: 'italic' as const,
+  margin: '0',
 };
 
 const divider = { borderColor: '#EEF6FC', margin: '20px 0' };
 
-const progressBox = {
+const featureCard = {
   backgroundColor: '#EEF6FC',
-  borderRadius: '8px',
+  borderRadius: '12px',
+  border: '1px solid #DCE8F0',
   padding: '16px',
-  margin: '0 0 8px 0',
-  textAlign: 'center' as const,
-};
-
-const progressLabel = {
-  color: '#94A3B8',
-  fontSize: '11px',
-  fontWeight: 'bold',
-  letterSpacing: '1px',
-  margin: '0 0 6px 0',
-  textTransform: 'uppercase' as const,
-};
-
-const progressValue = {
-  color: '#2A3C45',
-  fontSize: '20px',
-  fontWeight: 'bold',
-  margin: '0 0 2px 0',
-};
-
-const progressLesson = {
-  color: '#58CC02',
-  fontSize: '14px',
-  fontWeight: 'bold' as const,
-  margin: '0',
-};
-
-const buttonContainer = { margin: '24px 0', textAlign: 'center' as const };
-
-const tipBox = {
-  backgroundColor: '#EEF6FC',
-  borderRadius: '8px',
-  padding: '12px 16px',
-  margin: '0 0 20px 0',
-};
-
-const tipText = {
-  color: '#6B7C8A',
-  fontSize: '13px',
-  lineHeight: '20px',
-  margin: '0',
-};
-
-const upsellBox = {
-  backgroundColor: '#FFFBEB',
-  border: '1px solid #FDE68A',
-  borderRadius: '10px',
-  padding: '16px',
-  margin: '0 0 20px 0',
-  textAlign: 'center' as const,
-};
-
-const upsellText = {
-  color: '#2A3C45',
-  fontSize: '14px',
-  lineHeight: '20px',
   margin: '0 0 12px 0',
 };
 
-const upsellButtonRow = { textAlign: 'center' as const };
+const textCell = {
+  verticalAlign: 'top' as const,
+  paddingRight: '12px',
+  width: '50%',
+};
+
+const imageCell = {
+  verticalAlign: 'top' as const,
+  width: '50%',
+};
+
+const featureImage = {
+  borderRadius: '8px',
+  width: '100%',
+  height: 'auto',
+  display: 'block' as const,
+};
+
+const featureTagline = {
+  color: '#2A3C45',
+  fontSize: '15px',
+  fontWeight: 'bold' as const,
+  lineHeight: '20px',
+  margin: '0 0 6px 0',
+};
+
+const featureDesc = {
+  color: '#6B7C8A',
+  fontSize: '14px',
+  lineHeight: '22px',
+  margin: '0 0 14px 0',
+};
+
+const buttonContainer = { margin: '24px 0', textAlign: 'center' as const };
 
 const signoff = {
   color: '#6B7C8A',

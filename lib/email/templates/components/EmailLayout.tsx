@@ -55,6 +55,10 @@ export function MiniRookIcon() {
   return <RookIcon cellSize={5} />;
 }
 
+export function SmallRookIcon() {
+  return <RookIcon cellSize={7} />;
+}
+
 function GradientPath() {
   const letters = [
     { char: 'p', color: '#FFC800' },

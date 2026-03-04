@@ -57,28 +57,51 @@ export async function GET(request: NextRequest) {
       const dayResults = { sent: 0, skipped: 0, errors: 0 };
       results[`day_${day}`] = dayResults;
 
-      // Calculate the signup date for users who should receive this drip email today
+      // Day 3: find users inactive for 3+ days (last_activity_date)
+      // Day 5/7: still based on signup date
       const targetDate = new Date(today);
       targetDate.setDate(targetDate.getDate() - day);
       const targetDateStr = targetDate.toISOString().split('T')[0];
 
-      // Query users who signed up on the target date
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          email,
-          display_name,
-          current_position,
-          subscription_status,
-          email_preferences (
-            marketing,
-            unsubscribed_all
-          )
-        `)
-        .not('email', 'is', null)
-        .gte('created_at', `${targetDateStr}T00:00:00.000Z`)
-        .lt('created_at', `${targetDateStr}T23:59:59.999Z`);
+      let users, error;
+
+      if (day === 3) {
+        // Users whose last activity was exactly 3 days ago
+        ({ data: users, error } = await supabase
+          .from('profiles')
+          .select(`
+            id,
+            email,
+            display_name,
+            current_position,
+            subscription_status,
+            email_preferences (
+              marketing,
+              unsubscribed_all
+            )
+          `)
+          .not('email', 'is', null)
+          .gte('last_activity_date', `${targetDateStr}T00:00:00.000Z`)
+          .lt('last_activity_date', `${targetDateStr}T23:59:59.999Z`));
+      } else {
+        // Day 5/7: users who signed up on the target date
+        ({ data: users, error } = await supabase
+          .from('profiles')
+          .select(`
+            id,
+            email,
+            display_name,
+            current_position,
+            subscription_status,
+            email_preferences (
+              marketing,
+              unsubscribed_all
+            )
+          `)
+          .not('email', 'is', null)
+          .gte('created_at', `${targetDateStr}T00:00:00.000Z`)
+          .lt('created_at', `${targetDateStr}T23:59:59.999Z`));
+      }
 
       if (error) {
         console.error(`Database error for day ${day}:`, error);
@@ -121,12 +144,11 @@ export async function GET(request: NextRequest) {
 
         switch (day) {
           case 3: {
-            const { level, lesson } = parsePosition(user.current_position || '1.1.1');
-            subject = `You left off at ${lesson} - pick up where you stopped!`;
+            subject = 'You Made Rookie Cry!';
             react = DripDay3LeftOff({
               displayName,
-              currentLevel: level,
-              currentLesson: lesson,
+              currentLevel: '',
+              currentLesson: '',
               appUrl,
               unsubscribeUrl,
             });
