@@ -45,3 +45,16 @@ data/puzzles-by-rating/*/*.csv
 
 # Build scheduler logs
 logs/builds/*.log
+
+# Large media files (use LFS or host externally)
+*.MP4
+*.mp4
+*.mov
+og-*.png
+public/Gameplay/
+
+# MCP config (local tool integrations)
+.mcp.json
+
+# Supabase temp
+supabase/.temp/

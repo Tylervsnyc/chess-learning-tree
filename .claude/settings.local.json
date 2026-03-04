@@ -150,7 +150,27 @@
       "mcp__claude_ai_Linear__list_projects",
       "mcp__claude_ai_Linear__get_issue",
       "Bash(cat:*)",
-      "mcp__claude_ai_Linear__list_comments"
+      "mcp__claude_ai_Linear__list_comments",
+      "mcp__claude_ai_Slack__slack_search_public_and_private",
+      "mcp__claude_ai_Linear__list_documents",
+      "WebFetch(domain:late.dev)",
+      "WebFetch(domain:getlate.dev)",
+      "mcp__claude_ai_Linear__create_document",
+      "WebFetch(domain:docs.getlate.dev)",
+      "Bash(sed:*)",
+      "mcp__claude_ai_Slack__slack_search_public",
+      "WebFetch(domain:explorer.lichess.org)",
+      "WebFetch(domain:www.365chess.com)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:ppqty.com)",
+      "WebFetch(domain:chessklub.com)",
+      "WebFetch(domain:gambiter.com)",
+      "WebFetch(domain:chesspathways.com)",
+      "Bash(/tmp/kg-fix-summary.txt:*)",
+      "Bash(/tmp/compute_austrian_fens.mjs:*)",
+      "mcp__claude_ai_Linear__save_issue",
+      "Bash(for file in french sicilian caro-kann ruy-lopez london pirc pirc-austrian)",
+      "Bash(do echo \"=== $file-lessons.ts ===\" grep -n \"^const.*LESSONS: Record\\\\|^export const.*: OpeningLesson\\\\|id:\" /Users/tyler.schwartz/chess-learning-tree/data/openings/$file-lessons.ts)"
     ]
   }
 }
