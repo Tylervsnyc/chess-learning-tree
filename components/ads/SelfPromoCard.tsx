@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 
-export type SelfPromoVariant = 'default' | 'compact' | 'dark';
-
 interface SelfPromoCardProps {
-  variant?: SelfPromoVariant;
   onClick?: () => void;
 }
 

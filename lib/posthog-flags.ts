@@ -42,15 +42,11 @@ export type PricingVariant = 'control' | 'low' | 'high';
 export async function getPricingVariant(
   distinctId: string
 ): Promise<PricingVariant> {
-  try {
-    const value = await getFeatureFlag('pricing-experiment', distinctId);
+  const value = await getFeatureFlag('pricing-experiment', distinctId);
 
-    if (value === 'low' || value === 'high') {
-      return value;
-    }
-
-    return 'control';
-  } catch {
-    return 'control';
+  if (value === 'low' || value === 'high') {
+    return value;
   }
+
+  return 'control';
 }
