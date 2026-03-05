@@ -991,8 +991,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
           {bottomHintCard && !puzzleComplete && (
             <div
               key={`hint-${puzzleIndex}-${guidedStep?.id || semiPhase || freePlayIntro || 'play'}-${wrongAttempts}`}
-              className={`w-full rounded-b-2xl py-2.5 px-4 ${bottomHintCard.dismissable ? 'cursor-pointer active:brightness-90' : ''}`}
-              onClick={bottomHintCard.dismissable ? () => setFreePlayIntro(null) : undefined}
+              className="w-full rounded-b-2xl py-2.5 px-4"
               style={{
                 animation: 'tutSlideUp 0.3s ease-out',
                 backgroundColor: 'var(--color-chess-green)',
@@ -1007,9 +1006,6 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
                   {bottomHintCard.message}
                 </p>
               </div>
-              {bottomHintCard.dismissable && (
-                <p className="text-center text-white/70 text-xs font-semibold mt-1">Tap to continue</p>
-              )}
             </div>
           )}
         </div>
