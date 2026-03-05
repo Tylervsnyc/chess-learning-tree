@@ -54,6 +54,10 @@ export interface TutorialConfig {
   welcomeMessage: string;
   /** Skip tutorial redirect URL */
   skipUrl: string;
+  /** Per-puzzle completion messages (one per puzzle) */
+  completionMessages?: string[];
+  /** Free play intro messages keyed by puzzle index (puzzles 4-6) */
+  freePlayIntros?: Record<number, string>;
 }
 
 interface TutorialFlowProps {
@@ -249,6 +253,19 @@ export const ROOK_TUTORIAL_CONFIG: TutorialConfig = {
   welcomeTitle: "Now let's try rook checkmates!",
   welcomeMessage: "The rook is great at back-rank mates.\n\nSlide your rook to deliver checkmate!",
   skipUrl: '/lesson/1.1.2?skipTutorial=true',
+  completionMessages: [
+    "Slammed the back door shut!",
+    "That king never saw it coming!",
+    "Back rank is your playground now.",
+    "Cold, clean, ruthless. Love it.",
+    "The rook does the heavy lifting!",
+    "Six rook mates down. You're dangerous!",
+  ],
+  freePlayIntros: {
+    3: "Your turn. Find the back rank mate!",
+    4: "No hints this time. You've got this.",
+    5: "Last one. Show me what you learned.",
+  },
 };
 
 // All 64 squares for dimming
@@ -317,7 +334,7 @@ function getHintDelay(puzzleIndex: number): number {
 }
 
 // Completion messages per puzzle
-const COMPLETION_MESSAGES = [
+const DEFAULT_COMPLETION_MESSAGES = [
   "The King has nowhere to run, nowhere to hide!",
   'You did it!',
   'Hope that king had life insurance!',
@@ -327,7 +344,7 @@ const COMPLETION_MESSAGES = [
 ];
 
 // Free play intro messages (puzzles 4-6, shown before board becomes interactive)
-const FREE_PLAY_INTROS: Record<number, string> = {
+const DEFAULT_FREE_PLAY_INTROS: Record<number, string> = {
   3: "You're on your own! Tap the queen and find the checkmate.",
   4: "I believe in you. Don't think. Become.",
   5: "One last puzzle to make sure you know your stuff.",
@@ -344,6 +361,8 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
 
   const allPuzzles = customPuzzles || QUEEN_PUZZLES;
   const config = customConfig || DEFAULT_CONFIG;
+  const completionMessages = config.completionMessages || DEFAULT_COMPLETION_MESSAGES;
+  const freePlayIntros = config.freePlayIntros || DEFAULT_FREE_PLAY_INTROS;
   const guidedSteps = useMemo(() => buildGuidedSteps(allPuzzles[0], config), [allPuzzles, config]);
 
   // Track tutorial start once
@@ -443,8 +462,8 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
           setGuidedStepIndex(0); // Start guided flow
         } else if (puzzleIndex <= 2) {
           setSemiPhase('tap-piece'); // Start semi-guided
-        } else if (FREE_PLAY_INTROS[puzzleIndex]) {
-          setFreePlayIntro(FREE_PLAY_INTROS[puzzleIndex]);
+        } else if (freePlayIntros[puzzleIndex]) {
+          setFreePlayIntro(freePlayIntros[puzzleIndex]);
         }
       }, 450);
 
@@ -563,6 +582,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
       const piece = game.get(sq);
       if (piece && piece.color === game.turn()) {
         setSelectedSquare(sq);
+        if (freePlayIntro) setFreePlayIntro(null);
       }
     } else if (selectedSquare === sq) {
       setSelectedSquare(null);
@@ -581,7 +601,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
         }
       }
     }
-  }, [game, selectedSquare, tryFreeMove, puzzleComplete]);
+  }, [game, selectedSquare, tryFreeMove, puzzleComplete, freePlayIntro]);
 
   // ─── Free play drag handler ───
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -790,7 +810,6 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
   const boardInteractive = useMemo(() => {
     if (!isSetupDone) return false;
     if (puzzleComplete) return false;
-    if (freePlayIntro) return false; // wait for user to dismiss intro card
 
     if (isGuided) {
       return guidedStep?.boardInteractive ?? false;
@@ -810,7 +829,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
   const bottomHintCard = useMemo(() => {
     // Free play intro (puzzles 4-6): Rookie message before play starts
     if (freePlayIntro && !puzzleComplete) {
-      return { message: freePlayIntro, showRookie: true, dismissable: true };
+      return { message: freePlayIntro, showRookie: true };
     }
 
     // Guided (puzzle 1): show step message
@@ -956,7 +975,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
             <PuzzleResultPopup
               key={`correct-${completedCount}`}
               type="correct"
-              message={COMPLETION_MESSAGES[puzzleIndex] || 'Checkmate!'}
+              message={completionMessages[puzzleIndex] || 'Checkmate!'}
               onContinue={nextPuzzle}
               rookAnimationStyle="lightning"
               rookProgressRef={rookProgressRef}
@@ -982,7 +1001,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
             >
               <div className="max-w-lg mx-auto flex items-center gap-2.5">
                 <div className="flex-shrink-0">
-                  <BreathingRook size="xs" />
+                  <BreathingRook size="xs" animate />
                 </div>
                 <p className="font-bold text-white leading-snug" style={{ fontSize: 15 }}>
                   {bottomHintCard.message}

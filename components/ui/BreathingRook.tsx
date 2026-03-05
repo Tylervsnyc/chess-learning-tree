@@ -19,6 +19,8 @@ interface BreathingRookProps {
   size?: 'xs' | 'sm' | 'md' | 'lg';
   label?: string;
   className?: string;
+  /** Enable gentle breathing animation (slow human-like pulse) */
+  animate?: boolean;
 }
 
 // Build a lookup map: "x,y" → block
@@ -30,7 +32,7 @@ const ALL_CELLS = Array.from({ length: 30 }, (_, i) => ({
   y: Math.floor(i / 5),
 }));
 
-export function BreathingRook({ size = 'md', label, className = '' }: BreathingRookProps) {
+export function BreathingRook({ size = 'md', label, className = '', animate = false }: BreathingRookProps) {
   const blockSize = SIZE_MAP[size];
   const gap = Math.max(1, Math.round(blockSize * 0.15));
   const radius = Math.max(1, Math.round(blockSize * 0.14));
@@ -59,6 +61,9 @@ export function BreathingRook({ size = 'md', label, className = '' }: BreathingR
           const block = BLOCK_MAP.get(`${x},${y}`);
           if (!block) return <div key={`${x},${y}`} />;
 
+          // Stagger delay based on distance from center for a wave effect
+          const delay = animate ? ((x + y) * 0.18) : 0;
+
           return (
             <div
               key={`${x},${y}`}
@@ -66,6 +71,9 @@ export function BreathingRook({ size = 'md', label, className = '' }: BreathingR
                 borderRadius: radius,
                 background: getMatteBackground(block.color),
                 boxShadow: insetShadow,
+                ...(animate ? {
+                  animation: `rookColorBreathe 5s ease-in-out ${delay}s infinite`,
+                } : {}),
               }}
             />
           );
@@ -73,6 +81,14 @@ export function BreathingRook({ size = 'md', label, className = '' }: BreathingR
       </div>
       {label && (
         <span className="text-xs text-chess-text-faint animate-pulse">{label}</span>
+      )}
+      {animate && (
+        <style>{`
+          @keyframes rookColorBreathe {
+            0%, 100% { filter: brightness(0.9) saturate(0.95); }
+            50% { filter: brightness(1.5) saturate(1.2); }
+          }
+        `}</style>
       )}
     </div>
   );

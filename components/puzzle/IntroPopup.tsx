@@ -43,7 +43,7 @@ export function IntroPopup({
         <div className="px-4 py-3">
           {showRookie ? (
             <div className="flex items-start gap-4 mb-3">
-              <BreathingRook size="lg" />
+              <BreathingRook size="lg" animate />
               <div>
                 {title && (
                   <h2 className="text-base font-bold text-white mb-1">
