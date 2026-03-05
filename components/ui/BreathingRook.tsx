@@ -1,6 +1,6 @@
 'use client';
 
-import { ROOK_BLOCKS, getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
+import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
 
 /**
  * BreathingRook — The standard loading indicator for Chess Path.
@@ -21,46 +21,51 @@ interface BreathingRookProps {
   className?: string;
 }
 
+// Build a lookup map: "x,y" → block
+const BLOCK_MAP = new Map(ROOK_BLOCKS.map(b => [`${b.x},${b.y}`, b]));
+
+// All 30 cells in the 5×6 grid, row by row
+const ALL_CELLS = Array.from({ length: 30 }, (_, i) => ({
+  x: i % 5,
+  y: Math.floor(i / 5),
+}));
+
 export function BreathingRook({ size = 'md', label, className = '' }: BreathingRookProps) {
   const blockSize = SIZE_MAP[size];
   const gap = Math.max(1, Math.round(blockSize * 0.15));
-  const cols = 5;
-  const rows = 6;
-  const totalWidth = cols * blockSize + (cols - 1) * gap;
-  const totalHeight = rows * blockSize + (rows - 1) * gap;
+  const radius = Math.max(1, Math.round(blockSize * 0.14));
+  const scale = blockSize / 14;
+  const s = (v: number) => `${(v * scale).toFixed(2)}px`;
+  const insetShadow = `inset 0 ${s(0.75)} 0 rgba(0,0,0,0.15), inset 0 -${s(0.75)} 0 rgba(255,255,255,0.15)`;
+
+  // Exact pixel dimensions to prevent flex layouts from introducing sub-pixel offsets
+  const gridWidth = 5 * blockSize + 4 * gap;
+  const gridHeight = 6 * blockSize + 5 * gap;
 
   return (
-    <div className={`flex flex-col items-center gap-2 ${className}`} role="status" aria-label={label || 'Loading'}>
-      <style>{`
-        @keyframes rookBreathe {
-          0%, 100% { opacity: 0.45; filter: brightness(0.8); }
-          50% { opacity: 1; filter: brightness(1.3); }
-        }
-      `}</style>
+    <div className={`inline-flex flex-col items-center gap-2 flex-shrink-0 ${className}`} role="status" aria-label={label || 'Loading'}>
       <div
         style={{
-          position: 'relative',
-          width: totalWidth,
-          height: totalHeight,
+          display: 'grid',
+          gridTemplateColumns: `repeat(5, ${blockSize}px)`,
+          gridTemplateRows: `repeat(6, ${blockSize}px)`,
+          gap: `${gap}px`,
+          width: gridWidth,
+          height: gridHeight,
+          transform: 'translateZ(0)',
         }}
       >
-        {ROOK_BLOCKS.map((block, i) => {
-          // Wave delay based on row (bottom-up) + column offset
-          const waveDelay = (block.y * 0.18) + (block.x * 0.06);
+        {ALL_CELLS.map(({ x, y }) => {
+          const block = BLOCK_MAP.get(`${x},${y}`);
+          if (!block) return <div key={`${x},${y}`} />;
 
           return (
             <div
-              key={i}
+              key={`${x},${y}`}
               style={{
-                position: 'absolute',
-                left: block.x * (blockSize + gap),
-                top: block.y * (blockSize + gap),
-                width: blockSize,
-                height: blockSize,
-                borderRadius: Math.max(1, Math.round(blockSize * 0.14)),
+                borderRadius: radius,
                 background: getMatteBackground(block.color),
-                boxShadow: getMatteBoxShadow(block.color, blockSize / 14),
-                animation: `rookBreathe 2.4s ease-in-out ${waveDelay}s infinite`,
+                boxShadow: insetShadow,
               }}
             />
           );

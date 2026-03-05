@@ -40,27 +40,41 @@ export function IntroPopup({
         {/* Header accent bar */}
         <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
 
-        <div className="px-3 py-2">
-          {showRookie && (
-            <div className="flex items-center gap-2 mb-1.5">
-              <BreathingRook size="xs" />
-              <span className="text-xs font-bold text-chess-green uppercase tracking-wider">Rookie</span>
+        <div className="px-4 py-3">
+          {showRookie ? (
+            <div className="flex items-start gap-4 mb-3">
+              <BreathingRook size="lg" />
+              <div>
+                {title && (
+                  <h2 className="text-base font-bold text-white mb-1">
+                    {title}
+                  </h2>
+                )}
+                <div className="space-y-1">
+                  {paragraphs.map((paragraph, index) => (
+                    <p key={index} className="text-white font-bold text-lg leading-snug">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
             </div>
+          ) : (
+            <>
+              {title && (
+                <h2 className="text-base font-bold text-white mb-1">
+                  {title}
+                </h2>
+              )}
+              <div className="space-y-1 mb-2">
+                {paragraphs.map((paragraph, index) => (
+                  <p key={index} className="text-chess-text-light text-sm leading-snug">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </>
           )}
-
-          {/* Title */}
-          <h2 className="text-base font-bold text-white mb-1">
-            {title}
-          </h2>
-
-          {/* Message paragraphs */}
-          <div className="space-y-1 mb-2">
-            {paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-chess-text-light text-sm leading-snug">
-                {paragraph}
-              </p>
-            ))}
-          </div>
 
           {/* Buttons */}
           <div className={onSkip && skipText ? 'flex gap-2' : ''}>

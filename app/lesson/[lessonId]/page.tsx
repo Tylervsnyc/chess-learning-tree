@@ -945,6 +945,33 @@ export default function LessonPage() {
     }
   }, [progressLoaded, isFullyLoaded, lessonUnlocked, isAdmin, router]);
 
+  // Tutorial lessons render immediately — no auth gate needed.
+  // This prevents the flash of a blank/learn screen on Mobile Safari.
+  if (isTutorial && !lessonComplete) {
+    const isRookTutorial = lessonId === '1.1.2';
+    return (
+      <TutorialFlow
+        lessonId={lessonId}
+        puzzles={isRookTutorial ? ROOK_PUZZLES : undefined}
+        config={isRookTutorial ? ROOK_TUTORIAL_CONFIG : undefined}
+        onComplete={(correctCount) => {
+          setTutorialCorrectCount(correctCount);
+          completeLesson(lessonId, allLessonIds);
+          const { shouldPromptSignup: promptSignup } = recordLessonComplete();
+          const accuracy = Math.round((correctCount / 6) * 100);
+          LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+          window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+          setLessonComplete(true);
+          if (promptSignup) {
+            setTimeout(() => setShowCreateProfileModal(true), 2000);
+          } else if (shouldPromptPremium) {
+            setTimeout(() => setShowLimitModal(true), 2000);
+          }
+        }}
+      />
+    );
+  }
+
   // Don't render if we're about to redirect (locked lesson)
   // Also don't render while auth/profile is loading (to avoid flash)
   if (!isFullyLoaded) {
@@ -1006,67 +1033,43 @@ export default function LessonPage() {
     );
   }
 
-  // Tutorial for lesson 1.1.1
-  if (isTutorial) {
-    if (lessonComplete) {
-      return (
-        <>
-          <LessonComplete
-            correctCount={tutorialCorrectCount}
-            lessonName="Queen Checkmate: Easy"
-            lessonId={lessonId}
-            isGuest={!user}
-            getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
-            onContinue={() => {
-              window.location.href = !user
-                ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
-                : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
-            }}
-            onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
-          />
-          <CreateProfileModal
-            isOpen={showCreateProfileModal}
-            onClose={() => setShowCreateProfileModal(false)}
-            lessonsCompleted={lessonsCompletedToday}
-          />
-          {user ? (
-            <LessonLimitModal
-              isOpen={showLimitModal}
-              onClose={() => setShowLimitModal(false)}
-              lessonsCompleted={lessonsCompletedToday}
-              isLoggedIn={true}
-            />
-          ) : (
-            <CreateProfileModal
-              isOpen={showLimitModal}
-              onClose={() => setShowLimitModal(false)}
-              context="lesson-limit"
-            />
-          )}
-        </>
-      );
-    }
-    const isRookTutorial = lessonId === '1.1.2';
+  // Tutorial completion screen (tutorial gameplay is rendered above, before auth gate)
+  if (isTutorial && lessonComplete) {
     return (
-      <TutorialFlow
-        lessonId={lessonId}
-        puzzles={isRookTutorial ? ROOK_PUZZLES : undefined}
-        config={isRookTutorial ? ROOK_TUTORIAL_CONFIG : undefined}
-        onComplete={(correctCount) => {
-          setTutorialCorrectCount(correctCount);
-          completeLesson(lessonId, allLessonIds);
-          const { shouldPromptSignup: promptSignup } = recordLessonComplete();
-          const accuracy = Math.round((correctCount / 6) * 100);
-          LearningEvents.lessonCompleted(lessonId, accuracy, 0);
-          window.dispatchEvent(new Event('chess-path:puzzle-complete'));
-          setLessonComplete(true);
-          if (promptSignup) {
-            setTimeout(() => setShowCreateProfileModal(true), 2000);
-          } else if (shouldPromptPremium) {
-            setTimeout(() => setShowLimitModal(true), 2000);
-          }
-        }}
-      />
+      <>
+        <LessonComplete
+          correctCount={tutorialCorrectCount}
+          lessonName="Queen Checkmate: Easy"
+          lessonId={lessonId}
+          isGuest={!user}
+          getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+          onContinue={() => {
+            window.location.href = !user
+              ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
+              : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+          }}
+          onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
+        />
+        <CreateProfileModal
+          isOpen={showCreateProfileModal}
+          onClose={() => setShowCreateProfileModal(false)}
+          lessonsCompleted={lessonsCompletedToday}
+        />
+        {user ? (
+          <LessonLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            lessonsCompleted={lessonsCompletedToday}
+            isLoggedIn={true}
+          />
+        ) : (
+          <CreateProfileModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            context="lesson-limit"
+          />
+        )}
+      </>
     );
   }
 

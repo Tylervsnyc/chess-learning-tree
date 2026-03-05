@@ -149,8 +149,8 @@ const DEFAULT_CONFIG: TutorialConfig = {
   pieceName: 'queen',
   lessonDisplayName: 'Queen Checkmate: Easy',
   analyticsKey: 'checkmate',
-  welcomeTitle: 'Welcome to Chess Path!',
-  welcomeMessage: "I'm Rookie! I'll help you learn chess.\n\nLet's jump into a puzzle!",
+  welcomeTitle: '',
+  welcomeMessage: "\"Hi, I'm Rookie. Welcome to Chess Path. I'm going to show you how to checkmate!\"",
   skipUrl: '/lesson/1.1.1?skipTutorial=true',
 };
 
@@ -285,7 +285,7 @@ function buildGuidedSteps(firstPuzzle: TutorialPuzzle, config: TutorialConfig): 
       id: 'welcome',
       title: config.welcomeTitle,
       message: config.welcomeMessage,
-      buttonText: "Let's Go!",
+      buttonText: "Let's Play!",
       useIntroPopup: true,
       boardInteractive: false,
     },
@@ -318,13 +318,20 @@ function getHintDelay(puzzleIndex: number): number {
 
 // Completion messages per puzzle
 const COMPLETION_MESSAGES = [
-  "That's checkmate!",
+  "The King has nowhere to run, nowhere to hide!",
   'You did it!',
-  'Nice find!',
+  'Hope that king had life insurance!',
   'Checkmate!',
   'Well played!',
   "Six for six! You're a natural!",
 ];
+
+// Free play intro messages (puzzles 4-6, shown before board becomes interactive)
+const FREE_PLAY_INTROS: Record<number, string> = {
+  3: "You're on your own! Tap the queen and find the checkmate.",
+  4: "I believe in you. Don't think. Become.",
+  5: "One last puzzle to make sure you know your stuff.",
+};
 
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
@@ -386,6 +393,9 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
   const hintTimerRef = useRef<NodeJS.Timeout | null>(null);
   const rookProgressRef = useRef<RookProgressAnimationRef>(null);
 
+  // Free play intro card (puzzles 4-6)
+  const [freePlayIntro, setFreePlayIntro] = useState<string | null>(null);
+
   const activePuzzle = allPuzzles[puzzleIndex];
   const isGuided = puzzleIndex === 0;
   const isSemiGuided = puzzleIndex === 1 || puzzleIndex === 2;
@@ -409,6 +419,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
     setIsSetupDone(false);
     setShowCheckmateHighlights(false);
     setSemiPhase(null);
+    setFreePlayIntro(null);
     solvedRef.current = false;
     advancingRef.current = false;
     setGuidedStepIndex(-1);
@@ -432,8 +443,9 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
           setGuidedStepIndex(0); // Start guided flow
         } else if (puzzleIndex <= 2) {
           setSemiPhase('tap-piece'); // Start semi-guided
+        } else if (FREE_PLAY_INTROS[puzzleIndex]) {
+          setFreePlayIntro(FREE_PLAY_INTROS[puzzleIndex]);
         }
-        // Puzzles 3-5: free play, no prompts
       }, 450);
 
       return () => clearTimeout(t2);
@@ -585,8 +597,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
     if (guidedStep.id === 'tap-piece') {
       if (sq === activePuzzle.pieceSquare) {
         setSelectedSquare(sq);
-        // Show moves briefly, then advance to tap-mate with checkmate highlighted
-        setTimeout(() => setGuidedStepIndex(prev => prev + 1), 1000);
+        setGuidedStepIndex(prev => prev + 1);
       }
       return;
     }
@@ -668,12 +679,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
 
-    // Layer 1: Yellow last-move highlights
-    const isOverlay = isGuided ? (guidedStep?.useIntroPopup || false) : false;
-    if (!isOverlay && isSetupDone && !puzzleComplete) {
-      styles[activePuzzle.setupFrom] = { backgroundColor: 'rgba(255, 170, 0, 0.5)' };
-      styles[activePuzzle.setupTo] = { backgroundColor: 'rgba(255, 170, 0, 0.6)' };
-    }
+    // Layer 1: No last-move highlights in tutorial — they're distracting for new players
 
     // Layer 2: Dim board except target (guided mode only)
     if (isGuided && guidedStep?.dimExcept) {
@@ -705,7 +711,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
 
         styles[targetSq] = {
           ...styles[targetSq],
-          background: move.captured
+          backgroundImage: move.captured
             ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
             : 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 25%, transparent 25%)',
         };
@@ -784,13 +790,14 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
   const boardInteractive = useMemo(() => {
     if (!isSetupDone) return false;
     if (puzzleComplete) return false;
+    if (freePlayIntro) return false; // wait for user to dismiss intro card
 
     if (isGuided) {
       return guidedStep?.boardInteractive ?? false;
     }
 
     return true; // semi-guided + free play always interactive after setup
-  }, [isSetupDone, puzzleComplete, isGuided, guidedStep]);
+  }, [isSetupDone, puzzleComplete, isGuided, guidedStep, freePlayIntro]);
 
   // ─── Click handler routing ───
   const onSquareClick = isGuided
@@ -801,6 +808,11 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
 
   // ─── Bottom hint card ───
   const bottomHintCard = useMemo(() => {
+    // Free play intro (puzzles 4-6): Rookie message before play starts
+    if (freePlayIntro && !puzzleComplete) {
+      return { message: freePlayIntro, showRookie: true, dismissable: true };
+    }
+
     // Guided (puzzle 1): show step message
     if (isGuided && guidedStep && !guidedStep.useIntroPopup && !puzzleComplete) {
       return { message: guidedStep.message };
@@ -823,7 +835,7 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
     }
 
     return null;
-  }, [isGuided, isSemiGuided, guidedStep, semiPhase, puzzleComplete, hintShown, isSetupDone, puzzleIndex, config]);
+  }, [isGuided, isSemiGuided, guidedStep, semiPhase, puzzleComplete, hintShown, isSetupDone, puzzleIndex, config, freePlayIntro]);
 
   // ─── Blue arrow showing the checkmate move ───
   const boardArrows = useMemo(() => {
@@ -959,8 +971,9 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
           {/* Bottom hint card — green message bar */}
           {bottomHintCard && !puzzleComplete && (
             <div
-              key={`hint-${puzzleIndex}-${guidedStep?.id || semiPhase || 'play'}-${wrongAttempts}`}
-              className="w-full rounded-b-2xl py-2.5 px-4"
+              key={`hint-${puzzleIndex}-${guidedStep?.id || semiPhase || freePlayIntro || 'play'}-${wrongAttempts}`}
+              className={`w-full rounded-b-2xl py-2.5 px-4 ${bottomHintCard.dismissable ? 'cursor-pointer active:brightness-90' : ''}`}
+              onClick={bottomHintCard.dismissable ? () => setFreePlayIntro(null) : undefined}
               style={{
                 animation: 'tutSlideUp 0.3s ease-out',
                 backgroundColor: 'var(--color-chess-green)',
@@ -975,6 +988,9 @@ export function TutorialFlow({ onComplete, lessonId, puzzles: customPuzzles, con
                   {bottomHintCard.message}
                 </p>
               </div>
+              {bottomHintCard.dismissable && (
+                <p className="text-center text-white/70 text-xs font-semibold mt-1">Tap to continue</p>
+              )}
             </div>
           )}
         </div>
