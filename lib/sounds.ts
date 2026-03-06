@@ -275,6 +275,75 @@ export async function playCaptureSound(): Promise<void> {
 /**
  * Haptic feedback for correct answer - single short vibration
  */
+// Pre-cached buffers for instant button click playback
+let clickNoiseBuffer: AudioBuffer | null = null;
+let clickReverbBuffer: AudioBuffer | null = null;
+
+function ensureClickBuffers(ctx: AudioContext) {
+  if (!clickNoiseBuffer) {
+    const len = Math.floor(ctx.sampleRate * 0.01);
+    clickNoiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = clickNoiseBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  }
+  if (!clickReverbBuffer) {
+    const reverbLen = Math.floor(ctx.sampleRate * 0.5);
+    clickReverbBuffer = ctx.createBuffer(2, reverbLen, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const rd = clickReverbBuffer.getChannelData(ch);
+      for (let i = 0; i < reverbLen; i++) {
+        rd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / reverbLen, 1.8);
+      }
+    }
+  }
+}
+
+/**
+ * Play button click — tongue-click with roomy reverb.
+ * Buffers are pre-generated so playback is instant.
+ */
+export function playButtonClick(): void {
+  if (typeof window === 'undefined') return;
+
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+  if (sharedAudioContext.state === 'suspended') {
+    sharedAudioContext.resume();
+  }
+  const ctx = sharedAudioContext;
+  ensureClickBuffers(ctx);
+  const t = ctx.currentTime;
+
+  const src = ctx.createBufferSource();
+  src.buffer = clickNoiseBuffer;
+
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = 2200;
+  bp.Q.value = 4;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(4800, t);
+  lp.frequency.exponentialRampToValueAtTime(700, t + 0.03);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.4, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+
+  const convolver = ctx.createConvolver();
+  convolver.buffer = clickReverbBuffer;
+  const wet = ctx.createGain();
+  wet.gain.value = 0.35;
+  const dry = ctx.createGain();
+  dry.gain.value = 1;
+
+  src.connect(bp).connect(lp).connect(gain);
+  gain.connect(dry).connect(ctx.destination);
+  gain.connect(convolver).connect(wet).connect(ctx.destination);
+  src.start(t);
+}
+
 export function vibrateOnCorrect(): void {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
     navigator.vibrate(100);

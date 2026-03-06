@@ -3,6 +3,8 @@
 import React from 'react';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 
+type RookAnimation = 'breathe' | 'enter' | 'think' | 'celebrate';
+
 interface IntroPopupProps {
   title: string;
   message: string;
@@ -11,6 +13,7 @@ interface IntroPopupProps {
   onSkip?: () => void;
   skipText?: string;
   showRookie?: boolean;
+  rookieAnimation?: RookAnimation;
 }
 
 export function IntroPopup({
@@ -21,6 +24,7 @@ export function IntroPopup({
   onSkip,
   skipText,
   showRookie = false,
+  rookieAnimation = 'breathe',
 }: IntroPopupProps) {
   // Split message by newlines to create paragraphs
   const paragraphs = message.split('\n\n').filter(p => p.trim());
@@ -43,7 +47,7 @@ export function IntroPopup({
         <div className="px-4 py-3">
           {showRookie ? (
             <div className="flex items-start gap-4 mb-3">
-              <BreathingRook size="lg" animate />
+              <BreathingRook size="lg" animation={rookieAnimation} />
               <div>
                 {title && (
                   <h2 className="text-base font-bold text-white mb-1">

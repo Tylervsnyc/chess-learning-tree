@@ -44,13 +44,90 @@ import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
-import { LearningEvents } from '@/lib/analytics/posthog';
+import { LearningEvents, trackEvent } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { LessonComplete } from '@/components/shared/LessonComplete';
 import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import confetti from 'canvas-confetti';
+
+// ═══════════════════════════════════════════
+// GUEST CELEBRATION — full-screen "You're Ready!" before signup
+// Matches the basics tutorial DoneScreen
+// ═══════════════════════════════════════════
+function GuestCelebrationScreen({ onContinue }: { onContinue: () => void }) {
+  const [entered, setEntered] = React.useState(false);
+
+  React.useEffect(() => {
+    trackEvent('guest_celebration_viewed');
+    confetti({
+      particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
+      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
+      gravity: 1.2, ticks: 200,
+    });
+    confetti({
+      particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
+      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
+      gravity: 1.2, ticks: 200,
+    });
+    playCelebrationSound();
+    const t = setTimeout(() => setEntered(true), 200);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
+      <div
+        className="mb-6"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'scale(1)' : 'scale(0.8)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <BreathingRook size="xl" animation="celebrate" />
+      </div>
+
+      <h1
+        className="text-2xl font-black mb-2 text-center"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
+        }}
+      >
+        You&apos;re a natural!
+      </h1>
+      <p
+        className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
+        }}
+      >
+        Save your chess path so you
+        <br />
+        can pick up where you left off.
+      </p>
+
+      <button
+        onClick={onContinue}
+        className="w-full max-w-sm py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
+        style={{
+          boxShadow: '0 4px 0 var(--color-chess-green-dark)',
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
+        }}
+      >
+        Save My Path
+      </button>
+    </div>
+  );
+}
 
 interface Puzzle {
   id: string;
@@ -158,6 +235,7 @@ export default function LessonPage() {
   // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showCreateProfileModal, setShowCreateProfileModal] = useState(false);
+  const [showGuestCelebration, setShowGuestCelebration] = useState(false);
 
   // Theme help modal
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -1033,6 +1111,11 @@ export default function LessonPage() {
     );
   }
 
+  // Guest celebration screen — full-screen "You're Ready!" before signup
+  if (showGuestCelebration) {
+    return <GuestCelebrationScreen onContinue={() => { trackEvent('save_path_clicked'); window.location.href = '/auth/signup?from=lesson'; }} />;
+  }
+
   // Tutorial completion screen (tutorial gameplay is rendered above, before auth gate)
   if (isTutorial && lessonComplete) {
     return (
@@ -1044,9 +1127,11 @@ export default function LessonPage() {
           isGuest={!user}
           getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
           onContinue={() => {
-            window.location.href = !user
-              ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
-              : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+            if (!user) {
+              setShowGuestCelebration(true);
+            } else {
+              window.location.href = `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+            }
           }}
           onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
         />
@@ -1146,9 +1231,11 @@ export default function LessonPage() {
             isGuest={!user}
             getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
             onContinue={() => {
-              window.location.href = !user
-                ? `/learn?guest=true&level=${String(getLevelFromLessonId(lessonId) || 1)}`
-                : `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+              if (!user) {
+                setShowGuestCelebration(true);
+              } else {
+                window.location.href = `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+              }
             }}
             onRetry={firstAttemptCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
           />

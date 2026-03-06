@@ -10,13 +10,14 @@ import {
   playMoveSound,
   playCaptureSound,
   playErrorSound,
-  warmupAudio,
+  playCelebrationSound,
+  playButtonClick,
   vibrateOnCorrect,
   vibrateOnError,
 } from '@/lib/sounds';
+import confetti from 'canvas-confetti';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
-import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 import { TutorialEvents } from '@/lib/analytics/posthog';
 
 // ══════════════════════════════════════════════════
@@ -40,19 +41,7 @@ interface TutorialStep {
   exercises: Exercise[];
 }
 
-const TOTAL_EXERCISES = 15; // 2+2+2+2+2+2+2+1
-
 const STEPS: TutorialStep[] = [
-  {
-    id: 'board',
-    title: 'The Chessboard',
-    introText: '64 squares — light and dark.\nYou always play from the bottom!',
-    introFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-    exercises: [
-      { type: 'tap', fen: '8/8/1k6/8/8/8/8/7K w - - 0 1', targetSquare: 'e4', instruction: 'Tap the green square!' },
-      { type: 'tap', fen: '8/8/1k6/8/8/8/8/7K w - - 0 1', targetSquare: 'a8', instruction: 'Now tap this one!' },
-    ],
-  },
   {
     id: 'rook',
     title: 'The Rook',
@@ -132,6 +121,83 @@ const STEPS: TutorialStep[] = [
 ];
 
 // ══════════════════════════════════════════════════
+// DONE SCREEN
+// ══════════════════════════════════════════════════
+
+function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
+  const [entered, setEntered] = useState(false);
+
+  React.useEffect(() => {
+    // Fire confetti from both sides
+    confetti({
+      particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
+      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
+      gravity: 1.2, ticks: 200,
+    });
+    confetti({
+      particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
+      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
+      gravity: 1.2, ticks: 200,
+    });
+    playCelebrationSound();
+
+    const t = setTimeout(() => setEntered(true), 200);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
+      <div
+        className="mb-6"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'scale(1)' : 'scale(0.8)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <BreathingRook size="xl" animation="celebrate" />
+      </div>
+
+      <h1
+        className="text-2xl font-black mb-2 text-center"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
+        }}
+      >
+        You&apos;re Ready!
+      </h1>
+      <p
+        className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
+        style={{
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
+        }}
+      >
+        You know how all the pieces move.
+        <br />
+        Time to start solving puzzles!
+      </p>
+
+      <button
+        onClick={onContinue}
+        className="w-full max-w-sm py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
+        style={{
+          boxShadow: '0 4px 0 var(--color-chess-green-dark)',
+          opacity: entered ? 1 : 0,
+          transform: entered ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
+        }}
+      >
+        Start Learning
+      </button>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════
 // COMPONENT
 // ══════════════════════════════════════════════════
 
@@ -150,17 +216,14 @@ export function BasicsTutorial() {
 
   // State
   const [stepIndex, setStepIndex] = useState(0);
-  const [exerciseIndex, setExerciseIndex] = useState(-1); // -1 = showing intro
-  const [currentFen, setCurrentFen] = useState(STEPS[0].introFen);
+  const [exerciseIndex, setExerciseIndex] = useState(0);
+  const [currentFen, setCurrentFen] = useState(STEPS[0].exercises[0].fen);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [exerciseComplete, setExerciseComplete] = useState(false);
   const [tutorialDone, setTutorialDone] = useState(false);
   const [shakeBoard, setShakeBoard] = useState(false);
   const [animationDuration, setAnimationDuration] = useState(0); // 0 for transitions, 200 for user moves
   const [boardKey, setBoardKey] = useState(0); // increment to force-remount board (kills all animation)
-  const [completedCount, setCompletedCount] = useState(0);
-  const [streak, setStreak] = useState(0);
-
   // Track completed exercises for sound progression
   const completedCountRef = useRef(0);
 
@@ -187,27 +250,12 @@ export function BasicsTutorial() {
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
 
-    if (exerciseIndex === -1 && currentStep.introPieceSquare) {
-      // INTRO: highlight all reachable squares for the piece
-      try {
-        const introGame = new Chess(currentStep.introFen);
-        const moves = introGame.moves({ square: currentStep.introPieceSquare as Square, verbose: true });
-        for (const move of moves) {
-          styles[move.to] = {
-            backgroundColor: 'rgba(28, 176, 246, 0.3)',
-          };
-        }
-        // Highlight the piece itself
-        styles[currentStep.introPieceSquare] = {
-          boxShadow: 'inset 0 0 0 3px rgba(28, 176, 246, 0.7)',
-          backgroundColor: 'rgba(28, 176, 246, 0.15)',
-        };
-      } catch { /* ignore */ }
-    } else if (currentExercise && !exerciseComplete) {
-      // EXERCISE: highlight target square in green
+    if (currentExercise && !exerciseComplete) {
+      // EXERCISE: highlight target square in neon green with breathing pulse
       styles[currentExercise.targetSquare] = {
-        backgroundColor: 'rgba(88, 204, 2, 0.5)',
-        boxShadow: 'inset 0 0 0 3px #58CC02, 0 0 12px rgba(88, 204, 2, 0.4)',
+        backgroundColor: 'rgba(0, 255, 100, 0.45)',
+        boxShadow: 'inset 0 0 0 3px #00FF64, 0 0 20px rgba(0, 255, 100, 0.6), 0 0 40px rgba(0, 255, 100, 0.2)',
+        animation: 'basicsTargetPulse 1.5s ease-in-out infinite',
       };
 
       // Pulse the piece they need to move (if not selected yet)
@@ -261,6 +309,13 @@ export function BasicsTutorial() {
     return styles;
   }, [exerciseIndex, currentStep, currentExercise, selectedSquare, game, exerciseComplete]);
 
+  // ── Blue arrow from piece to target ──
+  const boardArrows = useMemo(() => {
+    if (!currentExercise || exerciseComplete) return [];
+    if (currentExercise.type === 'tap' || !currentExercise.fromSquare) return [];
+    return [{ startSquare: currentExercise.fromSquare, endSquare: currentExercise.targetSquare, color: 'rgba(28, 176, 246, 0.85)' }];
+  }, [currentExercise, exerciseComplete]);
+
   // ── Advance to next exercise/step ──
   // Force-remount the board (boardKey++) so pieces snap — no sliding animation
   const advance = useCallback(() => {
@@ -279,8 +334,8 @@ export function BasicsTutorial() {
       TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
       const nextStep = STEPS[stepIndex + 1];
       setStepIndex(stepIndex + 1);
-      setExerciseIndex(-1);
-      setCurrentFen(nextStep.introFen);
+      setExerciseIndex(0);
+      setCurrentFen(nextStep.exercises[0].fen);
       setSelectedSquare(null);
       setExerciseComplete(false);
     } else {
@@ -301,25 +356,10 @@ export function BasicsTutorial() {
     playCorrectSound(completedCountRef.current);
     vibrateOnCorrect();
     completedCountRef.current += 1;
-    setCompletedCount(c => c + 1);
-    setStreak(s => s + 1);
 
     // Auto-advance after brief pause
     setTimeout(() => advance(), 900);
   }, [advance, exerciseComplete]);
-
-  // ── Start exercises (dismiss intro) ──
-  // Force-remount board so pieces snap into exercise position
-  const handleStartExercises = useCallback(() => {
-    warmupAudio();
-    const ex = currentStep.exercises[0];
-    setExerciseIndex(0);
-    setCurrentFen(ex.fen);
-    setSelectedSquare(null);
-    setExerciseComplete(false);
-    setBoardKey(k => k + 1); // remount board = zero animation
-    setAnimationDuration(0);
-  }, [currentStep]);
 
   // ── Board shake ──
   const triggerShake = useCallback(() => {
@@ -441,74 +481,21 @@ export function BasicsTutorial() {
   // ══════════════════════════════════════════════════
 
   if (tutorialDone) {
-    return (
-      <div className="h-full bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
-        <div className="max-w-sm w-full text-center">
-          <div className="mb-6 flex justify-center">
-            <AnimatedLogo theme="dark" perpetual autoPlay size={1} iconOnly />
-          </div>
-          <h1
-            className="text-2xl font-black mb-2"
-            style={{ animation: 'basicsFadeUp 0.5s ease-out' }}
-          >
-            You&apos;re Ready!
-          </h1>
-          <p
-            className="text-chess-text-muted text-sm mb-8"
-            style={{ animation: 'basicsFadeUp 0.5s ease-out 0.1s both' }}
-          >
-            You know how all the pieces move.
-            <br />
-            Time to start solving puzzles!
-          </p>
-          <button
-            onClick={() => router.push('/')}
-            className="w-full py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] shadow-[0_4px_0_var(--color-chess-green-shadow)] bg-chess-green"
-            style={{ animation: 'basicsFadeUp 0.5s ease-out 0.2s both' }}
-          >
-            Start Learning
-          </button>
-        </div>
-
-        <style jsx>{`
-          @keyframes basicsFadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-      </div>
-    );
+    return <BasicsDoneScreen onContinue={() => {
+      try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
+      router.push('/auth/signup?from=lesson');
+    }} />;
   }
 
   // ══════════════════════════════════════════════════
   // MAIN TUTORIAL VIEW
   // ══════════════════════════════════════════════════
 
-  const boardInteractive = exerciseIndex >= 0 && !exerciseComplete;
+  const boardInteractive = !exerciseComplete;
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      {/* Header: X button + progress bar */}
-      <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
-          <button
-            onClick={() => {
-              TutorialEvents.tutorialSkipped('basics', currentStep.id, stepIndex);
-              router.push('/about');
-            }}
-            className="text-chess-text-faint hover:text-chess-text-muted"
-          >
-            ✕
-          </button>
-          <div className="flex-1 mx-4">
-            <ChessProgressBar
-              current={completedCount}
-              total={TOTAL_EXERCISES}
-              streak={streak}
-            />
-          </div>
-        </div>
-      </div>
+      {/* No header — locked onboarding, no escape */}
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center px-4 overflow-hidden">
@@ -529,10 +516,11 @@ export function BasicsTutorial() {
                 onPieceDrop: boardInteractive ? handlePieceDrop : undefined,
                 allowDragging: boardInteractive && currentExercise?.type !== 'tap',
                 squareStyles,
+                arrows: boardArrows,
                 animationDurationInMs: animationDuration,
                 draggingPieceGhostStyle: { opacity: 1 },
                 boardStyle: {
-                  borderRadius: exerciseIndex === -1 ? '8px' : '8px 8px 0 0',
+                  borderRadius: '8px 8px 0 0',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 },
                 darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
@@ -540,80 +528,50 @@ export function BasicsTutorial() {
               }}
             />
 
-            {/* Intro overlay — on top of board, matching IntroPopup design */}
-            {exerciseIndex === -1 && (
-              <div
-                key={`intro-${stepIndex}`}
-                className="absolute inset-0 z-50 flex items-center justify-center"
-                style={{ animation: 'fadeIn 0.25s ease-out' }}
-              >
-                <div className="absolute inset-0 bg-black/70 rounded-md" />
-                <div className="relative mx-4 max-w-sm w-full bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-                  <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
-                  <div className="px-3 py-2">
-                    <h2 className="text-base font-bold text-white mb-1">
-                      {currentStep.title}
-                    </h2>
-                    <p className="text-chess-text-light text-sm leading-snug mb-2 whitespace-pre-line">
-                      {currentStep.introText}
-                    </p>
-                    <div className={stepIndex === 0 ? 'flex gap-2' : ''}>
-                      {stepIndex === 0 && (
-                        <button
-                          onClick={() => {
-                            TutorialEvents.tutorialSkipped('basics', currentStep.id, stepIndex);
-                            router.push('/');
-                          }}
-                          className="flex-1 py-2.5 text-center text-sm font-semibold text-chess-text-light border border-white/20 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all"
-                        >
-                          Skip
-                        </button>
-                      )}
-                      <button
-                        onClick={handleStartExercises}
-                        className={`${stepIndex === 0 ? 'flex-[2]' : 'w-full'} py-2.5 bg-chess-green text-white font-bold rounded-xl uppercase tracking-wide shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all hover:brightness-105`}
-                      >
-                        Got It
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* No intro overlay — go straight to exercises */}
           </div>
 
-          {/* Below board: exercise instruction bar */}
-          {exerciseIndex >= 0 && currentExercise ? (
+          {/* Below board: instruction popup with Rookie */}
+          {currentExercise ? (
             <div
               key={`ex-${stepIndex}-${exerciseIndex}`}
-              className="w-full rounded-b-2xl py-3 px-4 text-center"
+              className={`w-full rounded-b-2xl py-2.5 px-4 ${exerciseComplete ? 'bg-chess-correct-bg' : 'bg-chess-correct-bg'}`}
               style={{
-                backgroundColor: exerciseComplete ? '#d4edda' : '#FFF3CD',
-                animation: 'basicsSlideUp 0.3s ease-out',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                animation: exerciseComplete ? 'basicsSlideUpBounce 0.3s ease-out' : 'basicsSlideUp 0.3s ease-out',
               }}
             >
-              <p
-                className="font-semibold text-sm"
-                style={{ color: exerciseComplete ? '#2d6a30' : '#7A6200' }}
-              >
-                {exerciseComplete ? 'Nice!' : currentExercise.instruction}
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <BreathingRook
+                    size="sm"
+                    animation={exerciseComplete
+                      ? 'celebrate'
+                      : (['breathe', 'think', 'breathe', 'think', 'breathe', 'think', 'breathe'] as const)[stepIndex % 7]
+                    }
+                  />
+                </div>
+                <p
+                  className="font-bold text-[15px] leading-tight flex-1"
+                  style={{ color: exerciseComplete ? 'var(--color-chess-green-dark)' : 'var(--color-chess-green-dark)' }}
+                >
+                  {exerciseComplete ? 'Nice!' : currentExercise.instruction}
+                </p>
+              </div>
             </div>
           ) : null}
         </div>
       </div>
 
       {/* Animations */}
-      <style>{progressBarStyles}</style>
       <style jsx>{`
         @keyframes basicsSlideUp {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: scale(0.95); }
-          100% { opacity: 1; transform: scale(1); }
+        @keyframes basicsSlideUpBounce {
+          0% { opacity: 0; transform: translateY(20px); }
+          70% { transform: translateY(-4px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
         .basics-shake {
           animation: basicsShake 0.4s ease-in-out;
@@ -624,6 +582,10 @@ export function BasicsTutorial() {
           40% { transform: translateX(6px); }
           60% { transform: translateX(-4px); }
           80% { transform: translateX(4px); }
+        }
+        @keyframes basicsTargetPulse {
+          0%, 100% { box-shadow: inset 0 0 0 3px #00FF64, 0 0 20px rgba(0, 255, 100, 0.6), 0 0 40px rgba(0, 255, 100, 0.2); }
+          50% { box-shadow: inset 0 0 0 3px #00FF64, 0 0 30px rgba(0, 255, 100, 0.9), 0 0 60px rgba(0, 255, 100, 0.4); }
         }
       `}</style>
     </div>

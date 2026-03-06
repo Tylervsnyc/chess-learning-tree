@@ -326,8 +326,8 @@ function SignupContent() {
             </div>
             {fromLesson ? (
               <>
-                <h1 className="text-2xl font-extrabold text-chess-text mb-1">You&apos;re so close!</h1>
-                <p className="text-chess-text-muted text-[15px]">Save your progress and keep learning</p>
+                <h1 className="text-2xl font-extrabold text-chess-text mb-1">Don&apos;t lose your chess path!</h1>
+                <p className="text-chess-text-muted text-[15px]">I built this just for you. Sign up so we can pick up right where you left off.</p>
               </>
             ) : (
               <>
