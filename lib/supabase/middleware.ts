@@ -2,14 +2,47 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Public paths that don't need auth checks - skip to avoid latency
-const PUBLIC_PATHS = ['/', '/about', '/pricing', '/auth/', '/api/', '/learn'];
+const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/', '/learn', '/welcome'];
 
 export async function updateSession(request: NextRequest) {
-  const supabaseResponse = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request,
   });
 
   const pathname = request.nextUrl.pathname;
+
+  // Root path: check auth and redirect accordingly
+  if (pathname === '/') {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.redirect(new URL('/welcome', request.url));
+    }
+
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    });
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      return NextResponse.redirect(new URL('/learn', request.url));
+    }
+    return NextResponse.redirect(new URL('/welcome', request.url));
+  }
 
   // Skip auth check for public paths - no need to hit Supabase
   const isPublicPath = PUBLIC_PATHS.some(path =>
