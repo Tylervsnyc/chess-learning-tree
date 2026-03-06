@@ -39,6 +39,7 @@
     "node_modules",
     "_archive",
     "_archived",
-    "scripts"
+    "scripts",
+    "data/opening-builds"
   ]
 }
