@@ -395,16 +395,17 @@ export default function LearnPageContent() {
 
   const router = useRouter();
 
-  // Direct Onboarding Pipeline: new visitors skip the learn page entirely
-  // and go straight to lesson 1.1.1. localStorage flag prevents re-redirect
-  // for returning visitors with cleared cookies.
+  // Onboarding Pipeline: new visitors go to /welcome for the 3-step onboarding
+  // (level select -> quick win puzzle -> path reveal -> lesson 1.1.1).
+  // localStorage flag prevents re-redirect for returning visitors.
   useEffect(() => {
+    if (!serverFetched) return;
     if (completedLessons.length > 0) return;
     if (typeof window === 'undefined') return;
+    if (localStorage.getItem('chess_path_onboarded')) return;
     if (localStorage.getItem('chesspath_has_visited')) return;
-    localStorage.setItem('chesspath_has_visited', '1');
-    router.replace('/lesson/1.1.1');
-  }, [completedLessons, router]);
+    router.replace('/welcome');
+  }, [completedLessons, router, serverFetched]);
 
   // "Next lesson" nudge — show after completing 1.1.1 via onboarding pipeline
   // Only shows when user has ONLY completed 1.1.1 (not returning users who've progressed further)
