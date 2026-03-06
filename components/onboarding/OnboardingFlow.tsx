@@ -676,7 +676,7 @@ export function OnboardingFlow() {
     markOnboarded();
     // Route directly to first lesson of placed level
     const firstLessonId = `${placedLevel}.1.1`;
-    router.push(`/lesson/${firstLessonId}`);
+    router.push(`/lesson/${firstLessonId}?from=onboarding`);
   }, [eloValue, levelChoice, styleChoice, unlockLevel, router, markOnboarded]);
 
   return (

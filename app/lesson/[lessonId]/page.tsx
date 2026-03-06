@@ -215,7 +215,8 @@ export default function LessonPage() {
   const searchParams = useSearchParams();
   const lessonId = params.lessonId as string;
   const skipTutorial = searchParams.get('skipTutorial') === 'true';
-  const isTutorial = (lessonId === '1.1.1' || lessonId === '1.1.2') && !skipTutorial;
+  const fromOnboarding = searchParams.get('from') === 'onboarding';
+  const isTutorial = (lessonId === '1.1.1' || lessonId === '1.1.2') && !skipTutorial && !fromOnboarding;
   const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)
@@ -1220,6 +1221,11 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
+    // Onboarding funnel: skip score popup, go straight to celebration + signup
+    if (fromOnboarding && !user) {
+      return <GuestCelebrationScreen onContinue={() => { trackEvent('save_path_clicked'); window.location.href = '/auth/signup?from=onboarding'; }} />;
+    }
+
     // LessonCompleteScreen handles both pass (score >= 4) and fail (score <= 3) states
     if (lessonPassed === false || lessonPassed === true) {
       return (
