@@ -74,8 +74,8 @@ function LandingStep({ onGetStarted, onSignIn }: { onGetStarted: () => void; onS
   const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setShowTagline(true), 900);
-    const t2 = setTimeout(() => setShowButtons(true), 1200);
+    const t1 = setTimeout(() => setShowTagline(true), 600);
+    const t2 = setTimeout(() => setShowButtons(true), 800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -85,7 +85,7 @@ function LandingStep({ onGetStarted, onSignIn }: { onGetStarted: () => void; onS
 
       {/* Rook mascot */}
       <div className="mb-6">
-        <BreathingRook size="xl" animation="enter" />
+        <BreathingRook size="xl" animation="powerOn" />
       </div>
 
       {/* Branded wordmark */}

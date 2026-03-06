@@ -22,7 +22,7 @@ const SIZE_MAP = {
   xl: 36,
 };
 
-type AnimationMode = 'breathe' | 'enter' | 'think' | 'celebrate';
+type AnimationMode = 'breathe' | 'enter' | 'think' | 'celebrate' | 'powerOn';
 
 interface BreathingRookProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -59,13 +59,21 @@ function getBlockDelay(x: number, y: number, mode: AnimationMode): number {
       return (x + y) * 0.08; // fast diagonal wave
     case 'celebrate':
       return normalized * 0.15; // quick burst from center
+    case 'powerOn': {
+      // Pseudo-random but deterministic per cell position
+      const seed = (x * 7 + y * 13) % 22;
+      return (seed / 22) * 2.5; // stagger over 2.5s so full animation ~3s
+    }
     case 'breathe':
     default:
       return (x + y) * 0.18;
   }
 }
 
-function getBlockAnimation(mode: AnimationMode, delay: number): string {
+// The block that flickers after powerOn (yellow square in the crown rim)
+const FLICKER_BLOCK = { x: 1, y: 1 };
+
+function getBlockAnimation(mode: AnimationMode, delay: number, x?: number, y?: number): string {
   switch (mode) {
     case 'enter':
       return `rookEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s both`;
@@ -73,6 +81,14 @@ function getBlockAnimation(mode: AnimationMode, delay: number): string {
       return `rookThink 1.2s ease-in-out ${delay}s infinite`;
     case 'celebrate':
       return `rookCelebrate 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s both`;
+    case 'powerOn': {
+      const isFlicker = x === FLICKER_BLOCK.x && y === FLICKER_BLOCK.y;
+      if (isFlicker) {
+        // This block powers on then flickers on/off endlessly
+        return `rookPowerOn 0.5s ease-out ${delay}s both, rookFlicker 6s step-end ${delay + 0.5}s infinite`;
+      }
+      return `rookPowerOn 0.5s ease-out ${delay}s both`;
+    }
     case 'breathe':
     default:
       return `rookColorBreathe 5s ease-in-out ${delay}s infinite`;
@@ -96,6 +112,69 @@ const ANIMATION_KEYFRAMES = `
     0% { transform: scale(1); filter: brightness(1); }
     40% { transform: scale(1.3); filter: brightness(1.8); }
     100% { transform: scale(1); filter: brightness(1.1); }
+  }
+  @keyframes rookPowerOn {
+    0% { filter: brightness(0.1) saturate(0); }
+    60% { filter: brightness(1.4) saturate(1.1); }
+    100% { filter: brightness(1) saturate(1); }
+  }
+  @keyframes rookFlicker {
+    /* Morse code for "chess": C(-·-·) H(····) E(·) S(···) S(···) */
+    /* 48 time units total, OFF = dark blink, ON = lit */
+    /* C: dash */
+    0%      { filter: brightness(0.1) saturate(0); }
+    /* C: gap */
+    6.25%   { filter: brightness(1) saturate(1); }
+    /* C: dot */
+    8.33%   { filter: brightness(0.1) saturate(0); }
+    /* C: gap */
+    10.42%  { filter: brightness(1) saturate(1); }
+    /* C: dash */
+    12.5%   { filter: brightness(0.1) saturate(0); }
+    /* C: gap */
+    18.75%  { filter: brightness(1) saturate(1); }
+    /* C: dot */
+    20.83%  { filter: brightness(0.1) saturate(0); }
+    /* letter gap */
+    22.92%  { filter: brightness(1) saturate(1); }
+    /* H: dot 1 */
+    29.17%  { filter: brightness(0.1) saturate(0); }
+    31.25%  { filter: brightness(1) saturate(1); }
+    /* H: dot 2 */
+    33.33%  { filter: brightness(0.1) saturate(0); }
+    35.42%  { filter: brightness(1) saturate(1); }
+    /* H: dot 3 */
+    37.5%   { filter: brightness(0.1) saturate(0); }
+    39.58%  { filter: brightness(1) saturate(1); }
+    /* H: dot 4 */
+    41.67%  { filter: brightness(0.1) saturate(0); }
+    /* letter gap */
+    43.75%  { filter: brightness(1) saturate(1); }
+    /* E: dot */
+    50%     { filter: brightness(0.1) saturate(0); }
+    /* letter gap */
+    52.08%  { filter: brightness(1) saturate(1); }
+    /* S: dot 1 */
+    58.33%  { filter: brightness(0.1) saturate(0); }
+    60.42%  { filter: brightness(1) saturate(1); }
+    /* S: dot 2 */
+    62.5%   { filter: brightness(0.1) saturate(0); }
+    64.58%  { filter: brightness(1) saturate(1); }
+    /* S: dot 3 */
+    66.67%  { filter: brightness(0.1) saturate(0); }
+    /* letter gap */
+    68.75%  { filter: brightness(1) saturate(1); }
+    /* S: dot 1 */
+    75%     { filter: brightness(0.1) saturate(0); }
+    77.08%  { filter: brightness(1) saturate(1); }
+    /* S: dot 2 */
+    79.17%  { filter: brightness(0.1) saturate(0); }
+    81.25%  { filter: brightness(1) saturate(1); }
+    /* S: dot 3 */
+    83.33%  { filter: brightness(0.1) saturate(0); }
+    /* word gap — stays lit until loop */
+    85.42%  { filter: brightness(1) saturate(1); }
+    100%    { filter: brightness(1) saturate(1); }
   }
 `;
 
@@ -140,8 +219,9 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                 background: getMatteBackground(block.color),
                 boxShadow: insetShadow,
                 ...(activeMode ? {
-                  animation: getBlockAnimation(activeMode, delay),
+                  animation: getBlockAnimation(activeMode, delay, x, y),
                   ...(activeMode === 'enter' ? { opacity: 0 } : {}),
+                  ...(activeMode === 'powerOn' ? { filter: 'brightness(0.1) saturate(0)' } : {}),
                 } : {}),
               }}
             />
