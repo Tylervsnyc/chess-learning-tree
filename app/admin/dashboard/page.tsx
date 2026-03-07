@@ -9,6 +9,7 @@ import HealthPanel from '@/components/admin/dashboard/HealthPanel';
 import EngagementPanel from '@/components/admin/dashboard/EngagementPanel';
 import UXReportPanel from '@/components/admin/dashboard/UXReportPanel';
 import ProductionStatus from '@/components/admin/dashboard/ProductionStatus';
+import ConversionFunnel from '@/components/admin/dashboard/ConversionFunnel';
 
 export default function AdminDashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -57,6 +58,9 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Panel 0: Morning Briefing — full width */}
           <MorningBriefing refreshKey={refreshKey} />
+
+          {/* Conversion Funnel — full width */}
+          <ConversionFunnel refreshKey={refreshKey} />
 
           {/* Panel 1: Command Center — full width */}
           <CommandCenter />
