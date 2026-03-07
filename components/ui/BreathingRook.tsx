@@ -72,6 +72,8 @@ function getBlockDelay(x: number, y: number, mode: AnimationMode): number {
 
 // The block that flickers after powerOn (yellow square in the crown rim)
 const FLICKER_BLOCK = { x: 1, y: 1 };
+// Purple block that flickers morse "path" (4th row up, right side)
+const PATH_FLICKER_BLOCK = { x: 3, y: 2 };
 
 function getBlockAnimation(mode: AnimationMode, delay: number, x?: number, y?: number): string {
   switch (mode) {
@@ -82,10 +84,14 @@ function getBlockAnimation(mode: AnimationMode, delay: number, x?: number, y?: n
     case 'celebrate':
       return `rookCelebrate 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s both`;
     case 'powerOn': {
-      const isFlicker = x === FLICKER_BLOCK.x && y === FLICKER_BLOCK.y;
-      if (isFlicker) {
-        // This block powers on then flickers on/off endlessly
-        return `rookPowerOn 0.5s ease-out ${delay}s both, rookFlicker 6s step-end ${delay + 0.5}s infinite`;
+      const isChessFlicker = x === FLICKER_BLOCK.x && y === FLICKER_BLOCK.y;
+      const isPathFlicker = x === PATH_FLICKER_BLOCK.x && y === PATH_FLICKER_BLOCK.y;
+      if (isChessFlicker) {
+        return `rookPowerOn 0.5s ease-out ${delay}s both, rookFlickerChess 6s step-end ${delay + 0.5}s infinite`;
+      }
+      if (isPathFlicker) {
+        // 3x slower (18s cycle), starts at 8s
+        return `rookPowerOn 0.5s ease-out ${delay}s both, rookFlickerPath 18s step-end 8s infinite`;
       }
       return `rookPowerOn 0.5s ease-out ${delay}s both`;
     }
@@ -118,62 +124,64 @@ const ANIMATION_KEYFRAMES = `
     60% { filter: brightness(1.4) saturate(1.1); }
     100% { filter: brightness(1) saturate(1); }
   }
-  @keyframes rookFlicker {
-    /* Morse code for "chess": C(-·-·) H(····) E(·) S(···) S(···) */
-    /* 48 time units total, OFF = dark blink, ON = lit */
-    /* C: dash */
+  @keyframes rookFlickerChess {
+    /* Morse "chess": C(-.-.) H(....) E(.) S(...) S(...) — 48 units, 6s cycle */
     0%      { filter: brightness(0.1) saturate(0); }
-    /* C: gap */
     6.25%   { filter: brightness(1) saturate(1); }
-    /* C: dot */
     8.33%   { filter: brightness(0.1) saturate(0); }
-    /* C: gap */
     10.42%  { filter: brightness(1) saturate(1); }
-    /* C: dash */
     12.5%   { filter: brightness(0.1) saturate(0); }
-    /* C: gap */
     18.75%  { filter: brightness(1) saturate(1); }
-    /* C: dot */
     20.83%  { filter: brightness(0.1) saturate(0); }
-    /* letter gap */
     22.92%  { filter: brightness(1) saturate(1); }
-    /* H: dot 1 */
     29.17%  { filter: brightness(0.1) saturate(0); }
     31.25%  { filter: brightness(1) saturate(1); }
-    /* H: dot 2 */
     33.33%  { filter: brightness(0.1) saturate(0); }
     35.42%  { filter: brightness(1) saturate(1); }
-    /* H: dot 3 */
     37.5%   { filter: brightness(0.1) saturate(0); }
     39.58%  { filter: brightness(1) saturate(1); }
-    /* H: dot 4 */
     41.67%  { filter: brightness(0.1) saturate(0); }
-    /* letter gap */
     43.75%  { filter: brightness(1) saturate(1); }
-    /* E: dot */
     50%     { filter: brightness(0.1) saturate(0); }
-    /* letter gap */
     52.08%  { filter: brightness(1) saturate(1); }
-    /* S: dot 1 */
     58.33%  { filter: brightness(0.1) saturate(0); }
     60.42%  { filter: brightness(1) saturate(1); }
-    /* S: dot 2 */
     62.5%   { filter: brightness(0.1) saturate(0); }
     64.58%  { filter: brightness(1) saturate(1); }
-    /* S: dot 3 */
     66.67%  { filter: brightness(0.1) saturate(0); }
-    /* letter gap */
     68.75%  { filter: brightness(1) saturate(1); }
-    /* S: dot 1 */
     75%     { filter: brightness(0.1) saturate(0); }
     77.08%  { filter: brightness(1) saturate(1); }
-    /* S: dot 2 */
     79.17%  { filter: brightness(0.1) saturate(0); }
     81.25%  { filter: brightness(1) saturate(1); }
-    /* S: dot 3 */
     83.33%  { filter: brightness(0.1) saturate(0); }
-    /* word gap — stays lit until loop */
     85.42%  { filter: brightness(1) saturate(1); }
+    100%    { filter: brightness(1) saturate(1); }
+  }
+  @keyframes rookFlickerPath {
+    /* Morse "path": P(.--.) A(.-) T(-) H(....) — 42 units, 18s cycle */
+    0%      { filter: brightness(0.1) saturate(0); }
+    2.381%  { filter: brightness(1) saturate(1); }
+    4.762%  { filter: brightness(0.1) saturate(0); }
+    11.905% { filter: brightness(1) saturate(1); }
+    14.286% { filter: brightness(0.1) saturate(0); }
+    21.429% { filter: brightness(1) saturate(1); }
+    23.810% { filter: brightness(0.1) saturate(0); }
+    26.190% { filter: brightness(1) saturate(1); }
+    33.333% { filter: brightness(0.1) saturate(0); }
+    35.714% { filter: brightness(1) saturate(1); }
+    38.095% { filter: brightness(0.1) saturate(0); }
+    45.238% { filter: brightness(1) saturate(1); }
+    52.381% { filter: brightness(0.1) saturate(0); }
+    59.524% { filter: brightness(1) saturate(1); }
+    66.667% { filter: brightness(0.1) saturate(0); }
+    69.048% { filter: brightness(1) saturate(1); }
+    71.429% { filter: brightness(0.1) saturate(0); }
+    73.810% { filter: brightness(1) saturate(1); }
+    76.190% { filter: brightness(0.1) saturate(0); }
+    78.571% { filter: brightness(1) saturate(1); }
+    80.952% { filter: brightness(0.1) saturate(0); }
+    83.333% { filter: brightness(1) saturate(1); }
     100%    { filter: brightness(1) saturate(1); }
   }
 `;
