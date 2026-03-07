@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Public paths that don't need auth checks - skip to avoid latency
-const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/', '/learn', '/welcome'];
+const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/cron/', '/learn', '/welcome'];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
