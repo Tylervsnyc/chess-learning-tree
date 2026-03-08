@@ -5,21 +5,9 @@ import { useRouter } from 'next/navigation';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { useLessonProgress } from '@/hooks/useProgress';
-import { trackEvent } from '@/lib/analytics/posthog';
+import posthogLib from 'posthog-js';
+import { OnboardingEvents } from '@/lib/analytics/posthog';
 import { playButtonClick } from '@/lib/sounds';
-
-// ═══════════════════════════════════════════
-// ANALYTICS
-// ═══════════════════════════════════════════
-
-const OnboardingEvents = {
-  started: () => trackEvent('onboarding_started'),
-  levelSelected: (level: string) => trackEvent('onboarding_level_selected', { level }),
-  eloEntered: (elo: number) => trackEvent('onboarding_elo_entered', { elo }),
-  styleSelected: (style: string) => trackEvent('onboarding_style_selected', { style }),
-  completed: (data: { level: string; style: string; elo?: number; placedLevel?: number }) =>
-    trackEvent('onboarding_completed', data),
-};
 
 // ═══════════════════════════════════════════
 // ELO -> LEVEL MAPPING
@@ -608,7 +596,19 @@ export function OnboardingFlow() {
   const [styleChoice, setStyleChoice] = useState('');
 
   useEffect(() => {
-    OnboardingEvents.started();
+    // PostHog SDK init runs in provider's useEffect — may not be ready yet.
+    // Poll until posthog.__loaded is true, then fire.
+    let cancelled = false;
+    const tryFire = () => {
+      if (cancelled) return;
+      if (posthogLib.__loaded) {
+        OnboardingEvents.started();
+      } else {
+        setTimeout(tryFire, 200);
+      }
+    };
+    tryFire();
+    return () => { cancelled = true; };
   }, []);
 
   const markOnboarded = useCallback(() => {

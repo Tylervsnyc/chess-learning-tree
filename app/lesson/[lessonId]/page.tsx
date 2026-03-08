@@ -1019,10 +1019,11 @@ export default function LessonPage() {
 
   useEffect(() => {
     // Only check once progress AND auth/profile are fully loaded, and skip for admins
-    if (progressLoaded && isFullyLoaded && !lessonUnlocked && !isAdmin) {
+    // Skip lock check for onboarding users — they just unlocked via the welcome funnel
+    if (progressLoaded && isFullyLoaded && !lessonUnlocked && !isAdmin && !fromOnboarding) {
       router.replace('/');
     }
-  }, [progressLoaded, isFullyLoaded, lessonUnlocked, isAdmin, router]);
+  }, [progressLoaded, isFullyLoaded, lessonUnlocked, isAdmin, fromOnboarding, router]);
 
   // Tutorial lessons render immediately — no auth gate needed.
   // This prevents the flash of a blank/learn screen on Mobile Safari.
@@ -1053,10 +1054,11 @@ export default function LessonPage() {
 
   // Don't render if we're about to redirect (locked lesson)
   // Also don't render while auth/profile is loading (to avoid flash)
-  if (!isFullyLoaded) {
+  // Onboarding users bypass these gates — they just unlocked via the welcome funnel
+  if (!isFullyLoaded && !fromOnboarding) {
     return null; // Will show loading state from permissions check below
   }
-  if (progressLoaded && !lessonUnlocked && !isAdmin) {
+  if (progressLoaded && !lessonUnlocked && !isAdmin && !fromOnboarding) {
     return null;
   }
 

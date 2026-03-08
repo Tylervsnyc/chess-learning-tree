@@ -379,6 +379,17 @@ function findSectionForLesson(lessonId: string): string | null {
 }
 
 export default function LearnPageContent() {
+  const router = useRouter();
+
+  // Gate: redirect un-onboarded users to /welcome
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('chess_path_onboarded')) {
+        router.replace('/welcome');
+      }
+    } catch {}
+  }, [router]);
+
   // Track completed lessons and unlocked levels
   // currentPosition is the source of truth for where the user is in the curriculum
   const {
@@ -392,8 +403,6 @@ export default function LearnPageContent() {
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
-
-  const router = useRouter();
 
   // "Next lesson" nudge — show after completing 1.1.1 via onboarding pipeline
   // Only shows when user has ONLY completed 1.1.1 (not returning users who've progressed further)
