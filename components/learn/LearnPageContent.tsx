@@ -381,15 +381,6 @@ function findSectionForLesson(lessonId: string): string | null {
 export default function LearnPageContent() {
   const router = useRouter();
 
-  // Gate: redirect un-onboarded users to /welcome
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem('chess_path_onboarded')) {
-        router.replace('/welcome');
-      }
-    } catch {}
-  }, [router]);
-
   // Track completed lessons and unlocked levels
   // currentPosition is the source of truth for where the user is in the curriculum
   const {
@@ -430,6 +421,16 @@ export default function LearnPageContent() {
   // Admin users have unrestricted access to all lessons and levels
   // While loading, default to false (secure default) - show loading state instead of flash
   const isAdmin = profile?.is_admin ?? false;
+
+  // Gate: redirect un-onboarded users to /welcome (but not logged-in users)
+  useEffect(() => {
+    if (userLoading) return;
+    try {
+      if (!user && !localStorage.getItem('chess_path_onboarded')) {
+        router.replace('/welcome');
+      }
+    } catch {}
+  }, [router, user, userLoading]);
 
   // SCROLL BEHAVIOR (RULES.md Section 5) - currentPosition is the SINGLE source of truth
   // Two-phase approach:
