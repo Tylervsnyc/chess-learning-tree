@@ -7,13 +7,13 @@ export function initPostHog() {
 
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-    person_profiles: 'identified_only',
+    person_profiles: 'always',
     capture_pageview: true,
     capture_pageleave: true,
-    autocapture: true, // Automatically capture clicks, form submissions, etc.
-    disable_session_recording: false,
+    autocapture: true,
+    persistence: 'localStorage+cookie',
     session_recording: {
-      maskAllInputs: true,
+      maskAllInputs: false,
       maskTextSelector: '[data-mask]',
     },
   });
@@ -113,6 +113,16 @@ export const TutorialEvents = {
     trackEvent('tutorial_completed', { tutorial }),
   tutorialSkipped: (tutorial: TutorialKey, stepId: string, stepNumber: number) =>
     trackEvent('tutorial_skipped', { tutorial, stepId, stepNumber }),
+};
+
+// Onboarding/Welcome funnel
+export const OnboardingEvents = {
+  started: () => trackEvent('onboarding_started'),
+  levelSelected: (level: string) => trackEvent('onboarding_level_selected', { level }),
+  eloEntered: (elo: number) => trackEvent('onboarding_elo_entered', { elo }),
+  styleSelected: (style: string) => trackEvent('onboarding_style_selected', { style }),
+  completed: (data: { level: string; style: string; elo?: number; placedLevel?: number }) =>
+    trackEvent('onboarding_completed', data),
 };
 
 // Share/Viral funnel

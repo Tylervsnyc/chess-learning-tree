@@ -17,11 +17,15 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-      person_profiles: 'identified_only',
+      person_profiles: 'always',
       capture_pageview: false, // We'll capture manually for better control
       capture_pageleave: true,
       autocapture: true,
-      persistence: 'localStorage',
+      persistence: 'localStorage+cookie',
+      session_recording: {
+        maskAllInputs: false,
+        maskTextSelector: '[data-mask]',
+      },
     });
   }, []);
 
