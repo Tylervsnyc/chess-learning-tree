@@ -337,103 +337,13 @@ function EloStep({ onSubmit }: { onSubmit: (elo: number) => void }) {
   );
 }
 
-// --- PLAYER STYLE ---
-const STYLE_OPTIONS = [
-  { id: 'attacker', label: 'The Attacker', desc: 'I want to crush people fast', icon: 'queen' as PieceType, color: '#FF4B4B', darkColor: '#cc3030' },
-  { id: 'strategist', label: 'The Strategist', desc: 'I want to outthink my opponents', icon: 'knight' as PieceType, color: '#1CB0F6', darkColor: '#1487c0' },
-  { id: 'trickster', label: 'The Trickster', desc: 'I want to set traps they never see coming', icon: 'star' as PieceType, color: '#CE82FF', darkColor: '#a855c7' },
-];
-
-function StyleStep({ onSelect }: { onSelect: (style: string) => void }) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [entered, setEntered] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setEntered(true), 100);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleSelect = (id: string) => {
-    playButtonClick();
-    setSelected(id);
-    setTimeout(() => onSelect(id), 300);
-  };
-
-  return (
-    <div
-      className="flex-1 flex flex-col items-center px-6"
-      style={{
-        opacity: entered ? 1 : 0,
-        transform: entered ? 'translateY(0)' : 'translateY(12px)',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      <div className="flex-1" />
-
-      <div className="mb-4">
-        <BreathingRook size="lg" animation="breathe" />
-      </div>
-
-      <h2 className="text-[20px] font-black text-chess-text leading-tight text-center mb-6">
-        What kind of player do you want to be?
-      </h2>
-
-      <div className="space-y-3 w-full max-w-sm">
-        {STYLE_OPTIONS.map((opt, i) => {
-          const isSelected = selected === opt.id;
-          return (
-            <button
-              key={opt.id}
-              onClick={() => handleSelect(opt.id)}
-              className="w-full flex items-center gap-4 text-left px-5 py-4 rounded-2xl text-white transition-all active:translate-y-[2px]"
-              style={{
-                backgroundColor: opt.color,
-                boxShadow: isSelected
-                  ? `0 2px 0 ${opt.darkColor}`
-                  : `0 4px 0 ${opt.darkColor}`,
-                transform: isSelected ? 'scale(1.02) translateY(2px)' : 'scale(1)',
-                opacity: entered ? 1 : 0,
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                transitionDelay: `${i * 80}ms`,
-              }}
-            >
-              <div className="relative shrink-0" style={{ width: 44, height: 48 }}>
-                <div
-                  className="absolute rounded-full"
-                  style={{ width: 44, height: 44, top: 4, left: 0, backgroundColor: opt.darkColor }}
-                />
-                <div
-                  className="absolute rounded-full flex items-center justify-center"
-                  style={{ width: 44, height: 44, top: 0, left: 0, backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
-                  <PieceIcon piece={opt.icon} size={26} color="white" />
-                </div>
-              </div>
-              <div>
-                <span className="font-bold text-[15px] block">{opt.label}</span>
-                <span className="text-xs block mt-0.5 text-white/75">
-                  {opt.desc}
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="flex-1" />
-    </div>
-  );
-}
-
 // --- BUILDING PATH (loading) ---
 function BuildingStep({
   level,
-  style,
   elo,
   onDone,
 }: {
   level: string;
-  style: string;
   elo?: number;
   onDone: () => void;
 }) {
@@ -445,11 +355,7 @@ function BuildingStep({
       : level === 'basics'
         ? 'Alright, you know a horse from a bishop. Good start.'
         : 'Fresh start. I love the confidence.',
-    style === 'attacker'
-      ? 'Sharpening the swords...'
-      : style === 'strategist'
-        ? 'Dusting off the grandmaster playbook...'
-        : 'Hiding pieces behind pawns...',
+    'Building your path...',
     'Your path is almost ready...',
   ];
 
@@ -582,7 +488,7 @@ function ReadyStep({
 // MAIN FLOW
 // ═══════════════════════════════════════════
 
-type Step = 'landing' | 'level' | 'elo' | 'style' | 'building' | 'ready';
+type Step = 'landing' | 'level' | 'elo' | 'building' | 'ready';
 
 export function OnboardingFlow() {
   const router = useRouter();
@@ -593,7 +499,6 @@ export function OnboardingFlow() {
   // Collected data
   const [levelChoice, setLevelChoice] = useState('');
   const [eloValue, setEloValue] = useState<number | undefined>();
-  const [styleChoice, setStyleChoice] = useState('');
 
   useEffect(() => {
     // PostHog SDK init runs in provider's useEffect — may not be ready yet.
@@ -634,10 +539,10 @@ export function OnboardingFlow() {
       OnboardingEvents.completed({ level, style: 'none' });
       router.push('/basics');
     } else if (level === 'basics') {
-      // Basics users get style → building → lesson 1.1.1
-      goToStep('style');
+      // Basics users skip straight to building → lesson 1.1.1
+      goToStep('building');
     } else {
-      // Rated users go through elo → style → building → ready
+      // Rated users go through elo → building → ready
       goToStep('elo');
     }
   }, [goToStep, markOnboarded, router]);
@@ -646,13 +551,6 @@ export function OnboardingFlow() {
     OnboardingEvents.eloEntered(elo);
     setEloValue(elo);
     try { localStorage.setItem('chess_path_elo', String(elo)); } catch {}
-    goToStep('style');
-  }, [goToStep]);
-
-  const handleStyleSelect = useCallback((style: string) => {
-    OnboardingEvents.styleSelected(style);
-    setStyleChoice(style);
-    try { localStorage.setItem('chess_path_style', style); } catch {}
     goToStep('building');
   }, [goToStep]);
 
@@ -668,7 +566,7 @@ export function OnboardingFlow() {
 
     OnboardingEvents.completed({
       level: levelChoice,
-      style: styleChoice,
+      style: 'none',
       elo: eloValue,
       placedLevel,
     });
@@ -677,7 +575,7 @@ export function OnboardingFlow() {
     // Route directly to first lesson of placed level
     const firstLessonId = `${placedLevel}.1.1`;
     router.push(`/lesson/${firstLessonId}?from=onboarding`);
-  }, [eloValue, levelChoice, styleChoice, unlockLevel, router, markOnboarded]);
+  }, [eloValue, levelChoice, unlockLevel, router, markOnboarded]);
 
   return (
     <div className="h-[100dvh] flex flex-col bg-white relative overflow-hidden">
@@ -700,11 +598,9 @@ export function OnboardingFlow() {
         )}
         {step === 'level' && <LevelStep onSelect={handleLevelSelect} />}
         {step === 'elo' && <EloStep onSubmit={handleEloSubmit} />}
-        {step === 'style' && <StyleStep onSelect={handleStyleSelect} />}
         {step === 'building' && (
           <BuildingStep
             level={levelChoice}
-            style={styleChoice}
             elo={eloValue}
             onDone={handleBuildingDone}
           />
