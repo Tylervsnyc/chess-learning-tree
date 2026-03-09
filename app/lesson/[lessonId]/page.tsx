@@ -216,7 +216,7 @@ export default function LessonPage() {
   const lessonId = params.lessonId as string;
   const skipTutorial = searchParams.get('skipTutorial') === 'true';
   const fromOnboarding = searchParams.get('from') === 'onboarding';
-  const isTutorial = (lessonId === '1.1.1' || lessonId === '1.1.2') && !skipTutorial && !fromOnboarding;
+  const isTutorial = (lessonId === '1.1.1' || lessonId === '1.1.2') && !skipTutorial;
   const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)
