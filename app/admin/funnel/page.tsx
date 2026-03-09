@@ -568,8 +568,8 @@ export default function FunnelPage() {
                   </thead>
                   <tbody>
                     {data!.topUsers.map((user, i) => {
-                      const name = user.displayName || user.email || 'Anonymous';
-                      const initial = name[0]?.toUpperCase() ?? '?';
+                      const email = user.email || 'Anonymous';
+                      const initial = email[0]?.toUpperCase() ?? '?';
                       const rankColors = ['bg-[#FFD700]', 'bg-slate-300', 'bg-amber-600'];
                       return (
                         <tr
@@ -590,15 +590,8 @@ export default function FunnelPage() {
                               <div className="w-8 h-8 bg-[#1CB0F6]/10 text-[#1CB0F6] rounded-full flex items-center justify-center text-xs font-bold shrink-0">
                                 {initial}
                               </div>
-                              <div className="min-w-0">
-                                <div className="font-medium text-[#131F24] truncate max-w-[200px]">
-                                  {user.displayName || 'No name'}
-                                </div>
-                                {user.email && (
-                                  <div className="text-[11px] text-slate-400 truncate max-w-[200px]">
-                                    {user.email}
-                                  </div>
-                                )}
+                              <div className="font-medium text-[#131F24] truncate max-w-[250px]">
+                                {email}
                               </div>
                             </div>
                           </td>
@@ -651,8 +644,8 @@ export default function FunnelPage() {
               ) : (
                 <div className="divide-y divide-slate-50">
                   {data!.churnedUsers.map((user, i) => {
-                    const name = user.displayName || user.email || 'Anonymous';
-                    const initial = name[0]?.toUpperCase() ?? '?';
+                    const email = user.email || 'Anonymous';
+                    const initial = email[0]?.toUpperCase() ?? '?';
                     const daysGone = Math.floor(
                       (Date.now() - new Date(user.lastSeen).getTime()) / 86400000
                     );
@@ -672,13 +665,8 @@ export default function FunnelPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm text-[#131F24] truncate">
-                            {user.displayName || 'No name'}
+                            {email}
                           </div>
-                          {user.email && (
-                            <div className="text-[11px] text-slate-400 truncate">
-                              {user.email}
-                            </div>
-                          )}
                         </div>
                         <div className="text-right shrink-0">
                           <span
