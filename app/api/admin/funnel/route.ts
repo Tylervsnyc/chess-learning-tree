@@ -84,19 +84,19 @@ export async function GET(request: NextRequest) {
 
     const todayQueries: QueryDef[] = STAGE_DEFS.map((s) => ({
       key: s.id,
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = '${s.event}' ${s.filter} AND ${todayDateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = '${s.event}' ${s.filter} AND ${todayDateFilter}`,
     }));
 
     // DAU for today
     todayQueries.push({
       key: 'dau',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE ${todayDateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE ${todayDateFilter}`,
     });
 
     // Total users (all time)
     todayQueries.push({
       key: 'total_users',
-      hogql: `SELECT countDistinct(distinct_id) FROM events`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events`,
     });
 
     const todayCounts = await runBatched(todayQueries);

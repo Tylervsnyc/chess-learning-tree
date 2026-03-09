@@ -113,51 +113,51 @@ function buildDailyQueries(dateStr: string): QueryDef[] {
   return [
     {
       key: 'landing_page',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = '$pageview' AND properties.$pathname = '/' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = '$pageview' AND properties.$pathname = '/' AND ${dateFilter}`,
     },
     {
       key: 'tutorial_started',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'tutorial_started' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'tutorial_started' AND ${dateFilter}`,
     },
     {
       key: 'tutorial_completed',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'tutorial_completed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'tutorial_completed' AND ${dateFilter}`,
     },
     {
       key: 'signup_page',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'signup_page_viewed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'signup_page_viewed' AND ${dateFilter}`,
     },
     {
       key: 'signed_up',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'signup_completed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'signup_completed' AND ${dateFilter}`,
     },
     {
       key: 'onboarding_completed',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'onboarding_completed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'onboarding_completed' AND ${dateFilter}`,
     },
     {
       key: 'first_lesson',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'lesson_started' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'lesson_started' AND ${dateFilter}`,
     },
     {
       key: 'lesson_completed',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'lesson_completed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'lesson_completed' AND ${dateFilter}`,
     },
     {
       key: 'daily_active_users',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE ${dateFilter}`,
     },
     {
       key: 'paywall_viewed',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'paywall_viewed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'paywall_viewed' AND ${dateFilter}`,
     },
     {
       key: 'checkout_started',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'checkout_started' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'checkout_started' AND ${dateFilter}`,
     },
     {
       key: 'premium_converted',
-      hogql: `SELECT countDistinct(distinct_id) FROM events WHERE event = 'checkout_completed' AND ${dateFilter}`,
+      hogql: `SELECT count(DISTINCT distinct_id) FROM events WHERE event = 'checkout_completed' AND ${dateFilter}`,
     },
   ];
 }
@@ -204,7 +204,7 @@ async function main() {
   // Query total users (all time) — separate batch
   await sleep(500);
   const totalResult = await queryPostHog(
-    `SELECT countDistinct(distinct_id) FROM events`
+    `SELECT count(DISTINCT distinct_id) FROM events`
   );
   const totalUsers = Number(totalResult.results[0]?.[0] ?? 0);
 
