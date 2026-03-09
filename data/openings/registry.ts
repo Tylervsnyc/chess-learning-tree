@@ -32,6 +32,8 @@ export interface OpeningConfig {
     subtitle: string
     icon: 'bishop' | 'knight' | 'pawn' | 'rook' | 'queen' | 'king' | 'lightning' | 'shield'
     hasData: boolean
+    /** Slug for the variation's own tree (if different from parent) */
+    slug?: string
   }[]
 }
 
@@ -169,7 +171,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     variations: [
       { name: 'Exchange Variation', subtitle: '4.Bxc6 — simplify early', icon: 'bishop', hasData: false },
       { name: 'Berlin Defense', subtitle: '3...Nf6 — the Berlin Wall', icon: 'knight', hasData: false },
-      { name: 'Marshall Attack', subtitle: '8...d5 — legendary gambit', icon: 'lightning', hasData: false },
+      { name: 'Marshall Attack', subtitle: '8...d5 — legendary gambit', icon: 'lightning', hasData: true, slug: 'ruy-lopez-marshall' },
     ],
   },
   {

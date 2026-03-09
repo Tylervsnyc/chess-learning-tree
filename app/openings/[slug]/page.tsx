@@ -6,6 +6,8 @@ import { Chess } from 'chess.js'
 import { getOpeningBySlug, PIECE_SVGS } from '@/data/openings/registry'
 import type { OpeningConfig } from '@/data/openings/registry'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
+import { useOpeningProgress } from '@/hooks/useOpeningProgress'
+import { TREE_LOOKUP } from '@/lib/opening-trees'
 
 /** Parse registry moves like "1.e4 e5 2.Nf3 Nc6 3.Bc4" → FEN + last move squares */
 function parseOpeningMoves(movesStr: string) {
@@ -141,6 +143,15 @@ export default function OpeningDetailPage({
   const { slug } = use(params)
   const router = useRouter()
   const opening = getOpeningBySlug(slug)
+  const { getProgress } = useOpeningProgress()
+
+  // Check if main line is complete (all lessons in the base tree finished)
+  const mainLineComplete = useMemo(() => {
+    const tree = TREE_LOOKUP[slug]
+    if (!tree) return false
+    const { completedLessons } = getProgress(slug)
+    return tree.completionOrder.every(id => completedLessons.includes(id))
+  }, [slug, getProgress])
 
   const board = useMemo(
     () => (opening ? parseOpeningMoves(opening.moves) : null),
@@ -319,17 +330,20 @@ export default function OpeningDetailPage({
             </div>
 
             <div className="space-y-3">
-              {opening.variations.map((variation, idx) => (
+              {opening.variations.map((variation, idx) => {
+                const variationReady = variation.hasData && mainLineComplete
+                const variationSlug = variation.slug || slug
+                return (
                 <button
                   key={idx}
                   onClick={() =>
-                    variation.hasData &&
-                    router.push(`/openings/${slug}/tree`)
+                    variationReady &&
+                    router.push(`/openings/${variationSlug}/tree`)
                   }
-                  disabled={!variation.hasData}
+                  disabled={!variationReady}
                   style={{
-                    opacity: variation.hasData ? 1 : 0.5,
-                    pointerEvents: variation.hasData ? 'auto' : 'none',
+                    opacity: variationReady ? 1 : 0.5,
+                    pointerEvents: variationReady ? 'auto' : 'none',
                   }}
                   className="w-full bg-white rounded-[14px] p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow disabled:hover:shadow-sm"
                 >
@@ -347,9 +361,15 @@ export default function OpeningDetailPage({
                   </div>
 
                   {/* Right: arrow or "Coming Soon" */}
-                  {variation.hasData ? (
+                  {variationReady ? (
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
                       <span className="text-gray-400 text-sm">→</span>
+                    </div>
+                  ) : variation.hasData && !mainLineComplete ? (
+                    <div className="flex-shrink-0 px-2 py-1 rounded-full bg-[#f0f4f8]">
+                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                        Complete Main Line
+                      </span>
                     </div>
                   ) : (
                     <div className="flex-shrink-0 px-2 py-1 rounded-full bg-[#f0f4f8]">
@@ -359,7 +379,8 @@ export default function OpeningDetailPage({
                     </div>
                   )}
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

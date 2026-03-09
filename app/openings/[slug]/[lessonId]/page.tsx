@@ -40,6 +40,7 @@ import { getCaroKannLesson } from '@/data/openings/caro-kann-lessons'
 import { getKingsGambitLesson } from '@/data/openings/kings-gambit-lessons'
 import { getKingsIndianLesson } from '@/data/openings/kings-indian-lessons'
 import { getScotchLesson } from '@/data/openings/scotch-lessons'
+import { getRuyLopezMarshallLesson } from '@/data/openings/ruy-lopez-marshall-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -148,6 +149,7 @@ export default function OpeningLessonPage() {
       'kings-gambit': getKingsGambitLesson,
       'kings-indian': getKingsIndianLesson,
       'scotch': getScotchLesson,
+      'ruy-lopez-marshall': getRuyLopezMarshallLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
@@ -162,6 +164,7 @@ export default function OpeningLessonPage() {
   const [showComplete, setShowComplete] = useState(false)
   const [correctCount, setCorrectCount] = useState(0)
   const [activePostMoveArrow, setActivePostMoveArrow] = useState<[Square, Square] | null>(null)
+  const [lastOpponentHighlight, setLastOpponentHighlight] = useState<string[] | null>(null)
 
   // For puzzle steps
   const [puzzleMoveIndex, setPuzzleMoveIndex] = useState(0)
@@ -219,6 +222,15 @@ export default function OpeningLessonPage() {
     }
 
     const nextStep = lesson.steps[nextIndex]
+    const currentStepNow = lesson.steps[currentStepIndex]
+
+    // Carry opponent's highlighted squares into the next play-move step
+    if (currentStepNow?.type === 'instruction' && currentStepNow.autoAdvance && currentStepNow.highlightSquares) {
+      setLastOpponentHighlight(currentStepNow.highlightSquares)
+    } else if (nextStep.type !== 'play-move') {
+      setLastOpponentHighlight(null)
+    }
+
     setCurrentStepIndex(nextIndex)
     setBoardFen(nextStep.fen)
     setBoardOrientation(getStepOrientation(nextStep))
@@ -271,6 +283,7 @@ export default function OpeningLessonPage() {
         setBoardFen(game.fen())
         setSelectedSquare(null)
         setMoveStatus('correct')
+        setLastOpponentHighlight(null)
         setCorrectCount(prev => prev + 1)
 
         // Play-through mode: if the next step is an auto-advancing opponent
@@ -279,7 +292,7 @@ export default function OpeningLessonPage() {
         const isPlayThrough = nextStep?.type === 'instruction' && nextStep.autoAdvance
 
         if (isPlayThrough) {
-          playMoveSound()
+          playCorrectSound(correctCount)
           vibrateOnCorrect()
           setTimeout(() => advanceStep(), 400)
         } else {
@@ -432,6 +445,13 @@ export default function OpeningLessonPage() {
     const styles: Record<string, React.CSSProperties> = {}
 
     if (currentStep?.type === 'play-move' && moveStatus === 'waiting') {
+      // Show opponent's last move highlights carried from auto-advance step
+      if (lastOpponentHighlight) {
+        for (const sq of lastOpponentHighlight) {
+          styles[sq] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
+        }
+      }
+
       if (currentStep.highlightSquares && wrongAttempts === 0) {
         for (const sq of currentStep.highlightSquares) {
           styles[sq] = { backgroundColor: 'rgba(255, 230, 50, 0.4)' }
@@ -481,7 +501,7 @@ export default function OpeningLessonPage() {
     }
 
     return styles
-  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts])
+  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts, lastOpponentHighlight])
 
   // ─── Arrows (library — for attack/instruction arrows) ───
   const arrows = useMemo(() => {
@@ -594,16 +614,31 @@ export default function OpeningLessonPage() {
           />
         )
       }
+      const isRecall = currentStep.prompt === 'Your move.'
       return (
-        <div className="w-full max-w-lg mx-auto px-4 py-4 flex flex-col flex-1">
-          <p className="text-sm font-semibold text-chess-text mb-1">
-            {currentStep.prompt}
-          </p>
-          {wrongAttempts >= 2 && currentStep.hint && (
-            <p className="text-xs text-chess-hint-text italic">
-              💡 {currentStep.hint}
+        <div
+          className="w-full rounded-b-2xl"
+          style={{
+            backgroundColor: isRecall ? '#EEF0FF' : '#E8F5E9',
+            animation: 'slideUpBounce 0.3s ease-out',
+          }}
+        >
+          <div className="max-w-lg mx-auto px-4 py-3">
+            <p
+              className="font-bold text-[15px] mb-0.5"
+              style={{ color: isRecall ? '#4A56C8' : '#2E7D32' }}
+            >
+              {isRecall ? 'Remember the move!' : 'Guess the next move!'}
             </p>
-          )}
+            <p className="text-sm text-chess-text">
+              {currentStep.prompt !== 'Your move.' ? currentStep.prompt : 'What move comes next?'}
+            </p>
+            {wrongAttempts >= 2 && currentStep.hint && (
+              <p className="text-xs text-chess-hint-text italic mt-1">
+                Hint: {currentStep.hint}
+              </p>
+            )}
+          </div>
         </div>
       )
     }

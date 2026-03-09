@@ -1,7 +1,7 @@
 'use client'
 
 import { use, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import OpeningTreeView from '@/components/openings/OpeningTreeView'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
 import { TREE_LOOKUP } from '@/lib/opening-trees'
@@ -13,12 +13,19 @@ export default function OpeningTreePage({
 }) {
   const { slug } = use(params)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const unlockAll = searchParams.get('unlock') === 'all'
   const tree = TREE_LOOKUP[slug]
   const { getProgress } = useOpeningProgress()
 
   // Derive completed + current from persisted progress
   const { completedIds, currentId } = useMemo(() => {
     if (!tree) return { completedIds: [], currentId: null }
+
+    // Debug: unlock all lessons for testing
+    if (unlockAll) {
+      return { completedIds: tree.completionOrder, currentId: tree.completionOrder[0] }
+    }
 
     const { completedLessons } = getProgress(slug)
     const order = tree.completionOrder
@@ -33,7 +40,7 @@ export default function OpeningTreePage({
     }
 
     return { completedIds: completedLessons, currentId: current }
-  }, [tree, slug, getProgress])
+  }, [tree, slug, getProgress, unlockAll])
 
   if (!tree) {
     return (
@@ -108,7 +115,7 @@ export default function OpeningTreePage({
         accentColor={tree.color}
         accentColorDark={tree.colorDark}
         onLessonTap={(nodeId) => {
-          if (nodeId === currentId || completedIds.includes(nodeId)) {
+          if (unlockAll || nodeId === currentId || completedIds.includes(nodeId)) {
             router.push(`/openings/${slug}/${nodeId}`)
           }
         }}
