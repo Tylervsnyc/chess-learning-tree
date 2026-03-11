@@ -56,76 +56,184 @@ function firstLessonName(level: number): string {
 // STEP COMPONENTS
 // ═══════════════════════════════════════════
 
-// --- LANDING: App intro + Get Started ---
-function LandingStep({ onGetStarted, onSignIn }: { onGetStarted: () => void; onSignIn: () => void }) {
-  const [showTagline, setShowTagline] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
+// --- LANDING: Router — three doors ---
 
-  useEffect(() => {
-    const t1 = setTimeout(() => setShowTagline(true), 600);
-    const t2 = setTimeout(() => setShowButtons(true), 800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+// SVG icon definitions for landing route buttons
+type LandingIconType = 'question' | 'knight' | 'lightning';
+const LANDING_ICON_PATHS: Record<LandingIconType, { viewBox: string; useFill: boolean; elements: { type: 'path' | 'circle'; d?: string; cx?: number; cy?: number; r?: number }[] }> = {
+  question: {
+    viewBox: '0 0 24 24', useFill: false,
+    elements: [
+      { type: 'path', d: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3' },
+      { type: 'circle', cx: 12, cy: 17, r: 0.5 },
+    ],
+  },
+  knight: {
+    viewBox: '0 0 45 45', useFill: true,
+    elements: [
+      { type: 'path', d: 'M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21' },
+      { type: 'path', d: 'M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3' },
+    ],
+  },
+  lightning: {
+    viewBox: '0 0 24 24', useFill: true,
+    elements: [
+      { type: 'path', d: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
+    ],
+  },
+};
+
+function LandingRouteIcon({ icon, color, darkColor }: { icon: LandingIconType; color: string; darkColor: string }) {
+  const data = LANDING_ICON_PATHS[icon];
+  const renderElements = (fill: string, stroke: string, transform?: string) =>
+    data.elements.map((el, i) => {
+      if (el.type === 'path') {
+        return data.useFill
+          ? <path key={i} transform={transform} fill={fill} d={el.d} />
+          : <path key={i} transform={transform} fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d={el.d} />;
+      } else {
+        return data.useFill
+          ? <circle key={i} transform={transform} fill={fill} cx={el.cx} cy={el.cy} r={el.r} />
+          : <circle key={i} transform={transform} fill={stroke} cx={el.cx} cy={el.cy} r={(el.r ?? 0) + 1} />;
+      }
+    });
 
   return (
-    <div className="flex-1 flex flex-col items-center px-6">
-      <div className="flex-1" />
-
-      {/* Rook mascot */}
-      <div className="mb-6">
-        <BreathingRook size="xl" animation="powerOn" />
+    <div className="relative shrink-0" style={{ width: 'calc(var(--icon-size) + 2px)', height: 'calc(var(--icon-size) + 5px)' }}>
+      <div className="absolute rounded-full" style={{ width: 'var(--icon-size)', height: 'var(--icon-size)', top: 5, left: 2, backgroundColor: darkColor }} />
+      <div className="absolute rounded-full flex items-center justify-center" style={{ width: 'var(--icon-size)', height: 'var(--icon-size)', top: 0, left: 0, backgroundColor: color }}>
+        <svg style={{ width: 'var(--icon-inner)', height: 'var(--icon-inner)' }} viewBox={data.viewBox}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <g key={i} opacity={0.12 - i * 0.02}>
+              {renderElements('#000', '#000', `translate(${(4 - i) * 0.7}, ${(4 - i) * 0.7})`)}
+            </g>
+          ))}
+          <g>{renderElements('white', 'white')}</g>
+        </svg>
       </div>
+    </div>
+  );
+}
 
-      {/* Branded wordmark */}
-      <h1
-        className="text-[32px] font-bold mb-3"
-        style={{ fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif" }}
-      >
-        <span className="text-chess-text">chess</span>
-        <span
+const LANDING_ROUTES = [
+  { id: 'new', label: "I don't know how to play chess", sub: 'Learn how the pieces move', color: '#1CB0F6', darkColor: '#0d8bc4', icon: 'question' as LandingIconType },
+  { id: 'elo', label: 'I have an ELO', sub: 'Jump in at your level', color: '#58CC02', darkColor: '#46a302', icon: 'knight' as LandingIconType },
+  { id: 'daily', label: 'Give me a challenge', sub: '22 puzzles, fresh today', color: '#CE82FF', darkColor: '#a855f7', icon: 'lightning' as LandingIconType },
+];
+
+function LandingStep({ onNewToChess, onHaveElo, onDailyChallenge, onSignIn }: {
+  onNewToChess: () => void;
+  onHaveElo: () => void;
+  onDailyChallenge: () => void;
+  onSignIn: () => void;
+}) {
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 150);
+    const t2 = setTimeout(() => setPhase(2), 450);
+    const t3 = setTimeout(() => setPhase(3), 750);
+    const t4 = setTimeout(() => setPhase(4), 1400);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+  }, []);
+
+  const handlers: Record<string, () => void> = {
+    new: onNewToChess,
+    elo: onHaveElo,
+    daily: onDailyChallenge,
+  };
+
+  return (
+    <div className="flex-1 flex flex-col items-center px-5 max-w-lg mx-auto w-full">
+      {/* Top: brand + heading */}
+      <div className="pt-10 sm:pt-16">
+        <div
+          className="flex items-center gap-2 justify-center mb-3"
           style={{
-            background: 'linear-gradient(90deg, #FFC800 0%, #FFC800 20%, #FF6B6B 40%, #FF6B6B 55%, #1CB0F6 75%, #1CB0F6 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            opacity: phase >= 1 ? 1 : 0,
+            transform: phase >= 1 ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          path
-        </span>
-      </h1>
+          <BreathingRook size="lg" animation="enter" />
+          <h1
+            className="font-bold"
+            style={{ fontSize: 'var(--wordmark-size)', fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif" }}
+          >
+            <span className="text-chess-text">chess</span>
+            <span
+              style={{
+                background: 'linear-gradient(90deg, #FFC800 0%, #FFC800 20%, #FF6B6B 40%, #FF6B6B 55%, #1CB0F6 75%, #1CB0F6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              path
+            </span>
+          </h1>
+        </div>
 
-      {/* Tagline */}
-      <p
-        className="text-[13px] font-semibold tracking-widest text-chess-text-muted uppercase"
-        style={{
-          opacity: showTagline ? 1 : 0,
-          transform: showTagline ? 'translateY(0)' : 'translateY(6px)',
-          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        The fun way to learn chess
-      </p>
-
-      {/* Buttons */}
-      <div
-        className="flex-1 flex flex-col justify-end w-full max-w-sm pb-8"
-        style={{
-          opacity: showButtons ? 1 : 0,
-          transform: showButtons ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        <button
-          onClick={() => { playButtonClick(); onGetStarted(); }}
-          className="w-full py-4 bg-chess-green text-white font-bold text-base rounded-2xl
-                     shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)]
-                     transition-all hover:brightness-105"
+        <p
+          className="font-semibold tracking-widest text-chess-text-muted uppercase text-center"
+          style={{
+            fontSize: 'var(--heading-size)',
+            opacity: phase >= 2 ? 1 : 0,
+            transform: phase >= 2 ? 'translateY(0)' : 'translateY(6px)',
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
         >
-          Get Started
-        </button>
+          Let&apos;s get you to the right place
+        </p>
+      </div>
+
+      {/* Center: route cards */}
+      <div className="flex-1 flex items-center w-full">
+        <div className="flex flex-col w-full" style={{ gap: 'var(--cards-gap)' }}>
+          {LANDING_ROUTES.map((route, i) => (
+            <button
+              key={route.id}
+              onClick={() => { playButtonClick(); handlers[route.id](); }}
+              className="relative w-full text-left level-card-hover group"
+              style={{
+                opacity: phase >= 3 ? 1 : 0,
+                transform: phase >= 3 ? 'translateY(0)' : 'translateY(24px)',
+                transition: `all 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${i * 100}ms`,
+              }}
+            >
+              {/* 3D depth layers */}
+              <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-1" style={{ backgroundColor: route.color, transform: 'translate(5px, 5px)', opacity: 0.2 }} />
+              <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-2" style={{ backgroundColor: route.color, transform: 'translate(2.5px, 2.5px)', opacity: 0.35 }} />
+
+              {/* Main card */}
+              <div
+                className="relative rounded-2xl border-2 transition-transform duration-300 level-card-main overflow-hidden"
+                style={{ backgroundColor: 'var(--color-chess-surface)', borderColor: route.color, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 'var(--card-py) var(--card-px)' }}
+              >
+                <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none" style={{ background: `linear-gradient(135deg, transparent 50%, ${route.color}15 50%)`, borderTopRightRadius: '1rem' }} />
+                <div className="absolute inset-0 shimmer-effect pointer-events-none" style={{ background: `linear-gradient(90deg, transparent, ${route.color}15, transparent)`, transform: 'skewX(-20deg) translateX(-150%)' }} />
+
+                <div className="relative z-10 flex items-center" style={{ gap: 'var(--card-gap)' }}>
+                  <LandingRouteIcon icon={route.icon} color={route.color} darkColor={route.darkColor} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-black text-chess-text leading-tight" style={{ fontSize: 'var(--label-size)' }}>{route.label}</p>
+                    <p className="text-chess-text-muted font-medium mt-0.5" style={{ fontSize: 'var(--sub-size)' }}>{route.sub}</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom: login */}
+      <div
+        className="pb-6"
+        style={{ opacity: phase >= 4 ? 1 : 0, transition: 'opacity 0.4s ease-out' }}
+      >
         <button
           onClick={() => { playButtonClick(); onSignIn(); }}
-          className="w-full py-3 mt-3 text-sm font-medium text-chess-text-muted hover:text-chess-text transition-colors"
+          className="text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 px-4"
         >
           I already have an account
         </button>
@@ -578,8 +686,38 @@ export function OnboardingFlow() {
   }, [eloValue, levelChoice, unlockLevel, router, markOnboarded]);
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-white relative overflow-hidden">
-      {/* No header, no progress bar, no skip, no back — Brilliant style */}
+    <div className="h-[100dvh] flex flex-col bg-chess-page relative overflow-hidden">
+      {/* Fluid sizing CSS vars for landing router */}
+      <style>{`
+        :root {
+          --icon-size: clamp(48px, 13vw, 60px);
+          --icon-inner: clamp(30px, 8.5vw, 40px);
+          --label-size: clamp(15px, 4.2vw, 19px);
+          --sub-size: clamp(10px, 2.8vw, 12px);
+          --card-py: clamp(10px, 2.8vw, 16px);
+          --card-px: clamp(12px, 3.2vw, 18px);
+          --card-gap: clamp(10px, 3vw, 14px);
+          --cards-gap: clamp(8px, 2.2vw, 12px);
+          --wordmark-size: clamp(28px, 8.5vw, 52px);
+          --heading-size: clamp(12px, 3.2vw, 14px);
+        }
+        @keyframes shimmer {
+          0% { transform: skewX(-20deg) translateX(-150%); }
+          100% { transform: skewX(-20deg) translateX(250%); }
+        }
+        .level-card-hover:active .level-card-main {
+          transform: translate(-2px, -2px);
+        }
+        .level-card-hover:active .level-layer-1 {
+          transform: translate(8px, 8px);
+        }
+        .level-card-hover:active .level-layer-2 {
+          transform: translate(5px, 5px);
+        }
+        .level-card-hover:active .shimmer-effect {
+          animation: shimmer 1s ease-in-out;
+        }
+      `}</style>
 
       {/* Step content with crossfade */}
       <div
@@ -592,7 +730,23 @@ export function OnboardingFlow() {
       >
         {step === 'landing' && (
           <LandingStep
-            onGetStarted={() => goToStep('level')}
+            onNewToChess={() => {
+              OnboardingEvents.routeSelected('new_to_chess');
+              markOnboarded();
+              OnboardingEvents.completed({ level: 'beginner', style: 'none' });
+              router.push('/basics');
+            }}
+            onHaveElo={() => {
+              OnboardingEvents.routeSelected('have_elo');
+              setLevelChoice('rated');
+              try { localStorage.setItem('chess_path_level', 'rated'); } catch {}
+              goToStep('elo');
+            }}
+            onDailyChallenge={() => {
+              OnboardingEvents.routeSelected('daily_challenge');
+              markOnboarded();
+              router.push('/daily-challenge');
+            }}
             onSignIn={() => router.push('/auth/login')}
           />
         )}

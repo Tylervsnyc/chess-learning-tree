@@ -15,6 +15,7 @@ export function NavHeader() {
   // Don't show header on auth pages, onboarding, basics tutorial, or opening lesson pages
   if (pathname?.startsWith('/auth/')) return null;
   if (pathname === '/welcome' || pathname === '/basics') return null;
+  if (pathname?.startsWith('/test/landing')) return null;
   if (pathname?.startsWith('/lesson/') && !user) return null;
   if (pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')) return null;
 
