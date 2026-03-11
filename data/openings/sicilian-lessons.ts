@@ -51,6 +51,35 @@ const FEN = {
   devBe2_after_Be3:   'rnbq1rk1/1p2bppp/p2p1n2/4p3/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 b - - 5 9',
   devBe2_after_Be6:   'rn1q1rk1/1p2bppp/p2pbn2/4p3/4P3/1NN1B3/PPP1BPPP/R2Q1RK1 w - - 6 10',
 
+  // ═══════════════════════════════════════════════════════════
+  // LEVEL 2 FENs
+  // Main line: 12...b4 13.Ne2 Ne8 14.f4 a5 15.f5 a4
+  //            16.Nbd4 exd4 17.Nxd4 b3 18.Kb1 bxc2+ 19.Nxc2
+  // ═══════════════════════════════════════════════════════════
+  l2_after_b4:     'r2q1rk1/3nbppp/p2pbn2/4p1P1/1p2P3/1NN1BP2/PPPQ3P/2KR1B1R w - - 0 13',
+  l2_after_Ne2:    'r2q1rk1/3nbppp/p2pbn2/4p1P1/1p2P3/1N2BP2/PPPQN2P/2KR1B1R b - - 1 13',
+  l2_after_Ne8:    'r2qnrk1/3nbppp/p2pb3/4p1P1/1p2P3/1N2BP2/PPPQN2P/2KR1B1R w - - 2 14',
+  l2_after_f4:     'r2qnrk1/3nbppp/p2pb3/4p1P1/1p2PP2/1N2B3/PPPQN2P/2KR1B1R b - - 0 14',
+  l2_after_a5:     'r2qnrk1/3nbppp/3pb3/p3p1P1/1p2PP2/1N2B3/PPPQN2P/2KR1B1R w - - 0 15',
+  l2_after_f5:     'r2qnrk1/3nbppp/3pb3/p3pPP1/1p2P3/1N2B3/PPPQN2P/2KR1B1R b - - 0 15',
+  l2_after_a4:     'r2qnrk1/3nbppp/3pb3/4pPP1/pp2P3/1N2B3/PPPQN2P/2KR1B1R w - - 0 16',
+  l2_after_Nbd4:   'r2qnrk1/3nbppp/3pb3/4pPP1/pp1NP3/4B3/PPPQN2P/2KR1B1R b - - 1 16',
+  l2_after_exd4:   'r2qnrk1/3nbppp/3pb3/5PP1/pp1pP3/4B3/PPPQN2P/2KR1B1R w - - 0 17',
+  l2_after_Nxd4:   'r2qnrk1/3nbppp/3pb3/5PP1/pp1NP3/4B3/PPPQ3P/2KR1B1R b - - 0 17',
+  l2_after_b3:     'r2qnrk1/3nbppp/3pb3/5PP1/p2NP3/1p2B3/PPPQ3P/2KR1B1R w - - 0 18',
+  l2_after_Kb1:    'r2qnrk1/3nbppp/3pb3/5PP1/p2NP3/1p2B3/PPPQ3P/1K1R1B1R b - - 1 18',
+  l2_after_bxc2:   'r2qnrk1/3nbppp/3pb3/5PP1/p2NP3/4B3/PPpQ3P/1K1R1B1R w - - 0 19',
+  l2_after_Nxc2:   'r2qnrk1/3nbppp/3pb3/5PP1/p3P3/4B3/PPNQ3P/1K1R1B1R b - - 0 19',
+
+  // Deviation: 16.fxe6 (instead of 16.Nbd4)
+  // Line: 15...a4 16.fxe6 axb3 17.cxb3 fxe6 18.Bh3 Rxa2
+  devFxe6_after_fxe6:  'r2qnrk1/3nbppp/3pP3/4p1P1/pp2P3/1N2B3/PPPQN2P/2KR1B1R b - - 0 16',
+  devFxe6_after_axb3:  'r2qnrk1/3nbppp/3pP3/4p1P1/1p2P3/1p2B3/PPPQN2P/2KR1B1R w - - 0 17',
+  devFxe6_after_cxb3:  'r2qnrk1/3nbppp/3pP3/4p1P1/1p2P3/1P2B3/PP1QN2P/2KR1B1R b - - 0 17',
+  devFxe6_after_fxe6b: 'r2qnrk1/3nb1pp/3pp3/4p1P1/1p2P3/1P2B3/PP1QN2P/2KR1B1R w - - 0 18',
+  devFxe6_after_Bh3:   'r2qnrk1/3nb1pp/3pp3/4p1P1/1p2P3/1P2B2B/PP1QN2P/2KR3R b - - 1 18',
+  devFxe6_after_Rxa2:  '3qnrk1/3nb1pp/3pp3/4p1P1/1p2P3/1P2B2B/rP1QN2P/2KR3R w - - 0 19',
+
   // Deviation: 7.Nf3 (instead of 7.Nb3)
   // Line: 6...e5 7.Nf3 Be7 8.Bc4 O-O 9.O-O Be6 10.Bb3
   devNf3_after_Nf3:   'rnbqkb1r/1p3ppp/p2p1n2/4p3/4P3/2N1BN2/PPP2PPP/R2QKB1R b KQkq - 1 7',
@@ -1371,6 +1400,629 @@ const SI_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// si-5: THE COUNTERATTACK (13.Ne2 Ne8 14.f4 a5 15.f5 a4)
+// First L2 lesson — no recap.
+// ═══════════════════════════════════════════════════════════
+
+const SI_5: OpeningLesson = {
+  id: 'si-5',
+  title: 'The Counterattack',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b4,
+      text: "White regroups with Ne2. You retreat the knight to safety and launch an a-pawn counterattack.",
+    },
+
+    // ── PREDICT/REVEAL 1: Ne8 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Ne2,
+      text: "White plays Ne2, repositioning the knight.",
+      autoAdvance: 800,
+      highlightSquares: ['c3', 'e2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Ne2,
+      correctMove: 'Ne8',
+      prompt: "White's g5 pawn is threatening your knight on f6. How do you save it?",
+      hint: 'Pull the knight back to a safe square where it can reroute.',
+      correctFeedback: "Ne8! The knight retreats to safety and can reroute to c7 or d6 later.",
+      wrongFeedback: 'Play Ne8 — save the knight from g5.',
+      postMoveArrow: ['e8', 'c7'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Ne8,
+      text: "Ne8 looks passive but it's the only good square. From e8, the knight can go to c7, d6, or even f6 later if g5 advances.",
+      arrow: ['f6', 'e8'],
+    },
+
+    // ── PREDICT/REVEAL 2: a5 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f4,
+      text: "White pushes f4, opening the f-file and threatening f5.",
+      autoAdvance: 800,
+      highlightSquares: ['f3', 'f4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f4,
+      correctMove: 'a5',
+      prompt: "White is pushing forward on the kingside. How do you fight back?",
+      hint: 'Counter on the queenside — push the a-pawn.',
+      correctFeedback: "a5! While White attacks on the kingside, you advance on the queenside. Classic Najdorf counterplay.",
+      wrongFeedback: 'Push a5 — counterattack on the queenside.',
+      postMoveArrow: ['a5', 'a4'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a5,
+      text: "a5 starts the queenside counterattack. The a-pawn will push to a4, undermining White's knight on b3.",
+      arrow: ['a6', 'a5'],
+    },
+
+    // ── PREDICT/REVEAL 3: a4 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f5,
+      text: "White plays f5, closing the kingside and eyeing e6.",
+      autoAdvance: 800,
+      highlightSquares: ['f4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f5,
+      correctMove: 'a4',
+      prompt: "White pushed f5. Keep the queenside pressure going — what's next?",
+      hint: 'Keep pushing the a-pawn to kick the knight.',
+      correctFeedback: "a4! The pawn attacks the knight on b3, forcing it to move or be captured.",
+      wrongFeedback: 'Push a4 — attack the knight on b3.',
+      postMoveArrow: ['a4', 'b3'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "a4 puts serious pressure on b3. White's knight has to move, and your queenside attack is rolling.",
+      arrow: ['a5', 'a4'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b4,
+      text: "Three moves from memory. Go.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Ne2,
+      text: 'Ne2.',
+      autoAdvance: 800,
+      highlightSquares: ['c3', 'e2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Ne2,
+      correctMove: 'Ne8',
+      prompt: 'Your move.',
+      hint: 'Ne8.',
+      correctFeedback: 'Ne8.',
+      wrongFeedback: 'Ne8.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f4,
+      text: 'f4.',
+      autoAdvance: 800,
+      highlightSquares: ['f3', 'f4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f4,
+      correctMove: 'a5',
+      prompt: 'Your move.',
+      hint: 'a5.',
+      correctFeedback: 'a5.',
+      wrongFeedback: 'a5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f5,
+      text: 'f5.',
+      autoAdvance: 800,
+      highlightSquares: ['f4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f5,
+      correctMove: 'a4',
+      prompt: 'Your move.',
+      hint: 'a4.',
+      correctFeedback: 'a4.',
+      wrongFeedback: 'a4.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "Ne8, a5, a4. You retreated safely and launched a queenside counterattack while White pushed on the kingside. That's the Najdorf way.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// si-6: BREAKING THROUGH (16.Nbd4 exd4 17.Nxd4 b3 18.Kb1 bxc2+)
+// ═══════════════════════════════════════════════════════════
+
+const SI_6: OpeningLesson = {
+  id: 'si-6',
+  title: 'Breaking Through',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "White sacrifices the knight with Nbd4. You trade, push b3 into the heart of White's position, and crack everything open.",
+    },
+
+    // ── RECAP (si-5 moves: Ne8, a5, a4) ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b4,
+      text: "Show me you've got this.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Ne2,
+      text: 'Ne2.',
+      autoAdvance: 800,
+      highlightSquares: ['c3', 'e2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Ne2,
+      correctMove: 'Ne8',
+      prompt: 'Your move.',
+      hint: 'Ne8.',
+      correctFeedback: 'Ne8.',
+      wrongFeedback: 'Ne8.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f4,
+      text: 'f4.',
+      autoAdvance: 800,
+      highlightSquares: ['f3', 'f4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f4,
+      correctMove: 'a5',
+      prompt: 'Your move.',
+      hint: 'a5.',
+      correctFeedback: 'a5.',
+      wrongFeedback: 'a5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f5,
+      text: 'f5.',
+      autoAdvance: 800,
+      highlightSquares: ['f4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f5,
+      correctMove: 'a4',
+      prompt: 'Your move.',
+      hint: 'a4.',
+      correctFeedback: 'a4.',
+      wrongFeedback: 'a4.',
+    },
+
+    // ── PREDICT/REVEAL 1: exd4 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Nbd4,
+      text: "White plays Nbd4, sacrificing the knight into the center.",
+      autoAdvance: 800,
+      highlightSquares: ['b3', 'd4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Nbd4,
+      correctMove: 'exd4',
+      prompt: "White's knight just jumped to d4. What do you do?",
+      hint: 'Take the knight — open lines and keep your pawns moving.',
+      correctFeedback: "exd4! You capture the knight and open the e-file for your rook.",
+      wrongFeedback: 'Capture with exd4 — take the knight.',
+      postMoveArrow: ['e5', 'd4'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_exd4,
+      text: "After exd4, the e-file opens and your rook on f8 can swing over. White recaptures with Nxd4.",
+      arrow: ['e5', 'd4'],
+    },
+
+    // ── PREDICT/REVEAL 2: b3 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Nxd4,
+      text: "White recaptures with Nxd4.",
+      autoAdvance: 800,
+      highlightSquares: ['e2', 'd4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Nxd4,
+      correctMove: 'b3',
+      prompt: "Your b4 pawn is ready to cause chaos. How?",
+      hint: 'Push the b-pawn one more square — right into White\'s camp.',
+      correctFeedback: "b3! The pawn crashes into White's second rank, threatening to open lines toward the king.",
+      wrongFeedback: 'Push b3 — invade White\'s position.',
+      postMoveArrow: ['b3', 'c2'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b3,
+      text: "b3 is a dagger. It threatens bxc2, ripping open the queenside right next to White's king on c1.",
+      arrow: ['b4', 'b3'],
+    },
+
+    // ── PREDICT/REVEAL 3: bxc2+ ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Kb1,
+      text: "White sidesteps with Kb1.",
+      autoAdvance: 800,
+      highlightSquares: ['c1', 'b1'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Kb1,
+      correctMove: 'bxc2+',
+      prompt: "The king moved to b1. How do you keep the pressure on?",
+      hint: 'Capture the c2 pawn — it comes with check.',
+      correctFeedback: "bxc2+! You take the pawn with check, forcing White to deal with the invasion.",
+      wrongFeedback: 'Capture bxc2+ — take with check.',
+      postMoveArrow: ['c2', 'b1'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_bxc2,
+      text: "bxc2+ forces the knight to recapture. You've destroyed White's queenside pawn structure and opened lines toward the king.",
+      arrow: ['b3', 'c2'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "All three from memory.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Nbd4,
+      text: 'Nbd4.',
+      autoAdvance: 800,
+      highlightSquares: ['b3', 'd4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Nbd4,
+      correctMove: 'exd4',
+      prompt: 'Your move.',
+      hint: 'exd4.',
+      correctFeedback: 'exd4.',
+      wrongFeedback: 'exd4.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Nxd4,
+      text: 'Nxd4.',
+      autoAdvance: 800,
+      highlightSquares: ['e2', 'd4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Nxd4,
+      correctMove: 'b3',
+      prompt: 'Your move.',
+      hint: 'b3.',
+      correctFeedback: 'b3.',
+      wrongFeedback: 'b3.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Kb1,
+      text: 'Kb1.',
+      autoAdvance: 800,
+      highlightSquares: ['c1', 'b1'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Kb1,
+      correctMove: 'bxc2+',
+      prompt: 'Your move.',
+      hint: 'bxc2+.',
+      correctFeedback: 'bxc2+.',
+      wrongFeedback: 'bxc2+.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_bxc2,
+      text: "exd4, b3, bxc2+. You traded the knight, invaded White's camp, and ripped open the queenside. The Najdorf counterattack is in full swing.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// si-dev-fxe6: DEVIATION — White plays 16.fxe6 (instead of 16.Nbd4)
+// Teaches: axb3, fxe6, Rxa2
+// ═══════════════════════════════════════════════════════════
+
+const SI_DEV_FXE6: OpeningLesson = {
+  id: 'si-dev-fxe6',
+  title: 'Dev 16.fxe6',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "Sometimes White captures with 16.fxe6 instead of 16.Nbd4. You punish it by grabbing the b3 pawn and invading on the a-file.",
+    },
+
+    // ── RECAP (si-5 moves: Ne8, a5, a4) ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b4,
+      text: "Quick review before the new stuff.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_Ne2,
+      text: 'Ne2.',
+      autoAdvance: 800,
+      highlightSquares: ['c3', 'e2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_Ne2,
+      correctMove: 'Ne8',
+      prompt: 'Your move.',
+      hint: 'Ne8.',
+      correctFeedback: 'Ne8.',
+      wrongFeedback: 'Ne8.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f4,
+      text: 'f4.',
+      autoAdvance: 800,
+      highlightSquares: ['f3', 'f4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f4,
+      correctMove: 'a5',
+      prompt: 'Your move.',
+      hint: 'a5.',
+      correctFeedback: 'a5.',
+      wrongFeedback: 'a5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_f5,
+      text: 'f5.',
+      autoAdvance: 800,
+      highlightSquares: ['f4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.l2_after_f5,
+      correctMove: 'a4',
+      prompt: 'Your move.',
+      hint: 'a4.',
+      correctFeedback: 'a4.',
+      wrongFeedback: 'a4.',
+    },
+
+    // ── DEVIATION SETUP ──
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_fxe6,
+      text: "White plays 16.fxe6 instead of 16.Nbd4, capturing your bishop's pawn. Time to make them pay.",
+      highlightSquares: ['f5', 'e6'],
+    },
+
+    // ── PREDICT/REVEAL 1: axb3 ──
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_fxe6,
+      correctMove: 'axb3',
+      prompt: "White just captured on e6. What's your priority?",
+      hint: 'Grab the knight on b3 — your a4 pawn is right there.',
+      correctFeedback: "axb3! You capture the knight and threaten to crash into c2. Don't worry about e6 yet.",
+      wrongFeedback: 'Capture axb3 — take the knight first.',
+      postMoveArrow: ['b3', 'c2'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_axb3,
+      text: "axb3 wins a piece. White's pawn on e6 is annoying, but your queenside attack is more dangerous.",
+      arrow: ['a4', 'b3'],
+    },
+
+    // ── PREDICT/REVEAL 2: fxe6 ──
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_cxb3,
+      text: "White recaptures with cxb3.",
+      autoAdvance: 800,
+      highlightSquares: ['c2', 'b3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_cxb3,
+      correctMove: 'fxe6',
+      prompt: "Now deal with that pawn on e6. How?",
+      hint: 'Recapture the pawn — clear it off e6.',
+      correctFeedback: "fxe6 removes the intruder and opens the f-file for your rook.",
+      wrongFeedback: 'Capture fxe6 — take back the pawn.',
+      postMoveArrow: ['f8', 'f1'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_fxe6b,
+      text: "fxe6 cleans up the pawn and opens the f-file. Your rook on f8 is now staring down the board.",
+      arrow: ['f7', 'e6'],
+    },
+
+    // ── PREDICT/REVEAL 3: Rxa2 ──
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_Bh3,
+      text: "White plays Bh3, targeting e6.",
+      autoAdvance: 800,
+      highlightSquares: ['f1', 'h3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_Bh3,
+      correctMove: 'Rxa2',
+      prompt: "White's bishop eyes e6. But you have a bigger threat — what is it?",
+      hint: 'The a2 pawn is completely undefended. Grab it with the rook.',
+      correctFeedback: "Rxa2! You invade with the rook and threaten to wreak havoc on White's second rank.",
+      wrongFeedback: 'Play Rxa2 — invade on the a-file.',
+      postMoveArrow: ['a2', 'b2'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_Rxa2,
+      text: "Rxa2 is devastating. The rook is deep in White's position, the b3 pawn is weak, and White's king is exposed.",
+      arrow: ['a8', 'a2'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_fxe6,
+      text: "White played fxe6. Handle it.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_fxe6,
+      correctMove: 'axb3',
+      prompt: 'Your move.',
+      hint: 'axb3.',
+      correctFeedback: 'axb3.',
+      wrongFeedback: 'axb3.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_cxb3,
+      text: 'cxb3.',
+      autoAdvance: 800,
+      highlightSquares: ['c2', 'b3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_cxb3,
+      correctMove: 'fxe6',
+      prompt: 'Your move.',
+      hint: 'fxe6.',
+      correctFeedback: 'fxe6.',
+      wrongFeedback: 'fxe6.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_Bh3,
+      text: 'Bh3.',
+      autoAdvance: 800,
+      highlightSquares: ['f1', 'h3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.devFxe6_after_Bh3,
+      correctMove: 'Rxa2',
+      prompt: 'Your move.',
+      hint: 'Rxa2.',
+      correctFeedback: 'Rxa2.',
+      wrongFeedback: 'Rxa2.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.devFxe6_after_Rxa2,
+      text: "axb3, fxe6, Rxa2. Against 16.fxe6, you grab the knight, clean up the pawn, and invade. White's king is in trouble.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// si-test-2: LEVEL 2 TEST
+// Tests L2 main line + fxe6 deviation. Zero guidance.
+// ═══════════════════════════════════════════════════════════
+
+const SI_TEST_2: OpeningLesson = {
+  id: 'si-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'black',
+  steps: [
+    // ── MAIN LINE ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_b4,
+      text: "Play the full Level 2 continuation from memory. Main line first, then the deviation.",
+    },
+
+    // Lesson 5: Ne8, a5, a4
+    { type: 'instruction', fen: FEN.l2_after_Ne2, text: 'Ne2.', autoAdvance: 800, highlightSquares: ['c3', 'e2'] },
+    { type: 'play-move', fen: FEN.l2_after_Ne2, correctMove: 'Ne8', prompt: 'Your move.', hint: 'Ne8.', correctFeedback: 'Ne8.', wrongFeedback: 'Ne8.' },
+    { type: 'instruction', fen: FEN.l2_after_f4, text: 'f4.', autoAdvance: 800, highlightSquares: ['f3', 'f4'] },
+    { type: 'play-move', fen: FEN.l2_after_f4, correctMove: 'a5', prompt: 'Your move.', hint: 'a5.', correctFeedback: 'a5.', wrongFeedback: 'a5.' },
+    { type: 'instruction', fen: FEN.l2_after_f5, text: 'f5.', autoAdvance: 800, highlightSquares: ['f4', 'f5'] },
+    { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'a4', prompt: 'Your move.', hint: 'a4.', correctFeedback: 'a4.', wrongFeedback: 'a4.' },
+
+    // Lesson 6: exd4, b3, bxc2+
+    { type: 'instruction', fen: FEN.l2_after_Nbd4, text: 'Nbd4.', autoAdvance: 800, highlightSquares: ['b3', 'd4'] },
+    { type: 'play-move', fen: FEN.l2_after_Nbd4, correctMove: 'exd4', prompt: 'Your move.', hint: 'exd4.', correctFeedback: 'exd4.', wrongFeedback: 'exd4.' },
+    { type: 'instruction', fen: FEN.l2_after_Nxd4, text: 'Nxd4.', autoAdvance: 800, highlightSquares: ['e2', 'd4'] },
+    { type: 'play-move', fen: FEN.l2_after_Nxd4, correctMove: 'b3', prompt: 'Your move.', hint: 'b3.', correctFeedback: 'b3.', wrongFeedback: 'b3.' },
+    { type: 'instruction', fen: FEN.l2_after_Kb1, text: 'Kb1.', autoAdvance: 800, highlightSquares: ['c1', 'b1'] },
+    { type: 'play-move', fen: FEN.l2_after_Kb1, correctMove: 'bxc2+', prompt: 'Your move.', hint: 'bxc2+.', correctFeedback: 'bxc2+.', wrongFeedback: 'bxc2+.' },
+
+    // ── DEVIATION: 16.fxe6 ──
+    {
+      type: 'instruction',
+      fen: FEN.l2_after_a4,
+      text: "Main line done. Now handle the deviation.",
+    },
+    { type: 'instruction', fen: FEN.devFxe6_after_fxe6, text: "White plays 16.fxe6.", autoAdvance: 800, highlightSquares: ['f5', 'e6'] },
+    { type: 'play-move', fen: FEN.devFxe6_after_fxe6, correctMove: 'axb3', prompt: 'Your move.', hint: 'axb3.', correctFeedback: 'axb3.', wrongFeedback: 'axb3.' },
+    { type: 'instruction', fen: FEN.devFxe6_after_cxb3, text: 'cxb3.', autoAdvance: 800, highlightSquares: ['c2', 'b3'] },
+    { type: 'play-move', fen: FEN.devFxe6_after_cxb3, correctMove: 'fxe6', prompt: 'Your move.', hint: 'fxe6.', correctFeedback: 'fxe6.', wrongFeedback: 'fxe6.' },
+    { type: 'instruction', fen: FEN.devFxe6_after_Bh3, text: 'Bh3.', autoAdvance: 800, highlightSquares: ['f1', 'h3'] },
+    { type: 'play-move', fen: FEN.devFxe6_after_Bh3, correctMove: 'Rxa2', prompt: 'Your move.', hint: 'Rxa2.', correctFeedback: 'Rxa2.', wrongFeedback: 'Rxa2.' },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -1382,6 +2034,10 @@ const SICILIAN_LESSONS: Record<string, OpeningLesson> = {
   'si-dev-Be2': SI_DEV_BE2,
   'si-dev-Nf3': SI_DEV_NF3,
   'si-test-1': SI_TEST_1,
+  'si-5': SI_5,
+  'si-6': SI_6,
+  'si-dev-fxe6': SI_DEV_FXE6,
+  'si-test-2': SI_TEST_2,
 }
 
 export function getSicilianLesson(id: string): OpeningLesson | undefined {

@@ -9,9 +9,14 @@
 // Main line (Najdorf): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6
 //            6.Be3 e5 7.Nb3 Be6 8.f3 h5 9.Nd5 Bxd5 10.exd5 Nbd7
 //            11.Qd2 g6 12.Be2 Bg7
+// L2 continuation: 13.Ne2 Ne8 14.f4 a5 15.f5 a4 16.Nbd4 exd4 17.Nxd4 b3
+//            18.Kb1 bxc2+ 19.Nxc2
 //
-// GRID LAYOUT (7 lessons):
-//   Row 4:                              si-test-1 (col 0)
+// GRID LAYOUT (11 lessons):
+//   Row 7:                                si-test-2 (col 0)
+//   Row 6:   si-dev-fxe6 (col -1)     si-6 (col 0)
+//   Row 5:                             si-5 (col 0)
+//   Row 4:                             si-test-1 (col 0)
 //   Row 3:                si-4 (col 0)
 //   Row 2:   si-dev-Nf3 (col -1)    si-3 (col 0)
 //   Row 1:   si-dev-Be2 (col -1)    si-2 (col 0)
@@ -32,6 +37,8 @@ export const SICILIAN_DEFENSE: OpeningTree = {
     'si-1', 'si-2', 'si-dev-Be2',
     'si-3', 'si-dev-Nf3', 'si-4',
     'si-test-1',
+    'si-5', 'si-6', 'si-dev-fxe6',
+    'si-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -123,6 +130,60 @@ export const SICILIAN_DEFENSE: OpeningTree = {
       col: 0,
       lineFrom: 'si-4',
       unlockedBy: 'si-4',
+      side: 'black',
+    },
+
+    // === LEVEL 2: MAIN LINE (center trunk, col 0) ===
+    {
+      id: 'si-5',
+      name: 'The Counterattack',
+      moves: ['13.Ne2 Ne8', '14.f4 a5', '15.f5 a4'],
+      description: 'Retreat the knight to safety, then launch the a-pawn counterattack while White pushes on the kingside.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'si-test-1',
+      unlockedBy: 'si-test-1',
+      side: 'black',
+    },
+    {
+      id: 'si-6',
+      name: 'Breaking Through',
+      moves: ['16.Nbd4 exd4', '17.Nxd4 b3', '18.Kb1 bxc2+'],
+      description: 'Trade off the knight, push b3 into White\'s camp, and crack open the queenside with bxc2+.',
+      type: 'main',
+      row: 6,
+      col: 0,
+      lineFrom: 'si-5',
+      unlockedBy: 'si-5',
+      side: 'black',
+    },
+
+    // === DEVIATION: 16.fxe6 (instead of 16.Nbd4) ===
+    {
+      id: 'si-dev-fxe6',
+      name: 'Dev 16.fxe6',
+      moves: ['16.fxe6 axb3', '17.cxb3 fxe6', '18.Bh3 Rxa2'],
+      description: 'White captures on e6 — grab the b3 pawn, recapture, and invade on the a-file.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'si-6',
+      unlockedBy: 'si-6',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'si-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Level 2 continuation and handle the fxe6 deviation.',
+      type: 'test',
+      row: 7,
+      col: 0,
+      lineFrom: 'si-6',
+      unlockedBy: 'si-dev-fxe6',
       side: 'black',
     },
   ],

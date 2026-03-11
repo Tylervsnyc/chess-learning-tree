@@ -93,7 +93,7 @@ function AddBuildForm({ onAdd }: { onAdd: () => void }) {
     level: 2,
     variationName: '',
     side: 'white' as 'white' | 'black',
-    category: '1.e4' as '1.e4' | '1.d4',
+    category: '1.e4' as '1.e4' | '1.d4' | '1.c4',
     mainLine: '',
     extendsFrom: '',
     priority: 2 as BuildPriority,
@@ -157,7 +157,7 @@ function AddBuildForm({ onAdd }: { onAdd: () => void }) {
         <Select label="Slug" value={form.slug} onChange={v => setForm(f => ({ ...f, slug: v }))} options={['italian', 'pirc-defense', 'ruy-lopez', 'sicilian', 'french', 'london', 'scotch', 'caro-kann', 'kings-gambit', 'kings-indian']} />
         <Select label="Type" value={form.type} onChange={v => setForm(f => ({ ...f, type: v as 'level' | 'variation' }))} options={['level', 'variation']} />
         <Select label="Side" value={form.side} onChange={v => setForm(f => ({ ...f, side: v as 'white' | 'black' }))} options={['white', 'black']} />
-        <Select label="Category" value={form.category} onChange={v => setForm(f => ({ ...f, category: v as '1.e4' | '1.d4' }))} options={['1.e4', '1.d4']} />
+        <Select label="Category" value={form.category} onChange={v => setForm(f => ({ ...f, category: v as '1.e4' | '1.d4' | '1.c4' }))} options={['1.e4', '1.d4', '1.c4']} />
         <Select label="Priority" value={String(form.priority)} onChange={v => setForm(f => ({ ...f, priority: Number(v) as BuildPriority }))} options={['1', '2', '3', '4']} />
         {form.type === 'level' && (
           <>

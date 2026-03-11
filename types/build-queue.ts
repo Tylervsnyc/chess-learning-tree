@@ -10,7 +10,7 @@ export interface OpeningBuildItem {
   level?: number                      // 2 or 3 (for level builds)
   variationName?: string              // "Najdorf" (for variation builds)
   side: 'white' | 'black'
-  category: '1.e4' | '1.d4'
+  category: '1.e4' | '1.d4' | '1.c4'
   mainLine: string                    // Key moves for the agent
   extendsFrom?: string                // Node ID to continue from (for levels)
   priority: BuildPriority

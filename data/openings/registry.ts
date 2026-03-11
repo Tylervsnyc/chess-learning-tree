@@ -9,7 +9,7 @@ export interface OpeningConfig {
   moves: string         // Key opening moves shown on cards
   description: string   // Longer description for detail page hero
   side: 'white' | 'black'
-  category: '1.e4' | '1.d4'
+  category: '1.e4' | '1.d4' | '1.c4'
   color: string         // Primary color
   colorDark: string     // Dark accent
   colorLight: string    // Light accent (for gradients)
@@ -285,6 +285,27 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: 'Cunningham Defense', subtitle: '3...Be7 — tricky bishop check', icon: 'bishop', hasData: false },
     ],
   },
+  {
+    slug: 'petroff',
+    name: 'Petroff Defense',
+    subtitle: 'A solid symmetrical defense against e4',
+    moves: '1.e4 e5 2.Nf3 Nf6',
+    description: 'Mirror White\'s knight, win back the pawn, and build a rock-solid center. The ultimate equalizer.',
+    side: 'black',
+    category: '1.e4',
+    color: '#3498DB',
+    colorDark: '#2980B9',
+    colorLight: '#5DADE2',
+    ghostPiece: '\u265E',
+    icon: 'knight',
+    hasData: true,
+    order: 14,
+    mainLine: { name: 'Classical Variation', subtitle: '3.Nxe5 d6 4.Nf3 Nxe4 -- the counterattack \u00b7 6 lessons' },
+    variations: [
+      { name: '3.d4 Variation', subtitle: '3.d4 Nxe4 -- grab the free pawn', icon: 'pawn', hasData: false },
+      { name: '5.Nc3 Variation', subtitle: '5.Nc3 Nxc3 -- exchange and develop', icon: 'knight', hasData: false },
+    ],
+  },
   // === 1.d4 OPENINGS ===
   {
     slug: 'london',
@@ -380,6 +401,46 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     hasData: true,
     order: 11,
     mainLine: { name: 'Exchange Variation', subtitle: '4.cxd5 Nxd5 5.e4 — pressure the center' },
+    variations: [],
+  },
+  {
+    slug: 'nimzo-indian',
+    name: 'Nimzo-Indian Defense',
+    subtitle: 'Pin the knight and fight for the center',
+    moves: '1.d4 Nf6 2.c4 e6 3.Nc3 Bb4',
+    description: 'Pin the knight, trade the bishop, and saddle White with doubled pawns. A rock-solid weapon against 1.d4.',
+    side: 'black',
+    category: '1.d4',
+    color: '#8E44AD',
+    colorDark: '#6C3483',
+    colorLight: '#A569BD',
+    ghostPiece: '\u2657',
+    icon: 'bishop',
+    hasData: true,
+    order: 15,
+    mainLine: { name: 'Rubinstein Variation', subtitle: '4.e3 O-O 5.Bd3 d5 -- classical play' },
+    variations: [
+      { name: 'Classical (4.Qc2)', subtitle: '4.Qc2 -- avoid doubled pawns', icon: 'queen', hasData: false },
+      { name: 'Saemisch (5.Ne2)', subtitle: '5.Ne2 -- flexible knight development', icon: 'knight', hasData: false },
+    ],
+  },
+  // === 1.c4 OPENINGS ===
+  {
+    slug: 'english',
+    name: 'English Opening',
+    subtitle: 'A flexible flank opening for White',
+    moves: '1.c4 e5',
+    description: 'Control the center from the flank. Fianchetto, exchange, expand on the queenside.',
+    side: 'white',
+    category: '1.c4',
+    color: '#2ECC71',
+    colorDark: '#27AE60',
+    colorLight: '#54D98C',
+    ghostPiece: '\u265F',
+    icon: 'pawn',
+    hasData: true,
+    order: 13,
+    mainLine: { name: 'Reversed Sicilian', subtitle: '2.Nc3 Nf6 3.Nf3 Nc6 4.g3 — fianchetto setup' },
     variations: [],
   },
 ]
