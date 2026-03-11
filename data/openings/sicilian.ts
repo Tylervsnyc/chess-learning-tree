@@ -13,8 +13,8 @@
 //   Row 4:                              sc-test-1 (col 0)
 //   Row 3:    sc-4 (col 0)                             sc-classical-1 (col 1)
 //   Row 2:    sc-3 (col 0)                             sc-dragon-2 (col 1)
-//   Row 1:    sc-punish-bc4 (col -1)    sc-2 (col 0)   sc-dragon-1 (col 1)
-//   Row 0:    sc-punish-qd4 (col -1)    sc-1 (col 0)
+//   Row 1:    sc-dev-bc4 (col -1)    sc-2 (col 0)   sc-dragon-1 (col 1)
+//   Row 0:    sc-dev-qd4 (col -1)    sc-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -28,7 +28,7 @@ export const SICILIAN_DEFENSE: OpeningTree = {
   color: '#FF4B4B',
   colorDark: '#CC3C3C',
   completionOrder: [
-    'sc-1', 'sc-2', 'sc-punish-qd4', 'sc-punish-bc4',
+    'sc-1', 'sc-2', 'sc-dev-qd4', 'sc-dev-bc4',
     'sc-3', 'sc-dragon-1', 'sc-4', 'sc-dragon-2',
     'sc-classical-1', 'sc-test-1',
   ],
@@ -67,7 +67,7 @@ export const SICILIAN_DEFENSE: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'sc-2',
-      unlockedBy: 'sc-punish-bc4',
+      unlockedBy: 'sc-dev-bc4',
       side: 'black',
     },
     {
@@ -85,11 +85,11 @@ export const SICILIAN_DEFENSE: OpeningTree = {
 
     // === PUNISH: Qxd4? (same row as sc-1, col -1) ===
     {
-      id: 'sc-punish-qd4',
-      name: 'Punish Qxd4?',
+      id: 'sc-dev-qd4',
+      name: 'Dev Qxd4?',
       moves: ['2.d4 cxd4', '3.Qxd4? Nc6!'],
       description: 'White recaptures with the queen — develop with tempo and punish!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'sc-1',
@@ -99,15 +99,15 @@ export const SICILIAN_DEFENSE: OpeningTree = {
 
     // === PUNISH: 2.Bc4?! (same row as sc-2, col -1) ===
     {
-      id: 'sc-punish-bc4',
-      name: 'Punish 2.Bc4?',
+      id: 'sc-dev-bc4',
+      name: 'Dev 2.Bc4?',
       moves: ['2.Bc4?! e6!', '3.Nc3 d5!'],
       description: 'White plays an Italian-style bishop — block the diagonal and seize the center!',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'sc-punish-qd4',
-      unlockedBy: 'sc-punish-qd4',
+      lineFrom: 'sc-dev-qd4',
+      unlockedBy: 'sc-dev-qd4',
       side: 'black',
     },
 

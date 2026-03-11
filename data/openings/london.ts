@@ -15,8 +15,8 @@
 //   Row 4:                              ln-test-1 (col 0)
 //   Row 3:   ln-4 (col 0)              ln-bd6-1 (col 1)
 //   Row 2:   ln-anti-bf5 (col -1)      ln-3 (col 0)
-//   Row 1:   ln-punish-c5 (col -1)     ln-2 (col 0)   ln-jobava-1 (col 1)
-//   Row 0:   ln-punish-e5 (col -1)     ln-1 (col 0)
+//   Row 1:   ln-dev-c5 (col -1)     ln-2 (col 0)   ln-jobava-1 (col 1)
+//   Row 0:   ln-dev-e5 (col -1)     ln-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -30,7 +30,7 @@ export const LONDON_SYSTEM: OpeningTree = {
   color: '#A560E8',
   colorDark: '#8448BA',
   completionOrder: [
-    'ln-1', 'ln-2', 'ln-punish-e5', 'ln-punish-c5',
+    'ln-1', 'ln-2', 'ln-dev-e5', 'ln-dev-c5',
     'ln-3', 'ln-jobava-1', 'ln-4', 'ln-anti-bf5',
     'ln-bd6-1', 'ln-test-1',
   ],
@@ -69,7 +69,7 @@ export const LONDON_SYSTEM: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'ln-2',
-      unlockedBy: 'ln-punish-c5',
+      unlockedBy: 'ln-dev-c5',
       side: 'white',
     },
     {
@@ -87,11 +87,11 @@ export const LONDON_SYSTEM: OpeningTree = {
 
     // === PUNISH: 1...e5? (Englund Gambit, col -1, row 0) ===
     {
-      id: 'ln-punish-e5',
-      name: 'Punish 1...e5?',
+      id: 'ln-dev-e5',
+      name: 'Dev 1...e5?',
       moves: ['1...e5?', '2.dxe5 d6', '3.exd6 Bxd6', '4.Nf3'],
       description: 'Black gambits a pawn with 1...e5 — take it and develop with tempo.',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'ln-1',
@@ -101,15 +101,15 @@ export const LONDON_SYSTEM: OpeningTree = {
 
     // === PUNISH: 2...c5? (premature queenside, col -1, row 1) ===
     {
-      id: 'ln-punish-c5',
-      name: 'Punish 2...c5?',
+      id: 'ln-dev-c5',
+      name: 'Dev 2...c5?',
       moves: ['2...c5?', '3.e3 cxd4', '4.exd4'],
       description: 'Black challenges d4 too early — trade and enjoy a great center with your bishop already developed.',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'ln-punish-e5',
-      unlockedBy: 'ln-punish-e5',
+      lineFrom: 'ln-dev-e5',
+      unlockedBy: 'ln-dev-e5',
       side: 'white',
     },
 

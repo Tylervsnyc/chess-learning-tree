@@ -15,8 +15,8 @@
 //   Row 4:                              ck-test-1 (col 0)
 //   Row 3:    ck-4 (col 0)                             ck-twoknight-1 (col 1)
 //   Row 2:    ck-exchange-1 (col -1)    ck-3 (col 0)   ck-advance-1 (col 1)
-//   Row 1:    ck-punish-nf3 (col -1)    ck-2 (col 0)
-//   Row 0:    ck-punish-e5 (col -1)     ck-1 (col 0)
+//   Row 1:    ck-dev-nf3 (col -1)    ck-2 (col 0)
+//   Row 0:    ck-dev-e5 (col -1)     ck-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -30,7 +30,7 @@ export const CARO_KANN: OpeningTree = {
   color: '#10B981',
   colorDark: '#059669',
   completionOrder: [
-    'ck-1', 'ck-2', 'ck-punish-nf3', 'ck-punish-e5',
+    'ck-1', 'ck-2', 'ck-dev-nf3', 'ck-dev-e5',
     'ck-3', 'ck-advance-1', 'ck-4', 'ck-exchange-1',
     'ck-twoknight-1', 'ck-test-1',
   ],
@@ -69,7 +69,7 @@ export const CARO_KANN: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'ck-2',
-      unlockedBy: 'ck-punish-e5',
+      unlockedBy: 'ck-dev-e5',
       side: 'black',
     },
     {
@@ -87,11 +87,11 @@ export const CARO_KANN: OpeningTree = {
 
     // === PUNISH: 2.Nf3?! (wrong move order, col -1, row 0) ===
     {
-      id: 'ck-punish-nf3',
-      name: 'Punish 2.Nf3?',
+      id: 'ck-dev-nf3',
+      name: 'Dev 2.Nf3?',
       moves: ['2.Nf3?! d5', '3.exd5 cxd5'],
       description: 'White plays Nf3 instead of d4 — grab the ideal pawn center with cxd5!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'ck-1',
@@ -101,15 +101,15 @@ export const CARO_KANN: OpeningTree = {
 
     // === PUNISH: 3.e5? (premature advance, col -1, row 1) ===
     {
-      id: 'ck-punish-e5',
-      name: 'Punish 3.e5?',
+      id: 'ck-dev-e5',
+      name: 'Dev 3.e5?',
       moves: ['3.e5? Bf5', '4.Nf3 e6'],
       description: 'White pushes e5 too early — develop your bishop to its dream square before e6!',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'ck-punish-nf3',
-      unlockedBy: 'ck-punish-nf3',
+      lineFrom: 'ck-dev-nf3',
+      unlockedBy: 'ck-dev-nf3',
       side: 'black',
     },
 

@@ -12,8 +12,8 @@
 //   Row 4:                      pi-test-1 (col 0)
 //   Row 3:    pi-4 (col 0)          pi-classical-1 (col 1)
 //   Row 2:    pi-3 (col 0)          pi-austrian-2 (col 1)
-//   Row 1:    pi-punish-Bc4 (col -1)  pi-2 (col 0)    pi-austrian-1 (col 1)
-//   Row 0:    pi-punish-f4 (col -1)   pi-1 (col 0)
+//   Row 1:    pi-dev-Bc4 (col -1)  pi-2 (col 0)    pi-austrian-1 (col 1)
+//   Row 0:    pi-dev-f4 (col -1)   pi-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -27,10 +27,10 @@ export const PIRC_DEFENSE: OpeningTree = {
   color: '#6366F1',
   colorDark: '#4F46E5',
   completionOrder: [
-    'pi-1', 'pi-2', 'pi-punish-f4', 'pi-punish-Bc4',
+    'pi-1', 'pi-2', 'pi-dev-f4', 'pi-dev-Bc4',
     'pi-3', 'pi-austrian-1', 'pi-4', 'pi-austrian-2',
     'pi-classical-1', 'pi-test-1',
-    'pi-5', 'pi-6', 'pi-punish-Nd5', 'pi-7',
+    'pi-5', 'pi-6', 'pi-dev-Nd5', 'pi-7',
     'pi-8', 'pi-classical-2', 'pi-test-2',
   ],
   nodes: [
@@ -68,7 +68,7 @@ export const PIRC_DEFENSE: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'pi-2',
-      unlockedBy: 'pi-punish-Bc4',
+      unlockedBy: 'pi-dev-Bc4',
       side: 'black',
     },
     {
@@ -86,11 +86,11 @@ export const PIRC_DEFENSE: OpeningTree = {
 
     // === PUNISH: White overextends with f4+e5 (same row as pi-1, col -1) ===
     {
-      id: 'pi-punish-f4',
-      name: 'Punish e5?!',
+      id: 'pi-dev-f4',
+      name: 'Dev e5?!',
       moves: ['4.f4 Bg7', '5.e5?! dxe5', '6.fxe5 Nd5!'],
       description: 'White pushes too early — exploit the weakened center with Nd5!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'pi-1',
@@ -100,15 +100,15 @@ export const PIRC_DEFENSE: OpeningTree = {
 
     // === PUNISH: White plays Bc4 early (same row as pi-2, col -1) ===
     {
-      id: 'pi-punish-Bc4',
-      name: 'Punish Bc4?',
+      id: 'pi-dev-Bc4',
+      name: 'Dev Bc4?',
       moves: ['5.Bc4? Nxe4!', '6.Nxe4 d5!'],
       description: 'White develops the bishop but leaves e4 unguarded. Fork them!',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
       lineFrom: 'pi-2',
-      unlockedBy: 'pi-punish-f4',
+      unlockedBy: 'pi-dev-f4',
       side: 'black',
     },
 
@@ -201,11 +201,11 @@ export const PIRC_DEFENSE: OpeningTree = {
 
     // PUNISH: After pi-4, White plays 10.Nd5? premature centralization
     {
-      id: 'pi-punish-Nd5',
-      name: 'Punish Nd5?',
+      id: 'pi-dev-Nd5',
+      name: 'Dev Nd5?',
       moves: ['10.Nd5? Bxd5', '11.exd5 Rc8'],
       description: 'White leaps to d5 too early. Black trades the knight off and activates the rook immediately.',
-      type: 'punish',
+      type: 'deviation',
       row: 5,
       col: -1,
       lineFrom: 'pi-4',
@@ -223,7 +223,7 @@ export const PIRC_DEFENSE: OpeningTree = {
       row: 7,
       col: 0,
       lineFrom: 'pi-6',
-      unlockedBy: 'pi-punish-Nd5',
+      unlockedBy: 'pi-dev-Nd5',
       side: 'black',
     },
 

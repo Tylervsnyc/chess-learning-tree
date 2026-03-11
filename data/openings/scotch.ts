@@ -14,8 +14,8 @@
 // GRID LAYOUT (9 lessons):
 //   Row 4:                              sc-test-1 (col 0)
 //   Row 3:   sc-4 (col 0)              sc-steinitz-1 (col 1)
-//   Row 2:   sc-punish-bc5 (col -1)    sc-3 (col 0)
-//   Row 1:   sc-punish-d5 (col -1)     sc-2 (col 0)    sc-schmidt-1 (col 1)
+//   Row 2:   sc-dev-bc5 (col -1)    sc-3 (col 0)
+//   Row 1:   sc-dev-d5 (col -1)     sc-2 (col 0)    sc-schmidt-1 (col 1)
 //   Row 0:                              sc-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
@@ -30,7 +30,7 @@ export const SCOTCH_GAME: OpeningTree = {
   color: '#FFC800',
   colorDark: '#CC9E00',
   completionOrder: [
-    'sc-1', 'sc-2', 'sc-punish-d5', 'sc-punish-bc5',
+    'sc-1', 'sc-2', 'sc-dev-d5', 'sc-dev-bc5',
     'sc-3', 'sc-schmidt-1', 'sc-4', 'sc-steinitz-1',
     'sc-test-1',
   ],
@@ -69,7 +69,7 @@ export const SCOTCH_GAME: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'sc-2',
-      unlockedBy: 'sc-punish-bc5',
+      unlockedBy: 'sc-dev-bc5',
       side: 'white',
     },
     {
@@ -87,11 +87,11 @@ export const SCOTCH_GAME: OpeningTree = {
 
     // === PUNISH: 3...d5? (premature counter, col -1, row 0) ===
     {
-      id: 'sc-punish-d5',
-      name: 'Punish 3...d5?',
+      id: 'sc-dev-d5',
+      name: 'Dev 3...d5?',
       moves: ['3...d5?', '4.exd5 Qxd5', '5.Nc3'],
       description: 'Black counter-gambits too early — win the pawn and develop with tempo on the queen.',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'sc-1',
@@ -101,15 +101,15 @@ export const SCOTCH_GAME: OpeningTree = {
 
     // === PUNISH: 4...Bc5? (slow development, col -1, row 1) ===
     {
-      id: 'sc-punish-bc5',
-      name: 'Punish 4...Bc5?',
+      id: 'sc-dev-bc5',
+      name: 'Dev 4...Bc5?',
       moves: ['4...Bc5?', '5.Be3'],
       description: 'Black develops the bishop but hangs a tempo — Be3 challenges with development.',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'sc-punish-d5',
-      unlockedBy: 'sc-punish-d5',
+      lineFrom: 'sc-dev-d5',
+      unlockedBy: 'sc-dev-d5',
       side: 'white',
     },
 

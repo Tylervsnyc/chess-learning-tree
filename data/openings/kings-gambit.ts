@@ -14,8 +14,8 @@
 // GRID LAYOUT (10 lessons):
 //   Row 4:                              kg-test-1 (col 0)
 //   Row 3:   kg-4 (col 0)              kg-cunningham-1 (col 1)
-//   Row 2:   kg-punish-g5 (col -1)     kg-3 (col 0)
-//   Row 1:   kg-punish-bc5 (col -1)    kg-2 (col 0)   kg-fischer-1 (col 1)
+//   Row 2:   kg-dev-g5 (col -1)     kg-3 (col 0)
+//   Row 1:   kg-dev-bc5 (col -1)    kg-2 (col 0)   kg-fischer-1 (col 1)
 //   Row 0:                              kg-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
@@ -30,7 +30,7 @@ export const KINGS_GAMBIT: OpeningTree = {
   color: '#E03030',
   colorDark: '#B02020',
   completionOrder: [
-    'kg-1', 'kg-2', 'kg-punish-bc5', 'kg-punish-g5',
+    'kg-1', 'kg-2', 'kg-dev-bc5', 'kg-dev-g5',
     'kg-3', 'kg-fischer-1', 'kg-4', 'kg-cunningham-1',
     'kg-test-1',
   ],
@@ -69,7 +69,7 @@ export const KINGS_GAMBIT: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'kg-2',
-      unlockedBy: 'kg-punish-g5',
+      unlockedBy: 'kg-dev-g5',
       side: 'white',
     },
     {
@@ -87,11 +87,11 @@ export const KINGS_GAMBIT: OpeningTree = {
 
     // === PUNISH: 2...Bc5? (declining, col -1, row 0) ===
     {
-      id: 'kg-punish-bc5',
-      name: 'Punish 2...Bc5?',
+      id: 'kg-dev-bc5',
+      name: 'Dev 2...Bc5?',
       moves: ['2...Bc5?', '3.fxe5'],
       description: 'Black declines the gambit with Bc5 — take the free pawn!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'kg-1',
@@ -101,15 +101,15 @@ export const KINGS_GAMBIT: OpeningTree = {
 
     // === PUNISH: 3...g5? (early push, col -1, row 1) ===
     {
-      id: 'kg-punish-g5',
-      name: 'Punish 3...g5?',
+      id: 'kg-dev-g5',
+      name: 'Dev 3...g5?',
       moves: ['3...g5?', '4.h4 g4', '5.Ne5'],
       description: 'Black pushes g5 too early — challenge with h4 and leap to e5!',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'kg-punish-bc5',
-      unlockedBy: 'kg-punish-bc5',
+      lineFrom: 'kg-dev-bc5',
+      unlockedBy: 'kg-dev-bc5',
       side: 'white',
     },
 

@@ -12,9 +12,9 @@
 // GRID LAYOUT (10 lessons):
 //   Row 6:                             pa-test-1 (col 0)
 //   Row 5:                             pa-6 (col 0)
-//   Row 4:                    pa-punish-Nxe5 (col 1)   pa-5 (col 0)
-//   Row 3:  pa-punish-fxe5 (col -1)   pa-4 (col 0)
-//   Row 2:  pa-punish-e5 (col -1)     pa-3 (col 0)
+//   Row 4:                    pa-dev-Nxe5 (col 1)   pa-5 (col 0)
+//   Row 3:  pa-dev-fxe5 (col -1)   pa-4 (col 0)
+//   Row 2:  pa-dev-e5 (col -1)     pa-3 (col 0)
 //   Row 1:                             pa-2 (col 0)
 //   Row 0:                             pa-1 (col 0)
 //
@@ -30,8 +30,8 @@ export const PIRC_AUSTRIAN: OpeningTree = {
   color: '#EC4D63',
   colorDark: '#D83A52',
   completionOrder: [
-    'pa-1', 'pa-2', 'pa-punish-e5', 'pa-3',
-    'pa-4', 'pa-punish-fxe5', 'pa-5', 'pa-punish-Nxe5',
+    'pa-1', 'pa-2', 'pa-dev-e5', 'pa-3',
+    'pa-4', 'pa-dev-fxe5', 'pa-5', 'pa-dev-Nxe5',
     'pa-6', 'pa-test-1',
     'pa-7', 'pa-8', 'pa-9',
     'pa-var-7', 'pa-var-8', 'pa-var-9', 'pa-var-10',
@@ -72,17 +72,17 @@ export const PIRC_AUSTRIAN: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'pa-2',
-      unlockedBy: 'pa-punish-e5',
+      unlockedBy: 'pa-dev-e5',
       side: 'black',
     },
 
     // === PUNISH: White plays e5?! prematurely (row 2, col -1) ===
     {
-      id: 'pa-punish-e5',
-      name: 'Punish e5?!',
+      id: 'pa-dev-e5',
+      name: 'Dev e5?!',
       moves: ['7.e5?! dxe5', '8.fxe5 Nd5!'],
       description: 'White overextends before castling — dxe5 and Nd5 punishes immediately.',
-      type: 'punish',
+      type: 'deviation',
       row: 2,
       col: -1,
       lineFrom: 'pa-2',
@@ -105,11 +105,11 @@ export const PIRC_AUSTRIAN: OpeningTree = {
 
     // === PUNISH: White plays fxe5? instead of d5 (row 3, col -1) ===
     {
-      id: 'pa-punish-fxe5',
-      name: 'Punish fxe5?',
+      id: 'pa-dev-fxe5',
+      name: 'Dev fxe5?',
       moves: ['8.fxe5? dxe5', '9.d5 Nd4!'],
       description: 'If White recaptures with the f-pawn instead of d5, you still get Nd4 with a great position.',
-      type: 'punish',
+      type: 'deviation',
       row: 3,
       col: -1,
       lineFrom: 'pa-3',
@@ -126,17 +126,17 @@ export const PIRC_AUSTRIAN: OpeningTree = {
       row: 4,
       col: 0,
       lineFrom: 'pa-4',
-      unlockedBy: 'pa-punish-fxe5',
+      unlockedBy: 'pa-dev-fxe5',
       side: 'black',
     },
 
     // === PUNISH: White plays Nxe5? (row 4, col 1) ===
     {
-      id: 'pa-punish-Nxe5',
-      name: 'Punish Nxe5?',
+      id: 'pa-dev-Nxe5',
+      name: 'Dev Nxe5?',
       moves: ['8.Nxe5? Nxe5', '9.fxe5 Nd7'],
       description: 'If White greedily takes e5 with the knight, trade it off and reroute to d7.',
-      type: 'punish',
+      type: 'deviation',
       row: 4,
       col: 1,
       lineFrom: 'pa-4',
@@ -153,7 +153,7 @@ export const PIRC_AUSTRIAN: OpeningTree = {
       row: 5,
       col: 0,
       lineFrom: 'pa-5',
-      unlockedBy: 'pa-punish-Nxe5',
+      unlockedBy: 'pa-dev-Nxe5',
       side: 'black',
     },
 

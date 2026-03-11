@@ -12,8 +12,8 @@
 //   Row 4:                              fr-test-1 (col 0)
 //   Row 3:    fr-4 (col 0)                             fr-winawer-2 (col 1)
 //   Row 2:    fr-3 (col 0)                             fr-winawer-1 (col 1)
-//   Row 1:    fr-punish-bd3 (col -1)    fr-2 (col 0)   fr-tarrasch-1 (col 1)
-//   Row 0:    fr-punish-e5 (col -1)     fr-1 (col 0)
+//   Row 1:    fr-dev-bd3 (col -1)    fr-2 (col 0)   fr-tarrasch-1 (col 1)
+//   Row 0:    fr-dev-e5 (col -1)     fr-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -27,7 +27,7 @@ export const FRENCH_DEFENSE: OpeningTree = {
   color: '#F59E0B',
   colorDark: '#D97706',
   completionOrder: [
-    'fr-1', 'fr-2', 'fr-punish-e5', 'fr-punish-bd3',
+    'fr-1', 'fr-2', 'fr-dev-e5', 'fr-dev-bd3',
     'fr-3', 'fr-tarrasch-1', 'fr-4', 'fr-winawer-1',
     'fr-winawer-2', 'fr-test-1',
   ],
@@ -66,7 +66,7 @@ export const FRENCH_DEFENSE: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'fr-2',
-      unlockedBy: 'fr-punish-bd3',
+      unlockedBy: 'fr-dev-bd3',
       side: 'black',
     },
     {
@@ -84,11 +84,11 @@ export const FRENCH_DEFENSE: OpeningTree = {
 
     // === PUNISH: 3.e5? (too early advance, col -1) ===
     {
-      id: 'fr-punish-e5',
-      name: 'Punish 3.e5?',
+      id: 'fr-dev-e5',
+      name: 'Dev 3.e5?',
       moves: ['3.e5? c5!', '4.c3 Nc6'],
       description: 'White pushes e5 too early — attack the center immediately with c5!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'fr-1',
@@ -98,15 +98,15 @@ export const FRENCH_DEFENSE: OpeningTree = {
 
     // === PUNISH: 3.Bd3? (passive, col -1) ===
     {
-      id: 'fr-punish-bd3',
-      name: 'Punish 3.Bd3?',
+      id: 'fr-dev-bd3',
+      name: 'Dev 3.Bd3?',
       moves: ['3.Bd3? dxe4!', '4.Bxe4 Nf6'],
       description: 'White plays passively — win the center pawn and develop with tempo!',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'fr-punish-e5',
-      unlockedBy: 'fr-punish-e5',
+      lineFrom: 'fr-dev-e5',
+      unlockedBy: 'fr-dev-e5',
       side: 'black',
     },
 

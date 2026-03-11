@@ -14,7 +14,7 @@
 //   Row 3:   it-4 (col 0)              it-fried-2 (col 1)
 //   Row 2:   it-evans-1 (col -1)       it-3 (col 0)
 //   Row 1:   it-two-knights (col -1)   it-2 (col 0)
-//   Row 0:   it-punish-f6 (col -1)     it-1 (col 0)          it-fried-1 (col 1)
+//   Row 0:   it-dev-f6 (col -1)     it-1 (col 0)          it-fried-1 (col 1)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -28,7 +28,7 @@ export const ITALIAN_GAME: OpeningTree = {
   color: '#58CC02',
   colorDark: '#46A302',
   completionOrder: [
-    'it-1', 'it-2', 'it-punish-f6', 'it-fried-1', 'it-3',
+    'it-1', 'it-2', 'it-dev-f6', 'it-fried-1', 'it-3',
     'it-two-knights', 'it-fried-2', 'it-4', 'it-evans-1', 'it-test-1',
   ],
   nodes: [
@@ -84,11 +84,11 @@ export const ITALIAN_GAME: OpeningTree = {
 
     // === PUNISH: 2...f6?? (same row as it-1, col -1) ===
     {
-      id: 'it-punish-f6',
-      name: 'Punishing f6',
+      id: 'it-dev-f6',
+      name: 'If f6',
       moves: ['2...f6??', '3.Nxe5! fxe5', '4.Qh5+ g6', '5.Qxe5+'],
       description: 'Black defends e5 with f6 — sacrifice the knight, win the rook.',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'it-1',
@@ -106,7 +106,7 @@ export const ITALIAN_GAME: OpeningTree = {
       row: 0,
       col: 1,
       lineFrom: 'it-1',
-      unlockedBy: 'it-punish-f6',
+      unlockedBy: 'it-dev-f6',
       side: 'white',
     },
 

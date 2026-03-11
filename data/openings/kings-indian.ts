@@ -13,8 +13,8 @@
 //   Row 4:                              ki-test-1 (col 0)
 //   Row 3:    ki-4 (col 0)                              ki-samisch-1 (col 1)
 //   Row 2:    ki-3 (col 0)                              ki-four-pawns-1 (col 1)
-//   Row 1:    ki-punish-bg5 (col -1)    ki-2 (col 0)    ki-classical-1 (col 1)
-//   Row 0:    ki-punish-dxe5 (col -1)   ki-1 (col 0)
+//   Row 1:    ki-dev-bg5 (col -1)    ki-2 (col 0)    ki-classical-1 (col 1)
+//   Row 0:    ki-dev-dxe5 (col -1)   ki-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -28,7 +28,7 @@ export const KINGS_INDIAN: OpeningTree = {
   color: '#1CB0F6',
   colorDark: '#1490D0',
   completionOrder: [
-    'ki-1', 'ki-2', 'ki-punish-bg5', 'ki-punish-dxe5',
+    'ki-1', 'ki-2', 'ki-dev-bg5', 'ki-dev-dxe5',
     'ki-3', 'ki-classical-1', 'ki-4', 'ki-four-pawns-1',
     'ki-samisch-1', 'ki-test-1',
   ],
@@ -67,7 +67,7 @@ export const KINGS_INDIAN: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'ki-2',
-      unlockedBy: 'ki-punish-dxe5',
+      unlockedBy: 'ki-dev-dxe5',
       side: 'black',
     },
     {
@@ -85,11 +85,11 @@ export const KINGS_INDIAN: OpeningTree = {
 
     // === PUNISH: 5.Bg5? (premature pin, col -1, row 0) ===
     {
-      id: 'ki-punish-bg5',
-      name: 'Punish 5.Bg5?',
+      id: 'ki-dev-bg5',
+      name: 'Dev 5.Bg5?',
       moves: ['5.Bg5? h6', '6.Bh4 g5', '7.Bg3 Nh5'],
       description: 'White pins your knight too early -- chase the bishop and take the dark squares!',
-      type: 'punish',
+      type: 'deviation',
       row: 0,
       col: -1,
       lineFrom: 'ki-1',
@@ -99,15 +99,15 @@ export const KINGS_INDIAN: OpeningTree = {
 
     // === PUNISH: 7.dxe5? (releases tension, col -1, row 1) ===
     {
-      id: 'ki-punish-dxe5',
-      name: 'Punish dxe5?',
+      id: 'ki-dev-dxe5',
+      name: 'Dev dxe5?',
       moves: ['7.dxe5? dxe5'],
       description: 'White trades in the center too early -- you get a great position with free development.',
-      type: 'punish',
+      type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'ki-punish-bg5',
-      unlockedBy: 'ki-punish-bg5',
+      lineFrom: 'ki-dev-bg5',
+      unlockedBy: 'ki-dev-bg5',
       side: 'black',
     },
 
