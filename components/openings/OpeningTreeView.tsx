@@ -11,8 +11,8 @@ import { lightenColor } from '@/lib/color-utils'
 const PAD = 12
 const DEFAULT_COLOR = '#FF9600'
 const DEFAULT_COLOR_DARK = '#CC7800'
-const PUNISH_COLOR = '#EF4444'
-const PUNISH_DARK = '#B91C1C'
+const DEVIATION_COLOR = '#0D9488'
+const DEVIATION_DARK = '#0F766E'
 const TEST_COLOR = '#8B5CF6'
 const TEST_DARK = '#6D28D9'
 const GOLD = '#FFC800'
@@ -158,10 +158,10 @@ function PlayIcon({ size, color }: { size: number; color: string }) {
     </svg>
   )
 }
-function PunishIcon({ size, color }: { size: number; color: string }) {
+function DeviationIcon({ size, color }: { size: number; color: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+      <path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z" />
     </svg>
   )
 }
@@ -216,13 +216,13 @@ function TreeNodeEl({
   const depthX = Math.max(2, nodeSize * 0.04)
   const iconSize = nodeSize * 0.4
   const isTest = n.type === 'test'
-  const isPunish = n.type === 'punish'
+  const isDeviation = n.type === 'deviation'
 
   let topColor: string, botColor: string
   if (status === 'completed') {
     topColor = GOLD; botColor = GOLD_DARK
-  } else if (isPunish) {
-    topColor = status === 'current' ? PUNISH_COLOR : lightenColor(PUNISH_COLOR, 0.3); botColor = PUNISH_DARK
+  } else if (isDeviation) {
+    topColor = status === 'current' ? DEVIATION_COLOR : lightenColor(DEVIATION_COLOR, 0.3); botColor = DEVIATION_DARK
   } else if (isTest) {
     topColor = status === 'current' ? TEST_COLOR : lightenColor(TEST_COLOR, 0.3); botColor = TEST_DARK
   } else {
@@ -232,17 +232,17 @@ function TreeNodeEl({
   const iconColor = status === 'completed' ? GOLD_DARK : '#fff'
   const nodeOpacity = status === 'completed' ? 0.85 : status === 'current' ? 1 : 0.65
   const borderRadius = isTest ? '20%' : '100%'
-  const ringColor = isPunish ? PUNISH_COLOR : isTest ? TEST_COLOR : accentColor
+  const ringColor = isDeviation ? DEVIATION_COLOR : isTest ? TEST_COLOR : accentColor
 
   let icon
   if (status === 'completed') icon = <CheckIcon size={iconSize} color={iconColor} />
   else if (isTest) icon = <StarIcon size={iconSize} color={iconColor} />
-  else if (isPunish) icon = <PunishIcon size={iconSize} color={iconColor} />
+  else if (isDeviation) icon = <DeviationIcon size={iconSize} color={iconColor} />
   else icon = <PlayIcon size={iconSize} color={iconColor} />
 
   // Window style — subtle tint matching node type
-  const windowStyle = isPunish
-    ? { bg: '#FFF5F5', border: '#FECACA', accent: '#DC2626' }
+  const windowStyle = isDeviation
+    ? { bg: '#F0FDFA', border: '#99F6E4', accent: '#0D9488' }
     : isTest
       ? { bg: '#F5F3FF', border: '#DDD6FE', accent: '#7C3AED' }
       : status === 'completed'
