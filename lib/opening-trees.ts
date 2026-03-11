@@ -14,6 +14,9 @@ import { KINGS_GAMBIT } from '@/data/openings/kings-gambit'
 import { KINGS_INDIAN } from '@/data/openings/kings-indian'
 import { SCOTCH_GAME } from '@/data/openings/scotch'
 import { RUY_LOPEZ_MARSHALL } from '@/data/openings/ruy-lopez-marshall'
+import { GRUNFELD_DEFENSE } from '@/data/openings/grunfeld'
+import { SLAV_DEFENSE } from '@/data/openings/slav'
+import { QUEENS_GAMBIT_DECLINED } from '@/data/openings/queens-gambit'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -28,6 +31,9 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'kings-indian': KINGS_INDIAN,
   'scotch': SCOTCH_GAME,
   'ruy-lopez-marshall': RUY_LOPEZ_MARSHALL,
+  'grunfeld': GRUNFELD_DEFENSE,
+  'slav': SLAV_DEFENSE,
+  'queens-gambit': QUEENS_GAMBIT_DECLINED,
 }
 
 /** Get total lesson count for an opening */

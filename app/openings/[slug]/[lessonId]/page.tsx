@@ -41,6 +41,9 @@ import { getKingsGambitLesson } from '@/data/openings/kings-gambit-lessons'
 import { getKingsIndianLesson } from '@/data/openings/kings-indian-lessons'
 import { getScotchLesson } from '@/data/openings/scotch-lessons'
 import { getRuyLopezMarshallLesson } from '@/data/openings/ruy-lopez-marshall-lessons'
+import { getGrunfeldLesson } from '@/data/openings/grunfeld-lessons'
+import { getSlavLesson } from '@/data/openings/slav-lessons'
+import { getQueensGambitLesson } from '@/data/openings/queens-gambit-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -150,6 +153,9 @@ export default function OpeningLessonPage() {
       'kings-indian': getKingsIndianLesson,
       'scotch': getScotchLesson,
       'ruy-lopez-marshall': getRuyLopezMarshallLesson,
+      'grunfeld': getGrunfeldLesson,
+      'slav': getSlavLesson,
+      'queens-gambit': getQueensGambitLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
