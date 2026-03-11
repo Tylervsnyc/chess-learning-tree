@@ -1,4 +1,4 @@
-// Pirc Defense Opening Tree Data
+// Pirc Defense — Austrian Attack (4.f4)
 // Fixed grid engine: row/col positions are explicit, never computed.
 // row 0 = bottom of screen. col 0 = center trunk.
 // lineFrom = visible structural line. unlockedBy = invisible unlock logic.
@@ -6,14 +6,15 @@
 // the previous one). This guarantees ONE current lesson at all times.
 //
 // BLACK OPENING: The user is learning to play as Black against 1.e4.
-// Main line: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O c5 (Classical)
+// Main line: 1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.f4 Bg7 5.Nf3 O-O 6.Bd3 Na6 7.O-O c5 8.d5 Bg4 9.Bc4 Nc7 10.h3 Bxf3
 //
-// GRID LAYOUT (10 lessons):
-//   Row 4:                      pi-test-1 (col 0)
-//   Row 3:    pi-4 (col 0)          pi-classical-1 (col 1)
-//   Row 2:    pi-3 (col 0)          pi-austrian-2 (col 1)
-//   Row 1:    pi-dev-Bc4 (col -1)  pi-2 (col 0)    pi-austrian-1 (col 1)
-//   Row 0:    pi-dev-f4 (col -1)   pi-1 (col 0)
+// Identity moves: 1.e4 d6
+//
+// GRID LAYOUT (6 nodes):
+//   Row 3:                      pi-test-1 (col 0)
+//   Row 2:  pi-dev-e5 (col -1)   pi-3 (col 0)
+//   Row 1:  pi-dev-Be3 (col -1)  pi-2 (col 0)
+//   Row 0:                      pi-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -23,23 +24,19 @@ export const PIRC_DEFENSE: OpeningTree = {
   id: 'pirc-defense',
   name: 'Pirc Defense',
   slug: 'pirc-defense',
-  description: 'A hypermodern opening — let White build a big center, then tear it apart.',
-  color: '#6366F1',
-  colorDark: '#4F46E5',
+  description: 'A hypermodern defense — let White build a big center, then tear it apart with the Austrian Attack.',
+  color: '#EC4899',
+  colorDark: '#DB2777',
   completionOrder: [
-    'pi-1', 'pi-2', 'pi-dev-f4', 'pi-dev-Bc4',
-    'pi-3', 'pi-austrian-1', 'pi-4', 'pi-austrian-2',
-    'pi-classical-1', 'pi-test-1',
-    'pi-5', 'pi-6', 'pi-dev-Nd5', 'pi-7',
-    'pi-8', 'pi-classical-2', 'pi-test-2',
+    'pi-1', 'pi-2', 'pi-dev-Be3', 'pi-dev-e5', 'pi-3', 'pi-test-1',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
     {
       id: 'pi-1',
       name: 'The Pirc Setup',
-      moves: ['1.e4 d6', '2.d4 Nf6', '3.Nc3 g6'],
-      description: 'Learn the Pirc Defense move order — d6, Nf6, g6. Let White build, then undermine.',
+      moves: ['2.d4 Nf6', '3.Nc3 g6', '4.f4 Bg7'],
+      description: 'The Pirc move order — Nf6, g6, Bg7. Let White build a center, then prepare to strike.',
       type: 'main',
       row: 0,
       col: 0,
@@ -49,9 +46,9 @@ export const PIRC_DEFENSE: OpeningTree = {
     },
     {
       id: 'pi-2',
-      name: 'The Dragon Bishop',
-      moves: ['4.Nf3 Bg7', '5.Be2 O-O'],
-      description: 'Complete the fianchetto and castle. Your bishop on g7 is a monster.',
+      name: 'Castle & Develop',
+      moves: ['5.Nf3 O-O', '6.Bd3 Na6', '7.O-O c5'],
+      description: 'Castle safely, develop the knight to a6, and strike at the center with c5.',
       type: 'main',
       row: 1,
       col: 0,
@@ -61,96 +58,42 @@ export const PIRC_DEFENSE: OpeningTree = {
     },
     {
       id: 'pi-3',
-      name: 'Strike ...c5!',
-      moves: ['6.O-O c5'],
-      description: 'Strike at White\'s center with ...c5! The Pirc comes alive.',
+      name: 'The Counterattack',
+      moves: ['8.d5 Bg4', '9.Bc4 Nc7', '10.h3 Bxf3'],
+      description: 'Pin the knight, reroute yours, then trade off the bishop on your terms.',
       type: 'main',
       row: 2,
       col: 0,
       lineFrom: 'pi-2',
-      unlockedBy: 'pi-dev-Bc4',
-      side: 'black',
-    },
-    {
-      id: 'pi-4',
-      name: 'After ...c5',
-      moves: ['7.Be3 cxd4', '8.Nxd4 Nc6', '9.Nb3 Be6'],
-      description: 'Trade the center pawn immediately with cxd4, then develop your knight and bishop actively.',
-      type: 'main',
-      row: 3,
-      col: 0,
-      lineFrom: 'pi-3',
-      unlockedBy: 'pi-austrian-1',
+      unlockedBy: 'pi-dev-e5',
       side: 'black',
     },
 
-    // === PUNISH: White overextends with f4+e5 (same row as pi-1, col -1) ===
+    // === DEVIATION: White plays Be3 instead of Bd3 (14%) ===
     {
-      id: 'pi-dev-f4',
-      name: 'Dev e5?!',
-      moves: ['4.f4 Bg7', '5.e5?! dxe5', '6.fxe5 Nd5!'],
-      description: 'White pushes too early — exploit the weakened center with Nd5!',
+      id: 'pi-dev-Be3',
+      name: 'If 6.Be3',
+      moves: ['6.Be3 Na6', '7.Bd3 c5', '8.d5 Bg4'],
+      description: 'White develops the bishop to e3 first. Same plan — Na6, c5, Bg4.',
       type: 'deviation',
-      row: 0,
+      row: 1,
       col: -1,
-      lineFrom: 'pi-1',
+      lineFrom: 'pi-2',
       unlockedBy: 'pi-2',
       side: 'black',
     },
 
-    // === PUNISH: White plays Bc4 early (same row as pi-2, col -1) ===
+    // === DEVIATION: White plays e5 instead of O-O (10%) ===
     {
-      id: 'pi-dev-Bc4',
-      name: 'Dev Bc4?',
-      moves: ['5.Bc4? Nxe4!', '6.Nxe4 d5!'],
-      description: 'White develops the bishop but leaves e4 unguarded. Fork them!',
+      id: 'pi-dev-e5',
+      name: 'If 7.e5',
+      moves: ['7.e5 dxe5', '8.fxe5 Nd7', '9.O-O c5'],
+      description: 'White pushes e5 aggressively. Take it, retreat the knight, and counter with c5.',
       type: 'deviation',
-      row: 1,
+      row: 2,
       col: -1,
       lineFrom: 'pi-2',
-      unlockedBy: 'pi-dev-f4',
-      side: 'black',
-    },
-
-    // === AUSTRIAN ATTACK (same row as pi-2, col 1) ===
-    {
-      id: 'pi-austrian-1',
-      name: 'Facing the Austrian',
-      moves: ['4.f4 Bg7', '5.Nf3 O-O'],
-      description: 'White plays aggressively with f4. Stay calm — fianchetto and castle.',
-      type: 'branch',
-      row: 1,
-      col: 1,
-      lineFrom: 'pi-2',
-      unlockedBy: 'pi-3',
-      side: 'black',
-    },
-
-    // === AUSTRIAN ATTACK DEEPER (same col as pi-austrian-1, col 1) ===
-    {
-      id: 'pi-austrian-2',
-      name: 'Austrian ...c5!',
-      moves: ['6.Bd3 c5'],
-      description: 'Strike at the Austrian center with ...c5! Same idea, different setup.',
-      type: 'branch',
-      row: 2,
-      col: 1,
-      lineFrom: 'pi-austrian-1',
-      unlockedBy: 'pi-4',
-      side: 'black',
-    },
-
-    // === CLASSICAL Be3 (same row as pi-4, col 1) ===
-    {
-      id: 'pi-classical-1',
-      name: 'Classical Be3',
-      moves: ['9.Nb3 Be6', '10.f4 Na5'],
-      description: 'Develop your bishop actively after Nb3, then reroute your knight toward the c4 outpost.',
-      type: 'branch',
-      row: 3,
-      col: 1,
-      lineFrom: 'pi-4',
-      unlockedBy: 'pi-austrian-2',
+      unlockedBy: 'pi-dev-Be3',
       side: 'black',
     },
 
@@ -161,111 +104,10 @@ export const PIRC_DEFENSE: OpeningTree = {
       moves: [],
       description: 'Prove you know the Pirc Defense — play the full line and handle every variation.',
       type: 'test',
-      row: 4,
+      row: 3,
       col: 0,
-      lineFrom: 'pi-4',
-      unlockedBy: 'pi-classical-1',
-      side: 'black',
-    },
-
-    // === LEVEL 2 (rows 5+) ===
-    // Extends from pi-4 after 9.Nb3 Be6, continues with 10.f4 Rc8 11.Kh1 Na5 12.f5 Nc4 13.Bd4 Bd7
-
-    // MAIN LINE: 10.f4 Rc8 11.Kh1 Na5
-    {
-      id: 'pi-5',
-      name: 'Kingside Plans',
-      moves: ['10.f4 Rc8', '11.Kh1 Na5'],
-      description: 'White expands on the kingside. Black activates the rook and reroutes the knight toward c4.',
-      type: 'main',
-      row: 5,
-      col: 0,
-      lineFrom: 'pi-4',
-      unlockedBy: 'pi-test-1',
-      side: 'black',
-    },
-
-    // MAIN LINE: 12.f5 Nc4 13.Bd4 Bd7
-    {
-      id: 'pi-6',
-      name: 'Knight Outpost',
-      moves: ['12.f5 Nc4', '13.Bd4 Bd7'],
-      description: 'White advances f5 aggressively. The knight lands on c4, a powerful outpost. Black repositions the bishop to d7.',
-      type: 'main',
-      row: 6,
-      col: 0,
-      lineFrom: 'pi-5',
-      unlockedBy: 'pi-5',
-      side: 'black',
-    },
-
-    // PUNISH: After pi-4, White plays 10.Nd5? premature centralization
-    {
-      id: 'pi-dev-Nd5',
-      name: 'Dev Nd5?',
-      moves: ['10.Nd5? Bxd5', '11.exd5 Rc8'],
-      description: 'White leaps to d5 too early. Black trades the knight off and activates the rook immediately.',
-      type: 'deviation',
-      row: 5,
-      col: -1,
-      lineFrom: 'pi-4',
-      unlockedBy: 'pi-6',
-      side: 'black',
-    },
-
-    // MAIN LINE: 14.Bxc4 Rxc4 (queenside activity)
-    {
-      id: 'pi-7',
-      name: 'The Queenside',
-      moves: ['14.Bxc4 Rxc4'],
-      description: 'White trades the bishop for the active knight on c4. Black recaptures with the rook, gaining queenside control.',
-      type: 'main',
-      row: 7,
-      col: 0,
-      lineFrom: 'pi-6',
-      unlockedBy: 'pi-dev-Nd5',
-      side: 'black',
-    },
-
-    // BRANCH: Queenside pressure after Rxc4
-    {
-      id: 'pi-8',
-      name: 'Rook Activity',
-      moves: ['15.Qd3 a5', '16.Nd5 Nxd5'],
-      description: 'White centralizes the queen. Black advances a5 to gain space, then trades knight on d5 to open the c-file.',
-      type: 'branch',
-      row: 6,
-      col: 1,
-      lineFrom: 'pi-6',
-      unlockedBy: 'pi-7',
-      side: 'black',
-    },
-
-    // CLASSICAL BRANCH: Deeper queenside play
-    {
-      id: 'pi-classical-2',
-      name: 'Deep Classical',
-      moves: ['15.Qd2 a5', '16.a4 Rc6'],
-      description: 'White develops the queen to d2. Black advances a5 to stop queenside expansion, then centralizes the rook.',
-      type: 'branch',
-      row: 7,
-      col: 1,
-      lineFrom: 'pi-8',
-      unlockedBy: 'pi-8',
-      side: 'black',
-    },
-
-    // === LEVEL 2 TEST ===
-    {
-      id: 'pi-test-2',
-      name: 'Lvl 2 Test',
-      moves: [],
-      description: 'Master the Level 2 line — play through 10.f4 Rc8 11.Kh1 Na5 12.f5 Nc4 13.Bd4 Bd7 and the key punish.',
-      type: 'test',
-      row: 8,
-      col: 0,
-      lineFrom: 'pi-7',
-      unlockedBy: 'pi-classical-2',
+      lineFrom: 'pi-3',
+      unlockedBy: 'pi-3',
       side: 'black',
     },
   ],
