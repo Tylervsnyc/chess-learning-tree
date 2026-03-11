@@ -6,27 +6,25 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string; lessonId: string; status: string }>;
 }): Promise<Metadata> {
-  const { slug, lessonId, status } = await params;
+  const { slug, lessonId } = await params;
 
   const opening = getOpeningBySlug(slug);
   const openingName = opening?.name || 'Opening';
   const color = opening?.color || '#FF9600';
   const colorLight = opening?.colorLight || '#FFB347';
 
-  const isPerfect = status === 'perfect';
-  const score = isPerfect ? '6/6' : '5/6';
-
+  // Opening lessons always count as perfect — no scoring
   const ogParams = new URLSearchParams({
     opening: openingName,
     lesson: lessonId,
-    score,
+    score: 'perfect',
     color,
     colorLight,
   });
 
   const ogImageUrl = `https://chesspath.app/api/og/opening?${ogParams.toString()}`;
-  const title = `${isPerfect ? 'Perfect!' : 'Completed!'} | ${openingName} | Chess Path`;
-  const description = `I ${isPerfect ? 'got a perfect score on' : 'completed'} a ${openingName} lesson on Chess Path! Can you beat it?`;
+  const title = `Perfect! | ${openingName} | Chess Path`;
+  const description = `I completed a ${openingName} lesson on Chess Path! Can you beat it?`;
   const url = `https://chesspath.app/openings/${slug}/${lessonId}/share/${status}`;
 
   return {
@@ -42,7 +40,7 @@ export async function generateMetadata({
           url: ogImageUrl,
           width: 1080,
           height: 1080,
-          alt: `Chess Path - ${openingName} - ${isPerfect ? 'Perfect Score' : 'Completed'}`,
+          alt: `Chess Path - ${openingName} - Perfect Score`,
         },
       ],
       type: 'website',

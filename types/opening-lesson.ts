@@ -43,8 +43,8 @@ export interface PlayMoveStep {
   orientation?: 'white' | 'black'
   /** Squares to highlight as guidance BEFORE the user moves (e.g., [from, to]) */
   highlightSquares?: Square[]
-  /** Arrow shown on the board AFTER a correct move (e.g., to show what the move attacks) */
-  postMoveArrow?: [Square, Square]
+  /** Red arrow(s) shown AFTER a correct move to show what the piece threatens. Single or multiple. */
+  postMoveArrow?: [Square, Square] | [Square, Square][]
 }
 
 /** Multiple choice quiz inline in the chat */

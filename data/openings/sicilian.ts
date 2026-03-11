@@ -6,15 +6,16 @@
 // the previous one). This guarantees ONE current lesson at all times.
 //
 // BLACK OPENING: The user is learning to play as Black against 1.e4.
-// Main line: 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Be3 e5
-//            7.Nb3 Be7 8.Qd2 O-O 9.O-O-O b5 10.f3 Bb7 11.Kb1 Nbd7 12.g4 Rc8
+// Main line (Najdorf): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6
+//            6.Be3 e5 7.Nb3 Be6 8.f3 h5 9.Nd5 Bxd5 10.exd5 Nbd7
+//            11.Qd2 g6 12.Be2 Bg7
 //
-// GRID LAYOUT (10 lessons):
-//   Row 4:                              sc-test-1 (col 0)
-//   Row 3:    sc-4 (col 0)                             sc-classical-1 (col 1)
-//   Row 2:    sc-3 (col 0)                             sc-dragon-2 (col 1)
-//   Row 1:    sc-dev-bc4 (col -1)    sc-2 (col 0)   sc-dragon-1 (col 1)
-//   Row 0:    sc-dev-qd4 (col -1)    sc-1 (col 0)
+// GRID LAYOUT (7 lessons):
+//   Row 4:                              si-test-1 (col 0)
+//   Row 3:                si-4 (col 0)
+//   Row 2:   si-dev-Nf3 (col -1)    si-3 (col 0)
+//   Row 1:   si-dev-Be2 (col -1)    si-2 (col 0)
+//   Row 0:                           si-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -24,21 +25,21 @@ export const SICILIAN_DEFENSE: OpeningTree = {
   id: 'sicilian',
   name: 'Sicilian Defense',
   slug: 'sicilian',
-  description: 'The fighting defense — Black meets 1.e4 with asymmetric counterplay.',
+  description: "The Sicilian Najdorf — Black's sharpest weapon against 1.e4.",
   color: '#FF4B4B',
   colorDark: '#CC3C3C',
   completionOrder: [
-    'sc-1', 'sc-2', 'sc-dev-qd4', 'sc-dev-bc4',
-    'sc-3', 'sc-dragon-1', 'sc-4', 'sc-dragon-2',
-    'sc-classical-1', 'sc-test-1',
+    'si-1', 'si-2', 'si-dev-Be2',
+    'si-3', 'si-dev-Nf3', 'si-4',
+    'si-test-1',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
     {
-      id: 'sc-1',
+      id: 'si-1',
       name: 'The Sicilian Move',
       moves: ['1.e4 c5', '2.Nf3 d6', '3.d4 cxd4'],
-      description: 'Learn the Sicilian move order — c5, d6, cxd4. Fight for the d4 square.',
+      description: 'The Sicilian move order — c5, d6, cxd4. Fight for the center on your terms.',
       type: 'main',
       row: 0,
       col: 0,
@@ -47,123 +48,81 @@ export const SICILIAN_DEFENSE: OpeningTree = {
       side: 'black',
     },
     {
-      id: 'sc-2',
+      id: 'si-2',
       name: 'The Najdorf',
       moves: ['4.Nxd4 Nf6', '5.Nc3 a6', '6.Be3 e5'],
       description: 'The legendary Najdorf — a6 keeps options open, e5 grabs the center.',
       type: 'main',
       row: 1,
       col: 0,
-      lineFrom: 'sc-1',
-      unlockedBy: 'sc-1',
+      lineFrom: 'si-1',
+      unlockedBy: 'si-1',
       side: 'black',
     },
     {
-      id: 'sc-3',
-      name: 'Castle & Attack',
-      moves: ['7.Nb3 Be7', '8.Qd2 O-O', '9.O-O-O b5'],
-      description: 'Castle kingside, then launch b5! Opposite-side castling means war.',
+      id: 'si-3',
+      name: 'The Bishop Trade',
+      moves: ['7.Nb3 Be6', '8.f3 h5', '9.Nd5 Bxd5'],
+      description: 'Develop the bishop, push h5 aggressively, then trade on d5 to wreck White\'s pawns.',
       type: 'main',
       row: 2,
       col: 0,
-      lineFrom: 'sc-2',
-      unlockedBy: 'sc-dev-bc4',
+      lineFrom: 'si-2',
+      unlockedBy: 'si-dev-Be2',
       side: 'black',
     },
     {
-      id: 'sc-4',
+      id: 'si-4',
       name: 'Complete the Setup',
-      moves: ['10.f3 Bb7', '11.Kb1 Nbd7', '12.g4 Rc8'],
-      description: 'Finish development — bishop on b7, knight on d7, rook on the c-file.',
+      moves: ['10.exd5 Nbd7', '11.Qd2 g6', '12.Be2 Bg7'],
+      description: 'Finish development — knight on d7, fianchetto the bishop, and prepare to attack.',
       type: 'main',
       row: 3,
       col: 0,
-      lineFrom: 'sc-3',
-      unlockedBy: 'sc-dragon-1',
+      lineFrom: 'si-3',
+      unlockedBy: 'si-dev-Nf3',
       side: 'black',
     },
 
-    // === PUNISH: Qxd4? (same row as sc-1, col -1) ===
+    // === DEVIATION: 6.Be2 (instead of 6.Be3) ===
     {
-      id: 'sc-dev-qd4',
-      name: 'Dev Qxd4?',
-      moves: ['2.d4 cxd4', '3.Qxd4? Nc6!'],
-      description: 'White recaptures with the queen — develop with tempo and punish!',
-      type: 'deviation',
-      row: 0,
-      col: -1,
-      lineFrom: 'sc-1',
-      unlockedBy: 'sc-2',
-      side: 'black',
-    },
-
-    // === PUNISH: 2.Bc4?! (same row as sc-2, col -1) ===
-    {
-      id: 'sc-dev-bc4',
-      name: 'Dev 2.Bc4?',
-      moves: ['2.Bc4?! e6!', '3.Nc3 d5!'],
-      description: 'White plays an Italian-style bishop — block the diagonal and seize the center!',
+      id: 'si-dev-Be2',
+      name: 'Dev 6.Be2',
+      moves: ['6.Be2 e5', '7.Nb3 Be7', '8.O-O O-O'],
+      description: 'White plays Be2 instead of Be3 — grab the center with e5 and develop smoothly.',
       type: 'deviation',
       row: 1,
       col: -1,
-      lineFrom: 'sc-dev-qd4',
-      unlockedBy: 'sc-dev-qd4',
+      lineFrom: 'si-2',
+      unlockedBy: 'si-2',
       side: 'black',
     },
 
-    // === DRAGON (same row as sc-2, col 1) ===
+    // === DEVIATION: 7.Nf3 (instead of 7.Nb3) ===
     {
-      id: 'sc-dragon-1',
-      name: 'The Dragon',
-      moves: ['5...g6', '6.Be3 Bg7', '7.f3 O-O'],
-      description: 'The Dragon variation — fianchetto the bishop and breathe fire down the long diagonal.',
-      type: 'branch',
-      row: 1,
-      col: 1,
-      lineFrom: 'sc-2',
-      unlockedBy: 'sc-3',
-      side: 'black',
-    },
-
-    // === DRAGON 2 (same col as sc-dragon-1, col 1) ===
-    {
-      id: 'sc-dragon-2',
-      name: 'Dragon Plans',
-      moves: ['8.Qd2 Nc6', '9.Bc4 Bd7', '10.O-O-O Rc8'],
-      description: 'Complete the Dragon setup — own the c-file and prepare the counterattack.',
-      type: 'branch',
+      id: 'si-dev-Nf3',
+      name: 'Dev 7.Nf3',
+      moves: ['7.Nf3 Be7', '8.Bc4 O-O', '9.O-O Be6'],
+      description: 'White retreats to f3 and plays Bc4 — develop calmly and prepare to challenge the bishop.',
+      type: 'deviation',
       row: 2,
-      col: 1,
-      lineFrom: 'sc-dragon-1',
-      unlockedBy: 'sc-4',
+      col: -1,
+      lineFrom: 'si-3',
+      unlockedBy: 'si-3',
       side: 'black',
     },
 
-    // === CLASSICAL (same row as sc-4, col 1) ===
+    // === LEVEL 1 TEST ===
     {
-      id: 'sc-classical-1',
-      name: 'The Classical',
-      moves: ['4...Nc6', '5.Nc3 Nf6', '6.Be2 e5'],
-      description: 'The Classical Sicilian — both knights out, then strike the center with e5.',
-      type: 'branch',
-      row: 3,
-      col: 1,
-      lineFrom: 'sc-4',
-      unlockedBy: 'sc-dragon-2',
-      side: 'black',
-    },
-
-    // === LEVEL 1 TEST (top of tree, col 0) ===
-    {
-      id: 'sc-test-1',
+      id: 'si-test-1',
       name: 'Lvl 1 Test',
       moves: [],
-      description: 'Prove you know the Sicilian — play the full Najdorf and handle every variation.',
+      description: 'Prove you know the Sicilian Najdorf — play the full main line and handle every deviation.',
       type: 'test',
       row: 4,
       col: 0,
-      lineFrom: 'sc-4',
-      unlockedBy: 'sc-classical-1',
+      lineFrom: 'si-4',
+      unlockedBy: 'si-4',
       side: 'black',
     },
   ],

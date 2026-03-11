@@ -83,21 +83,21 @@ const RL_LESSON_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.start, text: "The Ruy Lopez starts with three moves that control the center and put pressure on Black's knight. Let's learn them." },
 
     // PREDICT 1: e4
-    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'What would you play to start?', hint: 'The most popular first move in chess — grab the center.', correctFeedback: 'e4 claims the center and opens lines for your bishop and queen.', wrongFeedback: 'Start by pushing the e-pawn two squares to control the center.' },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'What would you play to start?', hint: 'The most popular first move in chess — grab the center.', correctFeedback: 'e4 claims the center and opens lines for your bishop and queen.', wrongFeedback: 'Start by pushing the e-pawn two squares to control the center.', postMoveArrow: ['e4', 'd5'] },
     { type: 'instruction', fen: FEN.after_e4, text: 'e4 controls d5 and f5, and opens the diagonal for your bishop.', arrow: ['e2', 'e4'] },
 
     // Black plays e5
     { type: 'instruction', fen: FEN.after_e4, text: 'Black mirrors you with e5.', autoAdvance: 800, highlightSquares: ['e7', 'e5'] },
 
     // PREDICT 2: Nf3
-    { type: 'play-move', fen: FEN.after_e5, correctMove: 'Nf3', prompt: "Black's e5 pawn is undefended. How do you attack it?", hint: 'Develop a piece that attacks e5.', correctFeedback: 'Nf3 develops the knight and attacks the e5 pawn right away.', wrongFeedback: 'The knight on g1 can jump to f3, attacking e5 while developing.' },
+    { type: 'play-move', fen: FEN.after_e5, correctMove: 'Nf3', prompt: "Black's e5 pawn is undefended. How do you attack it?", hint: 'Develop a piece that attacks e5.', correctFeedback: 'Nf3 develops the knight and attacks the e5 pawn right away.', wrongFeedback: 'The knight on g1 can jump to f3, attacking e5 while developing.', postMoveArrow: ['f3', 'e5'] },
     { type: 'instruction', fen: FEN.after_Nf3, text: 'Nf3 does two things at once — develops a piece and puts pressure on e5. Black has to defend.', arrow: ['g1', 'f3'] },
 
     // Black plays Nc6
     { type: 'instruction', fen: FEN.after_Nf3, text: 'Black defends with Nc6.', autoAdvance: 800, highlightSquares: ['b8', 'c6'] },
 
     // PREDICT 3: Bb5
-    { type: 'play-move', fen: FEN.after_Nc6, correctMove: 'Bb5', prompt: 'Black defended e5 with the knight. How do you keep the pressure on?', hint: 'Your bishop can target the knight that defends e5.', correctFeedback: "Bb5 pins the knight to the king — that's the Ruy Lopez!", wrongFeedback: "Put your bishop on b5 to pressure the knight that's defending e5." },
+    { type: 'play-move', fen: FEN.after_Nc6, correctMove: 'Bb5', prompt: 'Black defended e5 with the knight. How do you keep the pressure on?', hint: 'Your bishop can target the knight that defends e5.', correctFeedback: "Bb5 pins the knight to the king — that's the Ruy Lopez!", wrongFeedback: "Put your bishop on b5 to pressure the knight that's defending e5.", postMoveArrow: ['b5', 'c6'] },
     { type: 'instruction', fen: FEN.after_Bb5, text: "Bb5 is the Ruy Lopez. The bishop eyes the c6 knight, the main defender of e5. This has been played for over 500 years.", arrow: ['f1', 'b5'] },
 
     // RECALL
@@ -135,21 +135,21 @@ const RL_LESSON_2: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Bb5, text: 'Black plays a6, challenging your bishop.', autoAdvance: 800, highlightSquares: ['a7', 'a6'] },
 
     // PREDICT 1: Ba4
-    { type: 'play-move', fen: FEN.after_a6, correctMove: 'Ba4', prompt: 'Your bishop is attacked. Where does it go?', hint: 'Retreat along the diagonal — stay active on a4.', correctFeedback: 'Ba4 retreats but stays on the a4-e8 diagonal, keeping pressure on c6.', wrongFeedback: 'Retreat the bishop to a4 to stay on the active diagonal.' },
+    { type: 'play-move', fen: FEN.after_a6, correctMove: 'Ba4', prompt: 'Your bishop is attacked. Where does it go?', hint: 'Retreat along the diagonal — stay active on a4.', correctFeedback: 'Ba4 retreats but stays on the a4-e8 diagonal, keeping pressure on c6.', wrongFeedback: 'Retreat the bishop to a4 to stay on the active diagonal.', postMoveArrow: ['a4', 'c6'] },
     { type: 'instruction', fen: FEN.after_Ba4, text: 'Ba4 keeps the bishop aimed at the knight on c6. Black pushed a pawn but we lost no time.', arrow: ['b5', 'a4'] },
 
     // Black plays Nf6
     { type: 'instruction', fen: FEN.after_Ba4, text: "Black develops the knight to f6, attacking your e4 pawn.", autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
 
     // PREDICT 2: O-O
-    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'O-O', prompt: "Black is threatening your e4 pawn. What's the best response?", hint: 'Get your king safe — the rook will help defend e4.', correctFeedback: 'Castling gets the king safe and connects the rooks.', wrongFeedback: 'Castle kingside — it solves king safety and pawn defense at once.' },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'O-O', prompt: "Black is threatening your e4 pawn. What's the best response?", hint: 'Get your king safe — the rook will help defend e4.', correctFeedback: 'Castling gets the king safe and connects the rooks.', wrongFeedback: 'Castle kingside — it solves king safety and pawn defense at once.', postMoveArrow: ['f1', 'e1'] },
     { type: 'instruction', fen: FEN.after_OO_w, text: "O-O is the best move. Even though Nf6 attacks e4, Black can't win it — after Nxe4, we play Re1 and win it back.", arrow: ['e1', 'g1'] },
 
     // Black plays Be7
     { type: 'instruction', fen: FEN.after_OO_w, text: 'Black develops the bishop to e7, preparing to castle.', autoAdvance: 800, highlightSquares: ['f8', 'e7'] },
 
     // PREDICT 3: Re1
-    { type: 'play-move', fen: FEN.after_Be7, correctMove: 'Re1', prompt: 'Time to activate your rook. Where does it belong?', hint: 'The e-file is semi-open — put your rook there.', correctFeedback: 'Re1 puts the rook on the e-file, backing up the e4 pawn.', wrongFeedback: 'The e-file is where the action is. Put the rook on e1.' },
+    { type: 'play-move', fen: FEN.after_Be7, correctMove: 'Re1', prompt: 'Time to activate your rook. Where does it belong?', hint: 'The e-file is semi-open — put your rook there.', correctFeedback: 'Re1 puts the rook on the e-file, backing up the e4 pawn.', wrongFeedback: 'The e-file is where the action is. Put the rook on e1.', postMoveArrow: ['e1', 'e4'] },
     { type: 'instruction', fen: FEN.after_Re1, text: 'Re1 controls the e-file and supports e4. Over 50,000 master games reach this position.', arrow: ['f1', 'e1'] },
 
     // RECALL
@@ -189,21 +189,21 @@ const RL_LESSON_3: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Re1, text: 'Black pushes b5, chasing your bishop again.', autoAdvance: 800, highlightSquares: ['b7', 'b5'] },
 
     // PREDICT 1: Bb3
-    { type: 'play-move', fen: FEN.after_b5, correctMove: 'Bb3', prompt: 'Your bishop is under attack again. Where does it go?', hint: 'Retreat to b3 — it stays on the a2-g8 diagonal.', correctFeedback: 'Bb3 keeps the bishop on a strong diagonal aimed at f7.', wrongFeedback: 'Retreat the bishop to b3 — it stays active on the a2-g8 diagonal.' },
+    { type: 'play-move', fen: FEN.after_b5, correctMove: 'Bb3', prompt: 'Your bishop is under attack again. Where does it go?', hint: 'Retreat to b3 — it stays on the a2-g8 diagonal.', correctFeedback: 'Bb3 keeps the bishop on a strong diagonal aimed at f7.', wrongFeedback: 'Retreat the bishop to b3 — it stays active on the a2-g8 diagonal.', postMoveArrow: ['b3', 'f7'] },
     { type: 'instruction', fen: FEN.after_Bb3, text: 'Bb3 puts the bishop on the a2-g8 diagonal, pointing straight at f7 — a key weakness near the king.', arrow: ['a4', 'b3'] },
 
     // Black plays d6
     { type: 'instruction', fen: FEN.after_Bb3, text: 'Black plays d6, supporting the e5 pawn.', autoAdvance: 800, highlightSquares: ['d7', 'd6'] },
 
     // PREDICT 2: c3
-    { type: 'play-move', fen: FEN.after_d6, correctMove: 'c3', prompt: "You want to play d4 eventually. What prepares it?", hint: 'Support d4 with a pawn first.', correctFeedback: 'c3 prepares d4, giving your central push extra support.', wrongFeedback: 'Play c3 to prepare the d4 push.' },
+    { type: 'play-move', fen: FEN.after_d6, correctMove: 'c3', prompt: "You want to play d4 eventually. What prepares it?", hint: 'Support d4 with a pawn first.', correctFeedback: 'c3 prepares d4, giving your central push extra support.', wrongFeedback: 'Play c3 to prepare the d4 push.', postMoveArrow: ['c3', 'd4'] },
     { type: 'instruction', fen: FEN.after_c3, text: 'c3 prepares d4 and gives the bishop a retreat square on c2 if needed. A patient, solid move.', arrow: ['c2', 'c3'] },
 
     // Black castles
     { type: 'instruction', fen: FEN.after_c3, text: 'Black castles kingside.', autoAdvance: 800, highlightSquares: ['e8', 'g8'] },
 
     // PREDICT 3: h3
-    { type: 'play-move', fen: FEN.after_OO_b, correctMove: 'h3', prompt: "Both sides have castled. What useful move can you play?", hint: 'Prevent Black from pinning your f3 knight with Bg4.', correctFeedback: "h3 prevents Bg4, which would pin your knight to the queen.", wrongFeedback: "Push h3 to stop Black's bishop from pinning your knight on f3." },
+    { type: 'play-move', fen: FEN.after_OO_b, correctMove: 'h3', prompt: "Both sides have castled. What useful move can you play?", hint: 'Prevent Black from pinning your f3 knight with Bg4.', correctFeedback: "h3 prevents Bg4, which would pin your knight to the queen.", wrongFeedback: "Push h3 to stop Black's bishop from pinning your knight on f3.", postMoveArrow: ['h3', 'g4'] },
     { type: 'instruction', fen: FEN.after_h3, text: "h3 is a luft for the king and stops Bg4. Over 27,000 master games play this exact move here.", arrow: ['h2', 'h3'] },
 
     // RECALL
@@ -243,21 +243,21 @@ const RL_LESSON_4: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_h3, text: "Black plays Na5, attacking your bishop on b3.", autoAdvance: 800, highlightSquares: ['c6', 'a5'] },
 
     // PREDICT 1: Bc2
-    { type: 'play-move', fen: FEN.after_Na5, correctMove: 'Bc2', prompt: "The knight is coming for your bishop. Where do you save it?", hint: "Retreat to c2 — it's safe there and eyes the kingside.", correctFeedback: 'Bc2 saves the bishop and points it toward h7.', wrongFeedback: 'Retreat the bishop to c2, where it aims at the kingside.' },
+    { type: 'play-move', fen: FEN.after_Na5, correctMove: 'Bc2', prompt: "The knight is coming for your bishop. Where do you save it?", hint: "Retreat to c2 — it's safe there and eyes the kingside.", correctFeedback: 'Bc2 saves the bishop and points it toward h7.', wrongFeedback: 'Retreat the bishop to c2, where it aims at the kingside.', postMoveArrow: ['c2', 'h7'] },
     { type: 'instruction', fen: FEN.after_Bc2, text: "Bc2 tucks the bishop safely behind the pawns. From c2, it eyes h7 — a square that becomes important in many attacks.", arrow: ['b3', 'c2'] },
 
     // Black plays c5
     { type: 'instruction', fen: FEN.after_Bc2, text: "Black plays c5, challenging your center.", autoAdvance: 800, highlightSquares: ['c7', 'c5'] },
 
     // PREDICT 2: d4
-    { type: 'play-move', fen: FEN.after_c5, correctMove: 'd4', prompt: "You've been preparing this move for three turns. Play it!", hint: "Push d4 — that's what c3 was for.", correctFeedback: 'd4 strikes the center. This is the whole point of the Ruy Lopez setup.', wrongFeedback: 'Push d4 — you prepared this with c3.' },
+    { type: 'play-move', fen: FEN.after_c5, correctMove: 'd4', prompt: "You've been preparing this move for three turns. Play it!", hint: "Push d4 — that's what c3 was for.", correctFeedback: 'd4 strikes the center. This is the whole point of the Ruy Lopez setup.', wrongFeedback: 'Push d4 — you prepared this with c3.', postMoveArrow: ['d4', 'e5'] },
     { type: 'instruction', fen: FEN.after_d4, text: "d4 opens the center. Your pieces are perfectly placed — bishop on c2, knight on f3, rook on e1. Everything supports this push.", arrow: ['d2', 'd4'] },
 
     // Black plays Qc7
     { type: 'instruction', fen: FEN.after_d4, text: "Black plays Qc7, connecting the rooks.", autoAdvance: 800, highlightSquares: ['d8', 'c7'] },
 
     // PREDICT 3: Nbd2
-    { type: 'play-move', fen: FEN.after_Qc7, correctMove: 'Nbd2', prompt: "You have one piece left to develop. Where does the knight go?", hint: 'The b1 knight develops to d2, supporting e4.', correctFeedback: "Nbd2 develops the last piece and supports e4.", wrongFeedback: 'Develop the knight to d2 — it supports e4 and can reroute to g3.' },
+    { type: 'play-move', fen: FEN.after_Qc7, correctMove: 'Nbd2', prompt: "You have one piece left to develop. Where does the knight go?", hint: 'The b1 knight develops to d2, supporting e4.', correctFeedback: "Nbd2 develops the last piece and supports e4.", wrongFeedback: 'Develop the knight to d2 — it supports e4 and can reroute to g3.', postMoveArrow: ['d2', 'e4'] },
     { type: 'instruction', fen: FEN.after_Nbd2, text: "Nbd2 completes development. From d2, the knight can go to f1 and then g3, joining a kingside attack.", arrow: ['b1', 'd2'] },
 
     // RECALL
@@ -296,21 +296,21 @@ const RL_DEV_F5: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Bb5, text: "Black plays f5 — the Schliemann Defense. Aggressive, but it weakens the king.", autoAdvance: 800, highlightSquares: ['f7', 'f5'] },
 
     // PREDICT 1: Nc3
-    { type: 'play-move', fen: FEN.dev_f5, correctMove: 'Nc3', prompt: "Black pushed f5. What's your best developing move?", hint: 'Develop the knight to c3, where it eyes e4 and d5.', correctFeedback: 'Nc3 develops and prepares to recapture on e4.', wrongFeedback: 'Develop the knight to c3 — it eyes the e4 square.' },
+    { type: 'play-move', fen: FEN.dev_f5, correctMove: 'Nc3', prompt: "Black pushed f5. What's your best developing move?", hint: 'Develop the knight to c3, where it eyes e4 and d5.', correctFeedback: 'Nc3 develops and prepares to recapture on e4.', wrongFeedback: 'Develop the knight to c3 — it eyes the e4 square.', postMoveArrow: ['c3', 'e4'] },
     { type: 'instruction', fen: FEN.dev_f5_Nc3, text: 'Nc3 develops naturally. If Black takes on e4, your knight recaptures with a strong central position.', arrow: ['b1', 'c3'] },
 
     // Black plays fxe4
     { type: 'instruction', fen: FEN.dev_f5_Nc3, text: 'Black takes: fxe4.', autoAdvance: 800, highlightSquares: ['f5', 'e4'] },
 
     // PREDICT 2: Nxe4
-    { type: 'play-move', fen: FEN.dev_f5_fxe4, correctMove: 'Nxe4', prompt: 'Recapture the pawn.', hint: 'Take with the knight — it lands on a great central square.', correctFeedback: 'Nxe4 puts your knight on a powerful central square.', wrongFeedback: 'Recapture with the knight on e4.' },
+    { type: 'play-move', fen: FEN.dev_f5_fxe4, correctMove: 'Nxe4', prompt: 'Recapture the pawn.', hint: 'Take with the knight — it lands on a great central square.', correctFeedback: 'Nxe4 puts your knight on a powerful central square.', wrongFeedback: 'Recapture with the knight on e4.', postMoveArrow: [['e4', 'd6'], ['e4', 'f6']] },
     { type: 'instruction', fen: FEN.dev_f5_Nxe4, text: 'Nxe4 gives you a dominant knight in the center. Black weakened the kingside for nothing.', arrow: ['c3', 'e4'] },
 
     // Black plays Nf6
     { type: 'instruction', fen: FEN.dev_f5_Nxe4, text: 'Black develops Nf6, challenging your knight.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
 
     // PREDICT 3: Nxf6+
-    { type: 'play-move', fen: FEN.dev_f5_Nf6, correctMove: 'Nxf6+', prompt: "Black's knight challenges yours. What do you play?", hint: 'Trade knights — you get a check out of it.', correctFeedback: "Nxf6+ trades knights with check, keeping the initiative.", wrongFeedback: 'Take on f6 with check — you keep the tempo.' },
+    { type: 'play-move', fen: FEN.dev_f5_Nf6, correctMove: 'Nxf6+', prompt: "Black's knight challenges yours. What do you play?", hint: 'Trade knights — you get a check out of it.', correctFeedback: "Nxf6+ trades knights with check, keeping the initiative.", wrongFeedback: 'Take on f6 with check — you keep the tempo.', postMoveArrow: ['f6', 'e8'] },
     { type: 'instruction', fen: FEN.dev_f5_Nxf6, text: "Nxf6+ forces Black to recapture and you've kept all the momentum. Black's f5 plan backfired.", arrow: ['e4', 'f6'] },
 
     // RECALL
@@ -350,21 +350,21 @@ const RL_DEV_D6: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Ba4, text: "Black plays d6 instead of Nf6 — the Steinitz Defense. Solid but passive.", autoAdvance: 800, highlightSquares: ['d7', 'd6'] },
 
     // PREDICT 1: O-O
-    { type: 'play-move', fen: FEN.dev_d6, correctMove: 'O-O', prompt: "Black played d6. What's your best move?", hint: "When in doubt, castle.", correctFeedback: "O-O gets the king safe. Black is behind in development.", wrongFeedback: "Just castle. You're ahead in development." },
+    { type: 'play-move', fen: FEN.dev_d6, correctMove: 'O-O', prompt: "Black played d6. What's your best move?", hint: "When in doubt, castle.", correctFeedback: "O-O gets the king safe. Black is behind in development.", wrongFeedback: "Just castle. You're ahead in development.", postMoveArrow: ['f1', 'e1'] },
     { type: 'instruction', fen: FEN.dev_d6_OO, text: "Castle first, ask questions later. Black still needs to develop the kingside.", arrow: ['e1', 'g1'] },
 
     // Black plays Bd7
     { type: 'instruction', fen: FEN.dev_d6_OO, text: 'Black develops the bishop to d7.', autoAdvance: 800, highlightSquares: ['c8', 'd7'] },
 
     // PREDICT 2: c3
-    { type: 'play-move', fen: FEN.dev_d6_Bd7, correctMove: 'c3', prompt: "You're ahead in development. What do you prepare?", hint: 'Same idea as the main line — prepare d4.', correctFeedback: 'c3 prepares d4 just like in the main line.', wrongFeedback: 'Play c3 to prepare d4 — same plan as always.' },
+    { type: 'play-move', fen: FEN.dev_d6_Bd7, correctMove: 'c3', prompt: "You're ahead in development. What do you prepare?", hint: 'Same idea as the main line — prepare d4.', correctFeedback: 'c3 prepares d4 just like in the main line.', wrongFeedback: 'Play c3 to prepare d4 — same plan as always.', postMoveArrow: ['c3', 'd4'] },
     { type: 'instruction', fen: FEN.dev_d6_c3, text: "c3 prepares the d4 push. The plan doesn't change just because Black played d6 — you still want the center.", arrow: ['c2', 'c3'] },
 
     // Black plays g6
     { type: 'instruction', fen: FEN.dev_d6_c3, text: 'Black plays g6, preparing to fianchetto the bishop.', autoAdvance: 800, highlightSquares: ['g7', 'g6'] },
 
     // PREDICT 3: d4
-    { type: 'play-move', fen: FEN.dev_d6_g6, correctMove: 'd4', prompt: "You prepared it — now play it.", hint: 'Strike the center with d4.', correctFeedback: "d4 opens the center while Black is still setting up.", wrongFeedback: 'Push d4 — Black is too slow to stop it.' },
+    { type: 'play-move', fen: FEN.dev_d6_g6, correctMove: 'd4', prompt: "You prepared it — now play it.", hint: 'Strike the center with d4.', correctFeedback: "d4 opens the center while Black is still setting up.", wrongFeedback: 'Push d4 — Black is too slow to stop it.', postMoveArrow: ['d4', 'e5'] },
     { type: 'instruction', fen: FEN.dev_d6_d4, text: "d4 strikes while Black is still fianchettoing. You have a space advantage and better development.", arrow: ['d2', 'd4'] },
 
     // RECALL
@@ -401,21 +401,21 @@ const RL_DEV_B5: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_OO_w, text: "Black plays b5, chasing your bishop before developing the kingside.", autoAdvance: 800, highlightSquares: ['b7', 'b5'] },
 
     // PREDICT 1: Bb3
-    { type: 'play-move', fen: FEN.dev_b5, correctMove: 'Bb3', prompt: "Black pushes b5. Where does your bishop go?", hint: 'Retreat to b3 — same idea as the main line.', correctFeedback: 'Bb3 retreats to a safe diagonal, aiming at f7.', wrongFeedback: 'Retreat the bishop to b3.' },
+    { type: 'play-move', fen: FEN.dev_b5, correctMove: 'Bb3', prompt: "Black pushes b5. Where does your bishop go?", hint: 'Retreat to b3 — same idea as the main line.', correctFeedback: 'Bb3 retreats to a safe diagonal, aiming at f7.', wrongFeedback: 'Retreat the bishop to b3.', postMoveArrow: ['b3', 'f7'] },
     { type: 'instruction', fen: FEN.dev_b5_Bb3, text: "Same retreat as the main line. The bishop on b3 aims at f7 and is safe from pawn attacks.", arrow: ['a4', 'b3'] },
 
     // Black plays Bc5
     { type: 'instruction', fen: FEN.dev_b5_Bb3, text: 'Black develops the bishop actively to c5.', autoAdvance: 800, highlightSquares: ['f8', 'c5'] },
 
     // PREDICT 2: a4
-    { type: 'play-move', fen: FEN.dev_b5_Bc5, correctMove: 'a4', prompt: "Black's queenside is extended. How do you attack it?", hint: "Strike at the b5 pawn — it's overextended.", correctFeedback: 'a4 attacks the b5 pawn and fights for queenside space.', wrongFeedback: 'Push a4 to undermine the b5 pawn.' },
+    { type: 'play-move', fen: FEN.dev_b5_Bc5, correctMove: 'a4', prompt: "Black's queenside is extended. How do you attack it?", hint: "Strike at the b5 pawn — it's overextended.", correctFeedback: 'a4 attacks the b5 pawn and fights for queenside space.', wrongFeedback: 'Push a4 to undermine the b5 pawn.', postMoveArrow: ['a4', 'b5'] },
     { type: 'instruction', fen: FEN.dev_b5_a4, text: "a4 puts pressure on Black's extended queenside pawns. The b5 pawn is a target.", arrow: ['a2', 'a4'] },
 
     // Black plays Rb8
     { type: 'instruction', fen: FEN.dev_b5_a4, text: 'Black protects with Rb8.', autoAdvance: 800, highlightSquares: ['a8', 'b8'] },
 
     // PREDICT 3: c3
-    { type: 'play-move', fen: FEN.dev_b5_Rb8, correctMove: 'c3', prompt: "Same plan as always. What do you prepare?", hint: 'Support d4 with c3.', correctFeedback: 'c3 prepares d4 — the plan stays the same no matter what Black does.', wrongFeedback: 'Play c3 to prepare d4.' },
+    { type: 'play-move', fen: FEN.dev_b5_Rb8, correctMove: 'c3', prompt: "Same plan as always. What do you prepare?", hint: 'Support d4 with c3.', correctFeedback: 'c3 prepares d4 — the plan stays the same no matter what Black does.', wrongFeedback: 'Play c3 to prepare d4.', postMoveArrow: ['c3', 'd4'] },
     { type: 'instruction', fen: FEN.dev_b5_c3, text: "c3 prepares d4. Black pushed queenside pawns but you've got the center under control.", arrow: ['c2', 'c3'] },
 
     // RECALL
@@ -454,21 +454,21 @@ const RL_DEV_RE8: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_h3, text: "Black plays Re8 instead of Na5, keeping the knight on c6.", autoAdvance: 800, highlightSquares: ['f8', 'e8'] },
 
     // PREDICT 1: d4
-    { type: 'play-move', fen: FEN.dev_Re8, correctMove: 'd4', prompt: "Black isn't attacking your bishop. What can you play now?", hint: "You've been preparing d4 — nothing's stopping you.", correctFeedback: 'd4 strikes the center immediately.', wrongFeedback: "Push d4 — Black gave you a free move." },
+    { type: 'play-move', fen: FEN.dev_Re8, correctMove: 'd4', prompt: "Black isn't attacking your bishop. What can you play now?", hint: "You've been preparing d4 — nothing's stopping you.", correctFeedback: 'd4 strikes the center immediately.', wrongFeedback: "Push d4 — Black gave you a free move.", postMoveArrow: ['d4', 'e5'] },
     { type: 'instruction', fen: FEN.dev_Re8_d4, text: "d4 is even stronger here because Black spent a move on Re8 instead of attacking your bishop.", arrow: ['d2', 'd4'] },
 
     // Black plays Bb7
     { type: 'instruction', fen: FEN.dev_Re8_d4, text: 'Black develops the bishop to b7.', autoAdvance: 800, highlightSquares: ['c8', 'b7'] },
 
     // PREDICT 2: Nbd2
-    { type: 'play-move', fen: FEN.dev_Re8_Bb7, correctMove: 'Nbd2', prompt: "Keep developing. Where does the knight go?", hint: 'The b1 knight goes to d2, supporting e4.', correctFeedback: 'Nbd2 develops and supports the e4 pawn.', wrongFeedback: 'Develop the knight to d2.' },
+    { type: 'play-move', fen: FEN.dev_Re8_Bb7, correctMove: 'Nbd2', prompt: "Keep developing. Where does the knight go?", hint: 'The b1 knight goes to d2, supporting e4.', correctFeedback: 'Nbd2 develops and supports the e4 pawn.', wrongFeedback: 'Develop the knight to d2.', postMoveArrow: ['d2', 'e4'] },
     { type: 'instruction', fen: FEN.dev_Re8_Nbd2, text: "Nbd2 supports e4 and the knight can reroute to f1-g3 for a kingside attack.", arrow: ['b1', 'd2'] },
 
     // Black plays Bf8
     { type: 'instruction', fen: FEN.dev_Re8_Nbd2, text: 'Black retreats the bishop to f8, a common maneuver.', autoAdvance: 800, highlightSquares: ['e7', 'f8'] },
 
     // PREDICT 3: a4
-    { type: 'play-move', fen: FEN.dev_Re8_Bf8, correctMove: 'a4', prompt: "Black's b5 pawn is a target. How do you attack it?", hint: 'Push a4 to undermine the queenside.', correctFeedback: 'a4 attacks the b5 pawn and opens lines on the queenside.', wrongFeedback: 'Push a4 to put pressure on b5.' },
+    { type: 'play-move', fen: FEN.dev_Re8_Bf8, correctMove: 'a4', prompt: "Black's b5 pawn is a target. How do you attack it?", hint: 'Push a4 to undermine the queenside.', correctFeedback: 'a4 attacks the b5 pawn and opens lines on the queenside.', wrongFeedback: 'Push a4 to put pressure on b5.', postMoveArrow: ['a4', 'b5'] },
     { type: 'instruction', fen: FEN.dev_Re8_a4, text: "a4 challenges the b5 pawn. If Black takes, you open the a-file for your rook.", arrow: ['a2', 'a4'] },
 
     // RECALL

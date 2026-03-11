@@ -163,7 +163,7 @@ export default function OpeningLessonPage() {
   const [moveStatus, setMoveStatus] = useState<'waiting' | 'correct' | 'wrong'>('waiting')
   const [showComplete, setShowComplete] = useState(false)
   const [correctCount, setCorrectCount] = useState(0)
-  const [activePostMoveArrow, setActivePostMoveArrow] = useState<[Square, Square] | null>(null)
+  const [activePostMoveArrows, setActivePostMoveArrows] = useState<[Square, Square][] | null>(null)
   const [lastOpponentHighlight, setLastOpponentHighlight] = useState<string[] | null>(null)
 
   // For puzzle steps
@@ -237,7 +237,7 @@ export default function OpeningLessonPage() {
     setWrongAttempts(0)
     setSelectedSquare(null)
     setMoveStatus('waiting')
-    setActivePostMoveArrow(null)
+    setActivePostMoveArrows(null)
     setPuzzleMoveIndex(0)
     setPuzzleFen('')
     advancingRef.current = false
@@ -300,8 +300,10 @@ export default function OpeningLessonPage() {
           vibrateOnCorrect()
           setCorrectAnimCount(prev => prev + 1)
           if (currentStep.postMoveArrow) {
-            const arrow = currentStep.postMoveArrow
-            setTimeout(() => setActivePostMoveArrow(arrow), 350)
+            const raw = currentStep.postMoveArrow
+            // Normalize single arrow [from, to] to array of arrows
+            const arrows: [Square, Square][] = Array.isArray(raw[0]) ? raw as [Square, Square][] : [raw as [Square, Square]]
+            setTimeout(() => setActivePostMoveArrows(arrows), 350)
           }
         }
         return true
@@ -503,25 +505,26 @@ export default function OpeningLessonPage() {
     return styles
   }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts, lastOpponentHighlight])
 
-  // ─── Arrows (library — for attack/instruction arrows) ───
+  // ─── Arrows (library — blue for instruction, red for threats) ───
   const arrows = useMemo(() => {
-    const attackColor = 'rgba(29, 161, 242, 0.9)'
-    if (activePostMoveArrow) {
-      return [{
-        startSquare: activePostMoveArrow[0],
-        endSquare: activePostMoveArrow[1],
-        color: attackColor,
-      }]
+    const moveColor = 'rgba(29, 161, 242, 0.9)'    // blue — where the piece moved
+    const threatColor = 'rgba(235, 64, 52, 0.85)'   // red — what the piece threatens
+    if (activePostMoveArrows) {
+      return activePostMoveArrows.map(a => ({
+        startSquare: a[0],
+        endSquare: a[1],
+        color: threatColor,
+      }))
     }
     if (currentStep?.type === 'instruction' && currentStep.arrow) {
       return [{
         startSquare: currentStep.arrow[0],
         endSquare: currentStep.arrow[1],
-        color: attackColor,
+        color: moveColor,
       }]
     }
     return []
-  }, [currentStep, activePostMoveArrow])
+  }, [currentStep, activePostMoveArrows])
 
   // ─── Guide arrow (custom animated blue) ───
   const guideArrow = useMemo(() => {
@@ -769,25 +772,19 @@ export default function OpeningLessonPage() {
 
       {showComplete && (() => {
         const opening = getOpeningBySlug(slug)
-        const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
-        const isPerfect = correctCount === interactiveCount
-        const score = isPerfect ? `${interactiveCount}/${interactiveCount}` : `${correctCount}/${interactiveCount}`
-        const status = isPerfect ? 'perfect' : 'completed'
         return (
           <LessonComplete
             title="Lesson Complete!"
             subtitle={lesson.title}
             lessonName={lesson.title}
             lessonId={lessonId}
-            correctCount={correctCount}
-            totalPuzzles={interactiveCount}
             accentColor={opening?.color ?? '#FF9600'}
             shareConfig={{
-              shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/${status}`,
+              shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/perfect`,
               ogEndpoint: '/api/og/opening',
               ogParams: {
                 opening: opening?.name ?? 'Opening',
-                score,
+                score: 'perfect',
                 color: opening?.color ?? '#FF9600',
               },
               source: 'opening',

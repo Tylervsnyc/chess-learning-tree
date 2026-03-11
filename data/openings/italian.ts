@@ -6,15 +6,15 @@
 // the previous one). This guarantees ONE current lesson at all times.
 //
 // WHITE OPENING: The user is learning to play as White.
-// Main line: 1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Bd2
-//            7...Bxd2+ 8.Nbxd2 d5 9.exd5 Nxd5 10.O-O
+// Main line: 1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d3 d6 6.O-O O-O
+//            7.Re1 a5 8.h3 h6 9.Nbd2 Be6 10.Bb5 Qb8 11.Nf1 Qa7 12.Be3
 //
-// GRID LAYOUT (10 lessons):
-//   Row 4:                              it-test-1 (col 0)
-//   Row 3:   it-4 (col 0)              it-fried-2 (col 1)
-//   Row 2:   it-evans-1 (col -1)       it-3 (col 0)
-//   Row 1:   it-two-knights (col -1)   it-2 (col 0)
-//   Row 0:   it-dev-f6 (col -1)     it-1 (col 0)          it-fried-1 (col 1)
+// GRID LAYOUT (6 lessons):
+//   Row 4:   it-test-1 (col 0)
+//   Row 3:   it-4 (col 0)
+//   Row 2:   it-3 (col 0)
+//   Row 1:   it-2 (col 0)        it-dev-Be7 (col -1)
+//   Row 0:   it-1 (col 0)
 //
 // ALL lines are purely horizontal or vertical. No L-shapes, no diagonals.
 
@@ -28,8 +28,7 @@ export const ITALIAN_GAME: OpeningTree = {
   color: '#58CC02',
   colorDark: '#46A302',
   completionOrder: [
-    'it-1', 'it-2', 'it-dev-f6', 'it-fried-1', 'it-3',
-    'it-two-knights', 'it-fried-2', 'it-4', 'it-evans-1', 'it-test-1',
+    'it-1', 'it-2', 'it-dev-Be7', 'it-3', 'it-4', 'it-test-1',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -48,8 +47,8 @@ export const ITALIAN_GAME: OpeningTree = {
     {
       id: 'it-2',
       name: 'Giuoco Piano',
-      moves: ['3...Bc5', '4.c3 Nf6', '5.d4'],
-      description: 'Prepare the powerful d4 center push.',
+      moves: ['3...Bc5', '4.c3 Nf6', '5.d3 d6', '6.O-O'],
+      description: 'Build a solid center and castle early.',
       type: 'main',
       row: 1,
       col: 0,
@@ -59,96 +58,40 @@ export const ITALIAN_GAME: OpeningTree = {
     },
     {
       id: 'it-3',
-      name: 'The Center Fork',
-      moves: ['5...exd4', '6.cxd4 Bb4+', '7.Bd2'],
-      description: 'Handle the check and maintain your powerful center.',
+      name: 'The Buildup',
+      moves: ['6...O-O', '7.Re1 a5', '8.h3 h6', '9.Nbd2'],
+      description: 'Strengthen your position with quiet, improving moves.',
       type: 'main',
       row: 2,
       col: 0,
       lineFrom: 'it-2',
-      unlockedBy: 'it-fried-1',
+      unlockedBy: 'it-dev-Be7',
       side: 'white',
     },
     {
       id: 'it-4',
-      name: 'The Attack',
-      moves: ['7...Bxd2+', '8.Nbxd2 d5', '9.exd5 Nxd5', '10.O-O'],
-      description: 'Castle and develop — your center gives you a great game.',
+      name: 'The Plan',
+      moves: ['9...Be6', '10.Bb5 Qb8', '11.Nf1 Qa7', '12.Be3'],
+      description: 'Regroup your pieces and prepare for action.',
       type: 'main',
       row: 3,
       col: 0,
       lineFrom: 'it-3',
-      unlockedBy: 'it-fried-2',
-      side: 'white',
-    },
-
-    // === PUNISH: 2...f6?? (same row as it-1, col -1) ===
-    {
-      id: 'it-dev-f6',
-      name: 'If f6',
-      moves: ['2...f6??', '3.Nxe5! fxe5', '4.Qh5+ g6', '5.Qxe5+'],
-      description: 'Black defends e5 with f6 — sacrifice the knight, win the rook.',
-      type: 'deviation',
-      row: 0,
-      col: -1,
-      lineFrom: 'it-1',
-      unlockedBy: 'it-2',
-      side: 'white',
-    },
-
-    // === FRIED LIVER (same row as it-1, col 1) ===
-    {
-      id: 'it-fried-1',
-      name: 'The Fried Liver',
-      moves: ['3...Nf6', '4.Ng5 d5', '5.exd5 Nxd5??', '6.Nxf7!'],
-      description: 'The crowd-pleaser — sacrifice the knight on f7 for a devastating attack.',
-      type: 'branch',
-      row: 0,
-      col: 1,
-      lineFrom: 'it-1',
-      unlockedBy: 'it-dev-f6',
-      side: 'white',
-    },
-
-    // === FRIED LIVER CONT (same col as it-fried-1, col 1) ===
-    {
-      id: 'it-fried-2',
-      name: 'Fried Liver Cont.',
-      moves: ['6...Kxf7', '7.Qf3+ Ke6', '8.Nc3'],
-      description: 'Continue the attack — the king walks into the open.',
-      type: 'branch',
-      row: 3,
-      col: 1,
-      lineFrom: 'it-fried-1',
-      unlockedBy: 'it-two-knights',
-      side: 'white',
-    },
-
-    // === TWO KNIGHTS (same row as it-2, col -1) ===
-    {
-      id: 'it-two-knights',
-      name: 'Two Knights',
-      moves: ['3...Nf6', '4.d4 exd4', '5.O-O'],
-      description: 'Aggressive center play — sacrifice a pawn for rapid development.',
-      type: 'branch',
-      row: 1,
-      col: -1,
-      lineFrom: 'it-2',
       unlockedBy: 'it-3',
       side: 'white',
     },
 
-    // === EVANS GAMBIT (same row as it-3, col -1) ===
+    // === DEVIATION: 3...Be7 (col -1) ===
     {
-      id: 'it-evans-1',
-      name: 'Evans Gambit',
-      moves: ['3...Bc5', '4.b4!? Bxb4', '5.c3'],
-      description: 'Sacrifice a pawn for rapid development and a powerful center.',
-      type: 'branch',
-      row: 2,
+      id: 'it-dev-Be7',
+      name: 'If Be7',
+      moves: ['3...Be7', '4.d4 d6', '5.dxe5 dxe5', '6.Qxd8+ Bxd8', '7.Nc3'],
+      description: 'Black plays the passive Be7 — simplify and grab the center.',
+      type: 'deviation',
+      row: 1,
       col: -1,
-      lineFrom: 'it-3',
-      unlockedBy: 'it-4',
+      lineFrom: 'it-1',
+      unlockedBy: 'it-2',
       side: 'white',
     },
 
@@ -162,7 +105,7 @@ export const ITALIAN_GAME: OpeningTree = {
       row: 4,
       col: 0,
       lineFrom: 'it-4',
-      unlockedBy: 'it-evans-1',
+      unlockedBy: 'it-4',
       side: 'white',
     },
   ],

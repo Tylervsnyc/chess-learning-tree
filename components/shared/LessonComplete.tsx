@@ -79,7 +79,7 @@ export function LessonComplete({
   const hasScore = correctCount !== undefined
   const isPerfect = hasScore && correctCount === totalPuzzles
   const didFail = hasScore && correctCount <= Math.floor(totalPuzzles / 2)
-  const canShare = hasScore && !didFail && correctCount >= 4
+  const canShare = shareConfig ? !didFail : (hasScore && !didFail && correctCount! >= 4)
 
   const rookRef = useRef<RookCelebrationAnimationRef>(null)
   const wrongRookRef = useRef<RookWrongAnimationRef>(null)
@@ -107,25 +107,16 @@ export function LessonComplete({
 
   // ─── Confetti + sound (pass only) ───
   useEffect(() => {
-    if (didFail || !hasScore) return
-    confetti({
-      particleCount: isPerfect ? 100 : correctCount! >= 5 ? 60 : 40,
-      angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
-      colors: isPerfect
-        ? ['#FFC800', '#FFAA00', '#FFFFFF']
-        : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
-      gravity: 1.2, ticks: 200,
-    })
-    confetti({
-      particleCount: isPerfect ? 100 : correctCount! >= 5 ? 60 : 40,
-      angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
-      colors: isPerfect
-        ? ['#FFC800', '#FFAA00', '#FFFFFF']
-        : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF'],
-      gravity: 1.2, ticks: 200,
-    })
+    if (didFail) return
+    if (!hasScore && !shareConfig) return
+    const count = isPerfect || !hasScore ? 100 : correctCount! >= 5 ? 60 : 40
+    const colors = isPerfect || !hasScore
+      ? ['#FFC800', '#FFAA00', '#FFFFFF']
+      : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF']
+    confetti({ particleCount: count, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
+    confetti({ particleCount: count, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
     playCelebrationSound(correctCount)
-  }, [isPerfect, correctCount, didFail, hasScore])
+  }, [isPerfect, correctCount, didFail, hasScore, shareConfig])
 
   // ─── Wrong rook animation ───
   useEffect(() => {
@@ -189,7 +180,7 @@ export function LessonComplete({
       try {
         const shareData: ShareData = {
           title: `${lessonName} | Chess Path`,
-          text: `I ${isPerfect ? 'got a perfect score' : 'completed'} "${lessonName}" on Chess Path!`,
+          text: `I completed "${lessonName}" on Chess Path!`,
           url,
         }
         if (shareImageRef.current) {
