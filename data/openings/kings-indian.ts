@@ -11,7 +11,11 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (7 lessons):
+// GRID LAYOUT (12 lessons):
+//   Row 8:                              ki-test-2 (col 0)
+//   Row 7:                ki-7 (col 0)
+//   Row 6:                ki-6 (col 0)
+//   Row 5:   ki-dev-Bb2 (col -1)    ki-5 (col 0)
 //   Row 4:                              ki-test-1 (col 0)
 //   Row 3:                ki-4 (col 0)
 //   Row 2:   ki-dev-Be3 (col -1)    ki-3 (col 0)
@@ -33,6 +37,8 @@ export const KINGS_INDIAN: OpeningTree = {
     'ki-1', 'ki-2', 'ki-dev-h3',
     'ki-3', 'ki-dev-Be3', 'ki-4',
     'ki-test-1',
+    'ki-5', 'ki-dev-Bb2', 'ki-6',
+    'ki-7', 'ki-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -124,6 +130,72 @@ export const KINGS_INDIAN: OpeningTree = {
       col: 0,
       lineFrom: 'ki-4',
       unlockedBy: 'ki-4',
+      side: 'black',
+    },
+
+    // === LEVEL 2: MAIN LINE (13.Be3 h6 ... 22.Bb3 Rf5) ===
+    {
+      id: 'ki-5',
+      name: 'Forcing Trades',
+      moves: ['13.Be3 h6', '14.Ne6 Bxe6', '15.dxe6 fxe4'],
+      description: 'White tries to invade with the knight — trade it off and win material in the center.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'ki-test-1',
+      unlockedBy: 'ki-test-1',
+      side: 'black',
+    },
+    {
+      id: 'ki-6',
+      name: 'Recapturing',
+      moves: ['16.Nxe4 Nxe4', '17.Bxe4 d5', '18.cxd5 cxd5'],
+      description: 'Clear the center with precise trades, then break through with d5.',
+      type: 'main',
+      row: 6,
+      col: 0,
+      lineFrom: 'ki-5',
+      unlockedBy: 'ki-dev-Bb2',
+      side: 'black',
+    },
+    {
+      id: 'ki-7',
+      name: 'The Counterattack',
+      moves: ['19.Bc2 b6', '20.Qg4 e4', '21.Rad1 Qc7'],
+      description: 'Secure the queenside, push the e-pawn forward, and centralize your queen.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'ki-6',
+      unlockedBy: 'ki-6',
+      side: 'black',
+    },
+
+    // === DEVIATION: 13.Bb2 (instead of 13.Be3) ===
+    {
+      id: 'ki-dev-Bb2',
+      name: 'Dev 13.Bb2',
+      moves: ['13.Bb2 h6', '14.Ne6 Bxe6', '15.dxe6 fxe4'],
+      description: 'White fianchettoes the bishop instead of Be3 — same idea, trade off the invading knight.',
+      type: 'deviation',
+      row: 5,
+      col: -1,
+      lineFrom: 'ki-5',
+      unlockedBy: 'ki-5',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'ki-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Level 2 continuation and handle the Bb2 deviation.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'ki-7',
+      unlockedBy: 'ki-7',
       side: 'black',
     },
   ],

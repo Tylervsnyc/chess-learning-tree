@@ -6,10 +6,17 @@
 // WHITE OPENING: The user is learning to play as White.
 // Main line: 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7
 //            6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3 Na5 10.Bc2 c5 11.d4 Qc7 12.Nbd2
+// L2 main: 12...cxd4 13.cxd4 Nc6 14.Nb3 a5 15.Be3 a4 16.Nbd2 Bd7 17.Rc1 Qb7
+//          18.Qe2 Rfe8 19.Bd3 Rab8 20.dxe5 Nxe5 21.Nxe5
 //
-// 3 White moves per lesson. 4 main + 4 deviations + 1 test = 9 nodes.
+// 3 White moves per lesson. L1: 4 main + 4 deviations + 1 test = 9 nodes.
+//                           L2: 3 main + 1 deviation + 1 test = 5 nodes.
 //
 // GRID LAYOUT:
+//   Row 8: rl-test-2 (col 0)
+//   Row 7: rl-7 (col 0)
+//   Row 6: rl-dev-Bb7 (col -1)  rl-6 (col 0)
+//   Row 5: rl-5 (col 0)
 //   Row 4: rl-test-1 (col 0)
 //   Row 3: rl-4 (col 0)              rl-dev-Re8 (col -1)
 //   Row 2: rl-3 (col 0)
@@ -52,6 +59,7 @@ export const RUY_LOPEZ: OpeningTree = {
   completionOrder: [
     'rl-1', 'rl-2', 'rl-dev-f5', 'rl-dev-d6', 'rl-dev-b5',
     'rl-3', 'rl-4', 'rl-dev-Re8', 'rl-test-1',
+    'rl-5', 'rl-6', 'rl-dev-Bb7', 'rl-7', 'rl-test-2',
   ],
   nodes: [
 
@@ -166,6 +174,79 @@ export const RUY_LOPEZ: OpeningTree = {
       col: 0,
       lineFrom: 'rl-4',
       unlockedBy: 'rl-dev-Re8',
+      side: 'white',
+    },
+
+    // ═══════════════════════════════════════════════════════════
+    // LEVEL 2 — After 12.Nbd2
+    // Main line: 12...cxd4 13.cxd4 Nc6 14.Nb3 a5 15.Be3 a4
+    //            16.Nbd2 Bd7 17.Rc1 Qb7 18.Qe2 Rfe8 19.Bd3
+    //            Rab8 20.dxe5 Nxe5 21.Nxe5
+    // ═══════════════════════════════════════════════════════════
+
+    // === L2 MAIN LINE (center trunk, col 0) ===
+    {
+      id: 'rl-5',
+      name: 'The Recapture',
+      moves: ['12...cxd4', '13.cxd4 Nc6', '14.Nb3 a5', '15.Be3'],
+      description: 'Recapture, reroute the knight, and develop the bishop.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'rl-test-1',
+      unlockedBy: 'rl-test-1',
+      side: 'white',
+    },
+    {
+      id: 'rl-6',
+      name: 'Regrouping',
+      moves: ['15...a4', '16.Nbd2 Bd7', '17.Rc1 Qb7', '18.Qe2'],
+      description: 'Regroup the knight, activate the rook, and centralize the queen.',
+      type: 'main',
+      row: 6,
+      col: 0,
+      lineFrom: 'rl-5',
+      unlockedBy: 'rl-5',
+      side: 'white',
+    },
+    {
+      id: 'rl-7',
+      name: 'The Buildup',
+      moves: ['18...Rfe8', '19.Bd3 Rab8', '20.dxe5 Nxe5', '21.Nxe5'],
+      description: 'Centralize the bishop, break the tension, and trade in the center.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'rl-6',
+      unlockedBy: 'rl-dev-Bb7',
+      side: 'white',
+    },
+
+    // === L2 DEVIATION ===
+    {
+      id: 'rl-dev-Bb7',
+      name: 'If 13...Bb7',
+      moves: ['13...Bb7', '14.d5'],
+      description: 'Black develops the bishop instead of the knight. Lock the center with d5.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'rl-6',
+      unlockedBy: 'rl-6',
+      side: 'white',
+    },
+
+    // === L2 LEVEL TEST ===
+    {
+      id: 'rl-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play all Level 2 moves from memory, including the Bb7 deviation.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'rl-7',
+      unlockedBy: 'rl-7',
       side: 'white',
     },
   ],

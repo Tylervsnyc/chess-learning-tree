@@ -62,6 +62,36 @@ const FEN = {
   dev_b5_Rb8:   '1rbqk2r/2pp1ppp/p1n2n2/1pb1p3/P3P3/1B3N2/1PPP1PPP/RNBQ1RK1 w k - 1 8',
   dev_b5_c3:    '1rbqk2r/2pp1ppp/p1n2n2/1pb1p3/P3P3/1BP2N2/1P1P1PPP/RNBQ1RK1 b k - 0 8',
 
+  // ═══════════════════════════════════════════════════════════
+  // L2 FENs — after 12.Nbd2
+  // ═══════════════════════════════════════════════════════════
+  after_cxd4:     'r1b2rk1/2q1bppp/p2p1n2/np2p3/3pP3/2P2N1P/PPBN1PP1/R1BQR1K1 w - - 0 13',
+  after_cxd4_w:   'r1b2rk1/2q1bppp/p2p1n2/np2p3/3PP3/5N1P/PPBN1PP1/R1BQR1K1 b - - 0 13',
+  after_Nc6_l2:   'r1b2rk1/2q1bppp/p1np1n2/1p2p3/3PP3/5N1P/PPBN1PP1/R1BQR1K1 w - - 1 14',
+  after_Nb3:      'r1b2rk1/2q1bppp/p1np1n2/1p2p3/3PP3/1N3N1P/PPB2PP1/R1BQR1K1 b - - 2 14',
+  after_a5_l2:    'r1b2rk1/2q1bppp/2np1n2/pp2p3/3PP3/1N3N1P/PPB2PP1/R1BQR1K1 w - - 0 15',
+  after_Be3:      'r1b2rk1/2q1bppp/2np1n2/pp2p3/3PP3/1N2BN1P/PPB2PP1/R2QR1K1 b - - 1 15',
+  after_a4_l2:    'r1b2rk1/2q1bppp/2np1n2/1p2p3/p2PP3/1N2BN1P/PPB2PP1/R2QR1K1 w - - 0 16',
+  after_Nbd2_l2:  'r1b2rk1/2q1bppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBN1PP1/R2QR1K1 b - - 1 16',
+  after_Bd7:      'r4rk1/2qbbppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBN1PP1/R2QR1K1 w - - 2 17',
+  after_Rc1:      'r4rk1/2qbbppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBN1PP1/2RQR1K1 b - - 3 17',
+  after_Qb7:      'r4rk1/1q1bbppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBN1PP1/2RQR1K1 w - - 4 18',
+  after_Qe2:      'r4rk1/1q1bbppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBNQPP1/2R1R1K1 b - - 5 18',
+  after_Rfe8:     'r3r1k1/1q1bbppp/2np1n2/1p2p3/p2PP3/4BN1P/PPBNQPP1/2R1R1K1 w - - 6 19',
+  after_Bd3:      'r3r1k1/1q1bbppp/2np1n2/1p2p3/p2PP3/3BBN1P/PP1NQPP1/2R1R1K1 b - - 7 19',
+  after_Rab8:     '1r2r1k1/1q1bbppp/2np1n2/1p2p3/p2PP3/3BBN1P/PP1NQPP1/2R1R1K1 w - - 8 20',
+  after_dxe5_l2:  '1r2r1k1/1q1bbppp/2np1n2/1p2P3/p3P3/3BBN1P/PP1NQPP1/2R1R1K1 b - - 0 20',
+  after_Nxe5_b:   '1r2r1k1/1q1bbppp/3p1n2/1p2n3/p3P3/3BBN1P/PP1NQPP1/2R1R1K1 w - - 0 21',
+  after_Nxe5_w:   '1r2r1k1/1q1bbppp/3p1n2/1p2N3/p3P3/3BB2P/PP1NQPP1/2R1R1K1 b - - 0 21',
+
+  // L2 Deviation: 13...Bb7
+  dev_Bb7:        'r4rk1/1bq1bppp/p2p1n2/np2p3/3PP3/5N1P/PPBN1PP1/R1BQR1K1 w - - 1 14',
+  dev_Bb7_d5:     'r4rk1/1bq1bppp/p2p1n2/np1Pp3/4P3/5N1P/PPBN1PP1/R1BQR1K1 b - - 0 14',
+  dev_Bb7_Rac8:   '2r2rk1/1bq1bppp/p2p1n2/np1Pp3/4P3/5N1P/PPBN1PP1/R1BQR1K1 w - - 1 15',
+  dev_Bb7_Bd3:    '2r2rk1/1bq1bppp/p2p1n2/np1Pp3/4P3/3B1N1P/PP1N1PP1/R1BQR1K1 b - - 2 15',
+  dev_Bb7_Nd7:    '2r2rk1/1bqnbppp/p2p4/np1Pp3/4P3/3B1N1P/PP1N1PP1/R1BQR1K1 w - - 3 16',
+  dev_Bb7_Nf1:    '2r2rk1/1bqnbppp/p2p4/np1Pp3/4P3/3B1N1P/PP3PP1/R1BQRNK1 b - - 4 16',
+
   // Deviation: 9...Re8
   dev_Re8:      'r1bqr1k1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1 w - - 1 10',
   dev_Re8_d4:   'r1bqr1k1/2p1bppp/p1np1n2/1p2p3/3PP3/1BP2N1P/PP3PP1/RNBQR1K1 b - - 0 10',
@@ -536,6 +566,255 @@ const RL_TEST_1: OpeningLesson = {
 }
 
 // ═══════════════════════════════════════════════════════════
+// rl-5: The Recapture (cxd4, Nb3, Be3)
+// ═══════════════════════════════════════════════════════════
+
+const RL_LESSON_5: OpeningLesson = {
+  id: 'rl-5',
+  title: 'The Recapture',
+  defaultOrientation: 'white',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Nbd2, text: "Black captures on d4. You'll recapture, reroute a knight, and develop the bishop to a strong square." },
+
+    // Black plays cxd4
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'Black captures cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+
+    // PREDICT 1: cxd4
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: "Black just traded pawns. How do you recapture?", hint: 'Take back with the c3 pawn to keep a strong center.', correctFeedback: 'cxd4 recaptures and maintains your central pawn duo on d4 and e4.', wrongFeedback: 'Recapture with the c-pawn — cxd4 keeps a solid center.', postMoveArrow: ['d4', 'e5'] },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'cxd4 keeps two pawns in the center. The d4-e4 duo controls a lot of key squares.', arrow: ['c3', 'd4'] },
+
+    // Black plays Nc6
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Black returns the knight to c6, putting pressure on d4.', autoAdvance: 800, highlightSquares: ['a5', 'c6'] },
+
+    // PREDICT 2: Nb3
+    { type: 'play-move', fen: FEN.after_Nc6_l2, correctMove: 'Nb3', prompt: "The knight on d2 isn't doing much. Where can it go?", hint: 'Jump the knight to b3, eyeing a5 and d4.', correctFeedback: 'Nb3 reroutes the knight to a much better square, controlling a5 and c5.', wrongFeedback: 'Move the knight to b3 where it watches a5 and supports d4.', postMoveArrow: ['b3', 'a5'] },
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'Nb3 is a great reroute. The knight blocks the a-pawn from advancing and eyes the c5 square.', arrow: ['d2', 'b3'] },
+
+    // Black plays a5
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'Black pushes a5, gaining space on the queenside.', autoAdvance: 800, highlightSquares: ['a6', 'a5'] },
+
+    // PREDICT 3: Be3
+    { type: 'play-move', fen: FEN.after_a5_l2, correctMove: 'Be3', prompt: "Your dark-squared bishop hasn't moved yet. Where does it belong?", hint: 'Develop the bishop to e3, supporting d4.', correctFeedback: 'Be3 develops the last minor piece and shores up the d4 pawn.', wrongFeedback: 'The bishop belongs on e3, protecting d4 and eyeing the a7-g1 diagonal.', postMoveArrow: ['e3', 'd4'] },
+    { type: 'instruction', fen: FEN.after_Be3, text: 'Be3 is the natural square — it defends d4 and controls the a7-g1 diagonal. All your pieces are working together now.', arrow: ['c1', 'e3'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Nbd2, text: "Now play all three from memory." },
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['a5', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6_l2, correctMove: 'Nb3', prompt: 'Your move.', hint: 'Nb3.', correctFeedback: 'Nb3.', wrongFeedback: 'Nb3.' },
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'a5.', autoAdvance: 800, highlightSquares: ['a6', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5_l2, correctMove: 'Be3', prompt: 'Your move.', hint: 'Be3.', correctFeedback: 'Be3.', wrongFeedback: 'Be3.' },
+
+    { type: 'instruction', fen: FEN.after_Be3, text: "cxd4, Nb3, Be3 — you've recaptured, rerouted, and developed. The position is solid." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// rl-6: Regrouping (Nbd2, Rc1, Qe2)
+// ═══════════════════════════════════════════════════════════
+
+const RL_LESSON_6: OpeningLesson = {
+  id: 'rl-6',
+  title: 'Regrouping',
+  defaultOrientation: 'white',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Be3, text: "Black pushes a4, chasing your knight again. Time to regroup — bring the knight back, activate a rook, and centralize the queen." },
+
+    // RECAP (L2 moves so far: cxd4, Nb3, Be3)
+    { type: 'instruction', fen: FEN.after_Nbd2, text: "Quick review before the new stuff." },
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['a5', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6_l2, correctMove: 'Nb3', prompt: 'Your move.', hint: 'Nb3.', correctFeedback: 'Nb3.', wrongFeedback: 'Nb3.' },
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'a5.', autoAdvance: 800, highlightSquares: ['a6', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5_l2, correctMove: 'Be3', prompt: 'Your move.', hint: 'Be3.', correctFeedback: 'Be3.', wrongFeedback: 'Be3.' },
+
+    // Black plays a4
+    { type: 'instruction', fen: FEN.after_Be3, text: 'Black pushes a4, attacking your knight on b3.', autoAdvance: 800, highlightSquares: ['a5', 'a4'] },
+
+    // PREDICT 1: Nbd2
+    { type: 'play-move', fen: FEN.after_a4_l2, correctMove: 'Nbd2', prompt: "Your knight is under attack. Where does it retreat?", hint: 'Bring the knight back to d2 — it can reroute to f1 later.', correctFeedback: 'Nbd2 retreats the knight to safety. From d2 it can head to f1 and g3.', wrongFeedback: 'Retreat the knight to d2. It can reroute through f1 toward the kingside.', postMoveArrow: ['d2', 'f1'] },
+    { type: 'instruction', fen: FEN.after_Nbd2_l2, text: "Nbd2 gets the knight out of danger. The knight has a plan — d2, f1, g3 — heading to the kingside.", arrow: ['b3', 'd2'] },
+
+    // Black plays Bd7
+    { type: 'instruction', fen: FEN.after_Nbd2_l2, text: 'Black develops the bishop to d7.', autoAdvance: 800, highlightSquares: ['c8', 'd7'] },
+
+    // PREDICT 2: Rc1
+    { type: 'play-move', fen: FEN.after_Bd7, correctMove: 'Rc1', prompt: "Your rook on a1 needs an open file. Where does it go?", hint: 'The c-file is open — put the rook there.', correctFeedback: 'Rc1 puts the rook on the open c-file, adding pressure.', wrongFeedback: 'Swing the rook to c1 — the c-file is wide open after the pawn trade.', postMoveArrow: ['c1', 'c6'] },
+    { type: 'instruction', fen: FEN.after_Rc1, text: 'Rc1 seizes the open c-file. The rook eyes the c6 knight and can pressure the whole queenside.', arrow: ['a1', 'c1'] },
+
+    // Black plays Qb7
+    { type: 'instruction', fen: FEN.after_Rc1, text: 'Black moves the queen to b7, connecting the rooks.', autoAdvance: 800, highlightSquares: ['c7', 'b7'] },
+
+    // PREDICT 3: Qe2
+    { type: 'play-move', fen: FEN.after_Qb7, correctMove: 'Qe2', prompt: "Your queen is still on d1. Where should it go?", hint: 'Centralize the queen on e2, supporting e4 and the bishop.', correctFeedback: 'Qe2 centralizes the queen and supports the e4 pawn.', wrongFeedback: 'Bring the queen to e2 — it supports e4 and connects the rooks.', postMoveArrow: ['e2', 'e4'] },
+    { type: 'instruction', fen: FEN.after_Qe2, text: 'Qe2 is a multipurpose move — it supports e4, eyes the kingside, and unblocks the rooks.', arrow: ['d1', 'e2'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Be3, text: "Show me you've got this." },
+    { type: 'instruction', fen: FEN.after_Be3, text: 'a4.', autoAdvance: 800, highlightSquares: ['a5', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4_l2, correctMove: 'Nbd2', prompt: 'Your move.', hint: 'Nbd2.', correctFeedback: 'Nbd2.', wrongFeedback: 'Nbd2.' },
+    { type: 'instruction', fen: FEN.after_Nbd2_l2, text: 'Bd7.', autoAdvance: 800, highlightSquares: ['c8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Bd7, correctMove: 'Rc1', prompt: 'Your move.', hint: 'Rc1.', correctFeedback: 'Rc1.', wrongFeedback: 'Rc1.' },
+    { type: 'instruction', fen: FEN.after_Rc1, text: 'Qb7.', autoAdvance: 800, highlightSquares: ['c7', 'b7'] },
+    { type: 'play-move', fen: FEN.after_Qb7, correctMove: 'Qe2', prompt: 'Your move.', hint: 'Qe2.', correctFeedback: 'Qe2.', wrongFeedback: 'Qe2.' },
+
+    { type: 'instruction', fen: FEN.after_Qe2, text: "Nbd2, Rc1, Qe2 — all your pieces are on perfect squares. You're ready for action." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// rl-dev-Bb7: After 13...Bb7 (d5, Bd3, Nf1)
+// ═══════════════════════════════════════════════════════════
+
+const RL_DEV_BB7: OpeningLesson = {
+  id: 'rl-dev-Bb7',
+  title: 'If 13...Bb7',
+  defaultOrientation: 'white',
+  steps: [
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: "Sometimes Black plays Bb7 instead of Nc6 after the pawn trade. Here's how to respond — lock the center and reposition." },
+
+    // RECAP to deviation point (L2 moves: cxd4)
+    { type: 'instruction', fen: FEN.after_Nbd2, text: "Let's see what you remember!" },
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+
+    // DEVIATION: 13...Bb7
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: "Black plays Bb7 instead of Nc6 — developing the bishop to the long diagonal.", autoAdvance: 800, highlightSquares: ['c8', 'b7'] },
+
+    // PREDICT 1: d5
+    { type: 'play-move', fen: FEN.dev_Bb7, correctMove: 'd5', prompt: "Black's bishop points at e4. How do you shut it down?", hint: 'Push d5 to close the center and block the diagonal.', correctFeedback: 'd5 locks the center and shuts down the b7 bishop completely.', wrongFeedback: 'Push d5 — it closes the position and buries the bishop on b7.', postMoveArrow: ['d5', 'c6'] },
+    { type: 'instruction', fen: FEN.dev_Bb7_d5, text: "d5 is the key move. The center is locked, and Black's bishop on b7 is staring at your d5 pawn — it's going nowhere.", arrow: ['d4', 'd5'] },
+
+    // Black plays Rac8
+    { type: 'instruction', fen: FEN.dev_Bb7_d5, text: 'Black puts a rook on c8, aiming at the c-file.', autoAdvance: 800, highlightSquares: ['a8', 'c8'] },
+
+    // PREDICT 2: Bd3
+    { type: 'play-move', fen: FEN.dev_Bb7_Rac8, correctMove: 'Bd3', prompt: "Your bishop on c2 can find a better diagonal. Where?", hint: 'Move the bishop to d3, eyeing the kingside.', correctFeedback: 'Bd3 repositions the bishop toward the kingside, aiming at h7.', wrongFeedback: 'Put the bishop on d3 — it aims at h7 and supports e4.', postMoveArrow: ['d3', 'h7'] },
+    { type: 'instruction', fen: FEN.dev_Bb7_Bd3, text: 'Bd3 points the bishop at h7, setting up potential kingside ideas. The bishop is much more active here than c2.', arrow: ['c2', 'd3'] },
+
+    // Black plays Nd7
+    { type: 'instruction', fen: FEN.dev_Bb7_Bd3, text: 'Black retreats the knight to d7, looking to reroute it.', autoAdvance: 800, highlightSquares: ['f6', 'd7'] },
+
+    // PREDICT 3: Nf1
+    { type: 'play-move', fen: FEN.dev_Bb7_Nd7, correctMove: 'Nf1', prompt: "Your knight on d2 can start the classic maneuver. Where first?", hint: 'The knight heads to f1, then g3 — the classic Ruy Lopez reroute.', correctFeedback: 'Nf1 starts the knight journey toward g3, heading for the kingside.', wrongFeedback: 'Move the knight to f1 — from there it goes to g3, a powerful outpost.', postMoveArrow: ['f1', 'g3'] },
+    { type: 'instruction', fen: FEN.dev_Bb7_Nf1, text: 'Nf1 is the famous Ruy Lopez knight maneuver. Next stop: g3, where it controls e4 and eyes f5 and h5.', arrow: ['d2', 'f1'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: "Prove you know these moves!" },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Bb7.', autoAdvance: 800, highlightSquares: ['c8', 'b7'] },
+    { type: 'play-move', fen: FEN.dev_Bb7, correctMove: 'd5', prompt: 'Your move.', hint: 'd5.', correctFeedback: 'd5.', wrongFeedback: 'd5.' },
+    { type: 'instruction', fen: FEN.dev_Bb7_d5, text: 'Rac8.', autoAdvance: 800, highlightSquares: ['a8', 'c8'] },
+    { type: 'play-move', fen: FEN.dev_Bb7_Rac8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.dev_Bb7_Bd3, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['f6', 'd7'] },
+    { type: 'play-move', fen: FEN.dev_Bb7_Nd7, correctMove: 'Nf1', prompt: 'Your move.', hint: 'Nf1.', correctFeedback: 'Nf1.', wrongFeedback: 'Nf1.' },
+
+    { type: 'instruction', fen: FEN.dev_Bb7_Nf1, text: "d5, Bd3, Nf1 — you locked the center and started the kingside buildup." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// rl-7: The Buildup (Bd3, dxe5, Nxe5)
+// ═══════════════════════════════════════════════════════════
+
+const RL_LESSON_7: OpeningLesson = {
+  id: 'rl-7',
+  title: 'The Buildup',
+  defaultOrientation: 'white',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Qe2, text: "Both sides reposition their rooks. You'll centralize the bishop, break the tension with dxe5, and win a trade in the center." },
+
+    // RECAP (L2 moves: cxd4, Nb3, Be3, Nbd2, Rc1, Qe2)
+    { type: 'instruction', fen: FEN.after_Nbd2, text: "Let's see what you remember!" },
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['a5', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6_l2, correctMove: 'Nb3', prompt: 'Your move.', hint: 'Nb3.', correctFeedback: 'Nb3.', wrongFeedback: 'Nb3.' },
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'a5.', autoAdvance: 800, highlightSquares: ['a6', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5_l2, correctMove: 'Be3', prompt: 'Your move.', hint: 'Be3.', correctFeedback: 'Be3.', wrongFeedback: 'Be3.' },
+    { type: 'instruction', fen: FEN.after_Be3, text: 'a4.', autoAdvance: 800, highlightSquares: ['a5', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4_l2, correctMove: 'Nbd2', prompt: 'Your move.', hint: 'Nbd2.', correctFeedback: 'Nbd2.', wrongFeedback: 'Nbd2.' },
+    { type: 'instruction', fen: FEN.after_Nbd2_l2, text: 'Bd7.', autoAdvance: 800, highlightSquares: ['c8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Bd7, correctMove: 'Rc1', prompt: 'Your move.', hint: 'Rc1.', correctFeedback: 'Rc1.', wrongFeedback: 'Rc1.' },
+    { type: 'instruction', fen: FEN.after_Rc1, text: 'Qb7.', autoAdvance: 800, highlightSquares: ['c7', 'b7'] },
+    { type: 'play-move', fen: FEN.after_Qb7, correctMove: 'Qe2', prompt: 'Your move.', hint: 'Qe2.', correctFeedback: 'Qe2.', wrongFeedback: 'Qe2.' },
+
+    // Black plays Rfe8
+    { type: 'instruction', fen: FEN.after_Qe2, text: 'Black puts the rook on e8, reinforcing e5.', autoAdvance: 800, highlightSquares: ['f8', 'e8'] },
+
+    // PREDICT 1: Bd3
+    { type: 'play-move', fen: FEN.after_Rfe8, correctMove: 'Bd3', prompt: "Your bishop on c2 can be more active. Where does it go?", hint: 'Move the bishop to d3 — it aims at the kingside.', correctFeedback: 'Bd3 centralizes the bishop and aims it at h7.', wrongFeedback: 'The bishop belongs on d3, where it eyes h7 and supports e4.', postMoveArrow: ['d3', 'h7'] },
+    { type: 'instruction', fen: FEN.after_Bd3, text: 'Bd3 is the perfect moment to reposition. The bishop aims at h7 and supports the e4 pawn.', arrow: ['c2', 'd3'] },
+
+    // Black plays Rab8
+    { type: 'instruction', fen: FEN.after_Bd3, text: 'Black puts the last rook on b8, doubling on the b-file.', autoAdvance: 800, highlightSquares: ['a8', 'b8'] },
+
+    // PREDICT 2: dxe5
+    { type: 'play-move', fen: FEN.after_Rab8, correctMove: 'dxe5', prompt: "The tension in the center has been building. Time to resolve it. What do you play?", hint: 'Capture on e5 — break the tension in your favor.', correctFeedback: 'dxe5 opens lines for your pieces while keeping a strong e4 pawn.', wrongFeedback: 'Capture dxe5 — the position opens up in your favor.', postMoveArrow: ['e5', 'd6'] },
+    { type: 'instruction', fen: FEN.after_dxe5_l2, text: 'dxe5 breaks the center open. Black has to recapture, and your pieces are better placed for the open position.', arrow: ['d4', 'e5'] },
+
+    // Black plays Nxe5
+    { type: 'instruction', fen: FEN.after_dxe5_l2, text: 'Black recaptures with the knight — Nxe5.', autoAdvance: 800, highlightSquares: ['c6', 'e5'] },
+
+    // PREDICT 3: Nxe5
+    { type: 'play-move', fen: FEN.after_Nxe5_b, correctMove: 'Nxe5', prompt: "Black's knight just landed on e5. What's the best response?", hint: 'Trade knights — take on e5 with your f3 knight.', correctFeedback: 'Nxe5 trades knights and opens the f-file for your rook.', wrongFeedback: 'Capture the knight on e5. After dxe5, your bishop on d3 is very strong.', postMoveArrow: ['e5', 'd3'] },
+    { type: 'instruction', fen: FEN.after_Nxe5_w, text: 'Nxe5 simplifies the position. After Black takes back with dxe5, your bishop on d3 dominates the board.', arrow: ['f3', 'e5'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Qe2, text: "Prove you know these moves!" },
+    { type: 'instruction', fen: FEN.after_Qe2, text: 'Rfe8.', autoAdvance: 800, highlightSquares: ['f8', 'e8'] },
+    { type: 'play-move', fen: FEN.after_Rfe8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_Bd3, text: 'Rab8.', autoAdvance: 800, highlightSquares: ['a8', 'b8'] },
+    { type: 'play-move', fen: FEN.after_Rab8, correctMove: 'dxe5', prompt: 'Your move.', hint: 'dxe5.', correctFeedback: 'dxe5.', wrongFeedback: 'dxe5.' },
+    { type: 'instruction', fen: FEN.after_dxe5_l2, text: 'Nxe5.', autoAdvance: 800, highlightSquares: ['c6', 'e5'] },
+    { type: 'play-move', fen: FEN.after_Nxe5_b, correctMove: 'Nxe5', prompt: 'Your move.', hint: 'Nxe5.', correctFeedback: 'Nxe5.', wrongFeedback: 'Nxe5.' },
+
+    { type: 'instruction', fen: FEN.after_Nxe5_w, text: "Bd3, dxe5, Nxe5 — you've opened the center and your pieces are perfectly placed. Well done." },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
+// rl-test-2: Level 2 Test (main line + Bb7 deviation)
+// ═══════════════════════════════════════════════════════════
+
+const RL_TEST_2: OpeningLesson = {
+  id: 'rl-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'white',
+  steps: [
+    // === L2 MAIN LINE (9 White moves) ===
+    // Starting from after_Nbd2 (end of L1)
+    { type: 'instruction', fen: FEN.after_Nbd2, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c5', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['a5', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6_l2, correctMove: 'Nb3', prompt: 'Your move.', hint: 'Nb3.', correctFeedback: 'Nb3.', wrongFeedback: 'Nb3.' },
+    { type: 'instruction', fen: FEN.after_Nb3, text: 'a5.', autoAdvance: 800, highlightSquares: ['a6', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5_l2, correctMove: 'Be3', prompt: 'Your move.', hint: 'Be3.', correctFeedback: 'Be3.', wrongFeedback: 'Be3.' },
+    { type: 'instruction', fen: FEN.after_Be3, text: 'a4.', autoAdvance: 800, highlightSquares: ['a5', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4_l2, correctMove: 'Nbd2', prompt: 'Your move.', hint: 'Nbd2.', correctFeedback: 'Nbd2.', wrongFeedback: 'Nbd2.' },
+    { type: 'instruction', fen: FEN.after_Nbd2_l2, text: 'Bd7.', autoAdvance: 800, highlightSquares: ['c8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Bd7, correctMove: 'Rc1', prompt: 'Your move.', hint: 'Rc1.', correctFeedback: 'Rc1.', wrongFeedback: 'Rc1.' },
+    { type: 'instruction', fen: FEN.after_Rc1, text: 'Qb7.', autoAdvance: 800, highlightSquares: ['c7', 'b7'] },
+    { type: 'play-move', fen: FEN.after_Qb7, correctMove: 'Qe2', prompt: 'Your move.', hint: 'Qe2.', correctFeedback: 'Qe2.', wrongFeedback: 'Qe2.' },
+    { type: 'instruction', fen: FEN.after_Qe2, text: 'Rfe8.', autoAdvance: 800, highlightSquares: ['f8', 'e8'] },
+    { type: 'play-move', fen: FEN.after_Rfe8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_Bd3, text: 'Rab8.', autoAdvance: 800, highlightSquares: ['a8', 'b8'] },
+    { type: 'play-move', fen: FEN.after_Rab8, correctMove: 'dxe5', prompt: 'Your move.', hint: 'dxe5.', correctFeedback: 'dxe5.', wrongFeedback: 'dxe5.' },
+    { type: 'instruction', fen: FEN.after_dxe5_l2, text: 'Nxe5.', autoAdvance: 800, highlightSquares: ['c6', 'e5'] },
+    { type: 'play-move', fen: FEN.after_Nxe5_b, correctMove: 'Nxe5', prompt: 'Your move.', hint: 'Nxe5.', correctFeedback: 'Nxe5.', wrongFeedback: 'Nxe5.' },
+
+    // === DEVIATION TEST: 13...Bb7 ===
+    { type: 'instruction', fen: FEN.after_cxd4_w, text: 'But wait — Black plays Bb7 instead.', autoAdvance: 800, highlightSquares: ['c8', 'b7'] },
+    { type: 'play-move', fen: FEN.dev_Bb7, correctMove: 'd5', prompt: 'Your move.', hint: 'd5.', correctFeedback: 'd5.', wrongFeedback: 'd5.' },
+    { type: 'instruction', fen: FEN.dev_Bb7_d5, text: 'Rac8.', autoAdvance: 800, highlightSquares: ['a8', 'c8'] },
+    { type: 'play-move', fen: FEN.dev_Bb7_Rac8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.dev_Bb7_Bd3, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['f6', 'd7'] },
+    { type: 'play-move', fen: FEN.dev_Bb7_Nd7, correctMove: 'Nf1', prompt: 'Your move.', hint: 'Nf1.', correctFeedback: 'Nf1.', wrongFeedback: 'Nf1.' },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -549,6 +828,11 @@ const RUY_LOPEZ_LESSONS: Record<string, OpeningLesson> = {
   'rl-dev-b5': RL_DEV_B5,
   'rl-dev-Re8': RL_DEV_RE8,
   'rl-test-1': RL_TEST_1,
+  'rl-5': RL_LESSON_5,
+  'rl-6': RL_LESSON_6,
+  'rl-dev-Bb7': RL_DEV_BB7,
+  'rl-7': RL_LESSON_7,
+  'rl-test-2': RL_TEST_2,
 }
 
 export function getRuyLopezLesson(id: string): OpeningLesson | undefined {
