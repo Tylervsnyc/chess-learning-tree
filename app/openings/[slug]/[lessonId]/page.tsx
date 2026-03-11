@@ -47,6 +47,14 @@ import { getQueensGambitLesson } from '@/data/openings/queens-gambit-lessons'
 import { getEnglishLesson } from '@/data/openings/english-lessons'
 import { getNimzoIndianLesson } from '@/data/openings/nimzo-indian-lessons'
 import { getPetroffLesson } from '@/data/openings/petroff-lessons'
+import { getSicilianDragonLesson } from '@/data/openings/sicilian-dragon-lessons'
+import { getSicilianSveshnikovLesson } from '@/data/openings/sicilian-sveshnikov-lessons'
+import { getSicilianClassicalLesson } from '@/data/openings/sicilian-classical-lessons'
+import { getSicilianKanLesson } from '@/data/openings/sicilian-kan-lessons'
+import { getSicilianTaimanovLesson } from '@/data/openings/sicilian-taimanov-lessons'
+import { getSicilianAcceleratedDragonLesson } from '@/data/openings/sicilian-accelerated-dragon-lessons'
+import { getSicilianAlapinLesson } from '@/data/openings/sicilian-alapin-lessons'
+import { getSicilianScheveningenLesson } from '@/data/openings/sicilian-scheveningen-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -162,6 +170,14 @@ export default function OpeningLessonPage() {
       'english': getEnglishLesson,
       'nimzo-indian': getNimzoIndianLesson,
       'petroff': getPetroffLesson,
+      'sicilian-dragon': getSicilianDragonLesson,
+      'sicilian-sveshnikov': getSicilianSveshnikovLesson,
+      'sicilian-classical': getSicilianClassicalLesson,
+      'sicilian-kan': getSicilianKanLesson,
+      'sicilian-taimanov': getSicilianTaimanovLesson,
+      'sicilian-accelerated-dragon': getSicilianAcceleratedDragonLesson,
+      'sicilian-alapin': getSicilianAlapinLesson,
+      'sicilian-scheveningen': getSicilianScheveningenLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])

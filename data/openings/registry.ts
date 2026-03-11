@@ -194,10 +194,15 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '2.Nf3 d6 3.d4 — the main battlefield · 9 lessons',
     },
     variations: [
-      { name: 'Dragon Variation', subtitle: '5...g6 — fianchetto the bishop', icon: 'knight', hasData: false },
+      { name: 'Dragon Variation', subtitle: '5...g6 — fianchetto the bishop', icon: 'knight', hasData: true, slug: 'sicilian-dragon' },
       { name: 'Najdorf Variation', subtitle: '5...a6 — the most popular', icon: 'lightning', hasData: false },
-      { name: 'Sveshnikov Variation', subtitle: '5...e5 — fight for d5', icon: 'knight', hasData: false },
-      { name: 'Alapin Variation', subtitle: '2.c3 — solid alternative', icon: 'shield', hasData: false },
+      { name: 'Sveshnikov Variation', subtitle: '5...e5 — fight for d5', icon: 'knight', hasData: true, slug: 'sicilian-sveshnikov' },
+      { name: 'Classical Variation', subtitle: '6.Bg5 — Richter-Rauzer Attack', icon: 'bishop', hasData: true, slug: 'sicilian-classical' },
+      { name: 'Kan/Paulsen', subtitle: '4...a6 — flexible Sicilian', icon: 'pawn', hasData: true, slug: 'sicilian-kan' },
+      { name: 'Taimanov Variation', subtitle: '4...Nc6 — knight before pawn', icon: 'knight', hasData: true, slug: 'sicilian-taimanov' },
+      { name: 'Accelerated Dragon', subtitle: '4...g6 — fianchetto without d6', icon: 'knight', hasData: true, slug: 'sicilian-accelerated-dragon' },
+      { name: 'Alapin Variation', subtitle: '2.c3 — solid alternative', icon: 'shield', hasData: true, slug: 'sicilian-alapin' },
+      { name: 'Scheveningen Variation', subtitle: '5...e6 — small center, big plans', icon: 'pawn', hasData: true, slug: 'sicilian-scheveningen' },
     ],
   },
   {
