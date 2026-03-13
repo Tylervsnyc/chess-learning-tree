@@ -21,6 +21,40 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { TutorialEvents } from '@/lib/analytics/posthog';
 
 // ══════════════════════════════════════════════════
+// INTRO SLIDES
+// ══════════════════════════════════════════════════
+
+interface IntroSlide {
+  id: string;
+  title: string;
+  body: string;
+  fen?: string;
+  buttonText: string;
+}
+
+const INTRO_SLIDES: IntroSlide[] = [
+  {
+    id: 'welcome',
+    title: "Hi, I'm Rookie!",
+    body: "I'm going to teach you chess.\nIt's a game between two players — one plays White, the other plays Black.",
+    buttonText: 'How do I win?',
+  },
+  {
+    id: 'goal',
+    title: 'How do you win?',
+    body: "Each side has a King. Trap your opponent's King so it can't escape — that's called checkmate.\n\nDo that, and you win!",
+    buttonText: 'What does the board look like?',
+  },
+  {
+    id: 'board',
+    title: 'The starting position',
+    body: "This is how every game starts. 16 pieces each.\n\nDon't worry about memorizing this — we'll learn each piece one at a time.",
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    buttonText: "Let's learn the pieces!",
+  },
+];
+
+// ══════════════════════════════════════════════════
 // TUTORIAL DATA
 // ══════════════════════════════════════════════════
 
@@ -121,6 +155,147 @@ const STEPS: TutorialStep[] = [
 ];
 
 // ══════════════════════════════════════════════════
+// PROGRESS BAR
+// ══════════════════════════════════════════════════
+
+// Total segments: 3 intro slides + 7 piece steps
+const TOTAL_SEGMENTS = INTRO_SLIDES.length + STEPS.length;
+
+function ProgressBar({ current, total, onBack }: { current: number; total: number; onBack?: () => void }) {
+  return (
+    <div className="flex items-center gap-3 px-4 pt-3 pb-2 w-full max-w-lg mx-auto">
+      {onBack ? (
+        <button
+          onClick={() => { playButtonClick(); onBack(); }}
+          className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-chess-text-muted hover:text-chess-text hover:bg-chess-surface transition-colors"
+          aria-label="Go back"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      ) : (
+        <div className="w-8" />
+      )}
+      <div className="flex-1 h-3 bg-chess-surface rounded-full overflow-hidden flex gap-[3px]">
+        {Array.from({ length: total }).map((_, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-full transition-all duration-500 ease-out"
+            style={{
+              backgroundColor: i < current
+                ? 'var(--color-chess-green)'
+                : i === current
+                  ? 'var(--color-chess-green)'
+                  : 'var(--color-chess-disabled, #e0e0e0)',
+              opacity: i < current ? 1 : i === current ? 0.6 : 0.3,
+            }}
+          />
+        ))}
+      </div>
+      <div className="w-8" />
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════
+// INTRO SLIDE COMPONENT
+// ══════════════════════════════════════════════════
+
+function IntroSlideView({ slide, onNext, onBack, progressCurrent }: {
+  slide: IntroSlide;
+  onNext: () => void;
+  onBack?: () => void;
+  progressCurrent: number;
+}) {
+  const [entered, setEntered] = useState(false);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setEntered(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+      <ProgressBar current={progressCurrent} total={TOTAL_SEGMENTS} onBack={onBack} />
+
+      <div className="flex-1 flex flex-col items-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center max-w-sm">
+          <div
+            className="mb-6"
+            style={{
+              opacity: entered ? 1 : 0,
+              transform: entered ? 'scale(1)' : 'scale(0.85)',
+              transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            {slide.fen ? (
+              <div className="w-full max-w-[320px]">
+                <ChessPathBoard
+                  options={{
+                    position: slide.fen,
+                    boardOrientation: 'white' as const,
+                    allowDragging: false,
+                    animationDurationInMs: 0,
+                    boardStyle: {
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                    },
+                    darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
+                    lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
+                  }}
+                />
+              </div>
+            ) : (
+              <BreathingRook size="xl" animation="breathe" />
+            )}
+          </div>
+
+          <h2
+            className="text-[22px] font-black text-chess-text text-center mb-3"
+            style={{
+              opacity: entered ? 1 : 0,
+              transform: entered ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
+            }}
+          >
+            {slide.title}
+          </h2>
+
+          <p
+            className="text-[15px] text-chess-text-muted text-center leading-relaxed whitespace-pre-line"
+            style={{
+              opacity: entered ? 1 : 0,
+              transform: entered ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
+            }}
+          >
+            {slide.body}
+          </p>
+        </div>
+
+        <div
+          className="w-full max-w-sm pb-8"
+          style={{
+            opacity: entered ? 1 : 0,
+            transform: entered ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
+          }}
+        >
+          <button
+            onClick={() => { playButtonClick(); onNext(); }}
+            className="w-full py-4 font-bold text-base rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
+            style={{ boxShadow: '0 4px 0 var(--color-chess-green-dark)' }}
+          >
+            {slide.buttonText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════
 // DONE SCREEN
 // ══════════════════════════════════════════════════
 
@@ -128,7 +303,6 @@ function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
   const [entered, setEntered] = useState(false);
 
   React.useEffect(() => {
-    // Fire confetti from both sides
     confetti({
       particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
@@ -146,53 +320,57 @@ function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
   }, []);
 
   return (
-    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
-      <div
-        className="mb-6"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'scale(1)' : 'scale(0.8)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        <BreathingRook size="xl" animation="celebrate" />
+    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col">
+      <ProgressBar current={TOTAL_SEGMENTS} total={TOTAL_SEGMENTS} />
+
+      <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div
+          className="mb-6"
+          style={{
+            opacity: entered ? 1 : 0,
+            transform: entered ? 'scale(1)' : 'scale(0.8)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          <BreathingRook size="xl" animation="celebrate" />
+        </div>
+
+        <h1
+          className="text-2xl font-black mb-2 text-center"
+          style={{
+            opacity: entered ? 1 : 0,
+            transform: entered ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
+          }}
+        >
+          You&apos;re Ready!
+        </h1>
+        <p
+          className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
+          style={{
+            opacity: entered ? 1 : 0,
+            transform: entered ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
+          }}
+        >
+          You know how all the pieces move.
+          <br />
+          Time to start solving puzzles!
+        </p>
+
+        <button
+          onClick={onContinue}
+          className="w-full max-w-sm py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
+          style={{
+            boxShadow: '0 4px 0 var(--color-chess-green-dark)',
+            opacity: entered ? 1 : 0,
+            transform: entered ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
+          }}
+        >
+          Start Learning
+        </button>
       </div>
-
-      <h1
-        className="text-2xl font-black mb-2 text-center"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
-        }}
-      >
-        You&apos;re Ready!
-      </h1>
-      <p
-        className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
-        }}
-      >
-        You know how all the pieces move.
-        <br />
-        Time to start solving puzzles!
-      </p>
-
-      <button
-        onClick={onContinue}
-        className="w-full max-w-sm py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
-        style={{
-          boxShadow: '0 4px 0 var(--color-chess-green-dark)',
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
-        }}
-      >
-        Start Learning
-      </button>
     </div>
   );
 }
@@ -214,7 +392,11 @@ export function BasicsTutorial() {
     }
   }, []);
 
-  // State
+  // Intro slides state
+  const [introIndex, setIntroIndex] = useState(0);
+  const [introComplete, setIntroComplete] = useState(false);
+
+  // Exercise state
   const [stepIndex, setStepIndex] = useState(0);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [currentFen, setCurrentFen] = useState(STEPS[0].exercises[0].fen);
@@ -222,16 +404,10 @@ export function BasicsTutorial() {
   const [exerciseComplete, setExerciseComplete] = useState(false);
   const [tutorialDone, setTutorialDone] = useState(false);
   const [shakeBoard, setShakeBoard] = useState(false);
-  const [animationDuration, setAnimationDuration] = useState(0); // 0 for transitions, 200 for user moves
-  const [boardKey, setBoardKey] = useState(0); // increment to force-remount board (kills all animation)
-  // Track completed exercises for sound progression
+  const [animationDuration, setAnimationDuration] = useState(0);
+  const [boardKey, setBoardKey] = useState(0);
   const completedCountRef = useRef(0);
-
-  // Track previously highlighted selection squares so we can explicitly clear them
-  // (react-chessboard v5 caches square styles — omitting a style doesn't remove it)
   const prevSelectionSquaresRef = useRef<Square[]>([]);
-
-  // Prevent double-fire during advance
   const advancingRef = useRef(false);
 
   const currentStep = STEPS[stepIndex];
@@ -246,19 +422,62 @@ export function BasicsTutorial() {
     }
   }, [currentFen]);
 
+  // ── Intro navigation ──
+  const handleIntroNext = useCallback(() => {
+    if (introIndex < INTRO_SLIDES.length - 1) {
+      setIntroIndex(i => i + 1);
+    } else {
+      setIntroComplete(true);
+    }
+  }, [introIndex]);
+
+  const handleIntroBack = useCallback(() => {
+    if (introIndex > 0) {
+      setIntroIndex(i => i - 1);
+    }
+  }, [introIndex]);
+
+  // ── Back button during exercises ──
+  const handleExerciseBack = useCallback(() => {
+    playButtonClick();
+    if (exerciseIndex > 0) {
+      // Go back one exercise within the same step
+      const prevEx = currentStep.exercises[exerciseIndex - 1];
+      setExerciseIndex(exerciseIndex - 1);
+      setCurrentFen(prevEx.fen);
+      setSelectedSquare(null);
+      setExerciseComplete(false);
+      setBoardKey(k => k + 1);
+      setAnimationDuration(0);
+    } else if (stepIndex > 0) {
+      // Go back to previous step's last exercise
+      const prevStep = STEPS[stepIndex - 1];
+      const lastExIdx = prevStep.exercises.length - 1;
+      setStepIndex(stepIndex - 1);
+      setExerciseIndex(lastExIdx);
+      setCurrentFen(prevStep.exercises[lastExIdx].fen);
+      setSelectedSquare(null);
+      setExerciseComplete(false);
+      setBoardKey(k => k + 1);
+      setAnimationDuration(0);
+    } else {
+      // At very first exercise — go back to intro slides
+      setIntroComplete(false);
+      setIntroIndex(INTRO_SLIDES.length - 1);
+    }
+  }, [exerciseIndex, stepIndex, currentStep]);
+
   // ── Square highlight styles ──
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
 
     if (currentExercise && !exerciseComplete) {
-      // EXERCISE: highlight target square in neon green with breathing pulse
       styles[currentExercise.targetSquare] = {
         backgroundColor: 'rgba(0, 255, 100, 0.45)',
         boxShadow: 'inset 0 0 0 3px #00FF64, 0 0 20px rgba(0, 255, 100, 0.6), 0 0 40px rgba(0, 255, 100, 0.2)',
         animation: 'basicsTargetPulse 1.5s ease-in-out infinite',
       };
 
-      // Pulse the piece they need to move (if not selected yet)
       if (currentExercise.fromSquare && currentExercise.type !== 'tap' && !selectedSquare) {
         styles[currentExercise.fromSquare] = {
           ...styles[currentExercise.fromSquare],
@@ -267,7 +486,6 @@ export function BasicsTutorial() {
         };
       }
 
-      // Selected piece + legal move indicators
       if (selectedSquare && game) {
         styles[selectedSquare] = {
           backgroundColor: 'rgba(100, 200, 255, 0.6)',
@@ -275,7 +493,6 @@ export function BasicsTutorial() {
         const currentSelectionSquares: Square[] = [selectedSquare];
         const moves = game.moves({ square: selectedSquare, verbose: true });
         for (const move of moves) {
-          // Don't override the green target highlight
           if (move.to === currentExercise.targetSquare) continue;
           styles[move.to] = {
             ...styles[move.to],
@@ -285,10 +502,8 @@ export function BasicsTutorial() {
           };
           currentSelectionSquares.push(move.to as Square);
         }
-        // Track current selection squares so we can clear them when deselected
         prevSelectionSquaresRef.current = currentSelectionSquares;
       } else {
-        // Explicitly clear previous selection squares so react-chessboard removes cached styles
         for (const sq of prevSelectionSquaresRef.current) {
           if (!styles[sq]) {
             styles[sq] = {};
@@ -298,7 +513,6 @@ export function BasicsTutorial() {
       }
     }
 
-    // Success highlight
     if (exerciseComplete && currentExercise) {
       styles[currentExercise.targetSquare] = {
         backgroundColor: 'rgba(88, 204, 2, 0.7)',
@@ -317,7 +531,6 @@ export function BasicsTutorial() {
   }, [currentExercise, exerciseComplete]);
 
   // ── Advance to next exercise/step ──
-  // Force-remount the board (boardKey++) so pieces snap — no sliding animation
   const advance = useCallback(() => {
     if (advancingRef.current) return;
     advancingRef.current = true;
@@ -344,7 +557,7 @@ export function BasicsTutorial() {
       setTutorialDone(true);
     }
 
-    setBoardKey(k => k + 1); // remount board = zero animation
+    setBoardKey(k => k + 1);
     setAnimationDuration(0);
     setTimeout(() => { advancingRef.current = false; }, 100);
   }, [stepIndex, exerciseIndex]);
@@ -357,7 +570,6 @@ export function BasicsTutorial() {
     vibrateOnCorrect();
     completedCountRef.current += 1;
 
-    // Auto-advance after brief pause
     setTimeout(() => advance(), 900);
   }, [advance, exerciseComplete]);
 
@@ -372,7 +584,6 @@ export function BasicsTutorial() {
     if (!currentExercise || exerciseComplete) return;
     const sq = square as Square;
 
-    // TAP exercise
     if (currentExercise.type === 'tap') {
       if (sq === currentExercise.targetSquare) {
         handleExerciseSuccess();
@@ -380,7 +591,6 @@ export function BasicsTutorial() {
       return;
     }
 
-    // MOVE / CHECKMATE exercise
     if (!game) return;
 
     if (!selectedSquare) {
@@ -396,12 +606,10 @@ export function BasicsTutorial() {
       return;
     }
 
-    // Check if move is legal
     const legalMoves = game.moves({ square: selectedSquare, verbose: true });
     const isLegal = legalMoves.some(m => m.to === sq);
 
     if (!isLegal) {
-      // Maybe selecting a different piece
       const piece = game.get(sq);
       if (piece && piece.color === 'w') {
         setSelectedSquare(sq);
@@ -412,7 +620,6 @@ export function BasicsTutorial() {
     }
 
     if (sq === currentExercise.targetSquare) {
-      // Correct move — animate it!
       setAnimationDuration(200);
       try {
         const gameCopy = new Chess(currentFen);
@@ -429,7 +636,6 @@ export function BasicsTutorial() {
         }
       } catch { /* ignore */ }
     } else {
-      // Legal but wrong target
       playErrorSound();
       vibrateOnError();
       triggerShake();
@@ -451,7 +657,7 @@ export function BasicsTutorial() {
     if (!isLegal) return false;
 
     if (to === currentExercise.targetSquare) {
-      setAnimationDuration(200); // Animate the correct move
+      setAnimationDuration(200);
       try {
         const gameCopy = new Chess(currentFen);
         const move = gameCopy.move({ from, to, promotion: 'q' });
@@ -469,7 +675,6 @@ export function BasicsTutorial() {
       } catch { /* ignore */ }
     }
 
-    // Wrong target
     playErrorSound();
     vibrateOnError();
     triggerShake();
@@ -477,7 +682,23 @@ export function BasicsTutorial() {
   }, [game, currentExercise, currentFen, exerciseComplete, handleExerciseSuccess, triggerShake]);
 
   // ══════════════════════════════════════════════════
-  // TUTORIAL DONE SCREEN
+  // RENDER: INTRO SLIDES
+  // ══════════════════════════════════════════════════
+
+  if (!introComplete) {
+    return (
+      <IntroSlideView
+        key={introIndex}
+        slide={INTRO_SLIDES[introIndex]}
+        onNext={handleIntroNext}
+        onBack={introIndex > 0 ? handleIntroBack : undefined}
+        progressCurrent={introIndex}
+      />
+    );
+  }
+
+  // ══════════════════════════════════════════════════
+  // RENDER: DONE SCREEN
   // ══════════════════════════════════════════════════
 
   if (tutorialDone) {
@@ -488,21 +709,26 @@ export function BasicsTutorial() {
   }
 
   // ══════════════════════════════════════════════════
-  // MAIN TUTORIAL VIEW
+  // RENDER: EXERCISE VIEW
   // ══════════════════════════════════════════════════
 
   const boardInteractive = !exerciseComplete;
+  const progressCurrent = INTRO_SLIDES.length + stepIndex;
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      {/* No header — locked onboarding, no escape */}
+      <ProgressBar
+        current={progressCurrent}
+        total={TOTAL_SEGMENTS}
+        onBack={handleExerciseBack}
+      />
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col items-center px-4 overflow-hidden">
         <div className="w-full max-w-lg">
-          {/* Step title */}
+          {/* Step title + piece intro text */}
           <div className="text-center mb-2">
             <h2 className="text-lg font-bold text-chess-text">{currentStep.title}</h2>
+            <p className="text-xs text-chess-text-muted mt-0.5 whitespace-pre-line">{currentStep.introText}</p>
           </div>
 
           {/* Board */}
@@ -527,8 +753,6 @@ export function BasicsTutorial() {
                 lightSquareStyle: { backgroundColor: BOARD_COLORS.light },
               }}
             />
-
-            {/* No intro overlay — go straight to exercises */}
           </div>
 
           {/* Below board: instruction popup with Rookie */}
