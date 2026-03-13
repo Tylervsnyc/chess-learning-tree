@@ -116,14 +116,14 @@ function LandingRouteIcon({ icon, color, darkColor }: { icon: LandingIconType; c
 }
 
 const LANDING_ROUTES = [
-  { id: 'new', label: "I don't know how to play chess", sub: 'Learn how the pieces move', color: '#1CB0F6', darkColor: '#0d8bc4', icon: 'question' as LandingIconType },
-  { id: 'elo', label: 'I have an ELO', sub: 'Jump in at your level', color: '#58CC02', darkColor: '#46a302', icon: 'knight' as LandingIconType },
+  { id: 'new', label: "I'm new to chess", sub: 'Learn how the pieces move', color: '#1CB0F6', darkColor: '#0d8bc4', icon: 'question' as LandingIconType },
+  { id: 'play', label: 'I already play chess', sub: 'Pick your level and jump in', color: '#58CC02', darkColor: '#46a302', icon: 'knight' as LandingIconType },
   { id: 'daily', label: 'Give me a challenge', sub: '22 puzzles, fresh today', color: '#CE82FF', darkColor: '#a855f7', icon: 'lightning' as LandingIconType },
 ];
 
-function LandingStep({ onNewToChess, onHaveElo, onDailyChallenge, onSignIn }: {
+function LandingStep({ onNewToChess, onAlreadyPlay, onDailyChallenge, onSignIn }: {
   onNewToChess: () => void;
-  onHaveElo: () => void;
+  onAlreadyPlay: () => void;
   onDailyChallenge: () => void;
   onSignIn: () => void;
 }) {
@@ -139,7 +139,7 @@ function LandingStep({ onNewToChess, onHaveElo, onDailyChallenge, onSignIn }: {
 
   const handlers: Record<string, () => void> = {
     new: onNewToChess,
-    elo: onHaveElo,
+    play: onAlreadyPlay,
     daily: onDailyChallenge,
   };
 
@@ -183,7 +183,7 @@ function LandingStep({ onNewToChess, onHaveElo, onDailyChallenge, onSignIn }: {
             transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          Let&apos;s get you to the right place
+          Fun puzzles that make you better at chess
         </p>
       </div>
 
@@ -407,9 +407,12 @@ function EloStep({ onSubmit }: { onSubmit: (elo: number) => void }) {
         <BreathingRook size="lg" animation="breathe" />
       </div>
 
-      <h2 className="text-[20px] font-black text-chess-text leading-tight text-center mb-6">
+      <h2 className="text-[20px] font-black text-chess-text leading-tight text-center mb-2">
         What&apos;s your rating?
       </h2>
+      <p className="text-sm text-chess-text-muted text-center mb-6">
+        I&apos;ll pick puzzles that match your level.
+      </p>
 
       <div className="space-y-4 w-full max-w-sm">
         <input
@@ -424,7 +427,7 @@ function EloStep({ onSubmit }: { onSubmit: (elo: number) => void }) {
                      focus:outline-none focus:ring-2 focus:ring-chess-green transition-all"
         />
         <p className="text-xs text-chess-text-muted px-1 text-center">
-          Chess.com, Lichess, FIDE -- any rating works.
+          From Chess.com, Lichess, or FIDE — any rating works.
         </p>
       </div>
 
@@ -463,8 +466,8 @@ function BuildingStep({
       : level === 'basics'
         ? 'Alright, you know a horse from a bishop. Good start.'
         : 'Fresh start. I love the confidence.',
-    'Building your path...',
-    'Your path is almost ready...',
+    'Picking your puzzles...',
+    'Almost ready...',
   ];
 
   useEffect(() => {
@@ -543,7 +546,7 @@ function ReadyStep({
         }}
       >
         <h2 className="text-[22px] font-black text-chess-text leading-tight">
-          Your path is ready.
+          Your puzzles are ready.
         </h2>
         <p className="text-sm text-chess-text-muted mt-2 max-w-[280px] mx-auto leading-relaxed">
           {isRated
@@ -736,11 +739,9 @@ export function OnboardingFlow() {
               OnboardingEvents.completed({ level: 'beginner', style: 'none' });
               router.push('/basics');
             }}
-            onHaveElo={() => {
-              OnboardingEvents.routeSelected('have_elo');
-              setLevelChoice('rated');
-              try { localStorage.setItem('chess_path_level', 'rated'); } catch {}
-              goToStep('elo');
+            onAlreadyPlay={() => {
+              OnboardingEvents.routeSelected('already_play');
+              goToStep('level');
             }}
             onDailyChallenge={() => {
               OnboardingEvents.routeSelected('daily_challenge');
