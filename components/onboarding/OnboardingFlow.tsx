@@ -131,9 +131,9 @@ function LandingStep({ onNewToChess, onAlreadyPlay, onDailyChallenge, onSignIn }
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 150);
-    const t2 = setTimeout(() => setPhase(2), 450);
-    const t3 = setTimeout(() => setPhase(3), 750);
-    const t4 = setTimeout(() => setPhase(4), 1400);
+    const t2 = setTimeout(() => setPhase(2), 700);
+    const t3 = setTimeout(() => setPhase(3), 1100);
+    const t4 = setTimeout(() => setPhase(4), 1700);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, []);
 
@@ -145,92 +145,102 @@ function LandingStep({ onNewToChess, onAlreadyPlay, onDailyChallenge, onSignIn }
 
   return (
     <div className="flex-1 flex flex-col items-center px-5 max-w-lg mx-auto w-full">
-      {/* Top: brand + heading */}
-      <div className="pt-10 sm:pt-16">
-        <div
-          className="flex items-center gap-2 justify-center mb-3"
-          style={{
-            opacity: phase >= 1 ? 1 : 0,
-            transform: phase >= 1 ? 'translateY(0)' : 'translateY(8px)',
-            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-          }}
-        >
-          <BreathingRook size="lg" animation="enter" />
-          <h1
-            className="font-bold"
-            style={{ fontSize: 'var(--wordmark-size)', fontFamily: "var(--font-body), 'DM Sans', system-ui, sans-serif" }}
-          >
-            <span className="text-chess-text">chess</span>
-            <span
-              style={{
-                background: 'linear-gradient(90deg, #FFC800 0%, #FFC800 20%, #FF6B6B 40%, #FF6B6B 55%, #1CB0F6 75%, #1CB0F6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              path
-            </span>
-          </h1>
-        </div>
-
-        <p
-          className="font-semibold tracking-widest text-chess-text-muted uppercase text-center"
-          style={{
-            fontSize: 'var(--heading-size)',
-            opacity: phase >= 2 ? 1 : 0,
-            transform: phase >= 2 ? 'translateY(0)' : 'translateY(6px)',
-            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-          }}
-        >
-          Fun puzzles that make you better at chess
-        </p>
+      {/* Logo */}
+      <div
+        className="flex justify-center pt-10 sm:pt-14"
+        style={{
+          opacity: phase >= 1 ? 1 : 0,
+          transform: phase >= 1 ? 'translateY(0)' : 'translateY(-8px)',
+          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <AnimatedLogo size={0.45} perpetual theme="light" />
       </div>
 
-      {/* Center: route cards */}
-      <div className="flex-1 flex items-center w-full">
-        <div className="flex flex-col w-full" style={{ gap: 'var(--cards-gap)' }}>
-          {LANDING_ROUTES.map((route, i) => (
-            <button
-              key={route.id}
-              onClick={() => { playButtonClick(); handlers[route.id](); }}
-              className="relative w-full text-left level-card-hover group"
-              style={{
-                opacity: phase >= 3 ? 1 : 0,
-                transform: phase >= 3 ? 'translateY(0)' : 'translateY(24px)',
-                transition: `all 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${i * 100}ms`,
-              }}
+      <div className="flex-1" />
+
+      {/* Rookie speech bubble */}
+      <div
+        className="w-full flex items-center gap-1 mb-5"
+        style={{
+          opacity: phase >= 2 ? 1 : 0,
+          transform: phase >= 2 ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <div className="flex-shrink-0">
+          <AnimatedLogo iconOnly size={0.95} perpetual />
+        </div>
+        <div
+          className="flex-shrink-0"
+          style={{
+            width: 0, height: 0,
+            borderTop: '8px solid transparent',
+            borderBottom: '8px solid transparent',
+            borderRight: '10px solid white',
+            filter: 'drop-shadow(-1px 0 1px rgba(0,0,0,0.03))',
+          }}
+        />
+        <div
+          className="flex-1 min-w-0 bg-white rounded-2xl px-4 py-3"
+          style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}
+        >
+          <p className="font-bold text-chess-text leading-snug" style={{ fontSize: '15px' }}>
+            Hi, I&apos;m Rookie! I promise to make you better at chess by giving you{' '}
+            <span className="text-chess-green">fun puzzles</span> to play with.
+          </p>
+        </div>
+      </div>
+
+      {/* "Choose your path:" tagline */}
+      <p
+        className="text-center font-black text-chess-text mb-4 -mt-1"
+        style={{
+          fontSize: 'clamp(14px, 4vw, 18px)',
+          opacity: phase >= 3 ? 1 : 0,
+          transform: phase >= 3 ? 'translateY(0)' : 'translateY(6px)',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        Choose your path:
+      </p>
+
+      {/* Route cards */}
+      <div className="flex flex-col w-full" style={{ gap: 'var(--cards-gap)' }}>
+        {LANDING_ROUTES.map((route, i) => (
+          <button
+            key={route.id}
+            onClick={() => { playButtonClick(); handlers[route.id](); }}
+            className="relative w-full text-left level-card-hover group"
+            style={{
+              opacity: phase >= 3 ? 1 : 0,
+              transform: phase >= 3 ? 'translateY(0)' : 'translateY(24px)',
+              transition: `all 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${i * 100}ms`,
+            }}
+          >
+            <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-1" style={{ backgroundColor: route.color, transform: 'translate(5px, 5px)', opacity: 0.2 }} />
+            <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-2" style={{ backgroundColor: route.color, transform: 'translate(2.5px, 2.5px)', opacity: 0.35 }} />
+            <div
+              className="relative rounded-2xl border-2 transition-transform duration-300 level-card-main overflow-hidden"
+              style={{ backgroundColor: 'var(--color-chess-surface)', borderColor: route.color, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 'var(--card-py) var(--card-px)' }}
             >
-              {/* 3D depth layers */}
-              <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-1" style={{ backgroundColor: route.color, transform: 'translate(5px, 5px)', opacity: 0.2 }} />
-              <div className="absolute inset-0 rounded-2xl transition-transform duration-300 level-layer-2" style={{ backgroundColor: route.color, transform: 'translate(2.5px, 2.5px)', opacity: 0.35 }} />
-
-              {/* Main card */}
-              <div
-                className="relative rounded-2xl border-2 transition-transform duration-300 level-card-main overflow-hidden"
-                style={{ backgroundColor: 'var(--color-chess-surface)', borderColor: route.color, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 'var(--card-py) var(--card-px)' }}
-              >
-                <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none" style={{ background: `linear-gradient(135deg, transparent 50%, ${route.color}15 50%)`, borderTopRightRadius: '1rem' }} />
-                <div className="absolute inset-0 shimmer-effect pointer-events-none" style={{ background: `linear-gradient(90deg, transparent, ${route.color}15, transparent)`, transform: 'skewX(-20deg) translateX(-150%)' }} />
-
-                <div className="relative z-10 flex items-center" style={{ gap: 'var(--card-gap)' }}>
-                  <LandingRouteIcon icon={route.icon} color={route.color} darkColor={route.darkColor} />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-black text-chess-text leading-tight" style={{ fontSize: 'var(--label-size)' }}>{route.label}</p>
-                    <p className="text-chess-text-muted font-medium mt-0.5" style={{ fontSize: 'var(--sub-size)' }}>{route.sub}</p>
-                  </div>
+              <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none" style={{ background: `linear-gradient(135deg, transparent 50%, ${route.color}15 50%)`, borderTopRightRadius: '1rem' }} />
+              <div className="relative z-10 flex items-center" style={{ gap: 'var(--card-gap)' }}>
+                <LandingRouteIcon icon={route.icon} color={route.color} darkColor={route.darkColor} />
+                <div className="min-w-0 flex-1">
+                  <p className="font-black text-chess-text leading-tight" style={{ fontSize: 'var(--label-size)' }}>{route.label}</p>
+                  <p className="text-chess-text-muted font-medium mt-0.5" style={{ fontSize: 'var(--sub-size)' }}>{route.sub}</p>
                 </div>
               </div>
-            </button>
-          ))}
-        </div>
+            </div>
+          </button>
+        ))}
       </div>
 
-      {/* Bottom: login */}
-      <div
-        className="pb-6"
-        style={{ opacity: phase >= 4 ? 1 : 0, transition: 'opacity 0.4s ease-out' }}
-      >
+      <div className="flex-1" />
+
+      {/* Sign in link */}
+      <div className="pb-6" style={{ opacity: phase >= 4 ? 1 : 0, transition: 'opacity 0.4s ease-out' }}>
         <button
           onClick={() => { playButtonClick(); onSignIn(); }}
           className="text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 px-4"
