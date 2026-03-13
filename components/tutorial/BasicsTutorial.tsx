@@ -19,6 +19,7 @@ import confetti from 'canvas-confetti';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { TutorialEvents } from '@/lib/analytics/posthog';
+import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 
 // ══════════════════════════════════════════════════
 // INTRO SLIDES
@@ -161,7 +162,7 @@ const STEPS: TutorialStep[] = [
 // Total segments: 3 intro slides + 7 piece steps
 const TOTAL_SEGMENTS = INTRO_SLIDES.length + STEPS.length;
 
-function ProgressBar({ current, total, onBack }: { current: number; total: number; onBack?: () => void }) {
+function TutorialHeader({ current, total, onBack }: { current: number; total: number; onBack?: () => void }) {
   return (
     <div className="flex items-center gap-3 px-4 pt-3 pb-2 w-full max-w-lg mx-auto">
       {onBack ? (
@@ -177,22 +178,7 @@ function ProgressBar({ current, total, onBack }: { current: number; total: numbe
       ) : (
         <div className="w-8" />
       )}
-      <div className="flex-1 h-3 bg-chess-surface rounded-full overflow-hidden flex gap-[3px]">
-        {Array.from({ length: total }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 rounded-full transition-all duration-500 ease-out"
-            style={{
-              backgroundColor: i < current
-                ? 'var(--color-chess-green)'
-                : i === current
-                  ? 'var(--color-chess-green)'
-                  : 'var(--color-chess-disabled, #e0e0e0)',
-              opacity: i < current ? 1 : i === current ? 0.6 : 0.3,
-            }}
-          />
-        ))}
-      </div>
+      <ChessProgressBar current={current} total={total} className="flex-1" />
       <div className="w-8" />
     </div>
   );
@@ -217,7 +203,8 @@ function IntroSlideView({ slide, onNext, onBack, progressCurrent }: {
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      <ProgressBar current={progressCurrent} total={TOTAL_SEGMENTS} onBack={onBack} />
+      <style>{progressBarStyles}</style>
+      <TutorialHeader current={progressCurrent} total={TOTAL_SEGMENTS} onBack={onBack} />
 
       <div className="flex-1 flex flex-col items-center px-6">
         <div className="flex-1 flex flex-col items-center justify-center max-w-sm">
@@ -321,7 +308,8 @@ function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
 
   return (
     <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col">
-      <ProgressBar current={TOTAL_SEGMENTS} total={TOTAL_SEGMENTS} />
+      <style>{progressBarStyles}</style>
+      <TutorialHeader current={TOTAL_SEGMENTS} total={TOTAL_SEGMENTS} />
 
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div
@@ -717,7 +705,7 @@ export function BasicsTutorial() {
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-      <ProgressBar
+      <TutorialHeader
         current={progressCurrent}
         total={TOTAL_SEGMENTS}
         onBack={handleExerciseBack}
@@ -787,6 +775,7 @@ export function BasicsTutorial() {
       </div>
 
       {/* Animations */}
+      <style>{progressBarStyles}</style>
       <style jsx>{`
         @keyframes basicsSlideUp {
           from { opacity: 0; transform: translateY(8px); }
