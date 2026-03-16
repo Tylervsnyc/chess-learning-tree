@@ -765,125 +765,6 @@ export default function DailyChallengePage() {
     );
   }
 
-  // ─── AUTH GATE: require login to play ───────────────────────────────
-  if (!user) {
-    return (
-      <div className="h-full bg-chess-page text-chess-text flex flex-col items-center overflow-auto">
-        <div className="w-full max-w-md">
-          <div className="flex flex-col items-center justify-start px-4 pt-4 pb-2">
-            <div className="text-center max-w-sm w-full flex flex-col">
-              {/* Title */}
-              <div
-                className="inline-block px-5 py-2.5 rounded-xl mb-2 border-2 border-chess-orange/50 self-center"
-                style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
-              >
-                <h1
-                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange"
-                  style={{ fontFamily: 'Nunito, sans-serif' }}
-                >
-                  THE DAILY ROOK
-                </h1>
-              </div>
-
-              {/* Tagline */}
-              <p
-                className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#e05a5a] to-chess-orange mb-4"
-              >
-                Solve Puzzles. Build the Rook. Improve at Chess.
-              </p>
-
-              {/* Rules */}
-              <div
-                className="rounded-2xl p-3 mb-3 text-left space-y-2 border border-chess-orange/20"
-                style={{ background: 'linear-gradient(145deg, rgba(255,150,0,0.08), rgba(255,107,107,0.06), rgba(255,150,0,0.04))' }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#38bdf8]/30"
-                    style={{ background: 'linear-gradient(135deg, rgba(56,189,248,0.15), rgba(56,189,248,0.25))' }}
-                  >
-                    <span className="text-[#38bdf8] font-black text-xs">5</span>
-                  </div>
-                  <div className="text-chess-text font-bold text-sm">5 minutes on the clock</div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#4ade80]/30"
-                    style={{ background: 'linear-gradient(135deg, rgba(74,222,128,0.15), rgba(74,222,128,0.25))' }}
-                  >
-                    <svg className="w-3.5 h-3.5 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                    </svg>
-                  </div>
-                  <div className="text-chess-text font-bold text-sm">Puzzles get harder</div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#f87171]/30"
-                    style={{ background: 'linear-gradient(135deg, rgba(248,113,113,0.15), rgba(248,113,113,0.25))' }}
-                  >
-                    <span className="text-[#f87171] font-black text-xs">3</span>
-                  </div>
-                  <div className="text-chess-text font-bold text-sm">3 mistakes and you&apos;re out</div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#fbbf24]/30"
-                    style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,191,36,0.25))' }}
-                  >
-                    <svg className="w-3.5 h-3.5 text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-5 5h-1v2h2a2 2 0 0 1 2 2v4h-4v-2H9v2H5v-4a2 2 0 0 1 2-2h2v-2H8a5 5 0 0 1-5-5V5a2 2 0 0 1 2-2z"/>
-                    </svg>
-                  </div>
-                  <div className="text-chess-text font-bold text-sm">Same puzzles for everyone</div>
-                </div>
-              </div>
-
-              {/* Auth CTAs */}
-              <button
-                onClick={() => setShowSignupModal(true)}
-                className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-3"
-                style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
-              >
-                Sign Up Free to Play
-              </button>
-              <button
-                onClick={() => router.push('/auth/login?redirect=%2Fdaily-challenge')}
-                className="text-chess-text-muted hover:text-chess-text transition-colors text-xs mt-2"
-              >
-                Already have an account? Log in
-              </button>
-              <button
-                onClick={() => router.push('/')}
-                className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-3"
-                style={{ backgroundColor: 'var(--color-chess-green)', boxShadow: '0 3px 0 var(--color-chess-green-shadow)' }}
-              >
-                Back to Learning
-              </button>
-
-              <CreateProfileModal
-                isOpen={showSignupModal}
-                onClose={() => setShowSignupModal(false)}
-                context="daily-rook"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Rook preview in demo mode */}
-        <div className="max-w-md mx-auto w-full">
-          <DailyRookDisplay
-            results={Array(22).fill('pending')}
-            lives={MAX_LIVES}
-            maxLives={MAX_LIVES}
-            timeLeft={TOTAL_TIME}
-            mode="demo"
-          />
-        </div>
-      </div>
-    );
-  }
-
   // Determine the rook display mode
   const rookMode = gameState === 'ready' || gameState === 'loading'
     ? 'demo'
@@ -982,7 +863,7 @@ export default function DailyChallengePage() {
                   className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
                   style={{ backgroundColor: 'var(--color-chess-green)', boxShadow: '0 3px 0 var(--color-chess-green-shadow)' }}
                 >
-                  Back to Path
+                  Back to Home
                 </button>
               </div>
             </div>
@@ -1157,8 +1038,21 @@ export default function DailyChallengePage() {
               {!user ? (
                 <>
                   <button
+                    onClick={() => setShowSignupModal(true)}
+                    className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
+                  >
+                    Sign Up to Save Your Score
+                  </button>
+                  <button
+                    onClick={() => router.push('/auth/login?redirect=%2Fdaily-challenge')}
+                    className="text-chess-text-muted hover:text-chess-text transition-colors text-xs mt-2"
+                  >
+                    Already have an account? Log in
+                  </button>
+                  <button
                     onClick={() => router.push('/')}
-                    className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
+                    className="w-full py-3 rounded-xl text-white font-bold text-sm transition-transform active:scale-[0.98] mt-2 shadow-[0_3px_0_var(--color-chess-green-shadow)]"
                     style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
                     Start Learning
@@ -1166,6 +1060,11 @@ export default function DailyChallengePage() {
                   <div className="mt-2 text-chess-text-muted text-xs text-center">
                     New challenge drops at midnight!
                   </div>
+                  <CreateProfileModal
+                    isOpen={showSignupModal}
+                    onClose={() => setShowSignupModal(false)}
+                    context="daily-rook"
+                  />
                 </>
               ) : alreadyCompletedToday ? (
                 <>
@@ -1174,7 +1073,7 @@ export default function DailyChallengePage() {
                     className="w-full py-3 rounded-xl text-white font-bold transition-transform active:scale-[0.98] shadow-[0_4px_0_var(--color-chess-green-shadow)]"
                     style={{ backgroundColor: 'var(--color-chess-green)' }}
                   >
-                    Back to Path
+                    Back to Home
                   </button>
                   <div className="mt-2 text-chess-text-muted text-xs text-center">
                     New challenge drops at midnight!
@@ -1193,7 +1092,7 @@ export default function DailyChallengePage() {
                     onClick={() => router.push('/')}
                     className="mt-2 text-chess-text-muted hover:text-chess-text transition-colors block w-full text-sm"
                   >
-                    Back to Path
+                    Back to Home
                   </button>
                 </>
               )}

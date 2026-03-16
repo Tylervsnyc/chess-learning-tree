@@ -305,8 +305,7 @@ function PieceIcon({ piece, size = 28, color = 'white' }: { piece: PieceType; si
 }
 
 const LEVEL_OPTIONS = [
-  { id: 'beginner', label: "I'm brand new", desc: 'Teach me everything', icon: 'pawn' as PieceType, color: '#58CC02', darkColor: '#3d8c01' },
-  { id: 'basics', label: 'I know the basics', desc: 'I can move the pieces', icon: 'knight' as PieceType, color: '#1CB0F6', darkColor: '#1487c0' },
+  { id: 'checkmates', label: 'Start with checkmates', desc: 'Jump into puzzles right away', icon: 'knight' as PieceType, color: '#58CC02', darkColor: '#3d8c01' },
   { id: 'rated', label: 'I have a rating', desc: 'Place me at my level', icon: 'queen' as PieceType, color: '#CE82FF', darkColor: '#a855c7' },
 ];
 
@@ -341,7 +340,7 @@ function LevelStep({ onSelect }: { onSelect: (level: string) => void }) {
       </div>
 
       <h2 className="text-[20px] font-black text-chess-text leading-tight text-center mb-6">
-        What&apos;s your chess level?
+        How do you want to start?
       </h2>
 
       <div className="space-y-3 w-full max-w-sm">
@@ -471,11 +470,7 @@ function BuildingStep({
   const [message, setMessage] = useState(0);
 
   const messages = [
-    level === 'rated' && elo
-      ? `${elo}? Bold. Let's see what you've got.`
-      : level === 'basics'
-        ? 'Alright, you know a horse from a bishop. Good start.'
-        : 'Fresh start. I love the confidence.',
+    elo ? `${elo}? Bold. Let's see what you've got.` : 'Fresh start. I love the confidence.',
     'Picking your puzzles...',
     'Almost ready...',
   ];
@@ -654,14 +649,11 @@ export function OnboardingFlow() {
     setLevelChoice(level);
     try { localStorage.setItem('chess_path_level', level); } catch {}
 
-    if (level === 'beginner') {
-      // Beginners go straight to basics tutorial
+    if (level === 'checkmates') {
+      // Go straight to checkmate puzzles at 1.1.1
       markOnboarded();
       OnboardingEvents.completed({ level, style: 'none' });
-      router.push('/basics');
-    } else if (level === 'basics') {
-      // Basics users skip straight to building → lesson 1.1.1
-      goToStep('building');
+      router.push('/lesson/1.1.1?from=onboarding');
     } else {
       // Rated users go through elo → building → ready
       goToStep('elo');
