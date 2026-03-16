@@ -148,29 +148,33 @@ export function playCorrectSound(puzzleIndex: number, delay: number = 250): void
     const scaleIndex = Math.min(puzzleIndex, CHROMATIC_SCALE.length - 1);
     const baseFreq = CHROMATIC_SCALE[scaleIndex];
 
-    // First note (base frequency)
+    const t = ctx.currentTime;
+
+    // First note (base frequency) — short fade-in to avoid click
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
     osc1.type = 'triangle';
     osc1.frequency.value = baseFreq;
-    gain1.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+    gain1.gain.setValueAtTime(0.001, t);
+    gain1.gain.linearRampToValueAtTime(0.15, t + 0.005);
+    gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
     osc1.connect(gain1);
     gain1.connect(ctx.destination);
-    osc1.start();
-    osc1.stop(ctx.currentTime + 0.12);
+    osc1.start(t);
+    osc1.stop(t + 0.12);
 
     // Second note (perfect fifth above - 1.5x frequency)
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.type = 'triangle';
     osc2.frequency.value = baseFreq * 1.5;
-    gain2.gain.setValueAtTime(0.15, ctx.currentTime + 0.1);
-    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+    gain2.gain.setValueAtTime(0.001, t + 0.1);
+    gain2.gain.linearRampToValueAtTime(0.15, t + 0.105);
+    gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
     osc2.connect(gain2);
     gain2.connect(ctx.destination);
-    osc2.start(ctx.currentTime + 0.1);
-    osc2.stop(ctx.currentTime + 0.35);
+    osc2.start(t + 0.1);
+    osc2.stop(t + 0.35);
   }, delay);
 }
 
