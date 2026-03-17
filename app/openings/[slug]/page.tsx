@@ -7,7 +7,7 @@ import { getOpeningBySlug, PIECE_SVGS } from '@/data/openings/registry'
 import type { OpeningConfig } from '@/data/openings/registry'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
-import { TREE_LOOKUP } from '@/lib/opening-trees'
+import { TREE_LOOKUP, getLessonCount } from '@/lib/opening-trees'
 
 /** Parse registry moves like "1.e4 e5 2.Nf3 Nc6 3.Bc4" → FEN + last move squares */
 function parseOpeningMoves(movesStr: string) {
@@ -314,6 +314,22 @@ export default function OpeningDetailPage({
                 <p className="text-[11px] text-white/70 mt-1">
                   {opening.mainLine.subtitle}
                 </p>
+                {(() => {
+                  const total = getLessonCount(slug)
+                  const done = getProgress(slug).completedLessons.length
+                  if (total === 0) return null
+                  return (
+                    <div className="mt-2">
+                      <div className="h-1.5 rounded-full bg-white/20 w-full">
+                        <div
+                          className="h-1.5 rounded-full bg-white transition-all"
+                          style={{ width: `${(done / total) * 100}%` }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-white/60 mt-1 font-medium">{done}/{total}</p>
+                    </div>
+                  )
+                })()}
               </div>
             </div>
 
@@ -359,6 +375,22 @@ export default function OpeningDetailPage({
                       <p className="text-[10px] text-gray-500 mt-0.5 truncate">
                         {variation.subtitle}
                       </p>
+                      {variationReady && (() => {
+                        const total = getLessonCount(variationSlug)
+                        const done = getProgress(variationSlug).completedLessons.length
+                        if (total === 0) return null
+                        return (
+                          <div className="mt-1.5">
+                            <div className="h-1.5 rounded-full bg-gray-100 w-full">
+                              <div
+                                className="h-1.5 rounded-full transition-all"
+                                style={{ width: `${(done / total) * 100}%`, backgroundColor: opening.color }}
+                              />
+                            </div>
+                            <p className="text-[10px] text-gray-400 mt-1 font-medium">{done}/{total}</p>
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
 
