@@ -16,7 +16,7 @@ function isUnlocked(nodeId: string, completed: Set<string>): boolean {
 export default function Sicilian1TestPage() {
   const router = useRouter()
   const [completedIds, setCompletedIds] = useState<string[]>([])
-  const [currentId, setCurrentId] = useState<string | null>('sc-1')
+  const [currentId, setCurrentId] = useState<string | null>('si-1')
   const [treeKey, setTreeKey] = useState(0)
 
   const completeNext = useCallback(() => {
@@ -45,7 +45,7 @@ export default function Sicilian1TestPage() {
 
   const resetTree = useCallback(() => {
     setCompletedIds([])
-    setCurrentId('sc-1')
+    setCurrentId('si-1')
     setTreeKey(k => k + 1)
   }, [])
 

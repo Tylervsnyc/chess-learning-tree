@@ -6,8 +6,9 @@ Everything an agent needs to build opening lessons. No need to read RULES.md.
 
 ## Hard Rule #0
 
-**Every move we teach must be #1 in the Lichess masters database.** Only the opponent deviates (in punish lessons). Verify via:
+**Every move we teach must be #1 in the Lichess masters database.** The opponent deviates in deviation lessons (common alternatives from master games). Verify via:
 ```
+https://explorer.lichess.org/masters?play=e2e4,e7e5,...  (UCI format)
 https://lichess.org/api/cloud-eval?fen={URL_ENCODED_FEN}&multiPv=3
 ```
 
@@ -19,14 +20,14 @@ https://lichess.org/api/cloud-eval?fen={URL_ENCODED_FEN}&multiPv=3
 - **6 interactive steps minimum** per lesson (play-move, quiz, or puzzle). No slideshows.
 - **10 lessons per tree** (Level 1, Level 2, or standalone variation).
 - Every lesson except the first starts with a **recap** section (replay previous moves with `isRecap: true`).
-- Punish lessons can be lighter on new content but must hit the 6-step minimum through recap.
+- Deviation lessons can be lighter on new content but must hit the 6-step minimum through recap.
 
 ### Lesson Flow
 
 1. **Intro instruction** — one sentence, what this lesson covers
 2. **Recap** — replay prior moves (auto-advance, play-through mode)
 3. **Teach** — instruction explains the move, then play-move for user to execute
-4. **Punish section** (optional) — show one opponent mistake and the refutation
+4. **Deviation section** (optional) — show a common opponent alternative and our best response
 
 ### Step Types
 
@@ -55,7 +56,7 @@ If the NEXT step after a `play-move` is an `instruction` with `autoAdvance`, the
 
 Each tree has ~10 nodes:
 - **4-5 main line nodes** (col 0, the trunk)
-- **2-3 punish nodes** (col -1, opponent mistakes to exploit)
+- **2-3 deviation nodes** (col -1, common opponent alternatives)
 - **1-2 branch nodes** (col 1, important variations)
 - **1 test node** at the top
 
@@ -73,7 +74,7 @@ Each tree has ~10 nodes:
 | Type | Purpose |
 |------|---------|
 | `main` | Core line moves |
-| `punish` | Opponent plays badly, user exploits |
+| `deviation` | Common opponent alternative, user learns best response |
 | `branch` | Important variation off the main line |
 | `test` | Full recall test at end of level |
 
@@ -93,10 +94,10 @@ Common FEN bugs from hand-writing:
 
 ## Writing Style Guide
 
-### Tone
-- Conversational, confident, encouraging. Like a coach who respects the student.
+### Tone — Teach Like a Friend at a Coffee Shop
+- Imagine explaining chess to a friend over coffee. Casual, fun, accurate.
 - Short sentences. No jargon dumps.
-- Playful but not corny.
+- Playful but not corny. Be specific about pieces and squares.
 
 ### Accuracy Rules
 
@@ -145,7 +146,7 @@ Query Lichess cloud eval for each position in the line. Record:
 - The #1 move (this is what we teach)
 - The eval (this calibrates our language)
 - Alternative moves (potential branch/variation content)
-- Bad opponent moves (potential punish content — look for moves eval'd ±1.0+ worse than #1)
+- Common opponent alternatives from masters DB (potential deviation content — must have 100+ master games or 5%+ of total)
 
 ### Step 2: Break Into 3-Move Lessons
 
@@ -165,13 +166,13 @@ For each lesson, the generator builds:
    - Play-move step for user to execute
 4. Opponent auto-advance steps between user moves
 
-### Step 5: Find Punish Moves
+### Step 5: Find Deviations
 
-From the Lichess data, find 2-3 positions where a common opponent mistake (played often in lower-rated games but eval'd badly) can be punished. Each punish lesson teaches the refutation.
+From the Lichess masters database, find 2-3 positions where the opponent commonly plays a different move than the main line. Each deviation lesson teaches our best response. Deviations must have 100+ master games (or 5%+ of total). Our response = #1 reply from the masters explorer.
 
 ### Step 6: Find Variations
 
-From the Lichess data, find 1-2 important alternative lines where the opponent plays a different (but reasonable) move. Each variation lesson teaches the user's best response.
+From the Lichess data, find 1-2 important alternative lines where WE could play a different (but reasonable) move. Each variation lesson teaches an alternative approach for the user.
 
 ### Step 7: Validate
 

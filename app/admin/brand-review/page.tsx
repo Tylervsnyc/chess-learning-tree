@@ -19,7 +19,6 @@ const COMPONENTS_TO_REVIEW = [
 
 const EMAIL_TEMPLATES = [
   { name: 'Welcome Email', file: 'lib/email/templates/Welcome.tsx' },
-  { name: 'Re-engagement Email', file: 'lib/email/templates/ReEngagement.tsx' },
   { name: 'Email Layout', file: 'lib/email/templates/components/EmailLayout.tsx' },
 ];
 

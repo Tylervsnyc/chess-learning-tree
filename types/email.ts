@@ -1,15 +1,8 @@
 // Email system types for The Chess Path
 
 export type EmailType =
-  | 'streak_warning'
-  | 'streak_lost'
-  | 'weekly_digest'
   | 'welcome'
-  | 're_engagement'
-  | 'drip_day3'
-  | 'drip_day5'
-  | 'drip_day7'
-  | 'payment_failed';
+  | 'drip_day3';
 
 export interface EmailPreferences {
   user_id: string;
@@ -52,41 +45,8 @@ export interface EmailRecipient {
 }
 
 // Template-specific props
-export interface StreakWarningProps {
-  displayName: string;
-  currentStreak: number;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface StreakLostProps {
-  displayName: string;
-  lostStreak: number;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface WeeklyDigestProps {
-  displayName: string;
-  puzzlesSolved: number;
-  accuracy: number;
-  currentStreak: number;
-  eloChange: number;
-  topTheme: string | null;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
 export interface WelcomeProps {
   displayName: string;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface ReEngagementProps {
-  displayName: string;
-  daysSinceLastPlay: number;
-  previousStreak: number;
   appUrl: string;
   unsubscribeUrl: string;
 }
@@ -95,26 +55,6 @@ export interface DripDay3Props {
   displayName: string;
   currentLevel: string;
   currentLesson: string;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface DripDay5Props {
-  displayName: string;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface DripDay7Props {
-  displayName: string;
-  appUrl: string;
-  unsubscribeUrl: string;
-}
-
-export interface PaymentFailedProps {
-  displayName: string;
-  attemptNumber: 1 | 2 | 3;
-  billingPortalUrl: string;
   appUrl: string;
   unsubscribeUrl: string;
 }

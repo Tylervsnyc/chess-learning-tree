@@ -170,7 +170,23 @@
       "Bash(/tmp/compute_austrian_fens.mjs:*)",
       "mcp__claude_ai_Linear__save_issue",
       "Bash(for file in french sicilian caro-kann ruy-lopez london pirc pirc-austrian)",
-      "Bash(do echo \"=== $file-lessons.ts ===\" grep -n \"^const.*LESSONS: Record\\\\|^export const.*: OpeningLesson\\\\|id:\" /Users/tyler.schwartz/chess-learning-tree/data/openings/$file-lessons.ts)"
+      "Bash(do echo \"=== $file-lessons.ts ===\" grep -n \"^const.*LESSONS: Record\\\\|^export const.*: OpeningLesson\\\\|id:\" /Users/tyler.schwartz/chess-learning-tree/data/openings/$file-lessons.ts)",
+      "Bash(npm run:*)",
+      "Bash(claude:*)",
+      "Bash(ffprobe:*)",
+      "Bash(pip3 list:*)",
+      "Bash(crontab:*)",
+      "WebFetch(domain:screensdesign.com)",
+      "WebFetch(domain:trysavvy.com)",
+      "WebFetch(domain:www.uisources.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:rive.app)",
+      "WebFetch(domain:en.wikibooks.org)",
+      "Bash(launchctl list)",
+      "Bash(mv:*)",
+      "Bash(set -a && source .env.local && set +a && curl -s \"https://ruseupjmldymfvpybqdl.supabase.co/rest/v1/profiles?select=id,created_at,display_name&order=created_at.desc&limit=20\" \\\\\n  -H \"apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY\" \\\\\n  -H \"Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY\" | jq '.')",
+      "WebFetch(domain:impeccable.style)",
+      "Bash(npx skills:*)"
     ]
   }
 }

@@ -9,12 +9,14 @@
 // Main line (Najdorf): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6
 //            6.Be3 e5 7.Nb3 Be6 8.f3 h5 9.Nd5 Bxd5 10.exd5 Nbd7
 //            11.Qd2 g6 12.Be2 Bg7
-// L2 continuation: 13.Ne2 Ne8 14.f4 a5 15.f5 a4 16.Nbd4 exd4 17.Nxd4 b3
+// L2 continuation: 13.O-O-O O-O 14.g4 b5 15.g5 b4
+//            13.Ne2 Ne8 14.f4 a5 15.f5 a4 16.Nbd4 exd4 17.Nxd4 b3
 //            18.Kb1 bxc2+ 19.Nxc2
 //
-// GRID LAYOUT (11 lessons):
-//   Row 7:                                si-test-2 (col 0)
-//   Row 6:   si-dev-fxe6 (col -1)     si-6 (col 0)
+// GRID LAYOUT (12 lessons):
+//   Row 8:                                si-test-2 (col 0)
+//   Row 7:   si-dev-fxe6 (col -1)     si-7 (col 0)
+//   Row 6:                             si-6 (col 0)
 //   Row 5:                             si-5 (col 0)
 //   Row 4:                             si-test-1 (col 0)
 //   Row 3:                si-4 (col 0)
@@ -37,7 +39,7 @@ export const SICILIAN_DEFENSE: OpeningTree = {
     'si-1', 'si-2', 'si-dev-Be2',
     'si-3', 'si-dev-Nf3', 'si-4',
     'si-test-1',
-    'si-5', 'si-6', 'si-dev-fxe6',
+    'si-5', 'si-6', 'si-7', 'si-dev-fxe6',
     'si-test-2',
   ],
   nodes: [
@@ -136,9 +138,9 @@ export const SICILIAN_DEFENSE: OpeningTree = {
     // === LEVEL 2: MAIN LINE (center trunk, col 0) ===
     {
       id: 'si-5',
-      name: 'The Counterattack',
-      moves: ['13.Ne2 Ne8', '14.f4 a5', '15.f5 a4'],
-      description: 'Retreat the knight to safety, then launch the a-pawn counterattack while White pushes on the kingside.',
+      name: 'Castle & Push',
+      moves: ['13.O-O-O O-O', '14.g4 b5', '15.g5 b4'],
+      description: 'Castle opposite sides and launch the queenside pawn storm with b5-b4.',
       type: 'main',
       row: 5,
       col: 0,
@@ -148,14 +150,26 @@ export const SICILIAN_DEFENSE: OpeningTree = {
     },
     {
       id: 'si-6',
-      name: 'Breaking Through',
-      moves: ['16.Nbd4 exd4', '17.Nxd4 b3', '18.Kb1 bxc2+'],
-      description: 'Trade off the knight, push b3 into White\'s camp, and crack open the queenside with bxc2+.',
+      name: 'The Counterattack',
+      moves: ['13.Ne2 Ne8', '14.f4 a5', '15.f5 a4'],
+      description: 'Retreat the knight to safety, then launch the a-pawn counterattack while White pushes on the kingside.',
       type: 'main',
       row: 6,
       col: 0,
       lineFrom: 'si-5',
       unlockedBy: 'si-5',
+      side: 'black',
+    },
+    {
+      id: 'si-7',
+      name: 'Breaking Through',
+      moves: ['16.Nbd4 exd4', '17.Nxd4 b3', '18.Kb1 bxc2+'],
+      description: 'Trade off the knight, push b3 into White\'s camp, and crack open the queenside with bxc2+.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'si-6',
+      unlockedBy: 'si-6',
       side: 'black',
     },
 
@@ -166,10 +180,10 @@ export const SICILIAN_DEFENSE: OpeningTree = {
       moves: ['16.fxe6 axb3', '17.cxb3 fxe6', '18.Bh3 Rxa2'],
       description: 'White captures on e6 — grab the b3 pawn, recapture, and invade on the a-file.',
       type: 'deviation',
-      row: 6,
+      row: 7,
       col: -1,
-      lineFrom: 'si-6',
-      unlockedBy: 'si-6',
+      lineFrom: 'si-7',
+      unlockedBy: 'si-7',
       side: 'black',
     },
 
@@ -180,9 +194,9 @@ export const SICILIAN_DEFENSE: OpeningTree = {
       moves: [],
       description: 'Play the full Level 2 continuation and handle the fxe6 deviation.',
       type: 'test',
-      row: 7,
+      row: 8,
       col: 0,
-      lineFrom: 'si-6',
+      lineFrom: 'si-7',
       unlockedBy: 'si-dev-fxe6',
       side: 'black',
     },

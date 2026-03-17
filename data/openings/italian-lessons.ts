@@ -1173,7 +1173,7 @@ const IT_5: OpeningLesson = {
     // ── PREDICT/REVEAL 1: Nxe3 ──
     {
       type: 'instruction',
-      fen: FEN2.after_Bxe3,
+      fen: FEN.after_Be3,
       text: "Black takes your bishop. Bxe3.",
       autoAdvance: 800,
       highlightSquares: ['c5', 'e3'],
@@ -1254,7 +1254,7 @@ const IT_5: OpeningLesson = {
     },
     {
       type: 'instruction',
-      fen: FEN2.after_Bxe3,
+      fen: FEN.after_Be3,
       text: 'Bxe3.',
       autoAdvance: 800,
       highlightSquares: ['c5', 'e3'],
@@ -1352,7 +1352,7 @@ const IT_6: OpeningLesson = {
     },
     {
       type: 'instruction',
-      fen: FEN2.after_Bxe3,
+      fen: FEN.after_Be3,
       text: 'Bxe3.',
       autoAdvance: 800,
       highlightSquares: ['c5', 'e3'],
@@ -1607,7 +1607,7 @@ const IT_DEV_BC4: OpeningLesson = {
     },
     {
       type: 'instruction',
-      fen: FEN2.after_Bxe3,
+      fen: FEN.after_Be3,
       text: 'Bxe3.',
       autoAdvance: 800,
       highlightSquares: ['c5', 'e3'],
@@ -1790,7 +1790,7 @@ const IT_TEST_2: OpeningLesson = {
     },
 
     // Lesson 5: Nxe3, a4, d4
-    { type: 'instruction', fen: FEN2.after_Bxe3, text: 'Bxe3.', autoAdvance: 800, highlightSquares: ['c5', 'e3'] },
+    { type: 'instruction', fen: FEN.after_Be3, text: 'Bxe3.', autoAdvance: 800, highlightSquares: ['c5', 'e3'] },
     { type: 'play-move', fen: FEN2.after_Bxe3, correctMove: 'Nxe3', prompt: 'Your move.', hint: 'Nxe3.', correctFeedback: 'Nxe3.', wrongFeedback: 'Nxe3.' },
     { type: 'instruction', fen: FEN2.after_Ne7, text: 'Ne7.', autoAdvance: 800, highlightSquares: ['c6', 'e7'] },
     { type: 'play-move', fen: FEN2.after_Ne7, correctMove: 'a4', prompt: 'Your move.', hint: 'a4.', correctFeedback: 'a4.', wrongFeedback: 'a4.' },

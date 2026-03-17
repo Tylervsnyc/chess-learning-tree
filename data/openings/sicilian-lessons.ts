@@ -40,6 +40,14 @@ const FEN = {
   after_Be2:   'r2qkb1r/1p1n1p2/p2p1np1/3Pp2p/8/1N2BP2/PPPQB1PP/R3K2R b KQkq - 1 12',
   after_Bg7:   'r2qk2r/1p1n1pb1/p2p1np1/3Pp2p/8/1N2BP2/PPPQB1PP/R3K2R w KQkq - 2 13',
 
+  // Bridge moves: 13.O-O-O O-O 14.g4 b5 15.g5 b4
+  after_OOO:   'r2qk2r/1p1n1pb1/p2p1np1/3Pp2p/8/1N2BP2/PPPQB1PP/2KR3R b kq - 3 13',
+  after_OO:    'r2q1rk1/1p1n1pb1/p2p1np1/3Pp2p/8/1N2BP2/PPPQB1PP/2KR3R w - - 4 14',
+  after_g4:    'r2q1rk1/1p1n1pb1/p2p1np1/3Pp2p/6P1/1N2BP2/PPPQB2P/2KR3R b - - 0 14',
+  after_b5:    'r2q1rk1/3n1pb1/p2p1np1/1p1Pp2p/6P1/1N2BP2/PPPQB2P/2KR3R w - - 0 15',
+  after_g5:    'r2q1rk1/3n1pb1/p2p1np1/1p1Pp1Pp/8/1N2BP2/PPPQB2P/2KR3R b - - 0 15',
+  after_b4:    'r2q1rk1/3n1pb1/p2p1np1/3Pp1Pp/1p6/1N2BP2/PPPQB2P/2KR3R w - - 0 16',
+
   // Deviation: 6.Be2 (instead of 6.Be3)
   // Line: 5...a6 6.Be2 e5 7.Nb3 Be7 8.O-O O-O 9.Be3 Be6
   devBe2_after_Be2:   'rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP1BPPP/R1BQK2R b KQkq - 1 6',
@@ -596,14 +604,14 @@ const SI_3: OpeningLesson = {
       correctMove: 'Bxd5',
       prompt: "White's knight just landed on d5. What do you do?",
       hint: 'Trade the bishop for the knight — it damages White\'s pawn structure.',
-      correctFeedback: "Bxd5! You give up the bishop pair, but after exd5 White has doubled pawns and a weak structure.",
+      correctFeedback: "Bxd5! You give up the bishop pair, but after exd5 White's pawn structure is rigid and the e-file opens for your rook.",
       wrongFeedback: 'Capture with Bxd5 — wreck White\'s pawns.',
       postMoveArrow: [['d5', 'e4'], ['d5', 'c4']],
     },
     {
       type: 'instruction',
       fen: FEN.after_Bxd5,
-      text: "After Bxd5, White recaptures with exd5. That gives White doubled d-pawns and opens the e-file for your rook. A great trade.",
+      text: "After Bxd5, White recaptures with exd5. That locks in White's pawn structure and opens the e-file for your rook. A great trade.",
       arrow: ['e6', 'd5'],
     },
 
@@ -1400,12 +1408,271 @@ const SI_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
-// si-5: THE COUNTERATTACK (13.Ne2 Ne8 14.f4 a5 15.f5 a4)
-// First L2 lesson — no recap.
+// si-5: CASTLE & PUSH (13.O-O-O O-O 14.g4 b5 15.g5 b4)
+// Bridges L1 ending (after_Bg7) to L2 positions.
 // ═══════════════════════════════════════════════════════════
 
 const SI_5: OpeningLesson = {
   id: 'si-5',
+  title: 'Castle & Push',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Bg7,
+      text: "Development is done. Now both sides castle on opposite wings and launch pawn storms. You castle short and push b5-b4 to attack.",
+    },
+
+    // ── RECAP (si-3 and si-4 moves) ──
+    {
+      type: 'instruction',
+      fen: FEN.after_e5,
+      text: "Let's run through the last two lessons first.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Nb3,
+      text: 'Nb3.',
+      autoAdvance: 800,
+      highlightSquares: ['d4', 'b3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_Nb3,
+      correctMove: 'Be6',
+      prompt: 'Your move.',
+      hint: 'Be6.',
+      correctFeedback: 'Be6.',
+      wrongFeedback: 'Be6.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_f3,
+      text: 'f3.',
+      autoAdvance: 800,
+      highlightSquares: ['f2', 'f3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_f3,
+      correctMove: 'h5',
+      prompt: 'Your move.',
+      hint: 'h5.',
+      correctFeedback: 'h5.',
+      wrongFeedback: 'h5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Nd5,
+      text: 'Nd5.',
+      autoAdvance: 800,
+      highlightSquares: ['c3', 'd5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_Nd5,
+      correctMove: 'Bxd5',
+      prompt: 'Your move.',
+      hint: 'Bxd5.',
+      correctFeedback: 'Bxd5.',
+      wrongFeedback: 'Bxd5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_exd5,
+      text: 'exd5.',
+      autoAdvance: 800,
+      highlightSquares: ['e4', 'd5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_exd5,
+      correctMove: 'Nbd7',
+      prompt: 'Your move.',
+      hint: 'Nbd7.',
+      correctFeedback: 'Nbd7.',
+      wrongFeedback: 'Nbd7.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Qd2,
+      text: 'Qd2.',
+      autoAdvance: 800,
+      highlightSquares: ['d1', 'd2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_Qd2,
+      correctMove: 'g6',
+      prompt: 'Your move.',
+      hint: 'g6.',
+      correctFeedback: 'g6.',
+      wrongFeedback: 'g6.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Be2,
+      text: 'Be2.',
+      autoAdvance: 800,
+      highlightSquares: ['f1', 'e2'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_Be2,
+      correctMove: 'Bg7',
+      prompt: 'Your move.',
+      hint: 'Bg7.',
+      correctFeedback: 'Bg7.',
+      wrongFeedback: 'Bg7.',
+    },
+
+    // ── PREDICT/REVEAL 1: O-O ──
+    {
+      type: 'instruction',
+      fen: FEN.after_OOO,
+      text: "White castles queenside, putting the king behind the pawn wall and connecting the rooks.",
+      autoAdvance: 800,
+      highlightSquares: ['e1', 'c1'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_OOO,
+      correctMove: 'O-O',
+      prompt: "White castled queenside. Where does your king go?",
+      hint: 'Castle kingside — tuck the king away and activate the rook.',
+      correctFeedback: "O-O! You castle short. Now your rook is connected and your king is safe behind the g6/Bg7 fortress.",
+      wrongFeedback: 'Castle kingside with O-O.',
+      postMoveArrow: ['f8', 'e8'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_OO,
+      text: "Both sides have castled on opposite wings. This means a pawn storm race — White attacks your king, you attack White's. Opposite-side castling is the sharpest middlegame structure.",
+      arrow: ['e8', 'g8'],
+    },
+
+    // ── PREDICT/REVEAL 2: b5 ──
+    {
+      type: 'instruction',
+      fen: FEN.after_g4,
+      text: "White pushes g4, starting the kingside attack.",
+      autoAdvance: 800,
+      highlightSquares: ['g2', 'g4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_g4,
+      correctMove: 'b5',
+      prompt: "White starts the kingside storm with g4. How do you counter?",
+      hint: 'Push the b-pawn — race on the queenside.',
+      correctFeedback: "b5! You launch the queenside pawn storm. While White pushes g4-g5, you push b5-b4 toward the White king.",
+      wrongFeedback: 'Push b5 — counterattack on the queenside.',
+      postMoveArrow: ['b5', 'b4'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_b5,
+      text: "b5 starts your queenside attack. The plan is b4, kicking the knight and opening lines toward White's king on c1.",
+      arrow: ['b7', 'b5'],
+    },
+
+    // ── PREDICT/REVEAL 3: b4 ──
+    {
+      type: 'instruction',
+      fen: FEN.after_g5,
+      text: "White pushes g5, chasing your knight off f6.",
+      autoAdvance: 800,
+      highlightSquares: ['g4', 'g5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_g5,
+      correctMove: 'b4',
+      prompt: "White's g5 is coming for your knight. Keep pushing — what's your move?",
+      hint: 'Advance the b-pawn again — attack the knight on b3.',
+      correctFeedback: "b4! You keep the queenside pressure on. The pawn attacks White's knight and threatens to crack open the b-file.",
+      wrongFeedback: 'Push b4 — keep the attack rolling.',
+      postMoveArrow: ['b4', 'b3'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_b4,
+      text: "b4 attacks the knight on b3 and threatens to push further. Your queenside storm is faster than White's kingside attack.",
+      arrow: ['b5', 'b4'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Bg7,
+      text: "All three from memory.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_OOO,
+      text: 'O-O-O.',
+      autoAdvance: 800,
+      highlightSquares: ['e1', 'c1'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_OOO,
+      correctMove: 'O-O',
+      prompt: 'Your move.',
+      hint: 'O-O.',
+      correctFeedback: 'O-O.',
+      wrongFeedback: 'O-O.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_g4,
+      text: 'g4.',
+      autoAdvance: 800,
+      highlightSquares: ['g2', 'g4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_g4,
+      correctMove: 'b5',
+      prompt: 'Your move.',
+      hint: 'b5.',
+      correctFeedback: 'b5.',
+      wrongFeedback: 'b5.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_g5,
+      text: 'g5.',
+      autoAdvance: 800,
+      highlightSquares: ['g4', 'g5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_g5,
+      correctMove: 'b4',
+      prompt: 'Your move.',
+      hint: 'b4.',
+      correctFeedback: 'b4.',
+      wrongFeedback: 'b4.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_b4,
+      text: "O-O, b5, b4. You castled safe, then launched a pawn storm aimed straight at White's king. The race is on.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// si-6: THE COUNTERATTACK (13.Ne2 Ne8 14.f4 a5 15.f5 a4)
+// ═══════════════════════════════════════════════════════════
+
+const SI_6: OpeningLesson = {
+  id: 'si-6',
   title: 'The Counterattack',
   defaultOrientation: 'black',
   steps: [
@@ -1557,11 +1824,11 @@ const SI_5: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
-// si-6: BREAKING THROUGH (16.Nbd4 exd4 17.Nxd4 b3 18.Kb1 bxc2+)
+// si-7: BREAKING THROUGH (16.Nbd4 exd4 17.Nxd4 b3 18.Kb1 bxc2+)
 // ═══════════════════════════════════════════════════════════
 
-const SI_6: OpeningLesson = {
-  id: 'si-6',
+const SI_7: OpeningLesson = {
+  id: 'si-7',
   title: 'Breaking Through',
   defaultOrientation: 'black',
   steps: [
@@ -1572,7 +1839,7 @@ const SI_6: OpeningLesson = {
       text: "White sacrifices the knight with Nbd4. You trade, push b3 into the heart of White's position, and crack everything open.",
     },
 
-    // ── RECAP (si-5 moves: Ne8, a5, a4) ──
+    // ── RECAP (si-6 moves: Ne8, a5, a4) ──
     {
       type: 'instruction',
       fen: FEN.l2_after_b4,
@@ -1784,7 +2051,7 @@ const SI_DEV_FXE6: OpeningLesson = {
       text: "Sometimes White captures with 16.fxe6 instead of 16.Nbd4. You punish it by grabbing the b3 pawn and invading on the a-file.",
     },
 
-    // ── RECAP (si-5 moves: Ne8, a5, a4) ──
+    // ── RECAP (si-6 moves: Ne8, a5, a4) ──
     {
       type: 'instruction',
       fen: FEN.l2_after_b4,
@@ -1986,11 +2253,19 @@ const SI_TEST_2: OpeningLesson = {
     // ── MAIN LINE ──
     {
       type: 'instruction',
-      fen: FEN.l2_after_b4,
+      fen: FEN.after_Bg7,
       text: "Play the full Level 2 continuation from memory. Main line first, then the deviation.",
     },
 
-    // Lesson 5: Ne8, a5, a4
+    // Lesson 5: O-O, b5, b4
+    { type: 'instruction', fen: FEN.after_OOO, text: 'O-O-O.', autoAdvance: 800, highlightSquares: ['e1', 'c1'] },
+    { type: 'play-move', fen: FEN.after_OOO, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_g4, text: 'g4.', autoAdvance: 800, highlightSquares: ['g2', 'g4'] },
+    { type: 'play-move', fen: FEN.after_g4, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_g5, text: 'g5.', autoAdvance: 800, highlightSquares: ['g4', 'g5'] },
+    { type: 'play-move', fen: FEN.after_g5, correctMove: 'b4', prompt: 'Your move.', hint: 'b4.', correctFeedback: 'b4.', wrongFeedback: 'b4.' },
+
+    // Lesson 6: Ne8, a5, a4
     { type: 'instruction', fen: FEN.l2_after_Ne2, text: 'Ne2.', autoAdvance: 800, highlightSquares: ['c3', 'e2'] },
     { type: 'play-move', fen: FEN.l2_after_Ne2, correctMove: 'Ne8', prompt: 'Your move.', hint: 'Ne8.', correctFeedback: 'Ne8.', wrongFeedback: 'Ne8.' },
     { type: 'instruction', fen: FEN.l2_after_f4, text: 'f4.', autoAdvance: 800, highlightSquares: ['f3', 'f4'] },
@@ -1998,7 +2273,7 @@ const SI_TEST_2: OpeningLesson = {
     { type: 'instruction', fen: FEN.l2_after_f5, text: 'f5.', autoAdvance: 800, highlightSquares: ['f4', 'f5'] },
     { type: 'play-move', fen: FEN.l2_after_f5, correctMove: 'a4', prompt: 'Your move.', hint: 'a4.', correctFeedback: 'a4.', wrongFeedback: 'a4.' },
 
-    // Lesson 6: exd4, b3, bxc2+
+    // Lesson 7: exd4, b3, bxc2+
     { type: 'instruction', fen: FEN.l2_after_Nbd4, text: 'Nbd4.', autoAdvance: 800, highlightSquares: ['b3', 'd4'] },
     { type: 'play-move', fen: FEN.l2_after_Nbd4, correctMove: 'exd4', prompt: 'Your move.', hint: 'exd4.', correctFeedback: 'exd4.', wrongFeedback: 'exd4.' },
     { type: 'instruction', fen: FEN.l2_after_Nxd4, text: 'Nxd4.', autoAdvance: 800, highlightSquares: ['e2', 'd4'] },
@@ -2036,6 +2311,7 @@ const SICILIAN_LESSONS: Record<string, OpeningLesson> = {
   'si-test-1': SI_TEST_1,
   'si-5': SI_5,
   'si-6': SI_6,
+  'si-7': SI_7,
   'si-dev-fxe6': SI_DEV_FXE6,
   'si-test-2': SI_TEST_2,
 }

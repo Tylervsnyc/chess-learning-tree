@@ -34,11 +34,7 @@ export async function GET() {
   try {
     const [
       revenueSnapshotResult,
-      streakResult,
       dripResult,
-      reEngagementResult,
-      weeklyDigestResult,
-      dunningResult,
       emails24hResult,
       emails7dResult,
       emailsByTypeResult,
@@ -51,31 +47,7 @@ export async function GET() {
       admin
         .from('email_log')
         .select('sent_at')
-        .in('email_type', ['streak_warning', 'streak_lost'])
-        .order('sent_at', { ascending: false })
-        .limit(1),
-      admin
-        .from('email_log')
-        .select('sent_at')
-        .in('email_type', ['drip_day3', 'drip_day5', 'drip_day7'])
-        .order('sent_at', { ascending: false })
-        .limit(1),
-      admin
-        .from('email_log')
-        .select('sent_at')
-        .eq('email_type', 're_engagement')
-        .order('sent_at', { ascending: false })
-        .limit(1),
-      admin
-        .from('email_log')
-        .select('sent_at')
-        .eq('email_type', 'weekly_digest')
-        .order('sent_at', { ascending: false })
-        .limit(1),
-      admin
-        .from('email_log')
-        .select('sent_at')
-        .eq('email_type', 'payment_failed')
+        .in('email_type', ['drip_day3'])
         .order('sent_at', { ascending: false })
         .limit(1),
       admin
@@ -93,11 +65,7 @@ export async function GET() {
     ]);
 
     const revenueDate = revenueSnapshotResult.data?.[0]?.snapshot_date ?? null;
-    const streakDate = streakResult.data?.[0]?.sent_at ?? null;
     const dripDate = dripResult.data?.[0]?.sent_at ?? null;
-    const reEngagementDate = reEngagementResult.data?.[0]?.sent_at ?? null;
-    const weeklyDigestDate = weeklyDigestResult.data?.[0]?.sent_at ?? null;
-    const dunningDate = dunningResult.data?.[0]?.sent_at ?? null;
 
     const emailsByType7d = emailsByTypeResult.data || [];
 
@@ -111,11 +79,7 @@ export async function GET() {
       };
     };
 
-    const streakCounts = countByType(['streak_warning', 'streak_lost']);
-    const dripCounts = countByType(['drip_day3', 'drip_day5', 'drip_day7']);
-    const reEngagementCounts = countByType(['re_engagement']);
-    const weeklyDigestCounts = countByType(['weekly_digest']);
-    const dunningCounts = countByType(['payment_failed']);
+    const dripCounts = countByType(['drip_day3']);
 
     const crons: CronHealth[] = [
       {
@@ -125,34 +89,10 @@ export async function GET() {
         detail: revenueDate ? `Last snapshot: ${revenueDate}` : 'No snapshots found',
       },
       {
-        name: 'Streak Check',
-        lastActivity: streakDate,
-        status: getCronStatus(streakDate),
-        detail: `${streakCounts.sent} sent, ${streakCounts.failed} failed (7d)`,
-      },
-      {
         name: 'Drip Campaign',
         lastActivity: dripDate,
         status: getCronStatus(dripDate),
         detail: `${dripCounts.sent} sent, ${dripCounts.failed} failed (7d)`,
-      },
-      {
-        name: 'Re-engagement',
-        lastActivity: reEngagementDate,
-        status: getCronStatus(reEngagementDate),
-        detail: `${reEngagementCounts.sent} sent, ${reEngagementCounts.failed} failed (7d)`,
-      },
-      {
-        name: 'Weekly Digest',
-        lastActivity: weeklyDigestDate,
-        status: getCronStatus(weeklyDigestDate),
-        detail: `${weeklyDigestCounts.sent} sent, ${weeklyDigestCounts.failed} failed (7d)`,
-      },
-      {
-        name: 'Dunning',
-        lastActivity: dunningDate,
-        status: getCronStatus(dunningDate),
-        detail: `${dunningCounts.sent} sent, ${dunningCounts.failed} failed (7d)`,
       },
     ];
 

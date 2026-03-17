@@ -5,7 +5,7 @@
  * Queries PostHog for UI/UX data and outputs actionable insights,
  * improvement suggestions, and A/B test ideas.
  *
- * Usage: npx tsx scripts/posthog-insights.ts [--days=7] [--json]
+ * Usage: npx tsx scripts/posthog-insights.ts [--days=7] [--json] [--post-linear]
  */
 
 import { config } from 'dotenv';
@@ -24,6 +24,9 @@ if (!API_KEY || !PROJECT_ID) {
 const args = process.argv.slice(2);
 const days = parseInt(args.find(a => a.startsWith('--days='))?.split('=')[1] || '7');
 const jsonOutput = args.includes('--json');
+const postLinear = args.includes('--post-linear');
+const LINEAR_API_KEY = process.env.LINEAR_API_KEY;
+const LINEAR_TEAM_ID = '54251f1e-c50a-49ee-8b04-974acf6ffb10';
 
 interface QueryResult {
   results: unknown[][];
@@ -428,7 +431,6 @@ function analyzeData(data: {
   }
 
   // --- Page Bounce/Leave Analysis ---
-  const totalPageviews = data.topPages.reduce((sum, p) => sum + p.views, 0);
   for (const page of data.topPages.slice(0, 10)) {
     const leave = data.pageLeaves.find(l => l.url === page.url);
     if (leave) {
@@ -504,6 +506,91 @@ function analyzeData(data: {
   }
 
   return { insights, abTests };
+}
+
+// ============================================
+// LINEAR
+// ============================================
+
+async function postToLinear(title: string, content: string) {
+  if (!LINEAR_API_KEY) {
+    console.warn('Missing LINEAR_API_KEY — skipping Linear post');
+    return null;
+  }
+  const res = await fetch('https://api.linear.app/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: LINEAR_API_KEY },
+    body: JSON.stringify({
+      query: 'mutation($input: DocumentCreateInput!) { documentCreate(input: $input) { success document { id url } } }',
+      variables: { input: { title, content, teamId: LINEAR_TEAM_ID } },
+    }),
+  });
+  if (!res.ok) throw new Error('Linear API error ' + res.status);
+  const data = await res.json();
+  if (data.errors) throw new Error('Linear: ' + JSON.stringify(data.errors));
+  return data.data.documentCreate.document;
+}
+
+function buildMarkdown(
+  topPages: { url: string; views: number }[],
+  devices: { device: string; count: number }[],
+  rageClicks: { element: string | null; url: string; count: number }[],
+  signupFunnel: Record<string, number>,
+  lessonFunnel: Record<string, number>,
+  subscriptionFunnel: Record<string, number>,
+  dailyChallenge: Record<string, number>,
+  tutorial: Record<string, number>,
+  insights: Insight[],
+  abTests: ABTest[],
+): string {
+  const today = new Date().toISOString().slice(0, 10);
+  let md = `# UX Insights -- ${today}\n\n*Last ${days} days*\n\n`;
+
+  md += `## Funnels\n\n`;
+  md += `| Funnel | Flow |\n|--------|------|\n`;
+  md += `| Signup | ${signupFunnel['signup_page_viewed'] || 0} viewed -> ${signupFunnel['signup_started'] || 0} started -> ${signupFunnel['signup_completed'] || 0} completed |\n`;
+  md += `| Lessons | ${lessonFunnel['lesson_started'] || 0} started -> ${lessonFunnel['lesson_completed'] || 0} completed (${lessonFunnel['lesson_abandoned'] || 0} abandoned) |\n`;
+  md += `| Subscription | ${subscriptionFunnel['paywall_viewed'] || 0} paywall -> ${subscriptionFunnel['pricing_viewed'] || 0} pricing -> ${subscriptionFunnel['checkout_started'] || 0} checkout -> ${subscriptionFunnel['checkout_completed'] || 0} paid |\n`;
+  md += `| Daily Challenge | ${dailyChallenge['daily_challenge_viewed'] || 0} viewed -> ${dailyChallenge['daily_challenge_started'] || 0} started -> ${dailyChallenge['daily_challenge_completed'] || 0} completed |\n`;
+  md += `| Tutorial | ${tutorial['tutorial_started'] || 0} started -> ${tutorial['tutorial_completed'] || 0} completed (${tutorial['tutorial_skipped'] || 0} skipped) |\n\n`;
+
+  md += `## Devices\n\n| Device | Count |\n|--------|-------|\n`;
+  devices.forEach(d => { md += `| ${d.device || 'Unknown'} | ${d.count} |\n`; });
+
+  md += `\n## Top Pages\n\n| Page | Views |\n|------|-------|\n`;
+  topPages.slice(0, 10).forEach(p => {
+    try {
+      const path = new URL(p.url).pathname + (new URL(p.url).search || '');
+      md += `| ${path} | ${p.views} |\n`;
+    } catch { /* skip bad URLs */ }
+  });
+
+  if (rageClicks.length > 0) {
+    md += `\n## Rage Clicks\n\n| Element | Page | Count |\n|---------|------|-------|\n`;
+    rageClicks.slice(0, 8).forEach(r => {
+      try {
+        const path = new URL(r.url).pathname;
+        md += `| ${r.element || '(no text)'} | ${path} | ${r.count} |\n`;
+      } catch { /* skip */ }
+    });
+  }
+
+  md += `\n## Insights\n\n`;
+  insights.forEach(i => {
+    const sev = { high: 'HIGH', medium: 'MED', low: 'LOW' }[i.severity];
+    md += `**[${sev}] ${i.title}**\n${i.detail}\n*${i.suggestion}*\n\n`;
+  });
+
+  md += `## A/B Test Ideas\n\n`;
+  abTests.forEach((t, idx) => {
+    md += `${idx + 1}. **${t.name}** [${t.priority.toUpperCase()}]\n`;
+    md += `   Hypothesis: ${t.hypothesis}\n`;
+    md += `   Variants: ${t.variants.join(' | ')}\n`;
+    md += `   Measure: ${t.metric}\n\n`;
+  });
+
+  md += `---\n*Generated by scripts/posthog-insights.ts*`;
+  return md;
 }
 
 // ============================================
@@ -589,10 +676,10 @@ async function main() {
   console.log('  UX INSIGHTS & SUGGESTIONS');
   console.log('═══════════════════════════════════════\n');
 
-  const severityOrder = { high: 0, medium: 1, low: 2 };
+  const severityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
   const sorted = insights.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
 
-  sorted.forEach((insight, i) => {
+  sorted.forEach(insight => {
     const icon = { ux_issue: '🔴', drop_off: '🟡', opportunity: '🔵', positive: '🟢' }[insight.category];
     const sev = { high: 'HIGH', medium: 'MED', low: 'LOW' }[insight.severity];
     console.log(`${icon} [${sev}] ${insight.title}`);
@@ -606,15 +693,22 @@ async function main() {
   console.log('  SUGGESTED A/B TESTS');
   console.log('═══════════════════════════════════════\n');
 
-  abTests
-    .sort((a, b) => severityOrder[a.priority] - severityOrder[b.priority])
-    .forEach((test, i) => {
-      console.log(`${i + 1}. ${test.name} [${test.priority.toUpperCase()}]`);
-      console.log(`   Hypothesis: ${test.hypothesis}`);
-      console.log(`   Variants: ${test.variants.join(' | ')}`);
-      console.log(`   Measure: ${test.metric}`);
-      console.log('');
-    });
+  const sortedTests = abTests.sort((a, b) => severityOrder[a.priority] - severityOrder[b.priority]);
+  sortedTests.forEach((test, i) => {
+    console.log(`${i + 1}. ${test.name} [${test.priority.toUpperCase()}]`);
+    console.log(`   Hypothesis: ${test.hypothesis}`);
+    console.log(`   Variants: ${test.variants.join(' | ')}`);
+    console.log(`   Measure: ${test.metric}`);
+    console.log('');
+  });
+
+  // --- Post to Linear ---
+  if (postLinear) {
+    const md = buildMarkdown(topPages, devices, rageClicks, signupFunnel, lessonFunnel, subscriptionFunnel, dailyChallenge, tutorial, sorted, sortedTests);
+    console.log('Posting UX Insights to Linear...');
+    const doc = await postToLinear(`UX Insights -- ${new Date().toISOString().slice(0, 10)}`, md);
+    if (doc) console.log(`Posted: ${doc.url}`);
+  }
 }
 
 main().catch(err => {

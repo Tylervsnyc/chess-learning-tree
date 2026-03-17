@@ -29,7 +29,7 @@ function shouldSendEmail(
   if (!preferences) return true;
 
   // Transactional emails always send regardless of preferences
-  const alwaysSendTypes: EmailType[] = ['welcome', 'payment_failed'];
+  const alwaysSendTypes: EmailType[] = ['welcome'];
   if (alwaysSendTypes.includes(emailType)) return true;
 
   // Global unsubscribe blocks everything except transactional
@@ -37,15 +37,7 @@ function shouldSendEmail(
 
   // Check specific preference
   switch (emailType) {
-    case 'streak_warning':
-    case 'streak_lost':
-      return preferences.streak_warnings;
-    case 'weekly_digest':
-      return preferences.weekly_digest;
-    case 're_engagement':
     case 'drip_day3':
-    case 'drip_day5':
-    case 'drip_day7':
       return preferences.marketing;
     default:
       return true;

@@ -56,5 +56,22 @@ public/Gameplay/
 # MCP config (local tool integrations)
 .mcp.json
 
+# Opening build artifacts
+data/opening-builds/
+
 # Supabase temp
 supabase/.temp/
+
+# Voice design output
+voice-output/
+scripts/voice/.venv/
+scripts/voice/glados-tts/
+
+# Claude worktrees
+.claude/worktrees/
+
+# Logs
+logs/
+
+# Backup files
+*.bak

@@ -554,9 +554,10 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 | Page | Status | Purpose |
 |------|--------|---------|
-| `/` | KEEP | Main curriculum tree (the front door — guests see lesson tree immediately) |
+| `/` | KEEP | Middleware redirect: logged in → `/learn`, not logged in → `/welcome` |
+| `/welcome` | KEEP | Welcome funnel for new/unauthenticated users (see §47) |
 | `/about` | KEEP | "How It Works" onboarding instructions (3 steps: free lessons, level test, daily rook) |
-| `/learn` | KEEP | Redirects to `/` (preserves bookmarks/shared links) |
+| `/learn` | KEEP | Main curriculum tree (the front door for authenticated users) |
 | `/lesson/[lessonId]` | KEEP | Puzzle solving |
 | `/level-test/[transition]` | KEEP | Level unlock tests |
 | `/daily-challenge` | KEEP | The Daily Rook mode |
@@ -568,8 +569,9 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 | `/profile` | **DELETE** | Not needed yet |
 
 ### User Flows:
-- **New user**: `/` → tap lesson 1.1.1 (pulses as "start here") → play
-- **Returning user**: `/` → auto-scrolls to `currentPosition`
+- **New user (no session)**: `/` → middleware → `/welcome` → funnel → first lesson
+- **New user (beginner)**: `/welcome` → "I'm brand new" → `/basics` tutorial
+- **Returning user**: `/` → middleware → `/learn` → auto-scrolls to `currentPosition`
 - **From about**: `/about` → `/` (Begin Learning button)
 
 ---
@@ -1115,16 +1117,26 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 
 ## 21. Analytics (PostHog)
 
-### Events Tracked:
-- `lesson_started`
-- `lesson_completed`
-- `puzzle_attempted`
-- `daily_challenge_started`
-- `daily_challenge_ended`
-- `level_test_started`
-- `level_test_completed`
-- `signup`
-- `subscription_started`
+**All events defined in `lib/analytics/posthog.ts`.** Import the named event objects — never call `trackEvent()` directly from components.
+
+### Event Groups:
+
+**Auth funnel** (`AuthEvents`): `signup_page_viewed`, `signup_started`, `signup_completed`, `signup_failed`, `login_page_viewed`, `login_completed`, `login_failed`, `logout`
+
+**Learning funnel** (`LearningEvents`): `lesson_started`, `lesson_completed`, `puzzle_attempted`, `lesson_abandoned`
+
+**Engagement** (`EngagementEvents`): `tree_level_viewed`, `level_test_card_viewed`, `daily_challenge_viewed`, `daily_challenge_started`, `daily_challenge_completed`, `streak_updated`
+
+**Subscription funnel** (`SubscriptionEvents`): `paywall_viewed`, `paywall_dismissed`, `pricing_viewed`, `checkout_started`, `checkout_completed`, `checkout_abandoned`
+
+**Tutorial funnel** (`TutorialEvents`): `tutorial_started`, `tutorial_step_completed`, `tutorial_completed`, `tutorial_skipped`
+
+**Onboarding/Welcome funnel** (`OnboardingEvents`): `onboarding_started`, `onboarding_level_selected`, `onboarding_style_selected`, `onboarding_elo_entered`, `onboarding_completed`
+
+**Share/Viral funnel** (`ShareEvents`): `share_clicked`, `share_generated`, `share_completed`, `share_failed`
+
+### Daily Report:
+`scripts/daily-report.ts` — runs at 9:03am via cron, posts to Linear. Covers all funnels above.
 
 ---
 
@@ -2400,6 +2412,11 @@ In recall/play-through sections, the user's correct moves **auto-advance without
 
 Teaching sections (where the next step is NOT an auto-advance instruction) still show the "Correct!" popup with feedback.
 
+### Level Test Unlocks Deviations
+Completing a level test unlocks ALL deviation nodes for that level, regardless of their individual `unlockedBy` value. The test proves mastery — if you passed the test, every deviation from that level is accessible. This prevents deviations from appearing locked when a user's progress data doesn't include them (e.g., deviations added after the user already progressed past that level).
+
+**Implementation:** In `isNodeUnlocked`, a deviation node is unlocked if its normal `unlockedBy` is completed OR if any test node that comes after it in the `completionOrder` is completed.
+
 ### Key Files
 | File | Purpose |
 |------|---------|
@@ -2495,6 +2512,81 @@ Indexes on conversation_id, comment_id, post_id, and engagement_type for fast de
 3. **Dedup everything.** Every action checks `social_funnel_log` before executing.
 4. **Tyler's voice.** All templates written as Tyler, not a brand. Casual, encouraging, real.
 5. **No link in public comments.** Links only go in DMs to keep engagement organic.
+
+---
+
+## 47. Welcome Funnel
+
+### Route
+`/welcome` — the front door for unauthenticated users.
+
+### Middleware Routing (`lib/supabase/middleware.ts`)
+- `GET /` with session → redirect `/learn`
+- `GET /` without session → redirect `/welcome`
+- `/welcome` is in the `PUBLIC_PATHS` list (no auth check)
+
+### Funnel Steps
+
+| Step | Screen | Next |
+|------|--------|------|
+| `landing` | BreathingRook + "chesspath" wordmark + tagline + Get Started / Sign In | → `level` |
+| `level` | "What's your chess level?" — 3 options (brand new / know basics / have rating) | brand new → `/basics`, basics → `style`, rated → `elo` |
+| `elo` | "What's your rating?" — number input (100–3000) | → `style` |
+| `style` | "What kind of player?" — Attacker / Strategist / Trickster | → `building` |
+| `building` | BreathingRook thinking + 3 rotating messages (personalized to choices) | → `ready` (auto after ~3.8s) |
+| `ready` | "Your path is ready." + level badge (if rated) + Start button | → first lesson of placed level |
+
+### Beginner Shortcut
+"I'm brand new" skips style/building/ready and goes straight to `/basics` tutorial.
+
+### ELO → Level Placement
+
+| ELO Range | Placed Level |
+|-----------|-------------|
+| < 800 | 1 |
+| 800–999 | 2 |
+| 1000–1199 | 3 |
+| 1200–1399 | 4 |
+| 1400–1599 | 5 |
+| 1600–1799 | 6 |
+| 1800–1999 | 7 |
+| 2000+ | 8 |
+
+On start, `unlockLevel(placedLevel)` is called so the user lands at the right spot.
+
+### LocalStorage Keys
+
+| Key | Value | Purpose |
+|-----|-------|---------|
+| `chess_path_onboarded` | `'true'` | Marks funnel complete (prevents re-showing) |
+| `chess_path_level` | `'beginner'` / `'basics'` / `'rated'` | Selected experience level |
+| `chess_path_elo` | `string(number)` | Entered rating (rated users only) |
+| `chess_path_style` | `'attacker'` / `'strategist'` / `'trickster'` | Play style preference |
+
+### Analytics Events
+
+| Event | When | Properties |
+|-------|------|------------|
+| `onboarding_started` | Flow mounts | — |
+| `onboarding_level_selected` | Level chosen | `level` |
+| `onboarding_elo_entered` | ELO submitted | `elo` |
+| `onboarding_style_selected` | Style chosen | `style` |
+| `onboarding_completed` | Start button tapped | `level`, `style`, `elo?`, `placedLevel?` |
+
+### Design Rules
+- **NO HEADER ANYWHERE IN THE ONBOARDING FUNNEL.** No NavHeader, no nav bar, no top chrome on any page in the `/welcome`, `/basics`, or tutorial flows. Full-screen, immersive experience only.
+- **BreathingRook on every step** — varies by animation (`enter`, `breathe`, `think`, `celebrate`).
+- **Duolingo-style 3D buttons** — colored background + `box-shadow` bottom edge + `active:translate-y-[2px]`.
+- **Step transitions**: crossfade with slight scale (200ms).
+- **Staggered option entry**: each button fades in 80ms after the previous.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `app/welcome/page.tsx` | Route + metadata |
+| `components/onboarding/OnboardingFlow.tsx` | Full funnel (all steps, state, routing) |
+| `lib/supabase/middleware.ts` | Root redirect logic (`/` → `/welcome` or `/learn`) |
 
 ---
 

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rookie Voice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f7f7f9;
+    color: #1a1a1e;
+    padding: 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.3rem; margin-bottom: 0.25rem; }
+  .sub { color: #888; font-size: 0.8rem; margin-bottom: 1.5rem; }
+
+  .input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  input[type="text"] {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #d0d0d4;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #fff;
+    color: #1a1a1e;
+  }
+  input[type="text"]:focus { outline: none; border-color: #e85d2a; }
+  .speak-btn {
+    padding: 0.6rem 1.2rem;
+    background: #e85d2a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .speak-btn:hover { background: #d04f20; }
+  .speak-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+  .slider-section { margin-bottom: 1.5rem; }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.75rem;
+    margin-bottom: 0.1rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #eee;
+  }
+  .section-label:first-child { margin-top: 0; }
+  .slider-label {
+    font-size: 0.8rem;
+    color: #555;
+    min-width: 75px;
+  }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e85d2a;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-size: 0.8rem;
+    color: #888;
+    min-width: 45px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lines-title {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .line-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    background: #fff;
+    border: 1px solid #e8e8ec;
+    border-radius: 6px;
+    margin-bottom: 0.4rem;
+  }
+  .line-play {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #d0d0d4;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .line-play:hover { border-color: #e85d2a; color: #e85d2a; }
+  .line-play.playing { border-color: #e85d2a; background: #e85d2a; color: #fff; }
+  .line-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #333;
+  }
+  .line-regen {
+    font-size: 0.7rem;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    background: transparent;
+  }
+  .line-regen:hover { color: #e85d2a; border-color: #e85d2a; }
+  .line-remove {
+    font-size: 0.8rem;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    background: none;
+    border: none;
+  }
+  .line-remove:hover { color: #d44; }
+
+  .status {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 1rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Rookie Voice</h1>
+<p class="sub">GLaDOS neural TTS. Type a line, hit Enter.</p>
+
+<div class="input-row">
+  <input type="text" id="textInput" placeholder="What does Rookie say?"
+    value="I think I am experiencing what humans call pride.">
+  <button class="speak-btn" id="speakBtn">Speak</button>
+</div>
+
+<div class="slider-section">
+  <div class="section-label">GLaDOS Effects</div>
+  <div class="slider-row">
+    <span class="slider-label">Pitch Snap</span>
+    <input type="range" id="pitchSnap" min="0" max="1" step="0.05" value="0">
+    <span class="slider-val" id="pitchSnapVal">0%</span>
+  </div>
+  <div class="slider-row">
+    <span class="slider-label">Formant Up</span>
+    <input type="range" id="formant" min="0" max="12" step="0.5" value="0">
+    <span class="slider-val" id="formantVal">0</span>
+  </div>
+
+  <div class="section-label">General</div>
+  <div class="slider-row">
+    <span class="slider-label">Pitch</span>
+    <input type="range" id="pitch" min="-6" max="6" step="0.5" value="0">
+    <span class="slider-val" id="pitchVal">0</span>
+  </div>
+  <div class="slider-row">
+    <span class="slider-label">Speed</span>
+    <input type="range" id="speed" min="0.7" max="1.3" step="0.05" value="1.0">
+    <span class="slider-val" id="speedVal">1.00x</span>
+  </div>
+  <div class="slider-row">
+    <span class="slider-label">Chorus</span>
+    <input type="range" id="chorus" min="0" max="0.6" step="0.05" value="0">
+    <span class="slider-val" id="chorusVal">0%</span>
+  </div>
+  <div class="slider-row">
+    <span class="slider-label">Reverb</span>
+    <input type="range" id="reverb" min="0" max="0.3" step="0.02" value="0">
+    <span class="slider-val" id="reverbVal">0%</span>
+  </div>
+</div>
+
+<div class="lines-title">Lines</div>
+<div id="lines"></div>
+
+<div class="status" id="status">Ready</div>
+
+<script>
+let audioCtx = null;
+let currentPlaying = null;
+let impulseBuffer = null;
+
+function ctx() {
+  if (!audioCtx) audioCtx = new AudioContext();
+  return audioCtx;
+}
+
+// Slider display
+['pitch','speed','chorus','reverb','pitchSnap','formant'].forEach(id => {
+  const el = document.getElementById(id);
+  const val = document.getElementById(id+'Val');
+  el.addEventListener('input', () => {
+    if (id === 'speed') val.textContent = parseFloat(el.value).toFixed(2) + 'x';
+    else if (id === 'chorus' || id === 'reverb' || id === 'pitchSnap' || id === 'flatten')
+      val.textContent = Math.round(el.value * 100) + '%';
+    else val.textContent = el.value;
+  });
+});
+
+function getImpulse() {
+  if (impulseBuffer) return impulseBuffer;
+  const c = ctx();
+  const len = c.sampleRate * 1.2;
+  const buf = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = buf.getChannelData(ch);
+    for (let i = 0; i < len; i++) {
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.5);
+    }
+  }
+  impulseBuffer = buf;
+  return buf;
+}
+
+async function getTTS(text) {
+  const resp = await fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (!resp.ok) throw new Error(await resp.text());
+  const ab = await resp.arrayBuffer();
+  return ctx().decodeAudioData(ab);
+}
+
+// ── Pitch detection via autocorrelation ──
+function detectPitch(buf, sr) {
+  const SIZE = buf.length;
+  const MAX_P = Math.floor(sr / 60);   // ~60Hz min
+  const MIN_P = Math.floor(sr / 800);  // ~800Hz max
+
+  let bestCorr = 0, bestP = 0;
+  for (let p = MIN_P; p < MAX_P && p < SIZE; p++) {
+    let corr = 0;
+    for (let i = 0; i < SIZE - p; i++) corr += buf[i] * buf[i + p];
+    if (corr > bestCorr) { bestCorr = corr; bestP = p; }
+  }
+
+  let energy = 0;
+  for (let i = 0; i < SIZE; i++) energy += buf[i] * buf[i];
+  if (energy / SIZE < 0.0005 || bestP === 0) return 0;
+  return sr / bestP;
+}
+
+function snapToNote(freq) {
+  if (freq <= 0) return freq;
+  const noteNum = 12 * Math.log2(freq / 440) + 69;
+  const snapped = Math.round(noteNum);
+  return 440 * Math.pow(2, (snapped - 69) / 12);
+}
+
+// ── Apply GLaDOS effects (offline, returns new buffer) ──
+function applyGladosEffects(buffer, pitchSnapAmt, flattenAmt) {
+  if (pitchSnapAmt < 0.01 && flattenAmt < 0.01) return buffer;
+
+  const c = ctx();
+  const sr = buffer.sampleRate;
+  const input = buffer.getChannelData(0);
+
+  const FRAME = 2048;
+  const HOP = 512;
+
+  // Hann window
+  const hann = new Float32Array(FRAME);
+  for (let i = 0; i < FRAME; i++) hann[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / FRAME));
+
+  // Detect pitch for each frame first
+  const framePitches = [];
+  for (let pos = 0; pos + FRAME <= input.length; pos += HOP) {
+    const frame = input.slice(pos, pos + FRAME);
+    framePitches.push(detectPitch(frame, sr));
+  }
+
+  // Calculate average pitch for flattening
+  const voicedPitches = framePitches.filter(f => f > 0);
+  const avgPitch = voicedPitches.length > 0
+    ? voicedPitches.reduce((a, b) => a + b) / voicedPitches.length
+    : 0;
+
+  // Process
+  const accumulator = new Float32Array(input.length + FRAME);
+  const windowSum = new Float32Array(input.length + FRAME);
+
+  for (let fi = 0; fi < framePitches.length; fi++) {
+    const pos = fi * HOP;
+    const frame = new Float32Array(FRAME);
+    for (let i = 0; i < FRAME && pos + i < input.length; i++) frame[i] = input[pos + i];
+
+    const freq = framePitches[fi];
+
+    if (freq > 0) {
+      let targetFreq = freq;
+
+      // Pitch snap: snap to nearest chromatic note
+      if (pitchSnapAmt > 0.01) {
+        const snapped = snapToNote(freq);
+        targetFreq = freq + (snapped - freq) * pitchSnapAmt;
+      }
+
+      // Flatten: pull toward average pitch
+      if (flattenAmt > 0.01 && avgPitch > 0) {
+        targetFreq = targetFreq + (avgPitch - targetFreq) * flattenAmt;
+      }
+
+      const ratio = targetFreq / freq;
+
+      // Resample to shift pitch
+      const shifted = new Float32Array(FRAME);
+      for (let i = 0; i < FRAME; i++) {
+        const srcIdx = i * ratio;
+        const idx0 = Math.floor(srcIdx);
+        const frac = srcIdx - idx0;
+        if (idx0 + 1 < FRAME) {
+          shifted[i] = frame[idx0] * (1 - frac) + frame[idx0 + 1] * frac;
+        } else if (idx0 < FRAME) {
+          shifted[i] = frame[idx0];
+        }
+      }
+
+      for (let i = 0; i < FRAME; i++) {
+        accumulator[pos + i] += shifted[i] * hann[i];
+        windowSum[pos + i] += hann[i];
+      }
+    } else {
+      // Unvoiced: pass through
+      for (let i = 0; i < FRAME; i++) {
+        accumulator[pos + i] += frame[i] * hann[i];
+        windowSum[pos + i] += hann[i];
+      }
+    }
+  }
+
+  const output = new Float32Array(input.length);
+  for (let i = 0; i < input.length; i++) {
+    output[i] = windowSum[i] > 0.001 ? accumulator[i] / windowSum[i] : input[i];
+  }
+
+  const outBuf = c.createBuffer(1, output.length, sr);
+  outBuf.getChannelData(0).set(output);
+  return outBuf;
+}
+
+function playBuffer(buffer, lineId) {
+  stopCurrent();
+  const c = ctx();
+
+  const pitchSnapAmt = parseFloat(document.getElementById('pitchSnap').value);
+  const flattenAmt = 0;
+  const formantShift = parseFloat(document.getElementById('formant').value);
+  const pitch = parseFloat(document.getElementById('pitch').value);
+  const speed = parseFloat(document.getElementById('speed').value);
+  const chorusAmt = parseFloat(document.getElementById('chorus').value);
+  const reverbAmt = parseFloat(document.getElementById('reverb').value);
+
+  // Apply pitch snap + flatten (offline processing)
+  const processed = applyGladosEffects(buffer, pitchSnapAmt, flattenAmt);
+
+  const source = c.createBufferSource();
+  source.buffer = processed;
+  source.detune.value = pitch * 100;
+  source.playbackRate.value = speed;
+
+  let node = source;
+
+  // Formant shift UP: boost higher formant frequencies, cut originals
+  // Simulated with peaking EQ filters — shifting resonances upward
+  if (formantShift > 0.1) {
+    const shiftRatio = Math.pow(2, formantShift / 12);
+
+    // Cut original formant regions
+    const cut1 = c.createBiquadFilter();
+    cut1.type = 'peaking';
+    cut1.frequency.value = 500;
+    cut1.Q.value = 2;
+    cut1.gain.value = -formantShift * 0.8;
+    node.connect(cut1);
+    node = cut1;
+
+    const cut2 = c.createBiquadFilter();
+    cut2.type = 'peaking';
+    cut2.frequency.value = 1500;
+    cut2.Q.value = 2;
+    cut2.gain.value = -formantShift * 0.6;
+    node.connect(cut2);
+    node = cut2;
+
+    // Boost shifted formant positions
+    const formants = [
+      { freq: 500, q: 3, gain: 4 },
+      { freq: 1500, q: 4, gain: 3 },
+      { freq: 2500, q: 5, gain: 2 },
+    ];
+    formants.forEach(f => {
+      const filt = c.createBiquadFilter();
+      filt.type = 'peaking';
+      filt.frequency.value = Math.min(f.freq * shiftRatio, 16000);
+      filt.Q.value = f.q;
+      filt.gain.value = f.gain * (formantShift / 6);
+      node.connect(filt);
+      node = filt;
+    });
+  }
+
+  // Chorus
+  if (chorusAmt > 0.01) {
+    const dry = c.createGain();
+    dry.gain.value = 1;
+    const wet = c.createGain();
+    wet.gain.value = chorusAmt * 0.4;
+    const delay = c.createDelay(0.1);
+    delay.delayTime.value = 0.025;
+    const merge = c.createGain();
+
+    const lfo = c.createOscillator();
+    lfo.frequency.value = 1.0;
+    const lfoG = c.createGain();
+    lfoG.gain.value = 0.003;
+    lfo.connect(lfoG);
+    lfoG.connect(delay.delayTime);
+    lfo.start();
+
+    node.connect(dry);
+    node.connect(delay);
+    delay.connect(wet);
+    dry.connect(merge);
+    wet.connect(merge);
+    node = merge;
+  }
+
+  // Reverb
+  if (reverbAmt > 0.01) {
+    const conv = c.createConvolver();
+    conv.buffer = getImpulse();
+    const dryG = c.createGain();
+    dryG.gain.value = 1;
+    const wetG = c.createGain();
+    wetG.gain.value = reverbAmt;
+    const merge = c.createGain();
+    node.connect(dryG);
+    node.connect(conv);
+    conv.connect(wetG);
+    dryG.connect(merge);
+    wetG.connect(merge);
+    node = merge;
+  }
+
+  node.connect(c.destination);
+
+  currentPlaying = { source, id: lineId };
+  updatePlayButtons(lineId, true);
+
+  source.addEventListener('ended', () => {
+    if (currentPlaying && currentPlaying.id === lineId) {
+      currentPlaying = null;
+      updatePlayButtons(lineId, false);
+    }
+  });
+
+  source.start();
+}
+
+function stopCurrent() {
+  if (currentPlaying) {
+    try { currentPlaying.source.stop(); } catch(e) {}
+    updatePlayButtons(currentPlaying.id, false);
+    currentPlaying = null;
+  }
+}
+
+function updatePlayButtons(id, playing) {
+  const btn = document.querySelector(`[data-line-id="${id}"] .line-play`);
+  if (!btn) return;
+  btn.classList.toggle('playing', playing);
+  btn.innerHTML = playing ? '&#9632;' : '&#9654;';
+}
+
+let lines = [];
+let lineCounter = 0;
+
+function addLine(text, buffer) {
+  const id = ++lineCounter;
+  lines.push({ id, text, buffer });
+  renderLines();
+  playBuffer(buffer, id);
+}
+
+function renderLines() {
+  const container = document.getElementById('lines');
+  container.innerHTML = '';
+  lines.forEach(line => {
+    const div = document.createElement('div');
+    div.className = 'line-item';
+    div.dataset.lineId = line.id;
+    div.innerHTML = `
+      <button class="line-play">&#9654;</button>
+      <span class="line-text">${line.text}</span>
+      <button class="line-regen">regen</button>
+      <button class="line-remove">&times;</button>
+    `;
+
+    div.querySelector('.line-play').addEventListener('click', () => {
+      if (currentPlaying && currentPlaying.id === line.id) stopCurrent();
+      else playBuffer(line.buffer, line.id);
+    });
+
+    div.querySelector('.line-regen').addEventListener('click', async () => {
+      document.getElementById('status').textContent = 'Regenerating...';
+      try {
+        line.buffer = await getTTS(line.text);
+        playBuffer(line.buffer, line.id);
+        document.getElementById('status').textContent = 'Ready';
+      } catch(e) {
+        document.getElementById('status').textContent = 'Error: ' + e.message;
+      }
+    });
+
+    div.querySelector('.line-remove').addEventListener('click', () => {
+      if (currentPlaying && currentPlaying.id === line.id) stopCurrent();
+      lines = lines.filter(l => l.id !== line.id);
+      renderLines();
+    });
+
+    container.appendChild(div);
+  });
+}
+
+const speakBtn = document.getElementById('speakBtn');
+const textInput = document.getElementById('textInput');
+
+async function speak() {
+  const text = textInput.value.trim();
+  if (!text) return;
+  speakBtn.disabled = true;
+  speakBtn.textContent = '...';
+  document.getElementById('status').textContent = 'Generating...';
+  try {
+    const buffer = await getTTS(text);
+    addLine(text, buffer);
+    textInput.value = '';
+    document.getElementById('status').textContent = 'Ready';
+  } catch(e) {
+    document.getElementById('status').textContent = 'Error: ' + e.message;
+  }
+  speakBtn.disabled = false;
+  speakBtn.textContent = 'Speak';
+  textInput.focus();
+}
+
+speakBtn.addEventListener('click', speak);
+textInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); speak(); }
+});
+</script>
+</body>
+</html>

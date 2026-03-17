@@ -47,10 +47,30 @@ interface Connection {
   to: PositionedNode
 }
 
-function isNodeUnlocked(node: OpeningNode, completed: Set<string>): boolean {
+function isNodeUnlocked(
+  node: OpeningNode,
+  completed: Set<string>,
+  allNodes: OpeningNode[],
+  completionOrder: string[],
+): boolean {
   if (!node.unlockedBy) return true
-  if (Array.isArray(node.unlockedBy)) return node.unlockedBy.every(id => completed.has(id))
-  return completed.has(node.unlockedBy)
+  if (Array.isArray(node.unlockedBy)) {
+    if (node.unlockedBy.every(id => completed.has(id))) return true
+  } else if (completed.has(node.unlockedBy)) {
+    return true
+  }
+  // Completing a level test unlocks all deviations for that level.
+  // If any test after this node in completionOrder is completed, unlock it.
+  if (node.type === 'deviation') {
+    const nodeIdx = completionOrder.indexOf(node.id)
+    if (nodeIdx >= 0) {
+      for (let i = nodeIdx + 1; i < completionOrder.length; i++) {
+        const laterNode = allNodes.find(n => n.id === completionOrder[i])
+        if (laterNode?.type === 'test' && completed.has(laterNode.id)) return true
+      }
+    }
+  }
+  return false
 }
 
 function computeGrid(
@@ -58,6 +78,7 @@ function computeGrid(
   completed: Set<string>,
   frameW: number,
   frameH: number,
+  completionOrder: string[],
 ): GridResult | null {
   if (frameW < 10 || frameH < 10) return null
 
@@ -86,7 +107,7 @@ function computeGrid(
     return { cx, cy }
   }
 
-  const visible = allNodes.filter(n => completed.has(n.id) || isNodeUnlocked(n, completed))
+  const visible = allNodes.filter(n => completed.has(n.id) || isNodeUnlocked(n, completed, allNodes, completionOrder))
   const visibleIds = new Set(visible.map(n => n.id))
 
   const positioned = visible.map(n => {
@@ -417,8 +438,8 @@ export default function OpeningTreeView({
   const completedSet = useMemo(() => new Set(completedLessonIds), [completedLessonIds])
 
   const grid = useMemo(
-    () => computeGrid(tree.nodes, completedSet, dims.w, dims.h),
-    [tree.nodes, completedSet, dims.w, dims.h],
+    () => computeGrid(tree.nodes, completedSet, dims.w, dims.h, tree.completionOrder),
+    [tree.nodes, completedSet, dims.w, dims.h, tree.completionOrder],
   )
 
   const getStatus = useCallback((node: OpeningNode): NodeStatus => {

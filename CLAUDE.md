@@ -73,6 +73,7 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 §14 Level Tests          L457   §29 New Levels Checklist L1317 §44 Daily Puzzle Video   L2175
                                                               §45 Opening Lessons      L2337
                                                               §46 Social Funnel        L2360
+                                                              §47 Welcome Funnel       L2503
 §15 Pages                L497   §30 Work In Progress    L1365
 ```
 
@@ -134,3 +135,33 @@ That script checks if the server is already running and only starts it if needed
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
 4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Remove the thing causing the problem instead of adding code to counteract it.
 5. **If it's failed 3+ times, question the rules.** Repeated failures likely mean RULES.md is prescribing a broken pattern. Trace the actual code and fix RULES.md.
+
+---
+
+## Design Context
+
+### Users
+Complete beginners to chess who want to learn without feeling dumb. They're on their phones, probably curious but not committed yet. The job: go from "I don't know how the pieces move" to "I just solved my first checkmate" in under 5 minutes — and want to come back tomorrow.
+
+### Brand Personality
+**Fun, Friendly, Encouraging** — but with a unique twist: Rookie is a computer/AI who is *learning to feel emotions* alongside the user learning chess. Think Portal 2's Wheatley energy — earnest, occasionally confused by its own feelings, funny when things go wrong. Rookie's emotional growth mirrors the user's chess growth. The humor comes from Rookie experiencing feelings for the first time ("I think I'm... proud? My circuits feel warm.") and from the comedy of negative emotions too ("You moved the wrong piece. I'm experiencing what I believe is called 'disappointment.' It's terrible.").
+
+### Emotional Goals
+- **Delight + surprise**: Sounds, animations, Rookie's personality make it feel like a game, not a lesson
+- **Confidence + safety**: Gentle pacing, clear feedback, never feel lost or judged
+- **Curiosity + momentum**: Quick wins pull you forward — always progressing
+
+### Aesthetic Direction
+- **Light, clean, Duolingo-inspired** — approachable, not intimidating chess-club energy
+- **Reference**: Portal 2 — AI companion with growing personality, humor in failure states, discovery-driven
+- **Anti-references**:
+  - NOT Chess.com/Lichess (dense, assumes knowledge, intimidating)
+  - NOT corporate SaaS (no generic gradients, stock photos, "Get Started Free" energy)
+  - NOT a kids' app (playful yes, but adults use this too — never cartoonish or patronizing)
+
+### Design Principles
+1. **Rookie has feelings.** Every screen should feel like Rookie is there with you — reacting, learning, growing. Rookie's emotional commentary is the personality layer.
+2. **Show, don't explain.** Interactive beats text. A drag-and-drop move teaches more than a paragraph. Keep copy minimal — Rookie's quips do the heavy lifting.
+3. **Celebrate everything, even failure.** Wrong moves are funny, not punishing. Rookie reacts to mistakes with empathy and humor, never judgment.
+4. **Momentum over perfection.** Keep the user moving forward. Skip buttons always available. Progress bars visible. Never trap someone in a flow.
+5. **Earn the signup.** Delay account creation until after the first "I did it!" moment. The tutorial IS the pitch.

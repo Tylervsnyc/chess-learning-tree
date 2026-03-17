@@ -6,12 +6,7 @@ import type { EmailType } from '@/types/email';
 // Map email types to preference columns
 function getPreferenceColumn(emailType: EmailType | undefined): string | null {
   switch (emailType) {
-    case 'streak_warning':
-    case 'streak_lost':
-      return 'streak_warnings';
-    case 'weekly_digest':
-      return 'weekly_digest';
-    case 're_engagement':
+    case 'drip_day3':
       return 'marketing';
     default:
       return null; // Will unsubscribe from all
@@ -94,12 +89,7 @@ export async function GET(request: NextRequest) {
 
 function getEmailTypeName(type: EmailType | null): string {
   switch (type) {
-    case 'streak_warning':
-    case 'streak_lost':
-      return 'streak reminder';
-    case 'weekly_digest':
-      return 'weekly digest';
-    case 're_engagement':
+    case 'drip_day3':
       return 'promotional';
     default:
       return 'these';

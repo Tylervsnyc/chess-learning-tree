@@ -61,6 +61,23 @@ export const STRAT_BEAT3 = 120; // 4.0s — CTA
 export const STRAT_TOTAL_FRAMES =
   STRAT_BEAT1 + STRAT_BEAT2 + STRAT_BEAT3; // 570
 
+// ── Marketing Reels — Talking Head → Screen Recording → CTA ──
+export const MKT_CTA_FRAMES = 210; // 7s — CTA end card
+
+// Video 1: "Don't Know How to Checkmate" (~23s)
+export const MKT_CHECKMATE_CLIP = 564;  // 18.8s pre-edited clip
+export const MKT_CHECKMATE_TOTAL = MKT_CHECKMATE_CLIP + MKT_CTA_FRAMES; // 684
+
+// Video 2: "Always Wanted to Learn Chess" (~25s)
+export const MKT_BEGINNER_HEAD = 371;   // 12.38s talking head
+export const MKT_BEGINNER_SCREEN = 240;  // 8s screen recording
+export const MKT_BEGINNER_TOTAL = MKT_BEGINNER_HEAD + MKT_BEGINNER_SCREEN + MKT_CTA_FRAMES; // 731
+
+// Video 3: "Stuck Between 800-1500" (~25s)
+export const MKT_INTERMEDIATE_HEAD = 389;   // 12.96s talking head
+export const MKT_INTERMEDIATE_SCREEN = 240;  // 8s screen recording
+export const MKT_INTERMEDIATE_TOTAL = MKT_INTERMEDIATE_HEAD + MKT_INTERMEDIATE_SCREEN + MKT_CTA_FRAMES; // 749
+
 // Layout constants (1080x1920 — 4x scale from 270x480 test page)
 export const FRAME_W = 1080;
 export const FRAME_H = 1920;
