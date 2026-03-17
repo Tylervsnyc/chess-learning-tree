@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useMemo } from 'react'
+import { use, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Chess } from 'chess.js'
 import { getOpeningBySlug, PIECE_SVGS } from '@/data/openings/registry'
@@ -145,6 +145,15 @@ export default function OpeningDetailPage({
   const opening = getOpeningBySlug(slug)
   const { getProgress } = useOpeningProgress()
 
+  // Count only completions that match current tree lessons (filters stale IDs)
+  const getValidCompletionCount = useCallback((s: string) => {
+    const tree = TREE_LOOKUP[s]
+    if (!tree) return 0
+    const { completedLessons } = getProgress(s)
+    const valid = new Set(tree.completionOrder)
+    return completedLessons.filter(id => valid.has(id)).length
+  }, [getProgress])
+
   // Check if level 1 test is complete (unlocks variations)
   const level1TestComplete = useMemo(() => {
     const tree = TREE_LOOKUP[slug]
@@ -163,7 +172,7 @@ export default function OpeningDetailPage({
     let total = 0
     for (const s of slugs) {
       total += getLessonCount(s)
-      done += getProgress(s).completedLessons.length
+      done += getValidCompletionCount(s)
     }
     return { done, total }
   }, [slug, opening, getProgress])
@@ -344,7 +353,7 @@ export default function OpeningDetailPage({
             <div className="flex-shrink-0 flex items-center gap-3">
               {(() => {
                 const total = getLessonCount(slug)
-                const done = getProgress(slug).completedLessons.length
+                const done = getValidCompletionCount(slug)
                 if (total === 0) return null
                 const complete = done >= total
                 return complete ? (
@@ -419,7 +428,7 @@ export default function OpeningDetailPage({
                     <div className="flex-shrink-0 flex items-center gap-2.5">
                       {(() => {
                         const total = getLessonCount(variationSlug)
-                        const done = getProgress(variationSlug).completedLessons.length
+                        const done = getValidCompletionCount(variationSlug)
                         if (total === 0) return null
                         const complete = done >= total
                         return complete ? (
