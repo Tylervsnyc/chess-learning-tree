@@ -49,6 +49,15 @@ const FEN = {
   dev1_after_e4:    'r1bq1rk1/pppp1ppp/2n2n2/8/1bP1p3/2N2NP1/PP1PPPBP/R1BQ1RK1 w - - 0 7',
   dev1_after_Ng5:   'r1bq1rk1/pppp1ppp/2n2n2/6N1/1bP1p3/2N3P1/PP1PPPBP/R1BQ1RK1 b - - 1 7',
 
+  // Lesson 4 (L2): 11.d3 a5 12.b5 Nd4 13.Nd2 Qc8
+  after_f6:         'r2q1rk1/ppp1b1pp/1nn1bp2/4p3/1P6/P1N2NP1/3PPPBP/1RBQ1RK1 w - - 0 11',
+  after_d3_L2:      'r2q1rk1/ppp1b1pp/1nn1bp2/4p3/1P6/P1NP1NP1/4PPBP/1RBQ1RK1 b - - 0 11',
+  after_a5:         'r2q1rk1/1pp1b1pp/1nn1bp2/p3p3/1P6/P1NP1NP1/4PPBP/1RBQ1RK1 w - - 0 12',
+  after_b5_L2:      'r2q1rk1/1pp1b1pp/1nn1bp2/pP2p3/8/P1NP1NP1/4PPBP/1RBQ1RK1 b - - 0 12',
+  after_Nd4:        'r2q1rk1/1pp1b1pp/1n2bp2/pP2p3/3n4/P1NP1NP1/4PPBP/1RBQ1RK1 w - - 1 13',
+  after_Nd2:        'r2q1rk1/1pp1b1pp/1n2bp2/pP2p3/3n4/P1NP2P1/3NPPBP/1RBQ1RK1 b - - 2 13',
+  after_Qc8:        'r1q2rk1/1pp1b1pp/1n2bp2/pP2p3/3n4/P1NP2P1/3NPPBP/1RBQ1RK1 w - - 3 14',
+
   // Deviation 2: 6...Bc5 (instead of 6...Nb6)
   dev2_after_Bc5:   'r1bqk2r/ppp2ppp/2n5/2bnp3/8/2N2NP1/PP1PPPBP/R1BQK2R w KQkq - 2 7',
   dev2_after_OO_w:  'r1bqk2r/ppp2ppp/2n5/2bnp3/8/2N2NP1/PP1PPPBP/R1BQ1RK1 b kq - 3 7',
@@ -406,6 +415,121 @@ const EN_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// en-4: The Middlegame Plan (11.d3, 12.b5, 13.Nd2)
+// ═══════════════════════════════════════════════════════════
+
+const EN_4: OpeningLesson = {
+  id: 'en-4',
+  title: 'The Middlegame Plan',
+  defaultOrientation: 'white',
+  steps: [
+    // INTRO
+    { type: 'instruction', fen: FEN.after_Rb1, text: "Your queenside is rolling. Now you'll solidify the center, lock the queenside with b5, and reroute the knight." },
+
+    // RECAP (all L1 moves: 2.Nc3 through 10.Rb1)
+    { type: 'instruction', fen: FEN.after_e5, text: "Full line from the top — show me it's automatic." },
+    { type: 'play-move', fen: FEN.after_e5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_Nc3, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+    { type: 'instruction', fen: FEN.after_Nf3, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['b8', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6, correctMove: 'g3', prompt: 'Your move.', hint: 'g3.', correctFeedback: 'g3.', wrongFeedback: 'g3.' },
+    { type: 'instruction', fen: FEN.after_g3, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'cxd5', prompt: 'Your move.', hint: 'cxd5.', correctFeedback: 'cxd5.', wrongFeedback: 'cxd5.' },
+    { type: 'instruction', fen: FEN.after_cxd5, text: 'Nxd5.', autoAdvance: 800, highlightSquares: ['f6', 'd5'] },
+    { type: 'play-move', fen: FEN.after_Nxd5, correctMove: 'Bg2', prompt: 'Your move.', hint: 'Bg2.', correctFeedback: 'Bg2.', wrongFeedback: 'Bg2.' },
+    { type: 'instruction', fen: FEN.after_Bg2, text: 'Nb6.', autoAdvance: 800, highlightSquares: ['d5', 'b6'] },
+    { type: 'play-move', fen: FEN.after_Nb6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'Be7.', autoAdvance: 800, highlightSquares: ['f8', 'e7'] },
+    { type: 'play-move', fen: FEN.after_Be7, correctMove: 'a3', prompt: 'Your move.', hint: 'a3.', correctFeedback: 'a3.', wrongFeedback: 'a3.' },
+    { type: 'instruction', fen: FEN.after_a3, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e8', 'g8'] },
+    { type: 'play-move', fen: FEN.after_OO_b, correctMove: 'b4', prompt: 'Your move.', hint: 'b4.', correctFeedback: 'b4.', wrongFeedback: 'b4.' },
+    { type: 'instruction', fen: FEN.after_b4, text: 'Be6.', autoAdvance: 800, highlightSquares: ['c8', 'e6'] },
+    { type: 'play-move', fen: FEN.after_Be6, correctMove: 'Rb1', prompt: 'Your move.', hint: 'Rb1.', correctFeedback: 'Rb1.', wrongFeedback: 'Rb1.' },
+
+    // Black plays f6
+    { type: 'instruction', fen: FEN.after_Rb1, text: 'Black plays f6, strengthening the center.', autoAdvance: 800, highlightSquares: ['f7', 'f6'] },
+
+    // PREDICT 1: d3
+    { type: 'play-move', fen: FEN.after_f6, correctMove: 'd3', prompt: "Black has solidified the center with f6. How do you reinforce yours?", hint: 'A quiet central pawn move that supports e4 and opens the bishop.', correctFeedback: 'd3 shores up the center, prepares e4, and frees the c1 bishop.', wrongFeedback: 'Play d3 — solidify your center before continuing the queenside attack.' },
+    { type: 'instruction', fen: FEN.after_d3_L2, text: 'd3 is patient and strong. It controls e4, supports the knight on c3, and opens a diagonal for the c1 bishop.', arrow: ['d2', 'd3'] },
+
+    // Black plays a5
+    { type: 'instruction', fen: FEN.after_d3_L2, text: 'Black pushes a5, attacking your b4 pawn.', autoAdvance: 800, highlightSquares: ['a7', 'a5'] },
+
+    // PREDICT 2: b5
+    { type: 'play-move', fen: FEN.after_a5, correctMove: 'b5', prompt: "Black challenges your queenside with a5. How do you respond?", hint: 'Push the pawn forward — don\'t retreat.', correctFeedback: 'b5 locks the queenside and cramps Black\'s knight on c6.', wrongFeedback: 'Push b5 — advance past the challenge and lock things down.' },
+    { type: 'instruction', fen: FEN.after_b5_L2, text: 'b5 is decisive. The knight on c6 is cut off from b4 and d4 is weakened. Your queenside space advantage is permanent.', arrow: ['b4', 'b5'] },
+
+    // Black plays Nd4
+    { type: 'instruction', fen: FEN.after_b5_L2, text: 'Black jumps Nd4, seizing the outpost.', autoAdvance: 800, highlightSquares: ['c6', 'd4'] },
+
+    // PREDICT 3: Nd2
+    { type: 'play-move', fen: FEN.after_Nd4, correctMove: 'Nd2', prompt: "Black planted a knight on d4. What's your plan?", hint: 'Reroute the knight from f3 — it needs a better square.', correctFeedback: 'Nd2 reroutes the knight toward e4 or c4, where it\'ll be much stronger.', wrongFeedback: 'Play Nd2 — the knight moves to a better circuit via e4 or c4.' },
+    { type: 'instruction', fen: FEN.after_Nd2, text: 'Nd2 heads for e4 or c4. From either square it attacks the center and pressures Black\'s position.', arrow: ['f3', 'd2'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Rb1, text: "Three new moves — play them back." },
+    { type: 'instruction', fen: FEN.after_Rb1, text: 'f6.', autoAdvance: 800, highlightSquares: ['f7', 'f6'] },
+    { type: 'play-move', fen: FEN.after_f6, correctMove: 'd3', prompt: 'Your move.', hint: 'd3.', correctFeedback: 'd3.', wrongFeedback: 'd3.' },
+    { type: 'instruction', fen: FEN.after_d3_L2, text: 'a5.', autoAdvance: 800, highlightSquares: ['a7', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_b5_L2, text: 'Nd4.', autoAdvance: 800, highlightSquares: ['c6', 'd4'] },
+    { type: 'play-move', fen: FEN.after_Nd4, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
+
+    // OUTRO
+    { type: 'instruction', fen: FEN.after_Nd2, text: "d3, b5, Nd2 — center locked, queenside sealed, knight rerouting. The English middlegame plan is in motion." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// en-test-2: Level 2 Test
+// Test main line through L2. All zero guidance.
+// ═══════════════════════════════════════════════════════════
+
+const EN_TEST_2: OpeningLesson = {
+  id: 'en-test-2',
+  title: 'Lvl 2 Test',
+  defaultOrientation: 'white',
+  steps: [
+    // INTRO
+    { type: 'instruction', fen: FEN.after_e5, text: "Play the full English Opening through the middlegame plan. All twelve White moves." },
+
+    // === FULL MAIN LINE RECALL ===
+    // L1 moves
+    { type: 'play-move', fen: FEN.after_e5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_Nc3, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+    { type: 'instruction', fen: FEN.after_Nf3, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['b8', 'c6'] },
+    { type: 'play-move', fen: FEN.after_Nc6, correctMove: 'g3', prompt: 'Your move.', hint: 'g3.', correctFeedback: 'g3.', wrongFeedback: 'g3.' },
+    { type: 'instruction', fen: FEN.after_g3, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'cxd5', prompt: 'Your move.', hint: 'cxd5.', correctFeedback: 'cxd5.', wrongFeedback: 'cxd5.' },
+    { type: 'instruction', fen: FEN.after_cxd5, text: 'Nxd5.', autoAdvance: 800, highlightSquares: ['f6', 'd5'] },
+    { type: 'play-move', fen: FEN.after_Nxd5, correctMove: 'Bg2', prompt: 'Your move.', hint: 'Bg2.', correctFeedback: 'Bg2.', wrongFeedback: 'Bg2.' },
+    { type: 'instruction', fen: FEN.after_Bg2, text: 'Nb6.', autoAdvance: 800, highlightSquares: ['d5', 'b6'] },
+    { type: 'play-move', fen: FEN.after_Nb6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'Be7.', autoAdvance: 800, highlightSquares: ['f8', 'e7'] },
+    { type: 'play-move', fen: FEN.after_Be7, correctMove: 'a3', prompt: 'Your move.', hint: 'a3.', correctFeedback: 'a3.', wrongFeedback: 'a3.' },
+    { type: 'instruction', fen: FEN.after_a3, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e8', 'g8'] },
+    { type: 'play-move', fen: FEN.after_OO_b, correctMove: 'b4', prompt: 'Your move.', hint: 'b4.', correctFeedback: 'b4.', wrongFeedback: 'b4.' },
+    { type: 'instruction', fen: FEN.after_b4, text: 'Be6.', autoAdvance: 800, highlightSquares: ['c8', 'e6'] },
+    { type: 'play-move', fen: FEN.after_Be6, correctMove: 'Rb1', prompt: 'Your move.', hint: 'Rb1.', correctFeedback: 'Rb1.', wrongFeedback: 'Rb1.' },
+
+    // L2 moves
+    { type: 'instruction', fen: FEN.after_Rb1, text: 'f6.', autoAdvance: 800, highlightSquares: ['f7', 'f6'] },
+    { type: 'play-move', fen: FEN.after_f6, correctMove: 'd3', prompt: 'Your move.', hint: 'd3.', correctFeedback: 'd3.', wrongFeedback: 'd3.' },
+    { type: 'instruction', fen: FEN.after_d3_L2, text: 'a5.', autoAdvance: 800, highlightSquares: ['a7', 'a5'] },
+    { type: 'play-move', fen: FEN.after_a5, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_b5_L2, text: 'Nd4.', autoAdvance: 800, highlightSquares: ['c6', 'd4'] },
+    { type: 'play-move', fen: FEN.after_Nd4, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
+
+    // OUTRO
+    { type: 'instruction', fen: FEN.after_Nd2, text: "You passed the English Opening Level 2 test. Twelve moves deep — opening through middlegame, all locked in." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LOOKUP FUNCTION
 // ═══════════════════════════════════════════════════════════
 
@@ -417,6 +541,8 @@ export function getEnglishLesson(id: string): OpeningLesson | undefined {
     case 'en-dev-Bb4': return EN_DEV_BB4
     case 'en-dev-Bc5': return EN_DEV_BC5
     case 'en-test-1': return EN_TEST_1
+    case 'en-4': return EN_4
+    case 'en-test-2': return EN_TEST_2
     default: return undefined
   }
 }

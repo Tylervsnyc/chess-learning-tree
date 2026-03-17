@@ -13,7 +13,11 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (4 nodes):
+// GRID LAYOUT (8 nodes):
+//   Row 7:                              qg-test-2 (col 0)
+//   Row 6:                              qg-dev-Nf3 (col 1)
+//   Row 5:   qg-dev-5Bf4 (col -1)
+//   Row 4:                              qg-dev-Bf4 (col 1)
 //   Row 3: qg-test-1 (col 0)
 //   Row 2: qg-3 (col 0)
 //   Row 1: qg-2 (col 0)
@@ -30,6 +34,8 @@ export const QUEENS_GAMBIT_DECLINED: OpeningTree = {
   colorDark: '#D85070',
   completionOrder: [
     'qg-1', 'qg-2', 'qg-3', 'qg-test-1',
+    'qg-dev-Bf4', 'qg-dev-5Bf4', 'qg-dev-Nf3',
+    'qg-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -81,6 +87,64 @@ export const QUEENS_GAMBIT_DECLINED: OpeningTree = {
       col: 0,
       lineFrom: 'qg-3',
       unlockedBy: 'qg-3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATIONS ===
+
+    // 4.Bf4 instead of 4.cxd5 (branches from qg-1)
+    {
+      id: 'qg-dev-Bf4',
+      name: 'If 4.Bf4',
+      moves: ['4.Bf4 Be7', '5.e3 O-O', '6.Nf3 Nbd7'],
+      description: 'White plays the London-style Bf4 — develop calmly and castle early.',
+      type: 'deviation',
+      row: 4,
+      col: 1,
+      lineFrom: 'qg-test-1',
+      unlockedBy: 'qg-test-1',
+      side: 'black',
+    },
+
+    // 5.Bf4 instead of 5.Bg5 (branches from qg-1, after 4.cxd5 exd5)
+    {
+      id: 'qg-dev-5Bf4',
+      name: 'If 5.Bf4',
+      moves: ['5.Bf4 Bd6', '6.Bxd6 Qxd6', '7.e3 O-O'],
+      description: 'White trades bishops with Bf4 — challenge it, recapture with the queen, and castle.',
+      type: 'deviation',
+      row: 5,
+      col: -1,
+      lineFrom: 'qg-test-1',
+      unlockedBy: 'qg-dev-Bf4',
+      side: 'black',
+    },
+
+    // 8.Nf3 instead of 8.Qc2 (branches from qg-2)
+    {
+      id: 'qg-dev-Nf3',
+      name: 'If 8.Nf3',
+      moves: ['8.Nf3 O-O', '9.Qc2 Re8', '10.O-O Nf8'],
+      description: 'White develops the knight to f3 first — castle, activate the rook, and regroup.',
+      type: 'deviation',
+      row: 6,
+      col: 1,
+      lineFrom: 'qg-test-1',
+      unlockedBy: 'qg-dev-5Bf4',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'qg-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Handle every deviation — 4.Bf4, 5.Bf4, and 8.Nf3.',
+      type: 'test',
+      row: 7,
+      col: 0,
+      lineFrom: 'qg-dev-Nf3',
+      unlockedBy: 'qg-dev-Nf3',
       side: 'black',
     },
   ],

@@ -12,12 +12,16 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (6 nodes):
-//   Row 4:                             sl-test-1 (col 0)
-//   Row 3:  sl-dev-Bb3 (col -1)   sl-4 (col 0)
-//   Row 2:                             sl-3 (col 0)
-//   Row 1:                             sl-2 (col 0)
-//   Row 0:                             sl-1 (col 0)
+// GRID LAYOUT (10 nodes):
+//   Row 8:                              sl-test-2 (col 0)
+//   Row 7:  sl-dev-Bc4 (col -1)
+//   Row 6:                                                     sl-dev-Qxd4 (col 1)
+//   Row 5:                              sl-5 (col 0)
+//   Row 4:                              sl-test-1 (col 0)
+//   Row 3:  sl-dev-Bb3 (col -1)    sl-4 (col 0)
+//   Row 2:                              sl-3 (col 0)
+//   Row 1:                              sl-2 (col 0)
+//   Row 0:                              sl-1 (col 0)
 
 import type { OpeningNode, OpeningTree } from './ruy-lopez'
 
@@ -30,6 +34,7 @@ export const SICILIAN_ALAPIN: OpeningTree = {
   colorDark: '#7F8C8D',
   completionOrder: [
     'sl-1', 'sl-2', 'sl-3', 'sl-4', 'sl-dev-Bb3', 'sl-test-1',
+    'sl-5', 'sl-dev-Qxd4', 'sl-dev-Bc4', 'sl-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -107,6 +112,60 @@ export const SICILIAN_ALAPIN: OpeningTree = {
       col: 0,
       lineFrom: 'sl-4',
       unlockedBy: 'sl-dev-Bb3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'sl-5',
+      name: 'Trading Bishops',
+      moves: ['14.Bxc6 bxc6', '15.Bh6 Bf6', '16.Rfd1 Kh8'],
+      description: 'Trade the bishop, dodge the attack on g7, and tuck the king away.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'sl-test-1',
+      unlockedBy: 'sl-test-1',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATIONS ===
+    {
+      id: 'sl-dev-Qxd4',
+      name: 'Dev 5.Qxd4',
+      moves: ['5.Qxd4 e6', '6.Nf3 Nc6', '7.Qe4 f5'],
+      description: 'White recaptures with the queen — develop, kick the queen, and seize space.',
+      type: 'deviation',
+      row: 6,
+      col: 1,
+      lineFrom: 'sl-5',
+      unlockedBy: 'sl-5',
+      side: 'black',
+    },
+    {
+      id: 'sl-dev-Bc4',
+      name: 'Dev 4.Bc4',
+      moves: ['4.Bc4 Nb6', '5.Bb3 c4', '6.Bc2 Nc6'],
+      description: 'White develops the bishop early — chase it back and gain queenside space.',
+      type: 'deviation',
+      row: 7,
+      col: -1,
+      lineFrom: 'sl-5',
+      unlockedBy: 'sl-dev-Qxd4',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'sl-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Sicilian Alapin — main line continuation and both deviations.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'sl-5',
+      unlockedBy: 'sl-dev-Bc4',
       side: 'black',
     },
   ],

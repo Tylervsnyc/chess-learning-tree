@@ -9,8 +9,14 @@
 // Main line (Yugoslav Attack): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6
 //            6.Be3 Bg7 7.f3 O-O 8.Qd2 Nc6 9.O-O-O d5
 //            10.exd5 Nxd5 11.Nxc6 bxc6 12.Bd4 e5
+//            13.Bc5 Be6 14.Ne4 Re8 15.h4 h6
+//            16.g4 Qc7 17.g5 h5 18.Bc4 Red8
 //
-// GRID LAYOUT (8 nodes):
+// GRID LAYOUT (12 nodes):
+//   Row 8:                                sd-test-2 (col 0)
+//   Row 7:                                sd-6 (col 0)
+//   Row 6:   sd-dev-Bc4 (col -1)
+//   Row 5:                                sd-5 (col 0)
 //   Row 4:                                sd-test-1 (col 0)
 //   Row 3:   sd-dev-Qe1 (col -1)     sd-4 (col 0)
 //   Row 2:   sd-dev-g4 (col -1)      sd-3 (col 0)
@@ -30,6 +36,7 @@ export const SICILIAN_DRAGON: OpeningTree = {
     'sd-1', 'sd-2', 'sd-dev-Be2',
     'sd-3', 'sd-dev-g4', 'sd-4', 'sd-dev-Qe1',
     'sd-test-1',
+    'sd-5', 'sd-dev-Bc4', 'sd-6', 'sd-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -135,6 +142,60 @@ export const SICILIAN_DRAGON: OpeningTree = {
       col: 0,
       lineFrom: 'sd-4',
       unlockedBy: 'sd-dev-Qe1',
+      side: 'black',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'sd-5',
+      name: 'Bishop Under Siege',
+      moves: ['13.Bc5 Be6', '14.Ne4 Re8', '15.h4 h6'],
+      description: 'Develop the bishop, protect the rook, and hold the kingside.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'sd-test-1',
+      unlockedBy: 'sd-test-1',
+      side: 'black',
+    },
+    {
+      id: 'sd-6',
+      name: 'Weathering the Storm',
+      moves: ['16.g4 Qc7', '17.g5 h5', '18.Bc4 Red8'],
+      description: 'Reposition the queen, block the pawn storm, and centralize the rook.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'sd-5',
+      unlockedBy: 'sd-dev-Bc4',
+      side: 'black',
+    },
+
+    // === DEVIATION: 9.Bc4 (instead of 9.O-O-O) ===
+    {
+      id: 'sd-dev-Bc4',
+      name: 'Dev 9.Bc4',
+      moves: ['9.Bc4 Bd7', '10.O-O-O Rc8', '11.Bb3 Ne5'],
+      description: 'White develops the bishop early — play Bd7, activate the rook, and centralize.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'sd-5',
+      unlockedBy: 'sd-5',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'sd-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Dragon middlegame — main line and the Bc4 deviation.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'sd-6',
+      unlockedBy: 'sd-6',
       side: 'black',
     },
   ],

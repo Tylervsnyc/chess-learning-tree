@@ -1,7 +1,7 @@
 import type { OpeningLesson } from '@/types/opening-lesson'
 
 // ═══════════════════════════════════════════════════════════
-// QUEEN'S GAMBIT DECLINED LESSONS (qg-1 through qg-test-1)
+// QUEEN'S GAMBIT DECLINED LESSONS (qg-1 through qg-test-2)
 //
 // BLACK OPENING: User plays as Black. Black moves = play-move.
 // White moves = instruction with autoAdvance: 800.
@@ -37,6 +37,30 @@ const FEN = {
   after_Be6:     'r2qrnk1/pp2bppp/2p1bn2/3p2B1/3P4/2NBPP2/PPQ1N1PP/R4RK1 w - - 1 12',
   after_Rad1:    'r2qrnk1/pp2bppp/2p1bn2/3p2B1/3P4/2NBPP2/PPQ1N1PP/3R1RK1 b - - 2 12',
   after_Rc8:     '2rqrnk1/pp2bppp/2p1bn2/3p2B1/3P4/2NBPP2/PPQ1N1PP/3R1RK1 w - - 3 13',
+
+  // Deviation: 4.Bf4 (instead of 4.cxd5) — after identity
+  dev_Bf4_after_Bf4:   'rnbqkb1r/ppp2ppp/4pn2/3p4/2PP1B2/2N5/PP2PPPP/R2QKBNR b KQkq - 3 4',
+  dev_Bf4_after_Be7:   'rnbqk2r/ppp1bppp/4pn2/3p4/2PP1B2/2N5/PP2PPPP/R2QKBNR w KQkq - 4 5',
+  dev_Bf4_after_e3:    'rnbqk2r/ppp1bppp/4pn2/3p4/2PP1B2/2N1P3/PP3PPP/R2QKBNR b KQkq - 0 5',
+  dev_Bf4_after_OO:    'rnbq1rk1/ppp1bppp/4pn2/3p4/2PP1B2/2N1P3/PP3PPP/R2QKBNR w KQ - 1 6',
+  dev_Bf4_after_Nf3:   'rnbq1rk1/ppp1bppp/4pn2/3p4/2PP1B2/2N1PN2/PP3PPP/R2QKB1R b KQ - 2 6',
+  dev_Bf4_after_Nbd7:  'r1bq1rk1/pppnbppp/4pn2/3p4/2PP1B2/2N1PN2/PP3PPP/R2QKB1R w KQ - 3 7',
+
+  // Deviation: 5.Bf4 (instead of 5.Bg5) — after 4.cxd5 exd5
+  dev_5Bf4_after_Bf4:  'rnbqkb1r/ppp2ppp/5n2/3p4/3P1B2/2N5/PP2PPPP/R2QKBNR b KQkq - 1 5',
+  dev_5Bf4_after_Bd6:  'rnbqk2r/ppp2ppp/3b1n2/3p4/3P1B2/2N5/PP2PPPP/R2QKBNR w KQkq - 2 6',
+  dev_5Bf4_after_Bxd6: 'rnbqk2r/ppp2ppp/3B1n2/3p4/3P4/2N5/PP2PPPP/R2QKBNR b KQkq - 0 6',
+  dev_5Bf4_after_Qxd6: 'rnb1k2r/ppp2ppp/3q1n2/3p4/3P4/2N5/PP2PPPP/R2QKBNR w KQkq - 0 7',
+  dev_5Bf4_after_e3:   'rnb1k2r/ppp2ppp/3q1n2/3p4/3P4/2N1P3/PP3PPP/R2QKBNR b KQkq - 0 7',
+  dev_5Bf4_after_OO:   'rnb2rk1/ppp2ppp/3q1n2/3p4/3P4/2N1P3/PP3PPP/R2QKBNR w KQ - 1 8',
+
+  // Deviation: 8.Nf3 (instead of 8.Qc2) — after 7.Bd3 Nbd7
+  dev_Nf3_after_Nf3:   'r1bqk2r/pp1nbppp/2p2n2/3p2B1/3P4/2NBPN2/PP3PPP/R2QK2R b KQkq - 4 8',
+  dev_Nf3_after_OO:    'r1bq1rk1/pp1nbppp/2p2n2/3p2B1/3P4/2NBPN2/PP3PPP/R2QK2R w KQ - 5 9',
+  dev_Nf3_after_Qc2:   'r1bq1rk1/pp1nbppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/R3K2R b KQ - 6 9',
+  dev_Nf3_after_Re8:   'r1bqr1k1/pp1nbppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/R3K2R w KQ - 7 10',
+  dev_Nf3_after_OO_w:  'r1bqr1k1/pp1nbppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/R4RK1 b - - 8 10',
+  dev_Nf3_after_Nf8:   'r1bqrnk1/pp2bppp/2p2n2/3p2B1/3P4/2NBPN2/PPQ2PPP/R4RK1 w - - 9 11',
 }
 
 
@@ -236,6 +260,362 @@ const QG_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// qg-dev-Bf4: DEVIATION 4.Bf4 (instead of 4.cxd5)
+// After identity (3...Nf6), White plays 4.Bf4 instead of 4.cxd5
+// Black responds: Be7, O-O, Nbd7
+// ═══════════════════════════════════════════════════════════
+
+const QG_DEV_BF4: OpeningLesson = {
+  id: 'qg-dev-Bf4',
+  title: 'If 4.Bf4',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.identity,
+      text: "Sometimes White plays 4.Bf4 instead of exchanging pawns. This is a London-style setup. You develop calmly and castle early.",
+    },
+
+    // ── DEVIATION SETUP ──
+    { type: 'instruction', fen: FEN.dev_Bf4_after_Bf4, text: 'White plays 4.Bf4 instead of 4.cxd5.', autoAdvance: 800, highlightSquares: ['c1', 'f4'] },
+
+    // ── PREDICT/REVEAL 1: Be7 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev_Bf4_after_Bf4,
+      correctMove: 'Be7',
+      prompt: 'White developed the bishop to f4. How do you continue?',
+      hint: 'Develop the dark-squared bishop to e7 — solid and flexible.',
+      correctFeedback: 'Be7 develops naturally. No rush to react to the bishop on f4.',
+      wrongFeedback: 'Play Be7 to develop.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Bf4_after_Be7,
+      text: 'Be7 is the most flexible response. You keep the option to challenge the bishop later with Nh5 or just castle.',
+      arrow: ['f8', 'e7'],
+    },
+
+    // ── PREDICT/REVEAL 2: O-O ──
+    { type: 'instruction', fen: FEN.dev_Bf4_after_e3, text: 'White plays e3, supporting d4.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_Bf4_after_e3,
+      correctMove: 'O-O',
+      prompt: 'Your bishop is developed. What is the priority?',
+      hint: 'Get the king to safety — castle kingside.',
+      correctFeedback: 'O-O gets your king safe immediately. The position is solid.',
+      wrongFeedback: 'Castle kingside with O-O.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Bf4_after_OO,
+      text: 'Castling early is always good in the QGD. Your king is safe and the rook is activated.',
+      arrow: ['e8', 'g8'],
+    },
+
+    // ── PREDICT/REVEAL 3: Nbd7 ──
+    { type: 'instruction', fen: FEN.dev_Bf4_after_Nf3, text: 'White develops the knight with Nf3.', autoAdvance: 800, highlightSquares: ['g1', 'f3'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_Bf4_after_Nf3,
+      correctMove: 'Nbd7',
+      prompt: 'How do you develop the queenside knight?',
+      hint: 'Nbd7 supports the center and keeps your pieces coordinated.',
+      correctFeedback: 'Nbd7 develops the last minor piece. From d7, the knight supports e5 and c5 breaks.',
+      wrongFeedback: 'Play Nbd7 to complete development.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Bf4_after_Nbd7,
+      text: 'Nbd7 completes your development. You have a solid, flexible position with plans for c5 or e5.',
+      arrow: ['b8', 'd7'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_Bf4_after_Bf4,
+      text: "White played 4.Bf4. Handle it from memory.",
+      buttonText: "LET'S GO",
+    },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_Bf4, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.dev_Bf4_after_e3, text: 'e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_e3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.dev_Bf4_after_Nf3, text: 'Nf3.', autoAdvance: 800, highlightSquares: ['g1', 'f3'] },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_Nf3, correctMove: 'Nbd7', prompt: 'Your move.', hint: 'Nbd7.', correctFeedback: 'Nbd7.', wrongFeedback: 'Nbd7.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_Bf4_after_Nbd7,
+      text: "Against 4.Bf4, just develop naturally: Be7, castle, Nbd7. Simple and solid.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// qg-dev-5Bf4: DEVIATION 5.Bf4 (instead of 5.Bg5)
+// After 4.cxd5 exd5, White plays 5.Bf4 instead of 5.Bg5
+// Black responds: Bd6, Qxd6, O-O
+// ═══════════════════════════════════════════════════════════
+
+const QG_DEV_5BF4: OpeningLesson = {
+  id: 'qg-dev-5Bf4',
+  title: 'If 5.Bf4',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_exd5,
+      text: "After the exchange 4.cxd5 exd5, White can play 5.Bf4 instead of the usual Bg5. You challenge the bishop immediately and get a comfortable position.",
+    },
+
+    // ── RECAP to deviation point (4.cxd5 exd5 = 1 recap pair) ──
+    {
+      type: 'instruction',
+      fen: FEN.identity,
+      text: "First, the familiar exchange.",
+    },
+    { type: 'instruction', fen: FEN.identity, text: 'cxd5.', autoAdvance: 800, highlightSquares: ['c4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_cxd5, correctMove: 'exd5', prompt: 'Your move.', hint: 'exd5.', correctFeedback: 'exd5.', wrongFeedback: 'exd5.' },
+
+    // ── DEVIATION SETUP ──
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_Bf4, text: 'White plays 5.Bf4 instead of 5.Bg5.', autoAdvance: 800, highlightSquares: ['c1', 'f4'] },
+
+    // ── PREDICT/REVEAL 1: Bd6 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev_5Bf4_after_Bf4,
+      correctMove: 'Bd6',
+      prompt: 'White put the bishop on f4. How do you challenge it?',
+      hint: 'Develop to d6 and offer a trade — the bishop has nowhere better to go.',
+      correctFeedback: 'Bd6 challenges the bishop directly. White will be forced to trade or retreat.',
+      wrongFeedback: 'Play Bd6 to challenge the bishop.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_5Bf4_after_Bd6,
+      text: 'Bd6 attacks the bishop on f4. After the trade, your queen becomes active on d6.',
+      arrow: ['f8', 'd6'],
+    },
+
+    // ── PREDICT/REVEAL 2: Qxd6 ──
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_Bxd6, text: 'White trades bishops with Bxd6.', autoAdvance: 800, highlightSquares: ['f4', 'd6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_5Bf4_after_Bxd6,
+      correctMove: 'Qxd6',
+      prompt: 'White captured your bishop. How do you recapture?',
+      hint: 'Take back with the queen to activate it.',
+      correctFeedback: 'Qxd6 recaptures and puts the queen on a strong central square.',
+      wrongFeedback: 'Recapture with Qxd6.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_5Bf4_after_Qxd6,
+      text: 'Qxd6 gives you an active queen in the center. The bishop pair is traded, simplifying the position in your favor.',
+      arrow: ['d8', 'd6'],
+    },
+
+    // ── PREDICT/REVEAL 3: O-O ──
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_e3, text: 'White plays e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_5Bf4_after_e3,
+      correctMove: 'O-O',
+      prompt: 'Your queen is active and your position is solid. What now?',
+      hint: 'Castle to safety while your position is comfortable.',
+      correctFeedback: 'O-O completes your development priorities. King is safe, rook is ready.',
+      wrongFeedback: 'Castle kingside with O-O.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_5Bf4_after_OO,
+      text: 'Castling gives you a very comfortable position. The queen on d6 is well-placed and you can develop the rest naturally.',
+      arrow: ['e8', 'g8'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_5Bf4_after_Bf4,
+      text: "White went 5.Bf4. Play your three moves.",
+      buttonText: "LET'S GO",
+    },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_Bf4, correctMove: 'Bd6', prompt: 'Your move.', hint: 'Bd6.', correctFeedback: 'Bd6.', wrongFeedback: 'Bd6.' },
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_Bxd6, text: 'Bxd6.', autoAdvance: 800, highlightSquares: ['f4', 'd6'] },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_Bxd6, correctMove: 'Qxd6', prompt: 'Your move.', hint: 'Qxd6.', correctFeedback: 'Qxd6.', wrongFeedback: 'Qxd6.' },
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_e3, text: 'e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_e3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_5Bf4_after_OO,
+      text: "Against 5.Bf4, challenge it with Bd6, recapture with the queen, and castle. You get a clean, equal position.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// qg-dev-Nf3: DEVIATION 8.Nf3 (instead of 8.Qc2)
+// After 7.Bd3 Nbd7, White plays 8.Nf3 instead of 8.Qc2
+// Black responds: O-O, Re8, Nf8
+// ═══════════════════════════════════════════════════════════
+
+const QG_DEV_NF3: OpeningLesson = {
+  id: 'qg-dev-Nf3',
+  title: 'If 8.Nf3',
+  defaultOrientation: 'black',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nbd7,
+      text: "White sometimes develops with 8.Nf3 instead of 8.Qc2. Your plan stays the same: castle, activate the rook, reroute the knight.",
+    },
+
+    // ── RECAP to deviation point (4.cxd5 exd5 through 7.Bd3 Nbd7 = 4 recap pairs) ──
+    {
+      type: 'instruction',
+      fen: FEN.identity,
+      text: "Warm up with the moves you know.",
+    },
+    { type: 'instruction', fen: FEN.identity, text: 'cxd5.', autoAdvance: 800, highlightSquares: ['c4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_cxd5, correctMove: 'exd5', prompt: 'Your move.', hint: 'exd5.', correctFeedback: 'exd5.', wrongFeedback: 'exd5.' },
+    { type: 'instruction', fen: FEN.after_exd5, text: 'Bg5.', autoAdvance: 800, highlightSquares: ['c1', 'g5'] },
+    { type: 'play-move', fen: FEN.after_Bg5, correctMove: 'c6', prompt: 'Your move.', hint: 'c6.', correctFeedback: 'c6.', wrongFeedback: 'c6.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    { type: 'play-move', fen: FEN.after_e3, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.after_Be7, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['f1', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3, correctMove: 'Nbd7', prompt: 'Your move.', hint: 'Nbd7.', correctFeedback: 'Nbd7.', wrongFeedback: 'Nbd7.' },
+
+    // ── DEVIATION SETUP ──
+    { type: 'instruction', fen: FEN.dev_Nf3_after_Nf3, text: 'White plays 8.Nf3 instead of 8.Qc2.', autoAdvance: 800, highlightSquares: ['g1', 'f3'] },
+
+    // ── PREDICT/REVEAL 1: O-O ──
+    {
+      type: 'play-move',
+      fen: FEN.dev_Nf3_after_Nf3,
+      correctMove: 'O-O',
+      prompt: 'White developed the knight to f3. What should you do?',
+      hint: 'Your king is still in the center. Time to castle.',
+      correctFeedback: 'O-O gets the king safe. Same plan as the main line — the move order just shifts.',
+      wrongFeedback: 'Castle kingside with O-O.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Nf3_after_OO,
+      text: 'O-O is the natural response. Whether White plays Qc2 or Nf3 first, your plan is the same.',
+      arrow: ['e8', 'g8'],
+    },
+
+    // ── PREDICT/REVEAL 2: Re8 ──
+    { type: 'instruction', fen: FEN.dev_Nf3_after_Qc2, text: 'White plays Qc2, connecting the rooks.', autoAdvance: 800, highlightSquares: ['d1', 'c2'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_Nf3_after_Qc2,
+      correctMove: 'Re8',
+      prompt: 'White played Qc2. How do you activate the rook?',
+      hint: 'Put the rook on the e-file where it pressures e3.',
+      correctFeedback: 'Re8 puts the rook on the semi-open e-file. Familiar territory.',
+      wrongFeedback: 'Play Re8 to activate the rook.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Nf3_after_Re8,
+      text: 'Re8 on the e-file is the standard plan. The rook adds pressure to e3 and keeps the position active.',
+      arrow: ['f8', 'e8'],
+    },
+
+    // ── PREDICT/REVEAL 3: Nf8 ──
+    { type: 'instruction', fen: FEN.dev_Nf3_after_OO_w, text: 'White castles.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev_Nf3_after_OO_w,
+      correctMove: 'Nf8',
+      prompt: 'Both sides have castled. What is the next step of the Karlsbad plan?',
+      hint: 'Reroute the knight from d7 to f8 heading for e6.',
+      correctFeedback: 'Nf8 continues the Karlsbad regrouping. The knight aims for the powerful e6 square.',
+      wrongFeedback: 'Play Nf8 to reroute the knight.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev_Nf3_after_Nf8,
+      text: 'Nf8 is the same regrouping as the main line. The knight heads for e6 regardless of whether White played Qc2 or Nf3 first.',
+      arrow: ['d7', 'f8'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_Nf3_after_Nf3,
+      text: "White played 8.Nf3 — play the response from memory.",
+      buttonText: "LET'S GO",
+    },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_Nf3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.dev_Nf3_after_Qc2, text: 'Qc2.', autoAdvance: 800, highlightSquares: ['d1', 'c2'] },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_Qc2, correctMove: 'Re8', prompt: 'Your move.', hint: 'Re8.', correctFeedback: 'Re8.', wrongFeedback: 'Re8.' },
+    { type: 'instruction', fen: FEN.dev_Nf3_after_OO_w, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_OO_w, correctMove: 'Nf8', prompt: 'Your move.', hint: 'Nf8.', correctFeedback: 'Nf8.', wrongFeedback: 'Nf8.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev_Nf3_after_Nf8,
+      text: "8.Nf3 changes nothing for you. Castle, Re8, Nf8 — the same Karlsbad plan in a slightly different order.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// qg-test-2: Level 2 Test (deviations only)
+// ═══════════════════════════════════════════════════════════
+
+const QG_TEST_2: OpeningLesson = {
+  id: 'qg-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'black',
+  steps: [
+    // ── DEVIATION 1: 4.Bf4 ──
+    {
+      type: 'instruction',
+      fen: FEN.identity,
+      text: "Level 2 test. Handle all three deviations from memory.",
+    },
+    { type: 'instruction', fen: FEN.dev_Bf4_after_Bf4, text: 'White plays 4.Bf4 instead of 4.cxd5.', autoAdvance: 1200, highlightSquares: ['c1', 'f4'] },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_Bf4, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.dev_Bf4_after_e3, text: 'e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_e3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.dev_Bf4_after_Nf3, text: 'Nf3.', autoAdvance: 800, highlightSquares: ['g1', 'f3'] },
+    { type: 'play-move', fen: FEN.dev_Bf4_after_Nf3, correctMove: 'Nbd7', prompt: 'Your move.', hint: 'Nbd7.', correctFeedback: 'Nbd7.', wrongFeedback: 'Nbd7.' },
+
+    // ── DEVIATION 2: 5.Bf4 ──
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_Bf4, text: 'White plays 5.Bf4 instead of 5.Bg5.', autoAdvance: 1200, highlightSquares: ['c1', 'f4'] },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_Bf4, correctMove: 'Bd6', prompt: 'Your move.', hint: 'Bd6.', correctFeedback: 'Bd6.', wrongFeedback: 'Bd6.' },
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_Bxd6, text: 'Bxd6.', autoAdvance: 800, highlightSquares: ['f4', 'd6'] },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_Bxd6, correctMove: 'Qxd6', prompt: 'Your move.', hint: 'Qxd6.', correctFeedback: 'Qxd6.', wrongFeedback: 'Qxd6.' },
+    { type: 'instruction', fen: FEN.dev_5Bf4_after_e3, text: 'e3.', autoAdvance: 800, highlightSquares: ['e2', 'e3'] },
+    { type: 'play-move', fen: FEN.dev_5Bf4_after_e3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+
+    // ── DEVIATION 3: 8.Nf3 ──
+    { type: 'instruction', fen: FEN.dev_Nf3_after_Nf3, text: 'White plays 8.Nf3 instead of 8.Qc2.', autoAdvance: 1200, highlightSquares: ['g1', 'f3'] },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_Nf3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.dev_Nf3_after_Qc2, text: 'Qc2.', autoAdvance: 800, highlightSquares: ['d1', 'c2'] },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_Qc2, correctMove: 'Re8', prompt: 'Your move.', hint: 'Re8.', correctFeedback: 'Re8.', wrongFeedback: 'Re8.' },
+    { type: 'instruction', fen: FEN.dev_Nf3_after_OO_w, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_Nf3_after_OO_w, correctMove: 'Nf8', prompt: 'Your move.', hint: 'Nf8.', correctFeedback: 'Nf8.', wrongFeedback: 'Nf8.' },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -244,6 +624,10 @@ const QGD_LESSONS: Record<string, OpeningLesson> = {
   'qg-2': QG_2,
   'qg-3': QG_3,
   'qg-test-1': QG_TEST_1,
+  'qg-dev-Bf4': QG_DEV_BF4,
+  'qg-dev-5Bf4': QG_DEV_5BF4,
+  'qg-dev-Nf3': QG_DEV_NF3,
+  'qg-test-2': QG_TEST_2,
 }
 
 export function getQueensGambitLesson(id: string): OpeningLesson | undefined {

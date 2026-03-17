@@ -45,6 +45,18 @@ const FEN = {
   after_cxd4_w:    'r2q1rk1/pp2ppbp/6p1/n7/3PP1b1/3BBP2/P3N1PP/R2Q1RK1 b - - 0 13',
   after_Be6:       'r2q1rk1/pp2ppbp/4b1p1/n7/3PP3/3BBP2/P3N1PP/R2Q1RK1 w - - 1 14',
 
+  // L2 main line: 14.d5 Bxa1 15.Qxa1 f6 16.Bh6 Re8 17.Kh1 Rc8 18.Nf4 Bd7
+  after_d5_14:     'r2q1rk1/pp2ppbp/4b1p1/n2P4/4P3/3BBP2/P3N1PP/R2Q1RK1 b - - 0 14',
+  after_Bxa1:      'r2q1rk1/pp2pp1p/4b1p1/n2P4/4P3/3BBP2/P3N1PP/b2Q1RK1 w - - 0 15',
+  after_Qxa1:      'r2q1rk1/pp2pp1p/4b1p1/n2P4/4P3/3BBP2/P3N1PP/Q4RK1 b - - 0 15',
+  after_f6:        'r2q1rk1/pp2p2p/4bpp1/n2P4/4P3/3BBP2/P3N1PP/Q4RK1 w - - 0 16',
+  after_Bh6:       'r2q1rk1/pp2p2p/4bppB/n2P4/4P3/3B1P2/P3N1PP/Q4RK1 b - - 1 16',
+  after_Re8:       'r2qr1k1/pp2p2p/4bppB/n2P4/4P3/3B1P2/P3N1PP/Q4RK1 w - - 2 17',
+  after_Kh1:       'r2qr1k1/pp2p2p/4bppB/n2P4/4P3/3B1P2/P3N1PP/Q4R1K b - - 3 17',
+  after_Rc8:       '2rqr1k1/pp2p2p/4bppB/n2P4/4P3/3B1P2/P3N1PP/Q4R1K w - - 4 18',
+  after_Nf4:       '2rqr1k1/pp2p2p/4bppB/n2P4/4PN2/3B1P2/P5PP/Q4R1K b - - 5 18',
+  after_Bd7:       '2rqr1k1/pp1bp2p/5ppB/n2P4/4PN2/3B1P2/P5PP/Q4R1K w - - 6 19',
+
   // Deviation: 7.Be3 (instead of 7.Bc4)
   dev_after_Be3:   'rnbqk2r/ppp1ppbp/6p1/8/3PP3/2P1B3/P4PPP/R2QKBNR b KQkq - 2 7',
   dev_after_c5:    'rnbqk2r/pp2ppbp/6p1/2p5/3PP3/2P1B3/P4PPP/R2QKBNR w KQkq - 0 8',
@@ -317,6 +329,192 @@ const GR_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// gr-4: The Exchange Sacrifice (Be6, Bxa1, f6)
+// L2 starts here — continues from 12...cxd4
+// ═══════════════════════════════════════════════════════════
+
+const GR_4: OpeningLesson = {
+  id: 'gr-4',
+  title: 'The Exchange Sacrifice',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_cxd4, text: "White recaptures cxd4 and you'll play one of the Grunfeld's most famous ideas — the exchange sacrifice. Time to give up material for a winning position." },
+
+    // RECAP (all L1 moves: identity through 12...cxd4)
+    { type: 'instruction', fen: FEN.after_d5, text: "Run through the full line first." },
+    { type: 'instruction', fen: FEN.after_d5, text: 'cxd5.', autoAdvance: 800, highlightSquares: ['c4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_cxd5, correctMove: 'Nxd5', prompt: 'Your move.', hint: 'Nxd5.', correctFeedback: 'Nxd5.', wrongFeedback: 'Nxd5.' },
+    { type: 'instruction', fen: FEN.after_Nxd5, text: 'e4.', autoAdvance: 800, highlightSquares: ['e2', 'e4'] },
+    { type: 'play-move', fen: FEN.after_e4, correctMove: 'Nxc3', prompt: 'Your move.', hint: 'Nxc3.', correctFeedback: 'Nxc3.', wrongFeedback: 'Nxc3.' },
+    { type: 'instruction', fen: FEN.after_Nxc3, text: 'bxc3.', autoAdvance: 800, highlightSquares: ['b2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_bxc3, correctMove: 'Bg7', prompt: 'Your move.', hint: 'Bg7.', correctFeedback: 'Bg7.', wrongFeedback: 'Bg7.' },
+    { type: 'instruction', fen: FEN.after_Bg7, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'c5', prompt: 'Your move.', hint: 'c5.', correctFeedback: 'c5.', wrongFeedback: 'c5.' },
+    { type: 'instruction', fen: FEN.after_c5, text: 'Ne2.', autoAdvance: 800, highlightSquares: ['g1', 'e2'] },
+    { type: 'play-move', fen: FEN.after_Ne2, correctMove: 'Nc6', prompt: 'Your move.', hint: 'Nc6.', correctFeedback: 'Nc6.', wrongFeedback: 'Nc6.' },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Be3.', autoAdvance: 800, highlightSquares: ['c1', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_w, correctMove: 'Bg4', prompt: 'Your move.', hint: 'Bg4.', correctFeedback: 'Bg4.', wrongFeedback: 'Bg4.' },
+    { type: 'instruction', fen: FEN.after_Bg4, text: 'f3.', autoAdvance: 800, highlightSquares: ['f2', 'f3'] },
+    { type: 'play-move', fen: FEN.after_f3, correctMove: 'Na5', prompt: 'Your move.', hint: 'Na5.', correctFeedback: 'Na5.', wrongFeedback: 'Na5.' },
+    { type: 'instruction', fen: FEN.after_Na5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+
+    // White recaptures 13.cxd4
+    { type: 'instruction', fen: FEN.after_cxd4, text: 'White recaptures cxd4. The center is solidified — but not for long.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+
+    // PREDICT 1: Be6
+    { type: 'play-move', fen: FEN.after_cxd4_w, correctMove: 'Be6', prompt: 'Your bishop on g4 is loose after f3. Where does it retreat?', hint: 'The bishop goes to e6 — eyeing the d5 square and staying active.', correctFeedback: 'Be6 retreats the bishop to a great diagonal, keeping pressure on d5.', wrongFeedback: 'Retreat the bishop to e6 — it stays active and eyes d5.' },
+    { type: 'instruction', fen: FEN.after_Be6, text: "Be6 is the key move. The bishop retreats to safety while targeting the d5 square. White's next move will be aggressive.", arrow: ['g4', 'e6'] },
+
+    // White plays 14.d5
+    { type: 'instruction', fen: FEN.after_Be6, text: 'White pushes d5, attacking your bishop and trying to seize space.', autoAdvance: 800, highlightSquares: ['d4', 'd5'] },
+
+    // PREDICT 2: Bxa1
+    { type: 'play-move', fen: FEN.after_d5_14, correctMove: 'Bxa1', prompt: "White pushed d5, attacking your bishop. But look — what did the pawn leave undefended?", hint: 'The a1 rook is hanging. Your Bg7 can take it.', correctFeedback: "Bxa1! You grab the rook. White will recapture with the queen, but you're up an exchange.", wrongFeedback: 'Take the rook on a1 with your bishop — Bxa1.' },
+    { type: 'instruction', fen: FEN.after_Bxa1, text: "Bxa1 is the famous exchange sacrifice in reverse — you WIN the exchange here. White pushed d5 and left the rook hanging on a1.", arrow: ['g7', 'a1'] },
+
+    // White plays 15.Qxa1
+    { type: 'instruction', fen: FEN.after_Bxa1, text: 'White recaptures with the queen — Qxa1.', autoAdvance: 800, highlightSquares: ['d1', 'a1'] },
+
+    // PREDICT 3: f6
+    { type: 'play-move', fen: FEN.after_Qxa1, correctMove: 'f6', prompt: "You're up material. How do you solidify your position?", hint: 'Push f6 — shore up the kingside and block the queen\'s diagonal.', correctFeedback: 'f6 locks down the dark squares around your king and blocks the a1 queen\'s diagonal.', wrongFeedback: 'Play f6 — it secures your kingside and blocks the long diagonal.' },
+    { type: 'instruction', fen: FEN.after_f6, text: "f6 is crucial. It blocks the a1-h8 diagonal so White's queen can't pressure your king, and it controls e5.", arrow: ['f7', 'f6'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_cxd4, text: "Three huge moves. Let's see them again." },
+    { type: 'instruction', fen: FEN.after_cxd4, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4_w, correctMove: 'Be6', prompt: 'Your move.', hint: 'Be6.', correctFeedback: 'Be6.', wrongFeedback: 'Be6.' },
+    { type: 'instruction', fen: FEN.after_Be6, text: 'd5.', autoAdvance: 800, highlightSquares: ['d4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5_14, correctMove: 'Bxa1', prompt: 'Your move.', hint: 'Bxa1.', correctFeedback: 'Bxa1.', wrongFeedback: 'Bxa1.' },
+    { type: 'instruction', fen: FEN.after_Bxa1, text: 'Qxa1.', autoAdvance: 800, highlightSquares: ['d1', 'a1'] },
+    { type: 'play-move', fen: FEN.after_Qxa1, correctMove: 'f6', prompt: 'Your move.', hint: 'f6.', correctFeedback: 'f6.', wrongFeedback: 'f6.' },
+
+    { type: 'instruction', fen: FEN.after_f6, text: "Be6, Bxa1, f6 — you grabbed the exchange and locked down the position. White has central space but you have the material." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// gr-5: Regrouping (Re8, Rc8, Bd7)
+// ═══════════════════════════════════════════════════════════
+
+const GR_5: OpeningLesson = {
+  id: 'gr-5',
+  title: 'Regrouping',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_f6, text: "White tries to activate with Bh6. You'll regroup your rooks and bishop to prepare the counterattack." },
+
+    // RECAP (L1 + L2 gr-4 moves)
+    { type: 'instruction', fen: FEN.after_d5, text: "Full line review." },
+    { type: 'instruction', fen: FEN.after_d5, text: 'cxd5.', autoAdvance: 800, highlightSquares: ['c4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_cxd5, correctMove: 'Nxd5', prompt: 'Your move.', hint: 'Nxd5.', correctFeedback: 'Nxd5.', wrongFeedback: 'Nxd5.' },
+    { type: 'instruction', fen: FEN.after_Nxd5, text: 'e4.', autoAdvance: 800, highlightSquares: ['e2', 'e4'] },
+    { type: 'play-move', fen: FEN.after_e4, correctMove: 'Nxc3', prompt: 'Your move.', hint: 'Nxc3.', correctFeedback: 'Nxc3.', wrongFeedback: 'Nxc3.' },
+    { type: 'instruction', fen: FEN.after_Nxc3, text: 'bxc3.', autoAdvance: 800, highlightSquares: ['b2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_bxc3, correctMove: 'Bg7', prompt: 'Your move.', hint: 'Bg7.', correctFeedback: 'Bg7.', wrongFeedback: 'Bg7.' },
+    { type: 'instruction', fen: FEN.after_Bg7, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'c5', prompt: 'Your move.', hint: 'c5.', correctFeedback: 'c5.', wrongFeedback: 'c5.' },
+    { type: 'instruction', fen: FEN.after_c5, text: 'Ne2.', autoAdvance: 800, highlightSquares: ['g1', 'e2'] },
+    { type: 'play-move', fen: FEN.after_Ne2, correctMove: 'Nc6', prompt: 'Your move.', hint: 'Nc6.', correctFeedback: 'Nc6.', wrongFeedback: 'Nc6.' },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Be3.', autoAdvance: 800, highlightSquares: ['c1', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_w, correctMove: 'Bg4', prompt: 'Your move.', hint: 'Bg4.', correctFeedback: 'Bg4.', wrongFeedback: 'Bg4.' },
+    { type: 'instruction', fen: FEN.after_Bg4, text: 'f3.', autoAdvance: 800, highlightSquares: ['f2', 'f3'] },
+    { type: 'play-move', fen: FEN.after_f3, correctMove: 'Na5', prompt: 'Your move.', hint: 'Na5.', correctFeedback: 'Na5.', wrongFeedback: 'Na5.' },
+    { type: 'instruction', fen: FEN.after_Na5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    { type: 'instruction', fen: FEN.after_cxd4, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4_w, correctMove: 'Be6', prompt: 'Your move.', hint: 'Be6.', correctFeedback: 'Be6.', wrongFeedback: 'Be6.' },
+    { type: 'instruction', fen: FEN.after_Be6, text: 'd5.', autoAdvance: 800, highlightSquares: ['d4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5_14, correctMove: 'Bxa1', prompt: 'Your move.', hint: 'Bxa1.', correctFeedback: 'Bxa1.', wrongFeedback: 'Bxa1.' },
+    { type: 'instruction', fen: FEN.after_Bxa1, text: 'Qxa1.', autoAdvance: 800, highlightSquares: ['d1', 'a1'] },
+    { type: 'play-move', fen: FEN.after_Qxa1, correctMove: 'f6', prompt: 'Your move.', hint: 'f6.', correctFeedback: 'f6.', wrongFeedback: 'f6.' },
+
+    // White plays 16.Bh6
+    { type: 'instruction', fen: FEN.after_f6, text: 'White plays Bh6, targeting your king and threatening to trade off your dark-square cover.', autoAdvance: 800, highlightSquares: ['e3', 'h6'] },
+
+    // PREDICT 1: Re8
+    { type: 'play-move', fen: FEN.after_Bh6, correctMove: 'Re8', prompt: "White's bishop just landed on h6. Your rook on f8 isn't doing much — where should it go?", hint: 'Move the rook to e8 — it defends the e-file and avoids the bishop\'s pressure.', correctFeedback: 'Re8 gets the rook to the open e-file, defending against any e-pawn pushes.', wrongFeedback: 'Play Re8 — put the rook on the e-file.' },
+    { type: 'instruction', fen: FEN.after_Re8, text: "Re8 is practical. The rook moves off the f-file (where it was blocked by your own f6 pawn) and onto the e-file where it defends against White's e-pawn advance.", arrow: ['f8', 'e8'] },
+
+    // White plays 17.Kh1
+    { type: 'instruction', fen: FEN.after_Re8, text: 'White plays Kh1, stepping off the diagonal and preparing to advance.', autoAdvance: 800, highlightSquares: ['g1', 'h1'] },
+
+    // PREDICT 2: Rc8
+    { type: 'play-move', fen: FEN.after_Kh1, correctMove: 'Rc8', prompt: 'Your other rook is sitting idle on a8. Where should it go?', hint: 'Put it on the c-file — the open file where you can create pressure.', correctFeedback: 'Rc8 activates the rook on the open c-file, eyeing potential invasion squares.', wrongFeedback: 'Play Rc8 — get the rook onto the open c-file.' },
+    { type: 'instruction', fen: FEN.after_Rc8, text: "Rc8 completes the rook development. Both rooks are active — one on the e-file, one on the c-file. White's extra space means nothing if you control the open files.", arrow: ['a8', 'c8'] },
+
+    // White plays 18.Nf4
+    { type: 'instruction', fen: FEN.after_Rc8, text: 'White plays Nf4, centralizing the knight and eyeing e6.', autoAdvance: 800, highlightSquares: ['e2', 'f4'] },
+
+    // PREDICT 3: Bd7
+    { type: 'play-move', fen: FEN.after_Nf4, correctMove: 'Bd7', prompt: 'The knight on f4 threatens your bishop on e6. How do you save it?', hint: 'Retreat the bishop to d7 — it stays connected and avoids the knight.', correctFeedback: 'Bd7 sidesteps the knight threat and keeps the bishop on an active diagonal.', wrongFeedback: 'Retreat the bishop to d7 — avoid the knight on f4.' },
+    { type: 'instruction', fen: FEN.after_Bd7, text: "Bd7 is the calm retreat. The bishop stays active, your rooks control the open files, and you're up an exchange. The position is complex but you're in great shape.", arrow: ['e6', 'd7'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_f6, text: "Three regrouping moves. Play them back." },
+    { type: 'instruction', fen: FEN.after_f6, text: 'Bh6.', autoAdvance: 800, highlightSquares: ['e3', 'h6'] },
+    { type: 'play-move', fen: FEN.after_Bh6, correctMove: 'Re8', prompt: 'Your move.', hint: 'Re8.', correctFeedback: 'Re8.', wrongFeedback: 'Re8.' },
+    { type: 'instruction', fen: FEN.after_Re8, text: 'Kh1.', autoAdvance: 800, highlightSquares: ['g1', 'h1'] },
+    { type: 'play-move', fen: FEN.after_Kh1, correctMove: 'Rc8', prompt: 'Your move.', hint: 'Rc8.', correctFeedback: 'Rc8.', wrongFeedback: 'Rc8.' },
+    { type: 'instruction', fen: FEN.after_Rc8, text: 'Nf4.', autoAdvance: 800, highlightSquares: ['e2', 'f4'] },
+    { type: 'play-move', fen: FEN.after_Nf4, correctMove: 'Bd7', prompt: 'Your move.', hint: 'Bd7.', correctFeedback: 'Bd7.', wrongFeedback: 'Bd7.' },
+
+    { type: 'instruction', fen: FEN.after_Bd7, text: "Re8, Rc8, Bd7 — rooks on open files, bishop safe. You're up material and ready to fight back." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// gr-test-2: Level 2 Test (L2 main line)
+// ═══════════════════════════════════════════════════════════
+
+const GR_TEST_2: OpeningLesson = {
+  id: 'gr-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'black',
+  steps: [
+    // === FULL MAIN LINE (all 15 Black moves: L1 + L2) ===
+    { type: 'instruction', fen: FEN.after_d5, text: 'cxd5.', autoAdvance: 800, highlightSquares: ['c4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_cxd5, correctMove: 'Nxd5', prompt: 'Your move.', hint: 'Nxd5.', correctFeedback: 'Nxd5.', wrongFeedback: 'Nxd5.' },
+    { type: 'instruction', fen: FEN.after_Nxd5, text: 'e4.', autoAdvance: 800, highlightSquares: ['e2', 'e4'] },
+    { type: 'play-move', fen: FEN.after_e4, correctMove: 'Nxc3', prompt: 'Your move.', hint: 'Nxc3.', correctFeedback: 'Nxc3.', wrongFeedback: 'Nxc3.' },
+    { type: 'instruction', fen: FEN.after_Nxc3, text: 'bxc3.', autoAdvance: 800, highlightSquares: ['b2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_bxc3, correctMove: 'Bg7', prompt: 'Your move.', hint: 'Bg7.', correctFeedback: 'Bg7.', wrongFeedback: 'Bg7.' },
+    { type: 'instruction', fen: FEN.after_Bg7, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'c5', prompt: 'Your move.', hint: 'c5.', correctFeedback: 'c5.', wrongFeedback: 'c5.' },
+    { type: 'instruction', fen: FEN.after_c5, text: 'Ne2.', autoAdvance: 800, highlightSquares: ['g1', 'e2'] },
+    { type: 'play-move', fen: FEN.after_Ne2, correctMove: 'Nc6', prompt: 'Your move.', hint: 'Nc6.', correctFeedback: 'Nc6.', wrongFeedback: 'Nc6.' },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Be3.', autoAdvance: 800, highlightSquares: ['c1', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_w, correctMove: 'Bg4', prompt: 'Your move.', hint: 'Bg4.', correctFeedback: 'Bg4.', wrongFeedback: 'Bg4.' },
+    { type: 'instruction', fen: FEN.after_Bg4, text: 'f3.', autoAdvance: 800, highlightSquares: ['f2', 'f3'] },
+    { type: 'play-move', fen: FEN.after_f3, correctMove: 'Na5', prompt: 'Your move.', hint: 'Na5.', correctFeedback: 'Na5.', wrongFeedback: 'Na5.' },
+    { type: 'instruction', fen: FEN.after_Na5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3, correctMove: 'cxd4', prompt: 'Your move.', hint: 'cxd4.', correctFeedback: 'cxd4.', wrongFeedback: 'cxd4.' },
+    // L2 moves
+    { type: 'instruction', fen: FEN.after_cxd4, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4_w, correctMove: 'Be6', prompt: 'Your move.', hint: 'Be6.', correctFeedback: 'Be6.', wrongFeedback: 'Be6.' },
+    { type: 'instruction', fen: FEN.after_Be6, text: 'd5.', autoAdvance: 800, highlightSquares: ['d4', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5_14, correctMove: 'Bxa1', prompt: 'Your move.', hint: 'Bxa1.', correctFeedback: 'Bxa1.', wrongFeedback: 'Bxa1.' },
+    { type: 'instruction', fen: FEN.after_Bxa1, text: 'Qxa1.', autoAdvance: 800, highlightSquares: ['d1', 'a1'] },
+    { type: 'play-move', fen: FEN.after_Qxa1, correctMove: 'f6', prompt: 'Your move.', hint: 'f6.', correctFeedback: 'f6.', wrongFeedback: 'f6.' },
+    { type: 'instruction', fen: FEN.after_f6, text: 'Bh6.', autoAdvance: 800, highlightSquares: ['e3', 'h6'] },
+    { type: 'play-move', fen: FEN.after_Bh6, correctMove: 'Re8', prompt: 'Your move.', hint: 'Re8.', correctFeedback: 'Re8.', wrongFeedback: 'Re8.' },
+    { type: 'instruction', fen: FEN.after_Re8, text: 'Kh1.', autoAdvance: 800, highlightSquares: ['g1', 'h1'] },
+    { type: 'play-move', fen: FEN.after_Kh1, correctMove: 'Rc8', prompt: 'Your move.', hint: 'Rc8.', correctFeedback: 'Rc8.', wrongFeedback: 'Rc8.' },
+    { type: 'instruction', fen: FEN.after_Rc8, text: 'Nf4.', autoAdvance: 800, highlightSquares: ['e2', 'f4'] },
+    { type: 'play-move', fen: FEN.after_Nf4, correctMove: 'Bd7', prompt: 'Your move.', hint: 'Bd7.', correctFeedback: 'Bd7.', wrongFeedback: 'Bd7.' },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -326,6 +524,9 @@ const GRUNFELD_LESSONS: Record<string, OpeningLesson> = {
   'gr-3': GR_3,
   'gr-dev-Be3': GR_DEV_BE3,
   'gr-test-1': GR_TEST_1,
+  'gr-4': GR_4,
+  'gr-5': GR_5,
+  'gr-test-2': GR_TEST_2,
 }
 
 export function getGrunfeldLesson(id: string): OpeningLesson | undefined {

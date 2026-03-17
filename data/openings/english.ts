@@ -7,30 +7,14 @@
 //
 // WHITE OPENING: The user is learning to play as White.
 // Main line: 1.c4 e5 2.Nc3 Nf6 3.Nf3 Nc6 4.g3 d5 5.cxd5 Nxd5 6.Bg2 Nb6
-//            7.O-O Be7 8.a3 O-O 9.b4 Be6 10.Rb1
+//            7.O-O Be7 8.a3 O-O 9.b4 Be6 10.Rb1 f6
+//            11.d3 a5 12.b5 Nd4 13.Nd2 Qc8
 //
 // 3 White moves per lesson.
 //
-// GRID LAYOUT (6 nodes):
-//   Row 4:                            en-test-1 (col 0)
-//   Row 3:                            en-3 (col 0)
-//   Row 2:  en-dev-Bc5 (col -1)  en-2 (col 0)
-//   Row 1:  en-dev-Bb4 (col -1)  en-1 (col 0)   (but no devs from lesson 1)
-//   Row 0:                            en-1 (col 0)
-//
-// Wait — per rules, no deviations from lesson 1. Both deviations branch from
-// lesson 2 territory:
-//   - 4...Bb4 happens after lesson 1's 4.g3 (start of lesson 2)
-//   - 6...Bc5 happens after lesson 2's 6.Bg2
-//
-// GRID LAYOUT (7 nodes):
-//   Row 4:                             en-test-1 (col 0)
-//   Row 3:                             en-3 (col 0)
-//   Row 2:  en-dev-Bb4 (col -1)   en-2 (col 0)   en-dev-Bc5 (col 1)
-//   Row 1:                             en-1 (col 0)
-//   Row 0:                             en-1 (col 0)
-//
-// Actually with 3 main lessons:
+// GRID LAYOUT (8 nodes):
+//   Row 5:                             en-test-2 (col 0)
+//   Row 4:                             en-4 (col 0)
 //   Row 3:                             en-test-1 (col 0)
 //   Row 2:  en-dev-Bb4 (col -1)   en-3 (col 0)   en-dev-Bc5 (col 1)
 //   Row 1:                             en-2 (col 0)
@@ -47,6 +31,7 @@ export const ENGLISH_OPENING: OpeningTree = {
   colorDark: '#27AE60',
   completionOrder: [
     'en-1', 'en-2', 'en-dev-Bb4', 'en-dev-Bc5', 'en-3', 'en-test-1',
+    'en-4', 'en-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -126,6 +111,34 @@ export const ENGLISH_OPENING: OpeningTree = {
       col: 0,
       lineFrom: 'en-3',
       unlockedBy: 'en-3',
+      side: 'white',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'en-4',
+      name: 'The Middlegame Plan',
+      moves: ['11.d3 a5', '12.b5 Nd4', '13.Nd2 Qc8'],
+      description: 'Solidify the center with d3, push b5 to lock the queenside, and reroute the knight.',
+      type: 'main',
+      row: 4,
+      col: 0,
+      lineFrom: 'en-test-1',
+      unlockedBy: 'en-test-1',
+      side: 'white',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'en-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full English middlegame — from the opening through the queenside plan.',
+      type: 'test',
+      row: 5,
+      col: 0,
+      lineFrom: 'en-4',
+      unlockedBy: 'en-4',
       side: 'white',
     },
   ],
