@@ -8,7 +8,7 @@ import {
   type OpeningConfig,
 } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
-import { getLessonCount } from '@/lib/opening-trees'
+import { getLessonCount, TREE_LOOKUP } from '@/lib/opening-trees'
 
 type TabName = 'my-openings' | 'library'
 
@@ -323,7 +323,9 @@ export default function OpeningsPage() {
       const opening = OPENINGS_REGISTRY.find(o => o.slug === slug)
       if (!opening) return null
       const total = getLessonCount(slug)
-      return { opening, progress: completedLessons.length, total: total || 1 }
+      const validIds = new Set(TREE_LOOKUP[slug]?.completionOrder ?? [])
+      const progress = completedLessons.filter(id => validIds.has(id)).length
+      return { opening, progress, total: total || 1 }
     })
     .filter((o): o is NonNullable<typeof o> => o !== null)
 
