@@ -348,16 +348,25 @@ export default function OpeningDetailPage({
                 if (total === 0) return null
                 const complete = done >= total
                 return complete ? (
-                  <div className="flex flex-col items-center gap-0.5">
-                    <div className="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}>
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                        boxShadow: '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)',
+                      }}
+                    >
+                      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     </div>
-                    <span className="text-[11px] font-bold text-white">{done}/{total}</span>
+                    <span className="text-[13px] font-black text-white mt-1">{done}/{total}</span>
                   </div>
                 ) : (
-                  <span className="text-[13px] font-bold text-white/70">{done}/{total}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[20px] font-black text-white">{done}/{total}</span>
+                    <span className="text-[10px] font-medium text-white/50">lessons</span>
+                  </div>
                 )
               })()}
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -414,19 +423,25 @@ export default function OpeningDetailPage({
                         if (total === 0) return null
                         const complete = done >= total
                         return complete ? (
-                          <div className="flex flex-col items-center gap-0.5">
+                          <div className="flex flex-col items-center">
                             <div
-                              className="w-8 h-8 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: `${opening.color}18`, boxShadow: `0 0 10px ${opening.color}20` }}
+                              className="w-11 h-11 rounded-full flex items-center justify-center"
+                              style={{
+                                background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                                boxShadow: '0 0 14px rgba(255,215,0,0.4), 0 0 28px rgba(255,215,0,0.15)',
+                              }}
                             >
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={opening.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20 6L9 17l-5-5" />
                               </svg>
                             </div>
-                            <span className="text-[10px] font-bold" style={{ color: opening.color }}>{done}/{total}</span>
+                            <span className="text-[11px] font-black mt-0.5" style={{ color: '#D4950A' }}>{done}/{total}</span>
                           </div>
                         ) : (
-                          <span className="text-[13px] font-bold text-gray-400">{done}/{total}</span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[18px] font-black text-gray-300">{done}/{total}</span>
+                            <span className="text-[9px] font-medium text-gray-400">lessons</span>
+                          </div>
                         )
                       })()}
                       <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
