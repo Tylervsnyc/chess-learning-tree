@@ -145,12 +145,14 @@ export default function OpeningDetailPage({
   const opening = getOpeningBySlug(slug)
   const { getProgress } = useOpeningProgress()
 
-  // Check if main line is complete (all lessons in the base tree finished)
-  const mainLineComplete = useMemo(() => {
+  // Check if level 1 test is complete (unlocks variations)
+  const level1TestComplete = useMemo(() => {
     const tree = TREE_LOOKUP[slug]
     if (!tree) return false
     const { completedLessons } = getProgress(slug)
-    return tree.completionOrder.every(id => completedLessons.includes(id))
+    // Find the first test node in the tree
+    const firstTest = tree.nodes.find(n => n.type === 'test')
+    return firstTest ? completedLessons.includes(firstTest.id) : false
   }, [slug, getProgress])
 
   const board = useMemo(
@@ -331,7 +333,7 @@ export default function OpeningDetailPage({
 
             <div className="space-y-3">
               {opening.variations.map((variation, idx) => {
-                const variationReady = variation.hasData && mainLineComplete
+                const variationReady = variation.hasData && level1TestComplete
                 const variationSlug = variation.slug || slug
                 return (
                 <button
@@ -365,10 +367,10 @@ export default function OpeningDetailPage({
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
                       <span className="text-gray-400 text-sm">→</span>
                     </div>
-                  ) : variation.hasData && !mainLineComplete ? (
+                  ) : variation.hasData && !level1TestComplete ? (
                     <div className="flex-shrink-0 px-2 py-1 rounded-full bg-[#f0f4f8]">
                       <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
-                        Complete Main Line
+                        Pass Level 1 Test
                       </span>
                     </div>
                   ) : (
