@@ -37,7 +37,6 @@ import { getSicilianLesson } from '@/data/openings/sicilian-lessons'
 import { getLondonLesson } from '@/data/openings/london-lessons'
 import { getFrenchLesson } from '@/data/openings/french-lessons'
 import { getCaroKannLesson } from '@/data/openings/caro-kann-lessons'
-import { getKingsGambitLesson } from '@/data/openings/kings-gambit-lessons'
 import { getKingsIndianLesson } from '@/data/openings/kings-indian-lessons'
 import { getScotchLesson } from '@/data/openings/scotch-lessons'
 import { getRuyLopezMarshallLesson } from '@/data/openings/ruy-lopez-marshall-lessons'
@@ -160,7 +159,6 @@ export default function OpeningLessonPage() {
       'london': getLondonLesson,
       'french': getFrenchLesson,
       'caro-kann': getCaroKannLesson,
-      'kings-gambit': getKingsGambitLesson,
       'kings-indian': getKingsIndianLesson,
       'scotch': getScotchLesson,
       'ruy-lopez-marshall': getRuyLopezMarshallLesson,

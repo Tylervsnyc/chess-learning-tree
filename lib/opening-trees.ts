@@ -10,7 +10,6 @@ import { PIRC_AUSTRIAN } from '@/data/openings/pirc-austrian'
 import { LONDON_SYSTEM } from '@/data/openings/london'
 import { FRENCH_DEFENSE } from '@/data/openings/french'
 import { CARO_KANN } from '@/data/openings/caro-kann'
-import { KINGS_GAMBIT } from '@/data/openings/kings-gambit'
 import { KINGS_INDIAN } from '@/data/openings/kings-indian'
 import { SCOTCH_GAME } from '@/data/openings/scotch'
 import { RUY_LOPEZ_MARSHALL } from '@/data/openings/ruy-lopez-marshall'
@@ -38,7 +37,6 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'london': LONDON_SYSTEM,
   'french': FRENCH_DEFENSE,
   'caro-kann': CARO_KANN,
-  'kings-gambit': KINGS_GAMBIT,
   'kings-indian': KINGS_INDIAN,
   'scotch': SCOTCH_GAME,
   'ruy-lopez-marshall': RUY_LOPEZ_MARSHALL,
