@@ -337,28 +337,32 @@ export default function OpeningDetailPage({
                 <p className="text-[11px] text-white/70 mt-1">
                   {opening.mainLine.subtitle}
                 </p>
-                {(() => {
-                  const total = getLessonCount(slug)
-                  const done = getProgress(slug).completedLessons.length
-                  if (total === 0) return null
-                  const complete = done >= total
-                  return (
-                    <div className="mt-1.5 flex items-center gap-1.5">
-                      {complete && (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      )}
-                      <span className="text-[12px] font-bold text-white/80">{done}/{total}</span>
-                    </div>
-                  )
-                })()}
               </div>
             </div>
 
-            {/* Right arrow */}
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-              <span className="text-white text-lg">→</span>
+            {/* Progress + arrow */}
+            <div className="flex-shrink-0 flex items-center gap-3">
+              {(() => {
+                const total = getLessonCount(slug)
+                const done = getProgress(slug).completedLessons.length
+                if (total === 0) return null
+                const complete = done >= total
+                return complete ? (
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    </div>
+                    <span className="text-[11px] font-bold text-white">{done}/{total}</span>
+                  </div>
+                ) : (
+                  <span className="text-[13px] font-bold text-white/70">{done}/{total}</span>
+                )
+              })()}
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white text-lg">→</span>
+              </div>
             </div>
           </button>
         </div>
@@ -398,31 +402,36 @@ export default function OpeningDetailPage({
                       <p className="text-[10px] text-gray-500 mt-0.5 truncate">
                         {variation.subtitle}
                       </p>
-                      {variationReady && (() => {
+                    </div>
+                  </div>
+
+                  {/* Right: progress + arrow or status badge */}
+                  {variationReady ? (
+                    <div className="flex-shrink-0 flex items-center gap-2.5">
+                      {(() => {
                         const total = getLessonCount(variationSlug)
                         const done = getProgress(variationSlug).completedLessons.length
                         if (total === 0) return null
                         const complete = done >= total
-                        return (
-                          <div className="mt-1 flex items-center gap-1.5">
-                            {complete && (
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={opening.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        return complete ? (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: `${opening.color}18`, boxShadow: `0 0 10px ${opening.color}20` }}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={opening.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20 6L9 17l-5-5" />
                               </svg>
-                            )}
-                            <span className="text-[12px] font-bold" style={{ color: complete ? opening.color : '#94a3b8' }}>
-                              {done}/{total}
-                            </span>
+                            </div>
+                            <span className="text-[10px] font-bold" style={{ color: opening.color }}>{done}/{total}</span>
                           </div>
+                        ) : (
+                          <span className="text-[13px] font-bold text-gray-400">{done}/{total}</span>
                         )
                       })()}
-                    </div>
-                  </div>
-
-                  {/* Right: arrow or "Coming Soon" */}
-                  {variationReady ? (
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                      <span className="text-gray-400 text-sm">→</span>
+                      <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">→</span>
+                      </div>
                     </div>
                   ) : variation.hasData && !level1TestComplete ? (
                     <div className="flex-shrink-0 px-2 py-1 rounded-full bg-[#f0f4f8]">
