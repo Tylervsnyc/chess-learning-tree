@@ -155,6 +155,19 @@ export default function OpeningDetailPage({
     return firstTest ? completedLessons.includes(firstTest.id) : false
   }, [slug, getProgress])
 
+  // Total progress across main line + all variations
+  const totalProgress = useMemo(() => {
+    if (!opening) return { done: 0, total: 0 }
+    const slugs = [slug, ...opening.variations.filter(v => v.slug && v.hasData).map(v => v.slug!)]
+    let done = 0
+    let total = 0
+    for (const s of slugs) {
+      total += getLessonCount(s)
+      done += getProgress(s).completedLessons.length
+    }
+    return { done, total }
+  }, [slug, opening, getProgress])
+
   const board = useMemo(
     () => (opening ? parseOpeningMoves(opening.moves) : null),
     [opening],
@@ -283,6 +296,16 @@ export default function OpeningDetailPage({
                 <p className="text-[12px] text-white/80 leading-relaxed">
                   {opening.description}
                 </p>
+                {totalProgress.total > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-[13px] font-bold text-white">
+                      {totalProgress.done}/{totalProgress.total} lessons
+                    </span>
+                    <span className="text-[11px] text-white/60 font-medium">
+                      {Math.round((totalProgress.done / totalProgress.total) * 100)}% complete
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -318,15 +341,15 @@ export default function OpeningDetailPage({
                   const total = getLessonCount(slug)
                   const done = getProgress(slug).completedLessons.length
                   if (total === 0) return null
+                  const complete = done >= total
                   return (
-                    <div className="mt-2">
-                      <div className="h-1.5 rounded-full bg-white/20 w-full">
-                        <div
-                          className="h-1.5 rounded-full bg-white transition-all"
-                          style={{ width: `${(done / total) * 100}%` }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-white/60 mt-1 font-medium">{done}/{total}</p>
+                    <div className="mt-1.5 flex items-center gap-1.5">
+                      {complete && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      )}
+                      <span className="text-[12px] font-bold text-white/80">{done}/{total}</span>
                     </div>
                   )
                 })()}
@@ -379,15 +402,17 @@ export default function OpeningDetailPage({
                         const total = getLessonCount(variationSlug)
                         const done = getProgress(variationSlug).completedLessons.length
                         if (total === 0) return null
+                        const complete = done >= total
                         return (
-                          <div className="mt-1.5">
-                            <div className="h-1.5 rounded-full bg-gray-100 w-full">
-                              <div
-                                className="h-1.5 rounded-full transition-all"
-                                style={{ width: `${(done / total) * 100}%`, backgroundColor: opening.color }}
-                              />
-                            </div>
-                            <p className="text-[10px] text-gray-400 mt-1 font-medium">{done}/{total}</p>
+                          <div className="mt-1 flex items-center gap-1.5">
+                            {complete && (
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={opening.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                              </svg>
+                            )}
+                            <span className="text-[12px] font-bold" style={{ color: complete ? opening.color : '#94a3b8' }}>
+                              {done}/{total}
+                            </span>
                           </div>
                         )
                       })()}
