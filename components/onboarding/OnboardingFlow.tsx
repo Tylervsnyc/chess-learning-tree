@@ -652,7 +652,7 @@ export function OnboardingFlow() {
     if (level === 'checkmates') {
       // Go straight to checkmate puzzles at 1.1.1
       markOnboarded();
-      OnboardingEvents.completed({ level, style: 'none' });
+      OnboardingEvents.completed({ level });
       router.push('/lesson/1.1.1?from=onboarding');
     } else {
       // Rated users go through elo → building → ready
@@ -679,7 +679,6 @@ export function OnboardingFlow() {
 
     OnboardingEvents.completed({
       level: levelChoice,
-      style: 'none',
       elo: eloValue,
       placedLevel,
     });
@@ -738,7 +737,7 @@ export function OnboardingFlow() {
             onNewToChess={() => {
               OnboardingEvents.routeSelected('new_to_chess');
               markOnboarded();
-              OnboardingEvents.completed({ level: 'beginner', style: 'none' });
+              OnboardingEvents.completed({ level: 'beginner' });
               router.push('/basics');
             }}
             onAlreadyPlay={() => {

@@ -121,8 +121,7 @@ export const OnboardingEvents = {
   routeSelected: (route: string) => trackEvent('onboarding_route_selected', { route }),
   levelSelected: (level: string) => trackEvent('onboarding_level_selected', { level }),
   eloEntered: (elo: number) => trackEvent('onboarding_elo_entered', { elo }),
-  styleSelected: (style: string) => trackEvent('onboarding_style_selected', { style }),
-  completed: (data: { level: string; style: string; elo?: number; placedLevel?: number }) =>
+  completed: (data: { level: string; elo?: number; placedLevel?: number }) =>
     trackEvent('onboarding_completed', data),
 };
 
