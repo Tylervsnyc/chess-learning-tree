@@ -13,7 +13,11 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (7 nodes):
+// GRID LAYOUT (11 nodes):
+//   Row 8:                             st-test-2 (col 0)
+//   Row 7:                                                    st-dev-Be2 (col 1)
+//   Row 6:  st-dev-g3 (col -1)
+//   Row 5:                             st-dev-Nb5 (col 0)
 //   Row 4:                             st-test-1 (col 0)
 //   Row 3:  st-dev-Qf3 (col -1)  st-4 (col 0)
 //   Row 2:  st-dev-Bd3 (col -1)  st-3 (col 0)
@@ -31,6 +35,7 @@ export const SICILIAN_TAIMANOV: OpeningTree = {
   colorDark: '#2980B9',
   completionOrder: [
     'st-1', 'st-2', 'st-dev-Bd3', 'st-3', 'st-dev-Qf3', 'st-4', 'st-test-1',
+    'st-dev-Nb5', 'st-dev-g3', 'st-dev-Be2', 'st-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -122,6 +127,58 @@ export const SICILIAN_TAIMANOV: OpeningTree = {
       col: 0,
       lineFrom: 'st-4',
       unlockedBy: 'st-dev-Qf3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATIONS ===
+    {
+      id: 'st-dev-Nb5',
+      name: 'Dev 5.Nb5',
+      moves: ['5.Nb5 d6', '6.c4 Nf6', '7.N1c3 a6'],
+      description: 'White jumps the knight to b5 early — block with d6, develop, and push a6 to chase it away.',
+      type: 'deviation',
+      row: 5,
+      col: 0,
+      lineFrom: 'st-test-1',
+      unlockedBy: 'st-test-1',
+      side: 'black',
+    },
+    {
+      id: 'st-dev-g3',
+      name: 'Dev 6.g3',
+      moves: ['6.g3 a6', '7.Bg2 Nf6', '8.O-O Nxd4'],
+      description: 'White fianchettoes with g3 — grab space with a6, develop the knight, and trade on d4.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'st-dev-Nb5',
+      unlockedBy: 'st-dev-Nb5',
+      side: 'black',
+    },
+    {
+      id: 'st-dev-Be2',
+      name: 'Dev 7.Be2',
+      moves: ['7.Be2 Nf6', '8.O-O Bb4', '9.Na4 Be7'],
+      description: 'White develops the bishop to e2 — play Nf6, pin with Bb4, then retreat to Be7.',
+      type: 'deviation',
+      row: 7,
+      col: 1,
+      lineFrom: 'st-dev-Nb5',
+      unlockedBy: 'st-dev-g3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'st-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Handle all the Level 2 deviations — 5.Nb5, 6.g3, and 7.Be2.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'st-dev-Nb5',
+      unlockedBy: 'st-dev-Be2',
       side: 'black',
     },
   ],

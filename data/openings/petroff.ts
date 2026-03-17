@@ -12,7 +12,11 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (6 nodes):
+// GRID LAYOUT (10 nodes):
+//   Row 7:                              pt-test-2 (col 0)
+//   Row 6:                              pt-5 (col 0)
+//   Row 5:   pt-dev-Bf4 (col -1)
+//   Row 4:                              pt-4 (col 0)
 //   Row 3:                              pt-test-1 (col 0)
 //   Row 2:   pt-dev-nc3 (col -1)    pt-3 (col 0)
 //   Row 1:                              pt-2 (col 0)     pt-dev-d4 (col 1)
@@ -33,6 +37,8 @@ export const PETROFF_DEFENSE: OpeningTree = {
     'pt-1', 'pt-2', 'pt-dev-d4',
     'pt-3', 'pt-dev-nc3',
     'pt-test-1',
+    'pt-4', 'pt-5', 'pt-dev-Bf4',
+    'pt-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -112,6 +118,60 @@ export const PETROFF_DEFENSE: OpeningTree = {
       col: 0,
       lineFrom: 'pt-3',
       unlockedBy: 'pt-dev-nc3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'pt-4',
+      name: 'Simplification',
+      moves: ['12.bxc3 Nc6', '13.Re1 Bg4', '14.c5 Bxf3'],
+      description: 'Retreat the knight, pin the bishop, and trade down into a clean position.',
+      type: 'main',
+      row: 4,
+      col: 0,
+      lineFrom: 'pt-test-1',
+      unlockedBy: 'pt-test-1',
+      side: 'black',
+    },
+    {
+      id: 'pt-5',
+      name: 'Queenside Pressure',
+      moves: ['15.Bxf3 Bf6', '16.Rb1 Rb8', '17.Be2 Na5'],
+      description: 'Reposition your bishop, seize the b-file, and plant the knight on a5.',
+      type: 'main',
+      row: 6,
+      col: 0,
+      lineFrom: 'pt-4',
+      unlockedBy: 'pt-dev-Bf4',
+      side: 'black',
+    },
+
+    // === DEVIATION: 13.Bf4 instead of 13.Re1 (col -1) ===
+    {
+      id: 'pt-dev-Bf4',
+      name: 'Dev 13.Bf4',
+      moves: ['13.Bf4 Bg4', '14.Nd2 Bxe2', '15.Qxe2 Na5'],
+      description: 'White develops the bishop to f4 — trade pieces and target the c4 pawn.',
+      type: 'deviation',
+      row: 5,
+      col: -1,
+      lineFrom: 'pt-4',
+      unlockedBy: 'pt-4',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'pt-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Petroff middlegame — main line and the Bf4 deviation.',
+      type: 'test',
+      row: 7,
+      col: 0,
+      lineFrom: 'pt-5',
+      unlockedBy: 'pt-5',
       side: 'black',
     },
   ],

@@ -12,7 +12,11 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (4 nodes):
+// GRID LAYOUT (8 nodes):
+//   Row 7:   ni-test-2 (col 0)
+//   Row 6:   ni-dev-a3 (col -1)
+//   Row 5:   ni-dev-Bd2 (col 1)
+//   Row 4:   ni-dev-f3 (col -1)
 //   Row 3:   ni-test-1 (col 0)
 //   Row 2:   ni-3 (col 0)
 //   Row 1:   ni-2 (col 0)
@@ -31,6 +35,7 @@ export const NIMZO_INDIAN: OpeningTree = {
   colorDark: '#6C3483',
   completionOrder: [
     'ni-1', 'ni-2', 'ni-3', 'ni-test-1',
+    'ni-dev-f3', 'ni-dev-Bd2', 'ni-dev-a3', 'ni-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -82,6 +87,58 @@ export const NIMZO_INDIAN: OpeningTree = {
       col: 0,
       lineFrom: 'ni-3',
       unlockedBy: 'ni-3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATIONS ===
+    {
+      id: 'ni-dev-f3',
+      name: 'If f3',
+      moves: ['4.f3 d5', '5.a3 Bxc3+', '6.bxc3 c5'],
+      description: 'White plays the aggressive 4.f3 — strike the center, trade the bishop, and challenge the pawns.',
+      type: 'deviation',
+      row: 4,
+      col: -1,
+      lineFrom: 'ni-test-1',
+      unlockedBy: 'ni-test-1',
+      side: 'black',
+    },
+    {
+      id: 'ni-dev-Bd2',
+      name: 'If Bd2',
+      moves: ['5.Bd2 d5', '6.Nf3 b6', '7.cxd5 exd5'],
+      description: 'White plays 5.Bd2 instead of Bd3 — grab the center and prepare queenside development.',
+      type: 'deviation',
+      row: 5,
+      col: 1,
+      lineFrom: 'ni-test-1',
+      unlockedBy: 'ni-dev-f3',
+      side: 'black',
+    },
+    {
+      id: 'ni-dev-a3',
+      name: 'If a3',
+      moves: ['6.a3 Bxc3+', '7.bxc3 dxc4', '8.Bxc4 c5'],
+      description: 'White plays 6.a3 early — trade the bishop, grab the c4 pawn, and attack the center.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'ni-test-1',
+      unlockedBy: 'ni-dev-Bd2',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'ni-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Nimzo-Indian — main line and all three deviations.',
+      type: 'test',
+      row: 7,
+      col: 0,
+      lineFrom: 'ni-dev-a3',
+      unlockedBy: 'ni-dev-a3',
       side: 'black',
     },
   ],

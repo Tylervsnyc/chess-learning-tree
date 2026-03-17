@@ -13,7 +13,14 @@
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (6 nodes):
+// L2 continues: 18.O-O f5 19.exf5 Bxf5 20.Nxf5 Rxf5
+//               21.Bd3 Rf8 22.Qg4 Nd4 23.cxd4 exd4
+//
+// GRID LAYOUT (10 nodes):
+//   Row 8:                             sv-test-2 (col 0)
+//   Row 7:                             sv-6 (col 0)
+//   Row 6:  sv-dev-Nxf5 (col -1)
+//   Row 5:                             sv-5 (col 0)
 //   Row 4:                             sv-test-1 (col 0)
 //   Row 3:                             sv-4 (col 0)
 //   Row 2:  sv-dev-c4 (col -1)    sv-3 (col 0)
@@ -31,6 +38,7 @@ export const SICILIAN_SVESHNIKOV: OpeningTree = {
   colorDark: '#D35400',
   completionOrder: [
     'sv-1', 'sv-2', 'sv-3', 'sv-dev-c4', 'sv-4', 'sv-test-1',
+    'sv-5', 'sv-dev-Nxf5', 'sv-6', 'sv-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -108,6 +116,60 @@ export const SICILIAN_SVESHNIKOV: OpeningTree = {
       col: 0,
       lineFrom: 'sv-4',
       unlockedBy: 'sv-4',
+      side: 'black',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'sv-5',
+      name: 'The f5 Break',
+      moves: ['18.O-O f5', '19.exf5 Bxf5', '20.Nxf5 Rxf5'],
+      description: 'Castle, unleash the f5 pawn break, and trade down to an active rook.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'sv-test-1',
+      unlockedBy: 'sv-test-1',
+      side: 'black',
+    },
+    {
+      id: 'sv-6',
+      name: 'The Counterattack',
+      moves: ['21.Bd3 Rf8', '22.Qg4 Nd4', '23.cxd4 exd4'],
+      description: 'Retreat the rook, sacrifice the knight on d4, and rip open the center.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'sv-5',
+      unlockedBy: 'sv-dev-Nxf5',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATION: 19.Nxf5 (instead of 19.exf5) ===
+    {
+      id: 'sv-dev-Nxf5',
+      name: 'Dev 19.Nxf5',
+      moves: ['19.Nxf5 gxf5', '20.exf5 Bxf5', '21.Bd3 Bxd3'],
+      description: 'White takes with the knight first. You recapture with the g-pawn and trade bishops.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'sv-5',
+      unlockedBy: 'sv-5',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'sv-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Sveshnikov middlegame — main line and the Nxf5 deviation.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'sv-6',
+      unlockedBy: 'sv-6',
       side: 'black',
     },
   ],

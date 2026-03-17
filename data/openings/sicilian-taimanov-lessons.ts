@@ -60,6 +60,34 @@ const FEN = {
   dev_Qf3_after_Ne5:  'r1b1kb1r/1pqp1ppp/p3pn2/4n3/3NP3/2N1BQ2/PPP2PPP/2KR1B1R w kq - 4 9',
   dev_Qf3_after_Qg3:  'r1b1kb1r/1pqp1ppp/p3pn2/4n3/3NP3/2N1B1Q1/PPP2PPP/2KR1B1R b kq - 5 9',
   dev_Qf3_after_b5:   'r1b1kb1r/2qp1ppp/p3pn2/1p2n3/3NP3/2N1B1Q1/PPP2PPP/2KR1B1R w kq - 0 10',
+
+  // ═══════════════════════════════════════════════════════════
+  // LEVEL 2 — Deviations only (no new main line)
+  // ═══════════════════════════════════════════════════════════
+
+  // Deviation: 5.Nb5 (instead of 5.Nc3)
+  dev_Nb5_after_Nb5:   'r1bqkbnr/pp1p1ppp/2n1p3/1N6/4P3/8/PPP2PPP/RNBQKB1R b KQkq - 2 5',
+  dev_Nb5_after_d6:    'r1bqkbnr/pp3ppp/2npp3/1N6/4P3/8/PPP2PPP/RNBQKB1R w KQkq - 0 6',
+  dev_Nb5_after_c4:    'r1bqkbnr/pp3ppp/2npp3/1N6/2P1P3/8/PP3PPP/RNBQKB1R b KQkq - 0 6',
+  dev_Nb5_after_Nf6:   'r1bqkb1r/pp3ppp/2nppn2/1N6/2P1P3/8/PP3PPP/RNBQKB1R w KQkq - 1 7',
+  dev_Nb5_after_N1c3:  'r1bqkb1r/pp3ppp/2nppn2/1N6/2P1P3/2N5/PP3PPP/R1BQKB1R b KQkq - 2 7',
+  dev_Nb5_after_a6:    'r1bqkb1r/1p3ppp/p1nppn2/1N6/2P1P3/2N5/PP3PPP/R1BQKB1R w KQkq - 0 8',
+
+  // Deviation: 6.g3 (instead of 6.Be3, after 5.Nc3 Qc7)
+  dev_g3_after_g3:     'r1b1kbnr/ppqp1ppp/2n1p3/8/3NP3/2N3P1/PPP2P1P/R1BQKB1R b KQkq - 0 6',
+  dev_g3_after_a6:     'r1b1kbnr/1pqp1ppp/p1n1p3/8/3NP3/2N3P1/PPP2P1P/R1BQKB1R w KQkq - 0 7',
+  dev_g3_after_Bg2:    'r1b1kbnr/1pqp1ppp/p1n1p3/8/3NP3/2N3P1/PPP2PBP/R1BQK2R b KQkq - 1 7',
+  dev_g3_after_Nf6:    'r1b1kb1r/1pqp1ppp/p1n1pn2/8/3NP3/2N3P1/PPP2PBP/R1BQK2R w KQkq - 2 8',
+  dev_g3_after_OO:     'r1b1kb1r/1pqp1ppp/p1n1pn2/8/3NP3/2N3P1/PPP2PBP/R1BQ1RK1 b kq - 3 8',
+  dev_g3_after_Nxd4:   'r1b1kb1r/1pqp1ppp/p3pn2/8/3nP3/2N3P1/PPP2PBP/R1BQ1RK1 w kq - 0 9',
+
+  // Deviation: 7.Be2 (instead of 7.Qd2, after 5.Nc3 Qc7 6.Be3 a6)
+  dev_Be2_after_Be2:   'r1b1kbnr/1pqp1ppp/p1n1p3/8/3NP3/2N1B3/PPP1BPPP/R2QK2R b KQkq - 1 7',
+  dev_Be2_after_Nf6:   'r1b1kb1r/1pqp1ppp/p1n1pn2/8/3NP3/2N1B3/PPP1BPPP/R2QK2R w KQkq - 2 8',
+  dev_Be2_after_OO:    'r1b1kb1r/1pqp1ppp/p1n1pn2/8/3NP3/2N1B3/PPP1BPPP/R2Q1RK1 b kq - 3 8',
+  dev_Be2_after_Bb4:   'r1b1k2r/1pqp1ppp/p1n1pn2/8/1b1NP3/2N1B3/PPP1BPPP/R2Q1RK1 w kq - 4 9',
+  dev_Be2_after_Na4:   'r1b1k2r/1pqp1ppp/p1n1pn2/8/Nb1NP3/4B3/PPP1BPPP/R2Q1RK1 b kq - 5 9',
+  dev_Be2_after_Be7:   'r1b1k2r/1pqpbppp/p1n1pn2/8/N2NP3/4B3/PPP1BPPP/R2Q1RK1 w kq - 6 10',
 }
 
 
@@ -456,6 +484,200 @@ const ST_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// st-dev-Nb5: Deviation (5.Nb5 instead of 5.Nc3)
+// Black plays: d6, Nf6, a6
+// ═══════════════════════════════════════════════════════════
+
+const ST_DEV_NB5: OpeningLesson = {
+  id: 'st-dev-Nb5',
+  title: 'Dev 5.Nb5',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Nc6, text: "Instead of the usual Nc3, White jumps the knight to b5 early. It looks aggressive, but you have a simple plan to shut it down." },
+
+    // RECAP to deviation point (identity only — deviation is at move 5)
+    // No recap needed — the deviation happens at the very start of the taught line.
+
+    // DEVIATION SETUP
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'White plays Nb5, threatening to land on d6.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+
+    // PREDICT 1: d6
+    { type: 'play-move', fen: FEN.dev_Nb5_after_Nb5, correctMove: 'd6', prompt: 'The knight is heading for d6. How do you stop it?', hint: 'Block the knight with the d-pawn. Simple and solid.', correctFeedback: 'd6 blocks the knight from landing on d6. Straightforward and effective.', wrongFeedback: 'Play d6 to block the knight from reaching d6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_d6, text: 'd6 stops the knight in its tracks. The b5 knight has nowhere good to go now.', arrow: ['d7', 'd6'] },
+
+    // White plays 6.c4
+    { type: 'instruction', fen: FEN.dev_Nb5_after_d6, text: 'White pushes c4, grabbing central space.', autoAdvance: 800, highlightSquares: ['c2', 'c4'] },
+
+    // PREDICT 2: Nf6
+    { type: 'play-move', fen: FEN.dev_Nb5_after_c4, correctMove: 'Nf6', prompt: 'White pushed c4. How do you continue development?', hint: 'Develop the kingside knight to its natural square.', correctFeedback: 'Nf6 develops the knight and puts pressure on e4. Natural and strong.', wrongFeedback: 'Develop the knight to f6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_Nf6, text: 'Nf6 develops with tempo against e4. Meanwhile the b5 knight is still stuck on the rim.', arrow: ['g8', 'f6'] },
+
+    // White plays 7.N1c3
+    { type: 'instruction', fen: FEN.dev_Nb5_after_Nf6, text: 'White develops the other knight to c3.', autoAdvance: 800, highlightSquares: ['b1', 'c3'] },
+
+    // PREDICT 3: a6
+    { type: 'play-move', fen: FEN.dev_Nb5_after_N1c3, correctMove: 'a6', prompt: 'Both knights are out. How do you deal with the one on b5?', hint: 'Chase the knight away with a pawn push.', correctFeedback: 'a6 kicks the knight off b5. It has to retreat to a3 — a terrible square.', wrongFeedback: 'Push a6 to chase the knight away.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_a6, text: 'a6 forces the knight to the rim on a3. White wasted time with Nb5 and you have a comfortable position.', arrow: ['a7', 'a6'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Nc6, text: "Your turn. Handle 5.Nb5 from memory." },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Nb5.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_Nb5, correctMove: 'd6', prompt: 'Your move.', hint: 'd6.', correctFeedback: 'd6.', wrongFeedback: 'd6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_d6, text: 'c4.', autoAdvance: 800, highlightSquares: ['c2', 'c4'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_c4, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_Nf6, text: 'N1c3.', autoAdvance: 800, highlightSquares: ['b1', 'c3'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_N1c3, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+
+    { type: 'instruction', fen: FEN.dev_Nb5_after_a6, text: "d6, Nf6, a6 — against 5.Nb5, you block, develop, and chase. White's knight ends up on a3 looking silly." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// st-dev-g3: Deviation (6.g3 instead of 6.Be3)
+// After 5.Nc3 Qc7, White plays 6.g3 instead of 6.Be3
+// Black plays: a6, Nf6, Nxd4
+// ═══════════════════════════════════════════════════════════
+
+const ST_DEV_G3: OpeningLesson = {
+  id: 'st-dev-g3',
+  title: 'Dev 6.g3',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Qc7, text: "Instead of Be3, White fianchettoes the bishop with g3. It's a quieter setup — here's how you take advantage." },
+
+    // RECAP to deviation point (Nc3 Qc7)
+    { type: 'instruction', fen: FEN.after_Nc6, text: "Quick recap first." },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Nc3.', autoAdvance: 800, highlightSquares: ['b1', 'c3'] },
+    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'Qc7', prompt: 'Your move.', hint: 'Qc7.', correctFeedback: 'Qc7.', wrongFeedback: 'Qc7.' },
+
+    // DEVIATION SETUP
+    { type: 'instruction', fen: FEN.after_Qc7, text: 'White plays g3, preparing to fianchetto the bishop to g2.', autoAdvance: 800, highlightSquares: ['g2', 'g3'] },
+
+    // PREDICT 1: a6
+    { type: 'play-move', fen: FEN.dev_g3_after_g3, correctMove: 'a6', prompt: 'White is going for a fianchetto. What do you play?', hint: 'Same idea as the main line — grab queenside space and prevent Nb5.', correctFeedback: 'a6 prepares b5 and stops any Nb5 tricks. Good Taimanov habits.', wrongFeedback: 'Play a6 — same plan as the main line.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_a6, text: 'a6 is the right move regardless of what White does on the kingside. Queenside expansion is your plan.', arrow: ['a7', 'a6'] },
+
+    // White plays 7.Bg2
+    { type: 'instruction', fen: FEN.dev_g3_after_a6, text: 'White completes the fianchetto with Bg2.', autoAdvance: 800, highlightSquares: ['f1', 'g2'] },
+
+    // PREDICT 2: Nf6
+    { type: 'play-move', fen: FEN.dev_g3_after_Bg2, correctMove: 'Nf6', prompt: 'The bishop is on g2. How do you continue?', hint: 'Develop the kingside knight to its natural square.', correctFeedback: 'Nf6 develops naturally and challenges the center. Same plan, different White setup.', wrongFeedback: 'Develop the knight to f6.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_Nf6, text: 'Nf6 keeps developing. Against the g3 fianchetto, your plan stays the same — pieces out, then look for breaks.', arrow: ['g8', 'f6'] },
+
+    // White plays 8.O-O
+    { type: 'instruction', fen: FEN.dev_g3_after_Nf6, text: 'White castles kingside.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+
+    // PREDICT 3: Nxd4
+    { type: 'play-move', fen: FEN.dev_g3_after_OO, correctMove: 'Nxd4', prompt: 'White has castled. The knight on d4 is less protected now. What do you do?', hint: 'Capture the knight — with the queen on d1 gone, this trade favors you.', correctFeedback: 'Nxd4 trades off the strong centralized knight. White has to recapture with the queen.', wrongFeedback: 'Take the knight with Nxd4.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_Nxd4, text: 'Nxd4 is strong here. White must recapture with the queen, and you can develop actively with Bc5 next, targeting the queen.', arrow: ['c6', 'd4'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Qc7, text: "Handle 6.g3 on your own." },
+    { type: 'instruction', fen: FEN.after_Qc7, text: 'g3.', autoAdvance: 800, highlightSquares: ['g2', 'g3'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_g3, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_a6, text: 'Bg2.', autoAdvance: 800, highlightSquares: ['f1', 'g2'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_Bg2, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_Nf6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_OO, correctMove: 'Nxd4', prompt: 'Your move.', hint: 'Nxd4.', correctFeedback: 'Nxd4.', wrongFeedback: 'Nxd4.' },
+
+    { type: 'instruction', fen: FEN.dev_g3_after_Nxd4, text: "a6, Nf6, Nxd4 — against 6.g3, you keep your Taimanov plan and trade off the strong d4 knight. Clean and effective." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// st-dev-Be2: Deviation (7.Be2 instead of 7.Qd2)
+// After 5.Nc3 Qc7 6.Be3 a6, White plays 7.Be2 instead of 7.Qd2
+// Black plays: Nf6, Bb4, Be7
+// ═══════════════════════════════════════════════════════════
+
+const ST_DEV_BE2: OpeningLesson = {
+  id: 'st-dev-Be2',
+  title: 'Dev 7.Be2',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_a6, text: "White develops the bishop to e2 instead of playing Qd2. It's a solid choice — but your counterplay is the same." },
+
+    // RECAP to deviation point (Nc3 Qc7 Be3 a6)
+    { type: 'instruction', fen: FEN.after_Nc6, text: "Run through the line to the deviation point." },
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'Nc3.', autoAdvance: 800, highlightSquares: ['b1', 'c3'] },
+    { type: 'play-move', fen: FEN.after_Nc3, correctMove: 'Qc7', prompt: 'Your move.', hint: 'Qc7.', correctFeedback: 'Qc7.', wrongFeedback: 'Qc7.' },
+    { type: 'instruction', fen: FEN.after_Qc7, text: 'Be3.', autoAdvance: 800, highlightSquares: ['c1', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Be3, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+
+    // DEVIATION SETUP
+    { type: 'instruction', fen: FEN.after_a6, text: 'White plays Be2 instead of Qd2 — developing the bishop before committing the queen.', autoAdvance: 800, highlightSquares: ['f1', 'e2'] },
+
+    // PREDICT 1: Nf6
+    { type: 'play-move', fen: FEN.dev_Be2_after_Be2, correctMove: 'Nf6', prompt: 'White developed the bishop. How do you continue?', hint: 'The kingside knight still belongs on f6.', correctFeedback: 'Nf6 develops naturally and pressures e4. Same plan as the main line.', wrongFeedback: 'Develop the knight to f6.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Nf6, text: 'Nf6 is the right response. Whether White plays Qd2, Bd3, or Be2, the knight goes to f6.', arrow: ['g8', 'f6'] },
+
+    // White plays 8.O-O
+    { type: 'instruction', fen: FEN.dev_Be2_after_Nf6, text: 'White castles kingside.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+
+    // PREDICT 2: Bb4
+    { type: 'play-move', fen: FEN.dev_Be2_after_OO, correctMove: 'Bb4', prompt: 'White has castled. How do you create pressure on the knight?', hint: 'Pin the c3 knight — just like in the main line.', correctFeedback: 'Bb4 pins the knight on c3. The pin creates lasting pressure even with the king on g1.', wrongFeedback: 'Play Bb4 to pin the c3 knight.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Bb4, text: 'Bb4 pins the c3 knight. White will try to break the pin, but it causes them headaches either way.', arrow: ['f8', 'b4'] },
+
+    // White plays 9.Na4
+    { type: 'instruction', fen: FEN.dev_Be2_after_Bb4, text: 'White plays Na4, sidestepping the pin and eyeing c5.', autoAdvance: 800, highlightSquares: ['c3', 'a4'] },
+
+    // PREDICT 3: Be7
+    { type: 'play-move', fen: FEN.dev_Be2_after_Na4, correctMove: 'Be7', prompt: 'The knight moved to a4. Where does the bishop go now?', hint: 'Retreat to a safe square — the bishop has done its job.', correctFeedback: 'Be7 retreats the bishop to safety. The knight on a4 is offside, and you have a solid position.', wrongFeedback: 'Retreat the bishop to e7.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Be7, text: 'Be7 is practical. The knight on a4 is awkwardly placed, and White will spend time reorganizing. You have a comfortable game.', arrow: ['b4', 'e7'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_a6, text: "Handle 7.Be2 from memory." },
+    { type: 'instruction', fen: FEN.after_a6, text: 'Be2.', autoAdvance: 800, highlightSquares: ['f1', 'e2'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_Be2, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Nf6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_OO, correctMove: 'Bb4', prompt: 'Your move.', hint: 'Bb4.', correctFeedback: 'Bb4.', wrongFeedback: 'Bb4.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Bb4, text: 'Na4.', autoAdvance: 800, highlightSquares: ['c3', 'a4'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_Na4, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+
+    { type: 'instruction', fen: FEN.dev_Be2_after_Be7, text: "Nf6, Bb4, Be7 — against 7.Be2, you develop, pin, and retreat. White's knight is stuck on a4 and you have a solid position." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// st-test-2: Level 2 Test (L2 deviations only)
+// ═══════════════════════════════════════════════════════════
+
+const ST_TEST_2: OpeningLesson = {
+  id: 'st-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'black',
+  steps: [
+    // === DEVIATION TEST: 5.Nb5 ===
+    { type: 'instruction', fen: FEN.after_Nc6, text: 'White plays Nb5 instead of Nc3.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_Nb5, correctMove: 'd6', prompt: 'Your move.', hint: 'd6.', correctFeedback: 'd6.', wrongFeedback: 'd6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_d6, text: 'c4.', autoAdvance: 800, highlightSquares: ['c2', 'c4'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_c4, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_Nb5_after_Nf6, text: 'N1c3.', autoAdvance: 800, highlightSquares: ['b1', 'c3'] },
+    { type: 'play-move', fen: FEN.dev_Nb5_after_N1c3, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+
+    // === DEVIATION TEST: 6.g3 ===
+    { type: 'instruction', fen: FEN.after_Qc7, text: 'Now White plays g3 instead of Be3.', autoAdvance: 800, highlightSquares: ['g2', 'g3'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_g3, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_a6, text: 'Bg2.', autoAdvance: 800, highlightSquares: ['f1', 'g2'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_Bg2, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_g3_after_Nf6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_g3_after_OO, correctMove: 'Nxd4', prompt: 'Your move.', hint: 'Nxd4.', correctFeedback: 'Nxd4.', wrongFeedback: 'Nxd4.' },
+
+    // === DEVIATION TEST: 7.Be2 ===
+    { type: 'instruction', fen: FEN.after_a6, text: 'Now White plays Be2 instead of Qd2.', autoAdvance: 800, highlightSquares: ['f1', 'e2'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_Be2, correctMove: 'Nf6', prompt: 'Your move.', hint: 'Nf6.', correctFeedback: 'Nf6.', wrongFeedback: 'Nf6.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Nf6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_OO, correctMove: 'Bb4', prompt: 'Your move.', hint: 'Bb4.', correctFeedback: 'Bb4.', wrongFeedback: 'Bb4.' },
+    { type: 'instruction', fen: FEN.dev_Be2_after_Bb4, text: 'Na4.', autoAdvance: 800, highlightSquares: ['c3', 'a4'] },
+    { type: 'play-move', fen: FEN.dev_Be2_after_Na4, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -467,6 +689,10 @@ const SICILIAN_TAIMANOV_LESSONS: Record<string, OpeningLesson> = {
   'st-dev-Bd3': ST_DEV_BD3,
   'st-dev-Qf3': ST_DEV_QF3,
   'st-test-1': ST_TEST_1,
+  'st-dev-Nb5': ST_DEV_NB5,
+  'st-dev-g3': ST_DEV_G3,
+  'st-dev-Be2': ST_DEV_BE2,
+  'st-test-2': ST_TEST_2,
 }
 
 export function getSicilianTaimanovLesson(id: string): OpeningLesson | undefined {

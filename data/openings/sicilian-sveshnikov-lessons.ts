@@ -50,6 +50,37 @@ const FEN = {
   after_Nce3:      '1rbq1r1k/5ppp/2np4/p2Np1b1/R1B1P3/1PP1N3/5PPP/3QK2R b K - 2 17',
   after_g6:        '1rbq1r1k/5p1p/2np2p1/p2Np1b1/R1B1P3/1PP1N3/5PPP/3QK2R w K - 0 18',
 
+  // ═══════════════════════════════════════════════════════════
+  // LEVEL 2 — Main line continues from 17...g6
+  // 18.O-O f5 19.exf5 Bxf5 20.Nxf5 Rxf5
+  // 21.Bd3 Rf8 22.Qg4 Nd4 23.cxd4 exd4
+  // ═══════════════════════════════════════════════════════════
+
+  // sv-5: The f5 Break (f5, Bxf5, Rxf5)
+  after_OO_18:     '1rbq1r1k/5p1p/2np2p1/p2Np1b1/R1B1P3/1PP1N3/5PPP/3Q1RK1 b - - 1 18',
+  after_f5:        '1rbq1r1k/7p/2np2p1/p2Nppb1/R1B1P3/1PP1N3/5PPP/3Q1RK1 w - - 0 19',
+  after_exf5:      '1rbq1r1k/7p/2np2p1/p2NpPb1/R1B5/1PP1N3/5PPP/3Q1RK1 b - - 0 19',
+  after_Bxf5_b:    '1r1q1r1k/7p/2np2p1/p2Npbb1/R1B5/1PP1N3/5PPP/3Q1RK1 w - - 0 20',
+  after_Nxf5_w:    '1r1q1r1k/7p/2np2p1/p2NpNb1/R1B5/1PP5/5PPP/3Q1RK1 b - - 0 20',
+  after_Rxf5:      '1r1q3k/7p/2np2p1/p2Nprb1/R1B5/1PP5/5PPP/3Q1RK1 w - - 0 21',
+
+  // sv-6: The Counterattack (Rf8, Nd4, exd4)
+  after_Bd3_21:    '1r1q3k/7p/2np2p1/p2Nprb1/R7/1PPB4/5PPP/3Q1RK1 b - - 1 21',
+  after_Rf8:       '1r1q1r1k/7p/2np2p1/p2Np1b1/R7/1PPB4/5PPP/3Q1RK1 w - - 2 22',
+  after_Qg4:       '1r1q1r1k/7p/2np2p1/p2Np1b1/R5Q1/1PPB4/5PPP/5RK1 b - - 3 22',
+  after_Nd4:       '1r1q1r1k/7p/3p2p1/p2Np1b1/R2n2Q1/1PPB4/5PPP/5RK1 w - - 4 23',
+  after_cxd4:      '1r1q1r1k/7p/3p2p1/p2Np1b1/R2P2Q1/1P1B4/5PPP/5RK1 b - - 0 23',
+  after_exd4_23:   '1r1q1r1k/7p/3p2p1/p2N2b1/R2p2Q1/1P1B4/5PPP/5RK1 w - - 0 24',
+
+  // Deviation: 19.Nxf5 (instead of 19.exf5) — after 18...f5
+  dev_after_Nxf5:  '1rbq1r1k/7p/2np2p1/p2NpNb1/R1B1P3/1PP5/5PPP/3Q1RK1 b - - 0 19',
+  dev_after_gxf5:  '1rbq1r1k/7p/2np4/p2Nppb1/R1B1P3/1PP5/5PPP/3Q1RK1 w - - 0 20',
+  dev_after_exf5:  '1rbq1r1k/7p/2np4/p2NpPb1/R1B5/1PP5/5PPP/3Q1RK1 b - - 0 20',
+  dev_after_Bxf5:  '1r1q1r1k/7p/2np4/p2Npbb1/R1B5/1PP5/5PPP/3Q1RK1 w - - 0 21',
+  dev_after_Bd3:   '1r1q1r1k/7p/2np4/p2Npbb1/R7/1PPB4/5PPP/3Q1RK1 b - - 1 21',
+  dev_after_Bxd3:  '1r1q1r1k/7p/2np4/p2Np1b1/R7/1PPb4/5PPP/3Q1RK1 w - - 0 22',
+  dev_after_Qxd3:  '1r1q1r1k/7p/2np4/p2Np1b1/R7/1PPQ4/5PPP/5RK1 b - - 0 22',
+
   // Deviation: 11.c4 (instead of 11.c3)
   dev_after_c4:    'r1bqk2r/5ppp/p1np1b2/1p1Np3/2P1P3/N7/PP3PPP/R2QKB1R b KQkq - 0 11',
   dev_after_b4:    'r1bqk2r/5ppp/p1np1b2/3Np3/1pP1P3/N7/PP3PPP/R2QKB1R w KQkq - 0 12',
@@ -397,6 +428,270 @@ const SV_TEST_1: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
+// sv-5: The f5 Break (f5, Bxf5, Rxf5)
+// First L2 lesson — recap all L1 moves.
+// ═══════════════════════════════════════════════════════════
+
+const SV_5: OpeningLesson = {
+  id: 'sv-5',
+  title: 'The f5 Break',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_g6, text: "Everything you've built — the queenside, the king tuck, g6 — it all leads to this: the f5 pawn break. Time to blow the position open." },
+
+    // RECAP (all L1 moves: d6 through g6)
+    { type: 'instruction', fen: FEN.after_e5, text: "Run through the full line first." },
+    { type: 'instruction', fen: FEN.after_e5, text: 'Ndb5.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+    { type: 'play-move', fen: FEN.after_Ndb5, correctMove: 'd6', prompt: 'Your move.', hint: 'd6.', correctFeedback: 'd6.', wrongFeedback: 'd6.' },
+    { type: 'instruction', fen: FEN.after_d6, text: 'Bg5.', autoAdvance: 800, highlightSquares: ['c1', 'g5'] },
+    { type: 'play-move', fen: FEN.after_Bg5, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+    { type: 'instruction', fen: FEN.after_a6, text: 'Na3.', autoAdvance: 800, highlightSquares: ['b5', 'a3'] },
+    { type: 'play-move', fen: FEN.after_Na3, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_b5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['c3', 'd5'] },
+    { type: 'play-move', fen: FEN.after_Nd5, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.after_Be7, text: 'Bxf6.', autoAdvance: 800, highlightSquares: ['g5', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Bxf6w, correctMove: 'Bxf6', prompt: 'Your move.', hint: 'Bxf6.', correctFeedback: 'Bxf6.', wrongFeedback: 'Bxf6.' },
+    { type: 'instruction', fen: FEN.after_Bxf6b, text: 'c3.', autoAdvance: 800, highlightSquares: ['c2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_c3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'Nc2.', autoAdvance: 800, highlightSquares: ['a3', 'c2'] },
+    { type: 'play-move', fen: FEN.after_Nc2, correctMove: 'Bg5', prompt: 'Your move.', hint: 'Bg5.', correctFeedback: 'Bg5.', wrongFeedback: 'Bg5.' },
+    { type: 'instruction', fen: FEN.after_Bg5_move, text: 'a4.', autoAdvance: 800, highlightSquares: ['a2', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4, correctMove: 'bxa4', prompt: 'Your move.', hint: 'bxa4.', correctFeedback: 'bxa4.', wrongFeedback: 'bxa4.' },
+    { type: 'instruction', fen: FEN.after_bxa4, text: 'Rxa4.', autoAdvance: 800, highlightSquares: ['a1', 'a4'] },
+    { type: 'play-move', fen: FEN.after_Rxa4, correctMove: 'a5', prompt: 'Your move.', hint: 'a5.', correctFeedback: 'a5.', wrongFeedback: 'a5.' },
+    { type: 'instruction', fen: FEN.after_a5, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'Rb8', prompt: 'Your move.', hint: 'Rb8.', correctFeedback: 'Rb8.', wrongFeedback: 'Rb8.' },
+    { type: 'instruction', fen: FEN.after_Rb8, text: 'b3.', autoAdvance: 800, highlightSquares: ['b2', 'b3'] },
+    { type: 'play-move', fen: FEN.after_b3, correctMove: 'Kh8', prompt: 'Your move.', hint: 'Kh8.', correctFeedback: 'Kh8.', wrongFeedback: 'Kh8.' },
+    { type: 'instruction', fen: FEN.after_Kh8, text: 'Nce3.', autoAdvance: 800, highlightSquares: ['c2', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Nce3, correctMove: 'g6', prompt: 'Your move.', hint: 'g6.', correctFeedback: 'g6.', wrongFeedback: 'g6.' },
+
+    // White plays 18.O-O
+    { type: 'instruction', fen: FEN.after_g6, text: 'White castles. The king is safe, but now the position opens up.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+
+    // PREDICT 1: f5
+    { type: 'play-move', fen: FEN.after_OO_18, correctMove: 'f5', prompt: 'You prepared g6 for exactly this moment. What is the key pawn break?', hint: 'Push f5 — crack open the center and attack.', correctFeedback: 'f5! The signature Sveshnikov break. The center is about to explode.', wrongFeedback: 'Push f5 — this is the whole point of g6 and Kh8.' },
+    { type: 'instruction', fen: FEN.after_f5, text: 'f5 is the move the entire opening has been building toward. It challenges White\'s e4 pawn and opens lines for your pieces.', arrow: ['f7', 'f5'] },
+
+    // White plays 19.exf5
+    { type: 'instruction', fen: FEN.after_f5, text: 'White captures exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+
+    // PREDICT 2: Bxf5
+    { type: 'play-move', fen: FEN.after_exf5, correctMove: 'Bxf5', prompt: 'White took on f5. How do you recapture?', hint: 'Take back with the bishop — develop with tempo.', correctFeedback: 'Bxf5 recaptures and develops the bishop to an active square.', wrongFeedback: 'Take with the bishop — Bxf5 activates it while recapturing.' },
+    { type: 'instruction', fen: FEN.after_Bxf5_b, text: 'Bxf5 is correct. The bishop joins the attack and White has to deal with it.', arrow: ['c8', 'f5'] },
+
+    // White plays 20.Nxf5
+    { type: 'instruction', fen: FEN.after_Bxf5_b, text: 'White takes your bishop with Nxf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+
+    // PREDICT 3: Rxf5
+    { type: 'play-move', fen: FEN.after_Nxf5_w, correctMove: 'Rxf5', prompt: 'White captured your bishop. How do you recapture?', hint: 'Take with the rook — it lands on an active square.', correctFeedback: 'Rxf5! The rook is powerfully placed on f5, pressuring the position.', wrongFeedback: 'Recapture with the rook — Rxf5 puts it on an active file.' },
+    { type: 'instruction', fen: FEN.after_Rxf5, text: 'Rxf5 gives you an active rook in the heart of the position. The f5 break delivered exactly what you wanted — open lines and piece activity.', arrow: ['f8', 'f5'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_g6, text: "Three moves from memory. You know these." },
+    { type: 'instruction', fen: FEN.after_g6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_18, correctMove: 'f5', prompt: 'Your move.', hint: 'f5.', correctFeedback: 'f5.', wrongFeedback: 'f5.' },
+    { type: 'instruction', fen: FEN.after_f5, text: 'exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+    { type: 'play-move', fen: FEN.after_exf5, correctMove: 'Bxf5', prompt: 'Your move.', hint: 'Bxf5.', correctFeedback: 'Bxf5.', wrongFeedback: 'Bxf5.' },
+    { type: 'instruction', fen: FEN.after_Bxf5_b, text: 'Nxf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Nxf5_w, correctMove: 'Rxf5', prompt: 'Your move.', hint: 'Rxf5.', correctFeedback: 'Rxf5.', wrongFeedback: 'Rxf5.' },
+
+    { type: 'instruction', fen: FEN.after_Rxf5, text: "f5, Bxf5, Rxf5 — the pawn break you spent the whole opening preparing. Your rook is active and the position is wide open." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// sv-6: The Counterattack (Rf8, Nd4, exd4)
+// ═══════════════════════════════════════════════════════════
+
+const SV_6: OpeningLesson = {
+  id: 'sv-6',
+  title: 'The Counterattack',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_Rxf5, text: "White retreats the bishop and brings the queen into the game. You'll sacrifice a knight to rip the center apart." },
+
+    // RECAP (all L1 + sv-5)
+    { type: 'instruction', fen: FEN.after_e5, text: "Full line from the top." },
+    { type: 'instruction', fen: FEN.after_e5, text: 'Ndb5.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+    { type: 'play-move', fen: FEN.after_Ndb5, correctMove: 'd6', prompt: 'Your move.', hint: 'd6.', correctFeedback: 'd6.', wrongFeedback: 'd6.' },
+    { type: 'instruction', fen: FEN.after_d6, text: 'Bg5.', autoAdvance: 800, highlightSquares: ['c1', 'g5'] },
+    { type: 'play-move', fen: FEN.after_Bg5, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+    { type: 'instruction', fen: FEN.after_a6, text: 'Na3.', autoAdvance: 800, highlightSquares: ['b5', 'a3'] },
+    { type: 'play-move', fen: FEN.after_Na3, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_b5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['c3', 'd5'] },
+    { type: 'play-move', fen: FEN.after_Nd5, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.after_Be7, text: 'Bxf6.', autoAdvance: 800, highlightSquares: ['g5', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Bxf6w, correctMove: 'Bxf6', prompt: 'Your move.', hint: 'Bxf6.', correctFeedback: 'Bxf6.', wrongFeedback: 'Bxf6.' },
+    { type: 'instruction', fen: FEN.after_Bxf6b, text: 'c3.', autoAdvance: 800, highlightSquares: ['c2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_c3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'Nc2.', autoAdvance: 800, highlightSquares: ['a3', 'c2'] },
+    { type: 'play-move', fen: FEN.after_Nc2, correctMove: 'Bg5', prompt: 'Your move.', hint: 'Bg5.', correctFeedback: 'Bg5.', wrongFeedback: 'Bg5.' },
+    { type: 'instruction', fen: FEN.after_Bg5_move, text: 'a4.', autoAdvance: 800, highlightSquares: ['a2', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4, correctMove: 'bxa4', prompt: 'Your move.', hint: 'bxa4.', correctFeedback: 'bxa4.', wrongFeedback: 'bxa4.' },
+    { type: 'instruction', fen: FEN.after_bxa4, text: 'Rxa4.', autoAdvance: 800, highlightSquares: ['a1', 'a4'] },
+    { type: 'play-move', fen: FEN.after_Rxa4, correctMove: 'a5', prompt: 'Your move.', hint: 'a5.', correctFeedback: 'a5.', wrongFeedback: 'a5.' },
+    { type: 'instruction', fen: FEN.after_a5, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'Rb8', prompt: 'Your move.', hint: 'Rb8.', correctFeedback: 'Rb8.', wrongFeedback: 'Rb8.' },
+    { type: 'instruction', fen: FEN.after_Rb8, text: 'b3.', autoAdvance: 800, highlightSquares: ['b2', 'b3'] },
+    { type: 'play-move', fen: FEN.after_b3, correctMove: 'Kh8', prompt: 'Your move.', hint: 'Kh8.', correctFeedback: 'Kh8.', wrongFeedback: 'Kh8.' },
+    { type: 'instruction', fen: FEN.after_Kh8, text: 'Nce3.', autoAdvance: 800, highlightSquares: ['c2', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Nce3, correctMove: 'g6', prompt: 'Your move.', hint: 'g6.', correctFeedback: 'g6.', wrongFeedback: 'g6.' },
+    // sv-5 recap
+    { type: 'instruction', fen: FEN.after_g6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_18, correctMove: 'f5', prompt: 'Your move.', hint: 'f5.', correctFeedback: 'f5.', wrongFeedback: 'f5.' },
+    { type: 'instruction', fen: FEN.after_f5, text: 'exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+    { type: 'play-move', fen: FEN.after_exf5, correctMove: 'Bxf5', prompt: 'Your move.', hint: 'Bxf5.', correctFeedback: 'Bxf5.', wrongFeedback: 'Bxf5.' },
+    { type: 'instruction', fen: FEN.after_Bxf5_b, text: 'Nxf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Nxf5_w, correctMove: 'Rxf5', prompt: 'Your move.', hint: 'Rxf5.', correctFeedback: 'Rxf5.', wrongFeedback: 'Rxf5.' },
+
+    // White plays 21.Bd3
+    { type: 'instruction', fen: FEN.after_Rxf5, text: 'White retreats the bishop to d3, challenging your rook on f5.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+
+    // PREDICT 1: Rf8
+    { type: 'play-move', fen: FEN.after_Bd3_21, correctMove: 'Rf8', prompt: 'The bishop attacks your rook. Where does the rook retreat to?', hint: 'Pull back to f8 — you want the rook on the open file.', correctFeedback: 'Rf8 retreats to the open file. The rook stays active and the f-file is yours.', wrongFeedback: 'Play Rf8 — the rook retreats to the open file.' },
+    { type: 'instruction', fen: FEN.after_Rf8, text: 'Rf8 keeps the rook active on the f-file. You control the open file and your pieces are well placed.', arrow: ['f5', 'f8'] },
+
+    // White plays 22.Qg4
+    { type: 'instruction', fen: FEN.after_Rf8, text: 'White brings the queen to g4, eyeing the kingside.', autoAdvance: 800, highlightSquares: ['d1', 'g4'] },
+
+    // PREDICT 2: Nd4
+    { type: 'play-move', fen: FEN.after_Qg4, correctMove: 'Nd4', prompt: 'White is getting active. How do you fight back in the center?', hint: 'Jump the knight to d4 — sacrifice it to blow open the center.', correctFeedback: 'Nd4! A powerful sacrifice. If White takes, the center opens up in your favor.', wrongFeedback: 'Play Nd4 — sacrifice the knight to rip the center apart.' },
+    { type: 'instruction', fen: FEN.after_Nd4, text: 'Nd4 is a classic Sveshnikov sacrifice. The knight lands on the best possible square, and if White takes, the e-pawn becomes a monster.', arrow: ['c6', 'd4'] },
+
+    // White plays 23.cxd4
+    { type: 'instruction', fen: FEN.after_Nd4, text: 'White takes the knight with cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+
+    // PREDICT 3: exd4
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'exd4', prompt: 'White captured your knight. How do you recapture?', hint: 'Take with the e-pawn — it opens the e-file and creates a passed pawn.', correctFeedback: 'exd4! The center is ripped open. Your d4 pawn is a powerful passed pawn and the e-file is open for your rook.', wrongFeedback: 'Recapture with exd4 — open the center and create a passed pawn.' },
+    { type: 'instruction', fen: FEN.after_exd4_23, text: 'exd4 gives you a passed d-pawn and opens the e-file. This is the Sveshnikov at its best — dynamic compensation everywhere.', arrow: ['e5', 'd4'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_Rxf5, text: "Prove you know the counterattack." },
+    { type: 'instruction', fen: FEN.after_Rxf5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3_21, correctMove: 'Rf8', prompt: 'Your move.', hint: 'Rf8.', correctFeedback: 'Rf8.', wrongFeedback: 'Rf8.' },
+    { type: 'instruction', fen: FEN.after_Rf8, text: 'Qg4.', autoAdvance: 800, highlightSquares: ['d1', 'g4'] },
+    { type: 'play-move', fen: FEN.after_Qg4, correctMove: 'Nd4', prompt: 'Your move.', hint: 'Nd4.', correctFeedback: 'Nd4.', wrongFeedback: 'Nd4.' },
+    { type: 'instruction', fen: FEN.after_Nd4, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'exd4', prompt: 'Your move.', hint: 'exd4.', correctFeedback: 'exd4.', wrongFeedback: 'exd4.' },
+
+    { type: 'instruction', fen: FEN.after_exd4_23, text: "Rf8, Nd4, exd4 — you sacrificed the knight and tore the center wide open. A passed pawn on d4 and open files everywhere. The Sveshnikov strikes." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// sv-dev-Nxf5: Deviation (19.Nxf5 instead of 19.exf5)
+// Black plays: gxf5, Bxf5, Bxd3
+// ═══════════════════════════════════════════════════════════
+
+const SV_DEV_NXF5: OpeningLesson = {
+  id: 'sv-dev-Nxf5',
+  title: 'Dev 19.Nxf5',
+  defaultOrientation: 'black',
+  steps: [
+    { type: 'instruction', fen: FEN.after_f5, text: "Sometimes White captures with the knight first instead of the pawn. The ideas are similar, but the move order changes." },
+
+    // RECAP to deviation point
+    { type: 'instruction', fen: FEN.after_e5, text: "Let's get to the position." },
+    { type: 'instruction', fen: FEN.after_e5, text: 'Ndb5.', autoAdvance: 800, highlightSquares: ['d4', 'b5'] },
+    { type: 'play-move', fen: FEN.after_Ndb5, correctMove: 'd6', prompt: 'Your move.', hint: 'd6.', correctFeedback: 'd6.', wrongFeedback: 'd6.' },
+    { type: 'instruction', fen: FEN.after_d6, text: 'Bg5.', autoAdvance: 800, highlightSquares: ['c1', 'g5'] },
+    { type: 'play-move', fen: FEN.after_Bg5, correctMove: 'a6', prompt: 'Your move.', hint: 'a6.', correctFeedback: 'a6.', wrongFeedback: 'a6.' },
+    { type: 'instruction', fen: FEN.after_a6, text: 'Na3.', autoAdvance: 800, highlightSquares: ['b5', 'a3'] },
+    { type: 'play-move', fen: FEN.after_Na3, correctMove: 'b5', prompt: 'Your move.', hint: 'b5.', correctFeedback: 'b5.', wrongFeedback: 'b5.' },
+    { type: 'instruction', fen: FEN.after_b5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['c3', 'd5'] },
+    { type: 'play-move', fen: FEN.after_Nd5, correctMove: 'Be7', prompt: 'Your move.', hint: 'Be7.', correctFeedback: 'Be7.', wrongFeedback: 'Be7.' },
+    { type: 'instruction', fen: FEN.after_Be7, text: 'Bxf6.', autoAdvance: 800, highlightSquares: ['g5', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Bxf6w, correctMove: 'Bxf6', prompt: 'Your move.', hint: 'Bxf6.', correctFeedback: 'Bxf6.', wrongFeedback: 'Bxf6.' },
+    { type: 'instruction', fen: FEN.after_Bxf6b, text: 'c3.', autoAdvance: 800, highlightSquares: ['c2', 'c3'] },
+    { type: 'play-move', fen: FEN.after_c3, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_OO, text: 'Nc2.', autoAdvance: 800, highlightSquares: ['a3', 'c2'] },
+    { type: 'play-move', fen: FEN.after_Nc2, correctMove: 'Bg5', prompt: 'Your move.', hint: 'Bg5.', correctFeedback: 'Bg5.', wrongFeedback: 'Bg5.' },
+    { type: 'instruction', fen: FEN.after_Bg5_move, text: 'a4.', autoAdvance: 800, highlightSquares: ['a2', 'a4'] },
+    { type: 'play-move', fen: FEN.after_a4, correctMove: 'bxa4', prompt: 'Your move.', hint: 'bxa4.', correctFeedback: 'bxa4.', wrongFeedback: 'bxa4.' },
+    { type: 'instruction', fen: FEN.after_bxa4, text: 'Rxa4.', autoAdvance: 800, highlightSquares: ['a1', 'a4'] },
+    { type: 'play-move', fen: FEN.after_Rxa4, correctMove: 'a5', prompt: 'Your move.', hint: 'a5.', correctFeedback: 'a5.', wrongFeedback: 'a5.' },
+    { type: 'instruction', fen: FEN.after_a5, text: 'Bc4.', autoAdvance: 800, highlightSquares: ['f1', 'c4'] },
+    { type: 'play-move', fen: FEN.after_Bc4, correctMove: 'Rb8', prompt: 'Your move.', hint: 'Rb8.', correctFeedback: 'Rb8.', wrongFeedback: 'Rb8.' },
+    { type: 'instruction', fen: FEN.after_Rb8, text: 'b3.', autoAdvance: 800, highlightSquares: ['b2', 'b3'] },
+    { type: 'play-move', fen: FEN.after_b3, correctMove: 'Kh8', prompt: 'Your move.', hint: 'Kh8.', correctFeedback: 'Kh8.', wrongFeedback: 'Kh8.' },
+    { type: 'instruction', fen: FEN.after_Kh8, text: 'Nce3.', autoAdvance: 800, highlightSquares: ['c2', 'e3'] },
+    { type: 'play-move', fen: FEN.after_Nce3, correctMove: 'g6', prompt: 'Your move.', hint: 'g6.', correctFeedback: 'g6.', wrongFeedback: 'g6.' },
+    { type: 'instruction', fen: FEN.after_g6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_18, correctMove: 'f5', prompt: 'Your move.', hint: 'f5.', correctFeedback: 'f5.', wrongFeedback: 'f5.' },
+
+    // DEVIATION SETUP
+    { type: 'instruction', fen: FEN.after_f5, text: 'White takes with the knight first — Nxf5 instead of exf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+
+    // PREDICT 1: gxf5
+    { type: 'play-move', fen: FEN.dev_after_Nxf5, correctMove: 'gxf5', prompt: 'White took with the knight. How do you recapture?', hint: 'Take with the g-pawn to open the g-file.', correctFeedback: 'gxf5! Recapturing with the g-pawn opens the g-file for your rook later.', wrongFeedback: 'Take with gxf5 — it opens the g-file for your rook.' },
+    { type: 'instruction', fen: FEN.dev_after_gxf5, text: 'gxf5 opens the g-file. This gives you different attacking chances compared to the main line.', arrow: ['g6', 'f5'] },
+
+    // White plays 20.exf5
+    { type: 'instruction', fen: FEN.dev_after_gxf5, text: 'White recaptures exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+
+    // PREDICT 2: Bxf5
+    { type: 'play-move', fen: FEN.dev_after_exf5, correctMove: 'Bxf5', prompt: 'White took on f5. How do you recapture?', hint: 'Develop the bishop while recapturing.', correctFeedback: 'Bxf5 develops the bishop to an active diagonal. Same idea as the main line.', wrongFeedback: 'Take with the bishop — Bxf5 develops and recaptures in one move.' },
+    { type: 'instruction', fen: FEN.dev_after_Bxf5, text: 'Bxf5 is the natural recapture. The bishop is active and you have open lines everywhere.', arrow: ['c8', 'f5'] },
+
+    // White plays 21.Bd3
+    { type: 'instruction', fen: FEN.dev_after_Bxf5, text: 'White challenges your bishop with Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+
+    // PREDICT 3: Bxd3
+    { type: 'play-move', fen: FEN.dev_after_Bd3, correctMove: 'Bxd3', prompt: 'White puts a bishop on d3, attacking yours. What do you play?', hint: 'Trade bishops — your position is better without them.', correctFeedback: 'Bxd3 trades bishops cleanly. White has to recapture and your position remains strong.', wrongFeedback: 'Trade with Bxd3 — simplify while keeping your advantage.' },
+    { type: 'instruction', fen: FEN.dev_after_Bxd3, text: 'Bxd3 trades off the bishops. After Qxd3, your position is excellent with the open g-file and active pieces.', arrow: ['f5', 'd3'] },
+
+    // RECALL
+    { type: 'instruction', fen: FEN.after_f5, text: "Run through the deviation." },
+    { type: 'instruction', fen: FEN.after_f5, text: 'Nxf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+    { type: 'play-move', fen: FEN.dev_after_Nxf5, correctMove: 'gxf5', prompt: 'Your move.', hint: 'gxf5.', correctFeedback: 'gxf5.', wrongFeedback: 'gxf5.' },
+    { type: 'instruction', fen: FEN.dev_after_gxf5, text: 'exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+    { type: 'play-move', fen: FEN.dev_after_exf5, correctMove: 'Bxf5', prompt: 'Your move.', hint: 'Bxf5.', correctFeedback: 'Bxf5.', wrongFeedback: 'Bxf5.' },
+    { type: 'instruction', fen: FEN.dev_after_Bxf5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.dev_after_Bd3, correctMove: 'Bxd3', prompt: 'Your move.', hint: 'Bxd3.', correctFeedback: 'Bxd3.', wrongFeedback: 'Bxd3.' },
+
+    { type: 'instruction', fen: FEN.dev_after_Bxd3, text: "gxf5, Bxf5, Bxd3 — against 19.Nxf5, you recapture differently but end up in a strong position with an open g-file. Same fighting spirit." },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// sv-test-2: Level 2 Test (L2 main line + Nxf5 deviation)
+// ═══════════════════════════════════════════════════════════
+
+const SV_TEST_2: OpeningLesson = {
+  id: 'sv-test-2',
+  title: 'Level 2 Test',
+  defaultOrientation: 'black',
+  steps: [
+    // === L2 MAIN LINE (sv-5 + sv-6: 6 Black moves) ===
+    { type: 'instruction', fen: FEN.after_g6, text: 'O-O.', autoAdvance: 800, highlightSquares: ['e1', 'g1'] },
+    { type: 'play-move', fen: FEN.after_OO_18, correctMove: 'f5', prompt: 'Your move.', hint: 'f5.', correctFeedback: 'f5.', wrongFeedback: 'f5.' },
+    { type: 'instruction', fen: FEN.after_f5, text: 'exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+    { type: 'play-move', fen: FEN.after_exf5, correctMove: 'Bxf5', prompt: 'Your move.', hint: 'Bxf5.', correctFeedback: 'Bxf5.', wrongFeedback: 'Bxf5.' },
+    { type: 'instruction', fen: FEN.after_Bxf5_b, text: 'Nxf5.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Nxf5_w, correctMove: 'Rxf5', prompt: 'Your move.', hint: 'Rxf5.', correctFeedback: 'Rxf5.', wrongFeedback: 'Rxf5.' },
+    { type: 'instruction', fen: FEN.after_Rxf5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.after_Bd3_21, correctMove: 'Rf8', prompt: 'Your move.', hint: 'Rf8.', correctFeedback: 'Rf8.', wrongFeedback: 'Rf8.' },
+    { type: 'instruction', fen: FEN.after_Rf8, text: 'Qg4.', autoAdvance: 800, highlightSquares: ['d1', 'g4'] },
+    { type: 'play-move', fen: FEN.after_Qg4, correctMove: 'Nd4', prompt: 'Your move.', hint: 'Nd4.', correctFeedback: 'Nd4.', wrongFeedback: 'Nd4.' },
+    { type: 'instruction', fen: FEN.after_Nd4, text: 'cxd4.', autoAdvance: 800, highlightSquares: ['c3', 'd4'] },
+    { type: 'play-move', fen: FEN.after_cxd4, correctMove: 'exd4', prompt: 'Your move.', hint: 'exd4.', correctFeedback: 'exd4.', wrongFeedback: 'exd4.' },
+
+    // === DEVIATION TEST: 19.Nxf5 ===
+    { type: 'instruction', fen: FEN.after_f5, text: 'Now White plays Nxf5 instead.', autoAdvance: 800, highlightSquares: ['e3', 'f5'] },
+    { type: 'play-move', fen: FEN.dev_after_Nxf5, correctMove: 'gxf5', prompt: 'Your move.', hint: 'gxf5.', correctFeedback: 'gxf5.', wrongFeedback: 'gxf5.' },
+    { type: 'instruction', fen: FEN.dev_after_gxf5, text: 'exf5.', autoAdvance: 800, highlightSquares: ['e4', 'f5'] },
+    { type: 'play-move', fen: FEN.dev_after_exf5, correctMove: 'Bxf5', prompt: 'Your move.', hint: 'Bxf5.', correctFeedback: 'Bxf5.', wrongFeedback: 'Bxf5.' },
+    { type: 'instruction', fen: FEN.dev_after_Bxf5, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['c4', 'd3'] },
+    { type: 'play-move', fen: FEN.dev_after_Bd3, correctMove: 'Bxd3', prompt: 'Your move.', hint: 'Bxd3.', correctFeedback: 'Bxd3.', wrongFeedback: 'Bxd3.' },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
 // LESSON LOOKUP
 // ═══════════════════════════════════════════════════════════
 
@@ -407,6 +702,10 @@ const SVESHNIKOV_LESSONS: Record<string, OpeningLesson> = {
   'sv-4': SV_4,
   'sv-dev-c4': SV_DEV_C4,
   'sv-test-1': SV_TEST_1,
+  'sv-5': SV_5,
+  'sv-6': SV_6,
+  'sv-dev-Nxf5': SV_DEV_NXF5,
+  'sv-test-2': SV_TEST_2,
 }
 
 export function getSicilianSveshnikovLesson(id: string): OpeningLesson | undefined {
