@@ -8,10 +8,17 @@
 // BLACK OPENING: The user is learning to play as Black.
 // Main line: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 e6 5.Bg5 h6 6.Bh4 dxc4
 //            7.e4 g5 8.Bg3 b5 9.Be2 Bb7 10.O-O Nbd7 11.Ne5 Bg7
+//            12.Nxd7 Nxd7 13.Bd6 a6 14.a4 b4 15.Bxb4 Qb6 16.Ba3 Qxd4
+//            17.Qc2 c5 18.Rad1 Qe5 19.Bxc4 Qc7 20.Ne2 Be5
 //
 // 3 Black moves per lesson.
 //
-// GRID LAYOUT (6 nodes):
+// GRID LAYOUT (13 nodes):
+//   Row 8:                              sl-test-2 (col 0)
+//   Row 7:                              sl-6 (col 0)
+//   Row 6:   sl-dev-h4 (col -1)
+//   Row 5:                              sl-5 (col 0)        sl-dev-cxd5 (col 1)
+//   Row 4:                              sl-4 (col 0)        sl-dev-Qc2 (col 1)
 //   Row 3:                              sl-test-1 (col 0)
 //   Row 2:   sl-dev-e3 (col -1)     sl-3 (col 0)
 //   Row 1:                              sl-2 (col 0)        sl-dev-Nc3 (col 1)
@@ -31,6 +38,8 @@ export const SLAV_DEFENSE: OpeningTree = {
   completionOrder: [
     'sl-1', 'sl-2', 'sl-dev-e3', 'sl-3', 'sl-dev-Nc3',
     'sl-test-1',
+    'sl-4', 'sl-dev-Qc2', 'sl-5', 'sl-dev-cxd5', 'sl-6', 'sl-dev-h4',
+    'sl-test-2',
   ],
   nodes: [
     // === MAIN LINE (center trunk, col 0) ===
@@ -110,6 +119,96 @@ export const SLAV_DEFENSE: OpeningTree = {
       col: 0,
       lineFrom: 'sl-3',
       unlockedBy: 'sl-dev-Nc3',
+      side: 'black',
+    },
+
+    // === LEVEL 2 MAIN LINE ===
+    {
+      id: 'sl-4',
+      name: 'The Recapture',
+      moves: ['12.Nxd7 Nxd7', '13.Bd6 a6', '14.a4 b4'],
+      description: 'Recapture the knight, expand on the queenside, and push b4 to create counterplay.',
+      type: 'main',
+      row: 4,
+      col: 0,
+      lineFrom: 'sl-test-1',
+      unlockedBy: 'sl-test-1',
+      side: 'black',
+    },
+    {
+      id: 'sl-5',
+      name: 'Queen Activity',
+      moves: ['15.Bxb4 Qb6', '16.Ba3 Qxd4', '17.Qc2 c5'],
+      description: 'Activate the queen, win the d4 pawn, and break with c5.',
+      type: 'main',
+      row: 5,
+      col: 0,
+      lineFrom: 'sl-4',
+      unlockedBy: 'sl-dev-Qc2',
+      side: 'black',
+    },
+    {
+      id: 'sl-6',
+      name: 'Consolidation',
+      moves: ['18.Rad1 Qe5', '19.Bxc4 Qc7', '20.Ne2 Be5'],
+      description: 'Centralize the queen and bishop to consolidate the position.',
+      type: 'main',
+      row: 7,
+      col: 0,
+      lineFrom: 'sl-5',
+      unlockedBy: 'sl-dev-cxd5',
+      side: 'black',
+    },
+
+    // === LEVEL 2 DEVIATIONS ===
+    {
+      id: 'sl-dev-Qc2',
+      name: 'Dev 4.Qc2',
+      moves: ['4.Qc2 dxc4', '5.Qxc4 Bf5', '6.g3 e6'],
+      description: 'White plays 4.Qc2 — grab the pawn and develop the bishop early.',
+      type: 'deviation',
+      row: 4,
+      col: 1,
+      lineFrom: 'sl-4',
+      unlockedBy: 'sl-4',
+      side: 'black',
+    },
+    {
+      id: 'sl-dev-cxd5',
+      name: 'Dev 5.cxd5',
+      moves: ['5.cxd5 exd5', '6.Bg5 Be7', '7.Qc2 g6'],
+      description: 'White exchanges pawns with cxd5 — recapture and develop naturally.',
+      type: 'deviation',
+      row: 5,
+      col: 1,
+      lineFrom: 'sl-5',
+      unlockedBy: 'sl-5',
+      side: 'black',
+    },
+    {
+      id: 'sl-dev-h4',
+      name: 'Dev 9.h4',
+      moves: ['9.h4 g4', '10.Ne5 Nbd7', '11.Be2 Bb7'],
+      description: 'White attacks with h4 — push past and keep developing.',
+      type: 'deviation',
+      row: 6,
+      col: -1,
+      lineFrom: 'sl-6',
+      unlockedBy: 'sl-6',
+      side: 'black',
+    },
+
+    // === LEVEL 2 TEST ===
+    {
+      id: 'sl-test-2',
+      name: 'Lvl 2 Test',
+      moves: [],
+      description: 'Play the full Slav middlegame — main line and all three deviations.',
+      type: 'test',
+      row: 8,
+      col: 0,
+      lineFrom: 'sl-6',
+      unlockedBy: 'sl-dev-h4',
       side: 'black',
     },
   ],
