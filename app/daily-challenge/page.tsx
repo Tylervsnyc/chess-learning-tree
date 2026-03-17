@@ -21,6 +21,7 @@ import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface Puzzle {
   puzzleId: string;
@@ -746,21 +747,8 @@ export default function DailyChallengePage() {
   // Loading state while checking if user already completed today
   if (checkingCompletion || userLoading) {
     return (
-      <div className="h-full bg-chess-page flex flex-col items-center justify-center px-4 overflow-hidden">
-        <div className="text-center max-w-sm w-full">
-          <div
-            className="inline-block px-4 py-2 rounded-xl mb-3 border-2 border-chess-orange/50"
-            style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
-          >
-            <h1
-              className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange"
-              style={{ fontFamily: 'Nunito, sans-serif' }}
-            >
-              THE DAILY ROOK
-            </h1>
-          </div>
-          <div className="text-chess-text-muted animate-pulse">Loading...</div>
-        </div>
+      <div className="h-full bg-chess-page flex flex-col items-center justify-center">
+        <BreathingRook size="lg" animate />
       </div>
     );
   }

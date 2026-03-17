@@ -113,7 +113,7 @@ function PricingContent() {
 
       {loading || !pricesLoaded ? (
         <div className="flex-1 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
+          <BreathingRook size="md" animate />
         </div>
       ) : isPremium ? (
         <div className="flex-1 flex flex-col justify-center items-center px-4">

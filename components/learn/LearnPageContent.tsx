@@ -11,6 +11,7 @@ import { useUser } from '@/hooks/useUser';
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { darkenColor } from '@/lib/color-utils';
 
 // Types
@@ -496,25 +497,7 @@ export default function LearnPageContent() {
   // Show loading skeleton while auth or server fetch is loading to prevent flash
   // serverFetched ensures currentPosition has merged with server data before render
   if (userLoading || isProfileLoading || !serverFetched) {
-    return (
-      <div className="h-full overflow-auto bg-chess-page text-chess-text pb-20">
-        <div className="max-w-lg mx-auto px-4 py-6">
-          {/* Skeleton level header */}
-          <div className="h-24 bg-slate-200 rounded-2xl animate-pulse mb-6" />
-          {/* Skeleton sections */}
-          {[1, 2, 3].map(i => (
-            <div key={i} className="mb-4">
-              <div className="h-16 bg-slate-200 rounded-2xl animate-pulse mb-2" />
-              <div className="flex justify-center gap-4 mt-4">
-                {[1, 2, 3].map(j => (
-                  <div key={j} className="w-16 h-16 bg-slate-200 rounded-full animate-pulse" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
