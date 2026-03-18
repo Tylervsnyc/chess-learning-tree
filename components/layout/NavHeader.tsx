@@ -22,6 +22,7 @@ export function NavHeader() {
   if (pathname?.startsWith('/lesson/') && !user) return null;
   if (pathname === '/daily-challenge' && !user) return null;
   if (pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')) return null;
+  if (pathname?.startsWith('/2026candidates')) return null;
 
   // Show streak counter on / and /daily-challenge (feature-flagged off)
   const showStreakCounter = pathname === '/' || pathname === '/daily-challenge';
