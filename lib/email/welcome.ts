@@ -15,13 +15,12 @@ export async function sendWelcomeIfNew(
 
   const supabase = createServiceClient();
 
-  // Check if we already sent a welcome email to this user
+  // Check if we already sent (or attempted) a welcome email to this user
   const { data: existing } = await supabase
     .from('email_log')
     .select('id')
     .eq('user_id', userId)
     .eq('email_type', 'welcome')
-    .eq('status', 'sent')
     .limit(1);
 
   if (existing && existing.length > 0) return;
