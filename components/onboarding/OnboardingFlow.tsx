@@ -186,8 +186,8 @@ function LandingStep({ onNewToChess, onAlreadyPlay, onDailyChallenge, onSignIn }
           style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}
         >
           <p className="font-bold text-chess-text leading-snug" style={{ fontSize: '15px' }}>
-            I can process 4 billion calculations per second. Today I&apos;m teaching you how a horse moves in an{' '}
-            <span className="text-chess-green">L shape</span>. I&apos;m fine.
+            I promise chess is fun. And if it&apos;s not, you can blame me. I don&apos;t have{' '}
+            <span className="text-chess-green">emotions</span>!
           </p>
         </div>
       </div>
