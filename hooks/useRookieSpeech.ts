@@ -17,13 +17,7 @@ import {
   selectLine,
   endGame,
 } from '@/lib/speech/priority-queue';
-import {
-  type ThreadState,
-  createThreadState,
-  activateThread,
-  getThreadLine,
-  pickThread,
-} from '@/lib/speech/threads';
+import { pickThread } from '@/lib/speech/threads';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
 import { AUTHORED_LINES } from '@/lib/speech/line-pool';
 
@@ -81,7 +75,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   // ── Internal state (refs to avoid re-render storms) ──
   const beatRef = useRef<BeatState>(createBeatState());
   const queueStateRef = useRef<QueueState>(createSeededQueueState(initialUsedRecently));
-  const threadStateRef = useRef<ThreadState>(createThreadState());
+  const threadNameRef = useRef<string | null>(null);
   const linePoolRef = useRef<SpeechLine[]>([...AUTHORED_LINES]);
   const playerNameRef = useRef<string>('');
   const playerColorRef = useRef<'white' | 'black'>('white');
@@ -98,7 +92,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       event: input.event,
       movedBy: input.movedBy,
       moveNumber: input.moveNumber,
-      activeThreadId: threadStateRef.current.activeThread?.id ?? null,
+      activeThreadId: null,
       playerName: input.playerName,
       playerColor: input.playerColor,
       capturedPiece: input.capturedPiece,
@@ -155,7 +149,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // Reset all state
       beatRef.current = createBeatState();
       queueStateRef.current = createQueueState();
-      threadStateRef.current = createThreadState();
+      threadNameRef.current = null;
       linePoolRef.current = [...AUTHORED_LINES];
       playerNameRef.current = playerName;
       playerColorRef.current = playerColor;
@@ -205,19 +199,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       //   - Thread check-ins at turning_point/late_game transitions
       // Regular moves with event 'none' and no beat change = silence.
 
-      // 2. If beat changed to early_game, activate thread + speak opener
-      if (
-        beatResult.newBeat === 'early_game' &&
-        !threadStateRef.current.activeThread
-      ) {
-        threadStateRef.current = activateThread(threadStateRef.current);
-        if (threadStateRef.current.activeThread) {
-          queueQuip(threadStateRef.current.activeThread.opener);
-          queueStateRef.current.quipCount++;
-          lastQuipMoveRef.current = input.moveNumber;
-        }
-        return;
-      }
+      // 2. Early game transition — no automatic quip, just note it
+      if (beatResult.newBeat === 'early_game') return;
 
       // 3. Game end — always speak
       if (beatResult.newBeat === 'game_end') {
@@ -232,28 +215,19 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 4. Turning point — always speak, bypass cooldown (structural moment)
+      // 4. Turning point — speak from pool, bypass cooldown
       if (beatResult.newBeat === 'turning_point') {
-        const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
-        if (threadResult) {
-          threadStateRef.current = threadResult.newState;
-          queueQuip(threadResult.line);
-          queueStateRef.current.quipCount++;
-        } else {
-          const context = buildContext(input);
-          selectAndQueue(context);
+        const context = buildContext(input);
+        if (selectAndQueue(context)) {
+          lastQuipMoveRef.current = input.moveNumber;
         }
-        lastQuipMoveRef.current = input.moveNumber;
         return;
       }
 
-      // 5. Late game transition — one thread check-in, bypass cooldown
+      // 5. Late game transition — speak from pool, bypass cooldown
       if (beatResult.newBeat === 'late_game') {
-        const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
-        if (threadResult) {
-          threadStateRef.current = threadResult.newState;
-          queueQuip(threadResult.line);
-          queueStateRef.current.quipCount++;
+        const context = buildContext(input);
+        if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;
         }
         return;
@@ -293,7 +267,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         event: 'none',
         movedBy: 'rookie',
         moveNumber: beatRef.current.moveCount,
-        activeThreadId: threadStateRef.current.activeThread?.id ?? null,
+        activeThreadId: null,
         playerName: playerNameRef.current,
       };
 
@@ -315,7 +289,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     queueStateRef.current = endGame(queueStateRef.current);
     // Reset beat and thread state
     beatRef.current = createBeatState();
-    threadStateRef.current = createThreadState();
+    threadNameRef.current = null;
     // Clear playback queue
     clearQueue();
   }, [clearQueue]);
@@ -348,7 +322,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     /** Current beat (for debug/UI) */
     currentBeat: beatRef.current.currentBeat,
     /** Active thread name (for debug/UI) */
-    activeThread: threadStateRef.current.activeThread?.name ?? null,
+    activeThread: threadNameRef.current,
     /** Get all used line IDs (thisGame + recently) for persistence */
     getUsedRecently: (): string[] => {
       const all = new Set<string>();
