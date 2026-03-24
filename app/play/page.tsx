@@ -108,6 +108,7 @@ export default function PlayRookiePage() {
   const [lastMv, setLastMv] = useState<{ from: Square; to: Square } | null>(null);
   const [rookieThinking, setRookieThinking] = useState(false);
   const [gameResult, setGameResult] = useState<string | null>(null);
+  const [resignArmed, setResignArmed] = useState(false);
 
   // Eval bar state
   const [evalPct, setEvalPct] = useState(50); // white percentage
@@ -713,6 +714,7 @@ export default function PlayRookiePage() {
     setSelected(null);
     setGameResult(null);
     setRookieThinking(false);
+    setResignArmed(false);
     setRookieMood('neutral');
     setEvalPct(50);
     setGameReview(null);
@@ -737,6 +739,16 @@ export default function PlayRookiePage() {
 
     setPhase('playing');
   };
+
+  const handleResign = useCallback(() => {
+    if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+    setRookieThinking(false);
+    setGameResult('You resigned');
+    const g = new Chess(fen);
+    endSession(g);
+    setPhase('gameover');
+    setResignArmed(false);
+  }, [fen, endSession]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -1068,7 +1080,24 @@ export default function PlayRookiePage() {
 
             {/* Phase-specific content */}
             {phase === 'playing' && isMyTurn && !rookieThinking ? (
-              <p className="text-xs font-semibold text-chess-green text-center h-5">Your move</p>
+              <div className="flex items-center justify-between h-5">
+                <div className="w-14" />
+                <p className="text-xs font-semibold text-chess-green">Your move</p>
+                <button
+                  onClick={() => {
+                    if (resignArmed) handleResign();
+                    else setResignArmed(true);
+                  }}
+                  onBlur={() => setResignArmed(false)}
+                  className={`text-xs font-semibold px-2 py-0.5 rounded transition-all ${
+                    resignArmed
+                      ? 'bg-red-500 text-white'
+                      : 'text-chess-text-faint hover:text-chess-text-muted'
+                  }`}
+                >
+                  {resignArmed ? 'Tap to resign' : 'Resign'}
+                </button>
+              </div>
             ) : phase === 'playing' && rookieThinking ? (
               <p className="text-xs font-medium text-chess-text-faint text-center h-5">Rookie is thinking...</p>
             ) : phase === 'gameover' && gameResult ? (
