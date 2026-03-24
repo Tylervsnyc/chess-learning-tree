@@ -95,6 +95,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       moveNumber: input.moveNumber,
       activeThreadId: threadStateRef.current.activeThread?.id ?? null,
       playerName: input.playerName,
+      playerColor: input.playerColor,
       capturedPiece: input.capturedPiece,
     }),
     [],
@@ -137,6 +138,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         moveNumber: 0,
         activeThreadId: null,
         playerName,
+        playerColor,
       };
 
       // Try Claude-generated opening line
@@ -195,6 +197,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         // Queue the thread opener as a separate quip
         if (threadStateRef.current.activeThread) {
           queueQuip(threadStateRef.current.activeThread.opener);
+          queueStateRef.current.quipCount++;
+          return; // Don't double-quip on the same move
         }
       }
 
@@ -249,6 +253,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         if (threadResult) {
           threadStateRef.current = threadResult.newState;
           queueQuip(threadResult.line);
+          queueStateRef.current.quipCount++;
         }
       }
     },
