@@ -1110,38 +1110,46 @@ export default function PlayRookiePage() {
                   <AnalysisSummary analysis={postGame.analysis} />
                 ) : null}
 
-                <div className="flex gap-2">
-                  {gameReview && (
-                    <button
-                      onClick={() => {
-                        if (gameReview.keyMoments.length > 0) {
-                          const m = gameReview.keyMoments[0];
-                          setReviewMomentIndex(0);
-                          setReviewMoveIndex(0);
-                          setFen(m.fenBefore);
-                          setReviewText(m.description);
-                          setReviewArrows(m.moveSan ? [{
-                            startSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.from || 'e2',
-                            endSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.to || 'e4',
-                            color: getArrowColor(m.type),
-                          }] : []);
-                        } else {
-                          setReviewMoveIndex(0);
-                          setReviewText('Use the arrows to step through the game.');
-                        }
-                        setPhase('review');
-                      }}
-                      className="flex-1 py-2.5 bg-chess-surface text-chess-text font-semibold rounded-xl border border-chess-disabled text-sm"
-                    >
-                      Review game
-                    </button>
-                  )}
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => startGame()}
-                    className="flex-1 py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
+                    className="w-full py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
                   >
                     Rematch
                   </button>
+                  <div className="flex gap-2">
+                    {gameReview && (
+                      <button
+                        onClick={() => {
+                          if (gameReview.keyMoments.length > 0) {
+                            const m = gameReview.keyMoments[0];
+                            setReviewMomentIndex(0);
+                            setReviewMoveIndex(0);
+                            setFen(m.fenBefore);
+                            setReviewText(m.description);
+                            setReviewArrows(m.moveSan ? [{
+                              startSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.from || 'e2',
+                              endSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.to || 'e4',
+                              color: getArrowColor(m.type),
+                            }] : []);
+                          } else {
+                            setReviewMoveIndex(0);
+                            setReviewText('Use the arrows to step through the game.');
+                          }
+                          setPhase('review');
+                        }}
+                        className="flex-1 py-2 text-chess-text-muted font-semibold text-sm"
+                      >
+                        Review game
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setPhase('setup'); setGameReview(null); }}
+                      className="flex-1 py-2 text-chess-text-muted font-semibold text-sm"
+                    >
+                      New game
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : phase === 'review' && gameReview ? (
@@ -1169,12 +1177,20 @@ export default function PlayRookiePage() {
                   ))}
                 </div>
 
-                <button
-                  onClick={() => startGame()}
-                  className="w-full py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
-                >
-                  Rematch
-                </button>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => startGame()}
+                    className="w-full py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
+                  >
+                    Rematch
+                  </button>
+                  <button
+                    onClick={() => { setPhase('setup'); setGameReview(null); }}
+                    className="w-full py-2 text-chess-text-muted font-semibold text-sm"
+                  >
+                    New game
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="h-5" />
