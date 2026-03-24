@@ -19,6 +19,7 @@
     "build-opening": "npx tsx scripts/build-opening.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@react-email/components": "^1.0.6",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
@@ -31,6 +32,8 @@
     "react-chessboard": "^5.8.6",
     "react-dom": "^19.2.3",
     "resend": "^6.8.0",
+    "stockfish": "^18.0.5",
+    "stockfish.wasm": "^0.10.0",
     "stripe": "^20.2.0"
   },
   "devDependencies": {
