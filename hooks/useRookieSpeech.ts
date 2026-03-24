@@ -188,25 +188,29 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       });
       beatRef.current = beatResult.state;
 
-      // 2. If beat changed to early_game and no thread active, activate one
+      // ── CORE RULE: Rookie only speaks when something EARNS it. ──
+      // She does NOT comment on every move. She speaks on:
+      //   - Beat transitions (early_game start, turning_point, game_end)
+      //   - Notable events (check, castle, checkmate, blunder, great_move)
+      //   - Thread check-ins at turning_point/late_game transitions
+      // Regular moves with event 'none' and no beat change = silence.
+
+      // 2. If beat changed to early_game, activate thread + speak opener
       if (
         beatResult.newBeat === 'early_game' &&
         !threadStateRef.current.activeThread
       ) {
         threadStateRef.current = activateThread(threadStateRef.current);
-        // Queue the thread opener as a separate quip
         if (threadStateRef.current.activeThread) {
           queueQuip(threadStateRef.current.activeThread.opener);
           queueStateRef.current.quipCount++;
-          return; // Don't double-quip on the same move
         }
+        return;
       }
 
-      // 3. Build context
-      const context = buildContext(input);
-
-      // 4. Handle game_end with optional Claude generation
+      // 3. Game end — always speak
       if (beatResult.newBeat === 'game_end') {
+        const context = buildContext(input);
         if (generateGameEndLine) {
           const rookieWon = input.rookieWinPercent > 50;
           generateGameEndLine({
@@ -217,45 +221,51 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
               const genLine = createGeneratedLine(text, 'game_end', 90);
               linePoolRef.current.push(genLine);
               const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-              if (result) {
-                queueQuip(result.text, 'high');
-              }
+              if (result) queueQuip(result.text, 'high');
             })
             .catch(() => {
-              // Fall back to authored game_end lines
               const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-              if (result) {
-                queueQuip(result.text, 'high');
-              }
+              if (result) queueQuip(result.text, 'high');
             });
         } else {
           const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-          if (result) {
-            queueQuip(result.text, 'high');
-          }
+          if (result) queueQuip(result.text, 'high');
         }
-        return; // Don't double-quip on game end
+        return;
       }
 
-      // 5. Select from pool
-      const lineSelected = selectAndQueue(context);
+      // 4. Turning point — always speak (thread line or pool)
+      if (beatResult.newBeat === 'turning_point') {
+        const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
+        if (threadResult) {
+          threadStateRef.current = threadResult.newState;
+          queueQuip(threadResult.line);
+          queueStateRef.current.quipCount++;
+        } else {
+          const context = buildContext(input);
+          selectAndQueue(context);
+        }
+        return;
+      }
 
-      // 6. If no line was selected and we're in turning_point or late_game, try thread line
-      if (
-        !lineSelected &&
-        (beatRef.current.currentBeat === 'turning_point' ||
-          beatRef.current.currentBeat === 'late_game')
-      ) {
-        const threadResult = getThreadLine(
-          threadStateRef.current,
-          beatRef.current.evalMood,
-        );
+      // 5. Late game transition — one thread check-in
+      if (beatResult.newBeat === 'late_game') {
+        const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
         if (threadResult) {
           threadStateRef.current = threadResult.newState;
           queueQuip(threadResult.line);
           queueStateRef.current.quipCount++;
         }
+        return;
       }
+
+      // 6. Notable events only — skip if nothing interesting happened
+      if (input.event === 'none') return; // ← THE KEY LINE. Silence is default.
+
+      // 7. Something happened (capture, check, castle, blunder, great_move)
+      //    Speak if under the quip limit.
+      const context = buildContext(input);
+      selectAndQueue(context);
     },
     [buildContext, generateGameEndLine, queueQuip, selectAndQueue],
   );
