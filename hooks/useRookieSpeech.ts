@@ -56,6 +56,16 @@ export interface UseRookieSpeechOptions {
 }
 
 // ════════════════════════════════════════════════════════════════
+// Helpers
+// ════════════════════════════════════════════════════════════════
+
+function createSeededQueueState(seeds?: string[]): QueueState {
+  const state = createQueueState();
+  if (seeds) seeds.forEach(id => state.usedRecently.add(id));
+  return state;
+}
+
+// ════════════════════════════════════════════════════════════════
 // Hook
 // ════════════════════════════════════════════════════════════════
 
@@ -70,14 +80,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
   // ── Internal state (refs to avoid re-render storms) ──
   const beatRef = useRef<BeatState>(createBeatState());
-  const queueStateRef = useRef<QueueState>(createQueueState());
-
-  // Seed usedRecently from persisted memory (runs once on mount)
-  const seededRef = useRef(false);
-  if (!seededRef.current && initialUsedRecently?.length) {
-    initialUsedRecently.forEach(id => queueStateRef.current.usedRecently.add(id));
-    seededRef.current = true;
-  }
+  const queueStateRef = useRef<QueueState>(createSeededQueueState(initialUsedRecently));
   const threadStateRef = useRef<ThreadState>(createThreadState());
   const linePoolRef = useRef<SpeechLine[]>([...AUTHORED_LINES]);
   const playerNameRef = useRef<string>('');
@@ -114,6 +117,32 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [queueQuip],
   );
 
+  /** Try a Claude generator; on success push to pool and select; on failure fall back to authored pool */
+  const generateOrFallback = useCallback(
+    (
+      generator: Promise<string> | undefined,
+      beat: Beat,
+      context: QueueContext,
+      priority: 'high' | 'normal' = 'normal',
+    ) => {
+      const fallback = () => {
+        const result = selectLine(linePoolRef.current, context, queueStateRef.current);
+        if (result) queueQuip(result.text, priority);
+      };
+
+      if (!generator) { fallback(); return; }
+
+      generator
+        .then((text) => {
+          linePoolRef.current.push(createGeneratedLine(text, beat, 90));
+          const result = selectLine(linePoolRef.current, context, queueStateRef.current);
+          if (result) queueQuip(result.text, priority);
+        })
+        .catch(fallback);
+    },
+    [queueQuip],
+  );
+
   // ════════════════════════════════════════════════════════════════
   // Public API
   // ════════════════════════════════════════════════════════════════
@@ -141,37 +170,15 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerColor,
       };
 
-      // Try Claude-generated opening line
-      if (generateOpeningLine) {
-        // Pick a thread now so we can reference it in the opening
-        const thread = pickThread();
-
-        generateOpeningLine(thread.name, playerName)
-          .then((text) => {
-            const genLine = createGeneratedLine(text, 'opening', 90);
-            linePoolRef.current.push(genLine);
-            // Select from pool (generated line will likely win due to high priority)
-            const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-            if (result) {
-              queueQuip(result.text);
-            }
-          })
-          .catch(() => {
-            // Fall back to authored opening lines
-            const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-            if (result) {
-              queueQuip(result.text);
-            }
-          });
-      } else {
-        // No generator — use authored lines
-        const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-        if (result) {
-          queueQuip(result.text);
-        }
-      }
+      // Try Claude-generated opening line, fall back to authored pool
+      const thread = pickThread();
+      generateOrFallback(
+        generateOpeningLine ? generateOpeningLine(thread.name, playerName) : undefined,
+        'opening',
+        context,
+      );
     },
-    [clearQueue, generateOpeningLine, queueQuip],
+    [clearQueue, generateOpeningLine, generateOrFallback],
   );
 
   /** Call after every move with current game state */
@@ -211,26 +218,13 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // 3. Game end — always speak
       if (beatResult.newBeat === 'game_end') {
         const context = buildContext(input);
-        if (generateGameEndLine) {
-          const rookieWon = input.rookieWinPercent > 50;
-          generateGameEndLine({
-            playerName: input.playerName,
-            rookieWon,
-          })
-            .then((text) => {
-              const genLine = createGeneratedLine(text, 'game_end', 90);
-              linePoolRef.current.push(genLine);
-              const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-              if (result) queueQuip(result.text, 'high');
-            })
-            .catch(() => {
-              const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-              if (result) queueQuip(result.text, 'high');
-            });
-        } else {
-          const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-          if (result) queueQuip(result.text, 'high');
-        }
+        const rookieWon = input.rookieWinPercent > 50;
+        generateOrFallback(
+          generateGameEndLine ? generateGameEndLine({ playerName: input.playerName, rookieWon }) : undefined,
+          'game_end',
+          context,
+          'high',
+        );
         return;
       }
 
@@ -267,7 +261,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       const context = buildContext(input);
       selectAndQueue(context);
     },
-    [buildContext, generateGameEndLine, queueQuip, selectAndQueue],
+    [buildContext, generateGameEndLine, generateOrFallback, queueQuip, selectAndQueue],
   );
 
   /** Call when entering post-game phase */
@@ -294,34 +288,15 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       };
 
       // Try Claude game-end line for post-game if we haven't already
-      if (generateGameEndLine && accuracy !== undefined) {
-        generateGameEndLine({
-          playerName: playerNameRef.current,
-          rookieWon: false, // post-game, doesn't matter as much
-          accuracy,
-        })
-          .then((text) => {
-            const genLine = createGeneratedLine(text, 'post_game', 90);
-            linePoolRef.current.push(genLine);
-            const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-            if (result) {
-              queueQuip(result.text);
-            }
-          })
-          .catch(() => {
-            const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-            if (result) {
-              queueQuip(result.text);
-            }
-          });
-      } else {
-        const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-        if (result) {
-          queueQuip(result.text);
-        }
-      }
+      generateOrFallback(
+        generateGameEndLine && accuracy !== undefined
+          ? generateGameEndLine({ playerName: playerNameRef.current, rookieWon: false, accuracy })
+          : undefined,
+        'post_game',
+        context,
+      );
     },
-    [generateGameEndLine, queueQuip],
+    [generateGameEndLine, generateOrFallback],
   );
 
   /** Reset for new game */

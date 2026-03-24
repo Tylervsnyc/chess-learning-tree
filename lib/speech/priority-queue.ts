@@ -2,8 +2,8 @@
 // Hades-style dialogue queue: every line has preconditions and a priority score.
 // Pool of possible lines, scored and filtered per context. Once said, drained for the game.
 
-export type Beat = 'opening' | 'early_game' | 'turning_point' | 'late_game' | 'game_end' | 'post_game';
-export type EvalMood = 'winning' | 'losing' | 'even' | 'desperate';
+import { type Beat, type EvalMood } from '@/lib/speech/beat-sheet';
+export type { Beat, EvalMood };
 export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'none';
 
 export interface LineConditions {

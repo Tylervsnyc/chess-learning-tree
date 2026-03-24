@@ -342,13 +342,16 @@ export default function PlayRookiePage() {
 
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
-    if (moves.length > 0) {
+    const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
+    const analysis = moves.length > 0
+      ? analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor)
+      : null;
+
+    if (moves.length > 0 && analysis) {
       const review = analyzeGame(moves, playerColor);
       setGameReview(review);
 
       // Instant post-game analysis from evals collected during play — no re-analysis needed
-      const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
-      const analysis = analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor);
       postGame.setInstantAnalysis(analysis);
 
       // Rookie reacts to the analysis
@@ -375,17 +378,12 @@ export default function PlayRookiePage() {
         totalWins: 0, totalLosses: 0, totalDraws: 0,
       };
 
-      // Extract facts from this game
-      const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
-      const gameAnalysis = moves.length > 0
-        ? analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor)
-        : null;
       const newFacts = extractFacts({
         result,
         resultMethod: method,
         playerColor,
         moves,
-        analysis: gameAnalysis,
+        analysis,
         gamesPlayed: mem.gamesPlayed,
         totalWins: mem.totalWins,
       });

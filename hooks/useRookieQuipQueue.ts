@@ -32,6 +32,8 @@ export function useRookieQuipQueue(
   const queueRef = useRef<QueueItem[]>([]);
   const processingRef = useRef(false);
   const gapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const waitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const processQueue = useCallback(() => {
     if (processingRef.current) return;
@@ -47,7 +49,7 @@ export function useRookieQuipQueue(
     // Poll until speech is done, then process next after gap
     const waitForDone = () => {
       if (isTalkingRef.current) {
-        setTimeout(waitForDone, 100);
+        waitTimerRef.current = setTimeout(waitForDone, 100);
       } else {
         processingRef.current = false;
         // Gap before next quip
@@ -57,7 +59,7 @@ export function useRookieQuipQueue(
       }
     };
     // Start checking after a minimum time (speech may not have started yet)
-    setTimeout(waitForDone, 300);
+    waitTimerRef.current = setTimeout(waitForDone, 300);
   }, [speakQuip, isTalkingRef]);
 
   /** Queue a quip. Plays immediately if idle, otherwise waits in line. */
@@ -94,7 +96,7 @@ export function useRookieQuipQueue(
         if (!processingRef.current && queueRef.current.length === 0 && !isTalkingRef.current) {
           resolve();
         } else {
-          setTimeout(check, 100);
+          idleTimerRef.current = setTimeout(check, 100);
         }
       };
       check();
@@ -106,6 +108,8 @@ export function useRookieQuipQueue(
     queueRef.current = [];
     processingRef.current = false;
     if (gapTimerRef.current) clearTimeout(gapTimerRef.current);
+    if (waitTimerRef.current) clearTimeout(waitTimerRef.current);
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     setDisplayText(null);
   }, []);
 
@@ -113,6 +117,8 @@ export function useRookieQuipQueue(
   useEffect(() => {
     return () => {
       if (gapTimerRef.current) clearTimeout(gapTimerRef.current);
+      if (waitTimerRef.current) clearTimeout(waitTimerRef.current);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, []);
 
