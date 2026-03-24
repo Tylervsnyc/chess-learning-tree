@@ -354,15 +354,6 @@ export default function PlayRookiePage() {
 
       // Instant post-game analysis from evals collected during play — no re-analysis needed
       postGame.setInstantAnalysis(analysis);
-
-      // Rookie reacts to the analysis
-      const acc = Math.round(analysis.playerAccuracy);
-      const quip = acc >= 85
-        ? 'Wow. That was... really good. My circuits are conflicted.'
-        : acc >= 65
-          ? 'Not bad! I spotted some things we should look at though.'
-          : 'OK so... there were some moments. Want to go through them?';
-      setTimeout(() => speech.queueDirect(quip), 1500);
     }
 
     // Save to DB if logged in
