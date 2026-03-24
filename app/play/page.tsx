@@ -1056,15 +1056,13 @@ export default function PlayRookiePage() {
             </div>
           )}
 
-          {/* Opponent name (above board) — only after game ends */}
-          {(phase === 'gameover' || phase === 'review') && (
-            <div className="flex justify-between items-center mb-1">
-              <PlayerLabel
-                color={playerIsWhite ? 'black' : 'white'}
-                name="Rookie"
-              />
-            </div>
-          )}
+          {/* Top player (opponent from our perspective) */}
+          <div className="flex justify-between items-center mb-0.5">
+            <PlayerLabel
+              color={playerIsWhite ? 'black' : 'white'}
+              name="Rookie"
+            />
+          </div>
 
           {/* Chess board */}
           <ChessPathBoard
@@ -1083,19 +1081,17 @@ export default function PlayRookiePage() {
           />
 
           {/* Below board area */}
-          <div className="mt-1 space-y-1.5">
-            {/* Eval bar + player name — only after game ends */}
-            {(phase === 'gameover' || phase === 'review') && (
-              <>
-                <EvalBar />
-                <div className="flex justify-between items-center">
-                  <PlayerLabel
-                    color={playerIsWhite ? 'white' : 'black'}
-                    name={displayName}
-                  />
-                </div>
-              </>
-            )}
+          <div className="mt-0.5 space-y-1">
+            {/* Bottom player (us) */}
+            <div className="flex justify-between items-center">
+              <PlayerLabel
+                color={playerIsWhite ? 'white' : 'black'}
+                name={displayName}
+              />
+            </div>
+
+            {/* Eval bar — gameover/review only */}
+            {(phase === 'gameover' || phase === 'review') && <EvalBar />}
 
             {/* Phase-specific content */}
             {phase === 'playing' && isMyTurn && !rookieThinking ? (
