@@ -974,91 +974,84 @@ export default function PlayRookiePage() {
       <div className="flex-1 flex items-start justify-center px-4 pt-2 min-h-0">
         <div className="w-full max-w-lg">
 
-          {/* Area above board: Rookie speech bubble (playing/gameover) or teaching panel (review) */}
-          {/* Area above board: Rookie + speech or gameover actions */}
-          {phase === 'gameover' && gameResult ? (
-            <div className="flex items-start gap-3 pb-3 min-h-[80px]">
-              <div className="flex-shrink-0">
-                <BreathingRook size="sm" mood={rookieMood} />
-              </div>
-              <div className="flex-1 space-y-2">
-                <p className="text-base font-black">{gameResult}</p>
-                {postGame.isAnalyzing ? (
-                  <div className="h-1.5 w-full bg-chess-surface rounded-full overflow-hidden">
-                    <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
-                  </div>
-                ) : postGame.analysis ? (
-                  <AnalysisSummary analysis={postGame.analysis} />
-                ) : null}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => startGame()}
-                    className="flex-1 py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
-                  >
-                    Play Again
-                  </button>
-                  {gameReview && (
-                    <button
-                      onClick={() => {
-                        if (gameReview.keyMoments.length > 0) {
-                          const m = gameReview.keyMoments[0];
-                          setReviewMomentIndex(0);
-                          setReviewMoveIndex(0);
-                          setFen(m.fenBefore);
-                          setReviewText(m.description);
-                          setReviewArrows(m.moveSan ? [{
-                            startSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.from || 'e2',
-                            endSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.to || 'e4',
-                            color: getArrowColor(m.type),
-                          }] : []);
-                        } else {
-                          setReviewMoveIndex(0);
-                          setReviewText('Use the arrows to step through the game.');
-                        }
-                        setPhase('review');
-                      }}
-                      className="flex-1 py-2 bg-chess-surface text-chess-text font-semibold rounded-xl text-sm border border-chess-disabled"
-                    >
-                      Review
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : isReview ? (
-            <div className="mb-3">
-              <div className="bg-chess-surface rounded-2xl px-4 py-3 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
-                <p className="text-chess-text text-[14px] leading-relaxed font-medium min-h-[2.5em]">
+          {/* Above board: Rookie always in same spot, content changes by phase */}
+          {isReview ? (
+            <div className="mb-2">
+              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
+                <p className="text-chess-text text-[13px] leading-relaxed font-medium min-h-[2em]">
                   {reviewText || 'Use the arrows below to step through the game.'}
                 </p>
               </div>
             </div>
           ) : (
-            /* Rookie + Speech bubble during play */
-            <div className="flex items-start gap-3 pb-3 min-h-[80px] relative z-10 overflow-visible">
-              <div className="flex-shrink-0">
+            <div className="flex items-start gap-2.5 pb-2 min-h-[72px] relative z-10 overflow-visible">
+              <div className="flex-shrink-0 pt-0.5">
                 <BreathingRook
                   size="sm"
-                  animation={rookieThinking ? 'think' : undefined}
-                  animate={!rookieThinking && !isTalking}
+                  animation={phase === 'playing' && rookieThinking ? 'think' : undefined}
+                  animate={phase === 'playing' && !rookieThinking && !isTalking}
                   mood={rookieMood}
-                  talkIntensity={isTalking && !rookieThinking ? talkIntensity : undefined}
+                  talkIntensity={phase === 'playing' && isTalking && !rookieThinking ? talkIntensity : undefined}
                 />
               </div>
-              <div className="flex-1 flex items-center">
-                {speech.displayText && (
+              <div className="flex-1 min-w-0">
+                {phase === 'gameover' && gameResult ? (
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-black leading-tight">{gameResult}</p>
+                    {postGame.isAnalyzing ? (
+                      <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
+                        <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
+                      </div>
+                    ) : postGame.analysis ? (
+                      <AnalysisSummary analysis={postGame.analysis} />
+                    ) : null}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startGame()}
+                        className="flex-1 py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
+                      >
+                        Play Again
+                      </button>
+                      {gameReview && (
+                        <button
+                          onClick={() => {
+                            if (gameReview.keyMoments.length > 0) {
+                              const m = gameReview.keyMoments[0];
+                              setReviewMomentIndex(0);
+                              setReviewMoveIndex(0);
+                              setFen(m.fenBefore);
+                              setReviewText(m.description);
+                              setReviewArrows(m.moveSan ? [{
+                                startSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.from || 'e2',
+                                endSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.to || 'e4',
+                                color: getArrowColor(m.type),
+                              }] : []);
+                            } else {
+                              setReviewMoveIndex(0);
+                              setReviewText('Use the arrows to step through the game.');
+                            }
+                            setPhase('review');
+                          }}
+                          className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
+                        >
+                          Review
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : speech.displayText ? (
                   <div key={speech.msgKey} className="relative rookie-glitch">
                     <div
-                      className="absolute top-4 -left-[6px] w-3 h-3 bg-chess-surface rotate-45 rounded-[2px]"
+                      className="absolute top-3 -left-[6px] w-2.5 h-2.5 bg-chess-surface rotate-45 rounded-[2px]"
                       style={{ boxShadow: '-1px 1px 2px rgba(0,0,0,0.04)' }}
                     />
-                    <div className="relative bg-chess-surface rounded-2xl px-4 py-3 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
+                    <div className="relative bg-chess-surface rounded-xl px-3 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
                       <p className="text-chess-text text-[13px] leading-relaxed font-medium glitch-text line-clamp-3">
                         {speech.displayText}
                       </p>
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           )}
