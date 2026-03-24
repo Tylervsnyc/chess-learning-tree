@@ -967,21 +967,8 @@ export default function PlayRookiePage() {
 
   return (
     <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-2 flex-shrink-0">
-        <button onClick={() => { setPhase('setup'); setGameReview(null); }} className="text-chess-text-muted text-sm font-medium">
-          {isReview ? 'Back' : 'Quit'}
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-chess-text-muted font-medium">{SKILL_LEVELS[skillLevel].name}</span>
-          <button
-            onClick={() => setAudioOn(!audioOn)}
-            className="text-chess-text-muted text-xs px-2 py-1 rounded-lg hover:bg-chess-surface transition-colors"
-          >
-            {audioOn ? 'Sound On' : 'Sound Off'}
-          </button>
-        </div>
-      </div>
+      {/* Spacer for status bar */}
+      <div className="h-2 flex-shrink-0" />
 
       {/* Board area */}
       <div className="flex-1 flex items-start justify-center px-4 pt-2 min-h-0">
