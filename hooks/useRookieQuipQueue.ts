@@ -122,6 +122,11 @@ export function useRookieQuipQueue(
     };
   }, []);
 
+  /** Clear the speech bubble text (e.g. after N moves) */
+  const clearDisplay = useCallback(() => {
+    setDisplayText(null);
+  }, []);
+
   return {
     /** Queue a quip to be spoken */
     queueQuip,
@@ -129,6 +134,8 @@ export function useRookieQuipQueue(
     waitForIdle,
     /** Clear the queue */
     clearQueue,
+    /** Clear just the display text */
+    clearDisplay,
     /** Current display text (for speech bubble) */
     displayText,
     /** Key for animation reset */

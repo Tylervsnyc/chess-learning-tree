@@ -67,7 +67,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently } = options;
 
   // Playback queue (handles timing, speech bubble, TTS)
-  const { queueQuip, waitForIdle, clearQueue, displayText, msgKey } = useRookieQuipQueue(
+  const { queueQuip, waitForIdle, clearQueue, clearDisplay, displayText, msgKey } = useRookieQuipQueue(
     speakQuip,
     isTalkingRef,
   );
@@ -191,6 +191,12 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         piecesRemaining: input.piecesRemaining,
       });
       beatRef.current = beatResult.state;
+
+      // Dismiss speech bubble after 4 moves
+      const BUBBLE_DISMISS_MOVES = 4;
+      if (displayText && input.moveNumber - lastQuipMoveRef.current >= BUBBLE_DISMISS_MOVES) {
+        clearDisplay();
+      }
 
       // ── CORE RULE: Rookie only speaks when something EARNS it. ──
       // She does NOT comment on every move. She speaks on:
