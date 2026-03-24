@@ -85,6 +85,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const linePoolRef = useRef<SpeechLine[]>([...AUTHORED_LINES]);
   const playerNameRef = useRef<string>('');
   const playerColorRef = useRef<'white' | 'black'>('white');
+  const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
+  const QUIP_COOLDOWN_MOVES = 4; // minimum moves between event-triggered quips
 
   // ── Helpers ──
 
@@ -157,6 +159,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       linePoolRef.current = [...AUTHORED_LINES];
       playerNameRef.current = playerName;
       playerColorRef.current = playerColor;
+      lastQuipMoveRef.current = 0;
       clearQueue();
 
       const context: QueueContext = {
@@ -211,6 +214,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         if (threadStateRef.current.activeThread) {
           queueQuip(threadStateRef.current.activeThread.opener);
           queueStateRef.current.quipCount++;
+          lastQuipMoveRef.current = input.moveNumber;
         }
         return;
       }
@@ -228,7 +232,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 4. Turning point — always speak (thread line or pool)
+      // 4. Turning point — always speak, bypass cooldown (structural moment)
       if (beatResult.newBeat === 'turning_point') {
         const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
         if (threadResult) {
@@ -239,27 +243,33 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
           const context = buildContext(input);
           selectAndQueue(context);
         }
+        lastQuipMoveRef.current = input.moveNumber;
         return;
       }
 
-      // 5. Late game transition — one thread check-in
+      // 5. Late game transition — one thread check-in, bypass cooldown
       if (beatResult.newBeat === 'late_game') {
         const threadResult = getThreadLine(threadStateRef.current, beatRef.current.evalMood);
         if (threadResult) {
           threadStateRef.current = threadResult.newState;
           queueQuip(threadResult.line);
           queueStateRef.current.quipCount++;
+          lastQuipMoveRef.current = input.moveNumber;
         }
         return;
       }
 
-      // 6. Notable events only — skip if nothing interesting happened
-      if (input.event === 'none') return; // ← THE KEY LINE. Silence is default.
+      // 6. Nothing interesting = silence
+      if (input.event === 'none') return;
 
-      // 7. Something happened (capture, check, castle, blunder, great_move)
-      //    Speak if under the quip limit.
+      // 7. Cooldown: don't react to events if Rookie spoke recently
+      if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+
+      // 8. Something happened (capture, check, castle, blunder, great_move)
       const context = buildContext(input);
-      selectAndQueue(context);
+      if (selectAndQueue(context)) {
+        lastQuipMoveRef.current = input.moveNumber;
+      }
     },
     [buildContext, generateGameEndLine, generateOrFallback, queueQuip, selectAndQueue],
   );
