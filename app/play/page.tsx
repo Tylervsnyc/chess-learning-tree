@@ -1137,10 +1137,10 @@ export default function PlayRookiePage() {
                     </button>
                   )}
                   <button
-                    onClick={() => { setPhase('setup'); setGameReview(null); }}
+                    onClick={() => startGame()}
                     className="flex-1 py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
                   >
-                    Play Again
+                    Rematch
                   </button>
                 </div>
               </div>
@@ -1170,10 +1170,10 @@ export default function PlayRookiePage() {
                 </div>
 
                 <button
-                  onClick={() => { setPhase('setup'); setGameReview(null); }}
+                  onClick={() => startGame()}
                   className="w-full py-2.5 bg-chess-green text-white font-bold rounded-xl shadow-[0_3px_0_var(--color-chess-green-dark)] active:translate-y-[1px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all text-sm"
                 >
-                  Play Again
+                  Rematch
                 </button>
               </div>
             ) : (
