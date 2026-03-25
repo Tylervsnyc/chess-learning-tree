@@ -76,11 +76,11 @@ function SkillSlider({ value, onChange }: { value: number; onChange: (v: number)
 
   const getValueFromX = useCallback((clientX: number) => {
     const track = trackRef.current;
-    if (!track) return value;
+    if (!track) return 0;
     const rect = track.getBoundingClientRect();
     const raw = ((clientX - rect.left) / rect.width) * 4;
     return magneticSnap(Math.max(0, Math.min(4, raw)));
-  }, [value]);
+  }, []);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     dragging.current = true;
@@ -139,13 +139,11 @@ function SkillSlider({ value, onChange }: { value: number; onChange: (v: number)
         {SKILL_LEVELS.map((_, i) => (
           <div
             key={i}
-            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 transition-colors"
-            style={{ left: `${(i / 4) * 100}%` }}
-          >
-            <div className={`w-full h-full rounded-full ${
+            className={`absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 transition-colors ${
               i <= Math.round(value) ? 'bg-chess-green' : 'bg-chess-disabled'
-            }`} />
-          </div>
+            }`}
+            style={{ left: `${(i / 4) * 100}%` }}
+          />
         ))}
         {/* Thumb */}
         <div
@@ -321,7 +319,6 @@ export default function PlayRookiePage() {
         lastMovedBy: lastMovedByRef.current,
         playerName: playerName || 'friend',
         playerColor,
-        piecesRemaining: countPieces(fenStr),
       });
 
       // Only apply eval mood if no recent high-priority event override
