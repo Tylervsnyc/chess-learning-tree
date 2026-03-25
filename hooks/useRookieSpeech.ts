@@ -38,6 +38,16 @@ export interface SpeechInput {
   capturedPiece?: string;
 }
 
+export interface EvalUpdate {
+  rookieWinPercent: number;
+  prevRookieWinPercent?: number;
+  moveNumber: number;
+  lastMovedBy: 'player' | 'rookie';
+  playerName: string;
+  playerColor: 'white' | 'black';
+  piecesRemaining: number;
+}
+
 export interface UseRookieSpeechOptions {
   speakQuip: (text: string) => void;
   isTalkingRef: React.RefObject<boolean>;
@@ -80,7 +90,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const playerNameRef = useRef<string>('');
   const playerColorRef = useRef<'white' | 'black'>('white');
   const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
+  const playerHasCastledRef = useRef(false); // tracks if player has castled (for "no castle" quips)
   const QUIP_COOLDOWN_MOVES = 4; // minimum moves between event-triggered quips
+  const BLUNDER_THRESHOLD = 15; // rookieWinPercent swing to count as a blunder
 
   // ── Helpers ──
 
@@ -100,17 +112,27 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [],
   );
 
+  /** Get the active pool, filtering out lines that shouldn't be eligible */
+  const getActivePool = useCallback((): SpeechLine[] => {
+    let pool = linePoolRef.current;
+    // Filter out "no castle" lines if the player has already castled
+    if (playerHasCastledRef.current) {
+      pool = pool.filter(line => !line.id.startsWith('no_castle'));
+    }
+    return pool;
+  }, []);
+
   /** Select and queue a line from the pool for the current context */
   const selectAndQueue = useCallback(
     (context: QueueContext) => {
-      const result = selectLine(linePoolRef.current, context, queueStateRef.current);
+      const result = selectLine(getActivePool(), context, queueStateRef.current);
       if (result) {
         queueQuip(result.text);
         return true;
       }
       return false;
     },
-    [queueQuip],
+    [getActivePool, queueQuip],
   );
 
   /** Try a Claude generator; on success push to pool and select; on failure fall back to authored pool */
@@ -122,7 +144,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       priority: 'high' | 'normal' = 'normal',
     ) => {
       const fallback = () => {
-        const result = selectLine(linePoolRef.current, context, queueStateRef.current);
+        const result = selectLine(getActivePool(), context, queueStateRef.current);
         if (result) queueQuip(result.text, priority);
       };
 
@@ -131,12 +153,12 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       generator
         .then((text) => {
           linePoolRef.current.push(createGeneratedLine(text, beat, 90));
-          const result = selectLine(linePoolRef.current, context, queueStateRef.current);
+          const result = selectLine(getActivePool(), context, queueStateRef.current);
           if (result) queueQuip(result.text, priority);
         })
         .catch(fallback);
     },
-    [queueQuip],
+    [getActivePool, queueQuip],
   );
 
   // ════════════════════════════════════════════════════════════════
@@ -154,6 +176,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       playerNameRef.current = playerName;
       playerColorRef.current = playerColor;
       lastQuipMoveRef.current = 0;
+      playerHasCastledRef.current = false;
       clearQueue();
 
       const context: QueueContext = {
@@ -196,6 +219,11 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       const BUBBLE_DISMISS_MOVES = 4;
       if (displayText && input.moveNumber - lastQuipMoveRef.current >= BUBBLE_DISMISS_MOVES) {
         clearDisplay();
+      }
+
+      // Track if the player has castled
+      if (input.event === 'castle' && input.movedBy === 'player') {
+        playerHasCastledRef.current = true;
       }
 
       // ── CORE RULE: Rookie only speaks when something EARNS it. ──
@@ -289,6 +317,38 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [generateGameEndLine, generateOrFallback],
   );
 
+  /** Call when Stockfish eval arrives — detects blunders from eval swing */
+  const onEvalUpdate = useCallback(
+    (update: EvalUpdate) => {
+      // Only detect blunders after player moves
+      if (update.lastMovedBy !== 'player') return;
+      if (update.prevRookieWinPercent === undefined) return;
+
+      const swing = update.rookieWinPercent - update.prevRookieWinPercent;
+      if (swing < BLUNDER_THRESHOLD) return;
+
+      // Respect cooldown
+      if (update.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+
+      // Fire a blunder quip
+      const context: QueueContext = {
+        beat: beatRef.current.currentBeat,
+        evalMood: beatRef.current.evalMood,
+        event: 'blunder',
+        movedBy: 'player',
+        moveNumber: update.moveNumber,
+        activeThreadId: null,
+        playerName: update.playerName,
+        playerColor: update.playerColor,
+      };
+
+      if (selectAndQueue(context)) {
+        lastQuipMoveRef.current = update.moveNumber;
+      }
+    },
+    [selectAndQueue],
+  );
+
   /** Reset for new game */
   const reset = useCallback(() => {
     // Transfer usedThisGame to usedRecently
@@ -315,6 +375,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     onGameStart,
     /** Call when entering post-game phase */
     onPostGame,
+    /** Call when Stockfish eval arrives — detects blunders from eval swing */
+    onEvalUpdate,
     /** Reset for new game */
     reset,
     /** Queue an arbitrary text line */

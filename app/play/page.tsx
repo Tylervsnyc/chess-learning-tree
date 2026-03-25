@@ -11,7 +11,7 @@ import {
   playCelebrationSound,
 } from '@/lib/sounds';
 import { getRookieMove } from '@/lib/rookie-engine';
-import { useRookieSpeech } from '@/hooks/useRookieSpeech';
+import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
@@ -41,8 +41,134 @@ const SF_CONFIG: [number, number][] = [
   [20, 16], // Expert
 ];
 
+/** Interpolate Stockfish config from continuous skill level (0-4) */
+function interpolateSfConfig(level: number): [number, number] {
+  const clamped = Math.max(0, Math.min(4, level));
+  const lo = Math.floor(clamped);
+  const hi = Math.min(lo + 1, SF_CONFIG.length - 1);
+  const t = clamped - lo;
+  return [
+    Math.round(SF_CONFIG[lo][0] + t * (SF_CONFIG[hi][0] - SF_CONFIG[lo][0])),
+    Math.round(SF_CONFIG[lo][1] + t * (SF_CONFIG[hi][1] - SF_CONFIG[lo][1])),
+  ];
+}
+
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
+
+const SNAP_STRENGTH = 0.3; // how close (in level units) before snapping kicks in
+
+/** Magnetic snap: if within SNAP_STRENGTH of an integer, pull toward it */
+function magneticSnap(raw: number): number {
+  const nearest = Math.round(raw);
+  const dist = Math.abs(raw - nearest);
+  if (dist < SNAP_STRENGTH) {
+    // Ease toward the snap point — stronger as you get closer
+    const t = dist / SNAP_STRENGTH; // 0 = on it, 1 = edge of zone
+    return nearest + (raw - nearest) * (t * t); // quadratic ease
+  }
+  return raw;
+}
+
+function SkillSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  const getValueFromX = useCallback((clientX: number) => {
+    const track = trackRef.current;
+    if (!track) return value;
+    const rect = track.getBoundingClientRect();
+    const raw = ((clientX - rect.left) / rect.width) * 4;
+    return magneticSnap(Math.max(0, Math.min(4, raw)));
+  }, [value]);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    dragging.current = true;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    onChange(getValueFromX(e.clientX));
+  }, [getValueFromX, onChange]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    onChange(getValueFromX(e.clientX));
+  }, [getValueFromX, onChange]);
+
+  const handlePointerUp = useCallback(() => {
+    dragging.current = false;
+  }, []);
+
+  // Find nearest snap label
+  const nearestSnap = Math.round(value);
+  const distToSnap = Math.abs(value - nearestSnap);
+  const labelOpacity = distToSnap < 0.4 ? 1 - distToSnap / 0.4 : 0;
+
+  return (
+    <div className="space-y-2">
+      {/* Current level label */}
+      <div className="text-center h-10 flex flex-col items-center justify-center">
+        <span
+          className="text-sm font-bold text-chess-text transition-opacity"
+          style={{ opacity: labelOpacity }}
+        >
+          {SKILL_LEVELS[nearestSnap]?.name}
+        </span>
+        <span
+          className="text-[10px] text-chess-text-muted transition-opacity"
+          style={{ opacity: labelOpacity }}
+        >
+          {SKILL_LEVELS[nearestSnap]?.label}
+        </span>
+      </div>
+
+      {/* Slider track */}
+      <div
+        ref={trackRef}
+        className="relative h-10 flex items-center cursor-pointer touch-none select-none"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+      >
+        {/* Track background */}
+        <div className="absolute inset-x-0 h-1.5 bg-chess-surface rounded-full" />
+        {/* Active fill */}
+        <div
+          className="absolute left-0 h-1.5 bg-chess-green rounded-full transition-none"
+          style={{ width: `${(value / 4) * 100}%` }}
+        />
+        {/* Snap dots */}
+        {SKILL_LEVELS.map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 transition-colors"
+            style={{ left: `${(i / 4) * 100}%` }}
+          >
+            <div className={`w-full h-full rounded-full ${
+              i <= Math.round(value) ? 'bg-chess-green' : 'bg-chess-disabled'
+            }`} />
+          </div>
+        ))}
+        {/* Thumb */}
+        <div
+          className="absolute w-6 h-6 -translate-x-1/2 rounded-full bg-white shadow-md border-2 border-chess-green transition-none"
+          style={{ left: `${(value / 4) * 100}%` }}
+        />
+      </div>
+
+      {/* Labels under dots */}
+      <div className="relative h-4">
+        {SKILL_LEVELS.map((lv, i) => (
+          <span
+            key={i}
+            className="absolute text-[9px] text-chess-text-muted -translate-x-1/2 whitespace-nowrap"
+            style={{ left: `${(i / 4) * 100}%` }}
+          >
+            {lv.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type Phase = 'setup' | 'playing' | 'gameover' | 'review';
 
@@ -99,7 +225,7 @@ export default function PlayRookiePage() {
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
-  const [skillLevel, setSkillLevel] = useState(1);
+  const [skillLevel, setSkillLevel] = useState(1); // continuous 0-4 float
   const [playerName, setPlayerName] = useState('');
 
   // FEN is the single source of truth for board state
@@ -115,6 +241,8 @@ export default function PlayRookiePage() {
   const evalCp = useRef(0); // raw centipawns for display
   const evalMate = useRef<number | null>(null); // mate-in-N
   const prevRookieWpRef = useRef<number | undefined>(undefined); // for swing detection
+  const lastMovedByRef = useRef<'player' | 'rookie'>('player'); // who moved last (for blunder detection)
+  const speechEvalUpdateRef = useRef<((update: EvalUpdate) => void) | null>(null); // set after speech hook init
 
   // Review state
   const [gameReview, setGameReview] = useState<GameReview | null>(null);
@@ -181,8 +309,20 @@ export default function PlayRookiePage() {
 
       // Drive Rookie's baseline mood from eval
       const rookieColor = playerColor === 'white' ? 'black' : 'white';
-      const moodResult = evalToRookieMood(cp, mate, rookieColor, prevRookieWpRef.current);
+      const prevWp = prevRookieWpRef.current;
+      const moodResult = evalToRookieMood(cp, mate, rookieColor, prevWp);
       prevRookieWpRef.current = moodResult.rookieWinPercent;
+
+      // Check for blunders via speech system
+      speechEvalUpdateRef.current?.({
+        rookieWinPercent: moodResult.rookieWinPercent,
+        prevRookieWinPercent: prevWp,
+        moveNumber: moveNumRef.current,
+        lastMovedBy: lastMovedByRef.current,
+        playerName: playerName || 'friend',
+        playerColor,
+        piecesRemaining: countPieces(fenStr),
+      });
 
       // Only apply eval mood if no recent high-priority event override
       const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
@@ -199,7 +339,7 @@ export default function PlayRookiePage() {
         }
       }
     }).catch(() => {});
-  }, [phase, playerColor]);
+  }, [phase, playerColor, playerName]);
 
   // ════════════════════════════════
   // AUDIO (with real-time amplitude for talk animation)
@@ -250,6 +390,9 @@ export default function PlayRookiePage() {
     generateGameEndLine,
     initialUsedRecently: speechMemory?.usedRecently,
   });
+
+  // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
+  speechEvalUpdateRef.current = speech.onEvalUpdate;
 
   // ════════════════════════════════
   // MOOD — event overrides (captures, checks, game end)
@@ -423,6 +566,7 @@ export default function PlayRookiePage() {
       if (!result) { setRookieThinking(false); return; }
 
       moveNumRef.current++;
+      lastMovedByRef.current = 'rookie';
       const newFen = g.fen();
 
       setFen(newFen);
@@ -465,9 +609,9 @@ export default function PlayRookiePage() {
       }
     };
 
-    // Beginner uses minimax, others use Stockfish at selected skill level
-    if (skillLevel === 0 || !sfReadyRef.current) {
-      const result = getRookieMove(currentFen, skillLevel);
+    // Beginner range (< 0.5) uses minimax, others use Stockfish
+    if (skillLevel < 0.5 || !sfReadyRef.current) {
+      const result = getRookieMove(currentFen, Math.round(skillLevel));
       if (!result) { setRookieThinking(false); return; }
       rookieTimerRef.current = setTimeout(() => {
         applyRookieMove({ san: result.san });
@@ -475,7 +619,7 @@ export default function PlayRookiePage() {
       return;
     }
 
-    const [sfSkill, sfDepth] = SF_CONFIG[Math.min(skillLevel, SF_CONFIG.length - 1)];
+    const [sfSkill, sfDepth] = interpolateSfConfig(skillLevel);
     const thinkStart = Date.now();
     stockfish.getBestMove(currentFen, sfSkill, sfDepth).then((uciMove) => {
       if (!uciMove) {
@@ -507,6 +651,7 @@ export default function PlayRookiePage() {
       if (!result) return false;
 
       moveNumRef.current++;
+      lastMovedByRef.current = 'player';
       const newFen = g.fen();
 
       setFen(newFen);
@@ -894,25 +1039,10 @@ export default function PlayRookiePage() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-chess-text-muted uppercase tracking-wide mb-2 block">
+            <label className="text-xs font-semibold text-chess-text-muted uppercase tracking-wide mb-3 block">
               Rookie&apos;s strength
             </label>
-            <div className="space-y-2">
-              {SKILL_LEVELS.map((lv, i) => (
-                <button
-                  key={lv.name}
-                  onClick={() => setSkillLevel(i)}
-                  className={`w-full py-2.5 px-4 rounded-xl text-left transition-all flex items-center justify-between ${
-                    skillLevel === i
-                      ? 'bg-chess-green/15 border-2 border-chess-green text-chess-text'
-                      : 'bg-chess-surface border border-chess-disabled text-chess-text-muted hover:border-chess-green/50'
-                  }`}
-                >
-                  <span className="font-semibold text-sm">{lv.name}</span>
-                  <span className="text-xs opacity-70">{lv.label}</span>
-                </button>
-              ))}
-            </div>
+            <SkillSlider value={skillLevel} onChange={setSkillLevel} />
           </div>
 
           <button
