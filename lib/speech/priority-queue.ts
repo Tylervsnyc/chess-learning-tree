@@ -4,7 +4,7 @@
 
 import { type Beat, type EvalMood } from '@/lib/speech/beat-sheet';
 export type { Beat, EvalMood };
-export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'none';
+export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'none';
 
 export interface LineConditions {
   /** Which beats this line is valid for */
@@ -45,6 +45,10 @@ export interface QueueContext {
   playerName: string;
   playerColor?: 'white' | 'black';
   capturedPiece?: string; // 'pawn', 'knight', etc.
+  /** Net material swing from a capture sequence (positive = player gained) */
+  materialSwing?: number;
+  /** Number of captures in a capture sequence */
+  captureCount?: number;
 }
 
 export interface QueueState {
@@ -86,7 +90,9 @@ export function isAtLimit(state: QueueState): boolean {
 export function substitutePlaceholders(text: string, context: QueueContext): string {
   return text
     .replace(/\{name\}/g, context.playerName)
-    .replace(/\{piece\}/g, context.capturedPiece ?? 'piece');
+    .replace(/\{piece\}/g, context.capturedPiece ?? 'piece')
+    .replace(/\{swing\}/g, String(Math.abs(context.materialSwing ?? 0)))
+    .replace(/\{captures\}/g, String(context.captureCount ?? 0));
 }
 
 /** Check if a single line's conditions match the current context */

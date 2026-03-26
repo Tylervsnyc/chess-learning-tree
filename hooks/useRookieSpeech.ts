@@ -36,6 +36,8 @@ export interface SpeechInput {
   playerName: string;
   playerColor: 'white' | 'black';
   capturedPiece?: string;
+  /** Material value of the captured piece (1=pawn, 3=knight/bishop, 5=rook, 9=queen) */
+  capturedPieceValue?: number;
 }
 
 export interface EvalUpdate {
@@ -64,6 +66,14 @@ export interface UseRookieSpeechOptions {
 
 const QUIP_COOLDOWN_MOVES = 4; // minimum moves between event-triggered quips
 const BLUNDER_THRESHOLD = 15; // rookieWinPercent swing to count as a blunder
+const CAPTURE_SEQUENCE_MIN = 3; // minimum consecutive captures to trigger capture_sequence
+
+/** Tracks an ongoing capture sequence */
+interface CaptureSequence {
+  count: number;
+  /** Material gained by player (positive) or lost (negative) */
+  playerSwing: number;
+}
 
 // ════════════════════════════════════════════════════════════════
 // Helpers
@@ -97,6 +107,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const playerColorRef = useRef<'white' | 'black'>('white');
   const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
   const playerHasCastledRef = useRef(false); // tracks if player has castled (for "no castle" quips)
+  const captureSeqRef = useRef<CaptureSequence>({ count: 0, playerSwing: 0 });
 
   // ── Helpers ──
 
@@ -171,6 +182,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       playerColorRef.current = playerColor;
       lastQuipMoveRef.current = 0;
       playerHasCastledRef.current = false;
+      captureSeqRef.current = { count: 0, playerSwing: 0 };
       clearQueue();
 
       const context: QueueContext = {
@@ -221,11 +233,45 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         linePoolRef.current = linePoolRef.current.filter(line => !line.id.startsWith('no_castle'));
       }
 
+      // ── CAPTURE SEQUENCE TRACKING ──
+      // Accumulate consecutive captures. Fire capture_sequence when the dust settles.
+      const isCapture = input.event === 'capture';
+      const seq = captureSeqRef.current;
+
+      if (isCapture && input.capturedPieceValue) {
+        // Accumulate: player captures are positive, rookie captures are negative
+        const sign = input.movedBy === 'player' ? 1 : -1;
+        seq.count++;
+        seq.playerSwing += sign * input.capturedPieceValue;
+      } else if (seq.count >= CAPTURE_SEQUENCE_MIN) {
+        // Sequence just ended — fire the event
+        const seqContext: QueueContext = {
+          beat: beatRef.current.currentBeat,
+          evalMood: beatRef.current.evalMood,
+          event: 'capture_sequence',
+          movedBy: input.movedBy,
+          moveNumber: input.moveNumber,
+          activeThreadId: null,
+          playerName: input.playerName,
+          playerColor: input.playerColor,
+          materialSwing: seq.playerSwing,
+          captureCount: seq.count,
+        };
+        // Bypass cooldown — this is a big moment
+        if (selectAndQueue(seqContext)) {
+          lastQuipMoveRef.current = input.moveNumber;
+        }
+        captureSeqRef.current = { count: 0, playerSwing: 0 };
+      } else {
+        // Not enough captures to be a sequence — reset
+        captureSeqRef.current = { count: 0, playerSwing: 0 };
+      }
+
       // ── CORE RULE: Rookie only speaks when something EARNS it. ──
       // She does NOT comment on every move. She speaks on:
       //   - Beat transitions (early_game start, turning_point, game_end)
       //   - Notable events (check, castle, checkmate, blunder, great_move)
-      //   - Thread check-ins at turning_point/late_game transitions
+      //   - Capture sequences (3+ consecutive captures)
       // Regular moves with event 'none' and no beat change = silence.
 
       // 2. Early game transition — no automatic quip, just note it
@@ -262,7 +308,14 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 6. Nothing interesting = silence
+      // 6. Resign — always speak, bypass cooldown
+      if (input.event === 'resign') {
+        const context = buildContext(input);
+        selectAndQueue(context);
+        return;
+      }
+
+      // 7. Nothing interesting = silence
       if (input.event === 'none') return;
 
       // 7. Cooldown: don't react to events if Rookie spoke recently

@@ -190,6 +190,10 @@ const PIECE_NAMES: Record<string, string> = {
   p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king',
 };
 
+const PIECE_VALUES: Record<string, number> = {
+  p: 1, n: 3, b: 3, r: 5, q: 9, k: 0,
+};
+
 // Arrow colors for review mode
 const ARROW_GREEN = 'rgba(88, 204, 2, 0.85)';
 const ARROW_RED = 'rgba(235, 64, 52, 0.85)';
@@ -612,6 +616,7 @@ export default function PlayRookiePage() {
         playerName: playerName || 'friend',
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
+        capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
       });
       updateMood(g, 'rookie', result.captured || undefined);
       recordMoveToSession(g, result, 'rookie', currentFen);
@@ -696,6 +701,7 @@ export default function PlayRookiePage() {
         playerName: playerName || 'friend',
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
+        capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
       });
       updateMood(g, 'player', result.captured || undefined);
       recordMoveToSession(g, result, 'player', fen);
@@ -912,11 +918,23 @@ export default function PlayRookiePage() {
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     setRookieThinking(false);
     setGameResult('You resigned');
+    // Let Rookie react to the resignation
+    speech.onMove({
+      moveNumber: moveNumRef.current,
+      rookieWinPercent: prevRookieWpRef.current ?? 50,
+      prevRookieWinPercent: prevRookieWpRef.current,
+      isGameOver: true,
+      piecesRemaining: countPieces(fen),
+      movedBy: 'player',
+      event: 'resign',
+      playerName: playerName || 'friend',
+      playerColor,
+    });
     const g = new Chess(fen);
     endSession(g);
     setPhase('gameover');
     setResignArmed(false);
-  }, [fen, endSession]);
+  }, [fen, endSession, speech, playerName, playerColor]);
 
   // Cleanup timers on unmount
   useEffect(() => {
