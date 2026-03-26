@@ -228,6 +228,136 @@ export function gameAccuracy(moveAccuracies: number[], winPercents: number[]): n
 }
 
 // ════════════════════════════════
+// KEY MOMENTS (replaces heuristic game-review.ts)
+// ════════════════════════════════
+
+export type MomentType = 'blunder' | 'mistake' | 'best-move' | 'turning-point';
+
+export interface KeyMoment {
+  type: MomentType;
+  moveNumber: number;
+  title: string;
+  fenBefore: string;
+  fenAfter: string;
+  moveSan: string;
+  from: string;
+  to: string;
+  movedBy: 'player' | 'rookie';
+  description: string;
+  winPercentDelta: number;
+}
+
+/**
+ * Extract key moments from a GameAnalysis + move records.
+ * Finds the biggest blunder, best move, and turning point — all eval-driven.
+ */
+export function extractKeyMoments(
+  analysis: GameAnalysis,
+  moveRecords: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number; fenAfter: string; from: string; to: string }[],
+  playerName?: string,
+): KeyMoment[] {
+  const moments: KeyMoment[] = [];
+  const name = playerName || 'You';
+
+  // Helper: get FEN before a move (previous move's fenAfter, or start position)
+  const fenBefore = (idx: number) =>
+    idx > 0 ? moveRecords[idx - 1].fenAfter : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+  // Only look at player moves for mistakes/best moves
+  const playerMoveIndices = analysis.moves
+    .map((m, i) => ({ eval: m, idx: i }))
+    .filter(({ eval: m }) => m.movedBy === 'player');
+
+  // 1. Biggest blunder/mistake — largest win% drop
+  const worstMove = playerMoveIndices
+    .filter(({ eval: m }) => m.classification === 'blunder' || m.classification === 'mistake')
+    .sort((a, b) => b.eval.winPercentDelta - a.eval.winPercentDelta)[0];
+
+  if (worstMove) {
+    const m = worstMove.eval;
+    const rec = moveRecords[worstMove.idx];
+    const drop = Math.round(m.winPercentDelta);
+    const isBlunder = m.classification === 'blunder';
+    moments.push({
+      type: isBlunder ? 'blunder' : 'mistake',
+      moveNumber: m.moveNumber,
+      title: isBlunder ? 'Blunder' : 'Mistake',
+      fenBefore: fenBefore(worstMove.idx),
+      fenAfter: rec.fenAfter,
+      moveSan: m.san,
+      from: rec.from,
+      to: rec.to,
+      movedBy: 'player',
+      winPercentDelta: m.winPercentDelta,
+      description: m.bestMoveSan
+        ? `${m.san} cost ${name.toLowerCase() === 'you' ? 'you' : name} ${drop}% winning chances. ${m.bestMoveSan} was better here.`
+        : `${m.san} dropped your chances by ${drop}%. Before moving, ask: "What can they do after this?"`,
+    });
+  }
+
+  // 2. Best move — highest accuracy player move (great/brilliant)
+  const bestMove = playerMoveIndices
+    .filter(({ eval: m }) => m.classification === 'great' || m.classification === 'brilliant')
+    .sort((a, b) => a.eval.winPercentDelta - b.eval.winPercentDelta)[0];
+
+  if (bestMove) {
+    const m = bestMove.eval;
+    const rec = moveRecords[bestMove.idx];
+    moments.push({
+      type: 'best-move',
+      moveNumber: m.moveNumber,
+      title: m.classification === 'brilliant' ? 'Brilliant' : 'Great move',
+      fenBefore: fenBefore(bestMove.idx),
+      fenAfter: rec.fenAfter,
+      moveSan: m.san,
+      from: rec.from,
+      to: rec.to,
+      movedBy: 'player',
+      winPercentDelta: m.winPercentDelta,
+      description: m.classification === 'brilliant'
+        ? `${m.san} — the only winning move, and you found it.`
+        : `${m.san} — engine's top choice. You saw what Rookie saw.`,
+    });
+  }
+
+  // 3. Turning point — biggest absolute eval swing in either direction
+  if (analysis.moves.length >= 6) {
+    const turningPoint = [...analysis.moves]
+      .sort((a, b) => Math.abs(b.winPercentDelta) - Math.abs(a.winPercentDelta))[0];
+
+    // Only add if it's different from the worst/best move already shown
+    const alreadyShown = moments.map(m => m.moveNumber);
+    if (turningPoint && !alreadyShown.includes(turningPoint.moveNumber)) {
+      const idx = analysis.moves.indexOf(turningPoint);
+      const rec = moveRecords[idx];
+      if (rec) {
+        const gained = turningPoint.winPercentDelta < 0;
+        moments.push({
+          type: 'turning-point',
+          moveNumber: turningPoint.moveNumber,
+          title: 'Turning point',
+          fenBefore: fenBefore(idx),
+          fenAfter: rec.fenAfter,
+          moveSan: turningPoint.san,
+          from: rec.from,
+          to: rec.to,
+          movedBy: turningPoint.movedBy,
+          winPercentDelta: turningPoint.winPercentDelta,
+          description: gained
+            ? `Move ${turningPoint.moveNumber} is where ${turningPoint.movedBy === 'player' ? name.toLowerCase() === 'you' ? 'you' : name : 'Rookie'} took control.`
+            : `The game slipped on move ${turningPoint.moveNumber}. Things were close before this.`,
+        });
+      }
+    }
+  }
+
+  // Sort by move number for chronological display
+  moments.sort((a, b) => a.moveNumber - b.moveNumber);
+
+  return moments;
+}
+
+// ════════════════════════════════
 // FULL GAME ANALYSIS
 // ════════════════════════════════
 

@@ -18,12 +18,13 @@ import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-se
 import { useUser } from '@/hooks/useUser';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
-import { analyzeGame, GameReview, KeyMoment } from '@/lib/game-review';
-import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves } from '@/lib/game-eval';
+import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
 import { evalToRookieMood } from '@/lib/rookie-mood-eval';
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory, type SpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
+import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
+import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -195,8 +196,8 @@ const ARROW_RED = 'rgba(235, 64, 52, 0.85)';
 const ARROW_AMBER = 'rgba(245, 158, 11, 0.85)';
 
 function getArrowColor(type: string): string {
-  if (type === 'mistake') return ARROW_RED;
-  // book-end removed for now
+  if (type === 'blunder' || type === 'mistake') return ARROW_RED;
+  if (type === 'turning-point') return '#F5A623'; // amber
   return ARROW_GREEN;
 }
 
@@ -243,7 +244,7 @@ export default function PlayRookiePage() {
   const speechEvalUpdateRef = useRef<((update: EvalUpdate) => void) | null>(null); // set after speech hook init
 
   // Review state
-  const [gameReview, setGameReview] = useState<GameReview | null>(null);
+  const [keyMoments, setKeyMoments] = useState<KeyMoment[]>([]);
   const [reviewMomentIndex, setReviewMomentIndex] = useState(0);
   const [reviewMoveIndex, setReviewMoveIndex] = useState(0);
   const [reviewText, setReviewText] = useState<string | null>(null);
@@ -251,6 +252,10 @@ export default function PlayRookiePage() {
 
   // Post-game analysis
   const postGame = usePostGameAnalysis();
+
+  // Coaching drawer
+  const [coachingScript, setCoachingScript] = useState<CoachingScript | null>(null);
+  const [showCoaching, setShowCoaching] = useState(false);
 
   // Quip state
   const [audioOn, setAudioOn] = useState(true);
@@ -489,11 +494,30 @@ export default function PlayRookiePage() {
       : null;
 
     if (moves.length > 0 && analysis) {
-      const review = analyzeGame(moves, playerColor);
-      setGameReview(review);
+      // Extract eval-based key moments (replaces old heuristic review)
+      const moveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
+      setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined));
 
       // Instant post-game analysis from evals collected during play — no re-analysis needed
       postGame.setInstantAnalysis(analysis);
+
+      // Generate coaching script with analysis data
+      const coaching = generateFreeCoaching(
+        {
+          themesSeen: [],
+          themesCorrect: [],
+          themesMissed: [],
+          puzzlesTotal: 0,
+          puzzlesCorrect: 0,
+          bestStreak: 0,
+          piecesHung: moves.filter(m => m.movedBy === 'player' && m.pieceHung).length,
+          capturesMissed: moves.filter(m => m.movedBy === 'player' && m.captureAvailable && !m.captureTaken).length,
+          result,
+        },
+        playerName || undefined,
+        analysis,
+      );
+      setCoachingScript(coaching);
     }
 
     // Save to DB if logged in
@@ -732,6 +756,16 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // REVIEW MODE — game navigation
   // ════════════════════════════════
+  /** Update eval bar from stored position evals (index 0 = start, index N = after move N-1) */
+  const updateEvalBarForPosition = useCallback((positionIndex: number) => {
+    const evals = positionEvalsRef.current;
+    if (positionIndex < 0 || positionIndex >= evals.length) return;
+    const ev = evals[positionIndex];
+    evalCp.current = ev.cp ?? 0;
+    evalMate.current = ev.mate;
+    setEvalPct(evalToWhitePercent(ev.cp, ev.mate));
+  }, []);
+
   const navigateToMove = useCallback((index: number) => {
     const moves = moveLogRef.current;
     if (index < 0) {
@@ -741,6 +775,7 @@ export default function PlayRookiePage() {
       setLastMv(null);
       setReviewArrows([]);
       setReviewText('Starting position');
+      updateEvalBarForPosition(0);
       return;
     }
     if (index >= moves.length) index = moves.length - 1;
@@ -750,49 +785,47 @@ export default function PlayRookiePage() {
     setFen(move.fenAfter);
     setLastMv({ from: move.from as Square, to: move.to as Square });
 
+    // Update eval bar from stored evals (position after this move = index + 1)
+    updateEvalBarForPosition(index + 1);
+
     // Check if this move corresponds to a key moment
-    const review = gameReview;
-    if (review) {
-      const moment = review.keyMoments.find(m => m.moveNumber === move.moveNumber && m.movedBy === move.movedBy);
-      if (moment) {
-        setReviewText(moment.description);
-        setReviewArrows([{
-          startSquare: move.from,
-          endSquare: move.to,
-          color: getArrowColor(moment.type),
-        }]);
-        // Also update moment index
-        const mIdx = review.keyMoments.indexOf(moment);
-        if (mIdx >= 0) setReviewMomentIndex(mIdx);
-        return;
-      }
+    const moment = keyMoments.find(m => m.moveNumber === move.moveNumber && m.movedBy === move.movedBy);
+    if (moment) {
+      setReviewText(moment.description);
+      setReviewArrows([{
+        startSquare: moment.from,
+        endSquare: moment.to,
+        color: getArrowColor(moment.type),
+      }]);
+      const mIdx = keyMoments.indexOf(moment);
+      if (mIdx >= 0) setReviewMomentIndex(mIdx);
+      return;
     }
 
     // Regular move — just show SAN
     const moveLabel = move.movedBy === 'player' ? (playerName || 'You') : 'Rookie';
     setReviewText(`${moveLabel} played ${move.san}`);
     setReviewArrows([]);
-  }, [gameReview, playerName]);
+  }, [keyMoments, playerName, updateEvalBarForPosition]);
 
   const jumpToMoment = useCallback((moment: KeyMoment, momentIdx: number) => {
     setReviewMomentIndex(momentIdx);
-    // Find the move index for this moment
     const moves = moveLogRef.current;
     const moveIdx = moves.findIndex(m => m.moveNumber === moment.moveNumber && m.movedBy === moment.movedBy);
 
-    // Show fenBefore (position before the move) with the arrow
     setFen(moment.fenBefore);
     if (moveIdx >= 0) {
       setReviewMoveIndex(moveIdx);
       setLastMv(null);
+      updateEvalBarForPosition(moveIdx);
     }
     setReviewText(moment.description);
     setReviewArrows([{
-      startSquare: moves[moveIdx >= 0 ? moveIdx : 0].from,
-      endSquare: moves[moveIdx >= 0 ? moveIdx : 0].to,
+      startSquare: moment.from,
+      endSquare: moment.to,
       color: getArrowColor(moment.type),
     }]);
-  }, []);
+  }, [updateEvalBarForPosition]);
 
   // ════════════════════════════════
   // SQUARE STYLES
@@ -850,12 +883,14 @@ export default function PlayRookiePage() {
     setResignArmed(false);
     setRookieMood('neutral');
     setEvalPct(50);
-    setGameReview(null);
+    setKeyMoments([]);
     setReviewMoveIndex(0);
     setReviewMomentIndex(0);
     setReviewText(null);
     setReviewArrows([]);
     postGame.cancel(); // cancel any in-flight analysis
+    setCoachingScript(null);
+    setShowCoaching(false);
     prevRookieWpRef.current = undefined; // reset eval mood tracking
     // Seed with starting position eval (0cp = equal)
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
@@ -1139,31 +1174,37 @@ export default function PlayRookiePage() {
                       >
                         Play Again
                       </button>
-                      {gameReview && (
+                      {coachingScript && coachingScript.messages.length > 0 && (
                         <button
-                          onClick={() => {
-                            if (gameReview.keyMoments.length > 0) {
-                              const m = gameReview.keyMoments[0];
-                              setReviewMomentIndex(0);
-                              setReviewMoveIndex(0);
-                              setFen(m.fenBefore);
-                              setReviewText(m.description);
-                              setReviewArrows(m.moveSan ? [{
-                                startSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.from || 'e2',
-                                endSquare: moveLogRef.current.find(mv => mv.san === m.moveSan)?.to || 'e4',
-                                color: getArrowColor(m.type),
-                              }] : []);
-                            } else {
-                              setReviewMoveIndex(0);
-                              setReviewText('Use the arrows to step through the game.');
-                            }
-                            setPhase('review');
-                          }}
+                          onClick={() => setShowCoaching(true)}
                           className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
                         >
-                          Review
+                          Rookie&apos;s Take
                         </button>
                       )}
+                      <button
+                        onClick={() => {
+                          if (keyMoments.length > 0) {
+                            const m = keyMoments[0];
+                            setReviewMomentIndex(0);
+                            setReviewMoveIndex(0);
+                            setFen(m.fenBefore);
+                            setReviewText(m.description);
+                            setReviewArrows([{
+                              startSquare: m.from,
+                              endSquare: m.to,
+                              color: getArrowColor(m.type),
+                            }]);
+                          } else {
+                            setReviewMoveIndex(0);
+                            setReviewText('Use the arrows to step through the game.');
+                          }
+                          setPhase('review');
+                        }}
+                        className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
+                      >
+                        Review
+                      </button>
                     </div>
                   </div>
                 ) : speech.displayText ? (
@@ -1217,8 +1258,8 @@ export default function PlayRookiePage() {
               />
             </div>
 
-            {/* Eval bar — gameover/review only */}
-            {(phase === 'gameover' || phase === 'review') && <EvalBar />}
+            {/* Eval bar — visible during play, gameover, and review */}
+            {(phase === 'playing' || phase === 'gameover' || phase === 'review') && <EvalBar />}
 
             {/* Phase-specific content */}
             {phase === 'playing' && isMyTurn && !rookieThinking ? (
@@ -1244,27 +1285,31 @@ export default function PlayRookiePage() {
               <p className="text-xs font-medium text-chess-text-faint text-center h-5">Rookie is thinking...</p>
             ) : phase === 'gameover' ? (
               <div className="h-5" />
-            ) : phase === 'review' && gameReview ? (
+            ) : phase === 'review' ? (
               <div className="space-y-2">
                 <ReviewNav />
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {gameReview.keyMoments.map((m, i) => (
-                    <button
-                      key={i}
-                      onClick={() => jumpToMoment(m, i)}
-                      className={`flex-1 min-w-0 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
-                        reviewMomentIndex === i
-                          ? m.type === 'mistake'
-                            ? 'bg-red-500/15 border-2 border-red-500/40 text-red-400'
-                            : 'bg-chess-green/15 border-2 border-chess-green text-chess-green'
-                          : 'bg-chess-surface border border-chess-disabled text-chess-text-muted'
-                      }`}
-                    >
-                      <div className="truncate">{m.title}</div>
-                      <div className="text-[10px] opacity-70">Move {m.moveNumber}</div>
-                    </button>
-                  ))}
-                </div>
+                {keyMoments.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {keyMoments.map((m, i) => (
+                      <button
+                        key={i}
+                        onClick={() => jumpToMoment(m, i)}
+                        className={`flex-1 min-w-0 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+                          reviewMomentIndex === i
+                            ? m.type === 'blunder' || m.type === 'mistake'
+                              ? 'bg-red-500/15 border-2 border-red-500/40 text-red-400'
+                              : m.type === 'turning-point'
+                                ? 'bg-amber-500/15 border-2 border-amber-500/40 text-amber-400'
+                                : 'bg-chess-green/15 border-2 border-chess-green text-chess-green'
+                            : 'bg-chess-surface border border-chess-disabled text-chess-text-muted'
+                        }`}
+                      >
+                        <div className="truncate">{m.title}</div>
+                        <div className="text-[10px] opacity-70">Move {m.moveNumber}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={() => startGame()}
                   className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
@@ -1303,6 +1348,15 @@ export default function PlayRookiePage() {
           100% { text-shadow: none; }
         }
       `}</style>
+
+      {/* Coaching Drawer */}
+      {showCoaching && coachingScript && (
+        <CoachingDrawer
+          script={coachingScript}
+          onClose={() => setShowCoaching(false)}
+          playerName={playerName || undefined}
+        />
+      )}
     </div>
   );
 }
