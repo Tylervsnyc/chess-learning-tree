@@ -617,6 +617,7 @@ export default function PlayRookiePage() {
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
+        movedPiece: PIECE_NAMES[result.piece],
       });
       updateMood(g, 'rookie', result.captured || undefined);
       recordMoveToSession(g, result, 'rookie', currentFen);
@@ -702,6 +703,7 @@ export default function PlayRookiePage() {
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
+        movedPiece: PIECE_NAMES[result.piece],
       });
       updateMood(g, 'player', result.captured || undefined);
       recordMoveToSession(g, result, 'player', fen);

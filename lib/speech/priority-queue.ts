@@ -17,6 +17,8 @@ export interface LineConditions {
   threadId?: string;
   /** Who just moved? */
   movedBy?: 'player' | 'rookie';
+  /** Which piece was moved (e.g. 'queen', 'knight') */
+  movedPiece?: string;
   /** Which color the player is playing */
   playerColor?: 'white' | 'black';
   /** Minimum move number */
@@ -45,6 +47,7 @@ export interface QueueContext {
   playerName: string;
   playerColor?: 'white' | 'black';
   capturedPiece?: string; // 'pawn', 'knight', etc.
+  movedPiece?: string; // 'pawn', 'knight', etc.
   /** Net material swing from a capture sequence (positive = player gained) */
   materialSwing?: number;
   /** Number of captures in a capture sequence */
@@ -117,6 +120,9 @@ function matchesConditions(line: SpeechLine, context: QueueContext): boolean {
 
   // playerColor filter
   if (c.playerColor && c.playerColor !== context.playerColor) return false;
+
+  // Moved piece filter
+  if (c.movedPiece && c.movedPiece !== context.movedPiece) return false;
 
   // Move number range
   if (c.minMove !== undefined && context.moveNumber < c.minMove) return false;
