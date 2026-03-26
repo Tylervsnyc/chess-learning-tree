@@ -38,6 +38,8 @@ export interface SpeechInput {
   capturedPiece?: string;
   /** Material value of the captured piece (1=pawn, 3=knight/bishop, 5=rook, 9=queen) */
   capturedPieceValue?: number;
+  /** Which piece was moved (e.g. 'queen', 'knight') */
+  movedPiece?: string;
 }
 
 export interface EvalUpdate {
@@ -123,6 +125,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       playerName: input.playerName,
       playerColor: input.playerColor,
       capturedPiece: input.capturedPiece,
+      movedPiece: input.movedPiece,
     }),
     [],
   );
@@ -269,15 +272,24 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
       // ── CORE RULE: Rookie only speaks when something EARNS it. ──
       // She does NOT comment on every move. She speaks on:
+      //   - Resign (checked first — overrides game_end beat transition)
       //   - Beat transitions (early_game start, turning_point, game_end)
       //   - Notable events (check, castle, checkmate, blunder, great_move)
       //   - Capture sequences (3+ consecutive captures)
       // Regular moves with event 'none' and no beat change = silence.
 
-      // 2. Early game transition — no automatic quip, just note it
+      // 2. Resign — always speak, bypass cooldown. Must be checked before
+      //    game_end beat transition which would otherwise intercept it.
+      if (input.event === 'resign') {
+        const context = buildContext(input);
+        selectAndQueue(context);
+        return;
+      }
+
+      // 3. Early game transition — no automatic quip, just note it
       if (beatResult.newBeat === 'early_game') return;
 
-      // 3. Game end — always speak
+      // 4. Game end — always speak
       if (beatResult.newBeat === 'game_end') {
         const context = buildContext(input);
         const rookieWon = input.rookieWinPercent > 50;
@@ -305,13 +317,6 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;
         }
-        return;
-      }
-
-      // 6. Resign — always speak, bypass cooldown
-      if (input.event === 'resign') {
-        const context = buildContext(input);
-        selectAndQueue(context);
         return;
       }
 
