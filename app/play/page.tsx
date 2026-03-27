@@ -54,6 +54,18 @@ function interpolateSfConfig(level: number): [number, number] {
   ];
 }
 
+interface DebugEntry {
+  id: number;
+  moveNum: number;
+  timestamp: number;
+  type: 'move' | 'mood' | 'quip' | 'engine' | 'eval' | 'speech' | 'game-event';
+  who: 'player' | 'rookie' | 'system';
+  summary: string;
+  details: Record<string, unknown>;
+}
+
+let debugIdCounter = 0;
+
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
@@ -265,6 +277,22 @@ export default function PlayRookiePage() {
   const [audioOn, setAudioOn] = useState(true);
   const [rookieMood, setRookieMood] = useState<RookieMood>('neutral');
 
+  // Debug log
+  const [debugLog, setDebugLog] = useState<DebugEntry[]>([]);
+  const [debugOpen, setDebugOpen] = useState(false);
+  const debugEndRef = useRef<HTMLDivElement>(null);
+
+  const log = useCallback((entry: Omit<DebugEntry, 'id' | 'timestamp'>) => {
+    setDebugLog(prev => [...prev, { ...entry, id: debugIdCounter++, timestamp: Date.now() }]);
+  }, []);
+
+  // Auto-scroll debug log
+  useEffect(() => {
+    if (debugOpen && debugEndRef.current) {
+      debugEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [debugLog, debugOpen]);
+
   const moveNumRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -332,8 +360,8 @@ export default function PlayRookiePage() {
 
       // Only apply eval mood if no recent high-priority event override
       const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
-      if (movesSinceMoodChange >= MOOD_HOLD_MOVES) {
-        if (moodResult.mood !== prevMoodRef.current) {
+      const moodApplied = movesSinceMoodChange >= MOOD_HOLD_MOVES && moodResult.mood !== prevMoodRef.current;
+      if (moodApplied) {
           setRookieMood(moodResult.mood);
           prevMoodRef.current = moodResult.mood;
           moodSetAtMoveRef.current = moveNumRef.current;
@@ -342,10 +370,17 @@ export default function PlayRookiePage() {
           if (moodResult.isSwing) {
             evalSwingMoodRef.current = moodResult.mood;
           }
-        }
       }
+
+      log({
+        moveNum: moveNumRef.current,
+        type: 'eval',
+        who: 'system',
+        summary: `cp=${cp} mate=${mate} rookieWp=${moodResult.rookieWinPercent.toFixed(1)}% mood=${moodResult.mood}${moodApplied ? ' APPLIED' : ' held'}`,
+        details: { cp, mate, rookieWinPercent: moodResult.rookieWinPercent, mood: moodResult.mood, isSwing: moodResult.isSwing, moodApplied, movesSinceMoodChange },
+      });
     }).catch(() => {});
-  }, [phase, playerColor, playerName]);
+  }, [phase, playerColor, playerName, log]);
 
   // ════════════════════════════════
   // AUDIO (with real-time amplitude for talk animation)
@@ -427,15 +462,30 @@ export default function PlayRookiePage() {
 
     const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
     if (!isHighPriority && newMood !== prevMoodRef.current && movesSinceMoodChange < MOOD_HOLD_MOVES) {
+      log({
+        moveNum: moveNumRef.current,
+        type: 'mood',
+        who: movedBy,
+        summary: `HELD ${prevMoodRef.current} (wanted ${newMood}, ${movesSinceMoodChange}/${MOOD_HOLD_MOVES} moves)`,
+        details: { from: prevMoodRef.current, wanted: newMood, movesSinceMoodChange, isHighPriority },
+      });
       return;
     }
 
     if (newMood === prevMoodRef.current) return;
 
+    log({
+      moveNum: moveNumRef.current,
+      type: 'mood',
+      who: movedBy,
+      summary: `${prevMoodRef.current} -> ${newMood}${isHighPriority ? ' (high priority)' : ''}`,
+      details: { from: prevMoodRef.current, to: newMood, trigger: g.isCheckmate() ? 'checkmate' : g.isCheck() ? 'check' : g.isDraw() ? 'draw' : 'other', isHighPriority },
+    });
+
     setRookieMood(newMood);
     prevMoodRef.current = newMood;
     moodSetAtMoveRef.current = moveNumRef.current;
-  }, [playerColor]);
+  }, [playerColor, log]);
 
   // ════════════════════════════════
   // SESSION RECORDING — track moves for coaching
@@ -602,27 +652,48 @@ export default function PlayRookiePage() {
       if (result.captured) playCaptureSound();
       else playMoveSound();
 
+      log({
+        moveNum: moveNumRef.current,
+        type: 'move',
+        who: 'rookie',
+        summary: `${result.san}${result.captured ? ' captures ' + PIECE_NAMES[result.captured] : ''}${g.isCheck() ? ' +' : ''}`,
+        details: { san: result.san, from: result.from, to: result.to, captured: result.captured || null },
+      });
+
       // Update eval bar
       updateEval(newFen);
 
-      speech.onMove({
+      const speechInput = {
         moveNumber: moveNumRef.current,
         rookieWinPercent: prevRookieWpRef.current ?? 50,
         prevRookieWinPercent: prevRookieWpRef.current,
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
-        movedBy: 'rookie',
+        movedBy: 'rookie' as const,
         event: toGameEvent(g, result),
         playerName: playerName || 'friend',
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
+      };
+      speech.onMove(speechInput);
+      log({
+        moveNum: moveNumRef.current,
+        type: 'speech',
+        who: 'rookie',
+        summary: `onMove event=${speechInput.event} rookieWp=${speechInput.rookieWinPercent.toFixed(1)}%`,
+        details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
       });
+
       updateMood(g, 'rookie', result.captured || undefined);
       recordMoveToSession(g, result, 'rookie', currentFen);
 
       if (g.isGameOver()) {
+        const resultText = g.isCheckmate()
+          ? ((g.turn() === 'w' && playerColor === 'white') || (g.turn() === 'b' && playerColor === 'black') ? 'Rookie wins by checkmate' : 'Player wins by checkmate')
+          : g.isStalemate() ? 'Stalemate' : 'Draw';
+        log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: resultText, details: {} });
         if (g.isCheckmate()) {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
@@ -638,6 +709,7 @@ export default function PlayRookiePage() {
 
     // Beginner range (< 0.5) uses minimax, others use Stockfish
     if (skillLevel < 0.5 || !sfReadyRef.current) {
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (skill=${Math.round(skillLevel)})`, details: { engine: 'minimax', skillLevel } });
       const result = getRookieMove(currentFen, Math.round(skillLevel));
       if (!result) { setRookieThinking(false); return; }
       rookieTimerRef.current = setTimeout(() => {
@@ -647,6 +719,7 @@ export default function PlayRookiePage() {
     }
 
     const [sfSkill, sfDepth] = interpolateSfConfig(skillLevel);
+    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (skill=${sfSkill}, depth=${sfDepth})`, details: { engine: 'stockfish', sfSkill, sfDepth, skillLevel } });
     const thinkStart = Date.now();
     stockfish.getBestMove(currentFen, sfSkill, sfDepth).then((uciMove) => {
       if (!uciMove) {
@@ -662,7 +735,7 @@ export default function PlayRookiePage() {
       const wait = Math.max(0, 500 - (Date.now() - thinkStart));
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
     });
-  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech]);
+  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, log]);
 
   // ════════════════════════════════
   // PLAYER'S MOVE
@@ -688,27 +761,48 @@ export default function PlayRookiePage() {
       if (result.captured) playCaptureSound();
       else playMoveSound();
 
+      log({
+        moveNum: moveNumRef.current,
+        type: 'move',
+        who: 'player',
+        summary: `${result.san}${result.captured ? ' captures ' + PIECE_NAMES[result.captured] : ''}${g.isCheck() ? ' +' : ''}`,
+        details: { san: result.san, from, to, captured: result.captured || null },
+      });
+
       // Update eval bar
       updateEval(newFen);
 
-      speech.onMove({
+      const speechInput = {
         moveNumber: moveNumRef.current,
         rookieWinPercent: prevRookieWpRef.current ?? 50,
         prevRookieWinPercent: prevRookieWpRef.current,
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
-        movedBy: 'player',
+        movedBy: 'player' as const,
         event: toGameEvent(g, result),
         playerName: playerName || 'friend',
         playerColor,
         capturedPiece: result.captured ? PIECE_NAMES[result.captured] : undefined,
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
+      };
+      speech.onMove(speechInput);
+      log({
+        moveNum: moveNumRef.current,
+        type: 'speech',
+        who: 'player',
+        summary: `onMove event=${speechInput.event} rookieWp=${speechInput.rookieWinPercent.toFixed(1)}%`,
+        details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
       });
+
       updateMood(g, 'player', result.captured || undefined);
       recordMoveToSession(g, result, 'player', fen);
 
       if (g.isGameOver()) {
+        const resultText = g.isCheckmate()
+          ? ((g.turn() === 'w' && playerColor === 'white') || (g.turn() === 'b' && playerColor === 'black') ? 'Rookie wins by checkmate' : 'Player wins by checkmate')
+          : g.isStalemate() ? 'Stalemate' : 'Draw';
+        log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: resultText, details: {} });
         if (g.isCheckmate()) {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
@@ -727,7 +821,7 @@ export default function PlayRookiePage() {
     } catch {
       return false;
     }
-  }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval]);
+  }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, log]);
 
   // ════════════════════════════════
   // CLICK TO MOVE
@@ -903,6 +997,10 @@ export default function PlayRookiePage() {
     // Seed with starting position eval (0cp = equal)
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
 
+    // Clear debug log
+    setDebugLog([]);
+    debugIdCounter = 0;
+
     // Start session tracking (only for logged-in users)
     if (user?.id) {
       const session = new GameSession('play-rookie', user.id);
@@ -912,6 +1010,7 @@ export default function PlayRookiePage() {
     moveStartRef.current = Date.now();
 
     speech.onGameStart(playerColor, playerName || 'friend');
+    log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
 
     setPhase('playing');
   };
@@ -1278,8 +1377,8 @@ export default function PlayRookiePage() {
               />
             </div>
 
-            {/* Eval bar — visible during play, gameover, and review */}
-            {(phase === 'playing' || phase === 'gameover' || phase === 'review') && <EvalBar />}
+            {/* Eval bar — only visible during review (eval still runs during play for Rookie mood) */}
+            {phase === 'review' && <EvalBar />}
 
             {/* Phase-specific content */}
             {phase === 'playing' && isMyTurn && !rookieThinking ? (
@@ -1342,6 +1441,68 @@ export default function PlayRookiePage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* ════════════════════════════════ */}
+      {/* DEBUG LOG PANEL */}
+      {/* ════════════════════════════════ */}
+      <div className="flex-shrink-0 border-t border-chess-disabled">
+        <button
+          onClick={() => setDebugOpen(!debugOpen)}
+          className="w-full px-4 py-2 flex items-center justify-between text-xs font-mono text-chess-text-muted hover:bg-chess-surface transition-colors"
+        >
+          <span>Debug Log ({debugLog.length} entries)</span>
+          <span>{debugOpen ? 'Hide' : 'Show'}</span>
+        </button>
+
+        {debugOpen && (
+          <div className="max-h-[40vh] overflow-auto bg-[#0d1117] text-[11px] font-mono leading-relaxed">
+            {debugLog.length === 0 && (
+              <div className="px-4 py-3 text-gray-500">No events yet. Make a move...</div>
+            )}
+            {debugLog.map((entry) => {
+              const colors: Record<string, string> = {
+                move: 'text-blue-400',
+                mood: 'text-yellow-400',
+                quip: 'text-green-400',
+                engine: 'text-purple-400',
+                eval: 'text-cyan-400',
+                speech: 'text-orange-400',
+                'game-event': 'text-red-400',
+              };
+              const whoColors: Record<string, string> = {
+                player: 'text-cyan-300',
+                rookie: 'text-orange-300',
+                system: 'text-gray-400',
+              };
+              return (
+                <div key={entry.id} className="px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-gray-600 w-6 text-right flex-shrink-0">#{entry.moveNum}</span>
+                    <span className={`font-semibold ${colors[entry.type] || 'text-gray-400'}`}>
+                      [{entry.type}]
+                    </span>
+                    <span className={whoColors[entry.who] || 'text-gray-400'}>
+                      {entry.who}
+                    </span>
+                    <span className="text-gray-200">{entry.summary}</span>
+                  </div>
+                  {Object.keys(entry.details).length > 0 && (
+                    <div className="ml-8 mt-0.5 text-gray-500">
+                      {Object.entries(entry.details).map(([k, v]) => (
+                        <span key={k} className="mr-3">
+                          <span className="text-gray-600">{k}=</span>
+                          <span className="text-gray-400">{JSON.stringify(v)}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <div ref={debugEndRef} />
+          </div>
+        )}
       </div>
 
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />
