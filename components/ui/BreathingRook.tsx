@@ -338,7 +338,7 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
   const s = (v: number) => `${(v * scale).toFixed(2)}px`;
   const insetShadow = `inset 0 ${s(0.75)} 0 rgba(0,0,0,0.15), inset 0 -${s(0.75)} 0 rgba(255,255,255,0.15)`;
 
-  // Exact pixel dimensions to prevent flex layouts from introducing sub-pixel offsets
+  // Exact pixel dimensions — no CSS Grid, absolute positioning for pixel-perfect gaps
   const gridWidth = 5 * blockSize + 4 * gap;
   const gridHeight = 6 * blockSize + 5 * gap;
 
@@ -349,19 +349,17 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
     <div className={`inline-flex flex-col items-center gap-2 flex-shrink-0 ${className}`} role="status" aria-label={label || 'Loading'}>
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(5, ${blockSize}px)`,
-          gridTemplateRows: `repeat(6, ${blockSize}px)`,
-          gap: `${gap}px`,
+          position: 'relative',
           width: gridWidth,
           height: gridHeight,
-          transform: 'translateZ(0)',
         }}
       >
         {ALL_CELLS.map(({ x, y }) => {
           const block = BLOCK_MAP.get(`${x},${y}`);
-          if (!block) return <div key={`${x},${y}`} />;
+          if (!block) return null;
 
+          const left = x * (blockSize + gap);
+          const top = y * (blockSize + gap);
           const delay = activeMode ? getBlockDelay(x, y, activeMode) : 0;
 
           const tinted = tintColor(block.color, mood);
@@ -369,16 +367,19 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
           // Talk-intensity mode: audio-driven brightness + scale per block
           if (isTalkDriven) {
             const dist = BLOCK_DISTANCES.get(`${x},${y}`) ?? 0.5;
-            // Center blocks get full intensity, outer blocks get attenuated
-            // Creates a ripple: center reacts fully, edges react ~40% as much
             const blockIntensity = talkIntensity * (1 - dist * 0.6);
-            const brightness = 1 + blockIntensity * 0.5;  // 1.0 → 1.5
-            const blockScale = 1 + blockIntensity * 0.08;  // 1.0 → 1.08
+            const brightness = 1 + blockIntensity * 0.5;
+            const blockScale = 1 + blockIntensity * 0.08;
 
             return (
               <div
                 key={`${x},${y}`}
                 style={{
+                  position: 'absolute',
+                  left,
+                  top,
+                  width: blockSize,
+                  height: blockSize,
                   borderRadius: radius,
                   background: getMatteBackground(tinted),
                   boxShadow: insetShadow,
@@ -398,6 +399,11 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
             <div
               key={`${x},${y}`}
               style={{
+                position: 'absolute',
+                left,
+                top,
+                width: blockSize,
+                height: blockSize,
                 borderRadius: radius,
                 background: getMatteBackground(tinted),
                 boxShadow: insetShadow,

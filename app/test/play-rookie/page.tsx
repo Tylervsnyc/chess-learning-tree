@@ -36,6 +36,21 @@ const ANIM_MS = 300;
 
 type Phase = 'setup' | 'playing' | 'gameover';
 
+// ════════════════════════════════
+// DEBUG LOG
+// ════════════════════════════════
+interface DebugEntry {
+  id: number;
+  moveNum: number;
+  timestamp: number;
+  type: 'move' | 'mood' | 'quip' | 'engine' | 'game-event';
+  who: 'player' | 'rookie' | 'system';
+  summary: string;
+  details: Record<string, unknown>;
+}
+
+let debugIdCounter = 0;
+
 export default function RookieChatPage() {
   const [phase, setPhase] = useState<Phase>('setup');
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
@@ -55,8 +70,24 @@ export default function RookieChatPage() {
   const [msgKey, setMsgKey] = useState(0);
   const [rookieMood, setRookieMood] = useState<RookieMood>('neutral');
 
+  // Debug log
+  const [debugLog, setDebugLog] = useState<DebugEntry[]>([]);
+  const [debugOpen, setDebugOpen] = useState(false);
+  const debugEndRef = useRef<HTMLDivElement>(null);
+
+  const log = useCallback((entry: Omit<DebugEntry, 'id' | 'timestamp'>) => {
+    setDebugLog(prev => [...prev, { ...entry, id: debugIdCounter++, timestamp: Date.now() }]);
+  }, []);
+
   const moveNumRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-scroll debug log
+  useEffect(() => {
+    if (debugOpen && debugEndRef.current) {
+      debugEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [debugLog, debugOpen]);
 
   // Stockfish init
   const sfReadyRef = useRef(false);
@@ -100,20 +131,23 @@ export default function RookieChatPage() {
   const updateMood = useCallback((g: Chess, movedBy: 'player' | 'rookie', captured?: string) => {
     let newMood: RookieMood = 'neutral';
     let isHighPriority = false;
+    let trigger = 'none';
 
     if (g.isCheckmate()) {
       const loser = g.turn();
       const rookieLost = (loser === 'w' && playerColor === 'black') || (loser === 'b' && playerColor === 'white');
       newMood = rookieLost ? 'angry' : 'smug';
       isHighPriority = true;
+      trigger = `checkmate — rookie ${rookieLost ? 'lost' : 'won'}`;
     } else if (g.isDraw() || g.isStalemate()) {
       newMood = 'nervous';
       isHighPriority = true;
+      trigger = g.isStalemate() ? 'stalemate' : 'draw';
     } else if (g.isCheck()) {
       newMood = movedBy === 'player' ? 'surprised' : 'smug';
       isHighPriority = true;
+      trigger = `check by ${movedBy}`;
     } else if (captured) {
-      // Captures are emotional — react immediately
       const bigPiece = ['q', 'r'].includes(captured);
       if (movedBy === 'rookie') {
         newMood = bigPiece ? 'excited' : 'happy';
@@ -121,6 +155,7 @@ export default function RookieChatPage() {
         newMood = bigPiece ? 'panicking' : 'nervous';
       }
       isHighPriority = true;
+      trigger = `${movedBy} captured ${captured}${bigPiece ? ' (big piece)' : ''}`;
     } else {
       // Material count for general vibe
       const fenPos = g.fen().split(' ')[0];
@@ -128,23 +163,48 @@ export default function RookieChatPage() {
       const playerPieces = playerColor === 'white' ? fenPos.replace(/[^PNBRQK]/g, '') : fenPos.replace(/[^pnbrqk]/g, '');
       const rookieMat = rookiePieces.length;
       const playerMat = playerPieces.length;
-      if (rookieMat > playerMat + 2) newMood = 'happy';
-      else if (playerMat > rookieMat + 2) newMood = 'nervous';
+      if (rookieMat > playerMat + 2) { newMood = 'happy'; trigger = `material: rookie ${rookieMat} vs player ${playerMat}`; }
+      else if (playerMat > rookieMat + 2) { newMood = 'nervous'; trigger = `material: rookie ${rookieMat} vs player ${playerMat}`; }
+      else { trigger = `material even: rookie ${rookieMat} vs player ${playerMat}`; }
     }
 
     // Hold current mood unless high priority or enough moves have passed
     const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
     if (!isHighPriority && newMood !== prevMoodRef.current && movesSinceMoodChange < MOOD_HOLD_MOVES) {
-      return; // keep current mood
+      log({
+        moveNum: moveNumRef.current,
+        type: 'mood',
+        who: 'system',
+        summary: `HELD mood at "${prevMoodRef.current}" (would be "${newMood}")`,
+        details: { trigger, isHighPriority, movesSinceMoodChange, holdThreshold: MOOD_HOLD_MOVES, prevMood: prevMoodRef.current, proposedMood: newMood },
+      });
+      return;
     }
 
-    if (newMood === prevMoodRef.current) return; // no change
+    if (newMood === prevMoodRef.current) {
+      log({
+        moveNum: moveNumRef.current,
+        type: 'mood',
+        who: 'system',
+        summary: `Mood unchanged: "${newMood}"`,
+        details: { trigger, isHighPriority },
+      });
+      return;
+    }
+
+    log({
+      moveNum: moveNumRef.current,
+      type: 'mood',
+      who: 'system',
+      summary: `Mood: "${prevMoodRef.current}" -> "${newMood}"`,
+      details: { trigger, isHighPriority, movesSinceMoodChange, prevMood: prevMoodRef.current },
+    });
 
     setRookieMood(newMood);
     prevMoodRef.current = newMood;
     moodSetAtMoveRef.current = moveNumRef.current;
 
-  }, [playerColor, showRookieMsg]);
+  }, [playerColor, showRookieMsg, log]);
 
   // ════════════════════════════════
   // ROOKIE'S TURN — schedules a FEN update after delay
@@ -163,6 +223,14 @@ export default function RookieChatPage() {
       moveNumRef.current++;
       const newFen = g.fen();
 
+      log({
+        moveNum: moveNumRef.current,
+        type: 'move',
+        who: 'rookie',
+        summary: `Rookie plays ${result.san}${result.captured ? ` (captures ${result.captured})` : ''}${g.isCheck() ? '+' : ''}`,
+        details: { san: result.san, from: result.from, to: result.to, captured: result.captured || null, isCheck: g.isCheck(), fen: newFen },
+      });
+
       // Update FEN — react-chessboard diffs old vs new position and animates
       setFen(newFen);
       setLastMv({ from: result.from as Square, to: result.to as Square });
@@ -177,6 +245,12 @@ export default function RookieChatPage() {
       updateMood(g, 'rookie', result.captured || undefined);
 
       if (g.isGameOver()) {
+        const resultText = g.isCheckmate()
+          ? (() => { const loser = g.turn(); const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black'); return iLost ? 'Rookie wins!' : 'You win!'; })()
+          : g.isStalemate() ? 'Stalemate!' : 'Draw!';
+
+        log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `Game over: ${resultText}`, details: { checkmate: g.isCheckmate(), stalemate: g.isStalemate(), draw: g.isDraw() } });
+
         if (g.isCheckmate()) {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
@@ -193,6 +267,7 @@ export default function RookieChatPage() {
     if (skillLevel === 0 || !sfReadyRef.current) {
       const result = getRookieMove(currentFen, skillLevel);
       if (!result) { setRookieThinking(false); return; }
+      log({ moveNum: moveNumRef.current + 1, type: 'engine', who: 'rookie', summary: `Engine: minimax -> ${result.san}`, details: { engine: 'minimax', skillLevel, sfReady: sfReadyRef.current } });
       rookieTimerRef.current = setTimeout(() => {
         applyRookieMove({ san: result.san });
       }, 500);
@@ -202,6 +277,7 @@ export default function RookieChatPage() {
     // Stockfish path
     const [sfSkill, sfDepth] = SF_CONFIG[Math.min(skillLevel, SF_CONFIG.length - 1)];
     const thinkStart = Date.now();
+    log({ moveNum: moveNumRef.current + 1, type: 'engine', who: 'rookie', summary: `Engine: stockfish skill=${sfSkill} depth=${sfDepth}`, details: { engine: 'stockfish', sfSkill, sfDepth, skillLevel } });
     stockfish.getBestMove(currentFen, sfSkill, sfDepth).then((uciMove) => {
       if (!uciMove) {
         const result = getRookieMove(currentFen, skillLevel);
@@ -234,6 +310,14 @@ export default function RookieChatPage() {
       moveNumRef.current++;
       const newFen = g.fen();
 
+      log({
+        moveNum: moveNumRef.current,
+        type: 'move',
+        who: 'player',
+        summary: `Player plays ${result.san}${result.captured ? ` (captures ${result.captured})` : ''}${g.isCheck() ? '+' : ''}`,
+        details: { san: result.san, from: result.from, to: result.to, captured: result.captured || null, isCheck: g.isCheck(), fen: newFen },
+      });
+
       setFen(newFen);
       setLastMv({ from, to });
       setSelected(null);
@@ -246,6 +330,11 @@ export default function RookieChatPage() {
       updateMood(g, 'player', result.captured || undefined);
 
       if (g.isGameOver()) {
+        const resultText = g.isCheckmate()
+          ? (() => { const loser = g.turn(); const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black'); return iLost ? 'Rookie wins!' : 'You win!'; })()
+          : g.isStalemate() ? 'Stalemate!' : 'Draw!';
+        log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `Game over: ${resultText}`, details: { checkmate: g.isCheckmate(), stalemate: g.isStalemate(), draw: g.isDraw() } });
+
         if (g.isCheckmate()) {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
@@ -357,6 +446,8 @@ export default function RookieChatPage() {
     setRookieThinking(false);
     setRookieText(null);
     setRookieMood('neutral');
+    setDebugLog([]);
+    debugIdCounter = 0;
 
     setPhase('playing');
   };
@@ -550,6 +641,66 @@ export default function RookieChatPage() {
           </div>
         </div>
       )}
+
+      {/* ════════════════════════════════ */}
+      {/* DEBUG LOG PANEL */}
+      {/* ════════════════════════════════ */}
+      <div className="flex-shrink-0 border-t border-chess-disabled">
+        <button
+          onClick={() => setDebugOpen(!debugOpen)}
+          className="w-full px-4 py-2 flex items-center justify-between text-xs font-mono text-chess-text-muted hover:bg-chess-surface transition-colors"
+        >
+          <span>Debug Log ({debugLog.length} entries)</span>
+          <span>{debugOpen ? 'Hide' : 'Show'}</span>
+        </button>
+
+        {debugOpen && (
+          <div className="max-h-[40vh] overflow-auto bg-[#0d1117] text-[11px] font-mono leading-relaxed">
+            {debugLog.length === 0 && (
+              <div className="px-4 py-3 text-gray-500">No events yet. Make a move...</div>
+            )}
+            {debugLog.map((entry) => {
+              const colors: Record<string, string> = {
+                move: 'text-blue-400',
+                mood: 'text-yellow-400',
+                quip: 'text-green-400',
+                engine: 'text-purple-400',
+                'game-event': 'text-red-400',
+              };
+              const whoColors: Record<string, string> = {
+                player: 'text-cyan-300',
+                rookie: 'text-orange-300',
+                system: 'text-gray-400',
+              };
+              return (
+                <div key={entry.id} className="px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-gray-600 w-6 text-right flex-shrink-0">#{entry.moveNum}</span>
+                    <span className={`font-semibold ${colors[entry.type] || 'text-gray-400'}`}>
+                      [{entry.type}]
+                    </span>
+                    <span className={whoColors[entry.who] || 'text-gray-400'}>
+                      {entry.who}
+                    </span>
+                    <span className="text-gray-200">{entry.summary}</span>
+                  </div>
+                  {Object.keys(entry.details).length > 0 && (
+                    <div className="ml-8 mt-0.5 text-gray-500">
+                      {Object.entries(entry.details).map(([k, v]) => (
+                        <span key={k} className="mr-3">
+                          <span className="text-gray-600">{k}=</span>
+                          <span className="text-gray-400">{JSON.stringify(v)}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <div ref={debugEndRef} />
+          </div>
+        )}
+      </div>
 
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />
 
