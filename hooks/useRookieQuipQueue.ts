@@ -19,12 +19,14 @@ type Priority = 'high' | 'normal' | 'low';
 interface QueueItem {
   text: string;
   priority: Priority;
+  /** Pre-substitution template text for voice cache lookup */
+  voiceKey?: string;
 }
 
 const GAP_MS = 600; // pause between quips
 
 export function useRookieQuipQueue(
-  speakQuip: (text: string) => void,
+  speakQuip: (text: string, voiceKey?: string) => void,
   isTalkingRef: React.RefObject<boolean>,
 ) {
   const [displayText, setDisplayText] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function useRookieQuipQueue(
 
     setDisplayText(item.text);
     setMsgKey(k => k + 1);
-    speakQuip(item.text);
+    speakQuip(item.text, item.voiceKey);
 
     // Poll until speech is done, then process next after gap
     const waitForDone = () => {
@@ -63,13 +65,13 @@ export function useRookieQuipQueue(
   }, [speakQuip, isTalkingRef]);
 
   /** Queue a quip. Plays immediately if idle, otherwise waits in line. */
-  const queueQuip = useCallback((text: string, priority: Priority = 'normal') => {
+  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string) => {
     // Low priority gets dropped if anything is queued or playing
     if (priority === 'low' && (queueRef.current.length > 0 || processingRef.current)) {
       return;
     }
 
-    const item: QueueItem = { text, priority };
+    const item: QueueItem = { text, priority, voiceKey };
 
     if (priority === 'high') {
       // Insert at front (after any other high-priority items)

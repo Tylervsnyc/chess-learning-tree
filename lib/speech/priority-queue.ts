@@ -170,7 +170,7 @@ export function selectLine(
   pool: SpeechLine[],
   context: QueueContext,
   state: QueueState,
-): { line: SpeechLine; text: string } | null {
+): { line: SpeechLine; text: string; templateText: string } | null {
   const isUnlimitedBeat = UNLIMITED_BEATS.has(context.beat);
 
   // Check quip limit (game_end and post_game bypass it)
@@ -208,7 +208,7 @@ export function selectLine(
 
   const text = substitutePlaceholders(winner.line.text, context);
 
-  return { line: winner.line, text };
+  return { line: winner.line, text, templateText: winner.line.text };
 }
 
 /** Add a dynamically generated line (from Claude) to the pool */

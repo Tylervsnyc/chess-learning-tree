@@ -135,7 +135,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     (context: QueueContext) => {
       const result = selectLine(linePoolRef.current, context, queueStateRef.current);
       if (result) {
-        queueQuip(result.text);
+        queueQuip(result.text, 'normal', result.templateText);
         return true;
       }
       return false;
@@ -153,7 +153,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     ) => {
       const fallback = () => {
         const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-        if (result) queueQuip(result.text, priority);
+        if (result) queueQuip(result.text, priority, result.templateText);
       };
 
       if (!generator) { fallback(); return; }
@@ -162,7 +162,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         .then((text) => {
           linePoolRef.current.push(createGeneratedLine(text, beat, 90));
           const result = selectLine(linePoolRef.current, context, queueStateRef.current);
-          if (result) queueQuip(result.text, priority);
+          if (result) queueQuip(result.text, priority, result.templateText);
         })
         .catch(fallback);
     },

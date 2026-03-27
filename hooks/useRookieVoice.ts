@@ -120,20 +120,23 @@ export function useRookieVoice(audioOn: boolean) {
     setIsTalking(true);
   }, [getAudioContext]);
 
-  const speakQuip = useCallback(async (text: string) => {
+  const speakQuip = useCallback(async (text: string, voiceKey?: string) => {
     if (!audioOn) return;
     stopAudio();
 
-    // Try manifest cache first
+    // Try manifest cache — check voiceKey (template text) first, then exact text
     const manifest = manifestRef.current;
-    if (manifest && manifest[text]) {
-      try {
-        const res = await fetch(`/rookie-voice/${manifest[text]}`);
-        if (res.ok) {
-          await playBuffer(await res.arrayBuffer());
-          return;
-        }
-      } catch {}
+    if (manifest) {
+      const cacheKey = (voiceKey && manifest[voiceKey]) ? voiceKey : manifest[text] ? text : null;
+      if (cacheKey) {
+        try {
+          const res = await fetch(`/rookie-voice/${manifest[cacheKey]}`);
+          if (res.ok) {
+            await playBuffer(await res.arrayBuffer());
+            return;
+          }
+        } catch {}
+      }
     }
 
     // Fall back to API
