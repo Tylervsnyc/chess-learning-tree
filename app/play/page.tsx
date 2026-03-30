@@ -26,6 +26,7 @@ import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
 import { useRookieMood } from '@/hooks/useRookieMood';
+import { classifyOpening } from '@/lib/opening-classifier';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -308,6 +309,10 @@ export default function PlayRookiePage() {
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
 
+  // Honcho memory integration
+  const honchoGameIdRef = useRef<string | null>(null);
+  const honchoOpeningLoggedRef = useRef(false);
+
 
   // Stockfish init
   const sfReadyRef = useRef(false);
@@ -454,6 +459,59 @@ export default function PlayRookiePage() {
       isPromotion: result.flags.includes('p'),
     });
 
+    // Honcho: log opening at move 8, log blunders/brilliants
+    if (user?.id && honchoGameIdRef.current) {
+      const gameId = honchoGameIdRef.current;
+      const userId = user.id;
+
+      // Opening classification at move 8
+      if (moveNumRef.current === 8 && !honchoOpeningLoggedRef.current) {
+        honchoOpeningLoggedRef.current = true;
+        const gameMoves = moveLogRef.current.map(m => m.san);
+        const opening = classifyOpening(gameMoves);
+        if (opening) {
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'log_opening', gameId, userId, moves: gameMoves, color: playerColor }),
+          }).catch(() => {});
+          log({ moveNum: 8, type: 'game-event', who: 'system', summary: `Honcho: opening=${opening.name} (${opening.eco})`, details: { opening } });
+        }
+      }
+
+      // Log significant events (blunders, brilliants) — turning points from narrative
+      if (narrativeResult.isTurningPoint && movedBy === 'player') {
+        const events = narrativeResult.intelligence.briefing.events;
+        const eventType = events.includes('blunder') ? 'blunder'
+          : events.includes('great_move') ? 'brilliant'
+          : null;
+        if (eventType) {
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_event',
+              gameId,
+              userId,
+              event: {
+                fen: newFen,
+                movePlayed: result.san,
+                bestMove: result.san, // best move from eval would be better, but this is sufficient
+                evalBefore: evalCp.current,
+                evalAfter: evalCp.current,
+                moveNumber: moveNumRef.current,
+                phase: narrativeResult.intelligence.briefing.phase,
+                color: playerColor,
+                eventType,
+              },
+              completedLessons: [],
+            }),
+          }).catch(() => {});
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `Honcho: logged ${eventType} move ${moveNumRef.current}`, details: { eventType } });
+        }
+      }
+    }
+
     // If the narrative engine returned LLM text, route through the quip queue
     // so Rookie finishes her current thought before starting a new one
     if (narrativeResult.type === 'llm_narrative' && narrativeResult.text) {
@@ -588,6 +646,38 @@ export default function PlayRookiePage() {
         analysis,
       );
       setCoachingScript(coaching);
+
+      // Honcho: log game summary
+      if (user?.id && honchoGameIdRef.current && result && analysis) {
+        const gameMoves = moves.map(m => m.san);
+        const opening = classifyOpening(gameMoves);
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_summary',
+            gameId: honchoGameIdRef.current,
+            userId: user.id,
+            summary: {
+              result,
+              moveCount: moves.length,
+              openingName: opening?.name ?? null,
+              openingEco: opening?.eco ?? null,
+              color: playerColor,
+              blunders: analysis.blunders,
+              mistakes: analysis.mistakes,
+              brilliantMoves: analysis.brilliantMoves,
+              playerAccuracy: analysis.playerAccuracy,
+              primaryWeakness: null,
+              phase: {
+                opening: analysis.blunders === 0 ? 'solid' : 'shaky',
+                middlegame: analysis.playerAccuracy > 70 ? 'solid' : 'weak',
+                endgame: moves.length > 40 ? 'reached' : 'not reached',
+              },
+            },
+          }),
+        }).catch(() => {});
+      }
     }
 
     // Save to DB if logged in
@@ -1035,6 +1125,35 @@ export default function PlayRookiePage() {
     speech.onGameStart(playerColor, playerName || 'friend');
     narrative.resetForNewGame();
     narrative.setPlayerFacts(speechMemoryRef.current?.playerFacts ?? []);
+    honchoOpeningLoggedRef.current = false;
+
+    // Honcho: create session + fetch player context (fire-and-forget)
+    if (user?.id) {
+      const gameId = `game-${Date.now()}`;
+      honchoGameIdRef.current = gameId;
+      // Start session + fetch context in parallel
+      Promise.all([
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'start_session', gameId, userId: user.id }),
+        }),
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get_context', userId: user.id }),
+        }).then(r => r.json()),
+      ]).then(([_, contextData]) => {
+        if (contextData.context) {
+          narrative.setHonchoContext(contextData.context);
+          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `Honcho context loaded: ${contextData.context.slice(0, 80)}...`, details: { context: contextData.context } });
+        } else {
+          log({ moveNum: 0, type: 'game-event', who: 'system', summary: 'Honcho: no player context yet (need more games)', details: {} });
+        }
+      }).catch((err) => {
+        console.error('Honcho init failed:', err);
+      });
+    }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
 
     setPhase('playing');
