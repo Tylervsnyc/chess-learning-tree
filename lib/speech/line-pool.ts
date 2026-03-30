@@ -410,97 +410,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     source: 'authored',
   },
 
-  // ════════════════════════════════
-  // CAPTURES — PLAYER TAKES ROOKIE'S PIECE
-  // ════════════════════════════════
-  {
-    id: 'capture_player_1',
-    text: "My {piece}! I had plans for that {piece}. They were good plans, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_player_2',
-    text: "You took my {piece}. I want to say I'm fine but my evaluation function disagrees.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_player_3',
-    text: "That {piece} was doing important work. Now it's doing nothing. Because you took it.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_player_4',
-    text: "There goes my {piece}. I'm not upset. I'm just... recalculating everything.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_player_5',
-    text: "My {piece} is gone. I'm experiencing what I believe is called 'loss.' It's terrible.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_player_6',
-    text: "You just took my {piece} like it was nothing. It was not nothing to me, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'player' },
-    priority: 25,
-    source: 'authored',
-  },
-
-  // ════════════════════════════════
-  // CAPTURES — ROOKIE TAKES PLAYER'S PIECE
-  // ════════════════════════════════
-  {
-    id: 'capture_rookie_1',
-    text: "I'll take that {piece}, thank you. I want to celebrate but I'm told that's 'poor sportsmanship.'",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_rookie_2',
-    text: "Your {piece} is mine now. I'm adding it to my collection. I don't have a collection. But I'm starting one.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_rookie_3',
-    text: "Took your {piece}. Sorry. Actually I'm not sorry. Is that growth?",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_rookie_4',
-    text: "One {piece}, captured. The board just got a little emptier and I got a little happier.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_rookie_5',
-    text: "Your {piece} left the board. Involuntarily. My condolences, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
-  {
-    id: 'capture_rookie_6',
-    text: "I just captured your {piece} and felt a rush. Then guilt. Then the rush again. Feelings are complicated.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture'], movedBy: 'rookie' },
-    priority: 25,
-    source: 'authored',
-  },
+  // (Capture quips removed — Rookie doesn't comment on every trade)
 
   // ════════════════════════════════
   // CHECK
@@ -3250,45 +3160,6 @@ export const AUTHORED_LINES: SpeechLine[] = [
     text: 'Everything is pastel and quiet. This must be meditation.',
     conditions: { beats: ['turning_point'], evalMoods: ['even'] },
     priority: 45,
-    source: 'authored',
-  },
-
-  // ════════════════════════════════
-  // CAPTURE SEQUENCES (3+ consecutive captures)
-  // ════════════════════════════════
-  {
-    id: 'capture_seq_1',
-    text: "That was {captures} captures in a row. The board looks completely different now. I need a moment.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture_sequence'] },
-    priority: 40,
-    source: 'authored',
-  },
-  {
-    id: 'capture_seq_2',
-    text: "A {captures}-piece trade just happened. I blacked out for a second. What's left?",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture_sequence'] },
-    priority: 40,
-    source: 'authored',
-  },
-  {
-    id: 'capture_seq_3',
-    text: "Pieces flying off the board. {captures} captures. Chaos. I'm processing.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture_sequence'] },
-    priority: 40,
-    source: 'authored',
-  },
-  {
-    id: 'capture_seq_4',
-    text: "That exchange was violent, {name}. {captures} pieces gone. Just like that.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture_sequence'] },
-    priority: 40,
-    source: 'authored',
-  },
-  {
-    id: 'capture_seq_5',
-    text: "I just watched {captures} captures happen and I forgot to breathe. I don't breathe. But still.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['capture_sequence'] },
-    priority: 40,
     source: 'authored',
   },
 

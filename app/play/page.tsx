@@ -19,7 +19,6 @@ import { useUser } from '@/hooks/useUser';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
 import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
-// evalToRookieMood and getEvalMood now handled by useRookieMood hook
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory, type SpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
@@ -257,7 +256,6 @@ export default function PlayRookiePage() {
   const [evalPct, setEvalPct] = useState(50); // white percentage
   const evalCp = useRef(0); // raw centipawns for display
   const evalMate = useRef<number | null>(null); // mate-in-N
-  // (prevRookieWpRef moved to useRookieMood hook — access via moodSystem.getRookieWinPercent())
   const lastMovedByRef = useRef<'player' | 'rookie'>('player'); // who moved last (for blunder detection)
   const speechEvalUpdateRef = useRef<((update: EvalUpdate) => void) | null>(null); // set after speech hook init
 
@@ -310,7 +308,6 @@ export default function PlayRookiePage() {
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
 
-  // (mood refs moved to useRookieMood hook)
 
   // Stockfish init
   const sfReadyRef = useRef(false);
@@ -322,7 +319,6 @@ export default function PlayRookiePage() {
   const game = useMemo(() => new Chess(fen), [fen]);
   const isMyTurn = (game.turn() === 'w' && playerColor === 'white') || (game.turn() === 'b' && playerColor === 'black');
 
-  // (eval swing mood tracking moved to useRookieMood hook)
 
   // Accumulate position evals during play — used for instant post-game analysis
   const positionEvalsRef = useRef<PositionEval[]>([]);
