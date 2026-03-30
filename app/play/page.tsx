@@ -231,13 +231,27 @@ export default function PlayRookiePage() {
   const [speechMemory, setSpeechMemory] = useState<SpeechMemory | null>(null);
   const speechMemoryRef = useRef<SpeechMemory | null>(null);
 
-  // Load speech memory on login
+  // Load speech memory + Honcho context on login (before game starts)
   useEffect(() => {
     if (!user?.id) return;
     loadSpeechMemory(user.id).then((mem) => {
       setSpeechMemory(mem);
       speechMemoryRef.current = mem;
     });
+    // Pre-fetch Honcho context so it's ready when the game starts
+    fetch('/api/honcho', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get_context', userId: user.id }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.context) {
+          honchoContextRef.current = data.context;
+          console.log('[Honcho] Pre-fetched context:', data.context.slice(0, 80));
+        }
+      })
+      .catch(() => {});
   }, [user?.id]);
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -1131,36 +1145,25 @@ export default function PlayRookiePage() {
     narrative.resetForNewGame();
     narrative.setPlayerFacts(speechMemoryRef.current?.playerFacts ?? []);
     honchoOpeningLoggedRef.current = false;
-    honchoContextRef.current = null;
 
-    // Honcho: create session + fetch player context (fire-and-forget)
-    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'} — ${user?.id ? 'will init' : 'skipping'}`, details: { userId: user?.id ?? null } });
+    // Use pre-fetched Honcho context (loaded on page mount) for narrative + opening line
+    if (honchoContextRef.current) {
+      narrative.setHonchoContext(honchoContextRef.current);
+    }
+    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'}, context=${honchoContextRef.current ? 'ready' : 'none'}`, details: { userId: user?.id ?? null, hasContext: !!honchoContextRef.current } });
+
+    // Honcho: create session for logging (context was pre-fetched on page load)
     if (user?.id) {
       const gameId = `game-${Date.now()}`;
       honchoGameIdRef.current = gameId;
-      // Start session + fetch context in parallel
-      Promise.all([
-        fetch('/api/honcho', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'start_session', gameId, userId: user.id }),
-        }),
-        fetch('/api/honcho', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'get_context', userId: user.id }),
-        }).then(r => r.json()),
-      ]).then(([sessionRes, contextData]) => {
-        const sessionOk = sessionRes.ok;
-        if (contextData.context) {
-          narrative.setHonchoContext(contextData.context);
-          honchoContextRef.current = contextData.context;
-          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] context loaded: ${contextData.context.slice(0, 80)}...`, details: { context: contextData.context, sessionOk } });
-        } else {
-          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] no player context yet (session=${sessionOk ? 'ok' : 'failed'})`, details: { sessionOk, contextData } });
-        }
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start_session', gameId, userId: user.id }),
+      }).then(res => {
+        log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] session=${res.ok ? 'ok' : 'failed'}`, details: {} });
       }).catch((err) => {
-        log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] init FAILED: ${err?.message || err}`, details: { error: String(err) } });
+        log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] session FAILED: ${err?.message || err}`, details: {} });
       });
     }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
