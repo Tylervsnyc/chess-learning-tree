@@ -40,7 +40,20 @@ export type RookieMood =
   | 'defeated'     // dark, almost off
   | 'scheming'     // sinister green
   | 'panicking'    // rapid orange flashes
-  | 'zen';         // soft pastel calm
+  | 'zen'          // soft pastel calm
+  // -- potential new moods --
+  | 'shadow'       // matte black villain arc
+  | 'proud'        // warm bronze glow
+  | 'suspicious'   // narrow amber
+  | 'heartbroken'  // deep indigo
+  | 'mischievous'  // hot pink sparkle
+  | 'sleepy'       // dim warm purple
+  | 'starstruck'   // bright silver shimmer
+  | 'confused'     // swirling unsettled
+  | 'stubborn'     // burnt orange rigid
+  | 'grateful'     // soft warm pink
+  | 'feral'        // chaotic rainbow strobe
+  | 'royal';       // deep gold + purple
 
 // Each mood: target color to blend toward, blend strength, brightness
 const MOOD_TINTS: Record<RookieMood, { color: [number, number, number]; blend: number; brightness: number }> = {
@@ -56,6 +69,19 @@ const MOOD_TINTS: Record<RookieMood, { color: [number, number, number]; blend: n
   scheming:    { color: [0, 180, 80],    blend: 0.7,  brightness: 0.9 },   // sinister matrix green
   panicking:   { color: [255, 120, 0],   blend: 0.75, brightness: 1.1 },   // alarm orange
   zen:         { color: [180, 200, 220], blend: 0.5,  brightness: 1.05 },  // soft pastel wash
+  // -- potential new moods --
+  shadow:      { color: [15, 15, 15],    blend: 0.95, brightness: 0.3 },   // matte black villain
+  proud:       { color: [180, 130, 50],  blend: 0.6,  brightness: 1.1 },   // warm bronze glow
+  suspicious:  { color: [200, 160, 40],  blend: 0.6,  brightness: 0.85 },  // narrow amber
+  heartbroken: { color: [60, 40, 140],   blend: 0.7,  brightness: 0.7 },   // deep indigo sadness
+  mischievous: { color: [240, 60, 180],  blend: 0.65, brightness: 1.15 },  // hot pink sparkle
+  sleepy:      { color: [140, 100, 180], blend: 0.6,  brightness: 0.5 },   // dim warm purple
+  starstruck:  { color: [220, 225, 240], blend: 0.7,  brightness: 1.4 },   // bright silver shimmer
+  confused:    { color: [160, 120, 180], blend: 0.4,  brightness: 1.0 },   // swirling unsettled mix
+  stubborn:    { color: [180, 90, 30],   blend: 0.7,  brightness: 0.9 },   // burnt orange rigid
+  grateful:    { color: [230, 140, 160], blend: 0.55, brightness: 1.1 },   // soft warm pink
+  feral:       { color: [255, 50, 50],   blend: 0.3,  brightness: 1.5 },   // chaotic overdrive
+  royal:       { color: [180, 140, 40],  blend: 0.65, brightness: 1.05 },  // deep gold + purple
 };
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -295,14 +321,20 @@ const MOOD_KEYFRAMES = `
 const MOOD_BREATHE_SPEED: Record<RookieMood, number> = {
   neutral: 5, happy: 4, nervous: 1.8, angry: 3, smug: 4.5, surprised: 2.5,
   embarrassed: 8, excited: 1.5, defeated: 8, scheming: 4, panicking: 0.8, zen: 7,
+  shadow: 10, proud: 5, suspicious: 3.5, heartbroken: 9, mischievous: 2,
+  sleepy: 12, starstruck: 2, confused: 1.5, stubborn: 6, grateful: 5, feral: 0.5, royal: 5.5,
 };
 const MOOD_BRIGHTNESS_LOW: Record<RookieMood, number> = {
   neutral: 0.9, happy: 0.95, nervous: 0.6, angry: 0.7, smug: 0.85, surprised: 0.8,
   embarrassed: 0.05, excited: 0.9, defeated: 0.15, scheming: 0.6, panicking: 0.5, zen: 0.9,
+  shadow: 0.2, proud: 0.85, suspicious: 0.7, heartbroken: 0.4, mischievous: 0.8,
+  sleepy: 0.3, starstruck: 1.0, confused: 0.7, stubborn: 0.75, grateful: 0.85, feral: 0.8, royal: 0.8,
 };
 const MOOD_BRIGHTNESS_HIGH: Record<RookieMood, number> = {
   neutral: 1.5, happy: 1.6, nervous: 1.2, angry: 1.4, smug: 1.5, surprised: 1.6,
   embarrassed: 0.25, excited: 1.8, defeated: 0.5, scheming: 1.4, panicking: 1.7, zen: 1.2,
+  shadow: 0.4, proud: 1.5, suspicious: 1.2, heartbroken: 0.8, mischievous: 1.6,
+  sleepy: 0.6, starstruck: 1.9, confused: 1.4, stubborn: 1.1, grateful: 1.4, feral: 2.0, royal: 1.4,
 };
 
 const ALL_MOOD_KEYFRAMES = (Object.keys(MOOD_BREATHE_SPEED) as RookieMood[]).map(m => {
@@ -352,6 +384,9 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
           position: 'relative',
           width: gridWidth,
           height: gridHeight,
+          /* Own compositing layer so children's absolute positions aren't offset
+             by the parent's fractional pixel centering on desktop. */
+          transform: 'translate3d(0,0,0)',
         }}
       >
         {ALL_CELLS.map(({ x, y }) => {
@@ -410,6 +445,8 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                 transition: 'background 1.2s ease-in-out, opacity 1.2s ease-in-out, animation-duration 1.2s ease-in-out',
                 ...(mood === 'embarrassed' ? { opacity: 0.08 } : {}),
                 ...(mood === 'defeated' ? { opacity: 0.3 } : {}),
+                ...(mood === 'shadow' ? { opacity: 0.15 } : {}),
+                ...(mood === 'sleepy' ? { opacity: 0.4 } : {}),
                 ...(useMoodBreathe ? {
                   animation: `rookBreathe_${mood} ${moodSpeed}s ease-in-out ${breatheDelay}s infinite`,
                 } : activeMode ? {
