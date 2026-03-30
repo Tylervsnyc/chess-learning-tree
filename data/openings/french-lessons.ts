@@ -1384,7 +1384,7 @@ const FR_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.dev_exd5_after_Bd3, text: 'Bd3.', autoAdvance: 800, highlightSquares: ['f1', 'd3'] },
     { type: 'play-move', fen: FEN.dev_exd5_after_Bd3, correctMove: 'Nc6', prompt: 'Your move.', hint: 'Nc6.', correctFeedback: 'Nc6.', wrongFeedback: 'Nc6.' },
     { type: 'instruction', fen: FEN.dev_exd5_after_a3, text: 'a3.', autoAdvance: 800, highlightSquares: ['a2', 'a3'] },
-    { type: 'instruction', fen: FEN.dev_exd5_after_Bxc3, text: 'Bxc3+.', autoAdvance: 800, highlightSquares: ['b4', 'c3'] },
+    { type: 'play-move', fen: FEN.dev_exd5_after_a3, correctMove: 'Bxc3+', prompt: 'Your move.', hint: 'Bxc3+.', correctFeedback: 'Bxc3+.', wrongFeedback: 'Bxc3+.' },
     { type: 'instruction', fen: FEN.dev_exd5_after_bxc3, text: 'bxc3.', autoAdvance: 800, highlightSquares: ['b2', 'c3'] },
     { type: 'play-move', fen: FEN.dev_exd5_after_bxc3, correctMove: 'Nge7', prompt: 'Your move.', hint: 'Nge7.', correctFeedback: 'Nge7.', wrongFeedback: 'Nge7.' },
 

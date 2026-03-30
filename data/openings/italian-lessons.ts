@@ -1112,7 +1112,7 @@ const IT_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.dev_after_d6, text: 'd6.', autoAdvance: 800, highlightSquares: ['d7', 'd6'] },
     { type: 'play-move', fen: FEN.dev_after_d6, correctMove: 'dxe5', prompt: 'Your move.', hint: 'dxe5.', correctFeedback: 'dxe5.', wrongFeedback: 'dxe5.' },
     { type: 'instruction', fen: FEN.dev_after_dxe5_b, text: 'dxe5.', autoAdvance: 800, highlightSquares: ['d6', 'e5'] },
-    { type: 'instruction', fen: FEN.dev_after_Qxd8, text: 'Qxd8+.', autoAdvance: 800, highlightSquares: ['d1', 'd8'] },
+    { type: 'play-move', fen: FEN.dev_after_dxe5_b, correctMove: 'Qxd8+', prompt: 'Your move.', hint: 'Qxd8+.', correctFeedback: 'Qxd8+.', wrongFeedback: 'Qxd8+.' },
     { type: 'instruction', fen: FEN.dev_after_Bxd8, text: 'Bxd8.', autoAdvance: 800, highlightSquares: ['e7', 'd8'] },
     { type: 'play-move', fen: FEN.dev_after_Bxd8, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
   ],
