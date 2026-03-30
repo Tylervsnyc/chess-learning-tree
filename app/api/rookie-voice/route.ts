@@ -64,11 +64,17 @@ export async function POST(request: NextRequest) {
       ? `The player just played ${lastMove}. React to their move (or say "..." if it's not interesting enough to comment on):\n\n${context}`
       : `You (Rookie) just played ${lastMove}. Comment on your own move if you want (or say "..." if you'd rather stay quiet):\n\n${context}`;
 
+    // Inject Honcho player context if provided (CHE-201)
+    const honchoContext = body.honchoPlayerContext;
+    const systemPrompt = honchoContext
+      ? `## What I know about this player\n${honchoContext}\n---\n\n${ROOKIE_GAMEPLAY_PROMPT}`
+      : ROOKIE_GAMEPLAY_PROMPT;
+
     // Call Claude for Rookie's response
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 150,
-      system: ROOKIE_GAMEPLAY_PROMPT,
+      system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     });
 

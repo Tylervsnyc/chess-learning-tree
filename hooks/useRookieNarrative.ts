@@ -108,6 +108,7 @@ export function useRookieNarrative() {
   const gameHistoryRef = useRef<GameHistory>({ entries: [] });
   const llmCallCountRef = useRef(0);
   const playerFactsRef = useRef<string[]>([]);
+  const honchoContextRef = useRef<string | null>(null);
 
   /**
    * Process a move through the full 6-layer pipeline.
@@ -148,6 +149,7 @@ export function useRookieNarrative() {
       antiRepRef.current,
       gameHistoryRef.current,
       playerFactsRef.current,
+      honchoContextRef.current,
     );
 
     // ── Route handling ──
@@ -237,6 +239,7 @@ export function useRookieNarrative() {
     antiRepRef.current = createAntiRepetitionState();
     gameHistoryRef.current = { entries: [] };
     llmCallCountRef.current = 0;
+    honchoContextRef.current = null;
     clearLichessCache();
   }, []);
 
@@ -251,6 +254,11 @@ export function useRookieNarrative() {
     playerFactsRef.current = facts;
   }, []);
 
+  /** Set Honcho player context (call once at game start with peer.chat() result) */
+  const setHonchoContext = useCallback((context: string | null) => {
+    honchoContextRef.current = context;
+  }, []);
+
   /** Is the game currently in opening book? (based on last processed move) */
   const isInBook = useCallback(() => intelligenceRef.current.wasInBook, []);
 
@@ -258,6 +266,7 @@ export function useRookieNarrative() {
     onMove,
     resetForNewGame,
     setPlayerFacts,
+    setHonchoContext,
     getLlmCallCount,
     getNarrativeState,
     isInBook,

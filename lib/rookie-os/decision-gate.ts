@@ -145,6 +145,8 @@ export function assemblePrompt(
   gameHistory: GameHistory,
   maxTokens: number,
   playerFacts: string[] = [],
+  /** Honcho player context from peer.chat() — injected at top of system prompt */
+  honchoPlayerContext: string | null = null,
 ): AssembledPrompt {
   const card = ROOKIE_CHARACTER_CARD;
   const { briefing, openingTracker, playerPatterns, position } = intelligence;
@@ -154,6 +156,14 @@ export function assemblePrompt(
 
   // 1. System prompt (Layer 1)
   systemParts.push(card.system_prompt);
+
+  // 1b. Honcho player context (CHE-201) — what Rookie knows about this player
+  if (honchoPlayerContext) {
+    systemParts.push('');
+    systemParts.push('## What I know about this player');
+    systemParts.push(honchoPlayerContext);
+    systemParts.push('---');
+  }
 
   // 2. Description (Layer 1)
   systemParts.push('');
@@ -273,6 +283,8 @@ export function runPipeline(
   antiRepState: AntiRepetitionState,
   gameHistory: GameHistory,
   playerFacts: string[] = [],
+  /** Honcho player context — cached at game start, reused for all triggers */
+  honchoPlayerContext: string | null = null,
 ): PipelineResult {
   // Step 1: Decision Gate
   const decision = decide(intelligence, narrativeState);
@@ -288,6 +300,7 @@ export function runPipeline(
       gameHistory,
       decision.maxTokens,
       playerFacts,
+      honchoPlayerContext,
     );
   }
 

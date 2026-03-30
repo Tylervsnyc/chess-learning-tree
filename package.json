@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
+    "@honcho-ai/sdk": "^2.1.0",
     "@react-email/components": "^1.0.6",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
