@@ -1128,6 +1128,7 @@ export default function PlayRookiePage() {
     honchoOpeningLoggedRef.current = false;
 
     // Honcho: create session + fetch player context (fire-and-forget)
+    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'} — ${user?.id ? 'will init' : 'skipping'}`, details: { userId: user?.id ?? null } });
     if (user?.id) {
       const gameId = `game-${Date.now()}`;
       honchoGameIdRef.current = gameId;
@@ -1143,15 +1144,16 @@ export default function PlayRookiePage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'get_context', userId: user.id }),
         }).then(r => r.json()),
-      ]).then(([_, contextData]) => {
+      ]).then(([sessionRes, contextData]) => {
+        const sessionOk = sessionRes.ok;
         if (contextData.context) {
           narrative.setHonchoContext(contextData.context);
-          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `Honcho context loaded: ${contextData.context.slice(0, 80)}...`, details: { context: contextData.context } });
+          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] context loaded: ${contextData.context.slice(0, 80)}...`, details: { context: contextData.context, sessionOk } });
         } else {
-          log({ moveNum: 0, type: 'game-event', who: 'system', summary: 'Honcho: no player context yet (need more games)', details: {} });
+          log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] no player context yet (session=${sessionOk ? 'ok' : 'failed'})`, details: { sessionOk, contextData } });
         }
       }).catch((err) => {
-        console.error('Honcho init failed:', err);
+        log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] init FAILED: ${err?.message || err}`, details: { error: String(err) } });
       });
     }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
