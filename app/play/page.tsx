@@ -513,8 +513,10 @@ export default function PlayRookiePage() {
     }
 
     // If the narrative engine returned LLM text, route through the quip queue
-    // so Rookie finishes her current thought before starting a new one
-    if (narrativeResult.type === 'llm_narrative' && narrativeResult.text) {
+    // but only if Rookie isn't already talking (don't pile up prompts during fast play)
+    // and only if the game is still in progress
+    if (narrativeResult.type === 'llm_narrative' && narrativeResult.text
+      && !isTalkingRef.current && !g.isGameOver()) {
       speech.queueDirect(narrativeResult.text, 'high');
       log({
         moveNum: moveNumRef.current,
