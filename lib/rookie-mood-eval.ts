@@ -40,6 +40,8 @@ const ZONES = {
 
 // Swing threshold: a 15% win% change in one move is notable
 const SWING_THRESHOLD = 15;
+// Massive swing: 30%+ is game-changing (feral/heartbroken territory)
+const MASSIVE_SWING_THRESHOLD = 30;
 
 // ════════════════════════════════
 // MAPPING
@@ -77,18 +79,21 @@ export function evalToRookieMood(
 
   // Swing moods override zone-based moods
   if (isSwing) {
+    const delta = prevRookieWinPercent !== undefined ? Math.abs(rookieWp - prevRookieWinPercent) : 0;
+    const isMassive = delta >= MASSIVE_SWING_THRESHOLD;
+
     if (swingDirection === 'better') {
       return {
-        mood: 'excited',
-        reason: 'Big swing in my favor',
+        mood: isMassive ? 'feral' : 'excited',
+        reason: isMassive ? 'MASSIVE swing — lost all composure' : 'Big swing in my favor',
         rookieWinPercent: rookieWp,
         isSwing: true,
         swingDirection: 'better',
       };
     } else {
       return {
-        mood: 'surprised',
-        reason: 'Wait what just happened',
+        mood: isMassive ? 'heartbroken' : 'surprised',
+        reason: isMassive ? 'Devastating collapse' : 'Wait what just happened',
         rookieWinPercent: rookieWp,
         isSwing: true,
         swingDirection: 'worse',
