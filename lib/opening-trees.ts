@@ -27,6 +27,18 @@ import { SICILIAN_TAIMANOV } from '@/data/openings/sicilian-taimanov'
 import { SICILIAN_ACCELERATED_DRAGON } from '@/data/openings/sicilian-accelerated-dragon'
 import { SICILIAN_ALAPIN } from '@/data/openings/sicilian-alapin'
 import { SICILIAN_SCHEVENINGEN } from '@/data/openings/sicilian-scheveningen'
+import { FRENCH_WINAWER } from '@/data/openings/french-winawer'
+import { SICILIAN_NAJDORF } from '@/data/openings/sicilian-najdorf'
+import { RUY_LOPEZ_BERLIN } from '@/data/openings/ruy-lopez-berlin'
+import { RUY_LOPEZ_EXCHANGE } from '@/data/openings/ruy-lopez-exchange'
+import { NIMZO_INDIAN_CLASSICAL } from '@/data/openings/nimzo-indian-classical'
+import { NIMZO_INDIAN_SAEMISCH } from '@/data/openings/nimzo-indian-saemisch'
+import { PETROFF_3D4 } from '@/data/openings/petroff-3d4'
+import { PETROFF_5NC3 } from '@/data/openings/petroff-5nc3'
+import { ITALIAN_EVANS_GAMBIT } from '@/data/openings/italian-evans-gambit'
+import { LONDON_VS_C5 } from '@/data/openings/london-vs-c5'
+import { FRENCH_TARRASCH } from '@/data/openings/french-tarrasch'
+import { ITALIAN_TWO_KNIGHTS } from '@/data/openings/italian-two-knights'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -54,6 +66,18 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'sicilian-accelerated-dragon': SICILIAN_ACCELERATED_DRAGON,
   'sicilian-alapin': SICILIAN_ALAPIN,
   'sicilian-scheveningen': SICILIAN_SCHEVENINGEN,
+  'french-winawer': FRENCH_WINAWER,
+  'sicilian-najdorf': SICILIAN_NAJDORF,
+  'ruy-lopez-berlin': RUY_LOPEZ_BERLIN,
+  'ruy-lopez-exchange': RUY_LOPEZ_EXCHANGE,
+  'nimzo-indian-classical': NIMZO_INDIAN_CLASSICAL,
+  'nimzo-indian-saemisch': NIMZO_INDIAN_SAEMISCH,
+  'petroff-3d4': PETROFF_3D4,
+  'petroff-5nc3': PETROFF_5NC3,
+  'italian-evans-gambit': ITALIAN_EVANS_GAMBIT,
+  'london-vs-c5': LONDON_VS_C5,
+  'french-tarrasch': FRENCH_TARRASCH,
+  'italian-two-knights': ITALIAN_TWO_KNIGHTS,
 }
 
 /** Get total lesson count for an opening */

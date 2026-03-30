@@ -54,6 +54,18 @@ import { getSicilianTaimanovLesson } from '@/data/openings/sicilian-taimanov-les
 import { getSicilianAcceleratedDragonLesson } from '@/data/openings/sicilian-accelerated-dragon-lessons'
 import { getSicilianAlapinLesson } from '@/data/openings/sicilian-alapin-lessons'
 import { getSicilianScheveningenLesson } from '@/data/openings/sicilian-scheveningen-lessons'
+import { getFrenchWinawerLesson } from '@/data/openings/french-winawer-lessons'
+import { getSicilianNajdorfLesson } from '@/data/openings/sicilian-najdorf-lessons'
+import { getRuyLopezBerlinLesson } from '@/data/openings/ruy-lopez-berlin-lessons'
+import { getRuyLopezExchangeLesson } from '@/data/openings/ruy-lopez-exchange-lessons'
+import { getNimzoIndianClassicalLesson } from '@/data/openings/nimzo-indian-classical-lessons'
+import { getNimzoIndianSaemischLesson } from '@/data/openings/nimzo-indian-saemisch-lessons'
+import { getPetroff3d4Lesson } from '@/data/openings/petroff-3d4-lessons'
+import { getPetroff5nc3Lesson } from '@/data/openings/petroff-5nc3-lessons'
+import { getItalianEvansGambitLesson } from '@/data/openings/italian-evans-gambit-lessons'
+import { getLondonVsC5Lesson } from '@/data/openings/london-vs-c5-lessons'
+import { getFrenchTarraschLesson } from '@/data/openings/french-tarrasch-lessons'
+import { getItalianTwoKnightsLesson } from '@/data/openings/italian-two-knights-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -176,6 +188,18 @@ export default function OpeningLessonPage() {
       'sicilian-accelerated-dragon': getSicilianAcceleratedDragonLesson,
       'sicilian-alapin': getSicilianAlapinLesson,
       'sicilian-scheveningen': getSicilianScheveningenLesson,
+      'french-winawer': getFrenchWinawerLesson,
+      'sicilian-najdorf': getSicilianNajdorfLesson,
+      'ruy-lopez-berlin': getRuyLopezBerlinLesson,
+      'ruy-lopez-exchange': getRuyLopezExchangeLesson,
+      'nimzo-indian-classical': getNimzoIndianClassicalLesson,
+      'nimzo-indian-saemisch': getNimzoIndianSaemischLesson,
+      'petroff-3d4': getPetroff3d4Lesson,
+      'petroff-5nc3': getPetroff5nc3Lesson,
+      'italian-evans-gambit': getItalianEvansGambitLesson,
+      'london-vs-c5': getLondonVsC5Lesson,
+      'french-tarrasch': getFrenchTarraschLesson,
+      'italian-two-knights': getItalianTwoKnightsLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])

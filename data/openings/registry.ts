@@ -121,8 +121,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     },
     variations: [
       { name: 'Fried Liver Attack', subtitle: 'The classic trap — Nxf7', icon: 'lightning', hasData: false },
-      { name: 'Two Knights Defense', subtitle: '3...Nf6 — counterattack the center', icon: 'knight', hasData: false },
-      { name: 'Evans Gambit', subtitle: '4.b4 — sacrifice a pawn for tempo', icon: 'pawn', hasData: false },
+      { name: 'Two Knights Defense', subtitle: '3...Nf6 — counterattack the center', icon: 'knight', hasData: true, slug: 'italian-two-knights' },
+      { name: 'Evans Gambit', subtitle: '4.b4 — sacrifice a pawn for tempo', icon: 'pawn', hasData: true, slug: 'italian-evans-gambit' },
     ],
   },
   {
@@ -169,8 +169,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '3...a6 4.Ba4 — the main battleground · 9 lessons',
     },
     variations: [
-      { name: 'Exchange Variation', subtitle: '4.Bxc6 — simplify early', icon: 'bishop', hasData: false },
-      { name: 'Berlin Defense', subtitle: '3...Nf6 — the Berlin Wall', icon: 'knight', hasData: false },
+      { name: 'Exchange Variation', subtitle: '4.Bxc6 — simplify early', icon: 'bishop', hasData: true, slug: 'ruy-lopez-exchange' },
+      { name: 'Berlin Defense', subtitle: '3...Nf6 — the Berlin Wall', icon: 'knight', hasData: true, slug: 'ruy-lopez-berlin' },
       { name: 'Marshall Attack', subtitle: '8...d5 — legendary gambit', icon: 'lightning', hasData: true, slug: 'ruy-lopez-marshall' },
     ],
   },
@@ -195,7 +195,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     },
     variations: [
       { name: 'Dragon Variation', subtitle: '5...g6 — fianchetto the bishop', icon: 'knight', hasData: true, slug: 'sicilian-dragon' },
-      { name: 'Najdorf Variation', subtitle: '5...a6 — the most popular', icon: 'lightning', hasData: false },
+      { name: 'Najdorf Variation', subtitle: '5...a6 — the most popular', icon: 'lightning', hasData: true, slug: 'sicilian-najdorf' },
       { name: 'Sveshnikov Variation', subtitle: '5...e5 — fight for d5', icon: 'knight', hasData: true, slug: 'sicilian-sveshnikov' },
       { name: 'Classical Variation', subtitle: '6.Bg5 — Richter-Rauzer Attack', icon: 'bishop', hasData: true, slug: 'sicilian-classical' },
       { name: 'Kan/Paulsen', subtitle: '4...a6 — flexible Sicilian', icon: 'pawn', hasData: true, slug: 'sicilian-kan' },
@@ -225,8 +225,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '3.Nc3 Nf6 4.Bg5 Be7 — the main battleground · 10 lessons',
     },
     variations: [
-      { name: 'Winawer Variation', subtitle: '3...Bb4 — pin the knight', icon: 'bishop', hasData: false },
-      { name: 'Tarrasch Variation', subtitle: '3.Nd2 — avoid doubled pawns', icon: 'knight', hasData: false },
+      { name: 'Winawer Variation', subtitle: '3...Bb4 — pin the knight', icon: 'bishop', hasData: true, slug: 'french-winawer' },
+      { name: 'Tarrasch Variation', subtitle: '3.Nd2 — avoid doubled pawns', icon: 'knight', hasData: true, slug: 'french-tarrasch' },
     ],
   },
   // Coming Soon 1.e4
@@ -286,8 +286,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     order: 14,
     mainLine: { name: 'Classical Variation', subtitle: '3.Nxe5 d6 4.Nf3 Nxe4 -- the counterattack \u00b7 6 lessons' },
     variations: [
-      { name: '3.d4 Variation', subtitle: '3.d4 Nxe4 -- grab the free pawn', icon: 'pawn', hasData: false },
-      { name: '5.Nc3 Variation', subtitle: '5.Nc3 Nxc3 -- exchange and develop', icon: 'knight', hasData: false },
+      { name: '3.d4 Variation', subtitle: '3.d4 Nxe4 -- grab the free pawn', icon: 'pawn', hasData: true, slug: 'petroff-3d4' },
+      { name: '5.Nc3 Variation', subtitle: '5.Nc3 Nxc3 -- exchange and develop', icon: 'knight', hasData: true, slug: 'petroff-5nc3' },
     ],
   },
   // === 1.d4 OPENINGS ===
@@ -312,7 +312,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     },
     variations: [
       { name: 'vs King\'s Indian', subtitle: '...Nf6, ...g6 — handle the fianchetto', icon: 'knight', hasData: false },
-      { name: 'vs ...c5', subtitle: 'Counter-strike the center', icon: 'shield', hasData: false },
+      { name: 'vs ...c5', subtitle: 'Counter-strike the center', icon: 'shield', hasData: true, slug: 'london-vs-c5' },
     ],
   },
   {
@@ -404,8 +404,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     order: 15,
     mainLine: { name: 'Rubinstein Variation', subtitle: '4.e3 O-O 5.Bd3 d5 -- classical play' },
     variations: [
-      { name: 'Classical (4.Qc2)', subtitle: '4.Qc2 -- avoid doubled pawns', icon: 'queen', hasData: false },
-      { name: 'Saemisch (5.Ne2)', subtitle: '5.Ne2 -- flexible knight development', icon: 'knight', hasData: false },
+      { name: 'Classical (4.Qc2)', subtitle: '4.Qc2 -- avoid doubled pawns', icon: 'queen', hasData: true, slug: 'nimzo-indian-classical' },
+      { name: 'Saemisch (5.Ne2)', subtitle: '5.Ne2 -- flexible knight development', icon: 'knight', hasData: true, slug: 'nimzo-indian-saemisch' },
     ],
   },
   // === 1.c4 OPENINGS ===
