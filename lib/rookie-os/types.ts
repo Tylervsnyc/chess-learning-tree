@@ -51,7 +51,20 @@ export type RookieMood =
   | 'defeated'
   | 'scheming'
   | 'panicking'
-  | 'zen';
+  | 'zen'
+  // -- potential new moods --
+  | 'shadow'
+  | 'proud'
+  | 'suspicious'
+  | 'heartbroken'
+  | 'mischievous'
+  | 'sleepy'
+  | 'starstruck'
+  | 'confused'
+  | 'stubborn'
+  | 'grateful'
+  | 'feral'
+  | 'royal';
 
 // ════════════════════════════════
 // LAYER 2: CHESS BRIEFING (output of Chess Intelligence Agent)
