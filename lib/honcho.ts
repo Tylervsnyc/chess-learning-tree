@@ -122,11 +122,15 @@ export async function getPlayerContext(userId: string): Promise<string | null> {
   try {
     const user = await getUserPeer(userId);
     const response = await user.chat(
-      'What do you know about this player\'s chess? Focus on patterns, weaknesses, and tendencies. Be specific and brief — 2-3 sentences max.',
+      'List everything you know about this chess player. Include: openings they play, game results, accuracy, mistakes they made, strong moves, any patterns you notice. If you only have a little data, share what you have — even one fact is useful. Do not say you lack information. Just state the facts.',
       { reasoningLevel: 'low' },
     );
     // If the response is empty or generic, return null
     if (!response || typeof response !== 'string' || response.length < 20) {
+      return null;
+    }
+    // Filter out "I don't have enough" responses — they're useless as context
+    if (response.toLowerCase().includes('don\'t have enough') || response.toLowerCase().includes('no information')) {
       return null;
     }
     return response;

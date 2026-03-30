@@ -695,7 +695,11 @@ export default function PlayRookiePage() {
               },
             },
           }),
-        }).catch(() => {});
+        }).then(r => {
+          console.log(`[Honcho] Summary logged: ${r.ok ? 'ok' : 'failed'} — ${result} in ${moves.length} moves, accuracy ${Math.round(analysis.playerAccuracy)}%`);
+        }).catch(err => {
+          console.error('[Honcho] Summary log failed:', err);
+        });
       }
     }
 
