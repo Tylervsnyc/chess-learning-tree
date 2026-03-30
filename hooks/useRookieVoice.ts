@@ -124,10 +124,13 @@ export function useRookieVoice(audioOn: boolean) {
     if (!audioOn) return;
     stopAudio();
 
-    // Try manifest cache — check voiceKey (template text) first, then exact text
+    // Try manifest cache — check voiceKey (template text) first, then exact text.
+    // Skip any key containing { — pre-baked audio from templates would say placeholders literally.
     const manifest = manifestRef.current;
     if (manifest) {
-      const cacheKey = (voiceKey && manifest[voiceKey]) ? voiceKey : manifest[text] ? text : null;
+      const voiceKeyUsable = voiceKey && !voiceKey.includes('{') && manifest[voiceKey];
+      const textUsable = !text.includes('{') && manifest[text];
+      const cacheKey = voiceKeyUsable ? voiceKey : textUsable ? text : null;
       if (cacheKey) {
         try {
           const res = await fetch(`/rookie-voice/${manifest[cacheKey]}`);
