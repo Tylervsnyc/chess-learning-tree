@@ -1603,6 +1603,20 @@ export default function PlayRookiePage() {
 
         {debugOpen && (
           <div className="max-h-[40vh] overflow-auto bg-[#0d1117] text-[11px] font-mono leading-relaxed">
+            <div className="sticky top-0 z-10 bg-[#0d1117] border-b border-gray-800 px-4 py-1.5 flex justify-end">
+              <button
+                onClick={() => {
+                  const text = debugLog.map(e => {
+                    const details = Object.entries(e.details).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(' ');
+                    return `#${e.moveNum} [${e.type}] ${e.who} | ${e.summary}${details ? '\n  ' + details : ''}`;
+                  }).join('\n');
+                  navigator.clipboard.writeText(text);
+                }}
+                className="px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded transition-colors"
+              >
+                Copy Log
+              </button>
+            </div>
             {debugLog.length === 0 && (
               <div className="px-4 py-3 text-gray-500">No events yet. Make a move...</div>
             )}
