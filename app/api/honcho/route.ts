@@ -3,15 +3,16 @@ import {
   createHonchoGameSession,
   getPlayerContext,
   seedPeerCard,
-  logToHoncho,
 } from '@/lib/honcho';
-import { logGameSummary, logOpeningClassification, logBoardEvent, type GameSummaryEvent, type BoardEvent } from '@/lib/honcho-logger';
+import { classifyOpening } from '@/lib/opening-classifier';
+import { analyzePosition, type AnalysisInput } from '@/lib/chess-analysis-agent';
+import type { BoardEvent } from '@/lib/honcho-logger';
 
 /**
  * POST /api/honcho
  *
- * Lightweight proxy for Honcho operations (API key is server-side only).
- * Actions: start_session, get_context, log_opening, log_event, log_summary, seed_card
+ * Server-side proxy for Honcho operations. All logging is AWAITED here
+ * (not fire-and-forget) because Vercel Lambdas freeze after response.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -24,7 +25,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing gameId or userId' }, { status: 400 });
       }
       const honcho = await createHonchoGameSession(gameId, userId);
-      // Return session ID so client can reference it
       console.log(`[Honcho] Session started: game=${gameId} user=${userId}`);
       return NextResponse.json({ ok: true, gameId });
     }
@@ -45,8 +45,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing gameId or userId' }, { status: 400 });
       }
       const honcho = await createHonchoGameSession(gameId, userId);
-      const result = logOpeningClassification(honcho, moves, color);
-      console.log(`[Honcho] Opening classified: ${result?.name ?? 'unknown'}`);
+      const result = classifyOpening(moves);
+      if (result) {
+        const message = `Player opened with the ${result.name} (${result.eco}) playing ${color}.`;
+        await honcho.session.addMessages([honcho.user.message(message)]);
+        console.log(`[Honcho] Opening logged: ${result.name}`);
+      }
       return NextResponse.json({ opening: result });
     }
 
@@ -56,9 +60,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing gameId or userId' }, { status: 400 });
       }
       const honcho = await createHonchoGameSession(gameId, userId);
-      logBoardEvent(honcho, event as BoardEvent, completedLessons ?? []);
-      console.log(`[Honcho] Board event logged: ${event.eventType} move ${event.moveNumber}`);
-      return NextResponse.json({ ok: true });
+      // Run analysis agent to get pedagogical message
+      const input: AnalysisInput = { ...event, completedLessons: completedLessons ?? [] };
+      const analysis = await analyzePosition(input);
+      // Await the log — Lambda would freeze otherwise
+      await honcho.session.addMessages([honcho.user.message(analysis.honchoMessage)]);
+      console.log(`[Honcho] Event logged: ${event.eventType} move ${event.moveNumber} — "${analysis.honchoMessage.slice(0, 80)}..."`);
+      return NextResponse.json({ ok: true, concept: analysis.concept });
     }
 
     if (action === 'log_summary') {
@@ -67,8 +75,17 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing gameId or userId' }, { status: 400 });
       }
       const honcho = await createHonchoGameSession(gameId, userId);
-      logGameSummary(honcho, summary as GameSummaryEvent);
-      console.log(`[Honcho] Game summary logged: ${summary.result} in ${summary.moveCount} moves`);
+
+      const opening = summary.openingName
+        ? `playing the ${summary.openingName}${summary.openingEco ? ` (${summary.openingEco})` : ''}`
+        : 'with an unknown opening';
+      const resultText = summary.result === 'win' ? 'won' : summary.result === 'loss' ? 'lost' : 'drew';
+      const message = `Game ended: ${resultText} in ${summary.moveCount} moves as ${summary.color} ${opening}. ` +
+        `Accuracy: ${Math.round(summary.playerAccuracy)}%. ` +
+        `Phase: opening ${summary.phase.opening}, middlegame ${summary.phase.middlegame}, endgame ${summary.phase.endgame}.`;
+
+      await honcho.session.addMessages([honcho.user.message(message)]);
+      console.log(`[Honcho] Summary logged: ${message.slice(0, 100)}...`);
       return NextResponse.json({ ok: true });
     }
 
