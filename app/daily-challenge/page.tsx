@@ -22,6 +22,7 @@ import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/Dail
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { useGameSession } from '@/hooks/useGameSession';
 
 interface Puzzle {
   puzzleId: string;
@@ -78,6 +79,7 @@ export default function DailyChallengePage() {
   const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
   const { recordDailyActivity, currentStreak } = useLessonProgress();
+  const { startSession, recordPuzzleResult, endSession: endGameSession } = useGameSession('daily-rook', user?.id);
 
   // Dev mode: use ?testSeed=X to get different puzzles
   const testSeed = searchParams.get('testSeed');
@@ -110,6 +112,10 @@ export default function DailyChallengePage() {
 
   // Track results for each puzzle
   const [puzzleResults, setPuzzleResults] = useState<Record<string, 'correct' | 'wrong'>>({});
+
+  // Coaching tracking
+  const puzzleStartTimeRef = useRef<number>(Date.now());
+  const firstWrongMoveRef = useRef<string | null>(null);
 
   // Review mode state
   const [reviewingPuzzle, setReviewingPuzzle] = useState<ProcessedPuzzle | null>(null);
@@ -288,6 +294,7 @@ export default function DailyChallengePage() {
           if (timerRef.current) clearInterval(timerRef.current);
           finalElapsedMsRef.current = TOTAL_TIME; // Full time used
           setTimeLeft(0);
+          endGameSession().catch(() => {});
           setGameState('finished');
         } else {
           setTimeLeft(remaining);
@@ -385,6 +392,7 @@ export default function DailyChallengePage() {
     // Only start the game (and timer) after puzzles are loaded
     if (puzzles.length > 0) {
       EngagementEvents.dailyChallengeStarted();
+      startSession();
       // Animate the first puzzle's setup move
       // Step 1: Instantly snap to starting position
       setAnimationDuration(0);
@@ -412,23 +420,35 @@ export default function DailyChallengePage() {
     // Record result
     if (currentPuzzle) {
       setPuzzleResults(prev => ({ ...prev, [currentPuzzle.puzzleId]: 'correct' }));
+      recordPuzzleResult({
+        puzzleId: currentPuzzle.puzzleId,
+        puzzleTheme: currentPuzzle.themes?.[0] || 'general',
+        puzzleRating: currentPuzzle.rating || 0,
+        correct: true,
+        firstAttemptSan: firstWrongMoveRef.current,
+        retryCount: 0,
+        timeMs: Date.now() - puzzleStartTimeRef.current,
+      });
     }
 
     // Advance to next puzzle after brief delay
     setTimeout(() => {
       const nextIndex = puzzleIndex + 1;
+      firstWrongMoveRef.current = null;
       if (nextIndex >= allPuzzles.length) {
         // Completed all puzzles! Capture elapsed time NOW before state changes
         if (timerRef.current) clearInterval(timerRef.current);
         finalElapsedMsRef.current = endTimeRef.current > 0
           ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
           : TOTAL_TIME - timeLeft;
+        endGameSession().catch(() => {});
         setGameState('finished');
       } else {
         setPuzzleIndex(nextIndex);
         setMoveIndex(0);
         setMoveStatus('playing');
         setSelectedSquare(null);
+        puzzleStartTimeRef.current = Date.now();
       }
     }, 600);
   }, [currentPuzzle, puzzlesSolved, puzzleIndex, allPuzzles.length]);
@@ -445,6 +465,15 @@ export default function DailyChallengePage() {
     // Record result
     if (currentPuzzle) {
       setPuzzleResults(prev => ({ ...prev, [currentPuzzle.puzzleId]: 'wrong' }));
+      recordPuzzleResult({
+        puzzleId: currentPuzzle.puzzleId,
+        puzzleTheme: currentPuzzle.themes?.[0] || 'general',
+        puzzleRating: currentPuzzle.rating || 0,
+        correct: false,
+        firstAttemptSan: firstWrongMoveRef.current,
+        retryCount: 0,
+        timeMs: Date.now() - puzzleStartTimeRef.current,
+      });
     }
 
     if (newLives <= 0) {
@@ -453,23 +482,27 @@ export default function DailyChallengePage() {
       finalElapsedMsRef.current = endTimeRef.current > 0
         ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
         : TOTAL_TIME - timeLeft;
+      endGameSession().catch(() => {});
       setGameState('finished');
     } else {
       // Advance to next puzzle
       setTimeout(() => {
         const nextIndex = puzzleIndex + 1;
+        firstWrongMoveRef.current = null;
         if (nextIndex >= allPuzzles.length) {
           // Capture elapsed time NOW before state changes
           if (timerRef.current) clearInterval(timerRef.current);
           finalElapsedMsRef.current = endTimeRef.current > 0
             ? Math.max(0, TOTAL_TIME - (endTimeRef.current - Date.now()))
             : TOTAL_TIME - timeLeft;
+          endGameSession().catch(() => {});
           setGameState('finished');
         } else {
           setPuzzleIndex(nextIndex);
           setMoveIndex(0);
           setMoveStatus('playing');
           setSelectedSquare(null);
+          puzzleStartTimeRef.current = Date.now();
         }
       }, 800);
     }
@@ -549,7 +582,8 @@ export default function DailyChallengePage() {
           return true;
         }
 
-        // Wrong move
+        // Wrong move — capture the first wrong attempt SAN
+        if (!firstWrongMoveRef.current) firstWrongMoveRef.current = move.san;
         setSelectedSquare(null);
         handleIncorrect();
         return false;

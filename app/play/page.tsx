@@ -19,12 +19,14 @@ import { useUser } from '@/hooks/useUser';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
 import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
-import { evalToRookieMood } from '@/lib/rookie-mood-eval';
+// evalToRookieMood and getEvalMood now handled by useRookieMood hook
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory, type SpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
+import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
+import { useRookieMood } from '@/hooks/useRookieMood';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -255,7 +257,7 @@ export default function PlayRookiePage() {
   const [evalPct, setEvalPct] = useState(50); // white percentage
   const evalCp = useRef(0); // raw centipawns for display
   const evalMate = useRef<number | null>(null); // mate-in-N
-  const prevRookieWpRef = useRef<number | undefined>(undefined); // for swing detection
+  // (prevRookieWpRef moved to useRookieMood hook — access via moodSystem.getRookieWinPercent())
   const lastMovedByRef = useRef<'player' | 'rookie'>('player'); // who moved last (for blunder detection)
   const speechEvalUpdateRef = useRef<((update: EvalUpdate) => void) | null>(null); // set after speech hook init
 
@@ -269,13 +271,19 @@ export default function PlayRookiePage() {
   // Post-game analysis
   const postGame = usePostGameAnalysis();
 
+  // 6-layer narrative engine
+  const narrative = useRookieNarrative();
+
   // Coaching drawer
   const [coachingScript, setCoachingScript] = useState<CoachingScript | null>(null);
   const [showCoaching, setShowCoaching] = useState(false);
 
   // Quip state
   const [audioOn, setAudioOn] = useState(true);
-  const [rookieMood, setRookieMood] = useState<RookieMood>('neutral');
+
+  // Unified mood system
+  const moodSystem = useRookieMood(playerColor);
+  const rookieMood = moodSystem.mood;
 
   // Debug log
   const [debugLog, setDebugLog] = useState<DebugEntry[]>([]);
@@ -302,10 +310,7 @@ export default function PlayRookiePage() {
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
 
-  // Mood refs — needed by both updateEval and updateMood
-  const prevMoodRef = useRef<RookieMood>('neutral');
-  const moodSetAtMoveRef = useRef(0);
-  const MOOD_HOLD_MOVES = 4;
+  // (mood refs moved to useRookieMood hook)
 
   // Stockfish init
   const sfReadyRef = useRef(false);
@@ -317,8 +322,7 @@ export default function PlayRookiePage() {
   const game = useMemo(() => new Chess(fen), [fen]);
   const isMyTurn = (game.turn() === 'w' && playerColor === 'white') || (game.turn() === 'b' && playerColor === 'black');
 
-  // Track whether last eval mood was a swing (for mood system)
-  const evalSwingMoodRef = useRef<RookieMood | null>(null);
+  // (eval swing mood tracking moved to useRookieMood hook)
 
   // Accumulate position evals during play — used for instant post-game analysis
   const positionEvalsRef = useRef<PositionEval[]>([]);
@@ -342,42 +346,30 @@ export default function PlayRookiePage() {
         depth: 10,
       });
 
-      // Drive Rookie's baseline mood from eval
-      const rookieColor = playerColor === 'white' ? 'black' : 'white';
-      const prevWp = prevRookieWpRef.current;
-      const moodResult = evalToRookieMood(cp, mate, rookieColor, prevWp);
-      prevRookieWpRef.current = moodResult.rookieWinPercent;
+      // Drive Rookie's mood from eval via unified mood system
+      const moodUpdate = moodSystem.onEval(cp, mate, moveNumRef.current);
 
       // Check for blunders via speech system
       speechEvalUpdateRef.current?.({
-        rookieWinPercent: moodResult.rookieWinPercent,
-        prevRookieWinPercent: prevWp,
+        rookieWinPercent: moodUpdate.rookieWinPercent,
+        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
         moveNumber: moveNumRef.current,
         lastMovedBy: lastMovedByRef.current,
         playerName: playerName || 'friend',
         playerColor,
       });
 
-      // Only apply eval mood if no recent high-priority event override
-      const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
-      const moodApplied = movesSinceMoodChange >= MOOD_HOLD_MOVES && moodResult.mood !== prevMoodRef.current;
-      if (moodApplied) {
-          setRookieMood(moodResult.mood);
-          prevMoodRef.current = moodResult.mood;
-          moodSetAtMoveRef.current = moveNumRef.current;
-
-          // Mark swing for quip processing in effect below
-          if (moodResult.isSwing) {
-            evalSwingMoodRef.current = moodResult.mood;
-          }
+      // Let Rookie react when the eval mood zone changes
+      if (moodSystem.checkEvalMoodZone(moodUpdate.rookieWinPercent)) {
+        speech.onMoodChange(moveNumRef.current, moodUpdate.rookieWinPercent);
       }
 
       log({
         moveNum: moveNumRef.current,
         type: 'eval',
         who: 'system',
-        summary: `cp=${cp} mate=${mate} rookieWp=${moodResult.rookieWinPercent.toFixed(1)}% mood=${moodResult.mood}${moodApplied ? ' APPLIED' : ' held'}`,
-        details: { cp, mate, rookieWinPercent: moodResult.rookieWinPercent, mood: moodResult.mood, isSwing: moodResult.isSwing, moodApplied, movesSinceMoodChange },
+        summary: `cp=${cp} mate=${mate} rookieWp=${moodUpdate.rookieWinPercent.toFixed(1)}% mood=${moodUpdate.mood}${moodUpdate.applied ? ' APPLIED' : ' held'}`,
+        details: { cp, mate, rookieWinPercent: moodUpdate.rookieWinPercent, mood: moodUpdate.mood, isSwing: moodUpdate.isSwing, moodApplied: moodUpdate.applied },
       });
     }).catch(() => {});
   }, [phase, playerColor, playerName, log]);
@@ -435,57 +427,85 @@ export default function PlayRookiePage() {
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
 
+  // ── 6-layer narrative processing (runs alongside existing speech system) ──
+  const processNarrative = useCallback(async (
+    g: Chess,
+    result: { san: string; piece: string; from: string; to: string; captured?: string | null; flags: string },
+    movedBy: 'player' | 'rookie',
+    newFen: string,
+  ) => {
+    // Only run if we have eval data (Stockfish is ready)
+    if (!sfReadyRef.current) return;
+    const rookieColor = playerColor === 'white' ? 'black' : 'white';
+
+    const narrativeResult = await narrative.onMove({
+      fen: newFen,
+      san: result.san,
+      moveNumber: moveNumRef.current,
+      movedBy,
+      cp: evalCp.current,
+      mate: evalMate.current,
+      rookieColor: rookieColor as 'white' | 'black',
+      playerName: playerName || 'friend',
+      moveTimeSeconds: movedBy === 'player' ? (Date.now() - moveStartRef.current) / 1000 : null,
+      piece: result.piece,
+      isCapture: !!result.captured,
+      piecesRemaining: countPieces(newFen),
+      isCheck: g.isCheck(),
+      isCheckmate: g.isCheckmate(),
+      isStalemate: g.isStalemate(),
+      isCastle: result.flags.includes('k') || result.flags.includes('q'),
+      isPromotion: result.flags.includes('p'),
+    });
+
+    // If the narrative engine returned LLM text, route through the quip queue
+    // so Rookie finishes her current thought before starting a new one
+    if (narrativeResult.type === 'llm_narrative' && narrativeResult.text) {
+      speech.queueDirect(narrativeResult.text, 'high');
+      log({
+        moveNum: moveNumRef.current,
+        type: 'speech',
+        who: 'system',
+        summary: `[NARRATIVE] ${narrativeResult.text.slice(0, 80)}...`,
+        details: {
+          type: narrativeResult.type,
+          isTurningPoint: narrativeResult.isTurningPoint,
+          mood: narrativeResult.mood,
+          llmCalls: narrative.getLlmCallCount(),
+        },
+      });
+    }
+
+    // Use narrative mood if it changed (narrative engine sees full context)
+    if (narrativeResult.moodChanged) {
+      moodSystem.onNarrativeMood(narrativeResult.mood, true, moveNumRef.current);
+    }
+  }, [playerColor, playerName, narrative, moodSystem, speech, log]);
+
   // ════════════════════════════════
   // MOOD — event overrides (captures, checks, game end)
   // Eval-based baseline mood is handled in updateEval above
+  // All mood logic now lives in useRookieMood hook
   // ════════════════════════════════
 
-  const updateMood = useCallback((g: Chess, movedBy: 'player' | 'rookie', captured?: string) => {
-    let newMood: RookieMood = 'neutral';
-    let isHighPriority = false;
+  const updateMood = useCallback((g: Chess, movedBy: 'player' | 'rookie') => {
+    const event = g.isCheckmate() ? 'checkmate' as const
+      : g.isStalemate() ? 'stalemate' as const
+      : g.isDraw() ? 'draw' as const
+      : g.isCheck() ? 'check' as const
+      : 'none' as const;
 
-    if (g.isCheckmate()) {
-      const loser = g.turn();
-      const rookieLost = (loser === 'w' && playerColor === 'black') || (loser === 'b' && playerColor === 'white');
-      newMood = rookieLost ? 'angry' : 'smug';
-      isHighPriority = true;
-    } else if (g.isDraw() || g.isStalemate()) {
-      newMood = 'nervous';
-      isHighPriority = true;
-    } else if (g.isCheck()) {
-      newMood = movedBy === 'player' ? 'surprised' : 'smug';
-      isHighPriority = true;
-    }
-    // Captures are NOT high-priority — eval-based mood handles them correctly.
-    // A queen capture followed by recapture shouldn't trigger panicking then calm.
-    // The eval already sees the recapture and sets the right mood.
-
-    const movesSinceMoodChange = moveNumRef.current - moodSetAtMoveRef.current;
-    if (!isHighPriority && newMood !== prevMoodRef.current && movesSinceMoodChange < MOOD_HOLD_MOVES) {
+    const result = moodSystem.onGameEvent(event, movedBy, moveNumRef.current);
+    if (result) {
       log({
         moveNum: moveNumRef.current,
         type: 'mood',
         who: movedBy,
-        summary: `HELD ${prevMoodRef.current} (wanted ${newMood}, ${movesSinceMoodChange}/${MOOD_HOLD_MOVES} moves)`,
-        details: { from: prevMoodRef.current, wanted: newMood, movesSinceMoodChange, isHighPriority },
+        summary: `${result.reason} -> ${result.mood}`,
+        details: { mood: result.mood, source: result.source, event },
       });
-      return;
     }
-
-    if (newMood === prevMoodRef.current) return;
-
-    log({
-      moveNum: moveNumRef.current,
-      type: 'mood',
-      who: movedBy,
-      summary: `${prevMoodRef.current} -> ${newMood}${isHighPriority ? ' (high priority)' : ''}`,
-      details: { from: prevMoodRef.current, to: newMood, trigger: g.isCheckmate() ? 'checkmate' : g.isCheck() ? 'check' : g.isDraw() ? 'draw' : 'other', isHighPriority },
-    });
-
-    setRookieMood(newMood);
-    prevMoodRef.current = newMood;
-    moodSetAtMoveRef.current = moveNumRef.current;
-  }, [playerColor, log]);
+  }, [moodSystem, log]);
 
   // ════════════════════════════════
   // SESSION RECORDING — track moves for coaching
@@ -632,8 +652,7 @@ export default function PlayRookiePage() {
     setRookieThinking(true);
 
     const applyRookieMove = async (moveInfo: { from: string; to: string; promotion?: string } | { san: string }) => {
-      // Wait for Rookie to finish talking before making the move
-      await waitForSpeech();
+      // Rookie moves while still talking — game flows naturally
       const g = new Chess(currentFen);
       const result = 'san' in moveInfo
         ? g.move(moveInfo.san)
@@ -665,8 +684,8 @@ export default function PlayRookiePage() {
 
       const speechInput = {
         moveNumber: moveNumRef.current,
-        rookieWinPercent: prevRookieWpRef.current ?? 50,
-        prevRookieWinPercent: prevRookieWpRef.current,
+        rookieWinPercent: moodSystem.getRookieWinPercent(),
+        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
         movedBy: 'rookie' as const,
@@ -677,7 +696,8 @@ export default function PlayRookiePage() {
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
       };
-      speech.onMove(speechInput);
+      // Suppress old quip system during opening book — narrative engine handles it
+      if (!narrative.isInBook()) speech.onMove(speechInput);
       log({
         moveNum: moveNumRef.current,
         type: 'speech',
@@ -686,8 +706,11 @@ export default function PlayRookiePage() {
         details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
       });
 
-      updateMood(g, 'rookie', result.captured || undefined);
+      updateMood(g, 'rookie');
       recordMoveToSession(g, result, 'rookie', currentFen);
+
+      // Run 6-layer narrative engine (async, non-blocking)
+      processNarrative(g, result, 'rookie', newFen);
 
       if (g.isGameOver()) {
         const resultText = g.isCheckmate()
@@ -735,7 +758,7 @@ export default function PlayRookiePage() {
       const wait = Math.max(0, 500 - (Date.now() - thinkStart));
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
     });
-  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, log]);
+  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log]);
 
   // ════════════════════════════════
   // PLAYER'S MOVE
@@ -774,8 +797,8 @@ export default function PlayRookiePage() {
 
       const speechInput = {
         moveNumber: moveNumRef.current,
-        rookieWinPercent: prevRookieWpRef.current ?? 50,
-        prevRookieWinPercent: prevRookieWpRef.current,
+        rookieWinPercent: moodSystem.getRookieWinPercent(),
+        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
         movedBy: 'player' as const,
@@ -786,7 +809,8 @@ export default function PlayRookiePage() {
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
       };
-      speech.onMove(speechInput);
+      // Suppress old quip system during opening book — narrative engine handles it
+      if (!narrative.isInBook()) speech.onMove(speechInput);
       log({
         moveNum: moveNumRef.current,
         type: 'speech',
@@ -795,8 +819,11 @@ export default function PlayRookiePage() {
         details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
       });
 
-      updateMood(g, 'player', result.captured || undefined);
+      updateMood(g, 'player');
       recordMoveToSession(g, result, 'player', fen);
+
+      // Run 6-layer narrative engine (async, non-blocking for authored quips)
+      processNarrative(g, result, 'player', newFen);
 
       if (g.isGameOver()) {
         const resultText = g.isCheckmate()
@@ -821,7 +848,7 @@ export default function PlayRookiePage() {
     } catch {
       return false;
     }
-  }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, log]);
+  }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
 
   // ════════════════════════════════
   // CLICK TO MOVE
@@ -983,7 +1010,7 @@ export default function PlayRookiePage() {
     setGameResult(null);
     setRookieThinking(false);
     setResignArmed(false);
-    setRookieMood('neutral');
+    moodSystem.reset();
     setEvalPct(50);
     setKeyMoments([]);
     setReviewMoveIndex(0);
@@ -993,7 +1020,7 @@ export default function PlayRookiePage() {
     postGame.cancel(); // cancel any in-flight analysis
     setCoachingScript(null);
     setShowCoaching(false);
-    prevRookieWpRef.current = undefined; // reset eval mood tracking
+    moodSystem.reset(); // reset mood tracking for new game
     // Seed with starting position eval (0cp = equal)
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
 
@@ -1010,6 +1037,8 @@ export default function PlayRookiePage() {
     moveStartRef.current = Date.now();
 
     speech.onGameStart(playerColor, playerName || 'friend');
+    narrative.resetForNewGame();
+    narrative.setPlayerFacts(speechMemoryRef.current?.playerFacts ?? []);
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
 
     setPhase('playing');
@@ -1022,8 +1051,8 @@ export default function PlayRookiePage() {
     // Let Rookie react to the resignation
     speech.onMove({
       moveNumber: moveNumRef.current,
-      rookieWinPercent: prevRookieWpRef.current ?? 50,
-      prevRookieWinPercent: prevRookieWpRef.current,
+      rookieWinPercent: moodSystem.getRookieWinPercent(),
+      prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
       isGameOver: true,
       piecesRemaining: countPieces(fen),
       movedBy: 'player',

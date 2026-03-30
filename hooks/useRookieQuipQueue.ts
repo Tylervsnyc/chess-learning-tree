@@ -24,6 +24,7 @@ interface QueueItem {
 }
 
 const GAP_MS = 600; // pause between quips
+const MIN_DISPLAY_MS = 2500; // minimum time a quip stays visible (even if audio finishes sooner)
 
 export function useRookieQuipQueue(
   speakQuip: (text: string, voiceKey?: string) => void,
@@ -43,14 +44,20 @@ export function useRookieQuipQueue(
 
     processingRef.current = true;
     const item = queueRef.current.shift()!;
+    const startTime = Date.now();
 
     setDisplayText(item.text);
     setMsgKey(k => k + 1);
     speakQuip(item.text, item.voiceKey);
 
-    // Poll until speech is done, then process next after gap
+    // Poll until BOTH audio is done AND minimum display time has passed.
+    // This prevents quips from being visually interrupted.
     const waitForDone = () => {
-      if (isTalkingRef.current) {
+      const elapsed = Date.now() - startTime;
+      const audioStillPlaying = isTalkingRef.current;
+      const needsMoreDisplayTime = elapsed < MIN_DISPLAY_MS;
+
+      if (audioStillPlaying || needsMoreDisplayTime) {
         waitTimerRef.current = setTimeout(waitForDone, 100);
       } else {
         processingRef.current = false;

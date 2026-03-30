@@ -6,6 +6,7 @@ import {
   type BeatState,
   createBeatState,
   updateBeat,
+  getEvalMood,
 } from '@/lib/speech/beat-sheet';
 import {
   type GameEvent,
@@ -66,7 +67,7 @@ export interface UseRookieSpeechOptions {
 // Constants
 // ════════════════════════════════════════════════════════════════
 
-const QUIP_COOLDOWN_MOVES = 4; // minimum moves between event-triggered quips
+const QUIP_COOLDOWN_MOVES = 2; // minimum moves between event-triggered quips
 const BLUNDER_THRESHOLD = 15; // rookieWinPercent swing to count as a blunder
 const CAPTURE_SEQUENCE_MIN = 3; // minimum consecutive captures to trigger capture_sequence
 
@@ -402,6 +403,33 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [selectAndQueue],
   );
 
+  /** Call when eval mood zone changes (even/losing/desperate/winning). Gives Rookie a chance to comment. */
+  const onMoodChange = useCallback(
+    (moveNumber: number, rookieWinPercent: number) => {
+      // Respect cooldown
+      if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+
+      // Compute fresh evalMood from wp (beat state may be stale since eval is async)
+      const freshEvalMood = getEvalMood(rookieWinPercent);
+
+      const context: QueueContext = {
+        beat: beatRef.current.currentBeat,
+        evalMood: freshEvalMood,
+        event: 'mood_change',
+        movedBy: 'rookie', // mood is Rookie's feeling
+        moveNumber,
+        activeThreadId: null,
+        playerName: playerNameRef.current,
+        playerColor: playerColorRef.current,
+      };
+
+      if (selectAndQueue(context)) {
+        lastQuipMoveRef.current = moveNumber;
+      }
+    },
+    [selectAndQueue],
+  );
+
   /** Reset for new game */
   const reset = useCallback(() => {
     // Transfer usedThisGame to usedRecently
@@ -430,6 +458,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     onPostGame,
     /** Call when Stockfish eval arrives — detects blunders from eval swing */
     onEvalUpdate,
+    /** Call when eval-based mood is APPLIED — Rookie reacts to emotional shifts */
+    onMoodChange,
     /** Reset for new game */
     reset,
     /** Queue an arbitrary text line */

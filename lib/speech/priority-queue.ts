@@ -4,7 +4,7 @@
 
 import { type Beat, type EvalMood } from '@/lib/speech/beat-sheet';
 export type { Beat, EvalMood };
-export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'none';
+export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'mood_change' | 'none';
 
 export interface LineConditions {
   /** Which beats this line is valid for */
@@ -59,13 +59,13 @@ export interface QueueState {
   usedThisGame: Set<string>;
   /** Lines used in recent games -- lower priority but not blocked */
   usedRecently: Set<string>;
-  /** Count of quips spoken this game */
-  quipCount: number;
-  /** Max quips per game */
-  maxQuips: number;
+  /** Move numbers when quips were spoken — for rolling window limit */
+  quipMoves: number[];
 }
 
-const DEFAULT_MAX_QUIPS = 5;
+/** Max quips allowed within a rolling WINDOW_SIZE-move window */
+const WINDOW_MAX_QUIPS = 4;
+const WINDOW_SIZE = 10;
 const RECENTLY_USED_PENALTY = -30;
 const EVENT_MATCH_BONUS = 20;
 const THREAD_MATCH_BONUS = 10;
@@ -75,18 +75,20 @@ const DEFAULT_GENERATED_PRIORITY = 90;
 const UNLIMITED_BEATS = new Set<Beat>(['game_end', 'post_game']);
 
 /** Create initial queue state */
-export function createQueueState(maxQuips: number = DEFAULT_MAX_QUIPS): QueueState {
+export function createQueueState(): QueueState {
   return {
     usedThisGame: new Set(),
     usedRecently: new Set(),
-    quipCount: 0,
-    maxQuips,
+    quipMoves: [],
   };
 }
 
-/** Check if we've hit the quip limit */
-export function isAtLimit(state: QueueState): boolean {
-  return state.quipCount >= state.maxQuips;
+/** Check if we've hit the rolling window limit for a given move number */
+export function isAtLimit(state: QueueState, moveNumber?: number): boolean {
+  if (moveNumber === undefined) return false;
+  const windowStart = moveNumber - WINDOW_SIZE;
+  const quipsInWindow = state.quipMoves.filter((m) => m > windowStart).length;
+  return quipsInWindow >= WINDOW_MAX_QUIPS;
 }
 
 /** Substitute placeholders in line text */
@@ -173,15 +175,19 @@ export function selectLine(
 ): { line: SpeechLine; text: string; templateText: string } | null {
   const isUnlimitedBeat = UNLIMITED_BEATS.has(context.beat);
 
-  // Check quip limit (game_end and post_game bypass it)
-  if (!isUnlimitedBeat && isAtLimit(state)) return null;
+  // Check rolling window limit (game_end and post_game bypass it)
+  if (!isUnlimitedBeat && isAtLimit(state, context.moveNumber)) return null;
 
   // Filter: conditions match AND not drained this game
-  const candidates = pool.filter(
+  const allMatching = pool.filter(
     (line) => !state.usedThisGame.has(line.id) && matchesConditions(line, context),
   );
 
-  if (candidates.length === 0) return null;
+  if (allMatching.length === 0) return null;
+
+  // Prefer fresh lines over recently-used ones. Only fall back to recent if no fresh exist.
+  const fresh = allMatching.filter((line) => !state.usedRecently.has(line.id));
+  const candidates = fresh.length > 0 ? fresh : allMatching;
 
   // Score each candidate
   const scored = candidates.map((line) => ({
@@ -201,9 +207,9 @@ export function selectLine(
   // Drain: mark as used this game
   state.usedThisGame.add(winner.line.id);
 
-  // Increment quip count (only for limited beats)
-  if (!isUnlimitedBeat) {
-    state.quipCount++;
+  // Record move number for rolling window (only for limited beats)
+  if (!isUnlimitedBeat && context.moveNumber !== undefined) {
+    state.quipMoves.push(context.moveNumber);
   }
 
   const text = substitutePlaceholders(winner.line.text, context);
@@ -236,7 +242,6 @@ export function endGame(state: QueueState): QueueState {
   return {
     usedThisGame: new Set(),
     usedRecently,
-    quipCount: 0,
-    maxQuips: state.maxQuips,
+    quipMoves: [],
   };
 }
