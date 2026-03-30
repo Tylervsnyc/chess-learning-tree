@@ -312,6 +312,7 @@ export default function PlayRookiePage() {
   // Honcho memory integration
   const honchoGameIdRef = useRef<string | null>(null);
   const honchoOpeningLoggedRef = useRef(false);
+  const honchoContextRef = useRef<string | null>(null);
 
 
   // Stockfish init
@@ -392,6 +393,7 @@ export default function PlayRookiePage() {
           playerName: pName,
           playerFacts: speechMemoryRef.current?.playerFacts ?? [],
           gamesPlayed: speechMemoryRef.current?.gamesPlayed ?? 0,
+          honchoContext: honchoContextRef.current,
         },
       }),
     });
@@ -409,13 +411,14 @@ export default function PlayRookiePage() {
         context: {
           ...ctx,
           playerFacts: speechMemoryRef.current?.playerFacts ?? [],
+          honchoContext: honchoContextRef.current,
         },
       }),
     });
     const data = await res.json();
     if (!res.ok || !data.text) throw new Error('Failed');
     return data.text;
-  }, []);
+  }, [narrative]);
 
   const speech = useRookieSpeech({
     speakQuip,
@@ -1128,6 +1131,7 @@ export default function PlayRookiePage() {
     narrative.resetForNewGame();
     narrative.setPlayerFacts(speechMemoryRef.current?.playerFacts ?? []);
     honchoOpeningLoggedRef.current = false;
+    honchoContextRef.current = null;
 
     // Honcho: create session + fetch player context (fire-and-forget)
     log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'} — ${user?.id ? 'will init' : 'skipping'}`, details: { userId: user?.id ?? null } });
@@ -1150,6 +1154,7 @@ export default function PlayRookiePage() {
         const sessionOk = sessionRes.ok;
         if (contextData.context) {
           narrative.setHonchoContext(contextData.context);
+          honchoContextRef.current = contextData.context;
           log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] context loaded: ${contextData.context.slice(0, 80)}...`, details: { context: contextData.context, sessionOk } });
         } else {
           log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] no player context yet (session=${sessionOk ? 'ok' : 'failed'})`, details: { sessionOk, contextData } });

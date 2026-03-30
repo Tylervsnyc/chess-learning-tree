@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     let userPrompt: string;
 
     if (type === 'opening') {
-      const { threadName, playerName, playerFacts, gamesPlayed } = context;
+      const { threadName, playerName, playerFacts, gamesPlayed, honchoContext } = context;
 
       const factsBlock = playerFacts?.length
         ? `\nYou remember these things about ${playerName} from past games:\n${playerFacts.map((f: string) => `- ${f}`).join('\n')}\nReference ONE of these naturally — don't list them all.`
@@ -33,16 +33,20 @@ export async function POST(req: NextRequest) {
         ? `\nThis is game #${gamesPlayed + 1} with ${playerName}.`
         : `\nThis is ${playerName}'s first game against you.`;
 
+      const honchoBlock = honchoContext
+        ? `\nWhat you know about ${playerName}'s chess from past games:\n${honchoContext}\nWeave this knowledge into your greeting naturally — show you remember them.`
+        : '';
+
       userPrompt = `Write Rookie's opening line for a new chess game.
 
-Player: ${playerName}${historyBlock}${factsBlock}
+Player: ${playerName}${historyBlock}${factsBlock}${honchoBlock}
 
 Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.
 
 Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else if (type === 'game_end') {
-      const { playerName, rookieWon, accuracy, playerFacts } = context;
+      const { playerName, rookieWon, accuracy, playerFacts, honchoContext } = context;
 
       const outcomeText = rookieWon
         ? `Rookie won.`
@@ -56,9 +60,13 @@ Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS 
         ? `\nThings you noticed: ${playerFacts.join('. ')}.`
         : '';
 
+      const honchoBlock = honchoContext
+        ? `\nWhat you know about ${playerName}'s chess patterns:\n${honchoContext}\nIf relevant to how this game went, reference a specific pattern — show you're tracking their growth.`
+        : '';
+
       userPrompt = `Write Rookie's reaction to the game ending.
 
-${outcomeText}${accuracyText}${factsBlock}
+${outcomeText}${accuracyText}${factsBlock}${honchoBlock}
 
 Write exactly ONE line (1-2 sentences). React to the outcome with genuine emotion — this matters to Rookie. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
