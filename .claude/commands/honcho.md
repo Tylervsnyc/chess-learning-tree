@@ -23,6 +23,8 @@ Messages logged to session → Token buffer fills (~1000 tokens) → Reasoning r
 
 **Our job:** Log high-quality, plain-language pedagogical messages. Honcho does the rest.
 
+**Critical:** Reasoning must be enabled at the **workspace level**, not just per-session. `lib/honcho.ts` handles this via `ensureWorkspaceConfig()` which runs once per cold start. Without workspace config, messages get stored but never produce conclusions.
+
 ## Architecture
 
 All Honcho calls go through the server-side API route:
@@ -37,7 +39,7 @@ Client (fire-and-forget fetch) → POST /api/honcho → lib/honcho.ts → Honcho
 - `app/api/honcho/route.ts` — Server-side proxy (all actions)
 - `lib/rookie-memory.ts` — Formats Honcho context for Rookie's prompt
 
-**Existing API actions:** `start_session`, `get_context`, `get_last_game`, `log_opening`, `log_event`, `log_summary`, `seed_card`
+**Existing API actions:** `start_session`, `get_context`, `get_representation`, `get_last_game`, `log_opening`, `log_event`, `log_summary`, `log_message`, `log_summary_message`, `seed_card`
 
 ## Session ID Convention
 
