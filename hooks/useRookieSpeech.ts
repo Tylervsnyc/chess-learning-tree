@@ -58,7 +58,20 @@ export interface UseRookieSpeechOptions {
   /** Called to generate opening line via Claude. Optional — falls back to authored lines. */
   generateOpeningLine?: (threadName: string, playerName: string) => Promise<string>;
   /** Called to generate game-end line via Claude. Optional — falls back to authored lines. */
-  generateGameEndLine?: (context: { playerName: string; rookieWon: boolean; accuracy?: number }) => Promise<string>;
+  generateGameEndLine?: (context: {
+    playerName: string;
+    rookieWon: boolean;
+    accuracy?: number;
+    gameSummary?: {
+      result: string;
+      moveCount: number;
+      openingName?: string | null;
+      blunders: number;
+      mistakes: number;
+      brilliantMoves: number;
+      keyMoments?: string;
+    };
+  }) => Promise<string>;
   /** Seed usedRecently from persisted memory (loaded from Supabase) */
   initialUsedRecently?: string[];
 }
@@ -341,9 +354,17 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [buildContext, generateGameEndLine, generateOrFallback, queueQuip, selectAndQueue],
   );
 
-  /** Call when entering post-game phase */
+  /** Call when entering post-game phase with full game summary */
   const onPostGame = useCallback(
-    (accuracy?: number) => {
+    (accuracy?: number, rookieWon?: boolean, gameSummary?: {
+      result: string;
+      moveCount: number;
+      openingName?: string | null;
+      blunders: number;
+      mistakes: number;
+      brilliantMoves: number;
+      keyMoments?: string;
+    }) => {
       // Update beat to post_game
       const beatResult = updateBeat(beatRef.current, {
         moveNumber: beatRef.current.moveCount,
@@ -364,10 +385,15 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerName: playerNameRef.current,
       };
 
-      // Try Claude game-end line for post-game if we haven't already
+      // Generate Rookie's game summary with full analysis context
       generateOrFallback(
         generateGameEndLine && accuracy !== undefined
-          ? generateGameEndLine({ playerName: playerNameRef.current, rookieWon: false, accuracy })
+          ? generateGameEndLine({
+              playerName: playerNameRef.current,
+              rookieWon: rookieWon ?? false,
+              accuracy,
+              gameSummary,
+            })
           : undefined,
         'post_game',
         context,

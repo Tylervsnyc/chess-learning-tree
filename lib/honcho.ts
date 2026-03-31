@@ -65,8 +65,17 @@ export async function createHonchoGameSession(gameId: string, userId: string) {
 
   await session.addPeers([user, rookie]);
 
-  // Rookie is not observed — Honcho doesn't need to model her
+  // User is observed — Honcho models their chess behavior
+  await session.setPeerConfiguration(user, { observeMe: true });
+  // Rookie is not observed — she's deterministic
   await session.setPeerConfiguration('rookie', { observeMe: false });
+
+  // Enable the full observation pipeline: reasoning → conclusions → dreams
+  await session.setConfiguration({
+    reasoning: { enabled: true },
+    peerCard: { create: true },
+    dream: { enabled: true },
+  });
 
   return { session, user, rookie };
 }
@@ -116,6 +125,20 @@ export function logToHoncho(
   session.addMessages([peer.message(message)]).catch((err) => {
     console.error('Honcho log failed:', err);
   });
+}
+
+/**
+ * Trigger a Honcho dream to consolidate observations into conclusions.
+ * Call at end-of-game so Honcho processes everything from the session.
+ */
+export async function triggerDream(userId: string) {
+  try {
+    const honcho = getHoncho();
+    const user = await getUserPeer(userId);
+    await honcho.scheduleDream({ observer: user });
+  } catch (err) {
+    console.error('Honcho dream scheduling failed:', err);
+  }
 }
 
 function sanitizeStringArray(value: unknown): string[] {
@@ -195,6 +218,34 @@ Rules:
     return parseHonchoSummary(response);
   } catch (err) {
     console.error('Honcho player context failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Ask Honcho specifically about the player's most recent game.
+ * Returns a short narrative summary or null if no history.
+ */
+export async function getLastGameSummary(userId: string): Promise<string | null> {
+  try {
+    const user = await getUserPeer(userId);
+    const response = await user.chat(
+      `What happened in this player's most recent chess game? Include: the opening they played, the result (win/loss/draw), their accuracy, and any notable mistakes or brilliant moves. Keep it to 2-3 sentences. If you have no game history for this player, respond with exactly "no history".`,
+      { reasoningLevel: 'low' },
+    );
+    if (
+      !response ||
+      typeof response !== 'string' ||
+      response.length < 20 ||
+      response.toLowerCase().includes('no history') ||
+      response.toLowerCase().includes('no game') ||
+      response.toLowerCase().includes('don\'t have')
+    ) {
+      return null;
+    }
+    return response.trim();
+  } catch (err) {
+    console.error('Honcho last game summary failed:', err);
     return null;
   }
 }

@@ -258,14 +258,25 @@ export default function PlayRookiePage() {
         .then(r => r.json())
         .then(data => data.context ?? null)
         .catch(() => null),
-    ]).then(([speechMemory, honchoSummary]) => {
-      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary });
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_last_game', userId: user.id }),
+      })
+        .then(r => r.json())
+        .then(data => data.lastGame ?? null)
+        .catch(() => null),
+    ]).then(([speechMemory, honchoSummary, lastGameContext]) => {
+      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary, lastGameContext });
       setRookieMemory(memory);
       rookieMemoryRef.current = memory;
 
       const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
       if (honchoPreview) {
         console.log('[Honcho] Pre-fetched context:', honchoPreview.slice(0, 80));
+      }
+      if (lastGameContext) {
+        console.log('[Honcho] Last game context:', lastGameContext.slice(0, 80));
       }
     });
   }, [user?.id]);
@@ -471,7 +482,20 @@ export default function PlayRookiePage() {
     return data.text;
   }, []);
 
-  const generateGameEndLine = useCallback(async (ctx: { playerName: string; rookieWon: boolean; accuracy?: number }): Promise<string> => {
+  const generateGameEndLine = useCallback(async (ctx: {
+    playerName: string;
+    rookieWon: boolean;
+    accuracy?: number;
+    gameSummary?: {
+      result: string;
+      moveCount: number;
+      openingName?: string | null;
+      blunders: number;
+      mistakes: number;
+      brilliantMoves: number;
+      keyMoments?: string;
+    };
+  }): Promise<string> => {
     const res = await fetch('/api/rookie-speech', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -825,6 +849,23 @@ export default function PlayRookiePage() {
         }).catch(err => {
           console.error('[Honcho] Summary log failed:', err);
         });
+      }
+
+      // Generate Rookie's post-game summary with full analysis data
+      if (analysis && result) {
+        const rookieWon = result === 'loss';
+        const gameSummary = {
+          result,
+          moveCount: moves.length,
+          openingName: classifyOpening(moves.map(m => m.san))?.name ?? null,
+          blunders: analysis.blunders,
+          mistakes: analysis.mistakes,
+          brilliantMoves: analysis.brilliantMoves,
+          keyMoments: extractKeyMoments(analysis, moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to })), playerName || undefined)
+            .map(m => `${m.type}: ${m.moveSan} on move ${m.moveNumber}`)
+            .join('. ') || undefined,
+        };
+        speech.onPostGame(analysis.playerAccuracy, rookieWon, gameSummary);
       }
     }
 

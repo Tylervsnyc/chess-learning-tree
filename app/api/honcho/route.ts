@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   createHonchoGameSession,
   getPlayerContext,
+  getLastGameSummary,
   seedPeerCard,
+  triggerDream,
 } from '@/lib/honcho';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { analyzePosition, type AnalysisInput } from '@/lib/chess-analysis-agent';
@@ -39,6 +41,16 @@ export async function POST(req: NextRequest) {
       const preview = formatHonchoSummaryForPrompt(context);
       console.log(`[Honcho] Player context for ${userId}: ${preview ? preview.slice(0, 100) + '...' : 'null'}`);
       return NextResponse.json({ context });
+    }
+
+    if (action === 'get_last_game') {
+      const { userId } = body;
+      if (!userId) {
+        return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+      }
+      const summary = await getLastGameSummary(userId);
+      console.log(`[Honcho] Last game for ${userId}: ${summary ? summary.slice(0, 80) + '...' : 'null'}`);
+      return NextResponse.json({ lastGame: summary });
     }
 
     if (action === 'log_opening') {
@@ -108,6 +120,11 @@ export async function POST(req: NextRequest) {
 
       await honcho.session.addMessages([honcho.user.message(message)]);
       console.log(`[Honcho] Summary logged: ${message.slice(0, 100)}...`);
+
+      // Game is over — trigger a dream to consolidate into conclusions
+      await triggerDream(userId);
+      console.log(`[Honcho] Dream scheduled for ${userId}`);
+
       return NextResponse.json({ ok: true });
     }
 

@@ -44,24 +44,32 @@ export async function POST(req: NextRequest) {
         ? `\nThis is game #${memory.gamesPlayed + 1} with ${playerName}.`
         : `\nThis is ${playerName}'s first game against you.`;
 
-      const honchoBlock = honchoPromptSummary
+      const lastGameBlock = memory.lastGameContext
+        ? `\nLAST GAME (reference this — it's what just happened):\n${memory.lastGameContext}`
+        : '';
+
+      const lastGameInstruction = memory.lastGameContext
+        ? '\nIMPORTANT: Your greeting MUST reference the last game. "Back after that French Defense loss?" or "Ready to top that 91% accuracy?" Show you remember what just happened.'
+        : '';
+
+      const honchoBlock = !memory.lastGameContext && honchoPromptSummary
         ? `\nPLAYER HISTORY (you MUST reference one specific fact from this — name an opening, a result, or their accuracy):\n${honchoPromptSummary}`
         : '';
 
-      const honchoInstruction = honchoPromptSummary
+      const honchoInstruction = !memory.lastGameContext && honchoPromptSummary
         ? '\nIMPORTANT: Your greeting MUST mention something specific from the player history above. "Hey Tyler, back for more French Defense?" or "Last game was rough — 84% accuracy, we can do better." Show you remember them.'
         : '';
 
       userPrompt = `Write Rookie's opening line for a new chess game.
 
-Player: ${playerName}${historyBlock}${factsBlock}${honchoBlock}
+Player: ${playerName}${historyBlock}${factsBlock}${lastGameBlock}${honchoBlock}
 
-Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.${honchoInstruction}
+Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.${lastGameInstruction}${honchoInstruction}
 
 Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else if (type === 'game_end') {
-      const { playerName, rookieWon, accuracy } = context;
+      const { playerName, rookieWon, accuracy, gameSummary } = context;
 
       const outcomeText = rookieWon
         ? `Rookie won.`
@@ -71,23 +79,34 @@ Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS 
         ? ` ${playerName}'s accuracy was ${Math.round(accuracy)}%.`
         : '';
 
-      const factsBlock = memory.playerFacts.length
-        ? `\nThings you noticed: ${memory.playerFacts.join('. ')}.`
-        : '';
+      // Build game summary block from analysis data
+      let summaryBlock = '';
+      if (gameSummary) {
+        const parts: string[] = [];
+        parts.push(`Result: ${gameSummary.result} in ${gameSummary.moveCount} moves.`);
+        if (gameSummary.openingName) parts.push(`Opening: ${gameSummary.openingName}.`);
+        if (gameSummary.blunders > 0) parts.push(`Blunders: ${gameSummary.blunders}.`);
+        if (gameSummary.mistakes > 0) parts.push(`Mistakes: ${gameSummary.mistakes}.`);
+        if (gameSummary.brilliantMoves > 0) parts.push(`Brilliant moves: ${gameSummary.brilliantMoves}!`);
+        if (gameSummary.keyMoments) parts.push(`Key moments: ${gameSummary.keyMoments}`);
+        summaryBlock = `\nTHIS GAME'S STATS:\n${parts.join(' ')}`;
+      }
 
       const honchoBlock = honchoPromptSummary
         ? `\nPLAYER HISTORY (compare this game to what you know):\n${honchoPromptSummary}`
         : '';
 
       const honchoInstruction = honchoPromptSummary
-        ? '\nIMPORTANT: Compare this game to the player history. Did they improve? Repeat a mistake? Try a new opening? Be specific — "Your accuracy went up!" or "You keep struggling in the middlegame."'
+        ? '\nCompare this game to the player history. Did they improve? Repeat a mistake? Try a new opening?'
         : '';
 
-      userPrompt = `Write Rookie's reaction to the game ending.
+      userPrompt = `Write Rookie's fun summary of the game that just ended.
 
-${outcomeText}${accuracyText}${factsBlock}${honchoBlock}${honchoInstruction}
+${outcomeText}${accuracyText}${summaryBlock}${honchoBlock}${honchoInstruction}
 
-Write exactly ONE line (1-2 sentences). React to the outcome with genuine emotion — this matters to Rookie. Written for TTS — no formatting, no asterisks, no parentheses.`;
+Summarize the game in Rookie's voice — mention specific things that happened (the opening, a blunder, a brilliant move, their accuracy). Make it feel like a friend recapping the game. Be specific, not generic.
+
+Write 2-3 sentences. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else {
       return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
@@ -95,7 +114,7 @@ Write exactly ONE line (1-2 sentences). React to the outcome with genuine emotio
 
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 150,
+      max_tokens: 200,
       system: ROOKIE_GAMEPLAY_PROMPT,
       messages: [{ role: 'user', content: userPrompt }],
     });
