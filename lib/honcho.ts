@@ -19,6 +19,7 @@ import {
 // ════════════════════════════════
 
 let _honcho: Honcho | null = null;
+let _workspaceConfigured = false;
 
 function getHoncho(): Honcho {
   if (!_honcho) {
@@ -28,6 +29,21 @@ function getHoncho(): Honcho {
     });
   }
   return _honcho;
+}
+
+/**
+ * Ensure workspace-level config is set (once per cold start).
+ * Reasoning must be enabled at the workspace level for conclusions to form.
+ */
+async function ensureWorkspaceConfig() {
+  if (_workspaceConfigured) return;
+  const honcho = getHoncho();
+  await honcho.setConfiguration({
+    reasoning: { enabled: true },
+    peerCard: { create: true, use: true },
+    dream: { enabled: true },
+  });
+  _workspaceConfigured = true;
 }
 
 // ════════════════════════════════
@@ -53,11 +69,12 @@ export async function getRookiePeer() {
 // SESSIONS
 // ════════════════════════════════
 
-/**
- * Create a Honcho session for a game.
- * Returns session + both peers for message logging.
- */
-export async function createHonchoGameSession(gameId: string, userId: string) {
+// Cache initialized sessions so we don't re-add peers on every log call
+const _sessionCache = new Map<string, ReturnType<typeof _initSession>>();
+
+async function _initSession(gameId: string, userId: string) {
+  await ensureWorkspaceConfig();
+
   const honcho = getHoncho();
   const session = await honcho.session(gameId);
   const user = await getUserPeer(userId);
@@ -70,14 +87,22 @@ export async function createHonchoGameSession(gameId: string, userId: string) {
   // Rookie is not observed — she's deterministic
   await session.setPeerConfiguration('rookie', { observeMe: false });
 
-  // Enable the full observation pipeline: reasoning → conclusions → dreams
-  await session.setConfiguration({
-    reasoning: { enabled: true },
-    peerCard: { create: true },
-    dream: { enabled: true },
-  });
-
   return { session, user, rookie };
+}
+
+/**
+ * Get or create a Honcho session for a game.
+ * Caches session setup so repeated calls (e.g. per-message logging) don't
+ * re-add peers or re-set config.
+ */
+export async function createHonchoGameSession(gameId: string, userId: string) {
+  const cacheKey = `${gameId}:${userId}`;
+  let cached = _sessionCache.get(cacheKey);
+  if (!cached) {
+    cached = _initSession(gameId, userId);
+    _sessionCache.set(cacheKey, cached);
+  }
+  return cached;
 }
 
 // ════════════════════════════════
@@ -97,6 +122,7 @@ export async function seedPeerCard(
     experience?: string;
   },
 ) {
+  await ensureWorkspaceConfig();
   const user = await getUserPeer(userId);
   const card: string[] = [];
 
@@ -133,6 +159,7 @@ export function logToHoncho(
  */
 export async function triggerDream(userId: string) {
   try {
+    await ensureWorkspaceConfig();
     const honcho = getHoncho();
     const user = await getUserPeer(userId);
     await honcho.scheduleDream({ observer: user });
@@ -190,6 +217,7 @@ function parseHonchoSummary(response: string): HonchoPlayerSummary | null {
  */
 export async function getPlayerContext(userId: string): Promise<HonchoPlayerSummary | null> {
   try {
+    await ensureWorkspaceConfig();
     const user = await getUserPeer(userId);
     const response = await user.chat(
       `Summarize what you know about this chess player as JSON.
@@ -232,6 +260,7 @@ Rules:
  */
 export async function getPlayerRepresentation(userId: string): Promise<string | null> {
   try {
+    await ensureWorkspaceConfig();
     const honcho = getHoncho();
     const user = await getUserPeer(userId);
 
