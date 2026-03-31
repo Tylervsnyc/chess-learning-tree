@@ -138,6 +138,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    if (action === 'log_message') {
+      const { gameId, userId, message } = body;
+      if (!gameId || !userId || !message) {
+        return NextResponse.json({ error: 'Missing gameId, userId, or message' }, { status: 400 });
+      }
+      const honcho = await createHonchoGameSession(gameId, userId);
+      await honcho.session.addMessages([honcho.user.message(message)]);
+      console.log(`[Honcho] Message logged: ${message.slice(0, 80)}...`);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (action === 'log_summary_message') {
+      const { gameId, userId, message } = body;
+      if (!gameId || !userId || !message) {
+        return NextResponse.json({ error: 'Missing gameId, userId, or message' }, { status: 400 });
+      }
+      const honcho = await createHonchoGameSession(gameId, userId);
+      await honcho.session.addMessages([honcho.user.message(message)]);
+      await triggerDream(userId);
+      console.log(`[Honcho] Summary logged + dream scheduled: ${message.slice(0, 80)}...`);
+      return NextResponse.json({ ok: true });
+    }
+
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error) {
     console.error('[Honcho] API error:', error);

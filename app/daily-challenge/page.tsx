@@ -116,6 +116,7 @@ export default function DailyChallengePage() {
   // Coaching tracking
   const puzzleStartTimeRef = useRef<number>(Date.now());
   const firstWrongMoveRef = useRef<string | null>(null);
+  const honchoSessionIdRef = useRef<string | null>(null);
 
   // Review mode state
   const [reviewingPuzzle, setReviewingPuzzle] = useState<ProcessedPuzzle | null>(null);
@@ -399,6 +400,27 @@ export default function DailyChallengePage() {
       setCurrentFen(puzzles[0].originalFen); // Start with position BEFORE opponent's move
       setIsAnimatingSetup(true);
       setGameState('playing');
+      // Log Honcho session start
+      if (user?.id) {
+        const today = new Date().toISOString().slice(0, 10);
+        const sessionId = `daily-${today}`;
+        honchoSessionIdRef.current = sessionId;
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'start_session', gameId: sessionId, userId: user.id }),
+        }).catch(() => {});
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_message',
+            gameId: sessionId,
+            userId: user.id,
+            message: `Daily challenge started. ${puzzles.length} puzzles, 5-minute timer.`,
+          }),
+        }).catch(() => {});
+      }
       // Step 2: Enable animation, then animate the setup move
       setTimeout(() => {
         setAnimationDuration(300);
@@ -429,6 +451,21 @@ export default function DailyChallengePage() {
         retryCount: 0,
         timeMs: Date.now() - puzzleStartTimeRef.current,
       });
+      // Log to Honcho
+      if (user?.id && honchoSessionIdRef.current) {
+        const timeMs = Date.now() - puzzleStartTimeRef.current;
+        const themes = currentPuzzle.themes.join(', ') || 'general';
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_message',
+            gameId: honchoSessionIdRef.current,
+            userId: user.id,
+            message: `Solved puzzle #${puzzleIndex + 1} (${themes}) rated ${currentPuzzle.rating} on first attempt in ${Math.round(timeMs / 1000)}s.`,
+          }),
+        }).catch(() => {});
+      }
     }
 
     // Advance to next puzzle after brief delay
@@ -474,6 +511,22 @@ export default function DailyChallengePage() {
         retryCount: 0,
         timeMs: Date.now() - puzzleStartTimeRef.current,
       });
+      // Log to Honcho
+      if (user?.id && honchoSessionIdRef.current) {
+        const themes = currentPuzzle.themes.join(', ') || 'general';
+        const wrongMove = firstWrongMoveRef.current || 'unknown';
+        const solution = currentPuzzle.solutionMoves[0] || 'unknown';
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_message',
+            gameId: honchoSessionIdRef.current,
+            userId: user.id,
+            message: `Failed puzzle #${puzzleIndex + 1} (${themes}) rated ${currentPuzzle.rating}. Wrong move: ${wrongMove}. Correct was: ${solution}.`,
+          }),
+        }).catch(() => {});
+      }
     }
 
     if (newLives <= 0) {
@@ -679,6 +732,50 @@ export default function DailyChallengePage() {
         recordResult(puzzlesSolved, finalTimeLeft);
         // Update global day streak (per RULES.md Section 11)
         recordDailyActivity();
+        // Log Honcho summary + trigger dream
+        if (honchoSessionIdRef.current) {
+          const elapsed = finalElapsedMsRef.current;
+          const minutes = Math.floor(elapsed / 60000);
+          const seconds = Math.floor((elapsed % 60000) / 1000);
+          const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+          const accuracy = allPuzzles.length > 0 ? Math.round((puzzlesSolved / (puzzlesSolved + puzzlesWrong)) * 100) : 0;
+
+          const correctThemes = allPuzzles
+            .filter((_, i) => puzzleResults[allPuzzles[i]?.puzzleId] === 'correct')
+            .flatMap(p => p.themes);
+          const missedThemes = allPuzzles
+            .filter((_, i) => puzzleResults[allPuzzles[i]?.puzzleId] === 'wrong')
+            .flatMap(p => p.themes);
+          const uniqueCorrect = [...new Set(correctThemes)].join(', ') || 'none';
+          const uniqueMissed = [...new Set(missedThemes)].join(', ') || 'none';
+
+          const maxSolvedRating = allPuzzles
+            .filter((_, i) => puzzleResults[allPuzzles[i]?.puzzleId] === 'correct')
+            .reduce((max, p) => Math.max(max, p.rating), 0);
+          const firstFailRating = allPuzzles
+            .find((_, i) => puzzleResults[allPuzzles[i]?.puzzleId] === 'wrong')
+            ?.rating ?? 0;
+
+          const summaryParts = [
+            `Daily challenge complete: ${puzzlesSolved}/${allPuzzles.length} puzzles in ${timeStr}.`,
+            `Accuracy: ${accuracy}%. Lives remaining: ${lives}/${MAX_LIVES}.`,
+            `Themes correct: ${uniqueCorrect}. Themes missed: ${uniqueMissed}.`,
+            maxSolvedRating > 0 ? `Highest puzzle solved: rated ${maxSolvedRating}.` : null,
+            firstFailRating > 0 ? `Stopped at: rated ${firstFailRating}.` : null,
+            currentStreak > 0 ? `Streak: ${currentStreak} days.` : null,
+          ].filter(Boolean).join(' ');
+
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_summary_message',
+              gameId: honchoSessionIdRef.current,
+              userId: user.id,
+              message: summaryParts,
+            }),
+          }).catch(() => {});
+        }
       }
     }
   }, [gameState, puzzlesSolved, recordResult, recordDailyActivity, user]);

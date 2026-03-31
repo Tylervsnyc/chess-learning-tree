@@ -69,6 +69,7 @@ import { getItalianTwoKnightsLesson } from '@/data/openings/italian-two-knights-
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
+import { useUser } from '@/hooks/useUser'
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -160,6 +161,7 @@ export default function OpeningLessonPage() {
 
   useAudioWarmup()
   const { completeLesson } = useOpeningProgress()
+  const { user } = useUser()
 
   const lesson = useMemo((): OpeningLesson | undefined => {
     const lookups: Record<string, (id: string) => OpeningLesson | undefined> = {
@@ -204,6 +206,9 @@ export default function OpeningLessonPage() {
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
 
+  const openingConfig = useMemo(() => getOpeningBySlug(slug), [slug])
+  const openingName = openingConfig?.name ?? slug
+
   // ─── State ───
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [boardFen, setBoardFen] = useState('')
@@ -221,6 +226,7 @@ export default function OpeningLessonPage() {
   const [puzzleFen, setPuzzleFen] = useState('')
 
   const lessonStartTimeRef = useRef(Date.now())
+  const honchoSessionIdRef = useRef<string | null>(null)
   const advancingRef = useRef(false)
   const prevOrientationRef = useRef(boardOrientation)
   // Disable animation when orientation flips so pieces don't glitch
@@ -245,6 +251,26 @@ export default function OpeningLessonPage() {
     setBoardOrientation(step.orientation || lesson.defaultOrientation)
     lessonStartTimeRef.current = Date.now()
     LearningEvents.lessonStarted(lessonId, lesson.title, { source: 'opening', openingSlug: slug })
+    if (user?.id) {
+      const sessionId = `opening-${slug}-${lessonId}`
+      honchoSessionIdRef.current = sessionId
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start_session', gameId: sessionId, userId: user.id }),
+      }).catch(() => {})
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'log_message',
+          gameId: sessionId,
+          userId: user.id,
+          message: `Started opening lesson "${lesson.title}" in the ${openingName} (${slug}).`,
+        }),
+      }).catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lesson, lessonId, slug])
 
   const currentStep = lesson?.steps[currentStepIndex]
@@ -267,6 +293,30 @@ export default function OpeningLessonPage() {
       const accuracy = interactiveCount > 0 ? Math.round((correctCount / interactiveCount) * 100) : 100
       LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent, { source: 'opening', openingSlug: slug })
       completeLesson(slug, lessonId)
+      // Log Honcho summary + trigger dream
+      if (user?.id && honchoSessionIdRef.current) {
+        const predictSteps = lesson.steps.filter(s => s.type === 'play-move' && s.prompt !== 'Your move.')
+        const recallSteps = lesson.steps.filter(s => s.type === 'play-move' && s.prompt === 'Your move.')
+
+        const summaryParts = [
+          `Opening lesson "${lesson.title}" in ${openingName} complete.`,
+          `Accuracy: ${accuracy}%. Time: ${timeSpent}s.`,
+          predictSteps.length > 0 ? `Predict steps: ${predictSteps.length}.` : null,
+          recallSteps.length > 0 ? `Recall steps: ${recallSteps.length}.` : null,
+          `Interactive steps: ${interactiveCount} total, ${correctCount} correct on first try.`,
+        ].filter(Boolean).join(' ')
+
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_summary_message',
+            gameId: honchoSessionIdRef.current,
+            userId: user.id,
+            message: summaryParts,
+          }),
+        }).catch(() => {})
+      }
       advancingRef.current = false
       return
     }
@@ -336,6 +386,22 @@ export default function OpeningLessonPage() {
         setLastOpponentHighlight(null)
         setCorrectCount(prev => prev + 1)
 
+        // Log to Honcho
+        if (user?.id && honchoSessionIdRef.current) {
+          const isRecall = currentStep.prompt === 'Your move.'
+          const verb = isRecall ? 'Recalled' : 'Correctly predicted'
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_message',
+              gameId: honchoSessionIdRef.current,
+              userId: user.id,
+              message: `${verb} ${move.san} in the ${openingName} on first try.`,
+            }),
+          }).catch(() => {})
+        }
+
         // Play-through mode: if the next step is an auto-advancing opponent
         // move, skip the "Correct!" popup and flow straight into it
         const nextStep = lesson.steps[currentStepIndex + 1]
@@ -369,6 +435,21 @@ export default function OpeningLessonPage() {
 
         const newAttempts = wrongAttempts + 1
         setWrongAttempts(newAttempts)
+        // Log to Honcho
+        if (user?.id && honchoSessionIdRef.current) {
+          const isRecall = currentStep.prompt === 'Your move.'
+          const verb = isRecall ? 'Failed to recall' : 'Predicted wrong move in'
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_message',
+              gameId: honchoSessionIdRef.current,
+              userId: user.id,
+              message: `${verb} ${openingName}. Played ${move.san}, correct was ${currentStep.correctMove}.`,
+            }),
+          }).catch(() => {})
+        }
         setMoveStatus('wrong')
 
         setTimeout(() => {
@@ -407,6 +488,19 @@ export default function OpeningLessonPage() {
         if (nextIdx >= currentStep.solutionMoves.length) {
           LearningEvents.puzzleAttempted(lessonId, currentStepIndex + 1, true, 0, { source: 'opening', openingSlug: slug })
           setCorrectCount(prev => prev + 1)
+          // Log to Honcho
+          if (user?.id && honchoSessionIdRef.current) {
+            fetch('/api/honcho', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'log_message',
+                gameId: honchoSessionIdRef.current,
+                userId: user.id,
+                message: `Completed puzzle sequence in the ${openingName} correctly.`,
+              }),
+            }).catch(() => {})
+          }
           playCorrectSound(correctCount)
           setMoveStatus('correct')
           setCorrectAnimCount(prev => prev + 1)
@@ -434,6 +528,19 @@ export default function OpeningLessonPage() {
         setWrongAnimCount(prev => prev + 1)
         setTimeout(() => rookWrongRef.current?.triggerAnimation(), 250)
         setWrongAttempts(prev => prev + 1)
+        // Log to Honcho
+        if (user?.id && honchoSessionIdRef.current) {
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_message',
+              gameId: honchoSessionIdRef.current,
+              userId: user.id,
+              message: `Wrong move in ${openingName} puzzle. Played ${move.san}, expected ${currentStep.solutionMoves[puzzleMoveIndex]}.`,
+            }),
+          }).catch(() => {})
+        }
         setMoveStatus('wrong')
         setTimeout(() => {
           setBoardFen(fen)
