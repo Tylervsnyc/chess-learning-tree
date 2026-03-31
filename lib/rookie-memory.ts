@@ -18,6 +18,8 @@ export interface RookieMemoryContext {
   totalDraws: number;
   honchoSummary: HonchoPlayerSummary | null;
   lastGameContext: string | null;
+  /** Broad representation from session.context() — summaries + conclusions + peer card */
+  honchoRepresentation: string | null;
 }
 
 export const EMPTY_HONCHO_SUMMARY: HonchoPlayerSummary = {
@@ -38,12 +40,14 @@ export const EMPTY_ROOKIE_MEMORY: RookieMemoryContext = {
   totalDraws: 0,
   honchoSummary: null,
   lastGameContext: null,
+  honchoRepresentation: null,
 };
 
 export function buildRookieMemoryContext(input?: {
   speechMemory?: SpeechMemory | null;
   honchoSummary?: HonchoPlayerSummary | null;
   lastGameContext?: string | null;
+  honchoRepresentation?: string | null;
 }): RookieMemoryContext {
   const speechMemory = input?.speechMemory;
 
@@ -56,6 +60,7 @@ export function buildRookieMemoryContext(input?: {
     totalDraws: speechMemory?.totalDraws ?? 0,
     honchoSummary: input?.honchoSummary ?? null,
     lastGameContext: input?.lastGameContext ?? null,
+    honchoRepresentation: input?.honchoRepresentation ?? null,
   };
 }
 

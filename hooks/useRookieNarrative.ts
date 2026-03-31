@@ -147,13 +147,18 @@ export function useRookieNarrative() {
     intelligenceRef.current = intelligence.nextState;
 
     // ── Layer 6: Decision Gate + Prompt Assembly ──
+    // Combine Honcho chat summary + representation for richest possible context
+    const chatContext = formatHonchoSummaryForPrompt(memoryContextRef.current.honchoSummary);
+    const repContext = memoryContextRef.current.honchoRepresentation;
+    const honchoContext = [chatContext, repContext].filter(Boolean).join('\n\n') || null;
+
     const { decision, prompt } = runPipeline(
       intelligence,
       narrativeRef.current,
       antiRepRef.current,
       gameHistoryRef.current,
       memoryContextRef.current.playerFacts,
-      formatHonchoSummaryForPrompt(memoryContextRef.current.honchoSummary),
+      honchoContext,
     );
 
     // ── Route handling ──

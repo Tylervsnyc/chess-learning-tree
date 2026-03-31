@@ -223,6 +223,52 @@ Rules:
 }
 
 /**
+ * Get the player's full representation via session.context().
+ * This is the broad, open-ended call — returns summaries + conclusions + peer card,
+ * formatted and ready to inject into a prompt. Use this for system prompt context.
+ *
+ * peer.chat() = targeted question ("what happened last game?")
+ * session.context() = broad context dump ("tell me everything about this player")
+ */
+export async function getPlayerRepresentation(userId: string): Promise<string | null> {
+  try {
+    const honcho = getHoncho();
+    const user = await getUserPeer(userId);
+
+    // Get the user's most recent session to query context from
+    const sessions = await user.sessions();
+    const items = (sessions as unknown as { _data?: { items?: Array<{ id: string }> } })?._data?.items;
+    if (!items || items.length === 0) return null;
+
+    // Use the most recent session
+    const latestSessionId = items[items.length - 1].id;
+    const session = await honcho.session(latestSessionId);
+
+    const context = await session.context({
+      tokens: 800,
+      peerTarget: userId,
+    });
+
+    // Extract the peer representation if available
+    const rep = (context as { peerRepresentation?: string }).peerRepresentation;
+    const card = (context as { peerCard?: string[] }).peerCard;
+
+    const parts: string[] = [];
+    if (rep && typeof rep === 'string' && rep.length > 10) {
+      parts.push(rep);
+    }
+    if (card && Array.isArray(card) && card.length > 0) {
+      parts.push('Player card: ' + card.join('. '));
+    }
+
+    return parts.length > 0 ? parts.join('\n\n') : null;
+  } catch (err) {
+    console.error('Honcho representation failed:', err);
+    return null;
+  }
+}
+
+/**
  * Ask Honcho specifically about the player's most recent game.
  * Returns a short narrative summary or null if no history.
  */

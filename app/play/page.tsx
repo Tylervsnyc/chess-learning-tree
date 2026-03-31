@@ -248,35 +248,32 @@ export default function PlayRookiePage() {
       return;
     }
 
+    const honchoFetch = (action: string) =>
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, userId: user.id }),
+      }).then(r => r.json()).catch(() => ({}));
+
     Promise.all([
       loadSpeechMemory(user.id),
-      fetch('/api/honcho', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_context', userId: user.id }),
-      })
-        .then(r => r.json())
-        .then(data => data.context ?? null)
-        .catch(() => null),
-      fetch('/api/honcho', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_last_game', userId: user.id }),
-      })
-        .then(r => r.json())
-        .then(data => data.lastGame ?? null)
-        .catch(() => null),
-    ]).then(([speechMemory, honchoSummary, lastGameContext]) => {
-      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary, lastGameContext });
+      honchoFetch('get_context').then(d => d.context ?? null),
+      honchoFetch('get_last_game').then(d => d.lastGame ?? null),
+      honchoFetch('get_representation').then(d => d.representation ?? null),
+    ]).then(([speechMemory, honchoSummary, lastGameContext, honchoRepresentation]) => {
+      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary, lastGameContext, honchoRepresentation });
       setRookieMemory(memory);
       rookieMemoryRef.current = memory;
 
       const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
       if (honchoPreview) {
-        console.log('[Honcho] Pre-fetched context:', honchoPreview.slice(0, 80));
+        console.log('[Honcho] Chat context:', honchoPreview.slice(0, 80));
+      }
+      if (honchoRepresentation) {
+        console.log('[Honcho] Representation:', honchoRepresentation.slice(0, 80));
       }
       if (lastGameContext) {
-        console.log('[Honcho] Last game context:', lastGameContext.slice(0, 80));
+        console.log('[Honcho] Last game:', lastGameContext.slice(0, 80));
       }
     });
   }, [user?.id]);

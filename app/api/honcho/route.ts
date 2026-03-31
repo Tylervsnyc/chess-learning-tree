@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   createHonchoGameSession,
   getPlayerContext,
+  getPlayerRepresentation,
   getLastGameSummary,
   seedPeerCard,
   triggerDream,
@@ -41,6 +42,16 @@ export async function POST(req: NextRequest) {
       const preview = formatHonchoSummaryForPrompt(context);
       console.log(`[Honcho] Player context for ${userId}: ${preview ? preview.slice(0, 100) + '...' : 'null'}`);
       return NextResponse.json({ context });
+    }
+
+    if (action === 'get_representation') {
+      const { userId } = body;
+      if (!userId) {
+        return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+      }
+      const representation = await getPlayerRepresentation(userId);
+      console.log(`[Honcho] Representation for ${userId}: ${representation ? representation.slice(0, 100) + '...' : 'null'}`);
+      return NextResponse.json({ representation });
     }
 
     if (action === 'get_last_game') {
