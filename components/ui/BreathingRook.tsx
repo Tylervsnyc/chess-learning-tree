@@ -1,6 +1,9 @@
 'use client';
 
 import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
+import type { RookieMood } from '@/lib/rookie-os/types';
+
+export type { RookieMood } from '@/lib/rookie-os/types';
 
 /**
  * BreathingRook — The standard loading indicator for Chess Path.
@@ -24,37 +27,6 @@ const SIZE_MAP = {
 
 type AnimationMode = 'breathe' | 'enter' | 'think' | 'celebrate' | 'powerOn' | 'talk';
 
-/**
- * Mood shifts Rookie's colors like an octopus.
- * Strong moods push towards monochrome — like a uniform changing with confidence.
- */
-export type RookieMood =
-  | 'neutral'
-  | 'happy'
-  | 'nervous'
-  | 'angry'
-  | 'smug'
-  | 'surprised'
-  | 'embarrassed'  // power flickers out
-  | 'excited'      // golden overdrive
-  | 'defeated'     // dark, almost off
-  | 'scheming'     // sinister green
-  | 'panicking'    // rapid orange flashes
-  | 'zen'          // soft pastel calm
-  // -- potential new moods --
-  | 'shadow'       // matte black villain arc
-  | 'proud'        // warm bronze glow
-  | 'suspicious'   // narrow amber
-  | 'heartbroken'  // deep indigo
-  | 'mischievous'  // hot pink sparkle
-  | 'sleepy'       // dim warm purple
-  | 'starstruck'   // bright silver shimmer
-  | 'confused'     // swirling unsettled
-  | 'stubborn'     // burnt orange rigid
-  | 'grateful'     // soft warm pink
-  | 'feral'        // chaotic rainbow strobe
-  | 'royal';       // deep gold + purple
-
 // Each mood: target color to blend toward, blend strength, brightness
 const MOOD_TINTS: Record<RookieMood, { color: [number, number, number]; blend: number; brightness: number }> = {
   neutral:     { color: [0, 0, 0],       blend: 0,    brightness: 1 },
@@ -67,20 +39,20 @@ const MOOD_TINTS: Record<RookieMood, { color: [number, number, number]; blend: n
   excited:     { color: [255, 200, 0],   blend: 0.7,  brightness: 1.25 },  // golden overdrive
   defeated:    { color: [40, 40, 45],    blend: 0.8,  brightness: 0.35 },  // dark husk, barely alive
   scheming:    { color: [0, 180, 80],    blend: 0.7,  brightness: 0.9 },   // sinister matrix green
-  panicking:   { color: [255, 120, 0],   blend: 0.75, brightness: 1.1 },   // alarm orange
+  panicking:   { color: [220, 20, 20],   blend: 0.8,  brightness: 1.0 },   // red siren
   zen:         { color: [180, 200, 220], blend: 0.5,  brightness: 1.05 },  // soft pastel wash
+  feral:       { color: [255, 50, 50],   blend: 0.3,  brightness: 1.5 },   // chaotic overdrive
+  heartbroken: { color: [60, 40, 140],   blend: 0.7,  brightness: 0.7 },   // deep indigo sadness
   // -- potential new moods --
   shadow:      { color: [15, 15, 15],    blend: 0.95, brightness: 0.3 },   // matte black villain
   proud:       { color: [180, 130, 50],  blend: 0.6,  brightness: 1.1 },   // warm bronze glow
   suspicious:  { color: [200, 160, 40],  blend: 0.6,  brightness: 0.85 },  // narrow amber
-  heartbroken: { color: [60, 40, 140],   blend: 0.7,  brightness: 0.7 },   // deep indigo sadness
   mischievous: { color: [240, 60, 180],  blend: 0.65, brightness: 1.15 },  // hot pink sparkle
   sleepy:      { color: [140, 100, 180], blend: 0.6,  brightness: 0.5 },   // dim warm purple
   starstruck:  { color: [220, 225, 240], blend: 0.7,  brightness: 1.4 },   // bright silver shimmer
   confused:    { color: [160, 120, 180], blend: 0.4,  brightness: 1.0 },   // swirling unsettled mix
   stubborn:    { color: [180, 90, 30],   blend: 0.7,  brightness: 0.9 },   // burnt orange rigid
   grateful:    { color: [230, 140, 160], blend: 0.55, brightness: 1.1 },   // soft warm pink
-  feral:       { color: [255, 50, 50],   blend: 0.3,  brightness: 1.5 },   // chaotic overdrive
   royal:       { color: [180, 140, 40],  blend: 0.65, brightness: 1.05 },  // deep gold + purple
 };
 
@@ -307,6 +279,11 @@ const MOOD_KEYFRAMES = `
     0%, 100% { filter: brightness(0.7) saturate(0.8); }
     50% { filter: brightness(1.3) saturate(1.4); }
   }
+  @keyframes rookSiren {
+    0%, 100% { filter: brightness(0.35) saturate(0.5); }
+    10% { filter: brightness(2.2) saturate(1.8); }
+    25% { filter: brightness(0.35) saturate(0.5); }
+  }
   @keyframes rookDefeatedFlicker {
     0%, 100% { opacity: 0.3; filter: brightness(0.3) saturate(0); }
     5% { opacity: 0.5; filter: brightness(0.6) saturate(0.2); }
@@ -348,6 +325,8 @@ const ALL_MOOD_KEYFRAMES = (Object.keys(MOOD_BREATHE_SPEED) as RookieMood[]).map
 
 // Pre-compute normalized distance from center for each rook block (0–1)
 const BLOCK_DISTANCES = new Map<string, number>();
+// Pre-compute normalized angle from center for siren rotation (0–1)
+const BLOCK_ANGLES = new Map<string, number>();
 {
   let maxDist = 0;
   for (const { x, y } of ALL_CELLS) {
@@ -355,8 +334,11 @@ const BLOCK_DISTANCES = new Map<string, number>();
     const d = Math.sqrt((x - CENTER_X) ** 2 + (y - CENTER_Y) ** 2);
     if (d > maxDist) maxDist = d;
     BLOCK_DISTANCES.set(`${x},${y}`, d);
+    // Angle normalized to 0–1 (starting from top, clockwise)
+    const angle = Math.atan2(x - CENTER_X, -(y - CENTER_Y));
+    BLOCK_ANGLES.set(`${x},${y}`, (angle + Math.PI) / (2 * Math.PI));
   }
-  // Normalize
+  // Normalize distances
   for (const [key, d] of BLOCK_DISTANCES) {
     BLOCK_DISTANCES.set(key, d / (maxDist || 1));
   }
@@ -430,6 +412,11 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
           const moodSpeed = MOOD_BREATHE_SPEED[mood] ?? 5;
           const breatheDelay = (x + y) * (moodSpeed > 3 ? 0.18 : 0.08);
 
+          // Panicking: rotating siren beam based on angular position
+          const isSiren = mood === 'panicking' && useMoodBreathe;
+          const sirenDelay = BLOCK_ANGLES.get(`${x},${y}`) ?? 0;
+          const SIREN_SPEED = 1.2; // seconds per rotation
+
           return (
             <div
               key={`${x},${y}`}
@@ -447,7 +434,9 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                 ...(mood === 'defeated' ? { opacity: 0.3 } : {}),
                 ...(mood === 'shadow' ? { opacity: 0.15 } : {}),
                 ...(mood === 'sleepy' ? { opacity: 0.4 } : {}),
-                ...(useMoodBreathe ? {
+                ...(isSiren ? {
+                  animation: `rookSiren ${SIREN_SPEED}s ease-in-out ${sirenDelay * SIREN_SPEED}s infinite`,
+                } : useMoodBreathe ? {
                   animation: `rookBreathe_${mood} ${moodSpeed}s ease-in-out ${breatheDelay}s infinite`,
                 } : activeMode ? {
                   animation: getBlockAnimation(activeMode, delay, x, y),
@@ -462,7 +451,7 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
       {label && (
         <span className="text-xs text-chess-text-faint animate-pulse">{label}</span>
       )}
-      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: ANIMATION_KEYFRAMES + ALL_MOOD_KEYFRAMES }} />
+      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: ANIMATION_KEYFRAMES + MOOD_KEYFRAMES + ALL_MOOD_KEYFRAMES }} />
     </div>
   );
 }

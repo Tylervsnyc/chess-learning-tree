@@ -39,32 +39,20 @@ export interface CharacterCardV2 {
 // MOOD (cross-cutting state from Layer 2)
 // ════════════════════════════════
 
-export type RookieMood =
-  | 'neutral'
-  | 'happy'
-  | 'nervous'
-  | 'angry'
-  | 'smug'
-  | 'surprised'
-  | 'embarrassed'
-  | 'excited'
-  | 'defeated'
-  | 'scheming'
-  | 'panicking'
-  | 'zen'
-  // -- potential new moods --
-  | 'shadow'
-  | 'proud'
-  | 'suspicious'
-  | 'heartbroken'
-  | 'mischievous'
-  | 'sleepy'
-  | 'starstruck'
-  | 'confused'
-  | 'stubborn'
-  | 'grateful'
-  | 'feral'
-  | 'royal';
+/** Moods actively used in gameplay (eval triggers, event triggers, narrative). */
+export const ACTIVE_MOODS = [
+  'neutral', 'happy', 'nervous', 'angry', 'smug', 'surprised',
+  'embarrassed', 'excited', 'defeated', 'scheming', 'panicking',
+  'zen', 'feral', 'heartbroken',
+] as const;
+
+/** Moods designed but not yet wired into gameplay. */
+export const POTENTIAL_MOODS = [
+  'shadow', 'proud', 'suspicious', 'mischievous', 'sleepy',
+  'starstruck', 'confused', 'stubborn', 'grateful', 'royal',
+] as const;
+
+export type RookieMood = (typeof ACTIVE_MOODS)[number] | (typeof POTENTIAL_MOODS)[number];
 
 // ════════════════════════════════
 // LAYER 2: CHESS BRIEFING (output of Chess Intelligence Agent)

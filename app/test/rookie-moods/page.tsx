@@ -1,39 +1,43 @@
 'use client';
 
 import { useState } from 'react';
-import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
+import { BreathingRook } from '@/components/ui/BreathingRook';
+import { ACTIVE_MOODS, POTENTIAL_MOODS, type RookieMood } from '@/lib/rookie-os/types';
 
 type AnimationMode = 'breathe' | 'think' | 'celebrate' | 'powerOn' | 'enter';
 
-const MOODS: { mood: RookieMood; label: string; desc: string }[] = [
-  { mood: 'neutral', label: 'Neutral', desc: 'Default rainbow' },
-  { mood: 'happy', label: 'Happy', desc: 'Warm green glow — winning material' },
-  { mood: 'nervous', label: 'Nervous', desc: 'Washed out grey-blue — losing material' },
-  { mood: 'angry', label: 'Angry', desc: 'Deep red, nearly mono — got checkmated' },
-  { mood: 'smug', label: 'Smug', desc: 'Rich purple royalty — delivered check' },
-  { mood: 'surprised', label: 'Surprised', desc: 'Electric cyan — got checked' },
-  { mood: 'embarrassed', label: 'Embarrassed', desc: 'Power flickers out — blundered' },
-  { mood: 'excited', label: 'Excited', desc: 'Golden overdrive — captured big piece' },
-  { mood: 'defeated', label: 'Defeated', desc: 'Dark husk, barely alive — lost badly' },
-  { mood: 'scheming', label: 'Scheming', desc: 'Sinister matrix green — sees a tactic' },
-  { mood: 'panicking', label: 'Panicking', desc: 'Alarm orange pulse — lost big piece' },
-  { mood: 'zen', label: 'Zen', desc: 'Soft pastel calm — even position' },
-];
+const MOOD_META: Record<RookieMood, { desc: string; merch?: string }> = {
+  // Active
+  neutral:     { desc: 'Default rainbow' },
+  happy:       { desc: 'Warm green glow — winning material' },
+  nervous:     { desc: 'Washed out grey-blue — losing material' },
+  angry:       { desc: 'Deep red, nearly mono — got checkmated' },
+  smug:        { desc: 'Rich purple royalty — delivered check' },
+  surprised:   { desc: 'Electric cyan — got checked' },
+  embarrassed: { desc: 'Power flickers out — blundered' },
+  excited:     { desc: 'Golden overdrive — captured big piece' },
+  defeated:    { desc: 'Dark husk, barely alive — lost badly' },
+  scheming:    { desc: 'Sinister matrix green — sees a tactic' },
+  panicking:   { desc: 'Alarm orange pulse — lost big piece' },
+  zen:         { desc: 'Soft pastel calm — even position' },
+  feral:       { desc: 'Chaotic rainbow strobe — massive streak', merch: 'Unhinged Rookie. Cult favorite.' },
+  heartbroken: { desc: 'Deep indigo — hung the queen', merch: 'Emo Rookie with a cracked rook.' },
+  // Potential
+  shadow:      { desc: 'Matte black villain arc — Rookie goes dark', merch: 'Dark alter-ego Rookie. The villain hat.' },
+  proud:       { desc: 'Warm bronze glow — found a hard move', merch: 'Trophy energy. Earned it.' },
+  suspicious:  { desc: 'Narrow amber — opponent played something weird', merch: 'Detective Rookie.' },
+  mischievous: { desc: 'Hot pink sparkle — setting a trap', merch: 'Winking Rookie.' },
+  sleepy:      { desc: 'Dim warm purple — long endgame grind', merch: 'Cozy Rookie with a little Z.' },
+  starstruck:  { desc: 'Silver shimmer — user played a brilliancy', merch: 'Glowing halo Rookie.' },
+  confused:    { desc: 'Swirling unsettled — complex position', merch: 'Spiral-eyed Rookie.' },
+  stubborn:    { desc: 'Burnt orange rigid — keeps trying same move', merch: 'Arms-crossed Rookie.' },
+  grateful:    { desc: 'Soft warm pink — end of lesson, post-streak', merch: 'Wholesome Rookie, heart accent.' },
+  royal:       { desc: 'Deep gold + purple — premium crown energy', merch: 'Crown Rookie. Premium tier.' },
+};
 
-const NEW_MOODS: { mood: RookieMood; label: string; desc: string; merch: string }[] = [
-  { mood: 'shadow', label: 'Shadow', desc: 'Matte black villain arc — Rookie goes dark', merch: 'Dark alter-ego Rookie. The villain hat.' },
-  { mood: 'proud', label: 'Proud', desc: 'Warm bronze glow — found a hard move', merch: 'Trophy energy. Earned it.' },
-  { mood: 'suspicious', label: 'Suspicious', desc: 'Narrow amber — opponent played something weird', merch: 'Detective Rookie.' },
-  { mood: 'heartbroken', label: 'Heartbroken', desc: 'Deep indigo — hung the queen', merch: 'Emo Rookie with a cracked rook.' },
-  { mood: 'mischievous', label: 'Mischievous', desc: 'Hot pink sparkle — setting a trap', merch: 'Winking Rookie.' },
-  { mood: 'sleepy', label: 'Sleepy', desc: 'Dim warm purple — long endgame grind', merch: 'Cozy Rookie with a little Z.' },
-  { mood: 'starstruck', label: 'Starstruck', desc: 'Silver shimmer — user played a brilliancy', merch: 'Glowing halo Rookie.' },
-  { mood: 'confused', label: 'Confused', desc: 'Swirling unsettled — complex position', merch: 'Spiral-eyed Rookie.' },
-  { mood: 'stubborn', label: 'Stubborn', desc: 'Burnt orange rigid — keeps trying same move', merch: 'Arms-crossed Rookie.' },
-  { mood: 'grateful', label: 'Grateful', desc: 'Soft warm pink — end of lesson, post-streak', merch: 'Wholesome Rookie, heart accent.' },
-  { mood: 'feral', label: 'Feral', desc: 'Chaotic rainbow strobe — massive streak', merch: 'Unhinged Rookie. Cult favorite.' },
-  { mood: 'royal', label: 'Royal', desc: 'Deep gold + purple — premium crown energy', merch: 'Crown Rookie. Premium tier.' },
-];
+function capitalize(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 const ANIMATIONS: { mode: AnimationMode | undefined; label: string; desc: string }[] = [
   { mode: undefined, label: 'Static', desc: 'No animation' },
@@ -75,8 +79,8 @@ export default function RookieMoodsPage() {
             animation={activeAnim && activeAnim !== 'breathe' ? activeAnim : undefined}
           />
           <div className="text-center">
-            <p className="text-xl font-black">{MOODS.find(m => m.mood === activeMood)?.label}</p>
-            <p className="text-chess-text-muted text-sm mt-1">{MOODS.find(m => m.mood === activeMood)?.desc}</p>
+            <p className="text-xl font-black">{capitalize(activeMood)}</p>
+            <p className="text-chess-text-muted text-sm mt-1">{MOOD_META[activeMood].desc}</p>
             {activeAnim && (
               <p className="text-chess-text-faint text-xs mt-2">
                 Animation: {ANIMATIONS.find(a => a.mode === activeAnim)?.label}
@@ -106,11 +110,11 @@ export default function RookieMoodsPage() {
           </div>
         </div>
 
-        {/* Mood grid */}
+        {/* Active moods */}
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wide text-chess-text-muted mb-3">Moods</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wide text-chess-text-muted mb-3">Active Moods</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-            {MOODS.map(({ mood, label }) => (
+            {ACTIVE_MOODS.map((mood) => (
               <button
                 key={mood}
                 onClick={() => setActiveMood(mood)}
@@ -125,7 +129,7 @@ export default function RookieMoodsPage() {
                   mood={mood}
                   animate
                 />
-                <span className="text-xs font-semibold">{label}</span>
+                <span className="text-xs font-semibold">{capitalize(mood)}</span>
               </button>
             ))}
           </div>
@@ -136,7 +140,7 @@ export default function RookieMoodsPage() {
           <h2 className="text-sm font-bold uppercase tracking-wide text-chess-text-muted mb-1">Potential New Moods</h2>
           <p className="text-chess-text-faint text-xs mb-4">Candidates for game triggers + merch designs. Click to preview.</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {NEW_MOODS.map(({ mood, label, desc, merch }) => (
+            {POTENTIAL_MOODS.map((mood) => (
               <button
                 key={mood}
                 onClick={() => setActiveMood(mood)}
@@ -152,9 +156,11 @@ export default function RookieMoodsPage() {
                   animate
                 />
                 <div className="text-center">
-                  <span className="text-xs font-semibold block">{label}</span>
-                  <span className="text-[10px] text-chess-text-muted block mt-0.5">{desc}</span>
-                  <span className="text-[10px] text-chess-text-faint block mt-1 italic">Hat: {merch}</span>
+                  <span className="text-xs font-semibold block">{capitalize(mood)}</span>
+                  <span className="text-[10px] text-chess-text-muted block mt-0.5">{MOOD_META[mood].desc}</span>
+                  {MOOD_META[mood].merch && (
+                    <span className="text-[10px] text-chess-text-faint block mt-1 italic">Hat: {MOOD_META[mood].merch}</span>
+                  )}
                 </div>
               </button>
             ))}
