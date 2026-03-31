@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         : `\nThis is ${playerName}'s first game against you.`;
 
       const honchoBlock = honchoContext
-        ? `\nWhat you know about ${playerName}'s chess from past games:\n${honchoContext}\nWeave this knowledge into your greeting naturally — show you remember them.`
+        ? `\nPLAYER HISTORY (you MUST reference one specific fact from this — name an opening, a result, or their accuracy):\n${honchoContext}`
         : '';
 
       userPrompt = `Write Rookie's opening line for a new chess game.
@@ -43,6 +43,7 @@ Player: ${playerName}${historyBlock}${factsBlock}${honchoBlock}
 
 Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.
 
+${honchoContext ? 'IMPORTANT: Your greeting MUST mention something specific from the player history above. "Hey Tyler, back for more French Defense?" or "Last game was rough — 84% accuracy, we can do better." Show you remember them.' : ''}
 Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else if (type === 'game_end') {
@@ -61,13 +62,14 @@ Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS 
         : '';
 
       const honchoBlock = honchoContext
-        ? `\nWhat you know about ${playerName}'s chess patterns:\n${honchoContext}\nIf relevant to how this game went, reference a specific pattern — show you're tracking their growth.`
+        ? `\nPLAYER HISTORY (compare this game to what you know):\n${honchoContext}`
         : '';
 
       userPrompt = `Write Rookie's reaction to the game ending.
 
 ${outcomeText}${accuracyText}${factsBlock}${honchoBlock}
 
+${honchoContext ? 'IMPORTANT: Compare this game to the player history. Did they improve? Repeat a mistake? Try a new opening? Be specific — "Your accuracy went up!" or "You keep struggling in the middlegame."' : ''}
 Write exactly ONE line (1-2 sentences). React to the outcome with genuine emotion — this matters to Rookie. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else {

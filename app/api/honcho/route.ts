@@ -55,15 +55,27 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'log_event') {
-      const { gameId, userId, event, completedLessons } = body;
+      const { gameId, userId, event, completedLessons, behavioral } = body;
       if (!gameId || !userId) {
         return NextResponse.json({ error: 'Missing gameId or userId' }, { status: 400 });
       }
       const honcho = await createHonchoGameSession(gameId, userId);
-      // Run analysis agent to get pedagogical message
+
+      // Behavioral events get a simpler message (no LLM analysis needed)
+      if (behavioral) {
+        const behaviorMessages: Record<string, string> = {
+          long_think: `Player took ${behavioral.seconds}s to think on move ${event.moveNumber} before playing ${event.movePlayed}.`,
+          panic_sequence: `Player made 3+ rapid moves after a long think around move ${behavioral.moveNumber}. Possible frustration or time pressure.`,
+        };
+        const msg = behaviorMessages[behavioral.type] ?? `Behavioral event: ${behavioral.type} on move ${event.moveNumber}.`;
+        await honcho.session.addMessages([honcho.user.message(msg)]);
+        console.log(`[Honcho] Behavioral: ${msg}`);
+        return NextResponse.json({ ok: true });
+      }
+
+      // Board events run through the analysis agent for pedagogical context
       const input: AnalysisInput = { ...event, completedLessons: completedLessons ?? [] };
       const analysis = await analyzePosition(input);
-      // Await the log — Lambda would freeze otherwise
       await honcho.session.addMessages([honcho.user.message(analysis.honchoMessage)]);
       console.log(`[Honcho] Event logged: ${event.eventType} move ${event.moveNumber} — "${analysis.honchoMessage.slice(0, 80)}..."`);
       return NextResponse.json({ ok: true, concept: analysis.concept });
@@ -80,9 +92,17 @@ export async function POST(req: NextRequest) {
         ? `playing the ${summary.openingName}${summary.openingEco ? ` (${summary.openingEco})` : ''}`
         : 'with an unknown opening';
       const resultText = summary.result === 'win' ? 'won' : summary.result === 'loss' ? 'lost' : 'drew';
-      const message = `Game ended: ${resultText} in ${summary.moveCount} moves as ${summary.color} ${opening}. ` +
-        `Accuracy: ${Math.round(summary.playerAccuracy)}%. ` +
-        `Phase: opening ${summary.phase.opening}, middlegame ${summary.phase.middlegame}, endgame ${summary.phase.endgame}.`;
+      const parts = [
+        `Game ended: ${resultText} in ${summary.moveCount} moves as ${summary.color} ${opening}.`,
+        `Accuracy: ${Math.round(summary.playerAccuracy)}%.`,
+        summary.blunders > 0 ? `Blunders: ${summary.blunders}.` : null,
+        summary.mistakes > 0 ? `Mistakes: ${summary.mistakes}.` : null,
+        summary.brilliantMoves > 0 ? `Brilliant moves: ${summary.brilliantMoves}.` : null,
+        summary.primaryWeakness ? `Key moments: ${summary.primaryWeakness}` : null,
+        summary.deviation ? `Opening deviation: ${summary.deviation}` : null,
+        `Phase: opening ${summary.phase.opening}, middlegame ${summary.phase.middlegame}, endgame ${summary.phase.endgame}.`,
+      ];
+      const message = parts.filter(Boolean).join(' ');
 
       await honcho.session.addMessages([honcho.user.message(message)]);
       console.log(`[Honcho] Summary logged: ${message.slice(0, 100)}...`);

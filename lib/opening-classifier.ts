@@ -64,7 +64,7 @@ export function classifyOpening(moves: string[]): OpeningClassification | null {
       matched++;
     }
 
-    if (match && matched > 0 && (!best || matched > best.matched)) {
+    if (match && matched >= 4 && (!best || matched > best.matched)) {
       best = { entry, matched };
     }
   }

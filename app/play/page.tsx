@@ -27,6 +27,7 @@ import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
+import { detectOpeningBook } from '@/lib/opening-book-detector';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -375,6 +376,48 @@ export default function PlayRookiePage() {
         playerColor,
       });
 
+      // Honcho: log blunders/mistakes from eval swings (catches what narrative misses)
+      if (user?.id && honchoGameIdRef.current && lastMovedByRef.current === 'player') {
+        const prevWp = moodSystem.getPrevRookieWinPercent() ?? 50;
+        const wpDelta = moodUpdate.rookieWinPercent - prevWp; // positive = Rookie gained = player lost
+        const lastMove = moveLogRef.current[moveLogRef.current.length - 1];
+        if (wpDelta >= 30 && lastMove) {
+          // Blunder: 30%+ swing against player
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_event', gameId: honchoGameIdRef.current, userId: user.id,
+              event: {
+                fen: lastMove.fenAfter, movePlayed: lastMove.san, bestMove: bestMove ?? 'unknown',
+                evalBefore: positionEvalsRef.current[positionEvalsRef.current.length - 2]?.cp ?? 0,
+                evalAfter: cp ?? 0, moveNumber: moveNumRef.current,
+                phase: moveNumRef.current <= 10 ? 'opening' : moveNumRef.current <= 30 ? 'middlegame' : 'endgame',
+                color: playerColor, eventType: 'blunder',
+              }, completedLessons: [],
+            }),
+          }).catch(() => {});
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] blunder logged: ${lastMove.san} (${Math.round(wpDelta)}% swing)`, details: { wpDelta, bestMove } });
+        } else if (wpDelta >= 20 && lastMove) {
+          // Mistake: 20%+ swing
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_event', gameId: honchoGameIdRef.current, userId: user.id,
+              event: {
+                fen: lastMove.fenAfter, movePlayed: lastMove.san, bestMove: bestMove ?? 'unknown',
+                evalBefore: positionEvalsRef.current[positionEvalsRef.current.length - 2]?.cp ?? 0,
+                evalAfter: cp ?? 0, moveNumber: moveNumRef.current,
+                phase: moveNumRef.current <= 10 ? 'opening' : moveNumRef.current <= 30 ? 'middlegame' : 'endgame',
+                color: playerColor, eventType: 'missed_tactic',
+              }, completedLessons: [],
+            }),
+          }).catch(() => {});
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] mistake logged: ${lastMove.san} (${Math.round(wpDelta)}% swing)`, details: { wpDelta, bestMove } });
+        }
+      }
+
       // Let Rookie react when the eval mood zone changes
       if (moodSystem.checkEvalMoodZone(moodUpdate.rookieWinPercent)) {
         speech.onMoodChange(moveNumRef.current, moodUpdate.rookieWinPercent);
@@ -496,12 +539,15 @@ export default function PlayRookiePage() {
         }
       }
 
-      // Log significant events (blunders, brilliants) — turning points from narrative
+      // Log significant events (blunders, mistakes, brilliants) — from narrative turning points
       if (narrativeResult.isTurningPoint && movedBy === 'player') {
         const events = narrativeResult.intelligence.briefing.events;
         const eventType = events.includes('blunder') ? 'blunder'
           : events.includes('great_move') ? 'brilliant'
           : null;
+        // Get Stockfish's best move from the previous eval (before this move was played)
+        const prevEval = positionEvalsRef.current[positionEvalsRef.current.length - 2];
+        const sfBestMove = prevEval?.bestMove ?? 'unknown';
         if (eventType) {
           fetch('/api/honcho', {
             method: 'POST',
@@ -513,7 +559,7 @@ export default function PlayRookiePage() {
               event: {
                 fen: newFen,
                 movePlayed: result.san,
-                bestMove: result.san, // best move from eval would be better, but this is sufficient
+                bestMove: sfBestMove,
                 evalBefore: evalCp.current,
                 evalAfter: evalCp.current,
                 moveNumber: moveNumRef.current,
@@ -613,9 +659,59 @@ export default function PlayRookiePage() {
     moveLogRef.current.push(moveRecord);
     if (session) session.recordMove(moveRecord);
 
+    // Honcho: detect behavioral events (long thinks, panic sequences)
+    if (movedBy === 'player' && user?.id && honchoGameIdRef.current && timeMs) {
+      const timeSec = timeMs / 1000;
+      const playerMoves = moveLogRef.current.filter(m => m.movedBy === 'player');
+
+      // Long think (>15s)
+      if (timeSec > 15) {
+        // We'll know if it was correct once the eval comes in — log the think for now
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_event', gameId: honchoGameIdRef.current, userId: user.id,
+            event: {
+              fen: g.fen(), movePlayed: result.san, bestMove: 'unknown',
+              evalBefore: 0, evalAfter: 0, moveNumber: moveNumRef.current,
+              phase: moveNumRef.current <= 10 ? 'opening' : moveNumRef.current <= 30 ? 'middlegame' : 'endgame',
+              color: playerColor, eventType: 'good_move',
+            }, completedLessons: [],
+            behavioral: { type: 'long_think', seconds: Math.round(timeSec) },
+          }),
+        }).catch(() => {});
+      }
+
+      // Panic sequence: 3+ consecutive fast moves (<2s each) after a long think (>10s)
+      if (playerMoves.length >= 3) {
+        const last3 = playerMoves.slice(-3);
+        const allFast = last3.every(m => m.timeToMoveMs !== null && m.timeToMoveMs < 2000);
+        const hadLongThink = playerMoves.length >= 4 &&
+          (playerMoves[playerMoves.length - 4]?.timeToMoveMs ?? 0) > 10000;
+        if (allFast && hadLongThink) {
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_event', gameId: honchoGameIdRef.current, userId: user.id,
+              event: {
+                fen: g.fen(), movePlayed: result.san, bestMove: 'unknown',
+                evalBefore: 0, evalAfter: 0, moveNumber: moveNumRef.current,
+                phase: moveNumRef.current <= 10 ? 'opening' : moveNumRef.current <= 30 ? 'middlegame' : 'endgame',
+                color: playerColor, eventType: 'good_move',
+              }, completedLessons: [],
+              behavioral: { type: 'panic_sequence', moveNumber: moveNumRef.current },
+            }),
+          }).catch(() => {});
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: '[Honcho] panic sequence detected', details: {} });
+        }
+      }
+    }
+
     // Reset timer for next player move
     if (movedBy === 'rookie') moveStartRef.current = Date.now();
-  }, [playerColor, rookieMood]);
+  }, [playerColor, rookieMood, user?.id]);
 
   const endSession = useCallback((g: Chess) => {
     let result: GameResult | undefined;
@@ -666,10 +762,27 @@ export default function PlayRookiePage() {
       );
       setCoachingScript(coaching);
 
-      // Honcho: log game summary
+      // Honcho: log rich game summary with key moments
       if (user?.id && honchoGameIdRef.current && result && analysis) {
         const gameMoves = moves.map(m => m.san);
         const opening = classifyOpening(gameMoves);
+        const moments = extractKeyMoments(analysis, moveRecs, playerName || undefined);
+
+        // Build key moments text for the summary
+        const momentLines = moments.map(m => {
+          if (m.type === 'blunder') return `Biggest blunder: ${m.moveSan} on move ${m.moveNumber} (${m.description})`;
+          if (m.type === 'mistake') return `Mistake: ${m.moveSan} on move ${m.moveNumber} (${m.description})`;
+          if (m.type === 'best-move') return `Best move: ${m.moveSan} on move ${m.moveNumber} (${m.description})`;
+          if (m.type === 'turning-point') return `Turning point: move ${m.moveNumber} (${m.description})`;
+          return '';
+        }).filter(Boolean);
+
+        // Opening book detection
+        const bookResult = detectOpeningBook(gameMoves, playerColor);
+        const deviationText = bookResult.found && bookResult.deviationMoveNumber > 0
+          ? `Left ${bookResult.openingName} book at move ${bookResult.deviationMoveNumber}, playing ${bookResult.playerMoveSan} instead of ${bookResult.bookMoveSan}.`
+          : '';
+
         fetch('/api/honcho', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -687,7 +800,8 @@ export default function PlayRookiePage() {
               mistakes: analysis.mistakes,
               brilliantMoves: analysis.brilliantMoves,
               playerAccuracy: analysis.playerAccuracy,
-              primaryWeakness: null,
+              primaryWeakness: momentLines.length > 0 ? momentLines.join('. ') : null,
+              deviation: deviationText || null,
               phase: {
                 opening: analysis.blunders === 0 ? 'solid' : 'shaky',
                 middlegame: analysis.playerAccuracy > 70 ? 'solid' : 'weak',
@@ -1169,6 +1283,25 @@ export default function PlayRookiePage() {
       }).catch((err) => {
         log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] session FAILED: ${err?.message || err}`, details: {} });
       });
+
+      // Seed peer card on first game so Honcho has grounding context
+      const gamesPlayed = speechMemoryRef.current?.gamesPlayed ?? 0;
+      if (gamesPlayed === 0) {
+        const eloMap = [400, 800, 1200, 1600, 2000];
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'seed_card',
+            userId: user.id,
+            profile: {
+              estimatedElo: eloMap[Math.round(skillLevel)] ?? 800,
+              colorPreference: playerColor,
+              experience: SKILL_LEVELS[Math.round(skillLevel)]?.name ?? 'Casual',
+            },
+          }),
+        }).catch(() => {});
+      }
     }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
 
