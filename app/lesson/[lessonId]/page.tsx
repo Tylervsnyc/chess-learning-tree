@@ -51,6 +51,7 @@ import { LessonComplete } from '@/components/shared/LessonComplete';
 import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { useGameSession } from '@/hooks/useGameSession';
 import confetti from 'canvas-confetti';
 
 // ═══════════════════════════════════════════
@@ -233,6 +234,9 @@ export default function LessonPage() {
     loading: permissionsLoading,
   } = usePermissions();
 
+  // Session tracking for coaching
+  const { startSession, recordPuzzleResult, endSession: endGameSession } = useGameSession('lesson', user?.id);
+
   // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showCreateProfileModal, setShowCreateProfileModal] = useState(false);
@@ -283,6 +287,10 @@ export default function LessonPage() {
 
   // Track time spent on puzzle (for analytics)
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
+
+  // Track first wrong attempt for coaching
+  const firstWrongMoveRef = useRef<string | null>(null);
+  const honchoSessionIdRef = useRef<string | null>(null);
 
   // Checkmate explanation highlights
   const [showCheckmateHighlights, setShowCheckmateHighlights] = useState(false);
@@ -411,6 +419,7 @@ export default function LessonPage() {
 
         const transformedPuzzles = data.puzzles.map(transformPuzzle);
         setPuzzles(transformedPuzzles);
+        startSession();
 
         // Animate the opponent's setup move
         const firstPuzzle = transformedPuzzles[0];
@@ -434,6 +443,27 @@ export default function LessonPage() {
 
         // Track lesson started
         LearningEvents.lessonStarted(lessonId, lesson.name);
+
+        // Start Honcho session
+        if (user?.id) {
+          const sessionId = `lesson-${lessonId}`;
+          honchoSessionIdRef.current = sessionId;
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'start_session', gameId: sessionId, userId: user.id }),
+          }).catch(() => {});
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_message',
+              gameId: sessionId,
+              userId: user.id,
+              message: `Started lesson ${lessonId} "${lesson.name}" — theme: ${themes}, rating range: ${lesson.ratingMin}-${lesson.ratingMax}.`,
+            }),
+          }).catch(() => {});
+        }
 
         setLoading(false);
       } catch {
@@ -772,6 +802,7 @@ export default function LessonPage() {
         }
 
         // Wrong move
+        if (!firstWrongMoveRef.current) firstWrongMoveRef.current = move.san;
         setSelectedSquare(null);
         playErrorSound();
         vibrateOnError();
@@ -876,6 +907,41 @@ export default function LessonPage() {
         solution: currentPuzzle.solution,
         timeSpentMs,
       });
+
+      // Record to coaching session
+      recordPuzzleResult({
+        puzzleId: currentPuzzle.puzzleId,
+        puzzleTheme: currentPuzzle.themes?.[0] || 'general',
+        puzzleRating: currentPuzzle.rating || 0,
+        correct: result === 'correct',
+        firstAttemptSan: firstWrongMoveRef.current,
+        retryCount: wrongAttempts,
+        timeMs: timeSpentMs,
+        fenAfter: currentFen || undefined,
+      });
+
+      // Log to Honcho
+      if (user?.id && honchoSessionIdRef.current) {
+        const themes = currentPuzzle.themes?.join(', ') || 'general';
+        const rating = currentPuzzle.rating || 0;
+        const msg = result === 'correct'
+          ? `Solved puzzle #${currentIndex + 1} (${themes}, rated ${rating}) on first attempt.`
+          : wrongAttempts >= 3
+            ? `Needed hint on puzzle #${currentIndex + 1} (${themes}, rated ${rating}) after ${wrongAttempts} wrong attempts.`
+            : `Missed puzzle #${currentIndex + 1} (${themes}, rated ${rating}). Took ${wrongAttempts} attempts. Wrong move: ${firstWrongMoveRef.current || 'unknown'}.`;
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_message',
+            gameId: honchoSessionIdRef.current,
+            userId: user.id,
+            message: msg,
+          }),
+        }).catch(() => {});
+      }
+
+      firstWrongMoveRef.current = null;
     }
 
     if (currentIndex >= totalPuzzles - 1) {
@@ -967,6 +1033,25 @@ export default function LessonPage() {
       }
       // Fail: don't call completeLesson — lesson stays as currentPosition
       // User returns to /learn and can retry with fresh puzzles
+
+      // Log Honcho summary + trigger dream
+      if (user?.id && honchoSessionIdRef.current) {
+        const retryCount = Object.values(results).filter(r => r === 'wrong').length;
+        const summaryParts = [
+          `Lesson ${lessonId} "${lessonName}" ${passed ? 'PASSED' : 'FAILED'}. Score: ${firstAttemptCorrectCount}/${puzzles.length}.`,
+          `First-attempt correct: ${firstAttemptCorrectCount}/${puzzles.length}. Retries needed: ${retryCount}.`,
+        ].join(' ');
+        fetch('/api/honcho', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_summary_message',
+            gameId: honchoSessionIdRef.current,
+            userId: user.id,
+            message: summaryParts,
+          }),
+        }).catch(() => {});
+      }
     }
   }, [lessonComplete, lessonPassed, firstAttemptCorrectCount, lessonId, completeLesson, allLessonIds, isTutorial]);
 
@@ -974,6 +1059,9 @@ export default function LessonPage() {
   useEffect(() => {
     if (isTutorial) return; // Tutorial handles its own completion in onComplete
     if (lessonComplete && lessonPassed === true) {
+      // End coaching session (fire and forget)
+      endGameSession().catch(() => {});
+
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
 
