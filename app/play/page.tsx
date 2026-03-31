@@ -20,7 +20,7 @@ import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
 import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
-import { loadSpeechMemory, saveSpeechMemory, type SpeechMemory } from '@/lib/speech/memory';
+import { loadSpeechMemory, saveSpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
@@ -28,6 +28,14 @@ import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarra
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
+import {
+  buildRookieMemoryContext,
+  EMPTY_ROOKIE_MEMORY,
+  formatHonchoSummaryForPrompt,
+  toSpeechMemory,
+  updateRookieMemoryContext,
+  type RookieMemoryContext,
+} from '@/lib/rookie-memory';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -229,30 +237,37 @@ function evalToWhitePercent(cp: number | null, mate: number | null): number {
 
 export default function PlayRookiePage() {
   const { user } = useUser();
-  const [speechMemory, setSpeechMemory] = useState<SpeechMemory | null>(null);
-  const speechMemoryRef = useRef<SpeechMemory | null>(null);
+  const [rookieMemory, setRookieMemory] = useState<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
+  const rookieMemoryRef = useRef<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
 
   // Load speech memory + Honcho context on login (before game starts)
   useEffect(() => {
-    if (!user?.id) return;
-    loadSpeechMemory(user.id).then((mem) => {
-      setSpeechMemory(mem);
-      speechMemoryRef.current = mem;
-    });
-    // Pre-fetch Honcho context so it's ready when the game starts
-    fetch('/api/honcho', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'get_context', userId: user.id }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (data.context) {
-          honchoContextRef.current = data.context;
-          console.log('[Honcho] Pre-fetched context:', data.context.slice(0, 80));
-        }
+    if (!user?.id) {
+      setRookieMemory(EMPTY_ROOKIE_MEMORY);
+      rookieMemoryRef.current = EMPTY_ROOKIE_MEMORY;
+      return;
+    }
+
+    Promise.all([
+      loadSpeechMemory(user.id),
+      fetch('/api/honcho', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_context', userId: user.id }),
       })
-      .catch(() => {});
+        .then(r => r.json())
+        .then(data => data.context ?? null)
+        .catch(() => null),
+    ]).then(([speechMemory, honchoSummary]) => {
+      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary });
+      setRookieMemory(memory);
+      rookieMemoryRef.current = memory;
+
+      const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
+      if (honchoPreview) {
+        console.log('[Honcho] Pre-fetched context:', honchoPreview.slice(0, 80));
+      }
+    });
   }, [user?.id]);
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -327,7 +342,6 @@ export default function PlayRookiePage() {
   // Honcho memory integration
   const honchoGameIdRef = useRef<string | null>(null);
   const honchoOpeningLoggedRef = useRef(false);
-  const honchoContextRef = useRef<string | null>(null);
 
 
   // Stockfish init
@@ -448,9 +462,7 @@ export default function PlayRookiePage() {
         context: {
           threadName,
           playerName: pName,
-          playerFacts: speechMemoryRef.current?.playerFacts ?? [],
-          gamesPlayed: speechMemoryRef.current?.gamesPlayed ?? 0,
-          honchoContext: honchoContextRef.current,
+          memory: rookieMemoryRef.current,
         },
       }),
     });
@@ -467,8 +479,7 @@ export default function PlayRookiePage() {
         type: 'game_end',
         context: {
           ...ctx,
-          playerFacts: speechMemoryRef.current?.playerFacts ?? [],
-          honchoContext: honchoContextRef.current,
+          memory: rookieMemoryRef.current,
         },
       }),
     });
@@ -482,7 +493,7 @@ export default function PlayRookiePage() {
     isTalkingRef,
     generateOpeningLine,
     generateGameEndLine,
-    initialUsedRecently: speechMemory?.usedRecently,
+    initialUsedRecently: rookieMemory.usedRecently,
   });
 
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
@@ -826,10 +837,7 @@ export default function PlayRookiePage() {
 
     // Save speech memory (fact extraction + line drain)
     if (user?.id && result) {
-      const mem = speechMemoryRef.current ?? {
-        usedRecently: [], playerFacts: [], gamesPlayed: 0,
-        totalWins: 0, totalLosses: 0, totalDraws: 0,
-      };
+      const mem = rookieMemoryRef.current;
 
       const newFacts = extractFacts({
         result,
@@ -841,16 +849,17 @@ export default function PlayRookiePage() {
         totalWins: mem.totalWins,
       });
 
-      const updatedMemory: SpeechMemory = {
+      const updatedMemory = updateRookieMemoryContext(mem, {
         usedRecently: speech.getUsedRecently(),
         playerFacts: [...mem.playerFacts, ...newFacts].slice(-20),
         gamesPlayed: mem.gamesPlayed + 1,
         totalWins: mem.totalWins + (result === 'win' ? 1 : 0),
         totalLosses: mem.totalLosses + (result === 'loss' ? 1 : 0),
         totalDraws: mem.totalDraws + (result === 'draw' ? 1 : 0),
-      };
-      speechMemoryRef.current = updatedMemory;
-      saveSpeechMemory(user.id, updatedMemory);
+      });
+      rookieMemoryRef.current = updatedMemory;
+      setRookieMemory(updatedMemory);
+      saveSpeechMemory(user.id, toSpeechMemory(updatedMemory));
     }
   }, [playerColor, postGame, speech, user?.id]);
 
@@ -1261,14 +1270,11 @@ export default function PlayRookiePage() {
 
     speech.onGameStart(playerColor, playerName || 'friend');
     narrative.resetForNewGame();
-    narrative.setPlayerFacts(speechMemoryRef.current?.playerFacts ?? []);
+    narrative.setMemoryContext(rookieMemoryRef.current);
     honchoOpeningLoggedRef.current = false;
 
     // Use pre-fetched Honcho context (loaded on page mount) for narrative + opening line
-    if (honchoContextRef.current) {
-      narrative.setHonchoContext(honchoContextRef.current);
-    }
-    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'}, context=${honchoContextRef.current ? 'ready' : 'none'}`, details: { userId: user?.id ?? null, hasContext: !!honchoContextRef.current } });
+    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'}, context=${rookieMemoryRef.current.honchoSummary ? 'ready' : 'none'}`, details: { userId: user?.id ?? null, hasContext: !!rookieMemoryRef.current.honchoSummary } });
 
     // Honcho: create session for logging (context was pre-fetched on page load)
     if (user?.id) {
@@ -1285,7 +1291,7 @@ export default function PlayRookiePage() {
       });
 
       // Seed peer card on first game so Honcho has grounding context
-      const gamesPlayed = speechMemoryRef.current?.gamesPlayed ?? 0;
+      const gamesPlayed = rookieMemoryRef.current.gamesPlayed;
       if (gamesPlayed === 0) {
         const eloMap = [400, 800, 1200, 1600, 2000];
         fetch('/api/honcho', {

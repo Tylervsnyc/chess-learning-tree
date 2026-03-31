@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import {
   type Beat,
   type BeatState,
@@ -111,6 +111,11 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
   const playerHasCastledRef = useRef(false); // tracks if player has castled (for "no castle" quips)
   const captureSeqRef = useRef<CaptureSequence>({ count: 0, playerSwing: 0 });
+
+  useEffect(() => {
+    if (!initialUsedRecently) return;
+    queueStateRef.current.usedRecently = new Set(initialUsedRecently);
+  }, [initialUsedRecently]);
 
   // ── Helpers ──
 

@@ -39,6 +39,11 @@ import {
   runPipeline,
   type GameHistory,
 } from '@/lib/rookie-os/decision-gate';
+import {
+  EMPTY_ROOKIE_MEMORY,
+  formatHonchoSummaryForPrompt,
+  type RookieMemoryContext,
+} from '@/lib/rookie-memory';
 
 // ════════════════════════════════
 // TYPES
@@ -107,8 +112,7 @@ export function useRookieNarrative() {
   const antiRepRef = useRef<AntiRepetitionState>(createAntiRepetitionState());
   const gameHistoryRef = useRef<GameHistory>({ entries: [] });
   const llmCallCountRef = useRef(0);
-  const playerFactsRef = useRef<string[]>([]);
-  const honchoContextRef = useRef<string | null>(null);
+  const memoryContextRef = useRef<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
 
   /**
    * Process a move through the full 6-layer pipeline.
@@ -148,8 +152,8 @@ export function useRookieNarrative() {
       narrativeRef.current,
       antiRepRef.current,
       gameHistoryRef.current,
-      playerFactsRef.current,
-      honchoContextRef.current,
+      memoryContextRef.current.playerFacts,
+      formatHonchoSummaryForPrompt(memoryContextRef.current.honchoSummary),
     );
 
     // ── Route handling ──
@@ -239,7 +243,7 @@ export function useRookieNarrative() {
     antiRepRef.current = createAntiRepetitionState();
     gameHistoryRef.current = { entries: [] };
     llmCallCountRef.current = 0;
-    honchoContextRef.current = null;
+    memoryContextRef.current = EMPTY_ROOKIE_MEMORY;
     clearLichessCache();
   }, []);
 
@@ -249,14 +253,9 @@ export function useRookieNarrative() {
   /** Get current narrative state (for debugging) */
   const getNarrativeState = useCallback(() => narrativeRef.current, []);
 
-  /** Set player facts from cross-game memory (call when speech memory loads) */
-  const setPlayerFacts = useCallback((facts: string[]) => {
-    playerFactsRef.current = facts;
-  }, []);
-
-  /** Set Honcho player context (call once at game start with peer.chat() result) */
-  const setHonchoContext = useCallback((context: string | null) => {
-    honchoContextRef.current = context;
+  /** Set cross-game memory used by Rookie's narrative layer. */
+  const setMemoryContext = useCallback((memory: RookieMemoryContext) => {
+    memoryContextRef.current = memory;
   }, []);
 
   /** Is the game currently in opening book? (based on last processed move) */
@@ -265,8 +264,7 @@ export function useRookieNarrative() {
   return {
     onMove,
     resetForNewGame,
-    setPlayerFacts,
-    setHonchoContext,
+    setMemoryContext,
     getLlmCallCount,
     getNarrativeState,
     isInBook,

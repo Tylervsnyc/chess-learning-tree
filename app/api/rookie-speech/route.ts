@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
+import {
+  EMPTY_ROOKIE_MEMORY,
+  formatHonchoSummaryForPrompt,
+  type RookieMemoryContext,
+} from '@/lib/rookie-memory';
 
 const anthropic = new Anthropic();
 
@@ -20,34 +25,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing type or context' }, { status: 400 });
     }
 
+    const memory: RookieMemoryContext = {
+      ...EMPTY_ROOKIE_MEMORY,
+      ...(context.memory ?? {}),
+    };
+    const honchoPromptSummary = formatHonchoSummaryForPrompt(memory.honchoSummary);
+
     let userPrompt: string;
 
     if (type === 'opening') {
-      const { threadName, playerName, playerFacts, gamesPlayed, honchoContext } = context;
+      const { threadName, playerName } = context;
 
-      const factsBlock = playerFacts?.length
-        ? `\nYou remember these things about ${playerName} from past games:\n${playerFacts.map((f: string) => `- ${f}`).join('\n')}\nReference ONE of these naturally — don't list them all.`
+      const factsBlock = memory.playerFacts.length
+        ? `\nYou remember these things about ${playerName} from past games:\n${memory.playerFacts.map((fact) => `- ${fact}`).join('\n')}\nReference ONE of these naturally — don't list them all.`
         : '';
 
-      const historyBlock = gamesPlayed > 0
-        ? `\nThis is game #${gamesPlayed + 1} with ${playerName}.`
+      const historyBlock = memory.gamesPlayed > 0
+        ? `\nThis is game #${memory.gamesPlayed + 1} with ${playerName}.`
         : `\nThis is ${playerName}'s first game against you.`;
 
-      const honchoBlock = honchoContext
-        ? `\nPLAYER HISTORY (you MUST reference one specific fact from this — name an opening, a result, or their accuracy):\n${honchoContext}`
+      const honchoBlock = honchoPromptSummary
+        ? `\nPLAYER HISTORY (you MUST reference one specific fact from this — name an opening, a result, or their accuracy):\n${honchoPromptSummary}`
+        : '';
+
+      const honchoInstruction = honchoPromptSummary
+        ? '\nIMPORTANT: Your greeting MUST mention something specific from the player history above. "Hey Tyler, back for more French Defense?" or "Last game was rough — 84% accuracy, we can do better." Show you remember them.'
         : '';
 
       userPrompt = `Write Rookie's opening line for a new chess game.
 
 Player: ${playerName}${historyBlock}${factsBlock}${honchoBlock}
 
-Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.
+Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.${honchoInstruction}
 
-${honchoContext ? 'IMPORTANT: Your greeting MUST mention something specific from the player history above. "Hey Tyler, back for more French Defense?" or "Last game was rough — 84% accuracy, we can do better." Show you remember them.' : ''}
 Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else if (type === 'game_end') {
-      const { playerName, rookieWon, accuracy, playerFacts, honchoContext } = context;
+      const { playerName, rookieWon, accuracy } = context;
 
       const outcomeText = rookieWon
         ? `Rookie won.`
@@ -57,19 +71,22 @@ Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS 
         ? ` ${playerName}'s accuracy was ${Math.round(accuracy)}%.`
         : '';
 
-      const factsBlock = playerFacts?.length
-        ? `\nThings you noticed: ${playerFacts.join('. ')}.`
+      const factsBlock = memory.playerFacts.length
+        ? `\nThings you noticed: ${memory.playerFacts.join('. ')}.`
         : '';
 
-      const honchoBlock = honchoContext
-        ? `\nPLAYER HISTORY (compare this game to what you know):\n${honchoContext}`
+      const honchoBlock = honchoPromptSummary
+        ? `\nPLAYER HISTORY (compare this game to what you know):\n${honchoPromptSummary}`
+        : '';
+
+      const honchoInstruction = honchoPromptSummary
+        ? '\nIMPORTANT: Compare this game to the player history. Did they improve? Repeat a mistake? Try a new opening? Be specific — "Your accuracy went up!" or "You keep struggling in the middlegame."'
         : '';
 
       userPrompt = `Write Rookie's reaction to the game ending.
 
-${outcomeText}${accuracyText}${factsBlock}${honchoBlock}
+${outcomeText}${accuracyText}${factsBlock}${honchoBlock}${honchoInstruction}
 
-${honchoContext ? 'IMPORTANT: Compare this game to the player history. Did they improve? Repeat a mistake? Try a new opening? Be specific — "Your accuracy went up!" or "You keep struggling in the middlegame."' : ''}
 Write exactly ONE line (1-2 sentences). React to the outcome with genuine emotion — this matters to Rookie. Written for TTS — no formatting, no asterisks, no parentheses.`;
 
     } else {

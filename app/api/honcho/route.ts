@@ -6,6 +6,7 @@ import {
 } from '@/lib/honcho';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { analyzePosition, type AnalysisInput } from '@/lib/chess-analysis-agent';
+import { formatHonchoSummaryForPrompt } from '@/lib/rookie-memory';
 import type { BoardEvent } from '@/lib/honcho-logger';
 
 /**
@@ -35,7 +36,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
       }
       const context = await getPlayerContext(userId);
-      console.log(`[Honcho] Player context for ${userId}: ${context ? context.slice(0, 100) + '...' : 'null'}`);
+      const preview = formatHonchoSummaryForPrompt(context);
+      console.log(`[Honcho] Player context for ${userId}: ${preview ? preview.slice(0, 100) + '...' : 'null'}`);
       return NextResponse.json({ context });
     }
 
