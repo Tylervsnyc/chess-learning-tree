@@ -39,31 +39,23 @@ import {
 } from '@/lib/rookie-memory';
 
 const SKILL_LEVELS = [
-  { name: 'Beginner', label: 'I just learned the rules' },
-  { name: 'Casual', label: 'I know the basics' },
-  { name: 'Intermediate', label: 'I play sometimes' },
-  { name: 'Advanced', label: 'I study chess' },
-  { name: 'Expert', label: 'Challenge me' },
+  { name: '~400 ELO', label: 'I just learned the rules' },
+  { name: '~800 ELO', label: 'I know the basics' },
+  { name: '~1200 ELO', label: 'I play sometimes' },
+  { name: '~1500 ELO', label: 'I study chess' },
+  { name: '~1800 ELO', label: 'Challenge me' },
 ];
 
-const SF_CONFIG: [number, number][] = [
-  [0, 1],   // Beginner — minimax fallback
-  [3, 5],   // Casual
-  [8, 8],   // Intermediate
-  [14, 12], // Advanced
-  [20, 16], // Expert
-];
+/** Target ELO for each skill level. Level 0 uses minimax, levels 1-4 use Stockfish UCI_Elo. */
+const TARGET_ELOS = [400, 800, 1200, 1500, 1800];
 
-/** Interpolate Stockfish config from continuous skill level (0-4) */
-function interpolateSfConfig(level: number): [number, number] {
+/** Interpolate target ELO from continuous skill level (0-4) */
+function interpolateTargetElo(level: number): number {
   const clamped = Math.max(0, Math.min(4, level));
   const lo = Math.floor(clamped);
-  const hi = Math.min(lo + 1, SF_CONFIG.length - 1);
+  const hi = Math.min(lo + 1, TARGET_ELOS.length - 1);
   const t = clamped - lo;
-  return [
-    Math.round(SF_CONFIG[lo][0] + t * (SF_CONFIG[hi][0] - SF_CONFIG[lo][0])),
-    Math.round(SF_CONFIG[lo][1] + t * (SF_CONFIG[hi][1] - SF_CONFIG[lo][1])),
-  ];
+  return Math.round(TARGET_ELOS[lo] + t * (TARGET_ELOS[hi] - TARGET_ELOS[lo]));
 }
 
 interface DebugEntry {
@@ -240,14 +232,18 @@ export default function PlayRookiePage() {
   const { user } = useUser();
   const [rookieMemory, setRookieMemory] = useState<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
   const rookieMemoryRef = useRef<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
+  const honchoLoadedRef = useRef(false);
 
   // Load speech memory + Honcho context on login (before game starts)
   useEffect(() => {
     if (!user?.id) {
       setRookieMemory(EMPTY_ROOKIE_MEMORY);
       rookieMemoryRef.current = EMPTY_ROOKIE_MEMORY;
+      honchoLoadedRef.current = false;
       return;
     }
+
+    honchoLoadedRef.current = false;
 
     const honchoFetch = (action: string) =>
       fetch('/api/honcho', {
@@ -265,16 +261,15 @@ export default function PlayRookiePage() {
       const memory = buildRookieMemoryContext({ speechMemory, honchoSummary, lastGameContext, honchoRepresentation });
       setRookieMemory(memory);
       rookieMemoryRef.current = memory;
+      honchoLoadedRef.current = true;
 
       const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
+      console.log(`[Honcho] Context loaded: chat=${honchoPreview ? 'yes' : 'no'} lastGame=${lastGameContext ? 'yes' : 'no'} representation=${honchoRepresentation ? 'yes' : 'no'}`);
       if (honchoPreview) {
-        console.log('[Honcho] Chat context:', honchoPreview.slice(0, 80));
-      }
-      if (honchoRepresentation) {
-        console.log('[Honcho] Representation:', honchoRepresentation.slice(0, 80));
+        console.log('[Honcho] Chat context:', honchoPreview.slice(0, 120));
       }
       if (lastGameContext) {
-        console.log('[Honcho] Last game:', lastGameContext.slice(0, 80));
+        console.log('[Honcho] Last game:', lastGameContext.slice(0, 120));
       }
     });
   }, [user?.id]);
@@ -1007,8 +1002,8 @@ export default function PlayRookiePage() {
       }
     };
 
-    // Beginner range (< 0.5) uses minimax, others use Stockfish
-    if (skillLevel < 0.5 || !sfReadyRef.current) {
+    // Levels 0-2 (~400-1200) use minimax, levels 3-4 (~1500-1800) use Stockfish
+    if (skillLevel < 2.5 || !sfReadyRef.current) {
       log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (skill=${Math.round(skillLevel)})`, details: { engine: 'minimax', skillLevel } });
       const result = getRookieMove(currentFen, Math.round(skillLevel));
       if (!result) { setRookieThinking(false); return; }
@@ -1018,10 +1013,10 @@ export default function PlayRookiePage() {
       return;
     }
 
-    const [sfSkill, sfDepth] = interpolateSfConfig(skillLevel);
-    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (skill=${sfSkill}, depth=${sfDepth})`, details: { engine: 'stockfish', sfSkill, sfDepth, skillLevel } });
+    const targetElo = interpolateTargetElo(skillLevel);
+    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, skillLevel } });
     const thinkStart = Date.now();
-    stockfish.getBestMove(currentFen, sfSkill, sfDepth).then((uciMove) => {
+    stockfish.getBestMoveAtElo(currentFen, targetElo).then((uciMove) => {
       if (!uciMove) {
         const result = getRookieMove(currentFen, skillLevel);
         if (!result) { setRookieThinking(false); return; }
@@ -1309,7 +1304,11 @@ export default function PlayRookiePage() {
     honchoOpeningLoggedRef.current = false;
 
     // Use pre-fetched Honcho context (loaded on page mount) for narrative + opening line
-    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'}, context=${rookieMemoryRef.current.honchoSummary ? 'ready' : 'none'}`, details: { userId: user?.id ?? null, hasContext: !!rookieMemoryRef.current.honchoSummary } });
+    const hasChat = !!rookieMemoryRef.current.honchoSummary;
+    const hasLastGame = !!rookieMemoryRef.current.lastGameContext;
+    const hasRep = !!rookieMemoryRef.current.honchoRepresentation;
+    const loaded = honchoLoadedRef.current;
+    log({ moveNum: 0, type: 'game-event', who: 'system', summary: `[Honcho] user=${user?.id ? 'logged-in' : 'anonymous'}, loaded=${loaded}, chat=${hasChat}, lastGame=${hasLastGame}, rep=${hasRep}`, details: { userId: user?.id ?? null, honchoLoaded: loaded, hasChat, hasLastGame, hasRep } });
 
     // Honcho: create session for logging (context was pre-fetched on page load)
     if (user?.id) {
@@ -1328,7 +1327,7 @@ export default function PlayRookiePage() {
       // Seed peer card on first game so Honcho has grounding context
       const gamesPlayed = rookieMemoryRef.current.gamesPlayed;
       if (gamesPlayed === 0) {
-        const eloMap = [400, 800, 1200, 1600, 2000];
+        const eloMap = [400, 800, 1200, 1500, 1800];
         fetch('/api/honcho', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

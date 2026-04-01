@@ -183,37 +183,33 @@ export function getRookieMove(fen: string, skillLevel: number): RookieMove | nul
   }
 
   // Map skill to search depth (max 4 — depth 5 freezes the main thread)
-  const depths = [1, 2, 2, 3, 4];
+  const depths = [1, 2, 3, 3, 4];
   const depth = depths[Math.min(skillLevel, depths.length - 1)];
 
+  // Randomness chances: how often to pick a random top-N move instead of the best
+  // Level 0 handled above (70% pure random). Levels 1-2 need to blunder regularly.
+  const blunderChance = [0, 0.35, 0.20, 0.05, 0];
+  const blunderPoolSize = [0, 5, 4, 3, 0];
+
   const isWhite = game.turn() === 'w';
-  let bestMove = moves[0];
-  let bestScore = isWhite ? -Infinity : Infinity;
 
-  for (const move of moves) {
-    game.move(move.san);
-    const score = minimax(game, depth - 1, -Infinity, Infinity, !isWhite);
+  // Score all moves
+  const scored = moves.map(m => {
+    game.move(m.san);
+    const s = minimax(game, depth - 1, -Infinity, Infinity, !isWhite);
     game.undo();
+    return { move: m, score: s };
+  });
+  scored.sort((a, b) => isWhite ? b.score - a.score : a.score - b.score);
 
-    if (isWhite ? score > bestScore : score < bestScore) {
-      bestScore = score;
-      bestMove = move;
-    }
-  }
+  let bestMove = scored[0].move;
 
-  // Add some randomness for lower skill levels
-  if (skillLevel <= 2 && Math.random() < 0.15) {
-    // Occasionally pick a random top-3 move instead of the absolute best
-    const scored = moves.map(m => {
-      game.move(m.san);
-      const s = minimax(game, depth - 1, -Infinity, Infinity, !isWhite);
-      game.undo();
-      return { move: m, score: s };
-    });
-    scored.sort((a, b) => isWhite ? b.score - a.score : a.score - b.score);
-    const topN = scored.slice(0, Math.min(3, scored.length));
-    const pick = topN[Math.floor(Math.random() * topN.length)];
-    bestMove = pick.move;
+  // Blunder: pick from top-N instead of the absolute best
+  const chance = blunderChance[Math.min(skillLevel, blunderChance.length - 1)];
+  const poolSize = blunderPoolSize[Math.min(skillLevel, blunderPoolSize.length - 1)];
+  if (chance > 0 && Math.random() < chance) {
+    const pool = scored.slice(0, Math.min(poolSize, scored.length));
+    bestMove = pool[Math.floor(Math.random() * pool.length)].move;
   }
 
   return {

@@ -75,6 +75,27 @@ class StockfishEngine {
   }
 
   /**
+   * Get the best move capped to a target ELO rating.
+   * Uses Stockfish's UCI_LimitStrength + UCI_Elo for accurate strength limiting.
+   * @param fen - FEN string
+   * @param targetElo - Target ELO rating (Stockfish supports ~1320-3190)
+   */
+  getBestMoveAtElo(fen: string, targetElo: number): Promise<string | null> {
+    if (!this.worker || !this.ready) return Promise.resolve(null);
+
+    const clampedElo = Math.max(1320, Math.min(3190, targetElo));
+
+    return new Promise((resolve) => {
+      this.pendingCallback = (result) => resolve(result.bestMove);
+      this.worker!.postMessage('setoption name UCI_LimitStrength value true');
+      this.worker!.postMessage(`setoption name UCI_Elo value ${clampedElo}`);
+      this.worker!.postMessage('ucinewgame');
+      this.worker!.postMessage(`position fen ${fen}`);
+      this.worker!.postMessage('go depth 12');
+    });
+  }
+
+  /**
    * Get position evaluation in centipawns (from white's perspective).
    * Positive = white advantage, negative = black advantage.
    * Returns null if engine isn't ready.
