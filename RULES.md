@@ -1001,8 +1001,15 @@ All 6 puzzles still come from the API (no hardcoded puzzles). Hint cards are the
 ## 18. Puzzle Interaction
 
 ### Input Methods:
-- Click-click: Supported
+- Click-click: Supported (click piece to select, click again to deselect, click target to move)
 - Drag-drop: Supported
+
+### Click-to-Move (OSOT):
+All board pages use `hooks/useClickToMove.ts` — the single source of truth for click-to-move behavior. The hook handles: select piece → deselect on reclick → try move → reselect friendly piece or deselect on failed move.
+
+**Pages using the hook:** `/play`, `/daily-challenge`, `/lesson/[id]`, `/level-test/[id]`, `/test/play-rookie`
+
+**Pages with custom handlers:** Tutorial pages (`BasicsTutorial`, `TutorialFlow`) and opening lessons have specialized logic (guided steps, tap-piece phases) that the shared hook doesn't cover. These implement the same select/deselect/move pattern inline but with additional constraints.
 
 ### Wrong Move:
 1. Red popup
@@ -1309,6 +1316,12 @@ Lichess theme names are mapped to quip keys via `THEME_KEY_MAP`. Notable mapping
 - 20-25 per theme key (e.g. `fork`, `pin`)
 - 12-15 per `{theme}:{piece}` combo (e.g. `fork:N`)
 - 3-5 per context category (`first`, `last`, `recovery`, `streak:3`, `streak:5`)
+
+### Speech Pacing (Play Rookie):
+- **Never interrupt.** If Rookie is currently speaking (audio playing / `isTalking` true), drop the new quip entirely.
+- **Cooldown after speech.** After audio finishes, wait at least 2 seconds (`QUIP_COOLDOWN_MS = 2000`) before allowing a new quip. Fast-moving games should feel *quiet*, not cluttered.
+- **Think mode takes priority.** If Rookie is calculating (`rookieThinking`), the talk animation yields to the think shimmer.
+- Implementation: `useRookieVoice` hook tracks `isTalking` (live) and `lastSpokeAtRef` (timestamp). `showRookieMsg` checks both before speaking.
 
 ---
 

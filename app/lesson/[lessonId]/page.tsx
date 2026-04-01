@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
+import { useClickToMove } from '@/hooks/useClickToMove';
 import {
   playCorrectSound,
   playErrorSound,
@@ -852,36 +853,21 @@ export default function LessonPage() {
     }
   }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint, lessonId, currentIndex, puzzleHadWrongAttempt, totalPuzzles]);
 
-  // Handle square click
+  // Handle square click — shared hook
+  const handleClickToMove = useClickToMove({
+    game,
+    ownColor: game?.turn() ?? 'w',
+    selectedSquare,
+    setSelectedSquare,
+    tryMove,
+    enabled: moveStatus === 'playing' && introState === 'playing',
+  });
+
   const onSquareClick = useCallback(
     ({ square }: { piece: { pieceType: string } | null; square: string }) => {
-      if (!game || moveStatus !== 'playing' || introState !== 'playing') return;
-      const clickedSquare = square as Square;
-
-      if (!selectedSquare) {
-        const piece = game.get(clickedSquare);
-        if (piece && piece.color === game.turn()) {
-          setSelectedSquare(clickedSquare);
-        }
-      } else if (selectedSquare === clickedSquare) {
-        setSelectedSquare(null);
-      } else {
-        const legalMoves = game.moves({ square: selectedSquare, verbose: true });
-        const isLegalMove = legalMoves.some(m => m.to === clickedSquare);
-
-        if (isLegalMove) {
-          tryMove(selectedSquare, clickedSquare);
-        } else {
-          const piece = game.get(clickedSquare);
-          if (piece && piece.color === game.turn()) {
-            setSelectedSquare(clickedSquare);
-          } else {
-            setSelectedSquare(null);
-          }
-        }
-      }
+      handleClickToMove(square as Square);
     },
-    [game, selectedSquare, moveStatus, tryMove, introState]
+    [handleClickToMove],
   );
 
   // Progress stats - use first attempt results for final score (declared before recordAndAdvance)

@@ -14,6 +14,7 @@ import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
+import { useClickToMove } from '@/hooks/useClickToMove';
 import confetti from 'canvas-confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 
@@ -314,36 +315,21 @@ export default function LevelTestPage() {
     }
   }, [chess, currentPuzzle, moveIndex, moveStatus, streak, correctCount]);
 
-  // Handle square click
+  // Handle square click — shared hook
+  const handleClickToMove = useClickToMove({
+    game: chess,
+    ownColor: chess?.turn() ?? 'w',
+    selectedSquare,
+    setSelectedSquare,
+    tryMove,
+    enabled: moveStatus === 'playing',
+  });
+
   const onSquareClick = useCallback(
     ({ square }: { piece: { pieceType: string } | null; square: string }) => {
-      if (!chess || moveStatus !== 'playing') return;
-      const clickedSquare = square as Square;
-
-      if (!selectedSquare) {
-        const piece = chess.get(clickedSquare);
-        if (piece && piece.color === chess.turn()) {
-          setSelectedSquare(clickedSquare);
-        }
-      } else if (selectedSquare === clickedSquare) {
-        setSelectedSquare(null);
-      } else {
-        const legalMoves = chess.moves({ square: selectedSquare, verbose: true });
-        const isLegalMove = legalMoves.some(m => m.to === clickedSquare);
-
-        if (isLegalMove) {
-          tryMove(selectedSquare, clickedSquare);
-        } else {
-          const piece = chess.get(clickedSquare);
-          if (piece && piece.color === chess.turn()) {
-            setSelectedSquare(clickedSquare);
-          } else {
-            setSelectedSquare(null);
-          }
-        }
-      }
+      handleClickToMove(square as Square);
     },
-    [chess, selectedSquare, moveStatus, tryMove]
+    [handleClickToMove],
   );
 
   // Handle continue after puzzle result

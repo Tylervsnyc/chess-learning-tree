@@ -566,6 +566,10 @@ export default function OpeningLessonPage() {
       const game = new Chess(fen)
 
       if (selectedSquare) {
+        if (selectedSquare === square) {
+          setSelectedSquare(null)
+          return
+        }
         if (currentStep.type === 'play-move') {
           handlePlayMove(selectedSquare, square)
         } else {
@@ -805,7 +809,24 @@ export default function OpeningLessonPage() {
 
     // ── Quiz step ──
     if (currentStep.type === 'quiz') {
-      return <QuizStepContent step={currentStep} onComplete={advanceStep} />
+      return <QuizStepContent step={currentStep} onComplete={advanceStep} onAnswer={(correct, chosenIndex) => {
+        if (correct) setCorrectCount(prev => prev + 1)
+        if (user?.id && honchoSessionIdRef.current) {
+          const msg = correct
+            ? `Answered quiz correctly in ${openingName}: "${currentStep.question}"`
+            : `Answered quiz wrong in ${openingName}: "${currentStep.question}". Chose "${currentStep.options[chosenIndex]}", correct: "${currentStep.options[currentStep.correctIndex]}".`
+          fetch('/api/honcho', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_message',
+              gameId: honchoSessionIdRef.current,
+              userId: user.id,
+              message: msg,
+            }),
+          }).catch(() => {})
+        }
+      }} />
     }
 
     // ── Puzzle step ──
@@ -958,7 +979,7 @@ export default function OpeningLessonPage() {
 // QUIZ STEP (inline component)
 // ═══════════════════════════════════════════
 
-function QuizStepContent({ step, onComplete }: { step: QuizStep; onComplete: () => void }) {
+function QuizStepContent({ step, onComplete, onAnswer }: { step: QuizStep; onComplete: () => void; onAnswer?: (correct: boolean, chosenIndex: number) => void }) {
   const [selected, setSelected] = useState<number | null>(null)
   const answered = selected !== null
   const isCorrect = selected === step.correctIndex
@@ -966,6 +987,7 @@ function QuizStepContent({ step, onComplete }: { step: QuizStep; onComplete: () 
   const handleSelect = (idx: number) => {
     if (answered) return
     setSelected(idx)
+    onAnswer?.(idx === step.correctIndex, idx)
   }
 
   if (answered) {

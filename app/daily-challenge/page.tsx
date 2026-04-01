@@ -23,6 +23,7 @@ import { CreateProfileModal } from '@/components/subscription/CreateProfileModal
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
+import { useClickToMove } from '@/hooks/useClickToMove';
 
 interface Puzzle {
   puzzleId: string;
@@ -653,40 +654,21 @@ export default function DailyChallengePage() {
     return tryMove(sourceSquare as Square, targetSquare as Square);
   }, [tryMove]);
 
-  // Handle square click (click-to-move)
+  // Handle square click (click-to-move) — shared hook
+  const handleClickToMove = useClickToMove({
+    game,
+    ownColor: game?.turn() ?? 'w',
+    selectedSquare,
+    setSelectedSquare,
+    tryMove,
+    enabled: moveStatus === 'playing' && gameState === 'playing',
+  });
+
   const onSquareClick = useCallback(
     ({ square }: { piece: { pieceType: string } | null; square: string }) => {
-      if (!game || moveStatus !== 'playing' || gameState !== 'playing') return;
-      const clickedSquare = square as Square;
-
-      if (!selectedSquare) {
-        // No square selected - select if it's player's piece
-        const piece = game.get(clickedSquare);
-        if (piece && piece.color === game.turn()) {
-          setSelectedSquare(clickedSquare);
-        }
-      } else if (selectedSquare === clickedSquare) {
-        // Clicked same square - deselect
-        setSelectedSquare(null);
-      } else {
-        // Different square clicked - try to move or select new piece
-        const legalMoves = game.moves({ square: selectedSquare, verbose: true });
-        const isLegalMove = legalMoves.some(m => m.to === clickedSquare);
-
-        if (isLegalMove) {
-          tryMove(selectedSquare, clickedSquare);
-        } else {
-          // Not a legal move - check if clicking on another friendly piece
-          const piece = game.get(clickedSquare);
-          if (piece && piece.color === game.turn()) {
-            setSelectedSquare(clickedSquare);
-          } else {
-            setSelectedSquare(null);
-          }
-        }
-      }
+      handleClickToMove(square as Square);
     },
-    [game, selectedSquare, moveStatus, gameState, tryMove]
+    [handleClickToMove]
   );
 
   // Record result to Supabase

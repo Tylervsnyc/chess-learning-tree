@@ -28,6 +28,7 @@ import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarra
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
+import { useClickToMove } from '@/hooks/useClickToMove';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
@@ -1127,28 +1128,18 @@ export default function PlayRookiePage() {
   }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
 
   // ════════════════════════════════
-  // CLICK TO MOVE
+  // CLICK TO MOVE — shared hook
   // ════════════════════════════════
-  const onClickSquare = useCallback((square: Square) => {
-    if (phase !== 'playing' || rookieThinking) return;
-    const g = new Chess(fen);
-    const turn = g.turn();
-    const myTurn = (turn === 'w' && playerColor === 'white') || (turn === 'b' && playerColor === 'black');
-    if (!myTurn) return;
+  const clickGame = useMemo(() => { try { return new Chess(fen); } catch { return null; } }, [fen]);
 
-    const ownColor = playerColor === 'white' ? 'w' : 'b';
-
-    if (selected) {
-      const ok = doPlayerMove(selected, square);
-      if (!ok) {
-        const pc = g.get(square);
-        setSelected(pc && pc.color === ownColor ? square : null);
-      }
-    } else {
-      const pc = g.get(square);
-      if (pc && pc.color === ownColor) setSelected(square);
-    }
-  }, [phase, rookieThinking, fen, playerColor, selected, doPlayerMove]);
+  const onClickSquare = useClickToMove({
+    game: clickGame,
+    ownColor: playerColor === 'white' ? 'w' : 'b',
+    selectedSquare: selected,
+    setSelectedSquare: setSelected,
+    tryMove: doPlayerMove,
+    enabled: phase === 'playing' && !rookieThinking,
+  });
 
   // Kick off Rookie's first move if player is black
   useEffect(() => {
