@@ -54,6 +54,10 @@ export const POTENTIAL_MOODS = [
 
 export type RookieMood = (typeof ACTIVE_MOODS)[number] | (typeof POTENTIAL_MOODS)[number];
 
+/** Alarm animation variants — randomized when Rookie is 8+ pawns behind */
+export const ALARM_VARIANTS = ['heartbeat', 'sos', 'shiver', 'ringPulse', 'flickerOut'] as const;
+export type AlarmVariant = (typeof ALARM_VARIANTS)[number];
+
 // ════════════════════════════════
 // LAYER 2: CHESS BRIEFING (output of Chess Intelligence Agent)
 // ════════════════════════════════

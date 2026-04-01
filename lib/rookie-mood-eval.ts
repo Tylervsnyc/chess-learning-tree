@@ -8,7 +8,7 @@
  * All percentages are from ROOKIE's perspective (high = Rookie winning).
  */
 
-import { RookieMood } from '@/components/ui/BreathingRook';
+import { RookieMood, ALARM_VARIANTS, type AlarmVariant } from '@/lib/rookie-os/types';
 import { evalToWinPercent, winPercentForColor } from '@/lib/game-eval';
 
 // ════════════════════════════════
@@ -21,6 +21,8 @@ export interface EvalMoodResult {
   rookieWinPercent: number;
   isSwing: boolean;       // large eval change from previous position
   swingDirection: 'better' | 'worse' | null;
+  /** Random alarm animation variant when Rookie is 8+ pawns behind */
+  alarmVariant: AlarmVariant | null;
 }
 
 // ════════════════════════════════
@@ -42,6 +44,13 @@ const ZONES = {
 const SWING_THRESHOLD = 15;
 // Massive swing: 30%+ is game-changing (feral/heartbroken territory)
 const MASSIVE_SWING_THRESHOLD = 30;
+// Alarm threshold: 800cp behind = 8 pawns. Through the sigmoid this is ~5% win.
+// Use 12% as the threshold to catch "clearly crushed" territory.
+const ALARM_WIN_PERCENT = 12;
+
+function pickAlarmVariant(): AlarmVariant {
+  return ALARM_VARIANTS[Math.floor(Math.random() * ALARM_VARIANTS.length)];
+}
 
 // ════════════════════════════════
 // MAPPING
@@ -89,14 +98,18 @@ export function evalToRookieMood(
         rookieWinPercent: rookieWp,
         isSwing: true,
         swingDirection: 'better',
+        alarmVariant: null,
       };
     } else {
+      // Massive swing INTO alarm territory = pick an alarm variant
+      const inAlarmZone = rookieWp < ALARM_WIN_PERCENT;
       return {
         mood: isMassive ? 'heartbroken' : 'surprised',
         reason: isMassive ? 'Devastating collapse' : 'Wait what just happened',
         rookieWinPercent: rookieWp,
         isSwing: true,
         swingDirection: 'worse',
+        alarmVariant: inAlarmZone ? pickAlarmVariant() : null,
       };
     }
   }
@@ -138,11 +151,15 @@ export function evalToRookieMood(
     reason = 'This is hopeless';
   }
 
+  // Alarm variant when Rookie is getting crushed (8+ pawns behind)
+  const alarmVariant = rookieWp < ALARM_WIN_PERCENT ? pickAlarmVariant() : null;
+
   return {
     mood,
     reason,
     rookieWinPercent: rookieWp,
     isSwing: false,
     swingDirection: null,
+    alarmVariant,
   };
 }

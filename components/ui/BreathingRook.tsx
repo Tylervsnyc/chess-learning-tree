@@ -1,9 +1,9 @@
 'use client';
 
 import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
-import type { RookieMood } from '@/lib/rookie-os/types';
+import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
 
-export type { RookieMood } from '@/lib/rookie-os/types';
+export type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
 
 /**
  * BreathingRook — The standard loading indicator for Chess Path.
@@ -84,6 +84,8 @@ interface BreathingRookProps {
   animation?: AnimationMode;
   /** Octopus-like color mood shift */
   mood?: RookieMood;
+  /** Alarm animation variant — overrides default siren when panicking */
+  alarmVariant?: AlarmVariant | null;
   /**
    * Live audio intensity (0–1) for talk mode.
    * Drives per-block brightness/scale from real-time audio analysis.
@@ -294,6 +296,76 @@ const MOOD_KEYFRAMES = `
   }
 `;
 
+const ALARM_KEYFRAMES = `
+  /* Heartbeat — two quick pulses then rest */
+  @keyframes rookAlarmHeartbeat {
+    0%, 100% { filter: brightness(0.6); transform: scale(1); }
+    14% { filter: brightness(1.8); transform: scale(1.12); }
+    22% { filter: brightness(0.6); transform: scale(0.98); }
+    32% { filter: brightness(1.6); transform: scale(1.08); }
+    42% { filter: brightness(0.5); transform: scale(1); }
+  }
+
+  /* SOS Morse — ... --- ... (34 units, 2.4s cycle) */
+  @keyframes rookAlarmSos {
+    /* S: dit dit dit */
+    0%     { filter: brightness(2.0) saturate(1.6); }
+    2.9%   { filter: brightness(0.2) saturate(0.3); }
+    5.9%   { filter: brightness(2.0) saturate(1.6); }
+    8.8%   { filter: brightness(0.2) saturate(0.3); }
+    11.8%  { filter: brightness(2.0) saturate(1.6); }
+    14.7%  { filter: brightness(0.2) saturate(0.3); }
+    /* O: dah dah dah */
+    23.5%  { filter: brightness(2.0) saturate(1.6); }
+    32.4%  { filter: brightness(0.2) saturate(0.3); }
+    35.3%  { filter: brightness(2.0) saturate(1.6); }
+    44.1%  { filter: brightness(0.2) saturate(0.3); }
+    47.1%  { filter: brightness(2.0) saturate(1.6); }
+    55.9%  { filter: brightness(0.2) saturate(0.3); }
+    /* S: dit dit dit */
+    64.7%  { filter: brightness(2.0) saturate(1.6); }
+    67.6%  { filter: brightness(0.2) saturate(0.3); }
+    70.6%  { filter: brightness(2.0) saturate(1.6); }
+    73.5%  { filter: brightness(0.2) saturate(0.3); }
+    76.5%  { filter: brightness(2.0) saturate(1.6); }
+    79.4%  { filter: brightness(0.2) saturate(0.3); }
+    100%   { filter: brightness(0.2) saturate(0.3); }
+  }
+
+  /* Shiver — rapid horizontal jitter + gentle red pulse */
+  @keyframes rookAlarmShiver {
+    0%   { transform: translateX(-1px); }
+    25%  { transform: translateX(1px); }
+    50%  { transform: translateX(-0.5px); }
+    75%  { transform: translateX(0.5px); }
+    100% { transform: translateX(-1px); }
+  }
+  @keyframes rookAlarmShiverPulse {
+    0%, 100% { filter: brightness(0.7); }
+    50% { filter: brightness(1.4); }
+  }
+
+  /* Ring Pulse — concentric rings expand outward from center */
+  @keyframes rookAlarmRing {
+    0% { filter: brightness(2.0) saturate(1.5); transform: scale(1.1); }
+    40% { filter: brightness(0.5) saturate(0.6); transform: scale(1); }
+    100% { filter: brightness(0.5) saturate(0.6); transform: scale(1); }
+  }
+
+  /* Flicker Out — random power failure and recovery */
+  @keyframes rookAlarmFlicker {
+    0%, 100% { opacity: 1; filter: brightness(0.9); }
+    15% { opacity: 1; filter: brightness(1.4); }
+    20% { opacity: 0.08; filter: brightness(0.1); }
+    25% { opacity: 0.6; filter: brightness(0.5); }
+    30% { opacity: 0.08; filter: brightness(0.1); }
+    35% { opacity: 1; filter: brightness(1.2); }
+    70% { opacity: 1; filter: brightness(0.8); }
+    75% { opacity: 0.15; filter: brightness(0.15); }
+    78% { opacity: 1; filter: brightness(1.0); }
+  }
+`;
+
 // Static mood config — computed once at module level
 const MOOD_BREATHE_SPEED: Record<RookieMood, number> = {
   neutral: 5, happy: 4, nervous: 1.8, angry: 3, smug: 4.5, surprised: 2.5,
@@ -327,6 +399,8 @@ const ALL_MOOD_KEYFRAMES = (Object.keys(MOOD_BREATHE_SPEED) as RookieMood[]).map
 const BLOCK_DISTANCES = new Map<string, number>();
 // Pre-compute normalized angle from center for siren rotation (0–1)
 const BLOCK_ANGLES = new Map<string, number>();
+// Combined metadata for alarm animations
+const BLOCK_META_MAP = new Map<string, { normDist: number; angle: number }>();
 {
   let maxDist = 0;
   for (const { x, y } of ALL_CELLS) {
@@ -340,11 +414,13 @@ const BLOCK_ANGLES = new Map<string, number>();
   }
   // Normalize distances
   for (const [key, d] of BLOCK_DISTANCES) {
-    BLOCK_DISTANCES.set(key, d / (maxDist || 1));
+    const norm = d / (maxDist || 1);
+    BLOCK_DISTANCES.set(key, norm);
+    BLOCK_META_MAP.set(key, { normDist: norm, angle: BLOCK_ANGLES.get(key) ?? 0 });
   }
 }
 
-export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', talkIntensity }: BreathingRookProps) {
+export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', alarmVariant, talkIntensity }: BreathingRookProps) {
   const blockSize = SIZE_MAP[size];
   const gap = Math.max(1, Math.round(blockSize * 0.15));
   const radius = Math.max(1, Math.round(blockSize * 0.14));
@@ -412,10 +488,37 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
           const moodSpeed = MOOD_BREATHE_SPEED[mood] ?? 5;
           const breatheDelay = (x + y) * (moodSpeed > 3 ? 0.18 : 0.08);
 
-          // Panicking: rotating siren beam based on angular position
-          const isSiren = mood === 'panicking' && useMoodBreathe;
+          // Panicking: use alarm variant if provided, otherwise default siren
+          const isPanicking = mood === 'panicking' && useMoodBreathe;
           const sirenDelay = BLOCK_ANGLES.get(`${x},${y}`) ?? 0;
-          const SIREN_SPEED = 1.2; // seconds per rotation
+          const SIREN_SPEED = 1.2;
+
+          // Build alarm variant animation string
+          const getAlarmAnimation = (): string | null => {
+            if (!isPanicking) return null;
+            if (!alarmVariant) {
+              // Default siren
+              return `rookSiren ${SIREN_SPEED}s ease-in-out ${sirenDelay * SIREN_SPEED}s infinite`;
+            }
+            const meta = BLOCK_META_MAP.get(`${x},${y}`);
+            const normDist = meta?.normDist ?? 0.5;
+            const seed = (x * 11 + y * 17) % 22;
+            switch (alarmVariant) {
+              case 'heartbeat':
+                return `rookAlarmHeartbeat 1.4s ease-in-out ${normDist * 0.08}s infinite`;
+              case 'sos':
+                return `rookAlarmSos 2.4s step-end ${normDist * 0.05}s infinite`;
+              case 'shiver':
+                return `rookAlarmShiver 0.15s linear ${normDist * 0.02}s infinite, rookAlarmShiverPulse 2s ease-in-out ${normDist * 0.3}s infinite`;
+              case 'ringPulse':
+                return `rookAlarmRing 1.6s ease-out ${normDist * 1.6}s infinite`;
+              case 'flickerOut':
+                return `rookAlarmFlicker 2.5s ease-in-out ${seed * 0.12}s infinite`;
+              default:
+                return `rookSiren ${SIREN_SPEED}s ease-in-out ${sirenDelay * SIREN_SPEED}s infinite`;
+            }
+          };
+          const alarmAnim = getAlarmAnimation();
 
           return (
             <div
@@ -434,8 +537,8 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                 ...(mood === 'defeated' ? { opacity: 0.3 } : {}),
                 ...(mood === 'shadow' ? { opacity: 0.15 } : {}),
                 ...(mood === 'sleepy' ? { opacity: 0.4 } : {}),
-                ...(isSiren ? {
-                  animation: `rookSiren ${SIREN_SPEED}s ease-in-out ${sirenDelay * SIREN_SPEED}s infinite`,
+                ...(alarmAnim ? {
+                  animation: alarmAnim,
                 } : useMoodBreathe ? {
                   animation: `rookBreathe_${mood} ${moodSpeed}s ease-in-out ${breatheDelay}s infinite`,
                 } : activeMode ? {
@@ -451,7 +554,7 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
       {label && (
         <span className="text-xs text-chess-text-faint animate-pulse">{label}</span>
       )}
-      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: ANIMATION_KEYFRAMES + MOOD_KEYFRAMES + ALL_MOOD_KEYFRAMES }} />
+      <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: ANIMATION_KEYFRAMES + MOOD_KEYFRAMES + ALARM_KEYFRAMES + ALL_MOOD_KEYFRAMES }} />
     </div>
   );
 }
