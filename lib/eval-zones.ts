@@ -149,8 +149,8 @@ export interface EvalMoodResult {
   rookiePawns: number;
   /** Win% kept for downstream consumers (analysis, eval bar) */
   rookieWinPercent: number;
-  isSwing: boolean;
-  swingDirection: 'better' | 'worse' | null;
+  /** Rookie jumped 2+ zones in her favor — show "excited" */
+  isComeback: boolean;
   alarmVariant: AlarmVariant | null;
 }
 
@@ -181,44 +181,25 @@ export function evalToRookieMood(
     ? (rookieColor === 'white' ? whiteWinPercent : 100 - whiteWinPercent)
     : 50;
 
-  // ── Swing detection (pawn units) ──
-  let isSwing = false;
-  let swingDirection: 'better' | 'worse' | null = null;
+  // ── Comeback detection: did Rookie jump 2+ mood zones in her favor? ──
+  // Mood zones from Rookie's perspective (worst to best):
+  //   defeated(-5) → panicking(-3) → nervous(-1.5) → neutral(0) → scheming(+0.5) → happy(+1.5) → smug(+3)
+  // A jump of 2+ steps (e.g. panicking → neutral) triggers "excited"
+  let isComeback = false;
 
   if (prevRookiePawns !== undefined) {
-    const delta = rookiePawns - prevRookiePawns;
-    if (Math.abs(delta) >= SWING_THRESHOLD) {
-      isSwing = true;
-      swingDirection = delta > 0 ? 'better' : 'worse';
-    }
-  }
-
-  // ── Swing moods override zone-based moods ──
-  if (isSwing && prevRookiePawns !== undefined) {
-    const delta = Math.abs(rookiePawns - prevRookiePawns);
-    const isMassive = delta >= MASSIVE_SWING_THRESHOLD;
-
-    if (swingDirection === 'better') {
-      return {
-        mood: isMassive ? 'feral' : 'excited',
-        reason: isMassive ? 'MASSIVE swing — lost all composure' : 'Big swing in my favor',
-        rookiePawns,
-        rookieWinPercent: rookieWp,
-        isSwing: true,
-        swingDirection: 'better',
-        alarmVariant: null,
-      };
-    } else {
-      const inAlarmZone = rookiePawns <= ALARM_THRESHOLD;
-      return {
-        mood: isMassive ? 'heartbroken' : 'surprised',
-        reason: isMassive ? 'Devastating collapse' : 'Wait what just happened',
-        rookiePawns,
-        rookieWinPercent: rookieWp,
-        isSwing: true,
-        swingDirection: 'worse',
-        alarmVariant: inAlarmZone ? pickAlarmVariant() : null,
-      };
+    const moodRank = (p: number): number => {
+      if (p <= -EVAL_ZONES.WINNING) return 0;   // defeated
+      if (p <= -EVAL_ZONES.ADVANTAGE) return 1;  // panicking
+      if (p <= -EVAL_ZONES.SLIGHT) return 2;     // nervous
+      if (p <= EVAL_ZONES.SLIGHT) return 3;       // neutral
+      if (p <= EVAL_ZONES.ADVANTAGE) return 4;    // scheming
+      if (p <= EVAL_ZONES.WINNING) return 5;      // happy
+      return 6;                                    // smug
+    };
+    const improvement = moodRank(rookiePawns) - moodRank(prevRookiePawns);
+    if (improvement >= 2) {
+      isComeback = true;
     }
   }
 
@@ -265,8 +246,7 @@ export function evalToRookieMood(
     reason,
     rookiePawns,
     rookieWinPercent: rookieWp,
-    isSwing: false,
-    swingDirection: null,
+    isComeback,
     alarmVariant,
   };
 }

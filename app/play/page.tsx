@@ -452,7 +452,7 @@ export default function PlayRookiePage() {
         type: 'eval',
         who: 'system',
         summary: `cp=${cp} mate=${mate} rookiePawns=${moodUpdate.rookiePawns.toFixed(2)} mood=${moodUpdate.mood}${moodUpdate.applied ? ' APPLIED' : ' held'}`,
-        details: { cp, mate, rookiePawns: moodUpdate.rookiePawns, mood: moodUpdate.mood, isSwing: moodUpdate.isSwing, moodApplied: moodUpdate.applied },
+        details: { cp, mate, rookiePawns: moodUpdate.rookiePawns, mood: moodUpdate.mood, isComeback: moodUpdate.isComeback, moodApplied: moodUpdate.applied },
       });
     }).catch(() => {});
   }, [phase, playerColor, playerName, log]);

@@ -40,10 +40,16 @@ import { evalToWinPercent, winPercentForColor } from '@/lib/game-eval';
 
 /** How many moves each mood source holds before it can be overwritten */
 const HOLD_MOVES = {
-  eval: 2,
+  eval: 5,
   event: 1,
-  narrative: 2,
+  narrative: 5,
 } as const;
+
+/** While in alarm territory, cooldown doubles */
+const ALARM_HOLD_MULTIPLIER = 2;
+
+/** Alarm turns off only when Rookie recovers above this (hysteresis) */
+const ALARM_RECOVERY_THRESHOLD = -3.0;
 
 // ════════════════════════════════
 // TYPES
@@ -56,7 +62,7 @@ export interface MoodUpdate {
   applied: boolean;
   rookieWinPercent: number;
   rookiePawns: number;
-  isSwing: boolean;
+  isComeback: boolean;
 }
 
 type MoodSource = 'eval' | 'event' | 'narrative';
@@ -144,9 +150,11 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     forceOverride: boolean = false,
   ): boolean => {
     const movesSinceChange = moveNumRef.current - moodSetAtMoveRef.current;
-    const currentHold = HOLD_MOVES[moodSourceRef.current];
+    const baseHold = HOLD_MOVES[moodSourceRef.current];
+    // Double cooldown while alarm is active
+    const currentHold = alarmLockedRef.current ? baseHold * ALARM_HOLD_MULTIPLIER : baseHold;
 
-    // Force override (terminal events, zone changes) bypasses hold
+    // Force override (terminal events) bypasses hold
     if (!forceOverride && newMood !== prevMoodRef.current && movesSinceChange < currentHold) {
       return false;
     }
@@ -181,37 +189,38 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     prevRookiePawnsRef.current = result.rookiePawns;
     rookiePawnsRef.current = result.rookiePawns;
 
-    // Check if eval zone changed — zone changes force through hold
+    // Comeback: if Rookie jumped 2+ zones in her favor, show "excited"
+    const moodToApply = result.isComeback ? 'excited' as RookieMood : result.mood;
+    const reasonToApply = result.isComeback ? 'Big comeback' : result.reason;
+
+    // Track zone for downstream consumers, but don't force override cooldown
     const newZone = getEvalZone(result.rookiePawns).zone;
-    const zoneChanged = newZone !== prevEvalZoneRef.current;
     prevEvalZoneRef.current = newZone;
+    // No force override — only terminal events bypass the 5-move cooldown
+    const applied = applyMood(moodToApply, 'eval', false);
 
-    // Eval is primary — zone changes and swings force override
-    const forceOverride = zoneChanged || result.isSwing;
-    const applied = applyMood(result.mood, 'eval', forceOverride);
-
-    // Sticky alarm: lock on at -5.0, unlock only when Rookie recovers above -5.0
+    // Alarm: lock on at -5.0, unlock only when Rookie recovers above -3.0 (hysteresis)
     if (result.rookiePawns <= ALARM_THRESHOLD) {
       if (!alarmLockedRef.current) {
         alarmLockedRef.current = true;
         setAlarmVariant(result.alarmVariant ?? pickAlarmVariant());
       }
-      // Already locked — keep current alarm variant
-    } else {
+    } else if (result.rookiePawns > ALARM_RECOVERY_THRESHOLD) {
       if (alarmLockedRef.current) {
         alarmLockedRef.current = false;
         setAlarmVariant(null);
       }
     }
+    // Between -5.0 and -3.0: alarm stays in whatever state it's already in
 
     return {
-      mood: result.mood,
-      reason: result.reason,
+      mood: moodToApply,
+      reason: reasonToApply,
       source: 'eval',
       applied,
       rookieWinPercent: result.rookieWinPercent,
       rookiePawns: result.rookiePawns,
-      isSwing: result.isSwing,
+      isComeback: result.isComeback,
     };
   }, [playerColor, applyMood]);
 
@@ -244,7 +253,7 @@ export function useRookieMood(playerColor: 'white' | 'black') {
         playerColor === 'white' ? 'black' : 'white',
       ),
       rookiePawns: rookiePawnsRef.current,
-      isSwing: false,
+      isComeback: false,
     };
   }, [applyMood, playerColor]);
 
