@@ -154,7 +154,7 @@ export interface EvalMoodResult {
   alarmVariant: AlarmVariant | null;
 }
 
-function pickAlarmVariant(): AlarmVariant {
+export function pickAlarmVariant(): AlarmVariant {
   return ALARM_VARIANTS[Math.floor(Math.random() * ALARM_VARIANTS.length)];
 }
 

@@ -27,6 +27,8 @@ import {
   getEvalZone,
   getRookiePawns,
   EVAL_ZONES,
+  ALARM_THRESHOLD,
+  pickAlarmVariant,
   type EvalMoodResult,
   type EvalMood,
 } from '@/lib/eval-zones';
@@ -129,6 +131,8 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   const moveNumRef = useRef(0);
   /** Current rookiePawns — available for event resolution */
   const rookiePawnsRef = useRef(0);
+  /** Sticky alarm: once triggered at -5.0, stays until Rookie recovers above -5.0 */
+  const alarmLockedRef = useRef(false);
 
   /**
    * Apply a mood change with source-specific hold logic.
@@ -186,11 +190,18 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     const forceOverride = zoneChanged || result.isSwing;
     const applied = applyMood(result.mood, 'eval', forceOverride);
 
-    // Update alarm variant
-    if (result.alarmVariant) {
-      setAlarmVariant(result.alarmVariant);
-    } else if (applied) {
-      setAlarmVariant(null);
+    // Sticky alarm: lock on at -5.0, unlock only when Rookie recovers above -5.0
+    if (result.rookiePawns <= ALARM_THRESHOLD) {
+      if (!alarmLockedRef.current) {
+        alarmLockedRef.current = true;
+        setAlarmVariant(result.alarmVariant ?? pickAlarmVariant());
+      }
+      // Already locked — keep current alarm variant
+    } else {
+      if (alarmLockedRef.current) {
+        alarmLockedRef.current = false;
+        setAlarmVariant(null);
+      }
     }
 
     return {
@@ -296,6 +307,7 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     prevEvalZoneRef.current = 'equal';
     moveNumRef.current = 0;
     rookiePawnsRef.current = 0;
+    alarmLockedRef.current = false;
   }, []);
 
   return {

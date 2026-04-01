@@ -91,64 +91,19 @@ export function usePermissions() {
       };
     }
 
-    switch (tier) {
-      case 'anonymous': {
-        const limit = LESSON_LIMITS.anonymous.totalLessons;
-        const remaining = Math.max(0, limit - data.totalLessonsAsAnon);
-        return {
-          tier,
-          dailyLessonLimit: limit,
-          lessonsCompletedToday: data.totalLessonsAsAnon,
-          lessonsRemainingToday: remaining,
-          canAccessLesson: remaining > 0,
-          canSkipLevels: false,
-          canAccessAllPuzzles: false,
-          shouldPromptSignup: remaining === 0,
-          shouldPromptPremium: false,
-          dailyResetTime: null, // Anonymous doesn't reset - must sign up
-        };
-      }
-
-      case 'free': {
-        // Free users get unlimited lessons — re-enable limits once we have real traction
-        const freeLimitActive = false;
-        const limit = freeLimitActive ? LESSON_LIMITS.free.dailyLimit : null;
-        const remaining = limit !== null ? Math.max(0, limit - data.lessonsCompletedToday) : null;
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-
-        return {
-          tier,
-          dailyLessonLimit: limit,
-          lessonsCompletedToday: data.lessonsCompletedToday,
-          lessonsRemainingToday: remaining,
-          canAccessLesson: remaining === null || remaining > 0,
-          canSkipLevels: true,
-          canAccessAllPuzzles: false,
-          shouldPromptSignup: false,
-          shouldPromptPremium: remaining !== null && remaining === 0,
-          dailyResetTime: freeLimitActive ? tomorrow : null,
-        };
-      }
-
-      case 'admin':
-      case 'premium': {
-        const isAdmin = tier === 'admin';
-        return {
-          tier,
-          dailyLessonLimit: null,
-          lessonsCompletedToday: data.lessonsCompletedToday,
-          lessonsRemainingToday: null,
-          canAccessLesson: true,
-          canSkipLevels: true,
-          canAccessAllPuzzles: isAdmin,
-          shouldPromptSignup: false,
-          shouldPromptPremium: false,
-          dailyResetTime: null,
-        };
-      }
-    }
+    // All features unlocked during development — re-enable tier gating later
+    return {
+      tier,
+      dailyLessonLimit: null,
+      lessonsCompletedToday: data.lessonsCompletedToday,
+      lessonsRemainingToday: null,
+      canAccessLesson: true,
+      canSkipLevels: true,
+      canAccessAllPuzzles: true,
+      shouldPromptSignup: false,
+      shouldPromptPremium: false,
+      dailyResetTime: null,
+    };
   })();
 
   // Initialize
