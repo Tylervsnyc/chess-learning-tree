@@ -13,7 +13,7 @@
  */
 
 import { useRef, useCallback, useState } from 'react';
-import type { RookieMood } from '@/lib/rookie-os/types';
+import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
 import { evalToRookieMood, type EvalMoodResult } from '@/lib/rookie-mood-eval';
 import { getEvalMood, type EvalMood } from '@/lib/speech/beat-sheet';
 
@@ -45,6 +45,7 @@ type GameEvent = 'check' | 'checkmate' | 'stalemate' | 'draw' | 'none';
 
 export function useRookieMood(playerColor: 'white' | 'black') {
   const [mood, setMood] = useState<RookieMood>('neutral');
+  const [alarmVariant, setAlarmVariant] = useState<AlarmVariant | null>(null);
 
   // Internal state
   const prevMoodRef = useRef<RookieMood>('neutral');
@@ -94,6 +95,13 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     prevRookieWpRef.current = result.rookieWinPercent;
 
     const applied = applyMood(result.mood, false);
+
+    // Update alarm variant — sticky until mood leaves alarm territory
+    if (result.alarmVariant) {
+      setAlarmVariant(result.alarmVariant);
+    } else if (applied) {
+      setAlarmVariant(null);
+    }
 
     return {
       mood: result.mood,
@@ -197,6 +205,7 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   /** Reset for new game */
   const reset = useCallback(() => {
     setMood('neutral');
+    setAlarmVariant(null);
     prevMoodRef.current = 'neutral';
     moodSetAtMoveRef.current = 0;
     prevRookieWpRef.current = undefined;
@@ -207,6 +216,8 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   return {
     /** Current mood (reactive state — triggers re-renders) */
     mood,
+    /** Active alarm animation variant (null when not in alarm territory) */
+    alarmVariant,
     /** Process Stockfish eval → baseline mood */
     onEval,
     /** Process game events (check, checkmate, etc.) → override mood */
