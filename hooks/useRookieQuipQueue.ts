@@ -49,14 +49,30 @@ export function useRookieQuipQueue(
   const waitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /** Wait for TTS to finish (polls isTalkingRef) */
+  /** Wait for TTS to finish: first waits for isTalking to become true (started), then waits for it to become false (done). */
   const waitForSpeechDone = useCallback((): Promise<void> => {
     return new Promise((resolve) => {
+      let started = false;
+      let attempts = 0;
+      const MAX_WAIT_FOR_START = 30; // 3s max to wait for TTS to start (30 * 100ms)
       const check = () => {
-        if (!isTalkingRef.current) resolve();
-        else waitTimerRef.current = setTimeout(check, 100);
+        if (!started) {
+          if (isTalkingRef.current) {
+            started = true;
+          } else {
+            attempts++;
+            // If TTS never starts after MAX_WAIT, resolve anyway (e.g. empty text, error)
+            if (attempts >= MAX_WAIT_FOR_START) { resolve(); return; }
+          }
+        }
+        if (started && !isTalkingRef.current) {
+          resolve();
+        } else {
+          waitTimerRef.current = setTimeout(check, 100);
+        }
       };
-      waitTimerRef.current = setTimeout(check, 300);
+      // Give TTS a moment to kick off before polling
+      waitTimerRef.current = setTimeout(check, 150);
     });
   }, [isTalkingRef]);
 
