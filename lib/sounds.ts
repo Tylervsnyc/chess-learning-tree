@@ -30,6 +30,19 @@ export const CHROMATIC_SCALE = [
 let sharedAudioContext: AudioContext | null = null;
 let isAudioWarmedUp = false;
 
+/**
+ * Get the shared AudioContext (unlocked by warmupAudio on first user gesture).
+ * Creates one if needed, but it won't be gesture-unlocked — call warmupAudio() first.
+ * Used by useRookieVoice to share the same context instead of creating a separate one.
+ */
+export function getSharedAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioContext();
+  }
+  return sharedAudioContext;
+}
+
 // Preloaded audio buffers for move/capture sounds
 let moveBuffer: AudioBuffer | null = null;
 let captureBuffer: AudioBuffer | null = null;
@@ -274,6 +287,24 @@ export async function playMoveSound(): Promise<void> {
 /** Play capture sound - uses preloaded mp3 file */
 export async function playCaptureSound(): Promise<void> {
   return playBuffer(captureBuffer);
+}
+
+/** Play check sound - sharp synthesized tone like Lichess */
+export async function playCheckSound(): Promise<void> {
+  const ctx = await ensureAudioReady();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1200, t);
+  osc.frequency.exponentialRampToValueAtTime(800, t + 0.08);
+  gain.gain.setValueAtTime(0.2, t);
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.12);
 }
 
 /**

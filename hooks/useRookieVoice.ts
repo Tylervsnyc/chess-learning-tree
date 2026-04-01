@@ -1,9 +1,13 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { getSharedAudioContext } from '@/lib/sounds';
 
 /**
  * Hook that manages Rookie's voice playback with real-time audio analysis.
+ *
+ * Uses the shared AudioContext from lib/sounds.ts (unlocked by warmupAudio on
+ * first user gesture) so that iOS Safari doesn't block voice playback.
  *
  * Returns:
  * - speakQuip(text): play TTS for a line (cached or generated)
@@ -15,7 +19,6 @@ export function useRookieVoice(audioOn: boolean) {
   const [isTalking, setIsTalking] = useState(false);
   const [intensity, setIntensity] = useState(0);
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const manifestRef = useRef<Record<string, string> | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -34,7 +37,7 @@ export function useRookieVoice(audioOn: boolean) {
     return () => {
       cancelAnimationFrame(rafRef.current);
       if (currentSourceRef.current) { try { currentSourceRef.current.stop(); } catch {} }
-      if (audioCtxRef.current) { audioCtxRef.current.close().catch(() => {}); }
+      // Don't close the shared AudioContext — it's shared across the app
     };
   }, []);
 
@@ -79,15 +82,16 @@ export function useRookieVoice(audioOn: boolean) {
   }, [isTalking]);
 
   const getAudioContext = useCallback(() => {
-    if (!audioCtxRef.current) {
-      const ctx = new AudioContext();
-      audioCtxRef.current = ctx;
+    const ctx = getSharedAudioContext();
+    if (!ctx) throw new Error('AudioContext unavailable');
+    // Create analyser lazily (once per hook instance)
+    if (!analyserRef.current) {
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
       analyser.smoothingTimeConstant = 0.3;
       analyserRef.current = analyser;
     }
-    return audioCtxRef.current;
+    return ctx;
   }, []);
 
   const stopAudio = useCallback(() => {
@@ -101,7 +105,17 @@ export function useRookieVoice(audioOn: boolean) {
   const playBuffer = useCallback(async (arrayBuffer: ArrayBuffer) => {
     const ctx = getAudioContext();
     const analyser = analyserRef.current!;
-    if (ctx.state === 'suspended') await ctx.resume();
+
+    // Try to resume if suspended (warmupAudio should have already unlocked it)
+    if (ctx.state === 'suspended') {
+      try { await ctx.resume(); } catch {}
+    }
+
+    // If still suspended after resume attempt, iOS hasn't unlocked audio yet.
+    // Drop this quip rather than queueing it (prevents the "all play at once" bug).
+    if (ctx.state !== 'running') {
+      return;
+    }
 
     const buf = await ctx.decodeAudioData(arrayBuffer);
     const src = ctx.createBufferSource();
