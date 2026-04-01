@@ -289,6 +289,27 @@ export async function playCaptureSound(): Promise<void> {
   return playBuffer(captureBuffer);
 }
 
+/**
+ * Play a sound effect file from /rookie-sfx/.
+ * Returns a promise that resolves when playback finishes.
+ */
+export async function playSfx(filename: string): Promise<void> {
+  const ctx = await ensureAudioReady();
+  if (!ctx) return;
+  const url = `/rookie-sfx/${filename}`;
+  const response = await fetch(url);
+  if (!response.ok) return;
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  return new Promise<void>((resolve) => {
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+    source.onended = () => resolve();
+    source.start(0);
+  });
+}
+
 /** Play check sound - sharp synthesized tone like Lichess */
 export async function playCheckSound(): Promise<void> {
   const ctx = await ensureAudioReady();

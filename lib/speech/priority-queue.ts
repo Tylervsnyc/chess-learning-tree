@@ -29,12 +29,14 @@ export interface LineConditions {
 
 export interface SpeechLine {
   id: string;
-  text: string; // may contain {name}, {piece} placeholders
+  text: string; // may contain {name}, {piece} placeholders. Use [SFX] to mark sound effect insertion point.
   conditions: LineConditions;
   /** Base priority (higher = more likely to be selected). 1-100 scale. */
   priority: number;
   /** Source: 'authored' (template) or 'generated' (Claude API) */
   source: 'authored' | 'generated';
+  /** Optional sound effect file path (relative to /rookie-sfx/). Plays at [SFX] marker in text. */
+  sfx?: string;
 }
 
 export interface QueueContext {

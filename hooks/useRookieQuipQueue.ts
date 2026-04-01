@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { playSfx } from '@/lib/sounds';
 
 /**
  * Unified quip queue for Rookie.
@@ -21,6 +22,8 @@ interface QueueItem {
   priority: Priority;
   /** Pre-substitution template text for voice cache lookup */
   voiceKey?: string;
+  /** Sound effect filename to play at [SFX] marker in text */
+  sfx?: string;
 }
 
 const GAP_MS = 600; // pause between quips
@@ -38,6 +41,17 @@ export function useRookieQuipQueue(
   const waitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /** Wait for TTS to finish (polls isTalkingRef) */
+  const waitForSpeechDone = useCallback((): Promise<void> => {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (!isTalkingRef.current) resolve();
+        else waitTimerRef.current = setTimeout(check, 100);
+      };
+      waitTimerRef.current = setTimeout(check, 300);
+    });
+  }, [isTalkingRef]);
+
   const processQueue = useCallback(() => {
     if (processingRef.current) return;
     if (queueRef.current.length === 0) return;
@@ -46,6 +60,36 @@ export function useRookieQuipQueue(
     const item = queueRef.current.shift()!;
     const startTime = Date.now();
 
+    // ── SFX quip: split at [SFX], speak part 1, play SFX, speak part 2 ──
+    if (item.sfx && item.text.includes('[SFX]')) {
+      const [before, after] = item.text.split('[SFX]');
+      const fullDisplay = item.text.replace('[SFX]', '');
+      setDisplayText(fullDisplay);
+      setMsgKey(k => k + 1);
+
+      // Speak first part
+      if (before.trim()) speakQuip(before.trim());
+
+      waitForSpeechDone().then(async () => {
+        // Play sound effect
+        await playSfx(item.sfx!);
+        // Speak second part
+        if (after.trim()) {
+          speakQuip(after.trim());
+          await waitForSpeechDone();
+        }
+        // Ensure minimum display time
+        const remaining = MIN_DISPLAY_MS - (Date.now() - startTime);
+        if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+        processingRef.current = false;
+        if (queueRef.current.length > 0) {
+          gapTimerRef.current = setTimeout(processQueue, GAP_MS);
+        }
+      });
+      return;
+    }
+
+    // ── Normal quip ──
     setDisplayText(item.text);
     setMsgKey(k => k + 1);
     speakQuip(item.text, item.voiceKey);
@@ -69,16 +113,16 @@ export function useRookieQuipQueue(
     };
     // Start checking after a minimum time (speech may not have started yet)
     waitTimerRef.current = setTimeout(waitForDone, 300);
-  }, [speakQuip, isTalkingRef]);
+  }, [speakQuip, isTalkingRef, waitForSpeechDone]);
 
   /** Queue a quip. Plays immediately if idle, otherwise waits in line. */
-  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string) => {
+  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string, sfx?: string) => {
     // Low priority gets dropped if anything is queued or playing
     if (priority === 'low' && (queueRef.current.length > 0 || processingRef.current)) {
       return;
     }
 
-    const item: QueueItem = { text, priority, voiceKey };
+    const item: QueueItem = { text, priority, voiceKey, sfx };
 
     if (priority === 'high') {
       // Insert at front (after any other high-priority items)
