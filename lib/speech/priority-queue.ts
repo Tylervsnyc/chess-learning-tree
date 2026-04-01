@@ -4,7 +4,7 @@
 
 import { type Beat, type EvalMood } from '@/lib/speech/beat-sheet';
 export type { Beat, EvalMood };
-export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'mood_change' | 'none';
+export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'mood_change' | 'alarm' | 'none';
 
 export interface LineConditions {
   /** Which beats this line is valid for */

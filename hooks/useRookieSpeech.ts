@@ -461,6 +461,32 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [selectAndQueue],
   );
 
+  /** Call when alarm variant is active (Rookie is getting crushed, 8+ pawns behind). Fires sore loser quips. */
+  const onAlarm = useCallback(
+    (moveNumber: number, rookieWinPercent: number) => {
+      // Respect cooldown
+      if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+
+      const freshEvalMood = getEvalMood(rookieWinPercent);
+
+      const context: QueueContext = {
+        beat: beatRef.current.currentBeat,
+        evalMood: freshEvalMood,
+        event: 'alarm',
+        movedBy: 'rookie',
+        moveNumber,
+        activeThreadId: null,
+        playerName: playerNameRef.current,
+        playerColor: playerColorRef.current,
+      };
+
+      if (selectAndQueue(context)) {
+        lastQuipMoveRef.current = moveNumber;
+      }
+    },
+    [selectAndQueue],
+  );
+
   /** Reset for new game */
   const reset = useCallback(() => {
     // Transfer usedThisGame to usedRecently
@@ -491,6 +517,8 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     onEvalUpdate,
     /** Call when eval-based mood is APPLIED — Rookie reacts to emotional shifts */
     onMoodChange,
+    /** Call when alarm variant is active (8+ pawns behind) — fires sore loser quips */
+    onAlarm,
     /** Reset for new game */
     reset,
     /** Queue an arbitrary text line */

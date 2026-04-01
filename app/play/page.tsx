@@ -321,6 +321,7 @@ export default function PlayRookiePage() {
   // Unified mood system
   const moodSystem = useRookieMood(playerColor);
   const rookieMood = moodSystem.mood;
+  const rookieAlarm = moodSystem.alarmVariant;
 
   // Debug log
   const [debugLog, setDebugLog] = useState<DebugEntry[]>([]);
@@ -443,6 +444,11 @@ export default function PlayRookiePage() {
       // Let Rookie react when the eval mood zone changes
       if (moodSystem.checkEvalMoodZone(moodUpdate.rookieWinPercent)) {
         speech.onMoodChange(moveNumRef.current, moodUpdate.rookieWinPercent);
+      }
+
+      // Fire sore loser quips when alarm is active (8+ pawns behind)
+      if (moodSystem.alarmVariant) {
+        speech.onAlarm(moveNumRef.current, moodUpdate.rookieWinPercent);
       }
 
       log({
@@ -1609,6 +1615,7 @@ export default function PlayRookiePage() {
                   animation={phase === 'playing' && rookieThinking ? 'think' : undefined}
                   animate={phase === 'playing' && !rookieThinking && !isTalking}
                   mood={rookieMood}
+                  alarmVariant={rookieAlarm}
                   talkIntensity={phase === 'playing' && isTalking && !rookieThinking ? talkIntensity : undefined}
                 />
               </div>
