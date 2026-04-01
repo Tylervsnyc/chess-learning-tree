@@ -1,3 +1,5 @@
+import { getEvalMood as getEvalMoodFromZones, SWING_THRESHOLD, type EvalMood } from '@/lib/eval-zones';
+
 export type Beat =
   | 'opening'
   | 'early_game'
@@ -6,7 +8,7 @@ export type Beat =
   | 'game_end'
   | 'post_game';
 
-export type EvalMood = 'winning' | 'losing' | 'even' | 'desperate';
+export type { EvalMood } from '@/lib/eval-zones';
 
 export interface BeatState {
   currentBeat: Beat;
@@ -19,8 +21,9 @@ export interface BeatState {
 
 export interface BeatInput {
   moveNumber: number;
-  rookieWinPercent: number; // 0-100, from Rookie's perspective
-  prevRookieWinPercent?: number;
+  /** Rookie's eval in pawn units (from eval-zones OSOT) */
+  rookiePawns: number;
+  prevRookiePawns?: number;
   isGameOver: boolean;
   isPostGame: boolean;
   piecesRemaining: number; // total pieces on board
@@ -38,16 +41,12 @@ export function createBeatState(): BeatState {
   };
 }
 
-/** Map rookieWinPercent to an EvalMood */
-export function getEvalMood(rookieWinPercent: number): EvalMood {
-  if (rookieWinPercent >= 60) return 'winning';
-  if (rookieWinPercent >= 40) return 'even';
-  if (rookieWinPercent >= 20) return 'losing';
-  return 'desperate';
+/** Map Rookie's pawn eval to EvalMood — delegates to eval-zones OSOT */
+export function getEvalMood(rookiePawns: number): EvalMood {
+  return getEvalMoodFromZones(rookiePawns);
 }
 
 const TURNING_POINT_MIN_MOVE = 4;
-const TURNING_POINT_THRESHOLD = 15;
 const LATE_GAME_MOVE = 20;
 const LATE_GAME_PIECES = 16;
 
@@ -63,9 +62,9 @@ export function updateBeat(
   state: BeatState,
   input: BeatInput
 ): { state: BeatState; beatChanged: boolean; newBeat: Beat | null } {
-  const { moveNumber, rookieWinPercent, prevRookieWinPercent, isGameOver, isPostGame, piecesRemaining } = input;
+  const { moveNumber, rookiePawns, prevRookiePawns, isGameOver, isPostGame, piecesRemaining } = input;
 
-  const evalMood = getEvalMood(rookieWinPercent);
+  const evalMood = getEvalMood(rookiePawns);
   const prevBeat = state.currentBeat;
 
   // Post-game always wins
@@ -92,14 +91,14 @@ export function updateBeat(
     return { state: next, beatChanged: changed, newBeat: changed ? 'game_end' : null };
   }
 
-  // Track swing
+  // Track swing (pawn units)
   let turningPointFired = state.turningPointFired;
   let biggestSwing = state.biggestSwing;
   let biggestSwingMove = state.biggestSwingMove;
   let fireTurningPoint = false;
 
-  if (prevRookieWinPercent !== undefined) {
-    const swing = Math.abs(rookieWinPercent - prevRookieWinPercent);
+  if (prevRookiePawns !== undefined) {
+    const swing = Math.abs(rookiePawns - prevRookiePawns);
     if (swing > biggestSwing) {
       biggestSwing = swing;
       biggestSwingMove = moveNumber;
@@ -107,7 +106,7 @@ export function updateBeat(
     // Fire turning_point if threshold met, past min move, and hasn't fired yet
     if (
       !turningPointFired &&
-      swing > TURNING_POINT_THRESHOLD &&
+      swing > SWING_THRESHOLD &&
       swing >= biggestSwing &&
       moveNumber > TURNING_POINT_MIN_MOVE
     ) {

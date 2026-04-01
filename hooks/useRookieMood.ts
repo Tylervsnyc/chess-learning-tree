@@ -1,28 +1,47 @@
 /**
  * useRookieMood — Unified mood system for Rookie.
  *
- * Three mood sources, one output:
- *   1. Eval-based baseline — Stockfish eval → win% → mood zone (calm default)
- *   2. Event overrides — check, checkmate, stalemate (high-priority, temporary)
- *   3. Narrative overrides — 6-layer engine mood at turning points
+ * Priority order (eval is king):
+ *   1. Eval-based baseline — Stockfish cp → pawn units → mood zone (PRIMARY)
+ *   2. Event modifiers — check, checkmate, stalemate (CONTEXTUAL, not override)
+ *   3. Narrative nudges — 6-layer engine mood at turning points (TERTIARY)
  *
- * Hold logic: mood holds for HOLD_MOVES moves before the baseline can change it.
- * High-priority events (checkmate, check, stalemate) bypass the hold.
+ * Events are resolved against the eval baseline:
+ *   - Terminal events (checkmate, stalemate) always override (game is ending)
+ *   - Check while losing badly → base mood stays (Rookie is too stressed)
+ *   - Check while equal/winning → smug or surprised
+ *
+ * Hold system: source-specific decay instead of universal 4-move hold.
+ *   - Eval: 2 moves (overridden by zone change or terminal events)
+ *   - Event: 1 move (eval reasserts quickly)
+ *   - Narrative: 2 moves (overridden by zone change or terminal events)
  *
  * @see CHE-155 https://linear.app/chesspathapp/issue/CHE-155
  */
 
 import { useRef, useCallback, useState } from 'react';
 import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
-import { evalToRookieMood, type EvalMoodResult } from '@/lib/rookie-mood-eval';
-import { getEvalMood, type EvalMood } from '@/lib/speech/beat-sheet';
+import {
+  evalToRookieMood,
+  getEvalMood,
+  getEvalZone,
+  getRookiePawns,
+  EVAL_ZONES,
+  type EvalMoodResult,
+  type EvalMood,
+} from '@/lib/eval-zones';
+import { evalToWinPercent, winPercentForColor } from '@/lib/game-eval';
 
 // ════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════
 
-/** How many moves a mood holds before eval-based baseline can overwrite it */
-const HOLD_MOVES = 4;
+/** How many moves each mood source holds before it can be overwritten */
+const HOLD_MOVES = {
+  eval: 2,
+  event: 1,
+  narrative: 2,
+} as const;
 
 // ════════════════════════════════
 // TYPES
@@ -34,10 +53,63 @@ export interface MoodUpdate {
   source: 'eval' | 'event' | 'narrative';
   applied: boolean;
   rookieWinPercent: number;
+  rookiePawns: number;
   isSwing: boolean;
 }
 
+type MoodSource = 'eval' | 'event' | 'narrative';
 type GameEvent = 'check' | 'checkmate' | 'stalemate' | 'draw' | 'none';
+
+// ════════════════════════════════
+// CONTEXTUAL EVENT RESOLUTION
+// ════════════════════════════════
+
+/**
+ * Resolve what mood an event produces given the current eval baseline.
+ * Returns null if the event should be ignored (base mood stays).
+ */
+function resolveEventMood(
+  event: GameEvent,
+  movedBy: 'player' | 'rookie',
+  rookiePawns: number,
+): { mood: RookieMood; reason: string } | null {
+  // Terminal events always override — game is ending
+  if (event === 'checkmate') {
+    const rookieLost = movedBy === 'player';
+    return {
+      mood: rookieLost ? 'angry' : 'smug',
+      reason: rookieLost ? 'Got checkmated' : 'Delivered checkmate',
+    };
+  }
+  if (event === 'stalemate' || event === 'draw') {
+    return {
+      mood: 'nervous',
+      reason: event === 'stalemate' ? 'Stalemate' : 'Draw',
+    };
+  }
+
+  // Check — contextual based on eval
+  if (event === 'check') {
+    // Rookie is losing badly — too stressed to feel smug about a check
+    if (rookiePawns < -EVAL_ZONES.ADVANTAGE) {
+      return null; // base mood stays
+    }
+    // Rookie is slightly losing — brief surprise
+    if (rookiePawns < -EVAL_ZONES.SLIGHT) {
+      return {
+        mood: 'surprised',
+        reason: movedBy === 'player' ? 'Player checked while Rookie is down' : 'Desperate check',
+      };
+    }
+    // Rookie is equal or winning
+    return {
+      mood: movedBy === 'player' ? 'surprised' : 'smug',
+      reason: movedBy === 'player' ? 'Player checked Rookie' : 'Rookie gave check',
+    };
+  }
+
+  return null;
+}
 
 // ════════════════════════════════
 // HOOK
@@ -49,23 +121,29 @@ export function useRookieMood(playerColor: 'white' | 'black') {
 
   // Internal state
   const prevMoodRef = useRef<RookieMood>('neutral');
+  const moodSourceRef = useRef<MoodSource>('eval');
   const moodSetAtMoveRef = useRef(0);
-  const prevRookieWpRef = useRef<number | undefined>(undefined);
+  const prevRookiePawnsRef = useRef<number | undefined>(undefined);
   const prevEvalMoodRef = useRef<EvalMood>('even');
+  const prevEvalZoneRef = useRef<string>('equal');
   const moveNumRef = useRef(0);
+  /** Current rookiePawns — available for event resolution */
+  const rookiePawnsRef = useRef(0);
 
   /**
-   * Apply a mood change. Handles the hold logic and state updates.
+   * Apply a mood change with source-specific hold logic.
    * Returns whether the mood was actually applied.
    */
   const applyMood = useCallback((
     newMood: RookieMood,
-    isHighPriority: boolean,
+    source: MoodSource,
+    forceOverride: boolean = false,
   ): boolean => {
     const movesSinceChange = moveNumRef.current - moodSetAtMoveRef.current;
+    const currentHold = HOLD_MOVES[moodSourceRef.current];
 
-    // Hold logic: non-high-priority changes are blocked during hold period
-    if (!isHighPriority && newMood !== prevMoodRef.current && movesSinceChange < HOLD_MOVES) {
+    // Force override (terminal events, zone changes) bypasses hold
+    if (!forceOverride && newMood !== prevMoodRef.current && movesSinceChange < currentHold) {
       return false;
     }
 
@@ -74,13 +152,14 @@ export function useRookieMood(playerColor: 'white' | 'black') {
 
     setMood(newMood);
     prevMoodRef.current = newMood;
+    moodSourceRef.current = source;
     moodSetAtMoveRef.current = moveNumRef.current;
     return true;
   }, []);
 
   /**
    * Process a Stockfish eval update. Call after every position eval.
-   * Returns the mood result (even if not applied due to hold).
+   * Eval is the PRIMARY mood driver — flows through fastest.
    */
   const onEval = useCallback((
     cp: number | null,
@@ -89,14 +168,25 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   ): MoodUpdate => {
     moveNumRef.current = currentMoveNum;
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
-    const prevWp = prevRookieWpRef.current;
+    const prevPawns = prevRookiePawnsRef.current;
 
-    const result = evalToRookieMood(cp, mate, rookieColor, prevWp);
-    prevRookieWpRef.current = result.rookieWinPercent;
+    // Compute win% for downstream consumers (eval bar, analysis)
+    const whiteWp = evalToWinPercent(cp, mate);
 
-    const applied = applyMood(result.mood, false);
+    const result = evalToRookieMood(cp, mate, rookieColor, prevPawns, whiteWp);
+    prevRookiePawnsRef.current = result.rookiePawns;
+    rookiePawnsRef.current = result.rookiePawns;
 
-    // Update alarm variant — sticky until mood leaves alarm territory
+    // Check if eval zone changed — zone changes force through hold
+    const newZone = getEvalZone(result.rookiePawns).zone;
+    const zoneChanged = newZone !== prevEvalZoneRef.current;
+    prevEvalZoneRef.current = newZone;
+
+    // Eval is primary — zone changes and swings force override
+    const forceOverride = zoneChanged || result.isSwing;
+    const applied = applyMood(result.mood, 'eval', forceOverride);
+
+    // Update alarm variant
     if (result.alarmVariant) {
       setAlarmVariant(result.alarmVariant);
     } else if (applied) {
@@ -109,13 +199,15 @@ export function useRookieMood(playerColor: 'white' | 'black') {
       source: 'eval',
       applied,
       rookieWinPercent: result.rookieWinPercent,
+      rookiePawns: result.rookiePawns,
       isSwing: result.isSwing,
     };
   }, [playerColor, applyMood]);
 
   /**
    * Process a game event (check, checkmate, stalemate).
-   * High-priority events bypass the hold timer.
+   * Events are CONTEXTUAL — resolved against the eval baseline.
+   * Terminal events force override. Non-terminal events respect game state.
    */
   const onGameEvent = useCallback((
     event: GameEvent,
@@ -124,50 +216,30 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   ): MoodUpdate | null => {
     moveNumRef.current = currentMoveNum;
 
-    let newMood: RookieMood = 'neutral';
-    let isHighPriority = false;
-    let reason = '';
+    const resolved = resolveEventMood(event, movedBy, rookiePawnsRef.current);
+    if (!resolved) return null; // event suppressed by eval context
 
-    switch (event) {
-      case 'checkmate': {
-        // Who lost? The side whose turn it is (they're in checkmate)
-        const rookieLost = (movedBy === 'player'); // player just checkmated Rookie
-        newMood = rookieLost ? 'angry' : 'smug';
-        isHighPriority = true;
-        reason = rookieLost ? 'Got checkmated' : 'Delivered checkmate';
-        break;
-      }
-      case 'stalemate':
-      case 'draw':
-        newMood = 'nervous';
-        isHighPriority = true;
-        reason = event === 'stalemate' ? 'Stalemate' : 'Draw';
-        break;
-      case 'check':
-        newMood = movedBy === 'player' ? 'surprised' : 'smug';
-        isHighPriority = true;
-        reason = movedBy === 'player' ? 'Player checked Rookie' : 'Rookie gave check';
-        break;
-      case 'none':
-        return null;
-    }
-
-    const applied = applyMood(newMood, isHighPriority);
+    const isTerminal = event === 'checkmate' || event === 'stalemate' || event === 'draw';
+    const applied = applyMood(resolved.mood, 'event', isTerminal);
     if (!applied) return null;
 
     return {
-      mood: newMood,
-      reason,
+      mood: resolved.mood,
+      reason: resolved.reason,
       source: 'event',
       applied: true,
-      rookieWinPercent: prevRookieWpRef.current ?? 50,
+      rookieWinPercent: winPercentForColor(
+        evalToWinPercent(null, null),
+        playerColor === 'white' ? 'black' : 'white',
+      ),
+      rookiePawns: rookiePawnsRef.current,
       isSwing: false,
     };
-  }, [applyMood]);
+  }, [applyMood, playerColor]);
 
   /**
    * Process a mood from the narrative engine.
-   * Narrative mood changes are high-priority (the engine sees full context).
+   * Narrative is TERTIARY — can nudge but shouldn't contradict game state.
    */
   const onNarrativeMood = useCallback((
     narrativeMood: RookieMood,
@@ -176,15 +248,16 @@ export function useRookieMood(playerColor: 'white' | 'black') {
   ): boolean => {
     if (!moodChanged) return false;
     moveNumRef.current = currentMoveNum;
-    return applyMood(narrativeMood, true);
+    return applyMood(narrativeMood, 'narrative', false);
   }, [applyMood]);
 
   /**
    * Check if the eval mood zone changed (even/winning/losing/desperate).
    * Used by the speech system for mood-change quip triggers.
+   * Now uses pawn-based zones from eval-zones OSOT.
    */
-  const checkEvalMoodZone = useCallback((rookieWinPercent: number): boolean => {
-    const newZone = getEvalMood(rookieWinPercent);
+  const checkEvalMoodZone = useCallback((rookiePawns: number): boolean => {
+    const newZone = getEvalMood(rookiePawns);
     if (newZone !== prevEvalMoodRef.current) {
       prevEvalMoodRef.current = newZone;
       return true;
@@ -192,14 +265,23 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     return false;
   }, []);
 
-  /** Get current Rookie win% (for speech system and other consumers) */
-  const getRookieWinPercent = useCallback((): number => {
-    return prevRookieWpRef.current ?? 50;
+  /** Get current Rookie pawn eval */
+  const getRookiePawns = useCallback((): number => {
+    return rookiePawnsRef.current;
   }, []);
 
-  /** Get previous Rookie win% (for swing detection) */
-  const getPrevRookieWinPercent = useCallback((): number | undefined => {
-    return prevRookieWpRef.current;
+  /** Get current Rookie win% (for downstream consumers that still need it) */
+  const getRookieWinPercent = useCallback((): number => {
+    // Approximate from pawns — used for logging/display, not mood decisions
+    const cp = rookiePawnsRef.current * 100;
+    const rookieColor = playerColor === 'white' ? 'black' as const : 'white' as const;
+    const whiteWp = evalToWinPercent(rookieColor === 'white' ? cp : -cp, null);
+    return winPercentForColor(whiteWp, rookieColor);
+  }, [playerColor]);
+
+  /** Get previous Rookie pawn eval (for swing detection) */
+  const getPrevRookiePawns = useCallback((): number | undefined => {
+    return prevRookiePawnsRef.current;
   }, []);
 
   /** Reset for new game */
@@ -207,10 +289,13 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     setMood('neutral');
     setAlarmVariant(null);
     prevMoodRef.current = 'neutral';
+    moodSourceRef.current = 'eval';
     moodSetAtMoveRef.current = 0;
-    prevRookieWpRef.current = undefined;
+    prevRookiePawnsRef.current = undefined;
     prevEvalMoodRef.current = 'even';
+    prevEvalZoneRef.current = 'equal';
     moveNumRef.current = 0;
+    rookiePawnsRef.current = 0;
   }, []);
 
   return {
@@ -218,18 +303,20 @@ export function useRookieMood(playerColor: 'white' | 'black') {
     mood,
     /** Active alarm animation variant (null when not in alarm territory) */
     alarmVariant,
-    /** Process Stockfish eval → baseline mood */
+    /** Process Stockfish eval → baseline mood (PRIMARY) */
     onEval,
-    /** Process game events (check, checkmate, etc.) → override mood */
+    /** Process game events contextually against eval (SECONDARY) */
     onGameEvent,
-    /** Process narrative engine mood → override mood */
+    /** Process narrative engine mood (TERTIARY) */
     onNarrativeMood,
     /** Check if eval mood zone changed (for speech triggers) */
     checkEvalMoodZone,
-    /** Get current Rookie win% */
+    /** Get current Rookie pawn eval */
+    getRookiePawns,
+    /** Get current Rookie win% (for downstream compat) */
     getRookieWinPercent,
-    /** Get previous Rookie win% */
-    getPrevRookieWinPercent,
+    /** Get previous Rookie pawn eval */
+    getPrevRookiePawns,
     /** Reset for new game */
     reset,
   };

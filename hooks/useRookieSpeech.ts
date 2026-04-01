@@ -21,6 +21,7 @@ import {
 import { pickThread } from '@/lib/speech/threads';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
 import { AUTHORED_LINES } from '@/lib/speech/line-pool';
+import { SWING_THRESHOLD } from '@/lib/eval-zones';
 
 // ════════════════════════════════════════════════════════════════
 // Types
@@ -28,8 +29,9 @@ import { AUTHORED_LINES } from '@/lib/speech/line-pool';
 
 export interface SpeechInput {
   moveNumber: number;
-  rookieWinPercent: number;
-  prevRookieWinPercent?: number;
+  /** Rookie's eval in pawn units (from eval-zones OSOT) */
+  rookiePawns: number;
+  prevRookiePawns?: number;
   isGameOver: boolean;
   piecesRemaining: number;
   movedBy: 'player' | 'rookie';
@@ -44,8 +46,9 @@ export interface SpeechInput {
 }
 
 export interface EvalUpdate {
-  rookieWinPercent: number;
-  prevRookieWinPercent?: number;
+  /** Rookie's eval in pawn units */
+  rookiePawns: number;
+  prevRookiePawns?: number;
   moveNumber: number;
   lastMovedBy: 'player' | 'rookie';
   playerName: string;
@@ -81,7 +84,6 @@ export interface UseRookieSpeechOptions {
 // ════════════════════════════════════════════════════════════════
 
 const QUIP_COOLDOWN_MOVES = 2; // minimum moves between event-triggered quips
-const BLUNDER_THRESHOLD = 15; // rookieWinPercent swing to count as a blunder
 const CAPTURE_SEQUENCE_MIN = 3; // minimum consecutive captures to trigger capture_sequence
 
 /** Tracks an ongoing capture sequence */
@@ -232,11 +234,11 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Call after every move with current game state */
   const onMove = useCallback(
     (input: SpeechInput) => {
-      // 1. Update beat
+      // 1. Update beat (pawn units)
       const beatResult = updateBeat(beatRef.current, {
         moveNumber: input.moveNumber,
-        rookieWinPercent: input.rookieWinPercent,
-        prevRookieWinPercent: input.prevRookieWinPercent,
+        rookiePawns: input.rookiePawns,
+        prevRookiePawns: input.prevRookiePawns,
         isGameOver: input.isGameOver,
         isPostGame: false,
         piecesRemaining: input.piecesRemaining,
@@ -311,7 +313,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // 4. Game end — always speak
       if (beatResult.newBeat === 'game_end') {
         const context = buildContext(input);
-        const rookieWon = input.rookieWinPercent > 50;
+        const rookieWon = input.rookiePawns > 0;
         generateOrFallback(
           generateGameEndLine ? generateGameEndLine({ playerName: input.playerName, rookieWon }) : undefined,
           'game_end',
@@ -365,10 +367,10 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       brilliantMoves: number;
       keyMoments?: string;
     }) => {
-      // Update beat to post_game
+      // Update beat to post_game (0 pawns = neutral for post-game)
       const beatResult = updateBeat(beatRef.current, {
         moveNumber: beatRef.current.moveCount,
-        rookieWinPercent: 50, // neutral for post-game
+        rookiePawns: 0,
         isGameOver: true,
         isPostGame: true,
         piecesRemaining: 0,
@@ -402,15 +404,16 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [generateGameEndLine, generateOrFallback],
   );
 
-  /** Call when Stockfish eval arrives — detects blunders from eval swing */
+  /** Call when Stockfish eval arrives — detects blunders from eval swing (pawn units) */
   const onEvalUpdate = useCallback(
     (update: EvalUpdate) => {
       // Only detect blunders after player moves
       if (update.lastMovedBy !== 'player') return;
-      if (update.prevRookieWinPercent === undefined) return;
+      if (update.prevRookiePawns === undefined) return;
 
-      const swing = update.rookieWinPercent - update.prevRookieWinPercent;
-      if (swing < BLUNDER_THRESHOLD) return;
+      // Blunder = eval swing >= SWING_THRESHOLD in Rookie's favor (player lost ground)
+      const swing = update.rookiePawns - update.prevRookiePawns;
+      if (swing < SWING_THRESHOLD) return;
 
       // Respect cooldown
       if (update.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
@@ -436,12 +439,12 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
   /** Call when eval mood zone changes (even/losing/desperate/winning). Gives Rookie a chance to comment. */
   const onMoodChange = useCallback(
-    (moveNumber: number, rookieWinPercent: number) => {
+    (moveNumber: number, rookiePawns: number) => {
       // Respect cooldown
       if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
 
-      // Compute fresh evalMood from wp (beat state may be stale since eval is async)
-      const freshEvalMood = getEvalMood(rookieWinPercent);
+      // Compute fresh evalMood from pawn units
+      const freshEvalMood = getEvalMood(rookiePawns);
 
       const context: QueueContext = {
         beat: beatRef.current.currentBeat,
@@ -461,13 +464,13 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [selectAndQueue],
   );
 
-  /** Call when alarm variant is active (Rookie is getting crushed, 8+ pawns behind). Fires sore loser quips. */
+  /** Call when alarm variant is active (Rookie is getting crushed, 5+ pawns behind). Fires sore loser quips. */
   const onAlarm = useCallback(
-    (moveNumber: number, rookieWinPercent: number) => {
+    (moveNumber: number, rookiePawns: number) => {
       // Respect cooldown
       if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
 
-      const freshEvalMood = getEvalMood(rookieWinPercent);
+      const freshEvalMood = getEvalMood(rookiePawns);
 
       const context: QueueContext = {
         beat: beatRef.current.currentBeat,
@@ -517,7 +520,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     onEvalUpdate,
     /** Call when eval-based mood is APPLIED — Rookie reacts to emotional shifts */
     onMoodChange,
-    /** Call when alarm variant is active (8+ pawns behind) — fires sore loser quips */
+    /** Call when alarm variant is active (5+ pawns behind) — fires sore loser quips */
     onAlarm,
     /** Reset for new game */
     reset,

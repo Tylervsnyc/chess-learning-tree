@@ -14,7 +14,7 @@
  */
 
 import type { ChessBriefing, GameEvent, RookieMood } from './types';
-import { evalToRookieMood, type EvalMoodResult } from '@/lib/rookie-mood-eval';
+import { evalToRookieMood, type EvalMoodResult, getRookiePawns as calcRookiePawns, SWING_THRESHOLD } from '@/lib/eval-zones';
 import { evalToWinPercent, winPercentForColor } from '@/lib/game-eval';
 
 // ════════════════════════════════
@@ -218,16 +218,16 @@ export interface TurningPointResult {
   responseType: ResponseType;
 }
 
-// Eval swing thresholds (in win% points)
-const BLUNDER_SWING = 15;    // 15% win% change = blunder/brilliant
-const QUIET_THRESHOLD = 3;   // Under 3% change = quiet move
+// Eval swing thresholds (in pawn units, from OSOT)
+const BLUNDER_SWING = SWING_THRESHOLD; // 1.0 pawn change = blunder/brilliant
+const QUIET_THRESHOLD = 0.3;           // Under 0.3 pawns = quiet move
 
 /**
  * Determine if a move is a turning point and what response it warrants.
  */
 export function detectTurningPoint(input: {
-  /** Win% delta (positive = Rookie's position improved) */
-  rookieWpDelta: number;
+  /** Pawn eval delta (positive = Rookie's position improved) */
+  rookiePawnDelta: number;
   /** Who just moved */
   movedBy: 'player' | 'rookie';
   /** Did the player just leave book? */
@@ -245,26 +245,26 @@ export function detectTurningPoint(input: {
   /** Is material imbalanced without recent recapture? */
   isSacrifice: boolean;
 }): TurningPointResult {
-  const { rookieWpDelta, movedBy, justLeftBook, phaseChanged, prevPhase, newPhase, bookStatus, moveNumber, isSacrifice } = input;
+  const { rookiePawnDelta, movedBy, justLeftBook, phaseChanged, prevPhase, newPhase, bookStatus, moveNumber, isSacrifice } = input;
 
-  const absDelta = Math.abs(rookieWpDelta);
+  const absDelta = Math.abs(rookiePawnDelta);
 
   // FULL LLM CALL triggers
   // 1. Big eval swing (blunder or brilliant)
   if (absDelta >= BLUNDER_SWING) {
-    const isBlunder = (movedBy === 'player' && rookieWpDelta > 0) ||
-                      (movedBy === 'rookie' && rookieWpDelta < 0);
+    const isBlunder = (movedBy === 'player' && rookiePawnDelta > 0) ||
+                      (movedBy === 'rookie' && rookiePawnDelta < 0);
     const moverName = movedBy === 'player' ? 'Player' : 'Rookie';
     if (isBlunder) {
       return {
         isTurningPoint: true,
-        reason: `${moverName} blundered — ${Math.round(absDelta)}% swing.`,
+        reason: `${moverName} blundered — ${absDelta.toFixed(1)} pawn swing.`,
         responseType: 'full_llm_call',
       };
     } else {
       return {
         isTurningPoint: true,
-        reason: `${moverName} played a brilliant move — ${Math.round(absDelta)}% swing.`,
+        reason: `${moverName} played a brilliant move — ${absDelta.toFixed(1)} pawn swing.`,
         responseType: 'full_llm_call',
       };
     }
@@ -558,8 +558,8 @@ export interface MoveInput {
 
 /** Persistent state for the intelligence agent across a game */
 export interface IntelligenceState {
-  /** Previous Rookie win% for swing detection */
-  prevRookieWp: number;
+  /** Previous Rookie eval in pawn units for swing detection */
+  prevRookiePawns: number;
   /** Previous mood */
   prevMood: RookieMood;
   /** Previous phase */
@@ -585,7 +585,7 @@ export interface IntelligenceState {
 /** Create initial intelligence state at game start */
 export function createIntelligenceState(): IntelligenceState {
   return {
-    prevRookieWp: 50,
+    prevRookiePawns: 0, // start position = equal
     prevMood: 'neutral',
     prevPhase: 'opening',
     wasInBook: true, // assume we start in book
@@ -653,8 +653,9 @@ export async function processMove(
   // ── Sub-Component B: Position Translator ──
   const position = translatePosition(input.cp, input.mate, input.rookieColor);
 
-  // ── Mood (cross-cutting) ──
-  const moodResult = evalToRookieMood(input.cp, input.mate, input.rookieColor, state.prevRookieWp);
+  // ── Mood (cross-cutting, pawn units) ──
+  const rookiePawns = calcRookiePawns(input.cp, input.mate, input.rookieColor);
+  const moodResult = evalToRookieMood(input.cp, input.mate, input.rookieColor, state.prevRookiePawns);
 
   // ── Sub-Component C: Turning Point Detector ──
   const phase = detectPhase(input.moveNumber, input.piecesRemaining);
@@ -668,7 +669,7 @@ export async function processMove(
     materialLost > 0;
 
   const turningPoint = detectTurningPoint({
-    rookieWpDelta: position.rookieWinPercent - state.prevRookieWp,
+    rookiePawnDelta: rookiePawns - state.prevRookiePawns,
     movedBy: input.movedBy,
     justLeftBook,
     phaseChanged,
@@ -703,11 +704,11 @@ export async function processMove(
   if (input.isPromotion) events.push('promotion');
   if (moodResult.mood !== state.prevMood) events.push('mood_change');
 
-  // Classify blunder/great move from eval swing
-  const absDelta = Math.abs(position.rookieWinPercent - state.prevRookieWp);
-  if (absDelta >= BLUNDER_SWING) {
-    const moverLost = (input.movedBy === 'player' && position.rookieWinPercent > state.prevRookieWp) ||
-                      (input.movedBy === 'rookie' && position.rookieWinPercent < state.prevRookieWp);
+  // Classify blunder/great move from eval swing (pawn units)
+  const pawnDelta = Math.abs(rookiePawns - state.prevRookiePawns);
+  if (pawnDelta >= BLUNDER_SWING) {
+    const moverLost = (input.movedBy === 'player' && rookiePawns > state.prevRookiePawns) ||
+                      (input.movedBy === 'rookie' && rookiePawns < state.prevRookiePawns);
     if (moverLost) events.push('blunder');
     else events.push('great_move');
   }
@@ -750,7 +751,7 @@ export async function processMove(
 
   // ── Update state for next move ──
   const nextState: IntelligenceState = {
-    prevRookieWp: position.rookieWinPercent,
+    prevRookiePawns: rookiePawns,
     prevMood: moodResult.mood,
     prevPhase: phase,
     wasInBook: bookStatus !== 'out_of_book',

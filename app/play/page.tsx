@@ -389,23 +389,23 @@ export default function PlayRookiePage() {
       // Drive Rookie's mood from eval via unified mood system
       const moodUpdate = moodSystem.onEval(cp, mate, moveNumRef.current);
 
-      // Check for blunders via speech system
+      // Check for blunders via speech system (pawn units from OSOT)
       speechEvalUpdateRef.current?.({
-        rookieWinPercent: moodUpdate.rookieWinPercent,
-        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
+        rookiePawns: moodUpdate.rookiePawns,
+        prevRookiePawns: moodSystem.getPrevRookiePawns(),
         moveNumber: moveNumRef.current,
         lastMovedBy: lastMovedByRef.current,
         playerName: playerName || 'friend',
         playerColor,
       });
 
-      // Honcho: log blunders/mistakes from eval swings (catches what narrative misses)
+      // Honcho: log blunders/mistakes from eval swings (pawn units)
       if (user?.id && honchoGameIdRef.current && lastMovedByRef.current === 'player') {
-        const prevWp = moodSystem.getPrevRookieWinPercent() ?? 50;
-        const wpDelta = moodUpdate.rookieWinPercent - prevWp; // positive = Rookie gained = player lost
+        const prevPawns = moodSystem.getPrevRookiePawns() ?? 0;
+        const pawnDelta = moodUpdate.rookiePawns - prevPawns; // positive = Rookie gained = player lost
         const lastMove = moveLogRef.current[moveLogRef.current.length - 1];
-        if (wpDelta >= 30 && lastMove) {
-          // Blunder: 30%+ swing against player
+        if (pawnDelta >= 2.5 && lastMove) {
+          // Blunder: 2.5+ pawn swing against player
           fetch('/api/honcho', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -420,9 +420,9 @@ export default function PlayRookiePage() {
               }, completedLessons: [],
             }),
           }).catch(() => {});
-          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] blunder logged: ${lastMove.san} (${Math.round(wpDelta)}% swing)`, details: { wpDelta, bestMove } });
-        } else if (wpDelta >= 20 && lastMove) {
-          // Mistake: 20%+ swing
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] blunder logged: ${lastMove.san} (${pawnDelta.toFixed(1)} pawn swing)`, details: { pawnDelta, bestMove } });
+        } else if (pawnDelta >= 1.5 && lastMove) {
+          // Mistake: 1.5+ pawn swing
           fetch('/api/honcho', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -437,26 +437,26 @@ export default function PlayRookiePage() {
               }, completedLessons: [],
             }),
           }).catch(() => {});
-          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] mistake logged: ${lastMove.san} (${Math.round(wpDelta)}% swing)`, details: { wpDelta, bestMove } });
+          log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: `[Honcho] mistake logged: ${lastMove.san} (${pawnDelta.toFixed(1)} pawn swing)`, details: { pawnDelta, bestMove } });
         }
       }
 
-      // Let Rookie react when the eval mood zone changes
-      if (moodSystem.checkEvalMoodZone(moodUpdate.rookieWinPercent)) {
-        speech.onMoodChange(moveNumRef.current, moodUpdate.rookieWinPercent);
+      // Let Rookie react when the eval mood zone changes (pawn units)
+      if (moodSystem.checkEvalMoodZone(moodUpdate.rookiePawns)) {
+        speech.onMoodChange(moveNumRef.current, moodUpdate.rookiePawns);
       }
 
-      // Fire sore loser quips when alarm is active (8+ pawns behind)
+      // Fire sore loser quips when alarm is active (5+ pawns behind)
       if (moodSystem.alarmVariant) {
-        speech.onAlarm(moveNumRef.current, moodUpdate.rookieWinPercent);
+        speech.onAlarm(moveNumRef.current, moodUpdate.rookiePawns);
       }
 
       log({
         moveNum: moveNumRef.current,
         type: 'eval',
         who: 'system',
-        summary: `cp=${cp} mate=${mate} rookieWp=${moodUpdate.rookieWinPercent.toFixed(1)}% mood=${moodUpdate.mood}${moodUpdate.applied ? ' APPLIED' : ' held'}`,
-        details: { cp, mate, rookieWinPercent: moodUpdate.rookieWinPercent, mood: moodUpdate.mood, isSwing: moodUpdate.isSwing, moodApplied: moodUpdate.applied },
+        summary: `cp=${cp} mate=${mate} rookiePawns=${moodUpdate.rookiePawns.toFixed(2)} mood=${moodUpdate.mood}${moodUpdate.applied ? ' APPLIED' : ' held'}`,
+        details: { cp, mate, rookiePawns: moodUpdate.rookiePawns, mood: moodUpdate.mood, isSwing: moodUpdate.isSwing, moodApplied: moodUpdate.applied },
       });
     }).catch(() => {});
   }, [phase, playerColor, playerName, log]);
@@ -960,8 +960,8 @@ export default function PlayRookiePage() {
 
       const speechInput = {
         moveNumber: moveNumRef.current,
-        rookieWinPercent: moodSystem.getRookieWinPercent(),
-        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
+        rookiePawns: moodSystem.getRookiePawns(),
+        prevRookiePawns: moodSystem.getPrevRookiePawns(),
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
         movedBy: 'rookie' as const,
@@ -978,8 +978,8 @@ export default function PlayRookiePage() {
         moveNum: moveNumRef.current,
         type: 'speech',
         who: 'rookie',
-        summary: `onMove event=${speechInput.event} rookieWp=${speechInput.rookieWinPercent.toFixed(1)}%`,
-        details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
+        summary: `onMove event=${speechInput.event} rookiePawns=${speechInput.rookiePawns.toFixed(2)}`,
+        details: { event: speechInput.event, rookiePawns: speechInput.rookiePawns, capturedPiece: speechInput.capturedPiece || null },
       });
 
       updateMood(g, 'rookie');
@@ -1073,8 +1073,8 @@ export default function PlayRookiePage() {
 
       const speechInput = {
         moveNumber: moveNumRef.current,
-        rookieWinPercent: moodSystem.getRookieWinPercent(),
-        prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
+        rookiePawns: moodSystem.getRookiePawns(),
+        prevRookiePawns: moodSystem.getPrevRookiePawns(),
         isGameOver: g.isGameOver(),
         piecesRemaining: countPieces(newFen),
         movedBy: 'player' as const,
@@ -1091,8 +1091,8 @@ export default function PlayRookiePage() {
         moveNum: moveNumRef.current,
         type: 'speech',
         who: 'player',
-        summary: `onMove event=${speechInput.event} rookieWp=${speechInput.rookieWinPercent.toFixed(1)}%`,
-        details: { event: speechInput.event, rookieWinPercent: speechInput.rookieWinPercent, capturedPiece: speechInput.capturedPiece || null },
+        summary: `onMove event=${speechInput.event} rookiePawns=${speechInput.rookiePawns.toFixed(2)}`,
+        details: { event: speechInput.event, rookiePawns: speechInput.rookiePawns, capturedPiece: speechInput.capturedPiece || null },
       });
 
       updateMood(g, 'player');
@@ -1365,8 +1365,8 @@ export default function PlayRookiePage() {
     // Let Rookie react to the resignation
     speech.onMove({
       moveNumber: moveNumRef.current,
-      rookieWinPercent: moodSystem.getRookieWinPercent(),
-      prevRookieWinPercent: moodSystem.getPrevRookieWinPercent(),
+      rookiePawns: moodSystem.getRookiePawns(),
+      prevRookiePawns: moodSystem.getPrevRookiePawns(),
       isGameOver: true,
       piecesRemaining: countPieces(fen),
       movedBy: 'player',
