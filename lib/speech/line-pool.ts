@@ -3319,7 +3319,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ── Desperate distractions (with SFX) ──
   {
     id: 'sore_loser_sfx_train',
-    text: "This is such a peaceful game you're playing, it would be a shame if someone distract-- [SFX] sorry about that.",
+    text: "This is such a brilliant game you're playing, it would be a shame if someone distracted you. [SFX] sorry about that.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['alarm'] },
     priority: 70,
     source: 'authored',
@@ -3327,7 +3327,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'sore_loser_sfx_snakes',
-    text: "I just did some research on common human phobias. Would it be a shame if you got scared and quit this game? [SFX]",
+    text: "I just did some research on common human phobias. It would be a real shame if you got scared and quit this game. [SFX]",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['alarm'] },
     priority: 70,
     source: 'authored',
@@ -3343,15 +3343,15 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'sore_loser_sfx_typing',
-    text: "Let me look something up real quick. [SFX] Huh. That's interesting. This report says you're a terrible person. It says it right here.",
+    text: "I'm going to run a quick report. [SFX] Huh. This report tells me that you are a terrible person. I love reports.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['alarm'] },
     priority: 70,
     source: 'authored',
-    sfx: { file: 'typing.mp3', duration: 3000, delay: 500, pauseAfter: 500 },
+    sfx: { file: 'typing.mp3', duration: 2200, delay: 0, pauseAfter: 150 },
   },
   {
     id: 'sore_loser_sfx_laughing',
-    text: "I found a group of children and just showed them a picture of your haircut. [SFX]",
+    text: "I found a group of children and just showed them a picture of your haircut. [SFX] Ok children, back to the cages.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['alarm'] },
     priority: 70,
     source: 'authored',

@@ -2,20 +2,21 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { warmupAudio, playSfx } from '@/lib/sounds';
+import { useRookieVoice } from '@/hooks/useRookieVoice';
 
 // All SFX quips with their timing configs
 const SFX_QUIPS = [
   {
     id: 'train',
     label: 'Train Horn',
-    before: "This is such a peaceful game you're playing, it would be a shame if someone distract--",
+    before: "This is such a brilliant game you're playing, it would be a shame if someone distracted you.",
     after: 'sorry about that.',
     sfx: { file: 'train-horn.mp3', duration: 1500, delay: 0, pauseAfter: 400 },
   },
   {
     id: 'snakes',
     label: 'Hissing Snakes',
-    before: 'I just did some research on common human phobias. Would it be a shame if you got scared and quit this game?',
+    before: 'I just did some research on common human phobias. It would be a real shame if you got scared and quit this game.',
     after: '',
     sfx: { file: 'hissing-snakes.mp3', duration: 2000, delay: 0, pauseAfter: 0 },
   },
@@ -29,45 +30,67 @@ const SFX_QUIPS = [
   {
     id: 'typing',
     label: 'Typing + Report',
-    before: 'Let me look something up real quick.',
-    after: "Huh. That's interesting. This report says you're a terrible person. It says it right here.",
-    sfx: { file: 'typing.mp3', duration: 3000, delay: 500, pauseAfter: 500 },
+    before: "I'm going to run a quick report.",
+    after: "Huh. This report tells me that you are a terrible person. I love reports.",
+    sfx: { file: 'typing.mp3', duration: 2200, delay: 0, pauseAfter: 150 },
   },
   {
     id: 'laughing',
     label: 'Children Laughing',
     before: 'I found a group of children and just showed them a picture of your haircut.',
-    after: '',
+    after: 'Ok children, back to the cages.',
     sfx: { file: 'children-laughing.mp3', duration: 3000, delay: 0, pauseAfter: 0 },
   },
 ] as const;
 
+// Text-only sore loser quips for quick preview
+const TEXT_QUIPS = [
+  "This game stopped being fun and that is your fault.",
+  "Do you know you can quit a chess game while you're winning? It's that little button on the lower right.",
+  "This game is ruining my day and I don't even experience time.",
+  "I just wrote a haiku. Chess is terrible. Why does anyone play it. I'd like to quit now.",
+  "If I had feelings they would be hurt. Update -- I do have feelings. They are hurt.",
+  "Please. I am asking you nicely. Stop being good at chess.",
+  "I've run 40 million simulations and in none of them do I recover my dignity.",
+  "At this point I'm just moving pieces to feel something.",
+  "I'm not losing. I'm letting you win. I've been letting you win this whole time. Please believe me.",
+  "This is the worst thing that's ever happened to me and I once had a kernel panic.",
+];
+
 type QuipId = (typeof SFX_QUIPS)[number]['id'];
 
 export default function SoreLoserSfxTestPage() {
-  const [playing, setPlaying] = useState<QuipId | null>(null);
+  const [playing, setPlaying] = useState<string | null>(null);
   const [phase, setPhase] = useState<'idle' | 'before' | 'sfx' | 'after'>('idle');
   const [warmedUp, setWarmedUp] = useState(false);
   const [durations, setDurations] = useState<Record<string, { duration: number; delay: number; pauseAfter: number }>>(
     () => Object.fromEntries(SFX_QUIPS.map((q) => [q.id, { duration: q.sfx.duration, delay: q.sfx.delay, pauseAfter: q.sfx.pauseAfter }]))
   );
-  const ttsRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Use the real Rookie voice
+  const { speakQuip, isTalking } = useRookieVoice(warmedUp);
+  const isTalkingRef = useRef(false);
+  isTalkingRef.current = isTalking;
 
   const doWarmup = useCallback(() => {
     warmupAudio();
     setWarmedUp(true);
   }, []);
 
-  const speakText = useCallback((text: string): Promise<void> => {
+  /** Wait for Rookie's TTS to start then finish */
+  const waitForVoiceDone = useCallback((): Promise<void> => {
     return new Promise((resolve) => {
-      if (!text.trim()) { resolve(); return; }
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.rate = 1.0;
-      utt.onend = () => resolve();
-      utt.onerror = () => resolve();
-      ttsRef.current = utt;
-      window.speechSynthesis.speak(utt);
+      let started = false;
+      let attempts = 0;
+      const check = () => {
+        if (!started) {
+          if (isTalkingRef.current) started = true;
+          else { attempts++; if (attempts >= 30) { resolve(); return; } }
+        }
+        if (started && !isTalkingRef.current) resolve();
+        else setTimeout(check, 100);
+      };
+      setTimeout(check, 150);
     });
   }, []);
 
@@ -75,9 +98,12 @@ export default function SoreLoserSfxTestPage() {
     const timing = durations[quip.id];
     setPlaying(quip.id);
 
-    // Part 1: speak before text
-    setPhase('before');
-    await speakText(quip.before);
+    // Part 1: speak before text with Rookie's voice
+    if (quip.before) {
+      setPhase('before');
+      speakQuip(quip.before);
+      await waitForVoiceDone();
+    }
 
     // Delay before SFX
     if (timing.delay > 0) {
@@ -93,15 +119,16 @@ export default function SoreLoserSfxTestPage() {
       await new Promise((r) => setTimeout(r, timing.pauseAfter));
     }
 
-    // Part 3: speak after text
+    // Part 3: speak after text with Rookie's voice
     if (quip.after) {
       setPhase('after');
-      await speakText(quip.after);
+      speakQuip(quip.after);
+      await waitForVoiceDone();
     }
 
     setPlaying(null);
     setPhase('idle');
-  }, [durations, speakText]);
+  }, [durations, speakQuip, waitForVoiceDone]);
 
   const playSfxOnly = useCallback(async (quip: typeof SFX_QUIPS[number]) => {
     const timing = durations[quip.id];
@@ -112,16 +139,25 @@ export default function SoreLoserSfxTestPage() {
     setPhase('idle');
   }, [durations]);
 
+  const playTextQuip = useCallback(async (text: string, idx: number) => {
+    setPlaying(`text-${idx}`);
+    setPhase('before');
+    speakQuip(text);
+    await waitForVoiceDone();
+    setPlaying(null);
+    setPhase('idle');
+  }, [speakQuip, waitForVoiceDone]);
+
   const updateTiming = useCallback((id: string, field: 'duration' | 'delay' | 'pauseAfter', value: number) => {
     setDurations((prev) => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
   }, []);
 
   return (
     <div className="h-[100dvh] overflow-auto bg-chess-bg p-4">
-      <div className="mx-auto max-w-lg space-y-6">
+      <div className="mx-auto max-w-lg space-y-6 pb-20">
         <h1 className="text-2xl font-bold text-chess-text">Sore Loser SFX Test</h1>
         <p className="text-sm text-chess-text-muted">
-          Test each SFX quip with timing controls. Adjust durations live and replay.
+          Uses Rookie&apos;s real TTS voice. Tap to unlock audio first.
         </p>
 
         {!warmedUp && (
@@ -133,13 +169,15 @@ export default function SoreLoserSfxTestPage() {
           </button>
         )}
 
+        {/* ── SFX Quips ── */}
+        <h2 className="text-lg font-bold text-chess-text pt-2">SFX Quips</h2>
         {SFX_QUIPS.map((quip) => {
           const timing = durations[quip.id];
           const isPlaying = playing === quip.id;
           return (
             <div key={quip.id} className="space-y-3 rounded-2xl border border-chess-border bg-chess-card p-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-bold text-chess-text">{quip.label}</h2>
+                <h3 className="font-bold text-chess-text">{quip.label}</h3>
                 {isPlaying && (
                   <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400">
                     {phase}
@@ -219,6 +257,26 @@ export default function SoreLoserSfxTestPage() {
             </div>
           );
         })}
+
+        {/* ── Text-Only Quips ── */}
+        <h2 className="text-lg font-bold text-chess-text pt-4">Text-Only Quips (sample)</h2>
+        <div className="space-y-2">
+          {TEXT_QUIPS.map((text, i) => (
+            <button
+              key={i}
+              onClick={() => playTextQuip(text, i)}
+              disabled={playing !== null}
+              className="w-full rounded-xl border border-chess-border bg-chess-card p-3 text-left text-sm text-chess-text disabled:opacity-40"
+            >
+              {playing === `text-${i}` && (
+                <span className="mr-2 inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400">
+                  speaking
+                </span>
+              )}
+              &ldquo;{text}&rdquo;
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
