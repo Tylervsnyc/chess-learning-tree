@@ -3322,7 +3322,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 75,
     source: 'authored',
-    sfx: 'train-horn.mp3',
+    sfx: { file: 'train-horn.mp3', duration: 1500, overlap: 1, pauseAfter: 400 },
   },
   {
     id: 'sore_loser_sfx_snakes',
@@ -3330,7 +3330,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 75,
     source: 'authored',
-    sfx: 'hissing-snakes.mp3',
+    sfx: { file: 'hissing-snakes.mp3', duration: 2000 },
   },
   {
     id: 'sore_loser_sfx_explosion',
@@ -3338,7 +3338,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 75,
     source: 'authored',
-    sfx: 'explosion.mp3',
+    sfx: { file: 'explosion.mp3', duration: 1500 },
   },
   {
     id: 'sore_loser_sfx_typing',
@@ -3346,7 +3346,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 80,
     source: 'authored',
-    sfx: 'typing.mp3',
+    sfx: { file: 'typing.mp3', duration: 3000, delay: 500, pauseAfter: 500 },
   },
   {
     id: 'sore_loser_sfx_laughing',
@@ -3354,7 +3354,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 80,
     source: 'authored',
-    sfx: 'children-laughing.mp3',
+    sfx: { file: 'children-laughing.mp3', duration: 3000 },
   },
 
   // ── Desperate distractions (text only) ──

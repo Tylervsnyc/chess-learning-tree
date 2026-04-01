@@ -291,9 +291,11 @@ export async function playCaptureSound(): Promise<void> {
 
 /**
  * Play a sound effect file from /rookie-sfx/.
- * Returns a promise that resolves when playback finishes.
+ * @param filename - file in /rookie-sfx/
+ * @param durationMs - optional max duration in ms (clips the audio)
+ * Returns a promise that resolves when playback finishes (or after durationMs).
  */
-export async function playSfx(filename: string): Promise<void> {
+export async function playSfx(filename: string, durationMs?: number): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
   const url = `/rookie-sfx/${filename}`;
@@ -301,12 +303,28 @@ export async function playSfx(filename: string): Promise<void> {
   if (!response.ok) return;
   const arrayBuffer = await response.arrayBuffer();
   const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+
   return new Promise<void>((resolve) => {
     const source = ctx.createBufferSource();
     source.buffer = audioBuffer;
-    source.connect(ctx.destination);
-    source.onended = () => resolve();
-    source.start(0);
+
+    // If duration specified, fade out at the end for a clean cut
+    if (durationMs) {
+      const gain = ctx.createGain();
+      const durSec = durationMs / 1000;
+      const fadeStart = Math.max(0, durSec - 0.15);
+      gain.gain.setValueAtTime(1, ctx.currentTime);
+      gain.gain.setValueAtTime(1, ctx.currentTime + fadeStart);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + durSec);
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(0, 0, durSec + 0.01); // tiny buffer so fade completes
+      setTimeout(resolve, durationMs);
+    } else {
+      source.connect(ctx.destination);
+      source.onended = () => resolve();
+      source.start(0);
+    }
   });
 }
 

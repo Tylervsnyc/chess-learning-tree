@@ -154,7 +154,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     (context: QueueContext) => {
       const result = selectLine(linePoolRef.current, context, queueStateRef.current);
       if (result) {
-        queueQuip(result.text, 'normal', result.templateText, result.line.sfx);
+        queueQuip(result.text, 'normal', result.templateText, result.line.sfx ?? undefined);
         return true;
       }
       return false;

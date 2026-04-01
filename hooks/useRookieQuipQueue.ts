@@ -17,13 +17,21 @@ import { playSfx } from '@/lib/sounds';
 
 type Priority = 'high' | 'normal' | 'low';
 
+interface SfxConfig {
+  file: string;
+  duration?: number;
+  overlap?: number;
+  delay?: number;
+  pauseAfter?: number;
+}
+
 interface QueueItem {
   text: string;
   priority: Priority;
   /** Pre-substitution template text for voice cache lookup */
   voiceKey?: string;
-  /** Sound effect filename to play at [SFX] marker in text */
-  sfx?: string;
+  /** Sound effect config */
+  sfx?: SfxConfig;
 }
 
 const GAP_MS = 600; // pause between quips
@@ -64,20 +72,43 @@ export function useRookieQuipQueue(
     if (item.sfx && item.text.includes('[SFX]')) {
       const [before, after] = item.text.split('[SFX]');
       const fullDisplay = item.text.replace('[SFX]', '');
+      const { file, duration, overlap = 0, delay = 0, pauseAfter = 0 } = item.sfx;
+
       setDisplayText(fullDisplay);
       setMsgKey(k => k + 1);
 
-      // Speak first part
-      if (before.trim()) speakQuip(before.trim());
+      (async () => {
+        // Speak first part
+        if (before.trim()) {
+          speakQuip(before.trim());
 
-      waitForSpeechDone().then(async () => {
-        // Play sound effect
-        await playSfx(item.sfx!);
+          if (overlap > 0) {
+            // SFX should cut into the end of speech.
+            // Wait for speech, then subtract overlap (min 0) — so SFX fires
+            // slightly before speech would naturally end. Since we can't predict
+            // TTS duration, we poll and fire SFX `overlap`ms before TTS ends.
+            // Practical approach: wait for speech done, then fire immediately
+            // (the overlap value just means "no gap"). True mid-speech overlap
+            // would need TTS duration prediction which we don't have.
+            await waitForSpeechDone();
+          } else {
+            await waitForSpeechDone();
+            if (delay > 0) await new Promise(r => setTimeout(r, delay));
+          }
+        }
+
+        // Play sound effect (with optional duration clip)
+        await playSfx(file, duration);
+
+        // Pause after SFX before part 2
+        if (pauseAfter > 0) await new Promise(r => setTimeout(r, pauseAfter));
+
         // Speak second part
         if (after.trim()) {
           speakQuip(after.trim());
           await waitForSpeechDone();
         }
+
         // Ensure minimum display time
         const remaining = MIN_DISPLAY_MS - (Date.now() - startTime);
         if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
@@ -85,7 +116,7 @@ export function useRookieQuipQueue(
         if (queueRef.current.length > 0) {
           gapTimerRef.current = setTimeout(processQueue, GAP_MS);
         }
-      });
+      })();
       return;
     }
 
@@ -116,7 +147,7 @@ export function useRookieQuipQueue(
   }, [speakQuip, isTalkingRef, waitForSpeechDone]);
 
   /** Queue a quip. Plays immediately if idle, otherwise waits in line. */
-  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string, sfx?: string) => {
+  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string, sfx?: SfxConfig) => {
     // Low priority gets dropped if anything is queued or playing
     if (priority === 'low' && (queueRef.current.length > 0 || processingRef.current)) {
       return;

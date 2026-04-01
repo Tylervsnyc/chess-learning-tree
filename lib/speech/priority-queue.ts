@@ -35,8 +35,19 @@ export interface SpeechLine {
   priority: number;
   /** Source: 'authored' (template) or 'generated' (Claude API) */
   source: 'authored' | 'generated';
-  /** Optional sound effect file path (relative to /rookie-sfx/). Plays at [SFX] marker in text. */
-  sfx?: string;
+  /** Optional sound effect config. Plays at [SFX] marker in text. */
+  sfx?: {
+    /** Filename in /rookie-sfx/ (e.g. 'train-horn.mp3') */
+    file: string;
+    /** How long to play the SFX in ms. Clips the audio at this point. */
+    duration?: number;
+    /** ms to overlap with END of previous speech (SFX starts before TTS finishes). 0 = wait for speech to end. */
+    overlap?: number;
+    /** ms to wait AFTER speech ends before starting SFX (ignored if overlap > 0). */
+    delay?: number;
+    /** ms to wait after SFX ends before starting part 2 speech. */
+    pauseAfter?: number;
+  };
 }
 
 export interface QueueContext {
