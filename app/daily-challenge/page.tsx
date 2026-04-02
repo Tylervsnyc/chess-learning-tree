@@ -455,7 +455,7 @@ export default function DailyChallengePage() {
       // Log to Honcho
       if (user?.id && honchoSessionIdRef.current) {
         const timeMs = Date.now() - puzzleStartTimeRef.current;
-        const themes = currentPuzzle.themes.join(', ') || 'general';
+        const primaryTheme = currentPuzzle.themes[0] || 'general';
         fetch('/api/honcho', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -463,7 +463,7 @@ export default function DailyChallengePage() {
             action: 'log_message',
             gameId: honchoSessionIdRef.current,
             userId: user.id,
-            message: `Solved puzzle #${puzzleIndex + 1} (${themes}) rated ${currentPuzzle.rating} on first attempt in ${Math.round(timeMs / 1000)}s.`,
+            message: `Solved daily puzzle #${puzzleIndex + 1} (${primaryTheme}) rated ${currentPuzzle.rating} on first attempt in ${Math.round(timeMs / 1000)}s.`,
           }),
         }).catch(() => {});
       }
@@ -514,7 +514,7 @@ export default function DailyChallengePage() {
       });
       // Log to Honcho
       if (user?.id && honchoSessionIdRef.current) {
-        const themes = currentPuzzle.themes.join(', ') || 'general';
+        const primaryTheme = currentPuzzle.themes[0] || 'general';
         const wrongMove = firstWrongMoveRef.current || 'unknown';
         const solution = currentPuzzle.solutionMoves[0] || 'unknown';
         fetch('/api/honcho', {
@@ -524,7 +524,7 @@ export default function DailyChallengePage() {
             action: 'log_message',
             gameId: honchoSessionIdRef.current,
             userId: user.id,
-            message: `Failed puzzle #${puzzleIndex + 1} (${themes}) rated ${currentPuzzle.rating}. Wrong move: ${wrongMove}. Correct was: ${solution}.`,
+            message: `Failed daily puzzle #${puzzleIndex + 1} (${primaryTheme}) rated ${currentPuzzle.rating}. Wrong move: ${wrongMove}. Correct was: ${solution}.`,
           }),
         }).catch(() => {});
       }
