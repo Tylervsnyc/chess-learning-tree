@@ -52,7 +52,7 @@ export function usePostGameAnalysis() {
     if (moves.length === 0) return null;
 
     cancelledRef.current = false;
-    setState({ analysis: null, isAnalyzing: true, progress: 0, error: null });
+    setState(prev => ({ ...prev, isAnalyzing: true, progress: 0, error: null }));
 
     try {
       await stockfish.init();

@@ -775,8 +775,15 @@ export default function PlayRookiePage() {
       const moveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
       setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined));
 
-      // Instant post-game analysis from evals collected during play — no re-analysis needed
+      // Show instant analysis immediately, then kick off deep analysis (depth 18)
       postGame.setInstantAnalysis(analysis);
+      postGame.analyze(moves, playerColor).then((deepAnalysis) => {
+        if (deepAnalysis) {
+          // Update key moments with deeper eval
+          const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
+          setKeyMoments(extractKeyMoments(deepAnalysis, deepMoveRecs, playerName || undefined));
+        }
+      });
 
       // Generate coaching script with analysis data
       const coaching = generateFreeCoaching(
@@ -1613,12 +1620,12 @@ export default function PlayRookiePage() {
                 {phase === 'gameover' && gameResult ? (
                   <div className="space-y-1.5">
                     <p className="text-sm font-black leading-tight">{gameResult}</p>
-                    {postGame.isAnalyzing ? (
+                    {postGame.analysis ? (
+                      <AnalysisSummary analysis={postGame.analysis} />
+                    ) : postGame.isAnalyzing ? (
                       <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
                         <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
                       </div>
-                    ) : postGame.analysis ? (
-                      <AnalysisSummary analysis={postGame.analysis} />
                     ) : null}
                     <div className="flex gap-2">
                       <button
