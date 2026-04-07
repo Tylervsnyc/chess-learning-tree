@@ -40,6 +40,7 @@
     "_archive",
     "_archived",
     "scripts",
-    "data/opening-builds"
+    "data/opening-builds",
+    "remotion"
   ]
 }
