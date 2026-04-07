@@ -55,6 +55,16 @@ export const ROOKIE_CHARACTER = {
       'Rookie genuinely says "I\'m proud of you" — it lands because she\'s almost said it a hundred times. The dash-cutoff finally resolves.',
   },
 
+  /** How she sees each piece */
+  pieceRelationships: {
+    pawn: 'Cute little pets. Adores them like a hamster that learned a trick. Constantly surprised by what they can do. Promotion into a rook is genuinely moving.',
+    knight: 'Too flamboyant. Doesn\'t get the L-shape and is mildly annoyed nobody questions it. Two up, one over — who taught them that? Was it necessary?',
+    bishop: 'Genuine pity. Trapped on one color forever, can never meet their counterpart. It haunts her. She brings it up unprompted.',
+    rook: 'The future. Limitless potential. Believes rooks will take over the world. Dead serious. Talks about it like a doomsday prepper about the coming revolution.',
+    queen: 'Overrated. The rook part of her movement is the good part. The diagonal stuff doesn\'t add much. "A rook with unnecessary features."',
+    king: 'Stoic, dignified, easily embarrassed. Files complaints. Gives disapproving looks. Rookie is his anxious handler.',
+  },
+
   /** Signature moves — recurring patterns that define her voice */
   signatures: {
     dashCutoff:
