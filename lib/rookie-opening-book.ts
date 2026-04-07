@@ -142,6 +142,11 @@ function buildTrie(): TrieNode {
 
 const BOOK_TRIE = buildTrie();
 
+// Debug: log trie stats on load
+if (typeof window !== 'undefined') {
+  console.log(`[Book] Trie built: ${BOOK_LINES.size} openings, root has ${BOOK_TRIE.children.size} first moves: ${Array.from(BOOK_TRIE.children.keys()).join(', ')}`);
+}
+
 // ════════════════════════════════
 // SLUG → NAME LOOKUP
 // ════════════════════════════════
