@@ -124,6 +124,7 @@ export async function POST(req: NextRequest) {
         summary.mistakes > 0 ? `Mistakes: ${summary.mistakes}.` : null,
         summary.brilliantMoves > 0 ? `Brilliant moves: ${summary.brilliantMoves}.` : null,
         summary.primaryWeakness ? `Key moments: ${summary.primaryWeakness}` : null,
+        summary.rookieOpeningPlayed ? `Rookie played the ${summary.rookieOpeningPlayed} from her opening book.` : null,
         summary.deviation ? `Opening deviation: ${summary.deviation}` : null,
         `Phase: opening ${summary.phase.opening}, middlegame ${summary.phase.middlegame}, endgame ${summary.phase.endgame}.`,
       ];

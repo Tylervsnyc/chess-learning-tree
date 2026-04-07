@@ -11,6 +11,8 @@ import {
   playCelebrationSound,
 } from '@/lib/sounds';
 import { getRookieMove } from '@/lib/rookie-engine';
+import { getReactiveBookMove } from '@/lib/rookie-opening-book';
+import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
@@ -230,6 +232,9 @@ function evalToWhitePercent(cp: number | null, mate: number | null): number {
 
 export default function PlayRookiePage() {
   const { user } = useUser();
+  const { getMyOpenings } = useOpeningProgress();
+  const studiedSlugs = useMemo(() => getMyOpenings().map(o => o.slug), [getMyOpenings]);
+  const matchedOpeningRef = useRef<{ slug: string; name: string } | null>(null);
   const [rookieMemory, setRookieMemory] = useState<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
   const rookieMemoryRef = useRef<RookieMemoryContext>(EMPTY_ROOKIE_MEMORY);
   const honchoLoadedRef = useRef(false);
@@ -834,8 +839,9 @@ export default function PlayRookiePage() {
             summary: {
               result,
               moveCount: moves.length,
-              openingName: opening?.name ?? null,
+              openingName: opening?.name ?? matchedOpeningRef.current?.name ?? null,
               openingEco: opening?.eco ?? null,
+              rookieOpeningPlayed: matchedOpeningRef.current?.name ?? null,
               color: playerColor,
               blunders: analysis.blunders,
               mistakes: analysis.mistakes,
@@ -1009,6 +1015,19 @@ export default function PlayRookiePage() {
       }
     };
 
+    // Opening book check — Rookie reacts to the player's actual moves
+    const rookieColor = playerColor === 'white' ? 'black' : 'white';
+    const gameMoves = moveLogRef.current.map(m => m.san);
+    const bookResult = getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs);
+    if (bookResult.inBook && bookResult.moveSan) {
+      if (bookResult.matchedSlug) {
+        matchedOpeningRef.current = { slug: bookResult.matchedSlug, name: bookResult.matchedName! };
+      }
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `opening-book: ${bookResult.moveSan} (${bookResult.matchedName})`, details: { engine: 'opening-book', opening: bookResult.matchedSlug, move: bookResult.moveSan } });
+      rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: bookResult.moveSan! }), 400);
+      return;
+    }
+
     // Levels 0-2 (~400-1200) use minimax, levels 3-4 (~1500-1800) use Stockfish
     if (skillLevel < 2.5 || !sfReadyRef.current) {
       log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (skill=${Math.round(skillLevel)})`, details: { engine: 'minimax', skillLevel } });
@@ -1037,7 +1056,7 @@ export default function PlayRookiePage() {
       const wait = Math.max(0, 500 - (Date.now() - thinkStart));
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
     });
-  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log]);
+  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
 
   // ════════════════════════════════
   // PLAYER'S MOVE
@@ -1309,6 +1328,7 @@ export default function PlayRookiePage() {
     narrative.resetForNewGame();
     narrative.setMemoryContext(rookieMemoryRef.current);
     honchoOpeningLoggedRef.current = false;
+    matchedOpeningRef.current = null;
 
     // Use pre-fetched Honcho context (loaded on page mount) for narrative + opening line
     const hasChat = !!rookieMemoryRef.current.honchoSummary;
