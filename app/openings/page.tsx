@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   OPENINGS_REGISTRY,
@@ -10,6 +10,7 @@ import {
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
 import { getLessonCount, TREE_LOOKUP } from '@/lib/opening-trees'
 import { BreathingRook } from '@/components/ui/BreathingRook'
+import { OpeningsEvents } from '@/lib/analytics/posthog'
 
 type TabName = 'my-openings' | 'library'
 
@@ -330,7 +331,10 @@ export default function OpeningsPage() {
     })
     .filter((o): o is NonNullable<typeof o> => o !== null)
 
+  useEffect(() => { OpeningsEvents.libraryViewed() }, [])
+
   const handleOpeningClick = (slug: string) => {
+    OpeningsEvents.treeViewed(slug)
     router.push(`/openings/${slug}`)
   }
 

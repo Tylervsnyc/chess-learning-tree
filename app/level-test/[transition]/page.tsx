@@ -18,6 +18,7 @@ import { useClickToMove } from '@/hooks/useClickToMove';
 import confetti from 'canvas-confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { LevelTestEvents } from '@/lib/analytics/posthog';
 
 type TestState = 'loading' | 'intro' | 'playing' | 'passed' | 'failed';
 type MoveStatus = 'playing' | 'correct' | 'wrong';
@@ -344,12 +345,14 @@ export default function LevelTestPage() {
 
     // Check for test completion
     if (newWrongCount >= maxWrongAnswers) {
+      LevelTestEvents.completed(transition as string, false, newCorrectCount, puzzleCount);
       setTestState('failed');
       return;
     }
 
     if (currentIndex + 1 >= puzzleCount) {
       if (newCorrectCount >= passingScore) {
+        LevelTestEvents.completed(transition as string, true, newCorrectCount, puzzleCount);
         setTestState('passed');
         playCelebrationSound(newCorrectCount);
         // Unlock the level only if logged in
@@ -362,6 +365,7 @@ export default function LevelTestPage() {
           setShowAuthModal(true);
         }
       } else {
+        LevelTestEvents.completed(transition as string, false, newCorrectCount, puzzleCount);
         setTestState('failed');
         // Show auth modal for unauthenticated users
         if (!user && !userLoading) {
@@ -490,7 +494,8 @@ export default function LevelTestPage() {
 
           <button
             onClick={() => {
-              warmupAudio(); // Warmup audio NOW - user just clicked
+              warmupAudio();
+              LevelTestEvents.started(transition as string);
               setTestState('playing');
             }}
             className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"

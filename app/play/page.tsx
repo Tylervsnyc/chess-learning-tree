@@ -13,6 +13,7 @@ import {
 import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
+import { PlayEvents } from '@/lib/analytics/posthog';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
@@ -768,6 +769,8 @@ export default function PlayRookiePage() {
       result = 'draw';
     }
 
+    PlayEvents.gameEnded(result ?? 'unknown', moveLogRef.current.length, playerColor, skillLevel, matchedOpeningRef.current?.name);
+
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
     const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
@@ -1371,6 +1374,7 @@ export default function PlayRookiePage() {
       }
     }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
+    PlayEvents.gameStarted(skillLevel, playerColor);
 
     setPhase('playing');
   };

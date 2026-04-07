@@ -123,6 +123,27 @@ export const OnboardingEvents = {
     trackEvent('onboarding_completed', data),
 };
 
+// Play Rookie funnel
+export const PlayEvents = {
+  gameStarted: (skillLevel: number, color: 'white' | 'black') =>
+    trackEvent('game_started', { skillLevel, color }),
+  gameEnded: (result: string, moveCount: number, color: 'white' | 'black', skillLevel: number, openingName?: string | null) =>
+    trackEvent('game_ended', { result, moveCount, color, skillLevel, openingName }),
+};
+
+// Level test funnel
+export const LevelTestEvents = {
+  started: (transition: string) => trackEvent('level_test_started', { transition }),
+  completed: (transition: string, passed: boolean, score: number, total: number) =>
+    trackEvent('level_test_completed', { transition, passed, score, total }),
+};
+
+// Openings funnel
+export const OpeningsEvents = {
+  libraryViewed: () => trackEvent('openings_library_viewed'),
+  treeViewed: (slug: string) => trackEvent('opening_tree_viewed', { slug }),
+};
+
 // Share/Viral funnel
 export const ShareEvents = {
   shareClicked: (source: 'lesson' | 'daily_challenge' | 'opening', type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
