@@ -75,3 +75,15 @@ logs/
 
 # Backup files
 *.bak
+
+# Rookie SFX (not used in production yet)
+public/rookie-sfx/
+
+# Remotion assets (video pipeline, not app)
+public/remotion/
+remotion/
+
+# Narrative experiment scripts
+scripts/narrative/
+scripts/generate-hype-audio.ts
+scripts/generate-puzzle-voice.ts
