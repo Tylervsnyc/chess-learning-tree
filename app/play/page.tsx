@@ -1019,7 +1019,6 @@ export default function PlayRookiePage() {
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
     const bookResult = getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs);
-    console.log('[Book]', { gameMoves, rookieColor, studiedSlugs: studiedSlugs.slice(0, 5), result: bookResult });
     if (bookResult.inBook && bookResult.moveSan) {
       if (bookResult.matchedSlug) {
         matchedOpeningRef.current = { slug: bookResult.matchedSlug, name: bookResult.matchedName! };
