@@ -17,6 +17,7 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { useClickToMove } from '@/hooks/useClickToMove';
 import confetti from 'canvas-confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 type TestState = 'loading' | 'intro' | 'playing' | 'passed' | 'failed';
 type MoveStatus = 'playing' | 'correct' | 'wrong';
@@ -402,8 +403,8 @@ export default function LevelTestPage() {
   // Loading state while validating transition
   if (isValid === null) {
     return (
-      <div className="h-full bg-chess-page flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
+      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+        <BreathingRook size="lg" animate label="Preparing test..." />
       </div>
     );
   }
@@ -431,12 +432,9 @@ export default function LevelTestPage() {
   // Loading state
   if (testState === 'loading') {
     return (
-      <div className="h-full bg-chess-page flex items-center justify-center">
+      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
         <style>{progressBarStyles}</style>
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-chess-text-muted">Loading test puzzles...</p>
-        </div>
+        <BreathingRook size="lg" animate label="Loading test puzzles..." />
       </div>
     );
   }
@@ -638,8 +636,8 @@ export default function LevelTestPage() {
   // Playing state - wait for puzzle to be ready
   if (!currentPuzzle || !currentFen || !chess) {
     return (
-      <div className="h-full bg-chess-page flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-chess-green border-t-transparent rounded-full" />
+      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+        <BreathingRook size="lg" animate label="Loading puzzle..." />
       </div>
     );
   }
