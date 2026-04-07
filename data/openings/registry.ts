@@ -266,8 +266,12 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     icon: 'shield',
     hasData: true,
     order: 8,
-    mainLine: { name: 'Classical Variation', subtitle: '3...Bf5 — develop the bishop first' },
-    variations: [],
+    mainLine: { name: 'Classical Variation', subtitle: '3.Nc3 dxe4 4.Nxe4 Bf5 — develop the bishop first · 8 lessons' },
+    variations: [
+      { name: 'Advance Variation', subtitle: '3.e5 — closed center, kingside plans', icon: 'pawn', hasData: true, slug: 'caro-kann-advance' },
+      { name: 'Smyslov Variation', subtitle: '4...Nd7 — knight-first development', icon: 'knight', hasData: true, slug: 'caro-kann-smyslov' },
+      { name: 'Panov-Botvinnik Attack', subtitle: '3.exd5 cxd5 4.c4 — IQP positions', icon: 'lightning', hasData: true, slug: 'caro-kann-panov' },
+    ],
   },
   {
     slug: 'petroff',

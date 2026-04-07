@@ -39,6 +39,9 @@ import { ITALIAN_EVANS_GAMBIT } from '@/data/openings/italian-evans-gambit'
 import { LONDON_VS_C5 } from '@/data/openings/london-vs-c5'
 import { FRENCH_TARRASCH } from '@/data/openings/french-tarrasch'
 import { ITALIAN_TWO_KNIGHTS } from '@/data/openings/italian-two-knights'
+import { CARO_KANN_ADVANCE } from '@/data/openings/caro-kann-advance'
+import { CARO_KANN_PANOV } from '@/data/openings/caro-kann-panov'
+import { CARO_KANN_SMYSLOV } from '@/data/openings/caro-kann-smyslov'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -78,6 +81,9 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'london-vs-c5': LONDON_VS_C5,
   'french-tarrasch': FRENCH_TARRASCH,
   'italian-two-knights': ITALIAN_TWO_KNIGHTS,
+  'caro-kann-advance': CARO_KANN_ADVANCE,
+  'caro-kann-panov': CARO_KANN_PANOV,
+  'caro-kann-smyslov': CARO_KANN_SMYSLOV,
 }
 
 /** Get total lesson count for an opening */
