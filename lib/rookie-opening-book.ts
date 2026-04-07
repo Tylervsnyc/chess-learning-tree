@@ -57,6 +57,34 @@ function normalizeSan(san: string): string {
 }
 
 // ════════════════════════════════
+// IDENTITY MOVES
+// ════════════════════════════════
+// Many opening trees skip the first few "identity" moves (the moves that
+// define which opening it is). E.g., the Pirc tree starts at "2.d4 Nf6"
+// but the full line is 1.e4 d6 2.d4 Nf6 ...
+// We prepend these so the trie covers the complete move sequence.
+
+const IDENTITY_MOVES: Record<string, string[]> = {
+  'english': ['c4'],
+  'grunfeld': ['d4', 'Nf6', 'c4', 'g6', 'Nc3', 'd5'],
+  'london': ['d4', 'd5', 'Bf4', 'Nf6'],
+  'nimzo-indian': ['d4', 'Nf6', 'c4', 'e6', 'Nc3', 'Bb4'],
+  'petroff': ['e4', 'e5', 'Nf3', 'Nf6'],
+  'pirc-defense': ['e4', 'd6'],
+  'queens-gambit': ['d4', 'd5', 'c4', 'e6', 'Nc3', 'Nf6'],
+  'ruy-lopez-berlin': ['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'Nf6'],
+  'ruy-lopez-marshall': ['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'a6', 'Ba4', 'Nf6', 'O-O', 'Be7', 'Re1', 'b5', 'Bb3', 'O-O'],
+  'sicilian-alapin': ['e4', 'c5', 'c3'],
+  'sicilian-accelerated-dragon': ['e4', 'c5', 'Nf3', 'Nc6', 'd4', 'cxd4', 'Nxd4', 'g6'],
+  'sicilian-classical': ['e4', 'c5', 'Nf3', 'Nc6', 'd4', 'cxd4', 'Nxd4', 'Nf6', 'Nc3', 'd6'],
+  'sicilian-kan': ['e4', 'c5', 'Nf3', 'e6', 'd4', 'cxd4', 'Nxd4', 'a6'],
+  'sicilian-scheveningen': ['e4', 'c5', 'Nf3', 'd6', 'd4', 'cxd4', 'Nxd4', 'Nf6', 'Nc3', 'e6'],
+  'sicilian-sveshnikov': ['e4', 'c5', 'Nf3', 'Nc6', 'd4', 'cxd4', 'Nxd4', 'Nf6', 'Nc3', 'e5'],
+  'sicilian-taimanov': ['e4', 'c5', 'Nf3', 'e6', 'd4', 'cxd4', 'Nxd4', 'Nc6'],
+  'slav': ['d4', 'd5', 'c4', 'c6'],
+};
+
+// ════════════════════════════════
 // BUILD BOOK LINES (cached at module load)
 // ════════════════════════════════
 
@@ -70,7 +98,9 @@ function buildBookLines(): Map<string, BookLine> {
 
     if (mainNodes.length === 0) continue;
 
-    const moves: string[] = [];
+    // Prepend identity moves if the tree skips them
+    const identity = IDENTITY_MOVES[slug] ?? [];
+    const moves: string[] = [...identity];
     for (const node of mainNodes) {
       moves.push(...parseTreeMoves(node.moves));
     }
