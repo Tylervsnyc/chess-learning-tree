@@ -112,39 +112,40 @@ function buildBookLines(): Map<string, BookLine> {
   return lines;
 }
 
-const BOOK_LINES = buildBookLines();
+// Lazy init — built on first call to avoid module-load crashes
+let _bookLines: Map<string, BookLine> | null = null;
+let _bookTrie: TrieNode | null = null;
 
-// ════════════════════════════════
-// BUILD TRIE (cached at module load)
-// ════════════════════════════════
-
-function buildTrie(): TrieNode {
-  const root: TrieNode = { children: new Map(), slugs: [] };
-
-  for (const [slug, line] of BOOK_LINES) {
-    let node = root;
-    for (const move of line.moves) {
-      const key = normalizeSan(move);
-      let child = node.children.get(key);
-      if (!child) {
-        child = { children: new Map(), slugs: [] };
-        node.children.set(key, child);
-      }
-      node = child;
-      if (!node.slugs.includes(slug)) {
-        node.slugs.push(slug);
-      }
-    }
-  }
-
-  return root;
+function getBookLines(): Map<string, BookLine> {
+  if (!_bookLines) _bookLines = buildBookLines();
+  return _bookLines;
 }
 
-const BOOK_TRIE = buildTrie();
+function getBookTrie(): TrieNode {
+  if (!_bookTrie) {
+    const lines = getBookLines();
+    const root: TrieNode = { children: new Map(), slugs: [] };
 
-// Debug: log trie stats on load
-if (typeof window !== 'undefined') {
-  console.log(`[Book] Trie built: ${BOOK_LINES.size} openings, root has ${BOOK_TRIE.children.size} first moves: ${Array.from(BOOK_TRIE.children.keys()).join(', ')}`);
+    for (const [slug, line] of lines) {
+      let node = root;
+      for (const move of line.moves) {
+        const key = normalizeSan(move);
+        let child = node.children.get(key);
+        if (!child) {
+          child = { children: new Map(), slugs: [] };
+          node.children.set(key, child);
+        }
+        node = child;
+        if (!node.slugs.includes(slug)) {
+          node.slugs.push(slug);
+        }
+      }
+    }
+
+    _bookTrie = root;
+    console.log(`[Book] Trie built: ${lines.size} openings, root has ${root.children.size} first moves: ${Array.from(root.children.keys()).join(', ')}`);
+  }
+  return _bookTrie;
 }
 
 // ════════════════════════════════
@@ -152,7 +153,7 @@ if (typeof window !== 'undefined') {
 // ════════════════════════════════
 
 function getOpeningName(slug: string): string | null {
-  return BOOK_LINES.get(slug)?.name ?? null;
+  return getBookLines().get(slug)?.name ?? null;
 }
 
 // ════════════════════════════════
@@ -185,7 +186,13 @@ export function getReactiveBookMove(
   };
 
   // Walk the trie with moves played so far
-  let node = BOOK_TRIE;
+  let node: TrieNode;
+  try {
+    node = getBookTrie();
+  } catch (err) {
+    console.error('[Book] Trie init failed:', err);
+    return noBook;
+  }
   for (const move of gameMovesSan) {
     const child = node.children.get(normalizeSan(move));
     if (!child) return noBook; // player deviated from all known lines
