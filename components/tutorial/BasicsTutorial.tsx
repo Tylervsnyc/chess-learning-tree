@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
@@ -18,6 +18,8 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { TutorialEvents } from '@/lib/analytics/posthog';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
+import { RookieNameAsk, getPlayerName } from '@/components/onboarding/RookieNameAsk';
+import { useRookieVoice } from '@/hooks/useRookieVoice';
 
 // ══════════════════════════════════════════════════
 // PIECE ICONS (same SVG paths as /learn page buttons)
@@ -169,11 +171,11 @@ interface DialogueLine {
 
 const INTRO_DIALOGUE: DialogueLine[] = [
   {
-    text: "This is my favorite game! I know it looks complicated, but I'll teach you how all the pieces move. It's my purpose!",
-    buttonText: "Let's go!",
+    text: "I know chess. That's -- that's the whole thing I do. I'm going to teach you how all the pieces move. Won't take long.",
+    buttonText: "Let's go",
   },
   {
-    text: "The most important piece is the King. If you lose him, you lose the game! Let's see how he moves.",
+    text: "We start with the King. He's important. Lose him and the game's over. He knows this. He's very stressed about it.",
     buttonText: 'Show me',
     highlightPiece: 'king',
     highlightSquares: ['e1', 'e8'],
@@ -209,102 +211,102 @@ const STEPS: TutorialStep[] = [
     id: 'king',
     title: 'The King',
     introText: 'Moves one square in any direction.',
-    rookieQuip: "He's slow but he's the whole point. Protect this guy.",
-    completeQuip: "You did it! I'm adding 'great teacher' to my resume.",
-    introFen: '8/8/8/8/4K3/8/8/1k6 w - - 0 1',
+    rookieQuip: "One square at a time. He's careful like that. I relate.",
+    completeQuip: "He just gave you a look. I think that means he approves. Hard to tell with him.",
+    introFen: 'k7/8/8/8/4K3/8/8/8 w - - 0 1',
     introPieceSquare: 'e4',
     exercises: [
-      { type: 'free', fen: '8/8/8/8/4K3/8/8/1k6 w - - 0 1', pieceType: 'k', instruction: 'The King moves one square in any direction. Try it!' },
-      { type: 'free', fen: '8/8/8/8/4K3/8/8/1k6 w - - 0 1', pieceType: 'k', instruction: 'Move him again! Any direction you want.' },
-      { type: 'free', fen: '8/8/8/8/4K3/8/8/1k6 w - - 0 1', pieceType: 'k', instruction: 'One more time! You got this.' },
-      { type: 'move', fen: '8/8/8/3p4/4K3/8/8/1k6 w - - 0 1', fromSquare: 'e4', targetSquare: 'd5', instruction: 'Kings capture the same way they move. Grab that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/4K3/8/8/8 w - - 0 1', pieceType: 'k', instruction: 'The King moves one square in any direction. Go ahead -- try it.' },
+      { type: 'free', fen: 'k7/8/8/8/4K3/8/8/8 w - - 0 1', pieceType: 'k', instruction: 'Move him again. Any direction.' },
+      { type: 'free', fen: 'k7/8/8/8/4K3/8/8/8 w - - 0 1', pieceType: 'k', instruction: 'One more. He likes the attention. He won\'t admit it.' },
+      { type: 'move', fen: 'k7/8/8/3p4/4K3/8/8/8 w - - 0 1', fromSquare: 'e4', targetSquare: 'd5', instruction: 'Kings capture the same way they move. Grab that pawn.' },
     ],
   },
   {
     id: 'rook',
     title: 'The Rook',
-    introText: 'Moves in straight lines — up, down, left, right. As far as it wants!',
-    rookieQuip: "This one's my favorite. Obviously.",
-    completeQuip: "That's my favorite piece and you nailed it. I'm not crying, I'm just... buffering.",
+    introText: 'Moves in straight lines -- up, down, left, right. As far as it wants.',
+    rookieQuip: "Ah, the Rook. The glorious Rook. I -- I mean. This piece. It moves in straight lines. Limitless potential.",
+    completeQuip: "You learned how I move. I mean -- how the Rook moves. I'm not the Rook. Anyway. Moving on.",
     introFen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1',
     introPieceSquare: 'd4',
     exercises: [
-      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'The Rook moves in straight lines, as far as it wants. Try it!' },
-      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'Move it again! Up, down, left, or right.' },
-      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'One more! Send it anywhere.' },
-      { type: 'move', fen: 'k7/3p4/8/8/8/8/8/3R3K w - - 0 1', fromSquare: 'd1', targetSquare: 'd7', instruction: 'Rooks capture by moving straight into an enemy piece. Take that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'I -- I mean, the Rook moves in straight lines. As far as it wants. Try it.' },
+      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'Up, down, left, right. No diagonals. We don\'t need diagonals.' },
+      { type: 'free', fen: 'k7/8/8/8/3R4/8/8/7K w - - 0 1', pieceType: 'r', instruction: 'One more. Open files are just the beginning. You\'ll see.' },
+      { type: 'move', fen: 'k7/3p4/8/8/8/8/8/3R3K w - - 0 1', fromSquare: 'd1', targetSquare: 'd7', instruction: 'The Rook captures by moving straight into the enemy. Get that pawn.' },
     ],
   },
   {
     id: 'bishop',
     title: 'The Bishop',
-    introText: 'Moves diagonally — and stays on one color the whole game!',
-    rookieQuip: "Diagonal only. Commitment issues? No. Dedication.",
-    completeQuip: "Diagonal expert! I'd high-five you but I don't have hands.",
+    introText: 'Moves diagonally -- and stays on one color forever.',
+    rookieQuip: "Diagonal only. Forever. It'll never touch the other color. I think about this more than I should.",
+    completeQuip: "You know the bishop now. It'll never know its counterpart on the other color. They exist in parallel. Anyway.",
     introFen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1',
     introPieceSquare: 'd4',
     exercises: [
-      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'The Bishop moves diagonally, as far as it wants. Try it!' },
-      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'Again! Notice it stays on one color.' },
-      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'One more diagonal slide!' },
-      { type: 'move', fen: 'k7/8/8/4p3/8/2B5/8/7K w - - 0 1', fromSquare: 'c3', targetSquare: 'e5', instruction: 'Bishops capture diagonally too. Snag that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'The Bishop moves diagonally. As far as it wants. Try it.' },
+      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'Again. Notice it stays on one color. Forever. That\'s its whole life.' },
+      { type: 'free', fen: 'k7/8/8/8/3B4/8/8/7K w - - 0 1', pieceType: 'b', instruction: 'One more diagonal slide.' },
+      { type: 'move', fen: 'k7/8/8/4p3/8/2B5/8/7K w - - 0 1', fromSquare: 'c3', targetSquare: 'e5', instruction: 'Bishops capture diagonally too. Get that pawn.' },
     ],
   },
   {
     id: 'queen',
     title: 'The Queen',
-    introText: 'The most powerful piece! Moves like a Rook AND Bishop combined.',
-    rookieQuip: "She does everything. I'm not jealous. I'm not.",
-    completeQuip: "You're a natural! I'm writing this down in my diary. I mean... log file.",
+    introText: 'Moves like a Rook AND a Bishop combined.',
+    rookieQuip: "She moves like a rook -- that's the good part. The diagonal thing? I mean... sure.",
+    completeQuip: "Everyone loves the queen. I think she's a rook with unnecessary features. But you didn't hear that from me.",
     introFen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1',
     introPieceSquare: 'd4',
     exercises: [
-      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'The Queen moves any direction, as far as she wants. Try it!' },
-      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'Move her again! Straight or diagonal.' },
-      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'One more! She can go anywhere.' },
-      { type: 'move', fen: 'k7/4p3/8/8/4Q3/8/8/7K w - - 0 1', fromSquare: 'e4', targetSquare: 'e7', instruction: 'The Queen captures any direction she moves. Get that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'The Queen moves any direction. Straight or diagonal. As far as she wants.' },
+      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'Move her again. She gets a lot of credit for this.' },
+      { type: 'free', fen: 'k7/8/8/8/3Q4/8/8/7K w - - 0 1', pieceType: 'q', instruction: 'One more. Show off all her directions.' },
+      { type: 'move', fen: 'k7/4p3/8/8/4Q3/8/8/7K w - - 0 1', fromSquare: 'e4', targetSquare: 'e7', instruction: 'The Queen captures any direction she moves. Take that pawn.' },
     ],
   },
   {
     id: 'pawn',
     title: 'The Pawn',
-    introText: 'Moves forward one square (or two on its first move). Captures diagonally!',
-    rookieQuip: "Small but mighty. You get eight of these little guys.",
-    completeQuip: "Eight pawns down, zero problems. I knew you could do it!",
+    introText: 'Moves forward one square. Two on its first move. Captures diagonally.',
+    rookieQuip: "Cute little guys. They don't even know what they're capable of yet.",
+    completeQuip: "Pawns can promote into a rook someday. That's genuinely moving to me. Anyway -- next piece.",
     introFen: 'k7/8/8/8/8/3p1p2/4P3/7K w - - 0 1',
     introPieceSquare: 'e2',
     exercises: [
-      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'Pawns move forward. On their first move they can go two squares! Try it.' },
-      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'Move another pawn forward!' },
-      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'One more push!' },
-      { type: 'move', fen: 'k7/8/8/4p3/3P4/8/8/7K w - - 0 1', fromSquare: 'd4', targetSquare: 'e5', instruction: 'But pawns capture diagonally! Take that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'Pawns move forward. On their first move they can go two squares. Try it.' },
+      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'Push it forward again. One square this time.' },
+      { type: 'free', fen: 'k7/8/8/8/8/8/4P3/7K w - - 0 1', pieceType: 'p', instruction: 'One more push. Look at it go.' },
+      { type: 'move', fen: 'k7/8/8/4p3/3P4/8/8/7K w - - 0 1', fromSquare: 'd4', targetSquare: 'e5', instruction: 'Here\'s the twist -- pawns capture on the diagonal. One square, forward and to the side. Take that pawn.' },
     ],
   },
   {
     id: 'knight',
     title: 'The Knight',
-    introText: "Moves in an L-shape — two squares one way, then one sideways. The only jumper!",
-    rookieQuip: "The weird one. I respect that.",
-    completeQuip: "You know all the pieces! Now are you ready to learn checkmate?",
+    introText: 'Moves in an L-shape. Two squares one way, then one sideways. The only jumper.',
+    rookieQuip: "Knights. So dramatic. Two up, one over. Every time. Who taught them that?",
+    completeQuip: "You know all the pieces. Every single one. I'm experiencing something -- anyway. One more thing to show you.",
     introFen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1',
     introPieceSquare: 'd4',
     exercises: [
-      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'The Knight moves in an L-shape. Two squares then one to the side. Try it!' },
-      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'Move it again! L-shapes only.' },
-      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'One more hop!' },
-      { type: 'move', fen: 'k7/8/8/5p2/3N4/8/8/7K w - - 0 1', fromSquare: 'd4', targetSquare: 'f5', instruction: 'Knights capture by landing on the enemy. Hop on that pawn!' },
+      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'The Knight moves in an L-shape. Two squares then one to the side. Try it.' },
+      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'Again. It can also jump over other pieces. Only piece that does that.' },
+      { type: 'free', fen: 'k7/8/8/8/3N4/8/8/7K w - - 0 1', pieceType: 'n', instruction: 'One more hop. You couldn\'t just go straight? Apparently not.' },
+      { type: 'move', fen: 'k7/8/8/5p2/3N4/8/8/7K w - - 0 1', fromSquare: 'd4', targetSquare: 'f5', instruction: 'Knights capture by landing on the enemy. Hop on that pawn.' },
     ],
   },
   {
     id: 'checkmate',
     title: 'Checkmate!',
-    introText: "When the King is attacked and can't escape, that's checkmate — you win!",
-    rookieQuip: "This is the moment. I'm feeling something. Is this... excitement?",
+    introText: "When the King is attacked and can't escape -- that's checkmate. Game over.",
+    rookieQuip: "This is the moment. I'm feeling something. Is this... excitement? I should write this down.",
     completeQuip: "",
     introFen: '6k1/5ppp/8/8/8/8/8/3Q3K w - - 0 1',
     introPieceSquare: 'd1',
     exercises: [
-      { type: 'checkmate', fen: '6k1/5ppp/8/8/8/8/8/3Q3K w - - 0 1', fromSquare: 'd1', targetSquare: 'd8', instruction: 'Deliver checkmate! Move the Queen!' },
+      { type: 'checkmate', fen: '6k1/5ppp/8/8/8/8/8/3Q3K w - - 0 1', fromSquare: 'd1', targetSquare: 'd8', instruction: 'Deliver checkmate. Move the Queen to the back rank.' },
     ],
   },
 ];
@@ -440,7 +442,7 @@ function TutorialHeader({ current, total, onBack }: { current: number; total: nu
 // DONE SCREEN
 // ══════════════════════════════════════════════════
 
-function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
+function BasicsDoneScreen({ onContinue, playerName }: { onContinue: () => void; playerName?: string | null }) {
   const [entered, setEntered] = useState(false);
 
   React.useEffect(() => {
@@ -486,8 +488,10 @@ function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
         >
           <RookieSpeechBubble rookieSize={0.75}>
             <p className="font-bold text-chess-text leading-snug text-[15px]">
-              I&apos;m experiencing what I think is called &quot;pride.&quot;
-              My circuits feel warm. Is that normal?
+              {playerName
+                ? `${playerName}. You know all the pieces. You just delivered checkmate. I'm experiencing something I can't explain and I don't want to talk about it. Ready for your first real lesson?`
+                : "You know all the pieces. You just delivered checkmate. I'm experiencing something I can't explain and I don't want to talk about it. Ready for your first real lesson?"
+              }
             </p>
           </RookieSpeechBubble>
         </div>
@@ -532,6 +536,25 @@ export function BasicsTutorial() {
   useAudioWarmup();
   const trackedStartRef = useRef(false);
 
+  // Rookie voice — unlocked on first user interaction
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const { speakQuip, talkIntensity, isTalking } = useRookieVoice(audioUnlocked);
+  const lastSpokenRef = useRef('');
+
+  useEffect(() => {
+    const unlock = () => {
+      setAudioUnlocked(true);
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('touchstart', unlock);
+    };
+    window.addEventListener('click', unlock);
+    window.addEventListener('touchstart', unlock);
+    return () => {
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('touchstart', unlock);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (!trackedStartRef.current) {
       trackedStartRef.current = true;
@@ -562,11 +585,48 @@ export function BasicsTutorial() {
   // "Great job!" interstitial after completing a piece
   const [pieceCompleteId, setPieceCompleteId] = useState<string | null>(null);
 
+  // Name ask — triggers after completing the rook (piece #2)
+  const [showNameAsk, setShowNameAsk] = useState(false);
+  const [playerName, setPlayerNameState] = useState<string | null>(() => getPlayerName());
+  const nameAskedRef = useRef(false);
+
   const currentStep = STEPS[stepIndex];
   const currentExercise = exerciseIndex >= 0 ? currentStep.exercises[exerciseIndex] : null;
 
   // Current piece for checklist highlight (skip 'checkmate' — not a piece)
   const currentPieceId = currentStep.id === 'checkmate' ? null : currentStep.id;
+
+  // ── Voice: speak exactly what's displayed in the popup ──
+  const rookieSpeak = useCallback((text: string) => {
+    if (!text || text === lastSpokenRef.current) return;
+    lastSpokenRef.current = text;
+    speakQuip(text);
+  }, [speakQuip]);
+
+  // Speak intro dialogue lines
+  useEffect(() => {
+    if (!audioUnlocked || introComplete) return;
+    rookieSpeak(INTRO_DIALOGUE[dialogueIndex].text);
+  }, [dialogueIndex, audioUnlocked, introComplete, rookieSpeak]);
+
+  // Speak exercise instructions (what's actually shown in the popup)
+  // Skip speaking on exerciseComplete — the sound effect handles the celebration
+  useEffect(() => {
+    if (!audioUnlocked || !introComplete || !currentExercise) return;
+    if (pieceCompleteId || showNameAsk || exerciseComplete) return;
+    rookieSpeak(currentExercise.instruction);
+  }, [stepIndex, exerciseIndex, audioUnlocked, introComplete, currentExercise, pieceCompleteId, showNameAsk, exerciseComplete, rookieSpeak]);
+
+  // Speak piece complete quip (matches the popup text)
+  useEffect(() => {
+    if (!audioUnlocked || !pieceCompleteId) return;
+    if (pieceCompleteId === 'checkmate') {
+      rookieSpeak("That's checkmate. The King has nowhere to run. Red squares are attacked. Yellow squares are blocked by his own pieces. He would like to file a formal complaint.");
+    } else {
+      const step = STEPS.find(s => s.id === pieceCompleteId);
+      if (step?.completeQuip) rookieSpeak(step.completeQuip);
+    }
+  }, [pieceCompleteId, audioUnlocked, rookieSpeak]);
 
   const game = useMemo(() => {
     try {
@@ -846,6 +906,14 @@ export function BasicsTutorial() {
     const step = STEPS[stepIndex];
     TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
 
+    // After rook (piece #2), show name ask before advancing
+    if (step.id === 'rook' && !nameAskedRef.current) {
+      nameAskedRef.current = true;
+      setPieceCompleteId(null);
+      setShowNameAsk(true);
+      return;
+    }
+
     if (stepIndex < STEPS.length - 1) {
       const nextStep = STEPS[stepIndex + 1];
       setStepIndex(stepIndex + 1);
@@ -860,6 +928,24 @@ export function BasicsTutorial() {
       setTutorialDone(true);
     }
     setPieceCompleteId(null);
+  }, [stepIndex]);
+
+  // ── Continue after name ask ──
+  const handleNameSubmit = useCallback((name: string) => {
+    setPlayerNameState(name);
+    setShowNameAsk(false);
+
+    // Advance to next piece (bishop)
+    if (stepIndex < STEPS.length - 1) {
+      const nextStep = STEPS[stepIndex + 1];
+      setStepIndex(stepIndex + 1);
+      setExerciseIndex(0);
+      setCurrentFen(nextStep.exercises[0].fen);
+      setSelectedSquare(null);
+      setExerciseComplete(false);
+      setBoardKey(k => k + 1);
+      setAnimationDuration(0);
+    }
   }, [stepIndex]);
 
   // ── Advance free exercise (uninterrupted — carry FEN forward, no delay) ──
@@ -888,12 +974,23 @@ export function BasicsTutorial() {
   // ── Handle exercise success ──
   const handleExerciseSuccess = useCallback(() => {
     if (exerciseComplete) return;
-    setExerciseComplete(true);
-    playCorrectSound(completedCountRef.current);
     completedCountRef.current += 1;
 
-    setTimeout(() => advance(), 900);
-  }, [advance, exerciseComplete]);
+    const step = STEPS[stepIndex];
+    const isLastExercise = exerciseIndex === step.exercises.length - 1;
+
+    if (isLastExercise) {
+      // Last exercise (capture) — skip "Nice!", fire confetti + celebration, go to complete quip
+      playCelebrationSound();
+      setExerciseComplete(true);
+      setTimeout(() => advance(), 600);
+    } else {
+      // Mid-piece exercises — play correct sound, auto-advance (no "Nice!" popup)
+      playCorrectSound(completedCountRef.current);
+      setExerciseComplete(true);
+      setTimeout(() => advance(), 600);
+    }
+  }, [advance, exerciseComplete, stepIndex, exerciseIndex]);
 
   // ── Board shake ──
   const triggerShake = useCallback(() => {
@@ -1115,14 +1212,17 @@ export function BasicsTutorial() {
               {/* Popup directly under board */}
               <div
                 key={`dialogue-${dialogueIndex}`}
-                className="w-full bg-chess-correct-bg py-2.5 px-4"
+                className="w-full bg-chess-correct-bg py-2 px-3"
                 style={{ animation: 'basicsSlideUp 0.3s ease-out' }}
               >
-              <div className="flex items-center gap-3 mb-2.5">
-                <div className="flex-shrink-0">
-                  <AnimatedLogo iconOnly size={0.45} perpetual />
+              <div className="flex items-start gap-2.5 mb-2">
+                <div className="flex-shrink-0 pt-0.5">
+                  <AnimatedLogo iconOnly size={0.35} perpetual />
                 </div>
-                <p className="font-bold text-[15px] leading-snug text-chess-green-dark flex-1">
+                <p
+                  className="font-bold leading-snug text-chess-green-dark flex-1"
+                  style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}
+                >
                   &ldquo;{dialogue.text}&rdquo;
                 </p>
               </div>
@@ -1169,7 +1269,7 @@ export function BasicsTutorial() {
   // ══════════════════════════════════════════════════
 
   if (tutorialDone) {
-    return <BasicsDoneScreen onContinue={() => {
+    return <BasicsDoneScreen playerName={playerName} onContinue={() => {
       try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
       router.push('/lesson/1.1.1?from=onboarding');
     }} />;
@@ -1179,7 +1279,7 @@ export function BasicsTutorial() {
   // RENDER: EXERCISE VIEW
   // ══════════════════════════════════════════════════
 
-  const boardInteractive = !exerciseComplete && !pieceCompleteId;
+  const boardInteractive = !exerciseComplete && !pieceCompleteId && !showNameAsk;
   const progressCurrent = INTRO_DIALOGUE.length + stepIndex;
 
   return (
@@ -1212,19 +1312,24 @@ export function BasicsTutorial() {
             />
 
             {/* Popup directly under board */}
-            {pieceCompleteId ? (
+            {showNameAsk ? (
+              <RookieNameAsk onSubmit={handleNameSubmit} onSpeak={speakQuip} isTalking={isTalking} />
+            ) : pieceCompleteId ? (
               <div
                 key={`complete-${pieceCompleteId}`}
-                className="w-full bg-chess-correct-bg py-2.5 px-4"
+                className="w-full bg-chess-correct-bg py-2 px-3"
                 style={{ animation: 'basicsSlideUpBounce 0.3s ease-out' }}
               >
-                <div className="flex items-center gap-3 mb-2.5">
-                  <div className="flex-shrink-0">
-                    <AnimatedLogo iconOnly size={0.4} perpetual />
+                <div className="flex items-start gap-2.5 mb-2">
+                  <div className="flex-shrink-0 pt-0.5">
+                    <AnimatedLogo iconOnly size={0.35} perpetual />
                   </div>
-                  <p className="font-bold text-[15px] leading-tight flex-1 text-chess-green-dark">
+                  <p
+                    className="font-bold leading-snug flex-1 text-chess-green-dark"
+                    style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}
+                  >
                     &ldquo;{pieceCompleteId === 'checkmate'
-                      ? "That's checkmate! The King has nowhere to run. Red squares are attacked, yellow squares are blocked by his own pieces. Game over!"
+                      ? "That's checkmate. The King has nowhere to run. Red squares are attacked. Yellow squares are blocked by his own pieces. He would like to file a formal complaint."
                       : currentStep.completeQuip
                     }&rdquo;
                   </p>
@@ -1239,17 +1344,20 @@ export function BasicsTutorial() {
             ) : currentExercise ? (
               <div
                 key={`ex-${stepIndex}-${exerciseIndex}`}
-                className="w-full bg-chess-correct-bg py-2.5 px-4"
+                className="w-full bg-chess-correct-bg py-2 px-3"
                 style={{
-                  animation: exerciseComplete ? 'basicsSlideUpBounce 0.3s ease-out' : 'basicsSlideUp 0.3s ease-out',
+                  animation: 'basicsSlideUp 0.3s ease-out',
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    <AnimatedLogo iconOnly size={0.4} perpetual />
+                <div className="flex items-start gap-2.5">
+                  <div className="flex-shrink-0 pt-0.5">
+                    <AnimatedLogo iconOnly size={0.35} perpetual />
                   </div>
-                  <p className="font-bold text-[15px] leading-tight flex-1 text-chess-green-dark">
-                    &ldquo;{exerciseComplete ? 'Nice!' : currentExercise.instruction}&rdquo;
+                  <p
+                    className="font-bold leading-snug flex-1 text-chess-green-dark"
+                    style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}
+                  >
+                    &ldquo;{currentExercise.instruction}&rdquo;
                   </p>
                 </div>
               </div>

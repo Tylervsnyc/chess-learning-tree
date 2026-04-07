@@ -61,8 +61,10 @@ import confetti from 'canvas-confetti';
 // ═══════════════════════════════════════════
 function GuestCelebrationScreen({ onContinue }: { onContinue: () => void }) {
   const [entered, setEntered] = React.useState(false);
+  const [playerName, setPlayerName] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    try { setPlayerName(localStorage.getItem('chess_path_name')); } catch {}
     trackEvent('guest_celebration_viewed');
     confetti({
       particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
@@ -100,7 +102,7 @@ function GuestCelebrationScreen({ onContinue }: { onContinue: () => void }) {
           transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
         }}
       >
-        You&apos;re a natural!
+        {playerName ? `Okay ${playerName}. I'm impressed.` : "Okay. I'm impressed."}
       </h1>
       <p
         className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
@@ -110,9 +112,10 @@ function GuestCelebrationScreen({ onContinue }: { onContinue: () => void }) {
           transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
         }}
       >
-        Save your chess path so you
-        <br />
-        can pick up where you left off.
+        {playerName
+          ? `Create an account so I remember you, ${playerName}. I don't want to forget this.`
+          : <>Create an account so I remember you.<br />I don&apos;t want to forget this.</>
+        }
       </p>
 
       <button
