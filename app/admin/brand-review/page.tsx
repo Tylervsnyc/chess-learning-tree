@@ -26,9 +26,9 @@ export default function BrandReviewPage() {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-white/10 px-4 py-4">
+      <div className="bg-chess-bg-light border-b border-white/10 px-4 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold">Brand Review</h1>
           <Link href="/admin" className="text-gray-400 hover:text-white text-sm">
@@ -43,7 +43,7 @@ export default function BrandReviewPage() {
           <h2 className="text-lg font-bold mb-4">Pages</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {PAGES_TO_REVIEW.map((page) => (
-              <div key={page.path} className="bg-[#1A2C35] rounded-xl overflow-hidden border border-white/10">
+              <div key={page.path} className="bg-chess-bg-light rounded-xl overflow-hidden border border-white/10">
                 <div className="p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{page.name}</span>
@@ -75,7 +75,7 @@ export default function BrandReviewPage() {
                   <div className="border-t border-white/10">
                     <iframe
                       src={page.path}
-                      className="w-full h-[500px] bg-[#131F24]"
+                      className="w-full h-[500px] bg-chess-bg"
                       title={page.name}
                     />
                   </div>
@@ -88,7 +88,7 @@ export default function BrandReviewPage() {
         {/* Components */}
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4">Components</h2>
-          <div className="bg-[#1A2C35] rounded-xl p-4 border border-white/10">
+          <div className="bg-chess-bg-light rounded-xl p-4 border border-white/10">
             {COMPONENTS_TO_REVIEW.map((comp) => (
               <div key={comp.name} className="flex items-center justify-between">
                 <span className="font-medium">{comp.name}</span>
@@ -101,7 +101,7 @@ export default function BrandReviewPage() {
         {/* Email Templates */}
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4">Email Templates</h2>
-          <div className="bg-[#1A2C35] rounded-xl p-4 border border-white/10 space-y-2">
+          <div className="bg-chess-bg-light rounded-xl p-4 border border-white/10 space-y-2">
             {EMAIL_TEMPLATES.map((email) => (
               <div key={email.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="font-medium">{email.name}</span>
@@ -119,7 +119,7 @@ export default function BrandReviewPage() {
           <h2 className="text-lg font-bold mb-4">Side-by-Side Mobile Preview</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {PAGES_TO_REVIEW.slice(0, 4).map((page) => (
-              <div key={page.path} className="bg-[#1A2C35] rounded-xl overflow-hidden border border-white/10">
+              <div key={page.path} className="bg-chess-bg-light rounded-xl overflow-hidden border border-white/10">
                 <div className="bg-black/30 px-3 py-2 text-xs font-medium border-b border-white/10">
                   {page.name}
                 </div>

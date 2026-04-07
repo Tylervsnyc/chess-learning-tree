@@ -50,7 +50,7 @@ function DeltaBadge({ current, previous, format = 'number' }: { current: number;
   }
 
   return (
-    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isGood ? 'text-[#58CC02]' : 'text-red-400'}`}>
+    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isGood ? 'text-chess-green' : 'text-red-400'}`}>
       <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
         {isPositive ? (
           <path d="M6 2L10 7H2L6 2Z" />
@@ -179,9 +179,9 @@ export default function RevenueDashboardPage() {
   const previous = snapshots.length > 1 ? snapshots[snapshots.length - 2] : null;
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700">
+      <div className="bg-chess-bg-light border-b border-gray-700">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -205,7 +205,7 @@ export default function RevenueDashboardPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin w-8 h-8 border-2 border-[#58CC02] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-chess-green border-t-transparent rounded-full" />
           </div>
         )}
 
@@ -216,10 +216,10 @@ export default function RevenueDashboardPage() {
         )}
 
         {!loading && !error && !latest && (
-          <div className="bg-[#1A2C35] rounded-xl p-12 text-center border border-gray-700">
+          <div className="bg-chess-bg-light rounded-xl p-12 text-center border border-gray-700">
             <p className="text-gray-400 mb-2">No revenue snapshots yet</p>
             <p className="text-gray-500 text-sm">
-              Run the cron job at <code className="bg-[#131F24] px-2 py-0.5 rounded text-xs">/api/cron/revenue-snapshot</code> to generate the first snapshot.
+              Run the cron job at <code className="bg-chess-bg px-2 py-0.5 rounded text-xs">/api/cron/revenue-snapshot</code> to generate the first snapshot.
             </p>
           </div>
         )}
@@ -229,28 +229,28 @@ export default function RevenueDashboardPage() {
             {/* Metric Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               {/* MRR */}
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">MRR</div>
-                <div className="text-2xl font-bold text-[#58CC02]">{formatCents(latest.mrr_cents)}</div>
+                <div className="text-2xl font-bold text-chess-green">{formatCents(latest.mrr_cents)}</div>
                 {previous && <DeltaBadge current={latest.mrr_cents} previous={previous.mrr_cents} format="cents" />}
               </div>
 
               {/* ARR */}
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">ARR</div>
                 <div className="text-2xl font-bold">{formatCents(latest.arr_cents)}</div>
                 {previous && <DeltaBadge current={latest.arr_cents} previous={previous.arr_cents} format="cents" />}
               </div>
 
               {/* Total Subscribers */}
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">Subscribers</div>
                 <div className="text-2xl font-bold">{latest.total_subscribers}</div>
                 {previous && <DeltaBadge current={latest.total_subscribers} previous={previous.total_subscribers} />}
               </div>
 
               {/* Churn Rate */}
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">Churn Rate</div>
                 <div className="text-2xl font-bold">
                   {latest.churn_rate_pct !== null ? `${latest.churn_rate_pct}%` : '--'}
@@ -261,7 +261,7 @@ export default function RevenueDashboardPage() {
               </div>
 
               {/* LTV */}
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">LTV</div>
                 <div className="text-2xl font-bold">
                   {latest.ltv_cents !== null ? formatCents(latest.ltv_cents) : '--'}
@@ -273,7 +273,7 @@ export default function RevenueDashboardPage() {
             </div>
 
             {/* MRR Trend Chart */}
-            <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700 mb-8">
+            <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700 mb-8">
               <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">MRR Trend (Last 90 Days)</h2>
               <MrrChart snapshots={snapshots} />
             </div>
@@ -281,26 +281,26 @@ export default function RevenueDashboardPage() {
             {/* Subscriber Breakdown + Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Subscriber Breakdown */}
-              <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700">
                 <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">Subscriber Breakdown</h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#1CB0F6]" />
+                      <div className="w-3 h-3 rounded-full bg-chess-blue" />
                       <span className="text-gray-300">Monthly</span>
                     </div>
                     <span className="font-semibold">{latest.monthly_subscribers}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#CE82FF]" />
+                      <div className="w-3 h-3 rounded-full bg-chess-purple" />
                       <span className="text-gray-300">Yearly</span>
                     </div>
                     <span className="font-semibold">{latest.yearly_subscribers}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#FF9600]" />
+                      <div className="w-3 h-3 rounded-full bg-chess-orange" />
                       <span className="text-gray-300">Trial</span>
                     </div>
                     <span className="font-semibold">{latest.trial_users}</span>
@@ -318,15 +318,15 @@ export default function RevenueDashboardPage() {
                     <div className="mt-4">
                       <div className="flex h-3 rounded-full overflow-hidden bg-gray-700">
                         <div
-                          className="bg-[#1CB0F6]"
+                          className="bg-chess-blue"
                           style={{ width: `${(latest.monthly_subscribers / (latest.total_subscribers + latest.free_users)) * 100}%` }}
                         />
                         <div
-                          className="bg-[#CE82FF]"
+                          className="bg-chess-purple"
                           style={{ width: `${(latest.yearly_subscribers / (latest.total_subscribers + latest.free_users)) * 100}%` }}
                         />
                         <div
-                          className="bg-[#FF9600]"
+                          className="bg-chess-orange"
                           style={{ width: `${(latest.trial_users / (latest.total_subscribers + latest.free_users)) * 100}%` }}
                         />
                         <div
@@ -340,12 +340,12 @@ export default function RevenueDashboardPage() {
               </div>
 
               {/* 30-Day Activity */}
-              <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700">
                 <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">30-Day Activity</h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">New Subscribers</span>
-                    <span className="font-semibold text-[#58CC02]">+{latest.new_subscribers_last_30d}</span>
+                    <span className="font-semibold text-chess-green">+{latest.new_subscribers_last_30d}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Churned</span>
@@ -355,7 +355,7 @@ export default function RevenueDashboardPage() {
                     <span className="text-gray-300">Net Change</span>
                     <span className={`font-semibold ${
                       latest.new_subscribers_last_30d - latest.churned_last_30d >= 0
-                        ? 'text-[#58CC02]'
+                        ? 'text-chess-green'
                         : 'text-red-400'
                     }`}>
                       {latest.new_subscribers_last_30d - latest.churned_last_30d >= 0 ? '+' : ''}

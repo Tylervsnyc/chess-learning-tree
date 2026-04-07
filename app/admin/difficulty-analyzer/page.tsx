@@ -98,7 +98,7 @@ function FactorBar({ name, value, inverted }: { name: string; value: number; inv
           {inverted && <span className="text-xs ml-1">(inv: {effectiveValue})</span>}
         </span>
       </div>
-      <div className="h-2 bg-[#131F24] rounded-full overflow-hidden">
+      <div className="h-2 bg-chess-bg rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{ width: `${value}%`, backgroundColor: barColor }}
@@ -122,8 +122,8 @@ function PuzzleCard({ assignment, isSelected, onClick }: {
       onClick={onClick}
       className={`w-full text-left p-4 rounded-xl border transition-all ${
         isSelected
-          ? 'bg-[#1A2C35] border-[#1CB0F6]'
-          : 'bg-[#1A2C35]/50 border-gray-700 hover:border-gray-500'
+          ? 'bg-chess-bg-light border-chess-blue'
+          : 'bg-chess-bg-light/50 border-gray-700 hover:border-gray-500'
       }`}
     >
       <div className="flex items-center justify-between mb-1">
@@ -139,7 +139,7 @@ function PuzzleCard({ assignment, isSelected, onClick }: {
         <span className="text-xs text-gray-500">{analysis.executingPiece || '?'}</span>
       </div>
       <div className="mb-2">
-        <code className="text-xs font-mono text-[#1CB0F6]">{puzzleId}</code>
+        <code className="text-xs font-mono text-chess-blue">{puzzleId}</code>
       </div>
 
       <div className="flex items-center gap-4 text-sm">
@@ -149,7 +149,7 @@ function PuzzleCard({ assignment, isSelected, onClick }: {
         </div>
         <div>
           <span className="text-gray-500">True:</span>{' '}
-          <span className="text-[#1CB0F6] font-medium">{analysis.trueDifficultyScore}</span>
+          <span className="text-chess-blue font-medium">{analysis.trueDifficultyScore}</span>
         </div>
       </div>
 
@@ -229,9 +229,9 @@ export default function DifficultyAnalyzerPage() {
   const displayAnalysis = mode === 'single' ? singleAnalysis : selectedAssignment?.analysis;
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700 sticky top-0 z-50">
+      <div className="bg-chess-bg-light border-b border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Difficulty Analyzer</h1>
@@ -239,7 +239,7 @@ export default function DifficultyAnalyzerPage() {
           </div>
           <Link
             href="/admin"
-            className="text-sm text-[#1CB0F6] hover:text-[#58CC02] transition-colors"
+            className="text-sm text-chess-blue hover:text-chess-green transition-colors"
           >
             Back to Admin
           </Link>
@@ -253,8 +253,8 @@ export default function DifficultyAnalyzerPage() {
             onClick={() => setMode('lesson')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               mode === 'lesson'
-                ? 'bg-[#1CB0F6] text-white'
-                : 'bg-[#1A2C35] text-gray-400 hover:text-white'
+                ? 'bg-chess-blue text-white'
+                : 'bg-chess-bg-light text-gray-400 hover:text-white'
             }`}
           >
             6-Puzzle Lesson Arc
@@ -263,8 +263,8 @@ export default function DifficultyAnalyzerPage() {
             onClick={() => setMode('single')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               mode === 'single'
-                ? 'bg-[#1CB0F6] text-white'
-                : 'bg-[#1A2C35] text-gray-400 hover:text-white'
+                ? 'bg-chess-blue text-white'
+                : 'bg-chess-bg-light text-gray-400 hover:text-white'
             }`}
           >
             Single Puzzle
@@ -272,7 +272,7 @@ export default function DifficultyAnalyzerPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700 mb-6">
+        <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700 mb-6">
           {mode === 'single' ? (
             <div className="flex gap-4">
               <div className="flex-1">
@@ -282,7 +282,7 @@ export default function DifficultyAnalyzerPage() {
                   value={puzzleId}
                   onChange={(e) => setPuzzleId(e.target.value)}
                   placeholder="e.g., 009tE"
-                  className="w-full bg-[#131F24] border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-[#1CB0F6] focus:outline-none"
+                  className="w-full bg-chess-bg border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-chess-blue focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && analyzeSingle()}
                 />
               </div>
@@ -290,7 +290,7 @@ export default function DifficultyAnalyzerPage() {
                 <button
                   onClick={analyzeSingle}
                   disabled={loading || !puzzleId.trim()}
-                  className="px-6 py-2 bg-[#58CC02] text-white font-medium rounded-lg hover:bg-[#4CAF00] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-chess-green text-white font-medium rounded-lg hover:bg-chess-green-dark disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Analyzing...' : 'Analyze'}
                 </button>
@@ -303,7 +303,7 @@ export default function DifficultyAnalyzerPage() {
                 <select
                   value={bracket}
                   onChange={(e) => setBracket(e.target.value)}
-                  className="w-full bg-[#131F24] border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-[#1CB0F6] focus:outline-none"
+                  className="w-full bg-chess-bg border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-chess-blue focus:outline-none"
                 >
                   <option value="0400-0800">400-800 (Beginner)</option>
                   <option value="0800-1200">800-1200 (Intermediate)</option>
@@ -316,7 +316,7 @@ export default function DifficultyAnalyzerPage() {
                 <select
                   value={theme}
                   onChange={(e) => setTheme(e.target.value)}
-                  className="w-full bg-[#131F24] border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-[#1CB0F6] focus:outline-none"
+                  className="w-full bg-chess-bg border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-chess-blue focus:outline-none"
                 >
                   <option value="fork">Fork</option>
                   <option value="pin">Pin</option>
@@ -334,16 +334,16 @@ export default function DifficultyAnalyzerPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setTargetElo(Math.max(400, targetElo - 100))}
-                    className="w-12 h-10 bg-[#131F24] border border-gray-600 rounded-lg text-white text-xl font-bold hover:bg-[#1A2C35] hover:border-[#1CB0F6] transition-colors"
+                    className="w-12 h-10 bg-chess-bg border border-gray-600 rounded-lg text-white text-xl font-bold hover:bg-chess-bg-light hover:border-chess-blue transition-colors"
                   >
                     -
                   </button>
-                  <div className="flex-1 bg-[#131F24] border border-gray-600 rounded-lg px-4 py-2 text-white text-center font-medium">
+                  <div className="flex-1 bg-chess-bg border border-gray-600 rounded-lg px-4 py-2 text-white text-center font-medium">
                     {targetElo}
                   </div>
                   <button
                     onClick={() => setTargetElo(Math.min(2000, targetElo + 100))}
-                    className="w-12 h-10 bg-[#131F24] border border-gray-600 rounded-lg text-white text-xl font-bold hover:bg-[#1A2C35] hover:border-[#1CB0F6] transition-colors"
+                    className="w-12 h-10 bg-chess-bg border border-gray-600 rounded-lg text-white text-xl font-bold hover:bg-chess-bg-light hover:border-chess-blue transition-colors"
                   >
                     +
                   </button>
@@ -353,7 +353,7 @@ export default function DifficultyAnalyzerPage() {
                 <button
                   onClick={generateLessonArc}
                   disabled={loading}
-                  className="w-full px-6 py-2 bg-[#58CC02] text-white font-medium rounded-lg hover:bg-[#4CAF00] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-2 bg-chess-green text-white font-medium rounded-lg hover:bg-chess-green-dark disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Generating...' : 'Generate Arc'}
                 </button>
@@ -370,7 +370,7 @@ export default function DifficultyAnalyzerPage() {
 
         {/* Lesson Arc Stats */}
         {lessonArc && mode === 'lesson' && (
-          <div className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700 mb-6">
+          <div className="bg-chess-bg-light rounded-xl p-4 border border-gray-700 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6 text-sm">
                 <div>
@@ -379,7 +379,7 @@ export default function DifficultyAnalyzerPage() {
                 </div>
                 <div>
                   <span className="text-gray-500">Theme:</span>{' '}
-                  <span className="text-[#58CC02] font-medium">{lessonArc.theme}</span>
+                  <span className="text-chess-green font-medium">{lessonArc.theme}</span>
                 </div>
                 <div>
                   <span className="text-gray-500">Candidates:</span>{' '}
@@ -387,7 +387,7 @@ export default function DifficultyAnalyzerPage() {
                 </div>
                 <div>
                   <span className="text-gray-500">Selected:</span>{' '}
-                  <span className="text-[#1CB0F6] font-medium">{lessonArc.lessonArc.length}/6</span>
+                  <span className="text-chess-blue font-medium">{lessonArc.lessonArc.length}/6</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-xs">
@@ -432,17 +432,17 @@ export default function DifficultyAnalyzerPage() {
           {/* Center: Chessboard */}
           <div className={mode === 'lesson' && lessonArc ? 'col-span-4' : 'col-span-5'}>
             {displayAnalysis ? (
-              <div className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-4 border border-gray-700">
                 {/* Puzzle ID */}
                 <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono text-[#1CB0F6] bg-[#131F24] px-2 py-1 rounded">
+                  <code className="text-sm font-mono text-chess-blue bg-chess-bg px-2 py-1 rounded">
                     {displayAnalysis.puzzleId}
                   </code>
                   <a
                     href={`https://lichess.org/training/${displayAnalysis.puzzleId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-gray-500 hover:text-[#1CB0F6] transition-colors"
+                    className="text-xs text-gray-500 hover:text-chess-blue transition-colors"
                   >
                     View on Lichess →
                   </a>
@@ -494,8 +494,8 @@ export default function DifficultyAnalyzerPage() {
                       key={t}
                       className={`px-2 py-0.5 rounded text-xs ${
                         t === displayAnalysis.predictedPrimaryTheme
-                          ? 'bg-[#58CC02]/20 text-[#58CC02] font-medium'
-                          : 'bg-[#131F24] text-gray-400'
+                          ? 'bg-chess-green/20 text-chess-green font-medium'
+                          : 'bg-chess-bg text-gray-400'
                       }`}
                     >
                       {t}
@@ -504,7 +504,7 @@ export default function DifficultyAnalyzerPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700 aspect-square flex items-center justify-center">
+              <div className="bg-chess-bg-light rounded-xl p-4 border border-gray-700 aspect-square flex items-center justify-center">
                 <p className="text-gray-500">
                   {mode === 'single' ? 'Enter a puzzle ID to analyze' : 'Generate a lesson arc to see puzzles'}
                 </p>
@@ -515,20 +515,20 @@ export default function DifficultyAnalyzerPage() {
           {/* Right: Difficulty Analysis */}
           <div className={mode === 'lesson' && lessonArc ? 'col-span-5' : 'col-span-7'}>
             {displayAnalysis ? (
-              <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700">
                 {/* Header Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-[#131F24] rounded-lg p-4 text-center">
+                  <div className="bg-chess-bg rounded-lg p-4 text-center">
                     <div className="text-gray-500 text-xs mb-1">Lichess Rating</div>
                     <div className="text-2xl font-bold text-white">{displayAnalysis.rating}</div>
                   </div>
-                  <div className="bg-[#131F24] rounded-lg p-4 text-center">
+                  <div className="bg-chess-bg rounded-lg p-4 text-center">
                     <div className="text-gray-500 text-xs mb-1">True Difficulty</div>
-                    <div className="text-2xl font-bold text-[#1CB0F6]">
+                    <div className="text-2xl font-bold text-chess-blue">
                       {displayAnalysis.trueDifficultyScore}
                     </div>
                   </div>
-                  <div className="bg-[#131F24] rounded-lg p-4 text-center">
+                  <div className="bg-chess-bg rounded-lg p-4 text-center">
                     <div className="text-gray-500 text-xs mb-1">Recommended Slot</div>
                     <div
                       className="text-2xl font-bold"
@@ -540,7 +540,7 @@ export default function DifficultyAnalyzerPage() {
                 </div>
 
                 {/* Rating Comparison */}
-                <div className="mb-6 p-4 bg-[#131F24] rounded-lg">
+                <div className="mb-6 p-4 bg-chess-bg rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-400">Rating Comparison</span>
                     <span className="text-xs text-gray-500">
@@ -548,14 +548,14 @@ export default function DifficultyAnalyzerPage() {
                       {displayAnalysis.trueDifficultyScore - displayAnalysis.rating}
                     </span>
                   </div>
-                  <div className="relative h-8 bg-[#1A2C35] rounded-full">
+                  <div className="relative h-8 bg-chess-bg-light rounded-full">
                     <div
                       className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-gray-400 border-2 border-white"
                       style={{ left: `${((displayAnalysis.rating - 400) / 1600) * 100}%` }}
                       title={`Lichess: ${displayAnalysis.rating}`}
                     />
                     <div
-                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#1CB0F6] border-2 border-white"
+                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-chess-blue border-2 border-white"
                       style={{ left: `${((displayAnalysis.trueDifficultyScore - 400) / 1600) * 100}%` }}
                       title={`True: ${displayAnalysis.trueDifficultyScore}`}
                     />
@@ -578,7 +578,7 @@ export default function DifficultyAnalyzerPage() {
                 ))}
 
                 {/* Reasoning */}
-                <div className="mt-6 p-4 bg-[#131F24] rounded-lg">
+                <div className="mt-6 p-4 bg-chess-bg rounded-lg">
                   <div className="text-sm text-gray-400 mb-2">Analysis Summary</div>
                   <p className="text-white text-sm">{displayAnalysis.difficultyReasoning}</p>
                 </div>
@@ -597,7 +597,7 @@ export default function DifficultyAnalyzerPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700 h-full flex items-center justify-center">
+              <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700 h-full flex items-center justify-center">
                 <div className="text-center text-gray-500">
                   <p className="mb-2">No puzzle selected</p>
                   <p className="text-sm">

@@ -241,7 +241,7 @@ function FeatureRow({ icon, title, free }: {
 function PricingFallback() {
   return (
     <div className="flex-1 flex justify-center items-center h-[calc(100dvh-45px)]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
+      <BreathingRook size="lg" animate label="Loading pricing..." />
     </div>
   );
 }

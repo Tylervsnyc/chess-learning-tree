@@ -126,7 +126,7 @@ export default function PuzzlePreview() {
   const [selected, setSelected] = useState(PUZZLES[0]);
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white p-6">
+    <div className="min-h-screen bg-chess-bg text-white p-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-2">Landing Page Puzzle Preview</h1>
         <p className="text-gray-400 text-sm mb-6">Select a puzzle to preview the animation</p>
@@ -140,15 +140,15 @@ export default function PuzzlePreview() {
               boxShadow: '0 0 30px rgba(0,255,255,0.3), 0 0 60px rgba(255,0,255,0.2)',
             }}
           >
-            <div className="bg-[#131F24] rounded-lg p-1">
+            <div className="bg-chess-bg rounded-lg p-1">
               <AnimatedBoard puzzle={selected} size={300} />
             </div>
           </div>
         </div>
 
         {/* Selected puzzle info */}
-        <div className="bg-[#1A2C35] rounded-xl p-4 mb-6 text-center">
-          <h2 className="text-lg font-bold text-[#58CC02]">{selected.name}</h2>
+        <div className="bg-chess-bg-light rounded-xl p-4 mb-6 text-center">
+          <h2 className="text-lg font-bold text-chess-green">{selected.name}</h2>
           <p className="text-gray-400 text-sm">{selected.description}</p>
         </div>
 
@@ -160,8 +160,8 @@ export default function PuzzlePreview() {
               onClick={() => setSelected(puzzle)}
               className={`p-3 rounded-xl text-left transition-all ${
                 selected.id === puzzle.id
-                  ? 'bg-[#58CC02]/20 border-2 border-[#58CC02]'
-                  : 'bg-[#1A2C35] border-2 border-transparent hover:border-gray-600'
+                  ? 'bg-chess-green/20 border-2 border-chess-green'
+                  : 'bg-chess-bg-light border-2 border-transparent hover:border-gray-600'
               }`}
             >
               <div className="font-semibold text-sm">{puzzle.name}</div>

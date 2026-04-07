@@ -148,7 +148,7 @@ function HeroCard({
 
 function AlertCard({ s, source }: { s: Suggestion; source: string }) {
   const colors: Record<string, { border: string; badge: string; text: string }> = {
-    high: { border: 'border-l-[#FF4B4B]', badge: 'bg-red-50 text-[#FF4B4B]', text: 'URGENT' },
+    high: { border: 'border-l-[#FF4B4B]', badge: 'bg-red-50 text-chess-red', text: 'URGENT' },
     medium: { border: 'border-l-[#FF9500]', badge: 'bg-amber-50 text-amber-700', text: 'WATCH' },
     low: { border: 'border-l-[#58CC02]', badge: 'bg-emerald-50 text-emerald-700', text: 'GOOD' },
   };
@@ -168,7 +168,7 @@ function AlertCard({ s, source }: { s: Suggestion; source: string }) {
       </div>
       <div className="font-semibold text-sm text-chess-text">{s.title}</div>
       <div className="text-xs text-chess-text-muted mt-0.5">{s.detail}</div>
-      <div className="text-xs text-[#1CB0F6] font-medium mt-1.5">{s.action}</div>
+      <div className="text-xs text-chess-blue font-medium mt-1.5">{s.action}</div>
     </div>
   );
 }
@@ -239,7 +239,7 @@ function BarStat({ label, value, maxValue }: { label: string; value: number; max
     <div className="flex items-center gap-3">
       <div className="w-28 sm:w-36 text-xs text-chess-text-muted truncate text-right">{label}</div>
       <div className="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden">
-        <div className="h-full bg-[#FF4B4B]/70 rounded-full transition-all duration-500" style={{ width: `${widthPct}%` }} />
+        <div className="h-full bg-chess-red/70 rounded-full transition-all duration-500" style={{ width: `${widthPct}%` }} />
       </div>
       <div className="w-12 text-xs font-semibold text-chess-text tabular-nums text-right">{pct(value)}</div>
     </div>
@@ -349,25 +349,25 @@ export default function AdminDashboardPage() {
           <HeroCard
             label="DAU"
             value={engagement?.activeUsers ? fmt(engagement.activeUsers.daily) : '—'}
-            color="text-[#1CB0F6]"
+            color="text-chess-blue"
             loading={loading}
           />
           <HeroCard
             label="Signups (7d)"
             value={em?.signups_7d != null ? fmt(Number(em.signups_7d)) : '—'}
-            color="text-[#58CC02]"
+            color="text-chess-green"
             loading={loading}
           />
           <HeroCard
             label="Paywall Conv."
             value={gm?.paywall_conversion_rate != null ? pct(Number(gm.paywall_conversion_rate)) : '—'}
-            color={Number(gm?.paywall_conversion_rate || 0) > 5 ? 'text-[#58CC02]' : 'text-[#FF9500]'}
+            color={Number(gm?.paywall_conversion_rate || 0) > 5 ? 'text-chess-green' : 'text-chess-orange'}
             loading={loading}
           />
           <HeroCard
             label="Churn"
             value={latestSnap ? pct(latestSnap.churn_rate_pct) : '—'}
-            color={Number(latestSnap?.churn_rate_pct || 0) < 5 ? 'text-[#58CC02]' : 'text-[#FF4B4B]'}
+            color={Number(latestSnap?.churn_rate_pct || 0) < 5 ? 'text-chess-green' : 'text-chess-red'}
             loading={loading}
           />
         </div>
@@ -492,9 +492,9 @@ export default function AdminDashboardPage() {
               <div className="bg-white rounded-2xl border border-slate-200 p-4">
                 <div className="text-xs font-semibold text-chess-text-muted mb-2">Devices</div>
                 <div className="flex items-center gap-1 h-6 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#1CB0F6] rounded-l-full" style={{ width: `${ux.deviceSplit.mobile}%` }} />
-                  <div className="h-full bg-[#58CC02]" style={{ width: `${ux.deviceSplit.desktop}%` }} />
-                  <div className="h-full bg-[#CE82FF] rounded-r-full" style={{ width: `${ux.deviceSplit.tablet}%` }} />
+                  <div className="h-full bg-chess-blue rounded-l-full" style={{ width: `${ux.deviceSplit.mobile}%` }} />
+                  <div className="h-full bg-chess-green" style={{ width: `${ux.deviceSplit.desktop}%` }} />
+                  <div className="h-full bg-chess-purple rounded-r-full" style={{ width: `${ux.deviceSplit.tablet}%` }} />
                 </div>
                 <div className="flex justify-between text-[10px] text-chess-text-muted mt-1.5">
                   <span>📱 {pct(ux.deviceSplit.mobile)}</span>
@@ -539,7 +539,7 @@ export default function AdminDashboardPage() {
                   <span className="text-chess-text-muted ml-1">emails sent (24h)</span>
                 </div>
                 {health.email.failed24h > 0 && (
-                  <div className="text-[#FF4B4B]">
+                  <div className="text-chess-red">
                     <span className="font-semibold">{health.email.failed24h}</span>
                     <span className="ml-1">failed</span>
                   </div>

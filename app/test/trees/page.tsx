@@ -284,13 +284,13 @@ function WinRateFlow({ tree, title, subtitle }: { tree: TreeNode; title: string;
   return (
     <div className="mb-10">
       <div className="flex items-baseline gap-2 mb-1">
-        <h2 className="text-[#2A3C45] text-sm font-bold">{title}</h2>
+        <h2 className="text-chess-text text-sm font-bold">{title}</h2>
         <span className="text-xs font-semibold" style={{ color: wr > 55 ? '#58CC02' : wr > 45 ? '#FFD700' : '#FF4B4B' }}>
           {wr}% overall
         </span>
       </div>
-      <p className="text-[#94a3b8] text-[11px] mb-3">{subtitle}</p>
-      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 shadow-sm overflow-x-auto">
+      <p className="text-chess-text-faint text-[11px] mb-3">{subtitle}</p>
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm overflow-x-auto">
         <svg width={svgW} height={svgH} className="w-full" style={{ minWidth: svgW }}>
           {/* Edges */}
           {/* Fork connectors: one stem from parent, vertical trunk, branches to children */}
@@ -423,9 +423,9 @@ function WinRateFlow({ tree, title, subtitle }: { tree: TreeNode; title: string;
 // ============================================================
 export default function TreeTestPage() {
   return (
-    <div className="min-h-screen bg-[#eef6fc] p-4 max-w-[390px] mx-auto overflow-auto pb-20">
-      <h1 className="text-[#2A3C45] text-lg font-bold mb-1">Opening Tree — Win Rate Flow</h1>
-      <p className="text-[#6b7c8a] text-xs mb-6">
+    <div className="min-h-screen bg-chess-page p-4 max-w-[390px] mx-auto overflow-auto pb-20">
+      <h1 className="text-chess-text text-lg font-bold mb-1">Opening Tree — Win Rate Flow</h1>
+      <p className="text-chess-text-muted text-xs mb-6">
         learnthroughstories · all speeds
       </p>
 

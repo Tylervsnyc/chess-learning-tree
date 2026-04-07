@@ -417,7 +417,7 @@ export default function StyleGuidePage() {
           <Subsection title="Dark Modal (In-Lesson / Paywall)">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200">
               <div className="bg-black/80 backdrop-blur-sm p-5 flex items-center justify-center min-h-[340px]">
-                <div className="relative bg-[#1A2C35] rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
+                <div className="relative bg-chess-bg-light rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-white/10">
                   {/* Logo container */}
                   <div className="flex justify-center mb-4">
                     <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
@@ -428,7 +428,7 @@ export default function StyleGuidePage() {
                   <p className="text-sm text-white/60 text-center mt-1 mb-5">You&apos;ve used your free lessons for today.</p>
                   {/* Option cards */}
                   <div className="space-y-2.5 mb-4">
-                    <div className="bg-[#0D1A1F] rounded-xl p-3">
+                    <div className="bg-chess-bg-deep rounded-xl p-3">
                       <p className="text-sm font-bold text-white">Save Progress</p>
                       <p className="text-xs text-white/50 mt-0.5">Sign up free, keep your streaks</p>
                     </div>
@@ -437,7 +437,7 @@ export default function StyleGuidePage() {
                       <p className="text-xs text-white/50 mt-0.5">All lessons, no limits</p>
                     </div>
                   </div>
-                  <button className="w-full py-3 rounded-xl bg-chess-green border-b-4 border-[#46a302] text-white font-bold transition-all">
+                  <button className="w-full py-3 rounded-xl bg-chess-green border-b-4 border-chess-green-dark text-white font-bold transition-all">
                     Sign Up Free
                   </button>
                   <button className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-orange-700 text-white font-bold transition-all mt-2">
@@ -450,7 +450,7 @@ export default function StyleGuidePage() {
               </div>
             </div>
             <p className="text-[10px] text-chess-text-faint mt-2">
-              Card: <code>bg-[#1A2C35] rounded-2xl border border-white/10 shadow-2xl p-6 max-w-sm</code>
+              Card: <code>bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl p-6 max-w-sm</code>
             </p>
           </Subsection>
 
@@ -497,12 +497,12 @@ export default function StyleGuidePage() {
           <Subsection title="Board Overlay Popup (Intro / Help)">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200">
               <div className="bg-black/70 p-5 flex items-center justify-center min-h-[240px]">
-                <div className="relative max-w-sm w-full bg-[#1A2C35] rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+                <div className="relative max-w-sm w-full bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
                   {/* Green-to-blue accent bar */}
                   <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
                   <div className="px-4 py-3">
                     <h3 className="text-base font-bold text-white">Knight Forks</h3>
-                    <p className="text-sm text-[#A3B8C2] mt-1 leading-snug">Attack two pieces at once by moving your knight to a square that threatens both targets.</p>
+                    <p className="text-sm text-chess-text-light mt-1 leading-snug">Attack two pieces at once by moving your knight to a square that threatens both targets.</p>
                     <div className="flex gap-2 mt-3">
                       <button className="flex-1 py-2 rounded-xl border border-white/20 text-white/70 text-sm font-medium hover:bg-white/10 transition-colors">
                         Skip
@@ -522,7 +522,7 @@ export default function StyleGuidePage() {
 
           <Subsection title="Puzzle Result (Correct / Wrong)">
             <div className="space-y-3">
-              <div className="w-full rounded-b-2xl bg-[#D7FFB8] py-2.5 pr-4 pl-4">
+              <div className="w-full rounded-b-2xl bg-chess-correct-bg py-2.5 pr-4 pl-4">
                 <div className="flex items-center gap-3">
                   <BreathingRook size="xs" />
                   <div className="flex-1">
@@ -533,7 +533,7 @@ export default function StyleGuidePage() {
                   </div>
                 </div>
               </div>
-              <div className="w-full rounded-b-2xl bg-[#FFDFE0] py-2.5 pr-4 pl-2">
+              <div className="w-full rounded-b-2xl bg-chess-wrong-bg py-2.5 pr-4 pl-2">
                 <div className="flex items-center gap-3">
                   <BreathingRook size="xs" />
                   <div className="flex-1">
@@ -546,7 +546,7 @@ export default function StyleGuidePage() {
               </div>
             </div>
             <p className="text-[10px] text-chess-text-faint mt-2">
-              Sits below the board. Correct: <code>bg-[#D7FFB8]</code> &middot; Wrong: <code>bg-[#FFDFE0]</code> &middot; Slides up with bounce
+              Sits below the board. Correct: <code>bg-chess-correct-bg</code> &middot; Wrong: <code>bg-chess-wrong-bg</code> &middot; Slides up with bounce
             </p>
           </Subsection>
         </Section>

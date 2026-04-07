@@ -93,9 +93,9 @@ export default function PaywallAnalyticsPage() {
   const maxRate = data?.data.reduce((max, d) => Math.max(max, d.rate), 0) || 1;
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700">
+      <div className="bg-chess-bg-light border-b border-gray-700">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -121,8 +121,8 @@ export default function PaywallAnalyticsPage() {
               onClick={() => setPeriod(p.value)}
               className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
                 period === p.value
-                  ? 'bg-[#58CC02] text-black'
-                  : 'bg-[#1A2C35] text-gray-400 hover:text-white border border-gray-700'
+                  ? 'bg-chess-green text-black'
+                  : 'bg-chess-bg-light text-gray-400 hover:text-white border border-gray-700'
               }`}
             >
               {p.label}
@@ -140,7 +140,7 @@ export default function PaywallAnalyticsPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin w-8 h-8 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-4 border-chess-green border-t-transparent rounded-full" />
           </div>
         )}
 
@@ -149,15 +149,15 @@ export default function PaywallAnalyticsPage() {
           <>
             {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <p className="text-gray-400 text-sm mb-1">Total Views</p>
                 <p className="text-3xl font-black">{data.totals.views.toLocaleString()}</p>
               </div>
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <p className="text-gray-400 text-sm mb-1">Total Conversions</p>
-                <p className="text-3xl font-black text-[#58CC02]">{data.totals.conversions.toLocaleString()}</p>
+                <p className="text-3xl font-black text-chess-green">{data.totals.conversions.toLocaleString()}</p>
               </div>
-              <div className="bg-[#1A2C35] rounded-xl p-5 border border-gray-700">
+              <div className="bg-chess-bg-light rounded-xl p-5 border border-gray-700">
                 <p className="text-gray-400 text-sm mb-1">Overall Rate</p>
                 <p className="text-3xl font-black" style={{ color: getRateColor(data.totals.rate) }}>
                   {data.totals.rate}%
@@ -166,7 +166,7 @@ export default function PaywallAnalyticsPage() {
             </div>
 
             {data.data.length === 0 ? (
-              <div className="bg-[#1A2C35] rounded-xl p-12 border border-gray-700 text-center">
+              <div className="bg-chess-bg-light rounded-xl p-12 border border-gray-700 text-center">
                 <p className="text-gray-400">No paywall events found for this period.</p>
                 <p className="text-gray-500 text-sm mt-2">
                   Events tracked: <code className="text-gray-400">paywall_viewed</code> and <code className="text-gray-400">checkout_completed</code>
@@ -175,7 +175,7 @@ export default function PaywallAnalyticsPage() {
             ) : (
               <>
                 {/* Bar Chart — Conversion Rate by Trigger */}
-                <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700 mb-8">
+                <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700 mb-8">
                   <h2 className="font-bold text-lg mb-6">Conversion Rate by Trigger</h2>
                   <svg
                     viewBox={`0 0 800 ${Math.max(data.data.length * 52 + 20, 100)}`}
@@ -254,7 +254,7 @@ export default function PaywallAnalyticsPage() {
                 </div>
 
                 {/* Data Table */}
-                <div className="bg-[#1A2C35] rounded-xl border border-gray-700 overflow-hidden">
+                <div className="bg-chess-bg-light rounded-xl border border-gray-700 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-700">
                     <h2 className="font-bold text-lg">Trigger Breakdown</h2>
                   </div>
@@ -270,7 +270,7 @@ export default function PaywallAnalyticsPage() {
                     </thead>
                     <tbody>
                       {data.data.map((d) => (
-                        <tr key={d.trigger} className="border-b border-gray-700/50 hover:bg-[#131F24]/50 transition-colors">
+                        <tr key={d.trigger} className="border-b border-gray-700/50 hover:bg-chess-bg/50 transition-colors">
                           <td className="px-6 py-4">
                             <span className="font-medium">{formatTrigger(d.trigger)}</span>
                             <span className="text-gray-500 text-xs ml-2">({d.trigger})</span>
@@ -278,7 +278,7 @@ export default function PaywallAnalyticsPage() {
                           <td className="px-6 py-4 text-right tabular-nums">
                             {d.views.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 text-right tabular-nums text-[#58CC02]">
+                          <td className="px-6 py-4 text-right tabular-nums text-chess-green">
                             {d.conversions.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -298,12 +298,12 @@ export default function PaywallAnalyticsPage() {
 
                     {/* Totals row */}
                     <tfoot>
-                      <tr className="bg-[#0D1A1F] font-bold">
+                      <tr className="bg-chess-bg-deep font-bold">
                         <td className="px-6 py-4">Total</td>
                         <td className="px-6 py-4 text-right tabular-nums">
                           {data.totals.views.toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-right tabular-nums text-[#58CC02]">
+                        <td className="px-6 py-4 text-right tabular-nums text-chess-green">
                           {data.totals.conversions.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -323,7 +323,7 @@ export default function PaywallAnalyticsPage() {
                 </div>
 
                 {/* Views Bar Chart */}
-                <div className="bg-[#1A2C35] rounded-xl p-6 border border-gray-700 mt-8">
+                <div className="bg-chess-bg-light rounded-xl p-6 border border-gray-700 mt-8">
                   <h2 className="font-bold text-lg mb-6">Views by Trigger</h2>
                   <svg
                     viewBox={`0 0 800 ${Math.max(data.data.length * 52 + 20, 100)}`}

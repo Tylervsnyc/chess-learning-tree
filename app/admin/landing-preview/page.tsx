@@ -135,7 +135,7 @@ export default function LandingPreview() {
               </svg>
             </Link>
             <span className="text-white font-medium text-sm">Landing Preview</span>
-            <span className="px-2 py-0.5 rounded text-[10px] bg-[#58CC02]/20 text-[#58CC02]">MVP</span>
+            <span className="px-2 py-0.5 rounded text-[10px] bg-chess-green/20 text-chess-green">MVP</span>
           </div>
           <span className="text-gray-500 text-xs">Neon Arcade Theme</span>
         </div>

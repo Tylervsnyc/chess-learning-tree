@@ -1171,7 +1171,7 @@ export function BasicsTutorial() {
   if (tutorialDone) {
     return <BasicsDoneScreen onContinue={() => {
       try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
-      router.push('/auth/signup?from=lesson');
+      router.push('/lesson/1.1.1?from=onboarding');
     }} />;
   }
 

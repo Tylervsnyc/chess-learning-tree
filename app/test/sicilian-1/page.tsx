@@ -56,26 +56,26 @@ export default function Sicilian1TestPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#c8d6e0] flex items-center justify-center overflow-auto p-4">
+    <div className="min-h-screen bg-chess-page flex items-center justify-center overflow-auto p-4">
       <div className="flex flex-col overflow-hidden" style={{
         width: 375,
         height: 720,
-        background: '#eef6fc',
+        background: 'var(--color-chess-page)',
         borderRadius: 32,
         border: '3px solid #2A3C45',
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
       }}>
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-gray-200 px-4 py-3 flex items-center gap-3" style={{ background: '#eef6fc' }}>
+        <div className="flex-shrink-0 border-b border-gray-200 px-4 py-3 flex items-center gap-3" style={{ background: 'var(--color-chess-page)' }}>
           <button
             onClick={() => router.push('/test')}
-            className="text-[#6b7c8a] text-xl bg-transparent border-none cursor-pointer"
+            className="text-chess-text-muted text-xl bg-transparent border-none cursor-pointer"
           >
             &larr;
           </button>
           <div>
-            <h1 className="text-lg font-bold" style={{ color: '#2A3C45' }}>Sicilian Defense</h1>
-            <p className="text-xs" style={{ color: '#6b7c8a' }}>
+            <h1 className="text-lg font-bold" style={{ color: 'var(--color-chess-text)' }}>Sicilian Defense</h1>
+            <p className="text-xs" style={{ color: 'var(--color-chess-text-muted)' }}>
               {completedIds.length} / {SICILIAN_DEFENSE.nodes.length} lessons
             </p>
           </div>
@@ -100,21 +100,21 @@ export default function Sicilian1TestPage() {
         <div className="flex-shrink-0 flex gap-2 px-3 py-2 border-t border-gray-200 bg-white">
           <button
             onClick={resetTree}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[13px] bg-gray-100 text-[#6b7c8a]"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[13px] bg-gray-100 text-chess-text-muted"
           >
             Reset
           </button>
           <button
             onClick={completeNext}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[13px] text-white"
-            style={{ background: '#58CC02' }}
+            style={{ background: 'var(--color-chess-green)' }}
           >
             Complete
           </button>
           <button
             onClick={completeAll}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[13px] text-white"
-            style={{ background: '#FF4B4B' }}
+            style={{ background: 'var(--color-chess-red)' }}
           >
             All
           </button>

@@ -60,7 +60,7 @@ function LessonCardSubtle({ lesson, moduleColor }: Omit<LessonCardProps, 'lockSt
       } ${
         isLocked
           ? 'bg-[#0D1B21] cursor-not-allowed opacity-60'
-          : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+          : 'bg-chess-bg-light hover:bg-[#243844] cursor-pointer'
       }`}
       style={{ borderColor: isNext ? moduleColor : 'transparent' }}
     >
@@ -109,7 +109,7 @@ function LessonCardGrayed({ lesson, moduleColor }: Omit<LessonCardProps, 'lockSt
       } ${
         isLocked
           ? 'bg-[#1A1A1A] cursor-not-allowed grayscale'
-          : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+          : 'bg-chess-bg-light hover:bg-[#243844] cursor-pointer'
       }`}
       style={{ borderColor: isNext ? moduleColor : 'transparent' }}
     >
@@ -161,8 +161,8 @@ function LessonCardBlur({ lesson, moduleColor }: Omit<LessonCardProps, 'lockStyl
           isNext ? 'animate-pulse' : ''
         } ${
           isLocked
-            ? 'bg-[#1A2C35] cursor-not-allowed blur-[2px]'
-            : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+            ? 'bg-chess-bg-light cursor-not-allowed blur-[2px]'
+            : 'bg-chess-bg-light hover:bg-[#243844] cursor-pointer'
         }`}
         style={{ borderColor: isNext ? moduleColor : 'transparent' }}
       >
@@ -212,8 +212,8 @@ function LessonCardOverlay({ lesson, moduleColor }: Omit<LessonCardProps, 'lockS
           isNext ? 'animate-pulse' : ''
         } ${
           isLocked
-            ? 'bg-[#1A2C35] cursor-not-allowed'
-            : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+            ? 'bg-chess-bg-light cursor-not-allowed'
+            : 'bg-chess-bg-light hover:bg-[#243844] cursor-pointer'
         }`}
         style={{
           borderColor: isNext ? moduleColor : isLocked ? '#FFD70050' : 'transparent',
@@ -265,8 +265,8 @@ function LessonCardMinimal({ lesson, moduleColor }: Omit<LessonCardProps, 'lockS
         isNext ? 'animate-pulse' : ''
       } ${
         isLocked
-          ? 'bg-[#1A2C35] cursor-not-allowed'
-          : 'bg-[#1A2C35] hover:bg-[#243844] cursor-pointer'
+          ? 'bg-chess-bg-light cursor-not-allowed'
+          : 'bg-chess-bg-light hover:bg-[#243844] cursor-pointer'
       }`}
       style={{ borderColor: isNext ? moduleColor : 'transparent' }}
     >
@@ -368,7 +368,7 @@ function LockedModule({ title, color, lockStyle }: { title: string; color: strin
   const variants = {
     subtle: (
       <div className="mb-3 opacity-50">
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#1A2C35]">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-chess-bg-light">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl bg-gray-700 text-gray-500">
             🔒
           </div>
@@ -396,7 +396,7 @@ function LockedModule({ title, color, lockStyle }: { title: string; color: strin
     ),
     blur: (
       <div className="mb-3 relative">
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#1A2C35] blur-[2px]">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-chess-bg-light blur-[2px]">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: color }}>
             2
           </div>
@@ -415,7 +415,7 @@ function LockedModule({ title, color, lockStyle }: { title: string; color: strin
     ),
     overlay: (
       <div className="mb-3 relative">
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#1A2C35] border-2 border-yellow-500/30">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-chess-bg-light border-2 border-yellow-500/30">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl bg-gray-700 text-gray-400">
             🔒
           </div>
@@ -431,7 +431,7 @@ function LockedModule({ title, color, lockStyle }: { title: string; color: strin
     ),
     minimal: (
       <div className="mb-3">
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#1A2C35]">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-chess-bg-light">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: color }}>
             2
           </div>
@@ -464,7 +464,7 @@ export default function LockedDesignsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white p-6">
+    <div className="min-h-screen bg-chess-bg text-white p-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-2">Locked Lesson Designs</h1>
         <p className="text-gray-400 mb-6">
@@ -472,7 +472,7 @@ export default function LockedDesignsPage() {
         </p>
 
         {/* Style Selector */}
-        <div className="bg-[#1A2C35] rounded-xl p-4 mb-6">
+        <div className="bg-chess-bg-light rounded-xl p-4 mb-6">
           <h2 className="font-semibold mb-3">Select Lock Style</h2>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(LOCK_STYLES) as LockStyle[]).map(style => (
@@ -481,8 +481,8 @@ export default function LockedDesignsPage() {
                 onClick={() => setSelectedStyle(style)}
                 className={`px-4 py-2 rounded-lg transition-all ${
                   selectedStyle === style
-                    ? 'bg-[#58CC02] text-black font-bold'
-                    : 'bg-[#0D1A1F] text-gray-400 hover:text-white'
+                    ? 'bg-chess-green text-black font-bold'
+                    : 'bg-chess-bg-deep text-gray-400 hover:text-white'
                 }`}
               >
                 {LOCK_STYLES[style].name}
@@ -494,7 +494,7 @@ export default function LockedDesignsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Expanded Module */}
-          <div className="bg-[#0D1A1F] rounded-xl p-4">
+          <div className="bg-chess-bg-deep rounded-xl p-4">
             <h3 className="font-semibold mb-4 text-gray-400">Expanded Module (with locked lessons)</h3>
             <Module
               title="Module 1: Getting Started"
@@ -508,7 +508,7 @@ export default function LockedDesignsPage() {
           </div>
 
           {/* Collapsed Module */}
-          <div className="bg-[#0D1A1F] rounded-xl p-4">
+          <div className="bg-chess-bg-deep rounded-xl p-4">
             <h3 className="font-semibold mb-4 text-gray-400">Collapsed Modules</h3>
             <Module
               title="Module 1: Getting Started"
@@ -527,7 +527,7 @@ export default function LockedDesignsPage() {
           </div>
 
           {/* All Styles Comparison - Lessons */}
-          <div className="bg-[#0D1A1F] rounded-xl p-4">
+          <div className="bg-chess-bg-deep rounded-xl p-4">
             <h3 className="font-semibold mb-4 text-gray-400">All Styles - Locked Lesson</h3>
             <div className="space-y-4">
               {(Object.keys(LOCK_STYLES) as LockStyle[]).map(style => {
@@ -552,7 +552,7 @@ export default function LockedDesignsPage() {
           </div>
 
           {/* All Styles Comparison - Modules */}
-          <div className="bg-[#0D1A1F] rounded-xl p-4">
+          <div className="bg-chess-bg-deep rounded-xl p-4">
             <h3 className="font-semibold mb-4 text-gray-400">All Styles - Locked Module</h3>
             <div className="space-y-4">
               {(Object.keys(LOCK_STYLES) as LockStyle[]).map(style => (
@@ -569,12 +569,12 @@ export default function LockedDesignsPage() {
           </div>
 
           {/* Interactive Preview */}
-          <div className="lg:col-span-2 bg-[#0D1A1F] rounded-xl p-4">
+          <div className="lg:col-span-2 bg-chess-bg-deep rounded-xl p-4">
             <h3 className="font-semibold mb-4 text-gray-400">
               Interactive Preview - {LOCK_STYLES[selectedStyle].name}
             </h3>
             <div className="max-w-md mx-auto">
-              <div className="h-1 mb-4 bg-gradient-to-r from-[#58CC02] via-[#1CB0F6] to-[#FF9600]" />
+              <div className="h-1 mb-4 bg-gradient-to-r from-chess-green via-chess-blue to-chess-orange" />
 
               <Module
                 title="Module 1: Getting Started"
@@ -602,15 +602,15 @@ export default function LockedDesignsPage() {
         </div>
 
         {/* Legend */}
-        <div className="mt-6 bg-[#1A2C35] rounded-xl p-4">
+        <div className="mt-6 bg-chess-bg-light rounded-xl p-4">
           <h3 className="font-semibold mb-3">Lesson States</h3>
           <div className="flex flex-wrap gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#58CC02] flex items-center justify-center text-white font-bold">✓</div>
+              <div className="w-8 h-8 rounded-lg bg-chess-green flex items-center justify-center text-white font-bold">✓</div>
               <span className="text-gray-400">Completed</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#58CC02] flex items-center justify-center text-white font-bold">3</div>
+              <div className="w-8 h-8 rounded-lg bg-chess-green flex items-center justify-center text-white font-bold">3</div>
               <span className="text-gray-400">Next (Available)</span>
             </div>
             <div className="flex items-center gap-2">

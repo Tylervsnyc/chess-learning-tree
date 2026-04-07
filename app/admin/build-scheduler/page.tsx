@@ -49,7 +49,7 @@ function CapacityMeter({ stats }: { stats: QueueStats }) {
   const progress = stats.total > 0 ? (done / stats.total) * 100 : 0
 
   return (
-    <div className="bg-[#1A2C35] rounded-xl p-5 mb-6">
+    <div className="bg-chess-bg-light rounded-xl p-5 mb-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-white font-bold text-lg">Build Capacity</h2>
         <span className="text-gray-400 text-sm">{done} of {stats.total} builds processed</span>
@@ -57,7 +57,7 @@ function CapacityMeter({ stats }: { stats: QueueStats }) {
 
       {/* Progress bar */}
       <div className="w-full bg-[#0D1B22] rounded-full h-4 mb-4 overflow-hidden">
-        <div className="h-full rounded-full bg-gradient-to-r from-[#58CC02] to-[#76d530] transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="h-full rounded-full bg-gradient-to-r from-chess-green to-[#76d530] transition-all duration-500" style={{ width: `${progress}%` }} />
       </div>
 
       {/* Stat chips */}
@@ -136,14 +136,14 @@ function AddBuildForm({ onAdd }: { onAdd: () => void }) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="bg-[#1A2C35] text-[#58CC02] border border-[#58CC02]/30 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#58CC02]/10 transition-colors">
+      <button onClick={() => setOpen(true)} className="bg-chess-bg-light text-chess-green border border-chess-green/30 px-4 py-2 rounded-lg text-sm font-bold hover:bg-chess-green/10 transition-colors">
         + Add Build
       </button>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#1A2C35] rounded-xl p-5 mb-6 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-chess-bg-light rounded-xl p-5 mb-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-white font-bold text-lg">Add Build</h2>
         <button type="button" onClick={() => setOpen(false)} className="text-gray-400 hover:text-white text-sm">Cancel</button>
@@ -172,7 +172,7 @@ function AddBuildForm({ onAdd }: { onAdd: () => void }) {
 
       <Input label="Main Line" value={form.mainLine} onChange={v => setForm(f => ({ ...f, mainLine: v }))} placeholder="1.e4 e5 2.Nf3 Nc6 3.Bc4" />
 
-      <button type="submit" disabled={submitting} className="w-full py-2 bg-[#58CC02] text-white font-bold rounded-lg disabled:opacity-50">
+      <button type="submit" disabled={submitting} className="w-full py-2 bg-chess-green text-white font-bold rounded-lg disabled:opacity-50">
         {submitting ? 'Adding...' : 'Add to Queue'}
       </button>
     </form>
@@ -225,7 +225,7 @@ function QueueTable({ items, onAction }: { items: OpeningBuildItem[]; onAction: 
   }
 
   return (
-    <div className="bg-[#1A2C35] rounded-xl overflow-hidden">
+    <div className="bg-chess-bg-light rounded-xl overflow-hidden">
       {/* Filter bar */}
       <div className="flex items-center gap-2 px-5 py-3 border-b border-gray-700/50">
         <h2 className="text-white font-bold text-lg mr-auto">Queue</h2>
@@ -233,7 +233,7 @@ function QueueTable({ items, onAction }: { items: OpeningBuildItem[]; onAction: 
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${filter === f ? 'bg-[#58CC02] text-white' : 'bg-[#0D1B22] text-gray-400 hover:text-white'}`}
+            className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${filter === f ? 'bg-chess-green text-white' : 'bg-[#0D1B22] text-gray-400 hover:text-white'}`}
           >
             {f === 'all' ? 'All' : f === 'needs-review' ? 'Review' : f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
@@ -324,7 +324,7 @@ function BuildHistory({ items }: { items: OpeningBuildItem[] }) {
   if (completed.length === 0) return null
 
   return (
-    <div className="bg-[#1A2C35] rounded-xl p-5 mt-6">
+    <div className="bg-chess-bg-light rounded-xl p-5 mt-6">
       <h2 className="text-white font-bold text-lg mb-3">Recent Builds</h2>
       <div className="space-y-2">
         {completed.map(item => (
@@ -367,14 +367,14 @@ function BuildSchedulerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="min-h-screen bg-chess-bg flex items-center justify-center">
         <div className="text-gray-400">Loading queue...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#131F24] p-6 max-w-5xl mx-auto">
+    <div className="min-h-screen bg-chess-bg p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -383,7 +383,7 @@ function BuildSchedulerPage() {
         </div>
         <div className="flex items-center gap-3">
           <AddBuildForm onAdd={fetchQueue} />
-          <button onClick={fetchQueue} className="text-gray-400 hover:text-white text-sm px-3 py-2 bg-[#1A2C35] rounded-lg">
+          <button onClick={fetchQueue} className="text-gray-400 hover:text-white text-sm px-3 py-2 bg-chess-bg-light rounded-lg">
             Refresh
           </button>
         </div>

@@ -9,6 +9,7 @@ import {
 } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
 import { getLessonCount, TREE_LOOKUP } from '@/lib/opening-trees'
+import { BreathingRook } from '@/components/ui/BreathingRook'
 
 type TabName = 'my-openings' | 'library'
 
@@ -331,6 +332,14 @@ export default function OpeningsPage() {
 
   const handleOpeningClick = (slug: string) => {
     router.push(`/openings/${slug}`)
+  }
+
+  if (progressLoading) {
+    return (
+      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+        <BreathingRook size="lg" animate label="Loading openings..." />
+      </div>
+    )
   }
 
   return (

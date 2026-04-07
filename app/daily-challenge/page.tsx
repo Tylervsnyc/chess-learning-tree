@@ -888,7 +888,7 @@ export default function DailyChallengePage() {
                 style={{ background: 'linear-gradient(135deg, rgba(255,150,0,0.15), rgba(255,107,107,0.15))' }}
               >
                 <h1
-                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange"
+                  className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-chess-red to-chess-orange"
                   style={{ fontFamily: 'Nunito, sans-serif' }}
                 >
                   THE DAILY ROOK
@@ -897,7 +897,7 @@ export default function DailyChallengePage() {
 
               {/* Tagline */}
               <p
-                className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#e05a5a] to-chess-orange mb-4"
+                className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-chess-red to-chess-orange mb-4"
               >
                 Solve Puzzles. Build the Rook. Improve at Chess.
               </p>
@@ -1011,7 +1011,7 @@ export default function DailyChallengePage() {
             <div className="max-w-md mx-auto w-full">
               {/* Score card — matches share card design */}
               <div className="bg-chess-surface rounded-2xl p-4 mb-3 celebratory-glow text-center">
-                <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-[#FF6B6B] to-chess-orange mb-2">
+                <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-chess-orange via-chess-red to-chess-orange mb-2">
                   {puzzlesSolved === allPuzzles.length ? 'Perfect Run!' : lives <= 0 ? 'Game Over' : 'Time\'s Up!'}
                 </h2>
                 <div className="flex items-baseline justify-center gap-1.5">

@@ -341,12 +341,12 @@ function FakeContent({ tab }: { tab: 'my' | 'lib' }) {
           <div key={o.name} className="flex items-center gap-3 bg-white rounded-2xl p-4" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: o.color }}>♟</div>
             <div className="flex-1">
-              <div className="text-sm font-bold text-[#2A3C45]">{o.name}</div>
+              <div className="text-sm font-bold text-chess-text">{o.name}</div>
               <div className="h-1.5 rounded-full bg-gray-100 mt-1.5 overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: `${o.pct}%`, backgroundColor: o.color }} />
               </div>
             </div>
-            <div className="text-xs text-[#94a3b8] font-medium">{o.sub}</div>
+            <div className="text-xs text-chess-text-faint font-medium">{o.sub}</div>
           </div>
         ))}
       </div>
@@ -358,8 +358,8 @@ function FakeContent({ tab }: { tab: 'my' | 'lib' }) {
         <div key={name} className="flex items-center gap-3 bg-white rounded-2xl p-4" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
           <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 text-sm">♟</div>
           <div className="flex-1">
-            <div className="text-sm font-bold text-[#2A3C45]">{name}</div>
-            <div className="text-xs text-[#94a3b8]">12 lessons</div>
+            <div className="text-sm font-bold text-chess-text">{name}</div>
+            <div className="text-xs text-chess-text-faint">12 lessons</div>
           </div>
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
@@ -383,9 +383,9 @@ export default function OpeningTabsTest() {
   const ActiveDesign = designs[designIndex].component;
 
   return (
-    <div className="min-h-screen bg-[#eef6fc] overflow-auto">
+    <div className="min-h-screen bg-chess-page overflow-auto">
       {/* Design picker */}
-      <div className="sticky top-0 z-50 bg-[#131F24] border-b border-white/10">
+      <div className="sticky top-0 z-50 bg-chess-bg border-b border-white/10">
         <div className="max-w-md mx-auto px-4 py-3">
           <h1 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Tab Switcher Designs</h1>
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>

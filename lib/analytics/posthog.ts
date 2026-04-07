@@ -118,10 +118,8 @@ export const TutorialEvents = {
 // Onboarding/Welcome funnel
 export const OnboardingEvents = {
   started: () => trackEvent('onboarding_started'),
-  routeSelected: (route: string) => trackEvent('onboarding_route_selected', { route }),
-  levelSelected: (level: string) => trackEvent('onboarding_level_selected', { level }),
-  eloEntered: (elo: number) => trackEvent('onboarding_elo_entered', { elo }),
-  completed: (data: { level: string; elo?: number; placedLevel?: number }) =>
+  routeSelected: (route: 'play' | 'learn') => trackEvent('onboarding_route_selected', { route }),
+  completed: (data: { level: string }) =>
     trackEvent('onboarding_completed', data),
 };
 

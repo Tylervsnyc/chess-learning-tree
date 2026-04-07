@@ -51,7 +51,7 @@ function AdPerformanceContent() {
     : '0.00';
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white p-6">
+    <div className="min-h-screen bg-chess-bg text-white p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -75,8 +75,8 @@ function AdPerformanceContent() {
               onClick={() => setDateRange(range)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 dateRange === range
-                  ? 'bg-[#58CC02] text-white'
-                  : 'bg-[#1A2C35] text-gray-400 hover:text-white'
+                  ? 'bg-chess-green text-white'
+                  : 'bg-chess-bg-light text-gray-400 hover:text-white'
               }`}
             >
               {range === '7d' ? 'Last 7 days' : range === '30d' ? 'Last 30 days' : 'Last 90 days'}
@@ -86,15 +86,15 @@ function AdPerformanceContent() {
 
         {/* Summary cards */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-[#1A2C35] rounded-xl p-4">
+          <div className="bg-chess-bg-light rounded-xl p-4">
             <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">Impressions</div>
             <div className="text-2xl font-bold">{loading ? '...' : totalImpressions.toLocaleString()}</div>
           </div>
-          <div className="bg-[#1A2C35] rounded-xl p-4">
+          <div className="bg-chess-bg-light rounded-xl p-4">
             <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">Clicks</div>
             <div className="text-2xl font-bold">{loading ? '...' : totalClicks.toLocaleString()}</div>
           </div>
-          <div className="bg-[#1A2C35] rounded-xl p-4">
+          <div className="bg-chess-bg-light rounded-xl p-4">
             <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">Overall CTR</div>
             <div className="text-2xl font-bold">{loading ? '...' : `${overallCtr}%`}</div>
           </div>
@@ -114,7 +114,7 @@ function AdPerformanceContent() {
         )}
 
         {/* Table */}
-        <div className="bg-[#1A2C35] rounded-xl overflow-hidden">
+        <div className="bg-chess-bg-light rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-700">
@@ -139,14 +139,14 @@ function AdPerformanceContent() {
                 </tr>
               ) : (
                 stats.map((row) => (
-                  <tr key={row.position} className="border-b border-gray-700/50 hover:bg-[#131F24]/50">
+                  <tr key={row.position} className="border-b border-gray-700/50 hover:bg-chess-bg/50">
                     <td className="px-4 py-3">
                       <span className="font-medium">{row.position}</span>
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">{row.impressions.toLocaleString()}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{row.clicks.toLocaleString()}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      <span className={row.ctr > 5 ? 'text-[#58CC02]' : row.ctr > 2 ? 'text-[#1CB0F6]' : 'text-gray-300'}>
+                      <span className={row.ctr > 5 ? 'text-chess-green' : row.ctr > 2 ? 'text-chess-blue' : 'text-gray-300'}>
                         {row.ctr.toFixed(2)}%
                       </span>
                     </td>

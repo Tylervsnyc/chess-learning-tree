@@ -107,18 +107,18 @@ export default function AdminUsersPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'premium':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-[#58CC02]/20 text-[#58CC02]">Premium</span>;
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-chess-green/20 text-chess-green">Premium</span>;
       case 'trial':
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-[#1CB0F6]/20 text-[#1CB0F6]">Trial</span>;
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-chess-blue/20 text-chess-blue">Trial</span>;
       default:
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400">Free</span>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700">
+      <div className="bg-chess-bg-light border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -137,7 +137,7 @@ export default function AdminUsersPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Search Box */}
-        <div className="bg-[#1A2C35] rounded-xl p-6 mb-6 border border-gray-700">
+        <div className="bg-chess-bg-light rounded-xl p-6 mb-6 border border-gray-700">
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Search by Email
           </label>
@@ -148,12 +148,12 @@ export default function AdminUsersPage() {
               onChange={(e) => setSearchEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
               placeholder="tyler@example.com"
-              className="flex-1 px-4 py-3 bg-[#131F24] border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+              className="flex-1 px-4 py-3 bg-chess-bg border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-chess-green transition-colors"
             />
             <button
               onClick={searchUsers}
               disabled={loading}
-              className="px-6 py-3 bg-[#58CC02] text-white font-semibold rounded-lg hover:bg-[#46A302] disabled:opacity-50 transition-colors"
+              className="px-6 py-3 bg-chess-green text-white font-semibold rounded-lg hover:bg-chess-green-dark disabled:opacity-50 transition-colors"
             >
               {loading ? 'Searching...' : 'Search'}
             </button>
@@ -168,14 +168,14 @@ export default function AdminUsersPage() {
         )}
 
         {successMessage && (
-          <div className="bg-[#58CC02]/10 border border-[#58CC02]/30 text-[#58CC02] px-4 py-3 rounded-lg mb-6">
+          <div className="bg-chess-green/10 border border-chess-green/30 text-chess-green px-4 py-3 rounded-lg mb-6">
             {successMessage}
           </div>
         )}
 
         {/* Results */}
         {users.length > 0 && (
-          <div className="bg-[#1A2C35] rounded-xl border border-gray-700 overflow-hidden">
+          <div className="bg-chess-bg-light rounded-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
               <h2 className="font-semibold">Search Results ({users.length})</h2>
             </div>
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => grantPremium(user.id)}
                           disabled={loading}
-                          className="px-4 py-2 bg-[#58CC02]/20 text-[#58CC02] font-medium rounded-lg hover:bg-[#58CC02]/30 disabled:opacity-50 transition-colors text-sm"
+                          className="px-4 py-2 bg-chess-green/20 text-chess-green font-medium rounded-lg hover:bg-chess-green/30 disabled:opacity-50 transition-colors text-sm"
                         >
                           Grant Premium
                         </button>
@@ -226,7 +226,7 @@ export default function AdminUsersPage() {
         )}
 
         {/* Quick Actions */}
-        <div className="mt-8 bg-[#1A2C35] rounded-xl p-6 border border-gray-700">
+        <div className="mt-8 bg-chess-bg-light rounded-xl p-6 border border-gray-700">
           <h3 className="font-semibold mb-3">Quick Actions</h3>
           <p className="text-gray-400 text-sm mb-4">
             Search for &quot;tyler@learnthroughstories.com&quot; and click &quot;Grant Premium&quot; to give full access.
@@ -236,7 +236,7 @@ export default function AdminUsersPage() {
               setSearchEmail('tyler@learnthroughstories.com');
               setTimeout(() => searchUsers(), 100);
             }}
-            className="text-[#1CB0F6] text-sm hover:underline"
+            className="text-chess-blue text-sm hover:underline"
           >
             Search for tyler@learnthroughstories.com →
           </button>

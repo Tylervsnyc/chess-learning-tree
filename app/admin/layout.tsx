@@ -9,8 +9,8 @@ function AdminGate({ children }: { children: React.ReactNode }) {
   // Show loading while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-[#58CC02] border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-chess-bg flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-chess-green border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -20,7 +20,7 @@ function AdminGate({ children }: { children: React.ReactNode }) {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="min-h-screen bg-chess-bg flex items-center justify-center">
         <div className="text-gray-500">Page not found</div>
       </div>
     );
@@ -36,7 +36,7 @@ export default function AdminLayout({
 }) {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#131F24] flex items-center justify-center">
+      <div className="min-h-screen bg-chess-bg flex items-center justify-center">
         <div className="text-gray-400">Loading...</div>
       </div>
     }>

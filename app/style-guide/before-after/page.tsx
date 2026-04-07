@@ -23,10 +23,10 @@ export default function BeforeAfterPage() {
         <CompareSection title="Buttons — Raw Hex → Tokens" note="These should look identical. Just swapping hardcoded hex for design tokens.">
           <Compare label="Primary Green Button">
             <Before>
-              <button className="w-full py-3 bg-[#58CC02] hover:bg-[#4CAF00] text-white font-semibold rounded-lg transition-colors shadow-[0_4px_0_#3d8c01]">
+              <button className="w-full py-3 bg-chess-green hover:bg-chess-green-dark text-white font-semibold rounded-lg transition-colors shadow-[0_4px_0_#3d8c01]">
                 Try Again
               </button>
-              <Tags values={['bg-[#58CC02]', 'rounded-lg', 'font-semibold']} />
+              <Tags values={['bg-chess-green', 'rounded-lg', 'font-semibold']} />
             </Before>
             <After>
               <button className="w-full py-3 bg-chess-green hover:bg-chess-green-dark text-white font-bold rounded-xl transition-colors shadow-[0_4px_0_var(--color-chess-green-shadow)]">
@@ -38,10 +38,10 @@ export default function BeforeAfterPage() {
 
           <Compare label="3D Green Button (Duolingo style)">
             <Before>
-              <button className="w-full py-3 rounded-xl bg-[#58CC02] border-b-4 border-[#46a302] active:border-b-0 active:mt-1 text-white font-bold text-lg transition-all hover:bg-[#4CAF00]">
+              <button className="w-full py-3 rounded-xl bg-chess-green border-b-4 border-chess-green-dark active:border-b-0 active:mt-1 text-white font-bold text-lg transition-all hover:bg-chess-green-dark">
                 Sign Up Free
               </button>
-              <Tags values={['bg-[#58CC02]', 'border-[#46a302]', 'hover:bg-[#4CAF00]']} />
+              <Tags values={['bg-chess-green', 'border-chess-green-dark', 'hover:bg-chess-green-dark']} />
             </Before>
             <After>
               <button className="w-full py-3 rounded-xl bg-chess-green border-b-[4px] border-chess-green-shadow text-white font-bold text-lg transition-all hover:brightness-105 active:border-b-[2px] active:translate-y-[2px]">
@@ -83,10 +83,10 @@ export default function BeforeAfterPage() {
 
           <Compare label="Dark Secondary Button">
             <Before>
-              <button className="w-full py-3 bg-[#131F24] hover:bg-[#0D1A1F] text-white font-semibold rounded-lg transition-colors border border-gray-600 text-center">
+              <button className="w-full py-3 bg-chess-bg hover:bg-chess-bg-deep text-white font-semibold rounded-lg transition-colors border border-gray-600 text-center">
                 Back to Home
               </button>
-              <Tags values={['bg-[#131F24]', 'rounded-lg', 'font-semibold', 'border-gray-600']} />
+              <Tags values={['bg-chess-bg', 'rounded-lg', 'font-semibold', 'border-gray-600']} />
             </Before>
             <After>
               <button className="w-full py-3 bg-chess-bg hover:bg-chess-bg-light text-white font-bold rounded-xl transition-colors border border-white/20 text-center">
@@ -147,11 +147,11 @@ export default function BeforeAfterPage() {
 
           <Compare label="Error Page Card">
             <Before>
-              <div className="bg-[#1A2C35] rounded-xl p-4">
+              <div className="bg-chess-bg-light rounded-xl p-4">
                 <p className="text-white font-bold text-sm">Something went wrong</p>
                 <p className="text-gray-400 text-xs mt-1">Please try again</p>
               </div>
-              <Tags values={['bg-[#1A2C35]', 'rounded-xl', 'text-gray-400']} />
+              <Tags values={['bg-chess-bg-light', 'rounded-xl', 'text-gray-400']} />
             </Before>
             <After>
               <div className="bg-chess-bg-light rounded-2xl p-4 border border-white/10">
@@ -235,19 +235,19 @@ export default function BeforeAfterPage() {
             <Before>
               <div className="rounded-xl overflow-hidden">
                 <div className="bg-black/70 p-4 flex items-center justify-center">
-                  <div className="bg-[#1A2C35] rounded-2xl border border-white/10 shadow-2xl overflow-hidden w-full max-w-xs">
-                    <div className="h-1.5 bg-gradient-to-r from-[#58CC02] to-[#1CB0F6]" />
+                  <div className="bg-chess-bg-light rounded-2xl border border-white/10 shadow-2xl overflow-hidden w-full max-w-xs">
+                    <div className="h-1.5 bg-gradient-to-r from-chess-green to-chess-blue" />
                     <div className="px-3 py-2">
                       <h3 className="text-sm font-bold text-white">Knight Forks</h3>
-                      <p className="text-[#A3B8C2] text-xs mt-1">Attack two pieces at once.</p>
-                      <button className="w-full mt-2 py-2 bg-[#58CC02] text-white font-bold rounded-xl text-xs uppercase tracking-wide shadow-[0_4px_0_#46A302]">
+                      <p className="text-chess-text-light text-xs mt-1">Attack two pieces at once.</p>
+                      <button className="w-full mt-2 py-2 bg-chess-green text-white font-bold rounded-xl text-xs uppercase tracking-wide shadow-[0_4px_0_#46A302]">
                         Start
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <Tags values={['bg-[#1A2C35]', 'from-[#58CC02]', 'text-[#A3B8C2]', 'bg-[#58CC02]']} />
+              <Tags values={['bg-chess-bg-light', 'from-chess-green', 'text-chess-text-light', 'bg-chess-green']} />
             </Before>
             <After>
               <div className="rounded-xl overflow-hidden">

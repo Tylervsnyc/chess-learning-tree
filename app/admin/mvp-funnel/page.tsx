@@ -29,7 +29,7 @@ export default function MVPFunnel() {
               </svg>
             </Link>
             <span className="text-white font-medium text-sm">MVP Funnel Preview</span>
-            <span className="px-2 py-0.5 rounded text-[10px] bg-[#58CC02]/20 text-[#58CC02]">FLOW</span>
+            <span className="px-2 py-0.5 rounded text-[10px] bg-chess-green/20 text-chess-green">FLOW</span>
           </div>
           <Link
             href={STEPS[currentStep].path}
@@ -51,10 +51,10 @@ export default function MVPFunnel() {
                 onClick={() => setCurrentStep(index)}
                 className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
                   currentStep === index
-                    ? 'bg-[#58CC02] text-black'
+                    ? 'bg-chess-green text-black'
                     : currentStep > index
-                    ? 'bg-[#58CC02]/20 text-[#58CC02]'
-                    : 'bg-[#1A2C35] text-gray-400 hover:bg-[#2A3C45]'
+                    ? 'bg-chess-green/20 text-chess-green'
+                    : 'bg-chess-bg-light text-gray-400 hover:bg-[#2A3C45]'
                 }`}
               >
                 <div
@@ -62,7 +62,7 @@ export default function MVPFunnel() {
                     currentStep === index
                       ? 'bg-black/20 text-black'
                       : currentStep > index
-                      ? 'bg-[#58CC02] text-black'
+                      ? 'bg-chess-green text-black'
                       : 'bg-gray-700 text-gray-400'
                   }`}
                 >
@@ -74,9 +74,9 @@ export default function MVPFunnel() {
           </div>
 
           {/* Progress bar */}
-          <div className="mt-4 h-1 bg-[#1A2C35] rounded-full overflow-hidden">
+          <div className="mt-4 h-1 bg-chess-bg-light rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#58CC02] transition-all duration-300"
+              className="h-full bg-chess-green transition-all duration-300"
               style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
             />
           </div>
@@ -91,7 +91,7 @@ export default function MVPFunnel() {
           className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
             currentStep === 0
               ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-              : 'bg-[#1A2C35] text-white hover:bg-[#2A3C45]'
+              : 'bg-chess-bg-light text-white hover:bg-[#2A3C45]'
           }`}
         >
           ← Previous
@@ -107,7 +107,7 @@ export default function MVPFunnel() {
           className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
             currentStep === STEPS.length - 1
               ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-              : 'bg-[#58CC02] text-black hover:scale-105'
+              : 'bg-chess-green text-black hover:scale-105'
           }`}
         >
           Next →

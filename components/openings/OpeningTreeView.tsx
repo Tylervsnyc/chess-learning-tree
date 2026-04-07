@@ -333,7 +333,7 @@ function TreeNodeEl({
               className="font-bold"
               style={{
                 fontSize,
-                color: '#2A3C45',
+                color: 'var(--color-chess-text)',
                 lineHeight: 1.25,
               }}
             >

@@ -188,7 +188,7 @@ function AgentCards() {
         {agents.map((agent) => (
           <div
             key={agent.type}
-            className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700/50"
+            className="bg-chess-bg-light rounded-xl p-4 border border-gray-700/50"
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ function AgentCards() {
             <p className="text-sm text-gray-400 mb-3">{agent.role}</p>
             <div className="space-y-1">
               {agent.ownedFiles.map((f) => (
-                <div key={f} className="text-xs font-mono text-gray-500 bg-[#131F24] px-2 py-1 rounded">
+                <div key={f} className="text-xs font-mono text-gray-500 bg-chess-bg px-2 py-1 rounded">
                   {f}
                 </div>
               ))}
@@ -220,7 +220,7 @@ function ConflictMatrix() {
     <section>
       <h2 className="text-lg font-bold text-white mb-4">Conflict Matrix</h2>
       <div className="overflow-x-auto">
-        <div className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700/50 inline-block min-w-full">
+        <div className="bg-chess-bg-light rounded-xl p-4 border border-gray-700/50 inline-block min-w-full">
           <table className="w-auto">
             <thead>
               <tr>
@@ -273,7 +273,7 @@ function FileOwnershipMap() {
   return (
     <section>
       <h2 className="text-lg font-bold text-white mb-4">File Ownership</h2>
-      <div className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700/50">
+      <div className="bg-chess-bg-light rounded-xl p-4 border border-gray-700/50">
         <div className="space-y-1 font-mono text-sm">
           {fileTree.map((entry) => (
             <div key={entry.path} className="flex items-center gap-3" style={{ paddingLeft: `${entry.indent * 16}px` }}>
@@ -353,12 +353,12 @@ function TaskTracker() {
       <h2 className="text-lg font-bold text-white mb-4">Task Tracker</h2>
 
       {/* Add Task Form */}
-      <form onSubmit={addTask} className="bg-[#1A2C35] rounded-xl p-4 border border-gray-700/50 mb-4">
+      <form onSubmit={addTask} className="bg-chess-bg-light rounded-xl p-4 border border-gray-700/50 mb-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <select
             value={newType}
             onChange={(e) => setNewType(e.target.value as AgentType)}
-            className="bg-[#131F24] border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
+            className="bg-chess-bg border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
           >
             {AGENT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -371,17 +371,17 @@ function TaskTracker() {
             onChange={(e) => setNewDesc(e.target.value)}
             placeholder="Task description..."
             rows={1}
-            className="flex-1 bg-[#131F24] border border-gray-600 rounded-lg px-3 py-2 text-white text-sm resize-none"
+            className="flex-1 bg-chess-bg border border-gray-600 rounded-lg px-3 py-2 text-white text-sm resize-none"
           />
           <input
             value={newBranch}
             onChange={(e) => setNewBranch(e.target.value)}
             placeholder="Branch (optional)"
-            className="bg-[#131F24] border border-gray-600 rounded-lg px-3 py-2 text-white text-sm sm:w-48"
+            className="bg-chess-bg border border-gray-600 rounded-lg px-3 py-2 text-white text-sm sm:w-48"
           />
           <button
             type="submit"
-            className="bg-[#58CC02] text-white font-bold text-sm px-4 py-2 rounded-lg whitespace-nowrap hover:bg-[#4CAF00] transition-colors"
+            className="bg-chess-green text-white font-bold text-sm px-4 py-2 rounded-lg whitespace-nowrap hover:bg-chess-green-dark transition-colors"
           >
             Add Task
           </button>
@@ -393,12 +393,12 @@ function TaskTracker() {
         {columns.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.status)
           return (
-            <div key={col.status} className="bg-[#1A2C35] rounded-xl p-3 border border-gray-700/50">
+            <div key={col.status} className="bg-chess-bg-light rounded-xl p-3 border border-gray-700/50">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wide">
                   {col.label}
                 </h3>
-                <span className="text-xs text-gray-500 bg-[#131F24] px-2 py-0.5 rounded-full">
+                <span className="text-xs text-gray-500 bg-chess-bg px-2 py-0.5 rounded-full">
                   {colTasks.length}
                 </span>
               </div>
@@ -409,7 +409,7 @@ function TaskTracker() {
                 {colTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="bg-[#131F24] rounded-lg p-3 border border-gray-700/30"
+                    className="bg-chess-bg rounded-lg p-3 border border-gray-700/30"
                   >
                     <div className="flex items-start gap-2 mb-2">
                       <div
@@ -473,9 +473,9 @@ function TaskTracker() {
 
 function AgentDashboardContent() {
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700 sticky top-0 z-50">
+      <div className="bg-chess-bg-light border-b border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -485,7 +485,7 @@ function AgentDashboardContent() {
               </div>
               <a
                 href="/admin"
-                className="text-sm text-gray-400 hover:text-[#1CB0F6] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-blue transition-colors"
               >
                 Back to Admin
               </a>

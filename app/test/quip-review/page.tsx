@@ -8,7 +8,7 @@ import { ROOKIE_CHARACTER_CARD } from '@/lib/rookie-os/character-card';
 // TYPES
 // ════════════════════════════════
 
-type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'needs-edit';
+type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'needs-edit' | 'favorite';
 
 interface QuipReview {
   status: ReviewStatus;
@@ -104,6 +104,7 @@ const STATUS_COLORS: Record<ReviewStatus, string> = {
   approved: 'bg-emerald-900/60 text-emerald-300 border border-emerald-700',
   rejected: 'bg-red-900/60 text-red-300 border border-red-700',
   'needs-edit': 'bg-amber-900/60 text-amber-300 border border-amber-700',
+  favorite: 'bg-fuchsia-900/60 text-fuchsia-300 border border-fuchsia-700',
 };
 
 const STATUS_LABELS: Record<ReviewStatus, string> = {
@@ -111,6 +112,7 @@ const STATUS_LABELS: Record<ReviewStatus, string> = {
   approved: 'Approved',
   rejected: 'Cut',
   'needs-edit': 'Needs Edit',
+  favorite: 'Fav',
 };
 
 // ════════════════════════════════
@@ -171,6 +173,16 @@ function QuipCard({
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        <button
+          onClick={() => setStatus('favorite')}
+          className={`text-xs px-3 py-1 rounded-md transition-colors ${
+            review.status === 'favorite'
+              ? 'bg-fuchsia-600 text-white'
+              : 'bg-zinc-700 text-zinc-300 hover:bg-fuchsia-800 hover:text-fuchsia-200'
+          }`}
+        >
+          Fav
+        </button>
         <button
           onClick={() => setStatus('approved')}
           className={`text-xs px-3 py-1 rounded-md transition-colors ${
@@ -291,10 +303,11 @@ export default function QuipReviewPage() {
   }, [mesExamples]);
 
   const stats = useMemo(() => {
-    const s = { total: allIds.length, approved: 0, rejected: 0, needsEdit: 0, pending: 0 };
+    const s = { total: allIds.length, approved: 0, rejected: 0, needsEdit: 0, pending: 0, favorite: 0 };
     for (const id of allIds) {
       const r = getReview(id);
-      if (r.status === 'approved') s.approved++;
+      if (r.status === 'favorite') s.favorite++;
+      else if (r.status === 'approved') s.approved++;
       else if (r.status === 'rejected') s.rejected++;
       else if (r.status === 'needs-edit') s.needsEdit++;
       else s.pending++;
@@ -345,6 +358,7 @@ export default function QuipReviewPage() {
         {/* Stats bar */}
         <div className="flex items-center gap-4 mb-6 text-sm">
           <span className="text-zinc-400">{stats.total} total</span>
+          <span className="text-fuchsia-400">{stats.favorite} fav</span>
           <span className="text-emerald-400">{stats.approved} kept</span>
           <span className="text-amber-400">{stats.needsEdit} edit</span>
           <span className="text-red-400">{stats.rejected} cut</span>
@@ -377,7 +391,7 @@ export default function QuipReviewPage() {
 
         {/* Filter */}
         <div className="flex gap-2 mb-6">
-          {(['all', 'pending', 'approved', 'needs-edit', 'rejected'] as FilterStatus[]).map(f => (
+          {(['all', 'pending', 'favorite', 'approved', 'needs-edit', 'rejected'] as FilterStatus[]).map(f => (
             <button
               key={f}
               onClick={() => setFilterStatus(f)}
@@ -511,6 +525,7 @@ export default function QuipReviewPage() {
               const filtered = lines.filter(l => filterQuip(l.id));
               const categoryStats = {
                 total: lines.length,
+                favorite: lines.filter(l => getReview(l.id).status === 'favorite').length,
                 approved: lines.filter(l => getReview(l.id).status === 'approved').length,
                 pending: lines.filter(l => getReview(l.id).status === 'pending').length,
               };
@@ -527,6 +542,9 @@ export default function QuipReviewPage() {
                     </div>
                     <div className="flex items-center gap-3 text-xs">
                       <span className="text-zinc-500">{categoryStats.total} quips</span>
+                      {categoryStats.favorite > 0 && (
+                        <span className="text-fuchsia-500">{categoryStats.favorite} fav</span>
+                      )}
                       {categoryStats.approved > 0 && (
                         <span className="text-emerald-500">{categoryStats.approved} kept</span>
                       )}

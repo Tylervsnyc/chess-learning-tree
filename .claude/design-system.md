@@ -165,20 +165,53 @@ For pages that should fill the screen (pricing, welcome):
 
 ---
 
-## Components Patterns
+## Shared Components
 
-### Buttons
+### ActionButton (`components/ui/ActionButton.tsx`)
+The Duolingo-style 3D button. Use this for ALL primary/secondary actions.
 ```tsx
-// Primary (green, for main actions)
-className="bg-chess-green text-white font-bold py-3 px-6 rounded-xl
-           hover:bg-chess-green-dark active:scale-95 transition-all"
+import { ActionButton } from '@/components/ui/ActionButton';
 
-// Secondary (blue, for navigation)
-className="bg-chess-blue text-white font-bold py-2 px-4 rounded-xl
-           hover:bg-chess-blue-dark"
+<ActionButton color="green" size="lg" fullWidth>Start Learning</ActionButton>
+<ActionButton color="blue" size="md">Continue</ActionButton>
+<ActionButton color="white" size="sm">Skip</ActionButton>
+<ActionButton color="red" size="md">Delete</ActionButton>
+<ActionButton color="gold" size="lg" fullWidth>Go Premium</ActionButton>
+```
+Colors: `green` | `blue` | `gold` | `red` | `white`. Sizes: `sm` | `md` | `lg`. Auto-plays click sound.
 
-// Ghost (text-only)
-className="text-chess-text-muted hover:text-chess-text"
+### PageLayout (`components/ui/PageLayout.tsx`)
+Full-height centered page container. Use for loading, error, setup screens.
+```tsx
+import { PageLayout } from '@/components/ui/PageLayout';
+
+<PageLayout>
+  <BreathingRook size="lg" />
+  <h1>Loading...</h1>
+</PageLayout>
+
+<PageLayout align="top" scroll>
+  {/* long scrollable content */}
+</PageLayout>
+```
+
+### RookieBubble (`components/ui/RookieBubble.tsx`)
+Rookie rook + speech bubble with caret. Use anywhere Rookie speaks.
+```tsx
+import { RookieBubble } from '@/components/ui/RookieBubble';
+
+// Horizontal (rook left, bubble right)
+<RookieBubble mood="happy">Nice fork!</RookieBubble>
+
+// Vertical (rook above, bubble below)
+<RookieBubble mood="defeated" direction="up" centered>
+  Well. That happened.
+</RookieBubble>
+```
+
+### Ghost buttons (inline, no component needed)
+```tsx
+className="text-chess-text-muted hover:text-chess-text font-semibold text-sm transition-colors"
 ```
 
 ### Cards

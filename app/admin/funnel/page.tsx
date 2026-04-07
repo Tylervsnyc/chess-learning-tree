@@ -126,7 +126,7 @@ function HeroCard({
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5">
-      <div className="text-2xl font-bold text-[#131F24]">{value.toLocaleString()}</div>
+      <div className="text-2xl font-bold text-chess-text">{value.toLocaleString()}</div>
       <div className="text-sm text-slate-500 mt-0.5">{label}</div>
       <div className="mt-3">
         <Sparkline data={sparkData} color={color} />
@@ -258,9 +258,9 @@ export default function FunnelPage() {
   const maxCount = Math.max(...stages.map((s) => s.count), 1);
 
   return (
-    <div className="min-h-screen bg-[#131F24] overflow-y-auto">
+    <div className="min-h-screen bg-chess-bg overflow-y-auto">
       {/* Sticky header */}
-      <div className="sticky top-0 z-10 bg-[#131F24]/95 backdrop-blur-sm border-b border-slate-700/50">
+      <div className="sticky top-0 z-10 bg-chess-bg/95 backdrop-blur-sm border-b border-slate-700/50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
@@ -286,7 +286,7 @@ export default function FunnelPage() {
                 onClick={() => setDays(p.value)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                   days === p.value
-                    ? 'bg-[#58CC02] text-white'
+                    ? 'bg-chess-green text-white'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -339,7 +339,7 @@ export default function FunnelPage() {
 
         {/* Funnel visualization */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-[#131F24] mb-6">
+          <h2 className="text-lg font-bold text-chess-text mb-6">
             Today&apos;s Funnel
           </h2>
           {loading ? (
@@ -419,7 +419,7 @@ export default function FunnelPage() {
                   >
                     <div className="text-xs text-slate-500 mb-1">{stage.label}</div>
                     <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-lg font-bold text-[#131F24]">
+                      <span className="text-lg font-bold text-chess-text">
                         {stage.count.toLocaleString()}
                       </span>
                       {delta !== 0 && histData.length >= 2 && (
@@ -447,7 +447,7 @@ export default function FunnelPage() {
               >
                 <div className="text-xs text-slate-500 mb-1">Daily Active Users</div>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-lg font-bold text-[#131F24]">
+                  <span className="text-lg font-bold text-chess-text">
                     {(data?.today.dau ?? 0).toLocaleString()}
                   </span>
                 </div>
@@ -491,7 +491,7 @@ export default function FunnelPage() {
                 return (
                   <>
                     <div className="flex items-baseline gap-3 mb-4">
-                      <span className="text-2xl font-bold text-[#131F24]">
+                      <span className="text-2xl font-bold text-chess-text">
                         {totalLessons.toLocaleString()}
                       </span>
                       <span className="text-sm text-slate-500">
@@ -508,7 +508,7 @@ export default function FunnelPage() {
                             style={{ height: '100%' }}
                           >
                             <div
-                              className="absolute bottom-0 left-0 right-0 bg-[#58CC02] rounded-t transition-all duration-300 hover:bg-[#46A302]"
+                              className="absolute bottom-0 left-0 right-0 bg-chess-green rounded-t transition-all duration-300 hover:bg-chess-green-dark"
                               style={{
                                 height: `${h}%`,
                                 animation: `funnelFadeIn 0.4s ease-out ${i * 0.03}s forwards`,
@@ -570,7 +570,7 @@ export default function FunnelPage() {
                     {data!.topUsers.map((user, i) => {
                       const email = user.email || 'Anonymous';
                       const initial = email[0]?.toUpperCase() ?? '?';
-                      const rankColors = ['bg-[#FFD700]', 'bg-slate-300', 'bg-amber-600'];
+                      const rankColors = ['bg-chess-gold', 'bg-slate-300', 'bg-amber-600'];
                       return (
                         <tr
                           key={i}
@@ -587,22 +587,22 @@ export default function FunnelPage() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2 min-w-0">
-                              <div className="w-8 h-8 bg-[#1CB0F6]/10 text-[#1CB0F6] rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 bg-chess-blue/10 text-chess-blue rounded-full flex items-center justify-center text-xs font-bold shrink-0">
                                 {initial}
                               </div>
-                              <div className="font-medium text-[#131F24] truncate max-w-[250px]">
+                              <div className="font-medium text-chess-text truncate max-w-[250px]">
                                 {email}
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-right font-medium text-[#131F24] tabular-nums">
+                          <td className="px-4 py-3 text-right font-medium text-chess-text tabular-nums">
                             {user.events.toLocaleString()}
                           </td>
                           <td className="px-4 py-3 text-right tabular-nums">
-                            <span className="text-[#58CC02] font-medium">{user.lessons}</span>
+                            <span className="text-chess-green font-medium">{user.lessons}</span>
                           </td>
                           <td className="px-4 py-3 text-right tabular-nums">
-                            <span className="text-[#FF9500] font-medium">{user.dailyRooks}</span>
+                            <span className="text-chess-orange font-medium">{user.dailyRooks}</span>
                           </td>
                           <td className="px-4 py-3 text-right text-slate-400 text-xs hidden sm:table-cell">
                             {formatTimeAgo(user.lastSeen)}
@@ -664,7 +664,7 @@ export default function FunnelPage() {
                           {initial}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm text-[#131F24] truncate">
+                          <div className="font-medium text-sm text-chess-text truncate">
                             {email}
                           </div>
                         </div>

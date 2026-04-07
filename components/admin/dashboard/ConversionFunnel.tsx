@@ -14,15 +14,15 @@ interface ConversionFunnelProps {
 }
 
 const STAGE_COLORS = [
-  { bg: 'bg-[#1CB0F6]', text: 'text-[#1CB0F6]', hex: '#1CB0F6' },        // Ad Traffic - blue
-  { bg: 'bg-[#1899D6]', text: 'text-[#1899D6]', hex: '#1899D6' },        // Landing - blue dark
+  { bg: 'bg-chess-blue', text: 'text-chess-blue', hex: '#1CB0F6' },        // Ad Traffic - blue
+  { bg: 'bg-chess-blue-dark', text: 'text-chess-blue-dark', hex: '#1899D6' },        // Landing - blue dark
   { bg: 'bg-[#3EAF5C]', text: 'text-[#3EAF5C]', hex: '#3EAF5C' },        // Signup Page - blue→green
-  { bg: 'bg-[#58CC02]', text: 'text-[#58CC02]', hex: '#58CC02' },        // Signed Up - green
-  { bg: 'bg-[#58CC02]', text: 'text-[#58CC02]', hex: '#58CC02' },        // First Lesson - green
-  { bg: 'bg-[#46A302]', text: 'text-[#46A302]', hex: '#46A302' },        // Lesson Done - green dark
-  { bg: 'bg-[#FF9500]', text: 'text-[#FF9500]', hex: '#FF9500' },        // Paywall - orange
+  { bg: 'bg-chess-green', text: 'text-chess-green', hex: '#58CC02' },        // Signed Up - green
+  { bg: 'bg-chess-green', text: 'text-chess-green', hex: '#58CC02' },        // First Lesson - green
+  { bg: 'bg-chess-green-dark', text: 'text-chess-green-dark', hex: '#46A302' },        // Lesson Done - green dark
+  { bg: 'bg-chess-orange', text: 'text-chess-orange', hex: '#FF9500' },        // Paywall - orange
   { bg: 'bg-[#E8A020]', text: 'text-[#E8A020]', hex: '#E8A020' },        // Checkout - orange→gold
-  { bg: 'bg-[#FFD700]', text: 'text-[#FFD700]', hex: '#FFD700' },        // Premium - gold
+  { bg: 'bg-chess-gold', text: 'text-chess-gold', hex: '#FFD700' },        // Premium - gold
 ];
 
 const PERIODS = [
@@ -41,9 +41,9 @@ function ConversionBadge({ from, to }: { from: number; to: number }) {
   const rate = (to / from) * 100;
   const dropped = from - to;
 
-  let colorClass = 'bg-[#58CC02]/15 text-[#58CC02]';
-  if (rate < 20) colorClass = 'bg-[#FF4B4B]/15 text-[#FF4B4B]';
-  else if (rate < 50) colorClass = 'bg-[#FF9500]/15 text-[#FF9500]';
+  let colorClass = 'bg-chess-green/15 text-chess-green';
+  if (rate < 20) colorClass = 'bg-chess-red/15 text-chess-red';
+  else if (rate < 50) colorClass = 'bg-chess-orange/15 text-chess-orange';
 
   return (
     <div className="flex items-center justify-center gap-2 py-1">
@@ -146,7 +146,7 @@ function StageBar({
             ${isNoData
               ? 'border-2 border-dashed border-slate-300 bg-slate-50'
               : isPremium
-                ? 'border-2 border-[#FFD700] bg-gradient-to-r from-[#FFD700]/10 via-[#FFF8DC]/20 to-[#FFD700]/10 shadow-[0_0_24px_rgba(255,215,0,0.25)]'
+                ? 'border-2 border-chess-gold bg-gradient-to-r from-chess-gold/10 via-[#FFF8DC]/20 to-chess-gold/10 shadow-[0_0_24px_rgba(255,215,0,0.25)]'
                 : `${color.bg}/10 border border-slate-200`
             }
           `}
@@ -166,12 +166,12 @@ function StageBar({
             <div className="flex items-center gap-2.5 min-w-0">
               <span className={`
                 w-7 h-7 rounded-lg flex items-center justify-center text-sm flex-shrink-0
-                ${isNoData ? 'bg-slate-200' : isPremium ? 'bg-[#FFD700]/20' : `${color.bg}/20`}
+                ${isNoData ? 'bg-slate-200' : isPremium ? 'bg-chess-gold/20' : `${color.bg}/20`}
               `}>
                 {stage.icon}
               </span>
               <div className="min-w-0">
-                <div className={`text-sm font-semibold truncate ${isPremium ? 'text-[#B8860B]' : 'text-chess-text'}`}>
+                <div className={`text-sm font-semibold truncate ${isPremium ? 'text-chess-gold-dark' : 'text-chess-text'}`}>
                   {stage.label}
                 </div>
                 {isNoData && (
@@ -186,7 +186,7 @@ function StageBar({
               {isNoData ? (
                 <span className="text-sm text-chess-text-faint italic">No data</span>
               ) : (
-                <span className={`text-lg font-bold tabular-nums ${isPremium ? 'text-[#B8860B]' : 'text-chess-text'}`}>
+                <span className={`text-lg font-bold tabular-nums ${isPremium ? 'text-chess-gold-dark' : 'text-chess-text'}`}>
                   {formatNumber(stage.count!)}
                 </span>
               )}
@@ -353,12 +353,12 @@ export default function ConversionFunnel({ refreshKey }: ConversionFunnelProps) 
 
             {/* Bottom summary */}
             <div className="mt-6 text-center">
-              <div className="inline-flex items-center gap-2 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-full px-4 py-2">
+              <div className="inline-flex items-center gap-2 bg-chess-gold/10 border border-chess-gold/30 rounded-full px-4 py-2">
                 <span>👑</span>
-                <span className="text-sm font-bold text-[#B8860B]">
+                <span className="text-sm font-bold text-chess-gold-dark">
                   {formatNumber(bottomCount)} premium members
                 </span>
-                <span className="text-xs text-[#B8860B]/60">
+                <span className="text-xs text-chess-gold-dark/60">
                   from {formatNumber(topCount)} visitors
                 </span>
               </div>

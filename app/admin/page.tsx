@@ -52,9 +52,9 @@ function AdminPageContent() {
   const currentCategory = getPageCategory(selectedPage)
 
   return (
-    <div className="min-h-screen bg-[#131F24] text-white">
+    <div className="min-h-screen bg-chess-bg text-white">
       {/* Admin Header */}
-      <div className="bg-[#1A2C35] border-b border-gray-700 sticky top-0 z-50">
+      <div className="bg-chess-bg-light border-b border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -64,37 +64,37 @@ function AdminPageContent() {
               </div>
               <Link
                 href="/admin/puzzle-process"
-                className="text-sm text-gray-400 hover:text-[#1CB0F6] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-blue transition-colors"
               >
                 Puzzle Pipeline Docs
               </Link>
               <Link
                 href="/admin/difficulty-analyzer"
-                className="text-sm text-gray-400 hover:text-[#58CC02] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-green transition-colors"
               >
                 Difficulty Analyzer
               </Link>
               <Link
                 href="/admin/ad-performance"
-                className="text-sm text-gray-400 hover:text-[#FFD700] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-gold transition-colors"
               >
                 Ad Performance
               </Link>
               <Link
                 href="/admin/agents"
-                className="text-sm text-gray-400 hover:text-[#CE82FF] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-purple transition-colors"
               >
                 Agent Dashboard
               </Link>
               <Link
                 href="/admin/revenue"
-                className="text-sm text-gray-400 hover:text-[#58CC02] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-green transition-colors"
               >
                 Revenue Dashboard
               </Link>
               <Link
                 href="/admin/paywall-analytics"
-                className="text-sm text-gray-400 hover:text-[#FFC800] transition-colors"
+                className="text-sm text-gray-400 hover:text-chess-gold transition-colors"
               >
                 Paywall Analytics
               </Link>
@@ -104,11 +104,11 @@ function AdminPageContent() {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 bg-[#131F24] border border-gray-600 rounded-lg px-4 py-2 hover:border-[#58CC02] transition-colors min-w-[220px] justify-between"
+                className="flex items-center gap-2 bg-chess-bg border border-gray-600 rounded-lg px-4 py-2 hover:border-chess-green transition-colors min-w-[220px] justify-between"
               >
                 <div className="flex items-center gap-2">
                   {currentCategory === 'mvp' && (
-                    <span className="w-2 h-2 rounded-full bg-[#58CC02]"></span>
+                    <span className="w-2 h-2 rounded-full bg-chess-green"></span>
                   )}
                   {currentCategory === 'pantry' && (
                     <span className="w-2 h-2 rounded-full bg-gray-500"></span>
@@ -129,14 +129,14 @@ function AdminPageContent() {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute top-full right-0 mt-2 w-80 bg-[#1A2C35] border border-gray-600 rounded-lg shadow-xl overflow-hidden z-50">
+                <div className="absolute top-full right-0 mt-2 w-80 bg-chess-bg-light border border-gray-600 rounded-lg shadow-xl overflow-hidden z-50">
                   {/* Tabs */}
                   <div className="flex border-b border-gray-700">
                     <button
                       onClick={() => setActiveTab('mvp')}
                       className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
                         activeTab === 'mvp'
-                          ? 'bg-[#58CC02]/20 text-[#58CC02] border-b-2 border-[#58CC02]'
+                          ? 'bg-chess-green/20 text-chess-green border-b-2 border-chess-green'
                           : 'text-gray-400 hover:text-white'
                       }`}
                     >
@@ -167,7 +167,7 @@ function AdminPageContent() {
                   <div className="max-h-80 overflow-y-auto">
                     {activeTab === 'mvp' && (
                       <>
-                        <div className="px-4 py-2 bg-[#58CC02]/10 text-xs text-[#58CC02]">
+                        <div className="px-4 py-2 bg-chess-green/10 text-xs text-chess-green">
                           Ship these first - core product
                         </div>
                         {mvpPages.map((page) => (
@@ -177,8 +177,8 @@ function AdminPageContent() {
                               setSelectedPage(page)
                               setIsDropdownOpen(false)
                             }}
-                            className={`w-full text-left px-4 py-3 hover:bg-[#131F24] transition-colors border-b border-gray-700/50 ${
-                              selectedPage.path === page.path ? 'bg-[#131F24] border-l-2 border-l-[#58CC02]' : ''
+                            className={`w-full text-left px-4 py-3 hover:bg-chess-bg transition-colors border-b border-gray-700/50 ${
+                              selectedPage.path === page.path ? 'bg-chess-bg border-l-2 border-l-[#58CC02]' : ''
                             }`}
                           >
                             <div className="font-medium">{page.name}</div>
@@ -200,8 +200,8 @@ function AdminPageContent() {
                               setSelectedPage(page)
                               setIsDropdownOpen(false)
                             }}
-                            className={`w-full text-left px-4 py-3 hover:bg-[#131F24] transition-colors border-b border-gray-700/50 ${
-                              selectedPage.path === page.path ? 'bg-[#131F24] border-l-2 border-l-gray-500' : ''
+                            className={`w-full text-left px-4 py-3 hover:bg-chess-bg transition-colors border-b border-gray-700/50 ${
+                              selectedPage.path === page.path ? 'bg-chess-bg border-l-2 border-l-gray-500' : ''
                             }`}
                           >
                             <div className="font-medium text-gray-300">{page.name}</div>
@@ -223,8 +223,8 @@ function AdminPageContent() {
                               setSelectedPage(page)
                               setIsDropdownOpen(false)
                             }}
-                            className={`w-full text-left px-4 py-3 hover:bg-[#131F24] transition-colors border-b border-gray-700/50 ${
-                              selectedPage.path === page.path ? 'bg-[#131F24] border-l-2 border-l-yellow-500' : ''
+                            className={`w-full text-left px-4 py-3 hover:bg-chess-bg transition-colors border-b border-gray-700/50 ${
+                              selectedPage.path === page.path ? 'bg-chess-bg border-l-2 border-l-yellow-500' : ''
                             }`}
                           >
                             <div className="font-medium text-gray-300">{page.name}</div>
@@ -242,11 +242,11 @@ function AdminPageContent() {
       </div>
 
       {/* Page Info Bar */}
-      <div className="bg-[#1A2C35]/50 border-b border-gray-700/50">
+      <div className="bg-chess-bg-light/50 border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {currentCategory === 'mvp' && (
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#58CC02]/20 text-[#58CC02]">
+              <span className="px-2 py-0.5 rounded text-xs font-medium bg-chess-green/20 text-chess-green">
                 MVP
               </span>
             )}
@@ -262,12 +262,12 @@ function AdminPageContent() {
             )}
             <span className="font-semibold">{selectedPage.name}</span>
             <span className="text-gray-500">•</span>
-            <code className="text-sm bg-[#131F24] px-2 py-1 rounded text-gray-300">{selectedPage.path}</code>
+            <code className="text-sm bg-chess-bg px-2 py-1 rounded text-gray-300">{selectedPage.path}</code>
           </div>
           <Link
             href={selectedPage.path}
             target="_blank"
-            className="flex items-center gap-2 text-sm text-[#1CB0F6] hover:text-[#58CC02] transition-colors"
+            className="flex items-center gap-2 text-sm text-chess-blue hover:text-chess-green transition-colors"
           >
             Open in new tab
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,16 +279,16 @@ function AdminPageContent() {
 
       {/* Page Preview */}
       <div className="max-w-7xl mx-auto p-4">
-        <div className="bg-[#1A2C35] rounded-xl overflow-hidden border border-gray-700">
+        <div className="bg-chess-bg-light rounded-xl overflow-hidden border border-gray-700">
           {/* Browser Chrome */}
-          <div className="bg-[#131F24] px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+          <div className="bg-chess-bg px-4 py-2 flex items-center gap-2 border-b border-gray-700">
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
               <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
             </div>
             <div className="flex-1 ml-4">
-              <div className="bg-[#1A2C35] rounded px-3 py-1 text-sm text-gray-400 max-w-md">
+              <div className="bg-chess-bg-light rounded px-3 py-1 text-sm text-gray-400 max-w-md">
                 localhost:3000{selectedPage.path}
               </div>
             </div>
@@ -298,7 +298,7 @@ function AdminPageContent() {
           <iframe
             key={selectedPage.path}
             src={selectedPage.path}
-            className="w-full h-[calc(100vh-220px)] bg-[#131F24]"
+            className="w-full h-[calc(100vh-220px)] bg-chess-bg"
             title={`Preview of ${selectedPage.name}`}
           />
         </div>
