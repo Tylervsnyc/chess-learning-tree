@@ -113,6 +113,7 @@ function useTypewriter(quips: string[], startDelay: number, idleInterval: number
     idleTimerRef.current = setTimeout(() => {
       setFading(true);
       setTimeout(() => {
+        setDisplayed('');
         setQuipIndex((prev) => (prev + 1) % quips.length);
         setFading(false);
       }, 300);
@@ -129,6 +130,7 @@ export function OnboardingFlow() {
   const [phase, setPhase] = useState(0);
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [learnExpanded, setLearnExpanded] = useState(false);
   const powerOnPlayedRef = useRef(false);
   const lastSpokenIndexRef = useRef(-1);
 
@@ -352,19 +354,50 @@ export function OnboardingFlow() {
             transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 80ms',
           }}
         >
-          <ActionButton
-            color="blue"
-            size="md"
-            fullWidth
-            onClick={() => handleRoute('learn', '/basics')}
-          >
-            <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
-              Learn
-            </span>
-            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
-              Show me which way the horsey goes
-            </span>
-          </ActionButton>
+          {!learnExpanded ? (
+            <ActionButton
+              color="blue"
+              size="md"
+              fullWidth
+              onClick={() => { playButtonClick(); setLearnExpanded(true); }}
+            >
+              <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
+                Learn
+              </span>
+              <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
+                Show me which way the horsey goes
+              </span>
+            </ActionButton>
+          ) : (
+            <div className="space-y-2">
+              <ActionButton
+                color="blue"
+                size="md"
+                fullWidth
+                onClick={() => handleRoute('learn', '/basics')}
+              >
+                <span className="font-black block" style={{ fontSize: 'clamp(16px, 4.5vw, 20px)' }}>
+                  Basics
+                </span>
+                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
+                  How the pieces move
+                </span>
+              </ActionButton>
+              <ActionButton
+                color="purple"
+                size="md"
+                fullWidth
+                onClick={() => handleRoute('learn', '/lesson/1-1-1')}
+              >
+                <span className="font-black block" style={{ fontSize: 'clamp(16px, 4.5vw, 20px)' }}>
+                  Checkmate
+                </span>
+                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
+                  I know the basics — let me win
+                </span>
+              </ActionButton>
+            </div>
+          )}
         </div>
       </div>
 

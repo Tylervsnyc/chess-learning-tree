@@ -87,8 +87,6 @@ export function NavHeader() {
   if (pathname?.startsWith('/test/rookie-promise')) return null;
   if (pathname?.startsWith('/test/basics-tutorial')) return null;
   if (pathname?.startsWith('/test/tutorial')) return null;
-  if (pathname?.startsWith('/lesson/') && !user) return null;
-  if (pathname === '/daily-challenge' && !user) return null;
   if (pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')) return null;
   if (pathname?.startsWith('/2026candidates')) return null;
 
@@ -149,6 +147,24 @@ export function NavHeader() {
                 >
                   Patron
                 </Link>
+              )}
+
+              {/* Guest auth buttons */}
+              {!loading && !user && (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap text-chess-text-muted hover:text-chess-text"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap bg-chess-green text-white"
+                  >
+                    Sign Up
+                  </Link>
+                </>
               )}
             </>
           )}
