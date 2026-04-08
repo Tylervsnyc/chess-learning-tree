@@ -168,6 +168,16 @@ export function OnboardingFlow() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Try auto-unlock on mount (works on desktop where autoplay is allowed)
+  useEffect(() => {
+    if (audioUnlocked) return;
+    warmupAudio();
+    const ctx = getSharedAudioContext();
+    if (ctx?.state === 'running') {
+      setAudioUnlocked(true);
+    }
+  }, [audioUnlocked]);
+
   // Power-on sound
   useEffect(() => {
     if (audioUnlocked && phase >= 2 && !powerOnPlayedRef.current) {

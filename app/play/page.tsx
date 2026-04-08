@@ -1739,45 +1739,12 @@ export default function PlayRookiePage() {
                         <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
                       </div>
                     ) : null}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => startGame()}
-                        className="flex-1 py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
-                      >
-                        Play Again
-                      </button>
-                      {coachingScript && coachingScript.messages.length > 0 && (
-                        <button
-                          onClick={() => setShowCoaching(true)}
-                          className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
-                        >
-                          Rookie&apos;s Take
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          if (keyMoments.length > 0) {
-                            const m = keyMoments[0];
-                            setReviewMomentIndex(0);
-                            setReviewMoveIndex(0);
-                            setFen(m.fenBefore);
-                            setReviewText(m.description);
-                            setReviewArrows([{
-                              startSquare: m.from,
-                              endSquare: m.to,
-                              color: getArrowColor(m.type),
-                            }]);
-                          } else {
-                            setReviewMoveIndex(0);
-                            setReviewText('Use the arrows to step through the game.');
-                          }
-                          setPhase('review');
-                        }}
-                        className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
-                      >
-                        Review
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => startGame()}
+                      className="w-full py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
+                    >
+                      Play Again
+                    </button>
                     <RookiePopup justCompleted="play" />
                   </div>
                 ) : speech.displayText ? (
