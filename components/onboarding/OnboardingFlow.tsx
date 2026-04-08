@@ -369,18 +369,18 @@ export function OnboardingFlow() {
               </span>
             </ActionButton>
           ) : (
-            <div className="space-y-2">
+            <div className="flex gap-2.5">
               <ActionButton
                 color="blue"
                 size="md"
                 fullWidth
                 onClick={() => handleRoute('learn', '/basics')}
               >
-                <span className="font-black block" style={{ fontSize: 'clamp(16px, 4.5vw, 20px)' }}>
+                <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Basics
                 </span>
-                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
-                  How the pieces move
+                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(9px, 2.2vw, 11px)', opacity: 0.7 }}>
+                  How pieces move
                 </span>
               </ActionButton>
               <ActionButton
@@ -389,11 +389,11 @@ export function OnboardingFlow() {
                 fullWidth
                 onClick={() => handleRoute('learn', '/lesson/1-1-1')}
               >
-                <span className="font-black block" style={{ fontSize: 'clamp(16px, 4.5vw, 20px)' }}>
+                <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Checkmate
                 </span>
-                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
-                  I know the basics — let me win
+                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(9px, 2.2vw, 11px)', opacity: 0.7 }}>
+                  I know the basics
                 </span>
               </ActionButton>
             </div>
