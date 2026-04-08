@@ -389,7 +389,7 @@ export function OnboardingFlow() {
                 color="purple"
                 size="md"
                 fullWidth
-                onClick={() => handleRoute('learn', '/lesson/1.1.1')}
+                onClick={() => handleRoute('learn', '/lesson/1.1.1?from=onboarding')}
               >
                 <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Checkmate
