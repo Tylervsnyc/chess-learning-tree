@@ -123,15 +123,6 @@ function useTypewriter(quips: string[], startDelay: number, idleInterval: number
   return { displayed, done, fading, text, quipIndex };
 }
 
-// ─── Floating chess pieces ───
-const FLOATING_PIECES = [
-  { char: '\u265A', x: 8, y: 12, size: 28, delay: 0, duration: 18 },
-  { char: '\u265B', x: 82, y: 8, size: 22, delay: 2, duration: 22 },
-  { char: '\u265E', x: 15, y: 72, size: 32, delay: 4, duration: 16 },
-  { char: '\u265D', x: 88, y: 68, size: 24, delay: 1, duration: 20 },
-  { char: '\u265F', x: 45, y: 5, size: 18, delay: 3, duration: 24 },
-  { char: '\u265C', x: 72, y: 82, size: 20, delay: 5, duration: 19 },
-];
 
 export function OnboardingFlow() {
   const router = useRouter();
@@ -217,12 +208,7 @@ export function OnboardingFlow() {
       onPointerDown={handleFirstInteraction}
     >
       <style>{`
-        @keyframes onb-float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          33% { transform: translateY(-12px) rotate(3deg); }
-          66% { transform: translateY(4px) rotate(-2deg); }
-        }
-        @keyframes onb-cursor-blink {
+@keyframes onb-cursor-blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
         }
@@ -232,26 +218,7 @@ export function OnboardingFlow() {
         }
       `}</style>
 
-      {/* Floating chess pieces */}
-      {FLOATING_PIECES.map((piece, i) => (
-        <div
-          key={i}
-          className="absolute pointer-events-none select-none"
-          style={{
-            left: `${piece.x}%`,
-            top: `${piece.y}%`,
-            fontSize: piece.size,
-            color: 'var(--color-chess-disabled)',
-            opacity: phase >= 1 ? 0.2 : 0,
-            transition: 'opacity 1.2s ease-out',
-            animation: phase >= 1 ? `onb-float ${piece.duration}s ease-in-out ${piece.delay}s infinite` : 'none',
-          }}
-        >
-          {piece.char}
-        </div>
-      ))}
-
-      {/* Logo */}
+{/* Logo */}
       <div
         className="pt-5 pl-5"
         style={{

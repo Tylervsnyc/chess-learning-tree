@@ -19,6 +19,7 @@ import {
 import { RookMultiplication, MULTIPLICATION_FRAMES } from './RookMultiplication';
 import { RookFullStory, FULL_STORY_FRAMES } from './RookFullStory';
 import { PuzzleExplainerReel, PUZZLE_EXPLAINER_TOTAL } from './PuzzleExplainerReel';
+import { DataRiverDailyReel, DATA_RIVER_DAILY_TOTAL } from './DataRiverDailyReel';
 import {
   FPS,
   FRAME_W,
@@ -195,6 +196,15 @@ export const Root: React.FC = () => {
         id="PuzzleExplainerReel"
         component={PuzzleExplainerReel as any} // eslint-disable-line
         durationInFrames={PUZZLE_EXPLAINER_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="DataRiverDaily"
+        component={DataRiverDailyReel as any} // eslint-disable-line
+        durationInFrames={DATA_RIVER_DAILY_TOTAL}
         fps={FPS}
         width={FRAME_W}
         height={FRAME_H}

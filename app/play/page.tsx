@@ -280,13 +280,6 @@ export default function PlayRookiePage() {
       honchoLoadedRef.current = true;
 
       const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
-      console.log(`[Honcho] Context loaded: chat=${honchoPreview ? 'yes' : 'no'} lastGame=${lastGameContext ? 'yes' : 'no'} representation=${honchoRepresentation ? 'yes' : 'no'}`);
-      if (honchoPreview) {
-        console.log('[Honcho] Chat context:', honchoPreview.slice(0, 120));
-      }
-      if (lastGameContext) {
-        console.log('[Honcho] Last game:', lastGameContext.slice(0, 120));
-      }
     });
   }, [user?.id]);
 
@@ -903,11 +896,7 @@ export default function PlayRookiePage() {
               },
             },
           }),
-        }).then(r => {
-          console.log(`[Honcho] Summary logged: ${r.ok ? 'ok' : 'failed'} — ${result} in ${moves.length} moves, accuracy ${Math.round(analysis.playerAccuracy)}%`);
-        }).catch(err => {
-          console.error('[Honcho] Summary log failed:', err);
-        });
+        }).catch(() => {});
       }
 
       // Generate Rookie's post-game summary with full analysis data
