@@ -11,7 +11,7 @@ test.describe('Smoke Tests', () => {
   });
 
   test('learn page loads', async ({ page }) => {
-    await page.goto('/learn');
+    await page.goto('/path');
     // Wait for the curriculum tree to render
     await expect(page.locator('body')).toBeVisible();
   });

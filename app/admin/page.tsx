@@ -8,7 +8,7 @@ const mvpPages = [
   { name: 'Landing', path: '/admin/landing-preview', description: 'Journey path landing with auto-animation' },
   { name: 'Login', path: '/auth/login', description: 'User authentication' },
   { name: 'Signup', path: '/auth/signup', description: 'User registration' },
-  { name: 'Learning Tree', path: '/learn', description: 'Main curriculum - 25 lessons by ELO' },
+  { name: 'Learning Tree', path: '/path', description: 'Main curriculum - 25 lessons by ELO' },
   { name: 'Lesson Player', path: '/lesson/1.1', description: 'Solve 6 puzzles per lesson' },
 ]
 

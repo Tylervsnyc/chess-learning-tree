@@ -9,11 +9,11 @@ test.describe('Navigation', () => {
     await page.goto('/');
 
     // Look for a link/button to the learn page
-    const learnLink = page.locator('a[href="/learn"], a[href*="learn"]').first();
+    const learnLink = page.locator('a[href="/path"], a[href*="path"]').first();
 
     if (await learnLink.isVisible().catch(() => false)) {
       await learnLink.click();
-      await expect(page).toHaveURL(/learn/);
+      await expect(page).toHaveURL(/path/);
     }
   });
 
@@ -31,7 +31,7 @@ test.describe('Navigation', () => {
 
 test.describe('Curriculum Tree', () => {
   test('learn page shows curriculum content', async ({ page }) => {
-    await page.goto('/learn');
+    await page.goto('/path');
 
     // Wait for page to load
     await page.waitForLoadState('networkidle');

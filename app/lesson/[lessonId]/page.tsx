@@ -1079,7 +1079,7 @@ export default function LessonPage() {
 
   // Confetti + celebration sound now handled by LessonCompleteScreen component
 
-  // Unlock check - redirect to /learn if lesson is locked
+  // Unlock check - redirect to /path if lesson is locked
   // Admin users bypass this check
   const lessonUnlocked = isLessonUnlocked(lessonId, allLessonIds);
 
@@ -1210,7 +1210,7 @@ export default function LessonPage() {
             if (!user) {
               setShowGuestCelebration(true);
             } else {
-              window.location.href = `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+              window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
             }
           }}
           onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
@@ -1319,7 +1319,7 @@ export default function LessonPage() {
               if (!user) {
                 setShowGuestCelebration(true);
               } else {
-                window.location.href = `/learn?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
+                window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
               }
             }}
             onRetry={firstAttemptCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}

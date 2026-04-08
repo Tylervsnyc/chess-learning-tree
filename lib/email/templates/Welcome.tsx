@@ -156,7 +156,7 @@ export function Welcome({
         titleColor="green"
         tagline="Tactical Trainer"
         description="Incredible puzzles that take you from beginner to 2000 ELO. Forks, pins, skewers, discovered attacks -- each lesson builds on the last, getting harder as you level up."
-        href={`${appUrl}/learn?${UTM_BASE}&utm_content=path`}
+        href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
         cta="Start Training"
         imageUrl={FEATURE_IMAGES.path}
         imageAlt="The Path -- structured chess lessons"
@@ -185,7 +185,7 @@ export function Welcome({
       />
 
       <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/learn?${UTM_BASE}&utm_content=cta`}>
+        <ChessButton href={`${appUrl}/path?${UTM_BASE}&utm_content=cta`}>
           Make Your First Move
         </ChessButton>
       </Section>

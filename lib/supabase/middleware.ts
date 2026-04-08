@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Public paths that don't need auth checks - skip to avoid latency
-const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/cron/', '/learn', '/welcome'];
+const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/cron/', '/path', '/welcome'];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -39,7 +39,7 @@ export async function updateSession(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      return NextResponse.redirect(new URL('/learn', request.url));
+      return NextResponse.redirect(new URL('/path', request.url));
     }
     return NextResponse.redirect(new URL('/welcome', request.url));
   }

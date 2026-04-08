@@ -12,11 +12,11 @@ export default async function SharePage({
   }
 
   // Render minimal HTML so crawlers see the OG meta tags from layout.tsx,
-  // then redirect real users to /learn via client-side JS.
+  // then redirect real users to /path via client-side JS.
   return (
     <script
       dangerouslySetInnerHTML={{
-        __html: "window.location.replace('/learn')",
+        __html: "window.location.replace('/path')",
       }}
     />
   );

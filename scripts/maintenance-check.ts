@@ -830,7 +830,7 @@ function loadEnvFile() {
 // Key pages to test — covers the main user flows
 const SMOKE_TEST_PAGES = [
   '/',
-  '/learn',
+  '/path',
   '/daily-challenge',
   '/lesson/1.1.1',       // First lesson (level 1)
   '/lesson/3.1.1',       // Mid-level lesson (level 3)

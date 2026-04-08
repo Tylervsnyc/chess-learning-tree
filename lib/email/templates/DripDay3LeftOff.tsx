@@ -156,7 +156,7 @@ export function DripDay3LeftOff({
         titleColor="green"
         tagline="Tactical Trainer"
         description="Pick up right where you left off. The puzzles are still there, getting progressively harder as you level up."
-        href={`${appUrl}/learn?${UTM_BASE}&utm_content=path`}
+        href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
         cta="Continue Training"
         imageUrl={FEATURE_IMAGES.path}
         imageAlt="The Path -- structured chess lessons"
@@ -185,7 +185,7 @@ export function DripDay3LeftOff({
       />
 
       <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/learn?${UTM_BASE}&utm_content=cta`}>
+        <ChessButton href={`${appUrl}/path?${UTM_BASE}&utm_content=cta`}>
           Come Back To Rookie
         </ChessButton>
       </Section>

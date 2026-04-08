@@ -8,7 +8,7 @@ const STEPS = [
   { id: 'choice', name: 'Choose Path', path: '/onboarding' },
   { id: 'diagnostic', name: 'Diagnostic', path: '/onboarding/diagnostic' },
   { id: 'complete', name: 'Results', path: '/onboarding/complete?elo=850&level=intermediate' },
-  { id: 'learn-guest', name: 'Chess Path', path: '/learn?guest=true&level=intermediate' },
+  { id: 'learn-guest', name: 'Chess Path', path: '/path?guest=true&level=intermediate' },
   { id: 'lesson', name: 'First Lesson', path: '/lesson/2.1?guest=true' },
   { id: 'signup', name: 'Sign Up', path: '/auth/signup?from=lesson' },
   { id: 'welcome', name: 'Welcome', path: '/auth/welcome' },

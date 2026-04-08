@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
+import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
 
 function LearnDropdown({ pathname }: { pathname: string | null }) {
   const [open, setOpen] = useState(false);
@@ -25,7 +26,7 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
   // Close on route change
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  const isLearnActive = pathname === '/' || pathname?.startsWith('/openings') || pathname?.startsWith('/lesson/');
+  const isLearnActive = pathname === '/' || pathname?.startsWith('/path') || pathname?.startsWith('/openings') || pathname?.startsWith('/lesson/');
 
   return (
     <div ref={ref} className="relative">
@@ -44,7 +45,7 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
       {open && (
         <div className="absolute top-full right-0 mt-1 flex flex-col gap-1 bg-chess-surface rounded-lg shadow-lg border border-purple-100 p-1 z-50">
           <Link
-            href="/"
+            href="/path"
             className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap bg-chess-red/10 text-chess-red hover:bg-chess-red hover:text-white"
             onClick={() => setOpen(false)}
           >
@@ -152,8 +153,8 @@ export function NavHeader() {
                 <span className="relative">Daily</span>
               </Link>
 
-              {/* Patron — free users only */}
-              {user && profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+              {/* Patron — free users only, hidden when monetization is off */}
+              {MONETIZATION_ENABLED && user && profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
                   className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${

@@ -108,7 +108,7 @@ test.describe('Signup Page', () => {
 
 test.describe('Auth Redirects', () => {
   test('login preserves redirect parameter', async ({ page }) => {
-    await page.goto('/auth/login?redirect=/learn');
+    await page.goto('/auth/login?redirect=/path');
 
     // The signup link should include the redirect
     const signupLink = page.getByRole('link', { name: /sign up/i });
