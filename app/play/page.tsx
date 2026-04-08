@@ -39,11 +39,11 @@ import { extractFacts } from '@/lib/speech/fact-extractor';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
-import { RookiePopup } from '@/components/shared/DailyRitual';
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import { useClickToMove } from '@/hooks/useClickToMove';
+import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
@@ -303,6 +303,7 @@ export default function PlayRookiePage() {
   const [rookieThinking, setRookieThinking] = useState(false);
   const [gameResult, setGameResult] = useState<string | null>(null);
   const [resignArmed, setResignArmed] = useState(false);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   // Eval bar state
   const [evalPct, setEvalPct] = useState(50); // white percentage
@@ -1703,22 +1704,16 @@ export default function PlayRookiePage() {
               </div>
               <div className="flex-1 min-w-0">
                 {phase === 'gameover' && gameResult ? (
-                  <div className="space-y-1.5">
-                    <p className="text-sm font-black leading-tight">{gameResult}</p>
-                    {postGame.analysis ? (
-                      <AnalysisSummary analysis={postGame.analysis} />
-                    ) : postGame.isAnalyzing ? (
-                      <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
-                        <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
-                      </div>
-                    ) : null}
-                    <button
-                      onClick={() => startGame()}
-                      className="w-full py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
-                    >
-                      Play Again
-                    </button>
-                    <RookiePopup justCompleted="play" />
+                  <div key="gameover-bubble" className="relative rookie-glitch">
+                    <div
+                      className="absolute top-3 -left-[6px] w-2.5 h-2.5 bg-chess-surface rotate-45 rounded-[2px]"
+                      style={{ boxShadow: '-1px 1px 2px rgba(0,0,0,0.04)' }}
+                    />
+                    <div className="relative bg-chess-surface rounded-xl px-3 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
+                      <p className="text-chess-text text-[13px] leading-relaxed font-medium">
+                        {gameResult}
+                      </p>
+                    </div>
                   </div>
                 ) : speech.displayText ? (
                   <div key={speech.msgKey} className="relative rookie-glitch">
@@ -1797,7 +1792,46 @@ export default function PlayRookiePage() {
             ) : phase === 'playing' && rookieThinking ? (
               <p className="text-xs font-medium text-chess-text-faint text-center h-5">Rookie is thinking...</p>
             ) : phase === 'gameover' ? (
-              <div className="h-5" />
+              <div className="space-y-2 pt-1">
+                {postGame.analysis ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-xs font-semibold text-chess-text-muted">Accuracy</span>
+                    <span className={`text-lg font-black ${
+                      Math.round(postGame.analysis.playerAccuracy) >= 80 ? 'text-chess-green' :
+                      Math.round(postGame.analysis.playerAccuracy) >= 60 ? 'text-amber-400' : 'text-red-400'
+                    }`}>{Math.round(postGame.analysis.playerAccuracy)}%</span>
+                  </div>
+                ) : postGame.isAnalyzing ? (
+                  <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
+                    <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
+                  </div>
+                ) : null}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        setShowSignupPrompt(true);
+                      } else {
+                        startGame();
+                      }
+                    }}
+                    className="flex-1 py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
+                  >
+                    Play Again
+                  </button>
+                  {moveLogRef.current.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setReviewMoveIndex(-1);
+                        setPhase('review');
+                      }}
+                      className="flex-1 py-2 bg-chess-surface border border-chess-disabled text-chess-text font-bold rounded-xl text-sm"
+                    >
+                      Review
+                    </button>
+                  )}
+                </div>
+              </div>
             ) : phase === 'review' ? (
               <div className="space-y-2">
                 <ReviewNav />
@@ -1945,6 +1979,11 @@ export default function PlayRookiePage() {
           onClose={() => setShowCoaching(false)}
           playerName={playerName || undefined}
         />
+      )}
+
+      {/* Guest signup prompt after game */}
+      {showSignupPrompt && (
+        <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); startGame(); }} />
       )}
     </div>
   );
