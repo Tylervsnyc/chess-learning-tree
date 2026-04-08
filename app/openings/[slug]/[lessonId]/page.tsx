@@ -32,6 +32,7 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup'
 import { getRuyLopezLesson } from '@/data/openings/ruy-lopez-lessons'
 import { getPircLesson } from '@/data/openings/pirc-lessons'
 import { getPircAustrianLesson } from '@/data/openings/pirc-austrian-lessons'
+import { getPirc150AttackLesson } from '@/data/openings/pirc-150-attack-lessons'
 import { getItalianLesson } from '@/data/openings/italian-lessons'
 import { getSicilianLesson } from '@/data/openings/sicilian-lessons'
 import { getLondonLesson } from '@/data/openings/london-lessons'
@@ -64,6 +65,7 @@ import { getPetroff3d4Lesson } from '@/data/openings/petroff-3d4-lessons'
 import { getPetroff5nc3Lesson } from '@/data/openings/petroff-5nc3-lessons'
 import { getItalianEvansGambitLesson } from '@/data/openings/italian-evans-gambit-lessons'
 import { getLondonVsC5Lesson } from '@/data/openings/london-vs-c5-lessons'
+import { getLondonVsKingsIndianLesson } from '@/data/openings/london-vs-kings-indian-lessons'
 import { getFrenchTarraschLesson } from '@/data/openings/french-tarrasch-lessons'
 import { getItalianTwoKnightsLesson } from '@/data/openings/italian-two-knights-lessons'
 import { getCaroKannAdvanceLesson } from '@/data/openings/caro-kann-advance-lessons'
@@ -173,6 +175,7 @@ export default function OpeningLessonPage() {
       'ruy-lopez': getRuyLopezLesson,
       'pirc-defense': getPircLesson,
       'pirc-austrian': getPircAustrianLesson,
+      'pirc-150-attack': getPirc150AttackLesson,
       'italian': getItalianLesson,
       'sicilian': getSicilianLesson,
       'london': getLondonLesson,
@@ -205,6 +208,7 @@ export default function OpeningLessonPage() {
       'petroff-5nc3': getPetroff5nc3Lesson,
       'italian-evans-gambit': getItalianEvansGambitLesson,
       'london-vs-c5': getLondonVsC5Lesson,
+      'london-vs-kings-indian': getLondonVsKingsIndianLesson,
       'french-tarrasch': getFrenchTarraschLesson,
       'italian-two-knights': getItalianTwoKnightsLesson,
       'caro-kann-advance': getCaroKannAdvanceLesson,

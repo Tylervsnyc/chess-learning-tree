@@ -146,7 +146,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     },
     variations: [
       { name: 'Austrian Attack', subtitle: '4.f4 — White goes all-in', icon: 'lightning', hasData: true },
-      { name: '150 Attack', subtitle: '4.Be3 — quiet but dangerous', icon: 'shield', hasData: false },
+      { name: '150 Attack', subtitle: '4.Be3 — quiet but dangerous', icon: 'shield', hasData: true, slug: 'pirc-150-attack' },
     ],
   },
   {
@@ -333,7 +333,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: 'Bf4 + e3 + Nf3 — the pyramid · 9 lessons',
     },
     variations: [
-      { name: 'vs King\'s Indian', subtitle: '...Nf6, ...g6 — handle the fianchetto', icon: 'knight', hasData: false },
+      { name: 'vs King\'s Indian', subtitle: '...Nf6, ...g6 — handle the fianchetto', icon: 'knight', hasData: true, slug: 'london-vs-kings-indian' },
       { name: 'vs ...c5', subtitle: 'Counter-strike the center', icon: 'shield', hasData: true, slug: 'london-vs-c5' },
     ],
   },

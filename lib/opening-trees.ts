@@ -7,6 +7,7 @@ import { ITALIAN_GAME } from '@/data/openings/italian'
 import { SICILIAN_DEFENSE } from '@/data/openings/sicilian'
 import { PIRC_DEFENSE } from '@/data/openings/pirc'
 import { PIRC_AUSTRIAN } from '@/data/openings/pirc-austrian'
+import { PIRC_150_ATTACK } from '@/data/openings/pirc-150-attack'
 import { LONDON_SYSTEM } from '@/data/openings/london'
 import { FRENCH_DEFENSE } from '@/data/openings/french'
 import { CARO_KANN } from '@/data/openings/caro-kann'
@@ -37,6 +38,7 @@ import { PETROFF_3D4 } from '@/data/openings/petroff-3d4'
 import { PETROFF_5NC3 } from '@/data/openings/petroff-5nc3'
 import { ITALIAN_EVANS_GAMBIT } from '@/data/openings/italian-evans-gambit'
 import { LONDON_VS_C5 } from '@/data/openings/london-vs-c5'
+import { LONDON_VS_KINGS_INDIAN } from '@/data/openings/london-vs-kings-indian'
 import { FRENCH_TARRASCH } from '@/data/openings/french-tarrasch'
 import { ITALIAN_TWO_KNIGHTS } from '@/data/openings/italian-two-knights'
 import { CARO_KANN_ADVANCE } from '@/data/openings/caro-kann-advance'
@@ -51,6 +53,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'sicilian': SICILIAN_DEFENSE,
   'pirc-defense': PIRC_DEFENSE,
   'pirc-austrian': PIRC_AUSTRIAN,
+  'pirc-150-attack': PIRC_150_ATTACK,
   'london': LONDON_SYSTEM,
   'french': FRENCH_DEFENSE,
   'caro-kann': CARO_KANN,
@@ -81,6 +84,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'petroff-5nc3': PETROFF_5NC3,
   'italian-evans-gambit': ITALIAN_EVANS_GAMBIT,
   'london-vs-c5': LONDON_VS_C5,
+  'london-vs-kings-indian': LONDON_VS_KINGS_INDIAN,
   'french-tarrasch': FRENCH_TARRASCH,
   'italian-two-knights': ITALIAN_TWO_KNIGHTS,
   'caro-kann-advance': CARO_KANN_ADVANCE,
