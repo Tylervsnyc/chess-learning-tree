@@ -9,6 +9,7 @@ import {
   playCaptureSound,
   warmupAudio,
   playCelebrationSound,
+  getSharedAudioContext,
 } from '@/lib/sounds';
 import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
@@ -38,6 +39,7 @@ import { extractFacts } from '@/lib/speech/fact-extractor';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
+import { RookiePopup } from '@/components/shared/DailyRitual';
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
@@ -540,6 +542,34 @@ export default function PlayRookiePage() {
     generateGameEndLine,
     initialUsedRecently: rookieMemory.usedRecently,
   });
+
+  // Speak the setup greeting as soon as page loads (desktop: auto, mobile: first tap)
+  const setupGreetingSpokenRef = useRef(false);
+  useEffect(() => {
+    if (phase !== 'setup' || setupGreetingSpokenRef.current) return;
+
+    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
+
+    const trySpeak = () => {
+      if (setupGreetingSpokenRef.current) return;
+      setupGreetingSpokenRef.current = true;
+      warmupAudio();
+      speakQuip(greeting.quote);
+    };
+
+    // Try auto-play (works on desktop where autoplay is allowed)
+    warmupAudio();
+    const ctx = getSharedAudioContext();
+    if (ctx?.state === 'running') {
+      trySpeak();
+      return;
+    }
+
+    // Mobile fallback: speak on first interaction
+    const handler = () => trySpeak();
+    document.addEventListener('pointerdown', handler, { once: true });
+    return () => document.removeEventListener('pointerdown', handler);
+  }, [phase, rookieLevel, speakQuip]);
 
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
@@ -1748,6 +1778,7 @@ export default function PlayRookiePage() {
                         Review
                       </button>
                     </div>
+                    <RookiePopup justCompleted="play" />
                   </div>
                 ) : speech.displayText ? (
                   <div key={speech.msgKey} className="relative rookie-glitch">

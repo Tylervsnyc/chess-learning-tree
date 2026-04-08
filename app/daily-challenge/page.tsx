@@ -24,6 +24,7 @@ import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
 import { useClickToMove } from '@/hooks/useClickToMove';
+import { RookiePopup } from '@/components/shared/DailyRitual';
 
 interface Puzzle {
   puzzleId: string;
@@ -1134,6 +1135,9 @@ export default function DailyChallengePage() {
               <div className="mb-2">
                 <AdSlot position="daily-complete" />
               </div>
+
+              {/* Daily ritual */}
+              {user && <RookiePopup justCompleted="daily" />}
 
               {/* Bottom action buttons */}
               {!user ? (

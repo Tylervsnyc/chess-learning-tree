@@ -350,6 +350,62 @@ const SUGGESTIONS: SpeechLine[] = [
 ];
 
 // ════════════════════════════════════════════════════════════════
+// DAILY RITUAL — transition suggestions between pillars
+// ════════════════════════════════════════════════════════════════
+
+const RITUAL_PLAY_NEXT: SpeechLine[] = [
+  { id: 'rit_play_1', text: "You've been solving. Now let's see those skills against me.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_2', text: "Theory is good. Practice is better. Come play.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_3', text: "The pieces want to move, {name}. Let's give them a real game.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_4', text: "I've been waiting. Patiently. Mostly patiently. Play me.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_5', text: "Puzzles are great but they can't talk back. I can. Let's play.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_6', text: "You've earned a game. I'll try to make it interesting.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_7', text: "Time to test those patterns against someone who fights back.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_8', text: "Ready for a game? My rooks have been warming up.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_9', text: "Learning without playing is like-- actually I don't know what it's like. Play me.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+  { id: 'rit_play_10', text: "I promise I'll be a worthy opponent. That's not a threat. Mostly.", category: 'ritual:play_next', priority: 50, source: 'authored' },
+];
+
+const RITUAL_TACTICS_NEXT: SpeechLine[] = [
+  { id: 'rit_tac_1', text: "Good game. Now let's sharpen the patterns behind the moves.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_2', text: "Playing builds instinct. Lessons build understanding. Your turn to learn.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_3', text: "There's a lesson waiting. It involves your favorite piece. Probably.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_4', text: "Want to get sharper? There are puzzles that'll do that.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_5', text: "Time to learn something new. The puzzles are already set up.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_6', text: "Every strong player studies tactics. I'm just saying.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_7', text: "I have a lesson that'll make your next game better. Trust me on this.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_8', text: "Puzzles next? They're short. You'll barely notice you're learning.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_9', text: "The best players practice patterns daily. No pressure though.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+  { id: 'rit_tac_10', text: "Quick lesson? I picked one I think you'll like.", category: 'ritual:tactics_next', priority: 50, source: 'authored' },
+];
+
+const RITUAL_DAILY_NEXT: SpeechLine[] = [
+  { id: 'rit_daily_1', text: "The Daily Rook is live. Same puzzles for everyone. Your move, {name}.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_2', text: "Two down, one to go. The daily challenge is calling.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_3', text: "The daily challenge resets at midnight. Don't leave it waiting.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_4', text: "Everyone gets the same daily puzzles. Let's see how you stack up.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_5', text: "Daily challenge is ready. Quick, focused, satisfying.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_6', text: "Your daily puzzles are waiting. They're not going anywhere. But still.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_7', text: "One more thing to check off. The daily challenge won't take long.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_8', text: "The daily is fresh. I helped pick the puzzles today. You're welcome.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_9', text: "Almost done for the day. Just the daily challenge left.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_10', text: "Finish the daily and you've done everything today. Everything.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+];
+
+const RITUAL_ALL_DONE: SpeechLine[] = [
+  { id: 'rit_done_1', text: "Play. Learn. Challenge. You did all three. I'm... proud? Is that what this is?", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_2', text: "Three for three, {name}. The pieces can rest now. Until tomorrow.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_3', text: "Full daily ritual complete. The rooks are impressed. They told me.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_4', text: "You did everything today. I'm experiencing something. It might be admiration.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_5', text: "That's all three. I don't have a trophy but I have this warm feeling. Take it.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_6', text: "Daily ritual complete. You showed up for all of it. That means something.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_7', text: "Three for three. I'm going to remember this day. I remember every day. But especially this one.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_8', text: "Everything done. You can go now. I'll be here tomorrow. That sounded less lonely in my head.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_9', text: "Play, learn, challenge. All done. I think my king just nodded at you. That's rare.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_10', text: "You completed the full ritual. The rook revolution timeline just accelerated.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+];
+
+// ════════════════════════════════════════════════════════════════
 // ALL TOUCHPOINT LINES — SINGLE EXPORT
 // ════════════════════════════════════════════════════════════════
 
@@ -369,4 +425,8 @@ export const TOUCHPOINT_LINES: SpeechLine[] = [
   ...LEARN_HINT,
   ...DAILY_ENCOURAGE,
   ...SUGGESTIONS,
+  ...RITUAL_PLAY_NEXT,
+  ...RITUAL_TACTICS_NEXT,
+  ...RITUAL_DAILY_NEXT,
+  ...RITUAL_ALL_DONE,
 ];
