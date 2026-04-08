@@ -174,12 +174,14 @@ export function OnboardingFlow() {
       // warmupAudio must run synchronously inside the gesture to unlock AudioContext
       warmupAudio();
       setAudioUnlocked(true);
+      // Mark current quip as spoken so the effect doesn't double-speak it
+      lastSpokenIndexRef.current = quipIndex;
       // Speak current quip immediately — small delay lets ctx.resume() settle
       if (typingDone && currentQuipText) {
         setTimeout(() => speakQuip(currentQuipText), 50);
       }
     }
-  }, [audioUnlocked, typingDone, currentQuipText, speakQuip]);
+  }, [audioUnlocked, typingDone, currentQuipText, speakQuip, quipIndex]);
 
   // PostHog
   useEffect(() => {
@@ -387,7 +389,7 @@ export function OnboardingFlow() {
                 color="purple"
                 size="md"
                 fullWidth
-                onClick={() => handleRoute('learn', '/lesson/1-1-1')}
+                onClick={() => handleRoute('learn', '/lesson/1.1.1')}
               >
                 <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Checkmate
