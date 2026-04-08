@@ -19,7 +19,6 @@ import {
 import { ShareEvents } from '@/lib/analytics/posthog'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
 import { AdSlot } from '@/components/ads/AdSlot'
-import { RookiePopup } from '@/components/shared/DailyRitual'
 
 // ═══════════════════════════════════════════
 // SHARED LESSON COMPLETE — always a modal card
@@ -343,9 +342,6 @@ export function LessonComplete({
               Continue
             </button>
           )}
-
-          {/* Daily ritual */}
-          {!isGuest && !didFail && <RookiePopup justCompleted="tactics" />}
 
           {/* Guest signup prompt (full-screen overlay) */}
           {isGuest && showSignupPrompt && (
