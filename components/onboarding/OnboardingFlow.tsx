@@ -171,17 +171,13 @@ export function OnboardingFlow() {
 
   const handleFirstInteraction = useCallback(() => {
     if (!audioUnlocked) {
-      // warmupAudio must run synchronously inside the gesture to unlock AudioContext
+      // Just unlock audio — don't retroactively speak queued quips.
+      // The user's first tap is usually a button that navigates away.
       warmupAudio();
+      lastSpokenIndexRef.current = quipIndex; // prevent effect from speaking stale quip
       setAudioUnlocked(true);
-      // Mark current quip as spoken so the effect doesn't double-speak it
-      lastSpokenIndexRef.current = quipIndex;
-      // Speak current quip immediately — small delay lets ctx.resume() settle
-      if (typingDone && currentQuipText) {
-        setTimeout(() => speakQuip(currentQuipText), 50);
-      }
     }
-  }, [audioUnlocked, typingDone, currentQuipText, speakQuip, quipIndex]);
+  }, [audioUnlocked, quipIndex]);
 
   // PostHog
   useEffect(() => {

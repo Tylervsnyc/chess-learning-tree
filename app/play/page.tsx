@@ -1330,6 +1330,8 @@ export default function PlayRookiePage() {
   // START GAME
   // ════════════════════════════════
   const startGame = () => {
+    // Prevent setup greeting from firing (onPointerDown fires before onClick)
+    setupGreetingSpokenRef.current = true;
     warmupAudio();
     speech.reset();
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
@@ -1623,6 +1625,7 @@ export default function PlayRookiePage() {
             {/* Play button */}
             <button
               onClick={startGame}
+              onPointerDown={(e) => { setupGreetingSpokenRef.current = true; e.stopPropagation(); }}
               className="w-full py-4 bg-chess-green text-white font-bold rounded-xl text-lg shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
             >
               Let&apos;s Play
