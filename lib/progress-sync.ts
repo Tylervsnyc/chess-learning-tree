@@ -87,6 +87,10 @@ export function mergeProgress(
     lessonsCompletedToday, // Server value takes priority
     lastLessonDate,
     unlockedLevels, // Merged from both local and server
+    // Ritual dates — local only (ephemeral daily tracking, not synced to server)
+    ritualPlayDate: local.ritualPlayDate ?? null,
+    ritualTacticsDate: local.ritualTacticsDate ?? null,
+    ritualDailyDate: local.ritualDailyDate ?? null,
   };
 }
 

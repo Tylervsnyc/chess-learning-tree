@@ -43,14 +43,14 @@ Last Updated: 2026-02-15
 33. [Daily Maintenance Check](#33-daily-maintenance-check)
 34. [Failed Payment Recovery](#34-failed-payment-recovery)
 35. [Loading Indicator — Breathing Rook](#35-loading-indicator--breathing-rook)
-35. [Revenue Dashboard](#35-revenue-dashboard)
-36. [Paywall Analytics](#36-paywall-analytics)
-37. [Dynamic Pricing](#37-dynamic-pricing)
-38. [Ad Placement](#38-ad-placement)
-39. [Cron Schedule](#39-cron-schedule)
-40. [Admin Dashboard](#40-admin-dashboard)
-41. [Design System Compliance](#41-design-system-compliance)
-42. [Daily Puzzle Video](#42-daily-puzzle-video)
+36. [Revenue Dashboard](#36-revenue-dashboard)
+37. [Paywall Analytics](#37-paywall-analytics)
+38. [Dynamic Pricing](#38-dynamic-pricing)
+39. [Ad Placement](#39-ad-placement)
+40. [Cron Schedule](#40-cron-schedule)
+41. [Admin Dashboard](#41-admin-dashboard)
+42. [Design System Compliance](#42-design-system-compliance)
+43. [Daily Puzzle Video](#43-daily-puzzle-video)
 
 ---
 
@@ -368,8 +368,8 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ## 12. The Daily Rook
 
-### Header Toggle:
-`[Path] [Daily]` toggle - shown on all pages
+### Header Nav:
+`[Play] [Learn ▾] [Daily]` — shown on all pages (see §16 for full header spec)
 
 ### Core Rules:
 | Rule | Value |
@@ -552,26 +552,33 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 
 ## 15. Pages
 
-| Page | Status | Purpose |
-|------|--------|---------|
-| `/` | KEEP | Middleware redirect: logged in → `/learn`, not logged in → `/welcome` |
-| `/welcome` | KEEP | Welcome funnel for new/unauthenticated users (see §47) |
-| `/about` | KEEP | "How It Works" onboarding instructions (3 steps: free lessons, level test, daily rook) |
-| `/learn` | KEEP | Main curriculum tree (the front door for authenticated users) |
-| `/lesson/[lessonId]` | KEEP | Puzzle solving |
-| `/level-test/[transition]` | KEEP | Level unlock tests |
-| `/daily-challenge` | KEEP | The Daily Rook mode |
-| `/pricing` | KEEP | Subscription (always accessible) |
-| `/auth/login` | KEEP | Login |
-| `/auth/signup` | KEEP | Signup |
-| `/admin/*` | KEEP | Admin tools |
-| `/workout` | **DELETE** | Not needed |
-| `/profile` | **DELETE** | Not needed yet |
+### Three Pillars (3.0):
+1. **Learn** — Lessons (tactics curriculum) + Openings
+2. **Play** — Play against Rookie (10-level difficulty system)
+3. **Daily** — The Daily Rook (22 timed puzzles)
+
+| Page | Purpose |
+|------|---------|
+| `/` | Middleware redirect: logged in → `/path`, not logged in → `/welcome` |
+| `/welcome` | Welcome funnel — "Play or Learn?" (see §47) |
+| `/about` | "How It Works" onboarding |
+| `/path` | Main curriculum tree (the front door for authenticated users) |
+| `/learn` | Redirect → `/path` (legacy route) |
+| `/play` | Play against Rookie — 10-level progression |
+| `/openings` | Opening tree browser |
+| `/openings/[name]/[lesson]` | Opening lesson player |
+| `/lesson/[lessonId]` | Puzzle solving |
+| `/level-test/[transition]` | Level unlock tests |
+| `/daily-challenge` | The Daily Rook mode |
+| `/pricing` | Subscription (behind `MONETIZATION_ENABLED`) |
+| `/auth/login` | Login |
+| `/auth/signup` | Signup |
+| `/admin/*` | Admin tools |
 
 ### User Flows:
-- **New user (no session)**: `/` → middleware → `/welcome` → funnel → first lesson
+- **New user (no session)**: `/` → middleware → `/welcome` → "Play or Learn?" → first game or first lesson
 - **New user (beginner)**: `/welcome` → "I'm brand new" → `/basics` tutorial
-- **Returning user**: `/` → middleware → `/learn` → auto-scrolls to `currentPosition`
+- **Returning user**: `/` → middleware → `/path` → auto-scrolls to `currentPosition`
 - **From about**: `/about` → `/` (Begin Learning button)
 
 ---
@@ -618,28 +625,28 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
   - `/` - curriculum tree needs to scroll
   - `/test-*` and `/test/**` pages - test pages often have lots of content, always allow scrolling
 
-### Elements by Location:
+### Elements by Location (3.0 Header):
 
 | Element | Where Shown | Links To |
 |---------|-------------|----------|
-| Logo | All pages | `/` (always) |
-| Learn/Path button | All pages | `/` |
+| Logo (BreathingHeaderLogo) | All pages | `/` (always) |
+| Play button | All pages | `/play` |
+| Learn dropdown | All pages | Opens dropdown: Tactics (`/path`) + Openings (`/openings`) |
 | Daily button | All pages | `/daily-challenge` |
-| Openings button | All pages (behind `SHOW_OPENINGS` flag) | `/openings` |
-| Premium button | Logged in, non-premium only | `/pricing` |
-| Sign Up button | Logged out only | `/auth/signup` |
-| Streak counter | `/`, `/daily-challenge` (feature-flagged off) | Nothing |
+| Patron button | Logged in, non-premium (only when `MONETIZATION_ENABLED`) | `/pricing` |
 
-**Note:** Logged-in users see "Path", logged-out users see "Learn" - same destination, different label.
+**Removed in 3.0:** Sign Up button (signup earned after first win), standalone Openings button (now in Learn dropdown).
 
 **Logout** lives on the `/about` page — not in the header. Keeps nav clean on mobile.
 
-### Learn/Daily Button Styling:
+### Nav Button Styling:
 
-| Button | Color | Always Visible |
-|--------|-------|----------------|
-| Learn/Path | Green (`#58CC02`) | Yes |
-| Daily | Blue gradient (`#1CB0F6` → `#0d9ee0`) + shimmer animation | Yes |
+| Button | Color | Style |
+|--------|-------|-------|
+| Play | Green (`chess-green`) | Solid |
+| Learn | Purple (`chess-purple`) | Solid + dropdown chevron |
+| Daily | Blue gradient (`#1CB0F6` → `#0d9ee0`) | Shimmer animation |
+| Patron | Gold gradient (`#FFD700` → `#FFA500`) | Black text |
 
 **Active state indicator:**
 - Active button: solid bottom shadow (darker shade of button color)
@@ -1132,6 +1139,10 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 
 **Learning funnel** (`LearningEvents`): `lesson_started`, `lesson_completed`, `puzzle_attempted`, `lesson_abandoned`
 
+**Play Rookie** (`PlayEvents`): `game_started` (skillLevel, color), `game_ended` (result, moveCount, color, skillLevel, openingName)
+
+**Level Tests** (`LevelTestEvents`): `level_test_started` (transition), `level_test_completed` (transition, passed, score, total)
+
 **Engagement** (`EngagementEvents`): `tree_level_viewed`, `level_test_card_viewed`, `daily_challenge_viewed`, `daily_challenge_started`, `daily_challenge_completed`, `streak_updated`
 
 **Subscription funnel** (`SubscriptionEvents`): `paywall_viewed`, `paywall_dismissed`, `pricing_viewed`, `checkout_started`, `checkout_completed`, `checkout_abandoned`
@@ -1149,25 +1160,28 @@ Puzzles still have ELO ratings (400-2000) for difficulty selection.
 
 ## 22. Feature Flags
 
-**File**: `/lib/config/feature-flags.ts`
+**Two files:**
+- `/lib/config/feature-flags.ts` — UI toggles
+- `/lib/feature-flags.ts` — `MONETIZATION_ENABLED` gate
 
-| Flag | Value | Description |
-|------|-------|-------------|
-| `SHOW_STREAK_COUNTER` | `false` | Show streak counter in header on / and /daily-challenge |
-| `SHOW_SHARING` | `true` | Show tap-rook-to-share on lesson complete (≥4/6) and share card on daily challenge screens |
-| `SHOW_ADS` | `true` | Show ad slots (self-promo CTAs) for free users |
-| `SHOW_OPENINGS` | `false` | Show Openings nav link and /repertoire route (redirects to / when off) |
+| Flag | File | Value | Description |
+|------|------|-------|-------------|
+| `MONETIZATION_ENABLED` | `lib/feature-flags.ts` | `false` | Master gate for all premium/patron UI. When false, all content is free. |
+| `SHOW_STREAK_COUNTER` | `lib/config/feature-flags.ts` | `false` | Streak counter (removed in 3.0, kept for potential future use) |
+| `SHOW_SHARING` | `lib/config/feature-flags.ts` | `true` | Share buttons/cards on lesson complete and daily challenge |
+| `SHOW_BLOCK_INTROS` | `lib/config/feature-flags.ts` | `false` | Block intro popups at section boundaries |
+| `SHOW_OPENINGS` | `lib/config/feature-flags.ts` | `true` | Openings feature in Learn dropdown |
 
 ### Permissions & Limits (not feature flags)
 
-Lesson limits and signup prompts are now configured as **constants** in `types/permissions.ts`, not feature flags:
+Lesson limits and signup prompts are configured as **constants** in `types/permissions.ts`, not feature flags:
 
 **File**: `/types/permissions.ts` → `LESSON_LIMITS`
 
 | Config | Value | Description |
 |--------|-------|-------------|
 | `anonymous.totalLessons` | `4` | Total lessons before signup required |
-| `free.dailyLimit` | `2` | Daily lesson limit for free users |
+| `free.dailyLimit` | `4` | Daily lesson limit for free users |
 | `premium.dailyLimit` | `null` | Unlimited for premium users |
 | `admin.dailyLimit` | `null` | Unlimited for admin users |
 
@@ -1327,22 +1341,25 @@ Lichess theme names are mapped to quip keys via `THEME_KEY_MAP`. Notable mapping
 
 ## 26. Quip Content Guidelines
 
+**Full voice rules: `.claude/rookie-voice-bible.md`** — read that file for the definitive guide.
+
 ### DO:
-- Playful, witty, confident
-- Trash talk (friendly)
-- Chess puns
-- Pop culture references
-- Heist/thievery metaphors
-- Sports metaphors
+- Playful, witty, confident — Rookie's own personality
+- Friendly trash talk
+- Chess puns and piece philosophy (each piece has its own personality)
+- Rook bias (Rookie loves rooks, slightly jealous of queens)
+- Rookie's emotional growth (learning to feel things for the first time)
+- Rookie's side projects and hobbies
 
 ### DON'T:
 - Violence/death language
-- Mean insults
-- Anything inappropriate for kids
-- Bullying
-- Real people
-- Swearing
-- Cheesy emojis (no 🔥💪🏆✨ etc. in UI)
+- Movie/pop culture references (killed in 3.0 — everything internal to Rookie)
+- Compute-flex quips ("I analyzed 14 million positions...")
+- "Circuits feel warm" (overused)
+- Contextual assumptions about board state unless data is confirmed present
+- Mean insults, bullying, real people, swearing
+- Emojis in UI
+- TTS decimals (say "two and a half" not "2.5")
 
 ### Banned Words:
 suffocated, death, dead, killed, murdered, destroyed (in violent context), die, dies, kill, coffin, tomb, violence
@@ -1361,22 +1378,24 @@ suffocated, death, dead, killed, murdered, destroyed (in violent context), die, 
 ### Lesson Names:
 Current names are good - keep them
 
-### Level Names (Movie Spoofs):
+### Level Names:
 | Level | Name |
 |-------|------|
-| 1 | Begin to Believe |
-| 2 | One Does Not Simply Win at Chess |
-| 3 | We Need to Go Deeper |
-| 4 | I Am the One Who Knocks |
-| 5 | No Country for Beginners |
-| 6 | Why So Serious? |
-| 7 | There Is Always Hope... Unless It's Checkmate |
-| 8 | Say Checkmate Again |
+| 1 | Checkmate |
+| 2 | Double Trouble |
+| 3 | The Setup |
+| 4 | The Squeeze |
+| 5 | Survival Instinct |
+| 6 | Between the Lines |
+| 7 | No Escape |
+| 8 | The Complete Player |
+
+**Note:** Movie spoof names were removed in 3.0. All level names now describe the chess content.
 
 ### Level Card Display Rule:
-- The `name` field in curriculum data is the movie spoof name ONLY (e.g., `"Begin to Believe"`, NOT `"Level 1: Begin to Believe"`)
-- The sticky level header has a colored badge that says "Level {number}" — the name next to it is ONLY the movie spoof title
-- The locked level card shows the movie spoof name as its heading — no separate "Level X" text
+- The `name` field in curriculum data is the level name ONLY (e.g., `"Checkmate"`, NOT `"Level 1: Checkmate"`)
+- The sticky level header has a colored badge that says "Level {number}" — the name next to it is ONLY the level name
+- The locked level card shows the level name as its heading — no separate "Level X" text
 - Never display the level number twice in the same card
 
 ### Block Names:
@@ -1448,33 +1467,28 @@ When adding Level N:
 
 ## 30. Work In Progress (WIP)
 
-**Last updated: 2026-02-07**
+**Last updated: 2026-04-08**
 
-This section tracks features currently being tested on localhost:3000 before pushing to production.
+### 3.0 Transition Status
 
-### 30.1 Share System
+**Completed:**
+- Phase 0: Purge (dead code, stale issues, test pages, half-built features)
+- Phase 1: Foundation (Honcho context provider, brand tokens, loading states, error boundaries, analytics)
+- Phase 2: Rookie's Voice (voice bible, quip audit, movie quotes killed, touchpoint content, Rookie on all pages)
+- Phase 3 partial: Unified Learn, NavHeader redesign, 10-level difficulty, monetization model decided
 
-**Status:** ✅ Complete — server-side OG image generation
+**In Progress:**
+- Personality-driven chess bot engine (CHE-216)
 
-**Two sharing systems:**
+**Remaining (tracked in Linear "Chess Path 3.0" project):**
+- Phase 3: Transition flows between pillars, Daily Challenge polish
+- Phase 4: Email pipeline, Rookie-voiced emails, share cards for all pillars, admin dashboard, observability
+- Phase 5: Touch-first audit, offline data, native transitions, sound abstraction, push notification hooks
+- Bugs: Quip stacking (CHE-251), TTS speed mismatch (CHE-252), victory sound distortion (CHE-250)
 
-**A. Daily Rook Story Card** (9:16, 1080×1920 — see Section 31 for full spec)
-- Server-side OG route renders card → client fetches as blob → Web Share API or download
-- Pre-fetched on game finish for instant sharing when user taps button
-- Entry points: "Share Card" button, "Copy Rook" (emoji text), link icon (clipboard URL)
+### Share System
 
-**B. Lesson Share Certificate** (1:1, 1080×1080 — see Section 32 for full spec)
-- Static share routes: `/lesson/[lessonId]/share/completed` or `/lesson/[lessonId]/share/perfect`
-- Score 4/6 or 5/6 → `/share/completed`, score 6/6 → `/share/perfect`
-- OG metadata on share route serves the certificate image as link preview
-- Clicking the shared link redirects to `/learn`
-- Pre-fetched on lesson complete for instant sharing when user taps rook
-- Entry point: Tap rook on lesson complete screen (scores ≥ 4/6)
-
-**C. Puzzle Share Card** (1:1, 1080×1080)
-- Client-side html-to-image generation
-- Shows puzzle position with "I SOLVED this tricky puzzle" + "SWIPE TO SEE THE SOLUTION"
-- Entry point: Puzzle success popup share button
+**Status:** Complete — server-side OG image generation
 
 **Files:**
 | File | Purpose |
@@ -1483,72 +1497,12 @@ This section tracks features currently being tested on localhost:3000 before pus
 | `app/api/og/daily-challenge/route.tsx` | Daily Rook story card (server-side) |
 | `app/api/og/lesson/route.tsx` | Lesson share card (server-side, see Section 32) |
 | `app/lesson/[lessonId]/share/[status]/layout.tsx` | OG metadata for lesson share routes |
-| `app/lesson/[lessonId]/share/[status]/page.tsx` | Redirects to `/learn` |
+| `app/lesson/[lessonId]/share/[status]/page.tsx` | Redirects to `/path` |
 | `components/share/ShareButton.tsx` | Puzzle share button + generation trigger |
 | `components/share/PuzzleShareCard.tsx` | Puzzle image card design |
 | `lib/share/generate-puzzle-image.ts` | Puzzle card → PNG (client-side) |
 | `lib/share/generate-share-text.ts` | Emoji rook text for clipboard |
 | `lib/share/piece-svgs.ts` | SVG chess pieces for OG images |
-
-**Test pages:** `/test-share` (puzzles), `/test-story-cards` (Daily Rook), `/test-lesson-share` (Lesson share card)
-
----
-
-### 30.2 The Daily Rook
-
-**Status:** ✅ Complete — full flow with sharing, leaderboard, rook visualization
-
-All features implemented and tested:
-- [x] Leaderboard API works with real user data
-- [x] Score recording to `daily_challenge_results` table
-- [x] Share button on results screen (3 share options)
-- [x] Same puzzles for different users on same day (date-seeded)
-- [x] Split-screen rook visualization (DailyRookDisplay component)
-- [x] Pre-fetched share image for instant sharing
-
-**Files:** See Section 12 for full spec.
-
-**To test:**
-- Visit `/daily-challenge` — full flow: start → solve → finish → share
-- Use `?testSeed=123` to get different puzzle sets for testing
-
----
-
-### 30.3 Header Buttons
-
-**Status:** ✅ Complete
-
-All features implemented:
-- [x] Learn/Daily buttons shown for ALL users (logged in + logged out)
-- [x] Premium button hides for premium/admin users
-- [x] Single-word labels, no text wrapping on mobile
-
-**File:** `components/layout/NavHeader.tsx`
-
----
-
-### 30.4 Other Test Pages (Exploratory)
-
-These pages exist for design exploration but aren't production features yet:
-
-| Page | Purpose |
-|------|---------|
-| `/test-share` | Puzzle share card preview |
-| `/test-story-cards` | Daily Rook story card preview |
-| `/test-level-designs` | Level design exploration |
-| `/test-share-cards` | Share card variations |
-
----
-
-### Quick Resume Checklist
-
-When resuming work:
-
-1. **Start dev server:** `./scripts/ensure-dev.sh` (auto-starts only if not already running)
-2. **Test Daily Rook:** `/daily-challenge` — full flow: start → solve → finish → share
-3. **Test share cards:** `/test-story-cards` — verify OG image renders
-4. **Test puzzle sharing:** `/test-share` — try generating PNG
-5. **Check console:** Look for any errors during testing
 
 ---
 

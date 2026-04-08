@@ -73,6 +73,10 @@ export interface Progress {
   lastLessonDate: string | null;
   // Unlocked levels (level numbers user can access)
   unlockedLevels: number[];
+  // Daily ritual tracking (YYYY-MM-DD dates, reset check at read time)
+  ritualPlayDate: string | null;
+  ritualTacticsDate: string | null;
+  ritualDailyDate: string | null;
 }
 
 const DEFAULT_PROGRESS: Progress = {
@@ -86,6 +90,9 @@ const DEFAULT_PROGRESS: Progress = {
   lessonsCompletedToday: 0,
   lastLessonDate: null,
   unlockedLevels: [1], // Level 1 always unlocked by default
+  ritualPlayDate: null,
+  ritualTacticsDate: null,
+  ritualDailyDate: null,
 };
 
 function getStoredProgress(): Progress {
@@ -549,6 +556,7 @@ export function useLessonProgress() {
         lastLessonDate: today,
         currentStreak: streakResult.newStreak,
         lastActivityDate: today,
+        ritualTacticsDate: today,
       };
       saveProgress(newProgress);
 
@@ -778,6 +786,7 @@ export function useLessonProgress() {
         ...prev,
         currentStreak: streakResult.newStreak,
         lastActivityDate: today,
+        ritualDailyDate: today,
       };
       saveProgress(newProgress);
 
@@ -793,6 +802,17 @@ export function useLessonProgress() {
       return newProgress;
     });
   }, [user, syncToServer]);
+
+  // Record play activity for daily ritual tracking
+  const recordRitualPlay = useCallback(() => {
+    setProgress(prev => {
+      const today = new Date().toISOString().split('T')[0];
+      if (prev.ritualPlayDate === today) return prev; // already recorded today
+      const newProgress = { ...prev, ritualPlayDate: today };
+      saveProgress(newProgress);
+      return newProgress;
+    });
+  }, []);
 
   // Dismiss streak celebration popup
   const dismissStreakCelebration = useCallback(() => {
@@ -833,5 +853,10 @@ export function useLessonProgress() {
     previousStreak,
     dismissStreakCelebration,
     recordDailyActivity,
+    // Daily ritual tracking
+    ritualPlayDate: progress.ritualPlayDate,
+    ritualTacticsDate: progress.ritualTacticsDate,
+    ritualDailyDate: progress.ritualDailyDate,
+    recordRitualPlay,
   };
 }

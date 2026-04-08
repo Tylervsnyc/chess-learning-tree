@@ -9,6 +9,7 @@ import {
   playCaptureSound,
   warmupAudio,
   playCelebrationSound,
+  getSharedAudioContext,
 } from '@/lib/sounds';
 import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
@@ -38,6 +39,7 @@ import { extractFacts } from '@/lib/speech/fact-extractor';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
+import { RookiePopup } from '@/components/shared/DailyRitual';
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
@@ -540,6 +542,18 @@ export default function PlayRookiePage() {
     generateGameEndLine,
     initialUsedRecently: rookieMemory.usedRecently,
   });
+
+  // Speak the setup greeting on first interaction (audio requires user gesture)
+  const setupGreetingSpokenRef = useRef(false);
+  const speakSetupGreeting = useCallback(() => {
+    if (setupGreetingSpokenRef.current || phase !== 'setup') return;
+    setupGreetingSpokenRef.current = true;
+    // warmupAudio must run synchronously inside the gesture to unlock AudioContext
+    warmupAudio();
+    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
+    // Small delay lets ctx.resume() settle before speakQuip checks ctx.state
+    setTimeout(() => speakQuip(greeting.quote), 50);
+  }, [phase, rookieLevel, speakQuip]);
 
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
@@ -1546,7 +1560,7 @@ export default function PlayRookiePage() {
     const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
 
     return (
-      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto">
+      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
         {/* Top: Level progress bar */}
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
           <LevelProgressBar currentLevel={rookieLevel} winsAtLevel={winsAtLevel} />
@@ -1709,45 +1723,13 @@ export default function PlayRookiePage() {
                         <div className="h-full bg-chess-green rounded-full transition-all duration-300" style={{ width: `${postGame.progress}%` }} />
                       </div>
                     ) : null}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => startGame()}
-                        className="flex-1 py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
-                      >
-                        Play Again
-                      </button>
-                      {coachingScript && coachingScript.messages.length > 0 && (
-                        <button
-                          onClick={() => setShowCoaching(true)}
-                          className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
-                        >
-                          Rookie&apos;s Take
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          if (keyMoments.length > 0) {
-                            const m = keyMoments[0];
-                            setReviewMomentIndex(0);
-                            setReviewMoveIndex(0);
-                            setFen(m.fenBefore);
-                            setReviewText(m.description);
-                            setReviewArrows([{
-                              startSquare: m.from,
-                              endSquare: m.to,
-                              color: getArrowColor(m.type),
-                            }]);
-                          } else {
-                            setReviewMoveIndex(0);
-                            setReviewText('Use the arrows to step through the game.');
-                          }
-                          setPhase('review');
-                        }}
-                        className="flex-1 py-1.5 bg-chess-surface text-chess-text font-semibold rounded-lg text-xs border border-chess-disabled"
-                      >
-                        Review
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => startGame()}
+                      className="w-full py-1.5 bg-chess-green text-white font-bold rounded-lg text-xs"
+                    >
+                      Play Again
+                    </button>
+                    <RookiePopup justCompleted="play" />
                   </div>
                 ) : speech.displayText ? (
                   <div key={speech.msgKey} className="relative rookie-glitch">

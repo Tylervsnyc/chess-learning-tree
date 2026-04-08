@@ -57,24 +57,24 @@ Read RULES.md lines {start}-{end} (§{number} {name}) — use offset/limit, not 
 Use `offset` and `limit` to read only the section you need — never read the full 2,300-line file.
 
 ```
-§1  User Types           L57    §16 Header              L521   §31 Share Card (Daily)  L1471
-§2  Lesson Unlocking     L85    §17 Lesson Page         L595   §32 Share Card (Lesson) L1567
-§3  Level Unlocking      L127   §18 Puzzle Interaction  L941   §33 SEO & Marketing     L1628
-§4  Nav After Complete   L143   §19 Sounds              L1027  §34 Daily Maintenance    L1721
-§5  Scroll Behavior      L160   §20 User ELO            L1050  §35 Payment Recovery     L1763
-§6  Naming Conventions   L212   §21 Analytics           L1058  §36 Revenue Dashboard    L1790
-§7  Daily Limits         L234   §22 Feature Flags       L1073  §37 Paywall Analytics    L1816
-§8  Premium Prompts      L252   §23 Database Tables     L1103  §38 Dynamic Pricing      L1841
-§9  Admin Users          L266   §24 Puzzle Selection    L1160  §39 Ad Placement         L1871
-§10 Data Storage         L281   §25 Quip System         L1178  §40 Cron Schedule        L1903
-§11 Streaks              L294   §26 Quip Guidelines     L1244  §41 Breathing Rook       L1958
-§12 Daily Rook           L313   §27 Lesson Naming       L1275  §42 Admin Dashboard      L2001
-§13 Leaderboard          L430   §28 Intro Messages      L1303  §43 Design System        L2085
-§14 Level Tests          L457   §29 New Levels Checklist L1317 §44 Daily Puzzle Video   L2175
-                                                              §45 Opening Lessons      L2337
-                                                              §46 Social Funnel        L2360
-                                                              §47 Welcome Funnel       L2503
-§15 Pages                L497   §30 Work In Progress    L1365
+§1  User Types           L57    §16 Header              L586   §31 Share Card (Daily)  L1509
+§2  Lesson Unlocking     L85    §17 Lesson Page         L662   §32 Share Card (Lesson) L1605
+§3  Level Unlocking      L127   §18 Puzzle Interaction  L1008  §33 SEO & Marketing     L1666
+§4  Nav After Complete   L143   §19 Sounds              L1101  §34 Daily Maintenance    L1759
+§5  Scroll Behavior      L160   §20 User ELO            L1124  §35 Payment Recovery     L1801
+§6  Naming Conventions   L268   §21 Analytics           L1132  §36 Revenue Dashboard    L1828
+§7  Daily Limits         L290   §22 Feature Flags       L1161  §37 Paywall Analytics    L1854
+§8  Premium Prompts      L308   §23 Database Tables     L1195  §38 Dynamic Pricing      L1879
+§9  Admin Users          L322   §24 Puzzle Selection    L1252  §39 Ad Placement         L1909
+§10 Data Storage         L337   §25 Quip System         L1270  §40 Cron Schedule        L1941
+§11 Streaks              L350   §26 Quip Guidelines     L1342  §41 Breathing Rook       L1996
+§12 Daily Rook           L369   §27 Lesson Naming       L1376  §42 Admin Dashboard      L2039
+§13 Leaderboard          L486   §28 Intro Messages      L1406  §43 Design System        L2123
+§14 Level Tests          L513   §29 New Levels Checklist L1420 §44 Daily Puzzle Video   L2213
+                                                              §45 Opening Lessons      L2364
+                                                              §46 Social Funnel        L2398
+                                                              §47 Welcome Funnel       L2485
+§15 Pages                L553   §30 Work In Progress    L1468
 ```
 
 ---
@@ -99,6 +99,7 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 | **AGENTS.md** | Agent roster + WARN pairs for parallel dispatch. |
 | `.claude/design-system.md` | Colors, tokens, layout rules, component patterns |
 | `.claude/standards/development.md` | Naming conventions, mobile-first rules |
+| `.claude/rookie-voice-bible.md` | Rookie's personality, 14 voice rules, piece table, anti-patterns |
 
 ---
 
