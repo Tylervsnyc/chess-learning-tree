@@ -133,7 +133,7 @@ function WinsIndicator({ wins, needed, nextLevel }: { wins: number; needed: numb
 // ════════════════════════════════
 
 export default function PlayDesignPreview() {
-  const [currentLevel, setCurrentLevel] = useState(1);
+  const [currentLevel, setCurrentLevel] = useState(5);
   const [winsAtLevel, setWinsAtLevel] = useState(0);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
   const [greetingContext, setGreetingContext] = useState<GreetingContext>({ type: 'default' });

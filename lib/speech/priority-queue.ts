@@ -80,8 +80,8 @@ export interface QueueState {
 }
 
 /** Max quips allowed within a rolling WINDOW_SIZE-move window */
-const WINDOW_MAX_QUIPS = 3;
-const WINDOW_SIZE = 12;
+const WINDOW_MAX_QUIPS = 2;
+const WINDOW_SIZE = 16;
 const RECENTLY_USED_PENALTY = -30;
 const EVENT_MATCH_BONUS = 20;
 const THREAD_MATCH_BONUS = 10;

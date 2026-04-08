@@ -74,6 +74,7 @@ function categorize(line: (typeof AUTHORED_LINES)[number]): string {
 function conditionBadges(line: (typeof AUTHORED_LINES)[number]): string[] {
   const badges: string[] = [];
   const c = line.conditions;
+  if (!c) return badges;
   if (c.beats) badges.push(...c.beats.map(b => `beat:${b}`));
   if (c.events) badges.push(...c.events.map(e => `event:${e}`));
   if (c.movedBy) badges.push(`by:${c.movedBy}`);

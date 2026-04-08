@@ -223,8 +223,7 @@ export function getContextualGreeting(context: GreetingContext, level: number): 
     };
   }
 
-  // Default: random quip from the level pool
-  const quips = rookieLevel.quips;
-  const quote = quips[Math.floor(Math.random() * quips.length)];
+  // Default: first quip (deterministic for SSR). Callers can randomize client-side.
+  const quote = rookieLevel.quips[0];
   return { quote, mood: rookieLevel.mood };
 }

@@ -83,7 +83,7 @@ export interface UseRookieSpeechOptions {
 // Constants
 // ════════════════════════════════════════════════════════════════
 
-const QUIP_COOLDOWN_MOVES = 2; // minimum moves between event-triggered quips
+const QUIP_COOLDOWN_MOVES = 8; // minimum moves between event-triggered quips
 const CAPTURE_SEQUENCE_MIN = 3; // minimum consecutive captures to trigger capture_sequence
 
 /** Tracks an ongoing capture sequence */
@@ -125,6 +125,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const playerColorRef = useRef<'white' | 'black'>('white');
   const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
   const playerHasCastledRef = useRef(false); // tracks if player has castled (for "no castle" quips)
+  const gameEndedRef = useRef(false); // once game_end fires, no more quips
   const captureSeqRef = useRef<CaptureSequence>({ count: 0, playerSwing: 0 });
 
   useEffect(() => {
@@ -206,6 +207,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       playerColorRef.current = playerColor;
       lastQuipMoveRef.current = 0;
       playerHasCastledRef.current = false;
+      gameEndedRef.current = false;
       captureSeqRef.current = { count: 0, playerSwing: 0 };
       clearQueue();
 
@@ -234,6 +236,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Call after every move with current game state */
   const onMove = useCallback(
     (input: SpeechInput) => {
+      // Guard: once game_end fires, no more speech events
+      if (gameEndedRef.current) return;
+
       // 1. Update beat (pawn units)
       const beatResult = updateBeat(beatRef.current, {
         moveNumber: input.moveNumber,
@@ -310,8 +315,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // 3. Early game transition — no automatic quip, just note it
       if (beatResult.newBeat === 'early_game') return;
 
-      // 4. Game end — always speak
+      // 4. Game end — speak once, then lock out further quips
       if (beatResult.newBeat === 'game_end') {
+        gameEndedRef.current = true;
         const context = buildContext(input);
         const rookieWon = input.rookiePawns > 0;
         generateOrFallback(
@@ -323,8 +329,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 4. Turning point — speak from pool, bypass cooldown
+      // 4. Turning point — speak from pool, but respect cooldown
       if (beatResult.newBeat === 'turning_point') {
+        if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
         const context = buildContext(input);
         if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;
@@ -332,8 +339,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 5. Late game transition — speak from pool, bypass cooldown
+      // 5. Late game transition — speak from pool, but respect cooldown
       if (beatResult.newBeat === 'late_game') {
+        if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
         const context = buildContext(input);
         if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;

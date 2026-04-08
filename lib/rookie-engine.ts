@@ -173,10 +173,10 @@ export function getRookieMove(fen: string, skillLevel: number): RookieMove | nul
   const moves = game.moves({ verbose: true });
   if (moves.length === 0) return null;
 
-  // Beginner: mostly random with occasional good moves
+  // Beginner: almost entirely random — "Distracted" Rookie (ELO ~200)
   if (skillLevel === 0) {
-    // 30% chance of playing the best move at depth 1, 70% random
-    if (Math.random() > 0.3) {
+    // 90% pure random, 10% depth-1 best move
+    if (Math.random() > 0.1) {
       const pick = moves[Math.floor(Math.random() * moves.length)];
       return { san: pick.san, from: pick.from, to: pick.to, captured: pick.captured || undefined, piece: pick.piece };
     }
