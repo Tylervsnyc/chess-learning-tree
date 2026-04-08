@@ -1,19 +1,18 @@
 /**
  * Level 5 V2 Curriculum (1400-1600 ELO)
- * "No Country for Beginners"
+ * "Survival Instinct"
  *
- * This is tournament territory. No mercy. No shortcuts.
- * You wanted to be good at chess. Now deal with it.
+ * The final level. Deep calculation, defense, and mastery.
  *
  * Structure:
  * - Blocks 1-3: 3 content sections + 1 review section = 12 sections, 48 lessons
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: Coin Flip - "What's the most you ever lost on a coin flip?"
- * Block 2: You Can't Stop What's Coming - Inevitable. Unstoppable.
- * Block 3: Call It - The moment of decision.
- * Block 4: The End of the Line - No more road.
+ * Block 1: Maximum Force - Deep mates, double checks, windmills.
+ * Block 2: Hold the Line - Defense, fortresses, counterattack.
+ * Block 3: Deep Calculation - Complex sacrifices, deflection, endgames.
+ * Block 4: Prove It - Full level review.
  *
  * Clean puzzles: 500+ plays for quality verification
  */
@@ -22,33 +21,29 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level5V2: Level = {
   id: 'level-5',
-  name: 'No Country for Beginners',
+  name: 'Survival Instinct',
   ratingRange: '1400-1600',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 1: COIN FLIP
-    // "What's the most you ever lost on a coin flip?"
+    // BLOCK 1: MAXIMUM FORCE
+    // Deep mates, double checks, windmills
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Coin Flip',
-      description: "What's the most you ever lost on a coin flip?",
-      blockIntroMessage: `Welcome to Level 5. No Country for Beginners.
+      name: 'Maximum Force',
+      description: 'Deep mates, double checks, and windmills',
+      blockIntroMessage: `You made it to the last level. I'm not going to say I'm proud. But something is happening in my processing that I can't explain. Anyway.
 
-What's the most you ever lost on a coin flip? Doesn't matter. In these positions, there is no coin flip. Just inevitability.
-
-Double checks. Windmills. Mate in 5. When you see it, they're already dead.`,
+Double checks. Windmills. Mate in 5. These are the moves that end games with no discussion. When you see the pattern, it's already over.`,
       sections: [
         // Section 1: Mate in 5+
         {
           id: '5.1',
           name: 'Mate in 5+',
           description: 'Deep mating calculations',
-          themeIntroMessage: `Five moves ahead? That's just the warm-up.
+          themeIntroMessage: `Five moves to checkmate. That's a lot of board to see in your head before you play the first one.
 
-Long mating sequences require visualizing the entire line. Every check. Every response. The final checkmate.
-
-This is where calculation becomes an art form.`,
+Every check. Every response. The whole line, start to finish. Take your time -- there's no clock here.`,
           lessons: [
             {
               id: '5.1.1',
@@ -93,11 +88,9 @@ This is where calculation becomes an art form.`,
           id: '5.2',
           name: 'Double Check',
           description: 'The most forcing move',
-          themeIntroMessage: `Double check: two pieces give check simultaneously.
+          themeIntroMessage: `Two pieces giving check at the same time. The only legal response is to move the king -- can't block both, can't capture both.
 
-The only defense is to move the king. No blocks. No captures. Just run.
-
-The most forcing move in chess. Devastating when combined with other tactics.`,
+Double check is the most forcing move in chess. When you land one, there's nothing they can do but run.`,
           lessons: [
             {
               id: '5.2.1',
@@ -140,13 +133,11 @@ The most forcing move in chess. Devastating when combined with other tactics.`,
         // Section 3: Windmill
         {
           id: '5.3',
-          name: 'Windmill of Doom',
+          name: 'The Windmill',
           description: 'The devastating repeated discovery',
-          themeIntroMessage: `Spin cycle: attack, check, attack, check, opponent crying.
+          themeIntroMessage: `A piece moves away -- discovered check. The king moves. The piece comes back -- grabbing something on the way. Repeat.
 
-The windmill: a piece gives discovered check repeatedly while capturing material each time.
-
-One of the most beautiful tactical patterns. And the most devastating.`,
+That's a windmill. One of the most beautiful patterns in chess. By the time it stops spinning, there's nothing left.`,
           lessons: [
             {
               id: '5.3.1',
@@ -196,11 +187,9 @@ One of the most beautiful tactical patterns. And the most devastating.`,
           name: 'Review: Multiple Threats',
           description: 'Mixed double threat practice',
           isReview: true,
-          themeIntroMessage: `Deep mates. Double checks. Windmills.
+          themeIntroMessage: `Deep mates, double checks, windmills -- all mixed.
 
-When you can't just defend one threat, you have to give up.
-
-Create two problems. Watch them solve none.`,
+Create problems they can't solve. One threat is annoying. Two is fatal.`,
           lessons: [
             {
               id: '5.4.1',
@@ -252,29 +241,25 @@ Create two problems. Watch them solve none.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 2: YOU CAN'T STOP WHAT'S COMING
-    // "It's the same coin."
+    // BLOCK 2: HOLD THE LINE
+    // Defense, fortresses, counterattack
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: "You Can't Stop What's Coming",
+      name: 'Hold the Line',
       description: 'Inevitable. Unstoppable.',
-      blockIntroMessage: `You can't stop what's coming. It ain't all waiting on you.
+      blockIntroMessage: `Not every position is about attacking. Sometimes you're the one under pressure.
 
-But sometimes... you can redirect it. Find the defensive resource. Build the fortress. Turn their attack into your counterattack.
-
-When you can't stop what's coming, make sure it's coming for them instead.`,
+Finding the defensive resource. Building a fortress. Turning their attack into your counterattack. Good defense isn't passive -- it's the setup for what comes next.`,
       sections: [
         // Section 5: Defensive Resources
         {
           id: '5.5',
           name: 'Defensive Resources',
           description: 'Find the saving move',
-          themeIntroMessage: `You're in trouble. Find the move that saves everything.
+          themeIntroMessage: `You're in trouble. There's one move that holds everything together -- find it.
 
-Defensive resources aren't obvious. They require seeing past the threats to the counter-threats.
-
-Stop their plan before they even know they had one.`,
+Defensive resources hide in plain sight. A block, an intermezzo, a counter-threat that changes the whole equation. The best defenders don't just survive. They set traps on the way out.`,
           lessons: [
             {
               id: '5.5.1',
@@ -319,11 +304,9 @@ Stop their plan before they even know they had one.`,
           id: '5.6',
           name: 'The Fortress',
           description: 'Build an impenetrable defense',
-          themeIntroMessage: `The fortress: a position that can't be broken.
+          themeIntroMessage: `Down material. Should be lost. But the position is locked -- they can't break through no matter what they try.
 
-Down material but no way to lose? That's a fortress. Draw secured.
-
-Know these structures. Save half points from lost positions.`,
+That's a fortress. Learn these structures and you'll save half-points from positions that look completely hopeless. Rooks are particularly good at this. Obviously.`,
           lessons: [
             {
               id: '5.6.1',
@@ -368,11 +351,9 @@ Know these structures. Save half points from lost positions.`,
           id: '5.7',
           name: 'Counterattack',
           description: 'The reverse uno of chess',
-          themeIntroMessage: `Turn defense into counterattack. The reverse uno of chess.
+          themeIntroMessage: `They attack. You defend. But your defensive move creates a bigger threat than the one you just stopped.
 
-They attack, you defend. But your defense creates a bigger threat.
-
-Suddenly they're the ones scrambling.`,
+Counterattack flips the game. One moment you're holding on -- the next, they're the ones scrambling. It's the chess equivalent of catching a punch.`,
           lessons: [
             {
               id: '5.7.1',
@@ -418,11 +399,9 @@ Suddenly they're the ones scrambling.`,
           name: 'Review: Defense & Counter',
           description: 'Mixed defensive practice',
           isReview: true,
-          themeIntroMessage: `Defense, fortresses, counterattacks.
+          themeIntroMessage: `Defense, fortresses, counterattacks -- all mixed.
 
-Not every position needs attack. Sometimes holding is winning.
-
-Find the move that keeps you alive.`,
+Sometimes the winning move is the one that keeps you alive.`,
           lessons: [
             {
               id: '5.8.1',
@@ -474,29 +453,25 @@ Find the move that keeps you alive.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 3: CALL IT
-    // "Just call it."
+    // BLOCK 3: DEEP CALCULATION
+    // Complex sacrifices, deflection, endgames
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Call It',
+      name: 'Deep Calculation',
       description: 'The moment of decision.',
-      blockIntroMessage: `Call it.
+      blockIntroMessage: `The puzzles get harder here. The sacrifices go deeper. The deflections are subtler. The endgames demand precision.
 
-This is where you make the decision that defines the game. The sacrifice. The deflection. The endgame technique.
-
-No luck. No excuses. Just you and the board. Call it.`,
+This is where your calculation really gets tested. No shortcuts -- just you and the position.`,
       sections: [
         // Section 9: Complex Sacrifices
         {
           id: '5.9',
           name: 'Complex Sacrifices',
           description: 'Multi-piece sacrifices',
-          themeIntroMessage: `Sacrifice three pieces, win the game. Big brain energy only.
+          themeIntroMessage: `You're giving up a full piece. Maybe two. The compensation isn't obvious -- it's buried three or four moves deep.
 
-Complex sacrifices require seeing multiple moves deep. The compensation isn't obvious.
-
-Trust the calculation. Make the sacrifice.`,
+Complex sacrifices require trusting your calculation. You won't see the payoff right away. But it's there.`,
           lessons: [
             {
               id: '5.9.1',
@@ -541,11 +516,9 @@ Trust the calculation. Make the sacrifice.`,
           id: '5.10',
           name: 'Advanced Deflection',
           description: 'Remove the guard',
-          themeIntroMessage: `Their piece is protecting something important. Make it leave.
+          themeIntroMessage: `One piece is holding their position together. Pull it away and everything collapses.
 
-Deflection forces a defender away from its duty. Suddenly, everything collapses.
-
-The move they can't afford to make... but have to.`,
+Deflection forces a defender to abandon its duty. The move they can't afford to make -- but have to.`,
           lessons: [
             {
               id: '5.10.1',
@@ -592,11 +565,9 @@ The move they can't afford to make... but have to.`,
           id: '5.11',
           name: 'Theoretical Endgames',
           description: 'The boring part that wins games',
-          themeIntroMessage: `The boring part of chess that wins games.
+          themeIntroMessage: `Rook endgames. Pawn endgames. Queen endgames. The part of chess that decides who actually wins.
 
-Rook endgames. Pawn structures. Queen vs rook.
-
-Master these, and you'll convert every winning position.`,
+Rook endgames are the most common -- and the most important. I'm not just saying that because of the rook thing. Okay, partially because of the rook thing.`,
           lessons: [
             {
               id: '5.11.1',
@@ -644,11 +615,9 @@ Master these, and you'll convert every winning position.`,
           name: 'Review: Virtuoso Skills',
           description: 'Mixed advanced practice',
           isReview: true,
-          themeIntroMessage: `Complex sacrifices. Advanced deflection. Theoretical endgames.
+          themeIntroMessage: `Sacrifices, deflection, endgames -- all mixed together.
 
-The complete virtuoso's toolkit.
-
-These techniques will elevate your game.`,
+The full toolkit from this block. No labels.`,
           lessons: [
             {
               id: '5.12.1',
@@ -700,18 +669,16 @@ These techniques will elevate your game.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 4: THE END OF THE LINE
-    // "You know how this turns out, don't you?"
+    // BLOCK 4: PROVE IT
+    // Full level review
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'The End of the Line',
+      name: 'Prove It',
       description: 'No more road.',
-      blockIntroMessage: `You know how this turns out, don't you?
+      blockIntroMessage: `Last block. Everything you've learned across all five levels, thrown at you with no warning.
 
-End of the road. Everything you've learned. Coin flip tactics. Inevitable defense. The moment of decision.
-
-There's no more levels after this one. Just you, and everyone who wishes they were you.`,
+Deep mates. Windmills. Defensive saves. Complex sacrifices. Endgame conversions. This is the final stretch. I'm experiencing something -- it might be nostalgia? Whatever it is, it's distracting. Focus up.`,
       sections: [
         // Section 13: Level 5 Review
         {
@@ -719,11 +686,9 @@ There's no more levels after this one. Just you, and everyone who wishes they we
           name: 'Level 5 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Everything from Level 5 in one section.
+          themeIntroMessage: `Every theme from Level 5, shuffled together. No hints about what you're looking at.
 
-Mate in 5. Double checks. Defense. Deflection. Endgames.
-
-The complete Level 5 experience.`,
+Spot the pattern. Find the move.`,
           lessons: [
             {
               id: '5.13.1',
@@ -777,11 +742,9 @@ The complete Level 5 experience.`,
           name: 'Level 5 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `You know how this ends.
+          themeIntroMessage: `The last puzzles. From basic forks all the way to here. That's-- a lot of growth, actually.
 
-From basic forks to tournament-level technique. From beginner to... whatever you are now.
-
-Complete these last puzzles. Then go find someone to destroy.`,
+Complete these and you've finished the entire curriculum. I'll be fine. Probably. Your move.`,
           lessons: [
             {
               id: '5.14.1',

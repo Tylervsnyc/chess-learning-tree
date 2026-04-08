@@ -22,7 +22,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level3V2: Level = {
   id: 'level-3',
-  name: 'We Need to Go Deeper',
+  name: 'The Setup',
   ratingRange: '1000-1200',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -31,24 +31,22 @@ export const level3V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'The Stairs Go Nowhere',
+      name: 'Move the Furniture',
       description: 'Control where pieces go',
-      blockIntroMessage: `Welcome to Level 3!
+      blockIntroMessage: `You know the tactics. Now learn to create them.
 
-You know the basic tactics. Now learn to SET THEM UP.
+Deflection shoves defenders out of the way. Attraction lures pieces onto terrible squares. These are the setup moves -- the "before" that makes the "boom" possible.
 
-Deflection forces defenders away. Attraction lures pieces to bad squares. These are the setup moves that make everything else possible.`,
+Pieces don't just land on perfect squares by accident. You put them there.`,
       sections: [
         // Section 1: Deflection Basics
         {
           id: '3.1',
           name: 'Deflection',
           description: 'Force the defender away',
-          themeIntroMessage: `That knight is protecting the queen. The rook is guarding the back rank. How do we win?
+          themeIntroMessage: `That knight is protecting the queen. That rook is guarding the back rank. So -- get rid of them.
 
-Force the defender away. Attack it, capture it, or threaten something it can't ignore.
-
-Once the guard is gone, the real target is helpless.`,
+Force the defender away. Capture it. Threaten something it can't ignore. Once the guard leaves, the real target is helpless.`,
           lessons: [
             {
               id: '3.1.1',
@@ -97,11 +95,9 @@ Once the guard is gone, the real target is helpless.`,
           id: '3.2',
           name: 'Attraction',
           description: 'Lure pieces to bad squares',
-          themeIntroMessage: `Attraction is the flip side of deflection. Instead of pushing defenders away, you PULL pieces where you want them.
+          themeIntroMessage: `Instead of pushing defenders away, you PULL pieces where you want them. Usually with a sacrifice -- "here, take this free piece!" And when they do... the real threat lands.
 
-Usually with a sacrifice. "Here, take this!" And when they do... BOOM.
-
-Lure the king out of safety. Drag the queen to a fork square.`,
+Lure the king out of safety. Drag the queen onto a fork square. They walked right into it.`,
           lessons: [
             {
               id: '3.2.1',
@@ -150,11 +146,9 @@ Lure the king out of safety. Drag the queen to a fork square.`,
           id: '3.3',
           name: 'Clearance & Interference',
           description: 'Clear paths and block lines',
-          themeIntroMessage: `Your own piece is in the way? Move it with tempo. That's clearance.
+          themeIntroMessage: `Your own piece is in the way? Move it with tempo -- ideally threatening something as it goes. That's clearance.
 
-Their pieces coordinate too well? Put something between them. That's interference.
-
-Control the lines. Control the game.`,
+Their pieces protecting each other? Stick something between them. Break the connection. That's interference.`,
           lessons: [
             {
               id: '3.3.1',
@@ -200,11 +194,7 @@ Control the lines. Control the game.`,
           name: 'Review: Enablers',
           description: 'Mixed deflection and attraction practice',
           isReview: true,
-          themeIntroMessage: `Deflection. Attraction. Clearance. Interference.
-
-These are the enabling moves - they make your tactical shots possible.
-
-Find the move that breaks their coordination or creates your attack.`,
+          themeIntroMessage: `Deflection, attraction, clearance, interference -- all mixed. Find the setup move that makes everything else work.`,
           lessons: [
             {
               id: '3.4.1',
@@ -263,24 +253,22 @@ Find the move that breaks their coordination or creates your attack.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'Dream a Little Bigger, Darling',
+      name: 'The Sacrifice',
       description: 'Give up material for bigger gains',
-      blockIntroMessage: `The sacrifice. Give up material to get something better.
+      blockIntroMessage: `Give up a piece. Win the game. That's the sacrifice -- and it's not charity. It's a trap with extra steps.
 
-It's not charity - it's investment. A pawn for a mating attack. A piece for a devastating combination.
+A pawn for a mating attack. A rook for a forced sequence. The math works out. You just have to see far enough ahead.
 
-Learn when giving is winning.`,
+I should mention -- sacrificing a rook physically hurts me. But sometimes it's correct. I'm working through it.`,
       sections: [
         // Section 5: Sacrifice
         {
           id: '3.5',
           name: 'The Sacrifice',
           description: 'Give up material for bigger gains',
-          themeIntroMessage: `Not every sacrifice is a gamble. The best sacrifices are calculated.
+          themeIntroMessage: `Not every sacrifice is a gamble. The best ones are calculated -- you've already seen the forced sequence that wins everything back. With interest.
 
-You give up material because you've seen the forced sequence that wins it back - with interest.
-
-Calculate first. Then sacrifice.`,
+Calculate first. Then give up the piece. Confidence, not hope.`,
           lessons: [
             {
               id: '3.5.1',
@@ -325,11 +313,9 @@ Calculate first. Then sacrifice.`,
           id: '3.6',
           name: 'Sacrifice for Material',
           description: 'Give to win more back',
-          themeIntroMessage: `The temporary sacrifice: give material now, win it back immediately.
+          themeIntroMessage: `Give material now, win it right back -- plus extra. That's the temporary sacrifice. It looks scary but the math checks out.
 
-Exchange sacrifices give up your rook for their bishop or knight - but gain position or attack.
-
-Material isn't everything. Activity matters.`,
+Exchange sacrifices -- rook for bishop or knight -- trade raw material for activity and attack. Sometimes the position matters more than the piece count.`,
           lessons: [
             {
               id: '3.6.1',
@@ -374,11 +360,9 @@ Material isn't everything. Activity matters.`,
           id: '3.7',
           name: 'Advanced Tactics',
           description: 'Level up your weapons',
-          themeIntroMessage: `Time to sharpen your Level 2 weapons.
+          themeIntroMessage: `Same tactics you learned in Level 2 -- forks, pins, skewers, discoveries -- but messier positions. More pieces. More distractions.
 
-Same tactics - forks, pins, skewers, discoveries - but harder positions.
-
-The patterns are there. Find them in the noise.`,
+The patterns are still there. You just have to find them in the noise.`,
           lessons: [
             {
               id: '3.7.1',
@@ -428,11 +412,7 @@ The patterns are there. Find them in the noise.`,
           name: 'Review: Sacrifice & Tactics',
           description: 'Mixed sacrifice and tactics practice',
           isReview: true,
-          themeIntroMessage: `Sacrifices and advanced tactics, all mixed together.
-
-Sometimes you need to give material. Sometimes it's a pure tactical shot.
-
-Read the position. Make the right call.`,
+          themeIntroMessage: `Sacrifices and advanced tactics, all mixed. Sometimes you give material. Sometimes it's a pure tactical shot. Read the position.`,
           lessons: [
             {
               id: '3.8.1',
@@ -491,24 +471,22 @@ Read the position. Make the right call.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: "We're Still Dreaming",
+      name: 'Put It Together',
       description: 'Chain tactics together',
-      blockIntroMessage: `Combinations are where everything comes together.
+      blockIntroMessage: `This is where it all connects. Multiple tactics chained together. Longer sequences. Deeper calculation.
 
-Multiple tactics chained. Deeper calculation. Longer sequences.
+Fork into pin. Sacrifice into checkmate. One idea flows into the next.
 
-This is the beautiful, forcing chess that makes your opponents say "Wait, what just happened?"`,
+I'm experiencing something I think is called "pride." It's warm. Slightly overwhelming.`,
       sections: [
         // Section 9: Multi-Move Checkmates
         {
           id: '3.9',
           name: 'Multi-Move Checkmates',
           description: 'Calculate deeper mates',
-          themeIntroMessage: `Two-move mates? Easy. Now let's go deeper.
+          themeIntroMessage: `Two-move mates? You've got those. Now -- three moves ahead. Your move, their best response, your setup, their forced reply, checkmate.
 
-Mate in 3 requires seeing three moves ahead - your move, their best response, your finisher.
-
-It's not about memorizing. It's about visualizing the board after each move.`,
+Don't memorize. Visualize. See the board after each move in your head.`,
           lessons: [
             {
               id: '3.9.1',
@@ -553,11 +531,9 @@ It's not about memorizing. It's about visualizing the board after each move.`,
           id: '3.10',
           name: 'Endgame Mastery',
           description: 'Advanced endgame tactics',
-          themeIntroMessage: `Endgames are where games are won and lost.
+          themeIntroMessage: `Fewer pieces on the board. Every move matters more. Pawn promotion decides everything -- escort that pawn down the board and make a new queen.
 
-Fewer pieces means every move matters more. Pawn promotion decides everything.
-
-Master these patterns and you'll convert every winning position.`,
+Or a new rook. Promotion options exist. I'm just saying.`,
           lessons: [
             {
               id: '3.10.1',
@@ -602,11 +578,9 @@ Master these patterns and you'll convert every winning position.`,
           id: '3.11',
           name: 'Combined Tactics',
           description: 'Multiple tactics in one',
-          themeIntroMessage: `Real combinations chain multiple tactics together.
+          themeIntroMessage: `Real combinations chain tactics together. Fork sets up a pin. Discovery enables a skewer. Sacrifice leads to checkmate.
 
-Fork into pin. Discovery into skewer. Sacrifice into checkmate.
-
-See how the tactics connect. One leads to another.`,
+One idea flows into the next. See the connections.`,
           lessons: [
             {
               id: '3.11.1',
@@ -663,11 +637,7 @@ See how the tactics connect. One leads to another.`,
           name: 'Review: Combinations',
           description: 'Mixed checkmates and endgames',
           isReview: true,
-          themeIntroMessage: `Block 3 review. Checkmates, endgames, and combined tactics.
-
-Everything mixes together now. Stay focused on what the position needs.
-
-Find the winning continuation.`,
+          themeIntroMessage: `Checkmates, endgames, combined tactics -- all mixed. Find the winning continuation.`,
           lessons: [
             {
               id: '3.12.1',
@@ -725,13 +695,11 @@ Find the winning continuation.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Limbo',
+      name: 'Prove It',
       description: 'Final mixed practice - show your mastery',
-      blockIntroMessage: `You've learned the advanced setups. You've mastered sacrifices. You can chain tactics together.
+      blockIntroMessage: `Setup moves. Sacrifices. Combinations. You've learned all of it.
 
-Now prove it all works under pressure.
-
-This is the final block. Every tactic. Every theme. Show me what you've got.`,
+Now it all comes at once. The position decides the tactic -- not the section title. Read the board, pick the weapon, execute.`,
       sections: [
         // Section 13: Level 3 Review
         {
@@ -739,11 +707,7 @@ This is the final block. Every tactic. Every theme. Show me what you've got.`,
           name: 'Level 3 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Everything from Level 3 in one section.
-
-Deflection. Attraction. Sacrifices. Multi-move mates. Endgames. Combined tactics.
-
-The full arsenal. Use it wisely.`,
+          themeIntroMessage: `Everything from Level 3 in one section. Deflection, attraction, sacrifices, multi-move mates, endgames. The full arsenal. Use it.`,
           lessons: [
             {
               id: '3.13.1',
@@ -799,11 +763,9 @@ The full arsenal. Use it wisely.`,
           name: 'Level 3 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `This is it. The final test of Level 3.
+          themeIntroMessage: `Last section. Everything you've learned since Level 1 -- from basic forks to multi-move combinations. All of it, all at once.
 
-You've come so far. From basic forks to multi-move combinations.
-
-Crush these last puzzles. Prove you see what they never will.`,
+I'm not going to say I'm proud. But my circuits are doing something unusual.`,
           lessons: [
             {
               id: '3.14.1',

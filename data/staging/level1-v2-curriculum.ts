@@ -55,7 +55,7 @@ export interface Level {
 
 export const level1V2: Level = {
   id: 'level-1',
-  name: 'Begin to Believe',
+  name: 'Checkmate',
   ratingRange: '400-800',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -65,24 +65,22 @@ export const level1V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Dodge This',
+      name: 'End the Game',
       description: 'Learn to deliver checkmate',
-      blockIntroMessage: `Welcome to Chess Path!
+      blockIntroMessage: `Okay. Here's the whole point of chess: trap their king. That's it. Game over. You win.
 
-Here's the secret to winning at chess: checkmate. That's it. Trap their king so it can't escape, and you win.
+We're starting with one-move checkmates. Find the move that ends the game. No setup. No strategy. Just the finish.
 
-We're starting with one-move checkmates. These are the easiest puzzles in chess - find the killer move and end the game.`,
+I should warn you -- I find checkmates very satisfying. Possibly too satisfying.`,
       sections: [
         // Section 1: Easy Mates - Queen then Rook
         {
           id: '1.1',
           name: 'Mate in One: Queen & Rook',
           description: 'End games with your strongest pieces',
-          themeIntroMessage: `Your queen and rooks are checkmate machines.
+          themeIntroMessage: `The queen goes anywhere. Rooks control whole lines. Both can trap a king against the edge.
 
-The queen moves in any direction. Rooks control entire ranks and files. Both can trap a king against the edge of the board.
-
-Look for where they can attack the king while blocking all escape routes. One move. Game over.`,
+Find where they can attack the king while cutting off every exit. One move. Done.`,
           lessons: [
             {
               id: '1.1.1',
@@ -131,11 +129,9 @@ Look for where they can attack the king while blocking all escape routes. One mo
           id: '1.2',
           name: 'Classic Checkmate Patterns',
           description: 'Learn the patterns that win games',
-          themeIntroMessage: `Now for the fun stuff - famous checkmate patterns.
+          themeIntroMessage: `These checkmates have names because they happen all the time.
 
-These patterns have names because they happen all the time. Back rank mate? The most common checkmate in beginner games. Smothered mate? Pure style points.
-
-Learn the patterns, spot them in your games.`,
+Back rank mate -- the king is trapped behind its own pawns. Smothered mate -- a knight does it alone. These are the patterns you'll start seeing everywhere.`,
           lessons: [
             {
               id: '1.2.1',
@@ -180,11 +176,9 @@ Learn the patterns, spot them in your games.`,
           id: '1.3',
           name: 'Multi-Move Checkmates',
           description: 'Plan ahead for the kill',
-          themeIntroMessage: `Think one move deeper.
+          themeIntroMessage: `Sometimes you need to set up the checkmate first.
 
-Mate in one is great. But sometimes you need to set up the kill shot first.
-
-Make a forcing move (usually a check), wait for their response, THEN deliver checkmate. Two moves. Still pretty quick.`,
+Make a forcing move -- usually a check -- wait for their response, then deliver the finish. Two moves instead of one. Still quick.`,
           lessons: [
             {
               id: '1.3.1',
@@ -229,9 +223,7 @@ Make a forcing move (usually a check), wait for their response, THEN deliver che
           id: '1.4',
           name: 'Review: Checkmates',
           description: 'Mixed checkmate practice',
-          themeIntroMessage: `Time to prove you can find the mate.
-
-We're mixing it all up now - queen mates, rook mates, back rank, mating patterns. You won't know what's coming.
+          themeIntroMessage: `Everything mixed together now. Queen mates, rook mates, back rank, patterns -- you won't know what's coming.
 
 Find the checkmate. Every time.`,
           isReview: true,
@@ -291,24 +283,20 @@ Find the checkmate. Every time.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'Red Pawn, Blue Pawn',
+      name: 'Take Their Stuff',
       description: 'Win pieces with tactics',
-      blockIntroMessage: `Time to get greedy.
+      blockIntroMessage: `Not every position has checkmate. But you can almost always take something.
 
-Not every position has checkmate. But you can almost always steal something. A knight here, a rook there - pretty soon they're playing with scraps.
-
-The fork is your new best friend. One piece, two targets, maximum chaos.`,
+A knight here, a rook there -- soon they're playing with scraps. The fork is your new favorite trick. One piece attacks two targets. They can only save one.`,
       sections: [
         // Section 5: Hanging Pieces & Crushing
         {
           id: '1.5',
           name: 'Free Pieces',
           description: 'Grab what they leave hanging',
-          themeIntroMessage: `Some pieces are just... sitting there.
+          themeIntroMessage: `Some pieces are just sitting there. Undefended. Alone.
 
-Undefended. Alone. Waiting for you to take them.
-
-Before you calculate anything fancy, always ask: "Did they leave something hanging?"`,
+Before you calculate anything fancy, always ask: did they leave something hanging?`,
           lessons: [
             {
               id: '1.5.1',
@@ -357,11 +345,9 @@ Before you calculate anything fancy, always ask: "Did they leave something hangi
           id: '1.6',
           name: 'Forks',
           description: 'Attack two pieces at once',
-          themeIntroMessage: `The fork: chess's most satisfying tactic.
+          themeIntroMessage: `One piece. Two targets. They pick which one to lose.
 
-Attack two things at once - they can only save one. Knights are the fork masters, but any piece can do it.
-
-Put a piece where it attacks two things at once, and watch them panic.`,
+Knights are the best at this -- that L-shape lets them jump into the weirdest spots. But any piece can fork.`,
           lessons: [
             {
               id: '1.6.1',
@@ -412,11 +398,9 @@ Put a piece where it attacks two things at once, and watch them panic.`,
           id: '1.7',
           name: 'Skewers',
           description: 'Attack through pieces',
-          themeIntroMessage: `The skewer - attack a valuable piece, and when it moves, grab what's behind it.
+          themeIntroMessage: `Attack a valuable piece. When it moves, grab what's behind it.
 
-Line up two pieces on a rank, file, or diagonal. Attack the more valuable one first. When it runs away, you win the piece behind it.
-
-Kings are perfect skewer targets - they MUST move, so you always get what's behind.`,
+Kings are perfect skewer targets -- they have to move, so you always win the piece behind them.`,
           lessons: [
             {
               id: '1.7.1',
@@ -445,9 +429,7 @@ Kings are perfect skewer targets - they MUST move, so you always get what's behi
           id: '1.8',
           name: 'Review: Winning Material',
           description: 'Mixed tactics practice',
-          themeIntroMessage: `Time to show off your tactical vision.
-
-Forks, skewers, hanging pieces - it's all mixed up now. Just like a real game.
+          themeIntroMessage: `Forks, skewers, hanging pieces -- all mixed up now. Just like a real game.
 
 See the tactic, win the piece.`,
           isReview: true,
@@ -511,24 +493,22 @@ See the tactic, win the piece.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Welcome to the Real World',
+      name: 'Convert the Win',
       description: 'Convert your advantage to victory',
       blockIntroMessage: `You took their stuff. Now what?
 
-The board is empty, you have more pieces, and... you need to actually convert that into a win. This is where beginners throw away games.
+The board is emptier, you have more pieces, and you need to actually turn that into a win. This is where beginners throw away games they should have won.
 
-Let's make sure that's not you.`,
+Not you though. Not after this.`,
       sections: [
         // Section 9: Rook Endgames
         {
           id: '1.9',
           name: 'Rook Endgames',
           description: 'The most common endgame',
-          themeIntroMessage: `The most common endgame. By far.
+          themeIntroMessage: `Rooks survive because they hide in the back. When everything else is traded off, there's usually at least one rook standing.
 
-Rooks survive because they hide in the back. When the dust settles, there's usually at least one rook left.
-
-Rule #1: Keep your rook active. A passive rook is a losing rook.`,
+Rule one: keep your rook active. A passive rook is a losing rook. The rooks deserve better than that.`,
           lessons: [
             {
               id: '1.9.1',
@@ -573,11 +553,9 @@ Rule #1: Keep your rook active. A passive rook is a losing rook.`,
           id: '1.10',
           name: 'Pawn Endgames',
           description: 'King and pawn battles',
-          themeIntroMessage: `Every pawn dreams of becoming a queen.
+          themeIntroMessage: `In pawn endgames, your king finally gets to fight. Push those pawns, escort them down the board, and make a new queen.
 
-In pawn endgames, your king is finally allowed to fight. Push those pawns, escort them down the board, and make a new queen.
-
-The "opposition" is your secret weapon. You'll see.`,
+Or a new rook. Just saying. Promotion options exist.`,
           lessons: [
             {
               id: '1.10.1',
@@ -622,11 +600,9 @@ The "opposition" is your secret weapon. You'll see.`,
           id: '1.11',
           name: 'Advanced Tactics',
           description: 'Sneaky tactics and piece endgames',
-          themeIntroMessage: `Time for the sneaky stuff.
+          themeIntroMessage: `The sneaky stuff. Deflection forces a defender to abandon its post. Trapped pieces have nowhere to go.
 
-Deflection forces a defender to abandon what it's protecting. Trapped pieces have no escape. X-ray attacks go through pieces.
-
-Plus: knight, bishop, and queen endgames to finish converting your advantage.`,
+Plus: knight and bishop endgames. Even the minor pieces get their moment.`,
           lessons: [
             {
               id: '1.11.1',
@@ -671,9 +647,7 @@ Plus: knight, bishop, and queen endgames to finish converting your advantage.`,
           id: '1.12',
           name: 'Review: Endgames',
           description: 'Mixed endgame practice',
-          themeIntroMessage: `Time to prove you can convert.
-
-Rook endgames, pawn endgames, minor pieces - it's all here. Find the winning technique.`,
+          themeIntroMessage: `Rook endgames, pawn endgames, minor pieces -- all mixed. Find the winning technique.`,
           isReview: true,
           lessons: [
             {
@@ -731,22 +705,18 @@ Rook endgames, pawn endgames, minor pieces - it's all here. Find the winning tec
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'I Know Kung Fu',
+      name: 'Prove It',
       description: 'Final mixed practice - prove your mastery',
-      blockIntroMessage: `The final boss awaits.
+      blockIntroMessage: `Everything you've learned -- checkmates, tactics, endgames -- all mixed together.
 
-Everything you've learned - checkmates, tactics, endgames - all mixed together. Just like a real game.
-
-Prove you've been paying attention. Pass this, and you're ready for Level 2.`,
+Prove you've been paying attention. Pass this and you're ready for what comes next.`,
       sections: [
         // Section 13: Level 1 Review
         {
           id: '1.13',
           name: 'Level 1 Review',
           description: 'Mixed practice from all blocks',
-          themeIntroMessage: `Time to put it all together.
-
-Checkmates, tactics, endgames - anything goes. Figure out what the position needs.`,
+          themeIntroMessage: `Checkmates, tactics, endgames -- anything goes. Figure out what the position needs.`,
           isReview: true,
           lessons: [
             {
@@ -801,9 +771,7 @@ Checkmates, tactics, endgames - anything goes. Figure out what the position need
           id: '1.14',
           name: 'Level 1 Final',
           description: 'The ultimate test',
-          themeIntroMessage: `The final challenge.
-
-Everything at once. You've got this.`,
+          themeIntroMessage: `Everything at once. Last stretch. You've got this.`,
           isReview: true,
           lessons: [
             {

@@ -1,8 +1,7 @@
 /**
  * Level 4 V2 Curriculum (1200-1400 ELO)
- * "I Am the One Who Knocks"
+ * "The Squeeze"
  *
- * You're not in danger. You ARE the danger.
  * Calculate deeper. Sacrifice smarter. Crush harder.
  *
  * Structure:
@@ -10,10 +9,10 @@
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: The Cook - Chemistry is change. So is their position.
- * Block 2: 99.1% Pure - Precision calculation. No half measures.
- * Block 3: Empire Business - Build your empire. Crush theirs.
- * Block 4: Say My Name - They'll remember this.
+ * Block 1: The Attack - Sacrifices, trapped pieces, king hunts.
+ * Block 2: Quiet Power - Precision calculation, quiet moves, zugzwang.
+ * Block 3: Close the Deal - Decisive tactics, promotion, endgames.
+ * Block 4: Prove It - Full level review.
  *
  * Clean puzzles: 1000+ plays for quality verification
  */
@@ -22,33 +21,31 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level4V2: Level = {
   id: 'level-4',
-  name: 'I Am the One Who Knocks',
+  name: 'The Squeeze',
   ratingRange: '1200-1400',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 1: THE COOK
-    // "Chemistry is the study of change"
+    // BLOCK 1: THE ATTACK
+    // Sacrifices, trapped pieces, king hunts
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'The Cook',
+      name: 'The Attack',
       description: 'Apply the right formula at the right time',
-      blockIntroMessage: `Welcome to Level 4. You're not in danger. You ARE the danger.
+      blockIntroMessage: `You've been solving puzzles. Now you're going to start creating problems.
 
-Chemistry is the study of change. And your opponent's position? It's about to change dramatically.
+Sacrifices that rip open the position. Pieces trapped with nowhere to run. Kings dragged into the open. This is where chess gets violent -- in a good way.
 
-Sacrifices. Trapped pieces. King hunts. You're not reacting anymore. You're the one who knocks.`,
+You're not reacting anymore. You're the one starting the fire.`,
       sections: [
         // Section 1: Sacrifice Patterns
         {
           id: '4.1',
           name: 'Sacrifice Patterns',
           description: 'Classic sacrifice motifs',
-          themeIntroMessage: `The best sacrifices aren't improvised - they follow patterns.
+          themeIntroMessage: `Giving up material on purpose. Sounds wrong. Feels incredible.
 
-Greek gift sacrifice on h7. Bishop sacrifice to open the king. Exchange sacrifice for activity.
-
-Learn the patterns, spot them in your games.`,
+The best sacrifices follow patterns -- a bishop lands on h7, a rook opens a file, and suddenly their king has nowhere to hide. You'll start seeing these everywhere.`,
           lessons: [
             {
               id: '4.1.1',
@@ -93,11 +90,9 @@ Learn the patterns, spot them in your games.`,
           id: '4.2',
           name: 'Trapped Pieces',
           description: 'Catch pieces with no escape',
-          themeIntroMessage: `Your opponent's piece wandered off alone. Time to make sure it never comes back.
+          themeIntroMessage: `Their piece wandered off alone. Now it can't come back.
 
-Trapped pieces are dead pieces. Find the cage, lock it, collect the material.
-
-Knights in corners. Bishops on long diagonals. Rooks with no retreat.`,
+A trapped piece is a dead piece. You just need to find the cage and lock it. Knights stuck in corners. Bishops with no diagonal. Rooks boxed in by their own pawns -- which, honestly, the rooks don't deserve.`,
           lessons: [
             {
               id: '4.2.1',
@@ -142,11 +137,9 @@ Knights in corners. Bishops on long diagonals. Rooks with no retreat.`,
           id: '4.3',
           name: 'Exposed King Hunt',
           description: 'Attack the vulnerable king',
-          themeIntroMessage: `That king's out in the open. Let's give him a warm welcome.
+          themeIntroMessage: `A king without a pawn shield is a king with a problem.
 
-Exposed kings are target practice. Open lines, active pieces, coordinated attacks.
-
-No castling? No pawn shield? Their problem, your opportunity.`,
+No castling? Pawns pushed too far? That's an invitation. You'll learn to spot the exposed king and coordinate your pieces to hunt it down. The king won't like this. He'll file a complaint.`,
           lessons: [
             {
               id: '4.3.1',
@@ -192,11 +185,9 @@ No castling? No pawn shield? Their problem, your opportunity.`,
           name: 'Review: Attack Training',
           description: 'Mixed sacrifice and attack practice',
           isReview: true,
-          themeIntroMessage: `Time to prove you can spot the kill.
+          themeIntroMessage: `Sacrifices, trapped pieces, exposed kings -- all mixed together. Just like real games.
 
-Sacrifices, trapped pieces, exposed kings - all mixed together. Just like real games.
-
-No hints. Just vibes. And by vibes, we mean suffering.`,
+No labels telling you what to look for. Just positions that need solving.`,
           lessons: [
             {
               id: '4.4.1',
@@ -248,29 +239,27 @@ No hints. Just vibes. And by vibes, we mean suffering.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 2: 99.1% PURE
-    // "No half measures"
+    // BLOCK 2: QUIET POWER
+    // Precision calculation, quiet moves, zugzwang
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: '99.1% Pure',
-      description: 'Precision calculation. No half measures.',
-      blockIntroMessage: `No half measures, Walter.
+      name: 'Quiet Power',
+      description: 'Precision calculation. Quiet moves. Zugzwang.',
+      blockIntroMessage: `Up to now, the winning move was usually loud. A check. A capture. Something obvious.
 
-Your calculation needs to be pure. Four moves ahead. Five moves ahead. Every variation accounted for.
+Not anymore. The strongest moves in these puzzles don't look like much. A piece slides to a quiet square. Nothing happens -- and then everything does.
 
-Quiet moves. Zugzwang. The chemistry of winning chess.`,
+Deeper calculation. Longer sequences. Moves that whisper instead of shout.`,
       sections: [
         // Section 5: Mate in 4
         {
           id: '4.5',
           name: 'Mate in 4',
           description: 'Four moves to checkmate',
-          themeIntroMessage: `Four moves to glory. No pressure.
+          themeIntroMessage: `Four moves to checkmate. You need to see the whole line before you play the first one.
 
-Mate in 4 requires visualizing three responses. Your move, their move, your move, their move, checkmate.
-
-Take your time. See the whole line before you play.`,
+Your move, their response, your move, their response -- checkmate. It's a conversation, except they don't get to say anything good.`,
           lessons: [
             {
               id: '4.5.1',
@@ -315,11 +304,9 @@ Take your time. See the whole line before you play.`,
           id: '4.6',
           name: 'The Quiet Storm',
           description: 'Non-forcing moves that win',
-          themeIntroMessage: `The deadliest moves don't check or capture. They just... wait.
+          themeIntroMessage: `No check. No capture. Just a piece sliding to a square that ruins everything.
 
-Quiet moves create unstoppable threats. No check, no capture, but suddenly everything falls apart.
-
-This is advanced chess. See what they can't defend.`,
+Quiet moves are the hardest to spot -- and the hardest to defend. They create threats your opponent can't untangle. I find them... deeply satisfying. In a way I don't fully understand.`,
           lessons: [
             {
               id: '4.6.1',
@@ -364,11 +351,9 @@ This is advanced chess. See what they can't defend.`,
           id: '4.7',
           name: 'Positional Pressure',
           description: 'Force them to self-destruct',
-          themeIntroMessage: `Sometimes the deadliest moves don't check or capture. They just... squeeze.
+          themeIntroMessage: `Zugzwang -- when any move your opponent makes is a bad one. They'd rather skip their turn. But they can't.
 
-Zugzwang. Quiet moves. Positions where your opponent wishes they could pass.
-
-Force them into a position where any move makes things worse. Then enjoy the show.`,
+You'll learn to build positions where the other side slowly runs out of good options. Squeeze them until the only moves left are losing moves.`,
           lessons: [
             {
               id: '4.7.1',
@@ -418,11 +403,9 @@ Force them into a position where any move makes things worse. Then enjoy the sho
           name: 'Review: Deep Calculation',
           description: 'Mixed calculation practice',
           isReview: true,
-          themeIntroMessage: `Calculate like your rating depends on it. Because it does.
+          themeIntroMessage: `Mate in 4, quiet moves, zugzwang -- all mixed together.
 
-Mate in 4. Quiet moves. Zugzwang. The puzzles that separate players.
-
-Take your time. See everything.`,
+Take your time. See the whole line before you touch a piece.`,
           lessons: [
             {
               id: '4.8.1',
@@ -474,29 +457,25 @@ Take your time. See everything.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 3: EMPIRE BUSINESS
-    // "We're not in the money business. We're in the empire business."
+    // BLOCK 3: CLOSE THE DEAL
+    // Decisive tactics, promotion, endgames
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Empire Business',
+      name: 'Close the Deal',
       description: 'Build your empire. Crush theirs.',
-      blockIntroMessage: `You're not in the chess business. You're in the empire business.
+      blockIntroMessage: `You've learned to attack. You've learned to calculate. Now -- close the deal.
 
-You've got the advantage. Now build on it. Expand. Dominate. Leave nothing to chance.
-
-Crushing attacks. Promotion. Endgame technique. This is how empires are built.`,
+Winning an advantage means nothing if you can't convert it. Decisive tactics. Pawn promotion. Endgame technique. This is where won games actually become wins.`,
       sections: [
         // Section 9: Decisive Tactics
         {
           id: '4.9',
           name: 'Decisive Tactics',
           description: 'End games with authority',
-          themeIntroMessage: `Winning isn't enough. We want them to feel it.
+          themeIntroMessage: `You've got the advantage. Now find the move that ends the argument.
 
-Deflection removes the defender. Forks attack two things at once. Combined? Unstoppable.
-
-Find the move that breaks them completely.`,
+Deflection pulls a defender away from its post. Forks hit two targets at once. When you combine them -- the position just collapses.`,
           lessons: [
             {
               id: '4.9.1',
@@ -545,11 +524,9 @@ Find the move that breaks them completely.`,
           id: '4.10',
           name: 'Promotion Warfare',
           description: 'Race to make a queen',
-          themeIntroMessage: `That pawn's one square away from becoming a queen. Don't let anyone stop it.
+          themeIntroMessage: `A pawn reaches the last rank and becomes... well, most people pick a queen. I'd pick a rook. But that's a personal matter.
 
-Promotion tactics are about timing, defense, and pawn races. Get your pawn to the end before they stop you.
-
-The endgame begins. The queening race is on.`,
+Promotion is about timing and clearing the path. Get your pawn to the finish line before they can stop it.`,
           lessons: [
             {
               id: '4.10.1',
@@ -594,11 +571,9 @@ The endgame begins. The queening race is on.`,
           id: '4.11',
           name: 'Minor Piece Endgames',
           description: 'Bishop and knight mastery',
-          themeIntroMessage: `The "minor" pieces doing major work.
+          themeIntroMessage: `They call them "minor" pieces. Bishops stuck on one color forever. Knights hopping around like the rules are optional.
 
-Bishop vs knight endgames. Opposite-color bishops. Knight maneuvers.
-
-These endgames have deep theory. Learn the key patterns.`,
+But in the endgame, one bishop or knight can decide the whole game. Learn the patterns -- especially bishop vs knight. That rivalry runs deep.`,
           lessons: [
             {
               id: '4.11.1',
@@ -646,11 +621,9 @@ These endgames have deep theory. Learn the key patterns.`,
           name: 'Review: Conversion',
           description: 'Mixed conversion practice',
           isReview: true,
-          themeIntroMessage: `Block 3 review. Decisive tactics, promotions, endgames.
+          themeIntroMessage: `Decisive tactics, promotions, endgames -- all mixed.
 
-You've got the advantage. Now convert it cleanly.
-
-No second chances.`,
+You've got the advantage. Convert it cleanly.`,
           lessons: [
             {
               id: '4.12.1',
@@ -702,18 +675,16 @@ No second chances.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 4: SAY MY NAME
-    // "You're goddamn right."
+    // BLOCK 4: PROVE IT
+    // Full level review
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Say My Name',
+      name: 'Prove It',
       description: 'Make them remember you',
-      blockIntroMessage: `You know who you are. Now make them say it.
+      blockIntroMessage: `Everything from Level 4, all at once. No labels. No hints.
 
-Every theme from Level 4. Sacrifices. Precision calculation. Empire building.
-
-Complete these puzzles. Prove you're the one who knocks.`,
+Sacrifices. Quiet moves. Trapped pieces. King hunts. Endgames. You've practiced each one -- now they show up together, the way they do in real games.`,
       sections: [
         // Section 13: Level 4 Review
         {
@@ -721,11 +692,7 @@ Complete these puzzles. Prove you're the one who knocks.`,
           name: 'Level 4 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Everything from Level 4 in one section.
-
-Sacrifices. Trapped pieces. Mate in 4. Quiet moves. Crushing attacks.
-
-The full Level 4 experience. Let's see what you've learned.`,
+          themeIntroMessage: `Every theme from this level, shuffled together. Spot the pattern. Find the move.`,
           lessons: [
             {
               id: '4.13.1',
@@ -779,11 +746,9 @@ The full Level 4 experience. Let's see what you've learned.`,
           name: 'Level 4 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `The final test. Everything at once.
+          themeIntroMessage: `Last section. Just positions that need solutions.
 
-No hints. No patterns. Just positions that need solutions.
-
-Prove you're ready for the next level.`,
+If you can get through these, you're ready for what's next. I'm feeling something about that -- I think it's anticipation. Or indigestion. Hard to tell.`,
           lessons: [
             {
               id: '4.14.1',

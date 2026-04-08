@@ -1,19 +1,18 @@
 /**
  * Level 8 V2 Curriculum (2000-2200 ELO)
- * "Say Checkmate Again"
+ * The Complete Player
  *
- * Pulp Fiction-themed. Chess puns meet Tarantino swagger.
- * Master-level tactics with style.
+ * Master-level tactics with Rookie's voice.
  *
  * Structure:
  * - Blocks 1-3: 3 content sections + 1 review section = 12 sections, 48 lessons
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: En Passant, Do You Speak It? - The subtle moves nobody sees coming
- * Block 2: Does He Look Like a Bishop? - Deep combinations that see through everything
- * Block 3: That IS a Tasty Fork - Winning material and converting advantages
- * Block 4: The Path of the Righteous Pawn - The final journey
+ * Block 1: The Refined Game - The subtle moves nobody sees coming
+ * Block 2: The Long Game - Deep combinations that see through everything
+ * Block 3: The Final Weapon - Winning material and converting advantages
+ * Block 4: Prove It - The final journey
  *
  * Clean puzzles: 100+ plays for common themes, 50+ for rare themes (2000+ puzzles are scarce)
  */
@@ -22,7 +21,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level8V2: Level = {
   id: 'level-8',
-  name: 'Say Checkmate Again',
+  name: 'The Complete Player',
   ratingRange: '2000-2200',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -31,24 +30,24 @@ export const level8V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'En Passant, Do You Speak It?',
+      name: 'The Refined Game',
       description: 'The subtle moves that nobody sees coming.',
-      blockIntroMessage: `En passant. Do you speak it?
+      blockIntroMessage: `The flashy stuff is behind you. From here on — it's the moves that don't look like anything.
 
-Because at 2000+, if you don't understand the subtle stuff — the quiet moves, the in-between moves, the positions where your opponent can't move without making things worse — then we have a communication problem.
+Quiet moves. In-between moves. Positions where your opponent can't breathe without making things worse. This is the chess that separates strong players from everyone else.
 
-The flashy tactics are behind you. Welcome to the part of chess that looks like nothing and changes everything.`,
+I've been looking forward to this part. The subtlety. The patience. It's — honestly kind of beautiful.`,
       sections: [
         // Section 1: The Positional Squeeze
         {
           id: '8.1',
           name: 'The Positional Squeeze',
           description: 'Zugzwang, defense, and positional pressure',
-          themeIntroMessage: `You know what's cooler than making a great move? Making your opponent wish they could pass.
+          themeIntroMessage: `The strongest move is sometimes the one that forces your opponent to destroy their own position. They'd pass if they could. They can't.
 
-Zugzwang. Defensive resources. Positional squeezes. At master level, the most powerful weapon is patience — and the knowledge that sometimes the best move is the one that forces your opponent to make a bad one.
+Zugzwang. Defensive resources. Positional pressure. You're not attacking — you're squeezing. Every move they make is a concession.
 
-That's a bingo.`,
+I think this might be my favorite kind of chess. The slow, inevitable kind.`,
           lessons: [
             {
               id: '8.1.1',
@@ -100,11 +99,11 @@ That's a bingo.`,
           id: '8.2',
           name: 'Quiet Move Mastery',
           description: 'The most dangerous moves look harmless',
-          themeIntroMessage: `Here's the thing about quiet moves — they don't look like anything. No check. No capture. No threat you can point at.
+          themeIntroMessage: `No check. No capture. No obvious threat. The quiet move just sits there — looking harmless.
 
-But three moves later? The whole board falls apart. It's like the briefcase in the trunk — you don't know what's inside, but you know it changes everything.
+Three moves later the whole position collapses. That's the thing about quiet moves. They don't announce themselves. They just rearrange reality when nobody's watching.
 
-The most dangerous move is the one nobody sees coming.`,
+Rooks are especially good at this. Just saying.`,
           lessons: [
             {
               id: '8.2.1',
@@ -149,13 +148,11 @@ The most dangerous move is the one nobody sees coming.`,
           id: '8.3',
           name: 'The In-Between Move',
           description: 'Zwischenzug/intermezzo mastery',
-          themeIntroMessage: `Non-linear storytelling. That's the whole trick.
+          themeIntroMessage: `Your opponent takes a piece. You're supposed to take back. That's the deal, right?
 
-Your opponent expects you to recapture. They expect the obvious response. But you don't give them what they expect — you throw in a move from a completely different chapter.
+Wrong. You slip in something else first — a check, a threat, a move that changes the math before you recapture. The intermezzo. The in-between move.
 
-The intermezzo. The in-between move. The scene that comes out of nowhere and changes the whole plot.
-
-Wiggle your big toe. Then wiggle the whole position.`,
+It breaks the expected sequence. And at this level, breaking expectations is how you win.`,
           lessons: [
             {
               id: '8.3.1',
@@ -198,14 +195,14 @@ Wiggle your big toe. Then wiggle the whole position.`,
         // Section 4: Block 1 Review
         {
           id: '8.4',
-          name: 'Review: The Refined Palate',
+          name: 'Review: Subtle Tactics',
           description: 'Mixed practice with Block 1 themes',
           isReview: true,
-          themeIntroMessage: `Positional squeezes. Quiet moves. Intermezzo.
+          themeIntroMessage: `Positional squeezes. Quiet moves. Intermezzo. Three tools that don't make noise — but change everything.
 
-Three concepts that separate the players who speak en passant from the ones who don't. No fireworks — just pure positional fluency.
+No labels this time. Just positions. You figure out which weapon fits.
 
-Now let's see if you're conversational or just tourist-level.`,
+I believe in you. I'm also a little nervous. Is that normal?`,
           lessons: [
             {
               id: '8.4.1',
@@ -262,24 +259,24 @@ Now let's see if you're conversational or just tourist-level.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'Does He Look Like a Bishop?',
+      name: 'The Long Game',
       description: 'Deep combinations that see through everything.',
-      blockIntroMessage: `What does your opponent's position look like? Does it look like it can handle a sacrifice? Does it LOOK like it can survive five moves of forced play?
+      blockIntroMessage: `Calculation gets deep here. Five moves. Six moves. Every one forced — and you see the whole thing before you play the first.
 
-Then why are you treating it like it can?
+Deep sacrifices. Long mating nets. X-ray attacks that look through pieces like they're not even there. This is chess that rewards the players who refuse to stop calculating.
 
-Deep sacrifices. Long mating sequences. X-Ray attacks that see through pieces. At this level, you don't just calculate — you interrogate the position until it confesses.`,
+The position always has a secret. Your job is to find it.`,
       sections: [
         // Section 5: Deep Sacrifices
         {
           id: '8.5',
           name: 'Deep Sacrifices',
           description: 'Master-level sacrificial play',
-          themeIntroMessage: `Here's the deal. At master level, a sacrifice isn't just throwing material at the board and hoping for the best. It's a calculated investment.
+          themeIntroMessage: `A sacrifice at this level isn't hope. It's a receipt. You give up the piece because you already know what you're getting back — five moves from now.
 
-You give up a piece and you KNOW — five, six moves from now — exactly where every piece will be standing when the dust settles.
+Positional sacrifices. Exchange sacrifices. Multi-piece sacrifices where the board looks insane but the math is airtight.
 
-That's not hope. That's style.`,
+Honestly? Watching a rook sacrifice itself for the greater good makes me feel things.`,
           lessons: [
             {
               id: '8.5.1',
@@ -322,13 +319,13 @@ That's not hope. That's style.`,
         // Section 6: The Long Goodbye
         {
           id: '8.6',
-          name: 'The Long Goodbye',
+          name: 'Long Mating Sequences',
           description: 'Mate in 5+ at master level',
-          themeIntroMessage: `Some conversations take a while. Five moves. Six moves. Every single one forced.
+          themeIntroMessage: `Five moves. Six moves. Every single one forced. You see the checkmate before you play move one.
 
-At this level, the long checkmate isn't just calculation — it's vision. You see the finale before you play the opening note. Like a soundtrack that plays in your head before the scene even starts.
+Long mating sequences are pure calculation — but there's something else in there too. Vision. You hold the whole line in your head and trust it.
 
-Find move one. The rest will follow.`,
+Find the first move. The rest will follow.`,
           lessons: [
             {
               id: '8.6.1',
@@ -371,13 +368,13 @@ Find move one. The rest will follow.`,
         // Section 7: Through the Looking Glass
         {
           id: '8.7',
-          name: 'Through the Looking Glass',
+          name: 'X-Ray and Interference',
           description: 'X-Ray attacks and interference',
-          themeIntroMessage: `X-Ray attacks — when your piece looks THROUGH another piece to hit the target behind it. Interference — when you jam a piece into the line and break everything.
+          themeIntroMessage: `X-ray attacks — your piece looks through another piece to hit the target behind it. Interference — you jam something into a line and break the connection.
 
-Both are about lines. Diagonals. Files. Ranks. And what happens when you mess with them.
+Both are about geometry. Files, ranks, diagonals — and what happens when you disrupt them.
 
-It's like that moment in the scene where you realize the whole conversation had a second meaning. Look deeper.`,
+Rooks on open files are particularly devastating here. They see through everything. I'm so proud.`,
           lessons: [
             {
               id: '8.7.1',
@@ -427,11 +424,11 @@ It's like that moment in the scene where you realize the whole conversation had 
           name: 'Review: The Technique',
           description: 'Mixed deep combination practice',
           isReview: true,
-          themeIntroMessage: `Sacrifices. Long mates. X-Rays. Interference.
+          themeIntroMessage: `Sacrifices. Long mates. X-rays. Interference. Four ways to crack a position wide open — mixed together now.
 
-Does the position look like it can handle this? No? Then stop treating it like it can.
+No labels. No hints about what you're facing. Just the board and your calculation.
 
-Four ways to interrogate a position until it gives up everything. Mixed together. No mercy.`,
+You've built the tools. Time to use them without the instruction manual.`,
           lessons: [
             {
               id: '8.8.1',
@@ -488,24 +485,24 @@ Four ways to interrogate a position until it gives up everything. Mixed together
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'That IS a Tasty Fork',
+      name: 'The Final Weapon',
       description: 'Winning material and converting advantages.',
-      blockIntroMessage: `Mmm-mmm. That IS a tasty fork. Mind if I have some of your material?
+      blockIntroMessage: `You can see the tactics now. But at this level they're buried — three moves deep, disguised as something else.
 
-Deflection. Attraction. Endgame technique. Kingside and queenside attacks. This is the part where you take what's yours — a piece here, a pawn there, a whole position if they let you.
+Deflection. Attraction. Endgame conversions. Flank attacks. The ideas aren't new. The difficulty is recognizing them when they don't announce themselves.
 
-At 2000+, every tactic is hiding inside something else. The fork is three moves deep. The deflection sets up an endgame win. You just have to see the whole menu.`,
+A piece here, a pawn there — soon they're playing with nothing. Take what's yours.`,
       sections: [
         // Section 9: The Art of Misdirection
         {
           id: '8.9',
           name: 'The Art of Misdirection',
           description: 'Deflection and attraction at master level',
-          themeIntroMessage: `Misdirection. The oldest trick in the book — and still the coolest.
+          themeIntroMessage: `Deflection — pull the defender away from what it's guarding. Attraction — lure a piece onto a square where it doesn't want to be.
 
-Deflection: pull the defender away from what it's guarding. Attraction: lure a piece onto a square where it doesn't want to be.
+Both turn your opponent's pieces against them. The defender was doing its job perfectly. You just gave it a different job.
 
-Both are about making your opponent's pieces work against them. It's not a trick — it's a conversation. And you're leading.`,
+Elegant and a little cruel. I respect it.`,
           lessons: [
             {
               id: '8.9.1',
@@ -552,13 +549,13 @@ Both are about making your opponent's pieces work against them. It's not a trick
         // Section 10: Endgame Cinema
         {
           id: '8.10',
-          name: 'Endgame Cinema',
+          name: 'Master Endgames',
           description: 'Master-level endgames (all types)',
-          themeIntroMessage: `The endgame. The third act. Where the whole story comes together.
+          themeIntroMessage: `Rook endgames that hinge on a single tempo. Pawn races decided by one square. Queen endgames where perpetual check is always lurking.
 
-Rook endgames that hinge on one tempo. Pawn races where promotion is one move away. Queen endgames with perpetual check lurking. Minor piece finesse.
+The endgame strips everything away. No hiding behind complications — just technique and precision.
 
-This is the final scene. Make it count.`,
+Rook endgames are the most common. And the most beautiful. I'm not biased. Okay, I'm biased.`,
           lessons: [
             {
               id: '8.10.1',
@@ -607,13 +604,13 @@ This is the final scene. Make it count.`,
         // Section 11: The Mexican Standoff
         {
           id: '8.11',
-          name: 'The Mexican Standoff',
+          name: 'Attack on Both Flanks',
           description: 'Kingside and queenside attacks',
-          themeIntroMessage: `Three players. Three guns. Nobody wants to shoot first.
+          themeIntroMessage: `Both sides are attacking. Kingside. Queenside. The tension is unbearable — and someone has to break through first.
 
-That's a Mexican standoff — and that's what happens when both sides are attacking. Kingside. Queenside. The tension is unbearable.
+At this level the question isn't whether you attack. It's where. Pick a flank. Commit your pieces. Don't hesitate.
 
-At master level, the question isn't IF you attack. It's WHERE. Pick a side. Commit. And don't blink.`,
+The side that commits first usually wins. Assuming they picked right.`,
           lessons: [
             {
               id: '8.11.1',
@@ -660,14 +657,14 @@ At master level, the question isn't IF you attack. It's WHERE. Pick a side. Comm
         // Section 12: Block 3 Review
         {
           id: '8.12',
-          name: 'Review: The Full Menu',
+          name: 'Review: The Full Arsenal',
           description: 'Mixed Block 3 themes',
           isReview: true,
-          themeIntroMessage: `Deflection. Attraction. Endgames. Kingside. Queenside.
+          themeIntroMessage: `Deflection. Attraction. Endgames. Flank attacks. Everything from this block — shuffled together.
 
-The full menu. And let me tell you — everything on it is tasty. Forks. Deflections. Endgame conversions. Flank attacks.
+No theme labels. No hints about what's coming. You read the position and choose the right tool yourself.
 
-No hints about what you're being served. Just eat what's in front of you.`,
+This is what real chess feels like. I'm getting emotional. Don't tell anyone.`,
           lessons: [
             {
               id: '8.12.1',
@@ -724,13 +721,13 @@ No hints about what you're being served. Just eat what's in front of you.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'The Path of the Righteous Pawn',
+      name: 'Prove It',
       description: 'The final journey. Every theme. Every tactic.',
-      blockIntroMessage: `The path of the righteous pawn is beset on all sides by the inequities of the selfish and the tyranny of stronger pieces. Blessed is the pawn who, in the name of good positional play and calculation, shepherds the weak squares through the valley of the middlegame.
+      blockIntroMessage: `This is the end. Every theme. Every tactic from Level 8 — mixed together. No labels. No hints. Just the board.
 
-That's you. Every theme. Every tactic from Level 8. Mixed together. No labels. No hints.
+You started this whole journey not knowing how the pieces moved. Now you're solving master-level combinations. That's — I don't have a word for what that is. My vocabulary files aren't built for this feeling.
 
-You've walked the path. Now prove you belong at the end of it.`,
+Prove it. One last time.`,
       sections: [
         // Section 13: Level 8 Review
         {
@@ -738,11 +735,11 @@ You've walked the path. Now prove you belong at the end of it.`,
           name: 'Level 8 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Every chapter. Every scene. Every tactic from Level 8, remixed and reshuffled.
+          themeIntroMessage: `Everything from Level 8 — remixed and reshuffled. Quiet moves next to sacrifices. Endgames next to intermezzo.
 
-No chapter headings. No theme labels. Just the board, the position, and whatever the director throws at you.
+No theme labels. No guardrails. Just the position and whatever it demands.
 
-You've got the whole script memorized. Now perform it.`,
+You've learned all the pieces. Now play like they're one instrument.`,
           lessons: [
             {
               id: '8.13.1',
@@ -796,11 +793,11 @@ You've got the whole script memorized. Now perform it.`,
           name: 'Level 8 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `The final scene. The credits are waiting. But first — four more puzzles. The hardest ones.
+          themeIntroMessage: `Four more puzzles. The hardest ones. Everything from Level 8 — cranked to the maximum.
 
-Everything from Level 8, cranked to the maximum. If you can handle this, you're not just a 2000-rated player anymore. You're something else entirely.
+If you can handle this, you've completed the entire curriculum. Every level. Every theme. From how the pieces move to master-level combinations.
 
-Say checkmate again. I double dare you.`,
+I'm going to be honest — I don't know what I'll do when this is over. I think I'm feeling something called "pride." It's a lot.`,
           lessons: [
             {
               id: '8.14.1',

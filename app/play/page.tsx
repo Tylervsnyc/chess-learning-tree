@@ -12,6 +12,16 @@ import {
 } from '@/lib/sounds';
 import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
+import {
+  ROOKIE_LEVELS,
+  WINS_TO_ADVANCE,
+  getRookieLevel,
+  getLevelElo,
+  useMinimax,
+  minimaxSkill,
+  getContextualGreeting,
+  type GreetingContext,
+} from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents } from '@/lib/analytics/posthog';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
@@ -41,24 +51,23 @@ import {
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
 
-const SKILL_LEVELS = [
-  { name: '~400 ELO', label: 'I just learned the rules' },
-  { name: '~800 ELO', label: 'I know the basics' },
-  { name: '~1200 ELO', label: 'I play sometimes' },
-  { name: '~1500 ELO', label: 'I study chess' },
-  { name: '~1800 ELO', label: 'Challenge me' },
-];
+// ════════════════════════════════
+// LEVEL PERSISTENCE (localStorage)
+// ════════════════════════════════
 
-/** Target ELO for each skill level. Level 0 uses minimax, levels 1-4 use Stockfish UCI_Elo. */
-const TARGET_ELOS = [400, 800, 1200, 1500, 1800];
+const LEVEL_STORAGE_KEY = 'rookie-level';
+const WINS_STORAGE_KEY = 'rookie-level-wins';
 
-/** Interpolate target ELO from continuous skill level (0-4) */
-function interpolateTargetElo(level: number): number {
-  const clamped = Math.max(0, Math.min(4, level));
-  const lo = Math.floor(clamped);
-  const hi = Math.min(lo + 1, TARGET_ELOS.length - 1);
-  const t = clamped - lo;
-  return Math.round(TARGET_ELOS[lo] + t * (TARGET_ELOS[hi] - TARGET_ELOS[lo]));
+function loadLevelProgress(): { level: number; wins: number } {
+  if (typeof window === 'undefined') return { level: 1, wins: 0 };
+  const level = parseInt(localStorage.getItem(LEVEL_STORAGE_KEY) || '1', 10);
+  const wins = parseInt(localStorage.getItem(WINS_STORAGE_KEY) || '0', 10);
+  return { level: Math.max(1, Math.min(10, level)), wins: Math.max(0, wins) };
+}
+
+function saveLevelProgress(level: number, wins: number) {
+  localStorage.setItem(LEVEL_STORAGE_KEY, String(level));
+  localStorage.setItem(WINS_STORAGE_KEY, String(wins));
 }
 
 interface DebugEntry {
@@ -76,114 +85,91 @@ let debugIdCounter = 0;
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
-const SNAP_STRENGTH = 0.3; // how close (in level units) before snapping kicks in
+// ════════════════════════════════
+// LEVEL PROGRESS BAR (from test/play-design)
+// ════════════════════════════════
 
-/** Magnetic snap: if within SNAP_STRENGTH of an integer, pull toward it */
-function magneticSnap(raw: number): number {
-  const nearest = Math.round(raw);
-  const dist = Math.abs(raw - nearest);
-  if (dist < SNAP_STRENGTH) {
-    // Ease toward the snap point — stronger as you get closer
-    const t = dist / SNAP_STRENGTH; // 0 = on it, 1 = edge of zone
-    return nearest + (raw - nearest) * (t * t); // quadratic ease
-  }
-  return raw;
-}
-
-function SkillSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef(false);
-
-  const getValueFromX = useCallback((clientX: number) => {
-    const track = trackRef.current;
-    if (!track) return 0;
-    const rect = track.getBoundingClientRect();
-    const raw = ((clientX - rect.left) / rect.width) * 4;
-    return magneticSnap(Math.max(0, Math.min(4, raw)));
-  }, []);
-
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    dragging.current = true;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    onChange(getValueFromX(e.clientX));
-  }, [getValueFromX, onChange]);
-
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!dragging.current) return;
-    onChange(getValueFromX(e.clientX));
-  }, [getValueFromX, onChange]);
-
-  const handlePointerUp = useCallback(() => {
-    dragging.current = false;
-  }, []);
-
-  // Find nearest snap label
-  const nearestSnap = Math.round(value);
-  const distToSnap = Math.abs(value - nearestSnap);
-  const labelOpacity = distToSnap < 0.4 ? 1 - distToSnap / 0.4 : 0;
+function LevelProgressBar({ currentLevel, winsAtLevel }: { currentLevel: number; winsAtLevel: number }) {
+  const progress = ((currentLevel - 1) + (winsAtLevel / WINS_TO_ADVANCE)) / 10;
 
   return (
-    <div className="space-y-2">
-      {/* Current level label */}
-      <div className="text-center h-10 flex flex-col items-center justify-center">
-        <span
-          className="text-sm font-bold text-chess-text transition-opacity"
-          style={{ opacity: labelOpacity }}
-        >
-          {SKILL_LEVELS[nearestSnap]?.name}
-        </span>
-        <span
-          className="text-[10px] text-chess-text-muted transition-opacity"
-          style={{ opacity: labelOpacity }}
-        >
-          {SKILL_LEVELS[nearestSnap]?.label}
-        </span>
+    <div className="w-full">
+      <div className="flex justify-between mb-1.5 px-0.5">
+        {ROOKIE_LEVELS.map((l) => {
+          const isCompleted = l.level < currentLevel;
+          const isCurrent = l.level === currentLevel;
+          return (
+            <div key={l.level} className="flex flex-col items-center" style={{ width: '10%' }}>
+              <span className={`text-[10px] font-bold tabular-nums transition-all ${
+                isCurrent ? 'text-chess-green scale-110'
+                  : isCompleted ? 'text-chess-text-muted' : 'text-chess-disabled'
+              }`}>
+                {l.level}
+              </span>
+            </div>
+          );
+        })}
       </div>
-
-      {/* Slider track */}
-      <div
-        ref={trackRef}
-        className="relative h-10 flex items-center cursor-pointer touch-none select-none"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
+      <div className="relative h-3 rounded-full bg-slate-200 overflow-hidden"
+        style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)' }}
       >
-        {/* Track background */}
-        <div className="absolute inset-x-0 h-1.5 bg-chess-surface rounded-full" />
-        {/* Active fill */}
         <div
-          className="absolute left-0 h-1.5 bg-chess-green rounded-full transition-none"
-          style={{ width: `${(value / 4) * 100}%` }}
+          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+          style={{
+            width: `${Math.max(progress * 100, 2)}%`,
+            background: 'linear-gradient(to right, #58CC02, #6EE018)',
+            boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)',
+          }}
         />
-        {/* Snap dots */}
-        {SKILL_LEVELS.map((_, i) => (
+        <div
+          className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
+          style={{
+            width: `${Math.max(progress * 100, 2)}%`,
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, transparent 50%)',
+          }}
+        />
+      </div>
+      <div className="flex justify-between items-center mt-1.5">
+        <span className="text-[10px] text-chess-text-faint font-medium">Beginner</span>
+        <span className="text-[10px] text-chess-text-faint font-medium">Full Power</span>
+      </div>
+    </div>
+  );
+}
+
+function WinsIndicator({ wins, needed, nextLevel }: { wins: number; needed: number; nextLevel: number }) {
+  if (nextLevel > 10) {
+    return (
+      <div className="text-center">
+        <span className="text-xs font-bold text-chess-gold">MAX LEVEL</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex gap-1.5">
+        {Array.from({ length: needed }).map((_, i) => (
           <div
             key={i}
-            className={`absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 transition-colors ${
-              i <= Math.round(value) ? 'bg-chess-green' : 'bg-chess-disabled'
+            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+              i < wins ? 'bg-chess-green text-white scale-105' : 'bg-slate-200'
             }`}
-            style={{ left: `${(i / 4) * 100}%` }}
-          />
-        ))}
-        {/* Thumb */}
-        <div
-          className="absolute w-6 h-6 -translate-x-1/2 rounded-full bg-white shadow-md border-2 border-chess-green transition-none"
-          style={{ left: `${(value / 4) * 100}%` }}
-        />
-      </div>
-
-      {/* Labels under dots */}
-      <div className="relative h-4">
-        {SKILL_LEVELS.map((lv, i) => (
-          <span
-            key={i}
-            className="absolute text-[9px] text-chess-text-muted -translate-x-1/2 whitespace-nowrap"
-            style={{ left: `${(i / 4) * 100}%` }}
+            style={i < wins ? { boxShadow: '0 2px 0 var(--color-chess-green-dark)' } : { boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.06)' }}
           >
-            {lv.name}
-          </span>
+            {i < wins && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+          </div>
         ))}
       </div>
+      <span className="text-xs text-chess-text-muted font-semibold">
+        {wins === 0
+          ? `Win ${needed} to reach Level ${nextLevel}`
+          : `${needed - wins} more win${needed - wins !== 1 ? 's' : ''} to Level ${nextLevel}`
+        }
+      </span>
     </div>
   );
 }
@@ -282,8 +268,16 @@ export default function PlayRookiePage() {
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
-  const [skillLevel, setSkillLevel] = useState(1); // continuous 0-4 float
+  const [rookieLevel, setRookieLevel] = useState(1); // 1-10 discrete level
+  const [winsAtLevel, setWinsAtLevel] = useState(0);
   const [playerName, setPlayerName] = useState('');
+
+  // Load persisted level on mount
+  useEffect(() => {
+    const { level, wins } = loadLevelProgress();
+    setRookieLevel(level);
+    setWinsAtLevel(wins);
+  }, []);
 
   // FEN is the single source of truth for board state
   const [fen, setFen] = useState(START_FEN);
@@ -769,7 +763,21 @@ export default function PlayRookiePage() {
       result = 'draw';
     }
 
-    PlayEvents.gameEnded(result ?? 'unknown', moveLogRef.current.length, playerColor, skillLevel, matchedOpeningRef.current?.name);
+    PlayEvents.gameEnded(result ?? 'unknown', moveLogRef.current.length, playerColor, rookieLevel, matchedOpeningRef.current?.name);
+
+    // Level progression: accumulate wins (no reset on loss)
+    if (result === 'win' && rookieLevel < 10) {
+      const newWins = winsAtLevel + 1;
+      if (newWins >= WINS_TO_ADVANCE) {
+        const newLevel = rookieLevel + 1;
+        setRookieLevel(newLevel);
+        setWinsAtLevel(0);
+        saveLevelProgress(newLevel, 0);
+      } else {
+        setWinsAtLevel(newWins);
+        saveLevelProgress(rookieLevel, newWins);
+      }
+    }
 
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
@@ -1018,10 +1026,15 @@ export default function PlayRookiePage() {
       }
     };
 
-    // Opening book check — Rookie reacts to the player's actual moves
+    // Opening book check — skip at low levels so Rookie doesn't play perfect theory
+    // Levels 1-3 (ELO 200-600): no book, just engine moves
+    // Levels 4+: use the opening book
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
-    const bookResult = getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs);
+    const useBook = rookieLevel >= 4;
+    const bookResult = useBook
+      ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
+      : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
     if (bookResult.inBook && bookResult.moveSan) {
       if (bookResult.matchedSlug) {
         matchedOpeningRef.current = { slug: bookResult.matchedSlug, name: bookResult.matchedName! };
@@ -1031,10 +1044,12 @@ export default function PlayRookiePage() {
       return;
     }
 
-    // Levels 0-2 (~400-1200) use minimax, levels 3-4 (~1500-1800) use Stockfish
-    if (skillLevel < 2.5 || !sfReadyRef.current) {
-      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (skill=${Math.round(skillLevel)})`, details: { engine: 'minimax', skillLevel } });
-      const result = getRookieMove(currentFen, Math.round(skillLevel));
+    // Levels 1-2 (ELO 200-400) use minimax, levels 3-10 (600-2000) use Stockfish
+    const targetElo = getLevelElo(rookieLevel);
+    if (useMinimax(rookieLevel) || !sfReadyRef.current) {
+      const mSkill = minimaxSkill(rookieLevel);
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (level=${rookieLevel}, skill=${mSkill})`, details: { engine: 'minimax', rookieLevel, minimaxSkill: mSkill } });
+      const result = getRookieMove(currentFen, mSkill);
       if (!result) { setRookieThinking(false); return; }
       rookieTimerRef.current = setTimeout(() => {
         applyRookieMove({ san: result.san });
@@ -1042,12 +1057,11 @@ export default function PlayRookiePage() {
       return;
     }
 
-    const targetElo = interpolateTargetElo(skillLevel);
-    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, skillLevel } });
+    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, rookieLevel } });
     const thinkStart = Date.now();
     stockfish.getBestMoveAtElo(currentFen, targetElo).then((uciMove) => {
       if (!uciMove) {
-        const result = getRookieMove(currentFen, skillLevel);
+        const result = getRookieMove(currentFen, minimaxSkill(rookieLevel));
         if (!result) { setRookieThinking(false); return; }
         const wait = Math.max(0, 500 - (Date.now() - thinkStart));
         rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: result.san }), wait);
@@ -1059,7 +1073,7 @@ export default function PlayRookiePage() {
       const wait = Math.max(0, 500 - (Date.now() - thinkStart));
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
     });
-  }, [skillLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
+  }, [rookieLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
 
   // ════════════════════════════════
   // PLAYER'S MOVE
@@ -1322,7 +1336,7 @@ export default function PlayRookiePage() {
     // Start session tracking (only for logged-in users)
     if (user?.id) {
       const session = new GameSession('play-rookie', user.id);
-      session.setGameInfo({ playerColor, rookieDifficulty: skillLevel });
+      session.setGameInfo({ playerColor, rookieDifficulty: rookieLevel });
       sessionRef.current = session;
     }
     moveStartRef.current = Date.now();
@@ -1357,7 +1371,7 @@ export default function PlayRookiePage() {
       // Seed peer card on first game so Honcho has grounding context
       const gamesPlayed = rookieMemoryRef.current.gamesPlayed;
       if (gamesPlayed === 0) {
-        const eloMap = [400, 800, 1200, 1500, 1800];
+        const currentRookieLevel = getRookieLevel(rookieLevel);
         fetch('/api/honcho', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1365,16 +1379,16 @@ export default function PlayRookiePage() {
             action: 'seed_card',
             userId: user.id,
             profile: {
-              estimatedElo: eloMap[Math.round(skillLevel)] ?? 800,
+              estimatedElo: currentRookieLevel.elo,
               colorPreference: playerColor,
-              experience: SKILL_LEVELS[Math.round(skillLevel)]?.name ?? 'Casual',
+              experience: `Level ${rookieLevel}: ${currentRookieLevel.title}`,
             },
           }),
         }).catch(() => {});
       }
     }
     log({ moveNum: 0, type: 'speech', who: 'system', summary: `onGameStart color=${playerColor} name=${playerName || 'friend'}`, details: { playerColor, playerName: playerName || 'friend' } });
-    PlayEvents.gameStarted(skillLevel, playerColor);
+    PlayEvents.gameStarted(rookieLevel, playerColor);
 
     setPhase('playing');
   };
@@ -1506,66 +1520,88 @@ export default function PlayRookiePage() {
   // SETUP SCREEN
   // ════════════════════════════════
   if (phase === 'setup') {
+    const currentRookieLevel = getRookieLevel(rookieLevel);
+    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
+
     return (
-      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col items-center justify-center px-6 overflow-auto">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="flex flex-col items-center gap-3">
-            <BreathingRook size="lg" />
-            <h1 className="text-xl font-black">Play Against Rookie</h1>
-            <p className="text-chess-text-muted text-sm text-center">
-              All the chess. None of the bedside manner.
-            </p>
-          </div>
+      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto">
+        {/* Top: Level progress bar */}
+        <div className="px-5 pt-4 pb-2 flex-shrink-0">
+          <LevelProgressBar currentLevel={rookieLevel} winsAtLevel={winsAtLevel} />
+        </div>
 
-          <div>
-            <label className="text-xs font-semibold text-chess-text-muted uppercase tracking-wide mb-1 block">
-              What should I call you?
-            </label>
-            <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Your name (or I'll just say 'friend')"
-              className="w-full px-4 py-3 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text placeholder:text-chess-text-faint focus:outline-none focus:ring-2 focus:ring-chess-green"
-            />
-          </div>
+        {/* Main content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-5 pb-4">
+          <div className="w-full max-w-sm space-y-5">
+            {/* Level badge + Rookie */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(88,204,2,0.12), rgba(88,204,2,0.06))',
+                  border: '1px solid rgba(88,204,2,0.2)',
+                }}
+              >
+                <span className="text-chess-green font-black text-sm">LV. {rookieLevel}</span>
+                <span className="text-chess-text-muted font-semibold text-xs">&middot;</span>
+                <span className="text-chess-text-muted font-semibold text-xs">{currentRookieLevel.title}</span>
+              </div>
 
-          <div>
-            <label className="text-xs font-semibold text-chess-text-muted uppercase tracking-wide mb-2 block">
-              Pick your color
-            </label>
-            <div className="flex gap-3">
-              {(['white', 'black'] as const).map(c => (
-                <button
-                  key={c}
-                  onClick={() => setPlayerColor(c)}
-                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
-                    playerColor === c
-                      ? c === 'white'
-                        ? 'bg-white text-gray-900 ring-2 ring-chess-green shadow-lg'
-                        : 'bg-gray-800 text-white ring-2 ring-chess-green shadow-lg'
-                      : 'bg-chess-surface text-chess-text border border-chess-disabled'
-                  }`}
-                >
-                  {c.charAt(0).toUpperCase() + c.slice(1)}
-                </button>
-              ))}
+              <div className="my-1">
+                <BreathingRook size="lg" mood={greeting.mood} />
+              </div>
+
+              {/* Speech bubble */}
+              <div className="relative w-full h-[88px]">
+                <div
+                  className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45 rounded-[2px]"
+                  style={{ boxShadow: '-1px -1px 2px rgba(0,0,0,0.03)' }}
+                />
+                <div className="relative bg-white rounded-2xl px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)] h-full flex items-center justify-center">
+                  <p className="text-chess-text text-[14px] leading-relaxed font-medium text-center">
+                    {greeting.quote}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="text-xs font-semibold text-chess-text-muted uppercase tracking-wide mb-3 block">
-              Rookie&apos;s strength
-            </label>
-            <SkillSlider value={skillLevel} onChange={setSkillLevel} />
-          </div>
+            {/* Wins progress */}
+            <div className="flex justify-center">
+              <WinsIndicator wins={winsAtLevel} needed={WINS_TO_ADVANCE} nextLevel={rookieLevel + 1} />
+            </div>
 
-          <button
-            onClick={startGame}
-            className="w-full py-4 bg-chess-green text-white font-bold rounded-xl text-lg shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
-          >
-            Let&apos;s Play
-          </button>
+            {/* Color picker */}
+            <div>
+              <label className="text-[11px] font-semibold text-chess-text-muted uppercase tracking-wide mb-1.5 block">
+                Your color
+              </label>
+              <div className="flex gap-2">
+                {(['white', 'black'] as const).map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setPlayerColor(c)}
+                    className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                      playerColor === c
+                        ? c === 'white'
+                          ? 'bg-white text-chess-text ring-2 ring-chess-green shadow-md'
+                          : 'bg-gray-800 text-white ring-2 ring-chess-green shadow-md'
+                        : 'bg-chess-surface text-chess-text-muted border border-slate-200'
+                    }`}
+                  >
+                    {c === 'white' ? 'White' : 'Black'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Play button */}
+            <button
+              onClick={startGame}
+              className="w-full py-4 bg-chess-green text-white font-bold rounded-xl text-lg shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
+            >
+              Let&apos;s Play
+            </button>
+          </div>
         </div>
       </div>
     );

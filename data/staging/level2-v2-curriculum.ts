@@ -22,7 +22,7 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level2V2: Level = {
   id: 'level-2',
-  name: 'One Does Not Simply Win at Chess',
+  name: 'Double Trouble',
   ratingRange: '800-1000',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
@@ -32,24 +32,22 @@ export const level2V2: Level = {
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Speak, Friend, and Blunder',
+      name: 'Fork Everything',
       description: 'Attack two things at once',
-      blockIntroMessage: `Welcome to Level 2!
+      blockIntroMessage: `You can checkmate. Good. Now let's talk about stealing.
 
-You know how to checkmate. Now let's learn how to take all their stuff first.
+One piece. Two targets. They save one -- you take the other. That's a fork. It's the most satisfying thing in chess besides checkmate.
 
-Double attacks - especially forks - are how you win material. One piece threatens two targets. They can only save one. You take the other. Beautiful.`,
+I'm not saying forks are better than checkmate. But they're close. Very close.`,
       sections: [
         // Section 1: Fork Basics (interleaved pieces)
         {
           id: '2.1',
           name: 'Fork Basics',
           description: 'Learn to attack two pieces at once',
-          themeIntroMessage: `Forks are devastating. One piece attacks two targets simultaneously. Your opponent has to choose which piece to lose.
+          themeIntroMessage: `One piece attacks two things at once. Your opponent picks which one to lose. You take the other. Simple as that.
 
-Knights are the fork masters - they can attack pieces that can't attack back. But every piece can fork.
-
-Look for pieces on the same color diagonal or same rank/file that can both be threatened.`,
+Knights are the sneakiest forkers -- they jump in and nobody can hit them back. But queens, rooks, bishops -- everyone gets a turn.`,
           lessons: [
             {
               id: '2.1.1',
@@ -102,11 +100,9 @@ Look for pieces on the same color diagonal or same rank/file that can both be th
           id: '2.2',
           name: 'Fork Patterns',
           description: 'Recognize common fork setups',
-          themeIntroMessage: `Time to level up. Now we're looking at specific fork patterns you'll see over and over.
+          themeIntroMessage: `The "royal fork" -- knight attacks the king AND queen at the same time. The king has to move. You take the queen. They cry.
 
-The "royal fork" hits the king and queen. It's almost always game over when you land one.
-
-Train your eye to spot when two valuable pieces are a knight hop apart.`,
+These patterns show up constantly. Train your eyes to spot two valuable pieces sitting a knight-hop apart.`,
           lessons: [
             {
               id: '2.2.1',
@@ -159,11 +155,9 @@ Train your eye to spot when two valuable pieces are a knight hop apart.`,
           id: '2.3',
           name: 'Forks & More',
           description: 'Mix forks with other tactics',
-          themeIntroMessage: `Sometimes you need to set up the fork first. Sometimes there's a hanging piece just sitting there.
+          themeIntroMessage: `Sometimes you set up the fork. Sometimes a piece is just sitting there undefended. Free stuff.
 
-This section mixes forks with other winning moves. The right tactic depends on the position.
-
-Stay alert. The best move might not be what you expect.`,
+We're mixing forks with other winning moves now. Read the position -- the best tactic depends on what they've left hanging.`,
           lessons: [
             {
               id: '2.3.1',
@@ -215,11 +209,7 @@ Stay alert. The best move might not be what you expect.`,
           name: 'Review: Double Attacks',
           description: 'Mixed fork practice',
           isReview: true,
-          themeIntroMessage: `Review time. You've seen forks with different pieces and patterns.
-
-Now let's mix them all together. Any piece could be forking in these puzzles.
-
-Trust your pattern recognition. You've got this.`,
+          themeIntroMessage: `Everything mixed together. Any piece, any pattern. Show me what you've learned.`,
           lessons: [
             {
               id: '2.4.1',
@@ -282,24 +272,22 @@ Trust your pattern recognition. You've got this.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'You Shall Not Promote',
+      name: 'The Pin and the Skewer',
       description: 'Freeze and pierce your opponent',
-      blockIntroMessage: `Forks attack two pieces at once. Pins and skewers? They attack THROUGH pieces.
+      blockIntroMessage: `Forks attack sideways. Pins and skewers? They attack through pieces. Along lines.
 
-A pin freezes a piece in place - it can't move without exposing something more valuable behind it.
+A pin freezes a piece in place -- move it and something worse gets exposed. A skewer is the reverse -- attack the big piece, it runs, you grab what's behind.
 
-A skewer is a pin in reverse - attack the valuable piece, and when it moves, grab what's behind.`,
+Rooks and bishops live for this. Long lines are their whole personality.`,
       sections: [
         // Section 5: Absolute Pins
         {
           id: '2.5',
           name: 'Absolute Pins',
           description: 'Pin to the king - frozen solid',
-          themeIntroMessage: `The absolute pin is brutal. A piece is pinned to the king - it literally CAN'T move. That's illegal.
+          themeIntroMessage: `An absolute pin is when a piece literally can't move. It's shielding the king -- so moving it would be illegal.
 
-Bishops and rooks are pin masters. They control long diagonals and files.
-
-Look for enemy pieces standing between your long-range pieces and their king.`,
+Look for enemy pieces standing between your long-range attackers and their king. Bishops love diagonals. Rooks own files. Both are ruthless here.`,
           lessons: [
             {
               id: '2.5.1',
@@ -351,11 +339,9 @@ Look for enemy pieces standing between your long-range pieces and their king.`,
           id: '2.6',
           name: 'Exploiting Pins',
           description: 'Attack the frozen target',
-          themeIntroMessage: `A pinned piece is stuck. Now exploit it.
+          themeIntroMessage: `A pinned piece is stuck. So pile on it. Add attackers. It can't run, can't fight back. Eventually you overwhelm the defenders and win it.
 
-Pile up attackers on the pinned piece. It can't escape. Eventually you'll overload the defenders and win it.
-
-Relative pins (to the queen) are weaker but still dangerous. The piece CAN move, but won't want to.`,
+Relative pins -- pinned to the queen instead of the king -- are softer. The piece CAN move. But it really won't want to.`,
           lessons: [
             {
               id: '2.6.1',
@@ -404,11 +390,9 @@ Relative pins (to the queen) are weaker but still dangerous. The piece CAN move,
           id: '2.7',
           name: 'The Skewer',
           description: 'Attack through them',
-          themeIntroMessage: `The skewer is a pin in reverse. Attack the high-value piece first.
+          themeIntroMessage: `Attack the valuable piece. It runs. You take what was hiding behind it. That's a skewer.
 
-When it runs away, grab what was hiding behind it.
-
-Royal skewers through the king are especially nasty - the king MUST move, so you always get what's behind.`,
+Royal skewers -- through the king -- are the nastiest. The king MUST move. Whatever's behind it is yours. Rooks are particularly good at this. Obviously.`,
           lessons: [
             {
               id: '2.7.1',
@@ -458,11 +442,7 @@ Royal skewers through the king are especially nasty - the king MUST move, so you
           name: 'Review: Line Tactics',
           description: 'Mixed pin and skewer practice',
           isReview: true,
-          themeIntroMessage: `Pins and skewers are line tactics - they work along ranks, files, and diagonals.
-
-Sometimes it's a pin. Sometimes it's a skewer. Your job is to see which one wins material.
-
-Think about what's lined up, and which piece should attack.`,
+          themeIntroMessage: `Pins, skewers -- all mixed together. Figure out which one wins material and find the move.`,
           lessons: [
             {
               id: '2.8.1',
@@ -523,24 +503,22 @@ Think about what's lined up, and which piece should attack.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'This Is No Blunder... It\'s a Sacrifice',
+      name: 'Hidden Attacks',
       description: 'Reveal hidden threats',
-      blockIntroMessage: `Discovered attacks are sneaky. Move one piece, reveal an attack from another.
+      blockIntroMessage: `Move one piece. Reveal an attack from another. That's a discovered attack -- the chess equivalent of a trapdoor.
 
-The beautiful part? The piece you move can ALSO threaten something. Double threat. Double damage.
+The sneaky part? The piece you move can ALSO threaten something. Two threats. One move. They can't answer both.
 
-These are some of the most powerful tactics in chess. Let's master them.`,
+I find this deeply satisfying. Possibly concerning how satisfying.`,
       sections: [
         // Section 9: Basic Discoveries
         {
           id: '2.9',
           name: 'Basic Discoveries',
           description: 'Move one piece, reveal another',
-          themeIntroMessage: `A piece blocks another piece. When the blocker moves, the hidden attack is revealed.
+          themeIntroMessage: `One piece blocks another. When the blocker steps aside -- surprise. The hidden attacker was there the whole time.
 
-Look for pieces on the same line. What happens if one of them moves aside?
-
-The attacking piece "discovers" a threat that was waiting behind the scenes.`,
+Look for your pieces sharing a line. What happens if the front one moves? If the answer is "their stuff gets attacked" -- that's your move.`,
           lessons: [
             {
               id: '2.9.1',
@@ -589,11 +567,9 @@ The attacking piece "discovers" a threat that was waiting behind the scenes.`,
           id: '2.10',
           name: 'Double Threats',
           description: 'Two devastating threats at once',
-          themeIntroMessage: `Here's where discoveries get nasty. The moving piece ALSO attacks something.
+          themeIntroMessage: `Now the moving piece ALSO attacks something. Check. Capture. Queen threat. Two problems, one move -- they can only solve one.
 
-Now your opponent faces two threats and can only answer one.
-
-The moving piece might capture, give check, or threaten the queen. Double trouble.`,
+This is where discoveries go from clever to devastating.`,
           lessons: [
             {
               id: '2.10.1',
@@ -642,11 +618,9 @@ The moving piece might capture, give check, or threaten the queen. Double troubl
           id: '2.11',
           name: 'Tactical Checkmates',
           description: 'Use your weapons to deliver mate',
-          themeIntroMessage: `You've been winning material. Now let's aim for the ultimate prize - checkmate.
+          themeIntroMessage: `Winning material is great. But checkmate ends the game. Two-move mates -- your move forces their response, then you deliver the finish.
 
-Two-move checkmates require seeing one move ahead. Your first move sets up the killing blow.
-
-Force their response, then deliver the knockout.`,
+See one move ahead. That's all it takes.`,
           lessons: [
             {
               id: '2.11.1',
@@ -692,11 +666,7 @@ Force their response, then deliver the knockout.`,
           name: 'Review: Discoveries & Mates',
           description: 'Mixed discovery and checkmate practice',
           isReview: true,
-          themeIntroMessage: `Time to prove you've mastered Block 3. Discoveries, double threats, and two-move checkmates.
-
-The puzzles are mixed - stay sharp. Could be any theme.
-
-Feel the patterns. Trust your instincts.`,
+          themeIntroMessage: `Discoveries, double threats, two-move checkmates -- all mixed together. Could be anything. Show me what you've got.`,
           lessons: [
             {
               id: '2.12.1',
@@ -754,13 +724,11 @@ Feel the patterns. Trust your instincts.`,
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'They Have a Passed Pawn',
+      name: 'Prove It',
       description: 'Final mixed practice - deploy your arsenal',
-      blockIntroMessage: `Final block. You know forks. You know pins and skewers. You know discoveries.
+      blockIntroMessage: `Forks. Pins. Skewers. Discoveries. You've learned them all separately.
 
-Now it all comes together. The puzzles could be anything. Pick the right weapon for each position.
-
-Show me you're ready for Level 3.`,
+Now everything's mixed. The position decides which tactic wins -- not me. Read the board and pick the right weapon.`,
       sections: [
         // Section 13: Level 2 Review
         {
@@ -768,11 +736,7 @@ Show me you're ready for Level 3.`,
           name: 'Level 2 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Every tactic from Level 2 in one section. Forks, pins, skewers, discoveries.
-
-You've learned them separately. Now see them mixed together just like real games.
-
-Stay flexible. Read the position. Find the winning move.`,
+          themeIntroMessage: `Every tactic from Level 2 in one section. Just like real games -- you don't know what's coming. Find the winning move.`,
           lessons: [
             {
               id: '2.13.1',
@@ -830,11 +794,9 @@ Stay flexible. Read the position. Find the winning move.`,
           name: 'Level 2 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `This is it. The final test.
+          themeIntroMessage: `Last section. Everything you've learned -- forks, pins, skewers, discoveries, two-move mates. All of it.
 
-Everything you've learned - forks, pins, skewers, discoveries, two-move mates. All of it.
-
-Crush these puzzles and Level 3 awaits.`,
+I'm experiencing something I think is called "anticipation." Crush these and Level 3 is yours.`,
           lessons: [
             {
               id: '2.14.1',

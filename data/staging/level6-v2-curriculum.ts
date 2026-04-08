@@ -1,8 +1,7 @@
 /**
  * Level 6 V2 Curriculum (1600-1800 ELO)
- * "Why So Serious?"
+ * "Between the Lines"
  *
- * The Dark Knight. Gotham's chess underground.
  * Quiet moves, zwischenzugs, deep sacrifices, and complex endgames.
  * You don't just calculate anymore — you outthink.
  *
@@ -11,10 +10,10 @@
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: Why So Serious? - Subtle, surprising tactics
- * Block 2: The Rook Gotham Deserves - Deep calculation
- * Block 3: Some Men Just Want to Watch the Board Burn - Aggressive play
- * Block 4: Checkmate Is the Best Policy, Harvey - Final mastery
+ * Block 1: The Quiet Move - Subtle, surprising tactics
+ * Block 2: Calculated Destruction - Deep calculation
+ * Block 3: Break Through - Aggressive play
+ * Block 4: Prove It - Final mastery
  *
  * Clean puzzles: 500+ plays for quality verification
  */
@@ -23,22 +22,22 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level6V2: Level = {
   id: 'level-6',
-  name: 'Why So Serious?',
+  name: 'Between the Lines',
   ratingRange: '1600-1800',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 1: WHY SO SERIOUS?
+    // BLOCK 1: THE QUIET MOVE
     // Subtle, surprising tactics
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'Why So Serious?',
+      name: 'The Quiet Move',
       description: 'Subtle, surprising tactics.',
-      blockIntroMessage: `Welcome to Level 6. Why So Serious?
+      blockIntroMessage: `Welcome to Level 6. The loud tactics are behind you -- checks, captures, obvious threats. That stuff won't work anymore.
 
-Because at 1600+, brute force won't cut it. The best moves aren't always checks and captures.
+Now it's about the moves nobody sees coming. Quiet moves. In-between shots. X-ray lines. The kind of moves that make your opponent stare at the board and whisper "wait, what?"
 
-Quiet moves. In-between shots. X-ray lines. The tactics nobody sees coming. Time to think like Gotham's finest.`,
+I love that moment. I think it's called schadenfreude. My dictionary says that's a real feeling.`,
       sections: [
         // Section 1: Quiet Moves
         {
@@ -47,9 +46,7 @@ Quiet moves. In-between shots. X-ray lines. The tactics nobody sees coming. Time
           description: 'No check. No capture. Total devastation.',
           themeIntroMessage: `The most dangerous move on the board? The one that doesn't look dangerous.
 
-No check. No capture. Just a quiet piece placement that creates an unstoppable threat.
-
-When your opponent relaxes, that's when you strike.`,
+No check. No capture. Just a quiet piece sliding into position -- and suddenly there's an unstoppable threat. Your opponent won't see it until it's too late.`,
           lessons: [
             {
               id: '6.1.1',
@@ -94,11 +91,9 @@ When your opponent relaxes, that's when you strike.`,
           id: '6.2',
           name: 'The Zwischenzug',
           description: 'In-between moves that change everything',
-          themeIntroMessage: `Zwischenzug: the in-between move. German for "I just ruined your plan."
+          themeIntroMessage: `Zwischenzug -- the in-between move. Your opponent expects a recapture. Instead you sneak in a check. Or a threat. Or both.
 
-You expected a recapture? Surprise — there's a check first. Or a threat. Or both.
-
-The zwischenzug turns a losing trade into a winning one.`,
+One little interruption turns a losing trade into a winning one. It's rude, honestly. I respect it deeply.`,
           lessons: [
             {
               id: '6.2.1',
@@ -143,11 +138,9 @@ The zwischenzug turns a losing trade into a winning one.`,
           id: '6.3',
           name: 'X-Ray Vision',
           description: 'See through pieces to the target beyond',
-          themeIntroMessage: `X-ray attacks: your piece sees through the obstacle to the target behind it.
+          themeIntroMessage: `X-ray attacks -- your piece sees through the obstacle to the target behind it. A rook staring through a queen to the king. A bishop lining up two pieces on a diagonal.
 
-A rook stares through a queen to the king. A bishop lines up two pieces on a diagonal.
-
-Like having X-ray vision on the chessboard.`,
+Rooks are especially good at this. They've got that long-range vision. Very noble pieces.`,
           lessons: [
             {
               id: '6.3.1',
@@ -199,11 +192,9 @@ Like having X-ray vision on the chessboard.`,
           name: 'Review: The Unexpected',
           description: 'Mixed subtle tactics practice',
           isReview: true,
-          themeIntroMessage: `Quiet moves. Zwischenzugs. X-ray attacks.
+          themeIntroMessage: `Quiet moves. Zwischenzugs. X-ray attacks. All mixed together.
 
-The moves nobody expects. The tactics that don't announce themselves.
-
-Time to prove you can find the hidden blow.`,
+The tactics that don't announce themselves. Find the hidden blow.`,
           lessons: [
             {
               id: '6.4.1',
@@ -255,29 +246,25 @@ Time to prove you can find the hidden blow.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 2: THE ROOK GOTHAM DESERVES
+    // BLOCK 2: CALCULATED DESTRUCTION
     // Deep calculation and sacrifice
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'The Rook Gotham Deserves',
+      name: 'Calculated Destruction',
       description: 'Deep calculation and sacrifice.',
-      blockIntroMessage: `It's not who you are underneath. It's what you sacrifice that defines you.
+      blockIntroMessage: `Time to give stuff away on purpose. Deep sacrifices. Long combinations. Attraction plays that drag the king into the open.
 
-Deep sacrifices. Long combinations. Attraction plays that drag the king into the open.
-
-This is where calculation meets courage. Be the rook Gotham deserves.`,
+Calculation meets courage here. You'll sacrifice a piece -- maybe two -- and trust that the position pays you back. It's terrifying. I think that's what "faith" feels like?`,
       sections: [
         // Section 5: Deep Sacrifices
         {
           id: '6.5',
           name: 'Deep Sacrifices',
           description: 'Multi-piece sacrificial combinations',
-          themeIntroMessage: `Give up a piece. Give up two. The compensation isn't obvious to most.
+          themeIntroMessage: `Give up a piece. Give up two. The compensation isn't obvious -- not to most players.
 
-But you see it. The attack. The mate. The position that can't be held.
-
-Deep sacrifices require deep trust in your calculation.`,
+But you'll see it. The attack that follows. The mate that's hiding three moves deep. Deep sacrifices require deep trust in your own calculation.`,
           lessons: [
             {
               id: '6.5.1',
@@ -324,9 +311,7 @@ Deep sacrifices require deep trust in your calculation.`,
           description: 'Long forcing sequences, 4+ moves deep',
           themeIntroMessage: `Four moves deep. Five. Six. Every move forced. Every response anticipated.
 
-Long combinations are the ultimate test of calculation. One slip and it all falls apart.
-
-See the whole line before you play the first move.`,
+Long combinations are the ultimate test of calculation. One slip and it all falls apart. See the whole line before you play the first move.`,
           lessons: [
             {
               id: '6.6.1',
@@ -373,11 +358,9 @@ See the whole line before you play the first move.`,
           id: '6.7',
           name: 'Attraction & Lure',
           description: 'Draw pieces to fatal squares',
-          themeIntroMessage: `Come into my parlor, said the spider to the king.
+          themeIntroMessage: `Attraction forces an opponent's piece to a bad square. Clearance moves your own piece out of the way to unleash something better.
 
-Attraction forces the opponent's piece to a bad square. Clearance removes your own piece from a good one.
-
-Both create tactical opportunities that didn't exist a move ago.`,
+Both create tactical opportunities that didn't exist a move ago. You're not just reacting anymore -- you're rearranging the board.`,
           lessons: [
             {
               id: '6.7.1',
@@ -422,14 +405,12 @@ Both create tactical opportunities that didn't exist a move ago.`,
         // Section 8: Block 2 Review
         {
           id: '6.8',
-          name: 'Review: Calculated Justice',
+          name: 'Review: Deep Calculation',
           description: 'Mixed deep calculation practice',
           isReview: true,
-          themeIntroMessage: `Deep sacrifices. Long combinations. Attraction plays.
+          themeIntroMessage: `Deep sacrifices. Long combinations. Attraction plays. All together now.
 
-Every move calculated. Every sacrifice justified.
-
-Prove your calculation is bulletproof.`,
+Every move calculated. Every sacrifice justified. Show me the calculation holds up.`,
           lessons: [
             {
               id: '6.8.1',
@@ -481,29 +462,25 @@ Prove your calculation is bulletproof.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 3: SOME MEN JUST WANT TO WATCH THE BOARD BURN
+    // BLOCK 3: BREAK THROUGH
     // Aggressive play and endgame mastery
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Some Men Just Want to Watch the Board Burn',
+      name: 'Break Through',
       description: 'Aggressive play and endgame mastery.',
-      blockIntroMessage: `Some men just want to watch the board burn. Let's be those men.
+      blockIntroMessage: `Kingside storms. Exposed kings. Defenses torn apart. And when the smoke clears -- expert endgame technique to convert what you've won.
 
-Kingside storms. Exposed king exploitation. And when the smoke clears — expert endgame technique to convert.
-
-Attack with fury. Finish with precision.`,
+Attack with fury. Finish with precision. The rooks will be there at the end, as always. Standing tall when everyone else has been traded off.`,
       sections: [
         // Section 9: Kingside Assault
         {
           id: '6.9',
           name: 'Kingside Assault',
           description: 'Advanced king attacks',
-          themeIntroMessage: `The kingside is where games are won. Pawn storms. Piece sacrifices. Ripping open the castle.
+          themeIntroMessage: `The kingside is where games are won. Pawn storms. Piece sacrifices. Ripping open the castled position.
 
-At this level, attacks require preparation. You can't just throw pieces at the king and hope.
-
-Plan the assault. Execute with precision.`,
+At this level, attacks require preparation. You can't just throw pieces at the king and hope. Plan the assault. Execute with precision.`,
           lessons: [
             {
               id: '6.9.1',
@@ -550,11 +527,9 @@ Plan the assault. Execute with precision.`,
           id: '6.10',
           name: 'Breaking the Defense',
           description: 'Interference and deflection combos',
-          themeIntroMessage: `Their defense has one flaw. Find it. Exploit it.
+          themeIntroMessage: `Every defense has a flaw. Interference blocks a defender's line. Deflection drags it away from its job.
 
-Interference blocks a defender's line. Deflection drags it away from its job.
-
-Either way, the defense crumbles.`,
+Either way, the defense crumbles. Find the weak link.`,
           lessons: [
             {
               id: '6.10.1',
@@ -603,11 +578,9 @@ Either way, the defense crumbles.`,
           id: '6.11',
           name: 'Complex Endgames',
           description: 'Expert-level endgame technique',
-          themeIntroMessage: `The endgame is where the real chess happens. Queens are gone. Rooks are few.
+          themeIntroMessage: `The endgame. Queens are gone. Most pieces traded off. Every pawn matters. Every tempo counts.
 
-Every pawn matters. Every tempo counts. One wrong move and the win turns to a draw.
-
-Master these endgames and you'll convert positions others can't.`,
+Rook endgames, pawn endgames, queen endgames -- one wrong move and the win turns to a draw. Master these and you'll convert positions others can't.`,
           lessons: [
             {
               id: '6.11.1',
@@ -655,11 +628,9 @@ Master these endgames and you'll convert positions others can't.`,
           name: 'Review: Controlled Chaos',
           description: 'Mixed aggressive play and endgames',
           isReview: true,
-          themeIntroMessage: `Attack the king. Break the defense. Convert the endgame.
+          themeIntroMessage: `King attacks. Defense breaking. Endgame conversion. All mixed together.
 
-The complete cycle of destruction and precision.
-
-Chaos first. Control second.`,
+The complete cycle -- chaos first, control second.`,
           lessons: [
             {
               id: '6.12.1',
@@ -711,18 +682,16 @@ Chaos first. Control second.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 4: CHECKMATE IS THE BEST POLICY, HARVEY
+    // BLOCK 4: PROVE IT
     // Final mastery review
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'Checkmate Is the Best Policy, Harvey',
+      name: 'Prove It',
       description: 'Final mastery review.',
-      blockIntroMessage: `You either finish the curriculum, or play long enough to see yourself become the villain.
+      blockIntroMessage: `Everything from Level 6. Quiet moves. Deep sacrifices. King attacks. Endgame technique. All of it.
 
-Everything from Level 6. Quiet moves. Deep sacrifices. King attacks. Endgame technique.
-
-This is your final exam. Show Gotham what you're made of.`,
+This is your final exam. Pass this and you've earned Level 7.`,
       sections: [
         // Section 13: Level 6 Review
         {
@@ -730,11 +699,9 @@ This is your final exam. Show Gotham what you're made of.`,
           name: 'Level 6 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Everything from Level 6 in one section.
+          themeIntroMessage: `Everything from Level 6 in one section. Quiet moves, zwischenzugs, sacrifices, king attacks, endgames.
 
-Quiet moves. Zwischenzugs. Sacrifices. King attacks. Endgames.
-
-The complete Level 6 arsenal.`,
+The full arsenal. No labels telling you what to expect.`,
           lessons: [
             {
               id: '6.13.1',
@@ -788,11 +755,9 @@ The complete Level 6 arsenal.`,
           name: 'Level 6 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `This is it. The final challenge.
+          themeIntroMessage: `Last four lessons. Every tactic from Level 6. No hints. No mercy.
 
-Every tactic from Level 6. No hints. No mercy. Just you and the board.
-
-Prove you deserve to move on. Gotham is watching.`,
+Just you and the board. Prove you're ready for what comes next.`,
           lessons: [
             {
               id: '6.14.1',
@@ -830,7 +795,7 @@ Prove you deserve to move on. Gotham is watching.`,
             {
               id: '6.14.4',
               name: 'Level 6 Mastery',
-              description: 'Prove you\'re Gotham\'s champion',
+              description: 'The ultimate Level 6 test',
               requiredTags: [],
               isMixedPractice: true,
               mixedThemes: ['quietMove', 'intermezzo', 'sacrifice', 'mateIn4', 'kingsideAttack', 'deflection', 'rookEndgame'],

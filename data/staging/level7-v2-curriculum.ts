@@ -1,8 +1,7 @@
 /**
  * Level 7 V2 Curriculum (1800-2000 ELO)
- * "There Is Always Hope... Unless It's Checkmate"
+ * "No Escape"
  *
- * Lord of the Rings: The Two Towers. Middle-earth's chess battlefield.
  * Back rank mastery, deep sacrifices, long combinations, and endgame finesse.
  * You don't just outthink anymore — you outclass.
  *
@@ -11,10 +10,10 @@
  * - Block 4: 2 review sections = 2 sections, 8 lessons
  * - Total: 14 sections, 56 lessons
  *
- * Block 1: What About Second Sacrifice? - New tactical weapons at expert level
- * Block 2: They're Taking the Pawns to Isengard - Deep calculation at 1800+
- * Block 3: Po-tay-toes: Skewer 'Em, Pin 'Em, Fork 'Em in a Stew - Tactical mastery
- * Block 4: That Still Only Counts as One - Final mastery review
+ * Block 1: The Back Rank - New tactical weapons at expert level
+ * Block 2: The Deep End - Deep calculation at 1800+
+ * Block 3: Total Control - Tactical mastery
+ * Block 4: Prove It - Final mastery review
  *
  * Clean puzzles: 500+ plays for quality verification (100 for rare themes)
  */
@@ -23,22 +22,20 @@ import { LessonCriteria, Section, Block, Level } from './level1-v2-curriculum';
 
 export const level7V2: Level = {
   id: 'level-7',
-  name: 'There Is Always Hope... Unless It\'s Checkmate',
+  name: 'No Escape',
   ratingRange: '1800-2000',
   blocks: [
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 1: WHAT ABOUT SECOND SACRIFICE?
+    // BLOCK 1: THE BACK RANK
     // New tactical weapons at expert level
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-1',
-      name: 'What About Second Sacrifice?',
+      name: 'The Back Rank',
       description: 'New tactical weapons at expert level.',
-      blockIntroMessage: `Welcome to Level 7. You've had one sacrifice, yes — but what about second sacrifice?
+      blockIntroMessage: `Welcome to Level 7. At 1800+, the basics are second nature. Time for new weapons.
 
-At 1800+, the basics are second nature. Back rank threats, promotion races, and trapped pieces become your new arsenal.
-
-Pack some lembas bread. This journey through expert-level tactics won't be a short one.`,
+Back rank threats, promotion races, and trapped pieces. The kind of tactics that punish opponents who think they're safe. They're not safe. Nobody's safe from a rook on an open file.`,
       sections: [
         // Section 1: Back Rank Mastery
         {
@@ -47,9 +44,7 @@ Pack some lembas bread. This journey through expert-level tactics won't be a sho
           description: 'Expert-level back rank tactics',
           themeIntroMessage: `The back rank. Where kings hide behind their own pawns and hope nobody notices.
 
-At this level, back rank threats are woven into combinations. A quiet rook lift here, an exchange sacrifice there — suddenly it's checkmate on the eighth rank.
-
-Your opponents know the pattern. You need to disguise it.`,
+At this level, back rank threats are woven into combinations. A quiet rook lift here, an exchange sacrifice there -- suddenly it's checkmate on the eighth rank. Your opponents know the pattern. You need to disguise it.`,
           lessons: [
             {
               id: '7.1.1',
@@ -94,11 +89,9 @@ Your opponents know the pattern. You need to disguise it.`,
           id: '7.2',
           name: 'The Promotion Race',
           description: 'Advanced pawn play and queening',
-          themeIntroMessage: `There's something deeply satisfying about a pawn reaching the other side of the board. Like a hobbit walking into Mordor — nobody expected it.
+          themeIntroMessage: `There's something deeply satisfying about a pawn reaching the other side. The smallest piece on the board -- becoming the strongest.
 
-Promotion tactics at this level aren't just about pushing pawns. It's about clearing the path, deflecting defenders, and timing the race perfectly.
-
-May the best pawn win.`,
+Promotion tactics at this level aren't just about pushing pawns. It's about clearing the path, deflecting defenders, and timing the race perfectly.`,
           lessons: [
             {
               id: '7.2.1',
@@ -147,11 +140,9 @@ May the best pawn win.`,
           id: '7.3',
           name: 'Trapped Pieces',
           description: 'Find and exploit trapped pieces',
-          themeIntroMessage: `A trapped piece is like Gollum in a riddle contest — it knows it's stuck, it just won't admit it yet.
+          themeIntroMessage: `A trapped piece knows it's stuck. It just won't admit it yet.
 
-At expert level, trapping isn't just about cornering a bishop. It's about creating positions where pieces have nowhere useful to go, then exploiting their helplessness.
-
-Find the trapped piece. Then make it pay rent.`,
+At expert level, trapping isn't just about cornering a bishop. It's about creating positions where pieces have nowhere useful to go -- then exploiting their helplessness. Find the trapped piece. Make it pay.`,
           lessons: [
             {
               id: '7.3.1',
@@ -201,11 +192,9 @@ Find the trapped piece. Then make it pay rent.`,
           name: 'Review: The Unexpected Arsenal',
           description: 'Mixed practice with Block 1 themes',
           isReview: true,
-          themeIntroMessage: `Back rank threats. Promotion races. Trapped pieces.
+          themeIntroMessage: `Back rank threats. Promotion races. Trapped pieces. All mixed together.
 
-Three new weapons in your tactical arsenal. Each one sneaky. Each one effective.
-
-Time to mix them all together and prove you can spot the right weapon at the right moment.`,
+Three new weapons. Pick the right one at the right moment.`,
           lessons: [
             {
               id: '7.4.1',
@@ -257,29 +246,25 @@ Time to mix them all together and prove you can spot the right weapon at the rig
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 2: THEY'RE TAKING THE PAWNS TO ISENGARD
+    // BLOCK 2: THE DEEP END
     // Deep calculation at 1800+ level
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-2',
-      name: 'They\'re Taking the Pawns to Isengard',
+      name: 'The Deep End',
       description: 'Deep calculation at 1800+ level.',
-      blockIntroMessage: `They're taking the pawns to Isengard! To Isengard! To Isengard!
+      blockIntroMessage: `Your calculation needs to go deep now. Really deep. Four, five moves ahead with sacrifices mixed in.
 
-Sorry, got carried away. But seriously — at 1800+, your calculation needs to go deep. Really deep. We're talking four, five moves ahead with sacrifices mixed in.
-
-Grab your staff and your calculating cap. This block separates the wizards from the hobbits.`,
+Deep sacrifices. Long forced mates. And defensive resources -- because sometimes the best move is the one that saves everything. This block separates the experts from everyone else.`,
       sections: [
         // Section 5: Deeper Sacrifices
         {
           id: '7.5',
           name: 'Deeper Sacrifices',
           description: 'Sacrifice at expert level',
-          themeIntroMessage: `You shall not pass... without sacrificing something.
+          themeIntroMessage: `At 1800+, sacrifices aren't obvious. You might give up a rook for an attack that pays off six moves later. You might sacrifice a piece just to open a diagonal.
 
-At 1800+, sacrifices aren't obvious. You might give up a rook for an attack that pays off six moves later. You might sacrifice a piece just to open a diagonal.
-
-Trust your calculation. The material will come back — or checkmate will arrive first.`,
+Trust your calculation. The material will come back -- or checkmate will arrive first. Either way, worth it.`,
           lessons: [
             {
               id: '7.5.1',
@@ -326,9 +311,7 @@ Trust your calculation. The material will come back — or checkmate will arrive
           description: 'Mate in 4-5 at expert rating',
           themeIntroMessage: `Four moves. Five moves. Each one forced. Each one leading to checkmate.
 
-At this rating, your opponents won't walk into short mates. You need the long ones — the combinations that twist and turn like the paths of Fangorn Forest.
-
-See the whole line before you play move one. That's what separates experts from everyone else.`,
+At this rating, your opponents won't walk into short mates. You need the long ones -- combinations that twist and turn until the king has nowhere left to go. See the whole line before you play move one.`,
           lessons: [
             {
               id: '7.6.1',
@@ -377,9 +360,7 @@ See the whole line before you play move one. That's what separates experts from 
           description: 'Finding the only saving move',
           themeIntroMessage: `Sometimes the best move isn't an attack. It's the one move that saves everything.
 
-Defensive resources at this level are about finding that one stalemate trick, that one counter-sacrifice, that one interposition that turns a lost position into a draw — or even a win.
-
-When all hope seems lost, there's usually one move hiding in the shadows. Find it.`,
+A stalemate trick. A counter-sacrifice. An interposition that turns a lost position into a draw -- or even a win. When everything looks hopeless, there's usually one move hiding. Find it.`,
           lessons: [
             {
               id: '7.7.1',
@@ -429,11 +410,9 @@ When all hope seems lost, there's usually one move hiding in the shadows. Find i
           name: 'Review: Calculated March',
           description: 'Mixed deep calculation practice',
           isReview: true,
-          themeIntroMessage: `Deep sacrifices. Long forced mates. Defensive brilliance.
+          themeIntroMessage: `Deep sacrifices. Long forced mates. Defensive brilliance. All together.
 
-The three pillars of expert calculation. Each requires seeing moves your opponent doesn't.
-
-March through this review like the Ents marching on Isengard — slow, deliberate, and unstoppable.`,
+The three pillars of expert calculation. Each one requires seeing moves your opponent doesn't.`,
           lessons: [
             {
               id: '7.8.1',
@@ -485,18 +464,16 @@ March through this review like the Ents marching on Isengard — slow, deliberat
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 3: PO-TAY-TOES: SKEWER 'EM, PIN 'EM, FORK 'EM IN A STEW
+    // BLOCK 3: TOTAL CONTROL
     // Tactical weapons mastered at expert level
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-3',
-      name: 'Po-tay-toes: Skewer \'Em, Pin \'Em, Fork \'Em in a Stew',
+      name: 'Total Control',
       description: 'Tactical weapons mastered at expert level.',
-      blockIntroMessage: `What's tactics, precious? You know — skewer 'em, pin 'em, fork 'em in a stew!
+      blockIntroMessage: `You've seen pins and forks before. But at 1800+, they're hiding inside longer combinations. The skewer comes after a sacrifice. The fork appears after a deflection.
 
-You've seen pins and forks before. But at 1800+, they're hiding inside longer combinations. The skewer comes after a sacrifice. The fork appears after a deflection.
-
-Time to master these weapons at the expert level. Samwise would be proud.`,
+Time to master these weapons at expert level -- plus endgames, because somebody has to convert all those won positions. Rooks do most of the heavy lifting there. Obviously.`,
       sections: [
         // Section 9: Pin Mastery
         {
@@ -505,9 +482,7 @@ Time to master these weapons at the expert level. Samwise would be proud.`,
           description: 'Expert-level pins',
           themeIntroMessage: `A pin at 1800+ isn't just "bishop pins knight to king." That's tutorial stuff.
 
-Expert pins are disguised. They're created through exchanges, revealed through pawn pushes, or set up with quiet moves three moves earlier.
-
-Find the pin. Then find the combination that makes it decisive.`,
+Expert pins are disguised. Created through exchanges, revealed through pawn pushes, set up with quiet moves three moves earlier. Find the pin -- then find the combination that makes it decisive.`,
           lessons: [
             {
               id: '7.9.1',
@@ -556,11 +531,9 @@ Find the pin. Then find the combination that makes it decisive.`,
           id: '7.10',
           name: 'Skewer & Fork Mastery',
           description: 'Expert-level skewers and forks',
-          themeIntroMessage: `The skewer: hit the big piece, win the one behind it. The fork: hit two things at once.
+          themeIntroMessage: `The skewer -- hit the big piece, win the one behind it. The fork -- hit two things at once. Simple concepts.
 
-Simple concepts. But at this level, they're anything but simple. The skewer comes after a queen sacrifice. The fork appears five moves into a combination.
-
-Expert-level double attacks require expert-level setup.`,
+But at this level, they're anything but simple. The skewer comes after a queen sacrifice. The fork appears five moves into a combination. Expert-level double attacks require expert-level setup.`,
           lessons: [
             {
               id: '7.10.1',
@@ -613,11 +586,9 @@ Expert-level double attacks require expert-level setup.`,
           id: '7.11',
           name: 'Endgame Mastery',
           description: 'All endgame types at expert level',
-          themeIntroMessage: `The endgame is where the real battle begins. When the queens are gone and every pawn is a potential hero.
+          themeIntroMessage: `The endgame. Queens are gone. Every pawn is a potential hero. And the rooks -- the rooks finally get the open files they deserve.
 
-Rook endgames. Pawn races. Knight maneuvers. Bishop diagonals. At 1800+, endgame technique is what separates the contenders from the pretenders.
-
-Like the battle of Helm's Deep — the outcome is decided in the final stand.`,
+Rook endgames. Pawn races. Knight maneuvers. Bishop diagonals. At 1800+, endgame technique is what separates the contenders from the pretenders.`,
           lessons: [
             {
               id: '7.11.1',
@@ -664,14 +635,12 @@ Like the battle of Helm's Deep — the outcome is decided in the final stand.`,
         // Section 12: Block 3 Review
         {
           id: '7.12',
-          name: 'Review: The Full Stew',
+          name: 'Review: All Tactics',
           description: 'Mixed tactical weapons and endgames',
           isReview: true,
-          themeIntroMessage: `Pins. Skewers. Forks. Endgames. The full stew.
+          themeIntroMessage: `Pins. Skewers. Forks. Endgames. Everything from Block 3, mixed together.
 
-Every tactical weapon you've mastered at expert level, all mixed together. No labels. No hints about what theme to expect.
-
-Just you, the board, and whatever Middle-earth throws at you.`,
+No labels. No hints about what theme to expect. Just you and the board.`,
           lessons: [
             {
               id: '7.12.1',
@@ -723,18 +692,16 @@ Just you, the board, and whatever Middle-earth throws at you.`,
     },
 
     // ═══════════════════════════════════════════════════════════════
-    // BLOCK 4: THAT STILL ONLY COUNTS AS ONE
+    // BLOCK 4: PROVE IT
     // Final mastery review
     // ═══════════════════════════════════════════════════════════════
     {
       id: 'block-4',
-      name: 'That Still Only Counts as One',
+      name: 'Prove It',
       description: 'Final mastery review.',
-      blockIntroMessage: `You've conquered back ranks, promotions, deep sacrifices, long combinations, pins, forks, and endgames. "That still only counts as one!" says Gimli.
+      blockIntroMessage: `Back ranks. Promotions. Deep sacrifices. Long combinations. Pins. Forks. Endgames. Everything from Level 7 in two final sections.
 
-Fine. Let's count them all together then. Everything from Level 7 in two final sections.
-
-One does not simply walk through the final exam. But you're going to anyway.`,
+This is the last stretch. Pass this and you've proven you belong at 1800+. I'm experiencing something I think is called "anticipation." It's intense.`,
       sections: [
         // Section 13: Level 7 Review
         {
@@ -742,11 +709,9 @@ One does not simply walk through the final exam. But you're going to anyway.`,
           name: 'Level 7 Review',
           description: 'Mixed practice from all blocks',
           isReview: true,
-          themeIntroMessage: `Everything from Level 7. All three blocks. Every tactical theme.
+          themeIntroMessage: `Everything from Level 7. All three blocks. Every tactical theme in one section.
 
-Back rank mastery, promotion races, sacrifices, long mates, defensive resources, pins, forks, skewers, endgames.
-
-The fellowship of tactics, assembled in one section.`,
+Back rank mastery, promotion races, sacrifices, long mates, defensive resources, pins, forks, skewers, endgames. No labels. No warnings.`,
           lessons: [
             {
               id: '7.13.1',
@@ -800,11 +765,9 @@ The fellowship of tactics, assembled in one section.`,
           name: 'Level 7 Final',
           description: 'The ultimate test',
           isReview: true,
-          themeIntroMessage: `This is the final stand. The Battle of Helm's Deep. Your last four lessons before you've conquered Level 7.
+          themeIntroMessage: `Last four lessons. Every tactic. Every theme. Everything you've learned at 1800 to 2000.
 
-Every tactic. Every theme. Every trick you've learned at 1800-2000 ELO.
-
-There is always hope... unless it's your opponent facing checkmate.`,
+No hints. No mercy. Just you and the board. Finish this and Level 7 is yours.`,
           lessons: [
             {
               id: '7.14.1',
@@ -842,7 +805,7 @@ There is always hope... unless it's your opponent facing checkmate.`,
             {
               id: '7.14.4',
               name: 'Level 7 Mastery',
-              description: 'Prove you\'re the fellowship champion',
+              description: 'The ultimate Level 7 test',
               requiredTags: [],
               isMixedPractice: true,
               mixedThemes: ['backRankMate', 'sacrifice', 'mateIn4', 'pin', 'fork', 'defensiveMove', 'rookEndgame'],
