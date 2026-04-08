@@ -12,6 +12,7 @@ import {
   playErrorSound,
   playCelebrationSound,
   playButtonClick,
+  warmupAudio,
 } from '@/lib/sounds';
 import confetti from 'canvas-confetti';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
@@ -544,6 +545,10 @@ export function BasicsTutorial() {
 
   useEffect(() => {
     const unlock = () => {
+      warmupAudio();
+      // Mark current dialogue as already spoken so the effect doesn't
+      // retroactively speak a quip that was showing before the user tapped
+      lastSpokenRef.current = INTRO_DIALOGUE[0].text;
       setAudioUnlocked(true);
       window.removeEventListener('click', unlock);
       window.removeEventListener('touchstart', unlock);
