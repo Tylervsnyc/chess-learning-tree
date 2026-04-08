@@ -20,6 +20,7 @@ import { TutorialEvents } from '@/lib/analytics/posthog';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
 import { RookieNameAsk, getPlayerName } from '@/components/onboarding/RookieNameAsk';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
+import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 
 // ══════════════════════════════════════════════════
 // PIECE ICONS (same SVG paths as /learn page buttons)
@@ -573,6 +574,7 @@ export function BasicsTutorial() {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [exerciseComplete, setExerciseComplete] = useState(false);
   const [tutorialDone, setTutorialDone] = useState(false);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
   const [shakeBoard, setShakeBoard] = useState(false);
   const [animationDuration, setAnimationDuration] = useState(0);
   const [boardKey, setBoardKey] = useState(0);
@@ -1269,9 +1271,15 @@ export function BasicsTutorial() {
   // ══════════════════════════════════════════════════
 
   if (tutorialDone) {
+    if (showSignupPrompt) {
+      return <SignupPrompt onDismiss={() => {
+        setShowSignupPrompt(false);
+        try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
+        router.push('/lesson/1-1-1?from=onboarding');
+      }} />;
+    }
     return <BasicsDoneScreen playerName={playerName} onContinue={() => {
-      try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
-      router.push('/lesson/1.1.1?from=onboarding');
+      setShowSignupPrompt(true);
     }} />;
   }
 

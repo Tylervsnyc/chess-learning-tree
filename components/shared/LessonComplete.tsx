@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { SignupPrompt } from '@/components/onboarding/SignupPrompt'
 import confetti from 'canvas-confetti'
 import { getRandomQuote, getTierLabel } from '@/data/celebration-quotes'
 import { playCelebrationSound } from '@/lib/sounds'
@@ -77,6 +78,7 @@ export function LessonComplete({
   accentColor,
   shareConfig,
 }: LessonCompleteProps) {
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false)
   const hasScore = correctCount !== undefined
   const isPerfect = hasScore && correctCount === totalPuzzles
   const didFail = hasScore && correctCount <= Math.floor(totalPuzzles / 2)
@@ -334,7 +336,7 @@ export function LessonComplete({
             </div>
           ) : (
             <button
-              onClick={onContinue}
+              onClick={isGuest ? () => setShowSignupPrompt(true) : onContinue}
               className="w-full py-3 rounded-xl font-bold text-white text-base active:brightness-90 transition-all"
               style={{ backgroundColor: btnColor }}
             >
@@ -345,19 +347,9 @@ export function LessonComplete({
           {/* Daily ritual */}
           {!isGuest && !didFail && <RookiePopup justCompleted="tactics" />}
 
-          {/* Guest signup */}
-          {isGuest && (
-            <div className="mt-4 rounded-2xl p-4 bg-chess-surface border border-slate-200">
-              <p className="text-sm mb-3 text-center text-chess-text-muted">Create a free account to save progress</p>
-              <div className="flex gap-3">
-                <Link href="/auth/signup?from=lesson" className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white text-center bg-chess-text hover:brightness-110 transition-colors">
-                  Sign Up
-                </Link>
-                <Link href="/auth/login" className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white text-center bg-chess-text hover:brightness-110 transition-colors">
-                  Sign In
-                </Link>
-              </div>
-            </div>
+          {/* Guest signup prompt (full-screen overlay) */}
+          {isGuest && showSignupPrompt && (
+            <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); onContinue(); }} />
           )}
         </div>
       </div>

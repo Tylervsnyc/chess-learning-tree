@@ -149,22 +149,14 @@ export function NavHeader() {
                 </Link>
               )}
 
-              {/* Guest auth buttons */}
+              {/* Guest sign up */}
               {!loading && !user && (
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap text-chess-text-muted hover:text-chess-text"
-                  >
-                    Log In
-                  </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap bg-chess-green text-white"
-                  >
-                    Sign Up
-                  </Link>
-                </>
+                <Link
+                  href="/auth/signup"
+                  className="px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap bg-chess-green text-white"
+                >
+                  Sign Up
+                </Link>
               )}
             </>
           )}

@@ -53,6 +53,8 @@ import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/t
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
+import { RookieNameAsk, getPlayerName, setPlayerName } from '@/components/onboarding/RookieNameAsk';
+import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import confetti from 'canvas-confetti';
 
 // ═══════════════════════════════════════════
@@ -245,6 +247,8 @@ export default function LessonPage() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showCreateProfileModal, setShowCreateProfileModal] = useState(false);
   const [showGuestCelebration, setShowGuestCelebration] = useState(false);
+  const [showNameAsk, setShowNameAsk] = useState(false);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   // Theme help modal
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -1300,9 +1304,38 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
-    // Onboarding funnel: skip score popup, go straight to celebration + signup
+    // Onboarding funnel: name ask → signup prompt
     if (fromOnboarding && !user) {
-      return <GuestCelebrationScreen onContinue={() => { trackEvent('save_path_clicked'); window.location.href = '/auth/signup?from=onboarding'; }} />;
+      if (showNameAsk) {
+        return (
+          <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+            <RookieNameAsk
+              onSubmit={(name) => {
+                setPlayerName(name);
+                setShowNameAsk(false);
+                setShowSignupPrompt(true);
+              }}
+            />
+          </div>
+        );
+      }
+      return (
+        <>
+          <GuestCelebrationScreen onContinue={() => {
+            if (!getPlayerName()) {
+              setShowNameAsk(true);
+            } else {
+              setShowSignupPrompt(true);
+            }
+          }} />
+          {showSignupPrompt && (
+            <SignupPrompt onDismiss={() => {
+              setShowSignupPrompt(false);
+              window.location.href = '/path';
+            }} />
+          )}
+        </>
+      );
     }
 
     // LessonCompleteScreen handles both pass (score >= 4) and fail (score <= 3) states

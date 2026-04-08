@@ -2492,67 +2492,77 @@ Indexes on conversation_id, comment_id, post_id, and engagement_type for fast de
 - `GET /` without session → redirect `/welcome`
 - `/welcome` is in the `PUBLIC_PATHS` list (no auth check)
 
-### Funnel Steps
+### Funnel Steps (3.0)
 
-| Step | Screen | Next |
-|------|--------|------|
-| `landing` | BreathingRook + "chesspath" wordmark + tagline + Get Started / Sign In | → `level` |
-| `level` | "What's your chess level?" — 3 options (brand new / know basics / have rating) | brand new → `/basics`, basics → `style`, rated → `elo` |
-| `elo` | "What's your rating?" — number input (100–3000) | → `style` |
-| `style` | "What kind of player?" — Attacker / Strategist / Trickster | → `building` |
-| `building` | BreathingRook thinking + 3 rotating messages (personalized to choices) | → `ready` (auto after ~3.8s) |
-| `ready` | "Your path is ready." + level badge (if rated) + Start button | → first lesson of placed level |
+```
+/welcome
+  ├─ Play → /play (game vs Rookie)
+  │   └─ Game over → RookieNameAsk → SignupPrompt (modal) → /path
+  │
+  └─ Learn (expands to two options)
+      ├─ Basics → /basics (how pieces move)
+      │   └─ Done screen → SignupPrompt (modal) → /lesson/1-1-1
+      │
+      └─ Checkmate → /lesson/1-1-1 (Queen Checkmate: Easy)
+          └─ Celebration → RookieNameAsk → SignupPrompt (modal) → /path
+```
 
-### Beginner Shortcut
-"I'm brand new" skips style/building/ready and goes straight to `/basics` tutorial.
+### Three Entry Paths
+1. **Play** → `/play` — play a game against Rookie immediately
+2. **Learn → Basics** → `/basics` — learn how all pieces move (existing tutorial)
+3. **Learn → Checkmate** → `/lesson/1-1-1` — skip basics, jump to first checkmate lesson
 
-### ELO → Level Placement
+### Signup Gate
+- **Soft gate, not hard.** After completing any path, a modal signup prompt appears.
+- The prompt is dismissible (X button, backdrop click, or "Maybe later").
+- If dismissed, user continues into the app with localStorage-only progress.
+- **NavHeader shows "Sign Up" button** for all guest users as a safety net.
 
-| ELO Range | Placed Level |
-|-----------|-------------|
-| < 800 | 1 |
-| 800–999 | 2 |
-| 1000–1199 | 3 |
-| 1200–1399 | 4 |
-| 1400–1599 | 5 |
-| 1600–1799 | 6 |
-| 1800–1999 | 7 |
-| 2000+ | 8 |
+### SignupPrompt (Modal)
+- Modal card over dimmed backdrop with BreathingRook (happy mood)
+- Random Rookie quip about saving progress
+- "Sign Up Free" button → `/auth/signup`
+- "I already have an account" button → `/auth/login`
+- X button + "Maybe later" to dismiss
+- Component: `components/onboarding/SignupPrompt.tsx`
 
-On start, `unlockLevel(placedLevel)` is called so the user lands at the right spot.
+### RookieNameAsk
+- Asked after completing a game or the checkmate tutorial (if no name in localStorage)
+- Skipped if name already exists (e.g., user came through basics first)
+- Saves to `chess_path_name` in localStorage
 
 ### LocalStorage Keys
 
 | Key | Value | Purpose |
 |-----|-------|---------|
 | `chess_path_onboarded` | `'true'` | Marks funnel complete (prevents re-showing) |
-| `chess_path_level` | `'beginner'` / `'basics'` / `'rated'` | Selected experience level |
-| `chess_path_elo` | `string(number)` | Entered rating (rated users only) |
-| `chess_path_style` | `'attacker'` / `'strategist'` / `'trickster'` | Play style preference |
+| `chess_path_name` | `string` | Player's name (asked after tutorial/game) |
 
 ### Analytics Events
 
 | Event | When | Properties |
 |-------|------|------------|
 | `onboarding_started` | Flow mounts | — |
-| `onboarding_level_selected` | Level chosen | `level` |
-| `onboarding_elo_entered` | ELO submitted | `elo` |
-| `onboarding_style_selected` | Style chosen | `style` |
-| `onboarding_completed` | Start button tapped | `level`, `style`, `elo?`, `placedLevel?` |
+| `onboarding_route_selected` | Play or Learn chosen | `id` |
+| `onboarding_completed` | User proceeds to next page | `level` |
 
 ### Design Rules
-- **NO HEADER ANYWHERE IN THE ONBOARDING FUNNEL.** No NavHeader, no nav bar, no top chrome on any page in the `/welcome`, `/basics`, or tutorial flows. Full-screen, immersive experience only.
+- **NO HEADER ON `/welcome` or `/basics`.** Full-screen, immersive experience only.
+- **Header shows on all other pages for guests** with a "Sign Up" button.
 - **BreathingRook on every step** — varies by animation (`enter`, `breathe`, `think`, `celebrate`).
 - **Duolingo-style 3D buttons** — colored background + `box-shadow` bottom edge + `active:translate-y-[2px]`.
-- **Step transitions**: crossfade with slight scale (200ms).
-- **Staggered option entry**: each button fades in 80ms after the previous.
+- **Learn button expands** into Basics + Checkmate sub-options on tap.
+- **SignupPrompt is a modal**, not a full-screen takeover.
 
 ### Key Files
 
 | File | Purpose |
 |------|---------|
 | `app/welcome/page.tsx` | Route + metadata |
-| `components/onboarding/OnboardingFlow.tsx` | Full funnel (all steps, state, routing) |
+| `components/onboarding/OnboardingFlow.tsx` | Welcome page (Play / Learn with sub-options) |
+| `components/onboarding/SignupPrompt.tsx` | Soft signup modal (post-tutorial/game) |
+| `components/onboarding/RookieNameAsk.tsx` | Name collection mid-flow |
+| `components/layout/NavHeader.tsx` | Sign Up button for guests |
 | `lib/supabase/middleware.ts` | Root redirect logic (`/` → `/welcome` or `/learn`) |
 
 ---
