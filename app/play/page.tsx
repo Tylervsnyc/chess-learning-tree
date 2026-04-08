@@ -543,32 +543,16 @@ export default function PlayRookiePage() {
     initialUsedRecently: rookieMemory.usedRecently,
   });
 
-  // Speak the setup greeting as soon as page loads (desktop: auto, mobile: first tap)
+  // Speak the setup greeting on first interaction (audio requires user gesture)
   const setupGreetingSpokenRef = useRef(false);
-  useEffect(() => {
-    if (phase !== 'setup' || setupGreetingSpokenRef.current) return;
-
-    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
-
-    const trySpeak = () => {
-      if (setupGreetingSpokenRef.current) return;
-      setupGreetingSpokenRef.current = true;
-      warmupAudio();
-      speakQuip(greeting.quote);
-    };
-
-    // Try auto-play (works on desktop where autoplay is allowed)
+  const speakSetupGreeting = useCallback(() => {
+    if (setupGreetingSpokenRef.current || phase !== 'setup') return;
+    setupGreetingSpokenRef.current = true;
+    // warmupAudio must run synchronously inside the gesture to unlock AudioContext
     warmupAudio();
-    const ctx = getSharedAudioContext();
-    if (ctx?.state === 'running') {
-      trySpeak();
-      return;
-    }
-
-    // Mobile fallback: speak on first interaction
-    const handler = () => trySpeak();
-    document.addEventListener('pointerdown', handler, { once: true });
-    return () => document.removeEventListener('pointerdown', handler);
+    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
+    // Small delay lets ctx.resume() settle before speakQuip checks ctx.state
+    setTimeout(() => speakQuip(greeting.quote), 50);
   }, [phase, rookieLevel, speakQuip]);
 
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
@@ -1576,7 +1560,7 @@ export default function PlayRookiePage() {
     const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
 
     return (
-      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto">
+      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
         {/* Top: Level progress bar */}
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
           <LevelProgressBar currentLevel={rookieLevel} winsAtLevel={winsAtLevel} />

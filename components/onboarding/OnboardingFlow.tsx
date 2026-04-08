@@ -168,16 +168,6 @@ export function OnboardingFlow() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Try auto-unlock on mount (works on desktop where autoplay is allowed)
-  useEffect(() => {
-    if (audioUnlocked) return;
-    warmupAudio();
-    const ctx = getSharedAudioContext();
-    if (ctx?.state === 'running') {
-      setAudioUnlocked(true);
-    }
-  }, [audioUnlocked]);
-
   // Power-on sound
   useEffect(() => {
     if (audioUnlocked && phase >= 2 && !powerOnPlayedRef.current) {
@@ -188,10 +178,15 @@ export function OnboardingFlow() {
 
   const handleFirstInteraction = useCallback(() => {
     if (!audioUnlocked) {
+      // warmupAudio must run synchronously inside the gesture to unlock AudioContext
       warmupAudio();
       setAudioUnlocked(true);
+      // Speak current quip immediately — small delay lets ctx.resume() settle
+      if (typingDone && currentQuipText) {
+        setTimeout(() => speakQuip(currentQuipText), 50);
+      }
     }
-  }, [audioUnlocked]);
+  }, [audioUnlocked, typingDone, currentQuipText, speakQuip]);
 
   // PostHog
   useEffect(() => {
@@ -256,9 +251,9 @@ export function OnboardingFlow() {
         </div>
       ))}
 
-      {/* Logo: top-left corner */}
+      {/* Logo */}
       <div
-        className="absolute top-4 left-4 z-10"
+        className="pt-5 pl-5"
         style={{
           opacity: phase >= 1 ? 1 : 0,
           transform: phase >= 1 ? 'translateY(0)' : 'translateY(-6px)',
@@ -268,7 +263,7 @@ export function OnboardingFlow() {
         <AnimatedLogo size={0.28} perpetual theme="light" />
       </div>
 
-      <div className="flex-[1.3]" />
+      <div className="flex-1" />
 
       {/* Rookie entrance */}
       <div
@@ -317,26 +312,26 @@ export function OnboardingFlow() {
         </div>
       </div>
 
-      {/* Speech bubble with typewriter */}
+      {/* Speech bubble with typewriter — fixed height so layout doesn't shift */}
       <div
         className="px-6 max-w-sm mx-auto w-full mt-4"
         style={{
           opacity: phase >= 3 ? 1 : 0,
           transform: phase >= 3 ? 'translateY(0)' : 'translateY(10px)',
           transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-          minHeight: 52,
+          height: 100,
         }}
       >
-        <div className="relative">
+        <div className="relative h-full">
           <div
             className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45 rounded-[2px]"
             style={{ boxShadow: '-1px -1px 2px rgba(0,0,0,0.03)' }}
           />
-          <div className="relative bg-white rounded-2xl px-5 py-3.5 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]">
+          <div className="relative bg-white rounded-2xl px-5 py-3.5 h-full flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]">
             <p
               className="text-chess-text text-center font-medium leading-relaxed"
               style={{
-                fontSize: 'clamp(14px, 3.8vw, 16px)',
+                fontSize: 'clamp(13px, 3.5vw, 15px)',
                 opacity: fading ? 0 : 1,
                 transition: 'opacity 0.3s ease-out',
               }}
@@ -356,7 +351,7 @@ export function OnboardingFlow() {
       <div className="flex-[0.8]" />
 
       {/* Play / Learn */}
-      <div className="px-6 max-w-sm mx-auto w-full space-y-3">
+      <div className="px-6 max-w-sm mx-auto w-full space-y-2.5">
         <div
           onPointerEnter={() => setHoveredBtn('play')}
           onPointerLeave={() => setHoveredBtn(null)}
@@ -368,14 +363,14 @@ export function OnboardingFlow() {
         >
           <ActionButton
             color="green"
-            size="lg"
+            size="md"
             fullWidth
             onClick={() => handleRoute('play', '/play')}
           >
-            <span className="font-black block" style={{ fontSize: 'clamp(22px, 6vw, 28px)' }}>
+            <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
               Play
             </span>
-            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(11px, 2.8vw, 13px)', opacity: 0.7 }}>
+            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
               I&apos;ll go easy. Probably.
             </span>
           </ActionButton>
@@ -392,14 +387,14 @@ export function OnboardingFlow() {
         >
           <ActionButton
             color="blue"
-            size="lg"
+            size="md"
             fullWidth
             onClick={() => handleRoute('learn', '/basics')}
           >
-            <span className="font-black block" style={{ fontSize: 'clamp(22px, 6vw, 28px)' }}>
+            <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
               Learn
             </span>
-            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(11px, 2.8vw, 13px)', opacity: 0.7 }}>
+            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
               Show me which way the horsey goes
             </span>
           </ActionButton>
