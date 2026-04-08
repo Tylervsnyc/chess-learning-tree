@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useUser } from '@/hooks/useUser';
 import { AuthEvents, resetUser } from '@/lib/analytics/posthog';
 
@@ -20,10 +21,13 @@ export default function AboutPage() {
       <div className="flex-1 flex flex-col items-center px-6 pt-10 overflow-y-auto">
         <div className="max-w-md w-full">
           {/* Heading + Logo */}
-          <h1 className="text-lg font-bold text-center mb-3">How It Works</h1>
-          <div className="flex justify-center mb-5">
-            <AnimatedLogo theme="dark" perpetual autoPlay size={0.75} iconOnly />
+          <div className="flex justify-center mb-3">
+            <BreathingRook size="md" mood="happy" animate />
           </div>
+          <h1 className="text-lg font-bold text-center mb-3">How It Works</h1>
+          <p className="text-sm text-chess-text-muted text-center mb-5">
+            I&apos;m Rookie. I&apos;ll walk you through it.
+          </p>
 
           {/* Steps */}
           <div className="space-y-3">

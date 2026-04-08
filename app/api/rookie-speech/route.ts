@@ -71,42 +71,48 @@ Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS 
     } else if (type === 'game_end') {
       const { playerName, rookieWon, accuracy, gameSummary } = context;
 
-      const outcomeText = rookieWon
-        ? `Rookie won.`
-        : `${playerName} won.`;
-
-      const accuracyText = accuracy !== undefined
-        ? ` ${playerName}'s accuracy was ${Math.round(accuracy)}%.`
-        : '';
-
-      // Build game summary block from analysis data
-      let summaryBlock = '';
+      // Build facts block — ONLY confirmed data
+      const facts: string[] = [];
+      facts.push(rookieWon ? 'Rookie won.' : `${playerName} won.`);
+      if (accuracy !== undefined) facts.push(`Accuracy: ${Math.round(accuracy)}%.`);
       if (gameSummary) {
-        const parts: string[] = [];
-        parts.push(`Result: ${gameSummary.result} in ${gameSummary.moveCount} moves.`);
-        if (gameSummary.openingName) parts.push(`Opening: ${gameSummary.openingName}.`);
-        if (gameSummary.blunders > 0) parts.push(`Blunders: ${gameSummary.blunders}.`);
-        if (gameSummary.mistakes > 0) parts.push(`Mistakes: ${gameSummary.mistakes}.`);
-        if (gameSummary.brilliantMoves > 0) parts.push(`Brilliant moves: ${gameSummary.brilliantMoves}!`);
-        if (gameSummary.keyMoments) parts.push(`Key moments: ${gameSummary.keyMoments}`);
-        summaryBlock = `\nTHIS GAME'S STATS:\n${parts.join(' ')}`;
+        facts.push(`Result: ${gameSummary.result} in ${gameSummary.moveCount} moves.`);
+        if (gameSummary.openingName) facts.push(`Opening: ${gameSummary.openingName}.`);
+        if (gameSummary.blunders > 0) facts.push(`Blunders: ${gameSummary.blunders}.`);
+        if (gameSummary.mistakes > 0) facts.push(`Mistakes: ${gameSummary.mistakes}.`);
+        if (gameSummary.brilliantMoves > 0) facts.push(`Brilliant moves: ${gameSummary.brilliantMoves}.`);
+        if (gameSummary.keyMoments) facts.push(`Key moments: ${gameSummary.keyMoments}`);
       }
 
       const honchoBlock = honchoPromptSummary
-        ? `\nPLAYER HISTORY (compare this game to what you know):\n${honchoPromptSummary}`
+        ? `\nPLAYER HISTORY (you may reference this):\n${honchoPromptSummary}`
         : '';
 
-      const honchoInstruction = honchoPromptSummary
-        ? '\nCompare this game to the player history. Did they improve? Repeat a mistake? Try a new opening?'
-        : '';
+      const noHistoryWarning = honchoPromptSummary
+        ? ''
+        : '\nYou have NO player history. Do NOT reference past games, improvement, or how many times they have played anything.';
 
-      userPrompt = `Write Rookie's fun summary of the game that just ended.
+      userPrompt = `Write Rookie's 2-sentence post-game summary.
 
-${outcomeText}${accuracyText}${summaryBlock}${honchoBlock}${honchoInstruction}
+THIS GAME'S FACTS (you may ONLY reference these):
+${facts.join(' ')}${honchoBlock}${noHistoryWarning}
 
-Summarize the game in Rookie's voice — mention specific things that happened (the opening, a blunder, a brilliant move, their accuracy). Make it feel like a friend recapping the game. Be specific, not generic.
+FORMAT:
+Sentence 1: Name the opening and say something about it. If no opening name is provided, skip the opening and comment on the game itself.
+Sentence 2: How the game ended + suggest what's next. Either a rematch, or learning an opening, or practicing tactics.
 
-Write 2-3 sentences. Written for TTS — no formatting, no asterisks, no parentheses.`;
+STRICT RULES:
+- ONLY reference data listed above. Never invent game counts, history, or progress you weren't given.
+- Be concrete: "You checkmated me on move 34" not "great finish." Name pieces, move numbers, the opening.
+- If you have player history, you may compare. If you don't, stick to this game only.
+- End with a gentle push toward what to do next.
+- 2 sentences max. Written for TTS — no formatting, no asterisks, no parentheses.
+
+EXAMPLES:
+"French Defense -- solid choice. You got my rook on move 18 and I never recovered. Want to try the Italian next?"
+"That was a Sicilian and it got wild. I checkmated you on move 26 after you left your king exposed -- there's a lesson on king safety that might help."
+"Good game, {name}. You resigned on move 22 down a knight, but honestly the middle game was close. Rematch?"
+"I didn't recognize that opening but it worked. You checkmated me on move 41 -- clean finish. Want to go again?"`;
 
     } else {
       return NextResponse.json({ error: 'Invalid type' }, { status: 400 });

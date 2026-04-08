@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 export default function SubscriptionCancelledPage() {
@@ -14,16 +15,14 @@ export default function SubscriptionCancelledPage() {
   return (
     <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        {/* Icon */}
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-chess-surface flex items-center justify-center border border-chess-text-faint/10 shadow-sm">
-          <svg className="w-12 h-12 text-chess-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+        {/* Rookie */}
+        <div className="flex justify-center mb-6">
+          <BreathingRook size="lg" mood="neutral" animate />
         </div>
 
         <h1 className="text-3xl font-bold text-chess-text mb-2">Checkout Cancelled</h1>
         <p className="text-chess-text-muted mb-8">
-          No worries! Your checkout was cancelled and you haven't been charged.
+          No worries. I&apos;ll be here whenever you&apos;re ready. The free stuff is still pretty good.
         </p>
 
         {/* Free tier reminder */}

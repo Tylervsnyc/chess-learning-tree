@@ -3,15 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { BreathingRook } from '@/components/ui/BreathingRook';
-
-const ERROR_MESSAGES = [
-  "Well, something broke. Even I don't know what happened.",
-  "I tripped over a wire somewhere. Try refreshing?",
-  "My circuits got confused. This is embarrassing.",
-];
+import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints';
+import { selectByCategory } from '@/lib/speech/priority-queue';
 
 function getRandomMessage() {
-  return ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
+  const result = selectByCategory(TOUCHPOINT_LINES, 'error');
+  return result?.text ?? "Something went wrong. Try refreshing?";
 }
 
 interface Props {

@@ -30,7 +30,10 @@ export interface LineConditions {
 export interface SpeechLine {
   id: string;
   text: string; // may contain {name}, {piece} placeholders. Use [SFX] to mark sound effect insertion point.
-  conditions: LineConditions;
+  /** Game-context conditions. Required for gameplay quips, omit for touchpoint content (greetings, errors, etc). */
+  conditions?: LineConditions;
+  /** Non-game content category. Format: 'type' or 'type:subtype' (e.g. 'greeting:morning', 'error', 'transition:learn'). */
+  category?: string;
   /** Base priority (higher = more likely to be selected). 1-100 scale. */
   priority: number;
   /** Source: 'authored' (template) or 'generated' (Claude API) */
@@ -77,8 +80,8 @@ export interface QueueState {
 }
 
 /** Max quips allowed within a rolling WINDOW_SIZE-move window */
-const WINDOW_MAX_QUIPS = 4;
-const WINDOW_SIZE = 10;
+const WINDOW_MAX_QUIPS = 3;
+const WINDOW_SIZE = 12;
 const RECENTLY_USED_PENALTY = -30;
 const EVENT_MATCH_BONUS = 20;
 const THREAD_MATCH_BONUS = 10;
@@ -115,6 +118,8 @@ export function substitutePlaceholders(text: string, context: QueueContext): str
 
 /** Check if a single line's conditions match the current context */
 function matchesConditions(line: SpeechLine, context: QueueContext): boolean {
+  // Category-only lines (greetings, errors, etc) never match game context
+  if (!line.conditions) return false;
   const c = line.conditions;
 
   // Beat must match
@@ -153,18 +158,20 @@ function matchesConditions(line: SpeechLine, context: QueueContext): boolean {
 function scoreLine(line: SpeechLine, context: QueueContext, state: QueueState): number {
   let score = line.priority;
 
+  const c = line.conditions;
+
   // Bonus for specific event match (not 'none')
   if (
-    line.conditions.events &&
-    line.conditions.events.length > 0 &&
+    c?.events &&
+    c.events.length > 0 &&
     context.event !== 'none' &&
-    line.conditions.events.includes(context.event)
+    c.events.includes(context.event)
   ) {
     score += EVENT_MATCH_BONUS;
   }
 
   // Bonus for matching active thread
-  if (line.conditions.threadId && line.conditions.threadId === context.activeThreadId) {
+  if (c?.threadId && c.threadId === context.activeThreadId) {
     score += THREAD_MATCH_BONUS;
   }
 
@@ -243,6 +250,41 @@ export function createGeneratedLine(
     priority,
     source: 'generated',
   };
+}
+
+/**
+ * Select a random line by category from a pool.
+ * Uses the same dedup ring as game quips (usedRecently).
+ * Category supports prefix matching: 'greeting' matches 'greeting:morning', 'greeting:evening', etc.
+ */
+export function selectByCategory(
+  pool: SpeechLine[],
+  category: string,
+  state?: QueueState,
+  playerName?: string,
+): { line: SpeechLine; text: string } | null {
+  const matching = pool.filter((line) => {
+    if (!line.category) return false;
+    if (line.category !== category && !line.category.startsWith(category + ':')) return false;
+    if (state?.usedRecently.has(line.id)) return false;
+    return true;
+  });
+
+  if (matching.length === 0) {
+    // Fall back to recently used if pool exhausted
+    const fallback = pool.filter(
+      (line) => line.category === category || line.category?.startsWith(category + ':'),
+    );
+    if (fallback.length === 0) return null;
+    const pick = fallback[Math.floor(Math.random() * fallback.length)];
+    const text = playerName ? pick.text.replace(/\{name\}/g, playerName) : pick.text;
+    return { line: pick, text };
+  }
+
+  const pick = matching[Math.floor(Math.random() * matching.length)];
+  if (state) state.usedRecently.add(pick.id);
+  const text = playerName ? pick.text.replace(/\{name\}/g, playerName) : pick.text;
+  return { line: pick, text };
 }
 
 /** Transfer usedThisGame to usedRecently for cross-game memory */

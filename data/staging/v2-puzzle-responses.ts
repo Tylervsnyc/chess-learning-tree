@@ -24,7 +24,7 @@ export const block1Responses = {
       "First puzzle down. Poker face: activated.",
       "And we're off. Clean start.",
       "Opening move: nailed it.",
-      "That's how you set the tone. GG to the warm-up.",
+      "That's how you set the tone.",
     ],
     last: [
       "Final checkmate. Close the curtain.",
@@ -44,7 +44,7 @@ export const block1Responses = {
     ],
     'streak:5': [
       "Five checkmates running. Absolutely clinical.",
-      "Five in a row. Save some GGs for later.",
+      "Five in a row. Save some for the rest of us.",
       "On a tear. Nobody's safe.",
       "Five straight. That's not luck, that's pattern recognition.",
     ],
@@ -52,7 +52,7 @@ export const block1Responses = {
       "Say good game. Try not to smirk.",
       "That's checkmate. Act surprised.",
       "Try not to smile too big. They're watching.",
-      "GG. Keep a straight face.",
+      "Clean. Keep a straight face.",
       "Checkmate. Now look humble.",
       "That was fast. Pretend you had to think about it.",
       "The king falls. Look sympathetic.",
@@ -91,7 +91,7 @@ export const block1Responses = {
     arabianMate: [
       "Knight and rook: the dynamic duo strikes.",
       "Ancient technique. Timeless destruction.",
-      "The Arabian finish. Chef's kiss.",
+      "The Arabian finish. Timeless.",
       "A classic for a reason.",
     ],
   },
@@ -155,13 +155,13 @@ export const block1Responses = {
   // Section 3: Advanced Mating Patterns
   '1.3': {
     first: [
-      "Advanced section, instant results. Off to a hot start.",
+      "Advanced patterns already? You didn't even hesitate.",
       "First advanced pattern spotted. The eye is sharp.",
-      "Big brain activated on puzzle one.",
+      "Sharp from the start.",
     ],
     last: [
       "Last advanced pattern crushed. Section complete.",
-      "That's the advanced chapter, done. Mic dropped.",
+      "That's the advanced chapter, done. Nothing left standing.",
       "Final puzzle. The advanced section bows to you.",
       "Closed out the hard stuff. Respect.",
     ],
@@ -179,10 +179,10 @@ export const block1Responses = {
       "Five advanced patterns straight. That's elite.",
       "Five for five on the advanced stuff. Show-off.",
       "Unstoppable on the hard patterns. Five running.",
-      "Five streak on advanced mates. Just flexing now.",
+      "Five advanced mates running. You're making this look easy and I don't love it.",
     ],
     general: [
-      "Big brain checkmate. Act casual.",
+      "Deep checkmate. Act casual.",
       "They didn't see that coming. You did.",
       "The hidden checkmate reveals itself.",
       "Complexity? What complexity? Easy.",
@@ -241,7 +241,7 @@ export const block1Responses = {
     'streak:3': [
       "Three multi-move solves running. Deep thinker.",
       "Calculated three in a row. The depth is real.",
-      "Triple multi-move streak. Big brain energy.",
+      "Triple multi-move streak. You're seeing deep.",
     ],
     'streak:5': [
       "Five multi-move mates in a row. Calculator mode.",
@@ -258,7 +258,7 @@ export const block1Responses = {
       "Every move led here. To their end.",
       "Forced all the way. No escaping fate.",
       "The net closes. The king falls.",
-      "Calculated destruction. Say GG.",
+      "Calculated destruction. Walk away clean.",
     ],
     mateIn2: [
       "Setup, strike. Done.",
@@ -284,7 +284,7 @@ export const block2Responses = {
   // Section 5: Free Pieces
   '1.5': {
     first: [
-      "First piece pocketed. The heist begins.",
+      "First free piece spotted and claimed. Good eye.",
       "Opening score of the section. Clean grab.",
       "And the collection starts. First freebie claimed.",
     ],
@@ -300,7 +300,7 @@ export const block2Responses = {
       "Second grab successful. No piece left behind.",
     ],
     'streak:3': [
-      "Three freebies in a row. The shelves are empty.",
+      "Three in a row. You're noticing things other players miss.",
       "Triple grab. They can't leave anything out.",
       "Three pieces collected. Running a tab now.",
     ],
@@ -308,13 +308,13 @@ export const block2Responses = {
       "Five straight grabs. Professional looter status.",
       "Five for five. This is organized collection.",
       "Five in a row. They should bolt things down.",
-      "Five freebies running. The warehouse is cleared.",
+      "Five in a row. Nothing gets past you.",
     ],
     general: [
       "Finders keepers.",
       "Thanks for the donation.",
       "That piece was just sitting there. Not anymore.",
-      "Free real estate.",
+      "Just sitting there. Not anymore.",
       "Unattended valuables collected.",
       "They left the door open. You walked in.",
       "Gift accepted. No receipt needed.",
@@ -343,7 +343,7 @@ export const block2Responses = {
   '1.6': {
     first: [
       "First fork landed. Two targets, zero survivors.",
-      "Opening fork. The horsey means business.",
+      "Opening fork. The knight means business.",
       "First puzzle, first double threat. Here we go.",
       "The fork section opens with a bang.",
     ],
@@ -615,7 +615,7 @@ export const block3Responses = {
       "The glow-up is complete.",
       "New queen just dropped.",
       "The pawn believed. The pawn achieved.",
-      "Promotion: the ultimate flex.",
+      "A pawn just became a queen. I get emotional every time.",
     ],
   },
 
@@ -728,7 +728,7 @@ export const block3Responses = {
     knightEndgame: [
       "The knight finds the outpost. The knight wins.",
       "Knights are weird. Weird wins.",
-      "The horse does horsey things. Successfully.",
+      "The knight does what knights do. Dramatically.",
     ],
     bishopEndgame: [
       "The bishop sees far. The bishop wins.",
@@ -754,7 +754,7 @@ export const block4Responses = {
     first: [
       "Review starts strong. Still got the touch.",
       "First review puzzle down. Muscle memory intact.",
-      "Opening the review with a flex. Classic.",
+      "Review mode and you still nailed it first try. The patterns stuck.",
       "Checkmate review begins. The patterns remember you.",
     ],
     last: [
@@ -776,7 +776,7 @@ export const block4Responses = {
       "Five review puzzles straight. Like they never left.",
       "Five in a row on review. Permanent knowledge.",
       "Five consecutive reviews aced. The fundamentals are bulletproof.",
-      "Five straight. Review mode, but still flexing.",
+      "Five straight on review. These patterns are yours now.",
     ],
     general: [
       "Still got it.",
@@ -810,7 +810,7 @@ export const block4Responses = {
   // Section 14: Review Winning Material
   '1.14': {
     first: [
-      "Material review opens with a clean grab. Still thieving.",
+      "Material review and you still see it instantly. That's growth.",
       "First review piece taken. The instincts are sharp.",
       "Review starts and the material flows in. Natural.",
     ],
@@ -969,7 +969,7 @@ export const block4Responses = {
       "Five consecutive solves in the finale. Untouchable.",
     ],
     general: [
-      "Final boss? More like final flex.",
+      "The final section. Everything you've learned, right here.",
       "Everything you learned, all at once. Handled.",
       "Mixed puzzles? Mixed results: all wins.",
       "The ultimate test. Aced.",
@@ -1252,7 +1252,7 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
       "The bishop's x-ray finds the king behind.",
     ],
     'pin:R': [
-      "Rook pin. Royalty behind. GG.",
+      "Rook pin. Royalty behind. Done.",
       "The rook's file is a prison for that piece.",
       "Pinned along the rank. The rook demands tribute.",
     ],
@@ -1484,7 +1484,7 @@ export const level2Responses: Record<string, Record<string, string[]>> = {
       "Discovery plus check. Maximum pressure.",
       "Two threats with one move.",
       "The discovered check demands attention.",
-      "Discover and capture. Chef's kiss.",
+      "Discover and capture. Textbook.",
       "The double threat lands.",
       "Check from one, attack from another.",
       "They can't address both.",
@@ -4913,7 +4913,7 @@ export const level7Responses: Record<string, Record<string, string[]>> = {
     'fork:N': [
       "The knight lands and two pieces tremble.",
       "The horse rides to Rohan. And takes everything.",
-      "L-shaped fork finds two targets. Classic horsey chaos.",
+      "L-shaped fork finds two targets. Classic knight chaos.",
     ],
   },
 

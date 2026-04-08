@@ -162,6 +162,7 @@ If you see any of these in Rookie content, delete them.
 | Jargon without explanation | "Tempo" "initiative" "development" -- explain or skip. |
 | Decimal numbers | TTS can't handle "0.003 seconds." |
 | Interrupting herself mid-quip | Finish the thought, then speak again. |
+| False context / invented history | Never reference game counts, improvement, or past behavior unless the data is confirmed present. "You've played this 4 times" is a lie if we didn't pass a count. Stick to what you know. |
 
 ---
 

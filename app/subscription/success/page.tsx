@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 
 function SuccessContent() {
@@ -73,11 +74,9 @@ function SuccessContent() {
     return (
       <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          {/* Error icon */}
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-amber-500/20 flex items-center justify-center">
-            <svg className="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
+          {/* Rookie error */}
+          <div className="flex justify-center mb-6">
+            <BreathingRook size="lg" mood="defeated" animate />
           </div>
 
           <h1 className="text-2xl font-bold text-chess-text mb-2">Issue Activating Subscription</h1>
@@ -111,16 +110,14 @@ function SuccessContent() {
   return (
     <div className="min-h-full bg-chess-page flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        {/* Success icon */}
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-chess-green to-chess-green-dark flex items-center justify-center shadow-md">
-          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
+        {/* Rookie celebration */}
+        <div className="flex justify-center mb-6">
+          <BreathingRook size="lg" mood="happy" animate />
         </div>
 
         <h1 className="text-3xl font-bold text-chess-text mb-2">Welcome to Premium!</h1>
         <p className="text-chess-text-muted mb-8">
-          Thank you for upgrading! You now have unlimited access to all puzzles.
+          You just made my day, and I don&apos;t even have days. Unlimited chess awaits.
         </p>
 
         {/* Features unlocked */}
