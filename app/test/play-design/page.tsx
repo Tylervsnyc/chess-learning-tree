@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
@@ -17,64 +18,69 @@ import {
 // ════════════════════════════════
 
 function LevelProgressBar({ currentLevel, winsAtLevel }: { currentLevel: number; winsAtLevel: number }) {
-  const progress = ((currentLevel - 1) + (winsAtLevel / WINS_TO_ADVANCE)) / 10;
+  const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
+  const fillPct = levelPct(currentLevel) + (winsAtLevel / WINS_TO_ADVANCE) * (100 / 9);
 
   return (
     <div className="w-full">
-      {/* Level markers */}
-      <div className="flex justify-between mb-1.5 px-0.5">
+      {/* Level numbers above */}
+      <div className="relative h-4 mb-1">
         {ROOKIE_LEVELS.map((l) => {
+          const pos = levelPct(l.level);
           const isCompleted = l.level < currentLevel;
           const isCurrent = l.level === currentLevel;
-
           return (
-            <div key={l.level} className="flex flex-col items-center" style={{ width: '10%' }}>
-              <span
-                className={`text-[10px] font-bold tabular-nums transition-all ${
-                  isCurrent
-                    ? 'text-chess-green scale-110'
-                    : isCompleted
-                      ? 'text-chess-text-muted'
-                      : 'text-chess-disabled'
-                }`}
-              >
-                {l.level}
-              </span>
-            </div>
+            <span
+              key={l.level}
+              className={`absolute -translate-x-1/2 text-[10px] font-bold tabular-nums ${
+                isCurrent ? 'text-chess-green'
+                  : isCompleted ? 'text-chess-text-muted' : 'text-chess-disabled'
+              }`}
+              style={{ left: `${pos}%` }}
+            >
+              {l.level}
+            </span>
           );
         })}
       </div>
-
       {/* Bar track */}
-      <div className="relative h-3 rounded-full bg-slate-200 overflow-hidden"
-        style={{
-          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)',
-        }}
+      <div className="relative h-3.5 rounded-full overflow-hidden bg-slate-200"
+        style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)' }}
       >
         {/* Fill */}
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
           style={{
-            width: `${Math.max(progress * 100, 2)}%`,
+            width: `${Math.max(fillPct, 1)}%`,
             background: 'linear-gradient(to right, #58CC02, #6EE018)',
             boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)',
           }}
         />
-
         {/* Shine */}
         <div
           className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
           style={{
-            width: `${Math.max(progress * 100, 2)}%`,
+            width: `${Math.max(fillPct, 1)}%`,
             background: 'linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, transparent 50%)',
           }}
         />
-      </div>
-
-      {/* Sub-label */}
-      <div className="flex justify-between items-center mt-1.5">
-        <span className="text-[10px] text-chess-text-faint font-medium">Beginner</span>
-        <span className="text-[10px] text-chess-text-faint font-medium">Full Power</span>
+        {/* Level divider lines (skip level 1 at 0% and level 10 at 100%) */}
+        {ROOKIE_LEVELS.slice(1, -1).map((l) => {
+          const pos = levelPct(l.level);
+          const isCompleted = l.level < currentLevel;
+          return (
+            <div
+              key={l.level}
+              className="absolute top-0 bottom-0 w-[2px] z-10"
+              style={{
+                left: `${pos}%`,
+                background: isCompleted
+                  ? 'rgba(255, 255, 255, 0.2)'
+                  : 'rgba(0, 0, 0, 0.12)',
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -133,6 +139,7 @@ function WinsIndicator({ wins, needed, nextLevel }: { wins: number; needed: numb
 // ════════════════════════════════
 
 export default function PlayDesignPreview() {
+  const router = useRouter();
   const [currentLevel, setCurrentLevel] = useState(5);
   const [winsAtLevel, setWinsAtLevel] = useState(0);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
@@ -266,7 +273,11 @@ export default function PlayDesignPreview() {
           </div>
 
           {/* Play button */}
-          <ActionButton color="green" size="lg" fullWidth>
+          <ActionButton color="green" size="lg" fullWidth onClick={() => {
+            localStorage.setItem('rookie-level', String(currentLevel));
+            localStorage.setItem('rookie-level-wins', String(winsAtLevel));
+            router.push('/play');
+          }}>
             Let&apos;s Play
           </ActionButton>
         </div>

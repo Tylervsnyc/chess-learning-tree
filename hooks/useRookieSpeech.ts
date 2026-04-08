@@ -315,17 +315,10 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // 3. Early game transition — no automatic quip, just note it
       if (beatResult.newBeat === 'early_game') return;
 
-      // 4. Game end — speak once, then lock out further quips
+      // 4. Game end — lock out mid-game quips. The real end-of-game speech
+      //    comes from onPostGame (which has analysis data for a better line).
       if (beatResult.newBeat === 'game_end') {
         gameEndedRef.current = true;
-        const context = buildContext(input);
-        const rookieWon = input.rookiePawns > 0;
-        generateOrFallback(
-          generateGameEndLine ? generateGameEndLine({ playerName: input.playerName, rookieWon }) : undefined,
-          'game_end',
-          context,
-          'high',
-        );
         return;
       }
 

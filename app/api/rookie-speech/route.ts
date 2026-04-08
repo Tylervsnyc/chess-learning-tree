@@ -66,7 +66,11 @@ Player: ${playerName}${historyBlock}${factsBlock}${lastGameBlock}${honchoBlock}
 
 Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.${lastGameInstruction}${honchoInstruction}
 
-Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.`;
+Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.
+
+BANNED PATTERNS (never use these):
+- Compute-flex: "calculated", "processing", "simulated", "analyzed", "running numbers", "algorithms"
+- Rookie doesn't brag about being a computer. She's a rook who has feelings, not a CPU.`;
 
     } else if (type === 'game_end') {
       const { playerName, rookieWon, accuracy, gameSummary } = context;
