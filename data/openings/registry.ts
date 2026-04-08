@@ -294,6 +294,24 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: '5.Nc3 Variation', subtitle: '5.Nc3 Nxc3 -- exchange and develop', icon: 'knight', hasData: true, slug: 'petroff-5nc3' },
     ],
   },
+  {
+    slug: 'scandinavian',
+    name: 'Scandinavian Defense',
+    subtitle: 'The queen strikes early against 1.e4',
+    moves: '1.e4 d5',
+    description: 'Challenge e4 immediately with d5, recapture with the queen, and develop with tempo.',
+    side: 'black',
+    category: '1.e4',
+    color: '#3B82F6',
+    colorDark: '#2563EB',
+    colorLight: '#60A5FA',
+    ghostPiece: '\u265B',
+    icon: 'queen',
+    hasData: true,
+    order: 16,
+    mainLine: { name: 'Qa5 Main Line', subtitle: '2...Qxd5 3.Nc3 Qa5 — the active queen' },
+    variations: [],
+  },
   // === 1.d4 OPENINGS ===
   {
     slug: 'london',
@@ -335,7 +353,9 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     hasData: true,
     order: 6,
     mainLine: { name: 'Orthodox Defense', subtitle: '3.Nc3 Nf6 4.Bg5 Be7 · 4 lessons' },
-    variations: [],
+    variations: [
+      { name: 'QGA', subtitle: '2...dxc4 — accept the gambit and develop quickly', icon: 'pawn', hasData: true, slug: 'queens-gambit-accepted' },
+    ],
   },
   {
     slug: 'slav',
