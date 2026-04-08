@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { useSubscription } from '@/hooks/useSubscription';
+import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
 
 const GUEST_QUIPS = [
   'Your chess moves are too good to lose!',
@@ -30,14 +31,14 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && MONETIZATION_ENABLED) {
       SubscriptionEvents.paywallViewed(isLoggedIn ? 'daily_limit' : 'guest_limit');
     }
   }, [isOpen, isLoggedIn]);
 
   // Fetch dynamic pricing for logged-in users
   useEffect(() => {
-    if (!isOpen || !isLoggedIn) return;
+    if (!MONETIZATION_ENABLED || !isOpen || !isLoggedIn) return;
     setMonthlyPrice(null);
     setCheckoutError(null);
     fetch('/api/pricing-experiment')
@@ -56,7 +57,8 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const quip = useMemo(() => GUEST_QUIPS[Math.floor(Math.random() * GUEST_QUIPS.length)], [isOpen]);
 
-  if (!isOpen) return null;
+  // Skip paywall entirely when monetization is off
+  if (!MONETIZATION_ENABLED || !isOpen) return null;
 
   const handleSignUpFree = () => {
     router.push('/auth/signup');

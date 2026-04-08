@@ -5,6 +5,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { isAdEnabled, getAdType } from '@/lib/ad-config';
 import { trackEvent } from '@/lib/analytics/posthog';
 import { SelfPromoCard } from './SelfPromoCard';
+import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
 
 interface AdSlotProps {
   position: string;
@@ -28,8 +29,8 @@ export function AdSlot({ position }: AdSlotProps) {
     });
   }, [loading, isPremium, position, adType]);
 
-  // Don't render while loading, for premium users, or if position is disabled
-  if (loading || isPremium || !isAdEnabled(position)) {
+  // Don't render while loading, for premium users, if position is disabled, or if monetization is off
+  if (!MONETIZATION_ENABLED || loading || isPremium || !isAdEnabled(position)) {
     return null;
   }
 

@@ -153,8 +153,8 @@ export function NavHeader() {
                 <span className="relative">Daily</span>
               </Link>
 
-              {/* Patron — free users only, hidden when monetization is off */}
-              {MONETIZATION_ENABLED && user && profile?.subscription_status !== 'premium' && profile?.subscription_status !== 'trial' && (
+              {/* Patron — free users only, hidden when monetization is off. Wait for profile to load to avoid flash. */}
+              {MONETIZATION_ENABLED && user && profile && profile.subscription_status !== 'premium' && profile.subscription_status !== 'trial' && (
                 <Link
                   href="/pricing"
                   className={`px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap ${
