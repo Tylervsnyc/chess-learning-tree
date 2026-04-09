@@ -143,7 +143,6 @@ function getBookTrie(): TrieNode {
     }
 
     _bookTrie = root;
-    console.log(`[Book] Trie built: ${lines.size} openings, root has ${root.children.size} first moves: ${Array.from(root.children.keys()).join(', ')}`);
   }
   return _bookTrie;
 }
