@@ -1552,7 +1552,7 @@ export default function PlayRookiePage() {
     const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
 
     return (
-      <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
+      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
         {/* Top: Level progress bar */}
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
           <LevelProgressBar currentLevel={rookieLevel} winsAtLevel={winsAtLevel} />
@@ -1676,7 +1676,7 @@ export default function PlayRookiePage() {
   const isReview = phase === 'review';
 
   return (
-    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col">
+    <div className="h-full bg-chess-page text-chess-text flex flex-col">
       {/* Spacer for status bar */}
       <div className="h-2 flex-shrink-0" />
 
