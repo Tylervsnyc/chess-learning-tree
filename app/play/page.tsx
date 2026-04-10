@@ -793,7 +793,7 @@ export default function PlayRookiePage() {
     if (moves.length > 0 && analysis) {
       // Extract eval-based key moments (replaces old heuristic review)
       const moveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
-      setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined));
+      setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
 
       // Show instant analysis immediately, then kick off deep analysis (depth 18)
       postGame.setInstantAnalysis(analysis);
@@ -801,7 +801,7 @@ export default function PlayRookiePage() {
         if (deepAnalysis) {
           // Update key moments with deeper eval
           const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
-          setKeyMoments(extractKeyMoments(deepAnalysis, deepMoveRecs, playerName || undefined));
+          setKeyMoments(extractKeyMoments(deepAnalysis, deepMoveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
         }
       });
 
