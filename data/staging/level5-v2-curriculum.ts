@@ -152,7 +152,7 @@ That's a windmill. One of the most beautiful patterns in chess. By the time it s
               id: '5.3.2',
               name: 'Windmill: Classic',
               description: 'The Torre-Lasker pattern',
-              requiredTags: ['discoveredAttack', 'doubleCheck'],
+              requiredTags: ['discoveredAttack'],
               ratingMin: 1400,
               ratingMax: 1600,
               minPlays: 100,
