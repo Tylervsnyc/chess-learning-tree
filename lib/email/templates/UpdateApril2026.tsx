@@ -14,7 +14,7 @@ const UTM_BASE = 'utm_source=email&utm_medium=update&utm_campaign=play_rookie_la
 const FEATURE_IMAGES = {
   playRookie: 'https://chesspath.app/email/play-board.png',
   openings: 'https://chesspath.app/email/openingtree.png',
-  free: 'https://chesspath.app/email/rookie-golden.png',
+  free: 'https://chesspath.app/email/rookie-excited-v2.png',
 };
 
 const PILL_COLORS: Record<string, { bg: string; shadow: string }> = {
