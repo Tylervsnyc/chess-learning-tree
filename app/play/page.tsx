@@ -602,6 +602,7 @@ export default function PlayRookiePage() {
       pendingLevelUpRef.current = null;
       pendingPostGameRef.current = null;
       landingFiredRef.current = true;
+      setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('level_up', pendingLevelUp.newLevel);
       let alreadyCelebrated = false;
       try {
@@ -620,6 +621,7 @@ export default function PlayRookiePage() {
     if (pendingResult !== null) {
       pendingPostGameRef.current = null;
       landingFiredRef.current = true;
+      setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('post_game', rookieLevel);
       const pool = pendingResult === 'win' ? winQuips : lossQuips;
       const line = pickFromPool(pool, usedWinLossQuipsRef.current);
@@ -632,6 +634,7 @@ export default function PlayRookiePage() {
 
     if (!landingFiredRef.current && user?.id) {
       landingFiredRef.current = true;
+      setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
       const line = pickLandingQuip(new Date(), usedLandingQuipsRef.current);
       if (line) {
@@ -2033,13 +2036,14 @@ export default function PlayRookiePage() {
 
       {/* Guest signup prompt after game */}
       {showSignupPrompt && (
-        <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }} />
+        <SignupPrompt source="play" onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }} />
       )}
 
       {/* Rookie asks for the player's name mid-game */}
       {showNameAsk && (
         <div className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[env(safe-area-inset-bottom,0)]">
           <RookieNameAsk
+            source="play"
             onSubmit={(n) => {
               setPlayerNameValue(n);
               setShowNameAsk(false);
