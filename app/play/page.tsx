@@ -54,6 +54,13 @@ import {
   updateRookieMemoryContext,
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
+import {
+  winQuips,
+  lossQuips,
+  levelUpQuips,
+  pickLandingQuip,
+} from '@/data/quips/play-quips';
+import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 
 // ════════════════════════════════
 // LEVEL PERSISTENCE (localStorage)
@@ -81,7 +88,17 @@ const ANIM_MS = 300;
 // LEVEL PROGRESS BAR (from test/play-design)
 // ════════════════════════════════
 
-function LevelProgressBar({ currentLevel, winsAtLevel }: { currentLevel: number; winsAtLevel: number }) {
+function LevelProgressBar({
+  currentLevel,
+  winsAtLevel,
+  animDurationMs = 700,
+  celebrate = false,
+}: {
+  currentLevel: number;
+  winsAtLevel: number;
+  animDurationMs?: number;
+  celebrate?: boolean;
+}) {
   // 9 gaps between 10 levels. Level 1 = 0%, level 10 = 100%.
   const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
   const fillPct = levelPct(currentLevel) + (winsAtLevel / WINS_TO_ADVANCE) * (100 / 9);
@@ -114,19 +131,25 @@ function LevelProgressBar({ currentLevel, winsAtLevel }: { currentLevel: number;
       >
         {/* Fill */}
         <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+          className="absolute inset-y-0 left-0 rounded-full ease-out"
           style={{
             width: `${Math.max(fillPct, 1)}%`,
-            background: 'linear-gradient(to right, #58CC02, #6EE018)',
-            boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)',
+            background: celebrate
+              ? 'linear-gradient(to right, #FFD700, #FFA500, #FFD700)'
+              : 'linear-gradient(to right, #58CC02, #6EE018)',
+            boxShadow: celebrate
+              ? 'inset 0 -1px 0 rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5), 0 0 18px rgba(255, 200, 0, 0.8)'
+              : 'inset 0 -1px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)',
+            transition: `width ${animDurationMs}ms ease-out, background 300ms ease-out, box-shadow 300ms ease-out`,
           }}
         />
         {/* Shine */}
         <div
-          className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
+          className="absolute inset-y-0 left-0 rounded-full pointer-events-none ease-out"
           style={{
             width: `${Math.max(fillPct, 1)}%`,
             background: 'linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, transparent 50%)',
+            transition: `width ${animDurationMs}ms ease-out`,
           }}
         />
         {/* Level divider lines (skip level 1 at 0% and level 10 at 100%) */}
@@ -281,6 +304,14 @@ export default function PlayRookiePage() {
   const playerName = playerNameValue || '';
   const [showNameAsk, setShowNameAsk] = useState(false);
   const nameAskedRef = useRef(false);
+
+  const usedWinLossQuipsRef = useRef<Set<string>>(new Set());
+  const usedLandingQuipsRef = useRef<Set<string>>(new Set());
+  const pendingPostGameRef = useRef<'win' | 'loss' | null>(null);
+  const pendingLevelUpRef = useRef<{ oldLevel: number; newLevel: number } | null>(null);
+  const lastResultForTrackingRef = useRef<'win' | 'loss' | 'none'>('none');
+  const landingFiredRef = useRef(false);
+  const [levelBarAnim, setLevelBarAnim] = useState<{ level: number; wins: number; duration: number } | null>(null);
 
   // Load persisted level on mount
   useEffect(() => {
@@ -532,6 +563,84 @@ export default function PlayRookiePage() {
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
 
+  const pickFromPool = useCallback((pool: string[], used: Set<string>): string => {
+    if (pool.length === 0) return '';
+    if (used.size >= pool.length) used.clear();
+    const available = pool.filter(q => !used.has(q));
+    const choice = available[Math.floor(Math.random() * available.length)] || pool[0];
+    used.add(choice);
+    return choice;
+  }, []);
+
+  const runLevelUpAnimation = useCallback((oldLevel: number, newLevel: number) => {
+    const DURATION = 1600;
+    PlayEvents.levelUpTriggered(oldLevel, newLevel);
+    setLevelBarAnim({ level: oldLevel, wins: WINS_TO_ADVANCE, duration: 0 });
+    window.setTimeout(() => {
+      setLevelBarAnim({ level: newLevel, wins: 0, duration: DURATION });
+    }, 80);
+    window.setTimeout(() => {
+      setRookieLevel(newLevel);
+      setWinsAtLevel(0);
+      setLevelBarAnim(null);
+      const quip = levelUpQuips[newLevel];
+      if (quip) {
+        speech.queueDirect(quip, 'high');
+        PlayEvents.quipShown('level_up', quip);
+      }
+      try {
+        localStorage.setItem('rookie-celebrated-level-' + newLevel, '1');
+      } catch {}
+    }, 80 + DURATION + 100);
+  }, [speech]);
+
+  useEffect(() => {
+    if (phase !== 'setup') return;
+
+    const pendingLevelUp = pendingLevelUpRef.current;
+    if (pendingLevelUp !== null) {
+      pendingLevelUpRef.current = null;
+      pendingPostGameRef.current = null;
+      landingFiredRef.current = true;
+      PlayEvents.landingViewed('level_up', pendingLevelUp.newLevel);
+      let alreadyCelebrated = false;
+      try {
+        alreadyCelebrated = localStorage.getItem('rookie-celebrated-level-' + pendingLevelUp.newLevel) === '1';
+      } catch {}
+      if (alreadyCelebrated) {
+        setRookieLevel(pendingLevelUp.newLevel);
+        setWinsAtLevel(0);
+      } else {
+        runLevelUpAnimation(pendingLevelUp.oldLevel, pendingLevelUp.newLevel);
+      }
+      return;
+    }
+
+    const pendingResult = pendingPostGameRef.current;
+    if (pendingResult !== null) {
+      pendingPostGameRef.current = null;
+      landingFiredRef.current = true;
+      PlayEvents.landingViewed('post_game', rookieLevel);
+      const pool = pendingResult === 'win' ? winQuips : lossQuips;
+      const line = pickFromPool(pool, usedWinLossQuipsRef.current);
+      if (line) {
+        speech.queueDirect(line, 'high');
+        PlayEvents.quipShown(pendingResult, line);
+      }
+      return;
+    }
+
+    if (!landingFiredRef.current && user?.id) {
+      landingFiredRef.current = true;
+      PlayEvents.landingViewed('direct', rookieLevel);
+      const line = pickLandingQuip(new Date(), usedLandingQuipsRef.current);
+      if (line) {
+        speech.queueDirect(line, 'high');
+        PlayEvents.quipShown('landing', line);
+      }
+    }
+  }, [phase, user?.id, rookieLevel, runLevelUpAnimation, pickFromPool, speech]);
+
   // ── 6-layer narrative processing (runs alongside existing speech system) ──
   const processNarrative = useCallback(async (
     g: Chess,
@@ -775,13 +884,16 @@ export default function PlayRookiePage() {
 
     PlayEvents.gameEnded(result ?? 'unknown', moveLogRef.current.length, playerColor, rookieLevel, matchedOpeningRef.current?.name);
 
-    // Level progression: accumulate wins (no reset on loss)
+    const postGameResult: 'win' | 'loss' = result === 'win' ? 'win' : 'loss';
+    pendingPostGameRef.current = postGameResult;
+    lastResultForTrackingRef.current = postGameResult;
+
     if (result === 'win' && rookieLevel < 10) {
       const newWins = winsAtLevel + 1;
       if (newWins >= WINS_TO_ADVANCE) {
         const newLevel = rookieLevel + 1;
-        setRookieLevel(newLevel);
-        setWinsAtLevel(0);
+        // localStorage written now so refresh keeps the new level; React state is committed by the setup-phase animation.
+        pendingLevelUpRef.current = { oldLevel: rookieLevel, newLevel };
         saveLevelProgress(newLevel, 0);
       } else {
         setWinsAtLevel(newWins);
@@ -1322,6 +1434,36 @@ export default function PlayRookiePage() {
     return s;
   }, [fen, game, lastMv, selected]);
 
+  const resetToSetup = useCallback(() => {
+    PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
+    if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+    speech.reset();
+    moveNumRef.current = 0;
+    playerMoveCountRef.current = 0;
+    nameAskedRef.current = false;
+    setShowNameAsk(false);
+    moveLogRef.current = [];
+    setFen(START_FEN);
+    setLastMv(null);
+    setSelected(null);
+    setGameResult(null);
+    setRookieThinking(false);
+    setResignArmed(false);
+    moodSystem.reset();
+    setEvalPct(50);
+    setKeyMoments([]);
+    setReviewMoveIndex(0);
+    setReviewMomentIndex(0);
+    setReviewText(null);
+    setReviewArrows([]);
+    postGame.cancel();
+    setCoachingScript(null);
+    setShowCoaching(false);
+    positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
+    setupGreetingSpokenRef.current = false;
+    setPhase('setup');
+  }, [speech, moodSystem, postGame, rookieLevel]);
+
   // ════════════════════════════════
   // START GAME
   // ════════════════════════════════
@@ -1550,7 +1692,15 @@ export default function PlayRookiePage() {
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
         {/* Top: Level progress bar */}
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
-          <LevelProgressBar currentLevel={rookieLevel} winsAtLevel={winsAtLevel} />
+          <div className="relative">
+            <LevelProgressBar
+              currentLevel={levelBarAnim ? levelBarAnim.level : rookieLevel}
+              winsAtLevel={levelBarAnim ? levelBarAnim.wins : winsAtLevel}
+              animDurationMs={levelBarAnim ? levelBarAnim.duration : 700}
+              celebrate={!!levelBarAnim}
+            />
+            <LevelUpCelebration active={!!levelBarAnim} />
+          </div>
         </div>
 
         {/* Main content */}
@@ -1581,8 +1731,8 @@ export default function PlayRookiePage() {
                   style={{ boxShadow: '-1px -1px 2px rgba(0,0,0,0.03)' }}
                 />
                 <div className="relative bg-white rounded-2xl px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)] h-full flex items-center justify-center">
-                  <p className="text-chess-text text-[14px] leading-relaxed font-medium text-center">
-                    {greeting.quote}
+                  <p key={speech.msgKey} className="text-chess-text text-[14px] leading-relaxed font-medium text-center line-clamp-3">
+                    {speech.displayText || greeting.quote}
                   </p>
                 </div>
               </div>
@@ -1810,7 +1960,7 @@ export default function PlayRookiePage() {
                       if (!user) {
                         setShowSignupPrompt(true);
                       } else {
-                        startGame();
+                        resetToSetup();
                       }
                     }}
                     className="flex-1 py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
@@ -1834,7 +1984,7 @@ export default function PlayRookiePage() {
               <div className="space-y-2">
                 <ReviewNav />
                 <button
-                  onClick={() => startGame()}
+                  onClick={() => resetToSetup()}
                   className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
                 >
                   Play Again
@@ -1883,7 +2033,7 @@ export default function PlayRookiePage() {
 
       {/* Guest signup prompt after game */}
       {showSignupPrompt && (
-        <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); startGame(); }} />
+        <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }} />
       )}
 
       {/* Rookie asks for the player's name mid-game */}

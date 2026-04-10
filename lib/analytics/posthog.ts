@@ -129,6 +129,16 @@ export const PlayEvents = {
     trackEvent('game_started', { skillLevel, color }),
   gameEnded: (result: string, moveCount: number, color: 'white' | 'black', skillLevel: number, openingName?: string | null) =>
     trackEvent('game_ended', { result, moveCount, color, skillLevel, openingName }),
+  landingViewed: (source: 'direct' | 'post_game' | 'level_up', level: number) =>
+    trackEvent('play_landing_viewed', { source, level }),
+  playAgainClicked: (lastResult: 'win' | 'loss' | 'none', levelAtClick: number) =>
+    trackEvent('play_again_clicked', { lastResult, levelAtClick }),
+  levelUpTriggered: (oldLevel: number, newLevel: number) =>
+    trackEvent('play_level_up', { oldLevel, newLevel }),
+  quipShown: (
+    category: 'win' | 'loss' | 'level_up' | 'landing',
+    text: string,
+  ) => trackEvent('play_quip_shown', { category, quipKey: text.slice(0, 60) }),
 };
 
 // Level test funnel
