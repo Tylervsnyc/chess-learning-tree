@@ -44,6 +44,8 @@ import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import { useClickToMove } from '@/hooks/useClickToMove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
+import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
+import { useName } from '@/hooks/useName';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
@@ -275,7 +277,10 @@ export default function PlayRookiePage() {
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
   const [rookieLevel, setRookieLevel] = useState(1); // 1-10 discrete level
   const [winsAtLevel, setWinsAtLevel] = useState(0);
-  const [playerName, setPlayerName] = useState('');
+  const { name: playerNameValue, setName: setPlayerNameValue } = useName();
+  const playerName = playerNameValue || '';
+  const [showNameAsk, setShowNameAsk] = useState(false);
+  const nameAskedRef = useRef(false);
 
   // Load persisted level on mount
   useEffect(() => {
@@ -328,6 +333,7 @@ export default function PlayRookiePage() {
   const log = useCallback((_entry: unknown) => {}, []);
 
   const moveNumRef = useRef(0);
+  const playerMoveCountRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Session tracking for coaching
@@ -1089,6 +1095,7 @@ export default function PlayRookiePage() {
       if (!result) return false;
 
       moveNumRef.current++;
+      playerMoveCountRef.current++;
       lastMovedByRef.current = 'player';
       const newFen = g.fen();
 
@@ -1098,6 +1105,21 @@ export default function PlayRookiePage() {
 
       if (result.captured) playCaptureSound();
       else playMoveSound();
+
+      // After the player has made a few moves, ask their name if we don't
+      // have one yet. Don't stack on top of other overlays.
+      if (
+        !nameAskedRef.current
+        && !playerNameValue
+        && playerMoveCountRef.current >= 4
+        && !gameResult
+        && !showSignupPrompt
+        && !showCoaching
+        && !isTalkingRef.current
+      ) {
+        nameAskedRef.current = true;
+        setShowNameAsk(true);
+      }
 
       log({
         moveNum: moveNumRef.current,
@@ -1163,7 +1185,7 @@ export default function PlayRookiePage() {
     } catch {
       return false;
     }
-  }, [fen, playerColor, playerName, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
+  }, [fen, playerColor, playerName, playerNameValue, gameResult, showSignupPrompt, showCoaching, isTalkingRef, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
 
   // ════════════════════════════════
   // CLICK TO MOVE — shared hook
@@ -1310,6 +1332,9 @@ export default function PlayRookiePage() {
     speech.reset();
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     moveNumRef.current = 0;
+    playerMoveCountRef.current = 0;
+    nameAskedRef.current = false;
+    setShowNameAsk(false);
     moveLogRef.current = [];
     setFen(START_FEN);
     setLastMv(null);
@@ -1859,6 +1884,20 @@ export default function PlayRookiePage() {
       {/* Guest signup prompt after game */}
       {showSignupPrompt && (
         <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); startGame(); }} />
+      )}
+
+      {/* Rookie asks for the player's name mid-game */}
+      {showNameAsk && (
+        <div className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[env(safe-area-inset-bottom,0)]">
+          <RookieNameAsk
+            onSubmit={(n) => {
+              setPlayerNameValue(n);
+              setShowNameAsk(false);
+            }}
+            onSpeak={speakQuip}
+            isTalking={isTalking}
+          />
+        </div>
       )}
     </div>
   );

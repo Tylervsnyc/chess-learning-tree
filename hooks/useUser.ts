@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { createClient, clearAuthTokens } from '@/lib/supabase/client';
 import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
@@ -8,7 +8,7 @@ import { AuthEvents, identifyUser } from '@/lib/analytics/posthog';
 interface Profile {
   id: string;
   email: string;
-  display_name: string;
+  display_name: string | null;
   subscription_status: 'free' | 'premium' | 'trial';
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
@@ -22,6 +22,20 @@ export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const userRef = useRef<User | null>(null);
+  userRef.current = user;
+
+  const refetchProfile = useCallback(async () => {
+    const u = userRef.current;
+    if (!u) return;
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', u.id)
+      .single();
+    if (data) setProfile(data);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -63,6 +77,25 @@ export function useUser() {
           if (data) {
             // Verify subscription status if they have a Stripe customer ID
             const verifiedProfile = await verifySubscription(data);
+            // Migrate guest name from localStorage once, on first login
+            // where the DB has no name yet.
+            if (!verifiedProfile.display_name || !verifiedProfile.display_name.trim()) {
+              try {
+                const guestName = localStorage.getItem('chess_path_name')?.trim();
+                if (guestName) {
+                  fetch('/api/profile/display-name', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: guestName }),
+                  }).then((res) => {
+                    if (res.ok && mounted) {
+                      setProfile((p) => p ? { ...p, display_name: guestName } : p);
+                    }
+                  }).catch(() => {});
+                  verifiedProfile.display_name = guestName;
+                }
+              } catch {}
+            }
             setProfile(verifiedProfile);
           } else if (error) {
             // No profile found - create a fake one for display purposes
@@ -71,7 +104,7 @@ export function useUser() {
             setProfile({
               id: userId,
               email: email,
-              display_name: email.split('@')[0],
+              display_name: null,
               subscription_status: 'free',
               subscription_expires_at: null,
               stripe_customer_id: null,
@@ -171,5 +204,5 @@ export function useUser() {
     }
   };
 
-  return { user, profile, loading, signOut };
+  return { user, profile, loading, signOut, refetchProfile };
 }
