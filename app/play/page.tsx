@@ -1808,28 +1808,6 @@ export default function PlayRookiePage() {
             ) : phase === 'review' ? (
               <div className="space-y-2">
                 <ReviewNav />
-                {keyMoments.length > 0 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {keyMoments.map((m, i) => (
-                      <button
-                        key={i}
-                        onClick={() => jumpToMoment(m, i)}
-                        className={`flex-1 min-w-0 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
-                          reviewMomentIndex === i
-                            ? m.type === 'blunder' || m.type === 'mistake'
-                              ? 'bg-red-500/15 border-2 border-red-500/40 text-red-400'
-                              : m.type === 'turning-point'
-                                ? 'bg-amber-500/15 border-2 border-amber-500/40 text-amber-400'
-                                : 'bg-chess-green/15 border-2 border-chess-green text-chess-green'
-                            : 'bg-chess-surface border border-chess-disabled text-chess-text-muted'
-                        }`}
-                      >
-                        <div className="truncate">{m.title}</div>
-                        <div className="text-[10px] opacity-70">Move {m.moveNumber}</div>
-                      </button>
-                    ))}
-                  </div>
-                )}
                 <button
                   onClick={() => startGame()}
                   className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
