@@ -72,18 +72,6 @@ function saveLevelProgress(level: number, wins: number) {
   localStorage.setItem(WINS_STORAGE_KEY, String(wins));
 }
 
-interface DebugEntry {
-  id: number;
-  moveNum: number;
-  timestamp: number;
-  type: 'move' | 'mood' | 'quip' | 'engine' | 'eval' | 'speech' | 'game-event';
-  who: 'player' | 'rookie' | 'system';
-  summary: string;
-  details: Record<string, unknown>;
-}
-
-let debugIdCounter = 0;
-
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
@@ -337,21 +325,7 @@ export default function PlayRookiePage() {
   const rookieMood = moodSystem.mood;
   const rookieAlarm = moodSystem.alarmVariant;
 
-  // Debug log
-  const [debugLog, setDebugLog] = useState<DebugEntry[]>([]);
-  const [debugOpen, setDebugOpen] = useState(false);
-  const debugEndRef = useRef<HTMLDivElement>(null);
-
-  const log = useCallback((entry: Omit<DebugEntry, 'id' | 'timestamp'>) => {
-    setDebugLog(prev => [...prev, { ...entry, id: debugIdCounter++, timestamp: Date.now() }]);
-  }, []);
-
-  // Auto-scroll debug log
-  useEffect(() => {
-    if (debugOpen && debugEndRef.current) {
-      debugEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [debugLog, debugOpen]);
+  const log = useCallback((_entry: unknown) => {}, []);
 
   const moveNumRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1357,10 +1331,6 @@ export default function PlayRookiePage() {
     // Seed with starting position eval (0cp = equal)
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
 
-    // Clear debug log
-    setDebugLog([]);
-    debugIdCounter = 0;
-
     // Start session tracking (only for logged-in users)
     if (user?.id) {
       const session = new GameSession('play-rookie', user.id);
@@ -1872,82 +1842,6 @@ export default function PlayRookiePage() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* ════════════════════════════════ */}
-      {/* DEBUG LOG PANEL */}
-      {/* ════════════════════════════════ */}
-      <div className="flex-shrink-0 border-t border-chess-disabled">
-        <button
-          onClick={() => setDebugOpen(!debugOpen)}
-          className="w-full px-4 py-2 flex items-center justify-between text-xs font-mono text-chess-text-muted hover:bg-chess-surface transition-colors"
-        >
-          <span>Debug Log ({debugLog.length} entries)</span>
-          <span>{debugOpen ? 'Hide' : 'Show'}</span>
-        </button>
-
-        {debugOpen && (
-          <div className="max-h-[40vh] overflow-auto bg-[#0d1117] text-[11px] font-mono leading-relaxed">
-            <div className="sticky top-0 z-10 bg-[#0d1117] border-b border-gray-800 px-4 py-1.5 flex justify-end">
-              <button
-                onClick={() => {
-                  const text = debugLog.map(e => {
-                    const details = Object.entries(e.details).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(' ');
-                    return `#${e.moveNum} [${e.type}] ${e.who} | ${e.summary}${details ? '\n  ' + details : ''}`;
-                  }).join('\n');
-                  navigator.clipboard.writeText(text);
-                }}
-                className="px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded transition-colors"
-              >
-                Copy Log
-              </button>
-            </div>
-            {debugLog.length === 0 && (
-              <div className="px-4 py-3 text-gray-500">No events yet. Make a move...</div>
-            )}
-            {debugLog.map((entry) => {
-              const colors: Record<string, string> = {
-                move: 'text-blue-400',
-                mood: 'text-yellow-400',
-                quip: 'text-green-400',
-                engine: 'text-purple-400',
-                eval: 'text-cyan-400',
-                speech: 'text-orange-400',
-                'game-event': 'text-red-400',
-              };
-              const whoColors: Record<string, string> = {
-                player: 'text-cyan-300',
-                rookie: 'text-orange-300',
-                system: 'text-gray-400',
-              };
-              return (
-                <div key={entry.id} className="px-4 py-1.5 border-b border-gray-800 hover:bg-gray-800/50">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-gray-600 w-6 text-right flex-shrink-0">#{entry.moveNum}</span>
-                    <span className={`font-semibold ${colors[entry.type] || 'text-gray-400'}`}>
-                      [{entry.type}]
-                    </span>
-                    <span className={whoColors[entry.who] || 'text-gray-400'}>
-                      {entry.who}
-                    </span>
-                    <span className="text-gray-200">{entry.summary}</span>
-                  </div>
-                  {Object.keys(entry.details).length > 0 && (
-                    <div className="ml-8 mt-0.5 text-gray-500">
-                      {Object.entries(entry.details).map(([k, v]) => (
-                        <span key={k} className="mr-3">
-                          <span className="text-gray-600">{k}=</span>
-                          <span className="text-gray-400">{JSON.stringify(v)}</span>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <div ref={debugEndRef} />
-          </div>
-        )}
       </div>
 
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />
