@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { aiGuard } from '@/lib/ai-guard';
 
 const anthropic = new Anthropic();
 let callCount = 0;
@@ -13,8 +14,19 @@ let callCount = 0;
  * Body: { system: string, messages: Array<{role, content}>, params: {temperature, top_p, max_tokens} }
  */
 export async function POST(req: NextRequest) {
+  const guard = await aiGuard(req, {
+    route: 'rookie-narrative',
+    dailyLimit: 30,
+    maxBodyBytes: 8000,
+  });
+  if (!guard.ok) return guard.response;
+
   try {
-    const { system, messages, params } = await req.json();
+    const { system, messages, params } = (guard.body ?? {}) as {
+      system?: string;
+      messages?: Array<{ role: 'user' | 'assistant'; content: string }>;
+      params?: { temperature?: number; top_p?: number; max_tokens?: number };
+    };
 
     if (!system || !messages || !params) {
       return NextResponse.json({ error: 'Missing system, messages, or params' }, { status: 400 });

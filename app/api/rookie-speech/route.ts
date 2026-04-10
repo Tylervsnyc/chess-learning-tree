@@ -6,6 +6,7 @@ import {
   formatHonchoSummaryForPrompt,
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
+import { aiGuard } from '@/lib/ai-guard';
 
 const anthropic = new Anthropic();
 
@@ -18,8 +19,33 @@ const anthropic = new Anthropic();
  * Body: { type: 'opening' | 'game_end', context: { ... } }
  */
 export async function POST(req: NextRequest) {
+  const guard = await aiGuard(req, {
+    route: 'rookie-speech',
+    dailyLimit: 100,
+    maxBodyBytes: 4000,
+  });
+  if (!guard.ok) return guard.response;
+
   try {
-    const { type, context } = await req.json();
+    const { type, context } = (guard.body ?? {}) as {
+      type?: 'opening' | 'game_end';
+      context?: Record<string, unknown> & {
+        memory?: Partial<RookieMemoryContext>;
+        threadName?: string;
+        playerName?: string;
+        rookieWon?: boolean;
+        accuracy?: number;
+        gameSummary?: {
+          result: string;
+          moveCount: number;
+          openingName?: string;
+          blunders: number;
+          mistakes: number;
+          brilliantMoves: number;
+          keyMoments?: string;
+        };
+      };
+    };
 
     if (!type || !context) {
       return NextResponse.json({ error: 'Missing type or context' }, { status: 400 });

@@ -2,14 +2,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
 import { generateAndCache, lookupVoiceCache } from '@/lib/rookie-voice-cache';
+import { aiGuard } from '@/lib/ai-guard';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 export async function POST(request: NextRequest) {
+  const guard = await aiGuard(request, {
+    route: 'rookie-voice',
+    dailyLimit: 100,
+    maxBodyBytes: 4000,
+  });
+  if (!guard.ok) return guard.response;
+
   try {
-    const body = await request.json();
+    const body = (guard.body ?? {}) as Record<string, unknown> & {
+      fen?: string;
+      lastMove?: string;
+      lastMoveBy?: string;
+      moveHistory?: string[];
+      playerName?: string;
+      playerColor?: string;
+      gameStatus?: string;
+      isCapture?: boolean;
+      isCheck?: boolean;
+      isCheckmate?: boolean;
+      movedPiece?: string;
+      capturedPiece?: string;
+      moveNumber?: number;
+      generateAudio?: boolean;
+      speakOnly?: string;
+      honchoPlayerContext?: string;
+    };
     const {
       fen,
       lastMove,
