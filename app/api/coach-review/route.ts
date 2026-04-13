@@ -59,7 +59,7 @@ FORMAT: Return a valid JSON object with this shape:
   "takeaway": "One key lesson from this game"
 }
 
-Keys in "moves" are "{moveNumber}w" or "{moveNumber}b". Include EVERY move. Keep each under 200 characters.`;
+Keys in "moves" are "{moveNumber}w" or "{moveNumber}b". Include EVERY move. Keep each comment to ONE short sentence, max 100 characters. Be punchy, not wordy.`;
 
 export async function POST(req: NextRequest) {
   try {
