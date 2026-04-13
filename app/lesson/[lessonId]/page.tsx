@@ -1064,7 +1064,7 @@ export default function LessonPage() {
 
       // Track in analytics
       const accuracy = Math.round((firstAttemptCorrectCount / puzzles.length) * 100);
-      LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+      LearningEvents.lessonCompleted(lessonId, accuracy, 0, fromOnboarding ? { source: 'onboarding' } : undefined);
 
       // Show appropriate modal for users who've hit their limit
       if (promptSignup) {
@@ -1120,7 +1120,7 @@ export default function LessonPage() {
           completeLesson(lessonId, allLessonIds);
           const { shouldPromptSignup: promptSignup } = recordLessonComplete();
           const accuracy = Math.round((correctCount / 6) * 100);
-          LearningEvents.lessonCompleted(lessonId, accuracy, 0);
+          LearningEvents.lessonCompleted(lessonId, accuracy, 0, fromOnboarding ? { source: 'onboarding' } : undefined);
           window.dispatchEvent(new Event('chess-path:puzzle-complete'));
           setLessonComplete(true);
           if (promptSignup) {
@@ -1310,6 +1310,7 @@ export default function LessonPage() {
         return (
           <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
             <RookieNameAsk
+              source="checkmate"
               onSubmit={(name) => {
                 setPlayerName(name);
                 setShowNameAsk(false);
@@ -1329,7 +1330,7 @@ export default function LessonPage() {
             }
           }} />
           {showSignupPrompt && (
-            <SignupPrompt onDismiss={() => {
+            <SignupPrompt source="checkmate" onDismiss={() => {
               setShowSignupPrompt(false);
               window.location.href = '/path';
             }} />
