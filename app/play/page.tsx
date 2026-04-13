@@ -952,7 +952,7 @@ export default function PlayRookiePage() {
         try {
           const evals = positionEvalsRef.current;
           const coachMoves = analysis.moves.map((mv, i) => ({
-            moveNumber: mv.moveNumber,
+            moveNumber: Math.ceil((i + 1) / 2), // chess move number: 1,1,2,2,3,3...
             color: (mv.movedBy === 'player' ? playerColor : (playerColor === 'white' ? 'black' : 'white')) as 'white' | 'black',
             san: mv.san,
             uci: moves[i] ? (moves[i].from + moves[i].to) : '',
@@ -1411,11 +1411,12 @@ export default function PlayRookiePage() {
     // Update eval bar from stored evals (position after this move = index + 1)
     updateEvalBarForPosition(index + 1);
 
-    // Claude commentary key: "1w" or "1b"
+    // Claude commentary key: "1w" or "1b" (chess move numbers, not sequential)
+    const chessMoveNum = Math.ceil((index + 1) / 2);
     const colorKey = move.movedBy === 'player'
       ? (playerColor === 'white' ? 'w' : 'b')
       : (playerColor === 'white' ? 'b' : 'w');
-    const commentKey = `${move.moveNumber}${colorKey}`;
+    const commentKey = `${chessMoveNum}${colorKey}`;
     const coachText = coachCommentaryRef.current[commentKey];
 
     // On last move, append takeaway
@@ -1788,8 +1789,13 @@ export default function PlayRookiePage() {
         >
           &#9665;
         </button>
-        <span className="text-xs text-chess-text-muted font-medium w-16 text-center">
-          {reviewMoveIndex + 1} / {totalMoves}
+        <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
+          {reviewMoveIndex < 0 ? 'Start' : (() => {
+            const m = moveLogRef.current[reviewMoveIndex];
+            const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
+            const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
+            return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
+          })()}
         </span>
         <button
           onClick={() => navigateToMove(reviewMoveIndex + 1)}
