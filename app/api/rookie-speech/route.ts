@@ -3,7 +3,6 @@ import Anthropic from '@anthropic-ai/sdk';
 import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
 import {
   EMPTY_ROOKIE_MEMORY,
-  formatHonchoSummaryForPrompt,
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
 import { aiGuard } from '@/lib/ai-guard';
@@ -55,8 +54,6 @@ export async function POST(req: NextRequest) {
       ...EMPTY_ROOKIE_MEMORY,
       ...(context.memory ?? {}),
     };
-    const honchoPromptSummary = formatHonchoSummaryForPrompt(memory.honchoSummary);
-
     let userPrompt: string;
 
     if (type === 'opening') {
@@ -70,27 +67,11 @@ export async function POST(req: NextRequest) {
         ? `\nThis is game #${memory.gamesPlayed + 1} with ${playerName}.`
         : `\nThis is ${playerName}'s first game against you.`;
 
-      const lastGameBlock = memory.lastGameContext
-        ? `\nLAST GAME (reference this — it's what just happened):\n${memory.lastGameContext}`
-        : '';
-
-      const lastGameInstruction = memory.lastGameContext
-        ? '\nIMPORTANT: Your greeting MUST reference the last game. "Back after that French Defense loss?" or "Ready to top that 91% accuracy?" Show you remember what just happened.'
-        : '';
-
-      const honchoBlock = !memory.lastGameContext && honchoPromptSummary
-        ? `\nPLAYER HISTORY (you MUST reference one specific fact from this — name an opening, a result, or their accuracy):\n${honchoPromptSummary}`
-        : '';
-
-      const honchoInstruction = !memory.lastGameContext && honchoPromptSummary
-        ? '\nIMPORTANT: Your greeting MUST mention something specific from the player history above. "Hey Tyler, back for more French Defense?" or "Last game was rough — 84% accuracy, we can do better." Show you remember them.'
-        : '';
-
       userPrompt = `Write Rookie's opening line for a new chess game.
 
-Player: ${playerName}${historyBlock}${factsBlock}${lastGameBlock}${honchoBlock}
+Player: ${playerName}${historyBlock}${factsBlock}
 
-Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.${lastGameInstruction}${honchoInstruction}
+Your tangent topic this game is: ${threadName}. You'll bring it up later — don't mention it yet, just let it color your mood.
 
 Write exactly ONE line (1-2 sentences). Greeting + personality. Written for TTS — no formatting, no asterisks, no parentheses.
 
