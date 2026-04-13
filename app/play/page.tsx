@@ -1965,12 +1965,17 @@ export default function PlayRookiePage() {
           {/* Above board: Rookie always in same spot, content changes by phase */}
           {isReview ? (
             <div className="mb-2">
-              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center">
+              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center gap-2.5">
+                {!coachReady && (
+                  <div className="flex-shrink-0">
+                    <BreathingRook size="xs" animation="think" />
+                  </div>
+                )}
                 <p className={`text-chess-text leading-snug font-medium ${
                   (reviewText?.length ?? 0) > 120 ? 'text-[11px]' :
                   (reviewText?.length ?? 0) > 80 ? 'text-[12px]' : 'text-[13px]'
                 }`}>
-                  {reviewText || 'Use the arrows below to step through the game.'}
+                  {!coachReady ? 'Rookie is reviewing your game...' : (reviewText || 'Use the arrows to step through the game.')}
                 </p>
               </div>
             </div>
