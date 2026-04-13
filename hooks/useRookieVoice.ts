@@ -114,6 +114,7 @@ export function useRookieVoice(audioOn: boolean) {
     // If still suspended after resume attempt, iOS hasn't unlocked audio yet.
     // Drop this quip rather than queueing it (prevents the "all play at once" bug).
     if (ctx.state !== 'running') {
+      console.warn('[RookieVoice] AudioContext not running — dropping quip. State:', ctx.state);
       return;
     }
 

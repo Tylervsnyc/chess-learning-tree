@@ -643,7 +643,7 @@ export default function PlayRookiePage() {
       return;
     }
 
-    if (!landingFiredRef.current && user?.id) {
+    if (!landingFiredRef.current) {
       landingFiredRef.current = true;
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
@@ -1127,8 +1127,7 @@ export default function PlayRookiePage() {
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
       };
-      // Suppress old quip system during opening book — narrative engine handles it
-      if (!narrative.isInBook()) speech.onMove(speechInput);
+      speech.onMove(speechInput);
       log({
         moveNum: moveNumRef.current,
         type: 'speech',
@@ -1277,8 +1276,7 @@ export default function PlayRookiePage() {
         capturedPieceValue: result.captured ? PIECE_VALUES[result.captured] : undefined,
         movedPiece: PIECE_NAMES[result.piece],
       };
-      // Suppress old quip system during opening book — narrative engine handles it
-      if (!narrative.isInBook()) speech.onMove(speechInput);
+      speech.onMove(speechInput);
       log({
         moveNum: moveNumRef.current,
         type: 'speech',
