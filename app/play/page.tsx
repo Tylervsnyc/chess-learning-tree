@@ -396,7 +396,10 @@ export default function PlayRookiePage() {
   const updateEval = useCallback((fenStr: string) => {
     if (!sfReadyRef.current || phase !== 'playing') return;
     stockfish.getFullEval(fenStr, 10).then((result) => {
-      if (!result) return;
+      if (!result) {
+        console.warn('[play] stockfish eval returned null — engine likely crashed');
+        return;
+      }
       const { cp, mate, bestMove } = result;
       evalCp.current = cp ?? 0;
       evalMate.current = mate;
@@ -483,7 +486,9 @@ export default function PlayRookiePage() {
         summary: `cp=${cp} mate=${mate} rookiePawns=${moodUpdate.rookiePawns.toFixed(2)} mood=${moodUpdate.mood}${moodUpdate.applied ? ' APPLIED' : ' held'}`,
         details: { cp, mate, rookiePawns: moodUpdate.rookiePawns, mood: moodUpdate.mood, isComeback: moodUpdate.isComeback, moodApplied: moodUpdate.applied },
       });
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error('[play] stockfish getFullEval threw:', err);
+    });
   }, [phase, playerColor, playerName, log]);
 
   // ════════════════════════════════
@@ -1319,10 +1324,9 @@ export default function PlayRookiePage() {
   // Kick off Rookie's first move if player is black
   useEffect(() => {
     if (phase === 'playing' && playerColor === 'black') {
-      scheduleRookieMove(fen);
+      scheduleRookieMove(START_FEN);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
+  }, [phase, playerColor, scheduleRookieMove]);
 
   // ════════════════════════════════
   // REVIEW MODE — game navigation
@@ -1583,6 +1587,14 @@ export default function PlayRookiePage() {
     setResignArmed(false);
   }, [fen, endSession, speech, playerName, playerColor]);
 
+  // Auto-show signup prompt for guests after first game ends
+  useEffect(() => {
+    if (phase !== 'gameover' || user || showSignupPrompt) return;
+    // Let them see the result for 3 seconds before prompting
+    const timer = setTimeout(() => setShowSignupPrompt(true), 3000);
+    return () => clearTimeout(timer);
+  }, [phase, user, showSignupPrompt]);
+
   // Cleanup timers on unmount
   useEffect(() => {
     return () => {
@@ -1788,6 +1800,7 @@ export default function PlayRookiePage() {
   // ANALYSIS SUMMARY — move classification + accuracy
   // ════════════════════════════════
   const AnalysisSummary = ({ analysis }: { analysis: GameAnalysis }) => {
+    const hasEvals = analysis.playerMoveCount > 0;
     const acc = Math.round(analysis.playerAccuracy);
     const accColor = acc >= 80 ? 'text-chess-green' : acc >= 60 ? 'text-amber-400' : 'text-red-400';
 
@@ -1795,7 +1808,11 @@ export default function PlayRookiePage() {
       <div className="bg-chess-surface rounded-xl px-3 py-2 text-left space-y-1.5">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-chess-text-muted">Your Accuracy</span>
-          <span className={`text-lg font-black ${accColor}`}>{acc}%</span>
+          {hasEvals ? (
+            <span className={`text-lg font-black ${accColor}`}>{acc}%</span>
+          ) : (
+            <span className="text-xs font-semibold text-chess-text-faint">Unavailable</span>
+          )}
         </div>
         <div className="flex items-center gap-3 text-[10px] font-bold">
           {analysis.brilliantMoves > 0 && (
@@ -1947,10 +1964,14 @@ export default function PlayRookiePage() {
                 {postGame.analysis ? (
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-xs font-semibold text-chess-text-muted">Accuracy</span>
-                    <span className={`text-lg font-black ${
-                      Math.round(postGame.analysis.playerAccuracy) >= 80 ? 'text-chess-green' :
-                      Math.round(postGame.analysis.playerAccuracy) >= 60 ? 'text-amber-400' : 'text-red-400'
-                    }`}>{Math.round(postGame.analysis.playerAccuracy)}%</span>
+                    {postGame.analysis.playerMoveCount > 0 ? (
+                      <span className={`text-lg font-black ${
+                        Math.round(postGame.analysis.playerAccuracy) >= 80 ? 'text-chess-green' :
+                        Math.round(postGame.analysis.playerAccuracy) >= 60 ? 'text-amber-400' : 'text-red-400'
+                      }`}>{Math.round(postGame.analysis.playerAccuracy)}%</span>
+                    ) : (
+                      <span className="text-xs font-semibold text-chess-text-faint">Unavailable</span>
+                    )}
                   </div>
                 ) : postGame.isAnalyzing ? (
                   <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
