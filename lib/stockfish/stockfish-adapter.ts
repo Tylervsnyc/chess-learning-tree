@@ -221,8 +221,8 @@ class StockfishEngine {
     this.busy = false;
     for (const fn of pending) {
       fn(); // sets this.pendingCallback
-      if (this.pendingCallback) {
-        const cb = this.pendingCallback;
+      const cb = this.pendingCallback;
+      if (cb) {
         this.pendingCallback = null;
         cb({ bestMove: null });
       }
