@@ -345,7 +345,7 @@ export function LessonComplete({
 
           {/* Guest signup prompt (full-screen overlay) */}
           {isGuest && showSignupPrompt && (
-            <SignupPrompt onDismiss={() => { setShowSignupPrompt(false); onContinue(); }} />
+            <SignupPrompt source="lesson_complete" onDismiss={() => { setShowSignupPrompt(false); onContinue(); }} />
           )}
         </div>
       </div>

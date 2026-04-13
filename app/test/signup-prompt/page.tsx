@@ -20,5 +20,5 @@ export default function TestSignupPrompt() {
     );
   }
 
-  return <SignupPrompt onDismiss={() => setDismissed(true)} />;
+  return <SignupPrompt source="test" onDismiss={() => setDismissed(true)} />;
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { playButtonClick } from '@/lib/sounds';
+import { OnboardingEvents, type OnboardingSource } from '@/lib/analytics/posthog';
 
 const ROOKIE_LINES = [
   "I saved your spot. Sign up so I don't forget.",
@@ -21,9 +22,19 @@ function pickLine() {
  * Soft, dismissible signup prompt shown after completing a tutorial or game.
  * Modal card over backdrop. User can skip.
  */
-export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
+export function SignupPrompt({ onDismiss, source }: { onDismiss: () => void; source: OnboardingSource }) {
   const router = useRouter();
   const [line] = useState(pickLine);
+
+  useEffect(() => {
+    OnboardingEvents.signupPromptShown(source);
+  }, [source]);
+
+  const dismiss = (method: 'x' | 'backdrop' | 'maybe_later') => {
+    OnboardingEvents.signupPromptDismissed(source, method);
+    playButtonClick();
+    onDismiss();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -39,7 +50,7 @@ export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
       <div
         className="absolute inset-0 bg-black/50"
         style={{ animation: 'sp-backdrop 0.3s ease-out' }}
-        onClick={() => { playButtonClick(); onDismiss(); }}
+        onClick={() => dismiss('backdrop')}
       />
 
       {/* Card */}
@@ -49,7 +60,7 @@ export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
       >
         {/* Close button */}
         <button
-          onClick={() => { playButtonClick(); onDismiss(); }}
+          onClick={() => dismiss('x')}
           className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
           aria-label="Close"
         >
@@ -84,6 +95,7 @@ export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
               size="md"
               fullWidth
               onClick={() => {
+                OnboardingEvents.signupPromptClicked(source, 'signup');
                 playButtonClick();
                 router.push('/auth/signup');
               }}
@@ -98,6 +110,7 @@ export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
               size="md"
               fullWidth
               onClick={() => {
+                OnboardingEvents.signupPromptClicked(source, 'login');
                 playButtonClick();
                 router.push('/auth/login');
               }}
@@ -109,7 +122,7 @@ export function SignupPrompt({ onDismiss }: { onDismiss: () => void }) {
           </div>
 
           <button
-            onClick={() => { playButtonClick(); onDismiss(); }}
+            onClick={() => dismiss('maybe_later')}
             className="mt-4 text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 px-4"
           >
             Maybe later

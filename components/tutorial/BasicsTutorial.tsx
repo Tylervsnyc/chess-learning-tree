@@ -564,7 +564,7 @@ export function BasicsTutorial() {
   React.useEffect(() => {
     if (!trackedStartRef.current) {
       trackedStartRef.current = true;
-      TutorialEvents.tutorialStarted('basics');
+      TutorialEvents.tutorialStarted('basics', { source: 'onboarding' });
     }
   }, []);
 
@@ -889,7 +889,7 @@ export function BasicsTutorial() {
       setSelectedSquare(null);
       setExerciseComplete(false);
     } else if (stepIndex < STEPS.length - 1) {
-      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
+      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex, { source: 'onboarding' });
       const nextStep = STEPS[stepIndex + 1];
       setStepIndex(stepIndex + 1);
       setExerciseIndex(0);
@@ -897,8 +897,8 @@ export function BasicsTutorial() {
       setSelectedSquare(null);
       setExerciseComplete(false);
     } else {
-      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
-      TutorialEvents.tutorialCompleted('basics');
+      TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex, { source: 'onboarding' });
+      TutorialEvents.tutorialCompleted('basics', { source: 'onboarding' });
       setTutorialDone(true);
     }
 
@@ -911,7 +911,7 @@ export function BasicsTutorial() {
   const handlePieceCompleteContinue = useCallback(() => {
     playButtonClick();
     const step = STEPS[stepIndex];
-    TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex);
+    TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex, { source: 'onboarding' });
 
     // After rook (piece #2), show name ask before advancing
     if (step.id === 'rook' && !nameAskedRef.current) {
@@ -931,7 +931,7 @@ export function BasicsTutorial() {
       setBoardKey(k => k + 1);
       setAnimationDuration(0);
     } else {
-      TutorialEvents.tutorialCompleted('basics');
+      TutorialEvents.tutorialCompleted('basics', { source: 'onboarding' });
       setTutorialDone(true);
     }
     setPieceCompleteId(null);
@@ -1277,7 +1277,7 @@ export function BasicsTutorial() {
 
   if (tutorialDone) {
     if (showSignupPrompt) {
-      return <SignupPrompt onDismiss={() => {
+      return <SignupPrompt source="basics" onDismiss={() => {
         setShowSignupPrompt(false);
         try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
         router.push('/lesson/1-1-1?from=onboarding');
@@ -1326,7 +1326,7 @@ export function BasicsTutorial() {
 
             {/* Popup directly under board */}
             {showNameAsk ? (
-              <RookieNameAsk onSubmit={handleNameSubmit} onSpeak={speakQuip} isTalking={isTalking} />
+              <RookieNameAsk source="basics" onSubmit={handleNameSubmit} onSpeak={speakQuip} isTalking={isTalking} />
             ) : pieceCompleteId ? (
               <div
                 key={`complete-${pieceCompleteId}`}

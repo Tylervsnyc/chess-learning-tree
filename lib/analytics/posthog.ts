@@ -104,23 +104,33 @@ export const SubscriptionEvents = {
 
 // Tutorial funnel
 type TutorialKey = 'basics' | 'checkmate' | 'rook-checkmate';
+type TutorialOpts = { source?: string };
 export const TutorialEvents = {
-  tutorialStarted: (tutorial: TutorialKey) =>
-    trackEvent('tutorial_started', { tutorial }),
-  tutorialStepCompleted: (tutorial: TutorialKey, stepId: string, stepNumber: number) =>
-    trackEvent('tutorial_step_completed', { tutorial, stepId, stepNumber }),
-  tutorialCompleted: (tutorial: TutorialKey) =>
-    trackEvent('tutorial_completed', { tutorial }),
-  tutorialSkipped: (tutorial: TutorialKey, stepId: string, stepNumber: number) =>
-    trackEvent('tutorial_skipped', { tutorial, stepId, stepNumber }),
+  tutorialStarted: (tutorial: TutorialKey, opts?: TutorialOpts) =>
+    trackEvent('tutorial_started', { tutorial, ...opts }),
+  tutorialStepCompleted: (tutorial: TutorialKey, stepId: string, stepNumber: number, opts?: TutorialOpts) =>
+    trackEvent('tutorial_step_completed', { tutorial, stepId, stepNumber, ...opts }),
+  tutorialCompleted: (tutorial: TutorialKey, opts?: TutorialOpts) =>
+    trackEvent('tutorial_completed', { tutorial, ...opts }),
+  tutorialSkipped: (tutorial: TutorialKey, stepId: string, stepNumber: number, opts?: TutorialOpts) =>
+    trackEvent('tutorial_skipped', { tutorial, stepId, stepNumber, ...opts }),
 };
 
 // Onboarding/Welcome funnel
+export type OnboardingSource = 'play' | 'basics' | 'checkmate' | 'lesson_complete' | 'test';
 export const OnboardingEvents = {
   started: () => trackEvent('onboarding_started'),
   routeSelected: (route: 'play' | 'learn') => trackEvent('onboarding_route_selected', { route }),
   completed: (data: { level: string }) =>
     trackEvent('onboarding_completed', data),
+  nameSubmitted: (source: OnboardingSource) =>
+    trackEvent('onboarding_name_submitted', { source }),
+  signupPromptShown: (source: OnboardingSource) =>
+    trackEvent('onboarding_signup_prompt_shown', { source }),
+  signupPromptClicked: (source: OnboardingSource, action: 'signup' | 'login') =>
+    trackEvent('onboarding_signup_prompt_clicked', { source, action }),
+  signupPromptDismissed: (source: OnboardingSource, method: 'x' | 'backdrop' | 'maybe_later') =>
+    trackEvent('onboarding_signup_prompt_dismissed', { source, method }),
 };
 
 // Play Rookie funnel
