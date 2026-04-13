@@ -989,14 +989,18 @@ export default function PlayRookiePage() {
             }),
           });
           const data = await res.json();
+          console.log('[coach-review] response:', JSON.stringify(data).slice(0, 500));
           if (data.review) {
             coachCommentaryRef.current = data.review.moves || {};
             coachSummaryRef.current = data.review.summary || null;
             coachTakeawayRef.current = data.review.takeaway || null;
             setCoachReady(true);
+            console.log('[coach-review] ready, moves:', Object.keys(data.review.moves || {}).length);
+          } else {
+            console.warn('[coach-review] no review in response:', data);
           }
-        } catch {
-          // Non-critical — review still works with key moments
+        } catch (err) {
+          console.error('[coach-review] failed:', err);
         }
       })();
 
@@ -1493,6 +1497,7 @@ export default function PlayRookiePage() {
   // Re-render current review position when Claude commentary arrives
   useEffect(() => {
     if (coachReady && phase === 'review') {
+      console.log('[coach-review] coachReady fired, re-navigating to move', reviewMoveIndex);
       navigateToMove(reviewMoveIndex);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
