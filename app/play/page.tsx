@@ -343,6 +343,12 @@ export default function PlayRookiePage() {
   const [reviewText, setReviewText] = useState<string | null>(null);
   const [reviewArrows, setReviewArrows] = useState<{ startSquare: string; endSquare: string; color: string }[]>([]);
 
+  // Claude coaching commentary (per-move, fetched at game end)
+  const coachCommentaryRef = useRef<Record<string, string>>({}); // "1w" -> text, "1b" -> text
+  const coachSummaryRef = useRef<string | null>(null);
+  const coachTakeawayRef = useRef<string | null>(null);
+  const [coachReady, setCoachReady] = useState(false);
+
   // Post-game analysis
   const postGame = usePostGameAnalysis();
 
@@ -955,6 +961,45 @@ export default function PlayRookiePage() {
       );
       setCoachingScript(coaching);
 
+      // Fire Claude coaching commentary (non-blocking)
+      (async () => {
+        try {
+          const evals = positionEvalsRef.current;
+          const coachMoves = analysis.moves.map((mv, i) => ({
+            moveNumber: mv.moveNumber,
+            color: (mv.movedBy === 'player' ? playerColor : (playerColor === 'white' ? 'black' : 'white')) as 'white' | 'black',
+            san: mv.san,
+            uci: moves[i] ? (moves[i].from + moves[i].to) : '',
+            fen: i > 0 ? moves[i - 1].fenAfter : START_FEN,
+            evalBefore: evals[i]?.cp ?? null,
+            evalAfter: evals[i + 1]?.cp ?? null,
+            bestMove: evals[i]?.bestMove ?? null,
+            threat: evals[i + 1]?.bestMove ?? null,
+            classification: mv.classification as 'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder' | null,
+          }));
+
+          const res = await fetch('/api/coach-review', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              moves: coachMoves,
+              playerColor,
+              playerElo: getLevelElo(rookieLevel),
+              result,
+            }),
+          });
+          const data = await res.json();
+          if (data.review) {
+            coachCommentaryRef.current = data.review.moves || {};
+            coachSummaryRef.current = data.review.summary || null;
+            coachTakeawayRef.current = data.review.takeaway || null;
+            setCoachReady(true);
+          }
+        } catch {
+          // Non-critical — review still works with key moments
+        }
+      })();
+
       // Honcho: log rich game summary with key moments
       if (user?.id && honchoGameIdRef.current && result && analysis) {
         const gameMoves = moves.map(m => m.san);
@@ -1362,7 +1407,7 @@ export default function PlayRookiePage() {
       setFen(START_FEN);
       setLastMv(null);
       setReviewArrows([]);
-      setReviewText('Starting position');
+      setReviewText(coachSummaryRef.current || 'Starting position');
       updateEvalBarForPosition(0);
       return;
     }
@@ -1376,10 +1421,26 @@ export default function PlayRookiePage() {
     // Update eval bar from stored evals (position after this move = index + 1)
     updateEvalBarForPosition(index + 1);
 
+    // Claude commentary key: "1w" or "1b"
+    const colorKey = move.movedBy === 'player'
+      ? (playerColor === 'white' ? 'w' : 'b')
+      : (playerColor === 'white' ? 'b' : 'w');
+    const commentKey = `${move.moveNumber}${colorKey}`;
+    const coachText = coachCommentaryRef.current[commentKey];
+
+    // On last move, append takeaway
+    let displayText = coachText || null;
+    if (index === moves.length - 1 && coachTakeawayRef.current) {
+      displayText = displayText
+        ? `${displayText}\n\n${coachTakeawayRef.current}`
+        : coachTakeawayRef.current;
+    }
+
     // Check if this move corresponds to a key moment
     const moment = keyMoments.find(m => m.moveNumber === move.moveNumber && m.movedBy === move.movedBy);
     if (moment) {
-      setReviewText(moment.description);
+      // Prefer Claude commentary over key moment description
+      setReviewText(displayText || moment.description);
       setReviewArrows([{
         startSquare: moment.from,
         endSquare: moment.to,
@@ -1390,11 +1451,15 @@ export default function PlayRookiePage() {
       return;
     }
 
-    // Regular move — just show SAN
-    const moveLabel = move.movedBy === 'player' ? (playerName || 'You') : 'Rookie';
-    setReviewText(`${moveLabel} played ${move.san}`);
+    // Regular move — Claude commentary or fallback to SAN
+    if (displayText) {
+      setReviewText(displayText);
+    } else {
+      const moveLabel = move.movedBy === 'player' ? (playerName || 'You') : 'Rookie';
+      setReviewText(`${moveLabel} played ${move.san}`);
+    }
     setReviewArrows([]);
-  }, [keyMoments, playerName, updateEvalBarForPosition]);
+  }, [keyMoments, playerName, playerColor, updateEvalBarForPosition]);
 
   const jumpToMoment = useCallback((moment: KeyMoment, momentIdx: number) => {
     setReviewMomentIndex(momentIdx);
@@ -1421,8 +1486,22 @@ export default function PlayRookiePage() {
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
     if (lastMv) {
-      s[lastMv.from] = { background: 'rgba(255, 170, 0, 0.4)' };
-      s[lastMv.to] = { background: 'rgba(255, 170, 0, 0.4)' };
+      // In review mode with analysis, color squares by classification
+      let moveColor = 'rgba(255, 170, 0, 0.4)'; // default orange
+      if (phase === 'review' && coachReady && reviewMoveIndex >= 0) {
+        const move = moveLogRef.current[reviewMoveIndex];
+        if (move && postGame.analysis) {
+          const moveEval = postGame.analysis.moves[reviewMoveIndex];
+          if (moveEval) {
+            const cls = moveEval.classification;
+            if (cls === 'blunder' || cls === 'mistake') moveColor = 'rgba(239, 68, 68, 0.5)';
+            else if (cls === 'brilliant' || cls === 'great') moveColor = 'rgba(34, 197, 94, 0.45)';
+            else if (cls === 'inaccuracy') moveColor = 'rgba(234, 179, 8, 0.4)';
+          }
+        }
+      }
+      s[lastMv.from] = { background: moveColor };
+      s[lastMv.to] = { background: moveColor };
     }
     if (game.isCheck()) {
       const board = game.board();
@@ -1452,7 +1531,7 @@ export default function PlayRookiePage() {
       }
     }
     return s;
-  }, [fen, game, lastMv, selected]);
+  }, [fen, game, lastMv, selected, phase, coachReady, reviewMoveIndex, postGame.analysis]);
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
@@ -1465,6 +1544,10 @@ export default function PlayRookiePage() {
     nameAskedRef.current = false;
     setShowNameAsk(false);
     moveLogRef.current = [];
+    coachCommentaryRef.current = {};
+    coachSummaryRef.current = null;
+    coachTakeawayRef.current = null;
+    setCoachReady(false);
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
@@ -1502,6 +1585,10 @@ export default function PlayRookiePage() {
     nameAskedRef.current = false;
     setShowNameAsk(false);
     moveLogRef.current = [];
+    coachCommentaryRef.current = {};
+    coachSummaryRef.current = null;
+    coachTakeawayRef.current = null;
+    setCoachReady(false);
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
