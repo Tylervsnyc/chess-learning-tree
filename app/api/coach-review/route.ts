@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
+// Allow up to 30s for Claude to generate commentary
+export const maxDuration = 30;
+
 const anthropic = new Anthropic();
 
 export interface MoveAnalysis {
@@ -85,10 +88,11 @@ ${moveLines}
 
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4000,
+      max_tokens: 3000,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: gameContext }],
     });
+    console.log('[coach-review] Claude response received, tokens:', response.usage);
 
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
 
@@ -101,9 +105,10 @@ ${moveLines}
     const review = JSON.parse(jsonMatch[0]);
     return NextResponse.json({ review });
   } catch (error) {
-    console.error('[coach-review] error:', error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[coach-review] error:', msg, error);
     return NextResponse.json(
-      { error: 'Review generation failed' },
+      { error: 'Review generation failed', detail: msg },
       { status: 500 },
     );
   }
