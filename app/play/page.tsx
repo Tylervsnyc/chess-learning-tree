@@ -366,6 +366,7 @@ export default function PlayRookiePage() {
   const moveNumRef = useRef(0);
   const playerMoveCountRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleRookieMoveRef = useRef<(fen: string) => void>(() => {});
 
   // Session tracking for coaching
   const sessionRef = useRef<GameSession | null>(null);
@@ -1200,6 +1201,7 @@ export default function PlayRookiePage() {
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
     });
   }, [rookieLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
+  scheduleRookieMoveRef.current = scheduleRookieMove;
 
   // ════════════════════════════════
   // PLAYER'S MOVE
@@ -1322,11 +1324,15 @@ export default function PlayRookiePage() {
   });
 
   // Kick off Rookie's first move if player is black
+  // Uses ref to avoid re-firing when scheduleRookieMove's deps change
   useEffect(() => {
     if (phase === 'playing' && playerColor === 'black') {
-      scheduleRookieMove(START_FEN);
+      scheduleRookieMoveRef.current(START_FEN);
     }
-  }, [phase, playerColor, scheduleRookieMove]);
+    return () => {
+      if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+    };
+  }, [phase, playerColor]);
 
   // ════════════════════════════════
   // REVIEW MODE — game navigation
