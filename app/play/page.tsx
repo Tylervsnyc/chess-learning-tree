@@ -367,6 +367,9 @@ export default function PlayRookiePage() {
   const playerMoveCountRef = useRef(0);
   const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scheduleRookieMoveRef = useRef<(fen: string) => void>(() => {});
+  // Game generation counter — increments on each new game.
+  // Stale closures from previous games check this before applying moves.
+  const gameGenRef = useRef(0);
 
   // Session tracking for coaching
   const sessionRef = useRef<GameSession | null>(null);
@@ -396,7 +399,9 @@ export default function PlayRookiePage() {
   // Update eval bar + eval-based mood after each position change
   const updateEval = useCallback((fenStr: string) => {
     if (!sfReadyRef.current || phase !== 'playing') return;
+    const gen = gameGenRef.current;
     stockfish.getFullEval(fenStr, 10).then((result) => {
+      if (gen !== gameGenRef.current) return; // stale — new game started
       if (!result) {
         console.warn('[play] stockfish eval returned null — engine likely crashed');
         return;
@@ -1073,8 +1078,11 @@ export default function PlayRookiePage() {
 
   const scheduleRookieMove = useCallback((currentFen: string) => {
     setRookieThinking(true);
+    const gen = gameGenRef.current; // capture current generation
 
     const applyRookieMove = async (moveInfo: { from: string; to: string; promotion?: string } | { san: string }) => {
+      // Stale closure guard — if a new game started, discard this move
+      if (gen !== gameGenRef.current) return;
       // Rookie moves while still talking — game flows naturally
       const g = new Chess(currentFen);
       const result = 'san' in moveInfo
@@ -1187,6 +1195,7 @@ export default function PlayRookiePage() {
     log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, rookieLevel } });
     const thinkStart = Date.now();
     stockfish.getBestMoveAtElo(currentFen, targetElo).then((uciMove) => {
+      if (gen !== gameGenRef.current) return; // stale — new game started
       if (!uciMove) {
         const result = getRookieMove(currentFen, minimaxSkill(rookieLevel));
         if (!result) { setRookieThinking(false); return; }
@@ -1449,7 +1458,9 @@ export default function PlayRookiePage() {
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
+    gameGenRef.current++; // invalidate all stale closures from previous game
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+    stockfish.cancel(); // flush pending Stockfish requests from previous game
     speech.reset();
     moveNumRef.current = 0;
     playerMoveCountRef.current = 0;
@@ -1484,7 +1495,9 @@ export default function PlayRookiePage() {
     // Prevent setup greeting from firing (onPointerDown fires before onClick)
     setupGreetingSpokenRef.current = true;
     warmupAudio();
+    gameGenRef.current++; // invalidate all stale closures from previous game
     speech.reset();
+    stockfish.cancel(); // flush pending Stockfish requests from previous game
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     moveNumRef.current = 0;
     playerMoveCountRef.current = 0;

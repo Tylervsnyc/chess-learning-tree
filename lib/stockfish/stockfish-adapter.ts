@@ -200,6 +200,39 @@ class StockfishEngine {
     });
   }
 
+  /**
+   * Cancel all pending and queued requests.
+   * Resolves them with null so callers aren't stuck waiting.
+   * The engine stays alive for new requests.
+   */
+  cancel() {
+    // Resolve the in-flight request with null
+    if (this.pendingCallback) {
+      const cb = this.pendingCallback;
+      this.pendingCallback = null;
+      this.infoListener = null;
+      cb({ bestMove: null });
+    }
+    // Flush the queue — each queued item is a thunk that would set pendingCallback.
+    // Just drop them; callers get the promise resolved with null via the enqueue wrapper.
+    // We need to resolve the promises, so run each thunk then immediately resolve with null.
+    const pending = this.queue;
+    this.queue = [];
+    this.busy = false;
+    for (const fn of pending) {
+      fn(); // sets this.pendingCallback
+      if (this.pendingCallback) {
+        const cb = this.pendingCallback;
+        this.pendingCallback = null;
+        cb({ bestMove: null });
+      }
+    }
+    // Stop any in-progress search
+    if (this.worker && this.ready) {
+      this.worker.postMessage('stop');
+    }
+  }
+
   terminate() {
     this.worker?.terminate();
     this.worker = null;
