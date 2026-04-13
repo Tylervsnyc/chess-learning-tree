@@ -137,6 +137,10 @@ export function useRookieVoice(audioOn: boolean) {
 
   const speakQuip = useCallback(async (text: string, voiceKey?: string) => {
     if (!audioOn) return;
+    // Don't attempt TTS before a user gesture — AudioContext will be suspended
+    // and the browser will log autoplay warnings. The text bubble still shows.
+    const ctx = getSharedAudioContext();
+    if (!ctx || ctx.state === 'suspended') return;
     stopAudio();
 
     // Try manifest cache — check voiceKey (template text) first, then exact text.
