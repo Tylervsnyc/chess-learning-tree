@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     title: 'Chess Path',
   },
   icons: {
+    icon: [
+      { url: '/brand/icon-32-favicon.svg', sizes: '32x32', type: 'image/svg+xml' },
+      { url: '/brand/icon-96.svg', sizes: '96x96', type: 'image/svg+xml' },
+    ],
     apple: '/brand/apple-touch-icon.png',
   },
   openGraph: {

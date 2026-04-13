@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const guard = await aiGuard(req, {
     route: 'rookie-speech',
     dailyLimit: 100,
-    maxBodyBytes: 4000,
+    maxBodyBytes: 20_000,
   });
   if (!guard.ok) return guard.response;
 
@@ -94,6 +94,9 @@ BANNED PATTERNS (never use these):
         if (gameSummary.brilliantMoves > 0) facts.push(`Brilliant moves: ${gameSummary.brilliantMoves}.`);
         if (gameSummary.keyMoments) facts.push(`Key moments: ${gameSummary.keyMoments}`);
       }
+
+      // Honcho player history — not yet wired up from client
+      const honchoPromptSummary = (context as Record<string, unknown>).honchoPromptSummary as string | undefined;
 
       const honchoBlock = honchoPromptSummary
         ? `\nPLAYER HISTORY (you may reference this):\n${honchoPromptSummary}`

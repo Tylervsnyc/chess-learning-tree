@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const guard = await aiGuard(req, {
     route: 'rookie-narrative',
     dailyLimit: 30,
-    maxBodyBytes: 8000,
+    maxBodyBytes: 30_000,
   });
   if (!guard.ok) return guard.response;
 

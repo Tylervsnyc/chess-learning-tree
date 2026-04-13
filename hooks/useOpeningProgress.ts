@@ -69,10 +69,17 @@ export function useOpeningProgress() {
   const mergedRef = useRef(false)
   const fetchedRef = useRef(false)
 
-  // Load localStorage on mount
+  // Load localStorage on mount (once only)
+  const initRef = useRef(false)
   useEffect(() => {
+    if (initRef.current) return
+    initRef.current = true
     const local = loadLocalProgress()
     setProgress(local)
+  }, [])
+
+  // When auth resolves as no-user, stop loading
+  useEffect(() => {
     if (!userLoading && !user) {
       setLoading(false)
     }

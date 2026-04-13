@@ -114,15 +114,22 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Missing progress data' }, { status: 400 })
   }
 
-  // Build rows for batch upsert
+  // Build rows for batch upsert — deduplicate by (slug, lessonId) to avoid
+  // upsert conflicts when localStorage has duplicate entries
+  const seen = new Set<string>()
   const rows: { user_id: string; opening_slug: string; lesson_id: string; completed_at: string }[] = []
   for (const [slug, data] of Object.entries(progress)) {
+    if (!data?.completedLessons || !Array.isArray(data.completedLessons)) continue
     for (const lessonId of data.completedLessons) {
+      if (!lessonId || typeof lessonId !== 'string') continue
+      const key = `${slug}::${lessonId}`
+      if (seen.has(key)) continue
+      seen.add(key)
       rows.push({
         user_id: user.id,
         opening_slug: slug,
         lesson_id: lessonId,
-        completed_at: data.lastPlayedAt,
+        completed_at: data.lastPlayedAt || new Date().toISOString(),
       })
     }
   }
