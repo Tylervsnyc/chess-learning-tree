@@ -13,7 +13,7 @@ import { playButtonClick, warmupAudio, getSharedAudioContext } from '@/lib/sound
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
   // ── Hook — short, punchy, instant ──
-  "Chess in 5 minutes. I'll prove it.",
+  "Learn chess in 5 minutes. I'll prove it.",
   "I teach chess. You learn chess. We both pretend I'm not a computer. It's a whole thing.",
   "You're new here? Perfect. I was built for this. Literally. It's the only thing I do.",
   // ── What this is ──
