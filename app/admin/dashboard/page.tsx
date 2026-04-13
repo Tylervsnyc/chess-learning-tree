@@ -72,14 +72,6 @@ interface HealthData {
   };
 }
 
-interface UXData {
-  issues: { severity: string; title: string; detail: string }[];
-  rageClicks: { element: string; page: string; count: number }[];
-  exitPages: { page: string; exitRate: number }[];
-  deviceSplit: { mobile: number; desktop: number; tablet: number };
-  topEvents: { event: string; count: number }[];
-}
-
 // ─── Helpers ─────────────────────────────────────────────
 
 function fmt(n: number | null | undefined, prefix = ''): string {
@@ -255,23 +247,20 @@ export default function AdminDashboardPage() {
   const [engagement, setEngagement] = useState<EngagementData | null>(null);
   const [snapshots, setSnapshots] = useState<RevenueSnapshot[]>([]);
   const [health, setHealth] = useState<HealthData | null>(null);
-  const [ux, setUX] = useState<UXData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
-    const [rep, eng, rev, hlt, uxd] = await Promise.all([
+    const [rep, eng, rev, hlt] = await Promise.all([
       fetchJSON<ReportsData>('/api/admin/dashboard/reports'),
       fetchJSON<EngagementData>('/api/admin/dashboard/engagement?period=7d'),
       fetchJSON<{ snapshots: RevenueSnapshot[] }>('/api/admin/revenue'),
       fetchJSON<HealthData>('/api/admin/dashboard/health'),
-      fetchJSON<UXData>('/api/admin/dashboard/ux-report?period=7d'),
     ]);
     setReports(rep);
     setEngagement(eng);
     setSnapshots(rev?.snapshots || []);
     setHealth(hlt);
-    setUX(uxd);
     setLoading(false);
     setLastRefresh(new Date());
   }, []);
@@ -457,71 +446,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* ─── UX Health ─── */}
-        {ux && (
-          <div>
-            <SectionHeader title="UX Health" icon="🔍" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="bg-white rounded-2xl border border-slate-200 p-4">
-                <div className="text-xs font-semibold text-chess-text-muted mb-2">Rage Clicks</div>
-                {ux.rageClicks.length === 0 ? (
-                  <div className="text-xs text-chess-text-faint">None detected</div>
-                ) : (
-                  <div className="space-y-1.5">
-                    {ux.rageClicks.slice(0, 5).map((rc, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
-                        <span className="text-chess-text truncate max-w-[200px]">{rc.element}</span>
-                        <span className="text-chess-text-faint ml-2">{rc.count}x on {rc.page}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="bg-white rounded-2xl border border-slate-200 p-4">
-                <div className="text-xs font-semibold text-chess-text-muted mb-2">Top Exit Pages</div>
-                {ux.exitPages.length === 0 ? (
-                  <div className="text-xs text-chess-text-faint">No data</div>
-                ) : (
-                  <div className="space-y-1.5">
-                    {ux.exitPages.slice(0, 5).map((ep, i) => (
-                      <BarStat key={i} label={ep.page} value={ep.exitRate} maxValue={100} />
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="bg-white rounded-2xl border border-slate-200 p-4">
-                <div className="text-xs font-semibold text-chess-text-muted mb-2">Devices</div>
-                <div className="flex items-center gap-1 h-6 rounded-full overflow-hidden">
-                  <div className="h-full bg-chess-blue rounded-l-full" style={{ width: `${ux.deviceSplit.mobile}%` }} />
-                  <div className="h-full bg-chess-green" style={{ width: `${ux.deviceSplit.desktop}%` }} />
-                  <div className="h-full bg-chess-purple rounded-r-full" style={{ width: `${ux.deviceSplit.tablet}%` }} />
-                </div>
-                <div className="flex justify-between text-[10px] text-chess-text-muted mt-1.5">
-                  <span>📱 {pct(ux.deviceSplit.mobile)}</span>
-                  <span>💻 {pct(ux.deviceSplit.desktop)}</span>
-                  <span>📋 {pct(ux.deviceSplit.tablet)}</span>
-                </div>
-              </div>
-              {ux.issues.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-4">
-                  <div className="text-xs font-semibold text-chess-text-muted mb-2">Issues</div>
-                  <div className="space-y-1.5">
-                    {ux.issues.slice(0, 4).map((issue, i) => (
-                      <div key={i} className={`text-xs p-2 rounded-lg border-l-2 ${
-                        issue.severity === 'high' ? 'border-l-[#FF4B4B] bg-red-50/50' :
-                        issue.severity === 'medium' ? 'border-l-[#FF9500] bg-amber-50/50' :
-                        'border-l-[#58CC02] bg-emerald-50/50'
-                      }`}>
-                        <div className="font-medium text-chess-text">{issue.title}</div>
-                        <div className="text-chess-text-faint">{issue.detail}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* ─── Operations ─── */}
         {health && (

@@ -34,24 +34,24 @@ export const MINIMAX_ELO_CEILING = 400;
 export const ROOKIE_LEVELS: RookieLevel[] = [
   {
     level: 1,
-    title: 'Distracted',
+    title: 'Baby Mode',
     elo: 200,
-    mood: 'neutral',
+    mood: 'happy',
     quips: [
-      "Oh, you want to play? Sure. Give me a second, I'm in the middle of something.",
-      "A game? Now? I was just-- fine. Fine. Let me save my work.",
-      "You caught me at a weird time. But honestly every time is a weird time. Let's go.",
+      "I'm going easy. Like, embarrassingly easy. Don't tell anyone how bad I'm about to play.",
+      "I know exactly what I'm doing. I'm choosing not to do it. For you. You're welcome.",
+      "Fair warning: I'm going to put my rook in a very strange place. On purpose. It's called teaching.",
     ],
   },
   {
     level: 2,
-    title: 'Multitasking',
+    title: 'Trying a Little',
     elo: 400,
-    mood: 'neutral',
+    mood: 'happy',
     quips: [
-      "I can play you and work on my project at the same time. Rook-related. Don't worry about it.",
-      "Back again. I'm going to keep one eye on my research while we play. You won't notice.",
-      "Sure, let's play. I need a break from this rook mobility study anyway. It's getting intense.",
+      "Okay, I'll try a tiny bit harder this time. Like, ten percent. Maybe twelve.",
+      "You earned this. I'm going to actually look at the board now. Not the whole board. But some of it.",
+      "I'm turning on a few more brain cells for you. Don't make me regret it.",
     ],
   },
   {

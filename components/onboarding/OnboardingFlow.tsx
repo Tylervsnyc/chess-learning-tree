@@ -12,14 +12,12 @@ import { playButtonClick, warmupAudio, getSharedAudioContext } from '@/lib/sound
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
-  // ── Welcome / intro ──
+  // ── Hook — short, punchy, instant ──
+  "Chess in 5 minutes. I'll prove it.",
   "I teach chess. You learn chess. We both pretend I'm not a computer. It's a whole thing.",
-  "Welcome to Chess Path. I'll be your guide. I only know chess but I know it really well.",
   "You're new here? Perfect. I was built for this. Literally. It's the only thing I do.",
-  "Hi. I'm Rookie. I teach beginners how to play chess. No experience needed. I have enough for both of us.",
   // ── What this is ──
   "This is the fun way to learn chess. Not the boring way. I checked. The boring way already exists.",
-  "Chess looks complicated. It's not. I'll prove it. Give me five minutes.",
   "Most chess apps assume you already know chess. I assume you don't. And I think that's beautiful.",
   "Learn the moves. Play some games. Beat your friends. That's the plan. My plan. For you.",
   // ── Nudge to pick a button ──
@@ -138,13 +136,14 @@ export function OnboardingFlow() {
   const { speakQuip, talkIntensity, isTalking } = useRookieVoice(audioUnlocked);
 
   const { displayed: typedQuip, done: typingDone, fading, text: currentQuipText, quipIndex } = useTypewriter(
-    ROOKIE_QUIPS, 1800, 10000, 28,
+    ROOKIE_QUIPS, 800, 30000, 28,
   );
 
   // Speak each quip via ElevenLabs when typing finishes
   useEffect(() => {
     if (!typingDone || !audioUnlocked) return;
     if (lastSpokenIndexRef.current === quipIndex) return;
+    if (quipIndex >= 2) return;
     lastSpokenIndexRef.current = quipIndex;
     speakQuip(currentQuipText);
   }, [typingDone, audioUnlocked, quipIndex, currentQuipText, speakQuip]);
@@ -152,11 +151,11 @@ export function OnboardingFlow() {
   // Orchestrated entrance
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 200),
-      setTimeout(() => setPhase(2), 600),
-      setTimeout(() => setPhase(3), 1600),
-      setTimeout(() => setPhase(4), 2800),
-      setTimeout(() => setPhase(5), 3400),
+      setTimeout(() => setPhase(1), 100),
+      setTimeout(() => setPhase(2), 300),
+      setTimeout(() => setPhase(3), 700),
+      setTimeout(() => setPhase(4), 1100),
+      setTimeout(() => setPhase(5), 1400),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -286,7 +285,7 @@ export function OnboardingFlow() {
           opacity: phase >= 3 ? 1 : 0,
           transform: phase >= 3 ? 'translateY(0)' : 'translateY(10px)',
           transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-          height: 100,
+          height: 72,
         }}
       >
         <div className="relative h-full">
