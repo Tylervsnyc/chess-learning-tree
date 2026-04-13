@@ -1458,7 +1458,17 @@ export default function PlayRookiePage() {
       const moveLabel = move.movedBy === 'player' ? (playerName || 'You') : 'Rookie';
       setReviewText(`${moveLabel} played ${move.san}`);
     }
-    setReviewArrows([]);
+
+    // Best move arrow (golden) — show opponent's best response from this position
+    const evals = positionEvalsRef.current;
+    const posEval = evals[index + 1]; // eval after this move
+    if (posEval?.bestMove) {
+      const from = posEval.bestMove.slice(0, 2);
+      const to = posEval.bestMove.slice(2, 4);
+      setReviewArrows([{ startSquare: from, endSquare: to, color: 'rgba(218, 165, 32, 0.8)' }]);
+    } else {
+      setReviewArrows([]);
+    }
   }, [keyMoments, playerName, playerColor, updateEvalBarForPosition]);
 
   const jumpToMoment = useCallback((moment: KeyMoment, momentIdx: number) => {
@@ -1479,6 +1489,14 @@ export default function PlayRookiePage() {
       color: getArrowColor(moment.type),
     }]);
   }, [updateEvalBarForPosition]);
+
+  // Re-render current review position when Claude commentary arrives
+  useEffect(() => {
+    if (coachReady && phase === 'review') {
+      navigateToMove(reviewMoveIndex);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coachReady]);
 
   // ════════════════════════════════
   // SQUARE STYLES
@@ -1956,8 +1974,8 @@ export default function PlayRookiePage() {
           {/* Above board: Rookie always in same spot, content changes by phase */}
           {isReview ? (
             <div className="mb-2">
-              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)]">
-                <p className="text-chess-text text-[13px] leading-relaxed font-medium min-h-[2em]">
+              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] overflow-y-auto">
+                <p className="text-chess-text text-[13px] leading-relaxed font-medium">
                   {reviewText || 'Use the arrows below to step through the game.'}
                 </p>
               </div>
