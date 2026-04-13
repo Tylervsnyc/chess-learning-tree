@@ -985,7 +985,7 @@ export default function PlayRookiePage() {
               moves: coachMoves,
               playerColor,
               playerElo: getLevelElo(rookieLevel),
-              result,
+              result: result || 'loss',
             }),
           });
           const data = await res.json();

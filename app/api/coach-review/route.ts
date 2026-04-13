@@ -67,7 +67,10 @@ export async function POST(req: NextRequest) {
     const { moves, playerColor, playerElo, result, openingName } = body;
 
     if (!moves || !playerColor || !result) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({
+        error: 'Missing required fields',
+        detail: { moves: !!moves, movesLen: moves?.length, playerColor, result },
+      }, { status: 400 });
     }
 
     // Build compact game data — every move with eval
