@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { playButtonClick, playCorrectSound } from '@/lib/sounds';
+import { OnboardingEvents, type OnboardingSource } from '@/lib/analytics/posthog';
 
 const NAME_KEY = 'chess_path_name';
 
@@ -25,10 +26,11 @@ export function setPlayerName(name: string) {
  * Designed to slot into the piece-complete interstitial in BasicsTutorial
  * or the post-move flow in /play.
  */
-export function RookieNameAsk({ onSubmit, onSpeak, isTalking }: {
+export function RookieNameAsk({ onSubmit, onSpeak, isTalking, source }: {
   onSubmit: (name: string) => void;
   onSpeak?: (text: string) => void;
   isTalking?: boolean;
+  source: OnboardingSource;
 }) {
   const [name, setName] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -62,6 +64,7 @@ export function RookieNameAsk({ onSubmit, onSpeak, isTalking }: {
     if (!trimmed) return;
     playCorrectSound(0);
     setPlayerName(trimmed);
+    OnboardingEvents.nameSubmitted(source);
     setSubmitted(true);
     submittedNameRef.current = trimmed;
     onSpeak?.(`${trimmed}. Noted. Alright ${trimmed} -- back to it.`);

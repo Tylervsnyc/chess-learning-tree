@@ -58,7 +58,8 @@
     "vu03r",
     "YFyeO",
     "4bI86",
-    "1cK7I"
+    "1cK7I",
+    "gpHG8"
   ],
   "renders": [
     {
@@ -355,6 +356,11 @@
       "puzzleId": "1cK7I",
       "date": "3.3.26",
       "file": "daily.3.3.26-1cK7I.mp4"
+    },
+    {
+      "puzzleId": "gpHG8",
+      "date": "4.10.26",
+      "file": "daily.4.10.26-gpHG8.mp4"
     }
   ]
 }

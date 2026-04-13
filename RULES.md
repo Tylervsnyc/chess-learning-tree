@@ -2305,7 +2305,7 @@ Lichess-style amber squares:
 
 **Pool file:** `data/video-puzzle-pool.json` (~200 puzzles)
 **Usage tracker:** `data/video-puzzle-usage.json`
-**Rating range:** 500–1800 (use `--min-rating=N` for harder puzzles)
+**Rating range:** 500–2000 (use `--min-rating=N` for harder puzzles)
 **Solution moves:** 3–7 (not too short for video, not too long)
 **Preferred themes:** mateIn1-3, backRankMate, smotheredMate, fork, pin, skewer, sacrifice, discoveredAttack, kingsideAttack, queensideAttack, deflection, attraction
 

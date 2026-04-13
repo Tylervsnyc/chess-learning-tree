@@ -28,8 +28,8 @@ const VIDEO_THEMES = [
   'deflection', 'attraction',
 ];
 
-// Levels to pull from (covers 400-1800 rating range)
-const LEVELS = [1, 2, 3, 4, 5];
+// Levels to pull from (covers 400-2000 rating range)
+const LEVELS = [1, 2, 3, 4, 5, 6, 7];
 
 interface RawPuzzle {
   puzzleId: string;
@@ -82,8 +82,8 @@ function main() {
         // Filter: 3-8 solution moves (not too short for video, not too long)
         if (numSolutionMoves < 3 || numSolutionMoves > 8) continue;
 
-        // Filter: rating 500-1800 (accessible for IG audience)
-        if (p.rating < 500 || p.rating > 1800) continue;
+        // Filter: rating 500-2000 (accessible for IG audience, with hard puzzles)
+        if (p.rating < 500 || p.rating > 2000) continue;
 
         // Prefer popular puzzles (if field exists)
         if (p.popularity !== undefined && p.popularity < 80) continue;
@@ -105,13 +105,14 @@ function main() {
   console.log(`Found ${allCandidates.length} candidates total`);
 
   // Sample across rating buckets to get a good spread
-  // 4 buckets: 500-800, 800-1100, 1100-1400, 1400-1800
-  const buckets: VideoPoolPuzzle[][] = [[], [], [], []];
+  // 5 buckets: 500-800, 800-1100, 1100-1400, 1400-1700, 1700-2000
+  const buckets: VideoPoolPuzzle[][] = [[], [], [], [], []];
   for (const p of allCandidates) {
     if (p.rating < 800) buckets[0].push(p);
     else if (p.rating < 1100) buckets[1].push(p);
     else if (p.rating < 1400) buckets[2].push(p);
-    else buckets[3].push(p);
+    else if (p.rating < 1700) buckets[3].push(p);
+    else buckets[4].push(p);
   }
 
   // Shuffle each bucket deterministically
