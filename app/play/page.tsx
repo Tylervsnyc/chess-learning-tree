@@ -506,7 +506,7 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // AUDIO (with real-time amplitude for talk animation)
   // ════════════════════════════════
-  const { speakQuip, talkIntensity, isTalking, isTalkingRef } = useRookieVoice(audioOn);
+  const { speakQuip, talkIntensity, isTalking, isTalkingRef, stopAudio } = useRookieVoice(audioOn);
 
   // ── Speech system (replaces getRookieQuip + getMoodShiftQuip) ──
   const generateOpeningLine = useCallback(async (threadName: string, pName: string): Promise<string> => {
@@ -1601,6 +1601,7 @@ export default function PlayRookiePage() {
     warmupAudio();
     gameGenRef.current++; // invalidate all stale closures from previous game
     speech.reset();
+    stopAudio(); // kill any in-progress landing quip audio
     stockfish.cancel(); // flush pending Stockfish requests from previous game
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     moveNumRef.current = 0;
