@@ -55,8 +55,8 @@ async function queryLichessExplorer(
   try {
     const encoded = encodeURIComponent(fen);
     const response = await fetch(
-      `https://explorer.lichess.ovh/masters?fen=${encoded}&topGames=0&recentGames=0`,
-      { signal: AbortSignal.timeout(3000) },
+      `/api/lichess-explorer?fen=${encoded}`,
+      { signal: AbortSignal.timeout(5000) },
     );
 
     if (!response.ok) {
