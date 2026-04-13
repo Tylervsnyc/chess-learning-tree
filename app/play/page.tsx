@@ -49,7 +49,6 @@ import { useName } from '@/hooks/useName';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
-  formatHonchoSummaryForPrompt,
   toSpeechMemory,
   updateRookieMemoryContext,
   type RookieMemoryContext,
@@ -274,25 +273,12 @@ export default function PlayRookiePage() {
 
     honchoLoadedRef.current = false;
 
-    const honchoFetch = (action: string) =>
-      fetch('/api/honcho', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, userId: user.id }),
-      }).then(r => r.json()).catch(() => ({}));
-
-    Promise.all([
-      loadSpeechMemory(user.id),
-      honchoFetch('get_context').then(d => d.context ?? null),
-      honchoFetch('get_last_game').then(d => d.lastGame ?? null),
-      honchoFetch('get_representation').then(d => d.representation ?? null),
-    ]).then(([speechMemory, honchoSummary, lastGameContext, honchoRepresentation]) => {
-      const memory = buildRookieMemoryContext({ speechMemory, honchoSummary, lastGameContext, honchoRepresentation });
+    // Honcho context disabled — just load speech memory for now
+    loadSpeechMemory(user.id).then((speechMemory) => {
+      const memory = buildRookieMemoryContext({ speechMemory });
       setRookieMemory(memory);
       rookieMemoryRef.current = memory;
       honchoLoadedRef.current = true;
-
-      const honchoPreview = formatHonchoSummaryForPrompt(honchoSummary);
     });
   }, [user?.id]);
 
@@ -1518,7 +1504,6 @@ export default function PlayRookiePage() {
           if (moveEval) {
             const cls = moveEval.classification;
             if (cls === 'blunder' || cls === 'mistake') moveColor = 'rgba(239, 68, 68, 0.5)';
-            else if (cls === 'brilliant' || cls === 'great') moveColor = 'rgba(34, 197, 94, 0.45)';
             else if (cls === 'inaccuracy') moveColor = 'rgba(234, 179, 8, 0.4)';
           }
         }

@@ -412,14 +412,6 @@ export default function TestCoachPage() {
       };
     }
 
-    // Green for great/brilliant
-    if (cls === 'brilliant' || cls === 'great') {
-      return {
-        [from]: { backgroundColor: 'rgba(34, 197, 94, 0.45)' },
-        [to]: { backgroundColor: 'rgba(34, 197, 94, 0.45)' },
-      };
-    }
-
     // Yellow for inaccuracy
     if (cls === 'inaccuracy') {
       return {
@@ -428,10 +420,10 @@ export default function TestCoachPage() {
       };
     }
 
-    // Normal: subtle highlight
+    // Everything else: standard orange (matches rest of app)
     return {
-      [from]: { backgroundColor: 'rgba(255, 170, 0, 0.3)' },
-      [to]: { backgroundColor: 'rgba(255, 170, 0, 0.3)' },
+      [from]: { backgroundColor: 'rgba(255, 170, 0, 0.4)' },
+      [to]: { backgroundColor: 'rgba(255, 170, 0, 0.4)' },
     };
   }, [reviewIndex, currentRecord, currentAnalysis]);
 
