@@ -345,8 +345,25 @@ export default function PlayRookiePage() {
   const [coachingScript, setCoachingScript] = useState<CoachingScript | null>(null);
   const [showCoaching, setShowCoaching] = useState(false);
 
-  // Quip state
-  const [audioOn, setAudioOn] = useState(true);
+  // Quip state — persisted in localStorage
+  const [audioOn, setAudioOn] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    try { const s = JSON.parse(localStorage.getItem('play-settings') || '{}'); return s.speechOn !== false; } catch { return true; }
+  });
+  const [soundsOn, setSoundsOn] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    try { const s = JSON.parse(localStorage.getItem('play-settings') || '{}'); return s.soundsOn !== false; } catch { return true; }
+  });
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Ref for sounds (used in closures)
+  const soundsOnRef = useRef(soundsOn);
+  useEffect(() => { soundsOnRef.current = soundsOn; }, [soundsOn]);
+
+  // Persist settings
+  useEffect(() => {
+    try { localStorage.setItem('play-settings', JSON.stringify({ speechOn: audioOn, soundsOn })); } catch {}
+  }, [audioOn, soundsOn]);
 
   // Unified mood system
   const moodSystem = useRookieMood(playerColor);
@@ -1134,8 +1151,10 @@ export default function PlayRookiePage() {
       setSelected(null);
       setRookieThinking(false);
 
-      if (result.captured) playCaptureSound();
-      else playMoveSound();
+      if (soundsOnRef.current) {
+        if (result.captured) playCaptureSound();
+        else playMoveSound();
+      }
 
       log({
         moveNum: moveNumRef.current,
@@ -1186,7 +1205,7 @@ export default function PlayRookiePage() {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
           setGameResult(iLost ? 'Rookie wins!' : 'You win!');
-          if (!iLost) playCelebrationSound();
+          if (!iLost && soundsOnRef.current) playCelebrationSound();
         } else {
           setGameResult(g.isStalemate() ? 'Stalemate!' : 'Draw!');
         }
@@ -1268,8 +1287,10 @@ export default function PlayRookiePage() {
       setLastMv({ from, to });
       setSelected(null);
 
-      if (result.captured) playCaptureSound();
-      else playMoveSound();
+      if (soundsOnRef.current) {
+        if (result.captured) playCaptureSound();
+        else playMoveSound();
+      }
 
       // After the player has made a few moves, ask their name if we don't
       // have one yet. Don't stack on top of other overlays.
@@ -1335,7 +1356,7 @@ export default function PlayRookiePage() {
           const loser = g.turn();
           const iLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
           setGameResult(iLost ? 'Rookie wins!' : 'You win!');
-          if (!iLost) playCelebrationSound();
+          if (!iLost && soundsOnRef.current) playCelebrationSound();
         } else {
           setGameResult(g.isStalemate() ? 'Stalemate!' : 'Draw!');
         }
@@ -2033,6 +2054,50 @@ export default function PlayRookiePage() {
               color={playerIsWhite ? 'black' : 'white'}
               name="Rookie"
             />
+            <div className="relative">
+              <button
+                onClick={() => setShowSettings(s => !s)}
+                className="p-1 rounded-lg text-chess-text-faint hover:text-chess-text-muted transition-colors"
+                aria-label="Game settings"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="3" r="1.5" fill="currentColor" />
+                  <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                  <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+                </svg>
+              </button>
+              {showSettings && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowSettings(false)} />
+                  <div className="absolute right-0 top-7 z-50 bg-chess-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.06)] w-56 py-2 px-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-chess-text">Rookie commentary</p>
+                        <p className="text-[10px] text-chess-text-faint">Voice and speech bubbles</p>
+                      </div>
+                      <button
+                        onClick={() => setAudioOn(v => !v)}
+                        className={`relative w-10 h-6 rounded-full transition-colors ${audioOn ? 'bg-chess-green' : 'bg-chess-disabled'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${audioOn ? 'translate-x-4' : ''}`} />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-chess-text">Move sounds</p>
+                        <p className="text-[10px] text-chess-text-faint">Piece move and capture sounds</p>
+                      </div>
+                      <button
+                        onClick={() => setSoundsOn(v => !v)}
+                        className={`relative w-10 h-6 rounded-full transition-colors ${soundsOn ? 'bg-chess-green' : 'bg-chess-disabled'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${soundsOn ? 'translate-x-4' : ''}`} />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Chess board */}
