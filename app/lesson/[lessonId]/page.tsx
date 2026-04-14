@@ -1117,7 +1117,6 @@ export default function LessonPage() {
           correctCount={tutorialCorrectCount}
           totalCount={6}
           playerName={profile?.display_name ?? undefined}
-          isGuest={!user}
           shareConfig={{
             shareUrl: `https://chesspath.app/lesson/${lessonId}/share/${tutorialCorrectCount === 6 ? 'perfect' : 'completed'}`,
             ogEndpoint: '/api/og/lesson',
