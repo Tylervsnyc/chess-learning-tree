@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Chess, Square } from 'chess.js'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
 import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
-import { LessonComplete } from '@/components/shared/LessonComplete'
+import { ActivityComplete } from '@/components/shared/ActivityComplete'
 import { writeBreadcrumb } from '@/lib/session-breadcrumb'
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup'
 import {
@@ -24,7 +24,6 @@ import {
   playCorrectSound,
   playMoveSound,
   playErrorSound,
-  playCelebrationSound,
   warmupAudio,
   vibrateOnCorrect,
   vibrateOnError,
@@ -301,7 +300,6 @@ export default function OpeningLessonPage() {
     const nextIndex = currentStepIndex + 1
 
     if (nextIndex >= lesson.steps.length) {
-      playCelebrationSound()
       setShowComplete(true)
       const timeSpent = Math.round((Date.now() - lessonStartTimeRef.current) / 1000)
       const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
@@ -964,29 +962,27 @@ export default function OpeningLessonPage() {
         </div>
       </div>
 
-      {showComplete && (() => {
-        const opening = getOpeningBySlug(slug)
-        return (
-          <LessonComplete
-            title="Lesson Complete!"
-            subtitle={lesson.title}
-            lessonName={lesson.title}
-            lessonId={lessonId}
-            accentColor={opening?.color ?? '#FF9600'}
-            shareConfig={{
-              shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/perfect`,
-              ogEndpoint: '/api/og/opening',
-              ogParams: {
-                opening: opening?.name ?? 'Opening',
-                score: 'perfect',
-                color: opening?.color ?? '#FF9600',
-              },
-              source: 'opening',
-            }}
-            onContinue={() => router.push(`/openings/${slug}/tree`)}
-          />
-        )
-      })()}
+      {showComplete && (
+        <ActivityComplete
+          source="opening"
+          mode="terminal"
+          activityName={lesson.title}
+          accentColor={openingConfig?.color ?? '#FF9600'}
+          shareConfig={{
+            shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/perfect`,
+            ogEndpoint: '/api/og/opening',
+            ogParams: {
+              opening: openingConfig?.name ?? 'Opening',
+              score: 'perfect',
+              color: openingConfig?.color ?? '#FF9600',
+            },
+            source: 'opening',
+            title: `${lesson.title} | Chess Path`,
+            text: `I completed "${lesson.title}" on Chess Path!`,
+          }}
+          onContinue={() => router.push(`/openings/${slug}/tree`)}
+        />
+      )}
     </div>
   )
 }

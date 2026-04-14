@@ -8,7 +8,6 @@ import { useClickToMove } from '@/hooks/useClickToMove';
 import {
   playCorrectSound,
   playErrorSound,
-  playCelebrationSound,
   playMoveSound,
   playCaptureSound,
   warmupAudio,
@@ -48,94 +47,15 @@ import { CreateProfileModal } from '@/components/subscription/CreateProfileModal
 import { LearningEvents, trackEvent } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { LessonComplete } from '@/components/shared/LessonComplete';
+import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/tutorial/TutorialFlow';
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
-import { RookieNameAsk, getPlayerName, setPlayerName } from '@/components/onboarding/RookieNameAsk';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import confetti from 'canvas-confetti';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
-// ═══════════════════════════════════════════
-// GUEST CELEBRATION — full-screen "You're Ready!" before signup
-// Matches the basics tutorial DoneScreen
-// ═══════════════════════════════════════════
-function GuestCelebrationScreen({ onContinue }: { onContinue: () => void }) {
-  const [entered, setEntered] = React.useState(false);
-  const [playerName, setPlayerName] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    try { setPlayerName(localStorage.getItem('chess_path_name')); } catch {}
-    trackEvent('guest_celebration_viewed');
-    confetti({
-      particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
-      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
-      gravity: 1.2, ticks: 200,
-    });
-    confetti({
-      particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
-      colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
-      gravity: 1.2, ticks: 200,
-    });
-    playCelebrationSound();
-    const t = setTimeout(() => setEntered(true), 200);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col items-center justify-center px-6">
-      <div
-        className="mb-6"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'scale(1)' : 'scale(0.8)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        <BreathingRook size="xl" animation="celebrate" />
-      </div>
-
-      <h1
-        className="text-2xl font-black mb-2 text-center"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
-        }}
-      >
-        {playerName ? `Okay ${playerName}. I'm impressed.` : "Okay. I'm impressed."}
-      </h1>
-      <p
-        className="text-chess-text-muted text-sm text-center max-w-[280px] mb-10"
-        style={{
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s',
-        }}
-      >
-        {playerName
-          ? `Create an account so I remember you, ${playerName}. I don't want to forget this.`
-          : <>Create an account so I remember you.<br />I don&apos;t want to forget this.</>
-        }
-      </p>
-
-      <button
-        onClick={onContinue}
-        className="w-full max-w-sm py-4 font-bold text-lg rounded-2xl text-white transition-all hover:brightness-105 active:translate-y-[2px] bg-chess-green"
-        style={{
-          boxShadow: '0 4px 0 var(--color-chess-green-dark)',
-          opacity: entered ? 1 : 0,
-          transform: entered ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s',
-        }}
-      >
-        Save My Path
-      </button>
-    </div>
-  );
-}
 
 interface Puzzle {
   id: string;
@@ -247,8 +167,6 @@ export default function LessonPage() {
   // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showCreateProfileModal, setShowCreateProfileModal] = useState(false);
-  const [showGuestCelebration, setShowGuestCelebration] = useState(false);
-  const [showNameAsk, setShowNameAsk] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   // Theme help modal
@@ -951,15 +869,9 @@ export default function LessonPage() {
 
           if (newRetryQueue.length === 0) {
             setLessonComplete(true);
-            if (firstAttemptCorrectCount >= 4) {
-              playCelebrationSound(firstAttemptCorrectCount);
-            }
           }
         } else {
           setLessonComplete(true);
-          if (firstAttemptCorrectCount >= 4) {
-            playCelebrationSound(firstAttemptCorrectCount);
-          }
         }
       } else {
         const wrongPuzzles = puzzles.filter(p =>
@@ -975,9 +887,6 @@ export default function LessonPage() {
           setCurrentIndex(0);
         } else {
           setLessonComplete(true);
-          if (firstAttemptCorrectCount >= 4) {
-            playCelebrationSound(firstAttemptCorrectCount);
-          }
         }
       }
     } else {
@@ -1198,27 +1107,27 @@ export default function LessonPage() {
     );
   }
 
-  // Guest celebration screen — full-screen "You're Ready!" before signup
-  if (showGuestCelebration) {
-    return <GuestCelebrationScreen onContinue={() => { trackEvent('save_path_clicked'); window.location.href = '/auth/signup?from=lesson'; }} />;
-  }
-
   // Tutorial completion screen (tutorial gameplay is rendered above, before auth gate)
   if (isTutorial && lessonComplete) {
     return (
       <>
-        <LessonComplete
+        <ActivityComplete
+          source="path"
+          mode="terminal"
           correctCount={tutorialCorrectCount}
-          lessonName="Queen Checkmate: Easy"
-          lessonId={lessonId}
+          totalCount={6}
+          playerName={profile?.display_name ?? undefined}
           isGuest={!user}
-          getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+          shareConfig={{
+            shareUrl: `https://chesspath.app/lesson/${lessonId}/share/${tutorialCorrectCount === 6 ? 'perfect' : 'completed'}`,
+            ogEndpoint: '/api/og/lesson',
+            ogParams: { score: `${tutorialCorrectCount}/6`, lesson: 'Queen Checkmate: Easy', level: String(getLevelFromLessonId(lessonId) || 1) },
+            source: 'lesson',
+            title: 'Queen Checkmate: Easy | Chess Path',
+            text: 'I completed "Queen Checkmate: Easy" on Chess Path!',
+          }}
           onContinue={() => {
-            if (!user) {
-              setShowGuestCelebration(true);
-            } else {
-              window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
-            }
+            window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
           }}
           onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
         />
@@ -1307,57 +1216,28 @@ export default function LessonPage() {
 
   // Lesson complete state
   if (lessonComplete) {
-    // Onboarding funnel: name ask → signup prompt
-    if (fromOnboarding && !user) {
-      if (showNameAsk) {
-        return (
-          <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
-            <RookieNameAsk
-              source="checkmate"
-              onSubmit={(name) => {
-                setPlayerName(name);
-                setShowNameAsk(false);
-                setShowSignupPrompt(true);
-              }}
-            />
-          </div>
-        );
-      }
-      return (
-        <>
-          <GuestCelebrationScreen onContinue={() => {
-            if (!getPlayerName()) {
-              setShowNameAsk(true);
-            } else {
-              setShowSignupPrompt(true);
-            }
-          }} />
-          {showSignupPrompt && (
-            <SignupPrompt source="checkmate" onDismiss={() => {
-              setShowSignupPrompt(false);
-              window.location.href = '/path';
-            }} />
-          )}
-        </>
-      );
-    }
-
     // LessonCompleteScreen handles both pass (score >= 4) and fail (score <= 3) states
     if (lessonPassed === false || lessonPassed === true) {
       return (
         <>
-          <LessonComplete
+          <ActivityComplete
+            source="path"
+            mode="terminal"
             correctCount={firstAttemptCorrectCount}
-            lessonName={lessonName}
-            lessonId={lessonId}
-            isGuest={!user}
-            getLevelKeyFromLessonId={(id) => String(getLevelFromLessonId(id) || 1)}
+            totalCount={puzzles.length}
+            activityName={lessonName}
+            playerName={profile?.display_name ?? undefined}
+
+            shareConfig={{
+              shareUrl: `https://chesspath.app/lesson/${lessonId}/share/${firstAttemptCorrectCount === puzzles.length ? 'perfect' : 'completed'}`,
+              ogEndpoint: '/api/og/lesson',
+              ogParams: { score: `${firstAttemptCorrectCount}/${puzzles.length}`, lesson: lessonName, level: String(getLevelFromLessonId(lessonId) || 1) },
+              source: 'lesson',
+              title: `${lessonName} | Chess Path`,
+              text: `I completed "${lessonName}" on Chess Path!`,
+            }}
             onContinue={() => {
-              if (!user) {
-                setShowGuestCelebration(true);
-              } else {
-                window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
-              }
+              window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
             }}
             onRetry={firstAttemptCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
           />

@@ -16,9 +16,9 @@ type Scenario = {
 }
 
 const SCENARIOS: Scenario[] = [
-  { label: 'Path - Perfect (6/6)', source: 'path', mode: 'terminal', correctCount: 6, totalCount: 6 },
-  { label: 'Path - Great (5/6)', source: 'path', mode: 'terminal', correctCount: 5, totalCount: 6 },
-  { label: 'Path - Fail (2/6)', source: 'path', mode: 'terminal', correctCount: 2, totalCount: 6 },
+  { label: 'Path - Perfect (6/6)', source: 'path', mode: 'terminal', correctCount: 6, totalCount: 6, activityName: 'Forks & Skewers' },
+  { label: 'Path - Great (5/6)', source: 'path', mode: 'terminal', correctCount: 5, totalCount: 6, activityName: 'Back Rank Checkmates' },
+  { label: 'Path - Fail (2/6)', source: 'path', mode: 'terminal', correctCount: 2, totalCount: 6, activityName: 'Discovered Attacks' },
   { label: 'Opening - Complete', source: 'opening', mode: 'terminal', activityName: 'The Italian Game: Main Ideas', accentColor: '#FF9600' },
   { label: 'Daily - Good (18/22)', source: 'daily', mode: 'dismissible', correctCount: 18, totalCount: 22 },
   { label: 'Daily - Perfect (22/22)', source: 'daily', mode: 'dismissible', correctCount: 22, totalCount: 22 },
@@ -56,6 +56,14 @@ export default function ActivityCompleteTestPage() {
           activityName={active.activityName}
           accentColor={active.accentColor}
           playerName="Tyler"
+          shareConfig={{
+            shareUrl: 'https://chesspath.app/test',
+            ogEndpoint: '/api/og/lesson',
+            ogParams: { score: '5/6', lesson: 'Test', level: '1' },
+            source: 'lesson',
+            title: 'Chess Path',
+            text: 'I completed a lesson on Chess Path!',
+          }}
           onContinue={() => { setActive(null); alert('Continue clicked') }}
           onDismiss={active.mode === 'dismissible' ? () => { setActive(null); alert('Dismissed — would show review') } : undefined}
           onRetry={active.correctCount !== undefined && active.correctCount <= 3 ? () => { setActive(null); alert('Retry clicked') } : undefined}

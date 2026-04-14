@@ -1017,7 +1017,6 @@ export default function DailyChallengePage() {
             mode="dismissible"
             correctCount={puzzlesSolved}
             totalCount={allPuzzles.length || 22}
-            isGuest={!user}
             shareConfig={{
               shareUrl: 'https://chesspath.app/daily-challenge',
               ogEndpoint: '/api/og/daily-challenge',

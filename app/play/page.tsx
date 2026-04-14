@@ -2276,7 +2276,6 @@ export default function PlayRookiePage() {
               : 'draw'
           }
           playerName={playerName || undefined}
-          isGuest={!user}
           shareConfig={{
             shareUrl: 'https://chesspath.app/play',
             ogEndpoint: '/api/og/play',

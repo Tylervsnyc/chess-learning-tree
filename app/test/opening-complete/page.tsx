@@ -4,7 +4,7 @@ import { useState, useRef, useMemo } from 'react'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
 import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup'
-import { LessonComplete } from '@/components/shared/LessonComplete'
+import { ActivityComplete } from '@/components/shared/ActivityComplete'
 import { BOARD_COLORS } from '@/lib/puzzle-utils'
 import {
   RookProgressAnimationRef,
@@ -132,34 +132,33 @@ export default function TestOpeningComplete() {
         </div>
       </div>
 
-      {/* ─── LessonComplete modals ─── */}
+      {/* ─── ActivityComplete screens ─── */}
       {popup === 'learn-pass' && (
-        <LessonComplete
+        <ActivityComplete
+          source="path"
+          mode="terminal"
           correctCount={5}
-          lessonName="The Fork"
-          lessonId="test"
-          isGuest={false}
-          getLevelKeyFromLessonId={() => '1'}
+          totalCount={6}
+          activityName="Forks & Skewers"
           onContinue={() => setPopup('none')}
         />
       )}
       {popup === 'learn-fail' && (
-        <LessonComplete
+        <ActivityComplete
+          source="path"
+          mode="terminal"
           correctCount={2}
-          lessonName="The Fork"
-          lessonId="test"
-          isGuest={true}
-          getLevelKeyFromLessonId={() => '1'}
+          totalCount={6}
+          activityName="Discovered Attacks"
           onContinue={() => setPopup('none')}
           onRetry={() => setPopup('none')}
         />
       )}
       {popup === 'opening' && (
-        <LessonComplete
-          title="Lesson Complete!"
-          subtitle="Main Line 1: The Opening Moves"
-          lessonName="Main Line 1: The Opening Moves"
-          lessonId="test"
+        <ActivityComplete
+          source="opening"
+          mode="terminal"
+          activityName="Main Line 1: The Opening Moves"
           accentColor="#FF9600"
           onContinue={() => setPopup('none')}
         />
