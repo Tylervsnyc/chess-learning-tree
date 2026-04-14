@@ -33,7 +33,17 @@ type ModeId =
   | 'repel' | 'attract' | 'spotlight' | 'ripple' | 'paint'
   | 'gravity' | 'magnet' | 'tornado' | 'freeze' | 'grow'
   | 'xray' | 'blackhole' | 'fireworks' | 'elastic' | 'wave'
-  | 'scatter' | 'orbit' | 'heat' | 'lightning' | 'bubble';
+  | 'scatter' | 'orbit' | 'heat' | 'lightning' | 'bubble'
+  // Batch 2
+  | 'eraser' | 'pixelate' | 'trampoline' | 'tractor' | 'mirror'
+  | 'smear' | 'whirlpool' | 'inflate' | 'revealer' | 'dominos'
+  | 'antigravity' | 'shockwave' | 'colorDrain' | 'puppeteer' | 'earthquake2'
+  | 'jellyPoke' | 'lavalamp2' | 'magnetSnap' | 'vaporize' | 'glueGun'
+  // Batch 3
+  | 'slingshot2' | 'stacking' | 'bowling' | 'flick' | 'seesaw'
+  | 'searchlight' | 'suction' | 'catapult' | 'lasso' | 'timeSlow'
+  | 'splitMerge' | 'rowing' | 'drumPad' | 'sponge' | 'wrecking'
+  | 'squeegee' | 'claw' | 'vacuum' | 'hoverboard' | 'yoyo';
 
 const MODES: { id: ModeId; label: string; description: string }[] = [
   { id: 'repel', label: 'Force Field', description: 'Blocks flee from your cursor' },
@@ -56,6 +66,48 @@ const MODES: { id: ModeId; label: string; description: string }[] = [
   { id: 'heat', label: 'Heat Finger', description: 'Hover heats blocks from blue to red' },
   { id: 'lightning', label: 'Lightning', description: 'Click to zap bolts between blocks' },
   { id: 'bubble', label: 'Bubble Wrap', description: 'Hover over blocks to pop them' },
+  // Batch 2
+  { id: 'eraser', label: 'Eraser', description: 'Drag to erase blocks, they grow back slowly' },
+  { id: 'pixelate', label: 'Pixelate', description: 'Cursor reveals low-res chunky version' },
+  { id: 'trampoline', label: 'Trampoline', description: 'Click and blocks bounce up from impact point' },
+  { id: 'tractor', label: 'Tractor Beam', description: 'Hold click to vacuum blocks toward cursor' },
+  { id: 'mirror', label: 'Mirror', description: 'One half mirrors cursor movement to the other' },
+  { id: 'smear', label: 'Smear', description: 'Drag to smear blocks in motion direction' },
+  { id: 'whirlpool', label: 'Whirlpool', description: 'Click to create a draining whirlpool' },
+  { id: 'inflate', label: 'Inflate', description: 'Hold to inflate blocks until they pop' },
+  { id: 'revealer', label: 'Revealer', description: 'Blocks are invisible until cursor passes over' },
+  { id: 'dominos', label: 'Dominos', description: 'Click a block to topple a chain reaction' },
+  { id: 'antigravity', label: 'Antigravity', description: 'Hold click to make blocks float upward' },
+  { id: 'shockwave', label: 'Shockwave', description: 'Click for expanding ring that flips blocks' },
+  { id: 'colorDrain', label: 'Color Drain', description: 'Cursor drains color, leaving grayscale' },
+  { id: 'puppeteer', label: 'Puppeteer', description: 'Blocks tilt toward cursor like they\'re watching' },
+  { id: 'earthquake2', label: 'Tremor', description: 'Click intensity controls earthquake strength' },
+  { id: 'jellyPoke', label: 'Jelly Poke', description: 'Poke the rook and it wobbles like jelly' },
+  { id: 'lavalamp2', label: 'Lava Touch', description: 'Drag to inject heat blobs that rise' },
+  { id: 'magnetSnap', label: 'Magnet Snap', description: 'Blocks snap to grid lines near cursor' },
+  { id: 'vaporize', label: 'Vaporize', description: 'Hover dissolves blocks into particles' },
+  { id: 'glueGun', label: 'Glue Gun', description: 'Click to glue blocks together in clumps' },
+  // Batch 3
+  { id: 'slingshot2', label: 'Slingshot', description: 'Pull blocks back with click, release to launch' },
+  { id: 'stacking', label: 'Stacking', description: 'Click to drop blocks, they stack up from bottom' },
+  { id: 'bowling', label: 'Bowling', description: 'Click to roll a ball through blocks and scatter them' },
+  { id: 'flick', label: 'Flick', description: 'Flick blocks with fast mouse movement' },
+  { id: 'seesaw', label: 'Seesaw', description: 'Click left or right side to tip the whole rook' },
+  { id: 'searchlight', label: 'Search Light', description: 'A cone of light follows cursor rotation' },
+  { id: 'suction', label: 'Suction Cup', description: 'Click to stick, drag to pull the whole rook' },
+  { id: 'catapult', label: 'Catapult', description: 'Click bottom to launch top blocks skyward' },
+  { id: 'lasso', label: 'Lasso', description: 'Circle blocks with cursor to capture them' },
+  { id: 'timeSlow', label: 'Time Slow', description: 'Blocks breathe normally, cursor creates bullet-time zone' },
+  { id: 'splitMerge', label: 'Split/Merge', description: 'Click to split rook in half, click again to merge' },
+  { id: 'rowing', label: 'Rowing', description: 'Move mouse left/right to row blocks like oars' },
+  { id: 'drumPad', label: 'Drum Pad', description: 'Each block is a drum — hover to hit it' },
+  { id: 'sponge', label: 'Sponge', description: 'Blocks absorb cursor color and squeeze it out' },
+  { id: 'wrecking', label: 'Wrecking Ball', description: 'Cursor is a wrecking ball, smash through blocks' },
+  { id: 'squeegee', label: 'Squeegee', description: 'Drag to wipe blocks clean, revealing bright underneath' },
+  { id: 'claw', label: 'Claw Machine', description: 'Click to drop a claw that grabs and lifts blocks' },
+  { id: 'vacuum', label: 'Vacuum', description: 'Hold to suck blocks into cursor, release to blow out' },
+  { id: 'hoverboard', label: 'Hoverboard', description: 'Rook floats and tilts based on cursor position' },
+  { id: 'yoyo', label: 'Yo-Yo', description: 'Click to send blocks down on a string, they snap back' },
 ];
 
 interface BlockState {
@@ -441,10 +493,831 @@ function computeBlock(
       }
       break;
     }
+
+    // ═══════════════════════════════════════════
+    // BATCH 2 — 20 MORE INTERACTIVE MODES
+    // ═══════════════════════════════════════════
+
+    case 'eraser': {
+      if (physics.heat > 0) {
+        // Erased — shrinking
+        const regrow = physics.heat;
+        state.scale = Math.min(1, regrow * 0.25);
+        state.opacity = state.scale;
+        state.brightness = 0.5 + state.scale * 0.5;
+      } else {
+        state.brightness = 1;
+      }
+      // Preview eraser near cursor
+      if (dist < 0.12 && !physics.popped) {
+        state.brightness = 0.5;
+        state.scale = 0.9;
+      }
+      break;
+    }
+
+    case 'pixelate': {
+      const inRange = dist < 0.3;
+      if (inRange) {
+        // Chunky low-res look — snap to big grid
+        const chunkSize = 2;
+        const snapX = Math.round(x / chunkSize) * chunkSize;
+        const snapY = Math.round(y / chunkSize) * chunkSize;
+        state.offsetX = (snapX - x) * blockSize * 0.3;
+        state.offsetY = (snapY - y) * blockSize * 0.3;
+        state.scale = 1.3;
+        state.brightness = 1.2;
+        // Flatten colors
+        const flatHue = Math.round(blockIdx / 5) * 72;
+        state.colorOverride = hslToHex(flatHue, 60, 50);
+      } else {
+        state.brightness = 0.8;
+      }
+      break;
+    }
+
+    case 'trampoline': {
+      if (timeSinceClick < 3) {
+        const impactDist = clickDist;
+        const delay = impactDist * 1.5;
+        const localT = timeSinceClick - delay;
+        if (localT > 0 && localT < 2) {
+          const bounce = Math.abs(Math.sin(localT * 5)) * Math.exp(-localT * 2);
+          state.offsetY = -bounce * 40;
+          state.scale = 1 + bounce * 0.2;
+          state.brightness = 1 + bounce * 1.0;
+        }
+      }
+      break;
+    }
+
+    case 'tractor': {
+      if (mouse.down) {
+        const pull = Math.max(0, 0.6 - dist) * 100;
+        state.offsetX = Math.cos(angle) * pull;
+        state.offsetY = Math.sin(angle) * pull;
+        state.scale = 1 - Math.max(0, 0.4 - dist) * 0.8;
+        state.brightness = 0.5 + (0.6 - Math.min(0.6, dist)) * 2;
+        state.rotation = t * 100 * Math.max(0, 0.3 - dist);
+        // Beam color
+        if (dist < 0.3) {
+          state.colorOverride = hslToHex(120, 60, 40 + (0.3 - dist) * 100);
+        }
+      } else {
+        state.brightness = 0.8 + Math.sin(t * 1.5 + blockIdx * 0.3) * 0.15;
+      }
+      break;
+    }
+
+    case 'mirror': {
+      // Left half follows cursor Y, right half mirrors it
+      const isLeft = x < CENTER_X;
+      const isRight = x > CENTER_X;
+      const mouseInfluence = Math.max(0, 0.5 - Math.abs(mouse.y - by) * 2);
+      if (isLeft) {
+        state.offsetY = (mouse.y - 0.5) * 20 * mouseInfluence;
+        state.brightness = 0.7 + mouseInfluence * 0.8;
+      } else if (isRight) {
+        // Mirror — opposite direction
+        state.offsetY = -(mouse.y - 0.5) * 20 * mouseInfluence;
+        state.brightness = 0.7 + mouseInfluence * 0.8;
+        state.hueShift = 180; // complementary color
+      } else {
+        // Center column — mirror line
+        state.brightness = 1.3;
+        state.scale = 1.05;
+      }
+      break;
+    }
+
+    case 'smear': {
+      // Blocks stretch in mouse movement direction
+      const velX = mouse.x - prevMouseX(mouse);
+      const velY = mouse.y - prevMouseY(mouse);
+      const speed = mouse.velocity * 200;
+      if (dist < 0.25 && speed > 0.5) {
+        const smearAmount = Math.min(1, speed * 2) * (1 - dist / 0.25);
+        state.skewX = velX * smearAmount * 200;
+        state.skewY = velY * smearAmount * 100;
+        state.scale = 1 + smearAmount * 0.3;
+        state.brightness = 1 + smearAmount * 0.5;
+        state.blur = smearAmount * 2;
+      }
+      break;
+    }
+
+    case 'whirlpool': {
+      if (timeSinceClick < 4) {
+        const whirlStrength = Math.exp(-timeSinceClick * 0.5);
+        const whirlAngle = angle + timeSinceClick * 4 * whirlStrength;
+        const pullIn = whirlStrength * 30 * (1 - normDist * 0.5);
+        state.offsetX = Math.cos(whirlAngle) * clickDist * pullIn - (clickDx) * gridWidth * whirlStrength * 0.5;
+        state.offsetY = Math.sin(whirlAngle) * clickDist * pullIn - (clickDy) * gridHeight * whirlStrength * 0.5;
+        state.rotation = whirlAngle * 60;
+        state.scale = 0.5 + (1 - whirlStrength) * 0.5;
+        state.brightness = 0.5 + whirlStrength * 1.0;
+        state.hueShift = whirlAngle * 30;
+      }
+      break;
+    }
+
+    case 'inflate': {
+      if (mouse.down && dist < 0.25) {
+        // Inflate while holding
+        const inflateAmount = Math.min(2, physics.heat);
+        state.scale = 1 + inflateAmount * 0.8;
+        state.brightness = 1 + inflateAmount * 0.5;
+        // About to pop!
+        if (inflateAmount > 1.5) {
+          state.offsetX = Math.sin(t * 20 + blockIdx) * inflateAmount * 2;
+          state.offsetY = Math.cos(t * 18 + blockIdx) * inflateAmount * 2;
+          state.colorOverride = hslToHex(0, 80, 50); // red warning
+        }
+        // POP
+        if (inflateAmount >= 2) {
+          state.scale = 0.1;
+          state.opacity = 0.2;
+          state.brightness = 3;
+        }
+      } else if (physics.heat > 2) {
+        // Popped — deflated
+        state.scale = 0.3;
+        state.opacity = 0.4;
+      } else {
+        state.brightness = 0.8;
+      }
+      break;
+    }
+
+    case 'revealer': {
+      // Blocks start invisible
+      if (physics.painted >= 0) {
+        // Revealed — visible
+        state.opacity = 1;
+        state.brightness = 1 + Math.sin(t * 2 + blockIdx * 0.3) * 0.1;
+      } else {
+        // Hidden
+        state.opacity = 0.03;
+        state.brightness = 0.1;
+      }
+      // Cursor glow preview
+      if (dist < 0.15) {
+        state.opacity = Math.max(state.opacity, 0.5);
+        state.brightness = 1.5;
+      }
+      break;
+    }
+
+    case 'dominos': {
+      if (timeSinceClick < 4) {
+        // Chain reaction from click point
+        const chainSpeed = 5;
+        const chainFront = timeSinceClick * chainSpeed;
+        const myDist = Math.sqrt((x - Math.round(mouse.clickX * 5)) ** 2 + (y - Math.round(mouse.clickY * 6)) ** 2);
+        const hitTime = myDist - chainFront / 3;
+
+        if (hitTime < 0 && hitTime > -1) {
+          // Toppling
+          const topple = Math.min(1, -hitTime);
+          state.rotation = topple * 90;
+          state.offsetY = Math.sin(topple * Math.PI * 0.5) * blockSize * 0.3;
+          state.brightness = 2 - topple;
+        } else if (hitTime < -1) {
+          // Fallen
+          state.rotation = 90;
+          state.offsetY = blockSize * 0.3;
+          state.brightness = 0.4;
+        }
+      }
+      break;
+    }
+
+    case 'antigravity': {
+      if (mouse.down) {
+        // Float upward
+        state.offsetY = physics.py;
+        state.offsetX = Math.sin(t * 2 + blockIdx * 0.5) * 3;
+        state.brightness = 0.8 + Math.abs(physics.py) * 0.02;
+        state.rotation = Math.sin(t + blockIdx) * 5;
+      } else {
+        // Fall back
+        state.offsetY = physics.py;
+        state.brightness = 0.8;
+      }
+      break;
+    }
+
+    case 'shockwave': {
+      if (timeSinceClick < 2) {
+        const ringRadius = timeSinceClick * 0.6;
+        const ringWidth = 0.1;
+        const distToRing = Math.abs(clickDist - ringRadius);
+        if (distToRing < ringWidth) {
+          const intensity = (1 - distToRing / ringWidth) * Math.exp(-timeSinceClick * 1.5);
+          // Flip blocks as ring passes
+          state.rotation = intensity * 180;
+          state.scale = 1 + intensity * 0.4;
+          state.brightness = 1 + intensity * 2;
+          state.offsetY = -intensity * 15;
+          state.hueShift = intensity * 90;
+        }
+      }
+      break;
+    }
+
+    case 'colorDrain': {
+      // Cursor drains saturation
+      const drainRadius = 0.3;
+      const inDrain = dist < drainRadius;
+      if (inDrain) {
+        const drainAmount = 1 - dist / drainRadius;
+        // Desaturate
+        state.colorOverride = hslToHex(0, 0, 40 + drainAmount * 20);
+        state.brightness = 0.6 + drainAmount * 0.3;
+      } else {
+        // Full color — vibrant
+        state.brightness = 1.2;
+        state.hueShift = t * 20 + blockIdx * 15;
+      }
+      break;
+    }
+
+    case 'puppeteer': {
+      // Blocks tilt to face cursor like eyes watching
+      const lookAngle = Math.atan2(dy, dx);
+      const lookStrength = Math.min(1, 0.5 / (dist + 0.1));
+      state.skewX = Math.cos(lookAngle) * lookStrength * 15;
+      state.skewY = Math.sin(lookAngle) * lookStrength * 8;
+      state.rotation = Math.cos(lookAngle) * lookStrength * 8;
+      state.brightness = 0.7 + lookStrength * 0.6;
+      // Closest block = "main eye"
+      if (dist < 0.1) {
+        state.scale = 1.2;
+        state.brightness = 1.5;
+      }
+      break;
+    }
+
+    case 'earthquake2': {
+      // Mouse distance from center = earthquake intensity
+      const intensity = Math.sqrt((mouse.x - 0.5) ** 2 + (mouse.y - 0.5) ** 2) * 2;
+      const shake = intensity * 15;
+      state.offsetX = Math.sin(t * 25 + y * 5) * shake;
+      state.offsetY = Math.cos(t * 22 + x * 4) * shake * 0.5;
+      state.brightness = 1 + intensity * 0.3;
+      // Click for big jolt
+      if (timeSinceClick < 0.3) {
+        const jolt = (0.3 - timeSinceClick) / 0.3;
+        state.offsetX += (seededRandom(Math.floor(t * 30) + blockIdx) - 0.5) * 30 * jolt;
+        state.offsetY -= jolt * 15;
+        state.brightness = 1 + jolt * 2;
+      }
+      break;
+    }
+
+    case 'jellyPoke': {
+      // Click sends a wobble wave through the rook
+      if (timeSinceClick < 3) {
+        const wobbleDist = clickDist;
+        const delay2 = wobbleDist * 2;
+        const localT2 = timeSinceClick - delay2;
+        if (localT2 > 0) {
+          const wobble = Math.sin(localT2 * 12) * Math.exp(-localT2 * 2);
+          const pushDir = Math.atan2(by - mouse.clickY, bx - mouse.clickX);
+          state.offsetX = Math.cos(pushDir) * wobble * 15;
+          state.offsetY = Math.sin(pushDir) * wobble * 12;
+          state.skewX = wobble * 10;
+          state.scale = 1 + Math.abs(wobble) * 0.1;
+          state.brightness = 1 + Math.abs(wobble) * 0.5;
+        }
+      }
+      break;
+    }
+
+    case 'lavalamp2': {
+      // Heat accumulates where you drag, rises
+      const temp = physics.heat;
+      if (temp > 0.1) {
+        // Hot blocks rise
+        state.offsetY = -temp * 20;
+        state.offsetX = Math.sin(t * 2 + blockIdx) * temp * 5;
+        state.scale = 1 + temp * 0.2;
+        state.colorOverride = hslToHex(
+          30 - temp * 30, // orange to red
+          80,
+          40 + temp * 25
+        );
+        state.brightness = 0.8 + temp * 0.8;
+      } else {
+        state.brightness = 0.5;
+        state.colorOverride = hslToHex(240, 30, 25); // cool blue base
+      }
+      break;
+    }
+
+    case 'magnetSnap': {
+      // Near cursor, blocks snap to quantized positions
+      if (dist < 0.3) {
+        const snapStrength = 1 - dist / 0.3;
+        const gridSnap = blockSize + gap;
+        // Snap to nearest grid intersection
+        const snapX = Math.round((bx * gridWidth) / gridSnap) * gridSnap;
+        const snapY = Math.round((by * gridHeight) / gridSnap) * gridSnap;
+        const currentX = x * (blockSize + gap);
+        const currentY = y * (blockSize + gap);
+        state.offsetX = (snapX - currentX) * snapStrength * 0.3;
+        state.offsetY = (snapY - currentY) * snapStrength * 0.3;
+        state.brightness = 1 + snapStrength * 0.8;
+        state.scale = 1 + snapStrength * 0.1;
+        // Magnetic glow
+        state.colorOverride = hslToHex(200 + snapStrength * 40, 70, 45 + snapStrength * 20);
+      } else {
+        state.brightness = 0.6;
+      }
+      break;
+    }
+
+    case 'vaporize': {
+      if (dist < 0.2) {
+        // Dissolving into particles
+        const dissolveAmount = (0.2 - dist) / 0.2;
+        state.scale = 1 - dissolveAmount * 0.7;
+        state.opacity = 1 - dissolveAmount * 0.8;
+        state.offsetX = (seededRandom(Math.floor(t * 8) + blockIdx * 11) - 0.5) * dissolveAmount * 20;
+        state.offsetY = -dissolveAmount * 15 + (seededRandom(Math.floor(t * 8) + blockIdx * 17) - 0.5) * dissolveAmount * 10;
+        state.brightness = 1 + dissolveAmount * 2;
+        state.blur = dissolveAmount * 3;
+        state.hueShift = dissolveAmount * 180;
+      } else if (physics.popped) {
+        // Vaporized — reforming slowly
+        const reform = Math.min(1, physics.heat * 0.3);
+        state.scale = reform;
+        state.opacity = reform;
+      }
+      break;
+    }
+
+    case 'glueGun': {
+      if (physics.painted >= 0) {
+        const glueX = physics.painted / 360;
+        const glueY = physics.heat;
+        state.offsetX = (glueX - bx) * gridWidth * 0.15;
+        state.offsetY = (glueY - by) * gridHeight * 0.15;
+        state.scale = 1.1;
+        state.brightness = 1.2;
+        state.colorOverride = hslToHex(45, 60, 55);
+      } else {
+        state.brightness = 0.7;
+      }
+      break;
+    }
+
+    // ═══════════════════════════════════════════
+    // BATCH 3 — 20 MORE INTERACTIVE MODES
+    // ═══════════════════════════════════════════
+
+    case 'slingshot2': {
+      if (mouse.down) {
+        // Pulling back — blocks stretch toward cursor
+        const stretch = Math.min(1, dist * 3);
+        state.offsetX = -(mouse.x - 0.5) * stretch * 40;
+        state.offsetY = -(mouse.y - 0.5) * stretch * 30;
+        state.scale = 1 + stretch * 0.1;
+        state.brightness = 1 + stretch * 0.5;
+        state.skewX = -(mouse.x - 0.5) * stretch * 15;
+      } else {
+        // Snap forward with spring physics
+        state.offsetX = physics.px;
+        state.offsetY = physics.py;
+        state.brightness = 1 + Math.abs(physics.vx + physics.vy) * 0.03;
+        state.blur = Math.abs(physics.vx) * 0.05;
+      }
+      break;
+    }
+
+    case 'stacking': {
+      if (timeSinceClick < 3) {
+        // Drop from click position
+        const dropCol = Math.round(mouse.clickX * 4);
+        if (x === dropCol) {
+          const dropDelay = (5 - y) * 0.15;
+          const localDrop = Math.max(0, timeSinceClick - dropDelay);
+          if (localDrop < 0.4) {
+            const fall = localDrop / 0.4;
+            state.offsetY = -80 * (1 - fall * fall);
+            state.brightness = 1.5;
+          } else {
+            // Landed — squish
+            const squish = Math.min(1, (localDrop - 0.4) * 5);
+            const bounce2 = Math.sin(squish * Math.PI * 3) * Math.exp(-squish * 3);
+            state.offsetY = -Math.abs(bounce2) * 8;
+            state.scale = 1 + Math.abs(bounce2) * 0.1;
+            state.brightness = 1 + Math.abs(bounce2) * 0.5;
+          }
+        }
+      }
+      break;
+    }
+
+    case 'bowling': {
+      if (timeSinceClick < 3) {
+        // Ball rolls from left at click Y
+        const ballX = timeSinceClick * 0.4;
+        const ballY = mouse.clickY;
+        const toBall = Math.sqrt((bx - ballX) ** 2 + (by - ballY) ** 2);
+        if (toBall < 0.12 && ballX < bx + 0.05) {
+          // HIT — scatter
+          const hitAngle = Math.atan2(by - ballY, bx - ballX);
+          const hitForce = (0.12 - toBall) / 0.12;
+          const age = Math.max(0, timeSinceClick - bx / 0.4);
+          state.offsetX = Math.cos(hitAngle) * hitForce * age * 80;
+          state.offsetY = Math.sin(hitAngle) * hitForce * age * 60 + age * age * 20;
+          state.rotation = age * hitForce * 300;
+          state.brightness = 1.5 - age * 0.5;
+          state.scale = 1 - age * 0.2;
+        }
+      }
+      // Ball preview
+      state.brightness = Math.max(state.brightness, 0.6);
+      break;
+    }
+
+    case 'flick': {
+      // Fast mouse movement flings nearby blocks
+      const speed2 = mouse.velocity * 300;
+      if (speed2 > 2 && dist < 0.2) {
+        const flickForce = Math.min(1, speed2 / 10) * (1 - dist / 0.2);
+        const flickAngle2 = Math.atan2(mouse.y - by, mouse.x - bx);
+        physics.vx += Math.cos(flickAngle2) * flickForce * 30;
+        physics.vy += Math.sin(flickAngle2) * flickForce * 25;
+      }
+      state.offsetX = physics.px;
+      state.offsetY = physics.py;
+      state.rotation = physics.vx * 1.5;
+      state.brightness = 0.8 + Math.abs(physics.vx + physics.vy) * 0.05;
+      break;
+    }
+
+    case 'seesaw': {
+      // Click side tips the whole rook
+      const tiltDir = mouse.down ? (mouse.x < 0.5 ? -1 : 1) : 0;
+      const tiltAmount = physics.heat; // store current tilt
+      const tiltEffect = tiltAmount * (x - CENTER_X) * 5;
+      state.offsetY = tiltEffect;
+      state.rotation = tiltAmount * 3;
+      state.brightness = 1 + Math.abs(tiltEffect) * 0.02;
+      // Blocks on high side glow
+      if (tiltEffect < -3) {
+        state.brightness += 0.3;
+      }
+      break;
+    }
+
+    case 'searchlight': {
+      // Cone of light from bottom-center aimed at cursor
+      const lightAngle2 = Math.atan2(mouse.y - 1, mouse.x - 0.5);
+      const blockAngle3 = Math.atan2(by - 1, bx - 0.5);
+      let angleDiff2 = Math.abs(lightAngle2 - blockAngle3);
+      if (angleDiff2 > Math.PI) angleDiff2 = Math.PI * 2 - angleDiff2;
+      const coneWidth = 0.3;
+      const inCone = angleDiff2 < coneWidth;
+      if (inCone) {
+        const coneIntensity = 1 - angleDiff2 / coneWidth;
+        state.brightness = 0.2 + coneIntensity * 2.5;
+        state.scale = 1 + coneIntensity * 0.1;
+      } else {
+        state.brightness = 0.05;
+        state.opacity = 0.4;
+      }
+      break;
+    }
+
+    case 'suction': {
+      // Click sticks, drag moves the whole rook
+      if (mouse.down) {
+        const dragX = (mouse.x - mouse.clickX) * gridWidth * 0.8;
+        const dragY = (mouse.y - mouse.clickY) * gridHeight * 0.8;
+        state.offsetX = dragX;
+        state.offsetY = dragY;
+        // Closest block to click = suction point, stretches more
+        if (clickDist < 0.15) {
+          state.scale = 1.15;
+          state.brightness = 1.4;
+        }
+        state.brightness = Math.max(state.brightness, 1);
+      } else {
+        // Spring back
+        state.offsetX = physics.px;
+        state.offsetY = physics.py;
+      }
+      break;
+    }
+
+    case 'catapult': {
+      if (timeSinceClick < 2) {
+        const clickedBottom = mouse.clickY > 0.6;
+        if (clickedBottom) {
+          // Top blocks launch upward
+          if (y <= 2) {
+            const launchDelay = (2 - y) * 0.08;
+            const localLaunch = Math.max(0, timeSinceClick - launchDelay);
+            if (localLaunch < 0.5) {
+              const up = localLaunch / 0.5;
+              state.offsetY = -up * 80;
+              state.offsetX = (x - CENTER_X) * up * 10;
+              state.rotation = up * 180 * (x > CENTER_X ? 1 : -1);
+              state.brightness = 2 - up;
+              state.scale = 1 + up * 0.3;
+            } else {
+              // Fall back
+              const fall2 = (localLaunch - 0.5) / 1.5;
+              const eased = easeOut(Math.min(1, fall2));
+              state.offsetY = -80 * (1 - eased);
+              state.offsetX = (x - CENTER_X) * 10 * (1 - eased);
+              state.rotation = 180 * (1 - eased) * (x > CENTER_X ? 1 : -1);
+              state.brightness = 1;
+            }
+          } else {
+            // Bottom blocks = lever
+            const leverP = Math.min(1, timeSinceClick * 5);
+            state.skewY = -leverP * 10 * (1 - timeSinceClick * 0.5);
+            state.brightness = 1 + leverP * 0.3;
+          }
+        }
+      }
+      break;
+    }
+
+    case 'lasso': {
+      // Blocks near cursor path get "lassoed" — pulled to center of path
+      if (dist < 0.15) {
+        physics.frozen = true; // captured
+      }
+      if (physics.frozen) {
+        // Pull toward cursor
+        const pullX = (mouse.x - bx) * gridWidth * 0.3;
+        const pullY = (mouse.y - by) * gridHeight * 0.3;
+        state.offsetX = pullX;
+        state.offsetY = pullY;
+        state.brightness = 1.3;
+        state.scale = 1.1;
+        state.colorOverride = hslToHex(45, 60, 50);
+        // Orbit slightly
+        state.offsetX += Math.sin(t * 3 + blockIdx) * 3;
+        state.offsetY += Math.cos(t * 3 + blockIdx) * 3;
+      } else {
+        state.brightness = 0.5;
+      }
+      break;
+    }
+
+    case 'timeSlow': {
+      // Blocks normally breathe fast. Near cursor = bullet time
+      const normalSpeed = 4;
+      const slowRadius = 0.25;
+      const inSlow = dist < slowRadius;
+      const timeScale = inSlow ? 0.1 : 1;
+      const breathePhase = t * normalSpeed * timeScale + blockIdx * 0.3;
+      state.brightness = 0.7 + Math.sin(breathePhase) * 0.4;
+      state.scale = 1 + Math.sin(breathePhase) * 0.05;
+      state.offsetY = Math.sin(breathePhase * 0.5) * 3 * timeScale;
+      if (inSlow) {
+        // Blue time-slow tint
+        const slowAmount = 1 - dist / slowRadius;
+        state.hueShift = 200 * slowAmount;
+        state.brightness += slowAmount * 0.3;
+      }
+      break;
+    }
+
+    case 'splitMerge': {
+      // Physics heat stores split state: 0=merged, >0=split
+      const isSplit = physics.heat > 0.5;
+      if (isSplit) {
+        const splitAmount = Math.min(1, physics.heat);
+        if (x < CENTER_X) {
+          state.offsetX = -splitAmount * 25;
+        } else if (x > CENTER_X) {
+          state.offsetX = splitAmount * 25;
+        }
+        state.brightness = 0.8;
+        // Glow at split edges
+        if (x === 1 || x === 3) {
+          state.brightness = 1 + Math.sin(t * 3) * 0.3;
+        }
+      } else {
+        state.brightness = 1 + Math.sin(t * 1.5 + blockIdx * 0.2) * 0.1;
+      }
+      break;
+    }
+
+    case 'rowing': {
+      // Mouse X velocity drives rowing motion
+      const rowPhase = mouse.x * Math.PI * 4;
+      const rowSide = x < CENTER_X ? -1 : x > CENTER_X ? 1 : 0;
+      const oarAngle = Math.sin(rowPhase + rowSide * Math.PI);
+      state.offsetX = oarAngle * rowSide * 8;
+      state.offsetY = Math.abs(oarAngle) * 3;
+      state.rotation = oarAngle * rowSide * 10;
+      state.brightness = 0.7 + Math.abs(oarAngle) * 0.5;
+      // Center column stays still (the boat)
+      if (x === Math.round(CENTER_X)) {
+        state.offsetX = 0;
+        state.offsetY = Math.sin(rowPhase * 0.5) * 2;
+        state.rotation = 0;
+        state.brightness = 1;
+      }
+      break;
+    }
+
+    case 'drumPad': {
+      // Each block is a drum pad — hover triggers a hit
+      if (dist < 0.1) {
+        // HIT!
+        const hitAge = (t * 2 + blockIdx) % 0.5;
+        if (hitAge < 0.15) {
+          const hit = hitAge / 0.15;
+          state.scale = 1.4 - hit * 0.4;
+          state.brightness = 2.5 - hit * 1.5;
+          state.offsetY = -5 * (1 - hit);
+          // Each block = different color
+          state.colorOverride = hslToHex((blockIdx * 47) % 360, 80, 50);
+        }
+      } else {
+        state.brightness = 0.4 + Math.max(0, 0.15 - dist) * 3;
+        // Resting state — dim pad colors
+        state.colorOverride = hslToHex((blockIdx * 47) % 360, 30, 25);
+      }
+      break;
+    }
+
+    case 'sponge': {
+      // Absorb color (brightens), squeeze to release
+      const absorbed = physics.heat;
+      if (dist < 0.15 && !mouse.down) {
+        // Absorbing
+        state.brightness = 1 + absorbed;
+        state.scale = 1 + absorbed * 0.15;
+        state.colorOverride = hslToHex((t * 40 + blockIdx * 20) % 360, 60 + absorbed * 30, 40 + absorbed * 20);
+      } else if (mouse.down && absorbed > 0.1) {
+        // Squeezing — color drains, blocks compress
+        const squeeze = Math.min(1, absorbed);
+        state.scale = 1 - squeeze * 0.2;
+        state.brightness = 0.5 + squeeze;
+        state.colorOverride = hslToHex((t * 40 + blockIdx * 20) % 360, squeeze * 80, 40);
+        state.offsetY = squeeze * 3;
+      } else {
+        state.brightness = 0.5;
+      }
+      break;
+    }
+
+    case 'wrecking': {
+      // Cursor is a heavy ball — smashes blocks it touches
+      if (dist < 0.12 && mouse.velocity > 0.005) {
+        // SMASH
+        const smashDir = Math.atan2(by - mouse.y, bx - mouse.x);
+        const smashForce = Math.min(1, mouse.velocity * 100);
+        physics.vx = Math.cos(smashDir) * smashForce * 40;
+        physics.vy = Math.sin(smashDir) * smashForce * 30;
+      }
+      state.offsetX = physics.px;
+      state.offsetY = physics.py;
+      state.rotation = physics.px * 2;
+      state.brightness = 0.7 + Math.abs(physics.vx) * 0.05;
+      // Wrecking ball preview
+      if (dist < 0.1) {
+        state.brightness = 1.5;
+        state.scale = 0.9;
+      }
+      break;
+    }
+
+    case 'squeegee': {
+      // Drag to wipe — revealed blocks are bright
+      if (physics.painted >= 0) {
+        // Wiped clean — bright
+        state.brightness = 1.5;
+        state.colorOverride = hslToHex(physics.painted, 70, 55);
+      } else {
+        // Dirty — dark and murky
+        state.brightness = 0.3;
+        state.colorOverride = hslToHex(30, 20, 20);
+        // Cursor preview
+        if (dist < 0.12) {
+          state.brightness = 0.6;
+        }
+      }
+      break;
+    }
+
+    case 'claw': {
+      if (timeSinceClick < 3) {
+        const clawX = mouse.clickX;
+        const clawPhase = timeSinceClick;
+        // Claw descends
+        const clawY = clawPhase < 1 ? clawPhase * 0.8 : 0.8;
+        const toClawDist = Math.sqrt((bx - clawX) ** 2 + (by - clawY) ** 2);
+
+        if (clawPhase > 1 && clawPhase < 2 && toClawDist < 0.15) {
+          // Grabbed — lifting
+          const liftP = (clawPhase - 1) / 1;
+          state.offsetY = -liftP * 50;
+          state.offsetX = (clawX - bx) * gridWidth * 0.3;
+          state.scale = 1.1;
+          state.brightness = 1.5;
+          state.colorOverride = hslToHex(50, 60, 50);
+        } else if (clawPhase > 2 && toClawDist < 0.15) {
+          // Drop!
+          const dropP = (clawPhase - 2) / 1;
+          state.offsetY = -50 * (1 - dropP * dropP) + 10 * dropP;
+          state.brightness = 1;
+        }
+      }
+      break;
+    }
+
+    case 'vacuum': {
+      if (mouse.down) {
+        // Sucking in — blocks pull toward cursor
+        const suckForce = Math.max(0, 0.4 - dist) * 120;
+        state.offsetX = Math.cos(angle) * suckForce;
+        state.offsetY = Math.sin(angle) * suckForce;
+        state.scale = Math.max(0.3, 1 - suckForce * 0.01);
+        state.rotation = t * suckForce * 2;
+        state.brightness = 0.5 + suckForce * 0.02;
+      } else if (physics.px !== 0 || physics.py !== 0) {
+        // Blow out! — reverse
+        state.offsetX = physics.px;
+        state.offsetY = physics.py;
+        state.brightness = 1 + Math.abs(physics.vx) * 0.05;
+        state.scale = 1 + Math.abs(physics.vx) * 0.005;
+      } else {
+        state.brightness = 0.8;
+      }
+      break;
+    }
+
+    case 'hoverboard': {
+      // Whole rook tilts based on cursor position
+      const tiltX = (mouse.x - 0.5) * 2; // -1 to 1
+      const tiltY = (mouse.y - 0.5) * 2;
+      // Perspective tilt
+      state.skewX = tiltX * 12;
+      state.skewY = tiltY * 6;
+      // Hover height varies by tilt
+      state.offsetY = -5 + tiltY * 3;
+      state.offsetX = tiltX * 5;
+      // Depth based on position and tilt
+      const depthFactor = 1 + (y - CENTER_Y) * tiltY * 0.03 + (x - CENTER_X) * tiltX * 0.02;
+      state.scale = depthFactor;
+      state.brightness = 0.7 + depthFactor * 0.4;
+      // Hover glow underneath
+      if (y >= 4) {
+        state.brightness += 0.2 + Math.sin(t * 3 + x) * 0.1;
+        state.colorOverride = hslToHex(200, 50, 40);
+      }
+      break;
+    }
+
+    case 'yoyo': {
+      if (timeSinceClick < 3) {
+        const yoPhase = timeSinceClick;
+        // Send down
+        if (yoPhase < 0.6) {
+          const down = yoPhase / 0.6;
+          state.offsetY = down * 60 * (1 - normDist * 0.5);
+          state.scale = 1 - down * 0.2;
+          state.brightness = 1 + down * 0.3;
+          state.rotation = down * 360;
+        } else if (yoPhase < 0.8) {
+          // Spin at bottom
+          state.offsetY = 60 * (1 - normDist * 0.5);
+          state.rotation = yoPhase * 720;
+          state.brightness = 1.5;
+          state.scale = 0.8;
+        } else {
+          // Snap back
+          const back = (yoPhase - 0.8) / 0.5;
+          const eased3 = easeOut(Math.min(1, back));
+          state.offsetY = 60 * (1 - eased3) * (1 - normDist * 0.5);
+          state.scale = 0.8 + eased3 * 0.2;
+          state.rotation = 720 * (1 - eased3);
+          state.brightness = 1 + (1 - eased3) * 0.3;
+        }
+      }
+      break;
+    }
   }
 
   return state;
 }
+
+function easeOut(t2: number): number { return 1 - (1 - t2) * (1 - t2); }
+
+// Helper stubs for smear mode
+function prevMouseX(mouse: MouseState): number { return mouse.x - mouse.velocity * 0.5; }
+function prevMouseY(mouse: MouseState): number { return mouse.y - mouse.velocity * 0.3; }
 
 // ─── Interactive Rook ───
 function InteractiveRook({ mode, blockSize = 28 }: { mode: ModeId; blockSize?: number }) {
@@ -572,9 +1445,154 @@ function InteractiveRook({ mode, blockSize = 28 }: { mode: ModeId; blockSize?: n
         }
 
         if (mode === 'freeze' && dist2 > 0.4 && p.frozen) {
-          // Slowly thaw blocks far from cursor
           if (seededRandom(Math.floor(t2) + i) > 0.98) {
             p.frozen = false;
+          }
+        }
+
+        if (mode === 'eraser') {
+          if (mouse.down && dist2 < 0.12 && p.heat <= 0) {
+            p.popped = true;
+            p.heat = 0.01;
+          }
+          if (p.popped) {
+            p.heat += dt * 0.5; // regrow timer
+            if (p.heat > 5) { p.popped = false; p.heat = 0; }
+          }
+        }
+
+        if (mode === 'revealer' && dist2 < 0.12) {
+          p.painted = 1;
+        }
+
+        if (mode === 'antigravity') {
+          if (mouse.down) {
+            p.vy -= 80 * dt;
+          } else {
+            p.vy += 120 * dt; // fall back
+          }
+          p.vy *= 0.95;
+          p.py += p.vy * dt;
+          p.py = Math.max(-50, Math.min(0, p.py));
+          if (p.py >= 0) { p.py = 0; p.vy = 0; }
+        }
+
+        if (mode === 'inflate' && mouse.down && dist2 < 0.25) {
+          p.heat += dt * 0.8;
+        }
+        if (mode === 'inflate' && !mouse.down && p.heat < 2) {
+          p.heat = Math.max(0, p.heat - dt * 0.5);
+        }
+
+        if (mode === 'lavalamp2') {
+          if (mouse.down && dist2 < 0.15) {
+            p.heat = Math.min(1, p.heat + dt * 1.5);
+          } else {
+            p.heat = Math.max(0, p.heat - dt * 0.2);
+          }
+        }
+
+        if (mode === 'vaporize') {
+          if (dist2 < 0.15 && !p.popped) {
+            p.popped = true;
+            p.heat = 0;
+          }
+          if (p.popped) {
+            p.heat += dt;
+            if (p.heat > 4) { p.popped = false; p.heat = 0; }
+          }
+        }
+
+        if (mode === 'glueGun' && mouse.down && dist2 < 0.15 && p.painted < 0) {
+          p.painted = mouse.x * 360;
+          p.heat = mouse.y;
+        }
+
+        if (mode === 'slingshot2') {
+          if (!mouse.down) {
+            // Spring snap
+            p.vx -= p.px * 12 * dt;
+            p.vy -= p.py * 12 * dt;
+            p.vx *= 0.92;
+            p.vy *= 0.92;
+            p.px += p.vx * dt;
+            p.py += p.vy * dt;
+          } else {
+            p.px = -((mouse.x - 0.5) * 40);
+            p.py = -((mouse.y - 0.5) * 30);
+            p.vx = 0; p.vy = 0;
+          }
+        }
+
+        if (mode === 'flick' || mode === 'wrecking') {
+          p.vx *= 0.93;
+          p.vy *= 0.93;
+          p.vx -= p.px * 3 * dt;
+          p.vy -= p.py * 3 * dt;
+          p.px += p.vx * dt;
+          p.py += p.vy * dt;
+          p.px = Math.max(-50, Math.min(50, p.px));
+          p.py = Math.max(-50, Math.min(50, p.py));
+        }
+
+        if (mode === 'seesaw') {
+          const target = mouse.down ? (mouse.x < 0.5 ? -1 : 1) : 0;
+          p.heat += (target - p.heat) * 3 * dt;
+        }
+
+        if (mode === 'splitMerge') {
+          // Toggle on click
+          if (t2 - mouse.clickTime < dt * 2 && mouse.clickTime > 0) {
+            p.heat = p.heat > 0.5 ? 0 : 1;
+          }
+          // Smooth transition
+          const target2 = p.heat > 0.5 ? 1 : 0;
+          p.heat += (target2 - p.heat) * 5 * dt;
+        }
+
+        if (mode === 'sponge') {
+          if (dist2 < 0.15 && !mouse.down) {
+            p.heat = Math.min(1, p.heat + dt * 1.5);
+          }
+          if (mouse.down) {
+            p.heat = Math.max(0, p.heat - dt * 2);
+          }
+        }
+
+        if (mode === 'squeegee' && mouse.down && dist2 < 0.12 && p.painted < 0) {
+          p.painted = (t2 * 30 + i * 15) % 360;
+        }
+
+        if (mode === 'suction') {
+          if (!mouse.down) {
+            // Spring back
+            p.vx -= p.px * 6 * dt;
+            p.vy -= p.py * 6 * dt;
+            p.vx *= 0.9;
+            p.vy *= 0.9;
+            p.px += p.vx * dt;
+            p.py += p.vy * dt;
+          } else {
+            p.px = (mouse.x - mouse.clickX) * 100;
+            p.py = (mouse.y - mouse.clickY) * 80;
+          }
+        }
+
+        if (mode === 'vacuum') {
+          if (mouse.down) {
+            // Store last suck position
+            p.vx = -(mouse.x - 0.5) * 40;
+            p.vy = -(mouse.y - 0.5) * 30;
+          } else {
+            // Blow out from stored velocity
+            p.vx *= 0.95;
+            p.vy *= 0.95;
+            p.vx -= p.px * 4 * dt;
+            p.vy -= p.py * 4 * dt;
+            p.px += p.vx * dt;
+            p.py += p.vy * dt;
+            p.px = Math.max(-60, Math.min(60, p.px));
+            p.py = Math.max(-60, Math.min(60, p.py));
           }
         }
       });
@@ -651,28 +1669,30 @@ export default function InteractiveSection() {
 
   return (
     <div>
-        {selected ? (
+        {selected ? (() => {
+          const idx = MODES.findIndex(a => a.id === selected);
+          const prev = idx > 0 ? MODES[idx - 1] : null;
+          const next = idx < MODES.length - 1 ? MODES[idx + 1] : null;
+          return (
           <div>
-            <button
-              onClick={() => setSelected(null)}
-              className="mb-6 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 transition"
-            >
-              Back to gallery
-            </button>
+            <div className="flex items-center gap-2 mb-6">
+              <button onClick={() => setSelected(null)} className="px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 transition">Back to gallery</button>
+              <div className="flex-1" />
+              <button onClick={() => prev && setSelected(prev.id)} disabled={!prev} className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition">Prev</button>
+              <span className="text-xs text-white/30">{idx + 1}/{MODES.length}</span>
+              <button onClick={() => next && setSelected(next.id)} disabled={!next} className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition">Next</button>
+            </div>
             <div className="flex flex-col items-center gap-4">
               <div className="bg-white/[0.03] rounded-2xl p-16 border border-white/[0.06]">
                 <InteractiveRook mode={selected} blockSize={36} />
               </div>
               <div className="text-center">
-                <p className="text-lg font-medium text-white/80">
-                  {MODES.find(a => a.id === selected)?.label}
-                </p>
-                <p className="text-sm text-white/40">
-                  {MODES.find(a => a.id === selected)?.description}
-                </p>
+                <p className="text-lg font-medium text-white/80">{MODES[idx]?.label}</p>
+                <p className="text-sm text-white/40">{MODES[idx]?.description}</p>
               </div>
             </div>
-          </div>
+          </div>);
+        })()
         ) : (
           <div>
             <div className="flex items-center gap-2 mb-6">

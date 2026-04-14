@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
 
 const InteractiveSection = lazy(() => import('./InteractiveSection'));
+const IllusionSection = lazy(() => import('./IllusionSection'));
+const MoodStorySection = lazy(() => import('./MoodStorySection'));
+const ComboSection = lazy(() => import('./ComboSection'));
 
 // ─── Block Data ───
 const BLOCK_MAP = new Map(ROOK_BLOCKS.map(b => [`${b.x},${b.y}`, b]));
@@ -2363,7 +2366,7 @@ function AnimatedRook({ animation, blockSize = 24, enableSound = false }: { anim
 const PER_PAGE = 12;
 const TOTAL_PAGES = Math.ceil(ANIMATIONS.length / PER_PAGE);
 
-type Tab = 'animations' | 'interactive';
+type Tab = 'animations' | 'interactive' | 'illusions' | 'stories' | 'combos';
 
 export default function TestRookAnimations() {
   const [tab, setTab] = useState<Tab>('animations');
@@ -2379,7 +2382,13 @@ export default function TestRookAnimations() {
         <p className="text-sm text-white/40 mb-4">
           {tab === 'animations'
             ? `${ANIMATIONS.length} animations · Page ${page + 1} of ${TOTAL_PAGES}`
-            : '20 mouse-reactive modes · hover, click, drag'}
+            : tab === 'interactive'
+            ? '60 mouse-reactive modes · hover, click, drag'
+            : tab === 'illusions'
+            ? '20 optical illusions · stare and question reality'
+            : tab === 'stories'
+            ? '20 animated shorts · Rookie has feelings'
+            : '20 mashups · animation + interaction layered'}
         </p>
 
         {/* Tab switcher */}
@@ -2402,7 +2411,37 @@ export default function TestRookAnimations() {
                 : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
             }`}
           >
-            Interactive (20)
+            Interactive (60)
+          </button>
+          <button
+            onClick={() => { setTab('illusions'); setSelected(null); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              tab === 'illusions'
+                ? 'bg-purple-500/30 text-purple-300 ring-1 ring-purple-500/50'
+                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
+            }`}
+          >
+            Illusions (20)
+          </button>
+          <button
+            onClick={() => { setTab('stories'); setSelected(null); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              tab === 'stories'
+                ? 'bg-amber-500/30 text-amber-300 ring-1 ring-amber-500/50'
+                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
+            }`}
+          >
+            Mood Stories (20)
+          </button>
+          <button
+            onClick={() => { setTab('combos'); setSelected(null); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              tab === 'combos'
+                ? 'bg-rose-500/30 text-rose-300 ring-1 ring-rose-500/50'
+                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
+            }`}
+          >
+            Combos (20)
           </button>
         </div>
 
@@ -2410,31 +2449,68 @@ export default function TestRookAnimations() {
           <Suspense fallback={<div className="text-white/30 text-sm">Loading interactive modes...</div>}>
             <InteractiveSection />
           </Suspense>
+        ) : tab === 'illusions' ? (
+          <Suspense fallback={<div className="text-white/30 text-sm">Loading illusions...</div>}>
+            <IllusionSection />
+          </Suspense>
+        ) : tab === 'stories' ? (
+          <Suspense fallback={<div className="text-white/30 text-sm">Loading stories...</div>}>
+            <MoodStorySection />
+          </Suspense>
+        ) : tab === 'combos' ? (
+          <Suspense fallback={<div className="text-white/30 text-sm">Loading combos...</div>}>
+            <ComboSection />
+          </Suspense>
         ) : (
         <>
         {selected ? (
           /* ─── Focus View ─── */
-          <div>
-            <button
-              onClick={() => setSelected(null)}
-              className="mb-6 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 transition"
-            >
-              Back to gallery
-            </button>
-            <div className="flex flex-col items-center gap-4">
-              <div className="bg-white/[0.03] rounded-2xl p-12 border border-white/[0.06]">
-                <AnimatedRook animation={selected} blockSize={36} enableSound />
+          (() => {
+            const idx = ANIMATIONS.findIndex(a => a.id === selected);
+            const prev = idx > 0 ? ANIMATIONS[idx - 1] : null;
+            const next = idx < ANIMATIONS.length - 1 ? ANIMATIONS[idx + 1] : null;
+            return (
+            <div>
+              <div className="flex items-center gap-2 mb-6">
+                <button
+                  onClick={() => setSelected(null)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 transition"
+                >
+                  Back to gallery
+                </button>
+                <div className="flex-1" />
+                <button
+                  onClick={() => prev && setSelected(prev.id)}
+                  disabled={!prev}
+                  className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"
+                >
+                  Prev
+                </button>
+                <span className="text-xs text-white/30">{idx + 1}/{ANIMATIONS.length}</span>
+                <button
+                  onClick={() => next && setSelected(next.id)}
+                  disabled={!next}
+                  className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"
+                >
+                  Next
+                </button>
               </div>
-              <div className="text-center">
-                <p className="text-lg font-medium text-white/80">
-                  {ANIMATIONS.find(a => a.id === selected)?.label}
-                </p>
-                <p className="text-sm text-white/40">
-                  {ANIMATIONS.find(a => a.id === selected)?.description}
-                </p>
+              <div className="flex flex-col items-center gap-4">
+                <div className="bg-white/[0.03] rounded-2xl p-12 border border-white/[0.06]">
+                  <AnimatedRook animation={selected} blockSize={36} enableSound />
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-medium text-white/80">
+                    {ANIMATIONS[idx]?.label}
+                  </p>
+                  <p className="text-sm text-white/40">
+                    {ANIMATIONS[idx]?.description}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+            );
+          })()
         ) : (
           /* ─── Gallery View (paginated) ─── */
           <div>
