@@ -16,15 +16,15 @@ import {
 } from '@/lib/sounds';
 import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { ShareEvents, EngagementEvents } from '@/lib/analytics/posthog';
+import { EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
 import { useClickToMove } from '@/hooks/useClickToMove';
-import { RookiePopup } from '@/components/shared/DailyRitual';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
 interface Puzzle {
@@ -87,6 +87,7 @@ export default function DailyChallengePage() {
   // Dev mode: use ?testSeed=X to get different puzzles
   const testSeed = searchParams.get('testSeed');
 
+  const [showActivityComplete, setShowActivityComplete] = useState(true);
   // Game state - simple: just an array of puzzles and current index
   const [gameState, setGameState] = useState<'ready' | 'loading' | 'playing' | 'finished'>('ready');
   const [allPuzzles, setAllPuzzles] = useState<ProcessedPuzzle[]>([]);
@@ -1009,6 +1010,32 @@ export default function DailyChallengePage() {
           </div>
         )}
 
+        {/* ── Activity Complete overlay ── */}
+        {gameState === 'finished' && showActivityComplete && (
+          <ActivityComplete
+            source="daily"
+            mode="dismissible"
+            correctCount={puzzlesSolved}
+            totalCount={allPuzzles.length || 22}
+            isGuest={!user}
+            shareConfig={{
+              shareUrl: 'https://chesspath.app/daily-challenge',
+              ogEndpoint: '/api/og/daily-challenge',
+              ogParams: {
+                score: String(puzzlesSolved),
+                time: String(completionTimeMs),
+                format: 'story',
+                results: attemptedPuzzles.map(p => p.result === 'correct' ? '1' : '0').join(','),
+              },
+              source: 'daily_challenge',
+              title: 'The Daily Rook | Chess Path',
+              text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!`,
+            }}
+            onDismiss={() => setShowActivityComplete(false)}
+            onContinue={() => router.push('/')}
+          />
+        )}
+
         {/* ── FINISHED ── */}
         {gameState === 'finished' && (
           <div className="px-4 py-2">
@@ -1026,80 +1053,6 @@ export default function DailyChallengePage() {
                   <span className="text-base font-semibold text-chess-text/40">in {formatTime(completionTimeMs)}</span>
                 </div>
               </div>
-
-              {/* Share Results button */}
-              {FEATURE_FLAGS.SHOW_SHARING && (
-                <button
-                  onClick={async () => {
-                    if (cardSharing || !shareImageRef.current) return;
-                    setCardSharing(true);
-                    ShareEvents.shareClicked('daily_challenge', 'image');
-                    try {
-                      // Image is guaranteed ready (button disabled until pre-fetch completes)
-                      // No async work before navigator.share() — preserves user activation
-                      const blob = shareImageRef.current;
-                      const file = new File([blob], 'daily-rook.png', { type: 'image/png' });
-
-                      // Try native share (mobile share sheet) — skip canShare check,
-                      // just attempt it and catch errors
-                      let shared = false;
-                      if (typeof navigator !== 'undefined' && 'share' in navigator) {
-                        try {
-                          await navigator.share({
-                            files: [file],
-                            title: 'The Daily Rook',
-                            text: `I solved ${puzzlesSolved} puzzles on today's Daily Rook!\nchesspath.app/daily-challenge`,
-                          });
-                          shared = true;
-                          ShareEvents.shareCompleted('daily_challenge', 'native_image');
-                        } catch (shareErr) {
-                          if (shareErr instanceof Error && shareErr.name === 'AbortError') {
-                            shared = true; // User cancelled — don't fall through to download
-                          }
-                          // TypeError = browser doesn't support file sharing → fall through
-                        }
-                      }
-
-                      if (!shared) {
-                        // Fallback: download the image
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'daily-rook.png';
-                        a.style.display = 'none';
-                        document.body.appendChild(a);
-                        a.click();
-                        setTimeout(() => {
-                          document.body.removeChild(a);
-                          URL.revokeObjectURL(url);
-                        }, 1000);
-                        ShareEvents.shareCompleted('daily_challenge', 'download');
-                      }
-                    } catch (err) {
-                      console.error('Share failed:', err);
-                      ShareEvents.shareFailed('daily_challenge', err instanceof Error ? err.message : 'unknown');
-                    } finally {
-                      setCardSharing(false);
-                    }
-                  }}
-                  disabled={cardSharing || !shareImageReady}
-                  className="w-full py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-70 mb-2"
-                  style={{ background: 'linear-gradient(135deg, var(--color-chess-orange), #FF6B6B)', boxShadow: '0 3px 0 #CC6600' }}
-                >
-                  {cardSharing ? (
-                    <span className="animate-pulse">Sharing...</span>
-                  ) : !shareImageReady ? (
-                    <span className="animate-pulse">Preparing...</span>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                      </svg>
-                      Share Results
-                    </>
-                  )}
-                </button>
-              )}
 
               {/* Puzzle Review Section */}
               {attemptedPuzzles.length > 0 && (
@@ -1138,9 +1091,6 @@ export default function DailyChallengePage() {
               <div className="mb-2">
                 <AdSlot position="daily-complete" />
               </div>
-
-              {/* Daily ritual */}
-              {user && <RookiePopup justCompleted="daily" />}
 
               {/* Bottom action buttons */}
               {!user ? (
