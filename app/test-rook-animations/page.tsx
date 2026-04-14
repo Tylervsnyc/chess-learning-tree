@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
+
+const InteractiveSection = lazy(() => import('./InteractiveSection'));
 
 // ─── Block Data ───
 const BLOCK_MAP = new Map(ROOK_BLOCKS.map(b => [`${b.x},${b.y}`, b]));
@@ -99,12 +101,12 @@ const ANIMATIONS: { id: AnimationId; label: string; description: string; sound?:
   { id: 'accordion', label: 'Accordion', description: 'Rows compress and expand like an accordion' },
   { id: 'antFarm', label: 'Ant Farm', description: 'Blocks crawl around following invisible trails' },
   { id: 'beeSwarm', label: 'Bee Swarm', description: 'Chaotic buzzing motion around a moving queen' },
-  { id: 'bigBang', label: 'Big Bang', description: 'Everything from a single point, expanding universe' },
+  { id: 'bigBang', label: 'Big Bang', description: 'Everything from a single point, expanding universe', sound: { src: '/sounds/epic-intro.mp3', interval: 6 } },
   { id: 'blinds', label: 'Window Blinds', description: 'Rows flip open and closed like venetian blinds' },
   { id: 'boiling', label: 'Boiling', description: 'Blocks bubble up from bottom with increasing fury' },
   { id: 'carousel', label: 'Carousel', description: '3D merry-go-round spinning with depth' },
   { id: 'catScan', label: 'CAT Scan', description: 'Medical scanner slice moving through the rook' },
-  { id: 'centrifuge', label: 'Centrifuge', description: 'Spinning faster and faster, blocks fly outward' },
+  { id: 'centrifuge', label: 'Centrifuge', description: 'Spinning faster and faster, blocks fly outward', sound: { src: '/sounds/tribal-perc.mp3', interval: 30 } },
   { id: 'chainReaction', label: 'Chain Reaction', description: 'One block triggers the next in an explosive chain' },
   { id: 'clapboard', label: 'Clapboard', description: 'Movie clapboard snap with blocks falling into place' },
   { id: 'comet', label: 'Comet', description: 'Blocks streak across with glowing tail' },
@@ -1891,8 +1893,8 @@ function animateBlock(anim: AnimationId, x: number, y: number, t: number, blockS
     case 'knightsTour': {
       // L-shaped knight moves, light follows the path
       const knightMoves = [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
-      const moveIdx = Math.floor(t * 2) % 8;
-      const moveProgress = (t * 2) % 1;
+      const moveIdx = ((Math.floor(t * 2) % 8) + 8) % 8;
+      const moveProgress = ((t * 2) % 1 + 1) % 1;
       const km = knightMoves[moveIdx];
       const knightX = (CENTER_X + km[0] * moveProgress + 5) % 5;
       const knightY = (CENTER_Y + km[1] * moveProgress + 6) % 6;
@@ -2361,7 +2363,10 @@ function AnimatedRook({ animation, blockSize = 24, enableSound = false }: { anim
 const PER_PAGE = 12;
 const TOTAL_PAGES = Math.ceil(ANIMATIONS.length / PER_PAGE);
 
+type Tab = 'animations' | 'interactive';
+
 export default function TestRookAnimations() {
+  const [tab, setTab] = useState<Tab>('animations');
   const [selected, setSelected] = useState<AnimationId | null>(null);
   const [page, setPage] = useState(0);
 
@@ -2371,8 +2376,42 @@ export default function TestRookAnimations() {
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-auto p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold mb-1 text-white/90">Rook Animation Lab</h1>
-        <p className="text-sm text-white/40 mb-5">{ANIMATIONS.length} animations &middot; Page {page + 1} of {TOTAL_PAGES}</p>
+        <p className="text-sm text-white/40 mb-4">
+          {tab === 'animations'
+            ? `${ANIMATIONS.length} animations · Page ${page + 1} of ${TOTAL_PAGES}`
+            : '20 mouse-reactive modes · hover, click, drag'}
+        </p>
 
+        {/* Tab switcher */}
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => { setTab('animations'); setSelected(null); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              tab === 'animations'
+                ? 'bg-indigo-500/30 text-indigo-300 ring-1 ring-indigo-500/50'
+                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
+            }`}
+          >
+            Animations ({ANIMATIONS.length})
+          </button>
+          <button
+            onClick={() => { setTab('interactive'); setSelected(null); }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              tab === 'interactive'
+                ? 'bg-emerald-500/30 text-emerald-300 ring-1 ring-emerald-500/50'
+                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
+            }`}
+          >
+            Interactive (20)
+          </button>
+        </div>
+
+        {tab === 'interactive' ? (
+          <Suspense fallback={<div className="text-white/30 text-sm">Loading interactive modes...</div>}>
+            <InteractiveSection />
+          </Suspense>
+        ) : (
+        <>
         {selected ? (
           /* ─── Focus View ─── */
           <div>
@@ -2452,6 +2491,8 @@ export default function TestRookAnimations() {
               </button>
             </div>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>
