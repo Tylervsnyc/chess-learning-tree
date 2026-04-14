@@ -76,19 +76,22 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
   );
 }
 
+// Lightweight gate — checks path BEFORE loading Supabase/useUser
+const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/test/landing', '/test/rookie-promise', '/test/basics-tutorial', '/test/tutorial', '/2026candidates', '/test-rook-animations'];
+
 export function NavHeader() {
-  const { user, profile, loading } = useUser();
   const pathname = usePathname();
 
-  // Don't show header on auth pages, onboarding, basics tutorial, or opening lesson pages
-  if (pathname?.startsWith('/auth/')) return null;
-  if (pathname === '/welcome' || pathname === '/basics') return null;
-  if (pathname?.startsWith('/test/landing')) return null;
-  if (pathname?.startsWith('/test/rookie-promise')) return null;
-  if (pathname?.startsWith('/test/basics-tutorial')) return null;
-  if (pathname?.startsWith('/test/tutorial')) return null;
-  if (pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')) return null;
-  if (pathname?.startsWith('/2026candidates')) return null;
+  // Early bail — avoids loading useUser/Supabase on pages that never show the header
+  const hidden = HIDDEN_PATHS.some(p => pathname?.startsWith(p))
+    || pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree');
+  if (hidden) return null;
+
+  return <NavHeaderInner pathname={pathname} />;
+}
+
+function NavHeaderInner({ pathname }: { pathname: string | null }) {
+  const { user, profile, loading } = useUser();
 
   return (
     <header className="sticky top-0 z-50 bg-chess-surface border-b border-slate-200 shadow-sm">
