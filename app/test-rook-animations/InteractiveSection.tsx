@@ -610,7 +610,7 @@ function computeBlock(
       if (timeSinceClick < 4) {
         const whirlStrength = Math.exp(-timeSinceClick * 0.5);
         const whirlAngle = angle + timeSinceClick * 4 * whirlStrength;
-        const pullIn = whirlStrength * 30 * (1 - normDist * 0.5);
+        const pullIn = whirlStrength * 30 * (1 - clickDist * 0.5);
         state.offsetX = Math.cos(whirlAngle) * clickDist * pullIn - (clickDx) * gridWidth * whirlStrength * 0.5;
         state.offsetY = Math.sin(whirlAngle) * clickDist * pullIn - (clickDy) * gridHeight * whirlStrength * 0.5;
         state.rotation = whirlAngle * 60;
@@ -1286,13 +1286,13 @@ function computeBlock(
         // Send down
         if (yoPhase < 0.6) {
           const down = yoPhase / 0.6;
-          state.offsetY = down * 60 * (1 - normDist * 0.5);
+          state.offsetY = down * 60 * (1 - dist * 0.5);
           state.scale = 1 - down * 0.2;
           state.brightness = 1 + down * 0.3;
           state.rotation = down * 360;
         } else if (yoPhase < 0.8) {
           // Spin at bottom
-          state.offsetY = 60 * (1 - normDist * 0.5);
+          state.offsetY = 60 * (1 - dist * 0.5);
           state.rotation = yoPhase * 720;
           state.brightness = 1.5;
           state.scale = 0.8;
@@ -1300,7 +1300,7 @@ function computeBlock(
           // Snap back
           const back = (yoPhase - 0.8) / 0.5;
           const eased3 = easeOut(Math.min(1, back));
-          state.offsetY = 60 * (1 - eased3) * (1 - normDist * 0.5);
+          state.offsetY = 60 * (1 - eased3) * (1 - dist * 0.5);
           state.scale = 0.8 + eased3 * 0.2;
           state.rotation = 720 * (1 - eased3);
           state.brightness = 1 + (1 - eased3) * 0.3;
@@ -1692,8 +1692,7 @@ export default function InteractiveSection() {
               </div>
             </div>
           </div>);
-        })()
-        ) : (
+        })() : (
           <div>
             <div className="flex items-center gap-2 mb-6">
               {Array.from({ length: TOTAL_PAGES }, (_, i) => (

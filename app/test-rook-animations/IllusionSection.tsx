@@ -578,8 +578,7 @@ export default function IllusionSection() {
             </div>
           </div>
         </div>);
-      })()
-      ) : (
+      })() : (
         <div>
           <div className="flex items-center gap-2 mb-6">
             {Array.from({ length: TOTAL_PAGES }, (_, i) => (

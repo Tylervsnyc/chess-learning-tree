@@ -686,8 +686,7 @@ export default function ComboSection() {
             </div>
           </div>
         </div>);
-      })()
-      ) : (
+      })() : (
         <div>
           {TOTAL_PAGES > 1 && (
             <div className="flex items-center gap-2 mb-6">
