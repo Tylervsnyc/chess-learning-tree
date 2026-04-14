@@ -148,14 +148,16 @@ export const OpeningsEvents = {
 };
 
 // Share/Viral funnel
+export type ShareSource = 'lesson' | 'daily_challenge' | 'opening' | 'play';
+
 export const ShareEvents = {
-  shareClicked: (source: 'lesson' | 'daily_challenge' | 'opening', type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
+  shareClicked: (source: ShareSource, type?: 'text' | 'link' | 'image' | 'card' | 'rook') =>
     trackEvent('share_clicked', { source, type }),
-  shareGenerated: (source: 'lesson' | 'daily_challenge' | 'opening') =>
+  shareGenerated: (source: ShareSource) =>
     trackEvent('share_generated', { source }),
-  shareCompleted: (source: 'lesson' | 'daily_challenge' | 'opening', method: 'native' | 'native_image' | 'download' | 'clipboard' | 'clipboard_link') =>
+  shareCompleted: (source: ShareSource, method: 'native' | 'native_image' | 'download' | 'clipboard' | 'clipboard_link') =>
     trackEvent('share_completed', { source, method }),
-  shareFailed: (source: 'lesson' | 'daily_challenge' | 'opening', error: string) =>
+  shareFailed: (source: ShareSource, error: string) =>
     trackEvent('share_failed', { source, error }),
 };
 
