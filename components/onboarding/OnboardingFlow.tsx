@@ -7,6 +7,7 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
 import { playButtonClick } from '@/lib/sounds';
+import { useBubblePopGame } from './BubblePopGame';
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
@@ -92,6 +93,9 @@ export function OnboardingFlow() {
     ROOKIE_QUIPS, 800, 30000, 28,
   );
 
+  // Bubble-pop mini-game — activates after entrance finishes
+  const { poppedAt, popQuip, teaseBlock, onBlockTap, start: startBubblePop } = useBubblePopGame();
+
   // Orchestrated entrance: Rookie first, then buttons, then logo
   // 1=Rookie appears, 2=powerOn anim, 3=speech bubble, 4=buttons, 5=logo+sign in
   useEffect(() => {
@@ -104,6 +108,11 @@ export function OnboardingFlow() {
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
+
+  // Start bubble-pop game after everything has loaded
+  useEffect(() => {
+    if (phase >= 5) startBubblePop();
+  }, [phase, startBubblePop]);
 
   // PostHog — fire onboarding_started once PostHog loads (lazy)
   useEffect(() => {
@@ -188,6 +197,9 @@ export function OnboardingFlow() {
             animation={phase >= 2 && phase < 4 ? 'powerOn' : undefined}
             animate={phase >= 4}
             mood={hoveredBtn === 'play' ? 'excited' : hoveredBtn === 'learn' ? 'happy' : 'neutral'}
+            onBlockTap={onBlockTap}
+            poppedAt={poppedAt}
+            teaseBlock={teaseBlock}
           />
         </div>
 
@@ -217,8 +229,8 @@ export function OnboardingFlow() {
                 transition: 'opacity 0.3s ease-out',
               }}
             >
-              <span className="font-black block" style={{ fontSize: 'clamp(15px, 4vw, 17px)' }}>I&apos;m Rookie.</span>{typedQuip}
-              {!typingDone && (
+              <span className="font-black block" style={{ fontSize: 'clamp(15px, 4vw, 17px)' }}>I&apos;m Rookie.</span>{popQuip || typedQuip}
+              {!popQuip && !typingDone && (
                 <span
                   className="inline-block w-[2px] h-[1em] bg-chess-text ml-0.5 align-text-bottom"
                   style={{ animation: 'onb-cursor-blink 0.8s step-end infinite' }}

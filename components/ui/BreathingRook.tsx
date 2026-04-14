@@ -92,6 +92,12 @@ interface BreathingRookProps {
    * Center blocks react first, outer blocks lag slightly.
    */
   talkIntensity?: number;
+  /** Called when a block is tapped — receives grid coords. Used for bubble-pop game. */
+  onBlockTap?: (x: number, y: number) => void;
+  /** Map of "x,y" → timestamp when popped. Blocks deflate then slowly reform over 4s. */
+  poppedAt?: Map<string, number>;
+  /** Single block key "x,y" that subtly pulses to invite a tap */
+  teaseBlock?: string | null;
 }
 
 // Build a lookup map: "x,y" → block
@@ -166,6 +172,10 @@ function getBlockAnimation(mode: AnimationMode, delay: number, x?: number, y?: n
 }
 
 const ANIMATION_KEYFRAMES = `
+  @keyframes rookTeaseBlock {
+    0%, 100% { transform: scale(0.88); }
+    50% { transform: scale(0.92); }
+  }
   @keyframes rookColorBreathe {
     0%, 100% { filter: brightness(0.9) saturate(0.95); }
     50% { filter: brightness(1.5) saturate(1.2); }
@@ -420,7 +430,7 @@ const BLOCK_META_MAP = new Map<string, { normDist: number; angle: number }>();
   }
 }
 
-export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', alarmVariant, talkIntensity }: BreathingRookProps) {
+export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', alarmVariant, talkIntensity, onBlockTap, poppedAt, teaseBlock }: BreathingRookProps) {
   const blockSize = SIZE_MAP[size];
   const gap = Math.max(1, Math.round(blockSize * 0.15));
   const radius = Math.max(1, Math.round(blockSize * 0.14));
@@ -520,9 +530,26 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
           };
           const alarmAnim = getAlarmAnimation();
 
+          const blockKey = `${x},${y}`;
+          const poppedTime = poppedAt?.get(blockKey);
+          const isPopped = poppedTime !== undefined;
+          const isTease = teaseBlock === blockKey && !isPopped;
+
+          // Reform progress: 0 = just popped (invisible), 1 = fully reformed
+          let reformProgress = 1;
+          if (isPopped) {
+            const elapsed = Date.now() - poppedTime;
+            reformProgress = Math.min(1, elapsed / 4000) * 0.3; // scale reforms slowly
+            // First 300ms: fast collapse. Then slow reform over remaining time.
+            if (elapsed < 300) {
+              reformProgress = 0;
+            }
+          }
+
           return (
             <div
-              key={`${x},${y}`}
+              key={blockKey}
+              onClick={onBlockTap ? (e) => { e.stopPropagation(); onBlockTap(x, y); } : undefined}
               style={{
                 position: 'absolute',
                 left,
@@ -532,12 +559,22 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                 borderRadius: radius,
                 background: getMatteBackground(tinted),
                 boxShadow: insetShadow,
-                transition: 'background 1.2s ease-in-out, opacity 1.2s ease-in-out, animation-duration 1.2s ease-in-out',
+                transition: isPopped
+                  ? 'transform 0.15s ease-out, opacity 0.15s ease-out, filter 0.15s ease-out'
+                  : 'background 1.2s ease-in-out, opacity 1.2s ease-in-out, animation-duration 1.2s ease-in-out, transform 0.4s ease-out',
+                cursor: onBlockTap ? 'pointer' : undefined,
+                ...(isPopped ? {
+                  transform: `scale(${reformProgress})`,
+                  opacity: 0.5 + reformProgress * 0.5,
+                  filter: `brightness(${0.5 + reformProgress * 0.5})`,
+                } : {}),
                 ...(mood === 'embarrassed' ? { opacity: 0.08 } : {}),
                 ...(mood === 'defeated' ? { opacity: 0.3 } : {}),
                 ...(mood === 'shadow' ? { opacity: 0.15 } : {}),
                 ...(mood === 'sleepy' ? { opacity: 0.4 } : {}),
-                ...(alarmAnim ? {
+                ...(!isPopped ? (isTease ? {
+                  animation: 'rookTeaseBlock 2s ease-in-out infinite',
+                } : alarmAnim ? {
                   animation: alarmAnim,
                 } : useMoodBreathe ? {
                   animation: `rookBreathe_${mood} ${moodSpeed}s ease-in-out ${breatheDelay}s infinite`,
@@ -545,7 +582,7 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
                   animation: getBlockAnimation(activeMode, delay, x, y),
                   ...(activeMode === 'enter' ? { opacity: 0 } : {}),
                   ...(activeMode === 'powerOn' ? { filter: 'brightness(0.1) saturate(0)' } : {}),
-                } : {}),
+                } : {}) : {}),
               }}
             />
           );
