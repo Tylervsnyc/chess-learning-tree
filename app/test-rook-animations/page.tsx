@@ -2470,8 +2470,8 @@ export default function TestRookAnimations() {
             const prev = idx > 0 ? ANIMATIONS[idx - 1] : null;
             const next = idx < ANIMATIONS.length - 1 ? ANIMATIONS[idx + 1] : null;
             return (
-            <div>
-              <div className="flex items-center gap-2 mb-6">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center gap-2 mb-6 shrink-0">
                 <button
                   onClick={() => setSelected(null)}
                   className="px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80 transition"
@@ -2495,7 +2495,7 @@ export default function TestRookAnimations() {
                   Next
                 </button>
               </div>
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex-1 overflow-auto flex flex-col items-center gap-4 py-8">
                 <div className="bg-white/[0.03] rounded-2xl p-12 border border-white/[0.06]">
                   <AnimatedRook animation={selected} blockSize={36} enableSound />
                 </div>
