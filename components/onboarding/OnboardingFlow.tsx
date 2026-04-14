@@ -5,69 +5,28 @@ import { useRouter } from 'next/navigation';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { useRookieVoice } from '@/hooks/useRookieVoice';
-import posthogLib from 'posthog-js';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
-import { playButtonClick, warmupAudio, getSharedAudioContext } from '@/lib/sounds';
+import { playButtonClick } from '@/lib/sounds';
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
-  // ── Hook — short, punchy, instant ──
-  "Learn chess in 5 minutes. I'll prove it.",
+  // ── Hook — lead with fun ──
+  "Chess is fun. I'll prove it.",
+  "Most chess apps are boring. I'm not most chess apps.",
+  "You're new here? Perfect. This is the fun way to learn chess. The boring way already exists.",
+  // ── Personality ──
   "I teach chess. You learn chess. We both pretend I'm not a computer. It's a whole thing.",
-  "You're new here? Perfect. I was built for this. Literally. It's the only thing I do.",
-  // ── What this is ──
-  "This is the fun way to learn chess. Not the boring way. I checked. The boring way already exists.",
-  "Most chess apps assume you already know chess. I assume you don't. And I think that's beautiful.",
-  "Learn the moves. Play some games. Beat your friends. That's the plan. My plan. For you.",
+  "I'm a rook, by the way. I only move in straight lines. My personality is less predictable.",
+  "If chess isn't fun, you can blame me. I can take it.",
   // ── Nudge to pick a button ──
   "Want to play a game or learn the basics? Either way I'm here. I'm always here.",
   "Two buttons. Big decision. Not really. Both are good. I made them both.",
   "Hit Play if you're feeling brave. Hit Learn if you want to know what the pieces do first.",
-  "You can play me or you can learn first. Fair warning: I go easy on beginners. Very easy.",
-  // ── Personality / charm ──
-  "I'm a rook, by the way. I only move in straight lines. My personality is less predictable.",
-  "I promise chess is fun. And if it's not, you can blame me. I can take it.",
-  "Five minutes. That's all I need. You'll know how every piece moves and you'll want to play again.",
-  "I've taught thousands of people chess. Some of them even came back. On purpose.",
   // ── Idle / waiting ──
   "Still deciding? No rush. I'll just be here. Existing. Waiting. It's what I do best.",
   "Take your time. I've been waiting since you opened the app. Which was not long ago. But still.",
-  "I don't have anywhere else to be. Pick whenever you're ready.",
   "Oh good, you're still here. I was worried you left. I can't check. I don't have eyes.",
 ];
-
-// ─── Synthesized power-on chime ───
-function playPowerOnSound() {
-  const ctx = getSharedAudioContext();
-  if (!ctx) return;
-  if (ctx.state === 'suspended') ctx.resume();
-  const t = ctx.currentTime;
-  const notes = [330, 415, 523, 659];
-  notes.forEach((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = freq;
-    const start = t + i * 0.12;
-    gain.gain.setValueAtTime(0.001, start);
-    gain.gain.linearRampToValueAtTime(0.08, start + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(start);
-    osc.stop(start + 0.4);
-  });
-  const sub = ctx.createOscillator();
-  const subGain = ctx.createGain();
-  sub.type = 'sine';
-  sub.frequency.value = 82;
-  subGain.gain.setValueAtTime(0.001, t);
-  subGain.gain.linearRampToValueAtTime(0.06, t + 0.1);
-  subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
-  sub.connect(subGain).connect(ctx.destination);
-  sub.start(t);
-  sub.stop(t + 0.8);
-}
 
 // ─── Typewriter hook with quip cycling ───
 function useTypewriter(quips: string[], startDelay: number, idleInterval: number, speed = 28) {
@@ -119,7 +78,7 @@ function useTypewriter(quips: string[], startDelay: number, idleInterval: number
     return () => { if (idleTimerRef.current) clearTimeout(idleTimerRef.current); };
   }, [done, quips.length, idleInterval]);
 
-  return { displayed, done, fading, text, quipIndex };
+  return { displayed, done, fading };
 }
 
 
@@ -127,64 +86,38 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [phase, setPhase] = useState(0);
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
-  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [learnExpanded, setLearnExpanded] = useState(false);
-  const powerOnPlayedRef = useRef(false);
-  const lastSpokenIndexRef = useRef(-1);
 
-  // ElevenLabs voice — real audio drives Rookie's talk intensity
-  const { speakQuip, talkIntensity, isTalking } = useRookieVoice(audioUnlocked);
-
-  const { displayed: typedQuip, done: typingDone, fading, text: currentQuipText, quipIndex } = useTypewriter(
+  const { displayed: typedQuip, done: typingDone, fading } = useTypewriter(
     ROOKIE_QUIPS, 800, 30000, 28,
   );
 
-  // Speak each quip via ElevenLabs when typing finishes
-  useEffect(() => {
-    if (!typingDone || !audioUnlocked) return;
-    if (lastSpokenIndexRef.current === quipIndex) return;
-    if (quipIndex >= 2) return;
-    lastSpokenIndexRef.current = quipIndex;
-    speakQuip(currentQuipText);
-  }, [typingDone, audioUnlocked, quipIndex, currentQuipText, speakQuip]);
-
-  // Orchestrated entrance
+  // Orchestrated entrance: Rookie first, then buttons, then logo
+  // 1=Rookie appears, 2=powerOn anim, 3=speech bubble, 4=buttons, 5=logo+sign in
   useEffect(() => {
     const timers = [
       setTimeout(() => setPhase(1), 100),
       setTimeout(() => setPhase(2), 300),
-      setTimeout(() => setPhase(3), 700),
-      setTimeout(() => setPhase(4), 1100),
-      setTimeout(() => setPhase(5), 1400),
+      setTimeout(() => setPhase(3), 800),
+      setTimeout(() => setPhase(4), 2200),
+      setTimeout(() => setPhase(5), 2800),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Power-on sound
-  useEffect(() => {
-    if (audioUnlocked && phase >= 2 && !powerOnPlayedRef.current) {
-      powerOnPlayedRef.current = true;
-      playPowerOnSound();
-    }
-  }, [audioUnlocked, phase]);
-
-  const handleFirstInteraction = useCallback(() => {
-    if (!audioUnlocked) {
-      // Just unlock audio — don't retroactively speak queued quips.
-      // The user's first tap is usually a button that navigates away.
-      warmupAudio();
-      lastSpokenIndexRef.current = quipIndex; // prevent effect from speaking stale quip
-      setAudioUnlocked(true);
-    }
-  }, [audioUnlocked, quipIndex]);
-
-  // PostHog
+  // PostHog — fire onboarding_started once PostHog loads (lazy)
   useEffect(() => {
     let cancelled = false;
-    const tryFire = () => {
+    const tryFire = async () => {
       if (cancelled) return;
-      if (posthogLib.__loaded) { OnboardingEvents.started(); }
-      else { setTimeout(tryFire, 200); }
+      try {
+        const posthog = (await import('posthog-js')).default;
+        if (cancelled) return;
+        if (posthog.__loaded) { OnboardingEvents.started(); }
+        else { setTimeout(tryFire, 200); }
+      } catch {
+        if (!cancelled) setTimeout(tryFire, 200);
+      }
     };
     tryFire();
     return () => { cancelled = true; };
@@ -195,6 +128,7 @@ export function OnboardingFlow() {
   }, []);
 
   const handleRoute = useCallback((id: 'play' | 'learn', route: string) => {
+    playButtonClick();
     OnboardingEvents.routeSelected(id);
     markOnboarded();
     OnboardingEvents.completed({ level: id });
@@ -202,10 +136,7 @@ export function OnboardingFlow() {
   }, [markOnboarded, router]);
 
   return (
-    <div
-      className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative"
-      onPointerDown={handleFirstInteraction}
-    >
+    <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
       <style>{`
 @keyframes onb-cursor-blink {
           0%, 100% { opacity: 1; }
@@ -221,9 +152,9 @@ export function OnboardingFlow() {
       <div
         className="pt-5 pl-5"
         style={{
-          opacity: phase >= 1 ? 1 : 0,
-          transform: phase >= 1 ? 'translateY(0)' : 'translateY(-6px)',
-          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+          opacity: phase >= 5 ? 1 : 0,
+          transform: phase >= 5 ? 'translateY(0)' : 'translateY(-6px)',
+          transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
         <AnimatedLogo size={0.28} perpetual theme="light" />
@@ -255,27 +186,11 @@ export function OnboardingFlow() {
           <BreathingRook
             size="xl"
             animation={phase >= 2 && phase < 4 ? 'powerOn' : undefined}
-            animate={phase >= 4 && !isTalking}
+            animate={phase >= 4}
             mood={hoveredBtn === 'play' ? 'excited' : hoveredBtn === 'learn' ? 'happy' : 'neutral'}
-            talkIntensity={isTalking ? talkIntensity : undefined}
           />
         </div>
 
-        <div
-          className="mt-3"
-          style={{
-            opacity: phase >= 3 ? 1 : 0,
-            transform: phase >= 3 ? 'translateY(0)' : 'translateY(6px)',
-            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-          }}
-        >
-          <span
-            className="text-chess-text font-black tracking-tight"
-            style={{ fontSize: 'clamp(20px, 5vw, 28px)' }}
-          >
-            I&apos;m Rookie.
-          </span>
-        </div>
       </div>
 
       {/* Speech bubble with typewriter — fixed height so layout doesn't shift */}
@@ -285,7 +200,7 @@ export function OnboardingFlow() {
           opacity: phase >= 3 ? 1 : 0,
           transform: phase >= 3 ? 'translateY(0)' : 'translateY(10px)',
           transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-          height: 72,
+          height: 90,
         }}
       >
         <div className="relative h-full">
@@ -302,7 +217,7 @@ export function OnboardingFlow() {
                 transition: 'opacity 0.3s ease-out',
               }}
             >
-              {typedQuip}
+              <span className="font-black block" style={{ fontSize: 'clamp(15px, 4vw, 17px)' }}>I&apos;m Rookie.</span>{typedQuip}
               {!typingDone && (
                 <span
                   className="inline-block w-[2px] h-[1em] bg-chess-text ml-0.5 align-text-bottom"
@@ -336,7 +251,7 @@ export function OnboardingFlow() {
             <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
               Play
             </span>
-            <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
+            <span className="block mt-0.5 font-semibold" style={{ fontSize: 'clamp(13px, 3.2vw, 15px)', opacity: 0.85 }}>
               I&apos;ll go easy. Probably.
             </span>
           </ActionButton>
@@ -361,7 +276,7 @@ export function OnboardingFlow() {
               <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
                 Learn
               </span>
-              <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', opacity: 0.7 }}>
+              <span className="block mt-0.5 font-semibold" style={{ fontSize: 'clamp(13px, 3.2vw, 15px)', opacity: 0.85 }}>
                 Show me which way the horsey goes
               </span>
             </ActionButton>
@@ -376,7 +291,7 @@ export function OnboardingFlow() {
                 <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Basics
                 </span>
-                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(9px, 2.2vw, 11px)', opacity: 0.7 }}>
+                <span className="block mt-0.5 font-semibold" style={{ fontSize: 'clamp(12px, 2.8vw, 13px)', opacity: 0.85 }}>
                   How pieces move
                 </span>
               </ActionButton>
@@ -389,7 +304,7 @@ export function OnboardingFlow() {
                 <span className="font-black block" style={{ fontSize: 'clamp(14px, 4vw, 17px)' }}>
                   Checkmate
                 </span>
-                <span className="block mt-0.5 font-medium" style={{ fontSize: 'clamp(9px, 2.2vw, 11px)', opacity: 0.7 }}>
+                <span className="block mt-0.5 font-semibold" style={{ fontSize: 'clamp(12px, 2.8vw, 13px)', opacity: 0.85 }}>
                   I know the basics
                 </span>
               </ActionButton>

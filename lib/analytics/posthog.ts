@@ -1,55 +1,38 @@
-import posthog from 'posthog-js';
+// Lazy accessor — reuses the singleton after PostHogProvider initializes it.
+// Avoids pulling posthog-js into every page's initial bundle.
+let _posthog: typeof import('posthog-js').default | null = null;
 
-// Initialize PostHog (call once in the provider)
-export function initPostHog() {
-  if (typeof window === 'undefined') return;
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
-
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-    person_profiles: 'always',
-    capture_pageview: true,
-    capture_pageleave: true,
-    autocapture: true,
-    persistence: 'localStorage+cookie',
-    session_recording: {
-      maskAllInputs: false,
-      maskTextSelector: '[data-mask]',
-    },
-  });
+async function getPostHog() {
+  if (_posthog) return _posthog;
+  if (typeof window === 'undefined') return null;
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return null;
+  try {
+    _posthog = (await import('posthog-js')).default;
+    return _posthog;
+  } catch {
+    return null;
+  }
 }
 
 // Identify user after login/signup
 export function identifyUser(userId: string, traits?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
-  try {
-    posthog.identify(userId, traits);
-  } catch (e) {
-    // Silently fail
-  }
+  getPostHog().then(ph => { try { ph?.identify(userId, traits); } catch {} });
 }
 
 // Reset user on logout
 export function resetUser() {
   if (typeof window === 'undefined') return;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
-  try {
-    posthog.reset();
-  } catch (e) {
-    // Silently fail
-  }
+  getPostHog().then(ph => { try { ph?.reset(); } catch {} });
 }
 
 // Track custom events
 export function trackEvent(event: string, properties?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
-  try {
-    posthog.capture(event, properties);
-  } catch (e) {
-    // Silently fail if PostHog isn't ready
-  }
+  getPostHog().then(ph => { try { ph?.capture(event, properties); } catch {} });
 }
 
 // ============================================
@@ -176,4 +159,5 @@ export const ShareEvents = {
     trackEvent('share_failed', { source, error }),
 };
 
-export default posthog;
+// Default export for direct posthog access (lazy — may be null before init)
+export { getPostHog };
