@@ -320,3 +320,160 @@ export function pickLandingQuip(
   // Absolute fallback (should be unreachable).
   return landingQuips[0]?.text ?? "Let's play.";
 }
+
+function pickRandom(pool: string[], exclude: Set<string>): string | null {
+  const available = pool.filter(q => !exclude.has(q));
+  if (available.length === 0) {
+    // All excluded — pick any
+    return pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : null;
+  }
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+import type { SessionBreadcrumb } from '@/lib/session-breadcrumb';
+
+export interface LandingContext {
+  /** From session breadcrumb */
+  breadcrumb?: SessionBreadcrumb | null;
+  /** Total games played */
+  gamesPlayed?: number;
+  /** Wins at current level */
+  winsAtLevel?: number;
+  /** Wins needed to advance */
+  winsNeeded?: number;
+}
+
+/**
+ * Pick a contextual landing quip based on what the user just did.
+ * Falls back to time-of-day quips if no context applies.
+ *
+ * Priority order:
+ *   1. Session breadcrumb (just finished daily/lesson/opening)
+ *   2. Milestone game count
+ *   3. Close to level up
+ *   4. Day/time fallback
+ */
+export function pickContextualLandingQuip(
+  context: LandingContext,
+  exclude: Set<string> = new Set(),
+): string {
+  const { breadcrumb, gamesPlayed, winsAtLevel, winsNeeded } = context;
+
+  // 1. Session breadcrumb — user just came from daily, lesson, or opening
+  if (breadcrumb) {
+    if (breadcrumb.type === 'daily') {
+      const { score, total } = breadcrumb;
+      const pct = total > 0 ? score / total : 0;
+      const templates = pct >= 0.7 ? dailyHighTemplates : pct >= 0.4 ? dailyMidTemplates : dailyLowTemplates;
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      return template(score, total);
+    }
+    if (breadcrumb.type === 'opening') {
+      const templates = fromOpeningTemplates;
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      return template(breadcrumb.openingName);
+    }
+    if (breadcrumb.type === 'lesson') {
+      const templates = fromLessonTemplates;
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      return template(breadcrumb.lessonName);
+    }
+  }
+
+  // 2. Milestone
+  if (gamesPlayed !== undefined) {
+    const milestone = milestoneQuips[gamesPlayed];
+    if (milestone && !exclude.has(milestone)) return milestone;
+  }
+
+  // 3. Close to level up (1 win away)
+  if (winsAtLevel !== undefined && winsNeeded !== undefined && winsNeeded - winsAtLevel === 1) {
+    const line = pickRandom(closeToLevelUpQuips, exclude);
+    if (line) return line;
+  }
+
+  // 4. Fallback to day/time quips
+  return pickLandingQuip(new Date(), exclude);
+}
+
+// ════════════════════════════════════════════════════════════
+// CONTEXTUAL QUIPS — based on what the user just did
+// ════════════════════════════════════════════════════════════
+
+// ─── From Daily Rook (templates with score/total) ─────────
+
+type DailyTemplate = (score: number, total: number) => string;
+
+const dailyHighTemplates: DailyTemplate[] = [
+  (s, t) => `${s} out of ${t} on the daily. I'm not going to say I'm impressed. But I'm recalibrating.`,
+  (s, t) => `${s} out of ${t}. That's real. Let's see if it carries over to a game.`,
+  (s, t) => `${s} out of ${t} correct. Strong. Now show me against someone who pushes back.`,
+  (s, t) => `${s} out of ${t}. I was watching. You made that look easy. Was it easy?`,
+  (s, t) => `${s} out of ${t} on the daily. I'm raising my expectations. Don't make me regret it.`,
+];
+
+const dailyMidTemplates: DailyTemplate[] = [
+  (s, t) => `${s} out of ${t}. Solid. Not perfect, but solid. Want to test it in a game?`,
+  (s, t) => `${s} out of ${t}. Some right, some wrong. That's honest. Let's play.`,
+  (s, t) => `${s} out of ${t} on the daily. Decent. Puzzles are one thing though. Games are another.`,
+  (s, t) => `${s} out of ${t}. Middle of the road. Sometimes that's where the road goes.`,
+  (s, t) => `${s} out of ${t}. Not bad. Let's see what sticks when there's no timer.`,
+];
+
+const dailyLowTemplates: DailyTemplate[] = [
+  (s, t) => `${s} out of ${t}. Rough day. But puzzles and games are different. Maybe you're more of a game person.`,
+  (s, t) => `${s} out of ${t}. The daily was unkind. Different day, different board.`,
+  (s, t) => `${s} out of ${t}. Tough one. Games use a different part of the brain. Probably.`,
+  (s, t) => `${s} out of ${t} on the daily. That happens. Let's play something without a timer.`,
+  (s, t) => `${s} out of ${t}. Chess has good days and bad days. Let's find out which this is.`,
+];
+
+// ─── From Lesson (templates with lesson name) ─────────────
+
+type LessonTemplate = (name: string) => string;
+
+const fromLessonTemplates: LessonTemplate[] = [
+  (n) => `Fresh off ${n}. Theory is great. But theory without practice is trivia.`,
+  (n) => `You just studied ${n}. I can tell. You have that look. Show me.`,
+  (n) => `${n} done? Good. Let's see if the knowledge survives contact with a game.`,
+  (n) => `Straight from ${n} to a game. I like that energy.`,
+  (n) => `You've been working on ${n}. Let's see if any of it sticks to the board.`,
+  (n) => `${n}. I know that material well. Let's see what you absorbed.`,
+  (n) => `${n} complete. The board doesn't know that. Let's remind it.`,
+  (n) => `Fresh off ${n}. My rooks are curious to see what you do with it.`,
+];
+
+// ─── From Opening Lesson (templates with opening name) ────
+
+const fromOpeningTemplates: LessonTemplate[] = [
+  (n) => `Studying the ${n}. I respect that. Let's see if you remember the ideas in a game.`,
+  (n) => `Fresh off the ${n}. Opening theory is nice. Now let's see it under pressure.`,
+  (n) => `The ${n}. Good choice. I know that opening. Let's see if you do too.`,
+  (n) => `You just worked on the ${n}. I'll be watching your first few moves closely.`,
+  (n) => `${n} practice. Now let's see if the lines hold up when I'm across the board.`,
+  (n) => `The ${n}. I have opinions about that opening. You'll see them on the board.`,
+];
+
+// ─── Close to leveling up ─────────────────────────────────
+
+const closeToLevelUpQuips: string[] = [
+  "One more win. That's all. No pressure. Okay, a little pressure.",
+  "You're right there. One win away. My king is bracing himself.",
+  "Almost to the next level. I can feel it. That might be anxiety. Hard to tell.",
+  "So close. One good game and you're through. I'll be honest, I'm conflicted.",
+  "Next level is one win away. I have feelings about this. Complex ones.",
+];
+
+// ─── Milestone games ──────────────────────────────────────
+
+const milestoneQuips: Record<number, string> = {
+  10: "Game ten. You're past the point where most people quit. I'm noting that.",
+  25: "Twenty-five games. That's not casual anymore. That's a thing.",
+  50: "Fifty games. I should have gotten you a cake. I can't make cake. But the thought is there.",
+  75: "Seventy-five. You're a regular now. The rooks know your name.",
+  100: "One hundred games. I don't know what to say. That's never happened before.",
+  150: "One hundred fifty. You've spent more time with me than most. I'm processing that.",
+  200: "Two hundred games. At this point I consider us colleagues.",
+  250: "Two hundred fifty. I've run out of ways to be surprised. You keep showing up.",
+  500: "Five hundred. I don't have the right words. I might need to invent some.",
+};

@@ -6,6 +6,7 @@ import { Chess, Square } from 'chess.js'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
 import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
 import { LessonComplete } from '@/components/shared/LessonComplete'
+import { writeBreadcrumb } from '@/lib/session-breadcrumb'
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup'
 import {
   RookCelebrationAnimationRef,
@@ -306,6 +307,7 @@ export default function OpeningLessonPage() {
       const interactiveCount = lesson.steps.filter(s => s.type === 'play-move' || s.type === 'quiz' || s.type === 'puzzle').length
       const accuracy = interactiveCount > 0 ? Math.round((correctCount / interactiveCount) * 100) : 100
       LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent, { source: 'opening', openingSlug: slug })
+      writeBreadcrumb({ type: 'opening', lessonName: lesson.title, openingName, lessonId, score: correctCount, total: interactiveCount })
       completeLesson(slug, lessonId)
       // Log Honcho summary + trigger dream
       if (user?.id && honchoSessionIdRef.current) {

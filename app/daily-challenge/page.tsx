@@ -25,6 +25,7 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
 import { useClickToMove } from '@/hooks/useClickToMove';
 import { RookiePopup } from '@/components/shared/DailyRitual';
+import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
 interface Puzzle {
   puzzleId: string;
@@ -708,6 +709,8 @@ export default function DailyChallengePage() {
       }
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+      // Leave breadcrumb so /play can greet contextually
+      writeBreadcrumb({ type: 'daily', score: puzzlesSolved, total: allPuzzles.length });
 
       if (user) {
         // Use finalElapsedMsRef which was captured at the exact moment the game ended

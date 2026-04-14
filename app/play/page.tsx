@@ -20,8 +20,6 @@ import {
   getLevelElo,
   useMinimax,
   minimaxSkill,
-  getContextualGreeting,
-  type GreetingContext,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents } from '@/lib/analytics/posthog';
@@ -57,8 +55,9 @@ import {
   winQuips,
   lossQuips,
   levelUpQuips,
-  pickLandingQuip,
+  pickContextualLandingQuip,
 } from '@/data/quips/play-quips';
+import { consumeBreadcrumb } from '@/lib/session-breadcrumb';
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 
 // ════════════════════════════════
@@ -575,10 +574,12 @@ export default function PlayRookiePage() {
     setupGreetingSpokenRef.current = true;
     // warmupAudio must run synchronously inside the gesture to unlock AudioContext
     warmupAudio();
-    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
-    // Small delay lets ctx.resume() settle before speakQuip checks ctx.state
-    setTimeout(() => speakQuip(greeting.quote), 50);
-  }, [phase, rookieLevel, speakQuip]);
+    // Speak whatever text is currently displayed in the bubble
+    const text = speech.displayText;
+    if (text) {
+      setTimeout(() => speakQuip(text), 50);
+    }
+  }, [phase, speech.displayText, speakQuip]);
 
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
@@ -656,13 +657,19 @@ export default function PlayRookiePage() {
       landingFiredRef.current = true;
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
-      const line = pickLandingQuip(new Date(), usedLandingQuipsRef.current);
+      const mem = rookieMemoryRef.current;
+      const line = pickContextualLandingQuip({
+        breadcrumb: consumeBreadcrumb(),
+        gamesPlayed: mem.gamesPlayed,
+        winsAtLevel,
+        winsNeeded: WINS_TO_ADVANCE,
+      }, usedLandingQuipsRef.current);
       if (line) {
         speech.queueDirect(line, 'high');
         PlayEvents.quipShown('landing', line);
       }
     }
-  }, [phase, user?.id, rookieLevel, runLevelUpAnimation, pickFromPool, speech]);
+  }, [phase, user?.id, rookieLevel, winsAtLevel, runLevelUpAnimation, pickFromPool, speech]);
 
   // ── 6-layer narrative processing (runs alongside existing speech system) ──
   const processNarrative = useCallback(async (
@@ -1841,7 +1848,6 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   if (phase === 'setup') {
     const currentRookieLevel = getRookieLevel(rookieLevel);
-    const greeting = getContextualGreeting({ type: 'default' }, rookieLevel);
 
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
@@ -1876,7 +1882,7 @@ export default function PlayRookiePage() {
               </div>
 
               <div className="my-1">
-                <BreathingRook size="lg" mood={greeting.mood} />
+                <BreathingRook size="lg" mood={currentRookieLevel.mood} />
               </div>
 
               {/* Speech bubble */}
@@ -1887,7 +1893,7 @@ export default function PlayRookiePage() {
                 />
                 <div className="relative bg-white rounded-2xl px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)] h-full flex items-center justify-center">
                   <p key={speech.msgKey} className="text-chess-text text-[14px] leading-relaxed font-medium text-center line-clamp-3">
-                    {speech.displayText || greeting.quote}
+                    {speech.displayText || "Let's play."}
                   </p>
                 </div>
               </div>

@@ -56,6 +56,7 @@ import { useGameSession } from '@/hooks/useGameSession';
 import { RookieNameAsk, getPlayerName, setPlayerName } from '@/components/onboarding/RookieNameAsk';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import confetti from 'canvas-confetti';
+import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
 // ═══════════════════════════════════════════
 // GUEST CELEBRATION — full-screen "You're Ready!" before signup
@@ -1057,6 +1058,8 @@ export default function LessonPage() {
 
       // Trigger PWA install prompt after first puzzle experience
       window.dispatchEvent(new Event('chess-path:puzzle-complete'));
+      // Leave breadcrumb so /play can greet contextually
+      writeBreadcrumb({ type: 'lesson', lessonName, lessonId, score: firstAttemptCorrectCount, total: puzzles.length });
 
       // Record the lesson completion for permission tracking
       // Use the returned value (not the stale closure) to check signup prompt
