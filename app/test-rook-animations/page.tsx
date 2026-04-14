@@ -2383,7 +2383,7 @@ export default function TestRookAnimations() {
           {tab === 'animations'
             ? `${ANIMATIONS.length} animations · Page ${page + 1} of ${TOTAL_PAGES}`
             : tab === 'interactive'
-            ? '60 mouse-reactive modes · hover, click, drag'
+            ? '60 interactive modes · 31 tap + 29 hover'
             : tab === 'illusions'
             ? '20 optical illusions · stare and question reality'
             : tab === 'stories'
