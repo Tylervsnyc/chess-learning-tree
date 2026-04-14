@@ -972,7 +972,7 @@ export default function MoodStorySection() {
             <button onClick={() => next && setSelected(next.id)} disabled={!next} className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition">Next</button>
           </div>
           <div className="flex flex-col items-center gap-4">
-            <div className="bg-white/[0.03] rounded-2xl p-16 border border-white/[0.06]">
+            <div className="bg-white/[0.03] rounded-2xl p-4 sm:p-16 border border-white/[0.06]">
               <StoryRook story={selected} blockSize={40} />
             </div>
             <div className="text-center max-w-md">
@@ -1000,11 +1000,11 @@ export default function MoodStorySection() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {pageItems.map(({ id, label, description }) => (
               <div
                 key={id}
-                className="flex flex-col items-center gap-3 bg-white/[0.03] rounded-xl p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
+                className="flex flex-col items-center gap-2 sm:gap-3 bg-white/[0.03] rounded-xl p-3 sm:p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
                 onClick={() => setSelected(id)}
               >
                 <StoryRook story={id} blockSize={18} />

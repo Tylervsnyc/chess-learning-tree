@@ -1368,6 +1368,37 @@ function InteractiveRook({ mode, blockSize = 28 }: { mode: ModeId; blockSize?: n
     mouseRef.current.clickTime = (performance.now() - startRef.current) / 1000;
   }, []);
 
+  // Touch handlers — mirror mouse events so all modes work on mobile
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect || !e.touches[0]) return;
+    const mx = (e.touches[0].clientX - rect.left) / rect.width;
+    const my = (e.touches[0].clientY - rect.top) / rect.height;
+    const prev = prevMouseRef.current;
+    mouseRef.current.velocity = Math.sqrt((mx - prev.x) ** 2 + (my - prev.y) ** 2);
+    mouseRef.current.x = mx;
+    mouseRef.current.y = my;
+    prevMouseRef.current = { x: mx, y: my };
+  }, []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect || !e.touches[0]) return;
+    const mx = (e.touches[0].clientX - rect.left) / rect.width;
+    const my = (e.touches[0].clientY - rect.top) / rect.height;
+    mouseRef.current.x = mx;
+    mouseRef.current.y = my;
+    mouseRef.current.down = true;
+    mouseRef.current.clickX = mx;
+    mouseRef.current.clickY = my;
+    mouseRef.current.clickTime = (performance.now() - startRef.current) / 1000;
+    prevMouseRef.current = { x: mx, y: my };
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    mouseRef.current.down = false;
+  }, []);
+
   useEffect(() => {
     startRef.current = performance.now();
     const tick = (now: number) => {
@@ -1612,12 +1643,16 @@ function InteractiveRook({ mode, blockSize = 28 }: { mode: ModeId; blockSize?: n
       onMouseDown={() => { mouseRef.current.down = true; }}
       onMouseUp={() => { mouseRef.current.down = false; }}
       onMouseLeave={() => { mouseRef.current.down = false; }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{
         position: 'relative',
         width: gridWidth,
         height: gridHeight,
         transform: 'translate3d(0,0,0)',
         cursor: 'crosshair',
+        touchAction: 'none',
       }}
     >
       {ALL_CELLS.map(({ x, y }) => {
@@ -1683,7 +1718,7 @@ export default function InteractiveSection() {
               <button onClick={() => next && setSelected(next.id)} disabled={!next} className="px-3 py-2 rounded-lg text-sm font-medium bg-white/5 text-white/50 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition">Next</button>
             </div>
             <div className="flex flex-col items-center gap-4">
-              <div className="bg-white/[0.03] rounded-2xl p-16 border border-white/[0.06]">
+              <div className="bg-white/[0.03] rounded-2xl p-4 sm:p-16 border border-white/[0.06]">
                 <InteractiveRook mode={selected} blockSize={36} />
               </div>
               <div className="text-center">
@@ -1710,11 +1745,11 @@ export default function InteractiveSection() {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
               {pageModes.map(({ id, label, description }) => (
                 <div
                   key={id}
-                  className="flex flex-col items-center gap-3 bg-white/[0.03] rounded-xl p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
+                  className="flex flex-col items-center gap-2 sm:gap-3 bg-white/[0.03] rounded-xl p-3 sm:p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
                   onClick={() => setSelected(id)}
                 >
                   <InteractiveRook mode={id} blockSize={18} />

@@ -2376,7 +2376,7 @@ export default function TestRookAnimations() {
   const pageAnims = ANIMATIONS.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-auto p-6">
+    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-auto p-3 sm:p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold mb-1 text-white/90">Rook Animation Lab</h1>
         <p className="text-sm text-white/40 mb-4">
@@ -2392,7 +2392,7 @@ export default function TestRookAnimations() {
         </p>
 
         {/* Tab switcher */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           <button
             onClick={() => { setTab('animations'); setSelected(null); }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
@@ -2496,7 +2496,7 @@ export default function TestRookAnimations() {
                 </button>
               </div>
               <div className="flex-1 overflow-auto flex flex-col items-center gap-4 py-8">
-                <div className="bg-white/[0.03] rounded-2xl p-12 border border-white/[0.06]">
+                <div className="bg-white/[0.03] rounded-2xl p-4 sm:p-12 border border-white/[0.06]">
                   <AnimatedRook animation={selected} blockSize={36} enableSound />
                 </div>
                 <div className="text-center">
@@ -2532,11 +2532,11 @@ export default function TestRookAnimations() {
             </div>
 
             {/* Grid — only 12 rAFs at a time */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
               {pageAnims.map(({ id, label, description }) => (
                 <div
                   key={id}
-                  className="flex flex-col items-center gap-3 bg-white/[0.03] rounded-xl p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
+                  className="flex flex-col items-center gap-2 sm:gap-3 bg-white/[0.03] rounded-xl p-3 sm:p-5 border border-white/[0.06] hover:border-white/[0.12] transition cursor-pointer"
                   onClick={() => setSelected(id)}
                 >
                   <AnimatedRook animation={id} blockSize={18} />
