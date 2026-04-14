@@ -44,6 +44,7 @@ import { useClickToMove } from '@/hooks/useClickToMove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
 import { useName } from '@/hooks/useName';
+import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
@@ -59,6 +60,7 @@ import {
 } from '@/data/quips/play-quips';
 import { consumeBreadcrumb } from '@/lib/session-breadcrumb';
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
+import { PlayPageRookie } from '@/components/play/PlayPageRookie';
 
 // ════════════════════════════════
 // LEVEL PERSISTENCE (localStorage)
@@ -282,6 +284,13 @@ export default function PlayRookiePage() {
   }, [user?.id]);
 
   const [phase, setPhase] = useState<Phase>('setup');
+  const [tapQuip, setTapQuip] = useState<string | null>(null);
+  const tapQuipTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const handleTapQuip = useCallback((quip: string) => {
+    setTapQuip(quip);
+    if (tapQuipTimerRef.current) clearTimeout(tapQuipTimerRef.current);
+    tapQuipTimerRef.current = setTimeout(() => setTapQuip(null), 4000);
+  }, []);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
   const [rookieLevel, setRookieLevel] = useState(1); // 1-10 discrete level
   const [winsAtLevel, setWinsAtLevel] = useState(0);
@@ -311,6 +320,7 @@ export default function PlayRookiePage() {
   const [lastMv, setLastMv] = useState<{ from: Square; to: Square } | null>(null);
   const [rookieThinking, setRookieThinking] = useState(false);
   const [gameResult, setGameResult] = useState<string | null>(null);
+  const [showActivityComplete, setShowActivityComplete] = useState(false);
   const [resignArmed, setResignArmed] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
@@ -1218,6 +1228,7 @@ export default function PlayRookiePage() {
         }
         endSession(g);
         setPhase('gameover');
+        setShowActivityComplete(true);
       }
     };
 
@@ -1369,6 +1380,7 @@ export default function PlayRookiePage() {
         }
         endSession(g);
         setPhase('gameover');
+        setShowActivityComplete(true);
         return true;
       }
 
@@ -1726,6 +1738,7 @@ export default function PlayRookiePage() {
     const g = new Chess(fen);
     endSession(g);
     setPhase('gameover');
+    setShowActivityComplete(true);
     setResignArmed(false);
   }, [fen, endSession, speech, playerName, playerColor]);
 
@@ -1881,9 +1894,7 @@ export default function PlayRookiePage() {
                 <span className="text-chess-text-muted font-semibold text-xs">{currentRookieLevel.title}</span>
               </div>
 
-              <div className="my-1">
-                <BreathingRook size="lg" mood={currentRookieLevel.mood} />
-              </div>
+              <PlayPageRookie onQuip={handleTapQuip} />
 
               {/* Speech bubble */}
               <div className="relative w-full h-[88px]">
@@ -1892,8 +1903,8 @@ export default function PlayRookiePage() {
                   style={{ boxShadow: '-1px -1px 2px rgba(0,0,0,0.03)' }}
                 />
                 <div className="relative bg-white rounded-2xl px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)] h-full flex items-center justify-center">
-                  <p key={speech.msgKey} className="text-chess-text text-[14px] leading-relaxed font-medium text-center line-clamp-3">
-                    {speech.displayText || "Let's play."}
+                  <p key={tapQuip || speech.msgKey} className="text-chess-text text-[14px] leading-relaxed font-medium text-center line-clamp-3">
+                    {tapQuip || speech.displayText || "Let's play."}
                   </p>
                 </div>
               </div>
@@ -2250,6 +2261,46 @@ export default function PlayRookiePage() {
           script={coachingScript}
           onClose={() => setShowCoaching(false)}
           playerName={playerName || undefined}
+        />
+      )}
+
+      {/* Post-game transition screen */}
+      {phase === 'gameover' && showActivityComplete && (
+        <ActivityComplete
+          source="play"
+          mode="dismissible"
+          outcome={
+            gameResult === 'You win!' ? 'win'
+              : gameResult === 'Rookie wins!' ? 'loss'
+              : gameResult === 'You resigned' ? 'resign'
+              : 'draw'
+          }
+          playerName={playerName || undefined}
+          isGuest={!user}
+          shareConfig={{
+            shareUrl: 'https://chesspath.app/play',
+            ogEndpoint: '/api/og/play',
+            ogParams: {
+              outcome: gameResult === 'You win!' ? 'win' : gameResult === 'Rookie wins!' || gameResult === 'You resigned' ? 'loss' : 'draw',
+              level: String(rookieLevel),
+            },
+            source: 'play',
+            title: 'Play Rookie | Chess Path',
+            text: gameResult === 'You win!' ? 'I beat Rookie on Chess Path!' : 'I just played Rookie on Chess Path!',
+          }}
+          onDismiss={() => {
+            setShowActivityComplete(false);
+            setReviewMoveIndex(-1);
+            setPhase('review');
+          }}
+          onContinue={() => {
+            setShowActivityComplete(false);
+            if (!user) {
+              setShowSignupPrompt(true);
+            } else {
+              resetToSetup();
+            }
+          }}
         />
       )}
 
