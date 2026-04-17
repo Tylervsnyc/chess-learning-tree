@@ -100,11 +100,11 @@ export function OnboardingFlow() {
   // 1=Rookie appears, 2=powerOn anim, 3=speech bubble, 4=buttons, 5=logo+sign in
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 100),
-      setTimeout(() => setPhase(2), 300),
-      setTimeout(() => setPhase(3), 800),
-      setTimeout(() => setPhase(4), 2200),
-      setTimeout(() => setPhase(5), 2800),
+      setTimeout(() => setPhase(1), 50),
+      setTimeout(() => setPhase(2), 150),
+      setTimeout(() => setPhase(3), 400),
+      setTimeout(() => setPhase(4), 1000),
+      setTimeout(() => setPhase(5), 1300),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -114,8 +114,12 @@ export function OnboardingFlow() {
     if (phase >= 5) startBubblePop();
   }, [phase, startBubblePop]);
 
-  // PostHog — fire onboarding_started once PostHog loads (lazy)
+  // PostHog — fire onboarding_started once CTAs are visible (phase 4).
+  // Firing on page load counted every bounce as a start and made the funnel unreadable.
+  const startedFiredRef = useRef(false);
   useEffect(() => {
+    if (phase < 4 || startedFiredRef.current) return;
+    startedFiredRef.current = true;
     let cancelled = false;
     const tryFire = async () => {
       if (cancelled) return;
@@ -130,7 +134,7 @@ export function OnboardingFlow() {
     };
     tryFire();
     return () => { cancelled = true; };
-  }, []);
+  }, [phase]);
 
   const markOnboarded = useCallback(() => {
     try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
