@@ -14,6 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AUTHORED_LINES } from '../lib/speech/line-pool';
 
 const BUCKET = 'rookie-voice';
 const MANIFEST_PATH = path.join(__dirname, '..', 'public', 'rookie-voice', 'manifest.json');
@@ -68,12 +69,7 @@ async function generateTTS(text: string): Promise<Buffer> {
 }
 
 async function main() {
-  // Load line pool texts
-  const src = fs.readFileSync(path.join(__dirname, '..', 'lib', 'speech', 'line-pool.ts'), 'utf8');
-  const templates: string[] = [];
-  for (const m of src.matchAll(/text:\s*["'](.+?)["']/g)) {
-    templates.push(m[1]);
-  }
+  const templates: string[] = AUTHORED_LINES.map(l => l.text);
 
   console.log(`Found ${templates.length} authored lines`);
 
