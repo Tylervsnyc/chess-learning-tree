@@ -145,7 +145,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: '4.Nf3 Bg7 — develop and fianchetto · 9 lessons',
     },
     variations: [
-      { name: 'Austrian Attack', subtitle: '4.f4 — White goes all-in', icon: 'lightning', hasData: true },
+      { name: 'Austrian Attack', subtitle: '4.f4 — White goes all-in', icon: 'lightning', hasData: true, slug: 'pirc-austrian' },
       { name: '150 Attack', subtitle: '4.Be3 — quiet but dangerous', icon: 'shield', hasData: true, slug: 'pirc-150-attack' },
     ],
   },
@@ -227,6 +227,30 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     variations: [
       { name: 'Winawer Variation', subtitle: '3...Bb4 — pin the knight', icon: 'bishop', hasData: true, slug: 'french-winawer' },
       { name: 'Tarrasch Variation', subtitle: '3.Nd2 — avoid doubled pawns', icon: 'knight', hasData: true, slug: 'french-tarrasch' },
+    ],
+  },
+  {
+    slug: 'kings-gambit',
+    name: "King's Gambit",
+    subtitle: 'The most aggressive e4 opening — sacrifice a pawn for attack',
+    moves: '1.e4 e5 2.f4',
+    description: 'Sacrifice the f-pawn to rip open the center and attack the king.',
+    side: 'white',
+    category: '1.e4',
+    color: '#E03030',
+    colorDark: '#B02020',
+    colorLight: '#F05050',
+    ghostPiece: '♔',
+    icon: 'lightning',
+    hasData: true,
+    order: 6,
+    mainLine: {
+      name: 'Accepted (Classical)',
+      subtitle: '2...exf4 3.Nf3 — the main battleground · 9 lessons',
+    },
+    variations: [
+      { name: "Fischer's Variation", subtitle: '3...d6 — Fischer\'s refutation attempt', icon: 'knight', hasData: false },
+      { name: 'Cunningham Defense', subtitle: '3...Be7 — calm, classical reply', icon: 'bishop', hasData: false },
     ],
   },
   // Coming Soon 1.e4
