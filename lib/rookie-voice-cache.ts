@@ -19,6 +19,23 @@ import { assertTtsAllowed, recordTtsUsage } from '@/lib/tts-guard';
 
 const BUCKET = 'rookie-voice';
 
+const MEMORY_CACHE_MAX = 64;
+const memoryCache = new Map<string, string>();
+
+function rememberInMemory(hash: string, audioBase64: string): void {
+  if (memoryCache.has(hash)) memoryCache.delete(hash);
+  memoryCache.set(hash, audioBase64);
+  while (memoryCache.size > MEMORY_CACHE_MAX) {
+    const oldest = memoryCache.keys().next().value;
+    if (oldest === undefined) break;
+    memoryCache.delete(oldest);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function textToHash(text: string): string {
   return crypto.createHash('md5').update(text).digest('hex');
 }
@@ -33,8 +50,14 @@ export interface CacheLookupResult {
  * Check if audio for this text exists in Supabase Storage.
  */
 export async function lookupVoiceCache(text: string): Promise<CacheLookupResult> {
-  const supabase = createServiceClient();
   const hash = textToHash(text);
+
+  const memHit = memoryCache.get(hash);
+  if (memHit) {
+    return { hit: true, url: `${hash}.mp3`, audioBase64: memHit };
+  }
+
+  const supabase = createServiceClient();
   const filePath = `${hash}.mp3`;
 
   const { data, error } = await supabase.storage
@@ -47,24 +70,34 @@ export async function lookupVoiceCache(text: string): Promise<CacheLookupResult>
 
   const arrayBuffer = await data.arrayBuffer();
   const audioBase64 = Buffer.from(arrayBuffer).toString('base64');
+  rememberInMemory(hash, audioBase64);
 
   return { hit: true, url: filePath, audioBase64 };
 }
 
 /**
- * Upload audio to Supabase Storage cache.
+ * Upload audio to Supabase Storage cache. Retries up to 3 attempts with
+ * exponential backoff. Throws if all attempts fail so callers can log/alert.
  */
 async function saveToCache(text: string, audioBuffer: Buffer): Promise<void> {
   const supabase = createServiceClient();
   const hash = textToHash(text);
   const filePath = `${hash}.mp3`;
 
-  await supabase.storage
-    .from(BUCKET)
-    .upload(filePath, audioBuffer, {
-      contentType: 'audio/mpeg',
-      upsert: true,
-    });
+  const delays = [0, 200, 400];
+  let lastError: unknown = null;
+  for (const delay of delays) {
+    if (delay) await sleep(delay);
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .upload(filePath, audioBuffer, {
+        contentType: 'audio/mpeg',
+        upsert: true,
+      });
+    if (!error) return;
+    lastError = error;
+  }
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
 /**
@@ -114,17 +147,21 @@ export async function generateAndCache(
 
   const arrayBuffer = await res.arrayBuffer();
   const audioBuffer = Buffer.from(arrayBuffer);
+  const audioBase64 = audioBuffer.toString('base64');
   recordTtsUsage(text);
 
-  // Await the cache write — fire-and-forget silently re-synthesized on failure
+  // Always populate in-memory cache so a failed Supabase write doesn't cost
+  // a second synthesis on the next request within this process.
+  rememberInMemory(textToHash(text), audioBase64);
+
   try {
     await saveToCache(text, audioBuffer);
   } catch (err) {
-    console.error('[TTS] CACHE WRITE FAILED — next request will re-synthesize:', err);
+    console.error('[TTS] tts.cache_write_failed — served from memory, persistent cache missing:', err);
   }
 
   return {
-    audioBase64: audioBuffer.toString('base64'),
+    audioBase64,
     fromCache: false,
   };
 }
