@@ -3,6 +3,7 @@
 // Pool of possible lines, scored and filtered per context. Once said, drained for the game.
 
 import { type Beat, type EvalMood } from '@/lib/speech/beat-sheet';
+import { renderLine } from '@/lib/speech/sanitize';
 export type { Beat, EvalMood };
 export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'mood_change' | 'alarm' | 'none';
 
@@ -109,11 +110,11 @@ export function isAtLimit(state: QueueState, moveNumber?: number): boolean {
 
 /** Substitute placeholders in line text */
 export function substitutePlaceholders(text: string, context: QueueContext): string {
-  return text
-    .replace(/\{name\}/g, context.playerName)
+  const withPieces = text
     .replace(/\{piece\}/g, context.capturedPiece ?? 'piece')
     .replace(/\{swing\}/g, String(Math.abs(context.materialSwing ?? 0)))
     .replace(/\{captures\}/g, String(context.captureCount ?? 0));
+  return renderLine(withPieces, context.playerName);
 }
 
 /** Check if a single line's conditions match the current context */
@@ -277,14 +278,12 @@ export function selectByCategory(
     );
     if (fallback.length === 0) return null;
     const pick = fallback[Math.floor(Math.random() * fallback.length)];
-    const text = playerName ? pick.text.replace(/\{name\}/g, playerName) : pick.text;
-    return { line: pick, text };
+    return { line: pick, text: renderLine(pick.text, playerName) };
   }
 
   const pick = matching[Math.floor(Math.random() * matching.length)];
   if (state) state.usedRecently.add(pick.id);
-  const text = playerName ? pick.text.replace(/\{name\}/g, playerName) : pick.text;
-  return { line: pick, text };
+  return { line: pick, text: renderLine(pick.text, playerName) };
 }
 
 /** Transfer usedThisGame to usedRecently for cross-game memory */

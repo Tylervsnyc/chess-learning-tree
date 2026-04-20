@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { aiGuard } from '@/lib/ai-guard';
+import { stripLeakedPlaceholders } from '@/lib/speech/sanitize';
 
 const anthropic = new Anthropic();
 let callCount = 0;
@@ -53,11 +54,13 @@ export async function POST(req: NextRequest) {
       .trim();
 
     // Strip any markdown or formatting artifacts
-    const cleaned = text
-      .replace(/\*\*/g, '')
-      .replace(/\*/g, '')
-      .replace(/[()]/g, '')
-      .replace(/^["']|["']$/g, '');
+    const cleaned = stripLeakedPlaceholders(
+      text
+        .replace(/\*\*/g, '')
+        .replace(/\*/g, '')
+        .replace(/[()]/g, '')
+        .replace(/^["']|["']$/g, ''),
+    );
 
     console.log(`   → "${cleaned.slice(0, 100)}${cleaned.length > 100 ? '...' : ''}"`);
     return NextResponse.json({ text: cleaned });

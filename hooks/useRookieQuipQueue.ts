@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { playSfx } from '@/lib/sounds';
+import { safeRenderText } from '@/lib/speech/sanitize';
 
 /**
  * Unified quip queue for Rookie.
@@ -32,6 +33,8 @@ interface QueueItem {
   voiceKey?: string;
   /** Sound effect config */
   sfx?: SfxConfig;
+  /** If true, show text bubble but skip TTS (for Claude-generated unique text) */
+  textOnly?: boolean;
 }
 
 const GAP_MS = 600; // pause between quips
@@ -86,8 +89,9 @@ export function useRookieQuipQueue(
 
     // ── SFX quip: split at [SFX], speak part 1, play SFX, speak part 2 ──
     if (item.sfx && item.text.includes('[SFX]')) {
-      const [before, after] = item.text.split('[SFX]');
-      const fullDisplay = item.text.replace('[SFX]', '');
+      const sanitizedText = safeRenderText(item.text, 'useRookieQuipQueue.sfx');
+      const [before, after] = sanitizedText.split('[SFX]');
+      const fullDisplay = sanitizedText.replace('[SFX]', '');
       const { file, duration, overlap = 0, delay = 0, pauseAfter = 0 } = item.sfx;
 
       setDisplayText(fullDisplay);
@@ -137,9 +141,12 @@ export function useRookieQuipQueue(
     }
 
     // ── Normal quip ──
-    setDisplayText(item.text);
+    const cleanText = safeRenderText(item.text, 'useRookieQuipQueue.normal');
+    setDisplayText(cleanText);
     setMsgKey(k => k + 1);
-    speakQuip(item.text, item.voiceKey);
+    if (!item.textOnly) {
+      speakQuip(cleanText, item.voiceKey);
+    }
 
     // Poll until BOTH audio is done AND minimum display time has passed.
     // This prevents quips from being visually interrupted.
@@ -163,13 +170,13 @@ export function useRookieQuipQueue(
   }, [speakQuip, isTalkingRef, waitForSpeechDone]);
 
   /** Queue a quip. Plays immediately if idle, otherwise waits in line. */
-  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string, sfx?: SfxConfig) => {
+  const queueQuip = useCallback((text: string, priority: Priority = 'normal', voiceKey?: string, sfx?: SfxConfig, textOnly?: boolean) => {
     // Low priority gets dropped if anything is queued or playing
     if (priority === 'low' && (queueRef.current.length > 0 || processingRef.current)) {
       return;
     }
 
-    const item: QueueItem = { text, priority, voiceKey, sfx };
+    const item: QueueItem = { text, priority, voiceKey, sfx, textOnly };
 
     if (priority === 'high') {
       // Insert at front (after any other high-priority items)

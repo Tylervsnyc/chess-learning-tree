@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
 import { generateAndCache, lookupVoiceCache } from '@/lib/rookie-voice-cache';
 import { aiGuard } from '@/lib/ai-guard';
+import { renderLine } from '@/lib/speech/sanitize';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -59,15 +60,16 @@ export async function POST(request: NextRequest) {
 
     // speakOnly: skip Claude, just do TTS (with cache)
     if (speakOnly) {
+      const safeSpeak = renderLine(speakOnly, playerName);
       if (!canTTS) {
-        return NextResponse.json({ text: speakOnly, audio: null });
+        return NextResponse.json({ text: safeSpeak, audio: null });
       }
       try {
-        const { audioBase64 } = await generateAndCache(speakOnly, apiKey!, voiceId!);
-        return NextResponse.json({ text: speakOnly, audio: audioBase64 });
+        const { audioBase64 } = await generateAndCache(safeSpeak, apiKey!, voiceId!);
+        return NextResponse.json({ text: safeSpeak, audio: audioBase64 });
       } catch (err) {
         console.error('TTS error:', err);
-        return NextResponse.json({ text: speakOnly, audio: null });
+        return NextResponse.json({ text: safeSpeak, audio: null });
       }
     }
 
@@ -103,12 +105,14 @@ export async function POST(request: NextRequest) {
       messages: [{ role: 'user', content: userMessage }],
     });
 
-    const rookieText = (message.content[0] as { type: string; text: string }).text.trim();
+    const rawRookieText = (message.content[0] as { type: string; text: string }).text.trim();
 
     // If Rookie says "..." she's staying quiet
-    if (rookieText === '...' || rookieText === '"..."') {
+    if (rawRookieText === '...' || rawRookieText === '"..."') {
       return NextResponse.json({ text: null, audio: null });
     }
+
+    const rookieText = renderLine(rawRookieText, playerName);
 
     // Generate audio with cache — never generate the same recording twice
     let audioBase64: string | null = null;
