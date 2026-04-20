@@ -24,6 +24,7 @@ import { QUIP_POOL, getTimeOfDay, milestoneForGameCount } from '@/lib/quips/quip
 import { selectByCategory } from '@/lib/speech/priority-queue';
 import type { SessionBreadcrumb } from '@/lib/session-breadcrumb';
 import { SWING_THRESHOLD } from '@/lib/eval-zones';
+import { toneForLevel } from '@/lib/quips/tone';
 
 // ════════════════════════════════════════════════════════════════
 // Types
@@ -79,6 +80,8 @@ export interface UseRookieSpeechOptions {
   }) => Promise<string>;
   /** Seed usedRecently from persisted memory (loaded from Supabase) */
   initialUsedRecently?: string[];
+  /** Rookie personality gauge (1-5). Controls tone filtering on quip selection. Defaults to 3 (baseline). */
+  attitudeLevel?: number;
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -110,7 +113,14 @@ function createSeededQueueState(seeds?: string[]): QueueState {
 // ════════════════════════════════════════════════════════════════
 
 export function useRookieSpeech(options: UseRookieSpeechOptions) {
-  const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently } = options;
+  const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently, attitudeLevel } = options;
+
+  // Keep tone in a ref so it's always up-to-date inside memoized callbacks
+  // without forcing consumers to re-subscribe on every slider change.
+  const toneRef = useRef(toneForLevel(attitudeLevel ?? 3));
+  useEffect(() => {
+    toneRef.current = toneForLevel(attitudeLevel ?? 3);
+  }, [attitudeLevel]);
 
   // Playback queue (handles timing, speech bubble, TTS)
   const { queueQuip, waitForIdle, clearQueue, clearDisplay, displayText, msgKey } = useRookieQuipQueue(
@@ -150,6 +160,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       playerColor: input.playerColor,
       capturedPiece: input.capturedPiece,
       movedPiece: input.movedPiece,
+      tone: toneRef.current,
     }),
     [],
   );
@@ -222,6 +233,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         activeThreadId: null,
         playerName,
         playerColor,
+        tone: toneRef.current,
       };
 
       // Try Claude-generated opening line, fall back to authored pool
@@ -287,6 +299,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
           playerColor: input.playerColor,
           materialSwing: seq.playerSwing,
           captureCount: seq.count,
+          tone: toneRef.current,
         };
         // Bypass cooldown — this is a big moment
         if (selectAndQueue(seqContext)) {
@@ -388,6 +401,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         moveNumber: beatRef.current.moveCount,
         activeThreadId: null,
         playerName: playerNameRef.current,
+        tone: toneRef.current,
       };
 
       // Generate Rookie's game summary with full analysis context
@@ -431,6 +445,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         activeThreadId: null,
         playerName: update.playerName,
         playerColor: update.playerColor,
+        tone: toneRef.current,
       };
 
       if (selectAndQueue(context)) {
@@ -458,6 +473,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         activeThreadId: null,
         playerName: playerNameRef.current,
         playerColor: playerColorRef.current,
+        tone: toneRef.current,
       };
 
       if (selectAndQueue(context)) {
@@ -484,6 +500,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         activeThreadId: null,
         playerName: playerNameRef.current,
         playerColor: playerColorRef.current,
+        tone: toneRef.current,
       };
 
       if (selectAndQueue(context)) {

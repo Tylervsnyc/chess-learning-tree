@@ -16,7 +16,12 @@ interface Profile {
   unlocked_levels?: number[];
   current_streak?: number;
   last_activity_date?: string | null;
+  /** CHE-290: Rookie personality gauge (1-5). 3 = baseline. */
+  attitude_level?: number;
 }
+
+const DEFAULT_ATTITUDE_LEVEL = 3;
+const clampAttitude = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -190,6 +195,24 @@ export function useUser() {
     };
   }, []);
 
+  const setAttitudeLevel = useCallback(async (level: number) => {
+    const clamped = clampAttitude(level);
+    const u = userRef.current;
+    // Optimistic local update (works even for guests without a profile row)
+    setProfile((p) => (p ? { ...p, attitude_level: clamped } : p));
+    if (!u) return;
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('profiles')
+        .update({ attitude_level: clamped })
+        .eq('id', u.id);
+      if (error) console.error('Error saving attitude_level:', error);
+    } catch (err) {
+      console.error('Error saving attitude_level:', err);
+    }
+  }, []);
+
   const signOut = async () => {
     try {
       const supabase = createClient();
@@ -204,5 +227,7 @@ export function useUser() {
     }
   };
 
-  return { user, profile, loading, signOut, refetchProfile };
+  const attitudeLevel = profile?.attitude_level ?? DEFAULT_ATTITUDE_LEVEL;
+
+  return { user, profile, loading, signOut, refetchProfile, attitudeLevel, setAttitudeLevel };
 }

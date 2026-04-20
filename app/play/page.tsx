@@ -249,7 +249,7 @@ function evalToWhitePercent(cp: number | null, mate: number | null): number {
 }
 
 export default function PlayRookiePage() {
-  const { user } = useUser();
+  const { user, attitudeLevel, setAttitudeLevel } = useUser();
   const { getMyOpenings } = useOpeningProgress();
   const studiedSlugs = useMemo(() => getMyOpenings().map(o => o.slug), [getMyOpenings]);
   const matchedOpeningRef = useRef<{ slug: string; name: string } | null>(null);
@@ -568,6 +568,7 @@ export default function PlayRookiePage() {
     generateOpeningLine,
     generateGameEndLine,
     initialUsedRecently: rookieMemory.usedRecently,
+    attitudeLevel,
   });
 
   // Speak the setup greeting on first interaction (audio requires user gesture)
@@ -2090,6 +2091,23 @@ export default function PlayRookiePage() {
                       >
                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${soundsOn ? 'translate-x-4' : ''}`} />
                       </button>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-chess-text">Rookie&apos;s mood</p>
+                      <input
+                        type="range"
+                        min={1}
+                        max={5}
+                        step={1}
+                        value={attitudeLevel}
+                        onChange={(e) => setAttitudeLevel(Number(e.target.value))}
+                        aria-label="Rookie's mood"
+                        className="mt-1.5 w-full accent-chess-green"
+                      />
+                      <div className="mt-0.5 flex justify-between text-[10px] text-chess-text-faint">
+                        <span>Polite</span>
+                        <span>Confrontational</span>
+                      </div>
                     </div>
                   </div>
                 </>
