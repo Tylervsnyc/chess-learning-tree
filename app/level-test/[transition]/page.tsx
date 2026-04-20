@@ -14,7 +14,7 @@ import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
-import { useClickToMove } from '@/hooks/useClickToMove';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import confetti from 'canvas-confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -255,6 +255,7 @@ export default function LevelTestPage() {
             });
 
             setCurrentFen(opponentGame.fen());
+            if (oppMove) setSelectedSquare(prev => reconcileSelectionAfterOpponentMove(prev, oppMove));
             setMoveIndex(nextMoveIndex + 1);
 
             if (oppMove && oppMove.captured) {

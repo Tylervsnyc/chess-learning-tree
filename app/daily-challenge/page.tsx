@@ -24,7 +24,7 @@ import { AdSlot } from '@/components/ads/AdSlot';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
-import { useClickToMove } from '@/hooks/useClickToMove';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
 interface Puzzle {
@@ -605,6 +605,7 @@ export default function DailyChallengePage() {
           try {
             const oppMove = opponentGame.move(opponentMove);
             setCurrentFen(opponentGame.fen());
+            if (oppMove) setSelectedSquare(prev => reconcileSelectionAfterOpponentMove(prev, oppMove));
             setMoveIndex(nextMoveIndex + 1);
 
             if (oppMove?.captured) {
