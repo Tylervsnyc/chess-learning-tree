@@ -40,6 +40,8 @@ function textToHash(text: string): string {
 
 // Rate limiting — ElevenLabs has limits
 const DELAY_MS = 500;
+const MAX_RETRIES = 3;
+const retries = new Map<number, number>();
 function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 async function generateTTS(text: string): Promise<Buffer> {
@@ -142,13 +144,20 @@ async function main() {
       const msg = err instanceof Error ? err.message : String(err);
       console.log(` FAILED: ${msg.slice(0, 80)}`);
 
-      // If rate limited, wait longer
+      // If rate limited, retry with exponential backoff (cap at MAX_RETRIES)
       if (msg.includes('429')) {
-        console.log('  Rate limited, waiting 10s...');
-        await sleep(10000);
-        i--; // retry
-        failed--;
-        continue;
+        const n = (retries.get(i) ?? 0) + 1;
+        if (n > MAX_RETRIES) {
+          console.log(`  Rate limited ${MAX_RETRIES}x, giving up on this line.`);
+        } else {
+          retries.set(i, n);
+          const backoff = 10000 * Math.pow(2, n - 1);
+          console.log(`  Rate limited, waiting ${backoff / 1000}s (retry ${n}/${MAX_RETRIES})...`);
+          await sleep(backoff);
+          i--;
+          failed--;
+          continue;
+        }
       }
     }
 
