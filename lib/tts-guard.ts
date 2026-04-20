@@ -11,10 +11,18 @@ const DEFAULT_BUDGET = 50000;
 const state = {
   day: '',
   charsUsed: 0,
+  warnedAt80: false,
+  warnedAt90: false,
 };
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+function nextUtcMidnight(): string {
+  const d = new Date();
+  d.setUTCHours(24, 0, 0, 0);
+  return d.toISOString();
 }
 
 function rollover() {
@@ -22,6 +30,8 @@ function rollover() {
   if (state.day !== d) {
     state.day = d;
     state.charsUsed = 0;
+    state.warnedAt80 = false;
+    state.warnedAt90 = false;
   }
 }
 
@@ -53,13 +63,32 @@ export function assertTtsAllowed(text: string): void {
 export function recordTtsUsage(text: string): void {
   rollover();
   state.charsUsed += text.length;
+
+  const budget = Number(process.env.TTS_DAILY_BUDGET_CHARS ?? DEFAULT_BUDGET);
+  const pct = state.charsUsed / budget;
+  if (pct >= 0.9 && !state.warnedAt90) {
+    state.warnedAt90 = true;
+    console.error(`[TTS] daily usage crossed 90% (${state.charsUsed}/${budget} chars)`);
+  } else if (pct >= 0.8 && !state.warnedAt80) {
+    state.warnedAt80 = true;
+    console.warn(`[TTS] daily usage crossed 80% (${state.charsUsed}/${budget} chars)`);
+  }
 }
 
-export function getTtsUsage(): { day: string; charsUsed: number; budget: number } {
+export function getTtsUsage(): {
+  day: string;
+  charsUsed: number;
+  budget: number;
+  percentUsed: number;
+  resetsAt: string;
+} {
   rollover();
+  const budget = Number(process.env.TTS_DAILY_BUDGET_CHARS ?? DEFAULT_BUDGET);
   return {
     day: state.day,
     charsUsed: state.charsUsed,
-    budget: Number(process.env.TTS_DAILY_BUDGET_CHARS ?? DEFAULT_BUDGET),
+    budget,
+    percentUsed: budget > 0 ? state.charsUsed / budget : 0,
+    resetsAt: nextUtcMidnight(),
   };
 }
