@@ -17,6 +17,7 @@ import {
   createGeneratedLine,
   selectLine,
   endGame,
+  cooldownForTalkativeness,
 } from '@/lib/speech/priority-queue';
 import { pickThread } from '@/lib/speech/threads';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
@@ -82,13 +83,14 @@ export interface UseRookieSpeechOptions {
   initialUsedRecently?: string[];
   /** Rookie personality gauge (1-5). Controls tone filtering on quip selection. Defaults to 3 (baseline). */
   attitudeLevel?: number;
+  /** Rookie talkativeness gauge (1-5). Controls cooldown + rolling window. Defaults to 3 (baseline). */
+  talkativenessLevel?: number;
 }
 
 // ════════════════════════════════════════════════════════════════
 // Constants
 // ════════════════════════════════════════════════════════════════
 
-const QUIP_COOLDOWN_MOVES = 8; // minimum moves between event-triggered quips
 const CAPTURE_SEQUENCE_MIN = 3; // minimum consecutive captures to trigger capture_sequence
 
 /** Tracks an ongoing capture sequence */
@@ -113,14 +115,18 @@ function createSeededQueueState(seeds?: string[]): QueueState {
 // ════════════════════════════════════════════════════════════════
 
 export function useRookieSpeech(options: UseRookieSpeechOptions) {
-  const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently, attitudeLevel } = options;
+  const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently, attitudeLevel, talkativenessLevel } = options;
 
-  // Keep tone in a ref so it's always up-to-date inside memoized callbacks
+  // Keep tone + talkativeness in refs so they're always up-to-date inside memoized callbacks
   // without forcing consumers to re-subscribe on every slider change.
   const toneRef = useRef(toneForLevel(attitudeLevel ?? 3));
   useEffect(() => {
     toneRef.current = toneForLevel(attitudeLevel ?? 3);
   }, [attitudeLevel]);
+  const talkRef = useRef(talkativenessLevel ?? 3);
+  useEffect(() => {
+    talkRef.current = talkativenessLevel ?? 3;
+  }, [talkativenessLevel]);
 
   // Playback queue (handles timing, speech bubble, TTS)
   const { queueQuip, waitForIdle, clearQueue, clearDisplay, displayText, msgKey } = useRookieQuipQueue(
@@ -161,6 +167,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       capturedPiece: input.capturedPiece,
       movedPiece: input.movedPiece,
       tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
     }),
     [],
   );
@@ -234,6 +241,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerName,
         playerColor,
         tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
       };
 
       // Try Claude-generated opening line, fall back to authored pool
@@ -300,6 +308,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
           materialSwing: seq.playerSwing,
           captureCount: seq.count,
           tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
         };
         // Bypass cooldown — this is a big moment
         if (selectAndQueue(seqContext)) {
@@ -339,7 +348,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
       // 4. Turning point — speak from pool, but respect cooldown
       if (beatResult.newBeat === 'turning_point') {
-        if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+        if (input.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
         const context = buildContext(input);
         if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;
@@ -349,7 +358,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
       // 5. Late game transition — speak from pool, but respect cooldown
       if (beatResult.newBeat === 'late_game') {
-        if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+        if (input.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
         const context = buildContext(input);
         if (selectAndQueue(context)) {
           lastQuipMoveRef.current = input.moveNumber;
@@ -361,7 +370,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       if (input.event === 'none') return;
 
       // 7. Cooldown: don't react to events if Rookie spoke recently
-      if (input.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+      if (input.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
 
       // 8. Something happened (capture, check, castle, blunder, great_move)
       const context = buildContext(input);
@@ -402,6 +411,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         activeThreadId: null,
         playerName: playerNameRef.current,
         tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
       };
 
       // Generate Rookie's game summary with full analysis context
@@ -433,7 +443,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       if (swing < SWING_THRESHOLD) return;
 
       // Respect cooldown
-      if (update.moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+      if (update.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
 
       // Fire a blunder quip
       const context: QueueContext = {
@@ -446,6 +456,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerName: update.playerName,
         playerColor: update.playerColor,
         tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
       };
 
       if (selectAndQueue(context)) {
@@ -459,7 +470,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const onMoodChange = useCallback(
     (moveNumber: number, rookiePawns: number) => {
       // Respect cooldown
-      if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+      if (moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
 
       // Compute fresh evalMood from pawn units
       const freshEvalMood = getEvalMood(rookiePawns);
@@ -474,6 +485,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerName: playerNameRef.current,
         playerColor: playerColorRef.current,
         tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
       };
 
       if (selectAndQueue(context)) {
@@ -487,7 +499,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const onAlarm = useCallback(
     (moveNumber: number, rookiePawns: number) => {
       // Respect cooldown
-      if (moveNumber - lastQuipMoveRef.current < QUIP_COOLDOWN_MOVES) return;
+      if (moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
 
       const freshEvalMood = getEvalMood(rookiePawns);
 
@@ -501,6 +513,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         playerName: playerNameRef.current,
         playerColor: playerColorRef.current,
         tone: toneRef.current,
+      talkativenessLevel: talkRef.current,
       };
 
       if (selectAndQueue(context)) {

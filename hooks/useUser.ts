@@ -18,17 +18,33 @@ interface Profile {
   last_activity_date?: string | null;
   /** CHE-290: Rookie personality gauge (1-5). 3 = baseline. */
   attitude_level?: number;
+  /** CHE-290: Rookie talkativeness gauge (1-5). 3 = baseline. */
+  talkativeness_level?: number;
 }
 
 const DEFAULT_ATTITUDE_LEVEL = 3;
+const DEFAULT_TALKATIVENESS_LEVEL = 3;
 const clampAttitude = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
+const clampTalkativeness = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [attitudeLevel, setAttitudeLevelState] = useState<number>(DEFAULT_ATTITUDE_LEVEL);
+  const [talkativenessLevel, setTalkativenessLevelState] = useState<number>(DEFAULT_TALKATIVENESS_LEVEL);
   const userRef = useRef<User | null>(null);
   userRef.current = user;
+
+  // Sync settings from profile when it loads
+  useEffect(() => {
+    if (profile?.attitude_level !== undefined) {
+      setAttitudeLevelState(clampAttitude(profile.attitude_level));
+    }
+    if (profile?.talkativeness_level !== undefined) {
+      setTalkativenessLevelState(clampTalkativeness(profile.talkativeness_level));
+    }
+  }, [profile?.attitude_level, profile?.talkativeness_level]);
 
   const refetchProfile = useCallback(async () => {
     const u = userRef.current;
@@ -198,7 +214,8 @@ export function useUser() {
   const setAttitudeLevel = useCallback(async (level: number) => {
     const clamped = clampAttitude(level);
     const u = userRef.current;
-    // Optimistic local update (works even for guests without a profile row)
+    // Optimistic local state — works for guests or before profile loads
+    setAttitudeLevelState(clamped);
     setProfile((p) => (p ? { ...p, attitude_level: clamped } : p));
     if (!u) return;
     try {
@@ -210,6 +227,24 @@ export function useUser() {
       if (error) console.error('Error saving attitude_level:', error);
     } catch (err) {
       console.error('Error saving attitude_level:', err);
+    }
+  }, []);
+
+  const setTalkativenessLevel = useCallback(async (level: number) => {
+    const clamped = clampTalkativeness(level);
+    const u = userRef.current;
+    setTalkativenessLevelState(clamped);
+    setProfile((p) => (p ? { ...p, talkativeness_level: clamped } : p));
+    if (!u) return;
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('profiles')
+        .update({ talkativeness_level: clamped })
+        .eq('id', u.id);
+      if (error) console.error('Error saving talkativeness_level:', error);
+    } catch (err) {
+      console.error('Error saving talkativeness_level:', err);
     }
   }, []);
 
@@ -227,7 +262,5 @@ export function useUser() {
     }
   };
 
-  const attitudeLevel = profile?.attitude_level ?? DEFAULT_ATTITUDE_LEVEL;
-
-  return { user, profile, loading, signOut, refetchProfile, attitudeLevel, setAttitudeLevel };
+  return { user, profile, loading, signOut, refetchProfile, attitudeLevel, setAttitudeLevel, talkativenessLevel, setTalkativenessLevel };
 }

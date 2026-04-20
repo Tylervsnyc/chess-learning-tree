@@ -97,6 +97,8 @@ export interface QueueContext {
   dayOfWeek?: number;
   /** Most recent breadcrumb type (where the user just came from) */
   breadcrumbType?: BreadcrumbType;
+  /** Talkativeness level (1-5) — controls rolling window throttle */
+  talkativenessLevel?: number;
 }
 
 export interface QueueState {
@@ -108,9 +110,33 @@ export interface QueueState {
   quipMoves: number[];
 }
 
-/** Max quips allowed within a rolling WINDOW_SIZE-move window */
+/** Default rolling window limits (talkativeness level 3 = baseline) */
 const WINDOW_MAX_QUIPS = 2;
 const WINDOW_SIZE = 16;
+
+/** Talkativeness level → rolling window config (1=silent, 5=nonstop) */
+export function windowForTalkativeness(level: number): { size: number; max: number } {
+  switch (level) {
+    case 1: return { size: 30, max: 1 };
+    case 2: return { size: 16, max: 1 };
+    case 4: return { size: 16, max: 3 };
+    case 5: return { size: 16, max: 4 };
+    case 3:
+    default: return { size: WINDOW_SIZE, max: WINDOW_MAX_QUIPS };
+  }
+}
+
+/** Talkativeness level → min moves between in-game event quips */
+export function cooldownForTalkativeness(level: number): number {
+  switch (level) {
+    case 1: return 20;
+    case 2: return 12;
+    case 4: return 5;
+    case 5: return 2;
+    case 3:
+    default: return 8;
+  }
+}
 const RECENTLY_USED_PENALTY = -30;
 const EVENT_MATCH_BONUS = 20;
 const THREAD_MATCH_BONUS = 10;
@@ -129,11 +155,12 @@ export function createQueueState(): QueueState {
 }
 
 /** Check if we've hit the rolling window limit for a given move number */
-export function isAtLimit(state: QueueState, moveNumber?: number): boolean {
+export function isAtLimit(state: QueueState, moveNumber?: number, talkativenessLevel?: number): boolean {
   if (moveNumber === undefined) return false;
-  const windowStart = moveNumber - WINDOW_SIZE;
+  const { size, max } = windowForTalkativeness(talkativenessLevel ?? 3);
+  const windowStart = moveNumber - size;
   const quipsInWindow = state.quipMoves.filter((m) => m > windowStart).length;
-  return quipsInWindow >= WINDOW_MAX_QUIPS;
+  return quipsInWindow >= max;
 }
 
 /** Substitute placeholders in line text */
@@ -244,7 +271,7 @@ export function selectLine(
   const isUnlimitedBeat = UNLIMITED_BEATS.has(context.beat);
 
   // Check rolling window limit (game_end and post_game bypass it)
-  if (!isUnlimitedBeat && isAtLimit(state, context.moveNumber)) return null;
+  if (!isUnlimitedBeat && isAtLimit(state, context.moveNumber, context.talkativenessLevel)) return null;
 
   // Filter: conditions match AND not drained this game
   const allMatching = pool.filter(

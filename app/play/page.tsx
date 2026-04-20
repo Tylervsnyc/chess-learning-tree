@@ -28,6 +28,8 @@ import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
 import { useUser } from '@/hooks/useUser';
+import { selectByCategory } from '@/lib/speech/priority-queue';
+import { QUIP_POOL } from '@/lib/quips/quip-pool';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
 import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
@@ -249,7 +251,7 @@ function evalToWhitePercent(cp: number | null, mate: number | null): number {
 }
 
 export default function PlayRookiePage() {
-  const { user, attitudeLevel, setAttitudeLevel } = useUser();
+  const { user, attitudeLevel, setAttitudeLevel, talkativenessLevel, setTalkativenessLevel } = useUser();
   const { getMyOpenings } = useOpeningProgress();
   const studiedSlugs = useMemo(() => getMyOpenings().map(o => o.slug), [getMyOpenings]);
   const matchedOpeningRef = useRef<{ slug: string; name: string } | null>(null);
@@ -569,6 +571,7 @@ export default function PlayRookiePage() {
     generateGameEndLine,
     initialUsedRecently: rookieMemory.usedRecently,
     attitudeLevel,
+    talkativenessLevel,
   });
 
   // Speak the setup greeting on first interaction (audio requires user gesture)
@@ -2055,13 +2058,13 @@ export default function PlayRookiePage() {
             <div className="relative">
               <button
                 onClick={() => setShowSettings(s => !s)}
-                className="p-1 rounded-lg text-chess-text-faint hover:text-chess-text-muted transition-colors"
+                className="p-2 rounded-lg text-chess-text-muted hover:text-chess-text hover:bg-chess-surface-subtle transition-colors"
                 aria-label="Game settings"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="8" cy="3" r="1.5" fill="currentColor" />
-                  <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-                  <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="5" r="2" fill="currentColor" />
+                  <circle cx="12" cy="12" r="2" fill="currentColor" />
+                  <circle cx="12" cy="19" r="2" fill="currentColor" />
                 </svg>
               </button>
               {showSettings && (
@@ -2101,12 +2104,49 @@ export default function PlayRookiePage() {
                         step={1}
                         value={attitudeLevel}
                         onChange={(e) => setAttitudeLevel(Number(e.target.value))}
+                        onPointerUp={(e) => {
+                          const level = Number((e.target as HTMLInputElement).value);
+                          const pick = selectByCategory(QUIP_POOL, `attitude:${level}`);
+                          if (pick) speech.queueDirect(pick.text, 'high');
+                        }}
+                        onKeyUp={(e) => {
+                          const level = Number((e.target as HTMLInputElement).value);
+                          const pick = selectByCategory(QUIP_POOL, `attitude:${level}`);
+                          if (pick) speech.queueDirect(pick.text, 'high');
+                        }}
                         aria-label="Rookie's mood"
-                        className="mt-1.5 w-full accent-chess-green"
+                        className="mt-2 w-full h-2 appearance-none bg-chess-disabled rounded-full accent-chess-green cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-chess-green [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-chess-green [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
                       />
                       <div className="mt-0.5 flex justify-between text-[10px] text-chess-text-faint">
                         <span>Polite</span>
                         <span>Confrontational</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-chess-text">How often Rookie talks</p>
+                      <input
+                        type="range"
+                        min={1}
+                        max={5}
+                        step={1}
+                        value={talkativenessLevel}
+                        onChange={(e) => setTalkativenessLevel(Number(e.target.value))}
+                        onPointerUp={(e) => {
+                          const level = Number((e.target as HTMLInputElement).value);
+                          const pick = selectByCategory(QUIP_POOL, `talk:${level}`);
+                          if (pick) speech.queueDirect(pick.text, 'high');
+                        }}
+                        onKeyUp={(e) => {
+                          const level = Number((e.target as HTMLInputElement).value);
+                          const pick = selectByCategory(QUIP_POOL, `talk:${level}`);
+                          if (pick) speech.queueDirect(pick.text, 'high');
+                        }}
+                        aria-label="How often Rookie talks"
+                        className="mt-2 w-full h-2 appearance-none bg-chess-disabled rounded-full accent-chess-green cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-chess-green [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-chess-green [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
+                      />
+                      <div className="mt-0.5 flex justify-between text-[10px] text-chess-text-faint">
+                        <span>Quiet</span>
+                        <span>Chatty</span>
                       </div>
                     </div>
                   </div>

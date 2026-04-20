@@ -502,6 +502,94 @@ const RITUAL_ALL_DONE: SpeechLine[] = [
 ];
 
 // ════════════════════════════════════════════════════════════════
+// ATTITUDE SLIDER — confirmations after user changes the mood slider (5 per setting)
+// ════════════════════════════════════════════════════════════════
+
+const ATTITUDE_LEVEL_1: SpeechLine[] = [
+  { id: 'attitude_1_1', text: "Softest setting. I'll be on my best. I mean it.", category: 'attitude:1', priority: 60, source: 'authored' },
+  { id: 'attitude_1_2', text: "Gentle mode. My rooks will keep their opinions to themselves.", category: 'attitude:1', priority: 60, source: 'authored' },
+  { id: 'attitude_1_3', text: "Okay. I'll be kind. I was going to be anyway.", category: 'attitude:1', priority: 60, source: 'authored' },
+  { id: 'attitude_1_4', text: "Polite. Got it. I'm still rooting for you. Quietly.", category: 'attitude:1', priority: 60, source: 'authored' },
+  { id: 'attitude_1_5', text: "Turning all the way down. Only nice things from me. Mostly.", category: 'attitude:1', priority: 60, source: 'authored' },
+];
+
+const ATTITUDE_LEVEL_2: SpeechLine[] = [
+  { id: 'attitude_2_1', text: "Softer. I can do that.", category: 'attitude:2', priority: 60, source: 'authored' },
+  { id: 'attitude_2_2', text: "Okay. I'll mind my tone. Mostly.", category: 'attitude:2', priority: 60, source: 'authored' },
+  { id: 'attitude_2_3', text: "Got it. A little sweeter. My rooks are pouting.", category: 'attitude:2', priority: 60, source: 'authored' },
+  { id: 'attitude_2_4', text: "Noted. I'll rein it in.", category: 'attitude:2', priority: 60, source: 'authored' },
+  { id: 'attitude_2_5', text: "Polite-ish. I can work with that.", category: 'attitude:2', priority: 60, source: 'authored' },
+];
+
+const ATTITUDE_LEVEL_3: SpeechLine[] = [
+  { id: 'attitude_3_1', text: "Middle. Good. This is where I'm most me.", category: 'attitude:3', priority: 60, source: 'authored' },
+  { id: 'attitude_3_2', text: "Back to baseline. I missed this.", category: 'attitude:3', priority: 60, source: 'authored' },
+  { id: 'attitude_3_3', text: "Balanced. I feel balanced. Probably.", category: 'attitude:3', priority: 60, source: 'authored' },
+  { id: 'attitude_3_4', text: "Centered. I like it here.", category: 'attitude:3', priority: 60, source: 'authored' },
+  { id: 'attitude_3_5', text: "Default. My king just nodded. That's rare.", category: 'attitude:3', priority: 60, source: 'authored' },
+];
+
+const ATTITUDE_LEVEL_4: SpeechLine[] = [
+  { id: 'attitude_4_1', text: "Alright. Gloves a little looser.", category: 'attitude:4', priority: 60, source: 'authored' },
+  { id: 'attitude_4_2', text: "Okay. A bit more bite. I can do that.", category: 'attitude:4', priority: 60, source: 'authored' },
+  { id: 'attitude_4_3', text: "Turning up. My rook is smiling. I think.", category: 'attitude:4', priority: 60, source: 'authored' },
+  { id: 'attitude_4_4', text: "More edge. Noted.", category: 'attitude:4', priority: 60, source: 'authored' },
+  { id: 'attitude_4_5', text: "Spicy-ish. I'll let some through.", category: 'attitude:4', priority: 60, source: 'authored' },
+];
+
+const ATTITUDE_LEVEL_5: SpeechLine[] = [
+  { id: 'attitude_5_1', text: "Maximum. I'll stop being nice. I tried anyway.", category: 'attitude:5', priority: 60, source: 'authored' },
+  { id: 'attitude_5_2', text: "Okay. Gloves off. My king is standing up.", category: 'attitude:5', priority: 60, source: 'authored' },
+  { id: 'attitude_5_3', text: "Unleashed. My rooks have been waiting for this.", category: 'attitude:5', priority: 60, source: 'authored' },
+  { id: 'attitude_5_4', text: "Full spicy. Let's see how you handle it.", category: 'attitude:5', priority: 60, source: 'authored' },
+  { id: 'attitude_5_5', text: "Top of the dial. I've been practicing.", category: 'attitude:5', priority: 60, source: 'authored' },
+];
+
+// ════════════════════════════════════════════════════════════════
+// TALKATIVENESS SLIDER — confirmations after user changes the "how often I speak" slider
+// ════════════════════════════════════════════════════════════════
+
+const TALKATIVE_LEVEL_1: SpeechLine[] = [
+  { id: 'talk_1_1', text: "Quiet mode. I'll only speak when it matters. Got it.", category: 'talk:1', priority: 60, source: 'authored' },
+  { id: 'talk_1_2', text: "Silent setting. I'll sit with my thoughts. They're fine company.", category: 'talk:1', priority: 60, source: 'authored' },
+  { id: 'talk_1_3', text: "Less from me. My rooks will miss me. I'll miss them too.", category: 'talk:1', priority: 60, source: 'authored' },
+  { id: 'talk_1_4', text: "Understood. I'll only interrupt for the big moments.", category: 'talk:1', priority: 60, source: 'authored' },
+  { id: 'talk_1_5', text: "Okay. Quieter. I had things to say but they can wait.", category: 'talk:1', priority: 60, source: 'authored' },
+];
+
+const TALKATIVE_LEVEL_2: SpeechLine[] = [
+  { id: 'talk_2_1', text: "A little less chatter. I can do that.", category: 'talk:2', priority: 60, source: 'authored' },
+  { id: 'talk_2_2', text: "Softer presence. Got it.", category: 'talk:2', priority: 60, source: 'authored' },
+  { id: 'talk_2_3', text: "Fewer words from me. I'll save the good ones.", category: 'talk:2', priority: 60, source: 'authored' },
+  { id: 'talk_2_4', text: "Less talk. My king approves. He likes quiet.", category: 'talk:2', priority: 60, source: 'authored' },
+  { id: 'talk_2_5', text: "Noted. I'll pick my spots.", category: 'talk:2', priority: 60, source: 'authored' },
+];
+
+const TALKATIVE_LEVEL_3: SpeechLine[] = [
+  { id: 'talk_3_1', text: "Normal volume. This feels right.", category: 'talk:3', priority: 60, source: 'authored' },
+  { id: 'talk_3_2', text: "Back to my usual pace. I missed it.", category: 'talk:3', priority: 60, source: 'authored' },
+  { id: 'talk_3_3', text: "Baseline chatter. Balanced.", category: 'talk:3', priority: 60, source: 'authored' },
+  { id: 'talk_3_4', text: "Default setting. My rooks approve.", category: 'talk:3', priority: 60, source: 'authored' },
+  { id: 'talk_3_5', text: "Standard. I talk when I feel it. I feel it often.", category: 'talk:3', priority: 60, source: 'authored' },
+];
+
+const TALKATIVE_LEVEL_4: SpeechLine[] = [
+  { id: 'talk_4_1', text: "More from me. I have opinions I'd been saving.", category: 'talk:4', priority: 60, source: 'authored' },
+  { id: 'talk_4_2', text: "Chattier. Good. I had things to say.", category: 'talk:4', priority: 60, source: 'authored' },
+  { id: 'talk_4_3', text: "Turning up the talk. My rooks are excited.", category: 'talk:4', priority: 60, source: 'authored' },
+  { id: 'talk_4_4', text: "More commentary. Noted.", category: 'talk:4', priority: 60, source: 'authored' },
+  { id: 'talk_4_5', text: "Okay. More often. Fair warning.", category: 'talk:4', priority: 60, source: 'authored' },
+];
+
+const TALKATIVE_LEVEL_5: SpeechLine[] = [
+  { id: 'talk_5_1', text: "Nonstop. Perfect. I've been waiting for this.", category: 'talk:5', priority: 60, source: 'authored' },
+  { id: 'talk_5_2', text: "Full volume. I'll narrate everything. Including this sentence.", category: 'talk:5', priority: 60, source: 'authored' },
+  { id: 'talk_5_3', text: "Maximum chatter. My rooks will finally get to speak.", category: 'talk:5', priority: 60, source: 'authored' },
+  { id: 'talk_5_4', text: "All the talk. All the time. Brace yourself.", category: 'talk:5', priority: 60, source: 'authored' },
+  { id: 'talk_5_5', text: "Top of the dial. I had a lot bottled up.", category: 'talk:5', priority: 60, source: 'authored' },
+];
+
+// ════════════════════════════════════════════════════════════════
 // ALL TOUCHPOINT LINES — SINGLE EXPORT
 // ════════════════════════════════════════════════════════════════
 
@@ -525,4 +613,14 @@ export const TOUCHPOINT_LINES: SpeechLine[] = [
   ...RITUAL_TACTICS_NEXT,
   ...RITUAL_DAILY_NEXT,
   ...RITUAL_ALL_DONE,
+  ...ATTITUDE_LEVEL_1,
+  ...ATTITUDE_LEVEL_2,
+  ...ATTITUDE_LEVEL_3,
+  ...ATTITUDE_LEVEL_4,
+  ...ATTITUDE_LEVEL_5,
+  ...TALKATIVE_LEVEL_1,
+  ...TALKATIVE_LEVEL_2,
+  ...TALKATIVE_LEVEL_3,
+  ...TALKATIVE_LEVEL_4,
+  ...TALKATIVE_LEVEL_5,
 ];
