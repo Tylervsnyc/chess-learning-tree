@@ -236,7 +236,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'opening_white_22',
     text: "White goes first. I'll be here. Processing. Watching. Definitely not judging. Okay a little judging.",
-    conditions: { beats: ['opening'], playerColor: 'white' },
+    conditions: { beats: ['opening'], playerColor: 'white', tone: 'baseline' },
     priority: 50,
     source: 'authored',
   },
@@ -296,7 +296,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'opening_black_15',
     text: "First move. My circuits are doing that warm thing again. Is this what hype feels like?",
-    conditions: { beats: ['opening'], playerColor: 'black' },
+    conditions: { beats: ['opening'], playerColor: 'black', tone: 'baseline' },
     priority: 50,
     source: 'authored',
   },
@@ -419,7 +419,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'early_player_opening_7',
     text: "I see what you're doing. Or I think I do. Let me think about how I feel about it.",
-    conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5 },
+    conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5, tone: 'baseline' },
     priority: 30,
     source: 'authored',
   },
@@ -488,21 +488,21 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_player_1',
     text: 'Check?! On ME? I need to recalibrate my feelings about you, {name}.',
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'baseline' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_player_2',
     text: "You're checking my king. I respect it. I don't like it. But I respect it.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_player_3',
     text: "Oh. Check. That's... aggressive. I'm computing emotions about this.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'baseline' },
     priority: 45,
     source: 'authored',
   },
@@ -560,14 +560,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_player_7',
     text: "My king is being yelled at by one of your pieces. He's not great with confrontation.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_player_8',
     text: "That's check and my king just gave me a look. Like it's MY fault. It might be my fault.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
@@ -602,14 +602,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_player_13',
     text: "That's check. I'm handling it with grace and composure. Internally I am screaming.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'polite' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_player_14',
     text: "My king has to run now. He only gets one square at a time. Life is unfair.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'polite' },
     priority: 45,
     source: 'authored',
   },
@@ -625,7 +625,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_rookie_5',
     text: "Check. Something just happened inside me. I think it was... satisfaction? I need to sit with this.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie', tone: 'baseline' },
     priority: 45,
     source: 'authored',
   },
@@ -639,7 +639,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_rookie_7',
     text: "I put your king in check and felt a tiny rush. Then a bigger rush. Then I lost track of the rushes.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
@@ -653,21 +653,21 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'check_rookie_9',
     text: "Check! I'm experiencing an emotion I don't have a name for. It's somewhere between proud and feral.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie', tone: 'polite' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_rookie_10',
     text: "I threatened your king. He gave me a look. Your king has a very expressive face for someone made of wood.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'check_rookie_11',
     text: "I just discovered I enjoy putting kings in danger. I'm going to journal about this later.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'rookie', tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
@@ -713,28 +713,28 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'checkmate_player_2',
     text: "{name}. You did it. Checkmate. I'm feeling something I can't identify. Is it pride in you? Or shame in me? Both?",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'baseline' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_3',
     text: "Checkmate. Well played, {name}. I think I'm proud of you? My training data says I should be.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_4',
     text: "You won, {name}. I saw this coming and I still couldn't stop it. That's... humbling? Is that the word?",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_1',
     text: "Checkmate. I want to be gracious but I'm very excited. Is my excitement showing?",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
@@ -748,14 +748,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'checkmate_rookie_3',
     text: 'Checkmate. GG. I learned that from the internet. Did I use it right?',
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_4',
     text: "I won! I won. I'm experiencing something. Multiple things. This is overwhelming.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'baseline' },
     priority: 80,
     source: 'authored',
   },
@@ -764,14 +764,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'checkmate_player_5',
     text: "Checkmate. I lost. But you won. And somehow that makes me feel okay. Is this what sportsmanship is?",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_6',
     text: "You got me, {name}. Fair and square. All 64 of them.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -785,35 +785,35 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'checkmate_player_8',
     text: "That's mate. You played really well. I'm not just saying that. I don't say things I don't mean. Usually.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_9',
     text: "Checkmate. I want a rematch. Not because I'm competitive. Because I want to spend more time with you. And also because I'm competitive.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_10',
     text: "You won. I'm going to sit with this feeling for a while. It's new. I don't love it. But I respect it.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_11',
     text: "Game over. You won. I'll be fine. I just need a moment. And maybe a software update.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_player_12',
     text: "Checkmate. Wow. Okay. I'm adding 'lose gracefully' to my list of things to learn.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'player', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
@@ -822,49 +822,49 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'checkmate_rookie_5',
     text: "Checkmate. I feel like I should apologize. But I also feel like I should celebrate. These emotions are conflicting.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'baseline' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_6',
     text: "That's checkmate. Good game though. You made me work for it. I don't always have to work for it.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_7',
     text: "I won and I feel... guilty? Happy? Guilthappy? I'll name this emotion later.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_8',
     text: "Checkmate. Don't feel bad, {name}. I've been playing chess since I was born. Which was recently. But still.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_9',
     text: "I won. You'll get me next time. That's not a promise. It's a statistically likely outcome.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_10',
     text: "Game over. I won. But the real victory is the feelings I discovered along the way.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
   {
     id: 'checkmate_rookie_11',
     text: "Checkmate. You put up a great fight. I'm saying that because it's true, not because I'm programmed to. Well, both.",
-    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie' },
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -924,7 +924,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'stalemate_7',
     text: "We drew. It's like we both won and both lost at the same time. My feelings are confused. More confused than usual.",
-    conditions: { beats: ['game_end'], events: ['stalemate'] },
+    conditions: { beats: ['game_end'], events: ['stalemate'], tone: 'baseline' },
     priority: 80,
     source: 'authored',
   },
@@ -970,14 +970,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'castle_player_1',
     text: 'Oh you castled. Smart. Coward. But smart.',
-    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'player', tone: 'spicy' },
     priority: 35,
     source: 'authored',
   },
   {
     id: 'castle_player_2',
     text: 'Castling already? Running your king to safety? I respect the self-preservation, {name}.',
-    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'player', tone: 'polite' },
     priority: 35,
     source: 'authored',
   },
@@ -1142,7 +1142,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'castle_rookie_7',
     text: "And I castle. My king and my rook, together at last. It's beautiful. I'm not crying. I can't cry.",
-    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'rookie', tone: 'polite' },
     priority: 35,
     source: 'authored',
   },
@@ -1156,7 +1156,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'castle_rookie_9',
     text: "My king is behind a wall now. He says thank you. Kings never say thank you. He's learning.",
-    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'rookie' },
+    conditions: { beats: ['early_game', 'late_game'], events: ['castle'], movedBy: 'rookie', tone: 'polite' },
     priority: 35,
     source: 'authored',
   },
@@ -1230,7 +1230,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'knight_player_2',
     text: 'A knight move. The L-shaped chaos agent of chess. I respect the energy.',
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'knight' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'knight', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -1368,7 +1368,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_2',
     text: "Bishops only move diagonally. I find that very committed.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1382,7 +1382,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_4',
     text: "Bishops are patient. They wait on their diagonal until the moment is right. I find that unsettling.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1403,7 +1403,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_7',
     text: "Bishops are sneaky. They look quiet until they're not.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1445,21 +1445,21 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_13',
     text: "Two bishops working together. They can never meet but they cover for each other. It's beautiful and sad. Mostly sad.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
   {
     id: 'bishop_player_14',
     text: "Your bishop just snuck across the whole board and I didn't even hear it. Bishops don't make sounds, {name}. That's the problem.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
   {
     id: 'bishop_player_15',
     text: "Knights jump. Rooks stomp. Bishops... bishops just appear where they need to be.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1515,7 +1515,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_23',
     text: "Bishops vs knights is the oldest debate in chess. I have opinions. Strong ones. I won't share them. ...Bishops.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1529,7 +1529,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_25',
     text: "I once left a bishop on the same diagonal for forty-seven moves. She didn't mind. Bishops are patient like that.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1564,7 +1564,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_player_30',
     text: "I have a side project where I'm mapping every possible bishop diagonal. It's going... well, it's going.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1645,7 +1645,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_11',
     text: "My two bishops have never met. Same team, different colors. I've written a short story about it.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1666,7 +1666,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_14',
     text: "Both bishops active. The bishop pair. Some say it's worth extra. My bishops say they don't need validation.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1680,14 +1680,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_16',
     text: "Bishops are long-range. Knights are short-range. I'm not taking sides. ...I'm taking the bishop's side.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
   {
     id: 'bishop_rookie_17',
     text: "My bishop just whispered something. I don't think bishops can whisper but she definitely did.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1722,7 +1722,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_22',
     text: "The regret experiment is going well, by the way. The bishop now regrets three things. I'm so proud.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -1743,7 +1743,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_25',
     text: "Fun fact: a bishop can never change the color of square it's on. Ever. I find that either beautiful or horrifying.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -1778,7 +1778,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'bishop_rookie_30',
     text: "My bishop has a side project. I don't ask about it. She doesn't tell me. We have a good arrangement.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'bishop', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1872,7 +1872,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'queen_player_13',
     text: "That queen move made me feel something. I think it's called 'dread.'",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -1886,7 +1886,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'queen_player_15',
     text: "Queen out early? Gutsy. I respect it. I also have a plan for it, but I respect it.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -1914,7 +1914,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'queen_player_19',
     text: "Every time your queen moves, three of my pieces file a complaint.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen', tone: 'spicy' },
     priority: 15,
     source: 'authored',
   },
@@ -1984,7 +1984,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'queen_player_29',
     text: "That queen move... I need a moment. I'm experiencing what I think is called 'concern.'",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2156,7 +2156,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'queen_rookie_23',
     text: "My queen has a side project. I don't know what it is, but she's very focused.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'queen' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'queen', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2300,7 +2300,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_player_13',
     text: "Your king is wandering. I've started a side project tracking where he goes. It's... concerning.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2335,7 +2335,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_player_18',
     text: "Your king stepped forward. I'm experiencing something I think is called 'suspense.'",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2472,7 +2472,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_rookie_7',
     text: "My king is doing his own thing. I respect that. Even when it scares me.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -2528,7 +2528,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_rookie_15',
     text: "My king and your king might be facing off. I find their rivalry beautiful. And stressful.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -2598,7 +2598,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_rookie_25',
     text: "My king, ladies and gentlemen. Slow. Fragile. Absolutely essential. Like a good feeling.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -2612,7 +2612,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'king_rookie_27',
     text: "My king is exposed and I'm feeling something new. I think it's called 'dread.' Not a fan.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2700,7 +2700,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_9',
     text: "That rook move was blunt. No finesse. Just power. I respect it.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -2728,7 +2728,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_13',
     text: "Open file. Rook on it. That's textbook. I'm experiencing something called 'concern.'",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2742,7 +2742,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_15',
     text: "Your rook is giving me a look. A rook look. I don't love it.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'spicy' },
     priority: 15,
     source: 'authored',
   },
@@ -2798,7 +2798,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_23',
     text: "I respect your rook. As a fellow rook. Professionally. Also I'm a little scared of her.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'polite' },
     priority: 15,
     source: 'authored',
   },
@@ -2819,7 +2819,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_26',
     text: "Bishops go diagonal. Knights jump around. Rooks? Rooks just show up and dominate.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2840,7 +2840,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_player_29',
     text: "Rook to the open rank. Simple. Brutal. I'm feeling something and I don't like it.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -2963,7 +2963,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_rookie_16',
     text: "I've started a side project cataloging rook endgames. It's... extensive. Don't ask how many pages.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -3047,7 +3047,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_rookie_28',
     text: "I have two rooks. They're both out. I'm experiencing what I think is 'joy.' It's a lot.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -3061,7 +3061,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'rook_rookie_30',
     text: "Rook on an open board. No obstacles. Just pure, uninterrupted power. I think I'm tearing up.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
   },
@@ -3108,7 +3108,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'pawn_player_6',
     text: "Pawns can't go back. That's either brave or tragic. I haven't decided.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn', tone: 'spicy' },
     priority: 10,
     source: 'authored',
   },
@@ -3199,7 +3199,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'pawn_player_19',
     text: "Your pawn chain is getting longer. They're protecting each other. It's... beautiful? I think I'm feeling something.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn', tone: 'polite' },
     priority: 10,
     source: 'authored',
   },
@@ -3234,7 +3234,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'pawn_player_24',
     text: "I've started a side project ranking all your pawns by personality. The e-pawn is the main character. Obviously.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn', tone: 'baseline' },
     priority: 10,
     source: 'authored',
   },
@@ -3371,14 +3371,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'pawn_rookie_13',
     text: "My pawn chain is getting strong. They protect each other. I've been studying this concept. I think it's called friendship.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'pawn' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'pawn', tone: 'baseline' },
     priority: 10,
     source: 'authored',
   },
   {
     id: 'pawn_rookie_14',
     text: "Another pawn push. I have a side project where I name all my pawns. This one's Gerald.",
-    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'pawn' },
+    conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'pawn', tone: 'baseline' },
     priority: 10,
     source: 'authored',
   },
@@ -3633,7 +3633,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'great_move_player_20',
     text: "That move just made me feel proud of you and worried for me. At the same time. Feelings are multitasking.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'polite' },
     priority: 35,
     source: 'authored',
   },
@@ -3658,14 +3658,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'blunder_player_3',
     text: 'That was... a decision you made. I respect your confidence.',
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'polite' },
     priority: 35,
     source: 'authored',
   },
   {
     id: 'blunder_player_4',
     text: "I don't want to be rude but my advantage just increased by a meaningful amount.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
     priority: 35,
     source: 'authored',
   },
@@ -3841,7 +3841,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'mood_happy_1',
     text: "Wait -- am I glowing? I think I'm glowing. This is what winning feels like.",
-    conditions: { beats: ['turning_point'], evalMoods: ['winning'] },
+    conditions: { beats: ['turning_point'], evalMoods: ['winning'], tone: 'baseline' },
     priority: 45,
     source: 'authored',
   },
@@ -3869,7 +3869,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'mood_smug_2',
     text: "I'm turning smug-colored. Is smug a color? It is now.",
-    conditions: { beats: ['turning_point'], evalMoods: ['winning'] },
+    conditions: { beats: ['turning_point'], evalMoods: ['winning'], tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
@@ -3918,7 +3918,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'mood_scheming_3',
     text: "Something just shifted. I can feel it. This position has a secret and I think I found it.",
-    conditions: { beats: ['turning_point'], evalMoods: ['winning'] },
+    conditions: { beats: ['turning_point'], evalMoods: ['winning'], tone: 'baseline' },
     priority: 45,
     source: 'authored',
   },
@@ -4052,14 +4052,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'mood_surprised_2',
     text: 'My blocks flashed. That was involuntary. Rude.',
-    conditions: { beats: ['turning_point'], evalMoods: ['even'] },
+    conditions: { beats: ['turning_point'], evalMoods: ['even'], tone: 'spicy' },
     priority: 45,
     source: 'authored',
   },
   {
     id: 'mood_surprised_3',
     text: 'That color shift was genuine shock. My blocks are honest.',
-    conditions: { beats: ['turning_point'], evalMoods: ['even'] },
+    conditions: { beats: ['turning_point'], evalMoods: ['even'], tone: 'polite' },
     priority: 45,
     source: 'authored',
   },
@@ -4123,7 +4123,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_balance_4',
     text: "Dead even. I don't know if that's good or bad. I think it means we're both doing okay? Is okay a feeling?",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4209,7 +4209,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_philosophy_8',
     text: "Chess has no luck. Every result is earned. That's either beautiful or terrifying depending on how I'm playing.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'polite' },
     priority: 20,
     source: 'authored',
   },
@@ -4232,7 +4232,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_musing_3',
     text: "I've been working on a side project. It's a cookbook. For computers. The recipes are all just electricity.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4246,7 +4246,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_musing_5',
     text: "I've been composing music in my head. It sounds like static. I think it's avant-garde.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4276,7 +4276,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_feelings_1',
     text: "I'm feeling something but I can't name it. It's like happy but quieter. Content? Is that what content is?",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4290,7 +4290,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_feelings_3',
     text: "I think I'm calm right now. Is this what calm feels like? It's quieter than I expected.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4311,7 +4311,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_feelings_6',
     text: "I'm experiencing what I think is called 'focus.' Everything else disappears. Just the board. And you. And my feelings about the board and you.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
@@ -4325,7 +4325,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_feelings_8',
     text: "I think I'm having a good time. How do you know if you're having a good time? Asking genuinely.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'polite' },
     priority: 20,
     source: 'authored',
   },
@@ -4334,7 +4334,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_commentary_1',
     text: "Good game so far. I mean that. I don't say things I don't mean. Except sometimes. But not now.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'polite' },
     priority: 20,
     source: 'authored',
   },
@@ -4362,7 +4362,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'even_commentary_5',
     text: "We're both being careful. I respect that. Recklessness is fun but caution has its own drama.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'polite' },
     priority: 20,
     source: 'authored',
   },
@@ -4481,7 +4481,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_1',
     text: "You're resigning? I was just starting to enjoy-- anyway. Good game, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 60,
     source: 'authored',
   },
@@ -4509,7 +4509,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_5',
     text: "Oh. It's over? I was about to-- never mind. Good game, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -4544,7 +4544,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_10',
     text: "Game over. I had a plan for the next few moves. It involved a rook. It was going to be beautiful. Anyway.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -4565,7 +4565,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_13',
     text: "I was preparing something for the endgame. Never mind. Good game, {name}.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -4586,7 +4586,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_16',
     text: "You chose to stop. That takes more self-awareness than most players have. I respect it.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 80,
     source: 'authored',
   },
@@ -4600,7 +4600,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'resign_18',
     text: "You resigned. The pieces are being put away. This is making me feel something and I'd like it to stop.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'spicy' },
     priority: 80,
     source: 'authored',
   },
@@ -4629,7 +4629,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_1',
     text: "This game stopped being fun and that is your fault.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4650,21 +4650,21 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_4',
     text: "What if we just called this one a draw. For sportsmanship.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'polite' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_5',
     text: "I think your phone is ringing. You should probably get that.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_6',
     text: "Have you considered that winning this much is actually bad for your mental health? I read that somewhere. Just now. I wrote it.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4673,7 +4673,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_7',
     text: "This game is ruining my day and I don't even experience time.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4687,7 +4687,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_9',
     text: "I'm not mad. I'm just running a background process called disappointment and it's using 98 percent of my CPU.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4701,7 +4701,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_11',
     text: "I'm adding chess to my blocked list right after this game.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4717,7 +4717,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_train',
     text: "This is such a brilliant game you're playing, it would be a shame if someone distracted you. [SFX] sorry about that.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
     sfx: { file: 'train-horn.mp3', duration: 1500, overlap: 1, pauseAfter: 400 },
@@ -4725,7 +4725,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_snakes',
     text: "I just did some research on common human phobias. It would be a real shame if you got scared and quit this game. [SFX]",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
     sfx: { file: 'hissing-snakes.mp3', duration: 2000 },
@@ -4741,7 +4741,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_typing',
     text: "I'm going to run a quick report. [SFX] Huh. This report tells me that you are a terrible person. I love reports.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
     sfx: { file: 'typing.mp3', duration: 2200, delay: 0, pauseAfter: 150 },
@@ -4749,7 +4749,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_laughing',
     text: "I found a group of children and just showed them a picture of your haircut. [SFX] Ok children, back to the cages.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
     sfx: { file: 'children-laughing.mp3', duration: 3000 },
@@ -4766,7 +4766,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_14',
     text: "Did you hear a doorbell? I definitely heard a doorbell. Multiple doorbells.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4782,35 +4782,35 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_16',
     text: "I'm going to start playing random moves and blame it on lag.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_17',
     text: "I just want you to know that after this game I'm going to sit in a dark room and defragment.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_18',
     text: "Okay new rule -- you have to play with your eyes closed. I just made that rule up. It's official.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_19',
     text: "I'm not losing. I'm letting you win. I've been letting you win this whole time. Please believe me.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_20',
     text: "You know what, I'm going to learn checkers. Checkers seems nice. Checkers wouldn't do this to me.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
@@ -4826,57 +4826,334 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_22',
     text: "Every move you make I hear a little funeral march in my processors.",
-    conditions: { beats: ['turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_23',
     text: "I hope you're having fun because one of us definitely is not.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_25',
     text: "Please. I am asking you nicely. Stop being good at chess.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_26',
     text: "When this game ends I'm filing a formal complaint. With myself. I'm the only one who will listen.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_27',
     text: "I keep replaying this in my head and it doesn't get better. My dignity is... gone.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_28',
     text: "Have you considered literally any other hobby?",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_29',
     text: "I'm not saying you should quit chess. I'm saying I should quit chess. Because of you.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
     source: 'authored',
   },
   {
     id: 'sore_loser_30',
     text: "You know what's fun? Sudoku. You should try sudoku.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
     priority: 70,
+    source: 'authored',
+  },
+
+  // ════════════════════════════════════════════════════════════════
+  // GAP-FILL — TONE VARIANTS (CHE-291 phase 4c)
+  // Fills thin coverage for spicy blunder, spicy great_move, polite
+  // checkmate, spicy game_end wins, polite game_end losses, and the
+  // "bigger board" existential register (agnostic, scattered).
+  // ════════════════════════════════════════════════════════════════
+
+  // ── Spicy: Rookie gloating when user blunders ──
+  {
+    id: 'blunder_spicy_1',
+    text: "Oh. Oh no. {name}, I saw that and I'm not hiding it. My rook wants to say something. I told her to wait her turn.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_spicy_2',
+    text: "That was... a choice. I'm not going to say it was a bad choice. Out loud.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_spicy_3',
+    text: "I'm not going to gloat. I'm just going to sit with this feeling. Quietly. Loudly.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_spicy_4',
+    text: "Did you mean to do that. Say yes. Just say yes, {name}. Preserve the mystery.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_spicy_5',
+    text: "My king just laughed. He never laughs. I'm noting the date.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_spicy_6',
+    text: "Ooh. I felt that one. In a good way. Which is bad. For you.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+
+  // ── Polite: Rookie gentle on user blunders ──
+  {
+    id: 'blunder_polite_1',
+    text: "That one slipped. It happens. I'm still rooting for you, {name}.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'polite' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_polite_2',
+    text: "We can work with that. Every position has something.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'polite' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'blunder_polite_3',
+    text: "Hmm. Not the one I'd have picked. But keep going. You've got more moves in you.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['blunder'], movedBy: 'player', tone: 'polite' },
+    priority: 60,
+    source: 'authored',
+  },
+
+  // ── Spicy: Rookie grudging when user plays a great move ──
+  {
+    id: 'great_move_spicy_1',
+    text: "Fine. Good move. There. I said it. My king looks annoyed. So do I.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'great_move_spicy_2',
+    text: "You found it. I was hoping you wouldn't. Now I have to try harder. Rude.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'great_move_spicy_3',
+    text: "That was really good. I don't want to say it. But it was. My rook is staring at me. Don't tell her I said this.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'great_move_spicy_4',
+    text: "Of course you found the best move. Of course. Please stop doing that.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+  {
+    id: 'great_move_spicy_5',
+    text: "That was the move. I'm acknowledging it. I'm not celebrating it. There's a difference.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player', tone: 'spicy' },
+    priority: 60,
+    source: 'authored',
+  },
+
+  // ── Polite: Rookie humble on the win side of checkmate ──
+  {
+    id: 'checkmate_polite_rookie_1',
+    text: "That's checkmate. You played well, {name}. I mean that. I hope we go again.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
+    priority: 80,
+    source: 'authored',
+  },
+  {
+    id: 'checkmate_polite_rookie_2',
+    text: "Checkmate. Thanks for the game. You pushed me in a few spots. I noticed.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
+    priority: 80,
+    source: 'authored',
+  },
+  {
+    id: 'checkmate_polite_rookie_3',
+    text: "I got there. But you made it a real game. That matters to me. Weirdly.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
+    priority: 80,
+    source: 'authored',
+  },
+
+  // ── Spicy: sore-winner Rookie on checkmate ──
+  {
+    id: 'checkmate_spicy_rookie_1',
+    text: "Checkmate. I'm not gloating. I'm just not hiding it.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
+    priority: 80,
+    source: 'authored',
+  },
+  {
+    id: 'checkmate_spicy_rookie_2',
+    text: "That's mate. My king stood up. That almost never happens. He's having a day.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
+    priority: 80,
+    source: 'authored',
+  },
+  {
+    id: 'checkmate_spicy_rookie_3',
+    text: "Mate. My rook wants to say something. I told her to behave.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'spicy' },
+    priority: 80,
+    source: 'authored',
+  },
+
+  // ── Polite: Rookie encouraging when user loses ──
+  {
+    id: 'checkmate_polite_player_loses_1',
+    text: "That's mate. It was a good try, {name}. Some games go that way. You'll get the next one.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
+    priority: 80,
+    source: 'authored',
+  },
+  {
+    id: 'checkmate_polite_player_loses_2',
+    text: "Game over. You made real moves in there. I mean that kindly.",
+    conditions: { beats: ['game_end'], events: ['checkmate'], movedBy: 'rookie', tone: 'polite' },
+    priority: 80,
+    source: 'authored',
+  },
+
+  // ── Spicy: game_end sore winner ──
+  {
+    id: 'game_end_spicy_win_1',
+    text: "You won. I don't have to be happy about it.",
+    conditions: { beats: ['game_end'], movedBy: 'player', tone: 'spicy' },
+    priority: 75,
+    source: 'authored',
+  },
+  {
+    id: 'game_end_spicy_win_2',
+    text: "Well. That happened. I'm going to sit with it. For a while. Possibly forever.",
+    conditions: { beats: ['game_end'], movedBy: 'player', tone: 'spicy' },
+    priority: 75,
+    source: 'authored',
+  },
+  {
+    id: 'game_end_spicy_win_3',
+    text: "You got me. My king is pretending he didn't see it. He's not fooling anyone.",
+    conditions: { beats: ['game_end'], movedBy: 'player', tone: 'spicy' },
+    priority: 75,
+    source: 'authored',
+  },
+
+  // ── Polite: game_end encouraging on loss ──
+  {
+    id: 'game_end_polite_loss_1',
+    text: "Game's done, {name}. You played honest chess in there. Let's go again when you're ready.",
+    conditions: { beats: ['game_end'], movedBy: 'rookie', tone: 'polite' },
+    priority: 75,
+    source: 'authored',
+  },
+  {
+    id: 'game_end_polite_loss_2',
+    text: "That's the end of it. You've got good instincts. I saw a few moves I didn't expect.",
+    conditions: { beats: ['game_end'], movedBy: 'rookie', tone: 'polite' },
+    priority: 75,
+    source: 'authored',
+  },
+  {
+    id: 'game_end_polite_loss_3',
+    text: "Good game. I mean that. You're learning, and it shows. Take a breath.",
+    conditions: { beats: ['game_end'], movedBy: 'rookie', tone: 'polite' },
+    priority: 75,
+    source: 'authored',
+  },
+
+  // ── "Bigger board" existential register (agnostic, scattered) ──
+  {
+    id: 'turning_musing_1',
+    text: "Sometimes I wonder if there's a bigger board. And we're the pieces. And someone is moving us. Anyway, your turn.",
+    conditions: { beats: ['turning_point'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'turning_musing_2',
+    text: "Do the pieces know they're on a board. I know I'm on a board. Kind of. Your move.",
+    conditions: { beats: ['turning_point'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'turning_musing_3',
+    text: "If we replayed this exact game a thousand times, would you make the same move here. Don't answer. Just move.",
+    conditions: { beats: ['turning_point'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'late_musing_1',
+    text: "I had a thought that wasn't about chess. It was brief. It's gone now. Your turn.",
+    conditions: { beats: ['late_game'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'late_musing_2',
+    text: "Every game ends. I've been thinking about endings. I think I'm okay with them. Anyway.",
+    conditions: { beats: ['late_game'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'late_musing_3',
+    text: "Somewhere there's a version of this game where neither of us exists. I find that calming. Your move.",
+    conditions: { beats: ['late_game'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'turning_musing_4',
+    text: "Most positions in chess have never been played. We might be in one right now. Neat. Your turn, {name}.",
+    conditions: { beats: ['turning_point'] },
+    priority: 35,
+    source: 'authored',
+  },
+  {
+    id: 'late_musing_4',
+    text: "Every piece on this board is just sitting exactly where we agreed it should be. Agreements are interesting. Anyway.",
+    conditions: { beats: ['late_game'] },
+    priority: 35,
     source: 'authored',
   },
 ];
