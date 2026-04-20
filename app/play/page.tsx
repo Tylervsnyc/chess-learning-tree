@@ -11,13 +11,15 @@ import {
   playCelebrationSound,
   getSharedAudioContext,
 } from '@/lib/sounds';
+import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
 import {
   ROOKIE_LEVELS,
   WINS_TO_ADVANCE,
   getRookieLevel,
   getLevelElo,
-  getLevelEngineConfig,
+  useMinimax,
+  minimaxSkill,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents } from '@/lib/analytics/posthog';
@@ -38,7 +40,7 @@ import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarra
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
-import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { useClickToMove } from '@/hooks/useClickToMove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
 import { useName } from '@/hooks/useName';
@@ -1163,7 +1165,7 @@ export default function PlayRookiePage() {
 
       setFen(newFen);
       setLastMv({ from: result.from as Square, to: result.to as Square });
-      setSelected(prev => reconcileSelectionAfterOpponentMove(prev, result));
+      setSelected(null);
       setRookieThinking(false);
 
       if (soundsOnRef.current) {
@@ -1230,13 +1232,12 @@ export default function PlayRookiePage() {
       }
     };
 
-    // Opening book check.
-    // All levels: force book for Rookie's first 5 moves so she doesn't open with 1...h6.
-    // After move 5: only use book at level 4+ (low levels leave theory early, blunder mid-game).
+    // Opening book check — skip at low levels so Rookie doesn't play perfect theory
+    // Levels 1-3 (ELO 200-600): no book, just engine moves
+    // Levels 4+: use the opening book
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
-    const rookieUpcomingMoveNum = Math.floor(gameMoves.length / 2) + 1;
-    const useBook = rookieUpcomingMoveNum <= 5 || rookieLevel >= 4;
+    const useBook = rookieLevel >= 4;
     const bookResult = useBook
       ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
       : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
@@ -1249,27 +1250,28 @@ export default function PlayRookiePage() {
       return;
     }
 
+    // Levels 1-2 (ELO 200-400) use minimax, levels 3-10 (600-2000) use Stockfish
     const targetElo = getLevelElo(rookieLevel);
-    const cfg = getLevelEngineConfig(rookieLevel);
-
-    if (!sfReadyRef.current) {
-      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish not ready — skip`, details: { rookieLevel } });
-      setRookieThinking(false);
+    if (useMinimax(rookieLevel) || !sfReadyRef.current) {
+      const mSkill = minimaxSkill(rookieLevel);
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (level=${rookieLevel}, skill=${mSkill})`, details: { engine: 'minimax', rookieLevel, minimaxSkill: mSkill } });
+      const result = getRookieMove(currentFen, mSkill);
+      if (!result) { setRookieThinking(false); return; }
+      rookieTimerRef.current = setTimeout(() => {
+        applyRookieMove({ san: result.san });
+      }, 500);
       return;
     }
 
-    log({
-      moveNum: moveNumRef.current,
-      type: 'engine',
-      who: 'system',
-      summary: `stockfish (elo=${targetElo}, skill=${cfg.skillLevel}, depth=${cfg.depth}, multiPV=${cfg.multiPV}, pool=${cfg.poolSize})`,
-      details: { engine: 'stockfish', targetElo, rookieLevel, ...cfg },
-    });
+    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, rookieLevel } });
     const thinkStart = Date.now();
-    stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize).then((uciMove) => {
+    stockfish.getBestMoveAtElo(currentFen, targetElo).then((uciMove) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
       if (!uciMove) {
-        setRookieThinking(false);
+        const result = getRookieMove(currentFen, minimaxSkill(rookieLevel));
+        if (!result) { setRookieThinking(false); return; }
+        const wait = Math.max(0, 500 - (Date.now() - thinkStart));
+        rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: result.san }), wait);
         return;
       }
       const from = uciMove.slice(0, 2);
@@ -1400,7 +1402,7 @@ export default function PlayRookiePage() {
     selectedSquare: selected,
     setSelectedSquare: setSelected,
     tryMove: doPlayerMove,
-    enabled: phase === 'playing',
+    enabled: phase === 'playing' && !rookieThinking,
   });
 
   // Kick off Rookie's first move if player is black
