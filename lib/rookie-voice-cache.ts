@@ -15,6 +15,7 @@
 
 import * as crypto from 'crypto';
 import { createServiceClient } from '@/lib/supabase/service';
+import { assertTtsAllowed, recordTtsUsage } from '@/lib/tts-guard';
 
 const BUCKET = 'rookie-voice';
 
@@ -83,6 +84,9 @@ export async function generateAndCache(
     return { audioBase64: cached.audioBase64, fromCache: true };
   }
 
+  // Cache miss — gate live synth through the TTS guard
+  assertTtsAllowed(text);
+
   // Generate via ElevenLabs
   const res = await fetch(
     `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -110,11 +114,14 @@ export async function generateAndCache(
 
   const arrayBuffer = await res.arrayBuffer();
   const audioBuffer = Buffer.from(arrayBuffer);
+  recordTtsUsage(text);
 
-  // Cache it (fire and forget — don't block the response)
-  saveToCache(text, audioBuffer).catch((err) =>
-    console.error('Voice cache save failed:', err)
-  );
+  // Await the cache write — fire-and-forget silently re-synthesized on failure
+  try {
+    await saveToCache(text, audioBuffer);
+  } catch (err) {
+    console.error('[TTS] CACHE WRITE FAILED — next request will re-synthesize:', err);
+  }
 
   return {
     audioBase64: audioBuffer.toString('base64'),

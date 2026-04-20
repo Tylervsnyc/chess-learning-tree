@@ -87,7 +87,7 @@ async function main() {
     const text = quips[i];
     const label = text.length > 60 ? text.slice(0, 60) + '...' : text;
 
-    const existing = lookupVoiceCache(text);
+    const existing = await lookupVoiceCache(text);
     if (existing.hit) {
       cached++;
       console.log(`[${i + 1}/${quips.length}] CACHED: ${label}`);
