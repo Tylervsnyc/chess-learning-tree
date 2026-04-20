@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
+import { ROOKIE_GAMEPLAY_PROMPT, withTone } from '@/lib/rookie-personality';
+import { toneForLevel } from '@/lib/quips/tone';
 import { generateAndCache, lookupVoiceCache } from '@/lib/rookie-voice-cache';
 import { aiGuard } from '@/lib/ai-guard';
 import { renderLine } from '@/lib/speech/sanitize';
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
       generateAudio?: boolean;
       speakOnly?: string;
       honchoPlayerContext?: string;
+      attitudeLevel?: number;
     };
     const {
       fen,
@@ -93,9 +95,11 @@ export async function POST(request: NextRequest) {
 
     // Inject Honcho player context if provided (CHE-201)
     const honchoContext = body.honchoPlayerContext;
+    const tone = toneForLevel(body.attitudeLevel ?? 3);
+    const tonedPrompt = withTone(ROOKIE_GAMEPLAY_PROMPT, tone);
     const systemPrompt = honchoContext
-      ? `## What I know about this player\n${honchoContext}\n---\n\n${ROOKIE_GAMEPLAY_PROMPT}`
-      : ROOKIE_GAMEPLAY_PROMPT;
+      ? `## What I know about this player\n${honchoContext}\n---\n\n${tonedPrompt}`
+      : tonedPrompt;
 
     // Call Claude for Rookie's response
     const message = await anthropic.messages.create({

@@ -526,13 +526,14 @@ export default function PlayRookiePage() {
           threadName,
           playerName: pName,
           memory: rookieMemoryRef.current,
+          attitudeLevel,
         },
       }),
     });
     const data = await res.json();
     if (!res.ok || !data.text) throw new Error('Failed');
     return data.text;
-  }, []);
+  }, [attitudeLevel]);
 
   const generateGameEndLine = useCallback(async (ctx: {
     playerName: string;
@@ -556,13 +557,14 @@ export default function PlayRookiePage() {
         context: {
           ...ctx,
           memory: rookieMemoryRef.current,
+          attitudeLevel,
         },
       }),
     });
     const data = await res.json();
     if (!res.ok || !data.text) throw new Error('Failed');
     return data.text;
-  }, [narrative]);
+  }, [narrative, attitudeLevel]);
 
   const speech = useRookieSpeech({
     speakQuip,

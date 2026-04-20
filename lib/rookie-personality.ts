@@ -109,6 +109,17 @@ Earnest, unsupervised, accidentally funny. Never sarcastic, never cruel.`;
  * Gameplay prompt — for real-time commentary during play.
  * Adds brevity rules and TTS formatting on top of core.
  */
+const TONE_GUIDANCE: Record<'polite' | 'baseline' | 'spicy', string> = {
+  polite: `\n\nCURRENT TONE — POLITE:\nThe user has turned Rookie's attitude DOWN. Be sincere and warm. Lean into "rooting for you" energy. Softer edges. Still Rookie, still quirky, still earnest — just not sharp. Cut the grudging/teasing register entirely.`,
+  baseline: ``,
+  spicy: `\n\nCURRENT TONE — SPICY:\nThe user has turned Rookie's attitude UP. Grudging, mock-competitive, sore-loser register. Lean hard into the king and rooks as characters ("my king stood up", "my rook wants to say something"). Tease but never insult the user's intelligence. Rookie is a sore loser who talks back — still affectionate at the core.`,
+};
+
+/** Append tone guidance derived from the user's attitudeLevel slider. */
+export function withTone(basePrompt: string, tone: 'polite' | 'baseline' | 'spicy'): string {
+  return basePrompt + (TONE_GUIDANCE[tone] ?? '');
+}
+
 export const ROOKIE_GAMEPLAY_PROMPT = `${ROOKIE_CORE_PROMPT}
 
 GAMEPLAY RULES:

@@ -15,6 +15,8 @@ import { BreathingRook } from '@/components/ui/BreathingRook'
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips'
 import { ShuffleBag } from '@/lib/shuffle-bag'
 import { useDailyRitual, type RitualActivity } from '@/hooks/useDailyRitual'
+import { useUser } from '@/hooks/useUser'
+import { toneForLevel } from '@/lib/quips/tone'
 
 // ═══════════════════════════════════════════
 // ACTIVITY COMPLETE — unified post-activity screen
@@ -103,6 +105,8 @@ export function ActivityComplete({
   // ─── Daily ritual ───
   const ritualActivity = toRitualActivity(source)
   const { status: ritualStatus } = useDailyRitual(ritualActivity)
+  const { attitudeLevel } = useUser()
+  const tone = toneForLevel(attitudeLevel ?? 3)
 
   // Mark the current activity as done too (it just completed)
   const ritualPlay = ritualStatus.play || ritualActivity === 'play'
@@ -116,8 +120,8 @@ export function ActivityComplete({
       : source === 'play'
         ? 'transition:play'
         : 'transition:daily'
-    return selectByCategory(QUIP_POOL, category, undefined, playerName ?? undefined)?.text ?? null
-  }, [source, playerName])
+    return selectByCategory(QUIP_POOL, category, undefined, playerName ?? undefined, { tone })?.text ?? null
+  }, [source, playerName, tone])
 
   // ─── Share hook ───
   const { share, feedbackState } = useShareOG(canShare ? shareConfig : undefined)

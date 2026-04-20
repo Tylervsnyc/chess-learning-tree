@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { ROOKIE_GAMEPLAY_PROMPT } from '@/lib/rookie-personality';
+import { ROOKIE_GAMEPLAY_PROMPT, withTone } from '@/lib/rookie-personality';
+import { toneForLevel } from '@/lib/quips/tone';
 import {
   EMPTY_ROOKIE_MEMORY,
   type RookieMemoryContext,
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
         playerName?: string;
         rookieWon?: boolean;
         accuracy?: number;
+        attitudeLevel?: number;
         gameSummary?: {
           result: string;
           moveCount: number;
@@ -133,10 +135,11 @@ EXAMPLES:
       return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
     }
 
+    const tone = toneForLevel(context.attitudeLevel ?? 3);
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 200,
-      system: ROOKIE_GAMEPLAY_PROMPT,
+      system: withTone(ROOKIE_GAMEPLAY_PROMPT, tone),
       messages: [{ role: 'user', content: userPrompt }],
     });
 
