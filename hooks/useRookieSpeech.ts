@@ -20,7 +20,9 @@ import {
 } from '@/lib/speech/priority-queue';
 import { pickThread } from '@/lib/speech/threads';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
-import { AUTHORED_LINES } from '@/lib/speech/line-pool';
+import { QUIP_POOL, getTimeOfDay, milestoneForGameCount } from '@/lib/quips/quip-pool';
+import { selectByCategory } from '@/lib/speech/priority-queue';
+import type { SessionBreadcrumb } from '@/lib/session-breadcrumb';
 import { SWING_THRESHOLD } from '@/lib/eval-zones';
 
 // ════════════════════════════════════════════════════════════════
@@ -120,7 +122,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   const beatRef = useRef<BeatState>(createBeatState());
   const queueStateRef = useRef<QueueState>(createSeededQueueState(initialUsedRecently));
   const threadNameRef = useRef<string | null>(null);
-  const linePoolRef = useRef<SpeechLine[]>([...AUTHORED_LINES]);
+  const linePoolRef = useRef<SpeechLine[]>([...QUIP_POOL]);
   const playerNameRef = useRef<string>('');
   const playerColorRef = useRef<'white' | 'black'>('white');
   const lastQuipMoveRef = useRef(0); // move number of last quip — for cooldown
@@ -202,7 +204,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       beatRef.current = createBeatState();
       queueStateRef.current = endGame(queueStateRef.current);
       threadNameRef.current = null;
-      linePoolRef.current = [...AUTHORED_LINES];
+      linePoolRef.current = [...QUIP_POOL];
       playerNameRef.current = playerName;
       playerColorRef.current = playerColor;
       lastQuipMoveRef.current = 0;
@@ -510,6 +512,149 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [queueQuip],
   );
 
+  /** Queue a post-game WIN quip from the unified pool (play:win). */
+  const queueWinQuip = useCallback(
+    (playerName?: string) => {
+      const result = selectByCategory(QUIP_POOL, 'play:win', queueStateRef.current, playerName);
+      if (result) {
+        queueQuip(result.text, 'high');
+        return result.text;
+      }
+      return null;
+    },
+    [queueQuip],
+  );
+
+  /** Queue a post-game LOSS quip from the unified pool (play:loss). */
+  const queueLossQuip = useCallback(
+    (playerName?: string) => {
+      const result = selectByCategory(QUIP_POOL, 'play:loss', queueStateRef.current, playerName);
+      if (result) {
+        queueQuip(result.text, 'high');
+        return result.text;
+      }
+      return null;
+    },
+    [queueQuip],
+  );
+
+  /** Queue a level-up quip (play:levelup:<level>). */
+  const queueLevelUpQuip = useCallback(
+    (level: number, playerName?: string) => {
+      const result = selectByCategory(
+        QUIP_POOL,
+        `play:levelup:${level}`,
+        queueStateRef.current,
+        playerName,
+      );
+      if (result) {
+        queueQuip(result.text, 'high');
+        return result.text;
+      }
+      return null;
+    },
+    [queueQuip],
+  );
+
+  /**
+   * Queue a landing quip for the /play home. Prefers the most specific match:
+   *   1. Breadcrumb-aware (daily score band, lesson, opening)
+   *   2. Milestone game count
+   *   3. Close-to-levelup (one win away)
+   *   4. Generic time-of-day / day-of-week landing
+   */
+  const queueLandingQuip = useCallback(
+    (ctx: {
+      breadcrumb?: SessionBreadcrumb | null;
+      gamesPlayed?: number;
+      winsAtLevel?: number;
+      winsNeeded?: number;
+      playerName?: string;
+      now?: Date;
+    }) => {
+      const { breadcrumb, gamesPlayed, winsAtLevel, winsNeeded, playerName } = ctx;
+      const now = ctx.now ?? new Date();
+      const state = queueStateRef.current;
+
+      // 1. Breadcrumb
+      if (breadcrumb) {
+        if (breadcrumb.type === 'daily') {
+          const { score, total } = breadcrumb;
+          const pct = total > 0 ? score / total : 0;
+          const band = pct >= 0.7 ? 'high' : pct >= 0.4 ? 'mid' : 'low';
+          const result = selectByCategory(
+            QUIP_POOL,
+            `play:landing:daily:${band}`,
+            state,
+            playerName,
+            { score, total, breadcrumbType: 'daily' },
+          );
+          if (result) { queueQuip(result.text, 'high'); return result.text; }
+        } else if (breadcrumb.type === 'opening') {
+          const result = selectByCategory(
+            QUIP_POOL,
+            'play:landing:opening',
+            state,
+            playerName,
+            { openingName: breadcrumb.openingName, breadcrumbType: 'opening' },
+          );
+          if (result) { queueQuip(result.text, 'high'); return result.text; }
+        } else if (breadcrumb.type === 'lesson') {
+          const result = selectByCategory(
+            QUIP_POOL,
+            'play:landing:lesson',
+            state,
+            playerName,
+            { lessonName: breadcrumb.lessonName, breadcrumbType: 'lesson' },
+          );
+          if (result) { queueQuip(result.text, 'high'); return result.text; }
+        }
+      }
+
+      // 2. Milestone
+      const milestone = milestoneForGameCount(gamesPlayed);
+      if (milestone !== null) {
+        const result = selectByCategory(
+          QUIP_POOL,
+          `play:landing:milestone:${milestone}`,
+          state,
+          playerName,
+        );
+        if (result) { queueQuip(result.text, 'high'); return result.text; }
+      }
+
+      // 3. Close to level up
+      if (winsAtLevel !== undefined && winsNeeded !== undefined && winsNeeded - winsAtLevel === 1) {
+        const result = selectByCategory(QUIP_POOL, 'play:landing:closelevel', state, playerName);
+        if (result) { queueQuip(result.text, 'high'); return result.text; }
+      }
+
+      // 4. Generic time-of-day / day-of-week landing.
+      // Walk specificity tiers: day+time, time-only, day-only, generic.
+      const tod = getTimeOfDay(now);
+      const dow = now.getDay();
+      const all = QUIP_POOL.filter(l => l.category === 'play:landing');
+      const pickFromTier = (tier: typeof all) => {
+        const fresh = tier.filter(l => !state.usedRecently.has(l.id));
+        const candidates = fresh.length > 0 ? fresh : tier;
+        if (candidates.length === 0) return null;
+        const pick = candidates[Math.floor(Math.random() * candidates.length)];
+        state.usedRecently.add(pick.id);
+        return pick;
+      };
+      const dayAndTime = all.filter(l => l.conditions?.dayOfWeek?.includes(dow) && l.conditions?.timeOfDay === tod);
+      const timeOnly = all.filter(l => !l.conditions?.dayOfWeek && l.conditions?.timeOfDay === tod);
+      const dayOnly = all.filter(l => l.conditions?.dayOfWeek?.includes(dow) && !l.conditions?.timeOfDay);
+      const generic = all.filter(l => !l.conditions?.dayOfWeek && !l.conditions?.timeOfDay);
+      for (const tier of [dayAndTime, timeOnly, dayOnly, generic]) {
+        const pick = pickFromTier(tier);
+        if (pick) { queueQuip(pick.text, 'high'); return pick.text; }
+      }
+      return null;
+    },
+    [queueQuip],
+  );
+
   return {
     /** Call after every move with current game state. Handles beat updates + quip selection. */
     onMove,
@@ -527,6 +672,14 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     reset,
     /** Queue an arbitrary text line */
     queueDirect,
+    /** Queue a post-game win quip */
+    queueWinQuip,
+    /** Queue a post-game loss quip */
+    queueLossQuip,
+    /** Queue a level-up quip for the given level */
+    queueLevelUpQuip,
+    /** Queue a /play landing quip (breadcrumb/milestone/time aware) */
+    queueLandingQuip,
     /** Current display text */
     displayText,
     /** Key for animation */

@@ -17,12 +17,7 @@ import { createClient } from '@supabase/supabase-js';
 // Known dotenv gotcha for this repo — use explicit path, not `import 'dotenv/config'`.
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
-import {
-  winQuips,
-  lossQuips,
-  levelUpQuips,
-  landingQuips,
-} from '../data/quips/play-quips';
+import { QUIP_POOL } from '../lib/quips/quip-pool';
 
 const BUCKET = 'rookie-voice';
 
@@ -49,12 +44,13 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // Collect unique texts from all exports.
+  // Collect unique texts from every play-prefixed line in the unified quip pool.
   const texts = new Set<string>();
-  for (const q of winQuips) texts.add(q);
-  for (const q of lossQuips) texts.add(q);
-  for (const q of Object.values(levelUpQuips)) texts.add(q);
-  for (const q of landingQuips) texts.add(q.text);
+  for (const line of QUIP_POOL) {
+    if (line.category?.startsWith('play:')) {
+      texts.add(line.text);
+    }
+  }
 
   const all = Array.from(texts);
   console.log(`Found ${all.length} unique quips to process.\n`);

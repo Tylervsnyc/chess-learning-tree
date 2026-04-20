@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { selectByCategory } from '@/lib/speech/priority-queue';
-import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints';
+import { QUIP_POOL } from '@/lib/quips/quip-pool';
 
 export type RitualActivity = 'play' | 'tactics' | 'daily';
 
@@ -55,10 +55,10 @@ export function useDailyRitual(justCompleted?: RitualActivity) {
   // Pick a Rookie line for the suggestion
   const suggestionLine = useMemo(() => {
     if (status.allDone) {
-      return selectByCategory(TOUCHPOINT_LINES, 'ritual:all_done')?.text ?? null;
+      return selectByCategory(QUIP_POOL, 'ritual:all_done')?.text ?? null;
     }
     if (status.nextActivity) {
-      return selectByCategory(TOUCHPOINT_LINES, `ritual:${status.nextActivity}_next`)?.text ?? null;
+      return selectByCategory(QUIP_POOL, `ritual:${status.nextActivity}_next`)?.text ?? null;
     }
     return null;
   }, [status.allDone, status.nextActivity]);

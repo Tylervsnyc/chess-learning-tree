@@ -2,7 +2,12 @@
 
 import { useCallback, useState } from 'react';
 import { ROOKIE_LEVELS, WINS_TO_ADVANCE } from '@/lib/rookie-levels';
-import { levelUpQuips } from '@/data/quips/play-quips';
+import { QUIP_POOL } from '@/lib/quips/quip-pool';
+
+function levelUpQuipFor(level: number): string | null {
+  const line = QUIP_POOL.find(l => l.category === `play:levelup:${level}`);
+  return line?.text ?? null;
+}
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 
 function LevelProgressBar({
@@ -129,14 +134,14 @@ export default function LevelUpTestPage() {
       setCelebrating(false);
 
       // Show the level-up quip (visual only — this page doesn't play voice)
-      setQuip(levelUpQuips[newLevel] ?? '(no quip defined)');
+      setQuip(levelUpQuipFor(newLevel) ?? '(no quip defined)');
 
       // Play audio via the same endpoint the app uses
       try {
         const res = await fetch('/api/rookie-voice', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ speakOnly: levelUpQuips[newLevel] }),
+          body: JSON.stringify({ speakOnly: levelUpQuipFor(newLevel) }),
         });
         if (res.ok) {
           const data = await res.json();

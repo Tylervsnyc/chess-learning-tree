@@ -7,7 +7,7 @@ import { playCelebrationSound } from '@/lib/sounds'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
 import { selectByCategory } from '@/lib/speech/priority-queue'
 import { safeRenderText } from '@/lib/speech/sanitize'
-import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints'
+import { QUIP_POOL } from '@/lib/quips/quip-pool'
 import { useShareOG, type ShareOGConfig } from '@/hooks/useShareOG'
 import { ActionButton } from '@/components/ui/ActionButton'
 import { InteractiveRook, type InteractiveModeId } from '@/components/ui/InteractiveRook'
@@ -116,7 +116,7 @@ export function ActivityComplete({
       : source === 'play'
         ? 'transition:play'
         : 'transition:daily'
-    return selectByCategory(TOUCHPOINT_LINES, category, undefined, playerName ?? undefined)?.text ?? null
+    return selectByCategory(QUIP_POOL, category, undefined, playerName ?? undefined)?.text ?? null
   }, [source, playerName])
 
   // ─── Share hook ───

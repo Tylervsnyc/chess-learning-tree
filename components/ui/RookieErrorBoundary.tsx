@@ -3,11 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { BreathingRook } from '@/components/ui/BreathingRook';
-import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints';
+import { QUIP_POOL } from '@/lib/quips/quip-pool';
 import { selectByCategory } from '@/lib/speech/priority-queue';
 
 function getRandomMessage() {
-  const result = selectByCategory(TOUCHPOINT_LINES, 'error');
+  const result = selectByCategory(QUIP_POOL, 'error');
   return result?.text ?? "Something went wrong. Try refreshing?";
 }
 

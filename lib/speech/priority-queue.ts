@@ -7,8 +7,12 @@ import { renderLine } from '@/lib/speech/sanitize';
 export type { Beat, EvalMood };
 export type GameEvent = 'capture' | 'check' | 'checkmate' | 'castle' | 'blunder' | 'great_move' | 'stalemate' | 'capture_sequence' | 'resign' | 'mood_change' | 'alarm' | 'none';
 
+export type Tone = 'polite' | 'baseline' | 'spicy';
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
+export type BreadcrumbType = 'daily' | 'opening' | 'lesson' | 'play';
+
 export interface LineConditions {
-  /** Which beats this line is valid for */
+  /** Which beats this line is valid for. May be empty for category-only (touchpoint) lines. */
   beats: Beat[];
   /** Which eval moods this line is valid for (empty = any) */
   evalMoods?: EvalMood[];
@@ -26,6 +30,14 @@ export interface LineConditions {
   minMove?: number;
   /** Maximum move number */
   maxMove?: number;
+  /** Personality tone gating (wired via CHE-290) */
+  tone?: Tone;
+  /** Restrict to a specific time-of-day bucket */
+  timeOfDay?: TimeOfDay;
+  /** Restrict to specific days (0=Sun..6=Sat). Empty/undefined = any */
+  dayOfWeek?: number[];
+  /** Restrict to specific breadcrumb origin */
+  breadcrumbType?: BreadcrumbType;
 }
 
 export interface SpeechLine {
@@ -65,10 +77,26 @@ export interface QueueContext {
   playerColor?: 'white' | 'black';
   capturedPiece?: string; // 'pawn', 'knight', etc.
   movedPiece?: string; // 'pawn', 'knight', etc.
+  /** Score from a completed daily/lesson activity */
+  score?: number;
+  /** Total possible score from a completed daily/lesson activity */
+  total?: number;
+  /** Name of the opening the user just finished */
+  openingName?: string;
+  /** Name of the lesson the user just finished */
+  lessonName?: string;
   /** Net material swing from a capture sequence (positive = player gained) */
   materialSwing?: number;
   /** Number of captures in a capture sequence */
   captureCount?: number;
+  /** Personality tone gate */
+  tone?: Tone;
+  /** Current time-of-day bucket */
+  timeOfDay?: TimeOfDay;
+  /** Current day-of-week (0=Sun..6=Sat) */
+  dayOfWeek?: number;
+  /** Most recent breadcrumb type (where the user just came from) */
+  breadcrumbType?: BreadcrumbType;
 }
 
 export interface QueueState {
@@ -113,7 +141,11 @@ export function substitutePlaceholders(text: string, context: QueueContext): str
   const withPieces = text
     .replace(/\{piece\}/g, context.capturedPiece ?? 'piece')
     .replace(/\{swing\}/g, String(Math.abs(context.materialSwing ?? 0)))
-    .replace(/\{captures\}/g, String(context.captureCount ?? 0));
+    .replace(/\{captures\}/g, String(context.captureCount ?? 0))
+    .replace(/\{score\}/g, String(context.score ?? 0))
+    .replace(/\{total\}/g, String(context.total ?? 0))
+    .replace(/\{openingName\}/g, context.openingName ?? '')
+    .replace(/\{lessonName\}/g, context.lessonName ?? '');
   return renderLine(withPieces, context.playerName);
 }
 
@@ -123,7 +155,8 @@ function matchesConditions(line: SpeechLine, context: QueueContext): boolean {
   if (!line.conditions) return false;
   const c = line.conditions;
 
-  // Beat must match
+  // Beat must match. Empty beats = category-only line, never matches game context.
+  if (!c.beats || c.beats.length === 0) return false;
   if (!c.beats.includes(context.beat)) return false;
 
   // Eval mood filter (empty = any)
@@ -151,6 +184,20 @@ function matchesConditions(line: SpeechLine, context: QueueContext): boolean {
 
   // Thread filter: if line requires a thread, it must be active
   if (c.threadId && c.threadId !== context.activeThreadId) return false;
+
+  // Tone filter (personality gauge, CHE-290)
+  if (c.tone && context.tone && c.tone !== context.tone) return false;
+
+  // Time-of-day filter
+  if (c.timeOfDay && context.timeOfDay && c.timeOfDay !== context.timeOfDay) return false;
+
+  // Day-of-week filter
+  if (c.dayOfWeek && c.dayOfWeek.length > 0 && context.dayOfWeek !== undefined && !c.dayOfWeek.includes(context.dayOfWeek)) {
+    return false;
+  }
+
+  // Breadcrumb filter
+  if (c.breadcrumbType && context.breadcrumbType && c.breadcrumbType !== context.breadcrumbType) return false;
 
   return true;
 }
@@ -257,12 +304,15 @@ export function createGeneratedLine(
  * Select a random line by category from a pool.
  * Uses the same dedup ring as game quips (usedRecently).
  * Category supports prefix matching: 'greeting' matches 'greeting:morning', 'greeting:evening', etc.
+ *
+ * `substitutions` allows contextual placeholder values ({score}, {total}, {openingName}, {lessonName}).
  */
 export function selectByCategory(
   pool: SpeechLine[],
   category: string,
   state?: QueueState,
   playerName?: string,
+  substitutions?: Partial<QueueContext>,
 ): { line: SpeechLine; text: string } | null {
   const matching = pool.filter((line) => {
     if (!line.category) return false;
@@ -271,6 +321,23 @@ export function selectByCategory(
     return true;
   });
 
+  const render = (text: string): string => {
+    if (substitutions) {
+      const ctx: QueueContext = {
+        beat: 'opening',
+        evalMood: 'even',
+        event: 'none',
+        movedBy: 'rookie',
+        moveNumber: 0,
+        activeThreadId: null,
+        playerName: playerName ?? '',
+        ...substitutions,
+      };
+      return substitutePlaceholders(text, ctx);
+    }
+    return renderLine(text, playerName);
+  };
+
   if (matching.length === 0) {
     // Fall back to recently used if pool exhausted
     const fallback = pool.filter(
@@ -278,12 +345,12 @@ export function selectByCategory(
     );
     if (fallback.length === 0) return null;
     const pick = fallback[Math.floor(Math.random() * fallback.length)];
-    return { line: pick, text: renderLine(pick.text, playerName) };
+    return { line: pick, text: render(pick.text) };
   }
 
   const pick = matching[Math.floor(Math.random() * matching.length)];
   if (state) state.usedRecently.add(pick.id);
-  return { line: pick, text: renderLine(pick.text, playerName) };
+  return { line: pick, text: render(pick.text) };
 }
 
 /** Transfer usedThisGame to usedRecently for cross-game memory */

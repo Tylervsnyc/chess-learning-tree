@@ -52,12 +52,6 @@ import {
   updateRookieMemoryContext,
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
-import {
-  winQuips,
-  lossQuips,
-  levelUpQuips,
-  pickContextualLandingQuip,
-} from '@/data/quips/play-quips';
 import { consumeBreadcrumb } from '@/lib/session-breadcrumb';
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
@@ -299,8 +293,7 @@ export default function PlayRookiePage() {
   const [showNameAsk, setShowNameAsk] = useState(false);
   const nameAskedRef = useRef(false);
 
-  const usedWinLossQuipsRef = useRef<Set<string>>(new Set());
-  const usedLandingQuipsRef = useRef<Set<string>>(new Set());
+  // Win/loss/landing quip dedup is now handled by the unified QueueState inside useRookieSpeech.
   const pendingPostGameRef = useRef<'win' | 'loss' | null>(null);
   const pendingLevelUpRef = useRef<{ oldLevel: number; newLevel: number } | null>(null);
   const lastResultForTrackingRef = useRef<'win' | 'loss' | 'none'>('none');
@@ -594,15 +587,6 @@ export default function PlayRookiePage() {
   // Wire up eval-based blunder detection (speech is defined after updateEval, so use ref)
   speechEvalUpdateRef.current = speech.onEvalUpdate;
 
-  const pickFromPool = useCallback((pool: string[], used: Set<string>): string => {
-    if (pool.length === 0) return '';
-    if (used.size >= pool.length) used.clear();
-    const available = pool.filter(q => !used.has(q));
-    const choice = available[Math.floor(Math.random() * available.length)] || pool[0];
-    used.add(choice);
-    return choice;
-  }, []);
-
   const runLevelUpAnimation = useCallback((oldLevel: number, newLevel: number) => {
     const DURATION = 1600;
     PlayEvents.levelUpTriggered(oldLevel, newLevel);
@@ -614,9 +598,8 @@ export default function PlayRookiePage() {
       setRookieLevel(newLevel);
       setWinsAtLevel(0);
       setLevelBarAnim(null);
-      const quip = levelUpQuips[newLevel];
+      const quip = speech.queueLevelUpQuip(newLevel);
       if (quip) {
-        speech.queueDirect(quip, 'high');
         PlayEvents.quipShown('level_up', quip);
       }
       try {
@@ -654,10 +637,8 @@ export default function PlayRookiePage() {
       landingFiredRef.current = true;
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('post_game', rookieLevel);
-      const pool = pendingResult === 'win' ? winQuips : lossQuips;
-      const line = pickFromPool(pool, usedWinLossQuipsRef.current);
+      const line = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
       if (line) {
-        speech.queueDirect(line, 'high');
         PlayEvents.quipShown(pendingResult, line);
       }
       return;
@@ -668,18 +649,17 @@ export default function PlayRookiePage() {
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
       const mem = rookieMemoryRef.current;
-      const line = pickContextualLandingQuip({
+      const line = speech.queueLandingQuip({
         breadcrumb: consumeBreadcrumb(),
         gamesPlayed: mem.gamesPlayed,
         winsAtLevel,
         winsNeeded: WINS_TO_ADVANCE,
-      }, usedLandingQuipsRef.current);
+      });
       if (line) {
-        speech.queueDirect(line, 'high');
         PlayEvents.quipShown('landing', line);
       }
     }
-  }, [phase, user?.id, rookieLevel, winsAtLevel, runLevelUpAnimation, pickFromPool, speech]);
+  }, [phase, user?.id, rookieLevel, winsAtLevel, runLevelUpAnimation, speech]);
 
   // ── 6-layer narrative processing (runs alongside existing speech system) ──
   const processNarrative = useCallback(async (
