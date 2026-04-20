@@ -18,6 +18,7 @@ import { createClient } from '@supabase/supabase-js';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 import { QUIP_POOL } from '../lib/quips/quip-pool';
+import { renderLine } from '../lib/speech/sanitize';
 
 const BUCKET = 'rookie-voice';
 
@@ -44,12 +45,30 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // Collect unique texts from every play-prefixed line in the unified quip pool.
+  // Collect unique texts from EVERY line in the unified pool.
+  // Pre-render through renderLine (null name) so {name} is stripped the same
+  // way runtime does when no playerName is set — personalized variants cache
+  // on first use at runtime.
+  //
+  // Skip lines that contain placeholders other than {name} ({openingName},
+  // {lessonName}, {score}, {total}) — those can't be pre-rendered without
+  // runtime context and stripping them blind produces grammatically broken
+  // audio that will never match the real runtime key anyway.
+  const OTHER_PLACEHOLDER = /\{(?!name\})[a-zA-Z_][a-zA-Z0-9_]*\}/;
   const texts = new Set<string>();
+  let skipped = 0;
   for (const line of QUIP_POOL) {
-    if (line.category?.startsWith('play:')) {
-      texts.add(line.text);
+    if (OTHER_PLACEHOLDER.test(line.text)) {
+      skipped++;
+      continue;
     }
+    const rendered = renderLine(line.text, null);
+    if (rendered.trim().length > 0) {
+      texts.add(rendered);
+    }
+  }
+  if (skipped > 0) {
+    console.log(`Skipped ${skipped} lines containing runtime placeholders (opening/lesson/score/total).\n`);
   }
 
   const all = Array.from(texts);

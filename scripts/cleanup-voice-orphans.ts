@@ -1,7 +1,15 @@
 /**
- * Remove orphan mp3s from manifest, local disk, and Supabase Storage.
- * An orphan = a manifest key that doesn't match any current AUTHORED_LINES
- * text (template) or Tyler-substituted version.
+ * Remove orphan mp3s from Supabase Storage.
+ *
+ * An orphan here = an mp3 whose hash matches a BROKEN pre-rendered text:
+ * specifically, any QUIP_POOL line that contains a non-{name} placeholder
+ * ({openingName}, {lessonName}, {score}, {total}, etc.) whose naive
+ * strip-and-render produces grammatically broken audio that will never
+ * match the real runtime key (runtime substitutes the real value first).
+ *
+ * Safe by default — conservative scope. Does NOT delete recordings for
+ * personalized {name} variants, in-game beat lines, or any fully-rendered
+ * text that matches a valid runtime key.
  *
  * Usage:
  *   npx tsx scripts/cleanup-voice-orphans.ts          # dry run
@@ -9,16 +17,15 @@
  */
 
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+import * as path from 'path';
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
-import { AUTHORED_LINES } from '../lib/speech/line-pool';
+import * as crypto from 'crypto';
+import { QUIP_POOL } from '../lib/quips/quip-pool';
+import { renderLine } from '../lib/speech/sanitize';
 
 const BUCKET = 'rookie-voice';
-const MANIFEST_PATH = path.join(__dirname, '..', 'public', 'rookie-voice', 'manifest.json');
-const VOICE_DIR = path.join(__dirname, '..', 'public', 'rookie-voice');
 const APPLY = process.argv.includes('--apply');
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -28,62 +35,55 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-async function main() {
-  const manifest: Record<string, string> = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+function textToHash(text: string): string {
+  return crypto.createHash('md5').update(text).digest('hex');
+}
 
-  const validKeys = new Set<string>();
-  for (const line of AUTHORED_LINES) {
-    validKeys.add(line.text);
-    if (line.text.includes('{name}')) {
-      validKeys.add(line.text.replace(/\{name\}/g, 'Tyler'));
+async function main() {
+  // Identify BROKEN pre-rendered texts: QUIP_POOL entries whose text contains
+  // a placeholder other than {name}, rendered through the same strip path
+  // the prerecord script used.
+  const OTHER_PLACEHOLDER = /\{(?!name\})[a-zA-Z_][a-zA-Z0-9_]*\}/;
+  const brokenHashes = new Set<string>();
+  const brokenSamples: string[] = [];
+  for (const line of QUIP_POOL) {
+    if (!OTHER_PLACEHOLDER.test(line.text)) continue;
+    const rendered = renderLine(line.text, null);
+    if (rendered.trim().length === 0) continue;
+    const h = textToHash(rendered);
+    if (!brokenHashes.has(h)) {
+      brokenHashes.add(h);
+      if (brokenSamples.length < 10) brokenSamples.push(rendered);
     }
   }
 
-  const orphans: { key: string; file: string }[] = [];
-  const kept: Record<string, string> = {};
-  for (const [key, file] of Object.entries(manifest)) {
-    if (validKeys.has(key)) kept[key] = file;
-    else orphans.push({ key, file });
-  }
+  console.log(`Broken pre-rendered texts (hash count): ${brokenHashes.size}`);
+  console.log('First 10 samples:');
+  for (const s of brokenSamples) console.log(`  - "${s.slice(0, 80)}"`);
 
-  console.log(`Manifest entries: ${Object.keys(manifest).length}`);
-  console.log(`Valid (match current lines): ${Object.keys(kept).length}`);
-  console.log(`Orphans: ${orphans.length}\n`);
-  console.log('First 5 orphans:');
-  for (const o of orphans.slice(0, 5)) console.log(`  - "${o.key.slice(0, 70)}" → ${o.file}`);
-
-  if (!APPLY) {
-    console.log('\n(dry run — pass --apply to actually delete)');
+  if (brokenHashes.size === 0) {
+    console.log('\nNothing to clean up.');
     return;
   }
 
-  console.log('\nDeleting...');
-  let localDeleted = 0;
-  let localMissing = 0;
-  for (const o of orphans) {
-    const p = path.join(VOICE_DIR, o.file);
-    if (fs.existsSync(p)) {
-      fs.unlinkSync(p);
-      localDeleted++;
-    } else {
-      localMissing++;
-    }
-  }
-  console.log(`Local: deleted ${localDeleted}, already missing ${localMissing}`);
+  // Convert to filenames
+  const filesToDelete = Array.from(brokenHashes).map(h => `${h}.mp3`);
 
-  const files = orphans.map(o => o.file);
+  if (!APPLY) {
+    console.log(`\n(dry run — pass --apply to actually delete ${filesToDelete.length} mp3s from Supabase)`);
+    return;
+  }
+
+  console.log(`\nDeleting ${filesToDelete.length} orphan mp3s from Supabase...`);
   const CHUNK = 100;
-  let remoteDeleted = 0;
-  for (let i = 0; i < files.length; i += CHUNK) {
-    const slice = files.slice(i, i + CHUNK);
+  let deleted = 0;
+  for (let i = 0; i < filesToDelete.length; i += CHUNK) {
+    const slice = filesToDelete.slice(i, i + CHUNK);
     const { data, error } = await supabase.storage.from(BUCKET).remove(slice);
-    if (error) console.log(`  Supabase error on chunk ${i}: ${error.message}`);
-    else remoteDeleted += data?.length || 0;
+    if (error) console.log(`  Error on chunk ${i}: ${error.message}`);
+    else deleted += data?.length || 0;
   }
-  console.log(`Supabase: deleted ${remoteDeleted}`);
-
-  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(kept, null, 2));
-  console.log(`Manifest rewritten with ${Object.keys(kept).length} entries.`);
+  console.log(`Supabase: deleted ${deleted}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
