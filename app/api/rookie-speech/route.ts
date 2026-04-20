@@ -6,6 +6,7 @@ import {
   type RookieMemoryContext,
 } from '@/lib/rookie-memory';
 import { aiGuard } from '@/lib/ai-guard';
+import { renderLine } from '@/lib/speech/sanitize';
 
 const anthropic = new Anthropic();
 
@@ -125,7 +126,7 @@ STRICT RULES:
 EXAMPLES:
 "French Defense -- solid choice. You got my rook on move 18 and I never recovered. Want to try the Italian next?"
 "That was a Sicilian and it got wild. I checkmated you on move 26 after you left your king exposed -- there's a lesson on king safety that might help."
-"Good game, {name}. You resigned on move 22 down a knight, but honestly the middle game was close. Rematch?"
+"Good game. You resigned on move 22 down a knight, but honestly the middle game was close. Rematch?"
 "I didn't recognize that opening but it worked. You checkmated me on move 41 -- clean finish. Want to go again?"`;
 
     } else {
@@ -139,11 +140,13 @@ EXAMPLES:
       messages: [{ role: 'user', content: userPrompt }],
     });
 
-    const text = message.content
+    const rawText = message.content
       .filter((b): b is Anthropic.TextBlock => b.type === 'text')
       .map(b => b.text)
       .join('')
       .trim();
+
+    const text = renderLine(rawText, context.playerName);
 
     return NextResponse.json({ text });
   } catch (error) {

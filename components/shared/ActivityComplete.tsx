@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti'
 import { playCelebrationSound } from '@/lib/sounds'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
 import { selectByCategory } from '@/lib/speech/priority-queue'
+import { safeRenderText } from '@/lib/speech/sanitize'
 import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints'
 import { useShareOG, type ShareOGConfig } from '@/hooks/useShareOG'
 import { ActionButton } from '@/components/ui/ActionButton'
@@ -177,7 +178,8 @@ export function ActivityComplete({
     onContinue()
   }
 
-  const displayLine = tapQuip || transitionLine || (shouldCelebrate ? 'Nice.' : 'We\'ll get it next time.')
+  const rawDisplayLine = tapQuip || transitionLine || (shouldCelebrate ? 'Nice.' : 'We\'ll get it next time.')
+  const displayLine = safeRenderText(rawDisplayLine, 'ActivityComplete.displayLine')
 
   return (
     <div

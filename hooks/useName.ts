@@ -3,16 +3,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { getPlayerName, setPlayerName as setLocalPlayerName } from '@/components/onboarding/RookieNameAsk';
+import { normalizePlayerName } from '@/lib/speech/sanitize';
 
 export function useName() {
   const { user, profile, refetchProfile } = useUser();
   const [localName, setLocalName] = useState<string | null>(null);
 
   useEffect(() => {
-    setLocalName(getPlayerName());
+    setLocalName(normalizePlayerName(getPlayerName()));
   }, []);
 
-  const dbName = profile?.display_name?.trim() || null;
+  const dbName = normalizePlayerName(profile?.display_name);
   const name = user ? dbName : localName;
 
   const setName = useCallback((value: string) => {
