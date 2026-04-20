@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
-import { useClickToMove } from '@/hooks/useClickToMove';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import {
   playCorrectSound,
   playErrorSound,
@@ -642,6 +642,7 @@ export default function LessonPage() {
           try {
             const oppMove = opponentGame.move(opponentMove);
             setCurrentFen(opponentGame.fen());
+            if (oppMove) setSelectedSquare(prev => reconcileSelectionAfterOpponentMove(prev, oppMove));
             setMoveIndex(nextMoveIndex + 1);
 
             if (oppMove && oppMove.captured) {

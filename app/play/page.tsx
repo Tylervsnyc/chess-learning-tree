@@ -40,7 +40,7 @@ import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarra
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
-import { useClickToMove } from '@/hooks/useClickToMove';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
 import { useName } from '@/hooks/useName';
@@ -1165,7 +1165,7 @@ export default function PlayRookiePage() {
 
       setFen(newFen);
       setLastMv({ from: result.from as Square, to: result.to as Square });
-      setSelected(null);
+      setSelected(prev => reconcileSelectionAfterOpponentMove(prev, result));
       setRookieThinking(false);
 
       if (soundsOnRef.current) {
@@ -1402,7 +1402,7 @@ export default function PlayRookiePage() {
     selectedSquare: selected,
     setSelectedSquare: setSelected,
     tryMove: doPlayerMove,
-    enabled: phase === 'playing' && !rookieThinking,
+    enabled: phase === 'playing',
   });
 
   // Kick off Rookie's first move if player is black

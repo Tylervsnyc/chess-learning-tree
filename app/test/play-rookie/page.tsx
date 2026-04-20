@@ -14,7 +14,7 @@ import {
 import { getRookieMove } from '@/lib/rookie-engine';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
-import { useClickToMove } from '@/hooks/useClickToMove';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 
 const SKILL_LEVELS = [
   { name: 'Beginner', label: 'I just learned the rules' },
@@ -235,7 +235,7 @@ export default function RookieChatPage() {
       // Update FEN — react-chessboard diffs old vs new position and animates
       setFen(newFen);
       setLastMv({ from: result.from as Square, to: result.to as Square });
-      setSelected(null);
+      setSelected(prev => reconcileSelectionAfterOpponentMove(prev, result));
       setRookieThinking(false);
 
       // Sound after move (Lichess pattern: move/capture, then check on top)
@@ -369,7 +369,7 @@ export default function RookieChatPage() {
     selectedSquare: selected,
     setSelectedSquare: setSelected,
     tryMove: doPlayerMove,
-    enabled: phase === 'playing' && !rookieThinking,
+    enabled: phase === 'playing',
   });
 
   // Kick off Rookie's first move if player is black
