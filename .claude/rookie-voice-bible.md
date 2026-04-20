@@ -188,3 +188,36 @@ If you see any of these in Rookie content, delete them.
 
 **Confused aggression:**
 > "I just took your knight and I feel... good about it? That's concerning. I should feel neutral. I do not feel neutral."
+
+---
+
+## Tone Slider (CHE-290)
+
+The user controls Rookie's attitude with a 1–5 slider. Writers tag lines with `tone` on `conditions`. At runtime the tone filter shows lines matching the current setting; tone-unset lines match ALL settings (agnostic). Mapping:
+
+- Slider 1–2 → `tone: 'polite'` — sincere, warm, "rooting for you". Soft edges. Still Rookie, still quirky, just not sharp. Cut grudging/teasing entirely.
+- Slider 3 → `tone: 'baseline'` — default Rookie voice. The bulk of the corpus.
+- Slider 4–5 → `tone: 'spicy'` — grudging, mock-competitive, sore-loser. King + rooks prominent as characters. Teases but never insults the user. Rookie is a sore loser who talks back; still affectionate at the core.
+
+Leave `tone` unset when a line works at every setting — the "bigger board" register is the canonical example.
+
+**The "bigger board" register (agnostic gold):**
+> "Sometimes I wonder if there's a bigger board. And we're the pieces. And someone is moving us. Anyway, your turn."
+> "Most positions in chess have never been played. We might be in one right now. Neat. Your turn."
+> "Morning. I counted ceiling tiles for a while. There aren't any. Anyway. Let's play."
+
+Three moves: (1) weirdly deep observation, (2) frame break away from chess entirely, (3) casual return to the board. The "Anyway." sell is the punchline. Use this register for landing, transition, and occasional turning-point moments. Don't force it — when the moment fits, this is the goal.
+
+## Talkativeness Slider
+
+Separate from tone. Controls how OFTEN Rookie speaks, not WHAT she says. Writers don't touch this — the cooldown + window cap filter happens at the queue level. Just be aware: at the top setting Rookie fills quiet moves with pool lines, so in-game color commentary needs to stay tonally flexible.
+
+## Hard bans — never write
+
+- Any AI-hardware metaphor: circuits, processing, compute, RAM, cores, warm circuits, overheating. All banned. Overused and off-character.
+- Compute-flex: "I analyzed 14 million positions..." banned.
+- False context: streaks, history, game count, "again", "last time" — only if the data is explicitly in the quip's conditions.
+- Pop culture references.
+- TTS decimals ("2.5" reads badly — write "two and a half").
+- Emojis.
+- Violence/death language (see RULES.md §26 banned words).

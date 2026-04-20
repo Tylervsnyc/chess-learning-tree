@@ -1267,10 +1267,45 @@ If all 40 seen in last 30 days → include oldest seen
 
 ---
 
-## 25. Quip System (v3)
+## 25. Quip System
 
-### Data File:
-`/data/staging/v2-puzzle-responses.ts`
+Two separate quip systems coexist. Pick the right one for your surface.
+
+### A) Puzzle-response quips (v3) — lesson/puzzle quips
+File: `/data/staging/v2-puzzle-responses.ts`. Used by lesson puzzle steps.
+Selection via `getQuip()` with piece/theme/context matching.
+
+### B) Unified play pool — Play/touchpoint/greeting/landing/in-game
+File: `lib/quips/quip-pool.ts` (exports `QUIP_POOL: SpeechLine[]`).
+Selection via `selectLine()` (beat/event-gated, in-game) or
+`selectByCategory()` (category prefix match, touchpoints).
+
+**Tone filter (CHE-290).** Every `QueueContext` / `selectByCategory` call
+passes a `tone: 'polite' | 'baseline' | 'spicy'` derived from the user's
+attitude slider. `matchesConditions` filters so lines tagged with a
+specific tone only appear at that setting; tone-unset lines match all
+settings. Mapping: slider 1-2 → polite, 3 → baseline, 4-5 → spicy.
+
+**Talkativeness filter.** `isAtLimit()` + `cooldownForTalkativeness(level)`
+throttle in-game speech per the user's talkativeness slider. At level 5
+Rookie also fires filler commentary on otherwise-silent moves (chatty
+override in `useRookieSpeech.onMove`). Levels:
+
+| Level | Cooldown (moves) | Window cap |
+|---|---|---|
+| 1 Silent | 20 | 1 per 30 |
+| 2 Quiet | 12 | 1 per 16 |
+| 3 Baseline | 8 | 2 per 16 |
+| 4 Chatty | 5 | 3 per 16 |
+| 5 Nonstop | 2 | 4 per 16 |
+
+Checkmate / game-end / landing always fire regardless of throttle.
+
+**Claude-generated voice paths** (`/api/rookie-voice`, `/api/rookie-speech`)
+also accept `attitudeLevel` and inject matching guidance into the system
+prompt via `withTone()` in `lib/rookie-personality.ts`.
+
+### v3 Puzzle-response details:
 
 ### Selection Function (v3):
 ```ts
@@ -1355,11 +1390,18 @@ Lichess theme names are mapped to quip keys via `THEME_KEY_MAP`. Notable mapping
 - Violence/death language
 - Movie/pop culture references (killed in 3.0 — everything internal to Rookie)
 - Compute-flex quips ("I analyzed 14 million positions...")
-- "Circuits feel warm" (overused)
+- Any AI-hardware metaphor: circuits, processing, RAM, cores, compute (all banned — overused and off-character)
 - Contextual assumptions about board state unless data is confirmed present
+- False context: streaks, history, game count, "again", "last time" — only allowed when the data is explicitly in the quip's conditions
 - Mean insults, bullying, real people, swearing
 - Emojis in UI
 - TTS decimals (say "two and a half" not "2.5")
+
+### Tone definitions (attitude slider):
+- **polite**: sincere, warm, "rooting for you" energy. Soft edges. Still Rookie, still quirky-AI, just not sharp.
+- **baseline**: default Rookie. Playful, earnest, learning-to-feel-things.
+- **spicy**: grudging, mock-competitive, sore-loser. King + rooks prominent as characters. Teases but never insults.
+- **agnostic** (no `tone` field): works at every setting. Use for the "bigger board" existential register — short frame-break asides + casual return ("Sometimes I wonder if there's a bigger board... Anyway. Your move.").
 
 ### Banned Words:
 suffocated, death, dead, killed, murdered, destroyed (in violent context), die, dies, kill, coffin, tomb, violence
