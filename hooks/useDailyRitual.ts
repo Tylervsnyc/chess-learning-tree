@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { selectByCategory } from '@/lib/speech/priority-queue';
 import { QUIP_POOL } from '@/lib/quips/quip-pool';
+import { toneForLevel } from '@/lib/quips/tone';
+import { useUser } from '@/hooks/useUser';
 
 export type RitualActivity = 'play' | 'tactics' | 'daily';
 
@@ -32,6 +34,8 @@ export function useDailyRitual(justCompleted?: RitualActivity) {
     ritualDailyDate,
     recordRitualPlay,
   } = useLessonProgress();
+  const { attitudeLevel } = useUser();
+  const tone = toneForLevel(attitudeLevel ?? 3);
 
   const status: DailyRitualStatus = useMemo(() => {
     const today = getToday();
@@ -55,13 +59,13 @@ export function useDailyRitual(justCompleted?: RitualActivity) {
   // Pick a Rookie line for the suggestion
   const suggestionLine = useMemo(() => {
     if (status.allDone) {
-      return selectByCategory(QUIP_POOL, 'ritual:all_done')?.text ?? null;
+      return selectByCategory(QUIP_POOL, 'ritual:all_done', undefined, undefined, { tone })?.text ?? null;
     }
     if (status.nextActivity) {
-      return selectByCategory(QUIP_POOL, `ritual:${status.nextActivity}_next`)?.text ?? null;
+      return selectByCategory(QUIP_POOL, `ritual:${status.nextActivity}_next`, undefined, undefined, { tone })?.text ?? null;
     }
     return null;
-  }, [status.allDone, status.nextActivity]);
+  }, [status.allDone, status.nextActivity, tone]);
 
   return { status, suggestionLine, recordRitualPlay };
 }

@@ -314,10 +314,16 @@ export function selectByCategory(
   playerName?: string,
   substitutions?: Partial<QueueContext>,
 ): { line: SpeechLine; text: string } | null {
+  const tone = substitutions?.tone;
+  const toneOk = (line: SpeechLine): boolean => {
+    const t = line.conditions?.tone;
+    return !t || !tone || t === tone;
+  };
   const matching = pool.filter((line) => {
     if (!line.category) return false;
     if (line.category !== category && !line.category.startsWith(category + ':')) return false;
     if (state?.usedRecently.has(line.id)) return false;
+    if (!toneOk(line)) return false;
     return true;
   });
 
@@ -341,7 +347,9 @@ export function selectByCategory(
   if (matching.length === 0) {
     // Fall back to recently used if pool exhausted
     const fallback = pool.filter(
-      (line) => line.category === category || line.category?.startsWith(category + ':'),
+      (line) =>
+        (line.category === category || line.category?.startsWith(category + ':')) &&
+        toneOk(line),
     );
     if (fallback.length === 0) return null;
     const pick = fallback[Math.floor(Math.random() * fallback.length)];

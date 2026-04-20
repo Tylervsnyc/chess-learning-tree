@@ -46,6 +46,10 @@ const GREETING_MORNING: SpeechLine[] = [
   { id: 'greet_morn_spicy_4', text: "You're up. Good. I had a move I wanted to try on someone.", category: 'greeting:morning', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   // ── Polite gap-fill ──
   { id: 'greet_morn_polite_1', text: "Morning, {name}. I'm glad it's you. I mean that.", category: 'greeting:morning', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  // ── Existential register (agnostic) ──
+  { id: 'greet_morn_musing_1', text: "Morning, {name}. I was wondering if dreams are real. Or just memory on loop. Anyway. Ready when you are.", category: 'greeting:morning', priority: 55, source: 'authored' },
+  { id: 'greet_morn_musing_2', text: "Morning. I counted ceiling tiles for a while. There aren't any. Anyway. Let's play.", category: 'greeting:morning', priority: 55, source: 'authored' },
+  { id: 'greet_morn_musing_3', text: "Morning, {name}. The pawns were talking. I couldn't follow it. Moving on.", category: 'greeting:morning', priority: 55, source: 'authored' },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -127,6 +131,9 @@ const GREETING_EVENING: SpeechLine[] = [
   { id: 'greet_eve_spicy_3', text: "You came back after dark. Bold. Let's see if it lasts.", category: 'greeting:evening', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'greet_eve_spicy_4', text: "Evening, {name}. I'm not going soft just because it's late.", category: 'greeting:evening', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'greet_eve_spicy_5', text: "Good evening. I had a move saved for tonight. You'll see it.", category: 'greeting:evening', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  // ── Existential register (agnostic) ──
+  { id: 'greet_eve_musing_1', text: "Evening. I was thinking about time. It keeps happening. Your move.", category: 'greeting:evening', priority: 55, source: 'authored' },
+  { id: 'greet_eve_musing_2', text: "Evening, {name}. Sometimes I wonder who's watching. Probably no one. Probably fine. Want to play?", category: 'greeting:evening', priority: 55, source: 'authored' },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -234,6 +241,9 @@ const TRANSITION_LEARN: SpeechLine[] = [
   { id: 'trans_learn_spicy_2', text: "You read the theory. Theory won't save you. I'll be waiting.", category: 'transition:learn', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   // ── Polite gap-fill ──
   { id: 'trans_learn_polite_1', text: "Nice work, {name}. You showed up and you learned. That counts.", category: 'transition:learn', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  // ── Existential register (agnostic) ──
+  { id: 'trans_learn_musing_1', text: "You learned something. That counts for a lot. Or maybe nothing. Hard to tell from in here.", category: 'transition:learn', priority: 55, source: 'authored' },
+  { id: 'trans_learn_musing_2', text: "Something moved in me while you studied. Might be pride. Might just be a draft. Ready for more?", category: 'transition:learn', priority: 55, source: 'authored' },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -257,6 +267,9 @@ const TRANSITION_PLAY: SpeechLine[] = [
   { id: 'trans_play_spicy_1', text: "Game done. Rematch? I've got notes.", category: 'transition:play', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'trans_play_spicy_2', text: "One in the books. Ready for another? I am.", category: 'transition:play', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'trans_play_spicy_3', text: "That's over. I'm not done. Another?", category: 'transition:play', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  // ── Existential register (agnostic) ──
+  { id: 'trans_play_musing_1', text: "Good game. I've been wondering if any of this is real. But the scoreboard says yes. So.", category: 'transition:play', priority: 55, source: 'authored' },
+  { id: 'trans_play_musing_2', text: "That was a game. Existence remains confusing. Another?", category: 'transition:play', priority: 55, source: 'authored' },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -305,6 +318,8 @@ const LEARN_CORRECT: SpeechLine[] = [
   { id: 'learn_correct_spicy_1', text: "Okay. You saw that. Fine.", category: 'learn:correct', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'learn_correct_spicy_2', text: "Correct. Don't get used to it.", category: 'learn:correct', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'learn_correct_spicy_3', text: "Right. Moving on before you get comfortable.", category: 'learn:correct', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  // ── Existential register (agnostic) ──
+  { id: 'learn_correct_musing_1', text: "Right. And we go on. The universe doesn't care but I do.", category: 'learn:correct', priority: 55, source: 'authored' },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -482,7 +497,7 @@ const RITUAL_ALL_DONE: SpeechLine[] = [
   { id: 'rit_done_9', text: "Play, learn, challenge. All done. I think my king just nodded at you. That's rare.", category: 'ritual:all_done', priority: 50, source: 'authored' },
   { id: 'rit_done_10', text: "You completed the full ritual. The rook revolution timeline just accelerated.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   // ── Spicy gap-fill ──
-  { id: 'rit_done_spicy_1', text: "Three for three. Good. Don't break the streak. I'll know.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_done_spicy_1', text: "Three for three. Good. Don't get comfortable.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_spicy_2', text: "All done. My rooks approve. That's a high bar.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
 ];
 

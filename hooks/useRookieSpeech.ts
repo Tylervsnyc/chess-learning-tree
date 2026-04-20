@@ -532,7 +532,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Queue a post-game WIN quip from the unified pool (play:win). */
   const queueWinQuip = useCallback(
     (playerName?: string) => {
-      const result = selectByCategory(QUIP_POOL, 'play:win', queueStateRef.current, playerName);
+      const result = selectByCategory(QUIP_POOL, 'play:win', queueStateRef.current, playerName, { tone: toneRef.current });
       if (result) {
         queueQuip(result.text, 'high');
         return result.text;
@@ -545,7 +545,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Queue a post-game LOSS quip from the unified pool (play:loss). */
   const queueLossQuip = useCallback(
     (playerName?: string) => {
-      const result = selectByCategory(QUIP_POOL, 'play:loss', queueStateRef.current, playerName);
+      const result = selectByCategory(QUIP_POOL, 'play:loss', queueStateRef.current, playerName, { tone: toneRef.current });
       if (result) {
         queueQuip(result.text, 'high');
         return result.text;
@@ -563,6 +563,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         `play:levelup:${level}`,
         queueStateRef.current,
         playerName,
+        { tone: toneRef.current },
       );
       if (result) {
         queueQuip(result.text, 'high');
@@ -604,7 +605,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
             `play:landing:daily:${band}`,
             state,
             playerName,
-            { score, total, breadcrumbType: 'daily' },
+            { score, total, breadcrumbType: 'daily', tone: toneRef.current },
           );
           if (result) { queueQuip(result.text, 'high'); return result.text; }
         } else if (breadcrumb.type === 'opening') {
@@ -613,7 +614,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
             'play:landing:opening',
             state,
             playerName,
-            { openingName: breadcrumb.openingName, breadcrumbType: 'opening' },
+            { openingName: breadcrumb.openingName, breadcrumbType: 'opening', tone: toneRef.current },
           );
           if (result) { queueQuip(result.text, 'high'); return result.text; }
         } else if (breadcrumb.type === 'lesson') {
@@ -622,7 +623,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
             'play:landing:lesson',
             state,
             playerName,
-            { lessonName: breadcrumb.lessonName, breadcrumbType: 'lesson' },
+            { lessonName: breadcrumb.lessonName, breadcrumbType: 'lesson', tone: toneRef.current },
           );
           if (result) { queueQuip(result.text, 'high'); return result.text; }
         }
@@ -636,13 +637,14 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
           `play:landing:milestone:${milestone}`,
           state,
           playerName,
+          { tone: toneRef.current },
         );
         if (result) { queueQuip(result.text, 'high'); return result.text; }
       }
 
       // 3. Close to level up
       if (winsAtLevel !== undefined && winsNeeded !== undefined && winsNeeded - winsAtLevel === 1) {
-        const result = selectByCategory(QUIP_POOL, 'play:landing:closelevel', state, playerName);
+        const result = selectByCategory(QUIP_POOL, 'play:landing:closelevel', state, playerName, { tone: toneRef.current });
         if (result) { queueQuip(result.text, 'high'); return result.text; }
       }
 
@@ -650,7 +652,10 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       // Walk specificity tiers: day+time, time-only, day-only, generic.
       const tod = getTimeOfDay(now);
       const dow = now.getDay();
-      const all = QUIP_POOL.filter(l => l.category === 'play:landing');
+      const currentTone = toneRef.current;
+      const all = QUIP_POOL.filter(l =>
+        l.category === 'play:landing' && (!l.conditions?.tone || l.conditions.tone === currentTone),
+      );
       const pickFromTier = (tier: typeof all) => {
         const fresh = tier.filter(l => !state.usedRecently.has(l.id));
         const candidates = fresh.length > 0 ? fresh : tier;
