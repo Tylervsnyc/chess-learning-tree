@@ -366,8 +366,18 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
         return;
       }
 
-      // 7. Nothing interesting = silence
-      if (input.event === 'none') return;
+      // 7. Nothing interesting + normal talkativeness = silence
+      if (input.event === 'none' && talkRef.current < 4) return;
+
+      // 7a. Chatty override — at talkativeness 4/5, try a filler quip on quiet moves too
+      if (input.event === 'none') {
+        if (input.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
+        const context = buildContext(input);
+        if (selectAndQueue(context)) {
+          lastQuipMoveRef.current = input.moveNumber;
+        }
+        return;
+      }
 
       // 7. Cooldown: don't react to events if Rookie spoke recently
       if (input.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
