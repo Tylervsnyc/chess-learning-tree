@@ -11,7 +11,6 @@ import {
   warmupAudio,
   playCelebrationSound,
 } from '@/lib/sounds';
-import { getRookieMove } from '@/lib/rookie-engine';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
@@ -24,12 +23,13 @@ const SKILL_LEVELS = [
   { name: 'Expert', label: 'Challenge me' },
 ];
 
-const SF_CONFIG: [number, number][] = [
-  [0, 1],   // Beginner — minimax fallback
-  [3, 5],   // Casual
-  [8, 8],   // Intermediate
-  [14, 12], // Advanced
-  [20, 16], // Expert
+// [skillLevel, depth, multiPV, poolSize]
+const SF_CONFIG: [number, number, number, number][] = [
+  [0,  3,  8, 8],  // Beginner — shallow + wide pool
+  [3,  5,  4, 3],  // Casual
+  [8,  8,  2, 2],  // Intermediate
+  [14, 12, 2, 1],  // Advanced
+  [20, 16, 1, 1],  // Expert
 ];
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -264,29 +264,16 @@ export default function RookieChatPage() {
       }
     };
 
-    // Minimax path
-    if (skillLevel === 0 || !sfReadyRef.current) {
-      const result = getRookieMove(currentFen, skillLevel);
-      if (!result) { setRookieThinking(false); return; }
-      log({ moveNum: moveNumRef.current + 1, type: 'engine', who: 'rookie', summary: `Engine: minimax -> ${result.san}`, details: { engine: 'minimax', skillLevel, sfReady: sfReadyRef.current } });
-      rookieTimerRef.current = setTimeout(() => {
-        applyRookieMove({ san: result.san });
-      }, 500);
+    if (!sfReadyRef.current) {
+      setRookieThinking(false);
       return;
     }
 
-    // Stockfish path
-    const [sfSkill, sfDepth] = SF_CONFIG[Math.min(skillLevel, SF_CONFIG.length - 1)];
+    const [sfSkill, sfDepth, sfMultiPV, sfPool] = SF_CONFIG[Math.min(skillLevel, SF_CONFIG.length - 1)];
     const thinkStart = Date.now();
-    log({ moveNum: moveNumRef.current + 1, type: 'engine', who: 'rookie', summary: `Engine: stockfish skill=${sfSkill} depth=${sfDepth}`, details: { engine: 'stockfish', sfSkill, sfDepth, skillLevel } });
-    stockfish.getBestMove(currentFen, sfSkill, sfDepth).then((uciMove) => {
-      if (!uciMove) {
-        const result = getRookieMove(currentFen, skillLevel);
-        if (!result) { setRookieThinking(false); return; }
-        const wait = Math.max(0, 500 - (Date.now() - thinkStart));
-        rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: result.san }), wait);
-        return;
-      }
+    log({ moveNum: moveNumRef.current + 1, type: 'engine', who: 'rookie', summary: `Engine: stockfish skill=${sfSkill} depth=${sfDepth} multiPV=${sfMultiPV} pool=${sfPool}`, details: { engine: 'stockfish', sfSkill, sfDepth, sfMultiPV, sfPool, skillLevel } });
+    stockfish.getBestMoveSampled(currentFen, sfSkill, sfDepth, sfMultiPV, sfPool).then((uciMove) => {
+      if (!uciMove) { setRookieThinking(false); return; }
       const from = uciMove.slice(0, 2);
       const to = uciMove.slice(2, 4);
       const promotion = uciMove.length > 4 ? uciMove[4] : undefined;

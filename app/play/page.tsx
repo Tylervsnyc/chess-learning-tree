@@ -11,21 +11,20 @@ import {
   playCelebrationSound,
   getSharedAudioContext,
 } from '@/lib/sounds';
-import { getRookieMove } from '@/lib/rookie-engine';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
 import {
   ROOKIE_LEVELS,
   WINS_TO_ADVANCE,
   getRookieLevel,
   getLevelElo,
-  useMinimax,
-  minimaxSkill,
+  getLevelEngineConfig,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents } from '@/lib/analytics/posthog';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
+import { maia } from '@/lib/maia/maia-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
 import { useUser } from '@/hooks/useUser';
 import { selectByCategory } from '@/lib/speech/priority-queue';
@@ -368,6 +367,12 @@ export default function PlayRookiePage() {
   useEffect(() => {
     try { localStorage.setItem('play-settings', JSON.stringify({ speechOn: audioOn, soundsOn })); } catch {}
   }, [audioOn, soundsOn]);
+
+  // Prepare Maia for L5/L6 — spins up worker on mount, triggers download only when user picks L5/L6.
+  useEffect(() => { maia.init(); }, []);
+  useEffect(() => {
+    if (rookieLevel === 5 || rookieLevel === 6) maia.ensureReady();
+  }, [rookieLevel]);
 
   // Unified mood system
   const moodSystem = useRookieMood(playerColor);
@@ -1223,10 +1228,7 @@ export default function PlayRookiePage() {
     // Levels 4+: use the opening book
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
-    const useBook = rookieLevel >= 4;
-    const bookResult = useBook
-      ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
-      : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
+    const bookResult = getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs);
     if (bookResult.inBook && bookResult.moveSan) {
       if (bookResult.matchedSlug) {
         matchedOpeningRef.current = { slug: bookResult.matchedSlug, name: bookResult.matchedName! };
@@ -1236,30 +1238,32 @@ export default function PlayRookiePage() {
       return;
     }
 
-    // Levels 1-2 (ELO 200-400) use minimax, levels 3-10 (600-2000) use Stockfish
-    const targetElo = getLevelElo(rookieLevel);
-    if (useMinimax(rookieLevel) || !sfReadyRef.current) {
-      const mSkill = minimaxSkill(rookieLevel);
-      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `minimax (level=${rookieLevel}, skill=${mSkill})`, details: { engine: 'minimax', rookieLevel, minimaxSkill: mSkill } });
-      const result = getRookieMove(currentFen, mSkill);
-      if (!result) { setRookieThinking(false); return; }
-      rookieTimerRef.current = setTimeout(() => {
-        applyRookieMove({ san: result.san });
-      }, 500);
+    // Maia at L5/L6 — neural-net moves tuned to human ELO (1100/1200).
+    // Falls through to Stockfish if Maia isn't ready (model not downloaded yet).
+    const useMaia = rookieLevel === 5 || rookieLevel === 6;
+    if (useMaia && maia.getStatus() === 'ready') {
+      const maiaElo = rookieLevel === 5 ? 1100 : 1200;
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `maia (elo=${maiaElo})`, details: { engine: 'maia', rookieLevel, eloSelf: maiaElo } });
+      const thinkStart = Date.now();
+      maia.getMaiaMove(currentFen, maiaElo, maiaElo).then((uciMove) => {
+        if (gen !== gameGenRef.current) return;
+        if (!uciMove) { setRookieThinking(false); return; }
+        const from = uciMove.slice(0, 2);
+        const to = uciMove.slice(2, 4);
+        const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
+        const wait = Math.max(0, 500 - (Date.now() - thinkStart));
+        rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
+      });
       return;
     }
 
-    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish (elo=${targetElo})`, details: { engine: 'stockfish', targetElo, rookieLevel } });
+    // Stockfish MultiPV sampling — weak-human feel via top-N candidate pool
+    const cfg = getLevelEngineConfig(rookieLevel);
+    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish sampled (level=${rookieLevel}, skill=${cfg.skillLevel}, depth=${cfg.depth}, pool=${cfg.poolSize}/${cfg.multiPV})`, details: { engine: 'stockfish-sampled', rookieLevel, ...cfg } });
     const thinkStart = Date.now();
-    stockfish.getBestMoveAtElo(currentFen, targetElo).then((uciMove) => {
+    stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize).then((uciMove) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
-      if (!uciMove) {
-        const result = getRookieMove(currentFen, minimaxSkill(rookieLevel));
-        if (!result) { setRookieThinking(false); return; }
-        const wait = Math.max(0, 500 - (Date.now() - thinkStart));
-        rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: result.san }), wait);
-        return;
-      }
+      if (!uciMove) { setRookieThinking(false); return; }
       const from = uciMove.slice(0, 2);
       const to = uciMove.slice(2, 4);
       const promotion = uciMove.length > 4 ? uciMove[4] : undefined;

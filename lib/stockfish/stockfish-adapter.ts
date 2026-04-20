@@ -123,7 +123,53 @@ class StockfishEngine {
   getBestMove(fen: string, skillLevel: number, depth: number): Promise<string | null> {
     return this.enqueue((resolve) => {
       this.pendingCallback = (result) => resolve(result.bestMove);
+      this.worker!.postMessage('setoption name UCI_LimitStrength value false');
+      this.worker!.postMessage('setoption name MultiPV value 1');
       this.worker!.postMessage(`setoption name Skill Level value ${skillLevel}`);
+      this.worker!.postMessage('ucinewgame');
+      this.worker!.postMessage(`position fen ${fen}`);
+      this.worker!.postMessage(`go depth ${depth}`);
+    });
+  }
+
+  /**
+   * Get a move sampled from Stockfish's top MultiPV candidates.
+   * At low Skill + shallow depth + wide pool, Rookie plays like a weak human
+   * who considered several plausible moves — not an engine that hangs a queen.
+   */
+  getBestMoveSampled(
+    fen: string,
+    skillLevel: number,
+    depth: number,
+    multiPV: number,
+    poolSize: number,
+  ): Promise<string | null> {
+    const candidates: (string | null)[] = new Array(multiPV).fill(null);
+
+    return this.enqueue((resolve) => {
+      this.pendingCallback = (result) => {
+        const populated = candidates.filter((m): m is string => !!m);
+        const pool = populated.slice(0, Math.min(poolSize, populated.length));
+        if (pool.length === 0) {
+          resolve(result.bestMove);
+          return;
+        }
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        resolve(pick);
+      };
+
+      this.infoListener = (line: string) => {
+        const mpvMatch = line.match(/ multipv (\d+)/);
+        const pvMatch = line.match(/ pv ([a-h][1-8][a-h][1-8][qrbn]?)/);
+        if (!mpvMatch || !pvMatch) return;
+        const idx = parseInt(mpvMatch[1], 10) - 1;
+        if (idx < 0 || idx >= multiPV) return;
+        candidates[idx] = pvMatch[1];
+      };
+
+      this.worker!.postMessage('setoption name UCI_LimitStrength value false');
+      this.worker!.postMessage(`setoption name Skill Level value ${skillLevel}`);
+      this.worker!.postMessage(`setoption name MultiPV value ${multiPV}`);
       this.worker!.postMessage('ucinewgame');
       this.worker!.postMessage(`position fen ${fen}`);
       this.worker!.postMessage(`go depth ${depth}`);

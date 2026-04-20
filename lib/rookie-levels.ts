@@ -28,8 +28,35 @@ export interface RookieLevel {
 
 export const WINS_TO_ADVANCE = 3;
 
-/** Minimax engine handles levels at or below this ELO threshold */
-export const MINIMAX_ELO_CEILING = 400;
+/**
+ * Stockfish engine config per level.
+ * - skillLevel: 0-20 (SF's built-in weakness dial)
+ * - depth: search depth plies
+ * - multiPV: how many candidate lines to search
+ * - poolSize: how many of the top candidates to pick from uniformly at random
+ *
+ * Lower levels widen the pool and shallow the depth — Rookie considers several
+ * plausible moves and picks one, mimicking a weak human (not a crippled engine).
+ */
+export interface RookieEngineConfig {
+  skillLevel: number;
+  depth: number;
+  multiPV: number;
+  poolSize: number;
+}
+
+const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
+  1:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8 },
+  2:  { skillLevel: 0,  depth: 4,  multiPV: 6, poolSize: 5 },
+  3:  { skillLevel: 3,  depth: 5,  multiPV: 4, poolSize: 3 },
+  4:  { skillLevel: 5,  depth: 6,  multiPV: 3, poolSize: 2 },
+  5:  { skillLevel: 8,  depth: 8,  multiPV: 2, poolSize: 2 },
+  6:  { skillLevel: 11, depth: 10, multiPV: 2, poolSize: 2 },
+  7:  { skillLevel: 14, depth: 12, multiPV: 2, poolSize: 1 },
+  8:  { skillLevel: 16, depth: 14, multiPV: 1, poolSize: 1 },
+  9:  { skillLevel: 18, depth: 16, multiPV: 1, poolSize: 1 },
+  10: { skillLevel: 20, depth: 20, multiPV: 1, poolSize: 1 },
+};
 
 export const ROOKIE_LEVELS: RookieLevel[] = [
   {
@@ -159,21 +186,10 @@ export function getLevelElo(level: number): number {
   return getRookieLevel(level).elo;
 }
 
-/**
- * Should we use the minimax engine for this level?
- * Levels 1-2 (ELO 200-400) use minimax, levels 3+ use Stockfish.
- */
-export function useMinimax(level: number): boolean {
-  return getLevelElo(level) <= MINIMAX_ELO_CEILING;
-}
-
-/**
- * Map a 10-level number to minimax skill parameter (0-1).
- * Only meaningful for levels 1-2.
- */
-export function minimaxSkill(level: number): number {
-  if (level <= 1) return 0;
-  return 1;
+/** Get the Stockfish engine config for a given level (1-10). */
+export function getLevelEngineConfig(level: number): RookieEngineConfig {
+  const clamped = Math.max(1, Math.min(10, level));
+  return ENGINE_CONFIGS[clamped];
 }
 
 // ════════════════════════════════

@@ -15,6 +15,8 @@ export default [
       "animated-logo-assets/**",
       "ads/**",
       "social-media/**",
+      ".claude/worktrees/**",
+      ".worktree-*/**",
     ],
   },
 
