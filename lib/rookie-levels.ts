@@ -47,9 +47,9 @@ export interface RookieEngineConfig {
 
 const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
   1:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8 },
-  2:  { skillLevel: 0,  depth: 4,  multiPV: 6, poolSize: 5 },
-  3:  { skillLevel: 3,  depth: 5,  multiPV: 4, poolSize: 3 },
-  4:  { skillLevel: 5,  depth: 6,  multiPV: 3, poolSize: 2 },
+  2:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8 },
+  3:  { skillLevel: 1,  depth: 4,  multiPV: 6, poolSize: 5 },
+  4:  { skillLevel: 3,  depth: 5,  multiPV: 4, poolSize: 4 },
   5:  { skillLevel: 8,  depth: 8,  multiPV: 2, poolSize: 2 },
   6:  { skillLevel: 11, depth: 10, multiPV: 2, poolSize: 2 },
   7:  { skillLevel: 14, depth: 12, multiPV: 2, poolSize: 1 },

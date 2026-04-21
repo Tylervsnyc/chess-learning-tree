@@ -1254,7 +1254,7 @@ export default function PlayRookiePage() {
     // Falls through to Stockfish if Maia isn't ready (model not downloaded yet).
     const useMaia = rookieLevel === 5 || rookieLevel === 6;
     if (useMaia && maia.getStatus() === 'ready') {
-      const maiaElo = rookieLevel === 5 ? 1100 : 1200;
+      const maiaElo = rookieLevel === 5 ? 1300 : 1500;
       log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `maia (elo=${maiaElo})`, details: { engine: 'maia', rookieLevel, eloSelf: maiaElo } });
       const thinkStart = Date.now();
       maia.getMaiaMove(currentFen, maiaElo, maiaElo).then((uciMove) => {
