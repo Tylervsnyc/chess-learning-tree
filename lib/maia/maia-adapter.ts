@@ -168,6 +168,25 @@ class MaiaEngine {
     return processOutputsMaia3(fen, result.logitsMove, result.logitsValue, legalMoves);
   }
 
+  /**
+   * Pick a move for gameplay. Samples weighted by Maia's policy so Rookie
+   * doesn't always play the exact same move in identical positions.
+   * Returns a UCI string (e.g. "e2e4") or null if no move available.
+   */
+  async getMaiaMove(fen: string, eloSelf = 1100, eloOppo = 1100): Promise<string | null> {
+    const result = await this.evaluate(fen, eloSelf, eloOppo);
+    if (!result) return null;
+    const entries = Object.entries(result.policy);
+    if (entries.length === 0) return null;
+    const r = Math.random();
+    let acc = 0;
+    for (const [uci, prob] of entries) {
+      acc += prob;
+      if (r <= acc) return uci;
+    }
+    return entries[entries.length - 1][0];
+  }
+
   terminate() {
     this.worker?.terminate();
     this.worker = null;

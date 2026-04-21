@@ -26,6 +26,7 @@ import { PlayEvents } from '@/lib/analytics/posthog';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
+import { maia } from '@/lib/maia/maia-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
 import { useUser } from '@/hooks/useUser';
 import { selectByCategory } from '@/lib/speech/priority-queue';
@@ -368,6 +369,16 @@ export default function PlayRookiePage() {
   useEffect(() => {
     try { localStorage.setItem('play-settings', JSON.stringify({ speechOn: audioOn, soundsOn })); } catch {}
   }, [audioOn, soundsOn]);
+
+  // Prepare Maia for L5/L6 — spins up worker on any level, triggers download only when user picks L5/L6.
+  useEffect(() => {
+    maia.init();
+  }, []);
+  useEffect(() => {
+    if (rookieLevel === 5 || rookieLevel === 6) {
+      maia.ensureReady();
+    }
+  }, [rookieLevel]);
 
   // Unified mood system
   const moodSystem = useRookieMood(playerColor);
