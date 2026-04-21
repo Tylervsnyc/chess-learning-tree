@@ -2609,4 +2609,50 @@ Indexes on conversation_id, comment_id, post_id, and engagement_type for fast de
 
 ---
 
+## 48. Rookie Play Engine (/play)
+
+Rookie's move selection at each of the 10 difficulty levels. Three engines in one pipeline: opening book → Maia (mid-range) → Stockfish sampled.
+
+### Dispatch order (per Rookie move)
+1. **Opening book** (`lib/rookie-opening-book.ts`) — walks the combined opening trie from `data/openings/registry.ts`. Capped at L1–L4 to Rookie's first 5 moves; L5+ use the full trie.
+2. **Maia-2** (`lib/maia/maia-adapter.ts`) — fires only at L5/L6 when the model is downloaded and ready. ONNX model at `public/maia3/maia3_simplified.onnx` (~45 MB, lazy-downloaded, IndexedDB cached).
+3. **Random move injection** — at L1/L2/L3 only. Probabilistic (30%/15%/5%). Picks uniformly from all legal moves. This is how we get sub-1000 effective ELO — vanilla Stockfish can't play that weakly on its own.
+4. **Stockfish sampled** (`lib/stockfish/stockfish-adapter.ts::getBestMoveSampled`) — MultiPV top-N candidate pool, uniform random pick from the pool. Handles everything that falls through 1–3.
+
+### Engine configs per level
+Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
+
+| Level | Engine | Skill | Depth | Pool | Random % | Nominal ELO |
+|---|---|---|---|---|---|---|
+| 1 | SF sampled | 0 | 3 | 8/8 | 30% | 200 |
+| 2 | SF sampled | 0 | 3 | 8/8 | 15% | 400 |
+| 3 | SF sampled | 1 | 4 | 5/6 | 5% | 600 |
+| 4 | SF sampled | 3 | 5 | 4/4 | — | 800 |
+| 5 | Maia eloSelf=1300 | — | — | — | — | 1000 |
+| 6 | Maia eloSelf=1500 | — | — | — | — | 1200 |
+| 7 | SF sampled | 14 | 12 | 1/2 | — | 1400 |
+| 8 | SF sampled | 16 | 12 | 1/1 | — | 1600 |
+| 9 | SF sampled | 18 | 13 | 1/1 | — | 1800 |
+| 10 | SF sampled | 20 | 14 | 1/1 | — | 2000 |
+
+"Nominal ELO" is the label shown in `ROOKIE_LEVELS`. Effective strength is usually +100–300 above nominal at the low end because of Stockfish's implicit floor.
+
+### Maia specifics
+- Loads on page mount (`maia.init()`) — spins up worker, no download yet.
+- Download triggers when user selects L5 or L6 (`maia.ensureReady()`).
+- Uses weighted-random sampling over the policy (never argmax) so Rookie doesn't play identical games from identical positions.
+- Falls through to Stockfish sampled if Maia returns null or isn't ready.
+
+### Hard rules
+- **Never bring back minimax.** The old `lib/rookie-engine.ts` was deleted for a reason — "3 perfect moves then hangs a queen" is the worst possible beginner feel.
+- **Never raise L10's depth above 14.** Without that cap, unrestricted Stockfish 18 plays ~2800+ and nobody can beat L10. Current L10 targets ~2100 (strong club / weak expert).
+- **Never skip the opening book at L1–L3.** Beginners still see plausible openings; the *middlegame* is where the 30% random move kicks in.
+- **Never make `poolSize > multiPV`.** It's clamped at runtime but the config should match.
+
+### Dev-only tools
+- `/play` floating bottom-right panel (`process.env.NODE_ENV === 'development'` only): engine log per move + 1–10 level picker.
+- Clickable level numbers above the progress bar (also dev-only).
+
+---
+
 *This document is the source of truth. If code disagrees with this document, either the code is wrong or this document needs updating. There is no third option.*

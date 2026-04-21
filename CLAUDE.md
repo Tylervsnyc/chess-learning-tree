@@ -74,6 +74,7 @@ Use `offset` and `limit` to read only the section you need — never read the fu
                                                               §45 Opening Lessons      L2364
                                                               §46 Social Funnel        L2398
                                                               §47 Welcome Funnel       L2485
+                                                              §48 Rookie Play Engine   L2612
 §15 Pages                L553   §30 Work In Progress    L1468
 ```
 
