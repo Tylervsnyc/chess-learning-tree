@@ -647,42 +647,49 @@ export default function PlayRookiePage() {
 
   useEffect(() => {
     if (phase !== 'setup') return;
+    if (landingFiredRef.current) return;
 
-    const pendingLevelUp = pendingLevelUpRef.current;
-    if (pendingLevelUp !== null) {
-      pendingLevelUpRef.current = null;
-      pendingPostGameRef.current = null;
-      landingFiredRef.current = true;
-      setupGreetingSpokenRef.current = true;
-      PlayEvents.landingViewed('level_up', pendingLevelUp.newLevel);
-      let alreadyCelebrated = false;
-      try {
-        alreadyCelebrated = localStorage.getItem('rookie-celebrated-level-' + pendingLevelUp.newLevel) === '1';
-      } catch {}
-      if (alreadyCelebrated) {
-        setUnlockedLevel(pendingLevelUp.newLevel);
-        setRookieLevel(pendingLevelUp.newLevel);
-        setWinsAtLevel(0);
-      } else {
-        runLevelUpAnimation(pendingLevelUp.oldLevel, pendingLevelUp.newLevel);
+    // Defer one tick so StrictMode's remount cleanup can cancel the first
+    // mount's fire before it happens. Without this, both mounts fire the
+    // landing quip and two audios play ~600ms apart (queue GAP_MS).
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      if (cancelled || landingFiredRef.current) return;
+
+      const pendingLevelUp = pendingLevelUpRef.current;
+      if (pendingLevelUp !== null) {
+        pendingLevelUpRef.current = null;
+        pendingPostGameRef.current = null;
+        landingFiredRef.current = true;
+        setupGreetingSpokenRef.current = true;
+        PlayEvents.landingViewed('level_up', pendingLevelUp.newLevel);
+        let alreadyCelebrated = false;
+        try {
+          alreadyCelebrated = localStorage.getItem('rookie-celebrated-level-' + pendingLevelUp.newLevel) === '1';
+        } catch {}
+        if (alreadyCelebrated) {
+          setUnlockedLevel(pendingLevelUp.newLevel);
+          setRookieLevel(pendingLevelUp.newLevel);
+          setWinsAtLevel(0);
+        } else {
+          runLevelUpAnimation(pendingLevelUp.oldLevel, pendingLevelUp.newLevel);
+        }
+        return;
       }
-      return;
-    }
 
-    const pendingResult = pendingPostGameRef.current;
-    if (pendingResult !== null) {
-      pendingPostGameRef.current = null;
-      landingFiredRef.current = true;
-      setupGreetingSpokenRef.current = true;
-      PlayEvents.landingViewed('post_game', rookieLevel);
-      const line = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
-      if (line) {
-        PlayEvents.quipShown(pendingResult, line);
+      const pendingResult = pendingPostGameRef.current;
+      if (pendingResult !== null) {
+        pendingPostGameRef.current = null;
+        landingFiredRef.current = true;
+        setupGreetingSpokenRef.current = true;
+        PlayEvents.landingViewed('post_game', rookieLevel);
+        const line = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
+        if (line) {
+          PlayEvents.quipShown(pendingResult, line);
+        }
+        return;
       }
-      return;
-    }
 
-    if (!landingFiredRef.current) {
       landingFiredRef.current = true;
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
@@ -696,7 +703,9 @@ export default function PlayRookiePage() {
       if (line) {
         PlayEvents.quipShown('landing', line);
       }
-    }
+    }, 0);
+
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [phase, user?.id, rookieLevel, winsAtLevel, runLevelUpAnimation, speech]);
 
   // ── 6-layer narrative processing (runs alongside existing speech system) ──
