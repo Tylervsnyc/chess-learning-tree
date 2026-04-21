@@ -441,32 +441,33 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
     [generateGameEndLine, generateOrFallback],
   );
 
-  /** Call when Stockfish eval arrives — detects blunders from eval swing (pawn units) */
+  /** Call when Stockfish eval arrives — detects blunders AND great moves from eval swing (pawn units). */
   const onEvalUpdate = useCallback(
     (update: EvalUpdate) => {
-      // Only detect blunders after player moves
       if (update.lastMovedBy !== 'player') return;
       if (update.prevRookiePawns === undefined) return;
 
-      // Blunder = eval swing >= SWING_THRESHOLD in Rookie's favor (player lost ground)
       const swing = update.rookiePawns - update.prevRookiePawns;
-      if (swing < SWING_THRESHOLD) return;
+      // swing > 0: player lost ground (Rookie gained). swing < 0: player gained.
+      let event: 'blunder' | 'great_move' | null = null;
+      if (swing >= SWING_THRESHOLD) event = 'blunder';
+      else if (swing <= -SWING_THRESHOLD) event = 'great_move';
+      if (!event) return;
 
       // Respect cooldown
       if (update.moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
 
-      // Fire a blunder quip
       const context: QueueContext = {
         beat: beatRef.current.currentBeat,
         evalMood: beatRef.current.evalMood,
-        event: 'blunder',
+        event,
         movedBy: 'player',
         moveNumber: update.moveNumber,
         activeThreadId: null,
         playerName: update.playerName,
         playerColor: update.playerColor,
         tone: toneRef.current,
-      talkativenessLevel: talkRef.current,
+        talkativenessLevel: talkRef.current,
       };
 
       if (selectAndQueue(context)) {
