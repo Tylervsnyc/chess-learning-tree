@@ -55,9 +55,9 @@ const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
   5:  { skillLevel: 8,  depth: 8,  multiPV: 2, poolSize: 2 },
   6:  { skillLevel: 11, depth: 10, multiPV: 2, poolSize: 2 },
   7:  { skillLevel: 14, depth: 12, multiPV: 2, poolSize: 1 },
-  8:  { skillLevel: 16, depth: 14, multiPV: 1, poolSize: 1 },
-  9:  { skillLevel: 18, depth: 16, multiPV: 1, poolSize: 1 },
-  10: { skillLevel: 20, depth: 20, multiPV: 1, poolSize: 1 },
+  8:  { skillLevel: 16, depth: 12, multiPV: 1, poolSize: 1 },
+  9:  { skillLevel: 18, depth: 13, multiPV: 1, poolSize: 1 },
+  10: { skillLevel: 20, depth: 14, multiPV: 1, poolSize: 1 },
 };
 
 export const ROOKIE_LEVELS: RookieLevel[] = [
