@@ -81,7 +81,10 @@ function PuzzleCard({
   return (
     <div className="puzzle-card flex flex-col items-center break-inside-avoid">
       <div className="flex items-baseline justify-between px-1 pb-1 text-xs" style={{ width: '2.5in' }}>
-        <span className="font-bold text-black">#{index + 1}</span>
+        <span className="text-black">
+          <span className="font-bold">#{index + 1}</span>
+          <span className="ml-1.5 text-neutral-500">· {puzzle.rating}</span>
+        </span>
         <span className="text-neutral-700">{toMove} to move</span>
       </div>
       <div className="puzzle-board" style={{ width: '2.5in', height: '2.5in' }}>
@@ -168,6 +171,10 @@ export function BoxingSheet({
         .boxing-sheet * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+        .boxing-sheet .puzzle-board [class*='notation'],
+        .boxing-sheet .puzzle-board text {
+          font-size: 5px !important;
         }
         .boxing-sheet .sheet-page {
           width: 8.5in;
