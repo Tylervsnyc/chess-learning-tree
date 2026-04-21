@@ -379,7 +379,15 @@ export default function PlayRookiePage() {
   const rookieMood = moodSystem.mood;
   const rookieAlarm = moodSystem.alarmVariant;
 
-  const log = useCallback((_entry: unknown) => {}, []);
+  // DEV-ONLY engine log (remove before shipping). Prints to console + floating panel.
+  const [devLog, setDevLog] = useState<Array<{ moveNum: number; type: string; who: string; summary: string }>>([]);
+  const log = useCallback((entry: { moveNum?: number; type?: string; who?: string; summary?: string; details?: unknown }) => {
+    if (process.env.NODE_ENV !== 'development') return;
+    const e = { moveNum: entry.moveNum ?? 0, type: entry.type ?? '', who: entry.who ?? '', summary: entry.summary ?? '' };
+    // eslint-disable-next-line no-console
+    console.log(`[engine] m${e.moveNum} ${e.type}: ${e.summary}`);
+    setDevLog((prev) => [...prev.slice(-49), e]);
+  }, []);
 
   const moveNumRef = useRef(0);
   const playerMoveCountRef = useRef(0);
@@ -2364,6 +2372,21 @@ export default function PlayRookiePage() {
             onSpeak={speakQuip}
             isTalking={isTalking}
           />
+        </div>
+      )}
+
+      {/* DEV-ONLY engine log — remove before shipping */}
+      {process.env.NODE_ENV === 'development' && devLog.length > 0 && (
+        <div className="fixed bottom-2 right-2 z-50 max-h-[40vh] w-[360px] overflow-auto rounded-md bg-black/85 p-2 font-mono text-[10px] leading-tight text-green-300 shadow-lg">
+          <div className="mb-1 flex items-center justify-between">
+            <span className="font-bold text-white">engine log</span>
+            <button onClick={() => setDevLog([])} className="text-white/60 hover:text-white">clear</button>
+          </div>
+          {devLog.slice().reverse().map((e, i) => (
+            <div key={i} className={e.type === 'engine' ? 'text-yellow-300' : 'text-green-300'}>
+              m{e.moveNum} · {e.type} · {e.summary}
+            </div>
+          ))}
         </div>
       )}
     </div>
