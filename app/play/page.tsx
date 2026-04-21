@@ -85,18 +85,22 @@ const ANIM_MS = 300;
 
 function LevelProgressBar({
   currentLevel,
+  playingLevel,
   winsAtLevel,
   animDurationMs = 700,
   celebrate = false,
   onPickLevel,
 }: {
   currentLevel: number;
+  /** Level currently being played. When !== currentLevel, user has picked a lower level for this session. */
+  playingLevel?: number;
   winsAtLevel: number;
   animDurationMs?: number;
   celebrate?: boolean;
   onPickLevel?: (level: number) => void;
 }) {
   const isDev = process.env.NODE_ENV === 'development';
+  const activePlayLevel = playingLevel ?? currentLevel;
   // 9 gaps between 10 levels. Level 1 = 0%, level 10 = 100%.
   const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
   const fillPct = levelPct(currentLevel) + (winsAtLevel / WINS_TO_ADVANCE) * (100 / 9);
@@ -109,14 +113,18 @@ function LevelProgressBar({
           const pos = levelPct(l.level);
           const isCompleted = l.level < currentLevel;
           const isCurrent = l.level === currentLevel;
+          const isPlaying = l.level === activePlayLevel;
+          const isUnlocked = l.level <= currentLevel;
+          const clickable = onPickLevel && (isDev || isUnlocked);
           return (
             <span
               key={l.level}
-              onClick={isDev && onPickLevel ? () => onPickLevel(l.level) : undefined}
+              onClick={clickable ? () => onPickLevel!(l.level) : undefined}
               className={`absolute -translate-x-1/2 text-[10px] font-bold tabular-nums ${
-                isCurrent ? 'text-chess-green'
+                isPlaying ? 'text-chess-green underline decoration-2 underline-offset-2'
+                  : isCurrent ? 'text-chess-green'
                   : isCompleted ? 'text-chess-text-muted' : 'text-chess-disabled'
-              } ${isDev && onPickLevel ? 'cursor-pointer hover:text-chess-green hover:scale-125 transition-transform' : ''}`}
+              } ${clickable ? 'cursor-pointer hover:text-chess-green hover:scale-125 transition-transform' : ''}`}
               style={{ left: `${pos}%` }}
             >
               {l.level}
@@ -291,7 +299,11 @@ export default function PlayRookiePage() {
     tapQuipTimerRef.current = setTimeout(() => setTapQuip(null), 4000);
   }, []);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
-  const [rookieLevel, setRookieLevel] = useState(1); // 1-10 discrete level
+  // unlockedLevel = progression level shown on the progress bar; advances with wins.
+  // rookieLevel = the level we're actually playing at right now; user can drop below
+  // unlockedLevel for a lighter session without affecting progression.
+  const [unlockedLevel, setUnlockedLevel] = useState(1);
+  const [rookieLevel, setRookieLevel] = useState(1);
   const [winsAtLevel, setWinsAtLevel] = useState(0);
   const { name: playerNameValue, setName: setPlayerNameValue } = useName();
   const playerName = playerNameValue || '';
@@ -308,6 +320,7 @@ export default function PlayRookiePage() {
   // Load persisted level on mount
   useEffect(() => {
     const { level, wins } = loadLevelProgress();
+    setUnlockedLevel(level);
     setRookieLevel(level);
     setWinsAtLevel(wins);
   }, []);
@@ -618,6 +631,7 @@ export default function PlayRookiePage() {
       setLevelBarAnim({ level: newLevel, wins: 0, duration: DURATION });
     }, 80);
     window.setTimeout(() => {
+      setUnlockedLevel(newLevel);
       setRookieLevel(newLevel);
       setWinsAtLevel(0);
       setLevelBarAnim(null);
@@ -646,6 +660,7 @@ export default function PlayRookiePage() {
         alreadyCelebrated = localStorage.getItem('rookie-celebrated-level-' + pendingLevelUp.newLevel) === '1';
       } catch {}
       if (alreadyCelebrated) {
+        setUnlockedLevel(pendingLevelUp.newLevel);
         setRookieLevel(pendingLevelUp.newLevel);
         setWinsAtLevel(0);
       } else {
@@ -931,16 +946,17 @@ export default function PlayRookiePage() {
     pendingPostGameRef.current = postGameResult;
     lastResultForTrackingRef.current = postGameResult;
 
-    if (result === 'win' && rookieLevel < 10) {
+    // Progression only counts when playing at your unlocked level (no farming at lower levels).
+    if (result === 'win' && rookieLevel === unlockedLevel && unlockedLevel < 10) {
       const newWins = winsAtLevel + 1;
       if (newWins >= WINS_TO_ADVANCE) {
-        const newLevel = rookieLevel + 1;
+        const newLevel = unlockedLevel + 1;
         // localStorage written now so refresh keeps the new level; React state is committed by the setup-phase animation.
-        pendingLevelUpRef.current = { oldLevel: rookieLevel, newLevel };
+        pendingLevelUpRef.current = { oldLevel: unlockedLevel, newLevel };
         saveLevelProgress(newLevel, 0);
       } else {
         setWinsAtLevel(newWins);
-        saveLevelProgress(rookieLevel, newWins);
+        saveLevelProgress(unlockedLevel, newWins);
       }
     }
 
@@ -1891,11 +1907,18 @@ export default function PlayRookiePage() {
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
           <div className="relative">
             <LevelProgressBar
-              currentLevel={levelBarAnim ? levelBarAnim.level : rookieLevel}
+              currentLevel={levelBarAnim ? levelBarAnim.level : unlockedLevel}
+              playingLevel={rookieLevel}
               winsAtLevel={levelBarAnim ? levelBarAnim.wins : winsAtLevel}
               animDurationMs={levelBarAnim ? levelBarAnim.duration : 700}
               celebrate={!!levelBarAnim}
-              onPickLevel={(lvl) => { setRookieLevel(lvl); saveLevelProgress(lvl, 0); setWinsAtLevel(0); }}
+              onPickLevel={(lvl) => {
+                // In prod: only let user pick ≤ unlocked level (no farming, no skipping ahead).
+                // Dev: any level.
+                const isDev = process.env.NODE_ENV === 'development';
+                if (!isDev && lvl > unlockedLevel) return;
+                setRookieLevel(lvl);
+              }}
             />
             <LevelUpCelebration active={!!levelBarAnim} />
           </div>
