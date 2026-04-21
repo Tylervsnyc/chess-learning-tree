@@ -88,12 +88,15 @@ function LevelProgressBar({
   winsAtLevel,
   animDurationMs = 700,
   celebrate = false,
+  onPickLevel,
 }: {
   currentLevel: number;
   winsAtLevel: number;
   animDurationMs?: number;
   celebrate?: boolean;
+  onPickLevel?: (level: number) => void;
 }) {
+  const isDev = process.env.NODE_ENV === 'development';
   // 9 gaps between 10 levels. Level 1 = 0%, level 10 = 100%.
   const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
   const fillPct = levelPct(currentLevel) + (winsAtLevel / WINS_TO_ADVANCE) * (100 / 9);
@@ -109,10 +112,11 @@ function LevelProgressBar({
           return (
             <span
               key={l.level}
+              onClick={isDev && onPickLevel ? () => onPickLevel(l.level) : undefined}
               className={`absolute -translate-x-1/2 text-[10px] font-bold tabular-nums ${
                 isCurrent ? 'text-chess-green'
                   : isCompleted ? 'text-chess-text-muted' : 'text-chess-disabled'
-              }`}
+              } ${isDev && onPickLevel ? 'cursor-pointer hover:text-chess-green hover:scale-125 transition-transform' : ''}`}
               style={{ left: `${pos}%` }}
             >
               {l.level}
@@ -1870,6 +1874,7 @@ export default function PlayRookiePage() {
               winsAtLevel={levelBarAnim ? levelBarAnim.wins : winsAtLevel}
               animDurationMs={levelBarAnim ? levelBarAnim.duration : 700}
               celebrate={!!levelBarAnim}
+              onPickLevel={(lvl) => { setRookieLevel(lvl); saveLevelProgress(lvl, 0); setWinsAtLevel(0); }}
             />
             <LevelUpCelebration active={!!levelBarAnim} />
           </div>
