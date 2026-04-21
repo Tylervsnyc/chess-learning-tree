@@ -2375,12 +2375,23 @@ export default function PlayRookiePage() {
         </div>
       )}
 
-      {/* DEV-ONLY engine log — remove before shipping */}
-      {process.env.NODE_ENV === 'development' && devLog.length > 0 && (
-        <div className="fixed bottom-2 right-2 z-50 max-h-[40vh] w-[360px] overflow-auto rounded-md bg-black/85 p-2 font-mono text-[10px] leading-tight text-green-300 shadow-lg">
+      {/* DEV-ONLY engine log + level picker — remove before shipping */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-2 right-2 z-50 max-h-[50vh] w-[360px] overflow-auto rounded-md bg-black/85 p-2 font-mono text-[10px] leading-tight text-green-300 shadow-lg">
           <div className="mb-1 flex items-center justify-between">
-            <span className="font-bold text-white">engine log</span>
+            <span className="font-bold text-white">dev · level {rookieLevel}</span>
             <button onClick={() => setDevLog([])} className="text-white/60 hover:text-white">clear</button>
+          </div>
+          <div className="mb-2 flex flex-wrap gap-1">
+            {[1,2,3,4,5,6,7,8,9,10].map((lv) => (
+              <button
+                key={lv}
+                onClick={() => setRookieLevel(lv)}
+                className={`h-6 w-6 rounded text-[10px] font-bold ${rookieLevel === lv ? 'bg-chess-green text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}
+              >
+                {lv}
+              </button>
+            ))}
           </div>
           {devLog.slice().reverse().map((e, i) => (
             <div key={i} className={e.type === 'engine' ? 'text-yellow-300' : 'text-green-300'}>
