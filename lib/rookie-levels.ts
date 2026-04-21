@@ -43,12 +43,14 @@ export interface RookieEngineConfig {
   depth: number;
   multiPV: number;
   poolSize: number;
+  /** 0..1 chance of playing a totally random legal move. Beginner "hung piece" feel. */
+  randomMoveChance?: number;
 }
 
 const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
-  1:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8 },
-  2:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8 },
-  3:  { skillLevel: 1,  depth: 4,  multiPV: 6, poolSize: 5 },
+  1:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8, randomMoveChance: 0.30 },
+  2:  { skillLevel: 0,  depth: 3,  multiPV: 8, poolSize: 8, randomMoveChance: 0.15 },
+  3:  { skillLevel: 1,  depth: 4,  multiPV: 6, poolSize: 5, randomMoveChance: 0.05 },
   4:  { skillLevel: 3,  depth: 5,  multiPV: 4, poolSize: 4 },
   5:  { skillLevel: 8,  depth: 8,  multiPV: 2, poolSize: 2 },
   6:  { skillLevel: 11, depth: 10, multiPV: 2, poolSize: 2 },

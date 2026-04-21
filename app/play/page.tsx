@@ -1271,6 +1271,20 @@ export default function PlayRookiePage() {
 
     // Stockfish MultiPV sampling — weak-human feel via top-N candidate pool
     const cfg = getLevelEngineConfig(rookieLevel);
+
+    // Random move injection for L1-L3 — true beginner "hung piece" feel that
+    // Stockfish can't produce on its own (even at skill 0, its worst move is ~1000 ELO).
+    if (cfg.randomMoveChance && Math.random() < cfg.randomMoveChance) {
+      const g = new Chess(currentFen);
+      const moves = g.moves({ verbose: true });
+      if (moves.length > 0) {
+        const pick = moves[Math.floor(Math.random() * moves.length)];
+        log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `random move (level=${rookieLevel}, chance=${cfg.randomMoveChance}) -> ${pick.san}`, details: { engine: 'random', rookieLevel, chance: cfg.randomMoveChance, move: pick.san } });
+        rookieTimerRef.current = setTimeout(() => applyRookieMove({ from: pick.from, to: pick.to, promotion: pick.promotion }), 500);
+        return;
+      }
+    }
+
     log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish sampled (level=${rookieLevel}, skill=${cfg.skillLevel}, depth=${cfg.depth}, pool=${cfg.poolSize}/${cfg.multiPV})`, details: { engine: 'stockfish-sampled', rookieLevel, ...cfg } });
     const thinkStart = Date.now();
     stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize).then((uciMove) => {
