@@ -3,7 +3,7 @@ export function SheetHeader() {
     <div className="sheet-header flex items-center justify-between gap-4 px-5 pt-3 pb-2 border-b border-neutral-300">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/brand/logo-horizontal-dark.svg"
+        src="/brand/logo-horizontal-light.svg"
         alt="Chess Path"
         style={{ height: '28px', width: 'auto' }}
       />
