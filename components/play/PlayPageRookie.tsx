@@ -25,13 +25,19 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
   const modeBagRef = useRef(createModeBag());
   const quipBagsRef = useRef(createQuipBags());
 
-  // One random mode per visit
-  const [mode] = useState<InteractiveModeId>(() => modeBagRef.current.draw());
+  // One random mode per visit. Deferred to after mount so SSR and first client
+  // render match (otherwise server and client draw different modes → hydration
+  // mismatch on InteractiveRook's brightness filter).
+  const [mode, setMode] = useState<InteractiveModeId | null>(null);
+  useEffect(() => {
+    setMode(modeBagRef.current.draw());
+  }, []);
   const quipTimerRef = useRef<NodeJS.Timeout | null>(null);
   const quipsUsedRef = useRef(0);
   const MAX_QUIPS_PER_MODE = 3;
 
   const handleInteraction = useCallback(() => {
+    if (!mode) return;
     if (quipsUsedRef.current >= MAX_QUIPS_PER_MODE) return;
     if (quipTimerRef.current) return;
 
@@ -58,7 +64,7 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
       onPointerDown={handleInteraction}
       className="my-1"
     >
-      <InteractiveRook mode={mode} blockSize={24} />
+      {mode && <InteractiveRook mode={mode} blockSize={24} />}
     </div>
   );
 }
