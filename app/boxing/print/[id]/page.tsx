@@ -64,6 +64,13 @@ export default function BoxingPrintPage({
         showThemes={data.draw.showThemes}
       />
       <style jsx global>{`
+        body header.sticky,
+        body > div header[class*='sticky'] {
+          display: none !important;
+        }
+        main {
+          max-width: none !important;
+        }
         @media print {
           .no-print {
             display: none !important;
