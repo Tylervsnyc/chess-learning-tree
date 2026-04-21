@@ -1240,12 +1240,12 @@ export default function PlayRookiePage() {
     // Levels 4+: use the opening book
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
-    // Cap book to Rookie's first 5 moves (10 plies total) so mid-game blunders
-    // still come from the engine where they should — beginners don't play
-    // 15 moves of Ruy Lopez theory.
+    // Cap book to Rookie's first 5 moves at L1-L4 so beginners don't play
+    // 15 moves of Ruy Lopez theory. L5+ use the full opening trie since
+    // stronger players legitimately know theory.
     const rookieMovesPlayed = gameMoves.filter((_, i) => (rookieColor === 'white' ? i % 2 === 0 : i % 2 === 1)).length;
-    const BOOK_MAX_ROOKIE_MOVES = 5;
-    const bookResult = rookieMovesPlayed < BOOK_MAX_ROOKIE_MOVES
+    const bookCapped = rookieLevel <= 4 && rookieMovesPlayed >= 5;
+    const bookResult = !bookCapped
       ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
       : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
     if (bookResult.inBook && bookResult.moveSan) {
