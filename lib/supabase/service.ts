@@ -6,8 +6,8 @@ import { createClient } from '@supabase/supabase-js';
  * in trusted server-side contexts like webhook handlers
  */
 export function createServiceClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.replace(/\s+/g, '');
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error('Missing Supabase service role configuration');
