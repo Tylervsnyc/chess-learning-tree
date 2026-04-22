@@ -97,7 +97,19 @@ export function selectBoxingPuzzles(opts: SelectOpts): BoxingPuzzle[] {
   for (let i = 0; i < total; i++) {
     const target = targetRating(i, total);
     const bracket = bracketFor(target);
-    const theme: string = opts.theme === 'mixed' ? pickMixedTheme(i, rng, lastTheme) : opts.theme;
+
+    // In mixed mode, try the rotated theme first, then fall back to any other theme.
+    const themesToTry: string[] =
+      opts.theme === 'mixed'
+        ? (() => {
+            const first = pickMixedTheme(i, rng, lastTheme);
+            const rest = shuffle(
+              BOXING_THEMES.filter((t) => t !== first && t !== lastTheme),
+              rng,
+            );
+            return [first, ...rest];
+          })()
+        : [opts.theme];
 
     // Try the exact bracket first, then adjacent brackets as fallback.
     const bracketOrder: Bracket[] = [bracket];
@@ -106,45 +118,54 @@ export function selectBoxingPuzzles(opts: SelectOpts): BoxingPuzzle[] {
     if (idx < BRACKETS.length - 1) bracketOrder.push(BRACKETS[idx + 1]);
 
     let picked: BoxingPuzzle | null = null;
+    let pickedTheme: string | null = null;
     const tolerance = 150;
-    for (const b of bracketOrder) {
-      const pool = loadThemeBracket(theme, b);
-      const candidates = pool.filter(
-        (p) =>
-          !opts.excluded.has(p.puzzleId) &&
-          !chosenIds.has(p.puzzleId) &&
-          Math.abs(p.rating - target) <= tolerance,
-      );
-      if (candidates.length > 0) {
-        const shuffled = shuffle(candidates, rng);
-        picked = shuffled[0];
-        break;
-      }
-    }
 
-    // Last-ditch: any puzzle in the bracket matching theme, ignore rating tolerance.
-    if (!picked) {
+    for (const theme of themesToTry) {
       for (const b of bracketOrder) {
         const pool = loadThemeBracket(theme, b);
         const candidates = pool.filter(
-          (p) => !opts.excluded.has(p.puzzleId) && !chosenIds.has(p.puzzleId),
+          (p) =>
+            !opts.excluded.has(p.puzzleId) &&
+            !chosenIds.has(p.puzzleId) &&
+            Math.abs(p.rating - target) <= tolerance,
         );
         if (candidates.length > 0) {
           picked = shuffle(candidates, rng)[0];
+          pickedTheme = theme;
           break;
         }
+      }
+      if (picked) break;
+    }
+
+    // Last-ditch: any puzzle in the bracket matching any tried theme, ignore tolerance.
+    if (!picked) {
+      for (const theme of themesToTry) {
+        for (const b of bracketOrder) {
+          const pool = loadThemeBracket(theme, b);
+          const candidates = pool.filter(
+            (p) => !opts.excluded.has(p.puzzleId) && !chosenIds.has(p.puzzleId),
+          );
+          if (candidates.length > 0) {
+            picked = shuffle(candidates, rng)[0];
+            pickedTheme = theme;
+            break;
+          }
+        }
+        if (picked) break;
       }
     }
 
     if (!picked) {
       throw new Error(
-        `Boxing pool exhausted for theme="${theme}" near rating ${target}. Try a different theme or reduce pages.`,
+        `Boxing pool exhausted near rating ${target}. Try a different theme or reduce pages.`,
       );
     }
 
     chosenIds.add(picked.puzzleId);
     out.push(picked);
-    lastTheme = theme;
+    lastTheme = pickedTheme;
   }
 
   return out;
