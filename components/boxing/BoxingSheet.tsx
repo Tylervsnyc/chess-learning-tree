@@ -80,14 +80,14 @@ function PuzzleCard({
 
   return (
     <div className="puzzle-card flex flex-col items-center break-inside-avoid">
-      <div className="flex items-baseline justify-between px-1 pb-1 text-xs" style={{ width: '2.5in' }}>
+      <div className="flex items-baseline justify-between px-1 pb-1 text-xs" style={{ width: '2.3in' }}>
         <span className="text-black">
           <span className="font-bold">#{index + 1}</span>
           <span className="ml-1.5 text-neutral-500">· {puzzle.rating}</span>
         </span>
         <span className="text-neutral-700">{toMove} to move</span>
       </div>
-      <div className="puzzle-board" style={{ width: '2.5in', height: '2.5in' }}>
+      <div className="puzzle-board" style={{ width: '2.3in', height: '2.3in' }}>
         <ChessPathBoard
           options={{
             position: fen,
@@ -192,14 +192,20 @@ export function BoxingSheet({
           }
           .boxing-sheet .sheet-page {
             width: 100%;
-            min-height: auto;
+            height: 10.3in;
+            min-height: 0;
+            max-height: 10.3in;
+            overflow: hidden;
             page-break-after: always;
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
           .boxing-sheet .sheet-page:last-child {
             page-break-after: auto;
           }
           .puzzle-card {
             break-inside: avoid;
+            page-break-inside: avoid;
           }
         }
       `}</style>
