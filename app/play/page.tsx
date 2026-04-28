@@ -1239,7 +1239,7 @@ export default function PlayRookiePage() {
       recordMoveToSession(g, result, 'rookie', currentFen);
 
       // Run 6-layer narrative engine (async, non-blocking)
-      processNarrative(g, result, 'rookie', newFen);
+      processNarrative(g, result, 'rookie', newFen).catch(() => {});
 
       if (g.isGameOver()) {
         const resultText = g.isCheckmate()
@@ -1291,12 +1291,15 @@ export default function PlayRookiePage() {
       const thinkStart = Date.now();
       maia.getMaiaMove(currentFen, maiaElo, maiaElo).then((uciMove) => {
         if (gen !== gameGenRef.current) return;
-        if (!uciMove) { setRookieThinking(false); return; }
+        if (!uciMove) { fallbackRandomMove(currentFen, gen); return; }
         const from = uciMove.slice(0, 2);
         const to = uciMove.slice(2, 4);
         const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
         const wait = Math.max(0, 500 - (Date.now() - thinkStart));
         rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
+      }).catch(() => {
+        if (gen !== gameGenRef.current) return;
+        fallbackRandomMove(currentFen, gen);
       });
       return;
     }
@@ -1321,13 +1324,26 @@ export default function PlayRookiePage() {
     const thinkStart = Date.now();
     stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize).then((uciMove) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
-      if (!uciMove) { setRookieThinking(false); return; }
+      if (!uciMove) { fallbackRandomMove(currentFen, gen); return; }
       const from = uciMove.slice(0, 2);
       const to = uciMove.slice(2, 4);
       const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
       const wait = Math.max(0, 500 - (Date.now() - thinkStart));
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
+    }).catch(() => {
+      if (gen !== gameGenRef.current) return;
+      fallbackRandomMove(currentFen, gen);
     });
+
+    function fallbackRandomMove(fenStr: string, capturedGen: number) {
+      if (capturedGen !== gameGenRef.current) return;
+      const g = new Chess(fenStr);
+      const moves = g.moves({ verbose: true });
+      if (moves.length === 0) { setRookieThinking(false); return; }
+      const pick = moves[Math.floor(Math.random() * moves.length)];
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `engine error → random fallback: ${pick.san}`, details: { engine: 'random-fallback', move: pick.san } });
+      rookieTimerRef.current = setTimeout(() => applyRookieMove({ from: pick.from, to: pick.to, promotion: pick.promotion }), 300);
+    }
   }, [rookieLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
   scheduleRookieMoveRef.current = scheduleRookieMove;
 
@@ -1411,7 +1427,7 @@ export default function PlayRookiePage() {
       recordMoveToSession(g, result, 'player', fen);
 
       // Run 6-layer narrative engine (async, non-blocking for authored quips)
-      processNarrative(g, result, 'player', newFen);
+      processNarrative(g, result, 'player', newFen).catch(() => {});
 
       if (g.isGameOver()) {
         const resultText = g.isCheckmate()

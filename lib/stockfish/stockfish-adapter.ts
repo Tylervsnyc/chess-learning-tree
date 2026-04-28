@@ -12,7 +12,7 @@ export interface StockfishResult {
 }
 
 type ResultCallback = (result: StockfishResult) => void;
-type QueuedRequest = () => void;
+type QueuedRequest = { run: () => void; cancel: () => void };
 
 class StockfishEngine {
   private worker: Worker | null = null;
@@ -97,19 +97,24 @@ class StockfishEngine {
     if (this.busy || this.queue.length === 0) return;
     this.busy = true;
     const next = this.queue.shift()!;
-    next();
+    next.run();
   }
 
-  /** Reject all queued requests (used on worker error). */
+  /** Resolve all queued requests with null (used on worker error). */
   private flushQueue() {
+    const pending = this.queue;
     this.queue = [];
+    for (const req of pending) req.cancel();
   }
 
   /** Enqueue a request that will run when the engine is free. */
   private enqueue<T>(fn: (resolve: (value: T) => void) => void): Promise<T> {
     if (!this.worker || !this.ready || this.dead) return Promise.resolve(null as T);
     return new Promise<T>((resolve) => {
-      this.queue.push(() => fn(resolve));
+      this.queue.push({
+        run: () => fn(resolve),
+        cancel: () => resolve(null as T),
+      });
       this.drain();
     });
   }
@@ -259,20 +264,11 @@ class StockfishEngine {
       this.infoListener = null;
       cb({ bestMove: null });
     }
-    // Flush the queue — each queued item is a thunk that would set pendingCallback.
-    // Just drop them; callers get the promise resolved with null via the enqueue wrapper.
-    // We need to resolve the promises, so run each thunk then immediately resolve with null.
+    // Resolve every queued caller with null so nobody hangs.
     const pending = this.queue;
     this.queue = [];
     this.busy = false;
-    for (const fn of pending) {
-      fn(); // sets this.pendingCallback
-      const cb = this.pendingCallback as ResultCallback | null;
-      if (cb) {
-        this.pendingCallback = null;
-        cb({ bestMove: null });
-      }
-    }
+    for (const req of pending) req.cancel();
     // Stop any in-progress search
     if (this.worker && this.ready) {
       this.worker.postMessage('stop');
