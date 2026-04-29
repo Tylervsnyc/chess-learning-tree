@@ -71,9 +71,21 @@ async function generateTTS(text: string): Promise<Buffer> {
 }
 
 async function main() {
-  const templates: string[] = AUTHORED_LINES.map(l => l.text);
+  // Expand each line into the text(s) the runtime will actually speak.
+  // SFX lines like "Hi. [SFX] Bye." are split by useRookieQuipQueue and
+  // speakQuip is called on each half — cache the halves, NEVER the full
+  // string (TTS would literally say "open bracket S F X close bracket").
+  const expandLine = (raw: string): string[] => {
+    if (!raw.includes('[SFX]')) return [raw];
+    return raw
+      .split('[SFX]')
+      .map(s => s.trim())
+      .filter(Boolean);
+  };
 
-  console.log(`Found ${templates.length} authored lines`);
+  const templates: string[] = AUTHORED_LINES.flatMap(l => expandLine(l.text));
+
+  console.log(`Found ${AUTHORED_LINES.length} authored lines (${templates.length} after [SFX] expansion)`);
 
   // Load existing manifest
   let manifest: Record<string, string> = {};

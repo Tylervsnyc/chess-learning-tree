@@ -1,0 +1,240 @@
+{
+  "text": "Watching pizza ranking videos won't make you better at chess. Come play me on ChessPath, I'll coach you for free.",
+  "words": [
+    {
+      "word": "Watching",
+      "start": 0.239,
+      "end": 0.579,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 0.579,
+      "end": 0.679,
+      "type": "spacing"
+    },
+    {
+      "word": "pizza",
+      "start": 0.68,
+      "end": 0.979,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 0.979,
+      "end": 1.059,
+      "type": "spacing"
+    },
+    {
+      "word": "ranking",
+      "start": 1.059,
+      "end": 1.419,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 1.419,
+      "end": 1.5,
+      "type": "spacing"
+    },
+    {
+      "word": "videos",
+      "start": 1.5,
+      "end": 2.019,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 2.019,
+      "end": 2.24,
+      "type": "spacing"
+    },
+    {
+      "word": "won't",
+      "start": 2.24,
+      "end": 2.539,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 2.539,
+      "end": 2.559,
+      "type": "spacing"
+    },
+    {
+      "word": "make",
+      "start": 2.559,
+      "end": 2.799,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 2.799,
+      "end": 2.839,
+      "type": "spacing"
+    },
+    {
+      "word": "you",
+      "start": 2.839,
+      "end": 2.96,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 2.96,
+      "end": 2.98,
+      "type": "spacing"
+    },
+    {
+      "word": "better",
+      "start": 2.98,
+      "end": 3.299,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 3.299,
+      "end": 3.339,
+      "type": "spacing"
+    },
+    {
+      "word": "at",
+      "start": 3.339,
+      "end": 3.5,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 3.5,
+      "end": 3.559,
+      "type": "spacing"
+    },
+    {
+      "word": "chess.",
+      "start": 3.559,
+      "end": 4.079,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 4.079,
+      "end": 4.139,
+      "type": "spacing"
+    },
+    {
+      "word": "Come",
+      "start": 4.139,
+      "end": 4.36,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 4.36,
+      "end": 4.4,
+      "type": "spacing"
+    },
+    {
+      "word": "play",
+      "start": 4.4,
+      "end": 4.599,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 4.599,
+      "end": 4.659,
+      "type": "spacing"
+    },
+    {
+      "word": "me",
+      "start": 4.659,
+      "end": 4.859,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 4.859,
+      "end": 4.939,
+      "type": "spacing"
+    },
+    {
+      "word": "on",
+      "start": 4.94,
+      "end": 5.039,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 5.039,
+      "end": 5.159,
+      "type": "spacing"
+    },
+    {
+      "word": "ChessPath,",
+      "start": 5.159,
+      "end": 5.879,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 5.879,
+      "end": 6.079,
+      "type": "spacing"
+    },
+    {
+      "word": "I'll",
+      "start": 6.079,
+      "end": 6.219,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 6.219,
+      "end": 6.259,
+      "type": "spacing"
+    },
+    {
+      "word": "coach",
+      "start": 6.259,
+      "end": 6.519,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 6.519,
+      "end": 6.559,
+      "type": "spacing"
+    },
+    {
+      "word": "you",
+      "start": 6.559,
+      "end": 6.639,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 6.639,
+      "end": 6.779,
+      "type": "spacing"
+    },
+    {
+      "word": "for",
+      "start": 6.779,
+      "end": 6.859,
+      "type": "word"
+    },
+    {
+      "word": " ",
+      "start": 6.859,
+      "end": 7.019,
+      "type": "spacing"
+    },
+    {
+      "word": "free.",
+      "start": 7.019,
+      "end": 7.319,
+      "type": "word"
+    }
+  ],
+  "duration": 7.319
+}
