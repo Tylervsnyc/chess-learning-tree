@@ -25,7 +25,10 @@ export async function GET() {
 
   if (error) {
     console.error('Error fetching opening progress:', error)
-    return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch progress', detail: error.message, code: error.code },
+      { status: 500 },
+    )
   }
 
   // Group by opening_slug
@@ -82,7 +85,10 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error('Error saving opening progress:', error)
-    return NextResponse.json({ error: 'Failed to save progress' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to save progress', detail: error.message, code: error.code },
+      { status: 500 },
+    )
   }
 
   return NextResponse.json({ success: true })
@@ -144,7 +150,10 @@ export async function PUT(request: NextRequest) {
 
   if (error) {
     console.error('Error merging opening progress:', error)
-    return NextResponse.json({ error: 'Failed to merge progress' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to merge progress', detail: error.message, code: error.code },
+      { status: 500 },
+    )
   }
 
   return NextResponse.json({ success: true })
