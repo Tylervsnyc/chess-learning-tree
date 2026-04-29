@@ -296,13 +296,28 @@ export async function playCaptureSound(): Promise<void> {
  * Returns a promise that resolves when playback finishes (or after durationMs).
  */
 export async function playSfx(filename: string, durationMs?: number): Promise<void> {
+  console.log('[playSfx] called', { filename, durationMs });
   const ctx = await ensureAudioReady();
-  if (!ctx) return;
+  if (!ctx) { console.warn('[playSfx] no AudioContext — bailing', { filename }); return; }
+  console.log('[playSfx] ctx state', ctx.state);
   const url = `/rookie-sfx/${filename}`;
-  const response = await fetch(url);
-  if (!response.ok) return;
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch (err) {
+    console.warn('[playSfx] fetch threw', { filename, err });
+    return;
+  }
+  if (!response.ok) { console.warn('[playSfx] fetch not ok', { filename, status: response.status }); return; }
   const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  let audioBuffer: AudioBuffer;
+  try {
+    audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  } catch (err) {
+    console.warn('[playSfx] decodeAudioData threw', { filename, err });
+    return;
+  }
+  console.log('[playSfx] decoded, starting source', { filename, dur: audioBuffer.duration });
 
   return new Promise<void>((resolve) => {
     const source = ctx.createBufferSource();
