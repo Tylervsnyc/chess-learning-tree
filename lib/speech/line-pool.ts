@@ -4620,9 +4620,9 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
 
   // ════════════════════════════════════════════════════════════════
-  // SORE LOSER — alarm variant only (8+ pawns behind)
+  // SORE LOSER — fires when alarmVariant is active (Rookie ≤ -5 pawns, hysteresis to -3)
   // Rookie is losing badly and wants you to stop.
-  // Fires when Rookie is in 'desperate' evalMood (defeated mood at -4+ pawns down).
+  // SFX and text variants share priority 70 — SFX wins ~15% of ties (5 SFX / 34 candidates).
   // ════════════════════════════════════════════════════════════════
 
   // ── Passive-aggressive quit suggestions ──
@@ -4717,7 +4717,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_train',
     text: "This is such a brilliant game you're playing, it would be a shame if someone distracted you. [SFX] sorry about that.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 70,
     source: 'authored',
     sfx: { file: 'train-horn.mp3', duration: 1500, overlap: 1, pauseAfter: 400 },
@@ -4725,7 +4725,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_snakes',
     text: "I just did some research on common human phobias. It would be a real shame if you got scared and quit this game. [SFX]",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 70,
     source: 'authored',
     sfx: { file: 'hissing-snakes.mp3', duration: 2000 },
@@ -4741,7 +4741,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_typing',
     text: "I'm going to run a quick report. [SFX] Huh. This report tells me that you are a terrible person. I love reports.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 70,
     source: 'authored',
     sfx: { file: 'typing.mp3', duration: 2200, delay: 0, pauseAfter: 150 },
@@ -4749,10 +4749,26 @@ export const AUTHORED_LINES: SpeechLine[] = [
   {
     id: 'sore_loser_sfx_laughing',
     text: "I found a group of children and just showed them a picture of your haircut. [SFX] Ok children, back to the cages.",
-    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
     priority: 70,
     source: 'authored',
     sfx: { file: 'children-laughing.mp3', duration: 3000 },
+  },
+  {
+    id: 'sore_loser_sfx_phone_friend',
+    text: "I need to phone a friend. [SFX]",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'], tone: 'spicy' },
+    priority: 70,
+    source: 'authored',
+    sfx: { file: 'phone-dialing.mp3', duration: 2600, pauseAfter: 150 },
+  },
+  {
+    id: 'sore_loser_sfx_drink',
+    text: "You know what? Mama needs a drink. [SFX] Ok. I feel better now. Where were we.",
+    conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['desperate'] },
+    priority: 70,
+    source: 'authored',
+    sfx: { file: 'pouring-drink.mp3', duration: 3000, delay: 200, pauseAfter: 500 },
   },
 
   // ── Desperate distractions (text only) ──

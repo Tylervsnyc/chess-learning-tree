@@ -509,8 +509,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Call when alarm variant is active (Rookie is getting crushed, 5+ pawns behind). Fires sore loser quips. */
   const onAlarm = useCallback(
     (moveNumber: number, rookiePawns: number) => {
-      // Respect cooldown
-      if (moveNumber - lastQuipMoveRef.current < cooldownForTalkativeness(talkRef.current)) return;
+      // No per-call cooldown: alarm-eligible lines are rare (event:'alarm' + desperate mood),
+      // and selectLine's rolling window (isAtLimit) already throttles overall quip rate.
+      // The shared cooldown was causing onMove (which always runs first) to starve onAlarm.
 
       const freshEvalMood = getEvalMood(rookiePawns);
 
