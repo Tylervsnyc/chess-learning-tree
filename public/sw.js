@@ -99,8 +99,12 @@ async function cacheFirst(request, cacheName) {
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
-    // Cache successful GET responses for offline fallback
-    if (response.ok) {
+    // Cache successful GET responses for offline fallback.
+    // Skip non-http(s) schemes (chrome-extension://, etc.) — Cache.put rejects them.
+    const isCacheable =
+      response.ok &&
+      (request.url.startsWith('http://') || request.url.startsWith('https://'));
+    if (isCacheable) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());
     }
