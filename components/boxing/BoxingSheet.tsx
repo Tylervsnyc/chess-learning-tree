@@ -80,14 +80,14 @@ function PuzzleCard({
 
   return (
     <div className="puzzle-card flex flex-col items-center break-inside-avoid">
-      <div className="flex items-baseline justify-between px-1 pb-1 text-xs" style={{ width: '2.3in' }}>
+      <div className="flex items-baseline justify-between px-1 pb-1 text-xs" style={{ width: '2.1in' }}>
         <span className="text-black">
           <span className="font-bold">#{index + 1}</span>
           <span className="ml-1.5 text-neutral-500">· {puzzle.rating}</span>
         </span>
         <span className="text-neutral-700">{toMove} to move</span>
       </div>
-      <div className="puzzle-board" style={{ width: '2.3in', height: '2.3in' }}>
+      <div className="puzzle-board" style={{ width: '2.1in', height: '2.1in' }}>
         <ChessPathBoard
           options={{
             position: fen,
