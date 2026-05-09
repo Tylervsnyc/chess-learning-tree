@@ -2,13 +2,11 @@
  * Generate Daily Rook Puzzles
  *
  * Creates a JSON file with pre-selected puzzles for the next 90 days.
- * Each day gets 22 puzzles with linear difficulty (400 → 2300 ELO).
+ * Each day gets 22 puzzles with linear difficulty (400 → ~2200 ELO).
  * First 3 puzzles are all ~400 rating to build confidence.
  * Same seed = same puzzles, so all users get identical puzzles on a given day.
  *
- * Data sources:
- * - clean-puzzles-v2/*.json for levels 1-5 (400-1600)
- * - puzzles-by-rating/*.csv for 1600-2000 and 2000+ brackets
+ * Data source: data/clean-puzzles-v2/level{1-8}-{theme}.json
  *
  * Usage: npx ts-node scripts/generate-daily-puzzles.ts
  *
@@ -19,7 +17,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const CLEAN_PUZZLES_DIR = path.join(process.cwd(), 'data', 'clean-puzzles-v2');
-const RAW_PUZZLES_DIR = path.join(process.cwd(), 'data', 'puzzles-by-rating');
 const OUTPUT_FILE = path.join(process.cwd(), 'data', 'daily-challenge-puzzles.json');
 const DAYS_TO_GENERATE = 90;
 
@@ -58,31 +55,33 @@ function getDateSeed(date: string): number {
   return Math.abs(hash);
 }
 
-// 22 puzzle targets: first 3 at ~400 (confidence), then 500 → 2300 in 100-step increments
-// Each target maps to the appropriate bracket folder in puzzles-by-rating
-const PUZZLE_TARGETS = [
-  { min: 350, max: 475, bracket: '0400-0800' },   // #1  - 400 (confidence)
-  { min: 350, max: 475, bracket: '0400-0800' },   // #2  - 400 (confidence)
-  { min: 350, max: 475, bracket: '0400-0800' },   // #3  - 400 (confidence)
-  { min: 425, max: 575, bracket: '0400-0800' },   // #4  - 500
-  { min: 525, max: 675, bracket: '0400-0800' },   // #5  - 600
-  { min: 625, max: 775, bracket: '0400-0800' },   // #6  - 700
-  { min: 725, max: 875, bracket: '0800-1200' },   // #7  - 800
-  { min: 825, max: 975, bracket: '0800-1200' },   // #8  - 900
-  { min: 925, max: 1075, bracket: '0800-1200' },  // #9  - 1000
-  { min: 1025, max: 1175, bracket: '0800-1200' }, // #10 - 1100
-  { min: 1125, max: 1275, bracket: '1200-1600' }, // #11 - 1200
-  { min: 1225, max: 1375, bracket: '1200-1600' }, // #12 - 1300
-  { min: 1325, max: 1475, bracket: '1200-1600' }, // #13 - 1400
-  { min: 1425, max: 1575, bracket: '1200-1600' }, // #14 - 1500
-  { min: 1525, max: 1675, bracket: '1600-2000' }, // #15 - 1600
-  { min: 1625, max: 1775, bracket: '1600-2000' }, // #16 - 1700
-  { min: 1725, max: 1875, bracket: '1600-2000' }, // #17 - 1800
-  { min: 1825, max: 1975, bracket: '1600-2000' }, // #18 - 1900
-  { min: 1925, max: 2075, bracket: '2000-plus' }, // #19 - 2000
-  { min: 2025, max: 2175, bracket: '2000-plus' }, // #20 - 2100
-  { min: 2100, max: 2300, bracket: '2000-plus' }, // #21 - 2200
-  { min: 2200, max: 2500, bracket: '2000-plus' }, // #22 - 2300
+// 22 puzzle targets: first 3 at ~400 (confidence), then 500 → ~2200 in 100-step increments.
+// Each target maps to one or more level files in clean-puzzles-v2.
+// clean-puzzles-v2 levels: 1=400-800, 2=800-1000, 3=1000-1200, 4=1200-1400,
+// 5=1400-1600, 6=1600-1800, 7=1800-2000, 8=2000-2199.
+const PUZZLE_TARGETS: Array<{ min: number; max: number; levels: number[] }> = [
+  { min: 350, max: 475, levels: [1] },        // #1  - 400 (confidence)
+  { min: 350, max: 475, levels: [1] },        // #2  - 400 (confidence)
+  { min: 350, max: 475, levels: [1] },        // #3  - 400 (confidence)
+  { min: 425, max: 575, levels: [1] },        // #4  - 500
+  { min: 525, max: 675, levels: [1] },        // #5  - 600
+  { min: 625, max: 775, levels: [1] },        // #6  - 700
+  { min: 725, max: 875, levels: [1, 2] },     // #7  - 800
+  { min: 825, max: 975, levels: [2] },        // #8  - 900
+  { min: 925, max: 1075, levels: [2, 3] },    // #9  - 1000
+  { min: 1025, max: 1175, levels: [3] },      // #10 - 1100
+  { min: 1125, max: 1275, levels: [3, 4] },   // #11 - 1200
+  { min: 1225, max: 1375, levels: [4] },      // #12 - 1300
+  { min: 1325, max: 1475, levels: [4, 5] },   // #13 - 1400
+  { min: 1425, max: 1575, levels: [5] },      // #14 - 1500
+  { min: 1525, max: 1675, levels: [5, 6] },   // #15 - 1600
+  { min: 1625, max: 1775, levels: [6] },      // #16 - 1700
+  { min: 1725, max: 1875, levels: [6, 7] },   // #17 - 1800
+  { min: 1825, max: 1975, levels: [7] },      // #18 - 1900
+  { min: 1925, max: 2075, levels: [7, 8] },   // #19 - 2000
+  { min: 2025, max: 2175, levels: [8] },      // #20 - 2100
+  { min: 2100, max: 2199, levels: [8] },      // #21 - 2150
+  { min: 2150, max: 2199, levels: [8] },      // #22 - 2199 (top of available range)
 ];
 
 // Tactical themes to prioritize
@@ -95,72 +94,70 @@ const TACTICAL_THEMES = [
   'crushing', 'kingsideAttack', 'queensideAttack',
 ];
 
-// Parse CSV line from Lichess puzzle format
-function parseCSVLine(line: string): Puzzle | null {
-  const parts = line.split(',');
-  if (parts.length < 9 || parts[0] === 'PuzzleId') return null;
-
-  return {
-    puzzleId: parts[0],
-    fen: parts[1],
-    moves: parts[2].split(' '),
-    rating: parseInt(parts[3], 10),
-    themes: parts[7].split(' '),
-    gameUrl: parts[8],
-  };
+interface CleanPuzzleFile {
+  level: number;
+  ratingRange: string;
+  theme: string;
+  puzzles: Array<{
+    puzzleId: string;
+    fen: string;
+    moves: string;
+    rating: number;
+    allThemes?: string[];
+    gameUrl: string;
+  }>;
 }
 
-// Load puzzles from CSV files in a bracket folder
-function loadPuzzlesFromBracket(bracket: string): Map<string, Puzzle[]> {
-  const puzzlesByTheme = new Map<string, Puzzle[]>();
-  const bracketDir = path.join(RAW_PUZZLES_DIR, bracket);
+// Per-level Map<theme, Puzzle[]>
+type LevelPuzzles = Map<string, Puzzle[]>;
 
-  if (!fs.existsSync(bracketDir)) {
-    console.warn(`  Warning: Bracket directory not found: ${bracketDir}`);
+// Load puzzles for a single level from clean-puzzles-v2 JSON files
+function loadPuzzlesForLevel(level: number): LevelPuzzles {
+  const puzzlesByTheme: LevelPuzzles = new Map();
+  const prefix = `level${level}-`;
+
+  if (!fs.existsSync(CLEAN_PUZZLES_DIR)) {
+    console.warn(`  Warning: clean-puzzles-v2 dir not found: ${CLEAN_PUZZLES_DIR}`);
     return puzzlesByTheme;
   }
 
-  const files = fs.readdirSync(bracketDir).filter(f => f.endsWith('.csv'));
+  const files = fs.readdirSync(CLEAN_PUZZLES_DIR)
+    .filter(f => f.startsWith(prefix) && f.endsWith('.json'));
 
   for (const file of files) {
-    const theme = file.replace('.csv', '');
+    const theme = file.replace(prefix, '').replace('.json', '');
 
-    // Only load tactical themes to keep memory usage reasonable
+    // Only load tactical themes
     if (!TACTICAL_THEMES.includes(theme)) continue;
 
     try {
-      const content = fs.readFileSync(path.join(bracketDir, file), 'utf-8');
-      const lines = content.trim().split('\n');
-      const puzzles: Puzzle[] = [];
-
-      // Sample to keep memory reasonable (max 2000 per theme)
-      const sampleRate = lines.length > 2000 ? Math.floor(lines.length / 2000) : 1;
-
-      for (let i = 1; i < lines.length; i += sampleRate) {
-        const puzzle = parseCSVLine(lines[i]);
-        if (puzzle) {
-          puzzles.push(puzzle);
-        }
-      }
-
+      const content = fs.readFileSync(path.join(CLEAN_PUZZLES_DIR, file), 'utf-8');
+      const data = JSON.parse(content) as CleanPuzzleFile;
+      const puzzles: Puzzle[] = data.puzzles.map(p => ({
+        puzzleId: p.puzzleId,
+        fen: p.fen,
+        moves: p.moves.split(' '),
+        rating: p.rating,
+        themes: p.allThemes ?? [theme],
+        gameUrl: p.gameUrl,
+      }));
       puzzlesByTheme.set(theme, puzzles);
     } catch (e) {
-      console.error(`  Error loading ${bracket}/${file}:`, e);
+      console.error(`  Error loading ${file}:`, e);
     }
   }
 
   return puzzlesByTheme;
 }
 
-// Load all puzzles from all brackets
-function loadAllPuzzles(): Map<string, Map<string, Puzzle[]>> {
-  const brackets = ['0400-0800', '0800-1200', '1200-1600', '1600-2000', '2000-plus'];
-  const allPuzzles = new Map<string, Map<string, Puzzle[]>>();
+// Load all puzzles for all 8 levels
+function loadAllPuzzles(): Map<number, LevelPuzzles> {
+  const allPuzzles = new Map<number, LevelPuzzles>();
 
-  for (const bracket of brackets) {
-    console.log(`  Loading ${bracket}...`);
-    const puzzles = loadPuzzlesFromBracket(bracket);
-    allPuzzles.set(bracket, puzzles);
+  for (let level = 1; level <= 8; level++) {
+    console.log(`  Loading level${level}...`);
+    const puzzles = loadPuzzlesForLevel(level);
+    allPuzzles.set(level, puzzles);
 
     let count = 0;
     puzzles.forEach(p => count += p.length);
@@ -170,22 +167,27 @@ function loadAllPuzzles(): Map<string, Map<string, Puzzle[]>> {
   return allPuzzles;
 }
 
-// Get available themes for a bracket
-function getThemesForBracket(allPuzzles: Map<string, Map<string, Puzzle[]>>, bracket: string): string[] {
-  const bracketPuzzles = allPuzzles.get(bracket);
-  if (!bracketPuzzles) return [];
-
-  const themes = Array.from(bracketPuzzles.keys());
-
-  // Prioritize tactical themes
-  const tactical = themes.filter(t => TACTICAL_THEMES.includes(t));
-  return tactical.length >= 5 ? tactical : themes;
+// Get a flat Map<theme, Puzzle[]> by merging the requested levels
+function mergeLevels(
+  allPuzzles: Map<number, LevelPuzzles>,
+  levels: number[],
+): LevelPuzzles {
+  const merged: LevelPuzzles = new Map();
+  for (const level of levels) {
+    const levelPuzzles = allPuzzles.get(level);
+    if (!levelPuzzles) continue;
+    levelPuzzles.forEach((puzzles, theme) => {
+      const existing = merged.get(theme) ?? [];
+      merged.set(theme, existing.concat(puzzles));
+    });
+  }
+  return merged;
 }
 
 // Generate puzzles for a single day
 function generateDayPuzzles(
   date: string,
-  allPuzzles: Map<string, Map<string, Puzzle[]>>
+  allPuzzles: Map<number, LevelPuzzles>,
 ): Puzzle[] {
   const seed = getDateSeed(date);
   const random = seededRandom(seed);
@@ -196,7 +198,8 @@ function generateDayPuzzles(
   let lastPrimaryTheme = ''; // Track previous puzzle's primary Lichess theme for diversity
 
   for (const target of PUZZLE_TARGETS) {
-    const themes = getThemesForBracket(allPuzzles, target.bracket);
+    const targetPuzzles = mergeLevels(allPuzzles, target.levels);
+    const themes = Array.from(targetPuzzles.keys());
     if (themes.length === 0) continue;
 
     // Shuffle themes
@@ -215,10 +218,7 @@ function generateDayPuzzles(
     // Find a puzzle — prefer one whose primary theme differs from the last puzzle's
     let found = false;
     for (const theme of sorted) {
-      const bracketPuzzles = allPuzzles.get(target.bracket);
-      if (!bracketPuzzles) continue;
-
-      const themePuzzles = bracketPuzzles.get(theme) || [];
+      const themePuzzles = targetPuzzles.get(theme) || [];
 
       // Filter by rating range, not used, and different primary theme from last puzzle
       let eligible = themePuzzles.filter(p =>
@@ -242,14 +242,7 @@ function generateDayPuzzles(
       const idx = Math.floor(random() * eligible.length);
       const puzzle = eligible[idx];
 
-      puzzles.push({
-        puzzleId: puzzle.puzzleId,
-        fen: puzzle.fen,
-        moves: puzzle.moves,
-        rating: puzzle.rating,
-        themes: puzzle.themes,
-        gameUrl: puzzle.gameUrl,
-      });
+      puzzles.push({ ...puzzle });
 
       usedPuzzleIds.add(puzzle.puzzleId);
       usedThemes.add(theme);
@@ -261,12 +254,8 @@ function generateDayPuzzles(
     if (!found) {
       // Fallback: try any puzzle in a wider rating range across all themes
       for (const theme of sorted) {
-        const bracketPuzzles = allPuzzles.get(target.bracket);
-        if (!bracketPuzzles) continue;
+        const themePuzzles = targetPuzzles.get(theme) || [];
 
-        const themePuzzles = bracketPuzzles.get(theme) || [];
-
-        // Widen the range a bit
         const eligible = themePuzzles.filter(p =>
           p.rating >= target.min - 50 &&
           p.rating <= target.max + 100 &&
@@ -278,14 +267,7 @@ function generateDayPuzzles(
         const idx = Math.floor(random() * eligible.length);
         const puzzle = eligible[idx];
 
-        puzzles.push({
-          puzzleId: puzzle.puzzleId,
-          fen: puzzle.fen,
-          moves: puzzle.moves,
-          rating: puzzle.rating,
-          themes: puzzle.themes,
-          gameUrl: puzzle.gameUrl,
-        });
+        puzzles.push({ ...puzzle });
 
         usedPuzzleIds.add(puzzle.puzzleId);
         usedThemes.add(theme);
@@ -313,7 +295,7 @@ function generateDayPuzzles(
 
 // Main
 function main() {
-  console.log('Loading puzzle files from raw CSVs...');
+  console.log('Loading puzzle files from clean-puzzles-v2...');
   const allPuzzles = loadAllPuzzles();
 
   const today = new Date();
