@@ -18,22 +18,21 @@ const FORM_LABEL: Record<RookieForm, string> = {
 
 export function TempoBar({ tempo, form, formMovesLeft }: TempoBarProps) {
   return (
-    <div className="bg-chess-surface rounded-xl px-3 py-2 shadow-sm flex items-center gap-3">
-      <div className="flex flex-col">
-        <div className="text-[10px] uppercase tracking-wide text-chess-text-faint">
-          Tempo
-        </div>
-        <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
+    <div className="bg-chess-surface rounded-lg px-2.5 py-1.5 shadow-sm flex items-center gap-2.5">
+      <div className="flex items-baseline gap-0.5">
+        <span className="text-sm font-black text-chess-text tabular-nums leading-none">
           {tempo}
-          <span className="text-chess-text-faint text-xs font-bold">/{TEMPO_MAX}</span>
-        </div>
+        </span>
+        <span className="text-chess-text-faint text-[10px] font-bold leading-none">
+          /{TEMPO_MAX}
+        </span>
       </div>
 
       <div className="flex-1 flex gap-0.5">
         {Array.from({ length: TEMPO_MAX }, (_, i) => (
           <div
             key={i}
-            className={`flex-1 h-3 rounded-sm ${
+            className={`flex-1 h-2 rounded-sm ${
               i < tempo
                 ? 'bg-amber-400 shadow-[0_0_4px_rgba(251,191,36,0.6)]'
                 : 'bg-chess-text/10'
@@ -42,18 +41,13 @@ export function TempoBar({ tempo, form, formMovesLeft }: TempoBarProps) {
         ))}
       </div>
 
-      <div className="text-right">
-        <div className="text-[10px] uppercase tracking-wide text-chess-text-faint">
-          Form
-        </div>
-        <div className="text-sm font-black text-chess-text leading-tight">
-          {FORM_LABEL[form]}
-          {form !== 'rook' && formMovesLeft > 0 && (
-            <span className="ml-1 text-chess-text-faint text-xs">
-              · {formMovesLeft}
-            </span>
-          )}
-        </div>
+      <div className="text-xs font-black text-chess-text leading-none">
+        {FORM_LABEL[form]}
+        {form !== 'rook' && formMovesLeft > 0 && (
+          <span className="ml-1 text-chess-text-faint text-[10px] font-bold">
+            ·{formMovesLeft}
+          </span>
+        )}
       </div>
     </div>
   );

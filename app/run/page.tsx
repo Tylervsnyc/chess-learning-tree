@@ -327,27 +327,27 @@ export default function RookiesRunPage() {
         </header>
 
         <div className="flex gap-2">
-          <div className="flex-1 bg-chess-surface rounded-xl px-3 py-2 shadow-sm">
-            <div className="text-[10px] uppercase tracking-wide text-chess-text-faint">
+          <div className="flex-1 bg-chess-surface rounded-lg px-2.5 py-1 shadow-sm">
+            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
               {moveLimit !== null ? `Moves / ${moveLimit}` : 'Moves'}
             </div>
-            <div className="text-2xl font-black text-chess-text tabular-nums">
+            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
               {state.moveCount}
             </div>
           </div>
-          <div className="flex-1 bg-chess-surface rounded-xl px-3 py-2 shadow-sm">
-            <div className="text-[10px] uppercase tracking-wide text-chess-text-faint">
+          <div className="flex-1 bg-chess-surface rounded-lg px-2.5 py-1 shadow-sm">
+            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
               Time
             </div>
-            <div className="text-2xl font-black text-chess-text tabular-nums">
+            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
               {formatElapsed(displayElapsed)}
             </div>
           </div>
-          <div className="flex-1 bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-950/40 rounded-xl px-3 py-2 shadow-sm">
-            <div className="text-[10px] uppercase tracking-wide text-chess-text-faint">
+          <div className="flex-1 bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-950/40 rounded-lg px-2.5 py-1 shadow-sm">
+            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
               Score
             </div>
-            <div className="text-2xl font-black text-chess-text tabular-nums">
+            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
               {score.total.toLocaleString()}
             </div>
           </div>
