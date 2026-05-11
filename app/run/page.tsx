@@ -11,6 +11,7 @@ import {
 import { CardDrawModal } from '@/components/run/CardDrawModal';
 import { CardHand } from '@/components/run/CardHand';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
+import { RunPickerModal } from '@/components/run/RunPickerModal';
 import { TempoBar } from '@/components/run/TempoBar';
 import { trackEvent } from '@/lib/analytics/posthog';
 import type { CardId } from '@/lib/run/cards';
@@ -404,16 +405,35 @@ export default function RookiesRunPage() {
     const nextRunId = getNextRunId(meta.runId);
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-current', nextRunId);
-      // Drop any ?run= or ?level= override in the URL so the new run starts clean.
       const url = new URL(window.location.href);
       url.searchParams.delete('run');
       url.searchParams.delete('level');
       window.history.replaceState({}, '', url.toString());
     }
     trackEvent('run_advanced', { from: meta.runId, to: nextRunId });
-    // Full reload — simplest way to reset every piece of run state.
     if (typeof window !== 'undefined') window.location.reload();
   }, [meta.runId]);
+
+  const [showRunPicker, setShowRunPicker] = useState(false);
+
+  const switchRun = useCallback(
+    (runId: string) => {
+      if (runId === meta.runId) {
+        setShowRunPicker(false);
+        return;
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rookies-run-current', runId);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('run');
+        url.searchParams.delete('level');
+        window.history.replaceState({}, '', url.toString());
+      }
+      trackEvent('run_picked', { from: meta.runId, to: runId });
+      if (typeof window !== 'undefined') window.location.reload();
+    },
+    [meta.runId],
+  );
 
   const displayElapsed = finalElapsed ?? elapsed;
   const score = useMemo(() => {
@@ -443,24 +463,31 @@ export default function RookiesRunPage() {
   return (
     <div className="h-full overflow-auto bg-chess-page">
       <div className="max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-3">
-        <header className="flex items-baseline justify-between">
-          <div>
-            <h1 className="text-xl font-black text-chess-text">{runDef.name}</h1>
-            <p className="text-xs text-chess-text-muted">
-              Level {levelIndex + 1} of {totalLevels} · climb to rank 8.
+        <header className="flex items-start justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setShowRunPicker(true)}
+            className="text-left flex-1 min-w-0 active:opacity-70 transition-opacity"
+            aria-label="Switch run"
+          >
+            <h1 className="text-xl font-black text-chess-text leading-tight inline-flex items-center gap-1">
+              {runDef.name}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-chess-text-faint">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </h1>
+            <p className="text-[11px] text-chess-text-muted leading-tight tabular-nums">
+              Seed {meta.iso} · Level {levelIndex + 1}/{totalLevels}
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-xs text-chess-text-faint tabular-nums">{meta.iso}</div>
-            <button
-              type="button"
-              onClick={openIntro}
-              aria-label="How to play"
-              className="w-6 h-6 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all"
-            >
-              ?
-            </button>
-          </div>
+          </button>
+          <button
+            type="button"
+            onClick={openIntro}
+            aria-label="How to play"
+            className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
+          >
+            ?
+          </button>
         </header>
 
         <div className="flex gap-2">
@@ -522,6 +549,14 @@ export default function RookiesRunPage() {
       )}
 
       {showIntro && <RunIntroModal onClose={dismissIntro} />}
+
+      {showRunPicker && (
+        <RunPickerModal
+          currentRunId={meta.runId}
+          onPick={switchRun}
+          onClose={() => setShowRunPicker(false)}
+        />
+      )}
 
       {showLevelCleared && (
         <LevelClearedModal
