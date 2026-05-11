@@ -25,6 +25,9 @@ interface RunSummaryModalProps {
   /** True when run was completed (all levels cleared). False on death. */
   completed: boolean;
   onReplay: () => void;
+  /** Name of the next run to advance to. When set, shows a "Next Run" button. */
+  nextRunName?: string;
+  onNextRun?: () => void;
 }
 
 function formatSeconds(seconds: number): string {
@@ -59,6 +62,8 @@ export function RunSummaryModal({
   shareString,
   completed,
   onReplay,
+  nextRunName,
+  onNextRun,
 }: RunSummaryModalProps) {
   const [shareCopied, setShareCopied] = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
@@ -194,7 +199,16 @@ export function RunSummaryModal({
           </div>
         </div>
 
-        <div className="mt-5 flex gap-2 justify-center">
+        {completed && nextRunName && onNextRun && (
+          <button
+            onClick={onNextRun}
+            className="mt-5 w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
+          >
+            Next Run · {nextRunName} →
+          </button>
+        )}
+
+        <div className="mt-3 flex gap-2 justify-center">
           <button
             onClick={handleCopy}
             className="tap-highlight px-4 py-2 rounded-xl bg-chess-text text-white text-sm font-bold"

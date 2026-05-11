@@ -7,6 +7,7 @@
  */
 
 import { buildLevel, TOTAL_LEVELS } from '@/components/run/levels';
+import { DEFAULT_RUN_ID, getRunById } from './runs';
 import type { BoardState, Coord, RunPuzzle } from './types';
 
 /** Mulberry32 — tiny seeded PRNG. No external deps. */
@@ -47,21 +48,40 @@ export function rookieStartForDate(iso: string): Coord {
   return { file, rank: 1 };
 }
 
-/** Build the puzzle for a specific level on a given date. */
-export function puzzleForDate(iso: string, levelIndex = 0): RunPuzzle {
+/** Build the puzzle for a specific level on a given date and run. */
+export function puzzleForDate(
+  iso: string,
+  levelIndex = 0,
+  runId: string = DEFAULT_RUN_ID,
+): RunPuzzle {
   const start = rookieStartForDate(iso);
-  return buildLevel(levelIndex, start);
+  const run = getRunById(runId);
+  const builder = run.levels[levelIndex];
+  if (builder) return builder(start);
+  // Daily run fallback to the legacy LEVEL_BUILDERS index.
+  if (runId === DEFAULT_RUN_ID) return buildLevel(levelIndex, start);
+  // Bail out gracefully — return the first level if asked for an out-of-range one.
+  return run.levels[0](start);
 }
 
-/** Build all 10 puzzles for a given date, in order. */
-export function runForDate(iso: string): RunPuzzle[] {
-  const start = rookieStartForDate(iso);
-  const out: RunPuzzle[] = [];
-  for (let i = 0; i < TOTAL_LEVELS; i++) {
-    out.push(buildLevel(i, start));
-  }
-  return out;
+/** Total levels in the given run. */
+export function totalLevelsForRun(runId: string = DEFAULT_RUN_ID): number {
+  const run = getRunById(runId);
+  return run.levels.length;
 }
+
+/** Build all puzzles for a given date and run, in order. */
+export function runForDate(
+  iso: string,
+  runId: string = DEFAULT_RUN_ID,
+): RunPuzzle[] {
+  const start = rookieStartForDate(iso);
+  const run = getRunById(runId);
+  return run.levels.map((b) => b(start));
+}
+
+// Keep TOTAL_LEVELS export alive for callers that haven't migrated.
+export { TOTAL_LEVELS };
 
 /** Convert a puzzle to the initial board state (Rookie's turn, no moves yet). */
 export function puzzleToBoardState(

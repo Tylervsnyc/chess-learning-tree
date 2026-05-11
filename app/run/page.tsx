@@ -12,7 +12,6 @@ import { CardDrawModal } from '@/components/run/CardDrawModal';
 import { CardHand } from '@/components/run/CardHand';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { TempoBar } from '@/components/run/TempoBar';
-import { TOTAL_LEVELS } from '@/components/run/levels';
 import { trackEvent } from '@/lib/analytics/posthog';
 import type { CardId } from '@/lib/run/cards';
 import {
@@ -23,9 +22,16 @@ import {
   stepEnemyTurn,
 } from '@/lib/run/engine';
 import {
+  DEFAULT_RUN_ID,
+  getNextRunId,
+  getRunById,
+  RUNS,
+} from '@/lib/run/runs';
+import {
   puzzleForDate,
   puzzleToBoardState,
   todayISO,
+  totalLevelsForRun,
 } from '@/lib/run/seed';
 import { computeScore } from '@/lib/run/scoring';
 import { buildShareString } from '@/lib/run/share';
@@ -47,37 +53,61 @@ function formatElapsed(ms: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function readLevelOverride(): number {
-  if (typeof window === 'undefined') return 0;
-  const p = new URLSearchParams(window.location.search).get('level');
-  if (!p) return 0;
-  const n = parseInt(p, 10);
-  if (Number.isNaN(n) || n < 1 || n > TOTAL_LEVELS) return 0;
-  return n - 1;
+function readUrlParams(): { runId: string; startLevelIndex: number } {
+  if (typeof window === 'undefined') {
+    return { runId: '', startLevelIndex: 0 };
+  }
+  const params = new URLSearchParams(window.location.search);
+  const runId = params.get('run') ?? '';
+  const levelStr = params.get('level');
+  let startLevelIndex = 0;
+  if (levelStr) {
+    const n = parseInt(levelStr, 10);
+    if (!Number.isNaN(n) && n >= 1) startLevelIndex = n - 1;
+  }
+  return { runId, startLevelIndex };
+}
+
+function readSavedRunId(): string {
+  if (typeof window === 'undefined') return DEFAULT_RUN_ID;
+  return localStorage.getItem('rookies-run-current') ?? DEFAULT_RUN_ID;
 }
 
 interface RunMeta {
   iso: string;
+  runId: string;
   startLevelIndex: number;
 }
 
-function freshRun(iso: string, startLevelIndex: number): {
-  state: BoardState;
-  puzzle: RunPuzzle;
-} {
-  const puzzle = puzzleForDate(iso, startLevelIndex);
+function freshRun(
+  iso: string,
+  runId: string,
+  startLevelIndex: number,
+): { state: BoardState; puzzle: RunPuzzle } {
+  const puzzle = puzzleForDate(iso, startLevelIndex, runId);
   return { state: puzzleToBoardState(puzzle), puzzle };
 }
 
 export default function RookiesRunPage() {
   const meta: RunMeta = useMemo(() => {
-    return { iso: todayISO(), startLevelIndex: readLevelOverride() };
+    const url = readUrlParams();
+    const runId = url.runId || readSavedRunId();
+    const validRunId = RUNS.some((r) => r.id === runId) ? runId : DEFAULT_RUN_ID;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rookies-run-current', validRunId);
+    }
+    const maxLevel = totalLevelsForRun(validRunId) - 1;
+    const startLevelIndex = Math.min(url.startLevelIndex, maxLevel);
+    return { iso: todayISO(), runId: validRunId, startLevelIndex };
   }, []);
+
+  const runDef = useMemo(() => getRunById(meta.runId), [meta.runId]);
+  const totalLevels = runDef.levels.length;
 
   const [levelIndex, setLevelIndex] = useState(meta.startLevelIndex);
   const initial = useMemo(
-    () => freshRun(meta.iso, meta.startLevelIndex),
-    [meta.iso, meta.startLevelIndex],
+    () => freshRun(meta.iso, meta.runId, meta.startLevelIndex),
+    [meta.iso, meta.runId, meta.startLevelIndex],
   );
   const [state, setState] = useState<BoardState>(initial.state);
   const [puzzle, setPuzzle] = useState<RunPuzzle>(initial.puzzle);
@@ -193,16 +223,17 @@ export default function RookiesRunPage() {
       tempo: state.tempo,
     });
 
-    if (levelIndex >= TOTAL_LEVELS - 1) {
+    if (levelIndex >= totalLevels - 1) {
       setRunComplete(true);
       trackEvent('run_completed', {
         iso: meta.iso,
+        run: meta.runId,
         score: levelScore,
       });
     } else {
       setShowLevelCleared(true);
     }
-  }, [state.status, state.moveCount, state.captures, state.tempo, levelIndex, showLevelCleared, runComplete, meta.iso]);
+  }, [state.status, state.moveCount, state.captures, state.tempo, levelIndex, showLevelCleared, runComplete, meta.iso, meta.runId, totalLevels]);
 
   // Loss handler: record the failed level once.
   const trackedLossRef = useRef(false);
@@ -336,7 +367,7 @@ export default function RookiesRunPage() {
 
   const goToNextLevel = useCallback(() => {
     const nextIdx = levelIndex + 1;
-    const nextPuzzle = puzzleForDate(meta.iso, nextIdx);
+    const nextPuzzle = puzzleForDate(meta.iso, nextIdx, meta.runId);
     setLevelIndex(nextIdx);
     setPuzzle(nextPuzzle);
     // Cards and remaining tempo both carry across levels.
@@ -345,10 +376,10 @@ export default function RookiesRunPage() {
     );
     setSelectedSquare(null);
     setShowLevelCleared(false);
-  }, [levelIndex, meta.iso, state.hand, state.tempo]);
+  }, [levelIndex, meta.iso, meta.runId, state.hand, state.tempo]);
 
   const resetRun = useCallback(() => {
-    const fresh = freshRun(meta.iso, meta.startLevelIndex);
+    const fresh = freshRun(meta.iso, meta.runId, meta.startLevelIndex);
     setLevelIndex(meta.startLevelIndex);
     setPuzzle(fresh.puzzle);
     setState(fresh.state);
@@ -366,8 +397,23 @@ export default function RookiesRunPage() {
     setRunComplete(false);
     trackedStartRef.current = false;
     trackedLossRef.current = false;
-    trackEvent('run_replayed', { iso: meta.iso });
-  }, [meta.iso, meta.startLevelIndex]);
+    trackEvent('run_replayed', { iso: meta.iso, run: meta.runId });
+  }, [meta.iso, meta.runId, meta.startLevelIndex]);
+
+  const goToNextRun = useCallback(() => {
+    const nextRunId = getNextRunId(meta.runId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rookies-run-current', nextRunId);
+      // Drop any ?run= or ?level= override in the URL so the new run starts clean.
+      const url = new URL(window.location.href);
+      url.searchParams.delete('run');
+      url.searchParams.delete('level');
+      window.history.replaceState({}, '', url.toString());
+    }
+    trackEvent('run_advanced', { from: meta.runId, to: nextRunId });
+    // Full reload — simplest way to reset every piece of run state.
+    if (typeof window !== 'undefined') window.location.reload();
+  }, [meta.runId]);
 
   const displayElapsed = finalElapsed ?? elapsed;
   const score = useMemo(() => {
@@ -399,9 +445,9 @@ export default function RookiesRunPage() {
       <div className="max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-3">
         <header className="flex items-baseline justify-between">
           <div>
-            <h1 className="text-xl font-black text-chess-text">Rookie&apos;s Run</h1>
+            <h1 className="text-xl font-black text-chess-text">{runDef.name}</h1>
             <p className="text-xs text-chess-text-muted">
-              Level {levelIndex + 1} of {TOTAL_LEVELS} · climb to rank 8.
+              Level {levelIndex + 1} of {totalLevels} · climb to rank 8.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -480,7 +526,7 @@ export default function RookiesRunPage() {
       {showLevelCleared && (
         <LevelClearedModal
           level={levelIndex + 1}
-          totalLevels={TOTAL_LEVELS}
+          totalLevels={totalLevels}
           tempo={state.tempo}
           onNext={goToNextLevel}
         />
@@ -489,7 +535,7 @@ export default function RookiesRunPage() {
       {((state.status === 'lost' && deathSettled) || runComplete) && (
         <RunSummaryModal
           iso={meta.iso}
-          totalLevels={TOTAL_LEVELS}
+          totalLevels={totalLevels}
           levelsCleared={levelsCleared}
           totalMoves={totalDisplayMoves}
           totalScore={score.total}
@@ -498,6 +544,8 @@ export default function RookiesRunPage() {
           shareString={shareString}
           completed={runComplete}
           onReplay={resetRun}
+          nextRunName={getRunById(getNextRunId(meta.runId)).name}
+          onNextRun={goToNextRun}
         />
       )}
     </div>
