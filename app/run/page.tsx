@@ -10,8 +10,10 @@ import {
 } from '@/components/run/RunSummaryModal';
 import { CardDrawModal } from '@/components/run/CardDrawModal';
 import { CardHand } from '@/components/run/CardHand';
+import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { TempoBar } from '@/components/run/TempoBar';
 import { TOTAL_LEVELS } from '@/components/run/levels';
+import { trackEvent } from '@/lib/analytics/posthog';
 import type { CardId } from '@/lib/run/cards';
 import {
   applyCardPick,
@@ -100,6 +102,37 @@ export default function RookiesRunPage() {
   const [glitching, setGlitching] = useState(false);
   const prevFormRef = useRef(state.form);
 
+  // Intro modal — shown once per device, re-openable via the "?" button.
+  const [showIntro, setShowIntro] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!localStorage.getItem('rookies-run-intro-seen')) {
+      setShowIntro(true);
+      trackEvent('run_intro_shown', { iso: meta.iso });
+    }
+  }, [meta.iso]);
+
+  const dismissIntro = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rookies-run-intro-seen', '1');
+    }
+    setShowIntro(false);
+    trackEvent('run_intro_dismissed', { iso: meta.iso });
+  }, [meta.iso]);
+
+  const openIntro = useCallback(() => {
+    setShowIntro(true);
+    trackEvent('run_intro_reopened', { iso: meta.iso });
+  }, [meta.iso]);
+
+  // Track run start (first move).
+  const trackedStartRef = useRef(false);
+  useEffect(() => {
+    if (trackedStartRef.current || state.moveCount === 0) return;
+    trackedStartRef.current = true;
+    trackEvent('run_started', { iso: meta.iso, level: levelIndex + 1 });
+  }, [state.moveCount, meta.iso, levelIndex]);
+
   // Glitch on every form change (manual transform + auto-revert).
   useEffect(() => {
     if (prevFormRef.current === state.form) return;
@@ -151,14 +184,28 @@ export default function RookiesRunPage() {
     setTotalCaptures((cs) => [...cs, ...state.captures]);
     setLevelsCleared((n) => n + 1);
 
+    trackEvent('run_level_cleared', {
+      iso: meta.iso,
+      level: levelIndex + 1,
+      moves: state.moveCount,
+      captures: state.captures.length,
+      score: levelScore,
+      tempo: state.tempo,
+    });
+
     if (levelIndex >= TOTAL_LEVELS - 1) {
       setRunComplete(true);
+      trackEvent('run_completed', {
+        iso: meta.iso,
+        score: levelScore,
+      });
     } else {
       setShowLevelCleared(true);
     }
-  }, [state.status, state.moveCount, state.captures, levelIndex, showLevelCleared, runComplete]);
+  }, [state.status, state.moveCount, state.captures, state.tempo, levelIndex, showLevelCleared, runComplete, meta.iso]);
 
   // Loss handler: record the failed level once.
+  const trackedLossRef = useRef(false);
   useEffect(() => {
     if (state.status !== 'lost') return;
     setLevelResults((rs) => {
@@ -174,7 +221,16 @@ export default function RookiesRunPage() {
         },
       ];
     });
-  }, [state.status, state.moveCount, state.captures, levelIndex]);
+    if (!trackedLossRef.current) {
+      trackedLossRef.current = true;
+      trackEvent('run_level_lost', {
+        iso: meta.iso,
+        level: levelIndex + 1,
+        moves: state.moveCount,
+        captures: state.captures.length,
+      });
+    }
+  }, [state.status, state.moveCount, state.captures, levelIndex, meta.iso]);
 
   // Timer tick.
   useEffect(() => {
@@ -238,22 +294,44 @@ export default function RookiesRunPage() {
   const onCardPick = useCallback(
     (cardId: CardId) => {
       const next = applyCardPick(state, cardId);
-      if (next !== state) setState(next);
+      if (next !== state) {
+        setState(next);
+        trackEvent('run_card_drawn', {
+          iso: meta.iso,
+          level: levelIndex + 1,
+          card: cardId,
+        });
+      }
     },
-    [state],
+    [state, meta.iso, levelIndex],
   );
 
   const onDismissDraw = useCallback(() => {
     const next = applyDismissDraw(state);
-    if (next !== state) setState(next);
-  }, [state]);
+    if (next !== state) {
+      setState(next);
+      trackEvent('run_draw_dismissed', {
+        iso: meta.iso,
+        level: levelIndex + 1,
+        reason: 'hand_full',
+      });
+    }
+  }, [state, meta.iso, levelIndex]);
 
   const onCardPlay = useCallback(
     (slotIndex: number) => {
+      const cardId = state.hand[slotIndex];
       const next = applyCardPlay(state, slotIndex);
-      if (next !== state) setState(next);
+      if (next !== state) {
+        setState(next);
+        trackEvent('run_card_played', {
+          iso: meta.iso,
+          level: levelIndex + 1,
+          card: cardId,
+        });
+      }
     },
-    [state],
+    [state, meta.iso, levelIndex],
   );
 
   const goToNextLevel = useCallback(() => {
@@ -286,6 +364,9 @@ export default function RookiesRunPage() {
     setDeathSettled(false);
     setShowLevelCleared(false);
     setRunComplete(false);
+    trackedStartRef.current = false;
+    trackedLossRef.current = false;
+    trackEvent('run_replayed', { iso: meta.iso });
   }, [meta.iso, meta.startLevelIndex]);
 
   const displayElapsed = finalElapsed ?? elapsed;
@@ -323,7 +404,17 @@ export default function RookiesRunPage() {
               Level {levelIndex + 1} of {TOTAL_LEVELS} · climb to rank 8.
             </p>
           </div>
-          <div className="text-xs text-chess-text-faint tabular-nums">{meta.iso}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-chess-text-faint tabular-nums">{meta.iso}</div>
+            <button
+              type="button"
+              onClick={openIntro}
+              aria-label="How to play"
+              className="w-6 h-6 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all"
+            >
+              ?
+            </button>
+          </div>
         </header>
 
         <div className="flex gap-2">
@@ -375,7 +466,7 @@ export default function RookiesRunPage() {
         )}
       </div>
 
-      {state.pendingDraw && state.status === 'playing' && (
+      {state.pendingDraw && state.status === 'playing' && !showIntro && (
         <CardDrawModal
           options={state.pendingDraw}
           handFull={state.hand.length >= 2}
@@ -383,6 +474,8 @@ export default function RookiesRunPage() {
           onDismiss={onDismissDraw}
         />
       )}
+
+      {showIntro && <RunIntroModal onClose={dismissIntro} />}
 
       {showLevelCleared && (
         <LevelClearedModal
