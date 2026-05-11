@@ -199,29 +199,45 @@ export function RunSummaryModal({
           </div>
         </div>
 
-        {completed && nextRunName && onNextRun && (
-          <button
-            onClick={onNextRun}
-            className="mt-5 w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
-          >
-            Next Run · {nextRunName} →
-          </button>
+        {completed && nextRunName && onNextRun ? (
+          <>
+            <button
+              onClick={onNextRun}
+              className="mt-5 w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
+            >
+              Next Run · {nextRunName} →
+            </button>
+            <div className="mt-3 flex gap-2 justify-center">
+              <button
+                onClick={handleCopy}
+                className="tap-highlight px-4 py-2 rounded-xl bg-chess-text text-white text-sm font-bold"
+              >
+                {shareCopied ? 'Copied!' : 'Share'}
+              </button>
+              <button
+                onClick={onReplay}
+                className="tap-highlight px-4 py-2 rounded-xl bg-chess-page text-chess-text text-sm font-bold border border-chess-text/10"
+              >
+                Replay this run
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="mt-5 flex gap-2 justify-center">
+            <button
+              onClick={handleCopy}
+              className="tap-highlight px-4 py-2 rounded-xl bg-chess-text text-white text-sm font-bold"
+            >
+              {shareCopied ? 'Copied!' : 'Share'}
+            </button>
+            <button
+              onClick={onReplay}
+              className="tap-highlight px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-black"
+            >
+              Try again
+            </button>
+          </div>
         )}
-
-        <div className="mt-3 flex gap-2 justify-center">
-          <button
-            onClick={handleCopy}
-            className="tap-highlight px-4 py-2 rounded-xl bg-chess-text text-white text-sm font-bold"
-          >
-            {shareCopied ? 'Copied!' : 'Share'}
-          </button>
-          <button
-            onClick={onReplay}
-            className="tap-highlight px-4 py-2 rounded-xl bg-chess-page text-chess-text text-sm font-bold border border-chess-text/10"
-          >
-            Replay
-          </button>
-        </div>
       </div>
     </div>
   );
