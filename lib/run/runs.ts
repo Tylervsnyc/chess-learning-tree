@@ -90,26 +90,31 @@ const RUN_KNIGHT_ACADEMY: RunDef = {
   levels: [
     make(
       1,
-      [pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3), pawn(2, 5), pawn(4, 5), pawn(6, 5), pawn(8, 5), pawn(1, 6), pawn(5, 6)],
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 5), pawn(4, 5), pawn(6, 5), pawn(8, 5),
+        pawn(1, 6), pawn(3, 6), pawn(5, 6), pawn(7, 6),
+        knight(4, 7),
+      ],
       { allowedForms: ['knight'] },
     ),
     make(
       2,
       [
         pawn(1, 3), pawn(4, 3), pawn(7, 3),
-        knight(3, 5),
+        knight(3, 5), knight(6, 5),
         pawn(2, 6), pawn(5, 6), pawn(7, 6),
-        pawn(4, 7),
+        pawn(4, 7), pawn(6, 7),
       ],
-      { allowedForms: ['knight'] },
+      { allowedForms: ['knight'], enemiesPerTurn: 2 },
     ),
     make(
       3,
       [
-        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 3), pawn(4, 3), pawn(5, 3), pawn(7, 3),
         knight(3, 5), knight(6, 5),
-        pawn(4, 6), pawn(8, 6),
-        pawn(4, 7), pawn(6, 7),
+        pawn(2, 6), pawn(4, 6), pawn(8, 6),
+        knight(5, 7),
       ],
       { allowedForms: ['knight'], enemiesPerTurn: 2 },
     ),
@@ -226,26 +231,31 @@ const RUN_BISHOPS_PATH: RunDef = {
   levels: [
     make(
       1,
-      [pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3), pawn(1, 5), pawn(4, 5), pawn(7, 5)],
+      [
+        pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3),
+        pawn(1, 5), pawn(4, 5), pawn(7, 5),
+        pawn(3, 6), pawn(6, 6),
+        bishop(5, 7),
+      ],
       { allowedForms: ['bishop'] },
     ),
     make(
       2,
       [
-        pawn(1, 3), pawn(4, 3), pawn(7, 3),
-        bishop(4, 5),
+        pawn(1, 3), pawn(3, 3), pawn(4, 3), pawn(7, 3),
+        bishop(4, 5), bishop(6, 5),
         pawn(2, 6), pawn(5, 6), pawn(8, 6),
         pawn(4, 7),
       ],
-      { allowedForms: ['bishop'] },
+      { allowedForms: ['bishop'], enemiesPerTurn: 2 },
     ),
     make(
       3,
       [
-        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 3), pawn(4, 3), pawn(5, 3), pawn(7, 3),
         bishop(3, 5), bishop(6, 5),
-        pawn(4, 6), pawn(7, 6),
-        pawn(3, 7), pawn(5, 7),
+        pawn(2, 6), pawn(4, 6), pawn(7, 6),
+        bishop(5, 7),
       ],
       { allowedForms: ['bishop'], enemiesPerTurn: 2 },
     ),
@@ -361,17 +371,22 @@ const RUN_SPEED_DEMON: RunDef = {
   levels: [
     make(
       1,
-      [pawn(2, 4), pawn(5, 4), pawn(7, 4), pawn(3, 6), pawn(6, 6)],
-      { moveLimit: 8 },
+      [
+        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        pawn(1, 5), pawn(4, 5), pawn(6, 5), pawn(8, 5),
+        pawn(3, 7), pawn(6, 7),
+      ],
+      { moveLimit: 9 },
     ),
     make(
       2,
       [
-        pawn(1, 3), pawn(4, 3), pawn(7, 3),
+        pawn(1, 3), pawn(3, 3), pawn(4, 3), pawn(7, 3),
         pawn(2, 5), pawn(5, 5), pawn(8, 5),
-        pawn(3, 7), pawn(6, 7),
+        knight(4, 6), pawn(7, 6),
+        pawn(3, 7),
       ],
-      { moveLimit: 9 },
+      { allowedForms: ['knight'], moveLimit: 10, enemiesPerTurn: 2 },
     ),
     make(
       3,
@@ -379,9 +394,9 @@ const RUN_SPEED_DEMON: RunDef = {
         pawn(2, 3), pawn(5, 3), pawn(8, 3),
         knight(4, 5), knight(6, 5),
         pawn(3, 6), pawn(7, 6),
-        pawn(4, 7),
+        bishop(5, 7), pawn(2, 7),
       ],
-      { allowedForms: ['knight'], moveLimit: 10, enemiesPerTurn: 2 },
+      { allowedForms: ['knight', 'bishop'], moveLimit: 11, enemiesPerTurn: 2 },
     ),
     make(
       4,
@@ -500,7 +515,12 @@ const RUN_HAZARD_MAZE: RunDef = {
   levels: [
     make(
       1,
-      [pawn(2, 4), pawn(6, 4), pawn(3, 6), pawn(7, 6)],
+      [
+        pawn(2, 3), pawn(6, 3),
+        pawn(2, 4), pawn(6, 4),
+        pawn(3, 6), pawn(7, 6),
+        pawn(4, 7), pawn(5, 7),
+      ],
       {
         hazards: [
           { file: 4, rank: 3 }, { file: 5, rank: 3 },
@@ -513,22 +533,24 @@ const RUN_HAZARD_MAZE: RunDef = {
       [
         pawn(1, 3), pawn(4, 3), pawn(7, 3),
         pawn(3, 5), pawn(6, 5),
-        pawn(2, 7), pawn(7, 7),
+        knight(4, 6), pawn(8, 6),
+        pawn(2, 7), pawn(5, 7), pawn(7, 7),
       ],
       {
         hazards: [
           { file: 2, rank: 4 }, { file: 7, rank: 4 },
           { file: 4, rank: 6 }, { file: 5, rank: 6 },
         ],
+        allowedForms: ['knight'],
       },
     ),
     make(
       3,
       [
-        pawn(2, 3), pawn(5, 3), pawn(7, 3),
-        knight(4, 5),
+        pawn(2, 3), pawn(4, 3), pawn(5, 3), pawn(7, 3),
+        knight(3, 5), knight(6, 5),
         pawn(3, 6), pawn(6, 6),
-        pawn(5, 7),
+        bishop(5, 7),
       ],
       {
         hazards: [
@@ -536,7 +558,8 @@ const RUN_HAZARD_MAZE: RunDef = {
           { file: 1, rank: 6 }, { file: 8, rank: 6 },
           { file: 4, rank: 7 }, { file: 6, rank: 7 },
         ],
-        allowedForms: ['knight'],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
       },
     ),
     make(
@@ -679,27 +702,33 @@ const RUN_BOSS_GAUNTLET: RunDef = {
   levels: [
     make(
       1,
-      [pawn(2, 3), pawn(5, 3), pawn(7, 3), queen(4, 6), pawn(4, 7)],
-      { allowedForms: ['knight', 'bishop'] },
+      [
+        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        knight(4, 5), bishop(6, 5),
+        queen(4, 6), pawn(7, 6),
+        pawn(3, 7), pawn(5, 7),
+      ],
+      { allowedForms: ['knight', 'bishop'], enemiesPerTurn: 2 },
     ),
     make(
       2,
       [
         pawn(1, 3), pawn(4, 3), pawn(7, 3),
-        knight(3, 5), queen(6, 6),
-        pawn(2, 7), pawn(5, 7),
+        knight(3, 5), bishop(6, 5),
+        pawn(2, 6), queen(6, 6),
+        pawn(4, 7), pawn(7, 7),
       ],
       { allowedForms: ['knight', 'bishop'], enemiesPerTurn: 2 },
     ),
     make(
       3,
       [
-        pawn(2, 3), pawn(5, 3), pawn(8, 3),
-        bishop(3, 5), queen(6, 5),
-        pawn(4, 6), pawn(7, 6),
-        pawn(4, 7),
+        pawn(2, 3), pawn(4, 3), pawn(5, 3), pawn(8, 3),
+        bishop(3, 5), knight(6, 5),
+        queen(5, 6), pawn(7, 6),
+        pawn(2, 7), pawn(6, 7),
       ],
-      { allowedForms: ['knight', 'bishop'], enemiesPerTurn: 2 },
+      { allowedForms: ['knight', 'bishop'], enemiesPerTurn: 2, moveLimit: 16 },
     ),
     make(
       4,
