@@ -203,7 +203,7 @@ export function RunBoard({
       const rookieSq = toSquare(state.rookie);
       const prev = styles[rookieSq] ?? {};
       const aegisRing =
-        'inset 0 0 0 3px rgba(56, 189, 248, 0.9), inset 0 0 16px rgba(125, 211, 252, 0.65)';
+        'inset 0 0 0 5px rgba(56, 189, 248, 1), inset 0 0 0 7px rgba(255, 255, 255, 0.85), inset 0 0 24px rgba(125, 211, 252, 0.9)';
       const merged = prev.boxShadow ? `${prev.boxShadow}, ${aegisRing}` : aegisRing;
       styles[rookieSq] = {
         ...prev,
@@ -294,6 +294,15 @@ export function RunBoard({
 
   // Shield pulse — when Rookie has Aegis charges, gently pulse her square's
   // inset ring so the protection reads as alive.
+  const aegisCharges = useMemo(() => {
+    const owned = state.abilities.find((a) => a.id === 'aegis');
+    if (!owned) return null;
+    if (state.status !== 'playing') return null;
+    if (owned.tier === 5) return { text: '∞', x: (state.rookie.file - 0.5) * 12.5, y: (8 - state.rookie.rank + 0.5) * 12.5 };
+    if (owned.usesLeftThisLevel <= 0) return null;
+    return { text: String(owned.usesLeftThisLevel), x: (state.rookie.file - 0.5) * 12.5, y: (8 - state.rookie.rank + 0.5) * 12.5 };
+  }, [state.abilities, state.rookie, state.status]);
+
   const rookieShieldSquare = useMemo(() => {
     const owned = state.abilities.find((a) => a.id === 'aegis');
     if (!owned) return null;
@@ -409,8 +418,8 @@ export function RunBoard({
           50%      { opacity: 1; transform: translate(4px, -6px) scale(1); }
         }
         @keyframes rookiesRunAegisShieldPulse {
-          0%, 100% { filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.85)) drop-shadow(0 0 8px rgba(56, 189, 248, 0.55)); }
-          50%      { filter: drop-shadow(0 0 7px rgba(125, 211, 252, 1))    drop-shadow(0 0 14px rgba(56, 189, 248, 0.9)); }
+          0%, 100% { filter: drop-shadow(0 0 6px rgba(125, 211, 252, 1)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.85)); }
+          50%      { filter: drop-shadow(0 0 12px rgba(125, 211, 252, 1)) drop-shadow(0 0 22px rgba(56, 189, 248, 1)); }
         }
         ${state.status === 'won'
           ? `[data-square$="8"] { animation: rookiesRunGoalGlow 1.2s ease-in-out infinite; }`
@@ -643,6 +652,35 @@ export function RunBoard({
         )}
         {abilityFx && fxGeom && (
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
+        )}
+        {aegisCharges && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: `${aegisCharges.x}%`,
+              top: `${aegisCharges.y}%`,
+              transform: 'translate(-50%, -130%)',
+              pointerEvents: 'none',
+              zIndex: 6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2px',
+              padding: '2px 6px',
+              borderRadius: 999,
+              background: 'linear-gradient(135deg, #38bdf8, #0284c7)',
+              color: '#f0f9ff',
+              fontSize: '10px',
+              fontWeight: 900,
+              lineHeight: 1,
+              boxShadow:
+                '0 0 0 1.5px rgba(255,255,255,0.9), 0 0 8px rgba(56,189,248,0.95), 0 1px 2px rgba(0,0,0,0.4)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontSize: '10px' }}>🛡</span>
+            <span>{aegisCharges.text}</span>
+          </div>
         )}
       </div>
     </>
