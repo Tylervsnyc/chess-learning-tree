@@ -300,15 +300,20 @@ export function AbilityCardMini({
 
         {/* Art window */}
         <div
-          className="mx-[3px] rounded-[3px] flex items-center justify-center"
+          className="mx-[3px] rounded-[3px] overflow-hidden"
           style={{
             background: t.art,
             height: '52%',
             boxShadow: 'inset 0 0 6px rgba(0,0,0,0.25)',
-            color: t.text,
           }}
         >
-          <AbilityIcon id={ability.id} size={22} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/abilities/${ability.id}-1.png`}
+            alt=""
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
         </div>
 
         {/* Footer: uses pips + tier gem */}
@@ -417,16 +422,21 @@ export function AbilityCardFull({
 
         {/* Art window */}
         <div
-          className="mx-2.5 rounded-md flex items-center justify-center relative"
+          className="mx-2.5 rounded-md overflow-hidden relative"
           style={{
             background: t.art,
             height: '46%',
             boxShadow:
               'inset 0 0 14px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(0,0,0,0.18)',
-            color: t.text,
           }}
         >
-          <AbilityIcon id={id} size={64} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/abilities/${id}-1.png`}
+            alt=""
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
         </div>
 
         {/* Type line */}
