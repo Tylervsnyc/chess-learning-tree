@@ -97,10 +97,11 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     pendingOffer: nextPendingOffer,
   };
 
-  // Win check — reaching rank 8 wins the level. Apply a flat +2 tempo bonus
-  // (capped) and queue an offer if the bonus fills the meter.
+  // Win check — reaching rank 8 wins the level. Capture tempo from a piece on
+  // rank 8 still counts (nextTempo includes it), THEN a flat +2 tempo finish
+  // bonus on top, capped at TEMPO_MAX.
   if (target.rank === 8) {
-    const winTempoRaw = state.tempo + 2;
+    const winTempoRaw = nextTempo + 2;
     const winTempo = Math.min(TEMPO_MAX, winTempoRaw);
     let winPendingOffer = state.pendingOffer ?? null;
     if (filled) {
