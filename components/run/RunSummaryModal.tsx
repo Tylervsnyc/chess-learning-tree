@@ -122,7 +122,10 @@ export function RunSummaryModal({
     : `Reached level ${Math.min(totalLevels, levelsCleared + 1)} of ${totalLevels}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6 animate-[rookiesRunFadeIn_180ms_ease-out]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6 animate-[rookiesRunFadeIn_180ms_ease-out] overscroll-contain"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
       <style>{`
         @keyframes rookiesRunFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes rookiesRunPopIn {
@@ -137,8 +140,11 @@ export function RunSummaryModal({
       `}</style>
 
       <div
-        className="w-full max-w-sm rounded-3xl bg-chess-surface shadow-2xl p-6 text-center max-h-full overflow-auto"
-        style={{ animation: 'rookiesRunPopIn 360ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+        className="w-full max-w-sm rounded-3xl bg-chess-surface shadow-2xl p-6 text-center overflow-y-auto overscroll-contain"
+        style={{
+          animation: 'rookiesRunPopIn 360ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          maxHeight: 'calc(100dvh - 3rem)',
+        }}
       >
         <div className="text-xs uppercase tracking-widest text-chess-text-faint">
           {iso}

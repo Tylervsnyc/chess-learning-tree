@@ -74,15 +74,28 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
 
   // Win check — reaching rank 8 wins the level. The winning move's own
   // capture reward is discarded; instead, beating a level grants a flat +2
-  // tempo bonus (capped at MAX). No card draw is triggered here even if
-  // the bonus tops out the meter — the next capture will fire that.
+  // tempo bonus (capped at MAX). If the bonus tops out the meter (or a
+  // capture on this same move already filled it), queue a card draw so it
+  // carries into the next level — players shouldn't have to fill the meter
+  // twice when level-clear bonuses overflow.
   if (target.rank === 8) {
+    const winTempoRaw = state.tempo + 2;
+    const winTempo = Math.min(TEMPO_MAX, winTempoRaw);
+    // Prefer any draw already queued by this move's capture. Otherwise if
+    // the level-clear bonus itself fills the meter, roll a fresh draw.
+    let winPendingDraw = state.pendingDraw ?? null;
+    if (filled) {
+      // The pre-win move's capture filled the meter — preserve that draw.
+      winPendingDraw = nextPendingDraw;
+    } else if (winPendingDraw === null && winTempoRaw >= TEMPO_MAX) {
+      winPendingDraw = rollDraw(2);
+    }
     return {
       ...afterMove,
       status: 'won',
       turn: 'rookie',
-      tempo: Math.min(TEMPO_MAX, state.tempo + 2),
-      pendingDraw: state.pendingDraw,
+      tempo: winPendingDraw ? TEMPO_MAX : winTempo,
+      pendingDraw: winPendingDraw,
     };
   }
 
@@ -95,7 +108,7 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
 
   // Hand off to enemy. UI ticks `stepEnemyTurn` so each enemy move animates
   // separately — no more mystery "rook disappeared" mid-batch.
-  return { ...afterMove, enemyMovedSquares: [] };
+  return { ...afterMove, enemyMovedSquares: [], enemyVacatedSquares: [] };
 }
 
 /** Re-export the single-step enemy advance for the UI. */

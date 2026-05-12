@@ -80,7 +80,11 @@ export function runForDate(
 /** Convert a puzzle to the initial board state (Rookie's turn, no moves yet). */
 export function puzzleToBoardState(
   puzzle: RunPuzzle,
-  carry: { tempo?: number; hand?: BoardState['hand'] } = {},
+  carry: {
+    tempo?: number;
+    hand?: BoardState['hand'];
+    pendingDraw?: BoardState['pendingDraw'];
+  } = {},
 ): BoardState {
   return {
     rookie: { ...puzzle.rookieStart },
@@ -96,9 +100,10 @@ export function puzzleToBoardState(
     moveLimit: puzzle.moveLimit ?? null,
     enemiesPerTurn: puzzle.enemiesPerTurn ?? 1,
     enemyMovedSquares: [],
+    enemyVacatedSquares: [],
     frozenSquares: [],
     hand: carry.hand ?? [],
-    pendingDraw: null,
+    pendingDraw: carry.pendingDraw ?? null,
     level: puzzle.level,
   };
 }

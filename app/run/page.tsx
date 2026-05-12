@@ -14,6 +14,12 @@ import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
 import { TempoBar } from '@/components/run/TempoBar';
 import { trackEvent } from '@/lib/analytics/posthog';
+import {
+  playCaptureSound,
+  playCardDrawSound,
+  playCardPlaySound,
+  playLevelClearSound,
+} from '@/lib/sounds';
 import type { CardId } from '@/lib/run/cards';
 import {
   applyBomb,
@@ -118,6 +124,13 @@ export default function RookiesRunPage() {
   const [puzzle, setPuzzle] = useState<RunPuzzle>(initial.puzzle);
 
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+  // Transient bomb VFX — set when bomb resolves, cleared after the anim runs.
+  const [bombFx, setBombFx] = useState<{ file: number; rank: number; id: number } | null>(null);
+  useEffect(() => {
+    if (!bombFx) return;
+    const t = setTimeout(() => setBombFx(null), 650);
+    return () => clearTimeout(t);
+  }, [bombFx]);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -198,6 +211,34 @@ export default function RookiesRunPage() {
     const t = setTimeout(() => setDeathSettled(true), 1200);
     return () => clearTimeout(t);
   }, [state.status]);
+
+  // Play capture sfx whenever Rookie's capture list grows.
+  const lastCaptureCountRef = useRef(0);
+  useEffect(() => {
+    if (state.status === 'lost') {
+      lastCaptureCountRef.current = state.captures.length;
+      return;
+    }
+    if (state.captures.length > lastCaptureCountRef.current) {
+      void playCaptureSound();
+    }
+    lastCaptureCountRef.current = state.captures.length;
+  }, [state.captures.length, state.status]);
+
+  // Play level-clear chime when the level is won. Pitch climbs per level.
+  useEffect(() => {
+    if (state.status !== 'won') return;
+    playLevelClearSound(levelIndex);
+  }, [state.status, levelIndex]);
+
+  // Card-draw sfx when a fresh draw appears.
+  const prevPendingDrawRef = useRef<typeof state.pendingDraw>(null);
+  useEffect(() => {
+    if (state.pendingDraw && !prevPendingDrawRef.current) {
+      playCardDrawSound();
+    }
+    prevPendingDrawRef.current = state.pendingDraw;
+  }, [state.pendingDraw]);
 
   // Win-of-level handler: bank moves/captures, show level-cleared overlay or
   // finalize the run.
@@ -311,6 +352,8 @@ export default function RookiesRunPage() {
           const next = applyBomb(state, targeting.slotIndex, coord);
           if (next !== state) {
             setState(next);
+            setBombFx({ ...coord, id: Date.now() });
+            playCardPlaySound();
             trackEvent('run_card_played', {
               iso: meta.iso,
               level: levelIndex + 1,
@@ -325,6 +368,7 @@ export default function RookiesRunPage() {
           const next = applyFreeze(state, targeting.slotIndex, coord);
           if (next !== state) {
             setState(next);
+            playCardPlaySound();
             trackEvent('run_card_played', {
               iso: meta.iso,
               level: levelIndex + 1,
@@ -349,6 +393,7 @@ export default function RookiesRunPage() {
           );
           if (next !== state) {
             setState(next);
+            playCardPlaySound();
             trackEvent('run_card_played', {
               iso: meta.iso,
               level: levelIndex + 1,
@@ -443,6 +488,7 @@ export default function RookiesRunPage() {
       const next = applyCardPlay(state, slotIndex);
       if (next !== state) {
         setState(next);
+        playCardPlaySound();
         trackEvent('run_card_played', {
           iso: meta.iso,
           level: levelIndex + 1,
@@ -458,13 +504,17 @@ export default function RookiesRunPage() {
     const nextPuzzle = puzzleForDate(meta.iso, nextIdx, meta.runId);
     setLevelIndex(nextIdx);
     setPuzzle(nextPuzzle);
-    // Cards and remaining tempo both carry across levels.
+    // Cards, remaining tempo, and a pending card draw all carry across levels.
     setState(
-      puzzleToBoardState(nextPuzzle, { hand: state.hand, tempo: state.tempo }),
+      puzzleToBoardState(nextPuzzle, {
+        hand: state.hand,
+        tempo: state.tempo,
+        pendingDraw: state.pendingDraw,
+      }),
     );
     setSelectedSquare(null);
     setShowLevelCleared(false);
-  }, [levelIndex, meta.iso, meta.runId, state.hand, state.tempo]);
+  }, [levelIndex, meta.iso, meta.runId, state.hand, state.tempo, state.pendingDraw]);
 
   const resetRun = useCallback(() => {
     const fresh = freshRun(meta.iso, meta.runId, meta.startLevelIndex);
@@ -612,6 +662,7 @@ export default function RookiesRunPage() {
             selectedSquare={selectedSquare}
             dying={dying}
             glitching={glitching}
+            bombFx={bombFx}
             onSquareClick={onSquareClick}
             onPieceDrop={onPieceDrop}
           />

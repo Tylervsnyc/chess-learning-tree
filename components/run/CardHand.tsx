@@ -49,7 +49,7 @@ function CardSlot({ cardId, active = false, onClick }: CardSlotProps) {
       className={`flex-1 h-9 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-950/40 shadow-sm px-2 flex items-center justify-center gap-1.5 text-indigo-700 dark:text-indigo-300 active:scale-[0.97] transition-transform border ${active ? 'border-amber-400 ring-2 ring-amber-300/60' : 'border-indigo-300 dark:border-indigo-700'}`}
     >
       <CardIcon cardId={cardId} size={16} />
-      <div className="text-xs font-black text-chess-text leading-none">
+      <div className="text-xs font-semibold tracking-wide text-indigo-700/85 dark:text-indigo-200/90 leading-none">
         {def.name}
       </div>
     </button>

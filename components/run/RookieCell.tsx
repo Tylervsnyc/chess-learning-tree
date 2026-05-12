@@ -94,6 +94,7 @@ export function RookieCell({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            transform: 'scale(0.88)',
             animation: showGlitch
               ? 'rookieGlitchBase 440ms steps(8)'
               : undefined,

@@ -107,11 +107,11 @@ export function CardDrawModal({
                     onClick={() => onPick(cardId)}
                     className="rookies-run-draw-card flex-1 aspect-[3/4] rounded-2xl bg-gradient-to-br from-indigo-200 via-indigo-100 to-purple-100 dark:from-indigo-800/60 dark:via-indigo-900/60 dark:to-purple-900/60 border-2 border-indigo-400 dark:border-indigo-600 shadow-lg p-3 flex flex-col items-center justify-between text-center active:scale-[0.95] transition-transform text-indigo-700 dark:text-indigo-200"
                   >
-                    <div className="text-sm font-black text-chess-text leading-tight uppercase tracking-wide">
+                    <div className="text-sm font-semibold text-indigo-700/90 dark:text-indigo-100/90 leading-tight tracking-wide">
                       {def.name}
                     </div>
                     <CardIcon cardId={cardId} size={48} />
-                    <div className="text-[10px] text-chess-text-muted leading-snug px-1">
+                    <div className="text-[10px] font-normal text-indigo-900/60 dark:text-indigo-100/70 leading-snug px-1">
                       {def.blurb}
                     </div>
                   </button>

@@ -50,6 +50,13 @@ export interface BoardState {
   /** Squares (algebraic) of pieces that have already moved this enemy turn. */
   enemyMovedSquares: string[];
   /**
+   * Squares (algebraic) that an enemy *vacated* during the current enemy
+   * turn — i.e. their position at the start of the turn. Treated as ghost
+   * blockers for subsequent movers so the player can plan threats from the
+   * board they actually saw. Cleared when control returns to Rookie.
+   */
+  enemyVacatedSquares: string[];
+  /**
    * Squares (algebraic) of enemies that are frozen and must skip their next
    * action. Cleared at the end of the enemy turn (when control returns to
    * Rookie), so freeze always lasts exactly one enemy turn.

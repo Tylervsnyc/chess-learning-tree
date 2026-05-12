@@ -17,6 +17,8 @@ interface BoardProps {
   dying?: boolean;
   /** True briefly after Rookie's form changes — plays the glitch effect. */
   glitching?: boolean;
+  /** Transient bomb VFX — set when bomb resolves, cleared after the anim. */
+  bombFx?: { file: number; rank: number; id: number } | null;
   onSquareClick: (square: string) => void;
   /** Called when Rookie is dragged onto a square. Return true to accept the
    *  move, false to snap her back. */
@@ -58,6 +60,7 @@ export function RunBoard({
   selectedSquare,
   dying = false,
   glitching = false,
+  bombFx = null,
   onSquareClick,
   onPieceDrop,
 }: BoardProps) {
@@ -116,8 +119,35 @@ export function RunBoard({
       }
     }
 
+    // Frozen-enemy highlight — icy blue wash with a shimmer overlay.
+    for (const sq of state.frozenSquares) {
+      styles[sq] = {
+        ...styles[sq],
+        backgroundColor: 'rgba(125, 211, 252, 0.55)',
+        backgroundImage:
+          'repeating-linear-gradient(135deg, rgba(255,255,255,0.4) 0 3px, transparent 3px 8px)',
+        boxShadow: 'inset 0 0 0 2px rgba(56, 189, 248, 0.9)',
+      };
+    }
+
+    // 8th-rank "level cleared" gold blaze.
+    if (state.status === 'won') {
+      for (let f = 1; f <= 8; f++) {
+        const sq = `${String.fromCharCode('a'.charCodeAt(0) + f - 1)}8`;
+        styles[sq] = {
+          ...styles[sq],
+          backgroundColor: 'rgba(255, 215, 0, 0.85)',
+          boxShadow: 'inset 0 0 18px rgba(255, 255, 255, 0.9)',
+        };
+      }
+    }
+
     return styles;
   }, [state, selectedSquare]);
+
+  const bombSquare = bombFx
+    ? toSquare({ file: bombFx.file, rank: bombFx.rank })
+    : null;
 
   const pieces = useMemo(
     () => ({
@@ -194,6 +224,30 @@ export function RunBoard({
           0%   { transform: translateY(-100%); }
           100% { transform: translateY(500%); }
         }
+        @keyframes rookiesRunFrozenShimmer {
+          0%, 100% { opacity: 0.55; }
+          50%      { opacity: 0.85; }
+        }
+        @keyframes rookiesRunBombFlash {
+          0%   { transform: scale(0.4); opacity: 1; box-shadow: 0 0 0 0 rgba(255,180,40,0.95), 0 0 0 0 rgba(255,80,20,0.8); }
+          40%  { transform: scale(1.6); opacity: 0.9; box-shadow: 0 0 40px 16px rgba(255,180,40,0.85), 0 0 80px 24px rgba(255,80,20,0.5); }
+          100% { transform: scale(2.4); opacity: 0;   box-shadow: 0 0 60px 40px rgba(255,80,20,0); }
+        }
+        @keyframes rookiesRunGoalGlow {
+          0%, 100% { filter: brightness(1); }
+          50%      { filter: brightness(1.25); }
+        }
+        ${state.status === 'won'
+          ? `[data-square$="8"] { animation: rookiesRunGoalGlow 1.2s ease-in-out infinite; }`
+          : ''}
+        ${state.frozenSquares
+          .map(
+            (sq) => `[data-square="${sq}"] > div > img,
+                     [data-square="${sq}"] > div > svg {
+               filter: drop-shadow(0 0 6px rgba(56,189,248,0.9)) saturate(0.6) brightness(1.05);
+             }`,
+          )
+          .join('\n')}
         ${wiggleSquares
           .map(
             (sq) => `[data-square="${sq}"] > div > img,
@@ -204,6 +258,23 @@ export function RunBoard({
           )
           .join('\n')}
       `}</style>
+      {bombSquare && (
+        <style key={bombFx?.id}>{`
+          [data-square="${bombSquare}"] {
+            position: relative;
+          }
+          [data-square="${bombSquare}"]::after {
+            content: '';
+            position: absolute;
+            inset: 8%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,180,40,0.85) 35%, rgba(255,80,20,0.55) 65%, transparent 80%);
+            pointer-events: none;
+            z-index: 5;
+            animation: rookiesRunBombFlash 600ms ease-out forwards;
+          }
+        `}</style>
+      )}
       <ChessPathBoard
         options={{
           id: 'rookies-run-board',

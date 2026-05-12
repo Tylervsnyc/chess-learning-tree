@@ -331,6 +331,88 @@ export async function playSfx(filename: string, durationMs?: number): Promise<vo
   });
 }
 
+/**
+ * Play level-clear sound for Rookie's Run — ascending chromatic arpeggio.
+ * Uses the same CHROMATIC_SCALE as playCorrectSound; each level climbs higher
+ * so cleared levels in a streak feel like a rising staircase of triumph.
+ * @param levelIndex 0-based level index inside the current run
+ */
+export function playLevelClearSound(levelIndex: number): void {
+  if (typeof window === 'undefined') return;
+  void (async () => {
+    const ctx = await ensureAudioReady();
+    if (!ctx) return;
+    // Climb the scale. 4-note arpeggio: root, M3, P5, octave.
+    const baseIdx = Math.min(levelIndex * 2, CHROMATIC_SCALE.length - 8);
+    const idxs = [baseIdx, baseIdx + 4, baseIdx + 7, Math.min(baseIdx + 12, CHROMATIC_SCALE.length - 1)];
+    const t0 = ctx.currentTime;
+    idxs.forEach((idx, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = CHROMATIC_SCALE[idx];
+      const t = t0 + i * 0.08;
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.38);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    });
+  })();
+}
+
+/** Play card-draw sound — soft sparkly two-note rise. */
+export function playCardDrawSound(): void {
+  if (typeof window === 'undefined') return;
+  void (async () => {
+    const ctx = await ensureAudioReady();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    [660, 990].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = t + i * 0.07;
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.linearRampToValueAtTime(0.12, start + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.01, start + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.27);
+    });
+  })();
+}
+
+/** Play card-played sound — quick downward whoosh. */
+export function playCardPlaySound(): void {
+  if (typeof window === 'undefined') return;
+  void (async () => {
+    const ctx = await ensureAudioReady();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(880, t);
+    osc.frequency.exponentialRampToValueAtTime(220, t + 0.18);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.14, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 1800;
+    osc.connect(lp);
+    lp.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.24);
+  })();
+}
+
 /** Play check sound - sharp synthesized tone like Lichess */
 export async function playCheckSound(): Promise<void> {
   const ctx = await ensureAudioReady();

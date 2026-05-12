@@ -57,8 +57,29 @@ function isHazard(hazards: Coord[], at: Coord): boolean {
   return hazards.some((h) => h.file === at.file && h.rank === at.rank);
 }
 
+/**
+ * "Ghost blockers" — squares vacated by enemies earlier in this same turn.
+ * Subsequent enemies treat them as still occupied so the player can plan
+ * threats from the board they saw at the start of the turn (no piece can
+ * slide through, jump onto, or advance into a square another enemy just left).
+ */
+function vacatedSet(state: BoardState): Set<string> {
+  const out = new Set<string>();
+  for (const sq of state.enemyVacatedSquares ?? []) {
+    const file = sq.charCodeAt(0) - 'a'.charCodeAt(0) + 1;
+    const rank = parseInt(sq[1], 10);
+    out.add(`${file},${rank}`);
+  }
+  return out;
+}
+
+function isVacated(vacated: ReadonlySet<string>, at: Coord): boolean {
+  return vacated.has(`${at.file},${at.rank}`);
+}
+
 /** All squares this piece could move to (or capture on) given the board. */
 function pieceLegalMoves(piece: EnemyPiece, state: BoardState): Coord[] {
+  const vacated = vacatedSet(state);
   switch (piece.type) {
     case 'pawn': {
       // Advances one rank (no two-square open; no captures from advancing).
@@ -68,6 +89,7 @@ function pieceLegalMoves(piece: EnemyPiece, state: BoardState): Coord[] {
         inBounds(target) &&
         !isHazard(state.hazards, target) &&
         !enemyAt(state.pieces, target) &&
+        !isVacated(vacated, target) &&
         !(state.rookie.file === target.file && state.rookie.rank === target.rank)
       ) {
         out.push(target);
@@ -92,6 +114,7 @@ function pieceLegalMoves(piece: EnemyPiece, state: BoardState): Coord[] {
         const c: Coord = { file: piece.file + df, rank: piece.rank + dr };
         if (!inBounds(c)) continue;
         if (isHazard(state.hazards, c)) continue;
+        if (isVacated(vacated, c)) continue; // ghost blocker
         const blocker = enemyAt(state.pieces, c);
         if (blocker && blocker !== piece) continue; // can't land on friendly
         out.push(c);
@@ -101,7 +124,7 @@ function pieceLegalMoves(piece: EnemyPiece, state: BoardState): Coord[] {
     case 'bishop':
     case 'queen': {
       const dirs = piece.type === 'queen' ? QUEEN_DIRS : BISHOP_DIRS;
-      return slidingMoves(piece, state, dirs);
+      return slidingMoves(piece, state, dirs, vacated);
     }
   }
 }
