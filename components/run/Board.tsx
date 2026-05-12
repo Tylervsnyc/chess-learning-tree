@@ -377,9 +377,15 @@ export function RunBoard({
           50%      { opacity: 0.85; }
         }
         @keyframes rookiesRunBombFlash {
-          0%   { transform: scale(0.4); opacity: 1; box-shadow: 0 0 0 0 rgba(255,180,40,0.95), 0 0 0 0 rgba(255,80,20,0.8); }
-          40%  { transform: scale(1.6); opacity: 0.9; box-shadow: 0 0 40px 16px rgba(255,180,40,0.85), 0 0 80px 24px rgba(255,80,20,0.5); }
-          100% { transform: scale(2.4); opacity: 0;   box-shadow: 0 0 60px 40px rgba(255,80,20,0); }
+          0%   { transform: scale(0.3); opacity: 1; box-shadow: 0 0 0 0 rgba(255,180,40,0.95), 0 0 0 0 rgba(255,80,20,0.8); }
+          30%  { transform: scale(1.8); opacity: 1;   box-shadow: 0 0 50px 20px rgba(255,180,40,0.95), 0 0 100px 32px rgba(255,80,20,0.6); }
+          60%  { transform: scale(2.2); opacity: 0.85; box-shadow: 0 0 60px 28px rgba(255,140,20,0.7),  0 0 120px 48px rgba(255,80,20,0.35); }
+          100% { transform: scale(2.8); opacity: 0;   box-shadow: 0 0 80px 60px rgba(255,80,20,0); }
+        }
+        @keyframes rookiesRunBombRing {
+          0%   { transform: scale(0.5); opacity: 0.95; border-width: 6px; }
+          70%  { transform: scale(2.4); opacity: 0.4;  border-width: 3px; }
+          100% { transform: scale(3.0); opacity: 0;    border-width: 1px; }
         }
         @keyframes rookiesRunTkPulse {
           0%, 100% { box-shadow: inset 0 0 0 3px rgba(168, 85, 247, 0.95), inset 0 0 24px rgba(217, 70, 239, 0.55); background-color: rgba(168, 85, 247, 0.22); }
@@ -504,12 +510,23 @@ export function RunBoard({
           [data-square="${bombSquare}"]::after {
             content: '';
             position: absolute;
-            inset: 8%;
+            inset: -10%;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,180,40,0.85) 35%, rgba(255,80,20,0.55) 65%, transparent 80%);
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,220,80,0.95) 25%, rgba(255,140,20,0.85) 55%, rgba(220,40,10,0.5) 75%, transparent 90%);
             pointer-events: none;
-            z-index: 5;
-            animation: rookiesRunBombFlash 600ms ease-out forwards;
+            z-index: 6;
+            animation: rookiesRunBombFlash 720ms cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
+          }
+          [data-square="${bombSquare}"]::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 6px solid rgba(255,200,80,0.95);
+            box-shadow: 0 0 20px rgba(255,140,20,0.85), inset 0 0 12px rgba(255,200,80,0.6);
+            pointer-events: none;
+            z-index: 7;
+            animation: rookiesRunBombRing 720ms cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
           }
         `}</style>
       )}
@@ -957,52 +974,8 @@ function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
     );
   }
 
-  if (fx.kind === 'detonate') {
-    // Bomb glyph arcs from Rookie to target, then the existing bomb-flash
-    // (managed in page.tsx) fires when this overlay is torn down.
-    const ctrlX = midX;
-    const ctrlY = midY - Math.min(20, 8 + length * 0.45);
-    return (
-      <div
-        key={fx.id}
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 4,
-        }}
-      >
-        <style>{`
-          @keyframes rrFxBombArc-${Math.floor(fx.id)} {
-            0%   { offset-distance: 0%;   transform: translate(-50%, -50%) rotate(0deg)   scale(0.6); opacity: 1; }
-            100% { offset-distance: 100%; transform: translate(-50%, -50%) rotate(540deg) scale(1.1); opacity: 1; }
-          }
-        `}</style>
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            width: '14%',
-            height: '14%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '8cqw',
-            offsetPath: `path('M ${fromX} ${fromY} Q ${ctrlX} ${ctrlY} ${toX} ${toY}')`,
-            // Fallback for older browsers — straight diagonal
-            // @ts-expect-error vendor offset-path
-            WebkitOffsetPath: `path('M ${fromX} ${fromY} Q ${ctrlX} ${ctrlY} ${toX} ${toY}')`,
-            animation: `rrFxBombArc-${Math.floor(fx.id)} 380ms ease-in forwards`,
-            filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.5))',
-          }}
-        >
-          💣
-        </div>
-      </div>
-    );
-  }
+  // Detonate has no overlay arc — the explosion flash on the target square
+  // (rendered separately, keyed by bombFx) is the whole effect.
 
   return null;
 }

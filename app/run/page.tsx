@@ -387,12 +387,9 @@ export default function RookiesRunPage() {
           playCardPlaySound();
           if (state.activeAbility.id === 'detonate') {
             const tier = state.abilities.find((a) => a.id === 'detonate')?.tier;
-            // Delay the blast until the bomb projectile finishes its arc.
-            const throwMs = 380;
-            setTimeout(() => {
-              setBombFx({ ...coord, id: Date.now() });
-              if (tier === 5) setShaking(true);
-            }, throwMs);
+            // Explosion fires immediately on the target square — no projectile arc.
+            setBombFx({ ...coord, id: Date.now() });
+            if (tier === 5) setShaking(true);
           }
           trackEvent('run_ability_used', {
             iso: meta.iso,
@@ -569,31 +566,44 @@ export default function RookiesRunPage() {
   return (
     <div className="h-full overflow-auto bg-chess-page">
       <div className="max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-3">
-        <header className="flex items-start justify-between gap-2">
+        <header className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => setShowRunPicker(true)}
             className="text-left flex-1 min-w-0 active:opacity-70 transition-opacity"
             aria-label="Switch run"
           >
-            <h1 className="text-xl font-black text-chess-text leading-tight inline-flex items-center gap-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-chess-text-muted leading-none">
+              Run
+            </p>
+            <h1 className="text-base font-black text-chess-text leading-tight inline-flex items-center gap-1 mt-0.5">
               {runDef.name}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-chess-text-faint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-chess-text-faint">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </h1>
-            <p className="text-[11px] text-chess-text-muted leading-tight tabular-nums">
-              Seed {meta.iso} · Level {levelIndex + 1}/{totalLevels}
-            </p>
           </button>
-          <button
-            type="button"
-            onClick={openIntro}
-            aria-label="How to play"
-            className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
-          >
-            ?
-          </button>
+
+          <div className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-chess-text text-chess-page shadow-sm">
+            <span className="text-[10px] font-black uppercase tracking-[0.16em] leading-none opacity-70">
+              Level
+            </span>
+            <span className="text-sm font-black tabular-nums leading-none">
+              {levelIndex + 1}
+              <span className="opacity-50">/{totalLevels}</span>
+            </span>
+          </div>
+
+          <div className="flex-1 flex justify-end">
+            <button
+              type="button"
+              onClick={openIntro}
+              aria-label="How to play"
+              className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
+            >
+              ?
+            </button>
+          </div>
         </header>
 
         <TempoBar tempo={state.tempo} form={state.form} formMovesLeft={state.formMovesLeft} />
