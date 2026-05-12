@@ -27,7 +27,7 @@ export function AbilityOfferModal({
         .offer-card-enter { animation: offerCardEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
       `}</style>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm px-4 py-6">
-        <div className="w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col gap-4 max-h-[calc(100dvh-3rem)] overflow-y-auto">
+        <div className="w-full max-w-md bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col gap-4 max-h-[calc(100dvh-3rem)] overflow-y-auto">
           <div className="text-center">
             <div className="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-black">
               ★ Tempo Full ★
@@ -37,14 +37,14 @@ export function AbilityOfferModal({
             </h2>
           </div>
 
-          <div className="flex flex-col gap-4 items-center">
+          <div className="grid grid-cols-2 gap-3 items-stretch">
             {offer.map((option, idx) => {
               const badge =
                 option.kind === 'new' ? 'New' : `Up → T${option.tier}`;
               return (
                 <div
                   key={`${option.id}-${option.tier}-${idx}`}
-                  className="offer-card-enter w-full flex justify-center"
+                  className="offer-card-enter flex justify-center"
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
                   <AbilityCardFull

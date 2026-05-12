@@ -20,8 +20,8 @@ export type AbilityId =
   | 'freeze-ray'
   | 'detonate'
   | 'phase-step'
-  | 'castle-swap'
-  | 'recall'
+  | 'leap'
+  | 'surge'
   | 'aegis';
 
 export type AbilityTier = 1 | 2 | 3 | 4 | 5;
@@ -108,19 +108,19 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Movement · Tactical',
     description: 'Walk through pieces.',
   },
-  'castle-swap': {
-    id: 'castle-swap',
-    name: 'Castle Swap',
-    activation: 'instant',
-    typeLine: 'Instant · Movement',
-    description: 'Swap places with something.',
+  leap: {
+    id: 'leap',
+    name: 'Leap',
+    activation: 'movement',
+    typeLine: 'Movement · Leap',
+    description: 'Jump over pieces to an empty square.',
   },
-  recall: {
-    id: 'recall',
-    name: 'Recall',
+  surge: {
+    id: 'surge',
+    name: 'Surge',
     activation: 'instant',
-    typeLine: 'Instant · Tactical',
-    description: 'Step back in time.',
+    typeLine: 'Instant · Tempo',
+    description: 'Take an extra move this turn.',
   },
   aegis: {
     id: 'aegis',
@@ -163,13 +163,16 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       return 2;
     case 'phase-step':
       return 1;
-    case 'castle-swap':
+    case 'leap':
       if (tier <= 2) return 1;
       if (tier === 3) return 2;
-      if (tier === 4) return 1;
-      return 2;
-    case 'recall':
-      if (tier <= 3) return 1;
+      if (tier === 4) return 2;
+      return 3;
+    case 'surge':
+      // T1: 1/level, T2: 2/level, T3: 1/level, T4: 2/level, T5: 2/level
+      if (tier === 1) return 1;
+      if (tier === 2) return 2;
+      if (tier === 3) return 1;
       return 2;
     case 'aegis':
       // Charges = passive blocks remaining. T5 = unlimited.
@@ -251,18 +254,18 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return '3 sq any dir, through 1 piece.';
       if (tier === 2) return '2 sq any dir, through 1 piece.';
       return '1 sq any dir, through 1 piece.';
-    case 'castle-swap':
-      if (tier === 5) return 'Swap with anything. 2/level.';
-      if (tier === 4) return 'Swap with an enemy (capture). 1/level.';
-      if (tier === 3) return 'Swap with any empty sq. 2/level.';
-      if (tier === 2) return 'Swap with any empty sq. 1/level.';
-      return 'Swap with any empty back-rank sq. 1/level.';
-    case 'recall':
-      if (tier === 5) return 'Rewind 2 full turns. 2/level.';
-      if (tier === 4) return 'Step back + undo enemy. 2/level.';
-      if (tier === 3) return 'Step back + undo last enemy move.';
-      if (tier === 2) return 'Step back + gain 1 tempo.';
-      return 'Step back to your previous square.';
+    case 'leap':
+      if (tier === 5) return 'Jump 2-6 sq any of 8 dirs. 3/level.';
+      if (tier === 4) return 'Jump 2-4 sq any cardinal. 2/level.';
+      if (tier === 3) return 'Jump 2-4 sq forward. 2/level.';
+      if (tier === 2) return 'Jump 2 or 3 sq forward. 1/level.';
+      return 'Jump exactly 2 sq forward. 1/level.';
+    case 'surge':
+      if (tier === 5) return '+3 extra moves this turn. 2/level.';
+      if (tier === 4) return '+2 extra moves this turn. 2/level.';
+      if (tier === 3) return '+2 extra moves this turn. 1/level.';
+      if (tier === 2) return '+1 extra move this turn. 2/level.';
+      return '+1 extra move this turn. 1/level.';
     case 'aegis':
       if (tier === 5) return 'Permanent — attackers die instead.';
       if (tier === 4) return 'Block next 3 captures.';
@@ -282,7 +285,7 @@ export interface AbilityOfferOption {
 export type AbilityOffer = AbilityOfferOption[];
 
 /**
- * Make an offer slate of up to 3 choices. Deterministic via the passed RNG.
+ * Make an offer slate of up to 2 choices. Deterministic via the passed RNG.
  *
  * Rules:
  *  - If the player owns fewer than MAX_OWNED_ABILITIES, mix "new" and "upgrade"
@@ -291,21 +294,24 @@ export type AbilityOffer = AbilityOfferOption[];
  *    eligible — no new-ability offers.
  *  - If every owned ability is already at T5, returns an empty array — callers
  *    (engine, seed) should treat that as "skip the offer, refund tempo".
+ *  - All returned options are distinct (the candidate pool itself contains no
+ *    duplicates — each ability appears at most once as either 'new' or 'upgrade').
  */
 export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   const owned = new Map(state.abilities.map((a) => [a.id, a]));
-  const atCap = owned.size >= MAX_OWNED_ABILITIES;
+  const ownedCount = owned.size;
+  const atCap = ownedCount >= MAX_OWNED_ABILITIES;
 
-  const newCandidates: AbilityOfferOption[] = atCap
-    ? []
-    : ALL_ABILITY_IDS.filter((id) => !owned.has(id)).map((id) => ({
-        kind: 'new',
-        id,
-        tier: 1,
-        description: blurbForTier(id, 1),
-      }));
+  const newPool: AbilityOfferOption[] = ALL_ABILITY_IDS.filter(
+    (id) => !owned.has(id),
+  ).map((id) => ({
+    kind: 'new',
+    id,
+    tier: 1,
+    description: blurbForTier(id, 1),
+  }));
 
-  const upgradeCandidates: AbilityOfferOption[] = [...owned.values()]
+  const upgradePool: AbilityOfferOption[] = [...owned.values()]
     .filter((a) => a.tier < 5)
     .map((a) => {
       const next = (a.tier + 1) as AbilityTier;
@@ -317,12 +323,56 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
       };
     });
 
-  const pool = [...newCandidates, ...upgradeCandidates];
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+  const pickOne = <T,>(arr: T[]): T | undefined => {
+    if (arr.length === 0) return undefined;
+    return arr[Math.floor(rng() * arr.length)];
+  };
+  const without = <T,>(arr: T[], match: (x: T) => boolean): T[] =>
+    arr.filter((x) => !match(x));
+
+  // Composition rules:
+  //   owned == 0                          -> [new, new]
+  //   owned >= 1 && !atCap && upgradeable -> [new, upgrade]
+  //   owned >= 1 && !atCap && all maxed   -> [new, new]
+  //   atCap && upgradeable                -> [upgrade, upgrade]
+  //   atCap && all maxed                  -> []  (caller treats as exhausted)
+  // Fallbacks (defensive): if a pool is empty when the rule wants from it,
+  // fall back to the other pool.
+  const offer: AbilityOfferOption[] = [];
+
+  if (atCap) {
+    if (upgradePool.length === 0) return [];
+    const a = pickOne(upgradePool);
+    if (a) offer.push(a);
+    const b = pickOne(without(upgradePool, (x) => x.id === a?.id));
+    if (b) offer.push(b);
+    return offer;
   }
-  return pool.slice(0, 3);
+
+  if (ownedCount === 0) {
+    const a = pickOne(newPool);
+    if (a) offer.push(a);
+    const b = pickOne(without(newPool, (x) => x.id === a?.id));
+    if (b) offer.push(b);
+    return offer;
+  }
+
+  // owned >= 1 && !atCap
+  if (upgradePool.length > 0 && newPool.length > 0) {
+    const up = pickOne(upgradePool);
+    const nw = pickOne(newPool);
+    if (up) offer.push(up);
+    if (nw) offer.push(nw);
+    return offer;
+  }
+
+  // All owned are maxed (or no news available) — fill from whichever has stock.
+  const fallback = newPool.length > 0 ? newPool : upgradePool;
+  const a = pickOne(fallback);
+  if (a) offer.push(a);
+  const b = pickOne(without(fallback, (x) => x.id === a?.id));
+  if (b) offer.push(b);
+  return offer;
 }
 
 /**
@@ -478,28 +528,65 @@ function phaseStepMoves(state: BoardState, tier: AbilityTier): Coord[] {
   return out;
 }
 
-function castleSwapTargets(state: BoardState, tier: AbilityTier): Coord[] {
+/**
+ * Leap — jump over pieces, land on an empty square.
+ *
+ * Direction convention matches Pawn Charge: "forward" = increasing rank (Rookie
+ * starts on rank 1, enemy back rank is 8).
+ *
+ *  T1: 2 sq forward
+ *  T2: 2-3 sq forward
+ *  T3: 2-4 sq forward
+ *  T4: 2-4 sq, 4 cardinal directions
+ *  T5: 2-6 sq, all 8 directions
+ */
+function leapMoves(state: BoardState, tier: AbilityTier): Coord[] {
+  const FORWARD: ReadonlyArray<readonly [number, number]> = [[0, 1]];
+  const CARDINALS: ReadonlyArray<readonly [number, number]> = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+  ];
+  const ALL_DIRS: ReadonlyArray<readonly [number, number]> = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1],
+  ];
+
+  let dirs: ReadonlyArray<readonly [number, number]>;
+  let distances: number[];
+  if (tier === 1) {
+    dirs = FORWARD;
+    distances = [2];
+  } else if (tier === 2) {
+    dirs = FORWARD;
+    distances = [2, 3];
+  } else if (tier === 3) {
+    dirs = FORWARD;
+    distances = [2, 3, 4];
+  } else if (tier === 4) {
+    dirs = CARDINALS;
+    distances = [2, 3, 4];
+  } else {
+    dirs = ALL_DIRS;
+    distances = [2, 3, 4, 5, 6];
+  }
+
   const out: Coord[] = [];
-  for (let f = 1; f <= 8; f++) {
-    for (let r = 1; r <= 8; r++) {
-      if (f === state.rookie.file && r === state.rookie.rank) continue;
-      const c = { file: f, rank: r };
+  const { rookie } = state;
+  for (const [df, dr] of dirs) {
+    for (const d of distances) {
+      const c = { file: rookie.file + df * d, rank: rookie.rank + dr * d };
+      if (!inBounds(c)) continue;
       if (isHazard(state, c)) continue;
-      const piece = enemyAt(state, c);
-      if (tier === 1) {
-        if (r !== 1) continue;
-        if (piece) continue;
-        out.push(c);
-      } else if (tier === 2 || tier === 3) {
-        if (piece) continue;
-        out.push(c);
-      } else if (tier === 4) {
-        if (!piece) continue;
-        out.push(c);
-      } else {
-        // T5 — anything
-        out.push(c);
-      }
+      if (enemyAt(state, c)) continue; // must land on empty square
+      out.push(c);
     }
   }
   return out;
@@ -513,7 +600,7 @@ export function abilityLegalMoves(
   if (!owned) return [];
   if (abilityId === 'pawn-charge') return pawnChargeMoves(state, owned.tier);
   if (abilityId === 'phase-step') return phaseStepMoves(state, owned.tier);
-  if (abilityId === 'castle-swap') return castleSwapTargets(state, owned.tier);
+  if (abilityId === 'leap') return leapMoves(state, owned.tier);
   return [];
 }
 
@@ -538,10 +625,9 @@ export function applyAbilityActivate(
   }
   // Passive abilities can't be tapped.
   if (def.activation === 'passive') return state;
-  // Instant abilities with a target tap (Castle Swap) use pick-square; Recall
-  // resolves on tap.
-  if (abilityId === 'recall') {
-    return applyRecall(state);
+  // Surge — instant, no target. Queues bonus moves and stays Rookie's turn.
+  if (abilityId === 'surge') {
+    return applySurge(state);
   }
 
   let step: 'pick-square' | 'pick-enemy' = 'pick-square';
@@ -589,37 +675,23 @@ function applyTransform(state: BoardState, abilityId: AbilityId): BoardState {
   };
 }
 
-/** Recall — step back to previous square. T2 refunds tempo, T3+ undoes enemy. */
-function applyRecall(state: BoardState): BoardState {
-  const owned = state.abilities.find((a) => a.id === 'recall');
+/** Bonus moves Surge grants per activation, by tier. */
+function surgeBonusForTier(tier: AbilityTier): number {
+  if (tier <= 2) return 1;
+  if (tier <= 4) return 2;
+  return 3;
+}
+
+/** Surge — instant, queues N bonus Rookie moves (no enemy turn between them). */
+function applySurge(state: BoardState): BoardState {
+  const owned = state.abilities.find((a) => a.id === 'surge');
   if (!owned) return state;
-  if (state.history.length === 0) return state;
-
-  const stepsToRewind = owned.tier === 5 ? Math.min(2, state.history.length) : 1;
-  let cur = state;
-  for (let i = 0; i < stepsToRewind; i++) {
-    const last = cur.history[cur.history.length - 1];
-    if (!last) break;
-    cur = {
-      ...cur,
-      rookie: { ...last.rookie },
-      history: cur.history.slice(0, -1),
-    };
-    // T3+ also restores enemy positions from that snapshot.
-    if (owned.tier >= 3) {
-      cur = { ...cur, pieces: last.enemyPieces.map((p) => ({ ...p })) };
-    }
-  }
-
-  let nextTempo = cur.tempo;
-  if (owned.tier === 2) {
-    nextTempo = Math.min(TEMPO_MAX, cur.tempo + 1);
-  }
-
+  if (owned.usesLeftThisLevel === 0) return state;
+  const bonus = surgeBonusForTier(owned.tier);
   return {
-    ...cur,
-    tempo: nextTempo,
-    abilities: decrementUse(state.abilities, 'recall'),
+    ...state,
+    bonusMovesLeft: state.bonusMovesLeft + bonus,
+    abilities: decrementUse(state.abilities, 'surge'),
     activeAbility: null,
   };
 }
@@ -668,11 +740,11 @@ export function applyAbilityMove(
   const abilities = decrementUse(state.abilities, abilityId);
   void owned;
 
-  // Push history (for Recall) — snapshot pre-move position.
-  const nextHistory = pushHistory(state.history, {
-    rookie: { ...state.rookie },
-    enemyPieces: state.pieces.map((p) => ({ ...p })),
-  });
+  // Surge bonus-move bookkeeping: if any are queued, consume one and keep
+  // control with Rookie instead of handing off to the enemy.
+  const hasBonus = state.bonusMovesLeft > 0;
+  const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
+  const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
   const afterMove: BoardState = {
     ...state,
@@ -682,8 +754,8 @@ export function applyAbilityMove(
     abilities,
     activeAbility: null,
     moveCount: nextMoveCount,
-    history: nextHistory,
-    turn: 'enemy',
+    bonusMovesLeft: nextBonus,
+    turn: nextTurn,
   };
 
   if (target.rank === 8) {
@@ -762,46 +834,6 @@ export function applyAbilityTargeted(
     };
   }
 
-  if (abilityId === 'castle-swap') {
-    const targets = castleSwapTargets(state, owned.tier);
-    if (!targets.some((c) => c.file === target.file && c.rank === target.rank)) {
-      return state;
-    }
-    const piece = enemyAt(state, target);
-    let pieces = state.pieces;
-    const captures = [...state.captures];
-    if (piece) {
-      // T4/T5 — capture the swapped enemy (don't put them on Rookie's old sq).
-      captures.push(piece.type);
-      pieces = pieces.filter((p) => p !== piece);
-    }
-    const nextHistory = pushHistory(state.history, {
-      rookie: { ...state.rookie },
-      enemyPieces: state.pieces.map((p) => ({ ...p })),
-    });
-    const nextMoveCount = state.moveCount + 1;
-    const after: BoardState = {
-      ...state,
-      rookie: { ...target },
-      pieces,
-      captures,
-      abilities: decrementUse(state.abilities, abilityId),
-      activeAbility: null,
-      moveCount: nextMoveCount,
-      history: nextHistory,
-      turn: 'enemy',
-      enemyMovedSquares: [],
-      enemyVacatedSquares: [],
-    };
-    if (target.rank === 8) {
-      return { ...after, status: 'won', turn: 'rookie' };
-    }
-    if (after.moveLimit !== null && nextMoveCount >= after.moveLimit) {
-      return { ...after, status: 'lost', turn: 'rookie' };
-    }
-    return after;
-  }
-
   return state;
 }
 
@@ -861,15 +893,6 @@ export function tryAegisIntercept(
     abilities:
       owned.tier === 5 ? state.abilities : decrementUse(state.abilities, 'aegis'),
   };
-}
-
-function pushHistory(
-  history: BoardState['history'],
-  entry: BoardState['history'][number],
-): BoardState['history'] {
-  const next = [...history, entry];
-  if (next.length > 2) next.shift();
-  return next;
 }
 
 /** Reset every owned ability's per-level uses (called at level transitions). */

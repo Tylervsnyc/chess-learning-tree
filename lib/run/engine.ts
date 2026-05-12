@@ -19,15 +19,6 @@ import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
 import type { BoardState, Coord, RookieForm } from './types';
 
-function pushHistory(
-  history: BoardState['history'],
-  entry: BoardState['history'][number],
-): BoardState['history'] {
-  const next = [...history, entry];
-  if (next.length > 2) next.shift();
-  return next;
-}
-
 function offerRngFor(state: BoardState): () => number {
   // Deterministic per (level, moveCount) so replaying the same daily run
   // produces the same offers.
@@ -63,22 +54,25 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
   const nextFormMovesLeft = nextForm === 'rook' ? 0 : movesLeftAfter;
 
   const nextMoveCount = state.moveCount + 1;
-  const nextHistory = pushHistory(state.history, {
-    rookie: { ...state.rookie },
-    enemyPieces: state.pieces.map((p) => ({ ...p })),
-  });
+
+  // Surge bonus-move bookkeeping. If bonus moves are queued, consume one and
+  // keep control with Rookie (no enemy turn between the bonus moves). Tempo
+  // gain from captures during bonus moves still accrues normally above.
+  const hasBonus = state.bonusMovesLeft > 0;
+  const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
+  const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
   const afterMove: BoardState = {
     ...state,
     rookie: { ...target },
     pieces,
-    turn: 'enemy',
+    turn: nextTurn,
     moveCount: nextMoveCount,
     captures: captured ? [...state.captures, captured.type] : state.captures,
     tempo: nextTempo,
     form: nextForm,
     formMovesLeft: nextFormMovesLeft,
-    history: nextHistory,
+    bonusMovesLeft: nextBonus,
   };
 
   // When the meter fills, roll an offer — unless every ability is maxed, in

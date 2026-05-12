@@ -166,20 +166,20 @@ function AbilityIcon({ id, size }: { id: AbilityId; size: number }) {
           <circle cx="14.5" cy="11" r="0.6" fill="currentColor" />
         </svg>
       );
-    case 'castle-swap':
-      // arrows left-right
+    case 'leap':
+      // upward chevron / forward leap arrow
       return (
         <svg {...props}>
-          <path d="M3 8h13M13 4l3 4-3 4" />
-          <path d="M21 16H8M11 12l-3 4 3 4" />
+          <path d="M12 20V6" />
+          <path d="M5 13l7-7 7 7" />
+          <path d="M5 19l7-7 7 7" opacity="0.55" />
         </svg>
       );
-    case 'recall':
-      // undo / rewind
+    case 'surge':
+      // lightning bolt / zap — energetic, "extra move" feel
       return (
         <svg {...props}>
-          <path d="M3 7v6h6" />
-          <path d="M3 13a9 9 0 1 0 3-7" />
+          <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
         </svg>
       );
     case 'aegis':
@@ -367,7 +367,7 @@ export function AbilityCardFull({
     <button
       type="button"
       onClick={onClick}
-      className="relative w-full max-w-[260px] mx-auto group active:scale-[0.98] transition-transform"
+      className="relative w-full max-w-[200px] mx-auto group active:scale-[0.98] transition-transform"
       style={{
         aspectRatio: '5 / 7',
         background: t.border,

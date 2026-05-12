@@ -78,10 +78,11 @@ export interface BoardState {
   /** Current level number (1-based) — drives pawn promotion options. */
   level: number;
   /**
-   * Short position-history buffer (capped at 2) — powers the Recall ability.
-   * Pushed on each Rookie move; popped when Recall fires.
+   * Extra Rookie moves queued by Surge. While > 0, the turn stays with Rookie
+   * after a move or ability instead of handing off to the enemy. Decremented
+   * once per move/ability consumed. Resets to 0 at the start of each level.
    */
-  history: { rookie: Coord; enemyPieces: EnemyPiece[] }[];
+  bonusMovesLeft: number;
 }
 
 export interface RunPuzzle {
