@@ -334,10 +334,8 @@ export function stepEnemyTurn(state: BoardState): BoardState {
   if (action.isCapture) {
     const blocked = tryAegisIntercept(state, action.mover);
     if (blocked) {
-      // Mark this attacker as already-acted this turn (or vanished on T5).
       const aegisOwned = blocked.abilities.find((a) => a.id === 'aegis');
       const attackerSquare = coordKey({ file: action.mover.file, rank: action.mover.rank });
-      const stillThere = aegisOwned && aegisOwned.tier !== 5;
       const withFx: BoardState = {
         ...blocked,
         lastAegisIntercept: {
@@ -346,14 +344,14 @@ export function stepEnemyTurn(state: BoardState): BoardState {
           id: Date.now() + Math.random(),
         },
       };
-      const nextMoved = [
-        ...state.enemyMovedSquares,
-        attackerSquare,
-      ];
+      // Non-T5: shield is consumed by this hit. End the turn so the remaining
+      // budget can't slip a second capturer past a now-dropped shield.
+      if (!aegisOwned || aegisOwned.tier !== 5) return endTurn(withFx);
+      // T5: shield stays up forever — keep ticking the budget. Mark this
+      // attacker as having "acted" (it actually vanished) so we don't re-pick it.
+      const nextMoved = [...state.enemyMovedSquares, attackerSquare];
       if (nextMoved.length >= budget) return endTurn(withFx);
-      return stillThere
-        ? { ...withFx, turn: 'enemy', enemyMovedSquares: nextMoved }
-        : { ...withFx, turn: 'enemy', enemyMovedSquares: state.enemyMovedSquares };
+      return { ...withFx, turn: 'enemy', enemyMovedSquares: nextMoved };
     }
   }
 
