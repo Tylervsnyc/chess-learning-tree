@@ -19,7 +19,7 @@ export async function GET() {
     { label: 'New board daily', bg: '#CDE3F2', fg: '#1A3D6B' },
   ];
 
-  return new ImageResponse(
+  const response = new ImageResponse(
     (
       <div
         style={{
@@ -144,4 +144,6 @@ export async function GET() {
       height: 630,
     },
   );
+  response.headers.set('Cache-Control', 'public, s-maxage=31536000, immutable');
+  return response;
 }
