@@ -102,6 +102,7 @@ export function puzzleToBoardState(
     enemyMovedSquares: [],
     enemyVacatedSquares: [],
     frozenSquares: [],
+    frozenTurnsLeft: {},
     hand: carry.hand ?? [],
     pendingDraw: carry.pendingDraw ?? null,
     level: puzzle.level,

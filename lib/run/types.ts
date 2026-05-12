@@ -57,11 +57,18 @@ export interface BoardState {
    */
   enemyVacatedSquares: string[];
   /**
-   * Squares (algebraic) of enemies that are frozen and must skip their next
-   * action. Cleared at the end of the enemy turn (when control returns to
-   * Rookie), so freeze always lasts exactly one enemy turn.
+   * Squares (algebraic) of enemies that are frozen and must skip their
+   * action. A freeze lasts TWO enemy turns — see `frozenTurnsLeft` for the
+   * remaining turn count per square. Squares stay listed here for the full
+   * lifetime of the freeze so the icy visual persists.
    */
   frozenSquares: string[];
+  /**
+   * Remaining enemy turns each frozen square will stay frozen. Decremented
+   * at the end of each enemy turn; when it hits 0 the entry is removed from
+   * both maps.
+   */
+  frozenTurnsLeft: Record<string, number>;
   /** Cards currently in Rookie's hand (max HAND_SIZE). */
   hand: CardId[];
   /** When the tempo meter fills, the player is offered cards to draw. */

@@ -19,6 +19,7 @@ import {
   playCardDrawSound,
   playCardPlaySound,
   playLevelClearSound,
+  playMoveSound,
 } from '@/lib/sounds';
 import type { CardId } from '@/lib/run/cards';
 import {
@@ -224,6 +225,30 @@ export default function RookiesRunPage() {
     }
     lastCaptureCountRef.current = state.captures.length;
   }, [state.captures.length, state.status]);
+
+  // Plain-move sfx — Rookie & enemy moves that aren't captures.
+  // Matches /play: capture -> playCaptureSound, else playMoveSound.
+  const lastRookieMoveRef = useRef(0);
+  const lastRookieCapCountRef = useRef(0);
+  const lastEnemyMoveRef = useRef(0);
+  useEffect(() => {
+    if (state.moveCount > lastRookieMoveRef.current) {
+      // Only chime if this Rookie move wasn't a capture.
+      if (state.captures.length === lastRookieCapCountRef.current) {
+        void playMoveSound();
+      }
+      lastRookieMoveRef.current = state.moveCount;
+      lastRookieCapCountRef.current = state.captures.length;
+    }
+  }, [state.moveCount, state.captures.length]);
+  useEffect(() => {
+    const len = state.enemyMovedSquares.length;
+    if (len > lastEnemyMoveRef.current) {
+      // Enemy capture of Rookie sets status='lost'; skip the move chime then.
+      if (state.status === 'playing') void playMoveSound();
+    }
+    lastEnemyMoveRef.current = len;
+  }, [state.enemyMovedSquares.length, state.status]);
 
   // Play level-clear chime when the level is won. Pitch climbs per level.
   useEffect(() => {

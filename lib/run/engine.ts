@@ -243,6 +243,7 @@ export function applyFreeze(
   return {
     ...state,
     frozenSquares: [...state.frozenSquares, sq],
+    frozenTurnsLeft: { ...state.frozenTurnsLeft, [sq]: 2 },
     hand: removeCard(state.hand, slotIndex),
   };
 }

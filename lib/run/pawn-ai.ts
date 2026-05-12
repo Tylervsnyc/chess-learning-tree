@@ -302,13 +302,26 @@ export function stepEnemyTurn(state: BoardState): BoardState {
   const budget = Math.max(1, state.enemiesPerTurn ?? 1);
   const exclude = new Set(state.enemyMovedSquares);
 
-  const endTurn = (s: BoardState): BoardState => ({
-    ...s,
-    turn: 'rookie',
-    enemyMovedSquares: [],
-    enemyVacatedSquares: [],
-    frozenSquares: [],
-  });
+  const endTurn = (s: BoardState): BoardState => {
+    // Decrement freeze counters; drop entries that have run out.
+    const nextFrozenTurnsLeft: Record<string, number> = {};
+    const nextFrozenSquares: string[] = [];
+    for (const sq of s.frozenSquares) {
+      const left = (s.frozenTurnsLeft[sq] ?? 1) - 1;
+      if (left > 0) {
+        nextFrozenSquares.push(sq);
+        nextFrozenTurnsLeft[sq] = left;
+      }
+    }
+    return {
+      ...s,
+      turn: 'rookie',
+      enemyMovedSquares: [],
+      enemyVacatedSquares: [],
+      frozenSquares: nextFrozenSquares,
+      frozenTurnsLeft: nextFrozenTurnsLeft,
+    };
+  };
 
   if (state.enemyMovedSquares.length >= budget) return endTurn(state);
 

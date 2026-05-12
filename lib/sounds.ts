@@ -332,9 +332,9 @@ export async function playSfx(filename: string, durationMs?: number): Promise<vo
 }
 
 /**
- * Play level-clear sound for Rookie's Run — ascending chromatic arpeggio.
- * Uses the same CHROMATIC_SCALE as playCorrectSound; each level climbs higher
- * so cleared levels in a streak feel like a rising staircase of triumph.
+ * Play level-clear sound for Rookie's Run — ascending major arpeggio whose
+ * root climbs by exactly ONE semitone per level (true chromatic staircase).
+ * Uses the same CHROMATIC_SCALE as playCorrectSound (each index = 1 semitone).
  * @param levelIndex 0-based level index inside the current run
  */
 export function playLevelClearSound(levelIndex: number): void {
@@ -342,9 +342,10 @@ export function playLevelClearSound(levelIndex: number): void {
   void (async () => {
     const ctx = await ensureAudioReady();
     if (!ctx) return;
-    // Climb the scale. 4-note arpeggio: root, M3, P5, octave.
-    const baseIdx = Math.min(levelIndex * 2, CHROMATIC_SCALE.length - 8);
-    const idxs = [baseIdx, baseIdx + 4, baseIdx + 7, Math.min(baseIdx + 12, CHROMATIC_SCALE.length - 1)];
+    // 4-note arpeggio (root, M3, P5, octave). Root climbs +1 semitone per level.
+    const maxRoot = CHROMATIC_SCALE.length - 13; // leave room for +12 octave
+    const baseIdx = Math.min(Math.max(0, levelIndex), maxRoot);
+    const idxs = [baseIdx, baseIdx + 4, baseIdx + 7, baseIdx + 12];
     const t0 = ctx.currentTime;
     idxs.forEach((idx, i) => {
       const osc = ctx.createOscillator();
