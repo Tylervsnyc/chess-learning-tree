@@ -577,6 +577,18 @@ export default function RookiesRunPage() {
             <RookiesRunLogo scale={0.45} />
           </button>
 
+          <div className="flex-1 flex justify-end items-center gap-2">
+            <div className="bg-chess-surface rounded-lg px-3 py-1.5 shadow-sm inline-flex items-center gap-1.5 leading-none">
+              <span className="text-[9px] font-black uppercase tracking-[0.14em] text-chess-text-muted">
+                Lvl
+              </span>
+              <span className="text-sm font-black text-chess-text tabular-nums">
+                {levelIndex + 1}
+                <span className="text-chess-text-faint">/{totalLevels}</span>
+              </span>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={openIntro}
@@ -591,8 +603,6 @@ export default function RookiesRunPage() {
           tempo={state.tempo}
           form={state.form}
           formMovesLeft={state.formMovesLeft}
-          levelIndex={levelIndex}
-          totalLevels={totalLevels}
         />
 
         <div className={`w-full ${shaking ? 'run-screenshake' : ''}`}>

@@ -7,8 +7,6 @@ interface TempoBarProps {
   tempo: number;
   form: RookieForm;
   formMovesLeft: number;
-  levelIndex: number;
-  totalLevels: number;
 }
 
 const FORM_LABEL: Record<RookieForm, string> = {
@@ -18,16 +16,9 @@ const FORM_LABEL: Record<RookieForm, string> = {
   queen: 'Queen',
 };
 
-export function TempoBar({ tempo, form, formMovesLeft, levelIndex, totalLevels }: TempoBarProps) {
+export function TempoBar({ tempo, form, formMovesLeft }: TempoBarProps) {
   return (
     <div className="bg-chess-surface rounded-lg px-2.5 py-1.5 shadow-sm flex items-center gap-2.5">
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-chess-text text-chess-page leading-none">
-        <span className="text-[9px] font-black uppercase tracking-[0.14em] opacity-70">Lvl</span>
-        <span className="text-xs font-black tabular-nums">
-          {levelIndex + 1}
-          <span className="opacity-50">/{totalLevels}</span>
-        </span>
-      </span>
       <span className="text-[10px] font-black uppercase tracking-[0.14em] text-chess-text-muted leading-none">
         Tempo
       </span>
