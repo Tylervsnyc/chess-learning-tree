@@ -112,19 +112,31 @@ export function RunBoard({
 }: BoardProps) {
   const rookieSprite = ROOKIE_SPRITE[state.form];
 
+  const rookieSq = toSquare(state.rookie);
+  const attackerAtRookie = useMemo(
+    () =>
+      state.status === 'lost'
+        ? state.pieces.find(
+            (p) => p.file === state.rookie.file && p.rank === state.rookie.rank,
+          ) ?? null
+        : null,
+    [state.status, state.pieces, state.rookie],
+  );
+
   const position = useMemo(() => {
     const map: Record<string, { pieceType: string }> = {};
     for (const p of state.pieces) {
-      map[toSquare(p)] = { pieceType: ENEMY_SPRITE[p.type] };
+      const sq = toSquare(p);
+      // The attacker on Rookie's square is rendered as a static overlay
+      // (below) so the chessboard's piece-animation can't hide it.
+      if (state.status === 'lost' && sq === rookieSq) continue;
+      map[sq] = { pieceType: ENEMY_SPRITE[p.type] };
     }
-    const rookieSq = toSquare(state.rookie);
-    // When Rookie has been captured, leave the attacker showing on her square
-    // instead of overwriting it. Her crumble animation plays as an overlay.
-    if (state.status !== 'lost' || !map[rookieSq]) {
+    if (state.status !== 'lost') {
       map[rookieSq] = { pieceType: rookieSprite };
     }
     return map;
-  }, [state.rookie, state.pieces, rookieSprite, state.status]);
+  }, [state.pieces, rookieSprite, state.status, rookieSq]);
 
   const wiggleSquares = useMemo(() => {
     if (state.status !== 'playing' || state.turn !== 'rookie') return [];
@@ -662,20 +674,45 @@ export function RunBoard({
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
         )}
         {state.status === 'lost' && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              left: `${(state.rookie.file - 1) * 12.5}%`,
-              top: `${(8 - state.rookie.rank) * 12.5}%`,
-              width: '12.5%',
-              height: '12.5%',
-              pointerEvents: 'none',
-              zIndex: 5,
-            }}
-          >
-            <RookieCell form={state.form} dying glitching={false} />
-          </div>
+          <>
+            {attackerAtRookie &&
+              (() => {
+                const PieceComp =
+                  defaultPieces[
+                    ENEMY_SPRITE[attackerAtRookie.type] as keyof typeof defaultPieces
+                  ];
+                return (
+                  <div
+                    aria-hidden
+                    style={{
+                      position: 'absolute',
+                      left: `${(state.rookie.file - 1) * 12.5}%`,
+                      top: `${(8 - state.rookie.rank) * 12.5}%`,
+                      width: '12.5%',
+                      height: '12.5%',
+                      pointerEvents: 'none',
+                      zIndex: 4,
+                    }}
+                  >
+                    {PieceComp ? <PieceComp /> : null}
+                  </div>
+                );
+              })()}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: `${(state.rookie.file - 1) * 12.5}%`,
+                top: `${(8 - state.rookie.rank) * 12.5}%`,
+                width: '12.5%',
+                height: '12.5%',
+                pointerEvents: 'none',
+                zIndex: 5,
+              }}
+            >
+              <RookieCell form={state.form} dying glitching={false} />
+            </div>
+          </>
         )}
       </div>
     </>
