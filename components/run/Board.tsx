@@ -117,9 +117,14 @@ export function RunBoard({
     for (const p of state.pieces) {
       map[toSquare(p)] = { pieceType: ENEMY_SPRITE[p.type] };
     }
-    map[toSquare(state.rookie)] = { pieceType: rookieSprite };
+    const rookieSq = toSquare(state.rookie);
+    // When Rookie has been captured, leave the attacker showing on her square
+    // instead of overwriting it. Her crumble animation plays as an overlay.
+    if (state.status !== 'lost' || !map[rookieSq]) {
+      map[rookieSq] = { pieceType: rookieSprite };
+    }
     return map;
-  }, [state.rookie, state.pieces, rookieSprite]);
+  }, [state.rookie, state.pieces, rookieSprite, state.status]);
 
   const wiggleSquares = useMemo(() => {
     if (state.status !== 'playing' || state.turn !== 'rookie') return [];
@@ -655,6 +660,22 @@ export function RunBoard({
         )}
         {abilityFx && fxGeom && (
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
+        )}
+        {state.status === 'lost' && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: `${(state.rookie.file - 1) * 12.5}%`,
+              top: `${(8 - state.rookie.rank) * 12.5}%`,
+              width: '12.5%',
+              height: '12.5%',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}
+          >
+            <RookieCell form={state.form} dying glitching={false} />
+          </div>
         )}
       </div>
     </>
