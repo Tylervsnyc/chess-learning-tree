@@ -35,8 +35,24 @@ interface BoardProps {
   onPieceDrop: (sourceSquare: string, targetSquare: string) => boolean;
 }
 
-// Goal-row gold — strong amber wash so rank 8 reads as "the finish line".
-const GOAL_GLOW = 'rgba(255, 191, 36, 0.55)';
+// Goal-row "Enchanted Dawn" — soft golden sunrise gradient so rank 8 reads as
+// a magical finish-line. Animated motes/haze added via overlay in JSX.
+const GOAL_GRADIENT =
+  'linear-gradient(180deg, #fff1b8 0%, #ffd56a 45%, #e89c1a 100%)';
+const GOAL_INSET_RING = 'inset 0 0 0 1px rgba(255,245,200,0.5)';
+
+// Scattered mote positions for the goal-row overlay — non-uniform so the
+// magic doesn't read as a repeating tile pattern.
+// [left%, top%, sizePx, delayS, durS]
+const GOAL_MOTES: Array<[number, number, number, number, number]> = [
+  [3, 60, 2, 0.0, 4.1], [9, 22, 3, 1.3, 4.8], [14, 78, 2, 0.6, 3.9],
+  [18, 38, 4, 2.0, 5.1], [23, 12, 2, 0.9, 4.4], [27, 65, 3, 1.6, 4.6],
+  [33, 42, 2, 0.3, 4.0], [38, 88, 3, 2.2, 5.0], [42, 18, 5, 0.5, 5.4],
+  [47, 55, 2, 1.1, 4.2], [52, 30, 3, 1.8, 4.7], [57, 72, 2, 0.4, 3.8],
+  [62, 8, 3, 2.4, 4.9], [66, 48, 4, 0.7, 5.2], [71, 82, 2, 1.4, 4.3],
+  [75, 25, 3, 2.1, 4.8], [79, 60, 2, 0.8, 4.0], [84, 15, 4, 1.5, 5.0],
+  [88, 70, 3, 0.2, 4.5], [93, 40, 2, 1.9, 4.4], [97, 85, 3, 1.0, 4.6],
+];
 // Hazard squares — dark crimson wash with a subtle no-entry vibe.
 const HAZARD_BG = 'rgba(190, 18, 60, 0.45)';
 const HAZARD_PATTERN =
@@ -105,10 +121,13 @@ export function RunBoard({
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
 
-    // Goal rank gold wash.
+    // Goal rank — "Enchanted Dawn" golden sunrise gradient.
     for (let f = 1; f <= 8; f++) {
       const sq = `${String.fromCharCode('a'.charCodeAt(0) + f - 1)}8`;
-      styles[sq] = { backgroundColor: GOAL_GLOW };
+      styles[sq] = {
+        backgroundImage: GOAL_GRADIENT,
+        boxShadow: GOAL_INSET_RING,
+      };
     }
 
     // Hazard squares — dark wash + hatched pattern.
@@ -333,6 +352,10 @@ export function RunBoard({
           0%, 100% { filter: brightness(1); }
           50%      { filter: brightness(1.25); }
         }
+        @keyframes rookiesRunDawnMote {
+          0%, 100% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+          50%      { opacity: 1; transform: translate(4px, -6px) scale(1); }
+        }
         @keyframes rookiesRunAegisShieldPulse {
           0%, 100% { filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.85)) drop-shadow(0 0 8px rgba(56, 189, 248, 0.55)); }
           50%      { filter: drop-shadow(0 0 7px rgba(125, 211, 252, 1))    drop-shadow(0 0 14px rgba(56, 189, 248, 0.9)); }
@@ -442,25 +465,69 @@ export function RunBoard({
           }
         `}</style>
       )}
-      <ChessPathBoard
-        options={{
-          id: 'rookies-run-board',
-          position,
-          pieces,
-          squareStyles,
-          showNotation: false,
-          boardOrientation: 'white',
-          allowDragging: true,
-          canDragPiece: ({ piece }) =>
-            piece?.pieceType === rookieSprite &&
-            state.turn === 'rookie' &&
-            state.status === 'playing',
-          onPieceDrop: ({ sourceSquare, targetSquare }) =>
-            targetSquare ? onPieceDrop(sourceSquare, targetSquare) : false,
-          onSquareClick: ({ square }) => onSquareClick(square),
-          animationDurationInMs: 300,
-        }}
-      />
+      <div style={{ position: 'relative' }}>
+        <ChessPathBoard
+          options={{
+            id: 'rookies-run-board',
+            position,
+            pieces,
+            squareStyles,
+            showNotation: false,
+            boardOrientation: 'white',
+            allowDragging: true,
+            canDragPiece: ({ piece }) =>
+              piece?.pieceType === rookieSprite &&
+              state.turn === 'rookie' &&
+              state.status === 'playing',
+            onPieceDrop: ({ sourceSquare, targetSquare }) =>
+              targetSquare ? onPieceDrop(sourceSquare, targetSquare) : false,
+            onSquareClick: ({ square }) => onSquareClick(square),
+            animationDurationInMs: 300,
+          }}
+        />
+        {state.status === 'playing' && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '12.5%',
+              pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Soft haze — radial washes that span the whole rank. */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'radial-gradient(ellipse at 30% 50%, rgba(255,255,220,0.45), transparent 55%), radial-gradient(ellipse at 75% 40%, rgba(255,220,150,0.4), transparent 60%)',
+                mixBlendMode: 'screen',
+              }}
+            />
+            {/* Drifting motes — scattered across the row, not tile-repeated. */}
+            {GOAL_MOTES.map((m, i) => (
+              <span
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: `${m[0]}%`,
+                  top: `${m[1]}%`,
+                  width: m[2],
+                  height: m[2],
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.95)',
+                  boxShadow: '0 0 8px 2px rgba(255,240,180,0.9)',
+                  animation: `rookiesRunDawnMote ${m[4]}s ease-in-out ${m[3]}s infinite`,
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 }
