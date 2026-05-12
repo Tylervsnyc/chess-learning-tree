@@ -31,7 +31,7 @@ export type AbilityTier = 1 | 2 | 3 | 4 | 5;
  * - targeted: tap card, then tap any enemy / any square depending on ability.
  * - transform: tap card → Rookie morphs into another piece for N turns.
  * - instant:   tap card → resolves with a follow-up target tap (e.g. swap).
- * - passive:   no tap — auto-fires (Aegis).
+ * - passive:   no tap — auto-fires (currently unused).
  */
 export type AbilityActivation =
   | 'movement'
@@ -125,9 +125,9 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
   aegis: {
     id: 'aegis',
     name: 'Aegis',
-    activation: 'passive',
-    typeLine: 'Passive · Shield',
-    description: 'Block the next capture.',
+    activation: 'instant',
+    typeLine: 'Instant · Shield',
+    description: 'Tap to raise a shield. Blocks the next capture.',
   },
 };
 
@@ -267,11 +267,11 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 2) return '+1 extra move this turn. 2/level.';
       return '+1 extra move this turn. 1/level.';
     case 'aegis':
-      if (tier === 5) return 'Permanent — attackers die instead.';
-      if (tier === 4) return 'Block next 3 captures.';
-      if (tier === 3) return 'Block 2 + stun attacker 1 turn.';
-      if (tier === 2) return 'Block next 2 captures.';
-      return 'Block next capture once.';
+      if (tier === 5) return 'Tap: permanent shield. Attackers die.';
+      if (tier === 4) return 'Tap: shield. 3 raises/level.';
+      if (tier === 3) return 'Tap: shield + stuns attacker. 2/level.';
+      if (tier === 2) return 'Tap: shield. 2 raises/level.';
+      return 'Tap: shield blocks next capture. 1/level.';
   }
 }
 
@@ -626,6 +626,7 @@ export function applyAbilityActivate(
       formMovesLeft: snap.formMovesLeft,
       bonusMovesLeft: snap.bonusMovesLeft,
       abilities: snap.abilities,
+      shieldUp: snap.shieldUp,
       cancellableActivation: undefined,
       activeAbility: null,
     };
@@ -645,6 +646,10 @@ export function applyAbilityActivate(
   // Surge — instant, no target. Queues bonus moves and stays Rookie's turn.
   if (abilityId === 'surge') {
     return applySurge(state);
+  }
+  // Aegis — instant, no target. Raises a shield that absorbs the next capture.
+  if (abilityId === 'aegis') {
+    return applyAegis(state);
   }
 
   let step: 'pick-square' | 'pick-enemy' = 'pick-square';
@@ -696,6 +701,35 @@ function applyTransform(state: BoardState, abilityId: AbilityId): BoardState {
         formMovesLeft: state.formMovesLeft,
         bonusMovesLeft: state.bonusMovesLeft,
         abilities: state.abilities,
+        shieldUp: state.shieldUp,
+      },
+    },
+  };
+}
+
+/** Aegis — instant, raises a shield. Decrements 1 use unless already up
+ *  (re-tapping while raised is a no-op so charges aren't wasted). T5 owners
+ *  never decrement — their shield is permanent once raised. */
+function applyAegis(state: BoardState): BoardState {
+  const owned = state.abilities.find((a) => a.id === 'aegis');
+  if (!owned) return state;
+  if (state.shieldUp) return state; // shield already raised — don't double-spend
+  if (owned.tier !== 5 && owned.usesLeftThisLevel === 0) return state;
+  const nextAbilities =
+    owned.tier === 5 ? state.abilities : decrementUse(state.abilities, 'aegis');
+  return {
+    ...state,
+    shieldUp: true,
+    abilities: nextAbilities,
+    activeAbility: null,
+    cancellableActivation: {
+      abilityId: 'aegis',
+      snapshot: {
+        form: state.form,
+        formMovesLeft: state.formMovesLeft,
+        bonusMovesLeft: state.bonusMovesLeft,
+        abilities: state.abilities,
+        shieldUp: state.shieldUp,
       },
     },
   };
@@ -726,6 +760,7 @@ function applySurge(state: BoardState): BoardState {
         formMovesLeft: state.formMovesLeft,
         bonusMovesLeft: state.bonusMovesLeft,
         abilities: state.abilities,
+        shieldUp: state.shieldUp,
       },
     },
   };
@@ -928,9 +963,9 @@ export function tryAegisIntercept(
   state: BoardState,
   attacker: EnemyPiece,
 ): BoardState | null {
+  if (!state.shieldUp) return null;
   const owned = state.abilities.find((a) => a.id === 'aegis');
   if (!owned) return null;
-  if (owned.usesLeftThisLevel === 0 && owned.tier !== 5) return null;
 
   let pieces = state.pieces;
   let captures = state.captures;
@@ -938,8 +973,6 @@ export function tryAegisIntercept(
     // Attacker dies instead of capturing.
     pieces = pieces.filter((p) => p !== attacker);
     captures = [...captures, attacker.type];
-  } else {
-    // Just block the capture — attacker stays.
   }
 
   // T3: stun the attacker for 1 turn (freeze its square).
@@ -948,8 +981,12 @@ export function tryAegisIntercept(
   if (owned.tier === 3) {
     const sq = toSquare({ file: attacker.file, rank: attacker.rank });
     if (!frozenSquares.includes(sq)) frozenSquares = [...frozenSquares, sq];
-    frozenTurnsLeft = { ...frozenTurnsLeft, [sq]: 2 }; // 2 = stays through this turn end + next
+    frozenTurnsLeft = { ...frozenTurnsLeft, [sq]: 2 };
   }
+
+  // T5: shield stays up permanently. Lower tiers: shield consumed by this hit
+  // (charges were already decremented when the player raised the shield).
+  const shieldUp = owned.tier === 5;
 
   return {
     ...state,
@@ -957,8 +994,7 @@ export function tryAegisIntercept(
     captures,
     frozenSquares,
     frozenTurnsLeft,
-    abilities:
-      owned.tier === 5 ? state.abilities : decrementUse(state.abilities, 'aegis'),
+    shieldUp,
   };
 }
 

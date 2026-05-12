@@ -84,6 +84,13 @@ export interface BoardState {
    */
   bonusMovesLeft: number;
   /**
+   * True while Rookie has an Aegis shield raised. Set by tapping the Aegis
+   * ability card (which also decrements a charge). Consumed when an enemy
+   * tries to capture her (T1-T4) — T5 keeps the shield up permanently.
+   * Resets between levels.
+   */
+  shieldUp: boolean;
+  /**
    * Transient signal: set on the state returned from an enemy step when Aegis
    * intercepts a capture. UI watches `id` for changes to fire the lunge-and-
    * bounce VFX. Not cleared by the engine — the UI tracks the last-seen id.
@@ -113,6 +120,7 @@ export interface BoardState {
       formMovesLeft: number;
       bonusMovesLeft: number;
       abilities: OwnedAbility[];
+      shieldUp: boolean;
     };
   };
 }

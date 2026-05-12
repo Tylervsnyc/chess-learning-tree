@@ -193,13 +193,10 @@ export function RunBoard({
       }
     }
 
-    // Aegis passive shield — light-blue inset ring + faint wash on Rookie's
-    // square whenever she has charges available. Layered with whatever's
-    // already on that square (e.g. selection ring).
-    const aegisOwned = state.abilities.find((a) => a.id === 'aegis');
-    const aegisActive =
-      !!aegisOwned && (aegisOwned.tier === 5 || aegisOwned.usesLeftThisLevel > 0);
-    if (aegisActive && state.status === 'playing') {
+    // Aegis shield — light-blue inset ring + wash on Rookie's square whenever
+    // her shield is currently raised. Layered with whatever's already on that
+    // square (e.g. selection ring).
+    if (state.shieldUp && state.status === 'playing') {
       const rookieSq = toSquare(state.rookie);
       const prev = styles[rookieSq] ?? {};
       const aegisRing =
@@ -292,24 +289,13 @@ export function RunBoard({
     return layers.join(' ');
   }, [state.bonusMovesLeft]);
 
-  // Shield pulse — when Rookie has Aegis charges, gently pulse her square's
-  // inset ring so the protection reads as alive.
-  const aegisCharges = useMemo(() => {
-    const owned = state.abilities.find((a) => a.id === 'aegis');
-    if (!owned) return null;
-    if (state.status !== 'playing') return null;
-    if (owned.tier === 5) return { text: '∞', x: (state.rookie.file - 0.5) * 12.5, y: (8 - state.rookie.rank + 0.5) * 12.5 };
-    if (owned.usesLeftThisLevel <= 0) return null;
-    return { text: String(owned.usesLeftThisLevel), x: (state.rookie.file - 0.5) * 12.5, y: (8 - state.rookie.rank + 0.5) * 12.5 };
-  }, [state.abilities, state.rookie, state.status]);
-
+  // Shield pulse — when Rookie's Aegis shield is currently up, pulse her
+  // square's inset ring so the protection reads as alive.
   const rookieShieldSquare = useMemo(() => {
-    const owned = state.abilities.find((a) => a.id === 'aegis');
-    if (!owned) return null;
-    if (owned.tier !== 5 && owned.usesLeftThisLevel <= 0) return null;
+    if (!state.shieldUp) return null;
     if (state.status !== 'playing') return null;
     return toSquare(state.rookie);
-  }, [state.abilities, state.rookie, state.status]);
+  }, [state.shieldUp, state.rookie, state.status]);
 
   const pieces = useMemo(
     () => ({
@@ -652,35 +638,6 @@ export function RunBoard({
         )}
         {abilityFx && fxGeom && (
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
-        )}
-        {aegisCharges && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              left: `${aegisCharges.x}%`,
-              top: `${aegisCharges.y}%`,
-              transform: 'translate(-50%, -130%)',
-              pointerEvents: 'none',
-              zIndex: 6,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '2px',
-              padding: '2px 6px',
-              borderRadius: 999,
-              background: 'linear-gradient(135deg, #38bdf8, #0284c7)',
-              color: '#f0f9ff',
-              fontSize: '10px',
-              fontWeight: 900,
-              lineHeight: 1,
-              boxShadow:
-                '0 0 0 1.5px rgba(255,255,255,0.9), 0 0 8px rgba(56,189,248,0.95), 0 1px 2px rgba(0,0,0,0.4)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span style={{ fontSize: '10px' }}>🛡</span>
-            <span>{aegisCharges.text}</span>
-          </div>
         )}
       </div>
     </>

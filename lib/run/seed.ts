@@ -115,6 +115,7 @@ export function puzzleToBoardState(
     activeAbility: null,
     level: puzzle.level,
     bonusMovesLeft: 0,
+    shieldUp: false,
   };
   if (puzzle.level === 6 && !pendingOffer && !offerIsExhausted(base)) {
     const rolled = rollOffer(base, mulberry32((puzzle.level * 7919) >>> 0));
