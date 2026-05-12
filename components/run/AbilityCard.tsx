@@ -353,8 +353,8 @@ interface FullProps {
   id: AbilityId;
   tier: AbilityTier;
   description: string;
-  /** "New" or "Upgrade → T3" badge. */
-  badge: string;
+  /** "Upgrade → T3" badge. Omit to hide. */
+  badge?: string;
   onClick: () => void;
 }
 
@@ -392,16 +392,18 @@ export function AbilityCardFull({
           color: t.text,
         }}
       >
-        {/* Badge (new / upgrade) */}
-        <div
-          className="absolute top-1.5 right-1.5 z-10 text-[9px] font-black uppercase tracking-[0.08em] px-1.5 py-0.5 rounded"
-          style={{
-            background: t.gem,
-            color: t.face,
-          }}
-        >
-          {badge}
-        </div>
+        {/* Badge (upgrade only — new cards have no badge) */}
+        {badge ? (
+          <div
+            className="absolute top-1.5 right-1.5 z-10 text-[9px] font-black uppercase tracking-[0.08em] px-1.5 py-0.5 rounded"
+            style={{
+              background: t.gem,
+              color: t.face,
+            }}
+          >
+            {badge}
+          </div>
+        ) : null}
 
         {/* Top banner — ability name in display font */}
         <div

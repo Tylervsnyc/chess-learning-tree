@@ -40,7 +40,7 @@ export function AbilityOfferModal({
           <div className="grid grid-cols-2 gap-3 items-stretch">
             {offer.map((option, idx) => {
               const badge =
-                option.kind === 'new' ? 'New' : `Up → T${option.tier}`;
+                option.kind === 'new' ? undefined : `Up → T${option.tier}`;
               return (
                 <div
                   key={`${option.id}-${option.tier}-${idx}`}
