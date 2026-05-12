@@ -134,6 +134,25 @@ export default function RookiesRunPage() {
     const t = setTimeout(() => setBombFx(null), 650);
     return () => clearTimeout(t);
   }, [bombFx]);
+  // Aegis intercept VFX — attacker lunges at Rookie then bounces back, plus a
+  // light-blue shield ripple at Rookie's square. Cleared after the anim ends.
+  const [aegisFx, setAegisFx] = useState<
+    { attackerSquare: string; rookieSquare: string; id: number } | null
+  >(null);
+  const lastAegisIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    const sig = state.lastAegisIntercept;
+    if (!sig) return;
+    if (lastAegisIdRef.current === sig.id) return;
+    lastAegisIdRef.current = sig.id;
+    setAegisFx({ ...sig });
+  }, [state.lastAegisIntercept]);
+  useEffect(() => {
+    if (!aegisFx) return;
+    const t = setTimeout(() => setAegisFx(null), 720);
+    return () => clearTimeout(t);
+  }, [aegisFx]);
+
   // Detonate T5 — screenshake the board container briefly.
   const [shaking, setShaking] = useState(false);
   useEffect(() => {
@@ -669,6 +688,7 @@ export default function RookiesRunPage() {
             dying={dying}
             glitching={glitching}
             bombFx={bombFx}
+            aegisFx={aegisFx}
             legalAbilityMoves={legalAbilityMoves}
             abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}

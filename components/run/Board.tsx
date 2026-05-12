@@ -8,7 +8,7 @@ import { rookieLegalMoves } from '@/lib/run/movement';
 import { nextEnemyMovers } from '@/lib/run/pawn-ai';
 import type { AbilityTier } from '@/lib/run/abilities';
 import type { BoardState, Coord, PieceType, RookieForm } from '@/lib/run/types';
-import { toSquare } from '@/lib/run/types';
+import { fromSquare, toSquare } from '@/lib/run/types';
 
 interface BoardProps {
   state: BoardState;
@@ -20,6 +20,8 @@ interface BoardProps {
   glitching?: boolean;
   /** Transient bomb VFX — set when bomb resolves, cleared after the anim. */
   bombFx?: { file: number; rank: number; id: number } | null;
+  /** Transient Aegis VFX — attacker lunges at Rookie then bounces back. */
+  aegisFx?: { attackerSquare: string; rookieSquare: string; id: number } | null;
   /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
    *  When set, that square gets a magical purple glow. */
   telekinesisTarget?: { file: number; rank: number } | null;
@@ -77,6 +79,7 @@ export function RunBoard({
   dying = false,
   glitching = false,
   bombFx = null,
+  aegisFx = null,
   telekinesisTarget = null,
   legalAbilityMoves,
   abilityTier,
@@ -155,6 +158,24 @@ export function RunBoard({
       }
     }
 
+    // Aegis passive shield — light-blue inset ring + faint wash on Rookie's
+    // square whenever she has charges available. Layered with whatever's
+    // already on that square (e.g. selection ring).
+    const aegisOwned = state.abilities.find((a) => a.id === 'aegis');
+    const aegisActive =
+      !!aegisOwned && (aegisOwned.tier === 5 || aegisOwned.usesLeftThisLevel > 0);
+    if (aegisActive && state.status === 'playing') {
+      const rookieSq = toSquare(state.rookie);
+      const prev = styles[rookieSq] ?? {};
+      const aegisRing =
+        'inset 0 0 0 3px rgba(56, 189, 248, 0.9), inset 0 0 16px rgba(125, 211, 252, 0.65)';
+      const merged = prev.boxShadow ? `${prev.boxShadow}, ${aegisRing}` : aegisRing;
+      styles[rookieSq] = {
+        ...prev,
+        boxShadow: merged,
+      };
+    }
+
     // Frozen-enemy highlight — icy blue wash with a shimmer overlay.
     for (const sq of state.frozenSquares) {
       styles[sq] = {
@@ -188,6 +209,27 @@ export function RunBoard({
   const telekinesisSquare = telekinesisTarget
     ? toSquare({ file: telekinesisTarget.file, rank: telekinesisTarget.rank })
     : null;
+
+  // Aegis lunge geometry — translate the attacker piece toward Rookie's
+  // square (in units of "one square width = 100% of the piece") then back.
+  const aegisLunge = useMemo(() => {
+    if (!aegisFx) return null;
+    const a = fromSquare(aegisFx.attackerSquare);
+    const r = fromSquare(aegisFx.rookieSquare);
+    const dx = (r.file - a.file) * 55; // 55% — stops short of fully entering
+    const dy = -(r.rank - a.rank) * 55; // visual y inverts rank
+    return { dx, dy, attackerSquare: aegisFx.attackerSquare, rookieSquare: aegisFx.rookieSquare, id: aegisFx.id };
+  }, [aegisFx]);
+
+  // Shield pulse — when Rookie has Aegis charges, gently pulse her square's
+  // inset ring so the protection reads as alive.
+  const rookieShieldSquare = useMemo(() => {
+    const owned = state.abilities.find((a) => a.id === 'aegis');
+    if (!owned) return null;
+    if (owned.tier !== 5 && owned.usesLeftThisLevel <= 0) return null;
+    if (state.status !== 'playing') return null;
+    return toSquare(state.rookie);
+  }, [state.abilities, state.rookie, state.status]);
 
   const pieces = useMemo(
     () => ({
@@ -291,6 +333,10 @@ export function RunBoard({
           0%, 100% { filter: brightness(1); }
           50%      { filter: brightness(1.25); }
         }
+        @keyframes rookiesRunAegisShieldPulse {
+          0%, 100% { filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.85)) drop-shadow(0 0 8px rgba(56, 189, 248, 0.55)); }
+          50%      { filter: drop-shadow(0 0 7px rgba(125, 211, 252, 1))    drop-shadow(0 0 14px rgba(56, 189, 248, 0.9)); }
+        }
         ${state.status === 'won'
           ? `[data-square$="8"] { animation: rookiesRunGoalGlow 1.2s ease-in-out infinite; }`
           : ''}
@@ -302,6 +348,12 @@ export function RunBoard({
              }`,
           )
           .join('\n')}
+        ${rookieShieldSquare
+          ? `[data-square="${rookieShieldSquare}"] > div > img,
+             [data-square="${rookieShieldSquare}"] > div > svg {
+               animation: rookiesRunAegisShieldPulse 1.8s ease-in-out infinite;
+             }`
+          : ''}
         ${wiggleSquares
           .map(
             (sq) => `[data-square="${sq}"] > div > img,
@@ -326,6 +378,30 @@ export function RunBoard({
             pointer-events: none;
             z-index: 5;
             animation: rookiesRunBombFlash 600ms ease-out forwards;
+          }
+        `}</style>
+      )}
+      {aegisLunge && (
+        <style key={aegisLunge.id}>{`
+          @keyframes rookiesRunAegisLunge-${Math.floor(aegisLunge.id)} {
+            0%   { transform: translate(0, 0) scale(1); }
+            35%  { transform: translate(${aegisLunge.dx}%, ${aegisLunge.dy}%) scale(1.08); }
+            55%  { transform: translate(${aegisLunge.dx * 0.92}%, ${aegisLunge.dy * 0.92}%) scale(0.92); }
+            100% { transform: translate(0, 0) scale(1); }
+          }
+          @keyframes rookiesRunAegisRipple-${Math.floor(aegisLunge.id)} {
+            0%   { box-shadow: inset 0 0 0 0 rgba(125, 211, 252, 0.95), inset 0 0 0 rgba(56, 189, 248, 0); background-color: rgba(125, 211, 252, 0); }
+            25%  { box-shadow: inset 0 0 0 6px rgba(125, 211, 252, 1),  inset 0 0 30px rgba(56, 189, 248, 0.95); background-color: rgba(125, 211, 252, 0.55); }
+            100% { box-shadow: inset 0 0 0 0 rgba(125, 211, 252, 0),    inset 0 0 0 rgba(56, 189, 248, 0); background-color: rgba(125, 211, 252, 0); }
+          }
+          [data-square="${aegisLunge.attackerSquare}"] > div > img,
+          [data-square="${aegisLunge.attackerSquare}"] > div > svg {
+            animation: rookiesRunAegisLunge-${Math.floor(aegisLunge.id)} 700ms cubic-bezier(0.5, -0.2, 0.4, 1.4) both;
+            z-index: 4;
+          }
+          [data-square="${aegisLunge.rookieSquare}"] {
+            position: relative;
+            animation: rookiesRunAegisRipple-${Math.floor(aegisLunge.id)} 700ms ease-out both;
           }
         `}</style>
       )}

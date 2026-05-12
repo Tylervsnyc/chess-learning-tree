@@ -338,14 +338,22 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       const aegisOwned = blocked.abilities.find((a) => a.id === 'aegis');
       const attackerSquare = coordKey({ file: action.mover.file, rank: action.mover.rank });
       const stillThere = aegisOwned && aegisOwned.tier !== 5;
+      const withFx: BoardState = {
+        ...blocked,
+        lastAegisIntercept: {
+          attackerSquare,
+          rookieSquare: toSquare(blocked.rookie),
+          id: Date.now() + Math.random(),
+        },
+      };
       const nextMoved = [
         ...state.enemyMovedSquares,
         attackerSquare,
       ];
-      if (nextMoved.length >= budget) return endTurn(blocked);
+      if (nextMoved.length >= budget) return endTurn(withFx);
       return stillThere
-        ? { ...blocked, turn: 'enemy', enemyMovedSquares: nextMoved }
-        : { ...blocked, turn: 'enemy', enemyMovedSquares: state.enemyMovedSquares };
+        ? { ...withFx, turn: 'enemy', enemyMovedSquares: nextMoved }
+        : { ...withFx, turn: 'enemy', enemyMovedSquares: state.enemyMovedSquares };
     }
   }
 

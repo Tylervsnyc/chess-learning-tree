@@ -83,6 +83,12 @@ export interface BoardState {
    * once per move/ability consumed. Resets to 0 at the start of each level.
    */
   bonusMovesLeft: number;
+  /**
+   * Transient signal: set on the state returned from an enemy step when Aegis
+   * intercepts a capture. UI watches `id` for changes to fire the lunge-and-
+   * bounce VFX. Not cleared by the engine — the UI tracks the last-seen id.
+   */
+  lastAegisIntercept?: { attackerSquare: string; rookieSquare: string; id: number };
 }
 
 export interface RunPuzzle {
