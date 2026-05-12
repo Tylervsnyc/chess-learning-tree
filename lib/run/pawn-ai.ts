@@ -14,6 +14,7 @@
  */
 
 import { enemyAt } from './movement';
+import { toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, PieceType } from './types';
 
 const BLACK_FORWARD = -1;
@@ -133,6 +134,7 @@ function slidingMoves(
   piece: EnemyPiece,
   state: BoardState,
   dirs: ReadonlyArray<[number, number]>,
+  vacated: ReadonlySet<string> = new Set(),
 ): Coord[] {
   const out: Coord[] = [];
   for (const [df, dr] of dirs) {
@@ -141,6 +143,7 @@ function slidingMoves(
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
       const c: Coord = { file: f, rank: r };
       if (isHazard(state.hazards, c)) break;
+      if (isVacated(vacated, c)) break; // ghost blocker — stop before
       const blocker = enemyAt(state.pieces, c);
       const isRookie = state.rookie.file === f && state.rookie.rank === r;
       if (blocker && blocker !== piece) break; // friendly blocker — stop before
@@ -220,6 +223,7 @@ function chooseEnemyAction(
   }
 
   // 2) Movers: pawns advance toward rank 1; others approach Rookie.
+  const vacated = vacatedSet(state);
   type Candidate = { mover: EnemyPiece; target: Coord; priority: number };
   const candidates: Candidate[] = [];
   for (const p of state.pieces) {
@@ -230,6 +234,7 @@ function chooseEnemyAction(
         inBounds(target) &&
         !isHazard(state.hazards, target) &&
         !enemyAt(state.pieces, target) &&
+        !isVacated(vacated, target) &&
         !(state.rookie.file === target.file && state.rookie.rank === target.rank)
       ) {
         // Lower rank = higher priority (closer to rank 1 = bigger threat).
@@ -297,25 +302,32 @@ export function stepEnemyTurn(state: BoardState): BoardState {
   const budget = Math.max(1, state.enemiesPerTurn ?? 1);
   const exclude = new Set(state.enemyMovedSquares);
 
-  if (state.enemyMovedSquares.length >= budget) {
-    return { ...state, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
-  }
+  const endTurn = (s: BoardState): BoardState => ({
+    ...s,
+    turn: 'rookie',
+    enemyMovedSquares: [],
+    enemyVacatedSquares: [],
+    frozenSquares: [],
+  });
+
+  if (state.enemyMovedSquares.length >= budget) return endTurn(state);
 
   const action = chooseEnemyAction(state, exclude);
-  if (!action) {
-    return { ...state, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
-  }
+  if (!action) return endTurn(state);
 
+  const originSquare = toSquare({ file: action.mover.file, rank: action.mover.rank });
   const after = applyAction(state, action);
-  if (after.status === 'lost') {
-    return { ...after, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
-  }
+  if (after.status === 'lost') return endTurn(after);
 
   const nextMoved = [...state.enemyMovedSquares, coordKey(action.target)];
-  if (nextMoved.length >= budget) {
-    return { ...after, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
-  }
-  return { ...after, turn: 'enemy', enemyMovedSquares: nextMoved };
+  const nextVacated = [...(state.enemyVacatedSquares ?? []), originSquare];
+  if (nextMoved.length >= budget) return endTurn(after);
+  return {
+    ...after,
+    turn: 'enemy',
+    enemyMovedSquares: nextMoved,
+    enemyVacatedSquares: nextVacated,
+  };
 }
 
 /**
@@ -352,11 +364,13 @@ export function nextEnemyMovers(state: BoardState): EnemyPiece[] {
     const action = chooseEnemyAction(cur, exclude);
     if (!action) break;
     movers.push(action.mover);
+    const originSquare = toSquare({ file: action.mover.file, rank: action.mover.rank });
     const after = applyAction(cur, action);
     if (after.status === 'lost') break;
     cur = {
       ...after,
       enemyMovedSquares: [...cur.enemyMovedSquares, coordKey(action.target)],
+      enemyVacatedSquares: [...(cur.enemyVacatedSquares ?? []), originSquare],
     };
   }
   return movers;

@@ -2677,6 +2677,7 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 - **Forms unlock by level**, defined by `allowedForms` on each puzzle. Daily Climb: rook L1–3, knight unlock L4, bishop unlock L7.
 - **Move limit is optional per level.** When set, the TempoBar counts down. Run out → fail level.
 - **Run progression:** completing a run advances `currentRunId` in localStorage and the SummaryModal shows a "Next Run" CTA cycling through `RUNS`.
+- **Ghost-blocker rule (fair-play, enemies-per-turn ≥ 2):** When multiple enemies move in one turn, every enemy after the first treats the *original* squares of pieces that already moved this turn as still occupied. No slider can pass through them, no knight can land on them, no pawn can advance into them. The player only ever needs to plan from the board they saw at the start of the turn. Tracked in `BoardState.enemyVacatedSquares`, cleared when control returns to Rookie.
 
 ### Files / dirs that should NOT exist (cleaned up 2026-05-12)
 - ~~`components/run/levels/`~~ — moved to `lib/run/daily-levels.ts`.
