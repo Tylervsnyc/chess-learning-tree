@@ -100,7 +100,26 @@ export function renderDigest(input: DigestInput): string {
   }
   lines.push(``);
 
-  // ─── 5. Ability power matrix ────────────────────────────────────────────
+  // ─── 5. Current Abilities Ranked ────────────────────────────────────────
+  // WHY ranked first, matrix second: a power_score (T3-weighted |delta|)
+  // gives Tyler the "what matters" view at a glance. The raw matrix below
+  // is the audit trail.
+  if (input.ablation.length > 0) {
+    lines.push(`## Current Abilities Ranked`);
+    lines.push(``);
+    lines.push(
+      `Power score weights absolute deltas by tier (T3=2.0, T4=1.5, T5=1.0) — abilities that help beginners rank higher. **Character** is a one-line interpretation of the curve.`,
+    );
+    lines.push(``);
+    lines.push(`| Rank | Ability | Power Score | ΔT3 | ΔT4 | ΔT5 | Character |`);
+    lines.push(`|---|---|---:|---:|---:|---:|---|`);
+    for (const row of buildRankingRows(input.ablation)) {
+      lines.push(row);
+    }
+    lines.push(``);
+  }
+
+  // ─── 5b. Ability power matrix ───────────────────────────────────────────
   lines.push(`## Ability Power Matrix (ablation)`);
   lines.push(``);
   lines.push(`Delta in win % when each ability is removed from the offer pool. Negative = removing it hurt players (ability was a crutch). Positive = removing it helped players (trap pick).`);
@@ -308,6 +327,46 @@ function shapeIcon(t3: number, t4: number, t5: number): string {
   if (t3 > 0.4 && t3 < 0.7 && t5 > 0.9) return 'fun-hard';
   if (t3 < 0.3 && t4 < 0.6) return 'punishing';
   return 'normal';
+}
+
+/**
+ * Per-ability power ranking. Score weights |Δwin-rate| by tier:
+ * T3=2.0 (beginners are the audience), T4=1.5, T5=1.0. Sort descending.
+ *
+ * Character labels are interpretive — same archetypes used by the standalone
+ * ability-lab one-shot agent so the two views stay consistent.
+ */
+function buildRankingRows(results: AblationResult[]): string[] {
+  const byAbility = new Map<AbilityId, AblationResult[]>();
+  for (const r of results) {
+    const arr = byAbility.get(r.ability) ?? [];
+    arr.push(r);
+    byAbility.set(r.ability, arr);
+  }
+  const scored = [...byAbility.entries()].map(([id, arr]) => {
+    const t3 = arr.find((r) => r.tier === 'T3')?.deltaPp ?? 0;
+    const t4 = arr.find((r) => r.tier === 'T4')?.deltaPp ?? 0;
+    const t5 = arr.find((r) => r.tier === 'T5')?.deltaPp ?? 0;
+    const power = 2.0 * Math.abs(t3) + 1.5 * Math.abs(t4) + 1.0 * Math.abs(t5);
+    return { id, t3, t4, t5, power };
+  });
+  scored.sort((a, b) => b.power - a.power);
+
+  return scored.map((s, i) => {
+    const character = characterFor(s.t3, s.t4, s.t5);
+    return `| ${i + 1} | ${ABILITY_DEFS[s.id].name} | ${s.power.toFixed(1)} | ${pp(s.t3)} | ${pp(s.t4)} | ${pp(s.t5)} | ${character} |`;
+  });
+}
+
+function characterFor(t3: number, t4: number, t5: number): string {
+  const a3 = Math.abs(t3);
+  const a4 = Math.abs(t4);
+  const a5 = Math.abs(t5);
+  if (t3 > 5) return 'Trap — beginners take it but lose more';
+  if (a3 < 3 && a4 < 3 && a5 < 3) return 'Quiet — negligible impact';
+  if (a3 >= 2 * a5 && t3 < 0) return 'Beginner crutch';
+  if (a5 > a3 && a5 > a4) return 'Expert tool';
+  return 'All-tier staple';
 }
 
 function buildAbilityRows(results: AblationResult[]): string[] {
