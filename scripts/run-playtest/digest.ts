@@ -15,6 +15,7 @@ import { ABILITY_DEFS } from '../../lib/run/abilities';
 import type { AbilityId } from '../../lib/run/abilities';
 import type { LevelFeatures } from './features';
 import type { FeatureCorrelation } from './correlations';
+import type { RegressionReport } from './regression';
 import type { AblationResult, LevelTierStats, TierId } from './types';
 
 export interface DigestInput {
@@ -25,6 +26,7 @@ export interface DigestInput {
   ablation: AblationResult[];
   features: LevelFeatures[];
   correlations: FeatureCorrelation[];
+  regression?: RegressionReport;
   caveats: string[];
 }
 
@@ -119,6 +121,31 @@ export function renderDigest(input: DigestInput): string {
       );
     }
     lines.push(``);
+  }
+
+  // ─── 6b. Multivariate model ─────────────────────────────────────────────
+  // Sits right after the univariate Pearson view so a reader can compare
+  // "what correlates" vs "what survives when controlling for everything
+  // else."
+  if (input.regression && input.regression.tiers.length > 0) {
+    lines.push(`## Multivariate Difficulty Model`);
+    lines.push(``);
+    lines.push(
+      `Ridge regression (λ=0.1) on standardized features. Coefficients say "moving this feature up by one standard deviation shifts win-rate by N pp, holding the other 18 features fixed." Hold-out R² uses a deterministic 20% of levels per tier so the number is comparable night-over-night.`,
+    );
+    lines.push(``);
+    for (const t of input.regression.tiers) {
+      lines.push(`**${t.tier}** — train R² ${fmtR2(t.trainR2)} · hold-out R² ${fmtR2(t.holdoutR2)} (n=${t.samples}, train=${t.trainSize}, hold-out=${t.holdoutSize})`);
+      lines.push(``);
+      lines.push(`| Feature | Std coef | Effect |`);
+      lines.push(`|---|---:|---|`);
+      for (const f of t.top5) {
+        lines.push(
+          `| ${f.feature} | ${fmtPp(f.stdCoef)} | ${narrate(f, t.tier)} |`,
+        );
+      }
+      lines.push(``);
+    }
   }
 
   // ─── 7. Methodology + caveats ───────────────────────────────────────────
@@ -274,4 +301,27 @@ function fmtLvlRate(s: LevelTierStats): string {
 
 function mean(xs: number[]): number {
   return xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
+}
+
+function fmtR2(x: number): string {
+  // Hold-out R² can legitimately be negative when the model generalizes
+  // worse than predicting the mean — show the sign so that's visible.
+  return x.toFixed(2);
+}
+
+function fmtPp(deltaWinRate: number): string {
+  // Coefficient is in raw win-rate units; the digest reads in pp.
+  const v = deltaWinRate * 100;
+  const r = Math.abs(v) < 0.05 ? 0 : Math.round(v * 10) / 10;
+  return r > 0 ? `+${r.toFixed(1)}pp` : `${r.toFixed(1)}pp`;
+}
+
+function narrate(
+  f: { feature: string; stdCoef: number },
+  tier: TierId,
+): string {
+  const v = f.stdCoef * 100;
+  const sign = v >= 0 ? '+' : '';
+  const r = Math.abs(v) < 0.05 ? 0 : Math.round(v * 10) / 10;
+  return `each std-dev of ${f.feature} changes ${tier} win-rate by ${sign}${r.toFixed(1)}pp`;
 }

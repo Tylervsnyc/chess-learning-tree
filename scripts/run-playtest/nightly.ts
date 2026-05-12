@@ -26,6 +26,7 @@ import { aggregate } from './aggregate';
 import { runAblation } from './ablation';
 import { extractFeatures } from './features';
 import { correlateFeatures } from './correlations';
+import { regressFeatures } from './regression';
 import { renderDigest } from './digest';
 import { buildLevelCatalog } from './utils/levels';
 
@@ -120,6 +121,15 @@ async function main(): Promise<void> {
       JSON.stringify(correlations, null, 2),
     );
 
+    // Multivariate ridge regression — runs after the univariate pass so
+    // the digest can show both views and we can sanity-check that
+    // strong Pearson features also rank high in importance.
+    const regression = regressFeatures(features, sweepStats);
+    writeFileSync(
+      join(rawDir, 'regression.json'),
+      JSON.stringify(regression, null, 2),
+    );
+
     // ─── Digest ─────────────────────────────────────────────────────────
     const md = renderDigest({
       date,
@@ -129,6 +139,7 @@ async function main(): Promise<void> {
       ablation: ablationResults,
       features,
       correlations,
+      regression,
       caveats,
     });
     const digestPath = join(digestsDir, `${date}.md`);
