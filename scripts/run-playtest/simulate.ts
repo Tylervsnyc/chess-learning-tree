@@ -6,15 +6,28 @@
  * offered/taken/used, near-death turns) as it goes.
  */
 
-import { applyDismissOffer, applyOfferPick } from '../../lib/run/abilities';
+import {
+  applyDismissOffer,
+  applyOfferPick,
+  refreshAbilityUses,
+} from '../../lib/run/abilities';
 import { puzzleToBoardState } from '../../lib/run/seed';
 import type { BoardState, PieceType, RunPuzzle } from '../../lib/run/types';
-import type { AbilityId } from '../../lib/run/abilities';
+import type { AbilityId, OwnedAbility } from '../../lib/run/abilities';
 import { applyBotAction } from './bots/apply';
 import { settleEnemyTurns } from './bots/t3';
 import { rookieInThreat, inferCapturer } from './bots/shared';
 import { rngFromString } from './utils/rng';
-import type { Bot, BotContext, Outcome } from './types';
+import { serializeBoard } from './utils/serialize';
+import { synthesizeReason } from './utils/reason';
+import type {
+  Bot,
+  BotAction,
+  BotContext,
+  BotDecision,
+  DecisionLogEntry,
+  Outcome,
+} from './types';
 
 const MAX_TURNS = 400;
 
@@ -23,22 +36,66 @@ export interface SimulateOpts {
   bot: Bot;
   seed: string;
   excludedAbilities?: ReadonlySet<AbilityId>;
+  /**
+   * Force the bot to accept these abilities whenever offered. Used by the
+   * forced-take and combo analyses to measure "if you took X, how would it
+   * play out?" without changing anything else about the bot.
+   */
+  forcedAcceptIds?: ReadonlySet<AbilityId>;
+  /** Force the bot to refuse these abilities whenever offered. */
+  forcedSkipIds?: ReadonlySet<AbilityId>;
+  /**
+   * Pre-owned abilities seeded at game start. Combos use this to inject a
+   * specific (A, B) pair as if Rookie had owned them from level 1. We layer
+   * on top of whatever the puzzle's own starting state was — existing wins
+   * by id (so we never clobber a higher-tier ability with a forced T1 copy).
+   */
+  preownedAbilities?: ReadonlyArray<OwnedAbility>;
+  /**
+   * When true, the simulator records a per-decision trace and returns it
+   * inside the outcome. Off by default — opt-in because the trace adds
+   * ~2-5KB per game and serializes a board snapshot on every Rookie action.
+   */
+  recordTrace?: boolean;
 }
 
-export function simulateGame(opts: SimulateOpts): Omit<
+export type SimulateResult = Omit<
   Outcome,
   'levelId' | 'runId' | 'levelIndex' | 'tier' | 'trial' | 'seed'
-> & { seed: number } {
+> & {
+  seed: number;
+  /** Final BoardState — used by the trace tool; sweep callers strip it. */
+  finalState: BoardState;
+};
+
+export function simulateGame(opts: SimulateOpts): SimulateResult {
   const rng = rngFromString(opts.seed);
   const seedHash = Math.floor(rng() * 2 ** 31);
   // Re-derive a fresh RNG for the bot (otherwise we consumed one tick).
   const botRng = rngFromString(opts.seed + ':bot');
   const ctx: BotContext = {
     excludedAbilities: opts.excludedAbilities ?? new Set(),
+    forcedAcceptIds: opts.forcedAcceptIds ?? new Set(),
+    forcedSkipIds: opts.forcedSkipIds ?? new Set(),
     rng: botRng,
   };
 
   let state: BoardState = puzzleToBoardState(opts.puzzle);
+  // Inject pre-owned abilities AFTER puzzleToBoardState so we layer on top of
+  // whatever the puzzle's own starting state was. Dedupe by id (existing
+  // wins — we don't clobber a higher-tier ability with a forced T1 copy).
+  if (opts.preownedAbilities && opts.preownedAbilities.length > 0) {
+    const seen = new Set(state.abilities.map((a) => a.id));
+    const additions = opts.preownedAbilities.filter((a) => !seen.has(a.id));
+    if (additions.length > 0) {
+      // refreshAbilityUses keeps `usesLeftThisLevel` in sync with the tier's
+      // max — same shape the engine uses at level transitions.
+      state = {
+        ...state,
+        abilities: refreshAbilityUses([...state.abilities, ...additions]),
+      };
+    }
+  }
   let prevState = state;
 
   let abilitiesOffered = 0;
@@ -49,6 +106,40 @@ export function simulateGame(opts: SimulateOpts): Omit<
   let lastAbilityCount = countAbilityUseFootprint(state);
   let lastOfferSeen: BoardState['pendingOffer'] = null;
 
+  // Trace accumulator — populated only when opts.recordTrace is on.
+  const decisionLog: DecisionLogEntry[] = [];
+  let decisionTurn = 0;
+
+  // Centralize the "pick richer or bare decision" branch so the main loop
+  // stays one-shape. Tracing prefers decideWithReasoning when the bot
+  // implements it (so we capture eval scores + rationale).
+  const ask = (s: BoardState): BotDecision => {
+    if (opts.recordTrace && opts.bot.decideWithReasoning) {
+      return opts.bot.decideWithReasoning(s, ctx);
+    }
+    return { action: opts.bot.decide(s, ctx) };
+  };
+  const recordEntry = (
+    snapshot: BoardState,
+    decision: BotDecision,
+  ): void => {
+    if (!opts.recordTrace) return;
+    const reason =
+      decision.reasoning ??
+      synthesizeReason(snapshot, decision.action, {
+        candidatesConsidered: decision.candidatesConsidered,
+        evalScore: decision.evalScore,
+      });
+    decisionLog.push({
+      turn: decisionTurn++,
+      moveCount: snapshot.moveCount,
+      beforeBoard: serializeBoard(snapshot),
+      action: decision.action,
+      reason,
+      evalScore: decision.evalScore,
+    });
+  };
+
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     if (state.status !== 'playing') break;
 
@@ -57,7 +148,9 @@ export function simulateGame(opts: SimulateOpts): Omit<
         abilitiesOffered++;
         lastOfferSeen = state.pendingOffer;
       }
-      const action = opts.bot.decide(state, ctx);
+      const decision = ask(state);
+      const action = decision.action;
+      recordEntry(state, decision);
       prevState = state;
       if (action.kind === 'pick-offer') {
         const opt = state.pendingOffer[action.optionIndex];
@@ -81,7 +174,9 @@ export function simulateGame(opts: SimulateOpts): Omit<
     // Rookie's turn — track if she's in threat before deciding.
     if (rookieInThreat(state)) nearDeathTurns++;
 
-    const action = opts.bot.decide(state, ctx);
+    const decision = ask(state);
+    const action: BotAction = decision.action;
+    recordEntry(state, decision);
     prevState = state;
     state = applyBotAction(state, action);
 
@@ -148,6 +243,8 @@ export function simulateGame(opts: SimulateOpts): Omit<
     nearDeathTurns,
     excludedAbilities: opts.excludedAbilities ? [...opts.excludedAbilities] : [],
     seed: seedHash,
+    decisionLog: opts.recordTrace ? decisionLog : undefined,
+    finalState: state,
   };
 }
 

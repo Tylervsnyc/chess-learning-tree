@@ -12,7 +12,7 @@ import { T4 } from './bots/t4';
 import { T5 } from './bots/t5';
 import { simulateGame } from './simulate';
 import { buildLevelCatalog } from './utils/levels';
-import type { AbilityId } from '../../lib/run/abilities';
+import type { AbilityId, OwnedAbility } from '../../lib/run/abilities';
 import type { Bot, Outcome, TierId } from './types';
 
 const BOTS: Record<TierId, Bot> = { T3, T4, T5 };
@@ -21,6 +21,12 @@ export interface SweepOpts {
   trials: number;
   tiers?: TierId[];
   excludedAbilities?: ReadonlySet<AbilityId>;
+  /** Forced-take: bots must accept these whenever offered. */
+  forcedAcceptIds?: ReadonlySet<AbilityId>;
+  /** Forced-take: bots must dismiss these whenever offered. */
+  forcedSkipIds?: ReadonlySet<AbilityId>;
+  /** Combo: pre-own these abilities at game start (per level). */
+  preownedAbilities?: ReadonlyArray<OwnedAbility>;
   /** Optional filter — only levels matching this id substring. */
   levelFilter?: string;
   /** Progress callback (line-by-line). */
@@ -47,9 +53,16 @@ export function runSweep(opts: SweepOpts): Outcome[] {
           bot,
           seed,
           excludedAbilities: opts.excludedAbilities,
+          forcedAcceptIds: opts.forcedAcceptIds,
+          forcedSkipIds: opts.forcedSkipIds,
+          preownedAbilities: opts.preownedAbilities,
         });
+        // Strip `finalState` so we don't bloat raw outcome JSONs with the
+        // entire end-of-game BoardState — only the trace CLI needs it.
+        const { finalState: _final, ...outcome } = r;
+        void _final;
         results.push({
-          ...r,
+          ...outcome,
           levelId: entry.levelId,
           runId: entry.runId,
           levelIndex: entry.levelIndex,

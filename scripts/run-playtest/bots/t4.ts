@@ -14,7 +14,6 @@
  *     just like regular moves
  */
 
-import { stepEnemyTurn } from '../../../lib/run/pawn-ai';
 import type { BoardState } from '../../../lib/run/types';
 import { softmaxSample } from '../utils/rng';
 import { applyBotAction } from './apply';
@@ -23,29 +22,52 @@ import {
   legalCandidates,
   rookieCanBeCapturedThisTurn,
 } from './shared';
-import type { Bot, BotAction, BotContext } from '../types';
+import { describeAction } from '../utils/reason';
+import type { Bot, BotAction, BotContext, BotDecision } from '../types';
 import { settleEnemyTurns } from './t3';
 
 export const T4: Bot = {
   id: 'T4',
   decide(state, ctx) {
-    if (state.pendingOffer) return pickOfferSharp(state, ctx);
-
-    if (rookieCanBeCapturedThisTurn(state) && hasUsableAegis(state, ctx)) {
-      return { kind: 'activate-ability', abilityId: 'aegis' };
-    }
-
-    const candidates = legalCandidates(state, ctx.excludedAbilities);
-    if (candidates.length === 0) {
-      return { kind: 'move', target: { ...state.rookie } };
-    }
-
-    const scores = candidates.map((c) => searchDepth(state, c, /* depth */ 2));
-    const idx = softmaxSample(scores, 1.5, ctx.rng); // sharper than T3, mild noise
-    const chosen = candidates[idx];
-    return candidateToAction(chosen);
+    return decideT4(state, ctx).action;
+  },
+  decideWithReasoning(state, ctx) {
+    return decideT4(state, ctx);
   },
 };
+
+function decideT4(state: BoardState, ctx: BotContext): BotDecision {
+  if (state.pendingOffer) {
+    const action = pickOfferSharp(state, ctx);
+    return { action, reasoning: describeAction(state, action) };
+  }
+
+  if (rookieCanBeCapturedThisTurn(state) && hasUsableAegis(state, ctx)) {
+    return {
+      action: { kind: 'activate-ability', abilityId: 'aegis' },
+      reasoning: 'rookie is in threat — reactive Aegis',
+    };
+  }
+
+  const candidates = legalCandidates(state, ctx.excludedAbilities);
+  if (candidates.length === 0) {
+    return {
+      action: { kind: 'move', target: { ...state.rookie } },
+      reasoning: 'no legal moves — stuck (dead-end)',
+    };
+  }
+
+  const scores = candidates.map((c) => searchDepth(state, c, /* depth */ 2));
+  const idx = softmaxSample(scores, 1.5, ctx.rng); // sharper than T3, mild noise
+  const chosen = candidates[idx];
+  const action = candidateToAction(chosen);
+  return {
+    action,
+    reasoning: `${describeAction(state, action)} — 2-ply best of ${candidates.length} (eval ${scores[idx].toFixed(1)})`,
+    evalScore: scores[idx],
+    candidatesConsidered: candidates.length,
+  };
+}
 
 export function searchDepth(
   state: BoardState,
@@ -87,6 +109,12 @@ function hasUsableAegis(state: BoardState, ctx: BotContext): boolean {
 
 function pickOfferSharp(state: BoardState, ctx: BotContext): BotAction {
   const offer = state.pendingOffer!;
+  // forcedAcceptIds wins over normal scoring — see T3 for rationale.
+  for (let i = 0; i < offer.length; i++) {
+    if (ctx.forcedAcceptIds.has(offer[i].id)) {
+      return { kind: 'pick-offer', optionIndex: i as 0 | 1 };
+    }
+  }
   // T4 scores each offer option by trying it on the current state and seeing
   // which yields higher eval immediately. Lightweight — doesn't recurse into
   // the future — but better than "always option 0."
@@ -94,6 +122,7 @@ function pickOfferSharp(state: BoardState, ctx: BotContext): BotAction {
   let bestScore = -Infinity;
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
+    if (ctx.forcedSkipIds.has(opt.id)) return;
     // Approximate "value of taking this offer": +3 + tier (mirror eval bonus)
     const synth = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
     if (synth > bestScore) {

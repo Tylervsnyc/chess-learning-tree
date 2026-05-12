@@ -19,36 +19,61 @@ import {
   legalCandidates,
   rookieCanBeCapturedThisTurn,
 } from './shared';
-import type { Bot, BotAction, BotContext } from '../types';
+import { describeAction } from '../utils/reason';
+import type { Bot, BotAction, BotContext, BotDecision } from '../types';
 
 export const T3: Bot = {
   id: 'T3',
   decide(state, ctx) {
-    // Offer screen — pick first non-excluded option, else dismiss.
-    if (state.pendingOffer) {
-      return pickOfferCasual(state, ctx);
-    }
-
-    // Reactive Aegis tap — raise shield if rookie is threatened right now AND
-    // we own aegis with charges.
-    if (rookieCanBeCapturedThisTurn(state) && hasUsableAegis(state, ctx)) {
-      return { kind: 'activate-ability', abilityId: 'aegis' };
-    }
-
-    const candidates = legalCandidates(state, ctx.excludedAbilities);
-    if (candidates.length === 0) {
-      // Dead-end: no legal moves. Engine will detect lost state on enemy turn.
-      return { kind: 'move', target: { ...state.rookie } };
-    }
-
-    // 1-ply lookahead. For each candidate, simulate the resulting state +
-    // one enemy turn cycle, then score.
-    const scores = candidates.map((c) => scoreCandidate(state, c));
-    const idx = softmaxSample(scores, 4, ctx.rng); // mild noise — casual lapses
-    const chosen = candidates[idx];
-    return candidateToAction(chosen);
+    return decideT3(state, ctx).action;
+  },
+  decideWithReasoning(state, ctx) {
+    return decideT3(state, ctx);
   },
 };
+
+/**
+ * Single source of truth for T3's policy. Returns the action + a short why.
+ * The bare `decide` method just strips the extras (keeps backward compat).
+ */
+function decideT3(state: BoardState, ctx: BotContext): BotDecision {
+  // Offer screen — pick first non-excluded option, else dismiss.
+  if (state.pendingOffer) {
+    const action = pickOfferCasual(state, ctx);
+    return { action, reasoning: describeAction(state, action) };
+  }
+
+  // Reactive Aegis tap — raise shield if rookie is threatened right now AND
+  // we own aegis with charges.
+  if (rookieCanBeCapturedThisTurn(state) && hasUsableAegis(state, ctx)) {
+    return {
+      action: { kind: 'activate-ability', abilityId: 'aegis' },
+      reasoning: 'rookie is in threat — reflexively raised Aegis',
+    };
+  }
+
+  const candidates = legalCandidates(state, ctx.excludedAbilities);
+  if (candidates.length === 0) {
+    // Dead-end: no legal moves. Engine will detect lost state on enemy turn.
+    return {
+      action: { kind: 'move', target: { ...state.rookie } },
+      reasoning: 'no legal moves — stuck (dead-end)',
+    };
+  }
+
+  // 1-ply lookahead. For each candidate, simulate the resulting state +
+  // one enemy turn cycle, then score.
+  const scores = candidates.map((c) => scoreCandidate(state, c));
+  const idx = softmaxSample(scores, 4, ctx.rng); // mild noise — casual lapses
+  const chosen = candidates[idx];
+  const action = candidateToAction(chosen);
+  return {
+    action,
+    reasoning: `${describeAction(state, action)} — 1-ply best of ${candidates.length} (eval ${scores[idx].toFixed(1)})`,
+    evalScore: scores[idx],
+    candidatesConsidered: candidates.length,
+  };
+}
 
 function scoreCandidate(
   state: BoardState,
@@ -95,9 +120,19 @@ function hasUsableAegis(state: BoardState, ctx: BotContext): boolean {
 
 function pickOfferCasual(state: BoardState, ctx: BotContext): BotAction {
   const offer = state.pendingOffer!;
+  // forcedAcceptIds wins over normal preference — the forced-take analysis
+  // measures the counterfactual "what if you said yes every time?".
+  for (let i = 0; i < offer.length; i++) {
+    if (ctx.forcedAcceptIds.has(offer[i].id)) {
+      return { kind: 'pick-offer', optionIndex: i as 0 | 1 };
+    }
+  }
   const eligible: { idx: 0 | 1 }[] = [];
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
+    // forcedSkipIds: refuse this slot. If the other slot is also blocked,
+    // we fall through to dismiss below.
+    if (ctx.forcedSkipIds.has(opt.id)) return;
     eligible.push({ idx: i as 0 | 1 });
   });
   if (eligible.length === 0) return { kind: 'dismiss-offer' };
