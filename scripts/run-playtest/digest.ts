@@ -16,6 +16,11 @@ import type { AbilityId } from '../../lib/run/abilities';
 import type { LevelFeatures } from './features';
 import type { FeatureCorrelation } from './correlations';
 import type { RegressionReport } from './regression';
+import type { Experiment } from './experiment-log';
+import { byDate, readAll as readAllExperiments } from './experiment-log';
+import type { Hypothesis } from './hypothesis-queue';
+import type { PublishResult } from './model-version';
+import { describeMutation } from './mutations';
 import type { AblationResult, LevelTierStats, TierId } from './types';
 
 export interface DigestInput {
@@ -27,6 +32,12 @@ export interface DigestInput {
   features: LevelFeatures[];
   correlations: FeatureCorrelation[];
   regression?: RegressionReport;
+  /** Hypotheses that were SCHEDULED for tonight (may include some that ran). */
+  hypothesesPlanned?: Hypothesis[];
+  /** Experiments that actually ran tonight (1 per hypothesis above). */
+  hypothesisResults?: Experiment[];
+  /** Outcome of proposeNewVersion — drives the "model trajectory" line. */
+  publishResult?: PublishResult | null;
   caveats: string[];
 }
 
@@ -101,6 +112,55 @@ export function renderDigest(input: DigestInput): string {
   }
   lines.push(``);
 
+  // ─── 5b. Forced-take analysis ───────────────────────────────────────────
+  // WHY: ablation removes the ability from the offer pool entirely. This
+  // panel leaves the pool alone but forces the bot's *pick* — telling us
+  // whether low usage is rational ("they skip because it's bad") or a
+  // blind-spot ("they skip but it would have helped").
+  if (input.forcedTake && input.forcedTake.length > 0) {
+    lines.push(`## Forced-Take Analysis`);
+    lines.push(``);
+    lines.push(`Force the bot to accept (or refuse) each ability whenever offered. Accept Δ > 0 = forcing the pick helped (bot was leaving value on the table). Skip Δ > 0 = forcing the skip helped (bot was hurting itself by taking it).`);
+    lines.push(``);
+    lines.push(`| Ability | Accept ΔT3 | Accept ΔT4 | Accept ΔT5 | Skip ΔT3 | Skip ΔT4 | Skip ΔT5 |`);
+    lines.push(`|---|---:|---:|---:|---:|---:|---:|`);
+    for (const row of buildForcedTakeRows(input.forcedTake)) {
+      lines.push(row);
+    }
+    lines.push(``);
+  }
+
+  // ─── 5c. Top combos ─────────────────────────────────────────────────────
+  if (input.combos && input.combos.length > 0) {
+    lines.push(`## Top Combos`);
+    lines.push(``);
+    const sampleNote = input.comboSampledLevels?.length
+      ? ` (sampled across ${input.comboSampledLevels.length} levels)`
+      : '';
+    lines.push(`Pair-combo synergy: pre-own (A, B) at T1 from level 1 and compare to the sum of solo (A) and solo (B) deltas${sampleNote}.`);
+    lines.push(`Positive synergy = the pair over-performs the sum of its parts. Negative = redundant or the abilities step on each other.`);
+    lines.push(``);
+    for (const tier of ['T3', 'T4', 'T5'] as TierId[]) {
+      const tierCombos = input.combos.filter((c) => c.tier === tier);
+      if (tierCombos.length === 0) continue;
+      const sorted = [...tierCombos].sort((a, b) => b.synergyPp - a.synergyPp);
+      const top = sorted.slice(0, 5);
+      const bottom = [...sorted].reverse().slice(0, 3);
+      lines.push(`**${tier} — top synergies**`);
+      lines.push(``);
+      lines.push(`| Pair | Pair Δ | Solo A Δ | Solo B Δ | Synergy Δ |`);
+      lines.push(`|---|---:|---:|---:|---:|`);
+      for (const c of top) lines.push(fmtComboRow(c));
+      lines.push(``);
+      lines.push(`**${tier} — anti-synergies**`);
+      lines.push(``);
+      lines.push(`| Pair | Pair Δ | Solo A Δ | Solo B Δ | Synergy Δ |`);
+      lines.push(`|---|---:|---:|---:|---:|`);
+      for (const c of bottom) lines.push(fmtComboRow(c));
+      lines.push(``);
+    }
+  }
+
   // ─── 6. Level factor findings ───────────────────────────────────────────
   lines.push(`## Level Factor Findings`);
   lines.push(``);
@@ -147,6 +207,11 @@ export function renderDigest(input: DigestInput): string {
       lines.push(``);
     }
   }
+
+  // ─── 6c. Hypothesis Ledger ──────────────────────────────────────────────
+  // The system's running scorecard: what did we predict, what did we
+  // measure, how is the model doing across the rolling window.
+  lines.push(...renderHypothesisLedger(input));
 
   // ─── 7. Methodology + caveats ───────────────────────────────────────────
   lines.push(`## Methodology`);
@@ -295,6 +360,40 @@ function pp(x: number): string {
   return v > 0 ? `+${v}pp` : `${v}pp`;
 }
 
+function buildForcedTakeRows(results: ForcedTakeResult[]): string[] {
+  const byAbility = new Map<AbilityId, ForcedTakeResult[]>();
+  for (const r of results) {
+    const arr = byAbility.get(r.ability) ?? [];
+    arr.push(r);
+    byAbility.set(r.ability, arr);
+  }
+  // Sort by most-positive accept delta — the abilities the bot most under-takes.
+  const entries = [...byAbility.entries()].sort((a, b) => {
+    const score = (arr: ForcedTakeResult[]): number =>
+      Math.max(...arr.map((r) => r.acceptDeltaPp));
+    return score(b[1]) - score(a[1]);
+  });
+  const rows: string[] = [];
+  for (const [id, arr] of entries) {
+    const aT3 = arr.find((r) => r.tier === 'T3')?.acceptDeltaPp ?? 0;
+    const aT4 = arr.find((r) => r.tier === 'T4')?.acceptDeltaPp ?? 0;
+    const aT5 = arr.find((r) => r.tier === 'T5')?.acceptDeltaPp ?? 0;
+    const sT3 = arr.find((r) => r.tier === 'T3')?.skipDeltaPp ?? 0;
+    const sT4 = arr.find((r) => r.tier === 'T4')?.skipDeltaPp ?? 0;
+    const sT5 = arr.find((r) => r.tier === 'T5')?.skipDeltaPp ?? 0;
+    rows.push(
+      `| ${ABILITY_DEFS[id].name} | ${pp(aT3)} | ${pp(aT4)} | ${pp(aT5)} | ${pp(sT3)} | ${pp(sT4)} | ${pp(sT5)} |`,
+    );
+  }
+  return rows;
+}
+
+function fmtComboRow(c: ComboResult): string {
+  const nameA = ABILITY_DEFS[c.abilityA].name;
+  const nameB = ABILITY_DEFS[c.abilityB].name;
+  return `| ${nameA} + ${nameB} | ${pp(c.pairDeltaPp)} | ${pp(c.soloADeltaPp)} | ${pp(c.soloBDeltaPp)} | ${pp(c.synergyPp)} |`;
+}
+
 function fmtLvlRate(s: LevelTierStats): string {
   return `${s.levelId} (${pct(s.winRate)})`;
 }
@@ -324,4 +423,110 @@ function narrate(
   const sign = v >= 0 ? '+' : '';
   const r = Math.abs(v) < 0.05 ? 0 : Math.round(v * 10) / 10;
   return `each std-dev of ${f.feature} changes ${tier} win-rate by ${sign}${r.toFixed(1)}pp`;
+}
+
+// ─── Hypothesis Ledger ──────────────────────────────────────────────────────
+
+const LEDGER_WINDOW_DAYS = 7;
+
+function renderHypothesisLedger(input: DigestInput): string[] {
+  const lines: string[] = [];
+  lines.push(`## Hypothesis Ledger`);
+  lines.push(``);
+  lines.push(
+    `The system's running scorecard. We pre-commit predictions, then measure. "Confirmed" = within 2pp · "Falsified" = off by more than 5pp (both scaled by confidence). The log is append-only at \`data/run-playtest/experiments.jsonl\`.`,
+  );
+  lines.push(``);
+
+  const todays = input.hypothesisResults ?? [];
+  lines.push(`**Last night (${todays.length} experiments)**`);
+  lines.push(``);
+  if (todays.length === 0) {
+    lines.push(`_No experiments ran — see caveats._`);
+    lines.push(``);
+  } else {
+    lines.push(`| Hypothesis | Mutation | Predicted | Actual | Verdict |`);
+    lines.push(`|---|---|---:|---:|---|`);
+    for (const e of todays) {
+      const mut = describeMutation(e.mutation);
+      lines.push(
+        `| ${shorten(e.hypothesis, 80)} | ${mut} | ${pct(e.prediction.winRate)} | ${pct(e.actual.winRate)} | ${e.verdict} |`,
+      );
+    }
+    lines.push(``);
+  }
+
+  // Aggregate over the last LEDGER_WINDOW_DAYS nights — covers a full week.
+  const window = recentWindow(LEDGER_WINDOW_DAYS);
+  const wins = window.filter((e) => e.verdict === 'confirmed').length;
+  const fails = window.filter((e) => e.verdict === 'falsified').length;
+  const incs = window.filter((e) => e.verdict === 'inconclusive').length;
+  lines.push(
+    `**Rolling ${LEDGER_WINDOW_DAYS}d:** confirmed: ${wins} · falsified: ${fails} · inconclusive: ${incs}`,
+  );
+  lines.push(``);
+
+  // Model trajectory.
+  if (input.publishResult) {
+    const r = input.publishResult;
+    const heldOut = r.heldOutR2;
+    const prior = r.priorHeldOutR2;
+    const verdict = r.published ? 'PUBLISHED' : 'kept';
+    lines.push(
+      `**Model trajectory:** ${verdict} v${r.version}${r.priorVersion ? ` (prior v${r.priorVersion})` : ''}. ${r.reason}`,
+    );
+    if (prior) {
+      lines.push(``);
+      lines.push(`| Tier | Prior R² | New R² | Δ |`);
+      lines.push(`|---|---:|---:|---:|`);
+      for (const tier of ['T3', 'T4', 'T5'] as TierId[]) {
+        const p = prior[tier];
+        const n = heldOut[tier];
+        const d = n - p;
+        lines.push(
+          `| ${tier} | ${p.toFixed(2)} | ${n.toFixed(2)} | ${d >= 0 ? '+' : ''}${d.toFixed(2)} |`,
+        );
+      }
+    }
+    lines.push(``);
+  }
+
+  // Open mysteries: top drift-flagged levels from tonight's predictions.
+  // We use the falsified experiments to surface levels worth re-investigating.
+  const mysteries = topMysteries(todays, 3);
+  if (mysteries.length > 0) {
+    lines.push(`**Open mysteries (largest unexplained gap):**`);
+    lines.push(``);
+    for (const m of mysteries) {
+      lines.push(
+        `- \`${m.levelId}\` ${m.actual.tier}: predicted ${pct(m.prediction.winRate)}, actual ${pct(m.actual.winRate)} (Δ${pp(m.deltaPp)})`,
+      );
+    }
+    lines.push(``);
+  }
+
+  return lines;
+}
+
+function recentWindow(days: number): Experiment[] {
+  // WHY by-date: experiments.jsonl might contain records from many nights;
+  // we want a precise "rolling N nights" cut.
+  const all = readAllExperiments();
+  const byD = byDate();
+  void byD;
+  const sortedDates = [...new Set(all.map((e) => e.date))].sort();
+  const cutoff = sortedDates.slice(-days);
+  const cutoffSet = new Set(cutoff);
+  return all.filter((e) => cutoffSet.has(e.date));
+}
+
+function topMysteries(experiments: Experiment[], n: number): Experiment[] {
+  return [...experiments]
+    .sort((a, b) => Math.abs(b.deltaPp) - Math.abs(a.deltaPp))
+    .slice(0, n);
+}
+
+function shorten(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1) + '…';
 }

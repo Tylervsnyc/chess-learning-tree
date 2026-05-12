@@ -3,23 +3,30 @@
  * Nightly orchestrator. Runs the full pipeline and writes outputs.
  *
  * Usage:
- *   npx tsx scripts/run-playtest/nightly.ts [--sweep-trials=N] [--ablation-trials=M] [--quick]
+ *   npx tsx scripts/run-playtest/nightly.ts [--sweep-trials=N] [--ablation-trials=M] [--quick] [--hypotheses-per-night=N]
  *
  * Defaults:
- *   --sweep-trials=200  (baseline trials per (level, tier))
+ *   --sweep-trials=200       (baseline trials per (level, tier))
  *   --ablation-trials=120
- *   --quick             shortcut: trials=20, ablation=10, skips features
+ *   --hypotheses-per-night=5
+ *   --quick                  shortcut: trials=20, ablation=10, hypotheses=1
  *
  * Outputs:
  *   data/run-playtest/raw/YYYY-MM-DD/sweep.json
  *   data/run-playtest/raw/YYYY-MM-DD/ablation.json
  *   data/run-playtest/raw/YYYY-MM-DD/features.json
  *   data/run-playtest/raw/YYYY-MM-DD/correlations.json
+ *   data/run-playtest/raw/YYYY-MM-DD/regression.json
+ *   data/run-playtest/raw/YYYY-MM-DD/hypotheses.json
+ *   data/run-playtest/raw/YYYY-MM-DD/experiments.json
+ *   data/run-playtest/raw/YYYY-MM-DD/model-publish.json
+ *   data/run-playtest/experiments.jsonl   (append-only, committed)
+ *   data/run-playtest/models/model-vN.json
  *   data/run-playtest/digests/YYYY-MM-DD.md
  *   data/run-playtest/digests/latest.md   (copy)
  */
 
-import { mkdirSync, writeFileSync, copyFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { runSweep } from './sweep';
 import { aggregate } from './aggregate';
@@ -29,35 +36,64 @@ import { correlateFeatures } from './correlations';
 import { regressFeatures } from './regression';
 import { renderDigest } from './digest';
 import { buildLevelCatalog } from './utils/levels';
+import {
+  loadCurrent,
+  modelFromRegression,
+  proposeNewVersion,
+} from './model-version';
+import type { PublishResult } from './model-version';
+import { buildHypothesisQueue } from './hypothesis-queue';
+import type { Hypothesis } from './hypothesis-queue';
+import { runExperiment } from './experiment';
+import { appendExperiment, readAll as readAllExperiments } from './experiment-log';
+import type { Experiment } from './experiment-log';
+import type { TierId } from './types';
 
 interface CliOpts {
   sweepTrials: number;
   ablationTrials: number;
+  hypothesesPerNight: number;
+  experimentTrials: number;
   quick: boolean;
   skipAblation: boolean;
   skipFeatures: boolean;
+  skipHypotheses: boolean;
 }
 
 function parseArgs(): CliOpts {
   const opts: CliOpts = {
     sweepTrials: 200,
     ablationTrials: 120,
+    hypothesesPerNight: 5,
+    experimentTrials: 80,
     quick: false,
     skipAblation: false,
     skipFeatures: false,
+    skipHypotheses: false,
   };
+  let hypothesesExplicit = false;
   for (const arg of process.argv.slice(2)) {
     if (arg === '--quick') opts.quick = true;
     else if (arg === '--skip-ablation') opts.skipAblation = true;
     else if (arg === '--skip-features') opts.skipFeatures = true;
+    else if (arg === '--skip-hypotheses') opts.skipHypotheses = true;
     else if (arg.startsWith('--sweep-trials='))
       opts.sweepTrials = parseInt(arg.split('=')[1], 10);
     else if (arg.startsWith('--ablation-trials='))
       opts.ablationTrials = parseInt(arg.split('=')[1], 10);
+    else if (arg.startsWith('--hypotheses-per-night=')) {
+      opts.hypothesesPerNight = parseInt(arg.split('=')[1], 10);
+      hypothesesExplicit = true;
+    } else if (arg.startsWith('--experiment-trials='))
+      opts.experimentTrials = parseInt(arg.split('=')[1], 10);
   }
   if (opts.quick) {
     opts.sweepTrials = 20;
     opts.ablationTrials = 10;
+    // WHY: --quick is for smoke tests. We still want at least 1 hypothesis
+    // so the loop is exercised end-to-end, but only one to keep runtime tiny.
+    if (!hypothesesExplicit) opts.hypothesesPerNight = 1;
+    opts.experimentTrials = 10;
   }
   return opts;
 }
@@ -130,6 +166,78 @@ async function main(): Promise<void> {
       JSON.stringify(regression, null, 2),
     );
 
+    // ─── Hypothesis loop ─────────────────────────────────────────────────
+    // WHY this lives between regression and digest: the loop needs the
+    // freshly fit regression to refit/publish, the prior committed model
+    // to generate predictions, and the digest needs the experiment results
+    // + publish decision to render the "Hypothesis Ledger" section. The
+    // append-only JSONL is the system's memory across nights.
+    let hypothesisRunResults: Experiment[] = [];
+    let publishResult: PublishResult | null = null;
+    let hypothesesPlanned: Hypothesis[] = [];
+    if (!opts.skipHypotheses) {
+      const priorModel = loadCurrent();
+      if (priorModel) {
+        console.log(
+          `[nightly] hypothesis loop (planning up to ${opts.hypothesesPerNight} for v${priorModel.version})`,
+        );
+        hypothesesPlanned = buildHypothesisQueue({
+          date,
+          model: priorModel,
+          catalog,
+          features,
+          stats: sweepStats,
+          priorExperiments: readAllExperiments(),
+        }).slice(0, Math.max(0, opts.hypothesesPerNight));
+        writeFileSync(
+          join(rawDir, 'hypotheses.json'),
+          JSON.stringify(hypothesesPlanned, null, 2),
+        );
+        for (const h of hypothesesPlanned) {
+          console.log(`[nightly]   → ${h.id} (${h.type})`);
+          const exp = await runExperiment({
+            date,
+            hypothesis: h,
+            trialsPerCell: opts.experimentTrials,
+          });
+          appendExperiment(exp);
+          hypothesisRunResults.push(exp);
+        }
+        writeFileSync(
+          join(rawDir, 'experiments.json'),
+          JSON.stringify(hypothesisRunResults, null, 2),
+        );
+      } else {
+        console.log(
+          `[nightly] no prior model — bootstrapping v1 from this night's regression`,
+        );
+        caveats.push(
+          'Hypothesis loop skipped: no prior model to generate predictions. Bootstrapping v1 from this night.',
+        );
+      }
+
+      // Refit + propose a new model version. The refit uses today's sweep
+      // stats — that's the canonical "new evidence" that has to beat the
+      // prior held-out R² on ≥2/3 tiers to be published.
+      const heldOutR2 = {
+        T3: regression.tiers.find((t) => t.tier === 'T3')?.holdoutR2 ?? 0,
+        T4: regression.tiers.find((t) => t.tier === 'T4')?.holdoutR2 ?? 0,
+        T5: regression.tiers.find((t) => t.tier === 'T5')?.holdoutR2 ?? 0,
+      } as Record<TierId, number>;
+      // proposeNewVersion picks the version number, so we pass 0 placeholder.
+      const candidate = modelFromRegression(date, 0, regression);
+      publishResult = await proposeNewVersion(candidate, heldOutR2);
+      writeFileSync(
+        join(rawDir, 'model-publish.json'),
+        JSON.stringify(publishResult, null, 2),
+      );
+      console.log(
+        `[nightly] model: ${publishResult.published ? 'PUBLISHED' : 'kept'} v${publishResult.version} — ${publishResult.reason}`,
+      );
+    } else {
+      console.log(`[nightly] hypothesis loop skipped (--skip-hypotheses)`);
+    }
+
     // ─── Digest ─────────────────────────────────────────────────────────
     const md = renderDigest({
       date,
@@ -140,6 +248,9 @@ async function main(): Promise<void> {
       features,
       correlations,
       regression,
+      hypothesesPlanned,
+      hypothesisResults: hypothesisRunResults,
+      publishResult,
       caveats,
     });
     const digestPath = join(digestsDir, `${date}.md`);
