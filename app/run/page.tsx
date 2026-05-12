@@ -707,6 +707,11 @@ export default function RookiesRunPage() {
             dying={dying}
             glitching={glitching}
             bombFx={bombFx}
+            telekinesisTarget={
+              targeting?.cardId === 'telekinesis' && targeting.step === 'square'
+                ? (targeting.selectedEnemy ?? null)
+                : null
+            }
             onSquareClick={onSquareClick}
             onPieceDrop={onPieceDrop}
           />

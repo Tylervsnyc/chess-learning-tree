@@ -19,6 +19,9 @@ interface BoardProps {
   glitching?: boolean;
   /** Transient bomb VFX — set when bomb resolves, cleared after the anim. */
   bombFx?: { file: number; rank: number; id: number } | null;
+  /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
+   *  When set, that square gets a magical purple glow. */
+  telekinesisTarget?: { file: number; rank: number } | null;
   onSquareClick: (square: string) => void;
   /** Called when Rookie is dragged onto a square. Return true to accept the
    *  move, false to snap her back. */
@@ -61,6 +64,7 @@ export function RunBoard({
   dying = false,
   glitching = false,
   bombFx = null,
+  telekinesisTarget = null,
   onSquareClick,
   onPieceDrop,
 }: BoardProps) {
@@ -149,6 +153,10 @@ export function RunBoard({
     ? toSquare({ file: bombFx.file, rank: bombFx.rank })
     : null;
 
+  const telekinesisSquare = telekinesisTarget
+    ? toSquare({ file: telekinesisTarget.file, rank: telekinesisTarget.rank })
+    : null;
+
   const pieces = useMemo(
     () => ({
       ...defaultPieces,
@@ -233,6 +241,20 @@ export function RunBoard({
           40%  { transform: scale(1.6); opacity: 0.9; box-shadow: 0 0 40px 16px rgba(255,180,40,0.85), 0 0 80px 24px rgba(255,80,20,0.5); }
           100% { transform: scale(2.4); opacity: 0;   box-shadow: 0 0 60px 40px rgba(255,80,20,0); }
         }
+        @keyframes rookiesRunTkPulse {
+          0%, 100% { box-shadow: inset 0 0 0 3px rgba(168, 85, 247, 0.95), inset 0 0 24px rgba(217, 70, 239, 0.55); background-color: rgba(168, 85, 247, 0.22); }
+          50%      { box-shadow: inset 0 0 0 4px rgba(217, 70, 239, 1),     inset 0 0 36px rgba(168, 85, 247, 0.85); background-color: rgba(217, 70, 239, 0.35); }
+        }
+        @keyframes rookiesRunTkFloat {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50%      { transform: translateY(-6%) rotate(-2deg); }
+        }
+        @keyframes rookiesRunTkSparkle {
+          0%   { transform: scale(0.4) rotate(0deg);   opacity: 0; }
+          30%  { transform: scale(1)   rotate(120deg); opacity: 1; }
+          70%  { transform: scale(1.1) rotate(240deg); opacity: 0.9; }
+          100% { transform: scale(0.3) rotate(360deg); opacity: 0; }
+        }
         @keyframes rookiesRunGoalGlow {
           0%, 100% { filter: brightness(1); }
           50%      { filter: brightness(1.25); }
@@ -272,6 +294,43 @@ export function RunBoard({
             pointer-events: none;
             z-index: 5;
             animation: rookiesRunBombFlash 600ms ease-out forwards;
+          }
+        `}</style>
+      )}
+      {telekinesisSquare && (
+        <style>{`
+          [data-square="${telekinesisSquare}"] {
+            position: relative;
+            animation: rookiesRunTkPulse 1.1s ease-in-out infinite;
+            border-radius: 4px;
+          }
+          [data-square="${telekinesisSquare}"] > div > img,
+          [data-square="${telekinesisSquare}"] > div > svg {
+            animation: rookiesRunTkFloat 1.4s ease-in-out infinite;
+            transform-origin: 50% 80%;
+            filter: drop-shadow(0 0 8px rgba(217, 70, 239, 0.95)) drop-shadow(0 0 14px rgba(168, 85, 247, 0.75));
+          }
+          [data-square="${telekinesisSquare}"]::before {
+            content: '✨';
+            position: absolute;
+            top: 4%;
+            left: 6%;
+            font-size: 38%;
+            pointer-events: none;
+            z-index: 5;
+            animation: rookiesRunTkSparkle 1.6s ease-in-out infinite;
+            filter: drop-shadow(0 0 4px rgba(255, 220, 130, 0.9));
+          }
+          [data-square="${telekinesisSquare}"]::after {
+            content: '✨';
+            position: absolute;
+            bottom: 6%;
+            right: 8%;
+            font-size: 30%;
+            pointer-events: none;
+            z-index: 5;
+            animation: rookiesRunTkSparkle 1.6s ease-in-out 0.5s infinite;
+            filter: drop-shadow(0 0 4px rgba(255, 220, 130, 0.9));
           }
         `}</style>
       )}
