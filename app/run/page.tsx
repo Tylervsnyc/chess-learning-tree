@@ -20,6 +20,7 @@ import {
   playCardPlaySound,
   playLevelClearSound,
   playMoveSound,
+  warmupAudio,
 } from '@/lib/sounds';
 import type { CardId } from '@/lib/run/cards';
 import {
@@ -151,6 +152,16 @@ export default function RookiesRunPage() {
   const [glitching, setGlitching] = useState(false);
   const prevFormRef = useRef(state.form);
 
+  // AudioContext gesture-unlock. Must run synchronously inside a user-gesture
+  // handler (tap/click) — async or effect-based calls won't unlock on iOS.
+  // Flag ensures we only do the work once per session.
+  const audioWarmedRef = useRef(false);
+  const ensureAudioWarm = useCallback(() => {
+    if (audioWarmedRef.current) return;
+    audioWarmedRef.current = true;
+    warmupAudio();
+  }, []);
+
   // Intro modal — shown once per device, re-openable via the "?" button.
   const [showIntro, setShowIntro] = useState(false);
   useEffect(() => {
@@ -162,12 +173,15 @@ export default function RookiesRunPage() {
   }, [meta.iso]);
 
   const dismissIntro = useCallback(() => {
+    // Sync warmup inside the user gesture — must come BEFORE any async work
+    // (setState, analytics) to count as a gesture on iOS Safari.
+    ensureAudioWarm();
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-intro-seen', '1');
     }
     setShowIntro(false);
     trackEvent('run_intro_dismissed', { iso: meta.iso });
-  }, [meta.iso]);
+  }, [meta.iso, ensureAudioWarm]);
 
   const openIntro = useCallback(() => {
     setShowIntro(true);
@@ -213,34 +227,34 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [state.status]);
 
-  // Play capture sfx whenever Rookie's capture list grows.
-  const lastCaptureCountRef = useRef(0);
-  useEffect(() => {
-    if (state.status === 'lost') {
-      lastCaptureCountRef.current = state.captures.length;
-      return;
-    }
-    if (state.captures.length > lastCaptureCountRef.current) {
-      void playCaptureSound();
-    }
-    lastCaptureCountRef.current = state.captures.length;
-  }, [state.captures.length, state.status]);
-
-  // Plain-move sfx — Rookie & enemy moves that aren't captures.
+  // Single Rookie move/capture sfx — one effect, mutually exclusive.
   // Matches /play: capture -> playCaptureSound, else playMoveSound.
+  // Two refs tracked together so a Rookie move + capture in the same render
+  // can never fire both sounds across separate effect runs.
   const lastRookieMoveRef = useRef(0);
   const lastRookieCapCountRef = useRef(0);
   const lastEnemyMoveRef = useRef(0);
   useEffect(() => {
     if (state.moveCount > lastRookieMoveRef.current) {
-      // Only chime if this Rookie move wasn't a capture.
-      if (state.captures.length === lastRookieCapCountRef.current) {
+      const wasCapture = state.captures.length > lastRookieCapCountRef.current;
+      if (wasCapture) {
+        void playCaptureSound();
+      } else if (state.status !== 'lost') {
         void playMoveSound();
       }
       lastRookieMoveRef.current = state.moveCount;
       lastRookieCapCountRef.current = state.captures.length;
     }
-  }, [state.moveCount, state.captures.length]);
+  }, [state.moveCount, state.captures.length, state.status]);
+
+  // Reset move/capture refs on level change so the new level's fresh
+  // state (moveCount=0, captures=[]) doesn't get mis-compared.
+  useEffect(() => {
+    lastRookieMoveRef.current = 0;
+    lastRookieCapCountRef.current = 0;
+    lastEnemyMoveRef.current = 0;
+  }, [levelIndex]);
+
   useEffect(() => {
     const len = state.enemyMovedSquares.length;
     if (len > lastEnemyMoveRef.current) {
@@ -365,6 +379,9 @@ export default function RookiesRunPage() {
 
   const onSquareClick = useCallback(
     (square: string) => {
+      // Sync warmup inside the user gesture (must be first — before any
+      // async/state work — to unlock the AudioContext on iOS).
+      ensureAudioWarm();
       if (state.status !== 'playing' || state.turn !== 'rookie') return;
 
       // Targeting mode short-circuits normal move selection.
@@ -448,11 +465,13 @@ export default function RookiesRunPage() {
       }
       setSelectedSquare(null);
     },
-    [state, selectedSquare, startTime, targeting, meta.iso, levelIndex],
+    [state, selectedSquare, startTime, targeting, meta.iso, levelIndex, ensureAudioWarm],
   );
 
   const onPieceDrop = useCallback(
     (_sourceSquare: string, targetSquare: string) => {
+      // Sync warmup inside the user gesture — see onSquareClick.
+      ensureAudioWarm();
       if (state.status !== 'playing' || state.turn !== 'rookie') return false;
       const target = fromSquare(targetSquare);
       const next = applyRookieMove(state, target);
@@ -465,7 +484,7 @@ export default function RookiesRunPage() {
       setSelectedSquare(null);
       return true;
     },
-    [state, startTime],
+    [state, startTime, ensureAudioWarm],
   );
 
   const onCardPick = useCallback(
