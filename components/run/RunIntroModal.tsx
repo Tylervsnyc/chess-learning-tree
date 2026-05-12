@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface RunIntroModalProps {
   onClose: () => void;
@@ -13,15 +12,57 @@ interface Slide {
   icon: React.ReactNode;
 }
 
+const GOAL_GRADIENT =
+  'linear-gradient(180deg, #fff1b8 0%, #ffd56a 45%, #e89c1a 100%)';
+const LIGHT_SQ = '#ebecd0';
+const DARK_SQ = '#739552';
+
+function MiniBoardWithArrow() {
+  return (
+    <div className="relative w-24 h-24">
+      <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-sm overflow-hidden shadow-md">
+        {Array.from({ length: 64 }, (_, i) => {
+          const row = Math.floor(i / 8);
+          const col = i % 8;
+          const isGoal = row === 0;
+          const isLight = (row + col) % 2 === 0;
+          return (
+            <div
+              key={i}
+              style={
+                isGoal
+                  ? {
+                      backgroundImage: GOAL_GRADIENT,
+                      boxShadow: 'inset 0 0 0 0.5px rgba(255,245,200,0.5)',
+                    }
+                  : { backgroundColor: isLight ? LIGHT_SQ : DARK_SQ }
+              }
+            />
+          );
+        })}
+      </div>
+      <svg
+        className="absolute -left-6 top-0 h-8 w-8"
+        viewBox="0 0 32 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ color: '#e89c1a' }}
+      >
+        <path d="M4 16 L26 16" />
+        <path d="M18 8 L26 16 L18 24" />
+      </svg>
+    </div>
+  );
+}
+
 const SLIDES: Slide[] = [
   {
     title: 'Climb to the 8th rank',
     body: 'Get Rookie to the top of the board. Ten levels. One daily run.',
-    icon: (
-      <div className="flex items-center justify-center">
-        <BreathingRook size="md" animate={true} mood="happy" />
-      </div>
-    ),
+    icon: <MiniBoardWithArrow />,
   },
   {
     title: 'Capture to charge tempo',
