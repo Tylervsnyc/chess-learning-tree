@@ -28,7 +28,7 @@ export function RunPickerModal({ currentRunId, onPick, onClose }: RunPickerModal
             Choose your run
           </div>
           <h2 className="mt-1 text-xl font-black text-chess-text leading-tight">
-            6 ways to climb
+            {RUNS.length} ways to climb
           </h2>
         </div>
 
