@@ -22,6 +22,13 @@ interface BoardProps {
   bombFx?: { file: number; rank: number; id: number } | null;
   /** Transient Aegis VFX — attacker lunges at Rookie then bounces back. */
   aegisFx?: { attackerSquare: string; rookieSquare: string; id: number } | null;
+  /** Transient per-ability cast VFX (charge / phase / leap / freeze / detonate). */
+  abilityFx?: {
+    kind: 'pawn-charge' | 'phase-step' | 'leap' | 'freeze-ray' | 'detonate';
+    from: string;
+    to: string;
+    id: number;
+  } | null;
   /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
    *  When set, that square gets a magical purple glow. */
   telekinesisTarget?: { file: number; rank: number } | null;
@@ -96,6 +103,7 @@ export function RunBoard({
   glitching = false,
   bombFx = null,
   aegisFx = null,
+  abilityFx = null,
   telekinesisTarget = null,
   legalAbilityMoves,
   abilityTier,
@@ -240,6 +248,42 @@ export function RunBoard({
     return { dx, dy, attackerSquare: aegisFx.attackerSquare, rookieSquare: aegisFx.rookieSquare, id: aegisFx.id };
   }, [aegisFx]);
 
+  // Convert from→to squares into board-percentage centers for overlay VFX.
+  // Board is rendered white-orientation: file 1 = leftmost, rank 8 = topmost.
+  const fxGeom = useMemo(() => {
+    if (!abilityFx) return null;
+    const f = fromSquare(abilityFx.from);
+    const t = fromSquare(abilityFx.to);
+    const fromX = (f.file - 0.5) * 12.5;
+    const fromY = (8 - f.rank + 0.5) * 12.5;
+    const toX = (t.file - 0.5) * 12.5;
+    const toY = (8 - t.rank + 0.5) * 12.5;
+    const midX = (fromX + toX) / 2;
+    const midY = (fromY + toY) / 2;
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angleRad = Math.atan2(dy, dx);
+    const angleDeg = (angleRad * 180) / Math.PI;
+    return { fromX, fromY, toX, toY, midX, midY, length, angleDeg, dx, dy };
+  }, [abilityFx]);
+
+  // Surge filter chain — N cyan ghost silhouettes echoed behind Rookie, one
+  // per bonusMovesLeft. Zero-blur drop-shadows give a hard "clone" silhouette.
+  const surgeFilter = useMemo(() => {
+    const n = state.bonusMovesLeft;
+    if (n <= 0) return null;
+    const layers: string[] = ['drop-shadow(0 0 8px rgba(34,211,238,0.95))'];
+    // Each clone shifts further back-left with shrinking opacity.
+    for (let i = 1; i <= Math.min(n, 3); i++) {
+      const dx = -i * 7;
+      const dy = i * 3;
+      const alpha = 0.75 - (i - 1) * 0.18;
+      layers.push(`drop-shadow(${dx}px ${dy}px 0 rgba(34,211,238,${alpha}))`);
+    }
+    return layers.join(' ');
+  }, [state.bonusMovesLeft]);
+
   // Shield pulse — when Rookie has Aegis charges, gently pulse her square's
   // inset ring so the protection reads as alive.
   const rookieShieldSquare = useMemo(() => {
@@ -375,6 +419,68 @@ export function RunBoard({
           ? `[data-square="${rookieShieldSquare}"] > div > img,
              [data-square="${rookieShieldSquare}"] > div > svg {
                animation: rookiesRunAegisShieldPulse 1.8s ease-in-out infinite;
+             }`
+          : ''}
+        ${surgeFilter
+          ? `[data-square="${toSquare(state.rookie)}"] > div {
+               filter: ${surgeFilter};
+             }
+             [data-square="${toSquare(state.rookie)}"]::before {
+               content: '+${state.bonusMovesLeft}';
+               position: absolute;
+               top: 2%;
+               right: 4%;
+               font-size: 22%;
+               font-weight: 900;
+               color: #ecfeff;
+               background: linear-gradient(135deg, #06b6d4, #0891b2);
+               padding: 4% 7%;
+               border-radius: 999px;
+               box-shadow: 0 0 8px rgba(34,211,238,0.9), inset 0 0 4px rgba(255,255,255,0.5);
+               pointer-events: none;
+               z-index: 6;
+               line-height: 1;
+               animation: rookiesRunSurgePulse 1s ease-in-out infinite;
+             }
+             [data-square="${toSquare(state.rookie)}"] {
+               position: relative;
+             }`
+          : ''}
+        @keyframes rookiesRunSurgePulse {
+          0%, 100% { transform: scale(1);   box-shadow: 0 0 6px rgba(34,211,238,0.7), inset 0 0 4px rgba(255,255,255,0.5); }
+          50%      { transform: scale(1.1); box-shadow: 0 0 14px rgba(34,211,238,1),  inset 0 0 6px rgba(255,255,255,0.8); }
+        }
+        @keyframes rrSpritePhaseLand {
+          0%   { opacity: 0.1; filter: drop-shadow(0 0 12px rgba(125,211,252,1)) blur(2px); }
+          60%  { opacity: 0.85; filter: drop-shadow(0 0 10px rgba(125,211,252,1)) blur(0.5px); }
+          100% { opacity: 1;    filter: drop-shadow(0 0 0 rgba(125,211,252,0))   blur(0); }
+        }
+        @keyframes rrSpriteLeapLand {
+          0%   { transform: translateY(-22%) scale(1.25); }
+          55%  { transform: translateY(0)    scale(1.35, 0.7); }
+          78%  { transform: translateY(0)    scale(0.9, 1.1); }
+          100% { transform: translateY(0)    scale(1); }
+        }
+        @keyframes rrSpriteCharge {
+          0%   { transform: scale(1)    skewX(0deg);  filter: drop-shadow(0 0 0 rgba(255,140,40,0)); }
+          25%  { transform: scale(1.05) skewX(-6deg); filter: drop-shadow(0 0 10px rgba(255,140,40,0.95)); }
+          70%  { transform: scale(0.95) skewX(3deg);  filter: drop-shadow(0 0 6px rgba(255,140,40,0.7)); }
+          100% { transform: scale(1)    skewX(0deg);  filter: drop-shadow(0 0 0 rgba(255,140,40,0)); }
+        }
+        ${abilityFx && abilityFx.kind === 'phase-step'
+          ? `[data-square="${abilityFx.to}"] > div {
+               animation: rrSpritePhaseLand 600ms ease-out both;
+             }`
+          : ''}
+        ${abilityFx && abilityFx.kind === 'leap'
+          ? `[data-square="${abilityFx.to}"] > div {
+               animation: rrSpriteLeapLand 700ms cubic-bezier(0.5, 0, 0.4, 1.4) both;
+               transform-origin: 50% 100%;
+             }`
+          : ''}
+        ${abilityFx && abilityFx.kind === 'pawn-charge'
+          ? `[data-square="${abilityFx.to}"] > div {
+               animation: rrSpriteCharge 600ms ease-out both;
              }`
           : ''}
         ${wiggleSquares
@@ -527,7 +633,373 @@ export function RunBoard({
             ))}
           </div>
         )}
+        {abilityFx && fxGeom && (
+          <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
+        )}
       </div>
     </>
   );
+}
+
+interface FxGeom {
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  midX: number;
+  midY: number;
+  length: number;
+  angleDeg: number;
+  dx: number;
+  dy: number;
+}
+
+interface AbilityFxLayerProps {
+  fx: NonNullable<BoardProps['abilityFx']>;
+  geom: FxGeom;
+}
+
+/**
+ * Renders one of five ability cast effects, layered absolutely over the
+ * board. Each kind uses different SVG/CSS pieces, all keyed off the fx id so
+ * React tears them down and remounts when a new cast fires.
+ */
+function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
+  const { fromX, fromY, toX, toY, midX, midY, length, angleDeg } = geom;
+
+  if (fx.kind === 'pawn-charge') {
+    // Orange comet streak — a thin rotated bar from origin to target that
+    // grows in then snaps out, with a bright head at the leading edge.
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxChargeStreak-${Math.floor(fx.id)} {
+            0%   { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(0); opacity: 0.9; }
+            40%  { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 0; }
+          }
+          @keyframes rrFxChargeBurst-${Math.floor(fx.id)} {
+            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+          }
+        `}</style>
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: `${length}%`,
+            height: '4%',
+            background:
+              'linear-gradient(90deg, rgba(255,180,40,0) 0%, rgba(255,180,40,0.8) 30%, rgba(255,120,30,1) 70%, rgba(255,255,255,1) 100%)',
+            transformOrigin: '0% 50%',
+            transform: `translate(0, -50%) rotate(${angleDeg}deg)`,
+            filter:
+              'drop-shadow(0 0 6px rgba(255,140,40,0.9)) drop-shadow(0 0 12px rgba(255,100,20,0.6))',
+            animation: `rrFxChargeStreak-${Math.floor(fx.id)} 600ms ease-out forwards`,
+            borderRadius: '999px',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: '14%',
+            height: '14%',
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,180,40,0.9) 40%, rgba(255,80,20,0) 80%)',
+            animation: `rrFxChargeBurst-${Math.floor(fx.id)} 500ms ease-out forwards`,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (fx.kind === 'phase-step') {
+    // Two ghost-rooks: one fading out at origin, one fading in at target.
+    // Plus a thin ghost-blue dashed line linking them.
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxPhaseFade-${Math.floor(fx.id)} {
+            0%   { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0;   transform: translate(-50%, -50%) scale(0.9); }
+          }
+          @keyframes rrFxPhaseAppear-${Math.floor(fx.id)} {
+            0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.6); }
+            70%  { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+            100% { opacity: 0;   transform: translate(-50%, -50%) scale(1); }
+          }
+          @keyframes rrFxPhaseLine-${Math.floor(fx.id)} {
+            0%, 100% { opacity: 0; }
+            30%      { opacity: 0.85; }
+          }
+        `}</style>
+        {/* Dashed ghost-blue link */}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: `${length}%`,
+            height: '2.5%',
+            transformOrigin: '0% 50%',
+            transform: `translate(0, -50%) rotate(${angleDeg}deg)`,
+            background:
+              'repeating-linear-gradient(90deg, rgba(125,211,252,0.95) 0 6px, transparent 6px 12px)',
+            filter: 'drop-shadow(0 0 6px rgba(125,211,252,0.95))',
+            animation: `rrFxPhaseLine-${Math.floor(fx.id)} 600ms ease-out forwards`,
+          }}
+        />
+        {/* Ghost at origin (fading out) */}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: '12%',
+            height: '12%',
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(125,211,252,0.85) 0%, rgba(56,189,248,0.4) 50%, transparent 80%)',
+            filter: 'blur(2px)',
+            animation: `rrFxPhaseFade-${Math.floor(fx.id)} 500ms ease-out forwards`,
+          }}
+        />
+        {/* Ghost at target (fading in then out) */}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${toX}%`,
+            top: `${toY}%`,
+            width: '14%',
+            height: '14%',
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(165,243,252,1) 0%, rgba(34,211,238,0.5) 50%, transparent 80%)',
+            filter: 'blur(2px)',
+            animation: `rrFxPhaseAppear-${Math.floor(fx.id)} 600ms ease-out forwards`,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (fx.kind === 'leap') {
+    // Curved dashed arc from origin to target + landing shockwave on target.
+    // The arc is approximated by a quadratic-bezier SVG path.
+    const ctrlX = midX;
+    // Lift the control point upward (in screen coords, smaller y) so the arc
+    // bows up — proportional to the jump length, capped so short hops still curve.
+    const lift = Math.min(18, 6 + length * 0.4);
+    const ctrlY = midY - lift;
+    const pathD = `M ${fromX} ${fromY} Q ${ctrlX} ${ctrlY} ${toX} ${toY}`;
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxLeapArc-${Math.floor(fx.id)} {
+            0%   { stroke-dashoffset: 100; opacity: 0; }
+            30%  { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+          }
+          @keyframes rrFxLeapLand-${Math.floor(fx.id)} {
+            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+          }
+        `}</style>
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}
+        >
+          <path
+            d={pathD}
+            fill="none"
+            stroke="rgba(245,158,11,0.95)"
+            strokeWidth={1.6}
+            strokeDasharray="2.5 1.5"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            style={{
+              filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.9))',
+              strokeDasharray: '100 100',
+              animation: `rrFxLeapArc-${Math.floor(fx.id)} 650ms ease-out forwards`,
+            }}
+          />
+        </svg>
+        {/* Landing shockwave */}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${toX}%`,
+            top: `${toY}%`,
+            width: '18%',
+            height: '18%',
+            borderRadius: '50%',
+            border: '3px solid rgba(245,158,11,0.95)',
+            boxShadow:
+              '0 0 16px rgba(245,158,11,0.95), inset 0 0 12px rgba(255,210,80,0.9)',
+            animation: `rrFxLeapLand-${Math.floor(fx.id)} 500ms ease-out 300ms forwards`,
+            opacity: 0,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (fx.kind === 'freeze-ray') {
+    // Cyan beam from origin to target + snowflake glyph traveling along it.
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxFreezeBeam-${Math.floor(fx.id)} {
+            0%   { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(0); opacity: 1; }
+            45%  { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 1; }
+            100% { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 0; }
+          }
+          @keyframes rrFxFreezeFlake-${Math.floor(fx.id)} {
+            0%   { left: ${fromX}%; top: ${fromY}%; transform: translate(-50%, -50%) rotate(0deg) scale(0.6); opacity: 1; }
+            70%  { left: ${toX}%;   top: ${toY}%;   transform: translate(-50%, -50%) rotate(540deg) scale(1.4); opacity: 1; }
+            100% { left: ${toX}%;   top: ${toY}%;   transform: translate(-50%, -50%) rotate(720deg) scale(2);   opacity: 0; }
+          }
+          @keyframes rrFxFreezeBurst-${Math.floor(fx.id)} {
+            0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+          }
+        `}</style>
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: `${length}%`,
+            height: '3%',
+            transformOrigin: '0% 50%',
+            background:
+              'linear-gradient(90deg, rgba(125,211,252,0) 0%, rgba(125,211,252,0.85) 20%, rgba(255,255,255,1) 50%, rgba(125,211,252,0.85) 80%, rgba(125,211,252,0) 100%)',
+            filter: 'drop-shadow(0 0 8px rgba(125,211,252,1))',
+            animation: `rrFxFreezeBeam-${Math.floor(fx.id)} 700ms ease-out forwards`,
+            borderRadius: '999px',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            width: '12%',
+            height: '12%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '8cqw',
+            filter: 'drop-shadow(0 0 6px rgba(125,211,252,1))',
+            animation: `rrFxFreezeFlake-${Math.floor(fx.id)} 700ms ease-out forwards`,
+            color: '#e0f2fe',
+          }}
+        >
+          ❄
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            left: `${toX}%`,
+            top: `${toY}%`,
+            width: '20%',
+            height: '20%',
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(125,211,252,0.6) 40%, transparent 75%)',
+            animation: `rrFxFreezeBurst-${Math.floor(fx.id)} 400ms ease-out 350ms forwards`,
+            opacity: 0,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (fx.kind === 'detonate') {
+    // Bomb glyph arcs from Rookie to target, then the existing bomb-flash
+    // (managed in page.tsx) fires when this overlay is torn down.
+    const ctrlX = midX;
+    const ctrlY = midY - Math.min(20, 8 + length * 0.45);
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxBombArc-${Math.floor(fx.id)} {
+            0%   { offset-distance: 0%;   transform: translate(-50%, -50%) rotate(0deg)   scale(0.6); opacity: 1; }
+            100% { offset-distance: 100%; transform: translate(-50%, -50%) rotate(540deg) scale(1.1); opacity: 1; }
+          }
+        `}</style>
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '14%',
+            height: '14%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '8cqw',
+            offsetPath: `path('M ${fromX} ${fromY} Q ${ctrlX} ${ctrlY} ${toX} ${toY}')`,
+            // Fallback for older browsers — straight diagonal
+            // @ts-expect-error vendor offset-path
+            WebkitOffsetPath: `path('M ${fromX} ${fromY} Q ${ctrlX} ${ctrlY} ${toX} ${toY}')`,
+            animation: `rrFxBombArc-${Math.floor(fx.id)} 380ms ease-in forwards`,
+            filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.5))',
+          }}
+        >
+          💣
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

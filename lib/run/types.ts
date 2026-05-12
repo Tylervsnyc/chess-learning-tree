@@ -89,6 +89,17 @@ export interface BoardState {
    * bounce VFX. Not cleared by the engine — the UI tracks the last-seen id.
    */
   lastAegisIntercept?: { attackerSquare: string; rookieSquare: string; id: number };
+  /**
+   * Transient signal: set when a Rookie ability resolves so the UI can fire
+   * the matching cast VFX (charge streak / phase ghost / leap arc / freeze
+   * beam / detonate throw). UI tracks the last-seen id.
+   */
+  lastAbilityFx?: {
+    kind: 'pawn-charge' | 'phase-step' | 'leap' | 'freeze-ray' | 'detonate';
+    from: string;
+    to: string;
+    id: number;
+  };
 }
 
 export interface RunPuzzle {

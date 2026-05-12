@@ -134,6 +134,12 @@ export default function RookiesRunPage() {
     const t = setTimeout(() => setBombFx(null), 650);
     return () => clearTimeout(t);
   }, [bombFx]);
+  // Per-ability cast VFX — pawn-charge streak / phase-step ghost / leap arc /
+  // freeze-ray beam / detonate throw. Cleared after the matching anim ends.
+  type AbilityFx = NonNullable<BoardState['lastAbilityFx']>;
+  const [abilityFx, setAbilityFx] = useState<AbilityFx | null>(null);
+  const lastAbilityFxIdRef = useRef<number | null>(null);
+
   // Aegis intercept VFX — attacker lunges at Rookie then bounces back, plus a
   // light-blue shield ripple at Rookie's square. Cleared after the anim ends.
   const [aegisFx, setAegisFx] = useState<
@@ -152,6 +158,27 @@ export default function RookiesRunPage() {
     const t = setTimeout(() => setAegisFx(null), 720);
     return () => clearTimeout(t);
   }, [aegisFx]);
+
+  useEffect(() => {
+    const sig = state.lastAbilityFx;
+    if (!sig) return;
+    if (lastAbilityFxIdRef.current === sig.id) return;
+    lastAbilityFxIdRef.current = sig.id;
+    setAbilityFx({ ...sig });
+  }, [state.lastAbilityFx]);
+  useEffect(() => {
+    if (!abilityFx) return;
+    // Duration per kind. Detonate-throw needs to finish before the bomb-flash.
+    const durations: Record<AbilityFx['kind'], number> = {
+      'pawn-charge': 650,
+      'phase-step': 600,
+      leap: 700,
+      'freeze-ray': 700,
+      detonate: 420,
+    };
+    const t = setTimeout(() => setAbilityFx(null), durations[abilityFx.kind]);
+    return () => clearTimeout(t);
+  }, [abilityFx]);
 
   // Detonate T5 — screenshake the board container briefly.
   const [shaking, setShaking] = useState(false);
@@ -428,9 +455,13 @@ export default function RookiesRunPage() {
           setState(next);
           playCardPlaySound();
           if (state.activeAbility.id === 'detonate') {
-            setBombFx({ ...coord, id: Date.now() });
             const tier = state.abilities.find((a) => a.id === 'detonate')?.tier;
-            if (tier === 5) setShaking(true);
+            // Delay the blast until the bomb projectile finishes its arc.
+            const throwMs = 380;
+            setTimeout(() => {
+              setBombFx({ ...coord, id: Date.now() });
+              if (tier === 5) setShaking(true);
+            }, throwMs);
           }
           trackEvent('run_ability_used', {
             iso: meta.iso,
@@ -689,6 +720,7 @@ export default function RookiesRunPage() {
             glitching={glitching}
             bombFx={bombFx}
             aegisFx={aegisFx}
+            abilityFx={abilityFx}
             legalAbilityMoves={legalAbilityMoves}
             abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}

@@ -746,6 +746,15 @@ export function applyAbilityMove(
   const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
   const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
+  const fxKind: 'pawn-charge' | 'phase-step' | 'leap' | null =
+    abilityId === 'pawn-charge'
+      ? 'pawn-charge'
+      : abilityId === 'phase-step'
+        ? 'phase-step'
+        : abilityId === 'leap'
+          ? 'leap'
+          : null;
+
   const afterMove: BoardState = {
     ...state,
     rookie: { ...target },
@@ -756,6 +765,14 @@ export function applyAbilityMove(
     moveCount: nextMoveCount,
     bonusMovesLeft: nextBonus,
     turn: nextTurn,
+    lastAbilityFx: fxKind
+      ? {
+          kind: fxKind,
+          from: toSquare(state.rookie),
+          to: toSquare(target),
+          id: Date.now() + Math.random(),
+        }
+      : state.lastAbilityFx,
   };
 
   if (target.rank === 8) {
@@ -797,6 +814,12 @@ export function applyAbilityTargeted(
       tempo: Math.min(TEMPO_MAX, state.tempo + tempoRefund),
       abilities: decrementUse(state.abilities, abilityId),
       activeAbility: null,
+      lastAbilityFx: {
+        kind: 'detonate',
+        from: toSquare(state.rookie),
+        to: toSquare(target),
+        id: Date.now() + Math.random(),
+      },
     };
   }
 
@@ -831,6 +854,12 @@ export function applyAbilityTargeted(
       frozenTurnsLeft,
       abilities: decrementUse(state.abilities, abilityId),
       activeAbility: null,
+      lastAbilityFx: {
+        kind: 'freeze-ray',
+        from: toSquare(state.rookie),
+        to: toSquare(target),
+        id: Date.now() + Math.random(),
+      },
     };
   }
 
