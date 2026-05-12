@@ -41,8 +41,8 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    title: 'Pick an ability',
-    body: 'When tempo fills, choose 1 of 3 cards. Abilities stick for the whole run — pick again to level them up.',
+    title: 'Collect up to 3 powers',
+    body: 'When tempo fills, choose 1 of 3 cards. Powers stick for the whole run — pick them again to level them up. Max 3 in your rack.',
     icon: (
       <div className="flex gap-2 px-2 items-end">
         <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-zinc-200 to-zinc-400 border-2 border-zinc-500 shadow-md -rotate-6" />
@@ -53,7 +53,7 @@ const SLIDES: Slide[] = [
   },
   {
     title: 'Stack them. Get loud.',
-    body: 'Bishop steps, freeze rays, detonations, time rewinds. Ten abilities, five tiers each. Make Rookie scary.',
+    body: 'Bishop steps, freeze rays, detonations, time rewinds. Five tiers each — pick the same power again to upgrade it. Uses refill every level.',
     icon: (
       <div className="flex items-center justify-center text-5xl text-amber-500 font-black">
         <span style={{ textShadow: '0 0 16px rgba(251,191,36,0.65)' }}>★</span>

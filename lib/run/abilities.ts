@@ -8,7 +8,6 @@
  * the permanent / unlimited payoff.
  */
 
-import { FORM_DURATION } from './movement';
 import { TEMPO_MAX } from './scoring';
 import { toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, RookieForm } from './types';
@@ -135,6 +134,9 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
 export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
   ABILITY_DEFS,
 ) as AbilityId[];
+
+/** Hard cap on how many abilities Rookie can own in a single run. */
+export const MAX_OWNED_ABILITIES = 3;
 
 /** Max uses per level for a given ability/tier. -1 = unlimited. */
 export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
@@ -279,18 +281,29 @@ export interface AbilityOfferOption {
 
 export type AbilityOffer = AbilityOfferOption[];
 
-/** Make an offer slate of 3 choices. Deterministic via the passed RNG. */
+/**
+ * Make an offer slate of up to 3 choices. Deterministic via the passed RNG.
+ *
+ * Rules:
+ *  - If the player owns fewer than MAX_OWNED_ABILITIES, mix "new" and "upgrade"
+ *    candidates.
+ *  - Once the player has hit the cap, ONLY upgrades for owned abilities are
+ *    eligible — no new-ability offers.
+ *  - If every owned ability is already at T5, returns an empty array — callers
+ *    (engine, seed) should treat that as "skip the offer, refund tempo".
+ */
 export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   const owned = new Map(state.abilities.map((a) => [a.id, a]));
+  const atCap = owned.size >= MAX_OWNED_ABILITIES;
 
-  const newCandidates: AbilityOfferOption[] = ALL_ABILITY_IDS.filter(
-    (id) => !owned.has(id),
-  ).map((id) => ({
-    kind: 'new',
-    id,
-    tier: 1,
-    description: blurbForTier(id, 1),
-  }));
+  const newCandidates: AbilityOfferOption[] = atCap
+    ? []
+    : ALL_ABILITY_IDS.filter((id) => !owned.has(id)).map((id) => ({
+        kind: 'new',
+        id,
+        tier: 1,
+        description: blurbForTier(id, 1),
+      }));
 
   const upgradeCandidates: AbilityOfferOption[] = [...owned.values()]
     .filter((a) => a.tier < 5)
@@ -312,6 +325,15 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   return pool.slice(0, 3);
 }
 
+/**
+ * True if the offer pool is empty — the player owns 3 maxed abilities. The
+ * engine should award a small tempo blessing instead of opening a modal.
+ */
+export function offerIsExhausted(state: BoardState): boolean {
+  if (state.abilities.length < MAX_OWNED_ABILITIES) return false;
+  return state.abilities.every((a) => a.tier === 5);
+}
+
 export function applyOfferPick(
   state: BoardState,
   option: AbilityOfferOption,
@@ -320,6 +342,7 @@ export function applyOfferPick(
   let abilities = state.abilities;
   if (option.kind === 'new') {
     if (abilities.some((a) => a.id === option.id)) return state;
+    if (abilities.length >= MAX_OWNED_ABILITIES) return state;
     abilities = [
       ...abilities,
       {

@@ -6,7 +6,7 @@
  * column (and tomorrow we can rotate level orderings if needed).
  */
 
-import { refreshAbilityUses, rollOffer } from './abilities';
+import { offerIsExhausted, refreshAbilityUses, rollOffer } from './abilities';
 import { DEFAULT_RUN_ID, getRunById } from './runs';
 import { TEMPO_MAX } from './scoring';
 import type { BoardState, Coord, RunPuzzle } from './types';
@@ -116,10 +116,13 @@ export function puzzleToBoardState(
     level: puzzle.level,
     history: [],
   };
-  if (puzzle.level === 6 && !pendingOffer) {
-    pendingOffer = rollOffer(base, mulberry32((puzzle.level * 7919) >>> 0));
-    tempo = TEMPO_MAX;
-    return { ...base, pendingOffer, tempo };
+  if (puzzle.level === 6 && !pendingOffer && !offerIsExhausted(base)) {
+    const rolled = rollOffer(base, mulberry32((puzzle.level * 7919) >>> 0));
+    if (rolled.length > 0) {
+      pendingOffer = rolled;
+      tempo = TEMPO_MAX;
+      return { ...base, pendingOffer, tempo };
+    }
   }
   return base;
 }

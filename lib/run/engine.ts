@@ -3,7 +3,6 @@
  *
  * Public surface:
  *   applyRookieMove(state, target)        → new BoardState
- *   applyTempoTransform(state, form)      → new BoardState
  *
  *   - Captures grant tempo (capped at TEMPO_MAX).
  *   - When tempo fills, an ability offer is rolled (see lib/run/abilities).
@@ -14,7 +13,7 @@ import {
   isLegalRookieMove,
   rookieLegalMoves,
 } from './movement';
-import { rollOffer } from './abilities';
+import { offerIsExhausted, rollOffer } from './abilities';
 import { stepEnemyTurn } from './pawn-ai';
 import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
@@ -82,11 +81,26 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     history: nextHistory,
   };
 
-  const stateForOffer = filled ? afterMove : afterMove;
-  const nextPendingOffer = filled
-    ? rollOffer(stateForOffer, offerRngFor(stateForOffer))
-    : state.pendingOffer;
-  const withOffer: BoardState = { ...afterMove, pendingOffer: nextPendingOffer };
+  // When the meter fills, roll an offer — unless every ability is maxed, in
+  // which case we just keep the tempo (as a small "blessing") and skip the modal.
+  let nextPendingOffer = state.pendingOffer;
+  let postOfferTempo = nextTempo;
+  if (filled) {
+    if (offerIsExhausted(afterMove)) {
+      nextPendingOffer = null;
+      // Keep tempo full as a visible "blessed" state.
+      postOfferTempo = TEMPO_MAX;
+    } else {
+      const rolled = rollOffer(afterMove, offerRngFor(afterMove));
+      nextPendingOffer = rolled.length > 0 ? rolled : null;
+      if (rolled.length === 0) postOfferTempo = TEMPO_MAX;
+    }
+  }
+  const withOffer: BoardState = {
+    ...afterMove,
+    tempo: postOfferTempo,
+    pendingOffer: nextPendingOffer,
+  };
 
   // Win check — reaching rank 8 wins the level. Apply a flat +2 tempo bonus
   // (capped) and queue an offer if the bonus fills the meter.
@@ -97,7 +111,10 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     if (filled) {
       winPendingOffer = nextPendingOffer;
     } else if (winPendingOffer === null && winTempoRaw >= TEMPO_MAX) {
-      winPendingOffer = rollOffer(afterMove, offerRngFor(afterMove));
+      if (!offerIsExhausted(afterMove)) {
+        const rolled = rollOffer(afterMove, offerRngFor(afterMove));
+        winPendingOffer = rolled.length > 0 ? rolled : null;
+      }
     }
     return {
       ...withOffer,

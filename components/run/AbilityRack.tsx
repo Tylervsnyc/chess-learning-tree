@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  MAX_OWNED_ABILITIES,
   type AbilityId,
   type AbilityTier,
   type OwnedAbility,
@@ -19,13 +20,7 @@ export function AbilityRack({
   activeId,
   onActivate,
 }: AbilityRackProps) {
-  if (abilities.length === 0) {
-    return (
-      <div className="text-center text-[11px] text-chess-text-faint italic">
-        Fill the tempo meter to earn abilities.
-      </div>
-    );
-  }
+  const emptySlots = Math.max(0, MAX_OWNED_ABILITIES - abilities.length);
 
   return (
     <>
@@ -42,17 +37,41 @@ export function AbilityRack({
           filter: drop-shadow(0 0 6px rgba(251,191,36,0.85));
         }
       `}</style>
-      <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1 -mx-1 px-1">
-        {abilities.map((a) => (
-          <RackEntry
-            key={a.id}
-            ability={a}
-            active={activeId === a.id}
-            onActivate={() => onActivate(a.id)}
-          />
-        ))}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex gap-2 justify-center items-end pb-1">
+          {abilities.map((a) => (
+            <RackEntry
+              key={a.id}
+              ability={a}
+              active={activeId === a.id}
+              onActivate={() => onActivate(a.id)}
+            />
+          ))}
+          {Array.from({ length: emptySlots }, (_, i) => (
+            <EmptySlot key={`empty-${i}`} />
+          ))}
+        </div>
+        <div className="text-center text-[10px] text-chess-text-faint font-bold uppercase tracking-wider leading-none">
+          {abilities.length === 0
+            ? 'Fill tempo to claim a power'
+            : abilities.length >= MAX_OWNED_ABILITIES
+              ? 'Rack full — fill tempo to upgrade'
+              : `${abilities.length}/${MAX_OWNED_ABILITIES} powers · refills each level`}
+        </div>
       </div>
     </>
+  );
+}
+
+function EmptySlot() {
+  return (
+    <div
+      aria-hidden="true"
+      className="shrink-0 rounded-[7px] border-2 border-dashed border-chess-text/15 flex items-center justify-center"
+      style={{ width: 64, aspectRatio: '5 / 7' }}
+    >
+      <span className="text-chess-text/20 text-xl font-black select-none">+</span>
+    </div>
   );
 }
 
