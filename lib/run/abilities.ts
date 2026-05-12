@@ -614,6 +614,23 @@ export function applyAbilityActivate(
 ): BoardState {
   if (state.status !== 'playing' || state.turn !== 'rookie') return state;
   if (state.pendingOffer) return state;
+
+  // Cancel-by-retap for instant abilities (transforms / Surge). If the most
+  // recent instant cast was this same ability AND nothing has consumed it
+  // yet, restore the pre-cast snapshot (refunds the use).
+  if (state.cancellableActivation?.abilityId === abilityId) {
+    const snap = state.cancellableActivation.snapshot;
+    return {
+      ...state,
+      form: snap.form,
+      formMovesLeft: snap.formMovesLeft,
+      bonusMovesLeft: snap.bonusMovesLeft,
+      abilities: snap.abilities,
+      cancellableActivation: undefined,
+      activeAbility: null,
+    };
+  }
+
   const owned = state.abilities.find((a) => a.id === abilityId);
   if (!owned) return state;
   if (owned.usesLeftThisLevel === 0) return state;
@@ -672,6 +689,15 @@ function applyTransform(state: BoardState, abilityId: AbilityId): BoardState {
     formMovesLeft: duration,
     abilities: decrementUse(state.abilities, abilityId),
     activeAbility: null,
+    cancellableActivation: {
+      abilityId,
+      snapshot: {
+        form: state.form,
+        formMovesLeft: state.formMovesLeft,
+        bonusMovesLeft: state.bonusMovesLeft,
+        abilities: state.abilities,
+      },
+    },
   };
 }
 
@@ -693,6 +719,15 @@ function applySurge(state: BoardState): BoardState {
     bonusMovesLeft: state.bonusMovesLeft + bonus,
     abilities: decrementUse(state.abilities, 'surge'),
     activeAbility: null,
+    cancellableActivation: {
+      abilityId: 'surge',
+      snapshot: {
+        form: state.form,
+        formMovesLeft: state.formMovesLeft,
+        bonusMovesLeft: state.bonusMovesLeft,
+        abilities: state.abilities,
+      },
+    },
   };
 }
 
@@ -765,6 +800,7 @@ export function applyAbilityMove(
     moveCount: nextMoveCount,
     bonusMovesLeft: nextBonus,
     turn: nextTurn,
+    cancellableActivation: undefined,
     lastAbilityFx: fxKind
       ? {
           kind: fxKind,
@@ -814,6 +850,7 @@ export function applyAbilityTargeted(
       tempo: Math.min(TEMPO_MAX, state.tempo + tempoRefund),
       abilities: decrementUse(state.abilities, abilityId),
       activeAbility: null,
+      cancellableActivation: undefined,
       lastAbilityFx: {
         kind: 'detonate',
         from: toSquare(state.rookie),
@@ -854,6 +891,7 @@ export function applyAbilityTargeted(
       frozenTurnsLeft,
       abilities: decrementUse(state.abilities, abilityId),
       activeAbility: null,
+      cancellableActivation: undefined,
       lastAbilityFx: {
         kind: 'freeze-ray',
         from: toSquare(state.rookie),

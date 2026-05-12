@@ -100,6 +100,21 @@ export interface BoardState {
     to: string;
     id: number;
   };
+  /**
+   * Instant-ability undo handle. When a transform or Surge resolves we stash
+   * the relevant pre-cast values here. Re-tapping the same card BEFORE the
+   * next Rookie move restores them (refunding the use). Cleared on any
+   * Rookie move (regular or ability) or when a different ability fires.
+   */
+  cancellableActivation?: {
+    abilityId: AbilityId;
+    snapshot: {
+      form: RookieForm;
+      formMovesLeft: number;
+      bonusMovesLeft: number;
+      abilities: OwnedAbility[];
+    };
+  };
 }
 
 export interface RunPuzzle {

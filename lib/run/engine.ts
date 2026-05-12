@@ -73,6 +73,7 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     form: nextForm,
     formMovesLeft: nextFormMovesLeft,
     bonusMovesLeft: nextBonus,
+    cancellableActivation: undefined,
   };
 
   // When the meter fills, roll an offer — unless every ability is maxed, in
