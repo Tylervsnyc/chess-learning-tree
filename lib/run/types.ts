@@ -49,6 +49,12 @@ export interface BoardState {
   enemiesPerTurn: number; // how many enemies act per enemy turn (default 1)
   /** Squares (algebraic) of pieces that have already moved this enemy turn. */
   enemyMovedSquares: string[];
+  /**
+   * Squares (algebraic) of enemies that are frozen and must skip their next
+   * action. Cleared at the end of the enemy turn (when control returns to
+   * Rookie), so freeze always lasts exactly one enemy turn.
+   */
+  frozenSquares: string[];
   /** Cards currently in Rookie's hand (max HAND_SIZE). */
   hand: CardId[];
   /** When the tempo meter fills, the player is offered cards to draw. */

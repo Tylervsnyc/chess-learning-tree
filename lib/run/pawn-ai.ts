@@ -171,7 +171,17 @@ function chooseEnemyAction(
   state: BoardState,
   excludeSquares: ReadonlySet<string> = new Set(),
 ): { mover: EnemyPiece; target: Coord; isCapture: boolean } | null {
-  const isExcluded = (p: EnemyPiece) => excludeSquares.has(coordKey(p));
+  // Frozen squares are treated as if those pieces have already moved.
+  const frozen = new Set(
+    state.frozenSquares
+      .map((sq) => {
+        const file = sq.charCodeAt(0) - 'a'.charCodeAt(0) + 1;
+        const rank = parseInt(sq[1], 10);
+        return `${file},${rank}`;
+      }),
+  );
+  const isExcluded = (p: EnemyPiece) =>
+    excludeSquares.has(coordKey(p)) || frozen.has(coordKey(p));
   // 1) Capture priority.
   const capturers = state.pieces
     .filter((p) => !isExcluded(p) && canCapture(p, state))
@@ -265,22 +275,22 @@ export function stepEnemyTurn(state: BoardState): BoardState {
   const exclude = new Set(state.enemyMovedSquares);
 
   if (state.enemyMovedSquares.length >= budget) {
-    return { ...state, turn: 'rookie', enemyMovedSquares: [] };
+    return { ...state, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
   }
 
   const action = chooseEnemyAction(state, exclude);
   if (!action) {
-    return { ...state, turn: 'rookie', enemyMovedSquares: [] };
+    return { ...state, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
   }
 
   const after = applyAction(state, action);
   if (after.status === 'lost') {
-    return { ...after, turn: 'rookie', enemyMovedSquares: [] };
+    return { ...after, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
   }
 
   const nextMoved = [...state.enemyMovedSquares, coordKey(action.target)];
   if (nextMoved.length >= budget) {
-    return { ...after, turn: 'rookie', enemyMovedSquares: [] };
+    return { ...after, turn: 'rookie', enemyMovedSquares: [], frozenSquares: [] };
   }
   return { ...after, turn: 'enemy', enemyMovedSquares: nextMoved };
 }

@@ -16,12 +16,16 @@ import { TempoBar } from '@/components/run/TempoBar';
 import { trackEvent } from '@/lib/analytics/posthog';
 import type { CardId } from '@/lib/run/cards';
 import {
+  applyBomb,
   applyCardPick,
   applyCardPlay,
   applyDismissDraw,
+  applyFreeze,
   applyRookieMove,
+  applyTelekinesis,
   stepEnemyTurn,
 } from '@/lib/run/engine';
+import { CARD_DEFS } from '@/lib/run/cards';
 import {
   DEFAULT_RUN_ID,
   getNextRunId,
@@ -281,11 +285,82 @@ export default function RookiesRunPage() {
     }
   }, [runComplete, state.status, finalElapsed, startTime]);
 
+  // Targeting state for cards that need a board click to resolve.
+  // step 'enemy' = picking an enemy; step 'square' = picking a board square.
+  // selectedEnemy is only used by telekinesis between the two steps.
+  const [targeting, setTargeting] = useState<{
+    cardId: CardId;
+    slotIndex: number;
+    step: 'enemy' | 'square';
+    selectedEnemy?: { file: number; rank: number };
+  } | null>(null);
+
+  const cancelTargeting = useCallback(() => setTargeting(null), []);
+
   const onSquareClick = useCallback(
     (square: string) => {
       if (state.status !== 'playing' || state.turn !== 'rookie') return;
-      const rookieSquare = toSquare(state.rookie);
 
+      // Targeting mode short-circuits normal move selection.
+      if (targeting) {
+        const coord = fromSquare(square);
+        const enemyHere = state.pieces.some(
+          (p) => p.file === coord.file && p.rank === coord.rank,
+        );
+        if (targeting.cardId === 'bomb') {
+          const next = applyBomb(state, targeting.slotIndex, coord);
+          if (next !== state) {
+            setState(next);
+            trackEvent('run_card_played', {
+              iso: meta.iso,
+              level: levelIndex + 1,
+              card: 'bomb',
+            });
+          }
+          setTargeting(null);
+          return;
+        }
+        if (targeting.cardId === 'freeze') {
+          if (!enemyHere) return; // ignore non-enemy taps
+          const next = applyFreeze(state, targeting.slotIndex, coord);
+          if (next !== state) {
+            setState(next);
+            trackEvent('run_card_played', {
+              iso: meta.iso,
+              level: levelIndex + 1,
+              card: 'freeze',
+            });
+          }
+          setTargeting(null);
+          return;
+        }
+        if (targeting.cardId === 'telekinesis') {
+          if (targeting.step === 'enemy') {
+            if (!enemyHere) return;
+            setTargeting({ ...targeting, step: 'square', selectedEnemy: coord });
+            return;
+          }
+          if (!targeting.selectedEnemy) return;
+          const next = applyTelekinesis(
+            state,
+            targeting.slotIndex,
+            targeting.selectedEnemy,
+            coord,
+          );
+          if (next !== state) {
+            setState(next);
+            trackEvent('run_card_played', {
+              iso: meta.iso,
+              level: levelIndex + 1,
+              card: 'telekinesis',
+            });
+          }
+          setTargeting(null);
+          return;
+        }
+      }
+
+      const rookieSquare = toSquare(state.rookie);
       if (square === rookieSquare) {
         setSelectedSquare((cur) => (cur === square ? null : square));
         return;
@@ -303,7 +378,7 @@ export default function RookiesRunPage() {
       }
       setSelectedSquare(null);
     },
-    [state, selectedSquare, startTime],
+    [state, selectedSquare, startTime, targeting, meta.iso, levelIndex],
   );
 
   const onPieceDrop = useCallback(
@@ -353,6 +428,18 @@ export default function RookiesRunPage() {
   const onCardPlay = useCallback(
     (slotIndex: number) => {
       const cardId = state.hand[slotIndex];
+      if (!cardId) return;
+      const def = CARD_DEFS[cardId];
+      // Targeted cards enter targeting mode instead of resolving immediately.
+      if (def.target !== 'none') {
+        setSelectedSquare(null);
+        setTargeting({
+          cardId,
+          slotIndex,
+          step: def.target === 'enemy' ? 'enemy' : 'square',
+        });
+        return;
+      }
       const next = applyCardPlay(state, slotIndex);
       if (next !== state) {
         setState(next);
@@ -530,9 +617,31 @@ export default function RookiesRunPage() {
           />
         </div>
 
-        <CardHand hand={state.hand} onPlay={onCardPlay} />
+        <CardHand hand={state.hand} onPlay={onCardPlay} activeSlot={targeting?.slotIndex ?? null} />
 
-        {state.status === 'playing' && (
+        {state.status === 'playing' && targeting && (
+          <div className="flex items-center gap-2 rounded-lg bg-indigo-500/15 border border-indigo-400/40 px-3 py-2">
+            <span className="text-xs font-black text-indigo-700 dark:text-indigo-300 flex-1 leading-tight">
+              {CARD_DEFS[targeting.cardId].name}:{' '}
+              {targeting.cardId === 'bomb'
+                ? 'tap any square'
+                : targeting.cardId === 'freeze'
+                  ? 'tap an enemy'
+                  : targeting.step === 'enemy'
+                    ? 'tap the enemy to move'
+                    : 'tap an empty square'}
+            </span>
+            <button
+              type="button"
+              onClick={cancelTargeting}
+              className="px-2 py-1 rounded bg-chess-text/10 text-chess-text text-[11px] font-bold active:scale-95"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {state.status === 'playing' && !targeting && (
           <p className="text-center text-sm text-chess-text-muted">
             Tap Rookie to see her moves.
           </p>

@@ -20,7 +20,14 @@ import {
 import { CARD_DEFS, HAND_SIZE, rollDraw, type CardId } from './cards';
 import { stepEnemyTurn } from './pawn-ai';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
+import { toSquare } from './types';
 import type { BoardState, Coord, RookieForm } from './types';
+
+function removeCard(hand: CardId[], slotIndex: number): CardId[] {
+  const out = hand.slice();
+  out.splice(slotIndex, 1);
+  return out;
+}
 
 export function applyRookieMove(state: BoardState, target: Coord): BoardState {
   if (state.status !== 'playing' || state.turn !== 'rookie') return state;
@@ -181,7 +188,75 @@ export function applyCardPlay(state: BoardState, slotIndex: number): BoardState 
       return state;
   }
 
-  const hand = next.hand.slice();
-  hand.splice(slotIndex, 1);
-  return { ...next, hand };
+  return { ...next, hand: removeCard(next.hand, slotIndex) };
+}
+
+/**
+ * Bomb — destroy every enemy in a 3×3 area centered on `center`. The card
+ * is consumed regardless of whether it actually hits anything; turn does
+ * not pass to the enemy.
+ */
+export function applyBomb(
+  state: BoardState,
+  slotIndex: number,
+  center: Coord,
+): BoardState {
+  if (state.status !== 'playing' || state.turn !== 'rookie') return state;
+  if (state.hand[slotIndex] !== 'bomb') return state;
+  const pieces = state.pieces.filter(
+    (p) => Math.abs(p.file - center.file) > 1 || Math.abs(p.rank - center.rank) > 1,
+  );
+  return { ...state, pieces, hand: removeCard(state.hand, slotIndex) };
+}
+
+/**
+ * Freeze — mark the enemy on `target` as frozen. Returns the state
+ * unchanged if no enemy is there. Frozen pieces are skipped on the next
+ * enemy turn, then thawed automatically.
+ */
+export function applyFreeze(
+  state: BoardState,
+  slotIndex: number,
+  target: Coord,
+): BoardState {
+  if (state.status !== 'playing' || state.turn !== 'rookie') return state;
+  if (state.hand[slotIndex] !== 'freeze') return state;
+  const hit = state.pieces.find(
+    (p) => p.file === target.file && p.rank === target.rank,
+  );
+  if (!hit) return state;
+  const sq = toSquare(target);
+  if (state.frozenSquares.includes(sq)) return state;
+  return {
+    ...state,
+    frozenSquares: [...state.frozenSquares, sq],
+    hand: removeCard(state.hand, slotIndex),
+  };
+}
+
+/**
+ * Telekinesis — relocate one enemy to an empty square. `from` must have an
+ * enemy on it, `to` must be empty (no enemy, not Rookie, not a hazard, and
+ * in bounds).
+ */
+export function applyTelekinesis(
+  state: BoardState,
+  slotIndex: number,
+  from: Coord,
+  to: Coord,
+): BoardState {
+  if (state.status !== 'playing' || state.turn !== 'rookie') return state;
+  if (state.hand[slotIndex] !== 'telekinesis') return state;
+  if (to.file < 1 || to.file > 8 || to.rank < 1 || to.rank > 8) return state;
+  const mover = state.pieces.find(
+    (p) => p.file === from.file && p.rank === from.rank,
+  );
+  if (!mover) return state;
+  if (state.rookie.file === to.file && state.rookie.rank === to.rank) return state;
+  if (state.pieces.some((p) => p.file === to.file && p.rank === to.rank)) return state;
+  if (state.hazards.some((h) => h.file === to.file && h.rank === to.rank)) return state;
+  const pieces = state.pieces.map((p) =>
+    p === mover ? { ...p, file: to.file, rank: to.rank } : { ...p },
+  );
+  return { ...state, pieces, hand: removeCard(state.hand, slotIndex) };
 }

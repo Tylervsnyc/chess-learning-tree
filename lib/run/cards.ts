@@ -74,10 +74,16 @@ export const CARD_DEFS: Record<CardId, CardDef> = {
 };
 
 /**
- * Cards eligible to appear in the draw pool right now. Bomb / freeze /
- * telekinesis are defined but not drawable until their targeting UIs land.
+ * All cards are drawable now that their targeting UIs are wired up.
  */
-export const DRAWABLE_POOL: CardId[] = ['move-bishop', 'move-knight', 'queen-mode'];
+export const DRAWABLE_POOL: CardId[] = [
+  'move-bishop',
+  'move-knight',
+  'queen-mode',
+  'bomb',
+  'freeze',
+  'telekinesis',
+];
 
 export const ALL_CARD_IDS: CardId[] = Object.keys(CARD_DEFS) as CardId[];
 
