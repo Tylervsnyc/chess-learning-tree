@@ -74,18 +74,6 @@ export async function GET() {
           ))}
         </div>
 
-        {/* ground shadow */}
-        <div
-          style={{
-            width: 160,
-            height: 16,
-            borderRadius: '50%',
-            background: 'rgba(120, 70, 30, 0.18)',
-            marginTop: 4,
-            display: 'flex',
-          }}
-        />
-
         {/* Title */}
         <div
           style={{
