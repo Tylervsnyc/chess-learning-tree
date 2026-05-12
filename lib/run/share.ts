@@ -1,26 +1,28 @@
 /**
- * Share string for Rookie's Run.
+ * Share string for Rookie's Run (Wordle-style).
  *
- * Format: `Rookie's Run · YYYY-MM-DD · {score} · {moves} moves · {time}s`
- * Score is omitted on a loss (no `score` arg).
+ * Format: `Rookie's Run · YYYY-MM-DD · Level X/N · streak Y`
  */
 
 export interface ShareInput {
   iso: string; // YYYY-MM-DD
-  moves: number;
-  elapsedMs: number;
-  score?: number;
+  levelReached: number;
+  totalLevels: number;
+  completed: boolean;
+  currentStreak: number;
 }
 
 export function buildShareString({
   iso,
-  moves,
-  elapsedMs,
-  score,
+  levelReached,
+  totalLevels,
+  completed,
+  currentStreak,
 }: ShareInput): string {
-  const seconds = Math.max(0, Math.round(elapsedMs / 1000));
-  const moveLabel = moves === 1 ? 'move' : 'moves';
-  const scorePart =
-    score !== undefined ? ` · ${score.toLocaleString()} pts` : '';
-  return `Rookie's Run · ${iso}${scorePart} · ${moves} ${moveLabel} · ${seconds}s`;
+  const result = completed
+    ? `${totalLevels}/${totalLevels} ✓`
+    : `Level ${levelReached}/${totalLevels}`;
+  const streakPart =
+    currentStreak > 1 ? ` · streak ${currentStreak}` : '';
+  return `Rookie's Run · ${iso} · ${result}${streakPart}`;
 }

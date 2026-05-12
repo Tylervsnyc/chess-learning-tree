@@ -2,71 +2,34 @@
 
 import { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { PIECE_VALUES } from '@/lib/run/scoring';
-import type { PieceType } from '@/lib/run/types';
-
-export interface LevelResult {
-  level: number;
-  cleared: boolean;
-  moves: number;
-  captures: PieceType[];
-  score: number;
-}
+import type { RunStats } from '@/lib/run/history';
 
 interface RunSummaryModalProps {
   iso: string;
   totalLevels: number;
-  levelsCleared: number;
-  totalMoves: number;
-  totalScore: number;
-  elapsedSeconds: number;
-  levelResults: LevelResult[];
-  shareString: string;
-  /** True when run was completed (all levels cleared). False on death. */
+  /** Level the player reached this run (1-indexed). */
+  levelReached: number;
+  /** True when the run was completed (all levels cleared). */
   completed: boolean;
+  stats: RunStats;
+  shareString: string;
   onReplay: () => void;
-  /** Name of the next run to advance to. When set, shows a "Next Run" button. */
   nextRunName?: string;
   onNextRun?: () => void;
-}
-
-function formatSeconds(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function captureSummary(captures: PieceType[]): string {
-  if (captures.length === 0) return '—';
-  const counts: Record<string, number> = {};
-  for (const c of captures) counts[c] = (counts[c] ?? 0) + 1;
-  const glyph: Record<PieceType, string> = {
-    pawn: '♙',
-    knight: '♘',
-    bishop: '♗',
-    queen: '♕',
-  };
-  return (Object.keys(counts) as PieceType[])
-    .map((t) => `${counts[t]}${glyph[t]}`)
-    .join(' ');
 }
 
 export function RunSummaryModal({
   iso,
   totalLevels,
-  levelsCleared,
-  totalMoves,
-  totalScore,
-  elapsedSeconds,
-  levelResults,
-  shareString,
+  levelReached,
   completed,
+  stats,
+  shareString,
   onReplay,
   nextRunName,
   onNextRun,
 }: RunSummaryModalProps) {
   const [shareCopied, setShareCopied] = useState(false);
-  const [displayTotal, setDisplayTotal] = useState(0);
 
   useEffect(() => {
     if (!completed) return;
@@ -91,21 +54,6 @@ export function RunSummaryModal({
     });
   }, [completed]);
 
-  useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const duration = 900;
-    const target = totalScore;
-    const step = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplayTotal(Math.round(target * eased));
-      if (t < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [totalScore]);
-
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shareString);
@@ -119,10 +67,20 @@ export function RunSummaryModal({
   const title = completed ? 'Run complete!' : 'Captured.';
   const subtitle = completed
     ? `All ${totalLevels} levels cleared`
-    : `Reached level ${Math.min(totalLevels, levelsCleared + 1)} of ${totalLevels}`;
+    : `Reached Level ${levelReached} of ${totalLevels}`;
+
+  // Build distribution rows: one per level, 1..totalLevels.
+  const rows = Array.from({ length: totalLevels }, (_, i) => {
+    const level = i + 1;
+    const count = stats.distribution[level] ?? 0;
+    const pct =
+      stats.maxBucket === 0 ? 0 : Math.round((count / stats.maxBucket) * 100);
+    return { level, count, pct, isToday: level === levelReached };
+  });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6 animate-[rookiesRunFadeIn_180ms_ease-out] overscroll-contain"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6 animate-[rookiesRunFadeIn_180ms_ease-out] overscroll-contain"
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
     >
@@ -133,9 +91,9 @@ export function RunSummaryModal({
           60%  { opacity: 1; transform: scale(1.02) translateY(0); }
           100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-        @keyframes rookiesRunRowIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes rookiesRunBarIn {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
         }
       `}</style>
 
@@ -150,55 +108,44 @@ export function RunSummaryModal({
           {iso}
         </div>
         <h2 className="mt-1 text-3xl font-black text-chess-text">{title}</h2>
-        <p className="mt-1 text-sm text-chess-text-muted">
-          {subtitle} · {totalMoves} {totalMoves === 1 ? 'move' : 'moves'} ·{' '}
-          {formatSeconds(elapsedSeconds)}
-        </p>
+        <p className="mt-1 text-sm text-chess-text-muted">{subtitle}</p>
 
-        <div className="mt-5 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-950/30 py-5">
-          <div className="text-[11px] uppercase tracking-widest text-chess-text-faint">
-            Total score
-          </div>
-          <div className="mt-1 text-5xl font-black tabular-nums text-chess-text">
-            {displayTotal.toLocaleString()}
-          </div>
+        <div className="mt-5 grid grid-cols-4 gap-2">
+          <Stat value={stats.played} label="Played" />
+          <Stat value={`${stats.winPct}%`} label="Win" />
+          <Stat value={stats.currentStreak} label="Streak" />
+          <Stat value={stats.maxStreak} label="Max" />
         </div>
 
-        <div className="mt-5 text-left">
-          <div className="text-[11px] uppercase tracking-widest text-chess-text-faint mb-1.5 px-1">
-            Per level
+        <div className="mt-6 text-left">
+          <div className="text-[11px] uppercase tracking-widest text-chess-text-faint mb-2 px-1">
+            Levels reached
           </div>
-          <div className="rounded-2xl bg-chess-page divide-y divide-chess-text/5">
-            {levelResults.map((r, idx) => (
-              <div
-                key={r.level}
-                className="flex items-center gap-3 px-3 py-2 text-sm"
-                style={{
-                  animation: `rookiesRunRowIn 320ms ease-out both`,
-                  animationDelay: `${300 + idx * 50}ms`,
-                }}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${
-                    r.cleared
-                      ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                      : 'bg-rose-500/20 text-rose-600 dark:text-rose-400'
-                  }`}
-                >
-                  {r.cleared ? '✓' : '✕'}
+          <div className="flex flex-col gap-1">
+            {rows.map((r, idx) => (
+              <div key={r.level} className="flex items-center gap-2 text-sm">
+                <div className="w-5 text-right text-[12px] font-bold text-chess-text-muted tabular-nums">
+                  {r.level}
                 </div>
-                <div className="flex-1">
-                  <div className="text-chess-text font-bold">Level {r.level}</div>
-                  <div className="text-[11px] text-chess-text-faint tabular-nums">
-                    {r.moves} {r.moves === 1 ? 'move' : 'moves'} · {captureSummary(r.captures)}
+                <div className="flex-1 h-6 rounded bg-chess-page overflow-hidden relative">
+                  <div
+                    className={`h-full flex items-center justify-end pr-2 text-[11px] font-black text-white tabular-nums ${
+                      r.isToday ? 'bg-emerald-500' : 'bg-chess-text/40'
+                    }`}
+                    style={{
+                      width: `${Math.max(r.count > 0 ? 10 : 0, r.pct)}%`,
+                      transformOrigin: 'left center',
+                      animation: `rookiesRunBarIn 500ms ease-out both`,
+                      animationDelay: `${200 + idx * 40}ms`,
+                    }}
+                  >
+                    {r.count > 0 ? r.count : ''}
                   </div>
-                </div>
-                <div
-                  className={`tabular-nums font-black ${
-                    r.cleared ? 'text-chess-text' : 'text-chess-text-faint'
-                  }`}
-                >
-                  {r.cleared ? `+${r.score.toLocaleString()}` : '—'}
+                  {r.count === 0 && r.isToday && (
+                    <div className="absolute inset-0 flex items-center px-2 text-[11px] font-black text-emerald-600 dark:text-emerald-400">
+                      ← you
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -209,7 +156,7 @@ export function RunSummaryModal({
           <>
             <button
               onClick={onNextRun}
-              className="mt-5 w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
+              className="mt-6 w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
             >
               Next Run · {nextRunName} →
             </button>
@@ -229,7 +176,7 @@ export function RunSummaryModal({
             </div>
           </>
         ) : (
-          <div className="mt-5 flex gap-2 justify-center">
+          <div className="mt-6 flex gap-2 justify-center">
             <button
               onClick={handleCopy}
               className="tap-highlight px-4 py-2 rounded-xl bg-chess-text text-white text-sm font-bold"
@@ -249,14 +196,15 @@ export function RunSummaryModal({
   );
 }
 
-/** Score one level: BASE - MOVE_PENALTY×moves + Σ captures + LEVEL_BONUS. */
-export function scoreForLevel(moves: number, captures: PieceType[]): number {
-  const BASE = 100;
-  const MOVE_PENALTY = 10;
-  const captureBonus = captures.reduce(
-    (s, t) => s + (PIECE_VALUES[t] ?? 0),
-    0,
+function Stat({ value, label }: { value: number | string; label: string }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="text-2xl font-black text-chess-text tabular-nums leading-none">
+        {value}
+      </div>
+      <div className="mt-1 text-[10px] uppercase tracking-wide text-chess-text-faint">
+        {label}
+      </div>
+    </div>
   );
-  const LEVEL_BONUS = 250;
-  return Math.max(0, BASE - MOVE_PENALTY * moves + captureBonus + LEVEL_BONUS);
 }

@@ -3,11 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RunBoard } from '@/components/run/Board';
 import { LevelClearedModal } from '@/components/run/LevelClearedModal';
-import {
-  RunSummaryModal,
-  scoreForLevel,
-  type LevelResult,
-} from '@/components/run/RunSummaryModal';
+import { RunSummaryModal } from '@/components/run/RunSummaryModal';
+import { computeStats, readHistory, recordRun } from '@/lib/run/history';
 import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
@@ -47,10 +44,9 @@ import {
   todayISO,
   totalLevelsForRun,
 } from '@/lib/run/seed';
-import { computeScore } from '@/lib/run/scoring';
 import { buildShareString } from '@/lib/run/share';
 import { fromSquare, toSquare } from '@/lib/run/types';
-import type { BoardState, Coord, PieceType, RunPuzzle } from '@/lib/run/types';
+import type { BoardState, Coord, RunPuzzle } from '@/lib/run/types';
 
 /**
  * Rookie's Run — Sprint 3.
@@ -59,13 +55,6 @@ import type { BoardState, Coord, PieceType, RunPuzzle } from '@/lib/run/types';
  * meter offers 3 ability choices (new ability or upgrade). Abilities are
  * permanent for the run and live in the rack below the board.
  */
-
-function formatElapsed(ms: number): string {
-  const seconds = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
 
 function readUrlParams(): { runId: string; startLevelIndex: number } {
   if (typeof window === 'undefined') {
@@ -188,15 +177,7 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [shaking]);
 
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsed, setElapsed] = useState(0);
-  const [finalElapsed, setFinalElapsed] = useState<number | null>(null);
-
-  // Accumulated totals across the run.
-  const [totalMoves, setTotalMoves] = useState(0);
-  const [totalCaptures, setTotalCaptures] = useState<PieceType[]>([]);
   const [levelsCleared, setLevelsCleared] = useState(0);
-  const [levelResults, setLevelResults] = useState<LevelResult[]>([]);
 
   // Phase flags.
   const [dying, setDying] = useState(false);
@@ -313,19 +294,6 @@ export default function RookiesRunPage() {
   useEffect(() => {
     if (state.status !== 'won' || showLevelCleared || runComplete) return;
 
-    const levelScore = scoreForLevel(state.moveCount, state.captures);
-    setLevelResults((rs) => [
-      ...rs,
-      {
-        level: levelIndex + 1,
-        cleared: true,
-        moves: state.moveCount,
-        captures: state.captures,
-        score: levelScore,
-      },
-    ]);
-    setTotalMoves((m) => m + state.moveCount);
-    setTotalCaptures((cs) => [...cs, ...state.captures]);
     setLevelsCleared((n) => n + 1);
 
     trackEvent('run_level_cleared', {
@@ -333,17 +301,12 @@ export default function RookiesRunPage() {
       level: levelIndex + 1,
       moves: state.moveCount,
       captures: state.captures.length,
-      score: levelScore,
       tempo: state.tempo,
     });
 
     if (levelIndex >= totalLevels - 1) {
       setRunComplete(true);
-      trackEvent('run_completed', {
-        iso: meta.iso,
-        run: meta.runId,
-        score: levelScore,
-      });
+      trackEvent('run_completed', { iso: meta.iso, run: meta.runId });
     } else {
       setShowLevelCleared(true);
     }
@@ -352,19 +315,6 @@ export default function RookiesRunPage() {
   const trackedLossRef = useRef(false);
   useEffect(() => {
     if (state.status !== 'lost') return;
-    setLevelResults((rs) => {
-      if (rs.some((r) => r.level === levelIndex + 1)) return rs;
-      return [
-        ...rs,
-        {
-          level: levelIndex + 1,
-          cleared: false,
-          moves: state.moveCount,
-          captures: state.captures,
-          score: 0,
-        },
-      ];
-    });
     if (!trackedLossRef.current) {
       trackedLossRef.current = true;
       trackEvent('run_level_lost', {
@@ -375,21 +325,6 @@ export default function RookiesRunPage() {
       });
     }
   }, [state.status, state.moveCount, state.captures, levelIndex, meta.iso]);
-
-  useEffect(() => {
-    if (runComplete || state.status === 'lost') return;
-    if (startTime === null) return;
-    const tick = () => setElapsed(Date.now() - startTime);
-    tick();
-    const id = setInterval(tick, 250);
-    return () => clearInterval(id);
-  }, [runComplete, state.status, startTime]);
-
-  useEffect(() => {
-    if ((runComplete || state.status === 'lost') && finalElapsed === null && startTime !== null) {
-      setFinalElapsed(Date.now() - startTime);
-    }
-  }, [runComplete, state.status, finalElapsed, startTime]);
 
   // Ability legal-move highlights (for movement abilities).
   const legalAbilityMoves: Coord[] | undefined = useMemo(() => {
@@ -439,10 +374,6 @@ export default function RookiesRunPage() {
         if (def.activation === 'movement') {
           const next = applyAbilityMove(state, state.activeAbility.id, coord);
           if (next !== state) {
-            if (startTime === null) {
-              setStartTime(Date.now());
-              setElapsed(0);
-            }
             setState(next);
             playCardPlaySound();
           }
@@ -480,17 +411,13 @@ export default function RookiesRunPage() {
       if (!selectedSquare) return;
 
       const target = fromSquare(square);
-      if (startTime === null) {
-        setStartTime(Date.now());
-        setElapsed(0);
-      }
       const next = applyRookieMove(state, target);
       if (next !== state) {
         setState(next);
       }
       setSelectedSquare(null);
     },
-    [state, selectedSquare, startTime, meta.iso, levelIndex, ensureAudioWarm],
+    [state, selectedSquare, meta.iso, levelIndex, ensureAudioWarm],
   );
 
   const onPieceDrop = useCallback(
@@ -501,15 +428,11 @@ export default function RookiesRunPage() {
       const target = fromSquare(targetSquare);
       const next = applyRookieMove(state, target);
       if (next === state) return false;
-      if (startTime === null) {
-        setStartTime(Date.now());
-        setElapsed(0);
-      }
       setState(next);
       setSelectedSquare(null);
       return true;
     },
-    [state, startTime, ensureAudioWarm],
+    [state, ensureAudioWarm],
   );
 
   const onOfferPick = useCallback(
@@ -561,20 +484,15 @@ export default function RookiesRunPage() {
     setLevelIndex(meta.startLevelIndex);
     setPuzzle(fresh.puzzle);
     setState(fresh.state);
-    setStartTime(null);
-    setElapsed(0);
-    setFinalElapsed(null);
     setSelectedSquare(null);
-    setTotalMoves(0);
-    setTotalCaptures([]);
     setLevelsCleared(0);
-    setLevelResults([]);
     setDying(false);
     setDeathSettled(false);
     setShowLevelCleared(false);
     setRunComplete(false);
     trackedStartRef.current = false;
     trackedLossRef.current = false;
+    runRecordedRef.current = false;
     trackEvent('run_replayed', { iso: meta.iso, run: meta.runId });
   }, [meta.iso, meta.runId, meta.startLevelIndex]);
 
@@ -612,30 +530,40 @@ export default function RookiesRunPage() {
     [meta.runId],
   );
 
-  const displayElapsed = finalElapsed ?? elapsed;
-  const score = useMemo(() => {
-    const inProgressMoves = state.status === 'playing' ? state.moveCount : 0;
-    const inProgressCaptures = state.status === 'playing' ? state.captures : [];
-    return computeScore({
-      moves: totalMoves + inProgressMoves,
-      captures: [...totalCaptures, ...inProgressCaptures],
-      elapsedMs: displayElapsed,
-      levelsCleared,
-      tempoRemaining: state.tempo,
-    });
-  }, [totalMoves, totalCaptures, state.status, state.moveCount, state.captures, state.tempo, displayElapsed, levelsCleared]);
+  const levelReached = runComplete
+    ? totalLevels
+    : state.status === 'lost'
+      ? levelIndex + 1
+      : Math.max(1, levelsCleared);
 
-  const inProgressMoves = state.status === 'playing' ? state.moveCount : 0;
+  // Record the finished run once, then read history for stats.
+  const runRecordedRef = useRef(false);
+  const [historyVersion, setHistoryVersion] = useState(0);
+  useEffect(() => {
+    if (runRecordedRef.current) return;
+    const finished = runComplete || (state.status === 'lost' && deathSettled);
+    if (!finished) return;
+    runRecordedRef.current = true;
+    recordRun({
+      iso: meta.iso,
+      runId: meta.runId,
+      levelReached,
+      totalLevels,
+      completed: runComplete,
+    });
+    setHistoryVersion((v) => v + 1);
+  }, [runComplete, state.status, deathSettled, meta.iso, meta.runId, levelReached, totalLevels]);
+
+  const stats = useMemo(() => computeStats(readHistory()), [historyVersion]);
 
   const shareString = buildShareString({
     iso: meta.iso,
-    moves: totalMoves + inProgressMoves,
-    elapsedMs: displayElapsed,
-    score: runComplete ? score.total : undefined,
+    levelReached,
+    totalLevels,
+    completed: runComplete,
+    currentStreak: stats.currentStreak,
   });
 
-  const totalDisplayMoves = totalMoves + inProgressMoves;
-  const moveLimit = state.moveLimit;
   void puzzle;
 
   return (
@@ -667,33 +595,6 @@ export default function RookiesRunPage() {
             ?
           </button>
         </header>
-
-        <div className="flex gap-2">
-          <div className="flex-1 bg-chess-surface rounded-lg px-2.5 py-1 shadow-sm">
-            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
-              {moveLimit !== null ? `Moves / ${moveLimit}` : 'Moves'}
-            </div>
-            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
-              {state.moveCount}
-            </div>
-          </div>
-          <div className="flex-1 bg-chess-surface rounded-lg px-2.5 py-1 shadow-sm">
-            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
-              Time
-            </div>
-            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
-              {formatElapsed(displayElapsed)}
-            </div>
-          </div>
-          <div className="flex-1 bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-950/40 rounded-lg px-2.5 py-1 shadow-sm">
-            <div className="text-[9px] uppercase tracking-wide text-chess-text-faint leading-tight">
-              Score
-            </div>
-            <div className="text-lg font-black text-chess-text tabular-nums leading-tight">
-              {score.total.toLocaleString()}
-            </div>
-          </div>
-        </div>
 
         <TempoBar tempo={state.tempo} form={state.form} formMovesLeft={state.formMovesLeft} />
 
@@ -792,13 +693,10 @@ export default function RookiesRunPage() {
         <RunSummaryModal
           iso={meta.iso}
           totalLevels={totalLevels}
-          levelsCleared={levelsCleared}
-          totalMoves={totalDisplayMoves}
-          totalScore={score.total}
-          elapsedSeconds={score.seconds}
-          levelResults={levelResults}
-          shareString={shareString}
+          levelReached={levelReached}
           completed={runComplete}
+          stats={stats}
+          shareString={shareString}
           onReplay={resetRun}
           nextRunName={getRunById(getNextRunId(meta.runId)).name}
           onNextRun={goToNextRun}
