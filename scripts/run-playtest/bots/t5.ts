@@ -1,0 +1,116 @@
+/**
+ * T5 — Expert (v0.1).
+ *
+ * 3-ply minimax with the same eval as T4. Deterministic (no temperature in
+ * move selection) — true argmax. Same offer/ability logic as T4 for now.
+ *
+ * Future iterations (tracked separately): ability-aware planner that searches
+ * over ability combinations, not just "should I tap this ability this turn?"
+ *
+ * Performance note: 3-ply is significantly slower than 2-ply. We cap the
+ * candidate branching by sorting candidates by 1-ply eval and only deep-
+ * searching the top-K. K=6 is a reasonable trade between strength and speed.
+ */
+
+import type { BoardState } from '../../../lib/run/types';
+import { applyBotAction } from './apply';
+import { evalState, legalCandidates, rookieCanBeCapturedThisTurn } from './shared';
+import { settleEnemyTurns } from './t3';
+import type { Bot, BotAction, BotContext } from '../types';
+
+const DEEP_BRANCH_K = 6;
+
+export const T5: Bot = {
+  id: 'T5',
+  decide(state, ctx) {
+    if (state.pendingOffer) return pickOfferExpert(state, ctx);
+
+    if (rookieCanBeCapturedThisTurn(state) && hasUsableAegis(state, ctx)) {
+      return { kind: 'activate-ability', abilityId: 'aegis' };
+    }
+
+    const candidates = legalCandidates(state, ctx.excludedAbilities);
+    if (candidates.length === 0) {
+      return { kind: 'move', target: { ...state.rookie } };
+    }
+
+    // First pass: 1-ply score on every candidate.
+    const shallow = candidates.map((c, i) => ({
+      i,
+      score: searchDepth(state, c, 1),
+    }));
+    shallow.sort((a, b) => b.score - a.score);
+
+    // Deep-search the top-K candidates.
+    const topK = shallow.slice(0, Math.min(DEEP_BRANCH_K, shallow.length));
+    let bestIdx = topK[0].i;
+    let bestScore = -Infinity;
+    for (const { i } of topK) {
+      const s = searchDepth(state, candidates[i], 3);
+      if (s > bestScore) {
+        bestScore = s;
+        bestIdx = i;
+      }
+    }
+
+    const chosen = candidates[bestIdx];
+    if (chosen.kind === 'move') return { kind: 'move', target: chosen.target! };
+    if (chosen.kind === 'activate-ability')
+      return { kind: 'activate-ability', abilityId: chosen.abilityId! };
+    return { kind: 'ability-target', abilityId: chosen.abilityId!, target: chosen.target! };
+  },
+};
+
+function searchDepth(
+  state: BoardState,
+  candidate: ReturnType<typeof legalCandidates>[number],
+  depth: number,
+): number {
+  const action: BotAction =
+    candidate.kind === 'move'
+      ? { kind: 'move', target: candidate.target! }
+      : candidate.kind === 'activate-ability'
+        ? { kind: 'activate-ability', abilityId: candidate.abilityId! }
+        : {
+            kind: 'ability-target',
+            abilityId: candidate.abilityId!,
+            target: candidate.target!,
+          };
+  const after = applyBotAction(state, action);
+  if (after === state) return -10_000;
+  const settled = settleEnemyTurns(after);
+  if (depth <= 1 || settled.status !== 'playing') return evalState(settled);
+  const nextCands = legalCandidates(settled, new Set());
+  if (nextCands.length === 0) return evalState(settled);
+  let best = -Infinity;
+  for (const nc of nextCands) {
+    const s = searchDepth(settled, nc, depth - 1);
+    if (s > best) best = s;
+  }
+  return best;
+}
+
+function hasUsableAegis(state: BoardState, ctx: BotContext): boolean {
+  if (ctx.excludedAbilities.has('aegis')) return false;
+  const owned = state.abilities.find((a) => a.id === 'aegis');
+  if (!owned) return false;
+  if (state.shieldUp) return false;
+  if (owned.tier !== 5 && owned.usesLeftThisLevel === 0) return false;
+  return true;
+}
+
+function pickOfferExpert(state: BoardState, ctx: BotContext): BotAction {
+  const offer = state.pendingOffer!;
+  let bestIdx = -1;
+  let bestScore = -Infinity;
+  offer.forEach((opt, i) => {
+    if (ctx.excludedAbilities.has(opt.id)) return;
+    const synth = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
+    if (synth > bestScore) {
+      bestScore = synth;
+      bestIdx = i;
+    }
+  });
+  if (bestIdx === -1) return { kind: 'dismiss-offer' };
+  return { kind: 'pick-offer', optionIndex: bestIdx as 0 | 1 };
+}

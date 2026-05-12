@@ -84,3 +84,6 @@ remotion/
 scripts/narrative/
 scripts/generate-hype-audio.ts
 scripts/generate-puzzle-voice.ts
+
+# Rookie's Run playtest — raw sweep data is large + regenerable. Digests stay.
+data/run-playtest/raw/
