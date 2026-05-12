@@ -8,8 +8,8 @@ import {
   scoreForLevel,
   type LevelResult,
 } from '@/components/run/RunSummaryModal';
-import { CardDrawModal } from '@/components/run/CardDrawModal';
-import { CardHand } from '@/components/run/CardHand';
+import { AbilityRack } from '@/components/run/AbilityRack';
+import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
 import { TempoBar } from '@/components/run/TempoBar';
@@ -22,18 +22,19 @@ import {
   playMoveSound,
   warmupAudio,
 } from '@/lib/sounds';
-import type { CardId } from '@/lib/run/cards';
 import {
-  applyBomb,
-  applyCardPick,
-  applyCardPlay,
-  applyDismissDraw,
-  applyFreeze,
-  applyRookieMove,
-  applyTelekinesis,
-  stepEnemyTurn,
-} from '@/lib/run/engine';
-import { CARD_DEFS } from '@/lib/run/cards';
+  ABILITY_DEFS,
+  abilityLegalMoves,
+  applyAbilityActivate,
+  applyAbilityCancel,
+  applyAbilityMove,
+  applyAbilityTargeted,
+  applyDismissOffer,
+  applyOfferPick,
+  type AbilityId,
+  type AbilityOfferOption,
+} from '@/lib/run/abilities';
+import { applyRookieMove, stepEnemyTurn } from '@/lib/run/engine';
 import {
   DEFAULT_RUN_ID,
   getNextRunId,
@@ -49,14 +50,14 @@ import {
 import { computeScore } from '@/lib/run/scoring';
 import { buildShareString } from '@/lib/run/share';
 import { fromSquare, toSquare } from '@/lib/run/types';
-import type { BoardState, PieceType, RunPuzzle } from '@/lib/run/types';
+import type { BoardState, Coord, PieceType, RunPuzzle } from '@/lib/run/types';
 
 /**
- * Rookie's Run — Sprint 2.
+ * Rookie's Run — Sprint 3.
  *
- * 10-level single daily run with the Tempo system. Capturing pieces grants
- * tempo; spend tempo to transform Rookie into a Knight or Bishop temporarily.
- * Die at any level → run ends. Beat all 10 → run complete.
+ * 10-level single daily run. Capturing pieces grants tempo; filling the tempo
+ * meter offers 3 ability choices (new ability or upgrade). Abilities are
+ * permanent for the run and live in the rack below the board.
  */
 
 function formatElapsed(ms: number): string {
@@ -126,13 +127,20 @@ export default function RookiesRunPage() {
   const [puzzle, setPuzzle] = useState<RunPuzzle>(initial.puzzle);
 
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  // Transient bomb VFX — set when bomb resolves, cleared after the anim runs.
+  // Transient bomb VFX — set when detonate resolves, cleared after the anim runs.
   const [bombFx, setBombFx] = useState<{ file: number; rank: number; id: number } | null>(null);
   useEffect(() => {
     if (!bombFx) return;
     const t = setTimeout(() => setBombFx(null), 650);
     return () => clearTimeout(t);
   }, [bombFx]);
+  // Detonate T5 — screenshake the board container briefly.
+  const [shaking, setShaking] = useState(false);
+  useEffect(() => {
+    if (!shaking) return;
+    const t = setTimeout(() => setShaking(false), 420);
+    return () => clearTimeout(t);
+  }, [shaking]);
 
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -152,9 +160,6 @@ export default function RookiesRunPage() {
   const [glitching, setGlitching] = useState(false);
   const prevFormRef = useRef(state.form);
 
-  // AudioContext gesture-unlock. Must run synchronously inside a user-gesture
-  // handler (tap/click) — async or effect-based calls won't unlock on iOS.
-  // Flag ensures we only do the work once per session.
   const audioWarmedRef = useRef(false);
   const ensureAudioWarm = useCallback(() => {
     if (audioWarmedRef.current) return;
@@ -162,7 +167,6 @@ export default function RookiesRunPage() {
     warmupAudio();
   }, []);
 
-  // Intro modal — shown once per device, re-openable via the "?" button.
   const [showIntro, setShowIntro] = useState(false);
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -173,8 +177,6 @@ export default function RookiesRunPage() {
   }, [meta.iso]);
 
   const dismissIntro = useCallback(() => {
-    // Sync warmup inside the user gesture — must come BEFORE any async work
-    // (setState, analytics) to count as a gesture on iOS Safari.
     ensureAudioWarm();
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-intro-seen', '1');
@@ -188,7 +190,6 @@ export default function RookiesRunPage() {
     trackEvent('run_intro_reopened', { iso: meta.iso });
   }, [meta.iso]);
 
-  // Track run start (first move).
   const trackedStartRef = useRef(false);
   useEffect(() => {
     if (trackedStartRef.current || state.moveCount === 0) return;
@@ -196,7 +197,6 @@ export default function RookiesRunPage() {
     trackEvent('run_started', { iso: meta.iso, level: levelIndex + 1 });
   }, [state.moveCount, meta.iso, levelIndex]);
 
-  // Glitch on every form change (manual transform + auto-revert).
   useEffect(() => {
     if (prevFormRef.current === state.form) return;
     prevFormRef.current = state.form;
@@ -205,8 +205,6 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [state.form]);
 
-  // Staged enemy turn: one piece moves at a time so you can SEE who acted.
-  // Tick every ~360ms while it's the enemy's turn.
   useEffect(() => {
     if (state.turn !== 'enemy' || state.status !== 'playing') return;
     const t = setTimeout(() => {
@@ -215,11 +213,6 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.enemyMovedSquares.length]);
 
-  // Death animation gate.
-  // NOTE: Only depends on state.status — including `dying`/`deathSettled` in
-  // the dep array causes setDying(true) below to re-fire this effect, whose
-  // cleanup then clears the 1.2s timeout before it can flip deathSettled,
-  // and the RunSummaryModal never mounts.
   useEffect(() => {
     if (state.status !== 'lost') return;
     setDying(true);
@@ -227,10 +220,6 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [state.status]);
 
-  // Single Rookie move/capture sfx — one effect, mutually exclusive.
-  // Matches /play: capture -> playCaptureSound, else playMoveSound.
-  // Two refs tracked together so a Rookie move + capture in the same render
-  // can never fire both sounds across separate effect runs.
   const lastRookieMoveRef = useRef(0);
   const lastRookieCapCountRef = useRef(0);
   const lastEnemyMoveRef = useRef(0);
@@ -247,8 +236,6 @@ export default function RookiesRunPage() {
     }
   }, [state.moveCount, state.captures.length, state.status]);
 
-  // Reset move/capture refs on level change so the new level's fresh
-  // state (moveCount=0, captures=[]) doesn't get mis-compared.
   useEffect(() => {
     lastRookieMoveRef.current = 0;
     lastRookieCapCountRef.current = 0;
@@ -258,29 +245,25 @@ export default function RookiesRunPage() {
   useEffect(() => {
     const len = state.enemyMovedSquares.length;
     if (len > lastEnemyMoveRef.current) {
-      // Enemy capture of Rookie sets status='lost'; skip the move chime then.
       if (state.status === 'playing') void playMoveSound();
     }
     lastEnemyMoveRef.current = len;
   }, [state.enemyMovedSquares.length, state.status]);
 
-  // Play level-clear chime when the level is won. Pitch climbs per level.
   useEffect(() => {
     if (state.status !== 'won') return;
     playLevelClearSound(levelIndex);
   }, [state.status, levelIndex]);
 
-  // Card-draw sfx when a fresh draw appears.
-  const prevPendingDrawRef = useRef<typeof state.pendingDraw>(null);
+  // Offer-arrival sfx (reuse card-draw chime).
+  const prevPendingOfferRef = useRef<BoardState['pendingOffer']>(null);
   useEffect(() => {
-    if (state.pendingDraw && !prevPendingDrawRef.current) {
+    if (state.pendingOffer && !prevPendingOfferRef.current) {
       playCardDrawSound();
     }
-    prevPendingDrawRef.current = state.pendingDraw;
-  }, [state.pendingDraw]);
+    prevPendingOfferRef.current = state.pendingOffer;
+  }, [state.pendingOffer]);
 
-  // Win-of-level handler: bank moves/captures, show level-cleared overlay or
-  // finalize the run.
   useEffect(() => {
     if (state.status !== 'won' || showLevelCleared || runComplete) return;
 
@@ -320,7 +303,6 @@ export default function RookiesRunPage() {
     }
   }, [state.status, state.moveCount, state.captures, state.tempo, levelIndex, showLevelCleared, runComplete, meta.iso, meta.runId, totalLevels]);
 
-  // Loss handler: record the failed level once.
   const trackedLossRef = useRef(false);
   useEffect(() => {
     if (state.status !== 'lost') return;
@@ -348,7 +330,6 @@ export default function RookiesRunPage() {
     }
   }, [state.status, state.moveCount, state.captures, levelIndex, meta.iso]);
 
-  // Timer tick.
   useEffect(() => {
     if (runComplete || state.status === 'lost') return;
     if (startTime === null) return;
@@ -358,93 +339,87 @@ export default function RookiesRunPage() {
     return () => clearInterval(id);
   }, [runComplete, state.status, startTime]);
 
-  // Freeze the clock when the run ends.
   useEffect(() => {
     if ((runComplete || state.status === 'lost') && finalElapsed === null && startTime !== null) {
       setFinalElapsed(Date.now() - startTime);
     }
   }, [runComplete, state.status, finalElapsed, startTime]);
 
-  // Targeting state for cards that need a board click to resolve.
-  // step 'enemy' = picking an enemy; step 'square' = picking a board square.
-  // selectedEnemy is only used by telekinesis between the two steps.
-  const [targeting, setTargeting] = useState<{
-    cardId: CardId;
-    slotIndex: number;
-    step: 'enemy' | 'square';
-    selectedEnemy?: { file: number; rank: number };
-  } | null>(null);
+  // Ability legal-move highlights (for movement abilities).
+  const legalAbilityMoves: Coord[] | undefined = useMemo(() => {
+    if (!state.activeAbility) return undefined;
+    if (state.activeAbility.step !== 'pick-square') return undefined;
+    return abilityLegalMoves(state, state.activeAbility.id);
+  }, [state]);
 
-  const cancelTargeting = useCallback(() => setTargeting(null), []);
+  const activeAbilityTier = useMemo(() => {
+    if (!state.activeAbility) return undefined;
+    return state.abilities.find((a) => a.id === state.activeAbility!.id)?.tier;
+  }, [state.activeAbility, state.abilities]);
+
+  const onActivateAbility = useCallback(
+    (id: AbilityId) => {
+      ensureAudioWarm();
+      // Tapping the same card again cancels.
+      if (state.activeAbility?.id === id) {
+        setState((s) => applyAbilityCancel(s));
+        return;
+      }
+      const next = applyAbilityActivate(state, id);
+      if (next !== state) {
+        setSelectedSquare(null);
+        setState(next);
+      }
+    },
+    [state, ensureAudioWarm],
+  );
 
   const onSquareClick = useCallback(
     (square: string) => {
-      // Sync warmup inside the user gesture (must be first — before any
-      // async/state work — to unlock the AudioContext on iOS).
       ensureAudioWarm();
       if (state.status !== 'playing' || state.turn !== 'rookie') return;
 
-      // Targeting mode short-circuits normal move selection.
-      if (targeting) {
+      // Ability resolution mode.
+      if (state.activeAbility) {
         const coord = fromSquare(square);
-        const enemyHere = state.pieces.some(
-          (p) => p.file === coord.file && p.rank === coord.rank,
-        );
-        if (targeting.cardId === 'bomb') {
-          const next = applyBomb(state, targeting.slotIndex, coord);
+        const def = ABILITY_DEFS[state.activeAbility.id];
+
+        // Cancel by tapping Rookie's own square.
+        if (square === toSquare(state.rookie)) {
+          setState((s) => applyAbilityCancel(s));
+          return;
+        }
+
+        if (def.activation === 'movement') {
+          const next = applyAbilityMove(state, state.activeAbility.id, coord);
           if (next !== state) {
+            if (startTime === null) {
+              setStartTime(Date.now());
+              setElapsed(0);
+            }
             setState(next);
+            playCardPlaySound();
+          }
+          return;
+        }
+
+        // Targeted (freeze / detonate).
+        const next = applyAbilityTargeted(state, state.activeAbility.id, coord);
+        if (next !== state) {
+          setState(next);
+          playCardPlaySound();
+          if (state.activeAbility.id === 'detonate') {
             setBombFx({ ...coord, id: Date.now() });
-            playCardPlaySound();
-            trackEvent('run_card_played', {
-              iso: meta.iso,
-              level: levelIndex + 1,
-              card: 'bomb',
-            });
+            const tier = state.abilities.find((a) => a.id === 'detonate')?.tier;
+            if (tier === 5) setShaking(true);
           }
-          setTargeting(null);
-          return;
+          trackEvent('run_ability_used', {
+            iso: meta.iso,
+            level: levelIndex + 1,
+            ability: state.activeAbility.id,
+          });
         }
-        if (targeting.cardId === 'freeze') {
-          if (!enemyHere) return; // ignore non-enemy taps
-          const next = applyFreeze(state, targeting.slotIndex, coord);
-          if (next !== state) {
-            setState(next);
-            playCardPlaySound();
-            trackEvent('run_card_played', {
-              iso: meta.iso,
-              level: levelIndex + 1,
-              card: 'freeze',
-            });
-          }
-          setTargeting(null);
-          return;
-        }
-        if (targeting.cardId === 'telekinesis') {
-          if (targeting.step === 'enemy') {
-            if (!enemyHere) return;
-            setTargeting({ ...targeting, step: 'square', selectedEnemy: coord });
-            return;
-          }
-          if (!targeting.selectedEnemy) return;
-          const next = applyTelekinesis(
-            state,
-            targeting.slotIndex,
-            targeting.selectedEnemy,
-            coord,
-          );
-          if (next !== state) {
-            setState(next);
-            playCardPlaySound();
-            trackEvent('run_card_played', {
-              iso: meta.iso,
-              level: levelIndex + 1,
-              card: 'telekinesis',
-            });
-          }
-          setTargeting(null);
-          return;
-        }
+        return;
       }
 
       const rookieSquare = toSquare(state.rookie);
@@ -465,14 +440,14 @@ export default function RookiesRunPage() {
       }
       setSelectedSquare(null);
     },
-    [state, selectedSquare, startTime, targeting, meta.iso, levelIndex, ensureAudioWarm],
+    [state, selectedSquare, startTime, meta.iso, levelIndex, ensureAudioWarm],
   );
 
   const onPieceDrop = useCallback(
     (_sourceSquare: string, targetSquare: string) => {
-      // Sync warmup inside the user gesture — see onSquareClick.
       ensureAudioWarm();
       if (state.status !== 'playing' || state.turn !== 'rookie') return false;
+      if (state.activeAbility) return false;
       const target = fromSquare(targetSquare);
       const next = applyRookieMove(state, target);
       if (next === state) return false;
@@ -487,78 +462,49 @@ export default function RookiesRunPage() {
     [state, startTime, ensureAudioWarm],
   );
 
-  const onCardPick = useCallback(
-    (cardId: CardId) => {
-      const next = applyCardPick(state, cardId);
+  const onOfferPick = useCallback(
+    (option: AbilityOfferOption) => {
+      const next = applyOfferPick(state, option);
       if (next !== state) {
         setState(next);
-        trackEvent('run_card_drawn', {
+        trackEvent('run_offer_picked', {
           iso: meta.iso,
           level: levelIndex + 1,
-          card: cardId,
+          kind: option.kind,
+          ability: option.id,
+          tier: option.tier,
         });
       }
     },
     [state, meta.iso, levelIndex],
   );
 
-  const onDismissDraw = useCallback(() => {
-    const next = applyDismissDraw(state);
+  const onOfferSkip = useCallback(() => {
+    const next = applyDismissOffer(state);
     if (next !== state) {
       setState(next);
-      trackEvent('run_draw_dismissed', {
+      trackEvent('run_offer_skipped', {
         iso: meta.iso,
         level: levelIndex + 1,
-        reason: 'hand_full',
       });
     }
   }, [state, meta.iso, levelIndex]);
-
-  const onCardPlay = useCallback(
-    (slotIndex: number) => {
-      const cardId = state.hand[slotIndex];
-      if (!cardId) return;
-      const def = CARD_DEFS[cardId];
-      // Targeted cards enter targeting mode instead of resolving immediately.
-      if (def.target !== 'none') {
-        setSelectedSquare(null);
-        setTargeting({
-          cardId,
-          slotIndex,
-          step: def.target === 'enemy' ? 'enemy' : 'square',
-        });
-        return;
-      }
-      const next = applyCardPlay(state, slotIndex);
-      if (next !== state) {
-        setState(next);
-        playCardPlaySound();
-        trackEvent('run_card_played', {
-          iso: meta.iso,
-          level: levelIndex + 1,
-          card: cardId,
-        });
-      }
-    },
-    [state, meta.iso, levelIndex],
-  );
 
   const goToNextLevel = useCallback(() => {
     const nextIdx = levelIndex + 1;
     const nextPuzzle = puzzleForDate(meta.iso, nextIdx, meta.runId);
     setLevelIndex(nextIdx);
     setPuzzle(nextPuzzle);
-    // Cards, remaining tempo, and a pending card draw all carry across levels.
     setState(
       puzzleToBoardState(nextPuzzle, {
-        hand: state.hand,
+        abilities: state.abilities,
         tempo: state.tempo,
-        pendingDraw: state.pendingDraw,
+        pendingOffer: state.pendingOffer,
       }),
     );
     setSelectedSquare(null);
     setShowLevelCleared(false);
-  }, [levelIndex, meta.iso, meta.runId, state.hand, state.tempo, state.pendingDraw]);
+  }, [levelIndex, meta.iso, meta.runId, state.abilities, state.tempo, state.pendingOffer]);
 
   const resetRun = useCallback(() => {
     const fresh = freshRun(meta.iso, meta.runId, meta.startLevelIndex);
@@ -640,6 +586,7 @@ export default function RookiesRunPage() {
 
   const totalDisplayMoves = totalMoves + inProgressMoves;
   const moveLimit = state.moveLimit;
+  void puzzle;
 
   return (
     <div className="h-full overflow-auto bg-chess-page">
@@ -700,40 +647,54 @@ export default function RookiesRunPage() {
 
         <TempoBar tempo={state.tempo} form={state.form} formMovesLeft={state.formMovesLeft} />
 
-        <div className="w-full">
+        <div className={`w-full ${shaking ? 'run-screenshake' : ''}`}>
+          <style>{`
+            @keyframes runScreenshake {
+              0%, 100% { transform: translate(0, 0); }
+              10% { transform: translate(-4px, 2px); }
+              20% { transform: translate(5px, -3px); }
+              30% { transform: translate(-3px, 4px); }
+              40% { transform: translate(4px, 2px); }
+              50% { transform: translate(-2px, -3px); }
+              60% { transform: translate(3px, 3px); }
+              70% { transform: translate(-2px, 1px); }
+              80% { transform: translate(2px, -1px); }
+              90% { transform: translate(-1px, 0); }
+            }
+            .run-screenshake { animation: runScreenshake 420ms ease-out; }
+          `}</style>
           <RunBoard
             state={state}
             selectedSquare={selectedSquare}
             dying={dying}
             glitching={glitching}
             bombFx={bombFx}
-            telekinesisTarget={
-              targeting?.cardId === 'telekinesis' && targeting.step === 'square'
-                ? (targeting.selectedEnemy ?? null)
-                : null
-            }
+            legalAbilityMoves={legalAbilityMoves}
+            abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}
             onPieceDrop={onPieceDrop}
           />
         </div>
 
-        <CardHand hand={state.hand} onPlay={onCardPlay} activeSlot={targeting?.slotIndex ?? null} />
+        <AbilityRack
+          abilities={state.abilities}
+          activeId={state.activeAbility?.id ?? null}
+          onActivate={onActivateAbility}
+        />
 
-        {state.status === 'playing' && targeting && (
+        {state.status === 'playing' && state.activeAbility && (
           <div className="flex items-center gap-2 rounded-lg bg-indigo-500/15 border border-indigo-400/40 px-3 py-2">
             <span className="text-xs font-black text-indigo-700 dark:text-indigo-300 flex-1 leading-tight">
-              {CARD_DEFS[targeting.cardId].name}:{' '}
-              {targeting.cardId === 'bomb'
-                ? 'tap any square'
-                : targeting.cardId === 'freeze'
-                  ? 'tap an enemy'
-                  : targeting.step === 'enemy'
-                    ? 'tap the enemy to move'
-                    : 'tap an empty square'}
+              {ABILITY_DEFS[state.activeAbility.id].name}:{' '}
+              {state.activeAbility.step === 'pick-enemy'
+                ? 'tap an enemy'
+                : ABILITY_DEFS[state.activeAbility.id].activation === 'targeted'
+                  ? 'tap any square'
+                  : 'tap a highlighted square'}
             </span>
             <button
               type="button"
-              onClick={cancelTargeting}
+              onClick={() => setState((s) => applyAbilityCancel(s))}
               className="px-2 py-1 rounded bg-chess-text/10 text-chess-text text-[11px] font-bold active:scale-95"
             >
               Cancel
@@ -741,19 +702,18 @@ export default function RookiesRunPage() {
           </div>
         )}
 
-        {state.status === 'playing' && !targeting && (
+        {state.status === 'playing' && !state.activeAbility && (
           <p className="text-center text-sm text-chess-text-muted">
             Tap Rookie to see her moves.
           </p>
         )}
       </div>
 
-      {state.pendingDraw && state.status === 'playing' && !showIntro && (
-        <CardDrawModal
-          options={state.pendingDraw}
-          handFull={state.hand.length >= 2}
-          onPick={onCardPick}
-          onDismiss={onDismissDraw}
+      {state.pendingOffer && state.status === 'playing' && !showIntro && (
+        <AbilityOfferModal
+          offer={state.pendingOffer}
+          onPick={onOfferPick}
+          onSkip={onOfferSkip}
         />
       )}
 

@@ -344,3 +344,22 @@ body {
 .guide-arrow-breathe {
   animation: guideArrowBreathe 2s ease-in-out infinite;
 }
+
+/* Rookie's Run — T5 foil ability card */
+.foil-card {
+  background: linear-gradient(135deg, #ffd8a8, #ffb3ec, #b3e5ff, #ffe9a8, #ffd8a8);
+  background-size: 300% 300%;
+  animation: foil-shift 6s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+.foil-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.7) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: foil-sweep 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes foil-shift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes foil-sweep { 0%{transform:translateX(-100%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }

@@ -15,8 +15,8 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    title: 'Reach the 8th rank',
-    body: 'Climb Rookie to the top of the board to clear each of the 10 levels.',
+    title: 'Climb to the 8th rank',
+    body: 'Get Rookie to the top of the board. Ten levels. One daily run.',
     icon: (
       <div className="flex items-center justify-center">
         <BreathingRook size="md" animate={true} mood="happy" />
@@ -24,8 +24,8 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    title: 'Fill the tempo meter',
-    body: 'Capture enemies and clear levels to fill your tempo. Each pawn, knight, bishop, or queen adds to the meter.',
+    title: 'Capture to charge tempo',
+    body: 'Every piece Rookie takes fills the tempo meter. Bigger piece, bigger boost.',
     icon: (
       <div className="flex gap-1 px-4 w-full">
         {Array.from({ length: 8 }, (_, i) => (
@@ -41,12 +41,22 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    title: 'Draw powerful cards',
-    body: 'When tempo fills, pick a card. Tap a card in your hand to play it — change how Rookie moves, blow up enemies, and more.',
+    title: 'Pick an ability',
+    body: 'When tempo fills, choose 1 of 3 cards. Abilities stick for the whole run — pick again to level them up.',
     icon: (
-      <div className="flex gap-2 px-2">
-        <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-indigo-200 to-purple-100 dark:from-indigo-800/60 dark:to-purple-900/60 border-2 border-indigo-400 shadow-md -rotate-3" />
-        <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-indigo-200 to-purple-100 dark:from-indigo-800/60 dark:to-purple-900/60 border-2 border-indigo-400 shadow-md rotate-3" />
+      <div className="flex gap-2 px-2 items-end">
+        <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-zinc-200 to-zinc-400 border-2 border-zinc-500 shadow-md -rotate-6" />
+        <div className="w-16 h-24 rounded-lg bg-gradient-to-br from-emerald-300 to-emerald-500 border-2 border-emerald-600 shadow-lg" />
+        <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-sky-300 to-sky-500 border-2 border-sky-600 shadow-md rotate-6" />
+      </div>
+    ),
+  },
+  {
+    title: 'Stack them. Get loud.',
+    body: 'Bishop steps, freeze rays, detonations, time rewinds. Ten abilities, five tiers each. Make Rookie scary.',
+    icon: (
+      <div className="flex items-center justify-center text-5xl text-amber-500 font-black">
+        <span style={{ textShadow: '0 0 16px rgba(251,191,36,0.65)' }}>★</span>
       </div>
     ),
   },

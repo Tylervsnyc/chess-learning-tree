@@ -11,7 +11,7 @@
  * Rookie starts on rank 1 and wins by reaching rank 8.
  */
 
-import type { CardId } from './cards';
+import type { AbilityId, AbilityOffer, OwnedAbility } from './abilities';
 
 export type PieceType = 'pawn' | 'knight' | 'bishop' | 'queen';
 export type PieceColor = 'black';
@@ -69,12 +69,19 @@ export interface BoardState {
    * both maps.
    */
   frozenTurnsLeft: Record<string, number>;
-  /** Cards currently in Rookie's hand (max HAND_SIZE). */
-  hand: CardId[];
-  /** When the tempo meter fills, the player is offered cards to draw. */
-  pendingDraw: CardId[] | null;
+  /** Permanent abilities Rookie has accrued this run. */
+  abilities: OwnedAbility[];
+  /** When the tempo meter fills, the player is offered 3 ability choices. */
+  pendingOffer: AbilityOffer | null;
+  /** Currently-targeting ability — drives ability resolution UI. */
+  activeAbility: { id: AbilityId; step: 'pick-square' | 'pick-enemy' } | null;
   /** Current level number (1-based) — drives pawn promotion options. */
   level: number;
+  /**
+   * Short position-history buffer (capped at 2) — powers the Recall ability.
+   * Pushed on each Rookie move; popped when Recall fires.
+   */
+  history: { rookie: Coord; enemyPieces: EnemyPiece[] }[];
 }
 
 export interface RunPuzzle {

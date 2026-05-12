@@ -13,6 +13,7 @@
  * Enemy pieces never step onto hazard squares either.
  */
 
+import { tryAegisIntercept } from './abilities';
 import { enemyAt } from './movement';
 import { toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, PieceType } from './types';
@@ -327,6 +328,26 @@ export function stepEnemyTurn(state: BoardState): BoardState {
 
   const action = chooseEnemyAction(state, exclude);
   if (!action) return endTurn(state);
+
+  // Aegis intercept — if Rookie is about to be captured AND she has Aegis
+  // charges, fire it instead. Attacker either dies (T5) or is just blocked.
+  if (action.isCapture) {
+    const blocked = tryAegisIntercept(state, action.mover);
+    if (blocked) {
+      // Mark this attacker as already-acted this turn (or vanished on T5).
+      const aegisOwned = blocked.abilities.find((a) => a.id === 'aegis');
+      const attackerSquare = coordKey({ file: action.mover.file, rank: action.mover.rank });
+      const stillThere = aegisOwned && aegisOwned.tier !== 5;
+      const nextMoved = [
+        ...state.enemyMovedSquares,
+        attackerSquare,
+      ];
+      if (nextMoved.length >= budget) return endTurn(blocked);
+      return stillThere
+        ? { ...blocked, turn: 'enemy', enemyMovedSquares: nextMoved }
+        : { ...blocked, turn: 'enemy', enemyMovedSquares: state.enemyMovedSquares };
+    }
+  }
 
   const originSquare = toSquare({ file: action.mover.file, rank: action.mover.rank });
   const after = applyAction(state, action);

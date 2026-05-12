@@ -6,7 +6,8 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { RookieCell } from './RookieCell';
 import { rookieLegalMoves } from '@/lib/run/movement';
 import { nextEnemyMovers } from '@/lib/run/pawn-ai';
-import type { BoardState, PieceType, RookieForm } from '@/lib/run/types';
+import type { AbilityTier } from '@/lib/run/abilities';
+import type { BoardState, Coord, PieceType, RookieForm } from '@/lib/run/types';
 import { toSquare } from '@/lib/run/types';
 
 interface BoardProps {
@@ -22,6 +23,10 @@ interface BoardProps {
   /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
    *  When set, that square gets a magical purple glow. */
   telekinesisTarget?: { file: number; rank: number } | null;
+  /** Squares highlighted as ability move targets (movement-style abilities). */
+  legalAbilityMoves?: Coord[];
+  /** Tier of the active ability — drives highlight color. */
+  abilityTier?: AbilityTier;
   onSquareClick: (square: string) => void;
   /** Called when Rookie is dragged onto a square. Return true to accept the
    *  move, false to snap her back. */
@@ -44,6 +49,14 @@ const MOVE_DOT =
 const CAPTURE_RING =
   'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.32) 60%)';
 
+const ABILITY_TIER_DOT: Record<AbilityTier, string> = {
+  1: 'rgba(120,113,108,0.55)',
+  2: 'rgba(16,185,129,0.65)',
+  3: 'rgba(14,165,233,0.65)',
+  4: 'rgba(245,158,11,0.75)',
+  5: 'rgba(244,114,182,0.75)',
+};
+
 const ROOKIE_SPRITE: Record<RookieForm, string> = {
   rook: 'wR',
   knight: 'wN',
@@ -65,6 +78,8 @@ export function RunBoard({
   glitching = false,
   bombFx = null,
   telekinesisTarget = null,
+  legalAbilityMoves,
+  abilityTier,
   onSquareClick,
   onPieceDrop,
 }: BoardProps) {
@@ -123,6 +138,23 @@ export function RunBoard({
       }
     }
 
+    // Ability move highlights — tier-colored dots / capture rings.
+    if (legalAbilityMoves && legalAbilityMoves.length > 0) {
+      const color = ABILITY_TIER_DOT[(abilityTier ?? 1) as AbilityTier];
+      for (const m of legalAbilityMoves) {
+        const sq = toSquare(m);
+        const isCapture = state.pieces.some(
+          (p) => p.file === m.file && p.rank === m.rank,
+        );
+        styles[sq] = {
+          ...styles[sq],
+          backgroundImage: isCapture
+            ? `radial-gradient(circle, transparent 60%, ${color} 60%)`
+            : `radial-gradient(circle, ${color} 22%, transparent 22%)`,
+        };
+      }
+    }
+
     // Frozen-enemy highlight — icy blue wash with a shimmer overlay.
     for (const sq of state.frozenSquares) {
       styles[sq] = {
@@ -147,7 +179,7 @@ export function RunBoard({
     }
 
     return styles;
-  }, [state, selectedSquare]);
+  }, [state, selectedSquare, legalAbilityMoves, abilityTier]);
 
   const bombSquare = bombFx
     ? toSquare({ file: bombFx.file, rank: bombFx.rank })

@@ -6,7 +6,9 @@
  * column (and tomorrow we can rotate level orderings if needed).
  */
 
+import { refreshAbilityUses, rollOffer } from './abilities';
 import { DEFAULT_RUN_ID, getRunById } from './runs';
+import { TEMPO_MAX } from './scoring';
 import type { BoardState, Coord, RunPuzzle } from './types';
 
 /** Mulberry32 — tiny seeded PRNG. No external deps. */
@@ -82,11 +84,16 @@ export function puzzleToBoardState(
   puzzle: RunPuzzle,
   carry: {
     tempo?: number;
-    hand?: BoardState['hand'];
-    pendingDraw?: BoardState['pendingDraw'];
+    abilities?: BoardState['abilities'];
+    pendingOffer?: BoardState['pendingOffer'];
   } = {},
 ): BoardState {
-  return {
+  const abilities = refreshAbilityUses(carry.abilities ?? []);
+  // Forced offer at start of level 6: if no offer carried over and the player
+  // hasn't hit one organically, force one so progression doesn't stall.
+  let pendingOffer = carry.pendingOffer ?? null;
+  let tempo = carry.tempo ?? 0;
+  const base: BoardState = {
     rookie: { ...puzzle.rookieStart },
     pieces: puzzle.pieces.map((p) => ({ ...p })),
     hazards: (puzzle.hazards ?? []).map((h) => ({ ...h })),
@@ -94,7 +101,7 @@ export function puzzleToBoardState(
     status: 'playing',
     moveCount: 0,
     captures: [],
-    tempo: carry.tempo ?? 0,
+    tempo,
     form: 'rook',
     formMovesLeft: 0,
     moveLimit: puzzle.moveLimit ?? null,
@@ -103,10 +110,18 @@ export function puzzleToBoardState(
     enemyVacatedSquares: [],
     frozenSquares: [],
     frozenTurnsLeft: {},
-    hand: carry.hand ?? [],
-    pendingDraw: carry.pendingDraw ?? null,
+    abilities,
+    pendingOffer,
+    activeAbility: null,
     level: puzzle.level,
+    history: [],
   };
+  if (puzzle.level === 6 && !pendingOffer) {
+    pendingOffer = rollOffer(base, mulberry32((puzzle.level * 7919) >>> 0));
+    tempo = TEMPO_MAX;
+    return { ...base, pendingOffer, tempo };
+  }
+  return base;
 }
 
 /** Convenience: today's first-level initial board state. */
