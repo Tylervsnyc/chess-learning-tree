@@ -303,7 +303,7 @@ export function AbilityCardMini({
           className="mx-[3px] rounded-[3px] overflow-hidden"
           style={{
             background: t.art,
-            height: '52%',
+            height: '64%',
             boxShadow: 'inset 0 0 6px rgba(0,0,0,0.25)',
           }}
         >
@@ -425,7 +425,7 @@ export function AbilityCardFull({
           className="mx-2.5 rounded-md overflow-hidden relative"
           style={{
             background: t.art,
-            height: '46%',
+            height: '60%',
             boxShadow:
               'inset 0 0 14px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(0,0,0,0.18)',
           }}
