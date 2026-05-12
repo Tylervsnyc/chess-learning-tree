@@ -33,7 +33,7 @@ export function AbilityOfferModal({
               ★ Tempo Full ★
             </div>
             <h2 className="text-2xl font-black text-chess-text leading-tight mt-1">
-              Choose your reward
+              Upgrade Rookie
             </h2>
           </div>
 
