@@ -161,9 +161,13 @@ export function RunBoard({
         const isCapture = state.pieces.some(
           (p) => p.file === m.file && p.rank === m.rank,
         );
+        const prev = styles[sq] ?? {};
+        const dotLayer = isCapture ? CAPTURE_RING : MOVE_DOT;
         styles[sq] = {
-          ...styles[sq],
-          backgroundImage: isCapture ? CAPTURE_RING : MOVE_DOT,
+          ...prev,
+          backgroundImage: prev.backgroundImage
+            ? `${dotLayer}, ${prev.backgroundImage}`
+            : dotLayer,
         };
       }
     }
@@ -176,11 +180,15 @@ export function RunBoard({
         const isCapture = state.pieces.some(
           (p) => p.file === m.file && p.rank === m.rank,
         );
+        const prev = styles[sq] ?? {};
+        const dotLayer = isCapture
+          ? `radial-gradient(circle, transparent 60%, ${color} 60%)`
+          : `radial-gradient(circle, ${color} 22%, transparent 22%)`;
         styles[sq] = {
-          ...styles[sq],
-          backgroundImage: isCapture
-            ? `radial-gradient(circle, transparent 60%, ${color} 60%)`
-            : `radial-gradient(circle, ${color} 22%, transparent 22%)`,
+          ...prev,
+          backgroundImage: prev.backgroundImage
+            ? `${dotLayer}, ${prev.backgroundImage}`
+            : dotLayer,
         };
       }
     }
