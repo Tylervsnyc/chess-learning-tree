@@ -9,6 +9,7 @@ import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
+import { RookiesRunLogo } from '@/components/run/RookiesRunLogo';
 import { TempoBar } from '@/components/run/TempoBar';
 import { trackEvent } from '@/lib/analytics/posthog';
 import {
@@ -570,43 +571,29 @@ export default function RookiesRunPage() {
           <button
             type="button"
             onClick={() => setShowRunPicker(true)}
-            className="text-left flex-1 min-w-0 active:opacity-70 transition-opacity"
+            className="text-left active:opacity-70 transition-opacity"
             aria-label="Switch run"
           >
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-chess-text-muted leading-none">
-              Run
-            </p>
-            <h1 className="text-base font-black text-chess-text leading-tight inline-flex items-center gap-1 mt-0.5">
-              {runDef.name}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-chess-text-faint">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </h1>
+            <RookiesRunLogo scale={0.45} />
           </button>
 
-          <div className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-chess-text text-chess-page shadow-sm">
-            <span className="text-[10px] font-black uppercase tracking-[0.16em] leading-none opacity-70">
-              Level
-            </span>
-            <span className="text-sm font-black tabular-nums leading-none">
-              {levelIndex + 1}
-              <span className="opacity-50">/{totalLevels}</span>
-            </span>
-          </div>
-
-          <div className="flex-1 flex justify-end">
-            <button
-              type="button"
-              onClick={openIntro}
-              aria-label="How to play"
-              className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
-            >
-              ?
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={openIntro}
+            aria-label="How to play"
+            className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
+          >
+            ?
+          </button>
         </header>
 
-        <TempoBar tempo={state.tempo} form={state.form} formMovesLeft={state.formMovesLeft} />
+        <TempoBar
+          tempo={state.tempo}
+          form={state.form}
+          formMovesLeft={state.formMovesLeft}
+          levelIndex={levelIndex}
+          totalLevels={totalLevels}
+        />
 
         <div className={`w-full ${shaking ? 'run-screenshake' : ''}`}>
           <style>{`

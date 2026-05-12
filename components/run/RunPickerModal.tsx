@@ -1,6 +1,7 @@
 'use client';
 
 import { RUNS, type RunDef } from '@/lib/run/runs';
+import { RookiesRunLogo } from './RookiesRunLogo';
 
 interface RunPickerModalProps {
   currentRunId: string;
@@ -23,11 +24,9 @@ export function RunPickerModal({ currentRunId, onPick, onClose }: RunPickerModal
           </svg>
         </button>
 
-        <div className="px-6 pt-6 pb-3">
-          <div className="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-black">
-            Choose your run
-          </div>
-          <h2 className="mt-1 text-xl font-black text-chess-text leading-tight">
+        <div className="px-6 pt-6 pb-3 flex flex-col items-center gap-3">
+          <RookiesRunLogo scale={0.6} />
+          <h2 className="text-sm font-black text-chess-text-muted leading-tight">
             {RUNS.length} ways to climb
           </h2>
         </div>
