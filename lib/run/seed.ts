@@ -6,7 +6,6 @@
  * column (and tomorrow we can rotate level orderings if needed).
  */
 
-import { buildLevel, TOTAL_LEVELS } from '@/components/run/levels';
 import { DEFAULT_RUN_ID, getRunById } from './runs';
 import type { BoardState, Coord, RunPuzzle } from './types';
 
@@ -58,9 +57,7 @@ export function puzzleForDate(
   const run = getRunById(runId);
   const builder = run.levels[levelIndex];
   if (builder) return builder(start);
-  // Daily run fallback to the legacy LEVEL_BUILDERS index.
-  if (runId === DEFAULT_RUN_ID) return buildLevel(levelIndex, start);
-  // Bail out gracefully — return the first level if asked for an out-of-range one.
+  // Out-of-range level — bail out to the first level of the run.
   return run.levels[0](start);
 }
 
@@ -79,9 +76,6 @@ export function runForDate(
   const run = getRunById(runId);
   return run.levels.map((b) => b(start));
 }
-
-// Keep TOTAL_LEVELS export alive for callers that haven't migrated.
-export { TOTAL_LEVELS };
 
 /** Convert a puzzle to the initial board state (Rookie's turn, no moves yet). */
 export function puzzleToBoardState(

@@ -1,5 +1,5 @@
 /**
- * Rookie's Run — 10-level run.
+ * Rookie's Run — Daily Climb (10 levels).
  *
  * Each builder takes Rookie's starting coord (always rank 1, file 2..7 from
  * the daily seed) and returns a fully-formed RunPuzzle.
@@ -17,14 +17,7 @@
  *   L10 Boss queen + hazards + limit (18) — knight + bishop
  */
 
-import { buildLevel1 } from './level-1';
-import type {
-  Coord,
-  EnemyPiece,
-  PieceType,
-  RookieForm,
-  RunPuzzle,
-} from '@/lib/run/types';
+import type { Coord, EnemyPiece, RookieForm, RunPuzzle } from './types';
 
 function pawn(file: number, rank: number): EnemyPiece {
   return { type: 'pawn', color: 'black', file, rank };
@@ -61,18 +54,26 @@ function build(
   };
 }
 
-// L2 — denser pawn maze. Adds a rank-4 stagger and rank-7 cap.
-export function buildLevel2(rookieStart: Coord): RunPuzzle {
-  return build(2, rookieStart, [
+// L1 — pawn maze tutorial. Broken-wall pattern guarantees no one-move win
+// from any starting file b–g.
+export function buildLevel1(rookieStart: Coord): RunPuzzle {
+  return build(1, rookieStart, [
     // front wall rank 3
     pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
-    // mid stagger rank 4
-    pawn(2, 4), pawn(6, 4),
     // mid wall rank 5
     pawn(2, 5), pawn(4, 5), pawn(6, 5), pawn(8, 5),
     // back wall rank 6
     pawn(1, 6), pawn(3, 6), pawn(5, 6), pawn(7, 6),
-    // rank-7 cap (two pawns)
+  ]);
+}
+
+// L2 — denser pawn maze. Adds a rank-4 stagger and rank-7 cap.
+export function buildLevel2(rookieStart: Coord): RunPuzzle {
+  return build(2, rookieStart, [
+    pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+    pawn(2, 4), pawn(6, 4),
+    pawn(2, 5), pawn(4, 5), pawn(6, 5), pawn(8, 5),
+    pawn(1, 6), pawn(3, 6), pawn(5, 6), pawn(7, 6),
     pawn(4, 7), pawn(5, 7),
   ]);
 }
@@ -80,12 +81,9 @@ export function buildLevel2(rookieStart: Coord): RunPuzzle {
 // L3 — full rank-5 wall (capture required) + sparse rank-7.
 export function buildLevel3(rookieStart: Coord): RunPuzzle {
   return build(3, rookieStart, [
-    // light front wall — easy to dodge
     pawn(2, 3), pawn(5, 3), pawn(7, 3),
-    // FULL rank-5 wall — must capture at least one to pass
     pawn(1, 5), pawn(2, 5), pawn(3, 5), pawn(4, 5),
     pawn(5, 5), pawn(6, 5), pawn(7, 5), pawn(8, 5),
-    // rank-7 sparse pickets
     pawn(2, 7), pawn(4, 7), pawn(6, 7),
   ]);
 }
@@ -213,7 +211,7 @@ export function buildLevel10(rookieStart: Coord): RunPuzzle {
 
 export type LevelBuilder = (rookieStart: Coord) => RunPuzzle;
 
-export const LEVEL_BUILDERS: ReadonlyArray<LevelBuilder> = [
+export const DAILY_LEVELS: ReadonlyArray<LevelBuilder> = [
   buildLevel1,
   buildLevel2,
   buildLevel3,
@@ -225,13 +223,3 @@ export const LEVEL_BUILDERS: ReadonlyArray<LevelBuilder> = [
   buildLevel9,
   buildLevel10,
 ];
-
-export const TOTAL_LEVELS = LEVEL_BUILDERS.length;
-
-export function buildLevel(levelIndex: number, rookieStart: Coord): RunPuzzle {
-  const builder = LEVEL_BUILDERS[levelIndex];
-  if (!builder) throw new Error(`No level builder for index ${levelIndex}`);
-  return builder(rookieStart);
-}
-
-export type { PieceType };

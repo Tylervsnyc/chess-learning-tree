@@ -2655,4 +2655,33 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 
 ---
 
+## 49. Rookie's Run (/run)
+
+**Goal:** A daily roguelike chess puzzle. Rookie spawns on rank 1 and must reach rank 8, advancing level-by-level through a themed run of 10 levels.
+
+### Architecture (single source of truth)
+- **Page:** `app/run/page.tsx` — single client component, all state.
+- **Engine:** `lib/run/engine.ts` — pure state transitions (Rookie move → enemy move → status check).
+- **Movement:** `lib/run/movement.ts` — legal-move generation per form.
+- **Enemy AI:** `lib/run/pawn-ai.ts` — handles pawn/knight/bishop/queen behavior.
+- **Cards:** `lib/run/cards.ts` — Bomb, Freeze, Telekinesis card defs.
+- **Runs:** `lib/run/runs.ts` — `RUNS` array: Daily Climb + 5 themed runs (Knight Academy, Bishop's Path, Speed Demon, Hazard Maze, Boss Gauntlet). Each is 10 levels.
+- **Daily levels:** `lib/run/daily-levels.ts` — the 10 Daily Climb level builders (`DAILY_LEVELS`). Imported by `runs.ts` only.
+- **Seed:** `lib/run/seed.ts` — deterministic per-date PRNG → Rookie's starting file (b–g).
+- **Scoring/share:** `lib/run/scoring.ts`, `lib/run/share.ts`.
+
+### Hard rules
+- **`RunDef.levels` is the only level source.** Never add a parallel level array or builder index outside `lib/run/`.
+- **Rookie always starts rank 1, file b–g** (never the corner files a or h).
+- **Same date → same starting file** for every run that day. Levels themselves don't change between players on the same day.
+- **Forms unlock by level**, defined by `allowedForms` on each puzzle. Daily Climb: rook L1–3, knight unlock L4, bishop unlock L7.
+- **Move limit is optional per level.** When set, the TempoBar counts down. Run out → fail level.
+- **Run progression:** completing a run advances `currentRunId` in localStorage and the SummaryModal shows a "Next Run" CTA cycling through `RUNS`.
+
+### Files / dirs that should NOT exist (cleaned up 2026-05-12)
+- ~~`components/run/levels/`~~ — moved to `lib/run/daily-levels.ts`.
+- ~~`components/run/CapturedModal.tsx`~~, ~~`EscapedModal.tsx`~~, ~~`TransformButtons.tsx`~~ — superseded by `RunSummaryModal` and auto-transform UX.
+
+---
+
 *This document is the source of truth. If code disagrees with this document, either the code is wrong or this document needs updating. There is no third option.*

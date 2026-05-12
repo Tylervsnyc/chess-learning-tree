@@ -9,7 +9,7 @@
  * run id in localStorage and reloads with the next variant.
  */
 
-import { LEVEL_BUILDERS as DAILY_LEVELS } from '@/components/run/levels';
+import { DAILY_LEVELS } from './daily-levels';
 import type { Coord, EnemyPiece, RookieForm, RunPuzzle } from './types';
 
 export type LevelBuilder = (rookieStart: Coord) => RunPuzzle;
