@@ -44,6 +44,9 @@ import { aggregate } from './aggregate';
 import { runAblation } from './ablation';
 import { runForcedTake } from './forced-take';
 import { runCombos } from './combos';
+import { runAbilityImpact } from './simulate-run';
+import type { AbilityForceMode } from './simulate-run';
+import { T3 } from './bots/t3';
 import { extractFeatures } from './features';
 import { correlateFeatures } from './correlations';
 import { regressFeatures } from './regression';
@@ -74,8 +77,11 @@ interface CliOpts {
   skipAblation: boolean;
   skipFeatures: boolean;
   skipHypotheses: boolean;
+  skipAbilityImpact: boolean;
   enableForcedTake: boolean;
   enableCombos: boolean;
+  abilityImpactRunId: string;
+  abilityImpactTrials: number;
 }
 
 function parseArgs(): CliOpts {
@@ -96,8 +102,13 @@ function parseArgs(): CliOpts {
     skipAblation: false,
     skipFeatures: false,
     skipHypotheses: false,
+    skipAbilityImpact: false,
     enableForcedTake: false,
     enableCombos: false,
+    // the-gauntlet at T3 has the best signal-to-noise — baseline 2.00 levels,
+    // so any ability that helps shows up clearly. Cost: ~3 min at 5 trials.
+    abilityImpactRunId: 'the-gauntlet',
+    abilityImpactTrials: 5,
   };
   let hypothesesExplicit = false;
   let forcedTakeExplicit = false;
@@ -109,6 +120,11 @@ function parseArgs(): CliOpts {
     else if (arg === '--skip-ablation') opts.skipAblation = true;
     else if (arg === '--skip-features') opts.skipFeatures = true;
     else if (arg === '--skip-hypotheses') opts.skipHypotheses = true;
+    else if (arg === '--skip-ability-impact') opts.skipAbilityImpact = true;
+    else if (arg.startsWith('--ability-impact-run='))
+      opts.abilityImpactRunId = arg.split('=')[1];
+    else if (arg.startsWith('--ability-impact-trials='))
+      opts.abilityImpactTrials = parseInt(arg.split('=')[1], 10);
     else if (arg === '--enable-forced-take') {
       opts.enableForcedTake = true;
       forcedTakeExplicit = true;
@@ -258,6 +274,49 @@ async function main(): Promise<void> {
     caveats.push('Pair-combos skipped this run.');
   }
 
+  // ─── Ability Impact (run-level) ───────────────────────────────────────
+  // The canonical ability ranking. Force-seeds each ability at T3 for the
+  // full run, measures end-of-run levels reached vs no-ability baseline.
+  // Catches what the per-level ablation misses: cross-level resource value
+  // and abilities the offer system rarely fires.
+  let abilityImpact: ReturnType<typeof runAbilityImpact> | null = null;
+  if (!opts.skipAbilityImpact) {
+    console.log(
+      `[nightly] ability-impact (${opts.abilityImpactTrials} trials × 11 abilities on ${opts.abilityImpactRunId} at T3)`,
+    );
+    const tI = Date.now();
+    abilityImpact = runAbilityImpact({
+      trials: opts.abilityImpactTrials,
+      bot: T3,
+      runId: opts.abilityImpactRunId,
+      rookieStart: { file: 4, rank: 1 },
+      modes: ['fixed-t3'],
+      onProgress: (s) => console.log(s),
+    });
+    writeFileSync(
+      join(rawDir, 'ability-impact.json'),
+      JSON.stringify(
+        {
+          runId: opts.abilityImpactRunId,
+          baseline: abilityImpact.baseline,
+          byAbility: Array.from(abilityImpact.byAbility.entries()).map(
+            ([id, byMode]) => ({
+              ability: id,
+              modes: Array.from(byMode.entries()).map(([mode, row]) => ({ mode, ...row })),
+            }),
+          ),
+        },
+        null,
+        2,
+      ),
+    );
+    console.log(
+      `[nightly] ability-impact done in ${((Date.now() - tI) / 1000).toFixed(1)}s`,
+    );
+  } else {
+    caveats.push('Ability impact skipped this run.');
+  }
+
   // ─── Features + correlations ──────────────────────────────────────────
   if (!opts.skipFeatures) {
     console.log(`[nightly] extracting level features`);
@@ -369,6 +428,13 @@ async function main(): Promise<void> {
       hypothesesPlanned,
       hypothesisResults: hypothesisRunResults,
       publishResult,
+      abilityImpact: abilityImpact
+        ? {
+            runId: opts.abilityImpactRunId,
+            baseline: abilityImpact.baseline,
+            byAbility: abilityImpact.byAbility,
+          }
+        : null,
       caveats,
     });
     const digestPath = join(digestsDir, `${date}.md`);

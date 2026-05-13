@@ -38,6 +38,16 @@ export interface DigestInput {
   hypothesisResults?: Experiment[];
   /** Outcome of proposeNewVersion — drives the "model trajectory" line. */
   publishResult?: PublishResult | null;
+  /**
+   * Run-level ability impact: each ability force-seeded at T3 across a
+   * 10-level run, measured as end-of-run levels reached vs baseline.
+   * The canonical ability ranking (more meaningful than ablation deltas).
+   */
+  abilityImpact?: {
+    runId: string;
+    baseline: { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number };
+    byAbility: Map<AbilityId, Map<string, { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number; meanAbilitiesAtEnd: number }>>;
+  } | null;
   caveats: string[];
 }
 
@@ -100,12 +110,48 @@ export function renderDigest(input: DigestInput): string {
   }
   lines.push(``);
 
-  // ─── 5. Current Abilities Ranked ────────────────────────────────────────
-  // WHY ranked first, matrix second: a power_score (T3-weighted |delta|)
-  // gives Tyler the "what matters" view at a glance. The raw matrix below
-  // is the audit trail.
+  // ─── 5. Ability Impact (run-level) ──────────────────────────────────────
+  // Canonical ability ranking — force-seeds each ability at T3 across all
+  // 10 levels of a single run, measures end-of-run levels reached.
+  // Replaces "did the bot use it" (ablation) with "what if every player
+  // got it from level 1 onward" — the real product question.
+  if (input.abilityImpact && input.abilityImpact.byAbility.size > 0) {
+    const ai = input.abilityImpact;
+    lines.push(`## Ability Impact (run-level)`);
+    lines.push(``);
+    lines.push(
+      `Each ability force-seeded at T3 for every level of a 10-level run on **${ai.runId}**. Bot = T3 Casual. Compared to a no-ability baseline. **Mean levels** = how far through the run that ability gets the bot. **Full-run rate** = % of trials that completed all 10 levels.`,
+    );
+    lines.push(``);
+    lines.push(
+      `**Baseline (no preowned ability)**: mean **${ai.baseline.meanLevelsCompleted.toFixed(2)}** levels (median ${ai.baseline.medianLevelsCompleted}) · full-run rate ${pct(ai.baseline.fullRunRate)}.`,
+    );
+    lines.push(``);
+    lines.push(`| Rank | Ability | Mean levels | Δ vs baseline | Full-run rate |`);
+    lines.push(`|---|---|---:|---:|---:|`);
+    const rows = [...ai.byAbility.entries()]
+      .map(([id, byMode]) => {
+        const r = byMode.get('fixed-t3') ?? byMode.get('upgrading');
+        return r ? { id, r } : null;
+      })
+      .filter((x): x is { id: AbilityId; r: NonNullable<ReturnType<Map<string, never>['get']>> } => x !== null)
+      .sort((a, b) => b.r.meanLevelsCompleted - a.r.meanLevelsCompleted);
+    rows.forEach(({ id, r }, idx) => {
+      const dMean = (r.meanLevelsCompleted - ai.baseline.meanLevelsCompleted).toFixed(2);
+      const sign = parseFloat(dMean) > 0 ? '+' : '';
+      lines.push(
+        `| ${idx + 1} | ${ABILITY_DEFS[id].name} | ${r.meanLevelsCompleted.toFixed(2)} | ${sign}${dMean} | ${pct(r.fullRunRate)} |`,
+      );
+    });
+    lines.push(``);
+  }
+
+  // ─── 5b. Current Abilities Ranked (ablation-based, secondary view) ──────
+  // The ablation answers "what does the bot LOSE if I take this away" —
+  // a useful audit but distorted by bots rarely getting offers organically.
+  // Kept for cross-check.
   if (input.ablation.length > 0) {
-    lines.push(`## Current Abilities Ranked`);
+    lines.push(`## Current Abilities Ranked (ablation, secondary view)`);
     lines.push(``);
     lines.push(
       `Power score weights absolute deltas by tier (T3=2.0, T4=1.5, T5=1.0) — abilities that help beginners rank higher. **Character** is a one-line interpretation of the curve.`,
