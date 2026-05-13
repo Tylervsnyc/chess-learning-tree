@@ -155,22 +155,62 @@ export function evalState(state: BoardState): number {
 
   let score = 0;
 
-  // Closer to rank 8 = better. Each rank ≈ 8 points.
-  score += state.rookie.rank * 8;
+  // Rank position is a small signal — a rook on rank 5 isn't meaningfully
+  // closer to winning than a rook on rank 2 if both have clear paths up.
+  // The dominant signal is OPEN PATHS, not raw rank. Keep this tiny so the
+  // bot doesn't waste turns inching forward when a winning slide exists.
+  score += state.rookie.rank * 2;
 
   // Squares I can safely occupy (legal moves not attacked).
   const attacked = enemyAttackedSquares(state);
   const legal = rookieLegalMoves(state);
   let safeMoves = 0;
   let advancingSafe = 0;
+  let winningReach = 0;
   for (const m of legal) {
     if (!attacked.has(toSquare(m))) {
       safeMoves++;
       if (m.rank > state.rookie.rank) advancingSafe++;
+      // Rookie reaches rank 8 RIGHT NOW with a safe slide. Game over,
+      // huge bonus so this dominates every other consideration.
+      if (m.rank === 8) winningReach++;
     }
   }
   score += Math.min(safeMoves, 6) * 1.5;
   score += advancingSafe * 2.5;
+  if (winningReach > 0) score += 60;
+
+  // OPEN PATH MANDATE — for each file, count whether rookie could reach
+  // rank 8 on that file with a clear vertical path. A "clear" file means
+  // no enemy and no hazard between rookie's current rank and rank 7
+  // (inclusive). Rank 8 itself can be empty or capturable.
+  //
+  // This is the rook-can-fly principle: an open file from rank 2 is more
+  // valuable than being on rank 7 of a blocked file.
+  let openPathCount = 0;
+  let rookieFileIsOpen = false;
+  for (let f = 1; f <= 8; f++) {
+    let clear = true;
+    for (let r = state.rookie.rank + 1; r <= 7; r++) {
+      if (state.pieces.some((p) => p.file === f && p.rank === r)) {
+        clear = false;
+        break;
+      }
+      if (state.hazards.some((h) => h.file === f && h.rank === r)) {
+        clear = false;
+        break;
+      }
+    }
+    if (clear) {
+      openPathCount++;
+      if (f === state.rookie.file) rookieFileIsOpen = true;
+    }
+  }
+  score += openPathCount * 5;
+  // Being ON an open winning file right now is even better than just having
+  // such a file exist — it means rookie is one slide from rank 8 (or a
+  // close-to-rank-8 square that wins on the followup).
+  if (rookieFileIsOpen) score += 20;
 
   // Penalize standing in a threatened square.
   if (attacked.has(toSquare(state.rookie))) score -= 25;
@@ -178,21 +218,24 @@ export function evalState(state: BoardState): number {
   // Move budget slack — if a move limit exists, prefer keeping room.
   if (state.moveLimit !== null) {
     const slack = state.moveLimit - state.moveCount;
-    if (slack <= 0) return LOST_SCORE; // shouldn't happen but be safe
+    if (slack <= 0) return LOST_SCORE;
     score += Math.min(slack, 8) * 1.5;
   }
 
-  // Tempo + abilities — latent power.
+  // Tempo + abilities — latent power. Owning matters; "has uses" is small
+  // so bots happily spend charges instead of hoarding them.
   score += (state.tempo / TEMPO_MAX) * 4;
   for (const a of state.abilities) {
-    score += 3 + a.tier; // owning matters; higher tier matters more
-    if (a.usesLeftThisLevel > 0 || a.usesLeftThisLevel === -1) score += 2;
+    score += 3 + a.tier;
+    if (a.usesLeftThisLevel > 0 || a.usesLeftThisLevel === -1) score += 0.5;
   }
   if (state.shieldUp) score += 6;
   if (state.bonusMovesLeft > 0) score += state.bonusMovesLeft * 5;
 
-  // Slight penalty for piece density still on the board — fewer enemies = easier.
-  score -= state.pieces.length * 0.4;
+  // Material penalty by chess piece value — removing a queen is worth ~7
+  // points to the bot instead of the prior 0.4 (any piece equal). Makes
+  // Queenkiller / Detonate / Freeze attractive when they clear blockers.
+  for (const p of state.pieces) score -= PIECE_VALUE[p.type] * 0.8;
 
   return score;
 }
