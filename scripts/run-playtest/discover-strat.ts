@@ -20,7 +20,10 @@ import { T4 } from './bots/t4';
 import { T5 } from './bots/t5';
 import { simulateGame } from './simulate';
 import { buildLevelCatalog } from './utils/levels';
-import { toSquare } from '../../lib/run/types';
+import { puzzleToBoardState } from '../../lib/run/seed';
+import { enemyAttackedSquares } from './bots/shared';
+import { toSquare, fromSquare } from '../../lib/run/types';
+import type { Coord, EnemyPiece, RunPuzzle } from '../../lib/run/types';
 import type { Bot, BotAction, TierId } from './types';
 import type { AbilityId } from '../../lib/run/abilities';
 
@@ -57,6 +60,135 @@ interface Analysis {
   abilityUsesInLosses: { abilityId: AbilityId; share: number }[];
   // Top 2-move sequences in wins (what winners do early).
   topOpenings: { sequence: string; count: number; winRate: number }[];
+}
+
+// ─── Position explanation (the "why" layer) ────────────────────────────────
+// These helpers turn raw squares into chess reasoning. See
+// .claude/run-strategy-bible.md for the principles they encode.
+
+/** Files with no enemy or hazard between fromRank+1 and rank 7 (inclusive). */
+function openFilesFromRank(puzzle: RunPuzzle, fromRank: number): number[] {
+  const open: number[] = [];
+  for (let f = 1; f <= 8; f++) {
+    let clear = true;
+    for (let r = fromRank + 1; r <= 7; r++) {
+      if (puzzle.pieces.some((p) => p.file === f && p.rank === r)) {
+        clear = false;
+        break;
+      }
+      if (puzzle.hazards?.some((h) => h.file === f && h.rank === r)) {
+        clear = false;
+        break;
+      }
+    }
+    if (clear) open.push(f);
+  }
+  return open;
+}
+
+/** Convert a file number to the chess letter (1 → 'a', 8 → 'h'). */
+function fileLetter(file: number): string {
+  return String.fromCharCode('a'.charCodeAt(0) + file - 1);
+}
+
+/** True if Rookie can reach (target) from (start) via a single rook slide
+ *  (same rank, same file) without enemies/hazards in between (the slide
+ *  stops at the first blocker — capturable squares are reachable). */
+function rookReachable(puzzle: RunPuzzle, start: Coord, target: Coord): boolean {
+  if (start.file === target.file && start.rank === target.rank) return true;
+  if (start.file !== target.file && start.rank !== target.rank) return false;
+  // Same rank — check intermediate files
+  if (start.rank === target.rank) {
+    const lo = Math.min(start.file, target.file);
+    const hi = Math.max(start.file, target.file);
+    for (let f = lo + 1; f < hi; f++) {
+      if (puzzle.pieces.some((p) => p.file === f && p.rank === start.rank)) return false;
+      if (puzzle.hazards?.some((h) => h.file === f && h.rank === start.rank)) return false;
+    }
+    return true;
+  }
+  // Same file — check intermediate ranks
+  const lo = Math.min(start.rank, target.rank);
+  const hi = Math.max(start.rank, target.rank);
+  for (let r = lo + 1; r < hi; r++) {
+    if (puzzle.pieces.some((p) => p.file === start.file && p.rank === r)) return false;
+    if (puzzle.hazards?.some((h) => h.file === start.file && h.rank === r)) return false;
+  }
+  return true;
+}
+
+/** Find enemies currently attacking a square (using the same compute as the
+ *  bot eval — handles pawn/knight/bishop/queen). */
+function attackersOf(puzzle: RunPuzzle, sq: Coord): EnemyPiece[] {
+  const state = puzzleToBoardState(puzzle);
+  const attacked = enemyAttackedSquares(state);
+  if (!attacked.has(toSquare(sq))) return [];
+  // Re-iterate pieces and check membership per piece. Reuses the eval's
+  // attack-set logic via individual-piece projection (simpler than re-running
+  // for each).
+  const out: EnemyPiece[] = [];
+  for (const p of state.pieces) {
+    const single: typeof state = { ...state, pieces: [p] };
+    if (enemyAttackedSquares(single).has(toSquare(sq))) out.push(p);
+  }
+  return out;
+}
+
+/** A short string describing why a starting square is good or bad. */
+function explainSquare(puzzle: RunPuzzle, sq: Coord): string {
+  const attackers = attackersOf(puzzle, sq);
+  const openFiles = openFilesFromRank(puzzle, sq.rank);
+  const onOpenFile = openFiles.includes(sq.file);
+  // Open files reachable along the current rank via a rook slide.
+  const reachableOpen = openFiles.filter((f) =>
+    rookReachable(puzzle, sq, { file: f, rank: sq.rank }),
+  );
+  const parts: string[] = [];
+
+  if (attackers.length === 0) parts.push('safe (no current attackers)');
+  else {
+    const names = attackers
+      .slice(0, 3)
+      .map((a) => `${a.type} ${fileLetter(a.file)}${a.rank}`)
+      .join(', ');
+    parts.push(`attacked by ${names}`);
+  }
+
+  if (onOpenFile) {
+    parts.push(`ON open winning file ${fileLetter(sq.file)}`);
+  } else if (reachableOpen.length > 0) {
+    parts.push(
+      `${reachableOpen.length} open file${reachableOpen.length === 1 ? '' : 's'} (${reachableOpen.map(fileLetter).join(',')}) reachable along rank ${sq.rank}`,
+    );
+  } else {
+    parts.push(`no open files reachable from rank ${sq.rank}`);
+  }
+
+  return parts.join('; ');
+}
+
+/** A short string describing why a 2-move opening might work. */
+function explainOpening(puzzle: RunPuzzle, first: string, second: string): string {
+  const firstC = fromSquare(first);
+  const secondC = fromSquare(second);
+  const openFromSecond = openFilesFromRank(puzzle, secondC.rank);
+  const onOpenAfterMove = openFromSecond.includes(secondC.file);
+  const secondAttackers = attackersOf(puzzle, secondC);
+  const parts: string[] = [];
+
+  if (firstC.rank === secondC.rank) {
+    parts.push(`rank-${firstC.rank} sidestep`);
+  } else if (firstC.file === secondC.file) {
+    parts.push(`climb file ${fileLetter(firstC.file)} +${secondC.rank - firstC.rank}`);
+  }
+
+  if (onOpenAfterMove) {
+    parts.push(`lands on open winning file ${fileLetter(secondC.file)}`);
+  }
+  if (secondAttackers.length > 0) {
+    parts.push(`${secondAttackers.length} attacker${secondAttackers.length === 1 ? '' : 's'} on ${second}`);
+  }
+  return parts.join('; ') || '—';
 }
 
 function parseArgs(): { levelId: string; trials: number; tiers: TierId[] } {
@@ -176,11 +308,35 @@ function analyze(records: TrialRecord[]): Analysis {
   };
 }
 
-function renderReport(levelId: string, analyses: Analysis[]): string {
+function renderReport(levelId: string, puzzle: RunPuzzle, analyses: Analysis[]): string {
   const lines: string[] = [];
   lines.push(`# Strategy Discovery — ${levelId}`);
   lines.push(``);
-  lines.push(`Each tier played the level multiple times with seed-varied bots. We compare what winners did vs losers to surface winning patterns.`);
+  lines.push(`Each tier played the level multiple times with seed-varied bots. We compare what winners did vs losers to surface winning patterns. Each square / opening is annotated with a chess-reasoning "why" derived from the level's piece geometry. See \`.claude/run-strategy-bible.md\` for the principles.`);
+  lines.push(``);
+  // Board summary
+  lines.push(`## Level summary`);
+  lines.push(``);
+  const pieceCounts = puzzle.pieces.reduce<Record<string, number>>((acc, p) => {
+    acc[p.type] = (acc[p.type] ?? 0) + 1;
+    return acc;
+  }, {});
+  const pieceDesc = Object.entries(pieceCounts)
+    .map(([t, n]) => `${n} ${t}${n > 1 ? 's' : ''}`)
+    .join(' · ');
+  lines.push(`- Pieces: ${pieceDesc}`);
+  lines.push(`- Rookie start: ${toSquare(puzzle.rookieStart)}`);
+  if (puzzle.moveLimit) lines.push(`- Move limit: ${puzzle.moveLimit}`);
+  if (puzzle.enemiesPerTurn && puzzle.enemiesPerTurn > 1)
+    lines.push(`- Enemies per turn: ${puzzle.enemiesPerTurn}`);
+  if (puzzle.allowedForms)
+    lines.push(`- Allowed forms: rook + ${puzzle.allowedForms.join(', ')}`);
+  if (puzzle.hazards && puzzle.hazards.length > 0)
+    lines.push(`- Hazards at: ${puzzle.hazards.map((h) => toSquare(h)).join(', ')}`);
+  const openAtStart = openFilesFromRank(puzzle, puzzle.rookieStart.rank);
+  lines.push(
+    `- Open files from start rank: ${openAtStart.length > 0 ? openAtStart.map(fileLetter).join(', ') : 'NONE — every file has a blocker'}`,
+  );
   lines.push(``);
   for (const a of analyses) {
     lines.push(`## ${a.tier}`);
@@ -196,11 +352,12 @@ function renderReport(levelId: string, analyses: Analysis[]): string {
     // First moves
     lines.push(`### Most common first moves`);
     lines.push(``);
-    lines.push(`| First square | Total | Win rate |`);
-    lines.push(`|---|---:|---:|`);
+    lines.push(`| First square | Total | Win rate | Why |`);
+    lines.push(`|---|---:|---:|---|`);
     for (const fm of a.firstMoves) {
+      const why = fm.square === '(none)' ? '—' : explainSquare(puzzle, fromSquare(fm.square));
       lines.push(
-        `| ${fm.square} | ${fm.total} | ${(fm.winRate * 100).toFixed(0)}% |`,
+        `| ${fm.square} | ${fm.total} | ${(fm.winRate * 100).toFixed(0)}% | ${why} |`,
       );
     }
     lines.push(``);
@@ -229,11 +386,14 @@ function renderReport(levelId: string, analyses: Analysis[]): string {
     if (a.topOpenings.length > 0) {
       lines.push(`### Top 2-move openings`);
       lines.push(``);
-      lines.push(`| Sequence | Times played | Win rate |`);
-      lines.push(`|---|---:|---:|`);
+      lines.push(`| Sequence | Times | Win rate | Why |`);
+      lines.push(`|---|---:|---:|---|`);
       for (const o of a.topOpenings) {
+        // sequence is formatted "X → Y"
+        const [first, second] = o.sequence.split(' → ');
+        const why = first && second ? explainOpening(puzzle, first, second) : '—';
         lines.push(
-          `| ${o.sequence} | ${o.count} | ${(o.winRate * 100).toFixed(0)}% |`,
+          `| ${o.sequence} | ${o.count} | ${(o.winRate * 100).toFixed(0)}% | ${why} |`,
         );
       }
       lines.push(``);
@@ -297,7 +457,7 @@ async function main(): Promise<void> {
   mkdirSync(outDir, { recursive: true });
   const safeId = levelId.replace(/\//g, '__');
   const outPath = join(outDir, `${safeId}_${date}.md`);
-  writeFileSync(outPath, renderReport(levelId, analyses));
+  writeFileSync(outPath, renderReport(levelId, entry.puzzle, analyses));
   console.log(`[discover-strat] report written: ${outPath}`);
 
   // Brief console summary
