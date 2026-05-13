@@ -167,6 +167,11 @@ export function simulateGame(opts: SimulateOpts): SimulateResult {
     }
 
     if (state.turn === 'enemy') {
+      // Snapshot before the enemy turn so inferCapturer can locate the
+      // capturer at Rookie's last square. Without this, prevState stays at
+      // Rookie's pre-move square and we miss-classify captures as dead-ends
+      // (royal-court/6 was the canonical example).
+      prevState = state;
       state = settleEnemyTurns(state);
       continue;
     }
