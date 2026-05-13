@@ -297,6 +297,20 @@ function candidatesForAbility(
       }
       return out;
     }
+    case 'queenkiller': {
+      // Only queens are legal targets — keeps the candidate set tight so the
+      // eval search doesn't waste cycles on non-queens that the engine would
+      // reject anyway.
+      for (const p of state.pieces) {
+        if (p.type !== 'queen') continue;
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'queenkiller',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
   }
   return out;
 }

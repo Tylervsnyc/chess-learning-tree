@@ -22,7 +22,8 @@ export type AbilityId =
   | 'phase-step'
   | 'leap'
   | 'surge'
-  | 'aegis';
+  | 'aegis'
+  | 'queenkiller';
 
 export type AbilityTier = 1 | 2 | 3 | 4 | 5;
 
@@ -129,6 +130,13 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Instant · Shield',
     description: 'Tap to raise a shield. Blocks the next capture.',
   },
+  queenkiller: {
+    id: 'queenkiller',
+    name: 'Queenkiller',
+    activation: 'targeted',
+    typeLine: 'Targeted · Tactical',
+    description: 'Take a queen anywhere on the board.',
+  },
 };
 
 export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
@@ -180,6 +188,12 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier === 2 || tier === 3) return 2;
       if (tier === 4) return 3;
       return -1;
+    case 'queenkiller':
+      // Queens are top-killer at every tier per the multivariate model.
+      // T1-T2 single capture, T3 two casts, T4 doubles use + adjacent pawns,
+      // T5 doubles use + 3x3 blast around the queen.
+      if (tier === 1 || tier === 2) return 1;
+      return 2;
   }
 }
 
@@ -272,6 +286,12 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return 'Tap: shield + stuns attacker. 2/level.';
       if (tier === 2) return 'Tap: shield. 2 raises/level.';
       return 'Tap: shield blocks next capture. 1/level.';
+    case 'queenkiller':
+      if (tier === 5) return 'Take a queen + 3×3 blast. 2/level.';
+      if (tier === 4) return 'Take a queen + adjacent pawns. 2/level.';
+      if (tier === 3) return 'Take a queen. 2/level.';
+      if (tier === 2) return 'Take a queen. +2 tempo. 1/level.';
+      return 'Take a queen. 1/level.';
   }
 }
 
@@ -929,6 +949,46 @@ export function applyAbilityTargeted(
       cancellableActivation: undefined,
       lastAbilityFx: {
         kind: 'freeze-ray',
+        from: toSquare(state.rookie),
+        to: toSquare(target),
+        id: Date.now() + Math.random(),
+      },
+    };
+  }
+
+  if (abilityId === 'queenkiller') {
+    // Must target a queen. Higher tiers add a radius effect (T4 pawns only,
+    // T5 full 3x3 blast) and T2+ grants a small tempo refund on cast.
+    const hit = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    if (!hit || hit.type !== 'queen') return state;
+
+    let killed: EnemyPiece[] = [hit];
+    if (owned.tier >= 4) {
+      for (const p of state.pieces) {
+        if (p === hit) continue;
+        const inRadius =
+          Math.abs(p.file - target.file) <= 1 &&
+          Math.abs(p.rank - target.rank) <= 1;
+        if (!inRadius) continue;
+        // T4 only kills pawns in the splash. T5 kills everything in radius.
+        if (owned.tier === 5 || p.type === 'pawn') killed.push(p);
+      }
+    }
+    const pieces = state.pieces.filter((p) => !killed.includes(p));
+    const captures = [...state.captures, ...killed.map((k) => k.type)];
+    const tempoBonus = owned.tier >= 2 ? 2 : 0;
+    return {
+      ...state,
+      pieces,
+      captures,
+      tempo: Math.min(TEMPO_MAX, state.tempo + tempoBonus),
+      abilities: decrementUse(state.abilities, abilityId),
+      activeAbility: null,
+      cancellableActivation: undefined,
+      lastAbilityFx: {
+        kind: 'detonate',
         from: toSquare(state.rookie),
         to: toSquare(target),
         id: Date.now() + Math.random(),
