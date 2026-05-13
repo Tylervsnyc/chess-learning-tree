@@ -1,4 +1,4 @@
-# Ability Impact — hornets-nest (8 runs / ability / mode)
+# Ability Impact — hornets-nest (5 runs / ability / mode)
 
 Each ability was force-seeded at the start of every level of a 10-level run and the bot played the full run. Compare end-of-run levels-completed vs the baseline (no preowned ability). Δ shows whether the ability materially helped progression.
 
@@ -6,36 +6,40 @@ Modes:
 - **fixed-tN** — ability locked at the same tier all 10 levels
 - **upgrading** — start at T1, +1 tier every 2 levels (T1→T2 at L3, T3 at L5, T4 at L7, T5 at L9)
 
-**Baseline**: mean levels completed **3.50** (median 3), full-run rate 0%, 0.25 abilities held at end.
+**Baseline**: mean levels completed **3.80** (median 4), full-run rate 0%, 0.20 abilities held at end.
 
 ## Mode: fixed-t3
 
 | Ability | Mean levels | Δ vs baseline | Median | Full-run rate | Abilities at end |
 |---|---:|---:|---:|---:|---:|
-| Detonate | 10.00 | +6.50 | 10 | 100% | 2.00 |
-| Aegis | 10.00 | +6.50 | 10 | 100% | 2.00 |
-| Surge | 9.25 | +5.75 | 9.5 | 50% | 2.00 |
-| Phase Step | 7.38 | +3.88 | 10 | 63% | 1.00 |
-| Leap | 7.13 | +3.63 | 7.5 | 50% | 1.13 |
-| Knight Hop | 5.63 | +2.13 | 5 | 0% | 1.25 |
-| Queen Pulse | 5.13 | +1.63 | 5 | 0% | 1.13 |
-| Bishop Step | 4.63 | +1.13 | 5 | 0% | 1.00 |
-| Freeze Ray | 4.50 | +1.00 | 4 | 0% | 1.13 |
-| Pawn Charge | 3.50 | 0.00 | 3 | 0% | 1.00 |
-| Queenkiller | 3.50 | 0.00 | 3 | 0% | 1.00 |
-
-## Mode: upgrading
-
-| Ability | Mean levels | Δ vs baseline | Median | Full-run rate | Abilities at end |
-|---|---:|---:|---:|---:|---:|
-| Aegis | 10.00 | +6.50 | 10 | 100% | 1.00 |
-| Detonate | 8.38 | +4.88 | 10 | 75% | 1.00 |
-| Surge | 8.00 | +4.50 | 9 | 25% | 1.00 |
-| Knight Hop | 5.75 | +2.25 | 5 | 0% | 1.00 |
-| Phase Step | 5.63 | +2.13 | 5 | 25% | 1.00 |
-| Queen Pulse | 5.38 | +1.88 | 4.5 | 13% | 1.00 |
-| Bishop Step | 5.13 | +1.63 | 4.5 | 13% | 1.00 |
-| Queenkiller | 4.25 | +0.75 | 3.5 | 13% | 1.13 |
-| Freeze Ray | 3.63 | +0.13 | 3 | 0% | 1.00 |
-| Pawn Charge | 3.38 | -0.13 | 3 | 0% | 1.00 |
-| Leap | 3.13 | -0.38 | 3 | 0% | 1.00 |
+| Detonate | 10.00 | +6.20 | 10 | 100% | 2.00 |
+| Aegis | 10.00 | +6.20 | 10 | 100% | 2.00 |
+| Slayer | 10.00 | +6.20 | 10 | 100% | 2.00 |
+| Mirror | 10.00 | +6.20 | 10 | 100% | 2.00 |
+| Tempo Vault | 10.00 | +6.20 | 10 | 100% | 2.00 |
+| Surge | 9.60 | +5.80 | 10 | 60% | 2.00 |
+| Quickstep | 9.00 | +5.20 | 9 | 0% | 2.00 |
+| Bait | 8.80 | +5.00 | 10 | 60% | 1.80 |
+| Decoy | 8.20 | +4.40 | 9 | 0% | 1.80 |
+| Mimic | 8.00 | +4.20 | 9 | 20% | 1.60 |
+| Leap | 7.80 | +4.00 | 10 | 60% | 1.20 |
+| Knight Hop | 7.60 | +3.80 | 9 | 40% | 1.60 |
+| Sapper | 7.60 | +3.80 | 10 | 60% | 1.60 |
+| Phase Step | 7.20 | +3.40 | 10 | 60% | 1.00 |
+| Smoke | 6.00 | +2.20 | 5 | 20% | 1.20 |
+| Tide | 5.80 | +2.00 | 3 | 40% | 1.40 |
+| Sinkhole | 5.60 | +1.80 | 5 | 0% | 1.20 |
+| Bishop Step | 4.80 | +1.00 | 5 | 0% | 1.00 |
+| Queen Pulse | 4.80 | +1.00 | 5 | 0% | 1.00 |
+| Bulwark | 4.80 | +1.00 | 4 | 20% | 1.20 |
+| Foresight | 4.60 | +0.80 | 3 | 0% | 1.20 |
+| Pushback | 4.60 | +0.80 | 4 | 0% | 1.20 |
+| Freeze Ray | 4.40 | +0.60 | 5 | 0% | 1.00 |
+| Skip | 4.20 | +0.40 | 4 | 0% | 1.20 |
+| Recall | 4.00 | +0.20 | 4 | 0% | 1.00 |
+| Rally | 3.40 | -0.40 | 3 | 0% | 1.00 |
+| Beeline | 3.40 | -0.40 | 3 | 0% | 1.00 |
+| Queenkiller | 3.20 | -0.60 | 3 | 0% | 1.00 |
+| Bedrock | 3.20 | -0.60 | 3 | 0% | 1.00 |
+| Pawn Charge | 3.00 | -0.80 | 3 | 0% | 1.00 |
+| Magnet | 2.80 | -1.00 | 3 | 0% | 1.00 |
