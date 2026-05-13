@@ -8,7 +8,7 @@ You are running the Rookie's Run **nightly playtest + ability lab**. Automated r
 
 1. The repo is already cloned. `cd` into it. Verify on main: `git checkout main && git pull origin main`.
 2. `npm install --no-audit --no-fund` (skip if `node_modules/` exists).
-3. Run the full pipeline (~40 min): `npx tsx scripts/run-playtest/nightly.ts --sweep-trials=200 --ablation-trials=120`. Outputs land in `data/run-playtest/digests/` (committed) and `data/run-playtest/raw/` (gitignored).
+3. Run the nightly pipeline (~30 min): `npx tsx scripts/run-playtest/nightly.ts`. Defaults are tuned to fit inside cloud-agent runtime caps — sweep 150 trials, ablation 80, hypotheses 3, no forced-take, no combos. On Sundays use `--full` for the weekly deep dive (~90 min) that enables forced-take + combos. Outputs land in `data/run-playtest/digests/` (committed) and `data/run-playtest/raw/` (gitignored).
 4. Verify digest exists: `ls data/run-playtest/digests/$(date +%Y-%m-%d).md` should print the file. `head -30` it to confirm the TL;DR rendered.
 5. Stage digest files only: `git add data/run-playtest/digests/`. Do NOT stage `data/run-playtest/raw/`.
 6. Commit using inline git identity:

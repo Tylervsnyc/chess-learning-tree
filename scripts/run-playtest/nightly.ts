@@ -3,16 +3,22 @@
  * Nightly orchestrator. Runs the full pipeline and writes outputs.
  *
  * Usage:
- *   npx tsx scripts/run-playtest/nightly.ts [--sweep-trials=N] [--ablation-trials=M] [--quick] [--hypotheses-per-night=N]
+ *   npx tsx scripts/run-playtest/nightly.ts [flags]
  *
- * Defaults:
- *   --sweep-trials=200       (baseline trials per (level, tier))
- *   --ablation-trials=120
- *   --forced-take-trials=80
- *   --combo-trials=30        (capped — 45 pairs × 3 tiers × N is expensive)
- *   --combo-sample-size=20   (representative subset of levels for combos)
- *   --hypotheses-per-night=5
- *   --quick                  shortcut: trials=20, ablation=10, hypotheses=1, no combos
+ * Defaults (tuned for a ~30 min run that fits inside cloud-agent runtime caps):
+ *   --sweep-trials=150       (baseline trials per (level, tier))
+ *   --ablation-trials=80
+ *   --hypotheses-per-night=3
+ *   forced-take + combos are OFF by default — enable via --full or explicit flag
+ *
+ * Flags:
+ *   --full                   weekly deep dive: enables forced-take + combos at full trial counts
+ *   --quick                  fast smoke: trials=20, ablation=10, hypotheses=1, no combos / no forced-take
+ *   --enable-forced-take     turn forced-take on (default off — too slow for nightly)
+ *   --enable-combos          turn combos on
+ *   --forced-take-trials=N
+ *   --combo-trials=N         capped at 30 because 45 pairs × 3 tiers × N is expensive
+ *   --combo-sample-size=N    representative subset of levels for combos
  *
  * Outputs:
  *   data/run-playtest/raw/YYYY-MM-DD/sweep.json
@@ -73,30 +79,33 @@ interface CliOpts {
 }
 
 function parseArgs(): CliOpts {
+  // WHY these defaults: the nightly remote agent has a runtime cap (~60 min).
+  // Forced-take + combos were the culprit when the 2026-05-13 run died
+  // mid-pipeline (forced-take alone took 63 min at the old defaults). Both
+  // are now opt-in via --full or explicit --enable-* flags. The trimmed sweep
+  // + ablation budget hits ~30 min end-to-end, leaving plenty of headroom.
   const opts: CliOpts = {
-    sweepTrials: 200,
-    ablationTrials: 120,
-    forcedTakeTrials: 80,
-    // Default combo trials capped at 30 — the matrix is 45 pairs × 3 tiers,
-    // so we trade per-cell precision for breadth. See combos.ts header.
+    sweepTrials: 150,
+    ablationTrials: 80,
+    forcedTakeTrials: 60,
     comboTrials: 30,
     comboSampleSize: 20,
-    hypothesesPerNight: 5,
-    experimentTrials: 80,
+    hypothesesPerNight: 3,
+    experimentTrials: 60,
     quick: false,
     skipAblation: false,
     skipFeatures: false,
     skipHypotheses: false,
-    // Both on by default off `--quick`. Quick flips combos off because the
-    // matrix is too slow even at small trial counts to be useful for smoke.
-    enableForcedTake: true,
-    enableCombos: true,
+    enableForcedTake: false,
+    enableCombos: false,
   };
   let hypothesesExplicit = false;
   let forcedTakeExplicit = false;
   let combosExplicit = false;
+  let fullMode = false;
   for (const arg of process.argv.slice(2)) {
     if (arg === '--quick') opts.quick = true;
+    else if (arg === '--full') fullMode = true;
     else if (arg === '--skip-ablation') opts.skipAblation = true;
     else if (arg === '--skip-features') opts.skipFeatures = true;
     else if (arg === '--skip-hypotheses') opts.skipHypotheses = true;
@@ -128,17 +137,24 @@ function parseArgs(): CliOpts {
     } else if (arg.startsWith('--experiment-trials='))
       opts.experimentTrials = parseInt(arg.split('=')[1], 10);
   }
+  if (fullMode) {
+    // Weekly deep dive. Pushes everything on at production trial counts.
+    opts.sweepTrials = 200;
+    opts.ablationTrials = 120;
+    opts.forcedTakeTrials = 80;
+    if (!hypothesesExplicit) opts.hypothesesPerNight = 5;
+    opts.experimentTrials = 80;
+    if (!forcedTakeExplicit) opts.enableForcedTake = true;
+    if (!combosExplicit) opts.enableCombos = true;
+  }
   if (opts.quick) {
     opts.sweepTrials = 20;
     opts.ablationTrials = 10;
     opts.forcedTakeTrials = 10;
-    // WHY: --quick is for smoke tests. We still want at least 1 hypothesis
-    // so the loop is exercised end-to-end, but only one to keep runtime tiny.
     if (!hypothesesExplicit) opts.hypothesesPerNight = 1;
     opts.experimentTrials = 10;
-    // Quick mode skips combos by default. Explicit `--enable-combos` overrides.
     if (!combosExplicit) opts.enableCombos = false;
-    if (!forcedTakeExplicit) opts.enableForcedTake = true;
+    if (!forcedTakeExplicit) opts.enableForcedTake = false;
   }
   return opts;
 }
