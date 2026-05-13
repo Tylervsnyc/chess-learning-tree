@@ -370,6 +370,7 @@ function candidatesForAbility(
     case 'decoy':
     case 'recall':
     case 'tide':
+    case 'tremor':
       out.push({ kind: 'activate-ability', abilityId: owned.id });
       return out;
     case 'bedrock': {

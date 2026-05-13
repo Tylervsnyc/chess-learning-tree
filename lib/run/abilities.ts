@@ -10,7 +10,7 @@
 
 import { TEMPO_MAX } from './scoring';
 import { toSquare } from './types';
-import type { BoardState, Coord, EnemyPiece, RookieForm } from './types';
+import type { BoardState, Coord, EnemyPiece, PieceType, RookieForm } from './types';
 
 export type AbilityId =
   | 'bishop-step'
@@ -48,7 +48,8 @@ export type AbilityId =
   | 'mimic'
   | 'recall'
   | 'tempo-vault'
-  | 'tide';
+  | 'tide'
+  | 'tremor';
 
 export type AbilityTier = 1 | 2 | 3 | 4 | 5;
 
@@ -305,6 +306,13 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Instant · Control',
     description: 'Push the front rank away.',
   },
+  tremor: {
+    id: 'tremor',
+    name: 'Tremor',
+    activation: 'instant',
+    typeLine: 'Instant · Control',
+    description: 'Shake the ground — pieces near you stagger back.',
+  },
 };
 
 export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
@@ -466,6 +474,14 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier <= 2) return 1;
       if (tier <= 4) return 2;
       return -1;
+    case 'tremor':
+      // Self-centered AoE pushback. Generous uses because each fire is
+      // local (radius 1 at T1) — bot can fire often without trivialising.
+      if (tier === 1) return 1;
+      if (tier === 2) return 2;
+      if (tier === 3) return 2;
+      if (tier === 4) return 3;
+      return 4;
   }
 }
 
@@ -684,6 +700,12 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return 'Push the nearest rank +1. 2/level.';
       if (tier === 2) return 'Push the nearest rank +1. 1/level.';
       return 'Push pieces above Rookie +1. 1/level.';
+    case 'tremor':
+      if (tier === 5) return 'All within 2 sq stagger back 2. 4/level.';
+      if (tier === 4) return 'All within 2 sq stagger back 1. 3/level.';
+      if (tier === 3) return 'All adjacent enemies back 1. 2/level.';
+      if (tier === 2) return 'All adjacent enemies back 1. 2/level.';
+      return 'Nearest adjacent enemy back 1. 1/level.';
   }
 }
 
@@ -1078,6 +1100,7 @@ export function applyAbilityActivate(
   if (abilityId === 'decoy') return applyDecoy(state, owned.tier);
   if (abilityId === 'recall') return applyRecall(state);
   if (abilityId === 'tide') return applyTide(state, owned.tier);
+  if (abilityId === 'tremor') return applyTremor(state, owned.tier);
 
   // Targeted abilities (and any movement abilities) fall through to "wait for
   // a follow-up tap." Sinkhole picks an empty square; bedrock picks a hazard
@@ -2110,6 +2133,94 @@ function applyTide(state: BoardState, tier: AbilityTier): BoardState {
     abilities: decrementUse(state.abilities, 'tide'),
     activeAbility: null,
     cancellableActivation: { abilityId: 'tide', snapshot: snapshotForCancel(state) },
+  };
+}
+
+/**
+ * Tremor — self-centered AoE pushback. Shake the ground; enemies near Rookie
+ * stagger directly away from her by N squares. Differs from Pushback
+ * (targeted single-enemy) and Tide (rank-based wave) by being self-centered
+ * and radial. Tier scaling:
+ *   T1: nearest adjacent enemy back 1
+ *   T2: all radius-1 enemies back 1
+ *   T3: all radius-1 enemies back 1 (more uses)
+ *   T4: all radius-2 enemies back 1
+ *   T5: all radius-2 enemies back 2
+ *
+ * Push direction = unit vector from Rookie toward the piece, snapped to the
+ * 8 compass directions. If destination is off-board, the piece is destroyed
+ * (counted as a capture). If blocked by another piece or hazard, the
+ * piece stays put.
+ */
+function applyTremor(state: BoardState, tier: AbilityTier): BoardState {
+  const owned = state.abilities.find((a) => a.id === 'tremor');
+  if (!owned) return state;
+  if (owned.usesLeftThisLevel === 0) return state;
+
+  const radius = tier >= 4 ? 2 : 1;
+  const shoveDistance = tier === 5 ? 2 : 1;
+
+  // Find enemies in radius.
+  const inRange = state.pieces.filter((p) => {
+    const df = Math.abs(p.file - state.rookie.file);
+    const dr = Math.abs(p.rank - state.rookie.rank);
+    if (df === 0 && dr === 0) return false;
+    return df <= radius && dr <= radius;
+  });
+
+  // T1 narrows to the single closest. Ties broken by chess-priority order:
+  // pieces with higher value first (queen > minor > pawn), then leftmost.
+  const VALUE: Record<PieceType, number> = { queen: 4, knight: 3, bishop: 2, pawn: 1 };
+  let movers = inRange;
+  if (tier === 1) {
+    inRange.sort((a, b) => {
+      const da =
+        Math.max(Math.abs(a.file - state.rookie.file), Math.abs(a.rank - state.rookie.rank));
+      const db =
+        Math.max(Math.abs(b.file - state.rookie.file), Math.abs(b.rank - state.rookie.rank));
+      if (da !== db) return da - db;
+      if (VALUE[b.type] !== VALUE[a.type]) return VALUE[b.type] - VALUE[a.type];
+      return a.file - b.file;
+    });
+    movers = inRange.slice(0, 1);
+  }
+
+  if (movers.length === 0) return state;
+
+  let pieces = state.pieces.slice();
+  const captures = state.captures.slice();
+
+  // Compute push direction (unit vector away from Rookie). Snap to 8 dirs.
+  const sign = (n: number): number => (n === 0 ? 0 : n > 0 ? 1 : -1);
+
+  for (const m of movers) {
+    const df = sign(m.file - state.rookie.file);
+    const dr = sign(m.rank - state.rookie.rank);
+    if (df === 0 && dr === 0) continue;
+    const destF = m.file + df * shoveDistance;
+    const destR = m.rank + dr * shoveDistance;
+    // Off-board → destroyed.
+    if (destF < 1 || destF > 8 || destR < 1 || destR > 8) {
+      pieces = pieces.filter((p) => p !== m);
+      captures.push(m.type);
+      continue;
+    }
+    // Hazard → blocked (stays put).
+    if (state.hazards.some((h) => h.file === destF && h.rank === destR)) continue;
+    // Collision with another piece → blocked.
+    if (pieces.some((p) => p !== m && p.file === destF && p.rank === destR)) continue;
+    // Collision with Rookie (shouldn't happen since we pushed AWAY) → blocked.
+    if (state.rookie.file === destF && state.rookie.rank === destR) continue;
+    pieces = pieces.map((p) => (p === m ? { ...p, file: destF, rank: destR } : p));
+  }
+
+  return {
+    ...state,
+    pieces,
+    captures,
+    abilities: decrementUse(state.abilities, 'tremor'),
+    activeAbility: null,
+    cancellableActivation: { abilityId: 'tremor', snapshot: snapshotForCancel(state) },
   };
 }
 
