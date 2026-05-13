@@ -52,6 +52,14 @@ export interface SimulateOpts {
    */
   preownedAbilities?: ReadonlyArray<OwnedAbility>;
   /**
+   * Carry-over from a previous level in a multi-level run. The engine
+   * supports this via `puzzleToBoardState`'s second arg; the per-level
+   * simulator just hadn't been threading it. Used by simulate-run.ts.
+   */
+  carryTempo?: number;
+  carryAbilities?: ReadonlyArray<OwnedAbility>;
+  carryPendingOffer?: BoardState['pendingOffer'];
+  /**
    * When true, the simulator records a per-decision trace and returns it
    * inside the outcome. Off by default — opt-in because the trace adds
    * ~2-5KB per game and serializes a board snapshot on every Rookie action.
@@ -80,7 +88,14 @@ export function simulateGame(opts: SimulateOpts): SimulateResult {
     rng: botRng,
   };
 
-  let state: BoardState = puzzleToBoardState(opts.puzzle);
+  // Use carry-from-previous-level fields when provided. Combines with
+  // preownedAbilities (which is added after, deduped by id). This lets
+  // simulate-run.ts chain levels with the right tempo + ability state.
+  let state: BoardState = puzzleToBoardState(opts.puzzle, {
+    tempo: opts.carryTempo,
+    abilities: opts.carryAbilities ? [...opts.carryAbilities] : undefined,
+    pendingOffer: opts.carryPendingOffer ?? undefined,
+  });
   // Inject pre-owned abilities AFTER puzzleToBoardState so we layer on top of
   // whatever the puzzle's own starting state was. Dedupe by id (existing
   // wins — we don't clobber a higher-tier ability with a forced T1 copy).
