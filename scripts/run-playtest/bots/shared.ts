@@ -354,6 +354,128 @@ function candidatesForAbility(
       }
       return out;
     }
+    // -------------------------------------------------------------------------
+    // Candidate batch — bot wiring. Instant abilities collapse to a single
+    // activate-ability action. Targeted abilities enumerate every plausible
+    // target so the bot's eval can pick the highest-impact cast.
+    // -------------------------------------------------------------------------
+    case 'rally':
+    case 'quickstep':
+    case 'smoke':
+    case 'beeline':
+    case 'mirror':
+    case 'foresight':
+    case 'bulwark':
+    case 'skip':
+    case 'decoy':
+    case 'recall':
+    case 'tide':
+      out.push({ kind: 'activate-ability', abilityId: owned.id });
+      return out;
+    case 'bedrock': {
+      // Target a hazard square — skip if no hazards exist.
+      for (const h of state.hazards) {
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'bedrock',
+          target: { file: h.file, rank: h.rank },
+        });
+      }
+      // T5 wipes all hazards in one cast — bot just needs one candidate.
+      if (out.length === 0 && state.hazards.length === 0) return out;
+      return out;
+    }
+    case 'sinkhole': {
+      // Target ANY square (empty or, on T4+, occupied). Limit the search to
+      // ranks 2-7 because rank-1/rank-8 hazards rarely change outcomes and
+      // explode the candidate count.
+      const isT4Plus = owned.tier >= 4;
+      for (let f = 1; f <= 8; f++) {
+        for (let r = 2; r <= 7; r++) {
+          if (f === state.rookie.file && r === state.rookie.rank) continue;
+          if (state.hazards.some((h) => h.file === f && h.rank === r)) continue;
+          const piece = state.pieces.some((p) => p.file === f && p.rank === r);
+          if (piece && !isT4Plus) continue;
+          out.push({
+            kind: 'ability-target',
+            abilityId: 'sinkhole',
+            target: { file: f, rank: r },
+          });
+        }
+      }
+      return out;
+    }
+    case 'slayer': {
+      // Only knights and bishops are valid targets.
+      for (const p of state.pieces) {
+        if (p.type !== 'knight' && p.type !== 'bishop') continue;
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'slayer',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
+    case 'sapper': {
+      // Target any pawn — the handler resolves which pawns get wiped based on
+      // tier and target file.
+      for (const p of state.pieces) {
+        if (p.type !== 'pawn') continue;
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'sapper',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
+    case 'bait': {
+      // Pick one enemy to KEEP active — the rest get frozen.
+      for (const p of state.pieces) {
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'bait',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
+    case 'magnet':
+    case 'pushback': {
+      // Target any enemy; the handler walks it along the Rookie-axis.
+      for (const p of state.pieces) {
+        out.push({
+          kind: 'ability-target',
+          abilityId: owned.id,
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
+    case 'mimic': {
+      // Only knight/bishop/queen targets — pawns can't become a Rookie form.
+      for (const p of state.pieces) {
+        if (p.type === 'pawn') continue;
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'mimic',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
+    case 'tempo-vault': {
+      // Any piece is a legal trade.
+      for (const p of state.pieces) {
+        out.push({
+          kind: 'ability-target',
+          abilityId: 'tempo-vault',
+          target: { file: p.file, rank: p.rank },
+        });
+      }
+      return out;
+    }
   }
   return out;
 }

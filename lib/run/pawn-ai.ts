@@ -13,7 +13,7 @@
  * Enemy pieces never step onto hazard squares either.
  */
 
-import { tryAegisIntercept } from './abilities';
+import { tryAegisIntercept, tryMirrorIntercept } from './abilities';
 import { enemyAt } from './movement';
 import { toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, PieceType } from './types';
@@ -324,11 +324,40 @@ export function stepEnemyTurn(state: BoardState): BoardState {
     };
   };
 
+  // Decoy: a queued skip token consumes the whole enemy turn. We only burn
+  // ONE token per turn and only when no enemies have acted yet — otherwise a
+  // mid-turn Decoy could erase the second of two enemy moves which is too
+  // strong for an instant.
+  if (
+    (state.skipEnemyTurns ?? 0) > 0 &&
+    state.enemyMovedSquares.length === 0
+  ) {
+    const skipsLeft = (state.skipEnemyTurns ?? 0) - 1;
+    return endTurn({ ...state, skipEnemyTurns: skipsLeft });
+  }
+
   if (state.enemyMovedSquares.length >= budget) return endTurn(state);
 
   const action = chooseEnemyAction(state, exclude);
   if (!action) return endTurn(state);
 
+  // Mirror intercept — kills the attacker before Aegis even fires. Cheaper
+  // for the player than burning an Aegis charge so it goes first.
+  if (action.isCapture) {
+    const mirrored = tryMirrorIntercept(state, action.mover);
+    if (mirrored) {
+      const attackerSquare = coordKey({ file: action.mover.file, rank: action.mover.rank });
+      const withFx: BoardState = {
+        ...mirrored,
+        lastAegisIntercept: {
+          attackerSquare,
+          rookieSquare: toSquare(mirrored.rookie),
+          id: Date.now() + Math.random(),
+        },
+      };
+      return endTurn(withFx);
+    }
+  }
   // Aegis intercept — if Rookie is about to be captured AND she has Aegis
   // charges, fire it instead. Attacker either dies (T5) or is just blocked.
   if (action.isCapture) {

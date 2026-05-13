@@ -91,6 +91,16 @@ export interface BoardState {
    */
   shieldUp: boolean;
   /**
+   * Mirror flag — when set, the next intercepted capture kills the attacker
+   * (like Aegis T5) even if Aegis isn't owned. Single-shot per cast.
+   */
+  mirrorUp?: boolean;
+  /**
+   * Decoy counter — enemy turns to skip before resuming normal play. Decoy
+   * adds to this; `stepEnemyTurn` drains 1 per fired turn and short-circuits.
+   */
+  skipEnemyTurns?: number;
+  /**
    * Transient signal: set on the state returned from an enemy step when Aegis
    * intercepts a capture. UI watches `id` for changes to fire the lunge-and-
    * bounce VFX. Not cleared by the engine — the UI tracks the last-seen id.
