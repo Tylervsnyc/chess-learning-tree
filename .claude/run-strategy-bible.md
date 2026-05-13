@@ -23,6 +23,15 @@ A rook can fly an entire file in one move. The dominant strategic objective is f
 
 The eval bonus for **open paths** dominates eval for **raw rank**. A rook on rank 2 with a clear file beats a rook on rank 7 of a blocked file.
 
+### 1b. Captures reshape the open-file landscape
+An "open file" is not just one with no current blockers — it's one Rookie can **make** open by capturing the right blocker. A pawn at d5 blocking the d-file is only a blocker as long as it lives. Rookie slides d1→d5, captures the pawn, lands on d5 with the d-file now open above her.
+
+The critical check is **defense**: an enemy at (f, r) is **undefended** when no OTHER enemy attacks the square (f, r). Capturing an undefended piece is a "free" move — Rookie lands there safely. Capturing a defended piece means Rookie lands in an attack set and gets recaptured next turn.
+
+**Capture-to-open pattern**: slide up a file to the first blocker. If undefended, capture. New state: Rookie is on a higher rank, one piece is gone, and the file beyond is checked again for open status.
+
+**Defense detection**: pawns defend the two squares diagonally toward rank 1 (so a pawn at (4,4) defends (3,3) and (5,3)). Bishops defend along diagonals; knights along L-jumps; queens everywhere. A "defended pawn chain" exists when each pawn in a row defends the next.
+
 ### 2. Rank-1 freedom
 Enemies almost never spawn on rank 1 (the starting rank). Rank 1 is therefore the **highway** — Rookie can sidestep along it freely without being threatened. The standard opening: stay on rank 1, slide to a good file, then climb.
 

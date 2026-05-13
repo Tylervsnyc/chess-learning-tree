@@ -134,6 +134,43 @@ function attackersOf(puzzle: RunPuzzle, sq: Coord): EnemyPiece[] {
   return out;
 }
 
+/** Find the first enemy piece on `file` between `fromRank` (exclusive) and
+ *  rank 8 inclusive. Returns the piece + the file's open status after capture. */
+function captureToOpen(
+  puzzle: RunPuzzle,
+  file: number,
+  fromRank: number,
+): { piece: EnemyPiece; defended: boolean; fileOpenAfter: boolean } | null {
+  let blocker: EnemyPiece | undefined;
+  for (let r = fromRank + 1; r <= 8; r++) {
+    // Hazards permanently block the file.
+    if (puzzle.hazards?.some((h) => h.file === file && h.rank === r)) return null;
+    const p = puzzle.pieces.find((q) => q.file === file && q.rank === r);
+    if (p) {
+      blocker = p;
+      break;
+    }
+  }
+  if (!blocker) return null; // file already clear
+
+  // Check if any OTHER enemy attacks the blocker's square — that's the
+  // "defended" test. Build a state without the blocker and see if remaining
+  // pieces attack the now-empty square.
+  const withoutBlocker: RunPuzzle = {
+    ...puzzle,
+    pieces: puzzle.pieces.filter((p) => p !== blocker),
+  };
+  const stateNoBlocker = puzzleToBoardState(withoutBlocker);
+  const defended = enemyAttackedSquares(stateNoBlocker).has(
+    toSquare({ file: blocker.file, rank: blocker.rank }),
+  );
+
+  // After the capture, would the file be open from the blocker's rank to 8?
+  const fileOpenAfter = openFilesFromRank(withoutBlocker, blocker.rank).includes(file);
+
+  return { piece: blocker, defended, fileOpenAfter };
+}
+
 /** A short string describing why a starting square is good or bad. */
 function explainSquare(puzzle: RunPuzzle, sq: Coord): string {
   const attackers = attackersOf(puzzle, sq);
@@ -161,7 +198,24 @@ function explainSquare(puzzle: RunPuzzle, sq: Coord): string {
       `${reachableOpen.length} open file${reachableOpen.length === 1 ? '' : 's'} (${reachableOpen.map(fileLetter).join(',')}) reachable along rank ${sq.rank}`,
     );
   } else {
-    parts.push(`no open files reachable from rank ${sq.rank}`);
+    parts.push(`no immediate open files from rank ${sq.rank}`);
+  }
+
+  // Capture-to-open: even when no file is currently open, capturing an
+  // undefended blocker can unlock one. Scan files reachable along rank.
+  const captureUnlocks: string[] = [];
+  for (let f = 1; f <= 8; f++) {
+    if (!rookReachable(puzzle, sq, { file: f, rank: sq.rank })) continue;
+    if (reachableOpen.includes(f)) continue; // already open, skip
+    const cap = captureToOpen(puzzle, f, sq.rank);
+    if (cap && !cap.defended && cap.fileOpenAfter) {
+      captureUnlocks.push(
+        `take ${cap.piece.type} ${fileLetter(cap.piece.file)}${cap.piece.rank} (undef) → ${fileLetter(f)} opens`,
+      );
+    }
+  }
+  if (captureUnlocks.length > 0) {
+    parts.push(`unlocks: ${captureUnlocks.slice(0, 3).join(', ')}`);
   }
 
   return parts.join('; ');
