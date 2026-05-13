@@ -71,6 +71,25 @@ Levels with tight `moveLimit` force speed. If Rookie can't reach rank 8 in N mov
 ### 9. enemiesPerTurn tempo imbalance
 Most levels have `enemiesPerTurn: 1` — Rookie and enemies move at the same pace. When `enemiesPerTurn` is 2 or 3, enemies converge faster than Rookie can escape. These levels demand decisive openings (no wasted moves) and frequently require abilities to win at all.
 
+### 9b. Stop-short tempo investment (cross-level strategy)
+**The most important meta-principle.** A run is 10 levels played sequentially. Tempo + abilities + pending offers all CARRY OVER between levels. So when you can win this level via a slide to rank 8, sometimes the optimal play is to capture a piece on a lower rank FIRST, fill tempo, trigger an offer, accept an ability — and only THEN proceed to the win on a later turn.
+
+**Why it works**: early-level captures convert into mid-level ability picks. Mid-level abilities convert into late-level survival (the harder boss levels need every advantage).
+
+**When to stop short**:
+- You have a safe path to rank 8 next turn even after the detour
+- The capture isn't defended (free tempo)
+- You're in an early level (4 or below) where the ability has many future levels to pay off
+- Your current tempo is close to filling (this capture triggers an offer)
+
+**When NOT to stop short**:
+- Late-level (level 8+) where winning is what matters
+- The detour creates capture risk
+- Tempo is already near full and there's no current offer queued
+- Move limit is tight — every move counts
+
+**Bot implications**: a per-level bot that optimizes for "win fast" will systematically under-capture in early levels and under-perform in late levels because it arrived with no abilities. Run-level evaluation is required to capture this strategy.
+
 ### 10. Hazards as permanent blocks
 Hazard squares can't be occupied by anyone. They turn into a feature of the board geometry. Hazards in the **approach zone** (ranks 2-7) reduce winning paths and amplify choke points.
 
