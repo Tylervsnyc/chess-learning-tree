@@ -319,6 +319,46 @@ export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
   ABILITY_DEFS,
 ) as AbilityId[];
 
+/**
+ * Candidate abilities — measured by the playtest harness but NOT yet ready
+ * for real-player offers (missing icons, missing UX polish, etc.). They're
+ * filtered out of `rollOffer` so the live game only offers the 10 shipped
+ * abilities. Playtest sims still test them via `preownedAbilities` /
+ * `forcedAcceptIds` — those paths don't go through `rollOffer`.
+ *
+ * To ship a candidate to real players: design + add its icon, polish UX,
+ * then REMOVE it from this set.
+ */
+export const CANDIDATE_ABILITY_IDS: ReadonlySet<AbilityId> = new Set<AbilityId>([
+  'queenkiller',
+  'bedrock',
+  'sinkhole',
+  'rally',
+  'quickstep',
+  'smoke',
+  'beeline',
+  'slayer',
+  'sapper',
+  'decoy',
+  'mirror',
+  'foresight',
+  'bulwark',
+  'skip',
+  'bait',
+  'magnet',
+  'pushback',
+  'mimic',
+  'recall',
+  'tempo-vault',
+  'tide',
+  'tremor',
+]);
+
+/** Subset of ALL_ABILITY_IDS that real players can be offered. */
+export const SHIPPED_ABILITY_IDS: AbilityId[] = ALL_ABILITY_IDS.filter(
+  (id) => !CANDIDATE_ABILITY_IDS.has(id),
+);
+
 /** Hard cap on how many abilities Rookie can own in a single run. */
 export const MAX_OWNED_ABILITIES = 3;
 
@@ -736,7 +776,10 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   const ownedCount = owned.size;
   const atCap = ownedCount >= MAX_OWNED_ABILITIES;
 
-  const newPool: AbilityOfferOption[] = ALL_ABILITY_IDS.filter(
+  // Only SHIPPED abilities go to real players. Candidate abilities live in
+  // ABILITY_DEFS for the playtest harness but are gated out here until they
+  // have icons + UX polish.
+  const newPool: AbilityOfferOption[] = SHIPPED_ABILITY_IDS.filter(
     (id) => !owned.has(id),
   ).map((id) => ({
     kind: 'new',
@@ -747,6 +790,10 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
 
   const upgradePool: AbilityOfferOption[] = [...owned.values()]
     .filter((a) => a.tier < 5)
+    // Don't roll upgrade options for candidate abilities — if a player ever
+    // ended up holding one (shouldn't happen post-fix), keep it but don't
+    // upgrade-offer it.
+    .filter((a) => !CANDIDATE_ABILITY_IDS.has(a.id))
     .map((a) => {
       const next = (a.tier + 1) as AbilityTier;
       return {
