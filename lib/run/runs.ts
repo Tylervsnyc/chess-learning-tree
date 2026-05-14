@@ -1751,6 +1751,82 @@ const RUN_GAUNTLET: RunDef = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Run 12 — Trial Run: 5 generator-tested levels promoted from the
+// 2026-05-13 candidate batch. Picked for "hard/fun" — T3 win rates
+// 20-70%, escalating difficulty. Each level was bot-tested at T3+T4 ×
+// 20 trials; full reports in data/run-playtest/candidate-levels/.
+
+const RUN_TRIAL: RunDef = {
+  id: 'trial-run',
+  name: 'Trial Run',
+  blurb: 'Five fresh levels, machine-tested for fun-hard pacing.',
+  levels: [
+    // L1 — Open Approach v1 (T3 70% / T4 100% — gentle warm-up)
+    make(
+      1,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(3, 3), pawn(4, 3), pawn(5, 3), pawn(6, 3), pawn(7, 3), pawn(8, 3),
+        pawn(1, 5), pawn(2, 5), pawn(3, 5), pawn(4, 5), pawn(5, 5), pawn(7, 5),
+        knight(2, 6), pawn(3, 6), knight(5, 6), pawn(6, 6),
+        pawn(4, 7), pawn(6, 7),
+      ],
+      { moveLimit: 16, allowedForms: ['knight', 'bishop'] },
+    ),
+    // L2 — Strategic Hazards v2 (T3 55% / T4 100% — 4 strategic hazards)
+    make(
+      2,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(3, 3), pawn(4, 3), pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        bishop(2, 5), queen(6, 5),
+        pawn(3, 6), pawn(4, 6), pawn(5, 6), pawn(7, 6),
+      ],
+      {
+        hazards: [
+          { file: 2, rank: 4 }, { file: 6, rank: 4 },
+          { file: 1, rank: 5 }, { file: 8, rank: 4 },
+        ],
+        moveLimit: 17,
+        allowedForms: ['knight', 'bishop'],
+      },
+    ),
+    // L3 — Open Approach v4 (T3 55% / T4 100% — race-then-wall)
+    make(
+      3,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(3, 3), pawn(4, 3), pawn(5, 3), pawn(6, 3), pawn(7, 3), pawn(8, 3),
+        pawn(1, 5), pawn(2, 5), pawn(5, 5), pawn(6, 5), pawn(7, 5), pawn(8, 5),
+        pawn(2, 6), pawn(4, 6), knight(7, 6),
+        pawn(3, 7),
+      ],
+      { moveLimit: 16, allowedForms: ['knight', 'bishop'] },
+    ),
+    // L4 — Pawn Wall v3 (T3 40% / T4 100% — sweet-spot fun-hard)
+    make(
+      4,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(3, 3), pawn(4, 3), pawn(5, 3), pawn(6, 3), pawn(7, 3), pawn(8, 3),
+        pawn(1, 5), pawn(2, 5), pawn(3, 5), pawn(4, 5), pawn(7, 5),
+        pawn(1, 6), pawn(4, 6), pawn(6, 6),
+        pawn(5, 7),
+      ],
+      { moveLimit: 18 },
+    ),
+    // L5 — Choke Point v5 (T3 20% / T4 90% — the punisher)
+    make(
+      5,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(7, 3), pawn(8, 3),
+        pawn(3, 4), pawn(5, 4), knight(7, 4),
+        pawn(1, 5), pawn(4, 5), bishop(6, 5), pawn(8, 5),
+        pawn(2, 6), pawn(5, 6),
+        pawn(3, 7), pawn(4, 7),
+      ],
+      { moveLimit: 19, allowedForms: ['knight', 'bishop'] },
+    ),
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Public registry.
 
 export const RUNS: ReadonlyArray<RunDef> = [
@@ -1765,6 +1841,7 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_HORNETS_NEST,
   RUN_ROYAL_COURT,
   RUN_GAUNTLET,
+  RUN_TRIAL,
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;
