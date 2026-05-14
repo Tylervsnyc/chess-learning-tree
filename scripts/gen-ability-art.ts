@@ -57,12 +57,6 @@ const SPECS: Spec[] = [
     ],
   },
   {
-    id: 'detonate',
-    variants: [
-      'A magnificent ornate spherical golden grenade relic centered in frame, a sphere of intricate gold filigree latticework wrapped around a fiery glowing molten ruby-orange core barely contained within, the core radiating beams of warm light through the gaps in the filigree, four small fuse-like gold extensions tipped with citrine gems, deep painted ember-black smoky background with floating sparks, ' + RELIC_STYLE + '.',
-    ],
-  },
-  {
     id: 'phase-step',
     variants: [
       'A magnificent ornate translucent ghost-amulet relic centered in frame, a teardrop-shaped pendant of clear smoke-glass set in ornate silver filigree, ghostly violet wisps swirling visibly inside the glass, four pale amethyst gems at the cardinal points of the silver setting, ethereal mist drifting from the edges of the relic, deep painted slate-indigo velvet background, ' + RELIC_STYLE + '.',

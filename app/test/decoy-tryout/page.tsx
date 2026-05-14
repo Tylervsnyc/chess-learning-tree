@@ -52,6 +52,10 @@ function buildInitialState(): BoardState {
     frozenTurnsLeft: {},
     decoyTarget: null,
     decoyTurnsLeft: 0,
+    poisonedSquares: [],
+    poisonedTurnsLeft: {},
+    rabidSquares: [],
+    rabidTurnsLeft: {},
     abilities: [
       {
         id: 'decoy',

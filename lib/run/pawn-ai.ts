@@ -13,7 +13,11 @@
  * Enemy pieces never step onto hazard squares either.
  */
 
-import { tryAegisIntercept, tryMirrorIntercept } from './abilities';
+import {
+  clearStatusOnSquare,
+  relocateStatusMarkers,
+  tryAegisIntercept,
+} from './abilities';
 import { enemyAt } from './movement';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
 import { fromSquare, toSquare } from './types';
@@ -221,16 +225,19 @@ function decoyViewState(state: BoardState): {
   };
 }
 
-/** Pick the enemy that will act, and the move they'll make. */
-function chooseEnemyAction(
-  state: BoardState,
-  excludeSquares: ReadonlySet<string> = new Set(),
-): {
+type EnemyAction = {
   mover: EnemyPiece;
   target: Coord;
   isCapture: boolean;
   isDecoyCapture?: boolean;
-} | null {
+  isRabidCapture?: boolean;
+};
+
+/** Pick the enemy that will act, and the move they'll make. */
+function chooseEnemyAction(
+  state: BoardState,
+  excludeSquares: ReadonlySet<string> = new Set(),
+): EnemyAction | null {
   // If a decoy mark is active, run the existing capture/approach logic on a
   // view where the marked piece IS Rookie. Any capture returned is a friendly
   // fire against the decoy, not a loss.
@@ -254,7 +261,7 @@ function chooseEnemyAction(
 function chooseEnemyActionAgainst(
   state: BoardState,
   excludeSquares: ReadonlySet<string>,
-): { mover: EnemyPiece; target: Coord; isCapture: boolean } | null {
+): EnemyAction | null {
   // Frozen squares are treated as if those pieces have already moved.
   const frozen = new Set(
     state.frozenSquares
@@ -266,9 +273,86 @@ function chooseEnemyActionAgainst(
   );
   const isExcluded = (p: EnemyPiece) =>
     excludeSquares.has(coordKey(p)) || frozen.has(coordKey(p));
+
+  // 0) Rabid pieces act on berserker logic first. They attack the nearest
+  // reachable entity (Rookie counts; ties → biggest piece wins). If no
+  // capture is reachable they approach the top-priority target instead.
+  const rabid = new Set(
+    state.rabidSquares.map((sq) => {
+      const file = sq.charCodeAt(0) - 'a'.charCodeAt(0) + 1;
+      const rank = parseInt(sq[1], 10);
+      return `${file},${rank}`;
+    }),
+  );
+  if (rabid.size > 0) {
+    const rabidPieces = state.pieces.filter(
+      (p) => !isExcluded(p) && rabid.has(coordKey(p)),
+    );
+    const captures: Array<{
+      mover: EnemyPiece;
+      target: Coord;
+      isCapture: boolean;
+      isRabidCapture?: boolean;
+      victimValue: number;
+    }> = [];
+    const approaches: Array<{
+      mover: EnemyPiece;
+      target: Coord;
+      isCapture: boolean;
+      approachDist: number;
+    }> = [];
+    for (const p of rabidPieces) {
+      const a = rabidAction(p, state);
+      if (!a) continue;
+      if (a.kind === 'capture') {
+        captures.push({
+          mover: p,
+          target: a.target,
+          isCapture: a.isRookie,
+          isRabidCapture: !a.isRookie,
+          victimValue: a.victimValue,
+        });
+      } else {
+        approaches.push({
+          mover: p,
+          target: a.target,
+          isCapture: false,
+          approachDist: a.approachDist,
+        });
+      }
+    }
+    if (captures.length > 0) {
+      captures.sort((a, b) => {
+        if (a.victimValue !== b.victimValue) return b.victimValue - a.victimValue;
+        if (a.mover.file !== b.mover.file) return a.mover.file - b.mover.file;
+        return a.mover.rank - b.mover.rank;
+      });
+      const pick = captures[0];
+      return {
+        mover: pick.mover,
+        target: pick.target,
+        isCapture: pick.isCapture,
+        isRabidCapture: pick.isRabidCapture,
+      };
+    }
+    if (approaches.length > 0) {
+      approaches.sort((a, b) => {
+        if (a.approachDist !== b.approachDist) return a.approachDist - b.approachDist;
+        if (a.mover.file !== b.mover.file) return a.mover.file - b.mover.file;
+        return a.mover.rank - b.mover.rank;
+      });
+      const pick = approaches[0];
+      return { mover: pick.mover, target: pick.target, isCapture: pick.isCapture };
+    }
+    // No rabid piece can usefully act — fall through to normal AI for the
+    // non-rabid pieces.
+  }
+
+  const isNormallyEligible = (p: EnemyPiece) =>
+    !isExcluded(p) && !rabid.has(coordKey(p));
   // 1) Capture priority.
   const capturers = state.pieces
-    .filter((p) => !isExcluded(p) && canCapture(p, state))
+    .filter((p) => isNormallyEligible(p) && canCapture(p, state))
     .sort((a, b) => {
       const ta = PIECE_THREAT[a.type] ?? 0;
       const tb = PIECE_THREAT[b.type] ?? 0;
@@ -285,7 +369,7 @@ function chooseEnemyActionAgainst(
   type Candidate = { mover: EnemyPiece; target: Coord; priority: number };
   const candidates: Candidate[] = [];
   for (const p of state.pieces) {
-    if (isExcluded(p)) continue;
+    if (!isNormallyEligible(p)) continue;
     if (p.type === 'pawn') {
       const target: Coord = { file: p.file, rank: p.rank + BLACK_FORWARD };
       if (
@@ -320,22 +404,147 @@ function chooseEnemyActionAgainst(
   return { mover: candidates[0].mover, target: candidates[0].target, isCapture: false };
 }
 
+/**
+ * Squares this rabid piece can land on AS A CAPTURE this turn. Unlike normal
+ * pieceLegalMoves, friendly pieces ARE legal capture targets here (rabies
+ * doesn't care about teamwork). Rookie's square is also a capture target.
+ * Bishops/queens still stop at the first thing on their ray.
+ */
+function rabidCaptureSquares(piece: EnemyPiece, state: BoardState): Coord[] {
+  const vacated = vacatedSet(state);
+  const out: Coord[] = [];
+  switch (piece.type) {
+    case 'pawn': {
+      for (const df of [-1, 1]) {
+        const c: Coord = { file: piece.file + df, rank: piece.rank + BLACK_FORWARD };
+        if (!inBounds(c)) continue;
+        if (isHazard(state.hazards, c)) continue;
+        if (isVacated(vacated, c)) continue;
+        const isRookie = state.rookie.file === c.file && state.rookie.rank === c.rank;
+        const friendly = enemyAt(state.pieces, c);
+        if (isRookie || (friendly && friendly !== piece)) out.push(c);
+      }
+      return out;
+    }
+    case 'knight': {
+      for (const [df, dr] of KNIGHT_DELTAS) {
+        const c: Coord = { file: piece.file + df, rank: piece.rank + dr };
+        if (!inBounds(c)) continue;
+        if (isHazard(state.hazards, c)) continue;
+        if (isVacated(vacated, c)) continue;
+        const isRookie = state.rookie.file === c.file && state.rookie.rank === c.rank;
+        const friendly = enemyAt(state.pieces, c);
+        if (isRookie || (friendly && friendly !== piece)) out.push(c);
+      }
+      return out;
+    }
+    case 'bishop':
+    case 'queen': {
+      const dirs = piece.type === 'queen' ? QUEEN_DIRS : BISHOP_DIRS;
+      for (const [df, dr] of dirs) {
+        let f = piece.file + df;
+        let r = piece.rank + dr;
+        while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+          const c: Coord = { file: f, rank: r };
+          if (isHazard(state.hazards, c)) break;
+          if (isVacated(vacated, c)) break;
+          const isRookie = state.rookie.file === f && state.rookie.rank === r;
+          const friendly = enemyAt(state.pieces, c);
+          if (isRookie || (friendly && friendly !== piece)) {
+            out.push(c);
+            break;
+          }
+          f += df;
+          r += dr;
+        }
+      }
+      return out;
+    }
+  }
+}
+
+/**
+ * Pick a rabid piece's action for this turn.
+ *
+ * Algorithm:
+ *   1) Build a target list = Rookie + every other enemy. Rookie counts as the
+ *      biggest piece (queen-tier 4).
+ *   2) Sort by (Chebyshev distance asc, value desc) — closest pieces first,
+ *      biggest piece on distance ties.
+ *   3) If any sorted target is in `rabidCaptureSquares`, that's the kill.
+ *   4) Otherwise the rabid piece approaches the top-priority target with a
+ *      normal (non-capture) move that strictly reduces Chebyshev distance.
+ */
+type RabidAction =
+  | { kind: 'capture'; target: Coord; isRookie: boolean; victimValue: number }
+  | { kind: 'approach'; target: Coord; approachDist: number };
+
+function rabidAction(piece: EnemyPiece, state: BoardState): RabidAction | null {
+  const piecePos: Coord = { file: piece.file, rank: piece.rank };
+  const targets: Array<{ at: Coord; value: number; isRookie: boolean }> = [
+    { at: { ...state.rookie }, value: PIECE_THREAT.queen, isRookie: true },
+  ];
+  for (const p of state.pieces) {
+    if (p === piece) continue;
+    targets.push({
+      at: { file: p.file, rank: p.rank },
+      value: PIECE_THREAT[p.type] ?? 0,
+      isRookie: false,
+    });
+  }
+  if (targets.length === 0) return null;
+  targets.sort((a, b) => {
+    const da = chebyshev(piecePos, a.at);
+    const db = chebyshev(piecePos, b.at);
+    if (da !== db) return da - db;
+    if (a.value !== b.value) return b.value - a.value;
+    if (a.at.file !== b.at.file) return a.at.file - b.at.file;
+    return a.at.rank - b.at.rank;
+  });
+  const captureSquares = rabidCaptureSquares(piece, state);
+  for (const t of targets) {
+    if (
+      captureSquares.some((c) => c.file === t.at.file && c.rank === t.at.rank)
+    ) {
+      return {
+        kind: 'capture',
+        target: t.at,
+        isRookie: t.isRookie,
+        victimValue: t.value,
+      };
+    }
+  }
+  // No capture — approach the nearest target with a non-capture move.
+  const focus = targets[0];
+  const moves = pieceLegalMoves(piece, state).filter(
+    (m) => !(m.file === state.rookie.file && m.rank === state.rookie.rank),
+  );
+  if (moves.length === 0) return null;
+  const cur = chebyshev(piecePos, focus.at);
+  let best: Coord | null = null;
+  let bestDist = Infinity;
+  for (const m of moves) {
+    const d = chebyshev(m, focus.at);
+    if (d < bestDist) {
+      bestDist = d;
+      best = m;
+    }
+  }
+  if (!best || bestDist >= cur) return null;
+  return { kind: 'approach', target: best, approachDist: bestDist };
+}
+
 /** Pawn promotion pool by level. Levels 1-4 → B/N, levels 5+ → B/N/Q. */
 function promotionPool(level: number): PieceType[] {
   return level >= 5 ? ['bishop', 'knight', 'queen'] : ['bishop', 'knight'];
 }
 
 /** Apply a single chosen action to the state, returning the new state. */
-function applyAction(
-  state: BoardState,
-  action: {
-    mover: EnemyPiece;
-    target: Coord;
-    isCapture: boolean;
-    isDecoyCapture?: boolean;
-  },
-): BoardState {
-  const { mover, target, isCapture, isDecoyCapture } = action;
+function applyAction(state: BoardState, action: EnemyAction): BoardState {
+  const { mover, target, isCapture, isDecoyCapture, isRabidCapture } = action;
+  const fromSq = toSquare({ file: mover.file, rank: mover.rank });
+  const toSq = toSquare(target);
+
   // Friendly-fire on the decoy: remove the marked piece, mover takes its
   // square, Rookie banks the capture (+ tempo), decoy mark clears. NOT a loss.
   if (isDecoyCapture) {
@@ -349,8 +558,12 @@ function applyAction(
       );
     const capturedType: PieceType | null = decoyPiece?.type ?? null;
     const tempoGain = capturedType ? TEMPO_REWARD[capturedType] ?? 0 : 0;
+    const cleared = clearStatusOnSquare(state, toSq);
+    const relocated = relocateStatusMarkers({ ...state, ...cleared }, fromSq, toSq);
     return {
       ...state,
+      ...cleared,
+      ...relocated,
       pieces,
       captures: capturedType
         ? [...state.captures, capturedType]
@@ -358,6 +571,33 @@ function applyAction(
       tempo: Math.min(TEMPO_MAX, state.tempo + tempoGain),
       decoyTarget: null,
       decoyTurnsLeft: 0,
+    };
+  }
+
+  // Rabid friendly-fire: same shape as decoy capture but rabies stays on the
+  // mover (markers follow), and there's no decoy mark to clear.
+  if (isRabidCapture) {
+    const victim = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    const pieces = state.pieces
+      .filter((p) => p !== victim)
+      .map((p) =>
+        p === mover ? { ...p, file: target.file, rank: target.rank } : { ...p },
+      );
+    const capturedType: PieceType | null = victim?.type ?? null;
+    const tempoGain = capturedType ? TEMPO_REWARD[capturedType] ?? 0 : 0;
+    const cleared = clearStatusOnSquare(state, toSq);
+    const relocated = relocateStatusMarkers({ ...state, ...cleared }, fromSq, toSq);
+    return {
+      ...state,
+      ...cleared,
+      ...relocated,
+      pieces,
+      captures: capturedType
+        ? [...state.captures, capturedType]
+        : state.captures,
+      tempo: Math.min(TEMPO_MAX, state.tempo + tempoGain),
     };
   }
 
@@ -374,7 +614,8 @@ function applyAction(
   if (isCapture) {
     return { ...state, pieces: newPieces, status: 'lost' };
   }
-  return { ...state, pieces: newPieces };
+  const relocated = relocateStatusMarkers(state, fromSq, toSq);
+  return { ...state, ...relocated, pieces: newPieces };
 }
 
 /**
@@ -416,8 +657,55 @@ export function stepEnemyTurn(state: BoardState): BoardState {
         decoyTurnsLeft = 0;
       }
     }
+    // Decrement rabies counters; drop entries that have run out or have lost
+    // their piece.
+    const nextRabidSquares: string[] = [];
+    const nextRabidTurnsLeft: Record<string, number> = {};
+    for (const sq of s.rabidSquares) {
+      const here = s.pieces.some((p) => toSquare(p) === sq);
+      if (!here) continue;
+      const left = (s.rabidTurnsLeft[sq] ?? 1) - 1;
+      if (left > 0) {
+        nextRabidSquares.push(sq);
+        nextRabidTurnsLeft[sq] = left;
+      }
+    }
+    // Decrement poison counters; pieces hitting 0 die (counted as a Rookie
+    // capture — tempo + share).
+    let pieces = s.pieces;
+    let captures = s.captures;
+    let tempo = s.tempo;
+    const nextPoisonedSquares: string[] = [];
+    const nextPoisonedTurnsLeft: Record<string, number> = {};
+    for (const sq of s.poisonedSquares) {
+      const victim = s.pieces.find((p) => toSquare(p) === sq);
+      if (!victim) continue;
+      const left = (s.poisonedTurnsLeft[sq] ?? 1) - 1;
+      if (left > 0) {
+        nextPoisonedSquares.push(sq);
+        nextPoisonedTurnsLeft[sq] = left;
+        continue;
+      }
+      pieces = pieces.filter((p) => p !== victim);
+      captures = [...captures, victim.type];
+      tempo = Math.min(TEMPO_MAX, tempo + (TEMPO_REWARD[victim.type] ?? 0));
+      // Strip any other markers on the dying square.
+      const ri = nextRabidSquares.indexOf(sq);
+      if (ri >= 0) {
+        nextRabidSquares.splice(ri, 1);
+        delete nextRabidTurnsLeft[sq];
+      }
+      const fi = nextFrozenSquares.indexOf(sq);
+      if (fi >= 0) {
+        nextFrozenSquares.splice(fi, 1);
+        delete nextFrozenTurnsLeft[sq];
+      }
+    }
     return {
       ...s,
+      pieces,
+      captures,
+      tempo,
       turn: 'rookie',
       enemyMovedSquares: [],
       enemyVacatedSquares: [],
@@ -425,43 +713,18 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       frozenTurnsLeft: nextFrozenTurnsLeft,
       decoyTarget,
       decoyTurnsLeft,
+      poisonedSquares: nextPoisonedSquares,
+      poisonedTurnsLeft: nextPoisonedTurnsLeft,
+      rabidSquares: nextRabidSquares,
+      rabidTurnsLeft: nextRabidTurnsLeft,
     };
   };
-
-  // Decoy: a queued skip token consumes the whole enemy turn. We only burn
-  // ONE token per turn and only when no enemies have acted yet — otherwise a
-  // mid-turn Decoy could erase the second of two enemy moves which is too
-  // strong for an instant.
-  if (
-    (state.skipEnemyTurns ?? 0) > 0 &&
-    state.enemyMovedSquares.length === 0
-  ) {
-    const skipsLeft = (state.skipEnemyTurns ?? 0) - 1;
-    return endTurn({ ...state, skipEnemyTurns: skipsLeft });
-  }
 
   if (state.enemyMovedSquares.length >= budget) return endTurn(state);
 
   const action = chooseEnemyAction(state, exclude);
   if (!action) return endTurn(state);
 
-  // Mirror intercept — kills the attacker before Aegis even fires. Cheaper
-  // for the player than burning an Aegis charge so it goes first.
-  if (action.isCapture) {
-    const mirrored = tryMirrorIntercept(state, action.mover);
-    if (mirrored) {
-      const attackerSquare = coordKey({ file: action.mover.file, rank: action.mover.rank });
-      const withFx: BoardState = {
-        ...mirrored,
-        lastAegisIntercept: {
-          attackerSquare,
-          rookieSquare: toSquare(mirrored.rookie),
-          id: Date.now() + Math.random(),
-        },
-      };
-      return endTurn(withFx);
-    }
-  }
   // Aegis intercept — if Rookie is about to be captured AND she has Aegis
   // charges, fire it instead. Attacker either dies (T5) or is just blocked.
   // (Decoy captures are friendly fire and never trigger Aegis.)

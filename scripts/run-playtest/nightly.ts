@@ -42,8 +42,6 @@ import { join } from 'path';
 import { runSweep } from './sweep';
 import { aggregate } from './aggregate';
 import { runAblation } from './ablation';
-import { runForcedTake } from './forced-take';
-import { runCombos } from './combos';
 import { runAbilityImpact } from './simulate-run';
 import type { AbilityForceMode } from './simulate-run';
 import { generateLevels } from './generate-levels';
@@ -69,9 +67,6 @@ import type { ComboResult, ForcedTakeResult, TierId } from './types';
 interface CliOpts {
   sweepTrials: number;
   ablationTrials: number;
-  forcedTakeTrials: number;
-  comboTrials: number;
-  comboSampleSize: number;
   hypothesesPerNight: number;
   experimentTrials: number;
   quick: boolean;
@@ -79,8 +74,6 @@ interface CliOpts {
   skipFeatures: boolean;
   skipHypotheses: boolean;
   skipAbilityImpact: boolean;
-  enableForcedTake: boolean;
-  enableCombos: boolean;
   // WHY off by default: full level-gen costs ~100 min at 20 trials/cell, well
   // beyond the nightly's ~30 min runtime budget. The cloud-agent triggers
   // this manually via --enable-level-gen on a slower overnight schedule.
@@ -100,9 +93,6 @@ function parseArgs(): CliOpts {
   const opts: CliOpts = {
     sweepTrials: 150,
     ablationTrials: 80,
-    forcedTakeTrials: 60,
-    comboTrials: 30,
-    comboSampleSize: 20,
     hypothesesPerNight: 3,
     experimentTrials: 60,
     quick: false,
@@ -110,8 +100,6 @@ function parseArgs(): CliOpts {
     skipFeatures: false,
     skipHypotheses: false,
     skipAbilityImpact: false,
-    enableForcedTake: false,
-    enableCombos: false,
     enableLevelGen: false,
     levelGenTrials: 20,
     levelGenSeedOffset: 0,
@@ -121,8 +109,6 @@ function parseArgs(): CliOpts {
     abilityImpactTrials: 5,
   };
   let hypothesesExplicit = false;
-  let forcedTakeExplicit = false;
-  let combosExplicit = false;
   let fullMode = false;
   for (const arg of process.argv.slice(2)) {
     if (arg === '--quick') opts.quick = true;
@@ -135,28 +121,10 @@ function parseArgs(): CliOpts {
       opts.abilityImpactRunId = arg.split('=')[1];
     else if (arg.startsWith('--ability-impact-trials='))
       opts.abilityImpactTrials = parseInt(arg.split('=')[1], 10);
-    else if (arg === '--enable-forced-take') {
-      opts.enableForcedTake = true;
-      forcedTakeExplicit = true;
-    } else if (arg === '--disable-forced-take') {
-      opts.enableForcedTake = false;
-      forcedTakeExplicit = true;
-    } else if (arg === '--enable-combos') {
-      opts.enableCombos = true;
-      combosExplicit = true;
-    } else if (arg === '--disable-combos') {
-      opts.enableCombos = false;
-      combosExplicit = true;
-    } else if (arg.startsWith('--sweep-trials='))
+    else if (arg.startsWith('--sweep-trials='))
       opts.sweepTrials = parseInt(arg.split('=')[1], 10);
     else if (arg.startsWith('--ablation-trials='))
       opts.ablationTrials = parseInt(arg.split('=')[1], 10);
-    else if (arg.startsWith('--forced-take-trials='))
-      opts.forcedTakeTrials = parseInt(arg.split('=')[1], 10);
-    else if (arg.startsWith('--combo-trials='))
-      opts.comboTrials = parseInt(arg.split('=')[1], 10);
-    else if (arg.startsWith('--combo-sample-size='))
-      opts.comboSampleSize = parseInt(arg.split('=')[1], 10);
     else if (arg.startsWith('--hypotheses-per-night=')) {
       opts.hypothesesPerNight = parseInt(arg.split('=')[1], 10);
       hypothesesExplicit = true;
@@ -170,23 +138,16 @@ function parseArgs(): CliOpts {
       opts.levelGenSeedOffset = parseInt(arg.split('=')[1], 10);
   }
   if (fullMode) {
-    // Weekly deep dive. Pushes everything on at production trial counts.
     opts.sweepTrials = 200;
     opts.ablationTrials = 120;
-    opts.forcedTakeTrials = 80;
     if (!hypothesesExplicit) opts.hypothesesPerNight = 5;
     opts.experimentTrials = 80;
-    if (!forcedTakeExplicit) opts.enableForcedTake = true;
-    if (!combosExplicit) opts.enableCombos = true;
   }
   if (opts.quick) {
     opts.sweepTrials = 20;
     opts.ablationTrials = 10;
-    opts.forcedTakeTrials = 10;
     if (!hypothesesExplicit) opts.hypothesesPerNight = 1;
     opts.experimentTrials = 10;
-    if (!combosExplicit) opts.enableCombos = false;
-    if (!forcedTakeExplicit) opts.enableForcedTake = false;
   }
   return opts;
 }
@@ -236,59 +197,13 @@ async function main(): Promise<void> {
     caveats.push('Ablation skipped this run (--skip-ablation).');
   }
 
-  // ─── Forced-take ──────────────────────────────────────────────────────
-  // WHY separate from ablation: ablation removes the ability from the offer
-  // pool entirely. Forced-take leaves the pool alone but biases the *pick*.
-  // The combination tells us whether low usage is rational or a blind-spot.
-  let forcedTakeResults: ForcedTakeResult[] = [];
-  if (opts.enableForcedTake) {
-    console.log(
-      `[nightly] forced-take (${opts.forcedTakeTrials} trials × 10 abilities × 2 scenarios)`,
-    );
-    const tF = Date.now();
-    const { results } = runForcedTake({
-      trials: opts.forcedTakeTrials,
-      baselineOutcomes: sweep,
-      onProgress: (s) => console.log(s),
-    });
-    forcedTakeResults = results;
-    writeFileSync(
-      join(rawDir, 'forced-take.json'),
-      JSON.stringify(results, null, 2),
-    );
-    console.log(
-      `[nightly] forced-take done in ${((Date.now() - tF) / 1000).toFixed(1)}s`,
-    );
-  } else {
-    caveats.push('Forced-take skipped this run.');
-  }
-
-  // ─── Pair-combo ───────────────────────────────────────────────────────
-  // Cost-heavy — see combos.ts header. We run on a small representative
-  // level sample by default. Skipped in --quick.
-  let comboResults: ComboResult[] = [];
-  let comboSampledLevels: string[] = [];
-  if (opts.enableCombos) {
-    console.log(
-      `[nightly] combos (${opts.comboTrials} trials × 45 pairs × 3 tiers on ${opts.comboSampleSize}-level sample)`,
-    );
-    const tC = Date.now();
-    const { results, sampledLevelIds } = runCombos({
-      trials: opts.comboTrials,
-      baselineOutcomes: sweep,
-      levelSampleSize: opts.comboSampleSize,
-      onProgress: (s) => console.log(s),
-    });
-    comboResults = results;
-    comboSampledLevels = sampledLevelIds;
-    writeFileSync(
-      join(rawDir, 'combos.json'),
-      JSON.stringify({ sampledLevelIds, results }, null, 2),
-    );
-    console.log(`[nightly] combos done in ${((Date.now() - tC) / 1000).toFixed(1)}s`);
-  } else {
-    caveats.push('Pair-combos skipped this run.');
-  }
+  // Forced-take + pair-combo experiments were retired together with the
+  // candidate-ability batch — they only added value when the team needed to
+  // measure unshipped abilities. The general ablation above covers the
+  // shipped roster.
+  const forcedTakeResults: ForcedTakeResult[] = [];
+  const comboResults: ComboResult[] = [];
+  const comboSampledLevels: string[] = [];
 
   // ─── Ability Impact (run-level) ───────────────────────────────────────
   // The canonical ability ranking. Force-seeds each ability at T3 for the

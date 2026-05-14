@@ -13,7 +13,7 @@ import {
   isLegalRookieMove,
   rookieLegalMoves,
 } from './movement';
-import { offerIsExhausted, rollOffer } from './abilities';
+import { clearStatusOnSquare, offerIsExhausted, rollOffer } from './abilities';
 import { stepEnemyTurn } from './pawn-ai';
 import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
@@ -67,8 +67,13 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
   const targetSq = toSquare(target);
   const clearDecoy = state.decoyTarget && state.decoyTarget === targetSq;
 
+  // If Rookie just captured a poisoned / rabid / frozen piece, drop its
+  // status markers along with the piece itself.
+  const statusOverlay = captured ? clearStatusOnSquare(state, targetSq) : null;
+
   const afterMove: BoardState = {
     ...state,
+    ...(statusOverlay ?? {}),
     rookie: { ...target },
     pieces,
     turn: nextTurn,
