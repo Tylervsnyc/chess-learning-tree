@@ -142,6 +142,16 @@ export interface BoardState {
     id: number;
   };
   /**
+   * Transient signal: set on the state returned from an enemy turn when one
+   * or more poisoned pieces' counters tick to 0 and they die. UI watches `id`
+   * for changes to fire the green-bubble drowning VFX on each death square.
+   * Not cleared by the engine — the UI tracks the last-seen id.
+   */
+  lastPoisonDeath?: {
+    deaths: { square: string; pieceType: PieceType }[];
+    id: number;
+  };
+  /**
    * Instant-ability undo handle. When a transform or Surge resolves we stash
    * the relevant pre-cast values here. Re-tapping the same card BEFORE the
    * next Rookie move restores them (refunding the use). Cleared on any

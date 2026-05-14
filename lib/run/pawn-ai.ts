@@ -677,6 +677,7 @@ export function stepEnemyTurn(state: BoardState): BoardState {
     let tempo = s.tempo;
     const nextPoisonedSquares: string[] = [];
     const nextPoisonedTurnsLeft: Record<string, number> = {};
+    const poisonDeaths: { square: string; pieceType: PieceType }[] = [];
     for (const sq of s.poisonedSquares) {
       const victim = s.pieces.find((p) => toSquare(p) === sq);
       if (!victim) continue;
@@ -689,6 +690,7 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       pieces = pieces.filter((p) => p !== victim);
       captures = [...captures, victim.type];
       tempo = Math.min(TEMPO_MAX, tempo + (TEMPO_REWARD[victim.type] ?? 0));
+      poisonDeaths.push({ square: sq, pieceType: victim.type });
       // Strip any other markers on the dying square.
       const ri = nextRabidSquares.indexOf(sq);
       if (ri >= 0) {
@@ -717,6 +719,10 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       poisonedTurnsLeft: nextPoisonedTurnsLeft,
       rabidSquares: nextRabidSquares,
       rabidTurnsLeft: nextRabidTurnsLeft,
+      lastPoisonDeath:
+        poisonDeaths.length > 0
+          ? { deaths: poisonDeaths, id: Date.now() + Math.random() }
+          : s.lastPoisonDeath,
     };
   };
 

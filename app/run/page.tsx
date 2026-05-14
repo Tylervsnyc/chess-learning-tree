@@ -163,6 +163,24 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [abilityFx]);
 
+  // Poison-death VFX — green bubbles drowning each piece whose poison timer
+  // ticked to 0 this enemy turn.
+  type PoisonDeathFx = NonNullable<BoardState['lastPoisonDeath']>;
+  const [poisonDeathFx, setPoisonDeathFx] = useState<PoisonDeathFx | null>(null);
+  const lastPoisonDeathIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    const sig = state.lastPoisonDeath;
+    if (!sig) return;
+    if (lastPoisonDeathIdRef.current === sig.id) return;
+    lastPoisonDeathIdRef.current = sig.id;
+    setPoisonDeathFx({ ...sig });
+  }, [state.lastPoisonDeath]);
+  useEffect(() => {
+    if (!poisonDeathFx) return;
+    const t = setTimeout(() => setPoisonDeathFx(null), 1100);
+    return () => clearTimeout(t);
+  }, [poisonDeathFx]);
+
   const [levelsCleared, setLevelsCleared] = useState(0);
 
   // Phase flags.
@@ -592,6 +610,7 @@ export default function RookiesRunPage() {
             glitching={glitching}
             aegisFx={aegisFx}
             abilityFx={abilityFx}
+            poisonDeathFx={poisonDeathFx}
             legalAbilityMoves={legalAbilityMoves}
             abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}

@@ -34,6 +34,11 @@ interface BoardProps {
     to: string;
     id: number;
   } | null;
+  /** Transient poison-death VFX — green bubbles drowning each dying piece. */
+  poisonDeathFx?: {
+    deaths: { square: string; pieceType: PieceType }[];
+    id: number;
+  } | null;
   /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
    *  When set, that square gets a magical purple glow. */
   telekinesisTarget?: { file: number; rank: number } | null;
@@ -108,6 +113,7 @@ export function RunBoard({
   glitching = false,
   aegisFx = null,
   abilityFx = null,
+  poisonDeathFx = null,
   telekinesisTarget = null,
   legalAbilityMoves,
   abilityTier,
@@ -703,6 +709,7 @@ export function RunBoard({
         {abilityFx && fxGeom && (
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
         )}
+        {poisonDeathFx && <PoisonDeathLayer fx={poisonDeathFx} />}
         {state.status === 'lost' && (
           <>
             {attackerAtRookie &&
@@ -1145,4 +1152,113 @@ function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
   }
 
   return null;
+}
+
+// Green-bubble drowning VFX for poisoned pieces dying at end-of-turn. For
+// each death square, paints a ghost of the dying piece sinking + desaturating
+// into sickly green, surrounded by rising bubbles and a toxic glow puddle.
+function PoisonDeathLayer({
+  fx,
+}: {
+  fx: { deaths: { square: string; pieceType: PieceType }[]; id: number };
+}) {
+  // Per-bubble offsets — non-uniform so the cluster doesn't read as a grid.
+  // [leftOffset%, delay ms, durMs, sizePct]
+  const BUBBLES: Array<[number, number, number, number]> = [
+    [-22, 0, 900, 12],
+    [-8, 120, 820, 16],
+    [10, 60, 940, 14],
+    [22, 200, 860, 11],
+    [-14, 280, 880, 10],
+    [4, 360, 800, 13],
+    [18, 440, 760, 9],
+  ];
+  const idKey = Math.floor(fx.id);
+  return (
+    <div
+      aria-hidden
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 6 }}
+    >
+      <style>{`
+        @keyframes rrPoisonSink-${idKey} {
+          0%   { transform: translate(-50%, -50%) scale(1);    filter: saturate(1)   hue-rotate(0deg)   brightness(1);   opacity: 1; }
+          40%  { transform: translate(-50%, -40%) scale(0.92); filter: saturate(0.4) hue-rotate(70deg)  brightness(0.85); opacity: 0.9; }
+          100% { transform: translate(-50%, -25%) scale(0.55); filter: saturate(0.2) hue-rotate(110deg) brightness(0.55); opacity: 0; }
+        }
+        @keyframes rrPoisonPuddle-${idKey} {
+          0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+          25%  { transform: translate(-50%, -50%) scale(1);   opacity: 0.85; }
+          100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0; }
+        }
+        @keyframes rrPoisonBubble-${idKey} {
+          0%   { transform: translate(-50%, 30%) scale(0.4); opacity: 0; }
+          15%  { transform: translate(-50%, 10%) scale(0.85); opacity: 0.95; }
+          70%  { transform: translate(-50%, -70%) scale(1.05); opacity: 0.85; }
+          100% { transform: translate(-50%, -110%) scale(0.5); opacity: 0; }
+        }
+      `}</style>
+      {fx.deaths.map((d, i) => {
+        const c = fromSquare(d.square);
+        const cx = (c.file - 1) * 12.5 + 6.25;
+        const cy = (8 - c.rank) * 12.5 + 6.25;
+        const PieceComp =
+          defaultPieces[ENEMY_SPRITE[d.pieceType] as keyof typeof defaultPieces];
+        return (
+          <div key={`${idKey}-${i}`} style={{ position: 'absolute', inset: 0 }}>
+            {/* Toxic puddle wash on the square. */}
+            <div
+              style={{
+                position: 'absolute',
+                left: `${cx}%`,
+                top: `${cy}%`,
+                width: '12%',
+                height: '12%',
+                borderRadius: '50%',
+                background:
+                  'radial-gradient(circle, rgba(132,204,22,0.85) 0%, rgba(101,163,13,0.6) 55%, transparent 80%)',
+                filter: 'blur(2px)',
+                animation: `rrPoisonPuddle-${idKey} 900ms ease-out forwards`,
+              }}
+            />
+            {/* Ghost of the dying piece sinking + going green. */}
+            {PieceComp && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: `${cx}%`,
+                  top: `${cy}%`,
+                  width: '12.5%',
+                  height: '12.5%',
+                  animation: `rrPoisonSink-${idKey} 900ms ease-in forwards`,
+                  transformOrigin: 'center center',
+                }}
+              >
+                <PieceComp />
+              </div>
+            )}
+            {/* Rising bubbles. */}
+            {BUBBLES.map((b, bi) => (
+              <span
+                key={bi}
+                style={{
+                  position: 'absolute',
+                  left: `calc(${cx}% + ${b[0] * 0.05}%)`,
+                  top: `${cy}%`,
+                  width: `${b[3] * 0.35}%`,
+                  height: `${b[3] * 0.35}%`,
+                  borderRadius: '50%',
+                  background:
+                    'radial-gradient(circle at 35% 30%, rgba(236,252,203,0.95) 0%, rgba(163,230,53,0.85) 40%, rgba(101,163,13,0.7) 75%, rgba(77,124,15,0.5) 100%)',
+                  boxShadow:
+                    'inset -1px -2px 3px rgba(63,98,18,0.5), 0 0 4px rgba(132,204,22,0.7)',
+                  animation: `rrPoisonBubble-${idKey} ${b[2]}ms ease-out ${b[1]}ms forwards`,
+                  opacity: 0,
+                }}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
