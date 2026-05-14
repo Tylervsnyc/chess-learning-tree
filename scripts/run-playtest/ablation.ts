@@ -7,7 +7,7 @@
  * Near-zero = ability is dead weight (bots never use it effectively).
  */
 
-import { ALL_ABILITY_IDS } from '../../lib/run/abilities';
+import { SHIPPED_ABILITY_IDS } from '../../lib/run/abilities';
 import type { AbilityId } from '../../lib/run/abilities';
 import { aggregate } from './aggregate';
 import { runSweep } from './sweep';
@@ -41,7 +41,12 @@ export function runAblation(opts: AblationOpts): {
   const results: AblationResult[] = [];
   const rawByAbility: Record<string, Outcome[]> = {};
 
-  for (const ability of ALL_ABILITY_IDS) {
+  // Only ablate SHIPPED abilities — testing candidate abilities here would
+  // (a) tripple the nightly's ablation runtime (32 vs 10 abilities, each a
+  // full sweep) and risk hitting the cloud-agent runtime cap, and (b) the
+  // digest's "Current Abilities Ranked" section is about real-player
+  // abilities. Candidate abilities are measured via ability-impact instead.
+  for (const ability of SHIPPED_ABILITY_IDS) {
     opts.onProgress?.(`[ablation] sweeping without ${ability}`);
     const ablatedOutcomes = runSweep({
       trials: opts.trials,

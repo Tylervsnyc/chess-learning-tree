@@ -19,7 +19,7 @@
  * "low usage" comes from rationality or from bot blind-spot.
  */
 
-import { ALL_ABILITY_IDS } from '../../lib/run/abilities';
+import { SHIPPED_ABILITY_IDS } from '../../lib/run/abilities';
 import type { AbilityId } from '../../lib/run/abilities';
 import { aggregate } from './aggregate';
 import { runSweep } from './sweep';
@@ -51,7 +51,9 @@ export function runForcedTake(opts: ForcedTakeOpts): {
   const rawAccept: Record<string, Outcome[]> = {};
   const rawSkip: Record<string, Outcome[]> = {};
 
-  for (const ability of ALL_ABILITY_IDS) {
+  // Restrict to shipped abilities — testing candidate abilities here adds
+  // 22 sweep-pairs that aren't relevant to the real-player-facing digest.
+  for (const ability of SHIPPED_ABILITY_IDS) {
     opts.onProgress?.(`[forced-take] force-accept ${ability}`);
     const acceptOutcomes = runSweep({
       trials: opts.trials,

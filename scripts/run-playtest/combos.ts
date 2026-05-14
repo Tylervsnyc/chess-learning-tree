@@ -27,7 +27,7 @@
  */
 
 import {
-  ALL_ABILITY_IDS,
+  SHIPPED_ABILITY_IDS,
   maxUsesForTier,
 } from '../../lib/run/abilities';
 import type {
@@ -71,7 +71,7 @@ export function runCombos(opts: ComboOpts): ComboRunResult {
 
   // Solo deltas — pre-own each ability alone, average win-rate on the sample.
   const soloByAbilityTier = new Map<string, number>();
-  for (const id of ALL_ABILITY_IDS) {
+  for (const id of SHIPPED_ABILITY_IDS) {
     opts.onProgress?.(`[combos] solo ${id}`);
     const raw = runSweep({
       trials: opts.trials,
@@ -86,12 +86,12 @@ export function runCombos(opts: ComboOpts): ComboRunResult {
     }
   }
 
-  // Pair deltas — upper triangle only (A < B by ALL_ABILITY_IDS index).
+  // Pair deltas — upper triangle only (A < B by SHIPPED_ABILITY_IDS index).
   const results: ComboResult[] = [];
-  for (let i = 0; i < ALL_ABILITY_IDS.length; i++) {
-    for (let j = i + 1; j < ALL_ABILITY_IDS.length; j++) {
-      const A = ALL_ABILITY_IDS[i];
-      const B = ALL_ABILITY_IDS[j];
+  for (let i = 0; i < SHIPPED_ABILITY_IDS.length; i++) {
+    for (let j = i + 1; j < SHIPPED_ABILITY_IDS.length; j++) {
+      const A = SHIPPED_ABILITY_IDS[i];
+      const B = SHIPPED_ABILITY_IDS[j];
       opts.onProgress?.(`[combos] pair ${A} + ${B}`);
       const raw = runSweep({
         trials: opts.trials,
