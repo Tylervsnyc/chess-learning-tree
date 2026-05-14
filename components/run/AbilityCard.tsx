@@ -43,11 +43,15 @@ interface TierStyle {
 }
 
 /**
- * Art extension per ability id. Most abilities ship a `.webp`; the new dart
- * art is `.png`. Keep this list in sync with what's in `public/abilities/`.
+ * Final art file per ability id. Most abilities ship `{id}-1.webp`; abilities
+ * with multiple AI-generated variants pin to the chosen one explicitly. The
+ * dart-art picker at `/test/dart-art` is the tool used to compare options.
  */
-function artExt(id: AbilityId): 'png' | 'webp' {
-  return id === 'poison-dart' || id === 'rabies-dart' ? 'png' : 'webp';
+function artFile(id: AbilityId): string {
+  if (id === 'poison-dart') return 'poison-dart-2.png';
+  if (id === 'rabies-dart') return 'rabies-dart-2.png';
+  if (id === 'freeze-ray') return 'freeze-ray-2.png';
+  return `${id}-1.webp`;
 }
 
 const TIER: Record<AbilityTier, TierStyle> = {
@@ -326,7 +330,7 @@ export function AbilityCardMini({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${ability.id}-1.${artExt(ability.id)}`}
+            src={`/abilities/${artFile(ability.id)}`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
@@ -451,7 +455,7 @@ export function AbilityCardFull({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${id}-1.${artExt(id)}`}
+            src={`/abilities/${artFile(id)}`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
