@@ -39,6 +39,13 @@ interface BoardProps {
     deaths: { square: string; pieceType: PieceType }[];
     id: number;
   } | null;
+  /** Transient enemy-on-enemy capture VFX — slide attacker fromSq→toSq. */
+  enemyCaptureFx?: {
+    fromSq: string;
+    toSq: string;
+    pieceType: PieceType;
+    id: number;
+  } | null;
   /** Enemy piece currently selected as the telekinesis source (step 1 → 2).
    *  When set, that square gets a magical purple glow. */
   telekinesisTarget?: { file: number; rank: number } | null;
@@ -114,6 +121,7 @@ export function RunBoard({
   aegisFx = null,
   abilityFx = null,
   poisonDeathFx = null,
+  enemyCaptureFx = null,
   telekinesisTarget = null,
   legalAbilityMoves,
   abilityTier,
@@ -140,13 +148,16 @@ export function RunBoard({
       // The attacker on Rookie's square is rendered as a static overlay
       // (below) so the chessboard's piece-animation can't hide it.
       if (state.status === 'lost' && sq === rookieSq) continue;
+      // During a rabid friendly-fire slide, hide the moved piece at its
+      // destination so the overlay's animated slide doesn't double-render.
+      if (enemyCaptureFx && sq === enemyCaptureFx.toSq) continue;
       map[sq] = { pieceType: ENEMY_SPRITE[p.type] };
     }
     if (state.status !== 'lost') {
       map[rookieSq] = { pieceType: rookieSprite };
     }
     return map;
-  }, [state.pieces, rookieSprite, state.status, rookieSq]);
+  }, [state.pieces, rookieSprite, state.status, rookieSq, enemyCaptureFx]);
 
   const wiggleSquares = useMemo(() => {
     if (state.status !== 'playing' || state.turn !== 'rookie') return [];
@@ -710,6 +721,9 @@ export function RunBoard({
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
         )}
         {poisonDeathFx && <PoisonDeathLayer fx={poisonDeathFx} />}
+        {enemyCaptureFx && (
+          <EnemyCaptureSlide fx={enemyCaptureFx} />
+        )}
         {state.status === 'lost' && (
           <>
             {attackerAtRookie &&
@@ -1259,6 +1273,52 @@ function PoisonDeathLayer({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function EnemyCaptureSlide({
+  fx,
+}: {
+  fx: { fromSq: string; toSq: string; pieceType: PieceType; id: number };
+}) {
+  const from = fromSquare(fx.fromSq);
+  const to = fromSquare(fx.toSq);
+  const fromX = (from.file - 1) * 12.5;
+  const fromY = (8 - from.rank) * 12.5;
+  const dx = (to.file - from.file) * 12.5;
+  const dy = -(to.rank - from.rank) * 12.5;
+  const PieceComp =
+    defaultPieces[ENEMY_SPRITE[fx.pieceType] as keyof typeof defaultPieces];
+  const idKey = Math.floor(fx.id);
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 5,
+      }}
+    >
+      <style>{`
+        @keyframes rrEnemyCaptureSlide-${idKey} {
+          0%   { transform: translate(0, 0); }
+          100% { transform: translate(${dx / 12.5 * 100}%, ${dy / 12.5 * 100}%); }
+        }
+      `}</style>
+      <div
+        style={{
+          position: 'absolute',
+          left: `${fromX}%`,
+          top: `${fromY}%`,
+          width: '12.5%',
+          height: '12.5%',
+          animation: `rrEnemyCaptureSlide-${idKey} 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards`,
+        }}
+      >
+        {PieceComp ? <PieceComp /> : null}
+      </div>
     </div>
   );
 }

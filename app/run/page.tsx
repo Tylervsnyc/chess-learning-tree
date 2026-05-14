@@ -181,6 +181,24 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [poisonDeathFx]);
 
+  // Enemy-on-enemy capture VFX — overlay slide of the attacker sprite from
+  // its origin square to the victim's square. Triggered by rabid friendly fire.
+  type EnemyCaptureFx = NonNullable<BoardState['lastEnemyCaptureFx']>;
+  const [enemyCaptureFx, setEnemyCaptureFx] = useState<EnemyCaptureFx | null>(null);
+  const lastEnemyCaptureIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    const sig = state.lastEnemyCaptureFx;
+    if (!sig) return;
+    if (lastEnemyCaptureIdRef.current === sig.id) return;
+    lastEnemyCaptureIdRef.current = sig.id;
+    setEnemyCaptureFx({ ...sig });
+  }, [state.lastEnemyCaptureFx]);
+  useEffect(() => {
+    if (!enemyCaptureFx) return;
+    const t = setTimeout(() => setEnemyCaptureFx(null), 320);
+    return () => clearTimeout(t);
+  }, [enemyCaptureFx]);
+
   const [levelsCleared, setLevelsCleared] = useState(0);
 
   // Phase flags.
@@ -611,6 +629,7 @@ export default function RookiesRunPage() {
             aegisFx={aegisFx}
             abilityFx={abilityFx}
             poisonDeathFx={poisonDeathFx}
+            enemyCaptureFx={enemyCaptureFx}
             legalAbilityMoves={legalAbilityMoves}
             abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}

@@ -571,6 +571,12 @@ function applyAction(state: BoardState, action: EnemyAction): BoardState {
       tempo: Math.min(TEMPO_MAX, state.tempo + tempoGain),
       decoyTarget: null,
       decoyTurnsLeft: 0,
+      lastEnemyCaptureFx: {
+        fromSq,
+        toSq,
+        pieceType: mover.type,
+        id: Date.now() + Math.random(),
+      },
     };
   }
 
@@ -598,6 +604,12 @@ function applyAction(state: BoardState, action: EnemyAction): BoardState {
         ? [...state.captures, capturedType]
         : state.captures,
       tempo: Math.min(TEMPO_MAX, state.tempo + tempoGain),
+      lastEnemyCaptureFx: {
+        fromSq,
+        toSq,
+        pieceType: mover.type,
+        id: Date.now() + Math.random(),
+      },
     };
   }
 

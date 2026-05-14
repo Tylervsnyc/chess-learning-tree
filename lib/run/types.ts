@@ -152,6 +152,18 @@ export interface BoardState {
     id: number;
   };
   /**
+   * Transient signal: set when an enemy piece captures another enemy piece
+   * (rabid friendly-fire or decoy-mark lure). The UI uses it to slide the
+   * attacker sprite from fromSq -> toSq, since the chessboard's built-in diff
+   * treats this as a piece-type swap and snaps.
+   */
+  lastEnemyCaptureFx?: {
+    fromSq: string;
+    toSq: string;
+    pieceType: PieceType;
+    id: number;
+  };
+  /**
    * Instant-ability undo handle. When a transform or Surge resolves we stash
    * the relevant pre-cast values here. Re-tapping the same card BEFORE the
    * next Rookie move restores them (refunding the use). Cleared on any
