@@ -4,8 +4,8 @@ import type { NextConfig } from 'next';
  * Trim what Next traces into serverless lambdas.
  *
  * Why this exists: Vercel caps each lambda at 250 MB uncompressed. Routes that
- * call `process.cwd()` or `spawn()` (e.g. /api/admin/promote-candidate) cause
- * Next's file tracer to conservatively bundle large chunks of the repo —
+ * call `process.cwd()` or `spawn()` cause Next's file tracer to conservatively
+ * bundle large chunks of the repo —
  * including binary assets in `public/` that are only served to the browser via
  * URL and never read server-side. The maia3 ONNX (44 MB), stockfish wasm
  * (7 MB), ort wasm (11 MB), ability art (38 MB), and rookie SFX (11 MB) alone

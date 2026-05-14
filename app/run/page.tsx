@@ -117,15 +117,8 @@ export default function RookiesRunPage() {
   const [puzzle, setPuzzle] = useState<RunPuzzle>(initial.puzzle);
 
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  // Transient bomb VFX — set when detonate resolves, cleared after the anim runs.
-  const [bombFx, setBombFx] = useState<{ file: number; rank: number; id: number } | null>(null);
-  useEffect(() => {
-    if (!bombFx) return;
-    const t = setTimeout(() => setBombFx(null), 650);
-    return () => clearTimeout(t);
-  }, [bombFx]);
   // Per-ability cast VFX — pawn-charge streak / phase-step ghost / leap arc /
-  // freeze-ray beam / detonate throw. Cleared after the matching anim ends.
+  // freeze-ray beam / poison or rabies dart. Cleared after the matching anim ends.
   type AbilityFx = NonNullable<BoardState['lastAbilityFx']>;
   const [abilityFx, setAbilityFx] = useState<AbilityFx | null>(null);
   const lastAbilityFxIdRef = useRef<number | null>(null);
@@ -158,25 +151,17 @@ export default function RookiesRunPage() {
   }, [state.lastAbilityFx]);
   useEffect(() => {
     if (!abilityFx) return;
-    // Duration per kind. Detonate-throw needs to finish before the bomb-flash.
     const durations: Record<AbilityFx['kind'], number> = {
       'pawn-charge': 650,
       'phase-step': 600,
       leap: 700,
       'freeze-ray': 700,
-      detonate: 420,
+      'poison-dart': 900,
+      'rabies-dart': 900,
     };
     const t = setTimeout(() => setAbilityFx(null), durations[abilityFx.kind]);
     return () => clearTimeout(t);
   }, [abilityFx]);
-
-  // Detonate T5 — screenshake the board container briefly.
-  const [shaking, setShaking] = useState(false);
-  useEffect(() => {
-    if (!shaking) return;
-    const t = setTimeout(() => setShaking(false), 420);
-    return () => clearTimeout(t);
-  }, [shaking]);
 
   const [levelsCleared, setLevelsCleared] = useState(0);
 
@@ -381,17 +366,11 @@ export default function RookiesRunPage() {
           return;
         }
 
-        // Targeted (freeze / detonate).
+        // Targeted (freeze ray / poison dart / rabies dart / decoy).
         const next = applyAbilityTargeted(state, state.activeAbility.id, coord);
         if (next !== state) {
           setState(next);
           playCardPlaySound();
-          if (state.activeAbility.id === 'detonate') {
-            const tier = state.abilities.find((a) => a.id === 'detonate')?.tier;
-            // Explosion fires immediately on the target square — no projectile arc.
-            setBombFx({ ...coord, id: Date.now() });
-            if (tier === 5) setShaking(true);
-          }
           trackEvent('run_ability_used', {
             iso: meta.iso,
             level: levelIndex + 1,
@@ -605,28 +584,12 @@ export default function RookiesRunPage() {
           formMovesLeft={state.formMovesLeft}
         />
 
-        <div className={`w-full ${shaking ? 'run-screenshake' : ''}`}>
-          <style>{`
-            @keyframes runScreenshake {
-              0%, 100% { transform: translate(0, 0); }
-              10% { transform: translate(-4px, 2px); }
-              20% { transform: translate(5px, -3px); }
-              30% { transform: translate(-3px, 4px); }
-              40% { transform: translate(4px, 2px); }
-              50% { transform: translate(-2px, -3px); }
-              60% { transform: translate(3px, 3px); }
-              70% { transform: translate(-2px, 1px); }
-              80% { transform: translate(2px, -1px); }
-              90% { transform: translate(-1px, 0); }
-            }
-            .run-screenshake { animation: runScreenshake 420ms ease-out; }
-          `}</style>
+        <div className="w-full">
           <RunBoard
             state={state}
             selectedSquare={selectedSquare}
             dying={dying}
             glitching={glitching}
-            bombFx={bombFx}
             aegisFx={aegisFx}
             abilityFx={abilityFx}
             legalAbilityMoves={legalAbilityMoves}

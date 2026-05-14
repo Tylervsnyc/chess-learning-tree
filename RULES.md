@@ -2663,8 +2663,8 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 - **Page:** `app/run/page.tsx` — single client component, all state.
 - **Engine:** `lib/run/engine.ts` — pure state transitions (Rookie move → enemy move → status check).
 - **Movement:** `lib/run/movement.ts` — legal-move generation per form.
-- **Enemy AI:** `lib/run/pawn-ai.ts` — handles pawn/knight/bishop/queen behavior.
-- **Cards:** `lib/run/cards.ts` — Bomb, Freeze, Telekinesis card defs.
+- **Enemy AI:** `lib/run/pawn-ai.ts` — handles pawn/knight/bishop/queen behavior + rabid-piece overrides + per-turn ticks for freeze/poison/rabies/decoy timers.
+- **Abilities:** `lib/run/abilities.ts` — 12 shipped ability defs, tier ladders, activation/resolution. Tempo fills → offer rolls → permanent for the run.
 - **Runs:** `lib/run/runs.ts` — `RUNS` array: Daily Climb + 5 themed runs (Knight Academy, Bishop's Path, Speed Demon, Hazard Maze, Boss Gauntlet). Each is 10 levels.
 - **Daily levels:** `lib/run/daily-levels.ts` — the 10 Daily Climb level builders (`DAILY_LEVELS`). Imported by `runs.ts` only.
 - **Seed:** `lib/run/seed.ts` — deterministic per-date PRNG → Rookie's starting file (b–g).
@@ -2678,6 +2678,10 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 - **Move limit is optional per level.** When set, the TempoBar counts down. Run out → fail level.
 - **Run progression:** completing a run advances `currentRunId` in localStorage and the SummaryModal shows a "Next Run" CTA cycling through `RUNS`.
 - **Ghost-blocker rule (fair-play, enemies-per-turn ≥ 2):** When multiple enemies move in one turn, every enemy after the first treats the *original* squares of pieces that already moved this turn as still occupied. No slider can pass through them, no knight can land on them, no pawn can advance into them. The player only ever needs to plan from the board they saw at the start of the turn. Tracked in `BoardState.enemyVacatedSquares`, cleared when control returns to Rookie.
+- **Shipped abilities (12):** bishop-step, knight-hop, queen-pulse, pawn-charge, freeze-ray, poison-dart, rabies-dart, phase-step, leap, surge, aegis, decoy. The 22 candidate abilities (queenkiller + 21 from the 2026-05-13 batch) and `detonate` were removed on 2026-05-14 — do not re-introduce. New abilities ship from `ABILITY_DEFS` straight into `SHIPPED_ABILITY_IDS` (which is now an alias for `ALL_ABILITY_IDS`).
+- **Line-of-sight rule (dart abilities):** Freeze Ray, Poison Dart, and Rabies Dart can only target enemies Rookie can currently *see* — i.e. an enemy that sits on a square in `rookieLegalMoves(state)` for her current form. Rays stop at the first piece, so a piece behind a blocker is not a legal dart target. If Rookie transforms, her sight changes (knight = L-squares, bishop = diagonals, queen = everything). Computed via `visibleEnemySquares(state)`.
+- **Status markers travel with the piece.** Poisoned, rabid, and frozen entries are keyed by algebraic square. When a piece moves the marker follows (`relocateStatusMarkers`); when a piece dies the marker clears (`clearStatusOnSquare`). End-of-enemy-turn ticks each timer down by 1; poisoned pieces hitting 0 die and grant tempo as a normal capture; rabid pieces hitting 0 revert to normal AI.
+- **Rabid action priority:** A rabid piece, on its turn, tries to capture the nearest entity (Rookie + every other enemy). On Chebyshev ties the biggest piece wins (Rookie counts as queen-tier). If no capture is reachable this turn it approaches the top-priority target with a non-capture move. Rabid pieces are picked *before* normal Rookie-capture priority in `chooseEnemyAction`. Rabid-on-friendly is friendly fire — the victim dies, Rookie banks the capture (tempo + share), the rabid piece keeps its mark.
 
 ### Files / dirs that should NOT exist (cleaned up 2026-05-12)
 - ~~`components/run/levels/`~~ — moved to `lib/run/daily-levels.ts`.

@@ -6,6 +6,7 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { RookieCell } from './RookieCell';
 import { rookieLegalMoves } from '@/lib/run/movement';
 import { nextEnemyMovers } from '@/lib/run/pawn-ai';
+import { visibleEnemySquares } from '@/lib/run/abilities';
 import type { AbilityTier } from '@/lib/run/abilities';
 import type { BoardState, Coord, PieceType, RookieForm } from '@/lib/run/types';
 import { fromSquare, toSquare } from '@/lib/run/types';
@@ -18,13 +19,17 @@ interface BoardProps {
   dying?: boolean;
   /** True briefly after Rookie's form changes — plays the glitch effect. */
   glitching?: boolean;
-  /** Transient bomb VFX — set when bomb resolves, cleared after the anim. */
-  bombFx?: { file: number; rank: number; id: number } | null;
   /** Transient Aegis VFX — attacker lunges at Rookie then bounces back. */
   aegisFx?: { attackerSquare: string; rookieSquare: string; id: number } | null;
-  /** Transient per-ability cast VFX (charge / phase / leap / freeze / detonate). */
+  /** Transient per-ability cast VFX (charge / phase / leap / dart casts). */
   abilityFx?: {
-    kind: 'pawn-charge' | 'phase-step' | 'leap' | 'freeze-ray' | 'detonate';
+    kind:
+      | 'pawn-charge'
+      | 'phase-step'
+      | 'leap'
+      | 'freeze-ray'
+      | 'poison-dart'
+      | 'rabies-dart';
     from: string;
     to: string;
     id: number;
@@ -101,7 +106,6 @@ export function RunBoard({
   selectedSquare,
   dying = false,
   glitching = false,
-  bombFx = null,
   aegisFx = null,
   abilityFx = null,
   telekinesisTarget = null,
@@ -210,6 +214,28 @@ export function RunBoard({
       }
     }
 
+    // Dart-style abilities (freeze ray, poison dart, rabies dart) highlight
+    // every enemy Rookie can currently SEE — line-of-sight per current form.
+    const activeId = state.activeAbility?.id;
+    const isDartActive =
+      activeId === 'freeze-ray' ||
+      activeId === 'poison-dart' ||
+      activeId === 'rabies-dart';
+    if (isDartActive && state.activeAbility?.step === 'pick-enemy') {
+      const color = ABILITY_TIER_DOT[(abilityTier ?? 1) as AbilityTier];
+      for (const c of visibleEnemySquares(state)) {
+        const sq = toSquare(c);
+        const prev = styles[sq] ?? {};
+        const ring = `radial-gradient(circle, transparent 58%, ${color} 58% 68%, transparent 68%)`;
+        styles[sq] = {
+          ...prev,
+          backgroundImage: prev.backgroundImage
+            ? `${ring}, ${prev.backgroundImage}`
+            : ring,
+        };
+      }
+    }
+
     // Aegis shield — light-blue inset ring + wash on Rookie's square whenever
     // her shield is currently raised. Layered with whatever's already on that
     // square (e.g. selection ring).
@@ -251,6 +277,30 @@ export function RunBoard({
       };
     }
 
+    // Poisoned-piece highlight — sickly green wash with diagonal hatch.
+    for (const sq of state.poisonedSquares) {
+      styles[sq] = {
+        ...styles[sq],
+        backgroundColor: 'rgba(132, 204, 22, 0.4)',
+        backgroundImage:
+          'repeating-linear-gradient(45deg, rgba(101, 163, 13, 0.55) 0 3px, transparent 3px 9px)',
+        boxShadow: 'inset 0 0 0 2px rgba(101, 163, 13, 0.95)',
+      };
+    }
+
+    // Rabid-piece highlight — angry crimson wash with a vibrating ring.
+    for (const sq of state.rabidSquares) {
+      styles[sq] = {
+        ...styles[sq],
+        backgroundColor: 'rgba(220, 38, 38, 0.45)',
+        backgroundImage:
+          'repeating-linear-gradient(135deg, rgba(127, 29, 29, 0.5) 0 2px, transparent 2px 6px)',
+        boxShadow:
+          'inset 0 0 0 3px rgba(220, 38, 38, 1), inset 0 0 16px rgba(248, 113, 113, 0.85)',
+        animation: 'rookiesRunRabidPulse 0.7s ease-in-out infinite',
+      };
+    }
+
     // 8th-rank "level cleared" gold blaze.
     if (state.status === 'won') {
       for (let f = 1; f <= 8; f++) {
@@ -265,10 +315,6 @@ export function RunBoard({
 
     return styles;
   }, [state, selectedSquare, legalAbilityMoves, abilityTier]);
-
-  const bombSquare = bombFx
-    ? toSquare({ file: bombFx.file, rank: bombFx.rank })
-    : null;
 
   const telekinesisSquare = telekinesisTarget
     ? toSquare({ file: telekinesisTarget.file, rank: telekinesisTarget.rank })
@@ -408,16 +454,13 @@ export function RunBoard({
           0%, 100% { opacity: 0.55; }
           50%      { opacity: 0.85; }
         }
-        @keyframes rookiesRunBombFlash {
-          0%   { transform: scale(0.3); opacity: 1; box-shadow: 0 0 0 0 rgba(255,180,40,0.95), 0 0 0 0 rgba(255,80,20,0.8); }
-          30%  { transform: scale(1.8); opacity: 1;   box-shadow: 0 0 50px 20px rgba(255,180,40,0.95), 0 0 100px 32px rgba(255,80,20,0.6); }
-          60%  { transform: scale(2.2); opacity: 0.85; box-shadow: 0 0 60px 28px rgba(255,140,20,0.7),  0 0 120px 48px rgba(255,80,20,0.35); }
-          100% { transform: scale(2.8); opacity: 0;   box-shadow: 0 0 80px 60px rgba(255,80,20,0); }
-        }
-        @keyframes rookiesRunBombRing {
-          0%   { transform: scale(0.5); opacity: 0.95; border-width: 6px; }
-          70%  { transform: scale(2.4); opacity: 0.4;  border-width: 3px; }
-          100% { transform: scale(3.0); opacity: 0;    border-width: 1px; }
+        @keyframes rookiesRunRabidPulse {
+          0%, 100% {
+            box-shadow: inset 0 0 0 3px rgba(220, 38, 38, 1), inset 0 0 16px rgba(248, 113, 113, 0.85);
+          }
+          50% {
+            box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 1), inset 0 0 24px rgba(252, 165, 165, 1);
+          }
         }
         @keyframes rookiesRunTkPulse {
           0%, 100% { box-shadow: inset 0 0 0 3px rgba(168, 85, 247, 0.95), inset 0 0 24px rgba(217, 70, 239, 0.55); background-color: rgba(168, 85, 247, 0.22); }
@@ -534,34 +577,6 @@ export function RunBoard({
           )
           .join('\n')}
       `}</style>
-      {bombSquare && (
-        <style key={bombFx?.id}>{`
-          [data-square="${bombSquare}"] {
-            position: relative;
-          }
-          [data-square="${bombSquare}"]::after {
-            content: '';
-            position: absolute;
-            inset: -10%;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,220,80,0.95) 25%, rgba(255,140,20,0.85) 55%, rgba(220,40,10,0.5) 75%, transparent 90%);
-            pointer-events: none;
-            z-index: 6;
-            animation: rookiesRunBombFlash 720ms cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
-          }
-          [data-square="${bombSquare}"]::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 6px solid rgba(255,200,80,0.95);
-            box-shadow: 0 0 20px rgba(255,140,20,0.85), inset 0 0 12px rgba(255,200,80,0.6);
-            pointer-events: none;
-            z-index: 7;
-            animation: rookiesRunBombRing 720ms cubic-bezier(0.2, 0.7, 0.4, 1) forwards;
-          }
-        `}</style>
-      )}
       {aegisLunge && (
         <style key={aegisLunge.id}>{`
           @keyframes rookiesRunAegisLunge-${Math.floor(aegisLunge.id)} {
@@ -1047,8 +1062,87 @@ function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
     );
   }
 
-  // Detonate has no overlay arc — the explosion flash on the target square
-  // (rendered separately, keyed by bombFx) is the whole effect.
+  if (fx.kind === 'poison-dart' || fx.kind === 'rabies-dart') {
+    // Thin arrow streak from origin to target + a small impact burst on the
+    // target. Colour & burst differ between poison (sickly green) and rabies
+    // (angry red).
+    const isPoison = fx.kind === 'poison-dart';
+    const stroke = isPoison ? '#65a30d' : '#dc2626';
+    const head = isPoison ? '#bef264' : '#fca5a5';
+    const haze = isPoison
+      ? 'rgba(132, 204, 22, 0.55)'
+      : 'rgba(220, 38, 38, 0.65)';
+    const burstGrad = isPoison
+      ? 'radial-gradient(circle, rgba(190,242,100,1) 0%, rgba(132,204,22,0.85) 40%, transparent 80%)'
+      : 'radial-gradient(circle, rgba(252,165,165,1) 0%, rgba(220,38,38,0.85) 40%, transparent 80%)';
+    return (
+      <div
+        key={fx.id}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <style>{`
+          @keyframes rrFxDartShaft-${Math.floor(fx.id)} {
+            0%   { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(0); opacity: 1; }
+            55%  { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 1; }
+            100% { transform: translate(0, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 0; }
+          }
+          @keyframes rrFxDartHead-${Math.floor(fx.id)} {
+            0%   { left: ${fromX}%; top: ${fromY}%; transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+            70%  { left: ${toX}%;   top: ${toY}%;   transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+            100% { left: ${toX}%;   top: ${toY}%;   transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+          }
+          @keyframes rrFxDartBurst-${Math.floor(fx.id)} {
+            0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+          }
+        `}</style>
+        <div
+          style={{
+            position: 'absolute',
+            left: `${fromX}%`,
+            top: `${fromY}%`,
+            width: `${length}%`,
+            height: '2%',
+            transformOrigin: '0% 50%',
+            background: `linear-gradient(90deg, ${haze} 0%, ${stroke} 50%, ${head} 100%)`,
+            filter: `drop-shadow(0 0 5px ${haze})`,
+            animation: `rrFxDartShaft-${Math.floor(fx.id)} 500ms ease-out forwards`,
+            borderRadius: '999px',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            width: '7%',
+            height: '7%',
+            borderRadius: '50%',
+            background: head,
+            filter: `drop-shadow(0 0 6px ${stroke})`,
+            animation: `rrFxDartHead-${Math.floor(fx.id)} 500ms ease-out forwards`,
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            left: `${toX}%`,
+            top: `${toY}%`,
+            width: '18%',
+            height: '18%',
+            borderRadius: '50%',
+            background: burstGrad,
+            animation: `rrFxDartBurst-${Math.floor(fx.id)} 380ms ease-out 380ms forwards`,
+            opacity: 0,
+          }}
+        />
+      </div>
+    );
+  }
 
   return null;
 }

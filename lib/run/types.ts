@@ -78,6 +78,25 @@ export interface BoardState {
   decoyTarget: string | null;
   /** Remaining enemy turns the decoy mark stays active. */
   decoyTurnsLeft: number;
+  /**
+   * Poisoned-piece squares (algebraic). On each enemy turn, every poisoned
+   * square ticks down; when its counter hits 0 the piece dies (counted as a
+   * capture for tempo / share). Moving a poisoned piece carries the poison
+   * to its new square.
+   */
+  poisonedSquares: string[];
+  /** Remaining enemy turns until each poisoned square's piece dies. */
+  poisonedTurnsLeft: Record<string, number>;
+  /**
+   * Rabid-piece squares (algebraic). A rabid piece, on its turn, tries to
+   * capture the nearest living thing (Rookie or any enemy). On Chebyshev
+   * ties, picks the biggest piece. If nothing is reachable to capture this
+   * turn, it approaches the nearest target instead. Rabies ticks down each
+   * enemy turn; on 0 the piece reverts to normal AI.
+   */
+  rabidSquares: string[];
+  /** Remaining enemy turns each rabid square stays rabid. */
+  rabidTurnsLeft: Record<string, number>;
   /** Permanent abilities Rookie has accrued this run. */
   abilities: OwnedAbility[];
   /** When the tempo meter fills, the player is offered 3 ability choices. */
@@ -100,16 +119,6 @@ export interface BoardState {
    */
   shieldUp: boolean;
   /**
-   * Mirror flag — when set, the next intercepted capture kills the attacker
-   * (like Aegis T5) even if Aegis isn't owned. Single-shot per cast.
-   */
-  mirrorUp?: boolean;
-  /**
-   * Decoy counter — enemy turns to skip before resuming normal play. Decoy
-   * adds to this; `stepEnemyTurn` drains 1 per fired turn and short-circuits.
-   */
-  skipEnemyTurns?: number;
-  /**
    * Transient signal: set on the state returned from an enemy step when Aegis
    * intercepts a capture. UI watches `id` for changes to fire the lunge-and-
    * bounce VFX. Not cleared by the engine — the UI tracks the last-seen id.
@@ -118,10 +127,16 @@ export interface BoardState {
   /**
    * Transient signal: set when a Rookie ability resolves so the UI can fire
    * the matching cast VFX (charge streak / phase ghost / leap arc / freeze
-   * beam / detonate throw). UI tracks the last-seen id.
+   * dart / poison dart / rabies dart). UI tracks the last-seen id.
    */
   lastAbilityFx?: {
-    kind: 'pawn-charge' | 'phase-step' | 'leap' | 'freeze-ray' | 'detonate';
+    kind:
+      | 'pawn-charge'
+      | 'phase-step'
+      | 'leap'
+      | 'freeze-ray'
+      | 'poison-dart'
+      | 'rabies-dart';
     from: string;
     to: string;
     id: number;

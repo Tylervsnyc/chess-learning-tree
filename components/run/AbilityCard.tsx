@@ -42,6 +42,18 @@ interface TierStyle {
   foil: boolean;
 }
 
+/**
+ * Final art file per ability id. Most abilities ship `{id}-1.webp`; abilities
+ * with multiple AI-generated variants pin to the chosen one explicitly. The
+ * dart-art picker at `/test/dart-art` is the tool used to compare options.
+ */
+function artFile(id: AbilityId): string {
+  if (id === 'poison-dart') return 'poison-dart-2.png';
+  if (id === 'rabies-dart') return 'rabies-dart-2.png';
+  if (id === 'freeze-ray') return 'freeze-ray-2.png';
+  return `${id}-1.webp`;
+}
+
 const TIER: Record<AbilityTier, TierStyle> = {
   1: {
     border:
@@ -148,13 +160,22 @@ function AbilityIcon({ id, size }: { id: AbilityId; size: number }) {
           <path d="M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3" />
         </svg>
       );
-    case 'detonate':
-      // bomb
+    case 'poison-dart':
+      // arrow with droplet head
       return (
         <svg {...props}>
-          <circle cx="11" cy="14" r="7" />
-          <path d="M16 9l3-3M19 6l1-3 3-1-1 3-3 1" />
-          <path d="M9 11a4 4 0 0 1 3-2" />
+          <path d="M3 21L17 7" />
+          <path d="M17 7l-4 0 0 4" />
+          <path d="M19 4c1.5 1.5 1.5 4 0 5.5s-4 1.5-5.5 0 0-4 1.5-5.5L17 1.5z" />
+        </svg>
+      );
+    case 'rabies-dart':
+      // arrow with fang head
+      return (
+        <svg {...props}>
+          <path d="M3 21L18 6" />
+          <path d="M18 6l-4 0 0 4" />
+          <path d="M14 4l3 3 3-3 1 3-3 1-3-1z" />
         </svg>
       );
     case 'phase-step':
@@ -309,7 +330,7 @@ export function AbilityCardMini({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${ability.id}-1.webp`}
+            src={`/abilities/${artFile(ability.id)}`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
@@ -434,7 +455,7 @@ export function AbilityCardFull({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${id}-1.webp`}
+            src={`/abilities/${artFile(id)}`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
