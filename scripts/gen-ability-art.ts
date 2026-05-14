@@ -48,7 +48,12 @@ const SPECS: Spec[] = [
   {
     id: 'freeze-ray',
     variants: [
+      // 1 — original snowflake (already shipped)
       'A magnificent ornate snowflake-shaped crystalline relic centered in frame, six radiating arms of carved sapphire and pale-blue crystal edged with delicate silver and gold filigree, each arm tipped with a faceted diamond, an enormous glowing icy-blue sapphire at the center radiating cold light, frost patterns and shimmer throughout, deep painted midnight-navy velvet background, ' + RELIC_STYLE + '.',
+      // 2 — frost pistol relic
+      'A magnificent ornate jeweled flintlock-style pistol relic centered in frame, clearly recognizable as a fantasy gun with a long barrel, grip, hammer, and trigger guard, the entire body sculpted from polished silver and platinum filigree with intricate baroque scrollwork covering every surface, the long octagonal barrel made of carved translucent sapphire crystal radiating internal icy-blue glow with frost rime creeping along its length, the muzzle a jagged starburst of carved-diamond icicle shards bristling outward, an enormous faceted pale-cyan diamond set into the side of the barrel like a power-core radiating beams of cold light, the curved pistol grip carved from deep-blue lapis inlaid with seed pearls and tiny aquamarine gems in fleur-de-lis patterns, the trigger guard and hammer dripping with delicate gold filigree curls and tipped with sapphire cabochons, frost-fern patterns etched into the breech, tiny snowflakes drifting from the muzzle, deep painted midnight-indigo velvet background with subtle silver dust shimmer, ' + RELIC_STYLE + '.',
+      // 3 — frozen orb amulet
+      'A magnificent ornate frozen-orb amulet relic centered in frame, a perfect spherical pendant of clear glacial crystal with a swirling living blizzard trapped inside, the orb cradled in an ornate silver-and-platinum filigree mount shaped like four icy claws each tipped with a faceted aquamarine, an enormous central pale-blue diamond set into the top of the mount radiating beams of cold light, frost rime spreading outward from the orb across the velvet, tiny ice crystals scattered throughout, deep painted midnight-indigo velvet background with subtle silver dust shimmer, ' + RELIC_STYLE + '.',
     ],
   },
   {
@@ -78,12 +83,27 @@ const SPECS: Spec[] = [
   {
     id: 'decoy',
     variants: [
-      // A — Bullseye Lure relic
-      'A magnificent ornate jeweled bullseye-target relic centered in frame, concentric carved rings of gold filigree and inset gemstones (outer ruby ring, sapphire ring, emerald ring, topaz ring) forming a perfect target pattern, an enormous central ruby cabochon glowing with hypnotic crimson light at the bullseye, four crossed ornamental arrows of gold and crystal piercing the rings diagonally at 45 degrees, scrollwork and seed pearls throughout the border, deep painted blood-crimson velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
-      // B — Masked Imposter relic
+      // Shipped: jester half-mask. Bullseye + idol concept art archived
+      // under public/abilities/concepts/ for reuse on future abilities.
       'A magnificent ornate jeweled theatrical jester half-mask relic centered in frame, an elaborate gold filigree mask with two empty eye-holes glowing with violet enchantment, ornate scrollwork curling outward like fool\'s-cap points each tipped with a faceted amethyst, a small ruby tear at one eye and a sapphire tear at the other, seed pearls outlining the lips, mischievous magical purple wisps curling around the mask, deep painted twilight-violet velvet background with floating gold sparkles, ' + RELIC_STYLE + '.',
-      // C — Glowing Idol relic
-      'A magnificent ornate jeweled golden idol relic centered in frame, a tall slender stylized chess-piece-shaped idol of polished mirror-bright gold standing on an ornate filigree pedestal, the idol\'s body inset with vertical bands of ruby and emerald gems, an enormous radiant diamond at the idol\'s crown radiating beams of light outward in all directions, four small kneeling silhouette pieces drawn toward it at the base, scrollwork and gold inlay throughout, deep painted shrine-gold and umber velvet background, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
+    id: 'poison-dart',
+    variants: [
+      // A — Emerald serpent dart
+      'A magnificent ornate jeweled dart relic centered in frame, a slender ornate gold-filigree dart with a barbed needle-tip of carved emerald crystal dripping with luminous viridian-green venom, the shaft inlaid with three faceted peridot gems and wrapped in twisting serpentine scrollwork, ornate gold fletching at the tail shaped like curling poisonous leaves, sickly green wisps and droplets of glowing toxin curling around the blade, deep painted swamp-emerald velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+      // B — Apothecary vial-tipped dart
+      'A magnificent ornate jeweled dart relic centered in frame, an ornate gold-filigree dart with a slim crystal apothecary vial built into the shaft glowing with swirling chartreuse poison, the needle-tip a carved black-onyx fang weeping a single luminous green droplet, ornate skull-and-vine scrollwork around the vial setting, fletching of carved jade leaves tipped with tiny topaz thorns, faint phosphorescent green mist drifting from the tip, deep painted blackened forest-green velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
+    id: 'rabies-dart',
+    variants: [
+      // A — Foaming fang dart
+      'A magnificent ornate jeweled dart relic centered in frame, a slender ornate gold-filigree dart with a savage barbed fang-tip of carved blood-red ruby crystal dripping with frothing crimson-and-white foam, the shaft inlaid with three faceted garnet gems and wrapped in snarling beast-fang scrollwork, ornate gold fletching at the tail shaped like jagged feral claws, wild crimson wisps and droplets of frothing rabid foam curling around the blade, deep painted blood-crimson and bone-ivory velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+      // B — Wolf-skull dart
+      'A magnificent ornate jeweled dart relic centered in frame, an ornate gold-filigree dart with a stylized snarling wolf-skull head forged into the base of the shaft, the needle-tip a curved carved bone fang stained crimson and slick with foaming saliva, two glowing ruby eyes set into the wolf-skull, the shaft wrapped in tangled bramble-thorn scrollwork inlaid with garnets, fletching of ragged carved bone shards, frothing pink-white spittle and wild crimson wisps curling from the fang, deep painted moonlit-crimson and ashen-grey velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
     ],
   },
   {
