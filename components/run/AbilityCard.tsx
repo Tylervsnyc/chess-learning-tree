@@ -14,6 +14,7 @@
  * uses the `.foil-card` class from globals.css.
  */
 
+import { useRef, useState } from 'react';
 import type {
   AbilityId,
   AbilityTier,
@@ -281,13 +282,53 @@ export function AbilityCardMini({
   const t = TIER[ability.tier];
   const disabled = ability.usesLeftThisLevel === 0 && ability.tier !== 5;
   const max = Math.max(1, maxUsesDisplay(ability));
+  const blurb = blurbForTier(ability.id, ability.tier);
+
+  // Peek = card-flip explainer. Hover on desktop, long-press (~400ms) on
+  // touch. Long-press also suppresses the next click so reading doesn't
+  // burn a use.
+  const [peeking, setPeeking] = useState(false);
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressedRef = useRef(false);
+
+  const clearPress = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+  const startPress = () => {
+    longPressedRef.current = false;
+    clearPress();
+    pressTimer.current = setTimeout(() => {
+      longPressedRef.current = true;
+      setPeeking(true);
+    }, 400);
+  };
+  const endPress = () => {
+    clearPress();
+    if (longPressedRef.current) setPeeking(false);
+  };
+  const handleClick = () => {
+    if (longPressedRef.current) {
+      longPressedRef.current = false;
+      return;
+    }
+    onClick();
+  };
 
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
+      onPointerDown={startPress}
+      onPointerUp={endPress}
+      onPointerLeave={endPress}
+      onPointerCancel={endPress}
+      onMouseEnter={() => setPeeking(true)}
+      onMouseLeave={() => setPeeking(false)}
       disabled={disabled}
-      title={`${def.name} — ${blurbForTier(ability.id, ability.tier)}`}
+      aria-label={`${def.name} — ${blurb}`}
       className={`relative snap-start shrink-0 group ${
         active ? 'ability-card-active' : ''
       } ${flashing ? 'ability-card-flash' : ''} ${
@@ -296,70 +337,149 @@ export function AbilityCardMini({
       style={{
         width: 64,
         aspectRatio: '5 / 7',
-        background: t.border,
         borderRadius: 7,
-        padding: 2,
-        boxShadow: t.halo ? `${t.halo}, 0 1px 3px rgba(0,0,0,0.25)` : '0 1px 3px rgba(0,0,0,0.25)',
+        background: 'transparent',
+        perspective: '600px',
+        boxShadow: 'none',
+        WebkitTapHighlightColor: 'transparent',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        touchAction: 'manipulation',
       }}
     >
       <div
-        className={`relative w-full h-full rounded-[5px] flex flex-col overflow-hidden ${
-          t.foil ? 'foil-card' : ''
-        }`}
+        className="relative w-full h-full"
         style={{
-          background: t.foil ? undefined : t.face,
-          color: t.text,
+          transformStyle: 'preserve-3d',
+          transform: peeking ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transition: 'transform 360ms cubic-bezier(0.4, 0.2, 0.2, 1)',
         }}
       >
-        {/* Name banner */}
+        {/* FRONT FACE */}
         <div
-          className="text-[7.5px] font-black uppercase leading-tight tracking-[0.04em] px-1 pt-[3px] pb-[2px] truncate text-center"
-          style={{ letterSpacing: '0.04em' }}
-        >
-          {def.name}
-        </div>
-
-        {/* Art window */}
-        <div
-          className="mx-[3px] rounded-[3px] overflow-hidden"
+          className="absolute inset-0"
           style={{
-            background: t.art,
-            height: '64%',
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.25)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            background: t.border,
+            borderRadius: 7,
+            padding: 2,
+            boxShadow: t.halo ? `${t.halo}, 0 1px 3px rgba(0,0,0,0.25)` : '0 1px 3px rgba(0,0,0,0.25)',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/abilities/${artFile(ability.id)}`}
-            alt=""
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-        </div>
-
-        {/* Footer: uses pips + tier gem */}
-        <div className="flex-1 flex items-end justify-between px-[3px] pb-[3px] pt-[2px]">
-          <UsesPips
-            uses={ability.usesLeftThisLevel}
-            max={max}
-            color={t.gem}
-          />
-          <span
-            className="text-[7px] font-black"
+          <div
+            className={`relative w-full h-full rounded-[5px] flex flex-col overflow-hidden ${
+              t.foil ? 'foil-card' : ''
+            }`}
             style={{
-              color: t.gem,
-              width: 9,
-              height: 9,
-              borderRadius: 999,
-              border: `1px solid ${t.gem}`,
-              lineHeight: '7px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              background: t.foil ? undefined : t.face,
+              color: t.text,
             }}
           >
-            {ability.tier}
-          </span>
+            {/* Name banner */}
+            <div
+              className="text-[7.5px] font-black uppercase leading-tight tracking-[0.04em] px-1 pt-[3px] pb-[2px] truncate text-center"
+              style={{ letterSpacing: '0.04em' }}
+            >
+              {def.name}
+            </div>
+
+            {/* Art window */}
+            <div
+              className="mx-[3px] rounded-[3px] overflow-hidden"
+              style={{
+                background: t.art,
+                height: '64%',
+                boxShadow: 'inset 0 0 6px rgba(0,0,0,0.25)',
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/abilities/${artFile(ability.id)}`}
+                alt=""
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+            </div>
+
+            {/* Footer: uses pips + tier gem */}
+            <div className="flex-1 flex items-end justify-between px-[3px] pb-[3px] pt-[2px]">
+              <UsesPips
+                uses={ability.usesLeftThisLevel}
+                max={max}
+                color={t.gem}
+              />
+              <span
+                className="text-[7px] font-black"
+                style={{
+                  color: t.gem,
+                  width: 9,
+                  height: 9,
+                  borderRadius: 999,
+                  border: `1px solid ${t.gem}`,
+                  lineHeight: '7px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {ability.tier}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* BACK FACE — explainer */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            background: t.border,
+            borderRadius: 7,
+            padding: 2,
+            boxShadow: t.halo ? `${t.halo}, 0 1px 3px rgba(0,0,0,0.25)` : '0 1px 3px rgba(0,0,0,0.25)',
+          }}
+        >
+          <div
+            className="relative w-full h-full rounded-[5px] flex flex-col overflow-hidden"
+            style={{
+              background: t.foil ? '#fff7e3' : t.face,
+              color: t.text,
+            }}
+          >
+            <div
+              className="text-[7.5px] font-black uppercase leading-tight tracking-[0.04em] px-1 pt-[3px] pb-[2px] truncate text-center"
+              style={{ letterSpacing: '0.04em', borderBottom: `1px solid ${t.gem}33` }}
+            >
+              {def.name}
+            </div>
+            <div
+              className="flex-1 px-[4px] py-[3px] text-[6.5px] leading-[1.25] font-medium text-center"
+              style={{ color: t.text, hyphens: 'auto' }}
+            >
+              {blurb}
+            </div>
+            <div className="flex items-end justify-end px-[3px] pb-[3px]">
+              <span
+                className="text-[7px] font-black"
+                style={{
+                  color: t.gem,
+                  width: 9,
+                  height: 9,
+                  borderRadius: 999,
+                  border: `1px solid ${t.gem}`,
+                  lineHeight: '7px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {ability.tier}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </button>
