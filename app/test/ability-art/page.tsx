@@ -67,7 +67,7 @@ function Card({
         <div className="relative w-full" style={{ aspectRatio: '1 / 1' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${abilityId}-${variant}.png`}
+            src={`/abilities/${abilityId}-${variant}.webp`}
             alt={`${name} option ${variant}`}
             className="absolute inset-0 w-full h-full object-cover"
             style={{ borderBottom: '1px solid #a8a39580' }}

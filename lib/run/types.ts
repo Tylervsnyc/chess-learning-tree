@@ -69,6 +69,15 @@ export interface BoardState {
    * both maps.
    */
   frozenTurnsLeft: Record<string, number>;
+  /**
+   * Decoy target — the algebraic square of an enemy piece that has been
+   * marked as a decoy. While set, enemy AI treats this piece like Rookie:
+   * teammates will capture it if they can, otherwise approach. Cleared when
+   * the piece is captured (or moves) or when `decoyTurnsLeft` hits 0.
+   */
+  decoyTarget: string | null;
+  /** Remaining enemy turns the decoy mark stays active. */
+  decoyTurnsLeft: number;
   /** Permanent abilities Rookie has accrued this run. */
   abilities: OwnedAbility[];
   /** When the tempo meter fills, the player is offered 3 ability choices. */

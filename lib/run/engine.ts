@@ -17,6 +17,7 @@ import { offerIsExhausted, rollOffer } from './abilities';
 import { stepEnemyTurn } from './pawn-ai';
 import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
+import { toSquare } from './types';
 import type { BoardState, Coord, RookieForm } from './types';
 
 function offerRngFor(state: BoardState): () => number {
@@ -62,6 +63,10 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
   const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
   const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
+  // If Rookie captured the decoyed piece herself, clear the mark.
+  const targetSq = toSquare(target);
+  const clearDecoy = state.decoyTarget && state.decoyTarget === targetSq;
+
   const afterMove: BoardState = {
     ...state,
     rookie: { ...target },
@@ -74,6 +79,8 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     formMovesLeft: nextFormMovesLeft,
     bonusMovesLeft: nextBonus,
     cancellableActivation: undefined,
+    decoyTarget: clearDecoy ? null : state.decoyTarget,
+    decoyTurnsLeft: clearDecoy ? 0 : state.decoyTurnsLeft,
   };
 
   // When the meter fills, roll an offer — unless every ability is maxed, in

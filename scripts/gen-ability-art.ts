@@ -76,6 +76,17 @@ const SPECS: Spec[] = [
     ],
   },
   {
+    id: 'decoy',
+    variants: [
+      // A — Bullseye Lure relic
+      'A magnificent ornate jeweled bullseye-target relic centered in frame, concentric carved rings of gold filigree and inset gemstones (outer ruby ring, sapphire ring, emerald ring, topaz ring) forming a perfect target pattern, an enormous central ruby cabochon glowing with hypnotic crimson light at the bullseye, four crossed ornamental arrows of gold and crystal piercing the rings diagonally at 45 degrees, scrollwork and seed pearls throughout the border, deep painted blood-crimson velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+      // B — Masked Imposter relic
+      'A magnificent ornate jeweled theatrical jester half-mask relic centered in frame, an elaborate gold filigree mask with two empty eye-holes glowing with violet enchantment, ornate scrollwork curling outward like fool\'s-cap points each tipped with a faceted amethyst, a small ruby tear at one eye and a sapphire tear at the other, seed pearls outlining the lips, mischievous magical purple wisps curling around the mask, deep painted twilight-violet velvet background with floating gold sparkles, ' + RELIC_STYLE + '.',
+      // C — Glowing Idol relic
+      'A magnificent ornate jeweled golden idol relic centered in frame, a tall slender stylized chess-piece-shaped idol of polished mirror-bright gold standing on an ornate filigree pedestal, the idol\'s body inset with vertical bands of ruby and emerald gems, an enormous radiant diamond at the idol\'s crown radiating beams of light outward in all directions, four small kneeling silhouette pieces drawn toward it at the base, scrollwork and gold inlay throughout, deep painted shrine-gold and umber velvet background, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
     id: 'aegis',
     variants: [
       'A magnificent ornate heraldic kite-shield relic centered in frame, an elaborate gold filigree shield with raised border scrollwork, four faceted gemstones (ruby, sapphire, emerald, diamond) inset at the cardinal points of the shield face, an enormous central rampant-rook-tower emblem rendered in gold inlay with a glowing sapphire core, deep painted midnight-blue velvet background, ' + RELIC_STYLE + '.',

@@ -225,6 +225,21 @@ export function RunBoard({
       };
     }
 
+    // Decoy mark — pulsing violet ring + jester-magic wash on the marked
+    // square. Teammates will treat this piece as Rookie.
+    if (state.decoyTarget) {
+      const sq = state.decoyTarget;
+      styles[sq] = {
+        ...styles[sq],
+        backgroundColor: 'rgba(168, 85, 247, 0.45)',
+        backgroundImage:
+          'repeating-linear-gradient(45deg, rgba(255, 215, 122, 0.35) 0 3px, transparent 3px 8px)',
+        boxShadow:
+          'inset 0 0 0 3px rgba(217, 70, 239, 0.95), inset 0 0 16px rgba(255, 215, 122, 0.7)',
+        animation: 'decoyPulse 1.4s ease-in-out infinite',
+      };
+    }
+
     // Frozen-enemy highlight — icy blue wash with a shimmer overlay.
     for (const sq of state.frozenSquares) {
       styles[sq] = {

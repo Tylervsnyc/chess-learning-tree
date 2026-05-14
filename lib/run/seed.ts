@@ -110,6 +110,8 @@ export function puzzleToBoardState(
     enemyVacatedSquares: [],
     frozenSquares: [],
     frozenTurnsLeft: {},
+    decoyTarget: null,
+    decoyTurnsLeft: 0,
     abilities,
     pendingOffer,
     activeAbility: null,

@@ -226,8 +226,8 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     id: 'decoy',
     name: 'Decoy',
     activation: 'targeted',
-    typeLine: 'Targeted · Shield',
-    description: 'A false Rookie pulls enemy fire.',
+    typeLine: 'Targeted · Trick',
+    description: 'Mark an enemy. Its teammates will attack it.',
   },
   mirror: {
     id: 'mirror',
@@ -454,11 +454,11 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier <= 4) return 2;
       return -1;
     case 'decoy':
-      // Defensive misdirection. T5 = unlimited as a permanent ghost.
       if (tier === 1) return 1;
-      if (tier <= 3) return 2;
-      if (tier === 4) return 3;
-      return -1;
+      if (tier === 2) return 1;
+      if (tier === 3) return 2;
+      if (tier === 4) return 2;
+      return 1; // T5 = 1 cast, lasts the rest of the level
     case 'mirror':
       // Auto-retaliation shield. Similar uses to Aegis but each charge kills.
       if (tier === 1) return 1;
@@ -669,11 +669,11 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 2) return 'Wipe pawns ahead on file. 1/level.';
       return 'Wipe nearest pawn on file. 1/level.';
     case 'decoy':
-      if (tier === 5) return 'Permanent decoy. Unlimited.';
-      if (tier === 4) return 'Decoy lasts 2 turns. 3/level.';
-      if (tier === 3) return 'Decoy lasts 2 turns. 2/level.';
-      if (tier === 2) return 'Decoy lasts 1 turn. 2/level.';
-      return 'Decoy lasts 1 turn. 1/level.';
+      if (tier === 5) return 'Mark stays until captured. 1/level.';
+      if (tier === 4) return 'Mark 3 turns. Capturers freeze. 2/level.';
+      if (tier === 3) return 'Mark for 2 turns. 2/level.';
+      if (tier === 2) return 'Mark for 2 turns. 1/level.';
+      return 'Mark an enemy for 1 turn. 1/level.';
     case 'mirror':
       if (tier === 5) return 'Attackers always die. Unlimited.';
       if (tier === 4) return 'Attacker dies. 3/level.';
@@ -1144,7 +1144,6 @@ export function applyAbilityActivate(
   if (abilityId === 'foresight') return applyForesight(state);
   if (abilityId === 'bulwark') return applyBulwark(state);
   if (abilityId === 'skip') return applySkip(state);
-  if (abilityId === 'decoy') return applyDecoy(state, owned.tier);
   if (abilityId === 'recall') return applyRecall(state);
   if (abilityId === 'tide') return applyTide(state, owned.tier);
   if (abilityId === 'tremor') return applyTremor(state, owned.tier);
@@ -1396,6 +1395,22 @@ export function applyAbilityTargeted(
         to: toSquare(target),
         id: Date.now() + Math.random(),
       },
+    };
+  }
+
+  if (abilityId === 'decoy') {
+    const hit = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    if (!hit) return state;
+    const turns = decoyTurns(owned.tier);
+    return {
+      ...state,
+      decoyTarget: toSquare(target),
+      decoyTurnsLeft: turns,
+      abilities: decrementUse(state.abilities, abilityId),
+      activeAbility: null,
+      cancellableActivation: undefined,
     };
   }
 
@@ -1797,6 +1812,13 @@ function detonateRadius(tier: AbilityTier): number {
   return 1;
 }
 
+function decoyTurns(tier: AbilityTier): number {
+  if (tier === 1) return 1;
+  if (tier === 2 || tier === 3) return 2;
+  if (tier === 4) return 3;
+  return 99; // T5 = until captured
+}
+
 function freezeTurns(tier: AbilityTier): number {
   if (tier === 1) return 1;
   if (tier === 5) return 99;
@@ -2067,21 +2089,6 @@ function applySkip(state: BoardState): BoardState {
     return { ...next, status: 'lost', turn: 'rookie' };
   }
   return next;
-}
-
-/** Decoy — queue a "skip the next enemy turn" token. pawn-ai drains it. */
-function applyDecoy(state: BoardState, tier: AbilityTier): BoardState {
-  const owned = state.abilities.find((a) => a.id === 'decoy');
-  if (!owned) return state;
-  if (owned.usesLeftThisLevel === 0) return state;
-  const add = tier === 1 || tier === 2 ? 1 : tier === 5 ? 99 : 2;
-  return {
-    ...state,
-    skipEnemyTurns: (state.skipEnemyTurns ?? 0) + add,
-    abilities: decrementUse(state.abilities, 'decoy'),
-    activeAbility: null,
-    cancellableActivation: { abilityId: 'decoy', snapshot: snapshotForCancel(state) },
-  };
 }
 
 /** Recall — teleport Rookie to (file, 1). Counts as a Rookie move; doesn't

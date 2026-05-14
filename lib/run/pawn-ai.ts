@@ -15,7 +15,8 @@
 
 import { tryAegisIntercept, tryMirrorIntercept } from './abilities';
 import { enemyAt } from './movement';
-import { toSquare } from './types';
+import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
+import { fromSquare, toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, PieceType } from './types';
 
 const BLACK_FORWARD = -1;
@@ -193,10 +194,66 @@ function coordKey(c: { file: number; rank: number }): string {
   return `${c.file},${c.rank}`;
 }
 
+/**
+ * When a decoy mark is active, return the "view state" the AI should plan
+ * against: the marked piece is removed from `pieces` (it can't act, and isn't
+ * a friendly blocker) and `rookie` is moved onto its square (so all existing
+ * capture / approach logic naturally treats the mark as the target). Returns
+ * null when no decoy is active or the marked piece is already gone.
+ */
+function decoyViewState(state: BoardState): {
+  view: BoardState;
+  decoyPiece: EnemyPiece;
+} | null {
+  if (!state.decoyTarget || state.decoyTurnsLeft <= 0) return null;
+  const dt = fromSquare(state.decoyTarget);
+  const decoyPiece = state.pieces.find(
+    (p) => p.file === dt.file && p.rank === dt.rank,
+  );
+  if (!decoyPiece) return null;
+  return {
+    view: {
+      ...state,
+      rookie: { file: dt.file, rank: dt.rank },
+      pieces: state.pieces.filter((p) => p !== decoyPiece),
+    },
+    decoyPiece,
+  };
+}
+
 /** Pick the enemy that will act, and the move they'll make. */
 function chooseEnemyAction(
   state: BoardState,
   excludeSquares: ReadonlySet<string> = new Set(),
+): {
+  mover: EnemyPiece;
+  target: Coord;
+  isCapture: boolean;
+  isDecoyCapture?: boolean;
+} | null {
+  // If a decoy mark is active, run the existing capture/approach logic on a
+  // view where the marked piece IS Rookie. Any capture returned is a friendly
+  // fire against the decoy, not a loss.
+  const decoy = decoyViewState(state);
+  if (decoy) {
+    const inner = chooseEnemyActionAgainst(decoy.view, excludeSquares);
+    if (inner) {
+      return {
+        mover: inner.mover,
+        target: inner.target,
+        isCapture: inner.isCapture,
+        isDecoyCapture: inner.isCapture,
+      };
+    }
+    // Decoy is active but nobody can usefully act on it — fall through to
+    // ordinary Rookie-targeting so the turn isn't a complete waste.
+  }
+  return chooseEnemyActionAgainst(state, excludeSquares);
+}
+
+function chooseEnemyActionAgainst(
+  state: BoardState,
+  excludeSquares: ReadonlySet<string>,
 ): { mover: EnemyPiece; target: Coord; isCapture: boolean } | null {
   // Frozen squares are treated as if those pieces have already moved.
   const frozen = new Set(
@@ -271,9 +328,39 @@ function promotionPool(level: number): PieceType[] {
 /** Apply a single chosen action to the state, returning the new state. */
 function applyAction(
   state: BoardState,
-  action: { mover: EnemyPiece; target: Coord; isCapture: boolean },
+  action: {
+    mover: EnemyPiece;
+    target: Coord;
+    isCapture: boolean;
+    isDecoyCapture?: boolean;
+  },
 ): BoardState {
-  const { mover, target, isCapture } = action;
+  const { mover, target, isCapture, isDecoyCapture } = action;
+  // Friendly-fire on the decoy: remove the marked piece, mover takes its
+  // square, Rookie banks the capture (+ tempo), decoy mark clears. NOT a loss.
+  if (isDecoyCapture) {
+    const decoyPiece = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    const pieces = state.pieces
+      .filter((p) => p !== decoyPiece)
+      .map((p) =>
+        p === mover ? { ...p, file: target.file, rank: target.rank } : { ...p },
+      );
+    const capturedType: PieceType | null = decoyPiece?.type ?? null;
+    const tempoGain = capturedType ? TEMPO_REWARD[capturedType] ?? 0 : 0;
+    return {
+      ...state,
+      pieces,
+      captures: capturedType
+        ? [...state.captures, capturedType]
+        : state.captures,
+      tempo: Math.min(TEMPO_MAX, state.tempo + tempoGain),
+      decoyTarget: null,
+      decoyTurnsLeft: 0,
+    };
+  }
+
   const newPieces = state.pieces.map((p) => {
     if (p !== mover) return { ...p };
     const moved: EnemyPiece = { ...p, file: target.file, rank: target.rank };
@@ -314,6 +401,21 @@ export function stepEnemyTurn(state: BoardState): BoardState {
         nextFrozenTurnsLeft[sq] = left;
       }
     }
+    // Decoy mark ticks down at end of enemy turn. Clears if it hits 0 or the
+    // marked piece is no longer on the board.
+    let decoyTarget = s.decoyTarget;
+    let decoyTurnsLeft = s.decoyTurnsLeft;
+    if (decoyTarget) {
+      const dt = fromSquare(decoyTarget);
+      const stillThere = s.pieces.some(
+        (p) => p.file === dt.file && p.rank === dt.rank,
+      );
+      decoyTurnsLeft = Math.max(0, decoyTurnsLeft - 1);
+      if (!stillThere || decoyTurnsLeft <= 0) {
+        decoyTarget = null;
+        decoyTurnsLeft = 0;
+      }
+    }
     return {
       ...s,
       turn: 'rookie',
@@ -321,6 +423,8 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       enemyVacatedSquares: [],
       frozenSquares: nextFrozenSquares,
       frozenTurnsLeft: nextFrozenTurnsLeft,
+      decoyTarget,
+      decoyTurnsLeft,
     };
   };
 
@@ -360,7 +464,8 @@ export function stepEnemyTurn(state: BoardState): BoardState {
   }
   // Aegis intercept — if Rookie is about to be captured AND she has Aegis
   // charges, fire it instead. Attacker either dies (T5) or is just blocked.
-  if (action.isCapture) {
+  // (Decoy captures are friendly fire and never trigger Aegis.)
+  if (action.isCapture && !action.isDecoyCapture) {
     const blocked = tryAegisIntercept(state, action.mover);
     if (blocked) {
       const aegisOwned = blocked.abilities.find((a) => a.id === 'aegis');

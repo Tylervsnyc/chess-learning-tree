@@ -309,7 +309,7 @@ export function AbilityCardMini({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${ability.id}-1.png`}
+            src={`/abilities/${ability.id}-1.webp`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
@@ -434,7 +434,7 @@ export function AbilityCardFull({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/abilities/${id}-1.png`}
+            src={`/abilities/${id}-1.webp`}
             alt=""
             className="w-full h-full object-cover"
             draggable={false}
