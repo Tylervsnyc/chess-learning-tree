@@ -46,6 +46,7 @@ import { runForcedTake } from './forced-take';
 import { runCombos } from './combos';
 import { runAbilityImpact } from './simulate-run';
 import type { AbilityForceMode } from './simulate-run';
+import { generateLevels } from './generate-levels';
 import { T3 } from './bots/t3';
 import { extractFeatures } from './features';
 import { correlateFeatures } from './correlations';
@@ -80,6 +81,12 @@ interface CliOpts {
   skipAbilityImpact: boolean;
   enableForcedTake: boolean;
   enableCombos: boolean;
+  // WHY off by default: full level-gen costs ~100 min at 20 trials/cell, well
+  // beyond the nightly's ~30 min runtime budget. The cloud-agent triggers
+  // this manually via --enable-level-gen on a slower overnight schedule.
+  enableLevelGen: boolean;
+  levelGenTrials: number;
+  levelGenSeedOffset: number;
   abilityImpactRunId: string;
   abilityImpactTrials: number;
 }
@@ -105,6 +112,9 @@ function parseArgs(): CliOpts {
     skipAbilityImpact: false,
     enableForcedTake: false,
     enableCombos: false,
+    enableLevelGen: false,
+    levelGenTrials: 20,
+    levelGenSeedOffset: 0,
     // the-gauntlet at T3 has the best signal-to-noise — baseline 2.00 levels,
     // so any ability that helps shows up clearly. Cost: ~3 min at 5 trials.
     abilityImpactRunId: 'the-gauntlet',
@@ -152,6 +162,12 @@ function parseArgs(): CliOpts {
       hypothesesExplicit = true;
     } else if (arg.startsWith('--experiment-trials='))
       opts.experimentTrials = parseInt(arg.split('=')[1], 10);
+    else if (arg === '--enable-level-gen') opts.enableLevelGen = true;
+    else if (arg === '--disable-level-gen') opts.enableLevelGen = false;
+    else if (arg.startsWith('--level-gen-trials='))
+      opts.levelGenTrials = parseInt(arg.split('=')[1], 10);
+    else if (arg.startsWith('--level-gen-seed-offset='))
+      opts.levelGenSeedOffset = parseInt(arg.split('=')[1], 10);
   }
   if (fullMode) {
     // Weekly deep dive. Pushes everything on at production trial counts.
@@ -444,6 +460,30 @@ async function main(): Promise<void> {
     console.log(`[nightly] digest written: ${digestPath}`);
   } else {
     console.log(`[nightly] features+digest skipped (--skip-features)`);
+  }
+
+  // ─── Level generator ──────────────────────────────────────────────────
+  // WHY opt-in: ~100 min at 20 trials × 40 sims × 50 candidates. Lives at
+  // the end so the rest of the digest pipeline ships before this phase
+  // starts. Outputs go to data/run-playtest/candidate-levels/$DATE/
+  // which is NOT covered by the run-playtest/raw/ gitignore, so the files
+  // can be committed by the orchestrator after the run.
+  if (opts.enableLevelGen) {
+    console.log(
+      `[nightly] level-gen (${opts.levelGenTrials} trials × 2 tiers × 50 candidates, seedOffset=${opts.levelGenSeedOffset})`,
+    );
+    const tG = Date.now();
+    const lg = generateLevels({
+      trialsPerCell: opts.levelGenTrials,
+      seedOffset: opts.levelGenSeedOffset,
+      date,
+      onProgress: (s) => console.log(s),
+    });
+    console.log(
+      `[nightly] level-gen done in ${((Date.now() - tG) / 1000).toFixed(1)}s — outDir ${lg.outDir}`,
+    );
+  } else {
+    caveats.push('Level generator skipped (use --enable-level-gen to run).');
   }
 
   console.log(`[nightly] done in ${((Date.now() - t0) / 1000).toFixed(1)}s total`);
