@@ -963,20 +963,16 @@ export function applyAbilityTargeted(
 }
 
 /**
- * Dart-style abilities only target enemies Rookie can currently "see" — i.e.
- * an enemy whose square is in `rookieLegalMoves` for her current form. The
- * ray stops at the first piece, so this matches chess line-of-sight (rook
- * lines, bishop diagonals, knight Ls, queen everything).
+ * Dart-style abilities (freeze ray, poison dart, rabies dart) can target ANY
+ * enemy piece on the board — no line-of-sight restriction.
  */
 export function visibleEnemySquares(state: BoardState): Coord[] {
-  return rookieLegalMoves(state).filter((c) =>
-    state.pieces.some((p) => p.file === c.file && p.rank === c.rank),
-  );
+  return state.pieces.map((p) => ({ file: p.file, rank: p.rank }));
 }
 
 function isVisibleEnemy(state: BoardState, target: Coord): boolean {
-  return visibleEnemySquares(state).some(
-    (c) => c.file === target.file && c.rank === target.rank,
+  return state.pieces.some(
+    (p) => p.file === target.file && p.rank === target.rank,
   );
 }
 
