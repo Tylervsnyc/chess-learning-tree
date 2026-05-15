@@ -188,7 +188,11 @@
       "WebFetch(domain:impeccable.style)",
       "Bash(npx skills:*)",
       "Read(//tmp/**)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(awk '/RUN_PAWN_TSUNAMI/,/RUN_DIAGONAL_WEB/' lib/run/runs.ts)",
+      "Bash(awk '/RUN_DIAGONAL_WEB/,/RUN_THRONE_ROOM/' lib/run/runs.ts)",
+      "Bash(awk '/RUN_CAVALRY_CHARGE/,/RUN_PAWN_TSUNAMI/' lib/run/runs.ts)",
+      "Bash(git rebase *)"
     ]
   }
 }

@@ -8,7 +8,13 @@
 import { runSweep } from './sweep';
 import type { Outcome, TierId } from './types';
 
-const RUN_IDS = ['hourglass', 'bishops-cathedral', 'royal-procession'];
+const RUN_IDS = [
+  'cavalry-charge',
+  'pawn-tsunami',
+  'diagonal-web',
+  'throne-room',
+  'surrounded',
+];
 const TIERS: TierId[] = ['T3', 'T4', 'T5'];
 
 const trials = process.argv[2] ? parseInt(process.argv[2], 10) : 50;
