@@ -1,7 +1,7 @@
 'use client';
 
 import { BreathingRook } from '@/components/ui/BreathingRook';
-import { PieceBlocks } from './PieceBlocks';
+import { GOLDEN_KING_PALETTE, PieceBlocks } from './PieceBlocks';
 import type { RookieForm } from '@/lib/run/types';
 
 interface RookieCellProps {
@@ -30,6 +30,16 @@ interface RookieCellProps {
 function Sprite({ form, animate }: { form: RookieForm; animate: boolean }) {
   if (form === 'rook') {
     return <BreathingRook size="xs" animate={animate} mood="neutral" />;
+  }
+  if (form === 'king') {
+    return (
+      <PieceBlocks
+        piece="K"
+        blockSize={3}
+        animate={animate}
+        palette={GOLDEN_KING_PALETTE}
+      />
+    );
   }
   const piece = form === 'knight' ? 'N' : form === 'bishop' ? 'B' : 'Q';
   return <PieceBlocks piece={piece} blockSize={3} animate={animate} />;

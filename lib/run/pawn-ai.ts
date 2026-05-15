@@ -84,8 +84,42 @@ function isVacated(vacated: ReadonlySet<string>, at: Coord): boolean {
   return vacated.has(`${at.file},${at.rank}`);
 }
 
+/**
+ * Royal aura filter — when Rookie is in king form, an enemy that is currently
+ * within king-distance 1 of her cannot LAND on a square that is strictly
+ * closer to her than its own square. Sliders may still pass through closer
+ * squares (only the final destination is constrained). Captures of Rookie
+ * herself are unaffected (the impervious bounce handles those at the engine
+ * level). Captures of OTHER pieces are also unaffected (this only restricts
+ * movement, not pickoffs).
+ */
+function applyRoyalAura(
+  piece: EnemyPiece,
+  moves: Coord[],
+  state: BoardState,
+): Coord[] {
+  if (state.form !== 'king') return moves;
+  const piecePos: Coord = { file: piece.file, rank: piece.rank };
+  const enemyDistToRookie = chebyshev(piecePos, state.rookie);
+  if (enemyDistToRookie > 1) return moves;
+  return moves.filter((m) => {
+    // Rookie's square — handled by impervious bounce; let it through so the
+    // engine still recognises the capture attempt.
+    if (m.file === state.rookie.file && m.rank === state.rookie.rank) return true;
+    // Capturing another enemy on m? Aura doesn't constrain pickoffs.
+    const occupant = enemyAt(state.pieces, m);
+    if (occupant && occupant !== piece) return true;
+    const destDist = chebyshev(m, state.rookie);
+    return destDist >= enemyDistToRookie;
+  });
+}
+
 /** All squares this piece could move to (or capture on) given the board. */
 function pieceLegalMoves(piece: EnemyPiece, state: BoardState): Coord[] {
+  return applyRoyalAura(piece, pieceLegalMovesRaw(piece, state), state);
+}
+
+function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
   const vacated = vacatedSet(state);
   switch (piece.type) {
     case 'pawn': {
@@ -377,7 +411,8 @@ function chooseEnemyActionAgainst(
         !isHazard(state.hazards, target) &&
         !enemyAt(state.pieces, target) &&
         !isVacated(vacated, target) &&
-        !(state.rookie.file === target.file && state.rookie.rank === target.rank)
+        !(state.rookie.file === target.file && state.rookie.rank === target.rank) &&
+        applyRoyalAura(p, [target], state).length > 0
       ) {
         // Lower rank = higher priority (closer to rank 1 = bigger threat).
         candidates.push({ mover: p, target, priority: -p.rank });
@@ -742,6 +777,33 @@ export function stepEnemyTurn(state: BoardState): BoardState {
 
   const action = chooseEnemyAction(state, exclude);
   if (!action) return endTurn(state);
+
+  // Become King impervious: while Rookie is in king form, she cannot be
+  // captured. The attacker is bounced back to its origin square (i.e. its
+  // move is canceled). Emits its own gold-themed FX signal — distinct from
+  // the Aegis blue shield.
+  if (
+    action.isCapture &&
+    !action.isDecoyCapture &&
+    state.form === 'king'
+  ) {
+    const attackerSquare = toSquare({
+      file: action.mover.file,
+      rank: action.mover.rank,
+    });
+    const withFx: BoardState = {
+      ...state,
+      lastImperviousBounce: {
+        attackerSquare,
+        rookieSquare: toSquare(state.rookie),
+        id: Date.now() + Math.random(),
+      },
+    };
+    // Mark this attacker as having "acted" so it isn't re-picked this turn.
+    const nextMoved = [...state.enemyMovedSquares, attackerSquare];
+    if (nextMoved.length >= budget) return endTurn(withFx);
+    return { ...withFx, turn: 'enemy', enemyMovedSquares: nextMoved };
+  }
 
   // Aegis intercept — if Rookie is about to be captured AND she has Aegis
   // charges, fire it instead. Attacker either dies (T5) or is just blocked.

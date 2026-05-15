@@ -116,9 +116,14 @@ interface PieceBlocksProps {
   animate?: boolean;
   /** Optional className on the wrapper. */
   className?: string;
+  /** Override the default Rookie palette (e.g. golden King for Become King). */
+  palette?: readonly string[];
 }
 
-export function PieceBlocks({ piece, blockSize = 12, animate = true, className }: PieceBlocksProps) {
+// Golden palette used when Rookie transforms into King (Become King ability).
+export const GOLDEN_KING_PALETTE = ['#FFF4B0', '#FFE066', '#FFD33A', '#FFC107', '#FFAA00', '#E8920C', '#C97A00', '#8C5200'];
+
+export function PieceBlocks({ piece, blockSize = 12, animate = true, className, palette }: PieceBlocksProps) {
   const [mask, setMask] = useState<Mask | null>(() => MASK_CACHE.get(piece) ?? null);
   useEffect(() => {
     if (MASK_CACHE.has(piece)) {
@@ -156,9 +161,10 @@ export function PieceBlocks({ piece, blockSize = 12, animate = true, className }
       ` }} />
       {mask.map((row, y) => row.map((filled, x) => {
         if (!filled) return null;
-        const bandIdx = Math.min(ROOKIE_PALETTE.length - 1, Math.floor((y / tpl.rows) * ROOKIE_PALETTE.length));
+        const pal = palette ?? ROOKIE_PALETTE;
+        const bandIdx = Math.min(pal.length - 1, Math.floor((y / tpl.rows) * pal.length));
         const tweak = (x + y) % 3 === 0 ? 1 : 0;
-        const color = ROOKIE_PALETTE[(bandIdx + tweak) % ROOKIE_PALETTE.length];
+        const color = pal[(bandIdx + tweak) % pal.length];
         const dist = Math.sqrt((x - CX) ** 2 + (y - CY) ** 2);
         const delay = (dist / 12) * 1.2;
         return (

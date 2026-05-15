@@ -101,6 +101,15 @@ const SPECS: Spec[] = [
     ],
   },
   {
+    id: 'become-king',
+    variants: [
+      // A — Imperial crown relic
+      'A magnificent ornate jeweled imperial crown relic centered in frame, an elaborate gold filigree royal crown with a velvet-lined cap of estate, four rising arches meeting at a central orb-and-cross finial, each arch tipped with an enormous faceted gemstone (ruby, sapphire, emerald, amethyst), an enormous central diamond on the orb radiating beams of golden light, fleur-de-lis and cross-pattée scrollwork around the rim, ermine-trim suggestion at the base, deep painted royal-purple velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+      // B — King chess-piece relic
+      'A magnificent ornate jeweled chess-king-piece relic centered in frame, a stylized regal chess king sculpted entirely from polished gold filigree with a tall crowned silhouette and prominent cross finial at the top, the body inlaid with vertical bands of faceted rubies and sapphires, the cross at the top set with an enormous central diamond radiating beams of light, ornate scrollwork curling around the base, deep painted crimson-and-gold royal velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
     id: 'aegis',
     variants: [
       'A magnificent ornate heraldic kite-shield relic centered in frame, an elaborate gold filigree shield with raised border scrollwork, four faceted gemstones (ruby, sapphire, emerald, diamond) inset at the cardinal points of the shield face, an enormous central rampant-rook-tower emblem rendered in gold inlay with a glowing sapphire core, deep painted midnight-blue velvet background, ' + RELIC_STYLE + '.',

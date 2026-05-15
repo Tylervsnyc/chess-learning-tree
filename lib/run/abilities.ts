@@ -17,7 +17,7 @@ export type AbilityId =
   | 'bishop-step'
   | 'knight-hop'
   | 'queen-pulse'
-  | 'pawn-charge'
+  | 'become-king'
   | 'freeze-ray'
   | 'poison-dart'
   | 'rabies-dart'
@@ -83,12 +83,12 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Transform · Movement',
     description: 'Become a queen for a few turns.',
   },
-  'pawn-charge': {
-    id: 'pawn-charge',
-    name: 'Pawn Charge',
-    activation: 'movement',
-    typeLine: 'Movement · Tactical',
-    description: 'Surge forward like a pawn.',
+  'become-king': {
+    id: 'become-king',
+    name: 'Become King',
+    activation: 'transform',
+    typeLine: 'Transform · Royal',
+    description: 'Become an impervious king. Nothing can capture you.',
   },
   'freeze-ray': {
     id: 'freeze-ray',
@@ -176,9 +176,9 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier <= 2) return 1;
       if (tier <= 4) return 2;
       return 1;
-    case 'pawn-charge':
-      if (tier === 1) return 2;
-      return 3;
+    case 'become-king':
+      if (tier === 4) return 2;
+      return 1;
     case 'freeze-ray':
       if (tier === 3 || tier === 4) return 2;
       return 1;
@@ -225,6 +225,7 @@ export function formForAbility(id: AbilityId): RookieForm | null {
   if (id === 'bishop-step') return 'bishop';
   if (id === 'knight-hop') return 'knight';
   if (id === 'queen-pulse') return 'queen';
+  if (id === 'become-king') return 'king';
   return null;
 }
 
@@ -240,6 +241,11 @@ export function transformDurationForTier(
     return 3;
   }
   if (id === 'queen-pulse') {
+    if (tier === 1) return 1;
+    if (tier === 2 || tier === 3) return 2;
+    return 3;
+  }
+  if (id === 'become-king') {
     if (tier === 1) return 1;
     if (tier === 2 || tier === 3) return 2;
     return 3;
@@ -267,12 +273,12 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return 'Queen for 2 turns. 2/level.';
       if (tier === 2) return 'Queen for 2 turns. 1/level.';
       return 'Queen for 1 turn. 1/level.';
-    case 'pawn-charge':
-      if (tier === 5) return 'Charge full column, capturing all. 3/level.';
-      if (tier === 4) return 'Up to 3 ranks, plows pawns. 3/level.';
-      if (tier === 3) return 'Up to 2 ranks forward. 3/level.';
-      if (tier === 2) return '1 rank forward, diag capture. 3/level.';
-      return '1 rank forward, diag capture. 2/level.';
+    case 'become-king':
+      if (tier === 5) return 'King for rest of level.';
+      if (tier === 4) return 'King for 3 turns. 2/level.';
+      if (tier === 3) return 'King for 2 turns. 1/level.';
+      if (tier === 2) return 'King for 2 turns. 1/level.';
+      return 'King for 1 turn. 1/level.';
     case 'freeze-ray':
       if (tier === 5) return 'Permanent freeze. 1/level.';
       if (tier === 4) return 'Freeze 3 turns. 2/level.';
@@ -475,38 +481,6 @@ function enemyAt(state: BoardState, c: Coord): EnemyPiece | undefined {
   return state.pieces.find((p) => p.file === c.file && p.rank === c.rank);
 }
 
-function pawnChargeMoves(state: BoardState, tier: AbilityTier): Coord[] {
-  const out: Coord[] = [];
-  const { rookie } = state;
-  if (tier < 5) {
-    for (const df of [-1, 1]) {
-      const c = { file: rookie.file + df, rank: rookie.rank + 1 };
-      if (inBounds(c) && !isHazard(state, c) && enemyAt(state, c)) out.push(c);
-    }
-  }
-  const maxRanks =
-    tier === 1 || tier === 2 ? 1 : tier === 3 ? 2 : tier === 4 ? 3 : 7;
-  for (let d = 1; d <= maxRanks; d++) {
-    const c = { file: rookie.file, rank: rookie.rank + d };
-    if (!inBounds(c)) break;
-    if (isHazard(state, c)) break;
-    const piece = enemyAt(state, c);
-    if (piece) {
-      if (tier === 4 && piece.type === 'pawn') {
-        out.push(c);
-        continue;
-      }
-      if (tier === 5) {
-        out.push(c);
-        continue;
-      }
-      break;
-    }
-    out.push(c);
-  }
-  return out;
-}
-
 function phaseStepMoves(state: BoardState, tier: AbilityTier): Coord[] {
   const out: Coord[] = [];
   const { rookie } = state;
@@ -613,7 +587,6 @@ export function abilityLegalMoves(
 ): Coord[] {
   const owned = state.abilities.find((a) => a.id === abilityId);
   if (!owned) return [];
-  if (abilityId === 'pawn-charge') return pawnChargeMoves(state, owned.tier);
   if (abilityId === 'phase-step') return phaseStepMoves(state, owned.tier);
   if (abilityId === 'leap') return leapMoves(state, owned.tier);
   return [];
@@ -783,29 +756,16 @@ export function applyAbilityMove(
   const captures = [...state.captures];
   const killedSquares: string[] = [];
 
-  if (abilityId === 'pawn-charge' && state.rookie.file === target.file) {
-    const lo = Math.min(state.rookie.rank, target.rank);
-    const hi = Math.max(state.rookie.rank, target.rank);
-    const plowed = pieces.filter(
-      (p) => p.file === target.file && p.rank > lo && p.rank <= hi,
-    );
-    for (const k of plowed) {
-      captures.push(k.type);
-      killedSquares.push(toSquare(k));
-    }
-    pieces = pieces.filter((p) => !plowed.includes(p));
-  } else {
-    const captured = pieces.find(
-      (p) => p.file === target.file && p.rank === target.rank,
-    );
-    if (captured) {
-      captures.push(captured.type);
-      killedSquares.push(toSquare(captured));
-    }
-    pieces = pieces.filter(
-      (p) => !(p.file === target.file && p.rank === target.rank),
-    );
+  const captured = pieces.find(
+    (p) => p.file === target.file && p.rank === target.rank,
+  );
+  if (captured) {
+    captures.push(captured.type);
+    killedSquares.push(toSquare(captured));
   }
+  pieces = pieces.filter(
+    (p) => !(p.file === target.file && p.rank === target.rank),
+  );
 
   // Strip status markers from any piece that died this resolve.
   let statusOverlay: ReturnType<typeof clearStatusOnSquare> | null = null;
@@ -822,14 +782,12 @@ export function applyAbilityMove(
   const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
   const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
-  const fxKind: 'pawn-charge' | 'phase-step' | 'leap' | null =
-    abilityId === 'pawn-charge'
-      ? 'pawn-charge'
-      : abilityId === 'phase-step'
-        ? 'phase-step'
-        : abilityId === 'leap'
-          ? 'leap'
-          : null;
+  const fxKind: 'phase-step' | 'leap' | null =
+    abilityId === 'phase-step'
+      ? 'phase-step'
+      : abilityId === 'leap'
+        ? 'leap'
+        : null;
 
   const afterMove: BoardState = {
     ...state,

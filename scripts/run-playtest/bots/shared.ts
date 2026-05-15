@@ -47,6 +47,13 @@ export function enemyAttackedSquares(state: BoardState): Set<string> {
     if (frozen.has(sq)) continue;
     addAttacksForPiece(state, p, out);
   }
+  // Become-King impervious: while Rookie is in king form she cannot be
+  // captured. Treat her square as un-attackable so safety scoring stops
+  // discounting it and bots stop "wasting tempo" on capture-of-Rookie moves
+  // that will simply bounce.
+  if (state.form === 'king') {
+    out.delete(toSquare(state.rookie));
+  }
   return out;
 }
 
@@ -303,11 +310,11 @@ function candidatesForAbility(
     case 'bishop-step':
     case 'knight-hop':
     case 'queen-pulse':
+    case 'become-king':
       if (state.form === 'rook') {
         out.push({ kind: 'activate-ability', abilityId: owned.id });
       }
       return out;
-    case 'pawn-charge':
     case 'phase-step':
     case 'leap': {
       const legals = abilityLegalMoves(state, owned.id);

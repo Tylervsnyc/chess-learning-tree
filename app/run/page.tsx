@@ -117,7 +117,7 @@ export default function RookiesRunPage() {
   const [puzzle, setPuzzle] = useState<RunPuzzle>(initial.puzzle);
 
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  // Per-ability cast VFX — pawn-charge streak / phase-step ghost / leap arc /
+  // Per-ability cast VFX — phase-step ghost / leap arc /
   // freeze-ray beam / poison or rabies dart. Cleared after the matching anim ends.
   type AbilityFx = NonNullable<BoardState['lastAbilityFx']>;
   const [abilityFx, setAbilityFx] = useState<AbilityFx | null>(null);
@@ -142,6 +142,24 @@ export default function RookiesRunPage() {
     return () => clearTimeout(t);
   }, [aegisFx]);
 
+  // Become-King impervious bounce VFX — distinct gold/royal-themed.
+  const [imperviousFx, setImperviousFx] = useState<
+    { attackerSquare: string; rookieSquare: string; id: number } | null
+  >(null);
+  const lastImperviousIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    const sig = state.lastImperviousBounce;
+    if (!sig) return;
+    if (lastImperviousIdRef.current === sig.id) return;
+    lastImperviousIdRef.current = sig.id;
+    setImperviousFx({ ...sig });
+  }, [state.lastImperviousBounce]);
+  useEffect(() => {
+    if (!imperviousFx) return;
+    const t = setTimeout(() => setImperviousFx(null), 700);
+    return () => clearTimeout(t);
+  }, [imperviousFx]);
+
   useEffect(() => {
     const sig = state.lastAbilityFx;
     if (!sig) return;
@@ -152,7 +170,6 @@ export default function RookiesRunPage() {
   useEffect(() => {
     if (!abilityFx) return;
     const durations: Record<AbilityFx['kind'], number> = {
-      'pawn-charge': 650,
       'phase-step': 600,
       leap: 700,
       'freeze-ray': 700,
@@ -627,6 +644,7 @@ export default function RookiesRunPage() {
             dying={dying}
             glitching={glitching}
             aegisFx={aegisFx}
+            imperviousFx={imperviousFx}
             abilityFx={abilityFx}
             poisonDeathFx={poisonDeathFx}
             enemyCaptureFx={enemyCaptureFx}

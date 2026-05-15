@@ -52,6 +52,7 @@ function artFile(id: AbilityId): string {
   if (id === 'poison-dart') return 'poison-dart-2.png';
   if (id === 'rabies-dart') return 'rabies-dart-2.png';
   if (id === 'freeze-ray') return 'freeze-ray-2.png';
+  if (id === 'become-king') return 'become-king-2.png';
   return `${id}-1.webp`;
 }
 
@@ -122,8 +123,8 @@ function AbilityIcon({ id, size }: { id: AbilityId; size: number }) {
         ? '♞' // ♞
         : id === 'queen-pulse'
           ? '♛' // ♛
-          : id === 'pawn-charge'
-            ? '♟' // ♟
+          : id === 'become-king'
+            ? '♚' // ♚
             : null;
   if (glyph) {
     return (

@@ -21,10 +21,11 @@ interface BoardProps {
   glitching?: boolean;
   /** Transient Aegis VFX — attacker lunges at Rookie then bounces back. */
   aegisFx?: { attackerSquare: string; rookieSquare: string; id: number } | null;
+  /** Transient Become-King impervious VFX — gold ring pulse + bounce flash. */
+  imperviousFx?: { attackerSquare: string; rookieSquare: string; id: number } | null;
   /** Transient per-ability cast VFX (charge / phase / leap / dart casts). */
   abilityFx?: {
     kind:
-      | 'pawn-charge'
       | 'phase-step'
       | 'leap'
       | 'freeze-ray'
@@ -104,6 +105,7 @@ const ROOKIE_SPRITE: Record<RookieForm, string> = {
   knight: 'wN',
   bishop: 'wB',
   queen: 'wQ',
+  king: 'wK',
 };
 
 const ENEMY_SPRITE: Record<PieceType, string> = {
@@ -119,6 +121,7 @@ export function RunBoard({
   dying = false,
   glitching = false,
   aegisFx = null,
+  imperviousFx = null,
   abilityFx = null,
   poisonDeathFx = null,
   enemyCaptureFx = null,
@@ -348,6 +351,22 @@ export function RunBoard({
     return { dx, dy, attackerSquare: aegisFx.attackerSquare, rookieSquare: aegisFx.rookieSquare, id: aegisFx.id };
   }, [aegisFx]);
 
+  // Become-King impervious bounce — same lunge geometry as Aegis but gold.
+  const imperviousLunge = useMemo(() => {
+    if (!imperviousFx) return null;
+    const a = fromSquare(imperviousFx.attackerSquare);
+    const r = fromSquare(imperviousFx.rookieSquare);
+    const dx = (r.file - a.file) * 55;
+    const dy = -(r.rank - a.rank) * 55;
+    return {
+      dx,
+      dy,
+      attackerSquare: imperviousFx.attackerSquare,
+      rookieSquare: imperviousFx.rookieSquare,
+      id: imperviousFx.id,
+    };
+  }, [imperviousFx]);
+
   // Convert from→to squares into board-percentage centers for overlay VFX.
   // Board is rendered white-orientation: file 1 = leftmost, rank 8 = topmost.
   const fxGeom = useMemo(() => {
@@ -422,6 +441,13 @@ export function RunBoard({
           form="queen"
           dying={dying && state.form === 'queen'}
           glitching={glitching && state.form === 'queen'}
+        />
+      ),
+      wK: () => (
+        <RookieCell
+          form="king"
+          dying={dying && state.form === 'king'}
+          glitching={glitching && state.form === 'king'}
         />
       ),
     }),
@@ -579,11 +605,6 @@ export function RunBoard({
                transform-origin: 50% 100%;
              }`
           : ''}
-        ${abilityFx && abilityFx.kind === 'pawn-charge'
-          ? `[data-square="${abilityFx.to}"] > div {
-               animation: rrSpriteCharge 600ms ease-out both;
-             }`
-          : ''}
         ${wiggleSquares
           .map(
             (sq) => `[data-square="${sq}"] > div > img,
@@ -615,6 +636,42 @@ export function RunBoard({
           [data-square="${aegisLunge.rookieSquare}"] {
             position: relative;
             animation: rookiesRunAegisRipple-${Math.floor(aegisLunge.id)} 700ms ease-out both;
+          }
+        `}</style>
+      )}
+      {imperviousLunge && (
+        <style key={`imp-${imperviousLunge.id}`}>{`
+          @keyframes rookiesRunImperviousLunge-${Math.floor(imperviousLunge.id)} {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(${imperviousLunge.dx}%, ${imperviousLunge.dy}%) scale(1.1); }
+            55%  { transform: translate(${imperviousLunge.dx * 0.6}%, ${imperviousLunge.dy * 0.6}%) scale(0.9) rotate(-8deg); }
+            80%  { transform: translate(${imperviousLunge.dx * -0.18}%, ${imperviousLunge.dy * -0.18}%) scale(0.95) rotate(4deg); }
+            100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+          }
+          @keyframes rookiesRunRoyalAura-${Math.floor(imperviousLunge.id)} {
+            0%   { box-shadow: inset 0 0 0 0 rgba(255, 211, 58, 0), inset 0 0 0 rgba(255, 170, 0, 0); background-color: rgba(255, 211, 58, 0); }
+            20%  { box-shadow: inset 0 0 0 6px rgba(255, 211, 58, 1), inset 0 0 28px rgba(255, 170, 0, 0.95); background-color: rgba(255, 211, 58, 0.55); }
+            55%  { box-shadow: inset 0 0 0 4px rgba(255, 244, 176, 0.95), inset 0 0 36px rgba(255, 170, 0, 0.85); background-color: rgba(255, 224, 102, 0.4); }
+            100% { box-shadow: inset 0 0 0 0 rgba(255, 211, 58, 0), inset 0 0 0 rgba(255, 170, 0, 0); background-color: rgba(255, 211, 58, 0); }
+          }
+          @keyframes rookiesRunRoyalFlash-${Math.floor(imperviousLunge.id)} {
+            0%   { box-shadow: inset 0 0 0 0 rgba(255, 211, 58, 0); background-color: rgba(255, 211, 58, 0); }
+            40%  { box-shadow: inset 0 0 0 4px rgba(255, 170, 0, 0.95), inset 0 0 18px rgba(255, 211, 58, 0.85); background-color: rgba(255, 211, 58, 0.45); }
+            100% { box-shadow: inset 0 0 0 0 rgba(255, 211, 58, 0); background-color: rgba(255, 211, 58, 0); }
+          }
+          [data-square="${imperviousLunge.attackerSquare}"] > div > img,
+          [data-square="${imperviousLunge.attackerSquare}"] > div > svg {
+            animation: rookiesRunImperviousLunge-${Math.floor(imperviousLunge.id)} 650ms cubic-bezier(0.5, -0.2, 0.4, 1.4) both;
+            z-index: 4;
+            filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.85));
+          }
+          [data-square="${imperviousLunge.attackerSquare}"] {
+            position: relative;
+            animation: rookiesRunRoyalFlash-${Math.floor(imperviousLunge.id)} 650ms ease-out both;
+          }
+          [data-square="${imperviousLunge.rookieSquare}"] {
+            position: relative;
+            animation: rookiesRunRoyalAura-${Math.floor(imperviousLunge.id)} 700ms ease-out both;
           }
         `}</style>
       )}
@@ -795,65 +852,6 @@ interface AbilityFxLayerProps {
  */
 function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
   const { fromX, fromY, toX, toY, midX, midY, length, angleDeg } = geom;
-
-  if (fx.kind === 'pawn-charge') {
-    // Orange comet streak — a thin rotated bar from origin to target that
-    // grows in then snaps out, with a bright head at the leading edge.
-    return (
-      <div
-        key={fx.id}
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 4,
-        }}
-      >
-        <style>{`
-          @keyframes rrFxChargeStreak-${Math.floor(fx.id)} {
-            0%   { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(0); opacity: 0.9; }
-            40%  { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) rotate(${angleDeg}deg) scaleX(1); opacity: 0; }
-          }
-          @keyframes rrFxChargeBurst-${Math.floor(fx.id)} {
-            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
-          }
-        `}</style>
-        <div
-          style={{
-            position: 'absolute',
-            left: `${fromX}%`,
-            top: `${fromY}%`,
-            width: `${length}%`,
-            height: '4%',
-            background:
-              'linear-gradient(90deg, rgba(255,180,40,0) 0%, rgba(255,180,40,0.8) 30%, rgba(255,120,30,1) 70%, rgba(255,255,255,1) 100%)',
-            transformOrigin: '0% 50%',
-            transform: `translate(0, -50%) rotate(${angleDeg}deg)`,
-            filter:
-              'drop-shadow(0 0 6px rgba(255,140,40,0.9)) drop-shadow(0 0 12px rgba(255,100,20,0.6))',
-            animation: `rrFxChargeStreak-${Math.floor(fx.id)} 600ms ease-out forwards`,
-            borderRadius: '999px',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            left: `${fromX}%`,
-            top: `${fromY}%`,
-            width: '14%',
-            height: '14%',
-            borderRadius: '50%',
-            background:
-              'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,180,40,0.9) 40%, rgba(255,80,20,0) 80%)',
-            animation: `rrFxChargeBurst-${Math.floor(fx.id)} 500ms ease-out forwards`,
-          }}
-        />
-      </div>
-    );
-  }
 
   if (fx.kind === 'phase-step') {
     // Two ghost-rooks: one fading out at origin, one fading in at target.

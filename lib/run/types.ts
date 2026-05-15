@@ -17,7 +17,7 @@ export type PieceType = 'pawn' | 'knight' | 'bishop' | 'queen';
 export type PieceColor = 'black';
 
 /** Rookie's current movement form. She starts and reverts to 'rook'. */
-export type RookieForm = 'rook' | 'knight' | 'bishop' | 'queen';
+export type RookieForm = 'rook' | 'knight' | 'bishop' | 'queen' | 'king';
 
 export interface Coord {
   file: number; // 1-8
@@ -125,13 +125,18 @@ export interface BoardState {
    */
   lastAegisIntercept?: { attackerSquare: string; rookieSquare: string; id: number };
   /**
+   * Transient signal: set when an enemy attempts to capture Rookie while she
+   * is in king form (Become King impervious). Distinct from Aegis so the UI
+   * fires gold-themed VFX instead of the blue shield. UI tracks last-seen id.
+   */
+  lastImperviousBounce?: { attackerSquare: string; rookieSquare: string; id: number };
+  /**
    * Transient signal: set when a Rookie ability resolves so the UI can fire
    * the matching cast VFX (charge streak / phase ghost / leap arc / freeze
    * dart / poison dart / rabies dart). UI tracks the last-seen id.
    */
   lastAbilityFx?: {
     kind:
-      | 'pawn-charge'
       | 'phase-step'
       | 'leap'
       | 'freeze-ray'

@@ -24,6 +24,17 @@ const BISHOP_DIRS: ReadonlyArray<[number, number]> = [
   [-1, -1],
 ];
 
+const KING_DELTAS: ReadonlyArray<[number, number]> = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+  [1, 1],
+  [1, -1],
+  [-1, 1],
+  [-1, -1],
+];
+
 const KNIGHT_DELTAS: ReadonlyArray<[number, number]> = [
   [1, 2],
   [2, 1],
@@ -83,6 +94,20 @@ function knightMoves(state: BoardState): Coord[] {
   return moves;
 }
 
+function kingMoves(state: BoardState): Coord[] {
+  const moves: Coord[] = [];
+  const { rookie, hazards } = state;
+  for (const [df, dr] of KING_DELTAS) {
+    const f = rookie.file + df;
+    const r = rookie.rank + dr;
+    if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+    const square = { file: f, rank: r };
+    if (isHazard(hazards, square)) continue;
+    moves.push(square);
+  }
+  return moves;
+}
+
 /** Returns the list of squares Rookie can legally move to from her current position. */
 export function rookieLegalMoves(state: BoardState): Coord[] {
   switch (state.form) {
@@ -92,6 +117,8 @@ export function rookieLegalMoves(state: BoardState): Coord[] {
       return slideMoves(state, BISHOP_DIRS);
     case 'queen':
       return [...slideMoves(state, ROOK_DIRS), ...slideMoves(state, BISHOP_DIRS)];
+    case 'king':
+      return kingMoves(state);
     case 'rook':
     default:
       return slideMoves(state, ROOK_DIRS);
@@ -111,6 +138,8 @@ export function transformCost(form: RookieForm): number {
     case 'bishop':
       return 3;
     case 'queen':
+      return 4;
+    case 'king':
       return 4;
     case 'rook':
       return 0;
