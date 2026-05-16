@@ -639,6 +639,7 @@ export default function RookiesRunPage() {
 
         <div className="w-full">
           <RunBoard
+            key={`level-${levelIndex}-${state.level}`}
             state={state}
             selectedSquare={selectedSquare}
             dying={dying}
