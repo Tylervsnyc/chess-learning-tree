@@ -678,17 +678,21 @@ export function RunBoard({
           .join('\n')}
         ${introPlaying ? `
           @keyframes rookiesRunEmerge-${introId} {
-            0%   { transform: translateY(45%) scale(0.55); opacity: 0; }
-            60%  { transform: translateY(-6%) scale(1.04); opacity: 1; }
-            100% { transform: translateY(0)   scale(1);    opacity: 1; }
+            0%   { transform: translateY(100%) scale(0.35); opacity: 0; }
+            55%  { transform: translateY(-10%) scale(1.08); opacity: 1; }
+            100% { transform: translateY(0)    scale(1);    opacity: 1; }
           }
           ${state.pieces
             .map((p) => {
               const sq = toSquare(p);
-              const delay = (p.rank - 1) * 60;
-              return `[data-square="${sq}"] > div > img,
-                      [data-square="${sq}"] > div > svg {
-                animation: rookiesRunEmerge-${introId} 550ms cubic-bezier(0.2, 0.7, 0.2, 1) ${delay}ms both;
+              const delay = (p.rank - 1) * 50;
+              // Target every level of nesting where react-chessboard might
+              // render the piece sprite — img, svg, OR a wrapper div. Using
+              // descendant (no '>') so we match regardless of depth.
+              return `[data-square="${sq}"] img,
+                      [data-square="${sq}"] svg,
+                      [data-square="${sq}"] [data-piece] {
+                animation: rookiesRunEmerge-${introId} 650ms cubic-bezier(0.2, 0.7, 0.2, 1) ${delay}ms both;
                 transform-origin: 50% 70%;
               }`;
             })
