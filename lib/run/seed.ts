@@ -80,12 +80,18 @@ export function runForDate(
 }
 
 /** Convert a puzzle to the initial board state (Rookie's turn, no moves yet). */
+/** Generate a fresh 32-bit seed for the enemy-AI RNG. */
+function newAiRngSeed(): number {
+  return ((Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0) || 1;
+}
+
 export function puzzleToBoardState(
   puzzle: RunPuzzle,
   carry: {
     tempo?: number;
     abilities?: BoardState['abilities'];
     pendingOffer?: BoardState['pendingOffer'];
+    aiRngSeed?: number;
   } = {},
 ): BoardState {
   const abilities = refreshAbilityUses(carry.abilities ?? []);
@@ -122,6 +128,7 @@ export function puzzleToBoardState(
     level: puzzle.level,
     bonusMovesLeft: 0,
     shieldUp: false,
+    aiRngSeed: carry.aiRngSeed ?? newAiRngSeed(),
   };
   if (puzzle.level === 6 && !pendingOffer && !offerIsExhausted(base)) {
     const rolled = rollOffer(base, mulberry32((puzzle.level * 7919) >>> 0));

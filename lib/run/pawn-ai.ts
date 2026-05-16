@@ -20,8 +20,29 @@ import {
 } from './abilities';
 import { enemyAt } from './movement';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
+import { mulberry32 } from './seed';
 import { fromSquare, toSquare } from './types';
 import type { BoardState, Coord, EnemyPiece, PieceType } from './types';
+
+/**
+ * RNG for AI tiebreak decisions. Seeded by the per-attempt `aiRngSeed` mixed
+ * with the current move count and step within the enemy turn, so each AI
+ * choice is deterministic for a given state (replayable) but varies between
+ * attempts and between turns.
+ */
+function aiRng(state: BoardState): () => number {
+  const seed =
+    (((state.aiRngSeed ?? 1) >>> 0) ^
+      Math.imul(state.moveCount + 1, 2654435761) ^
+      Math.imul(state.enemyMovedSquares.length + 1, 40503)) >>>
+    0;
+  return mulberry32(seed || 1);
+}
+
+/** Pick a uniformly-random element using a seeded RNG. */
+function pickRandom<T>(items: T[], rng: () => number): T {
+  return items[Math.floor(rng() * items.length)];
+}
 
 const BLACK_FORWARD = -1;
 
@@ -210,22 +231,23 @@ function chebyshev(a: Coord, b: Coord): number {
 }
 
 /** Pick the single best move for `piece` that gets it closer to Rookie. */
-function approachMove(piece: EnemyPiece, state: BoardState): Coord | null {
+function approachMove(
+  piece: EnemyPiece,
+  state: BoardState,
+  rng: () => number,
+): Coord | null {
   const moves = pieceLegalMoves(piece, state);
   if (moves.length === 0) return null;
   const cur = chebyshev({ file: piece.file, rank: piece.rank }, state.rookie);
-  let best: Coord | null = null;
   let bestDist = Infinity;
   for (const m of moves) {
     const d = chebyshev(m, state.rookie);
-    if (d < bestDist || (d === bestDist && best && (m.file < best.file || (m.file === best.file && m.rank < best.rank)))) {
-      bestDist = d;
-      best = m;
-    }
+    if (d < bestDist) bestDist = d;
   }
   // Only move if it gets us strictly closer to Rookie.
-  if (best && bestDist < cur) return best;
-  return null;
+  if (bestDist >= cur) return null;
+  const tied = moves.filter((m) => chebyshev(m, state.rookie) === bestDist);
+  return pickRandom(tied, rng);
 }
 
 function coordKey(c: { file: number; rank: number }): string {
@@ -296,6 +318,7 @@ function chooseEnemyActionAgainst(
   state: BoardState,
   excludeSquares: ReadonlySet<string>,
 ): EnemyAction | null {
+  const rng = aiRng(state);
   // Frozen squares are treated as if those pieces have already moved.
   const frozen = new Set(
     state.frozenSquares
@@ -356,12 +379,9 @@ function chooseEnemyActionAgainst(
       }
     }
     if (captures.length > 0) {
-      captures.sort((a, b) => {
-        if (a.victimValue !== b.victimValue) return b.victimValue - a.victimValue;
-        if (a.mover.file !== b.mover.file) return a.mover.file - b.mover.file;
-        return a.mover.rank - b.mover.rank;
-      });
-      const pick = captures[0];
+      const bestVal = Math.max(...captures.map((c) => c.victimValue));
+      const tied = captures.filter((c) => c.victimValue === bestVal);
+      const pick = pickRandom(tied, rng);
       return {
         mover: pick.mover,
         target: pick.target,
@@ -370,12 +390,9 @@ function chooseEnemyActionAgainst(
       };
     }
     if (approaches.length > 0) {
-      approaches.sort((a, b) => {
-        if (a.approachDist !== b.approachDist) return a.approachDist - b.approachDist;
-        if (a.mover.file !== b.mover.file) return a.mover.file - b.mover.file;
-        return a.mover.rank - b.mover.rank;
-      });
-      const pick = approaches[0];
+      const bestDist = Math.min(...approaches.map((a) => a.approachDist));
+      const tied = approaches.filter((a) => a.approachDist === bestDist);
+      const pick = pickRandom(tied, rng);
       return { mover: pick.mover, target: pick.target, isCapture: pick.isCapture };
     }
     // No rabid piece can usefully act — fall through to normal AI for the
@@ -384,18 +401,20 @@ function chooseEnemyActionAgainst(
 
   const isNormallyEligible = (p: EnemyPiece) =>
     !isExcluded(p) && !rabid.has(coordKey(p));
-  // 1) Capture priority.
-  const capturers = state.pieces
-    .filter((p) => isNormallyEligible(p) && canCapture(p, state))
-    .sort((a, b) => {
-      const ta = PIECE_THREAT[a.type] ?? 0;
-      const tb = PIECE_THREAT[b.type] ?? 0;
-      if (ta !== tb) return tb - ta;
-      if (a.file !== b.file) return a.file - b.file;
-      return a.rank - b.rank;
-    });
+  // 1) Capture priority. Among pieces tied on threat value, pick randomly so
+  // the same defensive layout doesn't always trigger the same attacker.
+  const capturers = state.pieces.filter(
+    (p) => isNormallyEligible(p) && canCapture(p, state),
+  );
   if (capturers.length > 0) {
-    return { mover: capturers[0], target: { ...state.rookie }, isCapture: true };
+    const bestThreat = Math.max(
+      ...capturers.map((p) => PIECE_THREAT[p.type] ?? 0),
+    );
+    const tied = capturers.filter(
+      (p) => (PIECE_THREAT[p.type] ?? 0) === bestThreat,
+    );
+    const pick = pickRandom(tied, rng);
+    return { mover: pick, target: { ...state.rookie }, isCapture: true };
   }
 
   // 2) Movers: pawns advance toward rank 1; others approach Rookie.
@@ -418,7 +437,7 @@ function chooseEnemyActionAgainst(
         candidates.push({ mover: p, target, priority: -p.rank });
       }
     } else {
-      const target = approachMove(p, state);
+      const target = approachMove(p, state, rng);
       if (target) {
         // Closer to Rookie = higher priority (negative chebyshev).
         candidates.push({
@@ -431,12 +450,10 @@ function chooseEnemyActionAgainst(
   }
 
   if (candidates.length === 0) return null;
-  candidates.sort((a, b) => {
-    if (a.priority !== b.priority) return b.priority - a.priority;
-    if (a.mover.file !== b.mover.file) return a.mover.file - b.mover.file;
-    return a.mover.rank - b.mover.rank;
-  });
-  return { mover: candidates[0].mover, target: candidates[0].target, isCapture: false };
+  const bestPriority = Math.max(...candidates.map((c) => c.priority));
+  const tied = candidates.filter((c) => c.priority === bestPriority);
+  const pick = pickRandom(tied, rng);
+  return { mover: pick.mover, target: pick.target, isCapture: false };
 }
 
 /**

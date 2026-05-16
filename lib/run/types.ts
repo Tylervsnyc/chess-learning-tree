@@ -174,6 +174,15 @@ export interface BoardState {
    * next Rookie move restores them (refunding the use). Cleared on any
    * Rookie move (regular or ability) or when a different ability fires.
    */
+  /**
+   * Per-attempt RNG seed used by the enemy AI to randomize tiebreaks (e.g.
+   * which pawn advances when several are tied for "lowest rank", or which
+   * piece approaches when multiple are equidistant from Rookie). Fixed for
+   * the lifetime of a single level attempt — replays of the same state from
+   * the same seed produce the same moves — but a fresh seed is generated on
+   * every retry / level transition so the same strategy can't be memorized.
+   */
+  aiRngSeed: number;
   cancellableActivation?: {
     abilityId: AbilityId;
     snapshot: {

@@ -56,6 +56,7 @@ function buildInitialState(): BoardState {
     poisonedTurnsLeft: {},
     rabidSquares: [],
     rabidTurnsLeft: {},
+    aiRngSeed: 1,
     abilities: [
       {
         id: 'decoy',
