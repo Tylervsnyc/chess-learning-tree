@@ -138,12 +138,59 @@ export function RunBoard({
   // bottom→top wave (staggered by rank). Suppress wiggle while playing.
   const [introId, setIntroId] = useState(() => Date.now());
   const [introPlaying, setIntroPlaying] = useState(true);
+  // Rookie's strobe-sweep entrance — overlay-driven so we can animate her
+  // across files. `introFile` is the file (1..8) the overlay currently shows;
+  // null means the sweep is done and real Rookie takes over.
+  const [introFile, setIntroFile] = useState<number | null>(
+    () => state.rookie.file,
+  );
+  const [introScale, setIntroScale] = useState(1);
   useEffect(() => {
     setIntroId(Date.now());
     setIntroPlaying(true);
-    const t = setTimeout(() => setIntroPlaying(false), 1000);
-    return () => clearTimeout(t);
-  }, [state.level]);
+
+    // Strobe-sweep sequence: two fast L→R passes across the whole rank,
+    // then a third decelerating sweep that stops on Rookie's landing file,
+    // then a tiny squash-settle.
+    const finalFile = state.rookie.file;
+    type Step = { file: number; scale: number; dur: number };
+    const steps: Step[] = [];
+    for (let sweep = 0; sweep < 2; sweep++) {
+      for (let f = 1; f <= 8; f++) steps.push({ file: f, scale: 1, dur: 40 });
+    }
+    for (let f = 1; f <= finalFile; f++) {
+      steps.push({ file: f, scale: 1, dur: 50 + (f - 1) * 18 });
+    }
+    steps.push({ file: finalFile, scale: 1.14, dur: 90 });
+    steps.push({ file: finalFile, scale: 1, dur: 0 });
+
+    setIntroFile(steps[0].file);
+    setIntroScale(steps[0].scale);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let elapsed = 0;
+    for (let i = 1; i < steps.length; i++) {
+      elapsed += steps[i - 1].dur;
+      const step = steps[i];
+      timers.push(
+        setTimeout(() => {
+          setIntroFile(step.file);
+          setIntroScale(step.scale);
+        }, elapsed),
+      );
+    }
+    const totalMs = elapsed + steps[steps.length - 1].dur;
+    timers.push(
+      setTimeout(() => {
+        setIntroFile(null);
+        setIntroScale(1);
+      }, totalMs + 20),
+    );
+    timers.push(setTimeout(() => setIntroPlaying(false), Math.max(1000, totalMs + 60)));
+
+    return () => {
+      for (const t of timers) clearTimeout(t);
+    };
+  }, [state.level, state.rookie.file, state.rookie.rank]);
 
   const rookieSq = toSquare(state.rookie);
   const attackerAtRookie = useMemo(
@@ -168,11 +215,11 @@ export function RunBoard({
       if (enemyCaptureFx && sq === enemyCaptureFx.toSq) continue;
       map[sq] = { pieceType: ENEMY_SPRITE[p.type] };
     }
-    if (state.status !== 'lost') {
+    if (state.status !== 'lost' && introFile === null) {
       map[rookieSq] = { pieceType: rookieSprite };
     }
     return map;
-  }, [state.pieces, rookieSprite, state.status, rookieSq, enemyCaptureFx]);
+  }, [state.pieces, rookieSprite, state.status, rookieSq, enemyCaptureFx, introFile]);
 
   const wiggleSquares = useMemo(() => {
     if (state.status !== 'playing' || state.turn !== 'rookie') return [];
@@ -646,11 +693,6 @@ export function RunBoard({
               }`;
             })
             .join('\n')}
-          [data-square="${rookieSq}"] > div > img,
-          [data-square="${rookieSq}"] > div > svg {
-            animation: rookiesRunEmerge-${introId} 550ms cubic-bezier(0.2, 0.7, 0.2, 1) 350ms both;
-            transform-origin: 50% 70%;
-          }
         ` : ''}
       `}</style>
       {aegisLunge && (
@@ -810,6 +852,24 @@ export function RunBoard({
                 }}
               />
             ))}
+          </div>
+        )}
+        {introFile !== null && state.status === 'playing' && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: `${(introFile - 1) * 12.5}%`,
+              top: `${(8 - state.rookie.rank) * 12.5}%`,
+              width: '12.5%',
+              height: '12.5%',
+              pointerEvents: 'none',
+              zIndex: 3,
+              transform: `scale(${introScale})`,
+              transformOrigin: 'center center',
+            }}
+          >
+            <RookieCell form={state.form} />
           </div>
         )}
         {abilityFx && fxGeom && (
