@@ -85,6 +85,30 @@ function newAiRngSeed(): number {
   return ((Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0) || 1;
 }
 
+/** Pick a random starting file for Rookie on her designed start rank,
+ *  avoiding enemy- and hazard-occupied squares so the level remains
+ *  legal. Keeps the puzzle's intended rank so spawn camping / forced
+ *  paths designed into the level stay intact. */
+function randomizedRookieStart(puzzle: RunPuzzle): { file: number; rank: number } {
+  const startRank = puzzle.rookieStart.rank;
+  const occupied = new Set<number>();
+  for (const p of puzzle.pieces) {
+    if (p.rank === startRank) occupied.add(p.file);
+  }
+  for (const h of puzzle.hazards ?? []) {
+    if (h.rank === startRank) occupied.add(h.file);
+  }
+  const available: number[] = [];
+  for (let f = 1; f <= 8; f++) {
+    if (!occupied.has(f)) available.push(f);
+  }
+  if (available.length === 0) return { ...puzzle.rookieStart };
+  return {
+    file: available[Math.floor(Math.random() * available.length)],
+    rank: startRank,
+  };
+}
+
 export function puzzleToBoardState(
   puzzle: RunPuzzle,
   carry: {
@@ -100,7 +124,7 @@ export function puzzleToBoardState(
   let pendingOffer = carry.pendingOffer ?? null;
   let tempo = carry.tempo ?? 0;
   const base: BoardState = {
-    rookie: { ...puzzle.rookieStart },
+    rookie: randomizedRookieStart(puzzle),
     pieces: puzzle.pieces.map((p) => ({ ...p })),
     hazards: (puzzle.hazards ?? []).map((h) => ({ ...h })),
     turn: 'rookie',

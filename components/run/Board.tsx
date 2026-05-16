@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { defaultPieces } from 'react-chessboard';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { RookieCell } from './RookieCell';
@@ -133,6 +133,18 @@ export function RunBoard({
 }: BoardProps) {
   const rookieSprite = ROOKIE_SPRITE[state.form];
 
+  // Level-start intro — bump introId whenever the level changes so the
+  // emerge animation replays. Pieces rise from below the square in a
+  // bottom→top wave (staggered by rank). Suppress wiggle while playing.
+  const [introId, setIntroId] = useState(() => Date.now());
+  const [introPlaying, setIntroPlaying] = useState(true);
+  useEffect(() => {
+    setIntroId(Date.now());
+    setIntroPlaying(true);
+    const t = setTimeout(() => setIntroPlaying(false), 1000);
+    return () => clearTimeout(t);
+  }, [state.level]);
+
   const rookieSq = toSquare(state.rookie);
   const attackerAtRookie = useMemo(
     () =>
@@ -164,8 +176,11 @@ export function RunBoard({
 
   const wiggleSquares = useMemo(() => {
     if (state.status !== 'playing' || state.turn !== 'rookie') return [];
+    // Hold off on wiggle while the level-start emerge intro is playing,
+    // otherwise the two animations collide on the same selector.
+    if (introPlaying) return [];
     return nextEnemyMovers(state).map((p) => toSquare(p));
-  }, [state]);
+  }, [state, introPlaying]);
 
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
@@ -614,6 +629,29 @@ export function RunBoard({
              }`,
           )
           .join('\n')}
+        ${introPlaying ? `
+          @keyframes rookiesRunEmerge-${introId} {
+            0%   { transform: translateY(45%) scale(0.55); opacity: 0; }
+            60%  { transform: translateY(-6%) scale(1.04); opacity: 1; }
+            100% { transform: translateY(0)   scale(1);    opacity: 1; }
+          }
+          ${state.pieces
+            .map((p) => {
+              const sq = toSquare(p);
+              const delay = (p.rank - 1) * 60;
+              return `[data-square="${sq}"] > div > img,
+                      [data-square="${sq}"] > div > svg {
+                animation: rookiesRunEmerge-${introId} 550ms cubic-bezier(0.2, 0.7, 0.2, 1) ${delay}ms both;
+                transform-origin: 50% 70%;
+              }`;
+            })
+            .join('\n')}
+          [data-square="${rookieSq}"] > div > img,
+          [data-square="${rookieSq}"] > div > svg {
+            animation: rookiesRunEmerge-${introId} 550ms cubic-bezier(0.2, 0.7, 0.2, 1) 350ms both;
+            transform-origin: 50% 70%;
+          }
+        ` : ''}
       `}</style>
       {aegisLunge && (
         <style key={aegisLunge.id}>{`
