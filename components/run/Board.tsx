@@ -190,7 +190,8 @@ export function RunBoard({
     return () => {
       for (const t of timers) clearTimeout(t);
     };
-  }, [state.level, state.rookie.file, state.rookie.rank]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.level]);
 
   const rookieSq = toSquare(state.rookie);
   const attackerAtRookie = useMemo(
