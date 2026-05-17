@@ -46,6 +46,7 @@ import { CARO_KANN_PANOV } from '@/data/openings/caro-kann-panov'
 import { CARO_KANN_SMYSLOV } from '@/data/openings/caro-kann-smyslov'
 import { QUEENS_GAMBIT_ACCEPTED } from '@/data/openings/queens-gambit-accepted'
 import { SCANDINAVIAN_DEFENSE } from '@/data/openings/scandinavian'
+import { WITTY_ALIEN } from '@/data/openings/witty-alien'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -92,6 +93,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'caro-kann-smyslov': CARO_KANN_SMYSLOV,
   'queens-gambit-accepted': QUEENS_GAMBIT_ACCEPTED,
   'scandinavian': SCANDINAVIAN_DEFENSE,
+  'witty-alien': WITTY_ALIEN,
 }
 
 /** Get total lesson count for an opening */
