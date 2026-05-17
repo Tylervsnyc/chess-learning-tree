@@ -1,0 +1,169 @@
+[Event "The Alien Gambit: Introduction"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Introduction"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/9UXGatJV"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.19"]
+[UTCTime "07:26:00"]
+[ChapterMode "gamebook"]
+
+{ Hi, this is my study on the Alien / Martian Gambit.
+The Alien / Martian gambits are very risky attacking openings and lead to the king being open and strong positions.
+If you enjoy this study, please leave a like ❤️, it means the world.
+Here is the link if you want to share:
+https://lichess.org/study/XvTkesnD/9UXGatJV
+For all my studies:
+https://lichess.org/study/by/OneAndOnlyChessGod }
+ *
+
+
+[Event "The Alien Gambit: --------------------------------------------------------------------------------"]
+[Date "2024.09.22"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "--------------------------------------------------------------------------------"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/yHY61WwC"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.22"]
+[UTCTime "04:49:18"]
+[ChapterMode "gamebook"]
+
+ *
+
+
+[Event "The Alien Gambit: Alien gambit"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Alien gambit"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/khLJNRRc"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.19"]
+[UTCTime "07:23:04"]
+[ChapterMode "gamebook"]
+
+{ In the alien gambit, you open with e4. }
+1. e4 c6 { Take the centre. } 2. d4 d5 { Develop the knight } 3. Nd2 dxe4 { Take back. } 4. Nxe4 Nf6 { Threaten the alien gambit on g5. } 5. Ng5 h6 6. Nxf7 Kxf7 { Begin to develop, this is also opening up the king in multiple ways and bringing it towards the centre. } { [%cal Gf1c4,Gg1f3,Gd1h5] } 7. Nf3 e6 { Develop with bd3. } 8. Bd3 Nbd7 { Bring the king to safety. } 9. O-O Bd6 { Develop the rook. } 10. Re1 Re8 { Now you can create a strong attack with the knight, where do you put it? } 11. Ne5+ Bxe5 { Take back. } 12. dxe5 Nd5 { Develop your queen to an attacking square. } 13. Qh5+ Kg8 { Now you can create a very strong attack with yet another sacrifice. } 14. Bxh6!! gxh6 { After queen to g6 it is checkmate no matter what. } { [%cal Gd3h7,Gh5f7,Gh5g6,Gh5h6] } 15. Qg6+ *
+
+
+[Event "The Alien Gambit: Martian gambit"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B18"]
+[Opening "Caro-Kann Defense: Martian Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Martian gambit"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/feGaxDnw"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.19"]
+[UTCTime "11:25:34"]
+[ChapterMode "gamebook"]
+
+{ Bring out the pawns like in the alien gambit. }
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Bf5 { Play g5 the same as the alien gambit. } 5. Ng5 Bg6 { Protect your knight. } 6. N1f3 h6 { Sacrifice the knight on g5. } 7. Ne6!! fxe6 { Attack the bishop. } 8. Ne5 Bf7 { Develop your bishop. } 9. Bc4 Nd7 { Trade for the bishop, also disallowing castling. } 10. Nxf7 Kxf7 { Queen to g4 threatening to take the pawn and check. This opens up their king. } { [%cal Gd1h5,Gd1f3,Gd1g4,Gc4e6] } 11. Qg4 Qa5+ { Defend with the bishop. } 12. Bd2 Qc7 { Take the free piece. } 13. Bxe6+ Ke8 { Check again, notice how many places there are to attack. } { [%cal Gg4h5,Gg4g6,Ge6d7,Ge6f7,Gd2f4] } 14. Qg6+ Kd8 { Protect your pawn on g2. } 15. O-O Ngf6 { Centralize your rook. } 16. Rfe1 a5 { Attack the queen. } 17. c4 c5 { Take. } 18. dxc5 Nxc5 { Bring the rook to d1, sacraficing your bishop. } 19. Rad1!! Nxe6 { Find the discovered check. } 20. Bxa5+ Kc8 { Take. } 21. Bxc7 Nxc7 { Give another check with the queen for a winning position. } 22. Qf5+ *
+
+
+[Event "The Alien Gambit: Puzzle 1"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Puzzle 1"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/qF5R0h2T"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[FEN "r1bqr1k1/pp1n4/2p1p1Qp/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 1 15"]
+[SetUp "1"]
+[UTCDate "2024.09.19"]
+[UTCTime "11:59:43"]
+[ChapterMode "gamebook"]
+
+15... Kf8 16. Qxh6+ Kg8 17. Bh7+ Kf7 18. Bg6+ Kg8 19. Qh7+ Kf8 20. Qf7# *
+
+
+[Event "The Alien Gambit: Puzzle 2"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Puzzle 2"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/KSLAw7Vp"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[FEN "r1k2b1r/1pn1p1p1/5n1p/5Q2/2P5/8/PP3PPP/3RR1K1 b - - 1 22"]
+[SetUp "1"]
+[UTCDate "2024.09.19"]
+[UTCTime "12:00:45"]
+[ChapterMode "gamebook"]
+
+22... e6 23. Rxe6 Nxe6 24. Qxe6+ *
+
+
+[Event "The Alien Gambit: Puzzle 3"]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Puzzle 3"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/BUI4pRX4"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[FEN "r1bqr1k1/pp1n2p1/2p1p2p/3nP2Q/8/3B4/PPP2PPP/R1B1R1K1 w - - 3 14"]
+[SetUp "1"]
+[UTCDate "2024.09.19"]
+[UTCTime "12:01:31"]
+[ChapterMode "gamebook"]
+
+14. Bxh6 gxh6 15. Qg6+ *
+
+
+[Event "The Alien Gambit: --------------------------------------------------------------------------------"]
+[Date "2024.09.22"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "--------------------------------------------------------------------------------"]
+[ChapterURL "https://lichess.org/study/XvTkesnD/zmgB46ce"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.22"]
+[UTCTime "04:49:27"]
+[ChapterMode "gamebook"]
+
+ *
+
+
+[Event "The Alien Gambit: Thankyou for studying with me."]
+[Date "2024.09.19"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Thankyou for studying with me."]
+[ChapterURL "https://lichess.org/study/XvTkesnD/800QXltt"]
+[Annotator "https://lichess.org/@/OneAndOnlyChessGod"]
+[UTCDate "2024.09.19"]
+[UTCTime "12:02:36"]
+[ChapterMode "gamebook"]
+
+{ Thank you, I hope you guys learnt something, please leave a like ❤️, it would be much appreciated. Have a good day. }
+ *
+
+

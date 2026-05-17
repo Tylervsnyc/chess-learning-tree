@@ -1,0 +1,256 @@
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 👽Introduction- Alien Gambit 👽"]
+[Date "2024.06.30"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "👽Introduction- Alien Gambit 👽"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/J9QRladg"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.06.30"]
+[UTCTime "04:33:27"]
+[ChapterMode "gamebook"]
+
+{ Welcome friends to my study ' Crush the Caro-Kann Defense with the Alien Gambit '!!. Alien Gambit is made by Witty Alien. There is also an Alien Gambit Bonjour Variation against the French Defense. Martian Gambit against the Caro-Kann.
+
+Alien Gambit can be only against the Caro-Kann Defense. Our ambition is to sacrifice our Knight on f7..CAN WE BECOME THE BEST STUDY IN LICHESS FOR ALIEN GAMBIT!!.
+
+Let's start play e4 to initiate the Alian Gambit!! }
+1. e4 { Alian Gambit can be only played with e4 against the Caro-Kann defense. } (1. d4) (1. c4) 1... c6 { We will play d4 to control the centre. } 2. d4 d5 { We are going to play Nd2 to protect our pawn on e4 and to start the journey of our Knight!! } { [%cal Gb1c3,Gb1d2,Gc3e4,Gg5f7,Gd2e4,Ge4g5] } 3. Nd2 dxe4 { If dxe4 then Nxe4. One more thing if the d pawn of black doesn't takes our pawn we would be not able to play the Alien Gambit. } 4. Nxe4 { Capturing with the Knight and its journey has started!! } 4... Nf6 { We will not take the Knight and go on g5. } { [%cal Ge4g5,Gg5f7] } 5. Ng5 { Do not take the Knight and go on g5. } 5... h6 { h6 is the most natural move in this position and has been played in 300,000+ games, giving a winrate of 56 %. It's time to sacrifice the Knight on f7. } 6. Nxf7!! { Sacrifice the Knight on f7 and its journey has ended!! The move has been played in 150,000+ games giving a winrate of 60%. Is it a BLUNDER or a BRILLIANT move? } *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📙CHECKMATE:-Trap-1"]
+[Date "2024.06.30"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📙CHECKMATE:-Trap-1"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/U267h89l"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.06.30"]
+[UTCTime "11:28:21"]
+[ChapterMode "gamebook"]
+
+{ Let's start !! Play e4.. }
+1. e4 c6 { Do you remember what to play ? } 2. d4 d5 { Now ? } 3. Nd2 { [%cal Gd2e4,Ge4g5,Gg5f7] } 3... dxe4 4. Nxe4 Nf6 { Is the sacrifice coming closer ? What will you play? } 5. Ng5 h6 { Sacrifice thaaa Knight!! } 6. Nxf7!! Kxf7 { Now we are going to make some developing moves.. Play Nf3. } 7. Nf3 Nbd7 { Nd7 is controlling e5 so we cannot give a check. Still we can give a check, can you find it? } { [%csl Ge5][%cal Gd7e5,Gf3e5] } 8. Bc4+ Ke8 { Black has four options to play e6, ke8 , Nd5 or kg6. Let's say the opponent played ke8. We can castle to make our king safe. } 9. O-O Nb6 { We will play Bd3 to control the empty diagonal and make our bishop safe. } 10. Bd3 { [%csl Gd3][%cal Gd3h7] } 10... Bg4?? { Black pinned our knight, so what we can still move it. Ne5! (TOP ENGINE MOVE)Sacrificing thaaa Queeeen! Do you know why? The stockfish gives white an advantage of +4.0. } { [%csl Gf3,Ge5,Gd1,Gg6][%cal Gf3e5,Gg4d1,Gd3g6] } 11. Ne5!! Bxd1?? { Bxd1 is a BLUNDER can you find why? } 12. Bg6#! *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📗CHECKMATE:-Trap-2"]
+[Date "2024.07.01"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📗CHECKMATE:-Trap-2"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/t1vL3kMn"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.07.01"]
+[UTCTime "14:53:19"]
+[ChapterMode "gamebook"]
+
+{ Initiate the Alien Gambit!!😤😤 }
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 { Now I think you are familiar with this opening? 🤔🧐 } 6. Nxf7!! Kxf7 { Remember what developing move we played in the previous chapter ?🤔 } 7. Nf3 Bf5 { The opponent played Bf5.. We are going to give a check with the Knight.. (Ne5+ is common move played in most of the traps)👍💪 } 8. Ne5+ { [%cal Gf7e8,Gf7g8,Gf7e6] } 8... Kg8 { We saw in the earlier trap that King went to e8 now it is going to g8..(Kg8 has been played in 9,500+ games). Let's see the trap further. Give him a check..✅👍 } 9. Bc4+ e6? { Here to defend the check the top engine move is Nd5 but lets say the opponent does not finds it and plays e6( e6 played in 4,500+ games). Winrate of 63% for white.🙂👍
+There is a 20% chance that black plays Nd5(TOP ENGINE MOVE) Can you find a way to win the pawn? } (9... Kh7 10. g4 Be4 11. g5 hxg5 12. Nf7! { [%cal Gf7g5,Gf7h8,Gf7d8] } 12... Qd7 13. Nxg5+ Kg6 14. Bf7+ Kh6 15. Nxe4+ Kh7 16. Nxf6+ gxf6 (16... exf6 17. Qh5#) 17. Qh5+ Bh6 18. Qxh6#) 10. g4! { Moves the Bishop away from the defense of the pawn.( g4 has been played in7,500+ games). Winrate of 75% for white.💪✅👍 } 10... Be4 { Capture the free pawn (Bxe6+).. } { [%cal Ge4h1] } 11. Bxe6+ Kh7 { Here we will play g5 ( Played in 450+ games and giving a winrate of 78% for white).Can you guess why? Giving the rook for free.. } 12. g5! { Black can either play Qe7, hxg5, Bxh1?? or Bb4+(TOP ENGINE MOVE).
+*If Bb4+ then we reply with c3.
+*If Qe7 , Bb3 , hxg5, Bxh1 ,Qd3+ ,Be4 , Qh3+ ,Nh5 , Qxh5#.
+*These moves are played very rarely. Qe7 has 7% chances and Bb4+ 2% chances to be played. } 12... Bxh1?? { Bxh1 is BLUNDER , Can you tell why? } (12... Qe7 13. Bb3 hxg5 14. Bxg5 Bxh1?? { [%cal Gd1d3,Gh1e4,Gd3h3,Gf6h5,Gh3h5] } 15. Qd3+ Be4 16. Qh3+ Nh5 17. Qxh5#) (12... hxg5 13. Nf7! { [%cal Gf7d8,Gf7h8,Gf7g5] } 13... Qa5+ 14. Bd2) (12... Bb4+ 13. c3 Re8 14. Bb3 Rxe5 (14... Bxh1 15. g6+ Kh8)) 13. g6#! { A pawn checkmate isn't amazing!! } *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📒CHECKMATE:-Trap-3"]
+[Date "2024.06.30"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B17"]
+[Opening "Caro-Kann Defense: Karpov Variation, Modern Variation"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📒CHECKMATE:-Trap-3"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/7GLGs1ce"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.06.30"]
+[UTCTime "11:13:00"]
+[ChapterMode "gamebook"]
+
+{ Playing e4.. }
+1. e4 (1. d4) 1... c6 { Do you remember what to play ? } 2. d4 d5 { Now ? } 3. Nd2 dxe4 { Capture the pawn. } 4. Nxe4 Nd7 { Is the sacrifice coming closer ? What will you play? } 5. Ng5 h6 { Here instead of playing Nxf7 we will play Ne6. Do you know why? } { [%csl Ge6][%cal Gg5e6] } 6. Ne6! { [%cal Gg5e6] } (6. Nxf7 { Come on brother,see properly what is given on the previous move. }) 6... fxe6?? { Can you find why fxe6 is a BLUNDER ? } 7. Qh5+! { Try to find the MATE. } 7... g6 8. Qxg6#! *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📘CHECKMATE:-Trap-4; Two Knights Variation"]
+[Date "2024.07.02"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B10"]
+[Opening "Caro-Kann Defense: Two Knights Attack"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📘CHECKMATE:-Trap-4; Two Knights Variation"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/gOY490rF"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.07.02"]
+[UTCTime "12:12:14"]
+[ChapterMode "gamebook"]
+
+{ This trap has been played by GM Hikaru Nakamura and he defeated a FM with this trap.. So let's start.. }
+1. e4 c6 { Here were not going to play d4 instead we will play Nc3. } 2. Nc3 (2. d4 { Come on brother, see properly what is given on the previous move. }) 2... d5 { Now we will play Nf3. } 3. Nf3 (3. d4 { Again brother, see properly what is given on the previous move. }) 3... dxe4 { Capture the pawn.. } 4. Nxe4 Nf6 { Now you know what to do.. } 5. Neg5 h6 { Sacrifice thaaa Knight!! } 6. Nxf7!! Kxf7 { Give a check by the Knight.. } 7. Ne5+ { [%cal Gf7e6,Gf7e8,Gf7g8] } 7... Ke8? { Play Bd3 threating a checkmate. } 8. Bd3 { [%csl Gg6][%cal Gd3g6] } (8. Bc4?? { This move is BLUNDER, black gets an advantage of -1.3.As now black has Qd4! double attack on our pieces. Instead play Bd3. Giving us an advantage of +1.0. } { [%csl Gf7,Gd4,Gc4,Ge5][%cal Gc4f7,Gd8d4,Gd4c4,Gd4e5] }) 8... Be6?? { Deliver the CHECKMATE..Here Hikaru's opponent got trapped.. } 9. Bg6+! Bf7 { Can you find the MATE ? } 10. Bxf7#! *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📔CHECKMATE:-Trap-5; Brilliant Bishop sacrifice on h6."]
+[Date "2024.07.06"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📔CHECKMATE:-Trap-5; Brilliant Bishop sacrifice on h6."]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/uYEDgAlq"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.07.06"]
+[UTCTime "05:47:15"]
+[ChapterMode "gamebook"]
+
+{ Let's start .. This trap was played between Witty Alien, and a GM and Witty Alien won the game, in the following manner. Start by playing e4. }
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7!! Kxf7 7. Nf3 Nbd7 { Nd7 is controlling d6 so we can't give a check with the Knight. We will develop the bishop by playing Bd3. } { [%csl Ge5][%cal Gd7e5,Gf3e5] } 8. Bd3 { [%csl Gg6][%cal Gd3g6] } 8... e6 { Now we will Castle.Making the king safe. } 9. O-O Bd6 { Bring the rook to the open file. } 10. Re1 Re8? { Play Ne5+ to make the Queen' s diagnol empty. } 11. Ne5+! Bxe5?? { This is a BLUNDER, as now we retake with the pawn and black's knight is under attack. After the knight moves the h5 square is undefended so we play Qh5+!. Bxe5?? gives white an advantage of +1.8 by the stockfish. } 12. dxe5 { Here the TOP ENGINE MOVE for black is Kg8 sacrificing the knight. But Kg8 is not possible for a human to find it until and unless the player is cheating. } { [%csl Gh5][%cal Gd1h5] } 12... Nd5?! { Play Qh5+ giving a check to black. } 13. Qh5+! Kg8 { Here comes the BRILLIANT BISHOP SACRIFICE, can you find it is a little difficult. } 14. Bxh6!! { This move has been played in over 900+ games. } 14... gxh6?? { If the pawn take we have a MATE IN 6.. Play Qg6+. } (14... Nf8 15. Bxg7!! Kxg7 16. Re4 Ng6 17. Rg4 Nf4 18. Rxg6+!! Nxg6 19. Qxg6+ Kh8 (19... Kf8 20. Qh6+ { [%cal Gf8f7,Gf8g8,Gf8e7] } 20... Ke7 (20... Kg8 21. Qh7+ Kf8 22. Bg6 { [%cal Ge8e7,Gd8d7] } 22... Re7 (22... Qd7 23. Qh8+ Ke7 24. Qf6#) 23. Qh8#) (20... Kf7 21. Bg6+ { [%cal Gf7e7,Gf7g8] } 21... Kg8 (21... Ke7 22. Qg7#) 22. Qh7+ Kf8 23. Qf7#) 21. Qg7#) 20. Qh7#) 15. Qg6+ { If black plays Kh8 we have Qh7#. } { [%cal Gg8h8] } 15... Kf8 { Capture the pawn. } (15... Kh8 16. Qh7#) 16. Qxh6+ { If Ke7 we will play Qh7#. } 16... Kg8 { Can you find the MATING SEQUENCE? } (16... Ke7 17. Qg7#) (16... Kf7 17. Bg6+ Kg8 (17... Ke7 18. Qg7#) 18. Qh7+ Kf8 19. Qf7#) 17. Bh7+ Kh8 18. Bg6+ Kg8 19. Qh7+ Kf8 { Find the MATE. } 20. Qf7# { All the mating variations are explained in my blog on Alien Gambit. Check it out
+( lichess.org/@/ishaan_biswas/blog/crush-the-caro-kann-defense-with-the-alian-gambit/4yIWRNkj ) } *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📕POSITIONAL PLAY and CHECKMATE:-Trap-6"]
+[Date "2024.07.03"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📕POSITIONAL PLAY and CHECKMATE:-Trap-6"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/3P6nkY9t"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.07.03"]
+[UTCTime "12:38:42"]
+[ChapterMode "gamebook"]
+
+{ Start the Gambit!! }
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7!! Kxf7 7. Nf3 e6 { Give a check. } 8. Ne5+ Kg8 { The black king went in the corner to be safe now we are going to play Bd3 controlling the diagnol. } 9. Bd3 { [%cal Gd3h7] } 9... Bd6 { We are now going to play f4 to anchor the knight on e5, even if the opponent takes the knight we will have a good pawn structure. } 10. f4 Bxe5?? { Capture with the f pawn.. } 11. fxe5 { If black takes the free pawn of d4 with the queen we have Bh7+!!.Winning the queen. } 11... Nd5 { Castling making our king safe and bringing the rook to an open file. } (11... Qxd4?? 12. Bh7+!! Nxh7 13. Qxd4) 12. O-O { [%cal Gf1f8] } 12... Nd7 { Now we are going to play Bg6 to make some mating possibilities. } 13. Bg6 Nf8 { After Nf8, we will play Bf7+ threating MATE.. } 14. Bf7+ Kh7 { Can you find the winning move ? } 15. Qd3+ g6 { Can you find the BRILLIANT MOVE ? } 16. Bxg6+!! Nxg6?? { Can you find why Nxg6 is BLUNDER ? } 17. Rf7+ Kg8 { Find MATE IN 1. } 18. Qxg6# *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📚What if the opponent does not play h6?- Trap 7"]
+[Date "2024.07.06"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📚What if the opponent does not play h6?- Trap 7"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/aApR5r4M"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[FEN "rnbqkb1r/pp2pppp/2p2n2/6N1/3P4/8/PPP2PPP/R1BQKBNR b KQkq - 1 5"]
+[SetUp "1"]
+[UTCDate "2024.07.06"]
+[UTCTime "11:04:53"]
+[ChapterMode "gamebook"]
+
+5... Bf5 { In this position black does not plays h6.So we will keep the knight on g5 only and play N1f3. } 6. N1f3 e6 { Black played e6 thinking of bringing the bishop to d6 and control e5 and not let our knight come on e5. Though we will play it now. Ne5 threating a fork on f7. } 7. Ne5! { [%cal Ge5f7,Gg5f7,Gf7h8,Gf7d8] } 7... Bg6 { Bg6 tries to protect f7 but we will play Bd3 offering a trade of bishops. } 8. Bd3 Qxd4? { Black being greedy took our free pawn on d4. Now we will play Nxg6. } (8... Qa5+ 9. Bd2 Qc7 10. Bxg6 hxg6 11. Ngxf7 { [%cal Gf7h8,Gf7d8,Gf7d6,Gf7h6,Gf7g5] }) 9. Nxg6! hxg6 { Now comes the sacrifice Nxf7 !!.. } 10. Nxf7!! Kxf7?? { Why Kxf7 is a BLUNDER can you find why ? } 11. Bxg6+!! Kxg6 { Capture thaa Queen... } 12. Qxd4 *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📙What if the opponent plays c5, the best move? Trap-8"]
+[Date "2024.07.06"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📙What if the opponent plays c5, the best move? Trap-8"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/AXvV20Au"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/8/PPP2PPP/R1BQKBNR w KQ - 0 1"]
+[SetUp "1"]
+[UTCDate "2024.07.06"]
+[UTCTime "10:10:23"]
+[ChapterMode "gamebook"]
+
+{ Play Nf3 . }
+1. Nf3 c5! { Here we are going to push the pawn to d5 offering black a free pawn. Or we have more trap Bd3, Nc6, Ne5+, Nxe5 ??, dxe5, Nd5, c4! ( 📌 ). Or wherever the knight moves except on the d file we have Bg6+!! Winning the queen !!.And if in Nd7, e6, Kxe6?? ( MATE IN 3 ), Bc4+, Ke5, Qd5+, Kf6, Qe6#. } 2. d5 { Here the queen or the knight can take the pawn if the knight takes we have c4 winning the knight as it is 📌 pinned. } (2. Bd3 Nc6 3. Ne5+ Nxe5?? 4. dxe5 { [%cal Gf6g4,Gf6h5,Gf6h7,Gf6g8,Gf6e8,Gf6d7,Gf6d5,Gf6e4] } 4... Ng8 (4... Nd5 5. c4! Nb6?? 6. Bg6+!! Kxg6 7. Qxd8) (4... Nd7 5. e6+! Kxe6?? (5... Ke8?? 6. Bg6#!) (5... Kg8 6. exd7) 6. Bc4+! Ke5 7. Qd5+ Kf6 8. Qe6#) (4... Ng4 5. Bg6+!!) (4... Nh5 5. Bg6+!! { [%cal Gd1d8] }) (4... Nh7 5. Bg6+!! { [%cal Gd1d8] }) (4... Ne8 5. Bg6+!! { [%cal Gd1d8] }) (4... Ne4 5. Bc4+!! Ke8 6. Bf7+!! Kxf7 { [%cal Gd1d8] } 7. Qxd8) 5. Bg6+!! Kxg6 6. Qxd8) (2. dxc5 { This move allows white to trade Queens which is bad for us. }) 2... Qxd5?? { Black took the free pawn but it is a BLUNDER, can you find why? } (2... Nxd5?? 3. c4!) (2... Bf5 3. g4 Bxg4?? 4. Ne5+! Ke8 5. Nxg4) 3. Bc4!! Qxc4 { Forky time 🍴🍴 play Ne5+. } 4. Ne5+! Ke8 { Capture the vulnerable queen.. } 5. Nxc4 *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📗What if the opponent plays c5, the best move? -Trap-9"]
+[Date "2024.07.06"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📗What if the opponent plays c5, the best move? -Trap-9"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/6rrHDwIV"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/8/PPP2PPP/R1BQKBNR w KQ - 1 5"]
+[SetUp "1"]
+[UTCDate "2024.07.06"]
+[UTCTime "10:55:32"]
+[ChapterMode "gamebook"]
+
+{ Play Nf3. }
+5. Nf3 c5! { Play Bd3 applying the trap.The opponent play c5 the TOP ENGINE MOVE. } 6. Bd3 cxd4 { Sacrifice thaaa Knight , Nxd4.. } 7. Nxd4!! Qxd4?? { Why is this a BLUNDER can you find it ? } 8. Bg6+!! Kxg6 { Capture thaaa Queen... } 9. Qxd4 { The position according to Stockfish is equal but according to normal humans it is winning for white as white has a queen instead of 3 minor pieces and Black's king is exposed and white is a pawn up. } *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📘MATERIAL GAIN:-Trap-10"]
+[Date "2024.07.01"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📘MATERIAL GAIN:-Trap-10"]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/SZY0qGCu"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[UTCDate "2024.07.01"]
+[UTCTime "01:30:36"]
+[ChapterMode "gamebook"]
+
+{ This trap is not of checkmate but it is of material gain.. So start the Gambit !! I am making you play the moves so many times to memorize the moves. }
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7!! Kxf7 7. Nf3 Bg4?? { Bg4 looks like a natural move but it is a BLUNDER.. Can you find the winning move ? } 8. Ne5+! { [%cal Ge5g4,Ge5f7,Gf7g8] } 8... Ke8 (8... Kg8 9. Bc4+ Kh7?? 10. Qd3+! Bf5 11. Qxf5+ g6 12. Qxg6#) 9. Nxg4 { Here you might question that Bc4 is threatening mate so why cannot play it? It is because black has Qa5+ making an escape square on d8 and after we play Bd2 black can sacrifice thaa Queen , Qxe5+ , dxe5 then Black takes our queen Bxd1 and we are completely lost. } (9. Bc4?? { Black has Qa5+ making an escape square on d8. } 9... Bxd1?? (9... Qa5+! 10. Bd2 (10. Qd2 Qxd2+ 11. Kxd2) 10... Qxe5+!! 11. dxe5 Bxd1 12. Rxd1) 10. Bf7#!) *
+
+
+[Event "Crush the Caro-Kann Defense with the Alien Gambit!!: 📚COUNTERATTACK against the Alien Gambit.."]
+[Date "2024.07.03"]
+[White "Alien Gambit"]
+[Black "COUNTERATTACK against Alien Gambit"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Crush the Caro-Kann Defense with the Alien Gambit!!"]
+[ChapterName "📚COUNTERATTACK against the Alien Gambit.."]
+[ChapterURL "https://lichess.org/study/ZPjWhHeg/DV5S6MkB"]
+[Annotator "https://lichess.org/@/Ishaan_Biswas"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/8/PPP2PPP/R1BQKBNR w KQ - 0 1"]
+[SetUp "1"]
+[UTCDate "2024.07.03"]
+[UTCTime "14:50:29"]
+[ChapterMode "gamebook"]
+
+{ This position is when you accept the Alian Gambit, as black. }
+1. Nf3 { We know that c5 is the TOP ENGINE MOVE as if white takes the pawn we take trade Queens and now there is a less chance of getting mated. } 1... c5! 2. Bc4+ { Block the check by playing e6. } 2... e6 3. Ne5+ { Play Kg8. } 3... Kg8 4. c3 { Develop the knight on c6 attacking the d4 pawn } 4... Nc6 5. Ng6 { Here do not make a mistake by playing Rh7 as the rook is useless in this position and our opponent's Knight is very vulnerable, it would be bad for our opponent if white captures our useless rook. Instead play cxd4. } 5... cxd4 (5... Rh7??) 6. Nxh8? { Take the Knight.. } 6... Kxh8 7. cxd4 { Here do not take the pawn first play Bb4+ and white wouldn't move the king to lose their castling rights, but play Bd2. } 7... Bb4+ 8. Bd2 { Now we can take the free pawn with the queen. } 8... Qxd4 { I hope that you have liked this study. I hope that I have not disappointed you as this is my first study. Please leave a like ❤️ if you like this study and want me to make more studies like this.Do try this Gambit 👽.. } *
+
+

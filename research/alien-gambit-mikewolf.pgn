@@ -1,0 +1,218 @@
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Date "2024.02.04"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[UTCDate "2024.02.04"]
+[UTCTime "13:29:31"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 { [%cal Gc8f5] } 4... Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 Bf5 8. Ne5+ Kg8 *
+
+
+[Event "Alien Gambit Study: Chapter 1"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 2 (Bishop G4)"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/Z9mPZi8M"]
+[UTCDate "2024.02.04"]
+[UTCTime "13:34:24"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 Bg4 { [%csl Gg4] } 8. Ne5+ Kg8 9. Bc4+ e6 10. Nxg4 { White is winning +3.9 } *
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 3 (Bishop F5) Mate with pawn variation"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/THrDWcpf"]
+[UTCDate "2024.02.04"]
+[UTCTime "13:43:43"]
+
+{ For this to work, your opponent needs to make some mistakes, but it's good to know this line }
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 Bf5 8. Ne5+ Kg8 9. Bc4+ e6 10. g4 Be4 11. Bxe6+ Kh7 12. g5 Bxh1 13. g6# *
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 4 Bishop F5 retreat, king in the middle"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/BJghpkc5"]
+[UTCDate "2024.02.04"]
+[UTCTime "13:50:55"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 Bf5 8. Ne5+ Ke8 9. g4 Bh7 10. Bc4 Bg8 11. Qd3 *
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 5 Greek gift style variation"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/ARGPY1px"]
+[UTCDate "2024.02.04"]
+[UTCTime "13:56:59"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 e6 8. Bd3 Nbd7 9. O-O Bd6 10. Re1 Rf8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 gxh6 (14... Qe8 15. Bg6 N7f6 16. exf6 Nxf6 17. Bxe8 Nxh5 18. Bxh5 gxh6 19. Rad1 { If by a miracle they play all the top engine moves and not accept our greek gift, you get 2 rooks 1 bishop winning end-game }) 15. Qg6+ Kh8 16. Qh7# { If black is developing natural moves, he might fall into yet another trap in the style of a bishop sacrifice, Greek God Brilliant } *
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 6 cxd4 QUEEN TRAP idea with light square bishop"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/ZXEtT4gr"]
+[UTCDate "2024.02.04"]
+[UTCTime "14:09:28"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } 7. Nf3 c5 8. c3 cxd4 9. Bd3 { [%cal Gd4c3] } 9... dxc3 10. Bg6+ Kxg6 11. Qxd8 *
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B18"]
+[Opening "Caro-Kann Defense: Classical Variation"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 7 Gambit Declined, 2 white knights variation"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/tglO7qzo"]
+[UTCDate "2024.02.04"]
+[UTCTime "14:16:49"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng5 e6 6. N1f3 Nf6 7. Ne5 Bg6 8. Bd3 Bxd3 9. Qxd3 Qa5+ 10. Bd2 Bb4 11. c3 Be7 12. Ngxf7 O-O 13. Nh6+ gxh6 14. Bxh6 Nbd7 (14... Kh8) 15. Qg3+ Ng4 16. Qxg4+ Bg5 17. Qxg5+ Kh8 18. Qg7# *
+
+
+[Event "Alien Gambit Study: Chapter 8 Real Game Example 1 (Witty_Alien vs i-am-tired1234) 2 brilliants"]
+[Date "2024.02.04"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 8 Real Game Example 1 (Witty_Alien vs i-am-tired1234) 2 brilliants"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/lp16fy4M"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[UTCDate "2024.02.04"]
+[UTCTime "14:24:18"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Be6 8. Bd3 Nbd7 9. O-O g5 10. Bxg5 Bg7 11. Re1 Bd5 12. Bf4 Bxf3 13. Qxf3 Rf8 14. Bc4+ Ke8 15. Qg3 Nh5 16. Qg6+ Rf7 17. Qxf7# *
+
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.12.02"]
+[Round "-"]
+[White "Witty_Alien"]
+[Black "Rawnsdale"]
+[Result "1-0"]
+[WhiteElo "2495"]
+[WhiteTitle "CM"]
+[BlackElo "2583"]
+[BlackTitle "NM"]
+[TimeControl "60"]
+[Termination "Witty_Alien won by checkmate"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 9 Real Game Example 2 (Witty_Alien vs NM Rawnsdale)"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/N0rf9493"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5?! h6 6. Nxf7?? Kxf7 7. Nf3 Nbd7?! 8. Bc4+?! e6 9. O-O?! Bd6 10. Re1 Re8?! 11. Ne5+ Bxe5?? 12. dxe5 Nd5 13. Qh5+?! Kg8? 14. Bxh6!! Nf8 15. Bxg7?? Kxg7 16. Re4 Ng6! 17. Rg4 Ne7? 18. Bd3! Rh8 19. Rxg6+? Nxg6 20. Qxg6+ Kf8 21. Re1! Qh4 22. Re3! Qxh2+? 23. Kf1 Qh1+?! 24. Ke2 Ke7 25. Qg7+ Kd8 26. Bg6 Bd7?! 27. Rd3! Kc8 28. Qxd7+ Kb8 29. Qd6+ Kc8 30. Qxe6+ Kc7 31. Qd6+ Kb6 32. Rb3+ Ka6 33. Qa3# { 1-0 White wins. } 1-0
+
+
+[Event "Alien Gambit Study: Alien Gambit Study: Chapter 1 (Gambit Accepted)"]
+[Site "https://lichess.org/study/ujO4MtIg/dfXh42da"]
+[Date "2024.02.04"]
+[Result "*"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 10 black knight d7 mistake exploit"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/Zp61Ih59"]
+[UTCDate "2024.02.04"]
+[UTCTime "14:47:13"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 { Alien Gambit accepted } { [%csl Gd1][%cal Gc8g4,Gf1c4,Gc4f7] } 7. Nf3 Nbd7 8. Bc4+ Ke8 9. Qd3 Nb6 10. Ne5 { [%cal Gc8f5,Gc4f7] } 10... Nxc4 (10... e6 11. Qg6+ Ke7 12. Qf7+ Kd6 13. b3) (10... g6 11. Bf7#) 11. Qg6# *
+
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.10.28"]
+[White "Witty_Alien"]
+[Black "Sjakkongen09"]
+[Result "1-0"]
+[WhiteElo "2511"]
+[BlackElo "2014"]
+[TimeControl "60"]
+[Termination "Witty_Alien won by checkmate"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 11Real Game Example 3 (Witty_Alien vs Sjakkongen09)"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/whf84Qap"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bg4 8. Ne5+ Ke8 9. Bc4 Bh5 10. Qxh5+ Nxh5 11. Bf7# { 1-0 White wins. } 1-0
+
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.12.14"]
+[White "Witty_Alien"]
+[Black "chess_enjoyer03"]
+[Result "1-0"]
+[WhiteElo "2533"]
+[BlackElo "2206"]
+[TimeControl "10+1"]
+[Termination "Witty_Alien won on time"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit Study"]
+[ChapterName "Chapter 12 Real Game Example 4 (Witty_Alien vs chess_enjoyer03)"]
+[ChapterURL "https://lichess.org/study/ujO4MtIg/eaXnwFlA"]
+[Annotator "https://lichess.org/@/MikeWolf321"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 c5 8. c3 cxd4 9. cxd4 Nc6 10. Bd3 e6 11. O-O Bd6 12. Re1 Re8 13. Ne5+ Bxe5 14. dxe5 Nd5 15. Qh5+ Kg8 16. Bxh6 Qe7 17. Bg5 { 1-0 White wins on time. } 1-0
+
+
