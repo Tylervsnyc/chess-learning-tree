@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEmail, getUnsubscribeUrl, getAppUrl } from '@/lib/email/send';
 import { DripDay3LeftOff } from '@/lib/email/templates/DripDay3LeftOff';
-import { verifyCronSecret } from '@/lib/cron-auth';
+import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
 import type { EmailType } from '@/types/email';
 
@@ -14,11 +14,7 @@ const DRIP_DAYS: DripDay[] = [
   { day: 3, emailType: 'drip_day3' },
 ];
 
-export async function GET(request: NextRequest) {
-  if (!verifyCronSecret(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
   try {
     const supabase = createServiceClient();
     const appUrl = getAppUrl();
@@ -49,8 +45,7 @@ export async function GET(request: NextRequest) {
           )
         `)
         .not('email', 'is', null)
-        .gte('last_activity_date', `${targetDateStr}T00:00:00.000Z`)
-        .lt('last_activity_date', `${targetDateStr}T23:59:59.999Z`);
+        .eq('last_activity_date', targetDateStr);
 
       if (error) {
         console.error(`Database error for day ${day}:`, error);
@@ -123,4 +118,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

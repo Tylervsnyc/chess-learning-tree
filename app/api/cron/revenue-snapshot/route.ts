@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyCronSecret } from '@/lib/cron-auth';
+import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
 import { getStripe } from '@/lib/stripe';
 import type Stripe from 'stripe';
 
-export async function GET(request: NextRequest) {
-  if (!verifyCronSecret(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = withCronHeartbeat('revenue-snapshot', async (_request: NextRequest) => {
   try {
     const stripe = getStripe();
     const supabase = createServiceClient();
@@ -202,4 +198,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

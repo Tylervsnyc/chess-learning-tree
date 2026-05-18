@@ -1991,16 +1991,18 @@ Feature-flagged ad slots show self-promo upgrade CTAs to free users. Premium use
 
 ## 40. Cron Schedule
 
-All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer token.
+All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer token. Every cron is wrapped in `withCronHeartbeat()` (`lib/cron/heartbeat.ts`) which records each run to the `cron_heartbeats` table and posts to `CRON_ALERT_WEBHOOK_URL` (if set) on failure. Admin dashboard `/admin/dashboard` surfaces health (CHE-239).
 
 | Endpoint | Schedule (UTC) | Purpose |
 |----------|----------------|---------|
-| `/api/cron/streak-check` | Daily 00:00 | Reset broken streaks |
-| `/api/cron/drip` | Daily 01:00 | Drip email campaigns |
+| `/api/cron/drip` | Daily 18:00 | 3-day inactivity email |
 | `/api/cron/revenue-snapshot` | Daily 02:00 | Stripe metrics snapshot |
-| `/api/cron/re-engagement` | Daily 08:00 | Win-back inactive users |
-| `/api/cron/dunning` | Daily 10:00 | Payment failure follow-ups |
-| `/api/cron/weekly-digest` | Sundays 14:00 | Weekly progress digest |
+| `/api/cron/report/revenue` | Daily 07:00 | Revenue report → `dashboard_reports` |
+| `/api/cron/report/engagement` | Daily 07:00 | PostHog engagement report |
+| `/api/cron/report/content` | Daily 07:00 | Puzzle content report |
+| `/api/cron/report/growth` | Daily 07:00 | Funnel/growth report |
+
+**Planned (not yet built):** streak-check, re-engagement, dunning, weekly-digest, ux-report.
 
 ---
 

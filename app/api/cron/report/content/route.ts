@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyCronSecret } from '@/lib/cron-auth';
+import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
 
 interface Suggestion {
@@ -9,11 +9,7 @@ interface Suggestion {
   action: string;
 }
 
-export async function GET(request: NextRequest) {
-  if (!verifyCronSecret(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = withCronHeartbeat('report-content', async (_request: NextRequest) => {
   const supabase = createServiceClient();
   const today = new Date().toISOString().split('T')[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -193,4 +189,4 @@ export async function GET(request: NextRequest) {
     suggestions,
     errors: errors.length > 0 ? errors : undefined,
   });
-}
+});
