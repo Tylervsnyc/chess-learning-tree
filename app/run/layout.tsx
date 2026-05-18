@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 const TITLE = "Rookie's Run | The Chess Path";
 const DESCRIPTION =
   "A daily chess roguelike. Help Rookie cross the board: unlock powers, clear 10 levels, new board every day.";
-const OG_IMAGE = 'https://chesspath.app/api/og/run';
+const OG_IMAGE = 'https://chesspath.app/og/run.png';
 const URL = 'https://chesspath.app/run';
 
 export const metadata: Metadata = {
