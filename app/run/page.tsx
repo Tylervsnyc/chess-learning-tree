@@ -8,8 +8,10 @@ import { computeStats, readHistory, recordRun } from '@/lib/run/history';
 import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
+import { RulesInline } from '@/components/run/RulesInline';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
 import { RookiesRunLogo } from '@/components/run/RookiesRunLogo';
+import { StcRunLogo } from '@/components/run/StcRunLogo';
 import { TempoBar } from '@/components/run/TempoBar';
 import { trackEvent } from '@/lib/analytics/posthog';
 import {
@@ -107,6 +109,7 @@ export default function RookiesRunPage() {
 
   const runDef = useMemo(() => getRunById(meta.runId), [meta.runId]);
   const totalLevels = runDef.levels.length;
+  const isStc = meta.runId.startsWith('stc-');
 
   const [levelIndex, setLevelIndex] = useState(meta.startLevelIndex);
   const initial = useMemo(
@@ -527,7 +530,12 @@ export default function RookiesRunPage() {
   }, [meta.iso, meta.runId, meta.startLevelIndex]);
 
   const goToNextRun = useCallback(() => {
-    const nextRunId = getNextRunId(meta.runId);
+    let nextRunId = getNextRunId(meta.runId);
+    if (meta.runId.startsWith('stc-')) {
+      const stcOrder = ['stc-king', 'stc-bishop', 'stc-pawn', 'stc-knight', 'stc-queen'];
+      const i = stcOrder.indexOf(meta.runId);
+      nextRunId = stcOrder[(i + 1) % stcOrder.length];
+    }
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-current', nextRunId);
       const url = new URL(window.location.href);
@@ -606,7 +614,7 @@ export default function RookiesRunPage() {
             className="text-left active:opacity-70 transition-opacity"
             aria-label="Switch run"
           >
-            <RookiesRunLogo scale={0.45} />
+            {isStc ? <StcRunLogo scale={0.45} /> : <RookiesRunLogo scale={0.45} />}
           </button>
 
           <div className="flex-1 flex justify-end items-center gap-2">
@@ -630,6 +638,8 @@ export default function RookiesRunPage() {
             ?
           </button>
         </header>
+
+        <RulesInline />
 
         <TempoBar
           tempo={state.tempo}
@@ -689,7 +699,7 @@ export default function RookiesRunPage() {
         )}
       </div>
 
-      {state.pendingOffer && state.status === 'playing' && !showIntro && (
+      {!isStc && state.pendingOffer && state.status === 'playing' && !showIntro && (
         <AbilityOfferModal
           offer={state.pendingOffer}
           onPick={onOfferPick}
@@ -697,13 +707,21 @@ export default function RookiesRunPage() {
         />
       )}
 
-      {showIntro && <RunIntroModal onClose={dismissIntro} />}
+      {showIntro && (
+        <RunIntroModal
+          onClose={dismissIntro}
+          tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
+        />
+      )}
 
       {showRunPicker && (
         <RunPickerModal
           currentRunId={meta.runId}
           onPick={switchRun}
           onClose={() => setShowRunPicker(false)}
+          filter={isStc ? (id) => id.startsWith('stc-') : undefined}
+          logo={isStc ? <StcRunLogo scale={0.5} /> : undefined}
+          caption={isStc ? 'Five pieces, five mini-runs' : undefined}
         />
       )}
 
@@ -725,7 +743,17 @@ export default function RookiesRunPage() {
           stats={stats}
           shareString={shareString}
           onReplay={resetRun}
-          nextRunName={getRunById(getNextRunId(meta.runId)).name}
+          nextRunName={getRunById(
+            isStc
+              ? (['stc-king', 'stc-bishop', 'stc-pawn', 'stc-knight', 'stc-queen'][
+                  (['stc-king', 'stc-bishop', 'stc-pawn', 'stc-knight', 'stc-queen'].indexOf(
+                    meta.runId,
+                  ) +
+                    1) %
+                    5
+                ] ?? meta.runId)
+              : getNextRunId(meta.runId),
+          ).name}
           onNextRun={goToNextRun}
         />
       )}

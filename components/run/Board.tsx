@@ -106,6 +106,7 @@ const ROOKIE_SPRITE: Record<RookieForm, string> = {
   bishop: 'wB',
   queen: 'wQ',
   king: 'wK',
+  pawn: 'wP',
 };
 
 const ENEMY_SPRITE: Record<PieceType, string> = {
@@ -849,18 +850,19 @@ export function RunBoard({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 'clamp(9px, 2.2cqw, 14px)',
+                fontSize: 'clamp(7px, 1.5cqw, 11px)',
                 fontWeight: 900,
-                letterSpacing: '0.5em',
-                paddingLeft: '0.5em',
-                color: 'rgba(120, 60, 0, 0.55)',
+                letterSpacing: '0.18em',
+                paddingLeft: '0.18em',
+                color: 'rgba(120, 60, 0, 0.6)',
                 textShadow:
                   '0 1px 0 rgba(255,245,200,0.85), 0 0 6px rgba(255,220,140,0.7)',
                 textTransform: 'uppercase',
                 userSelect: 'none',
+                whiteSpace: 'nowrap',
               }}
             >
-              Goal
+              Get Rookie here to level up
             </div>
             {/* Drifting motes — scattered across the row, not tile-repeated. */}
             {GOAL_MOTES.map((m, i) => (
