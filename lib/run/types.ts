@@ -17,7 +17,7 @@ export type PieceType = 'pawn' | 'knight' | 'bishop' | 'queen';
 export type PieceColor = 'black';
 
 /** Rookie's current movement form. She starts and reverts to 'rook'. */
-export type RookieForm = 'rook' | 'knight' | 'bishop' | 'queen' | 'king';
+export type RookieForm = 'rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'pawn';
 
 export interface Coord {
   file: number; // 1-8

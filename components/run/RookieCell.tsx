@@ -41,7 +41,14 @@ function Sprite({ form, animate }: { form: RookieForm; animate: boolean }) {
       />
     );
   }
-  const piece = form === 'knight' ? 'N' : form === 'bishop' ? 'B' : 'Q';
+  const piece =
+    form === 'knight'
+      ? 'N'
+      : form === 'bishop'
+        ? 'B'
+        : form === 'pawn'
+          ? 'P'
+          : 'Q';
   return <PieceBlocks piece={piece} blockSize={3} animate={animate} />;
 }
 

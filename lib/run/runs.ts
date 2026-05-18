@@ -3056,6 +3056,75 @@ const RUN_PINCER: RunDef = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Story Time Chess co-brand — 5 mini-runs, one per piece, teaching basics.
+// Each run pins `allowedForms` to a single piece so Rookie stays in that form
+// the whole time (engine treats formMovesLeft=-1 as locked).
+// Ability offers are suppressed in the /run page when runId starts with 'stc-'.
+
+const RUN_STC_KING: RunDef = {
+  id: 'stc-king',
+  name: 'STC · The King’s Stroll',
+  blurb: 'Kings move one square at a time. Walk Rookie home.',
+  levels: [
+    make(1, [], { allowedForms: ['king'] }),
+    make(2, [pawn(4, 5)], { allowedForms: ['king'] }),
+    make(3, [pawn(3, 5), pawn(6, 5)], { allowedForms: ['king'] }),
+  ],
+};
+
+const RUN_STC_BISHOP: RunDef = {
+  id: 'stc-bishop',
+  name: 'STC · The Bishop’s Path',
+  blurb: 'Bishops glide on diagonals. Find the line.',
+  levels: [
+    make(1, [], { allowedForms: ['bishop'] }),
+    make(2, [pawn(4, 4)], { allowedForms: ['bishop'] }),
+    make(3, [pawn(3, 4), pawn(6, 4), knight(5, 6)], { allowedForms: ['bishop'] }),
+  ],
+};
+
+const RUN_STC_PAWN: RunDef = {
+  id: 'stc-pawn',
+  name: 'STC · The Pawn’s March',
+  blurb: 'One step forward. Captures go diagonal.',
+  levels: [
+    make(1, [], { allowedForms: ['pawn'] }),
+    make(2, [pawn(4, 3)], { allowedForms: ['pawn'] }),
+    make(3, [pawn(3, 3), pawn(5, 3), pawn(4, 4)], { allowedForms: ['pawn'] }),
+  ],
+};
+
+const RUN_STC_KNIGHT: RunDef = {
+  id: 'stc-knight',
+  name: 'STC · The Knight’s Dance',
+  blurb: 'L-shaped hops. Knights jump over anything.',
+  levels: [
+    make(1, [], { allowedForms: ['knight'] }),
+    make(2, [pawn(3, 3), pawn(4, 3), pawn(5, 3)], { allowedForms: ['knight'] }),
+    make(3, [pawn(3, 3), pawn(4, 3), pawn(5, 3), pawn(6, 3), bishop(4, 6)], { allowedForms: ['knight'] }),
+  ],
+};
+
+const RUN_STC_QUEEN: RunDef = {
+  id: 'stc-queen',
+  name: 'STC · The Queen’s Power',
+  blurb: 'Every direction, any distance. The Queen rules.',
+  levels: [
+    make(1, [pawn(4, 4)], { allowedForms: ['queen'] }),
+    make(2, [pawn(3, 4), pawn(6, 4), knight(5, 6)], { allowedForms: ['queen'] }),
+    make(3, [pawn(3, 4), pawn(6, 4), knight(5, 6), bishop(2, 6), bishop(7, 6)], { allowedForms: ['queen'] }),
+  ],
+};
+
+export const STC_RUN_IDS = [
+  'stc-king',
+  'stc-bishop',
+  'stc-pawn',
+  'stc-knight',
+  'stc-queen',
+] as const;
+
 export const RUNS: ReadonlyArray<RunDef> = [
 
   RUN_DAILY,
@@ -3084,6 +3153,11 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_STONE_CITADEL,
   RUN_CROSSROADS,
   RUN_PINCER,
+  RUN_STC_KING,
+  RUN_STC_BISHOP,
+  RUN_STC_PAWN,
+  RUN_STC_KNIGHT,
+  RUN_STC_QUEEN,
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;

@@ -29,6 +29,7 @@ const ROOKIE_GLYPH: Record<RookieForm, string> = {
   bishop: '♗',  // ♗
   queen: '♕',   // ♕
   king: '♔',    // ♔
+  pawn: '♙',    // ♙
 };
 
 // Black-piece glyphs for enemies.

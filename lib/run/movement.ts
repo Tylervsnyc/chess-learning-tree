@@ -94,6 +94,26 @@ function knightMoves(state: BoardState): Coord[] {
   return moves;
 }
 
+function pawnMoves(state: BoardState): Coord[] {
+  const moves: Coord[] = [];
+  const { rookie, pieces, hazards } = state;
+  const forward = { file: rookie.file, rank: rookie.rank + 1 };
+  if (
+    forward.rank <= 8 &&
+    !isHazard(hazards, forward) &&
+    !enemyAt(pieces, forward)
+  ) {
+    moves.push(forward);
+  }
+  for (const df of [-1, 1]) {
+    const sq = { file: rookie.file + df, rank: rookie.rank + 1 };
+    if (sq.file < 1 || sq.file > 8 || sq.rank > 8) continue;
+    if (isHazard(hazards, sq)) continue;
+    if (enemyAt(pieces, sq)) moves.push(sq);
+  }
+  return moves;
+}
+
 function kingMoves(state: BoardState): Coord[] {
   const moves: Coord[] = [];
   const { rookie, hazards } = state;
@@ -119,6 +139,8 @@ export function rookieLegalMoves(state: BoardState): Coord[] {
       return [...slideMoves(state, ROOK_DIRS), ...slideMoves(state, BISHOP_DIRS)];
     case 'king':
       return kingMoves(state);
+    case 'pawn':
+      return pawnMoves(state);
     case 'rook':
     default:
       return slideMoves(state, ROOK_DIRS);
@@ -141,6 +163,8 @@ export function transformCost(form: RookieForm): number {
       return 4;
     case 'king':
       return 4;
+    case 'pawn':
+      return 0;
     case 'rook':
       return 0;
   }

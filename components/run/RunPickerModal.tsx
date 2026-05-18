@@ -7,9 +7,23 @@ interface RunPickerModalProps {
   currentRunId: string;
   onPick: (runId: string) => void;
   onClose: () => void;
+  /** Optional filter — if provided, only matching runs appear in the picker. */
+  filter?: (runId: string) => boolean;
+  /** Optional logo override (e.g. STC co-brand). Defaults to Rookie's Run logo. */
+  logo?: React.ReactNode;
+  /** Optional caption above the list. */
+  caption?: string;
 }
 
-export function RunPickerModal({ currentRunId, onPick, onClose }: RunPickerModalProps) {
+export function RunPickerModal({
+  currentRunId,
+  onPick,
+  onClose,
+  filter,
+  logo,
+  caption,
+}: RunPickerModalProps) {
+  const visibleRuns = filter ? RUNS.filter((r) => filter(r.id)) : RUNS;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 py-6">
       <div className="w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl flex flex-col relative overflow-hidden max-h-full">
@@ -25,14 +39,14 @@ export function RunPickerModal({ currentRunId, onPick, onClose }: RunPickerModal
         </button>
 
         <div className="px-6 pt-6 pb-3 flex flex-col items-center gap-3">
-          <RookiesRunLogo scale={0.6} />
-          <h2 className="text-sm font-black text-chess-text-muted leading-tight">
-            {RUNS.length} ways to climb
+          {logo ?? <RookiesRunLogo scale={0.6} />}
+          <h2 className="text-sm font-black text-chess-text-muted leading-tight text-center">
+            {caption ?? `${visibleRuns.length} ways to climb`}
           </h2>
         </div>
 
         <div className="flex-1 overflow-auto px-4 pb-5 flex flex-col gap-2">
-          {RUNS.map((run, idx) => (
+          {visibleRuns.map((run, idx) => (
             <RunRow
               key={run.id}
               run={run}

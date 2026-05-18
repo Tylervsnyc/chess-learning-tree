@@ -2,6 +2,8 @@
 
 interface RunIntroModalProps {
   onClose: () => void;
+  /** Optional tagline shown below the rules list (e.g. STC co-brand). */
+  tagline?: string;
 }
 
 const RULES: { n: number; text: string }[] = [
@@ -10,7 +12,7 @@ const RULES: { n: number; text: string }[] = [
   { n: 3, text: 'Show no mercy' },
 ];
 
-export function RunIntroModal({ onClose }: RunIntroModalProps) {
+export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
   return (
     <>
       <style>{`
@@ -66,6 +68,12 @@ export function RunIntroModal({ onClose }: RunIntroModalProps) {
               </li>
             ))}
           </ul>
+
+          {tagline && (
+            <div className="px-5 pb-4 -mt-1 text-[11px] font-bold text-chess-text-muted leading-snug text-center">
+              {tagline}
+            </div>
+          )}
 
           <button
             type="button"

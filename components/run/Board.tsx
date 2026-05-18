@@ -58,6 +58,10 @@ interface BoardProps {
   /** Called when Rookie is dragged onto a square. Return true to accept the
    *  move, false to snap her back. */
   onPieceDrop: (sourceSquare: string, targetSquare: string) => boolean;
+  /** Use default chess-piece sprites for Rookie instead of the embroidered
+   *  pixel-block RookieCell. Used by STC co-brand teaching runs where vanilla
+   *  pieces are clearer. */
+  vanillaPieces?: boolean;
 }
 
 // Goal-row "Enchanted Dawn" — soft golden sunrise gradient so rank 8 reads as
@@ -131,6 +135,7 @@ export function RunBoard({
   abilityTier,
   onSquareClick,
   onPieceDrop,
+  vanillaPieces = false,
 }: BoardProps) {
   const rookieSprite = ROOKIE_SPRITE[state.form];
 
@@ -476,7 +481,7 @@ export function RunBoard({
   }, [state.shieldUp, state.rookie, state.status]);
 
   const pieces = useMemo(
-    () => ({
+    () => vanillaPieces ? { ...defaultPieces } : ({
       ...defaultPieces,
       // Custom Rookie sprite for each of her three forms.
       wR: () => (
@@ -515,7 +520,7 @@ export function RunBoard({
         />
       ),
     }),
-    [dying, glitching, state.form],
+    [dying, glitching, state.form, vanillaPieces],
   );
 
   return (

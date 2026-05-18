@@ -50,9 +50,24 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
   const nextTempo = filled ? TEMPO_MAX : Math.min(TEMPO_MAX, rawTempo);
 
   // Form bookkeeping — decrement, revert to rook when expired.
-  const movesLeftAfter = state.form === 'rook' ? 0 : state.formMovesLeft - 1;
-  const nextForm: RookieForm = movesLeftAfter <= 0 ? 'rook' : state.form;
-  const nextFormMovesLeft = nextForm === 'rook' ? 0 : movesLeftAfter;
+  // formMovesLeft < 0 = locked form (STC mini-runs); no decrement, no revert.
+  const formLocked = state.formMovesLeft < 0;
+  const movesLeftAfter = formLocked
+    ? state.formMovesLeft
+    : state.form === 'rook'
+      ? 0
+      : state.formMovesLeft - 1;
+  const nextForm: RookieForm =
+    formLocked || state.form === 'rook'
+      ? state.form
+      : movesLeftAfter <= 0
+        ? 'rook'
+        : state.form;
+  const nextFormMovesLeft = formLocked
+    ? state.formMovesLeft
+    : nextForm === 'rook'
+      ? 0
+      : movesLeftAfter;
 
   const nextMoveCount = state.moveCount + 1;
 

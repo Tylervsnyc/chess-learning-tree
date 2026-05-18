@@ -15,6 +15,7 @@ const FORM_LABEL: Record<RookieForm, string> = {
   bishop: 'Bishop',
   queen: 'Queen',
   king: 'KING',
+  pawn: 'Pawn',
 };
 
 export function TempoBar({ tempo, form, formMovesLeft }: TempoBarProps) {
