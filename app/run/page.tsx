@@ -98,7 +98,12 @@ function freshRun(
 export default function RookiesRunPage() {
   const meta: RunMeta = useMemo(() => {
     const url = readUrlParams();
-    const runId = url.runId || readSavedRunId();
+    let runId = url.runId || readSavedRunId();
+    // Surface separation: a bare /run with no ?run= must never resolve to an
+    // STC run from a stale localStorage entry — STC lives behind /run/stc only.
+    if (!url.runId && runId.startsWith('stc-')) {
+      runId = DEFAULT_RUN_ID;
+    }
     const validRunId = RUNS.some((r) => r.id === runId) ? runId : DEFAULT_RUN_ID;
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-current', validRunId);
@@ -528,11 +533,20 @@ export default function RookiesRunPage() {
   }, [meta.iso, meta.runId, meta.startLevelIndex]);
 
   const goToNextRun = useCallback(() => {
-    let nextRunId = getNextRunId(meta.runId);
+    // STC and regular runs are separate cycles — never advance across the line.
+    let nextRunId: string;
     if (meta.runId.startsWith('stc-')) {
       const stcOrder = ['stc-king', 'stc-bishop', 'stc-pawn', 'stc-knight', 'stc-queen'];
       const i = stcOrder.indexOf(meta.runId);
       nextRunId = stcOrder[(i + 1) % stcOrder.length];
+    } else {
+      // Walk the regular cycle, skipping any STC entry that sneaks in.
+      let candidate = getNextRunId(meta.runId);
+      let guard = 0;
+      while (candidate.startsWith('stc-') && guard++ < 50) {
+        candidate = getNextRunId(candidate);
+      }
+      nextRunId = candidate;
     }
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-current', nextRunId);
@@ -722,7 +736,11 @@ export default function RookiesRunPage() {
           currentRunId={meta.runId}
           onPick={switchRun}
           onClose={() => setShowRunPicker(false)}
-          filter={isStc ? (id) => id.startsWith('stc-') : undefined}
+          filter={
+            isStc
+              ? (id: string) => id.startsWith('stc-')
+              : (id: string) => !id.startsWith('stc-')
+          }
           logo={isStc ? <StcRunLogo scale={0.5} /> : undefined}
           caption={isStc ? 'Five pieces, five mini-runs' : undefined}
         />
