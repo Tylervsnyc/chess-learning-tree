@@ -87,3 +87,6 @@ scripts/generate-puzzle-voice.ts
 
 # Rookie's Run playtest — raw sweep data is large + regenerable. Digests stay.
 data/run-playtest/raw/
+
+# Agent scratch files
+scripts/_tmp-*
