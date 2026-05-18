@@ -16,11 +16,12 @@
 
 import { useRef, useState } from 'react';
 import type {
+  AbilityBlurb,
   AbilityId,
   AbilityTier,
   OwnedAbility,
 } from '@/lib/run/abilities';
-import { ABILITY_DEFS, blurbForTier } from '@/lib/run/abilities';
+import { ABILITY_DEFS, blurbDetailForTier } from '@/lib/run/abilities';
 
 // ---------------------------------------------------------------------------
 // Tier styling.
@@ -283,7 +284,7 @@ export function AbilityCardMini({
   const t = TIER[ability.tier];
   const disabled = ability.usesLeftThisLevel === 0 && ability.tier !== 5;
   const max = Math.max(1, maxUsesDisplay(ability));
-  const blurb = blurbForTier(ability.id, ability.tier);
+  const blurb = blurbDetailForTier(ability.id, ability.tier);
 
   // Peek = card-flip explainer. Hover on desktop, long-press (~400ms) on
   // touch. Long-press also suppresses the next click so reading doesn't
@@ -329,7 +330,7 @@ export function AbilityCardMini({
       onMouseEnter={() => setPeeking(true)}
       onMouseLeave={() => setPeeking(false)}
       disabled={disabled}
-      aria-label={`${def.name} — ${blurb}`}
+      aria-label={`${def.name} — ${blurb.what} ${blurb.how}`}
       className={`relative snap-start shrink-0 group ${
         active ? 'ability-card-active' : ''
       } ${flashing ? 'ability-card-flash' : ''} ${
@@ -457,10 +458,21 @@ export function AbilityCardMini({
               {def.name}
             </div>
             <div
-              className="flex-1 px-[4px] py-[3px] text-[6.5px] leading-[1.25] font-medium text-center"
+              className="flex-1 px-[4px] py-[3px] flex flex-col gap-[2px] text-[6.5px] leading-[1.2] text-center"
               style={{ color: t.text, hyphens: 'auto' }}
             >
-              {blurb}
+              <div className="font-black">{blurb.what}</div>
+              <div className="font-medium" style={{ opacity: 0.65 }}>
+                {blurb.how}
+              </div>
+              {blurb.limit ? (
+                <div
+                  className="font-bold mt-auto"
+                  style={{ opacity: 0.7, fontSize: '5.5px' }}
+                >
+                  {blurb.limit}
+                </div>
+              ) : null}
             </div>
             <div className="flex items-end justify-end px-[3px] pb-[3px]">
               <span
@@ -494,7 +506,7 @@ export function AbilityCardMini({
 interface FullProps {
   id: AbilityId;
   tier: AbilityTier;
-  description: string;
+  description: AbilityBlurb;
   /** "Upgrade → T3" badge. Omit to hide. */
   badge?: string;
   onClick: () => void;
@@ -583,32 +595,33 @@ export function AbilityCardFull({
           />
         </div>
 
-        {/* Type line */}
-        <div
-          className="px-3 pt-1.5 pb-0 text-center text-[10px]"
+        {/* Text box — WHAT (bold), HOW (muted), limit (smaller). */}
+        <div className="mx-2.5 mt-2 mb-2 flex-1 rounded-md px-2.5 py-2 flex flex-col gap-1.5"
           style={{
-            fontFamily: 'ui-serif, Georgia, serif',
-            fontStyle: 'italic',
-            color: t.text,
-            opacity: 0.8,
-          }}
-        >
-          {def.typeLine}
-        </div>
-
-        {/* Text box */}
-        <div className="mx-2.5 mt-1.5 mb-2 flex-1 rounded-md px-2 py-1.5 flex items-center"
-          style={{
-            background: 'rgba(255,255,255,0.55)',
+            background: 'rgba(255,255,255,0.6)',
             boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)',
           }}
         >
           <p
-            className="text-[11px] leading-snug font-medium"
+            className="text-[11.5px] leading-snug font-black"
             style={{ color: '#241b08' }}
           >
-            {description}
+            {description.what}
           </p>
+          <p
+            className="text-[10px] leading-snug font-medium"
+            style={{ color: '#4a3a18' }}
+          >
+            {description.how}
+          </p>
+          {description.limit ? (
+            <p
+              className="text-[9px] leading-none font-bold uppercase tracking-wider mt-auto pt-0.5"
+              style={{ color: '#6b5223', opacity: 0.8 }}
+            >
+              {description.limit}
+            </p>
+          ) : null}
         </div>
 
         {/* Footer — tier gem bottom-right */}

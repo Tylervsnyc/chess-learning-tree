@@ -253,6 +253,116 @@ export function transformDurationForTier(
   return 0;
 }
 
+export interface AbilityBlurb {
+  /** Plain-English effect: "Move diagonally for 1 turn." */
+  what: string;
+  /** How to activate it: "Tap card, then tap a diagonal square." */
+  how: string;
+  /** Use limit per level in plain words, or "" for unlimited. */
+  limit: string;
+}
+
+const HOW: Record<AbilityId, string> = {
+  'bishop-step': 'Tap card, then tap a diagonal square.',
+  'knight-hop': 'Tap card, then tap a knight square.',
+  'queen-pulse': 'Tap card, then tap any square.',
+  'become-king': 'Tap card, then tap a king-move square.',
+  'freeze-ray': 'Tap card, then tap an enemy you can see.',
+  'poison-dart': 'Tap card, then tap an enemy you can see.',
+  'rabies-dart': 'Tap card, then tap an enemy you can see.',
+  'phase-step': 'Tap card, then tap a square past a piece.',
+  leap: 'Tap card, then tap a forward jump square.',
+  surge: 'Tap card. You get an extra move.',
+  aegis: 'Tap card. Shield stays up until used.',
+  decoy: 'Tap card, then tap an enemy.',
+};
+
+function limitText(id: AbilityId, tier: AbilityTier): string {
+  const n = maxUsesForTier(id, tier);
+  if (n < 0) return '';
+  if (n === 1) return '1 use per level';
+  return `${n} uses per level`;
+}
+
+export function blurbDetailForTier(
+  id: AbilityId,
+  tier: AbilityTier,
+): AbilityBlurb {
+  const how = HOW[id];
+  const limit = limitText(id, tier);
+  const what = whatForTier(id, tier);
+  return { what, how, limit };
+}
+
+function whatForTier(id: AbilityId, tier: AbilityTier): string {
+  switch (id) {
+    case 'bishop-step':
+      if (tier === 5) return 'Move diagonally for the rest of the level.';
+      if (tier >= 3) return 'Move diagonally for 3 turns.';
+      if (tier === 2) return 'Move diagonally for 2 turns.';
+      return 'Move diagonally for 1 turn.';
+    case 'knight-hop':
+      if (tier === 5) return 'Move in L-shapes for the rest of the level.';
+      if (tier >= 3) return 'Move in L-shapes for 3 turns.';
+      if (tier === 2) return 'Move in L-shapes for 2 turns.';
+      return 'Move in L-shapes for 1 turn.';
+    case 'queen-pulse':
+      if (tier === 5) return 'Move any direction for the rest of the level.';
+      if (tier === 4) return 'Move any direction for 3 turns.';
+      if (tier >= 2) return 'Move any direction for 2 turns.';
+      return 'Move any direction for 1 turn.';
+    case 'become-king':
+      if (tier === 5)
+        return 'Become a king. Nothing can capture you for the rest of the level.';
+      if (tier === 4) return 'Become a king for 3 turns. Nothing can capture you.';
+      if (tier >= 2) return 'Become a king for 2 turns. Nothing can capture you.';
+      return 'Become a king for 1 turn. Nothing can capture you.';
+    case 'freeze-ray':
+      if (tier === 5) return 'Freeze an enemy. It never moves again.';
+      if (tier === 4) return 'Freeze an enemy in place for 3 turns.';
+      if (tier >= 2) return 'Freeze an enemy in place for 2 turns.';
+      return 'Freeze an enemy in place for 1 turn.';
+    case 'poison-dart':
+      if (tier === 5) return 'Poison an enemy. It dies next turn.';
+      if (tier >= 3) return 'Poison an enemy. It dies in 2 turns.';
+      return 'Poison an enemy. It dies in 3 turns.';
+    case 'rabies-dart':
+      if (tier === 5)
+        return 'Drive an enemy mad for 5 turns. It attacks its own side.';
+      if (tier === 4)
+        return 'Drive an enemy mad for 3 turns. It attacks its own side.';
+      if (tier >= 2)
+        return 'Drive an enemy mad for 2 turns. It attacks its own side.';
+      return 'Drive an enemy mad for 1 turn. It attacks its own side.';
+    case 'phase-step':
+      if (tier === 5) return 'Teleport to any empty square.';
+      if (tier === 4) return 'Walk through everything in a straight line.';
+      if (tier === 3) return 'Walk through 1 piece, up to 3 squares.';
+      if (tier === 2) return 'Walk through 1 piece, up to 2 squares.';
+      return 'Walk through 1 piece, 1 square.';
+    case 'leap':
+      if (tier === 5) return 'Jump 2 to 6 squares in any direction.';
+      if (tier === 4) return 'Jump 2 to 4 squares up, down, left, or right.';
+      if (tier === 3) return 'Jump 2 to 4 squares forward.';
+      if (tier === 2) return 'Jump 2 or 3 squares forward.';
+      return 'Jump exactly 2 squares forward.';
+    case 'surge':
+      if (tier === 5) return 'Take 3 extra moves this turn.';
+      if (tier >= 3) return 'Take 2 extra moves this turn.';
+      return 'Take 1 extra move this turn.';
+    case 'aegis':
+      if (tier === 5) return 'Raise a permanent shield. Attackers die.';
+      if (tier === 3) return 'Raise a shield. The next attacker is stunned.';
+      return 'Raise a shield. It blocks the next attack on you.';
+    case 'decoy':
+      if (tier === 5) return 'Mark an enemy. Its team will keep attacking it.';
+      if (tier === 4)
+        return 'Mark an enemy for 3 turns. Whoever captures it freezes.';
+      if (tier >= 2) return 'Mark an enemy for 2 turns. Its team will attack it.';
+      return 'Mark an enemy for 1 turn. Its team will attack it.';
+  }
+}
+
 export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
   switch (id) {
     case 'bishop-step':
@@ -334,7 +444,7 @@ export interface AbilityOfferOption {
   kind: 'new' | 'upgrade';
   id: AbilityId;
   tier: AbilityTier;
-  description: string;
+  description: AbilityBlurb;
 }
 
 export type AbilityOffer = AbilityOfferOption[];
@@ -362,7 +472,7 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
     kind: 'new',
     id,
     tier: 1,
-    description: blurbForTier(id, 1),
+    description: blurbDetailForTier(id, 1),
   }));
 
   const upgradePool: AbilityOfferOption[] = [...owned.values()]
@@ -373,7 +483,7 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
         kind: 'upgrade',
         id: a.id,
         tier: next,
-        description: blurbForTier(a.id, next),
+        description: blurbDetailForTier(a.id, next),
       };
     });
 
