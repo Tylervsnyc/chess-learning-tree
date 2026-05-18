@@ -394,7 +394,7 @@ export default function OpeningDetailPage({
 
             <div className="space-y-3">
               {opening.variations.map((variation, idx) => {
-                const variationReady = variation.hasData && level1TestComplete
+                const variationReady = variation.hasData && (level1TestComplete || opening.alwaysUnlockVariations === true)
                 const variationSlug = variation.slug || slug
                 return (
                 <button

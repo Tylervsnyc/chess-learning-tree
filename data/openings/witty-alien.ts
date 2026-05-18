@@ -70,7 +70,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 1,
       col: 0,
       lineFrom: 'wa-1',
-      unlockedBy: 'wa-1',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -82,7 +82,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 2,
       col: 0,
       lineFrom: 'wa-2',
-      unlockedBy: 'wa-2',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -94,7 +94,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 3,
       col: 0,
       lineFrom: 'wa-3',
-      unlockedBy: 'wa-dev-Bg4',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -106,7 +106,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 4,
       col: 0,
       lineFrom: 'wa-4',
-      unlockedBy: 'wa-dev-Bf5',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -118,7 +118,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 5,
       col: 0,
       lineFrom: 'wa-5',
-      unlockedBy: 'wa-dev-c5',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -130,7 +130,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 6,
       col: 0,
       lineFrom: 'wa-6',
-      unlockedBy: 'wa-6',
+      unlockedBy: null,
       side: 'white',
     },
 
@@ -144,7 +144,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 3,
       col: -1,
       lineFrom: 'wa-3',
-      unlockedBy: 'wa-3',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -156,7 +156,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 4,
       col: -1,
       lineFrom: 'wa-4',
-      unlockedBy: 'wa-4',
+      unlockedBy: null,
       side: 'white',
     },
     {
@@ -168,7 +168,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 5,
       col: -1,
       lineFrom: 'wa-5',
-      unlockedBy: 'wa-5',
+      unlockedBy: null,
       side: 'white',
     },
 
@@ -182,7 +182,7 @@ export const WITTY_ALIEN: OpeningTree = {
       row: 7,
       col: 0,
       lineFrom: 'wa-7',
-      unlockedBy: 'wa-7',
+      unlockedBy: null,
       side: 'white',
     },
   ],

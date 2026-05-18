@@ -35,6 +35,8 @@ export interface OpeningConfig {
     /** Slug for the variation's own tree (if different from parent) */
     slug?: string
   }[]
+  /** If true, variations are accessible without completing the main line's Level 1 test. */
+  alwaysUnlockVariations?: boolean
 }
 
 // SVG paths for chess piece icons (white fill, viewBox 0 0 45 45)
@@ -277,6 +279,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: false, slug: 'witty-alien-two-knights' },
       { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: false, slug: 'witty-alien-bonjour' },
     ],
+    alwaysUnlockVariations: true,
   },
   // Coming Soon 1.e4
   {
