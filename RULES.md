@@ -368,8 +368,11 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ## 12. The Daily Rook
 
+> **ARCHIVED 2026-05-18.** Replaced by Rookie's Run (§49) as the app's daily ritual.
+> Code lives in `app/_archive/daily-challenge/` — no live route, not in the nav, not in the sitemap. The `daily_challenge_results` table is preserved for historical scores. The rules below stay as reference in case the feature is ever resurrected.
+
 ### Header Nav:
-`[Play] [Learn ▾] [Daily]` — shown on all pages (see §16 for full header spec)
+`[Play] [Learn ▾] [Run]` (was `[Daily]` while this feature was live — see §16 and §49)
 
 ### Core Rules:
 | Rule | Value |
@@ -586,7 +589,16 @@ endTimeRef.current = Date.now() + TOTAL_TIME;
 ## 16. Header
 
 ### Scroll Behavior:
-**Header is sticky** - stays fixed at top of viewport when scrolling. This allows users to access the Daily Rook toggle without losing their place in the curriculum.
+**Header is sticky** - stays fixed at top of viewport when scrolling. This keeps the Run (Rookie's Run) entry point reachable from anywhere in the curriculum.
+
+### Links (left → right):
+- **Play** → `/play`
+- **Learn ▾** dropdown → `/path` (tactics), `/openings`
+- **Run** → `/run` (Rookie's Run — the daily). Blue gradient + shimmer; active when path starts with `/run`.
+- **Patron** → `/pricing` (free users only, flag-gated)
+- **Sign Up** → `/auth/signup` (guests only)
+
+(Was `[Daily] → /daily-challenge` until 2026-05-18; see §12 archive.)
 
 ### Logo Rules:
 - **Icon**: Colorful rook made of 22 dots (5 columns × 6 rows)
@@ -1216,12 +1228,10 @@ daily_challenge_results
 level_test_attempts
   id, user_id, transition, passed, score, variant_id, created_at
 
-puzzle_history
-  id, user_id, puzzle_id, seen_at
-  -- Cleanup: delete rows older than 90 days
-
-quip_history
-  id, user_id, quip_id, seen_at
+-- puzzle_history: DROPPED 2026-05-18. Was never written; recently-seen
+--   dedup is now in-memory per session (see §24).
+-- quip_history: DROPPED 2026-05-18. Quip dedup is in-memory per session
+--   (see §25 Quip System v2).
 
 email_preferences
   id, user_id, streak_reminders, weekly_digest, marketing, created_at, updated_at
@@ -1241,11 +1251,14 @@ revenue_snapshots
 ```
 
 ### Columns/Tables to DELETE:
-- `theme_performance` table
-- `promo_codes` table
-- `promo_redemptions` table
+- ~~`theme_performance` table~~ — DROPPED 2026-05-18
+- ~~`promo_codes` table~~ — DROPPED 2026-05-18
+- ~~`promo_redemptions` table~~ — DROPPED 2026-05-18
 - `profiles.elo_rating`
 - `profiles.current_level`
+
+### Also dropped 2026-05-18 (were never load-bearing):
+- `daily_challenges`, `social_post_queue`, `social_funnel_log` (see §46 archived banner), `puzzle_history`, `quip_history`
 
 ---
 
@@ -1258,12 +1271,8 @@ revenue_snapshots
 
 ### On Lesson Start:
 1. Load pool file
-2. Filter out recently seen (puzzle_history, last 30 days)
-3. Pick 6 random: 2 easy, 3 medium, 1 hard
-4. Record seen puzzles to puzzle_history
-
-### Edge Case:
-If all 40 seen in last 30 days → include oldest seen
+2. Pick 6 random: 2 easy, 3 medium, 1 hard
+3. (No persistent dedup — `puzzle_history` was dropped 2026-05-18; recently-seen tracking is in-memory per session only)
 
 ---
 
@@ -2439,6 +2448,8 @@ Completing a level test unlocks ALL deviation nodes for that level, regardless o
 
 ## 46. Social Media Sales Funnel
 
+> **PAUSED 2026-05-18.** The backing table `social_funnel_log` was dropped during cleanup; no code currently reads or writes it. Spec retained as a blueprint — to revive, recreate the table and wire `lib/social/funnel-tracker.ts`.
+
 Automated social media engagement pipeline via **Late.dev** API. Covers Instagram, Twitter, and YouTube. All automation saves as **drafts for Tyler to approve** — nothing posts automatically without review.
 
 ### Architecture
@@ -2686,6 +2697,24 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 ### Files / dirs that should NOT exist (cleaned up 2026-05-12)
 - ~~`components/run/levels/`~~ — moved to `lib/run/daily-levels.ts`.
 - ~~`components/run/CapturedModal.tsx`~~, ~~`EscapedModal.tsx`~~, ~~`TransformButtons.tsx`~~ — superseded by `RunSummaryModal` and auto-transform UX.
+
+### Daily ritual (added 2026-05-18 when Rookie's Run replaced Daily Rook)
+
+- **Today's run mapping:** `lib/run/daily.ts` → `getRunIdForDate(yyyyMmDd)` is a deterministic rotation across the non-STC entries of `RUNS`. Anchored to `2026-01-01`. STC runs are excluded — they live behind `/run/stc` only.
+- **Day boundary is the user's local TZ**, never server UTC. Resolved via `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+- **`/run`** defaults to today's mapping for fresh visitors and STC fallbacks. An explicit `?run=` or a non-STC value in `localStorage.rookies-run-current` still wins — daily mapping is the default, not a lock.
+- **`/run/[date]`** is a server-component redirect: validates the date, rejects future or garbage to `/run`, else forwards to `/run?date=YYYY-MM-DD&run=<daily-runId>`.
+
+### Completion + streak (foundation only — UI not mounted yet)
+
+- **Table:** `run_completions` (`user_id`, `run_date`, `run_id`, `levels_cleared`, `tz`, `completed_at`). PK `(user_id, run_date)` — idempotent upsert. RLS: user reads/writes own rows.
+- **"Completed"** = cleared every level of the run (binary, not partial).
+- **POST `/api/run/complete`** records the completion. Auth required server-side; anonymous callers receive 200 silently (page plays, nothing recorded).
+- **Only the canonical daily for that date records.** STC runs and hand-picked non-daily runs are intentionally silent — they do not contribute to a streak.
+- **GET `/api/run/streak?tz=...`** returns `{ current, longest, completedToday }`. Streak is **derived** on every read by walking back from today (in user TZ) until the first gap. **Never stored.** Past streak bugs all traced to stored counters drifting from the source of truth.
+- **No shields, freezes, backfills, or grace periods.** Each one is a known streak-bug vector. Add only if retention data demands it.
+- **Anonymous users do not have streaks.** UI for streak/vault gates on auth. This kills the entire anonymous-merge bug class.
+- **Components shipped, unwired (2026-05-18):** `components/run/StreakChip.tsx`, `components/run/VaultList.tsx`. Completion POST is wired so history accumulates; mount UI when ready.
 
 ---
 
