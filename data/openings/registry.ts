@@ -253,6 +253,31 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: 'Cunningham Defense', subtitle: '3...Be7 — calm, classical reply', icon: 'bishop', hasData: false },
     ],
   },
+  {
+    slug: 'witty-alien',
+    name: 'Witty Alien',
+    subtitle: 'Knight sacrifices that crush the Caro-Kann',
+    moves: '1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4',
+    description: "Bulgarian streamer Witty_Alien's aggressive trick weapon — sacrifice a knight on f7 or e6 to drag the king out and attack.",
+    side: 'white',
+    category: '1.e4',
+    color: '#8B5CF6',
+    colorDark: '#6D28D9',
+    colorLight: '#A78BFA',
+    ghostPiece: '♘',
+    icon: 'lightning',
+    hasData: true,
+    order: 6,
+    mainLine: {
+      name: 'Alien Gambit',
+      subtitle: "5.Ng5 h6 6.Nxf7! — the signature sacrifice · 10 lessons",
+    },
+    variations: [
+      { name: 'Martian Gambit', subtitle: "vs 4...Nd7 — Ne6 instead of f7", icon: 'knight', hasData: false, slug: 'witty-alien-martian' },
+      { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: false, slug: 'witty-alien-two-knights' },
+      { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: false, slug: 'witty-alien-bonjour' },
+    ],
+  },
   // Coming Soon 1.e4
   {
     slug: 'scotch',

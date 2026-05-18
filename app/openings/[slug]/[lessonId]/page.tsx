@@ -73,6 +73,7 @@ import { getCaroKannPanovLesson } from '@/data/openings/caro-kann-panov-lessons'
 import { getCaroKannSmyslovLesson } from '@/data/openings/caro-kann-smyslov-lessons'
 import { getQueensGambitAcceptedLesson } from '@/data/openings/queens-gambit-accepted-lessons'
 import { getScandinavianLesson } from '@/data/openings/scandinavian-lessons'
+import { getWittyAlienLesson } from '@/data/openings/witty-alien-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -216,6 +217,7 @@ export default function OpeningLessonPage() {
       'caro-kann-smyslov': getCaroKannSmyslovLesson,
       'queens-gambit-accepted': getQueensGambitAcceptedLesson,
       'scandinavian': getScandinavianLesson,
+      'witty-alien': getWittyAlienLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])

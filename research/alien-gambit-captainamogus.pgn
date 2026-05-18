@@ -1,0 +1,210 @@
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): The Beginnings"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B10"]
+[Opening "Caro-Kann Defense: Two Knights Attack"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "The Beginnings"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/uVNImQTO"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[UTCDate "2024.01.31"]
+[UTCTime "09:25:43"]
+
+{ cls:red }
+1. e4 c6 { From here I will be analyzing two variations, the Caro-Kane and the Alien Gambit. Let's start with the Caro-Kane. } 2. Nf3 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Neg5 { The signature move of the Caro-Kane move, named after Jeremy Kane. From here there are multiple lines of play, which we will be analyzing in the next chapters. } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): Caro-Kane 5. h6 6. Nxf7 7. Kxf7 8. Ne5+ 9. Ke8"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "Caro-Kane 5. h6 6. Nxf7 7. Kxf7 8. Ne5+ 9. Ke8"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/yK2EiIRr"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbqkb1r/pp2pppp/2p2n2/6N1/8/5N2/PPPP1PPP/R1BQKB1R b KQkq - 2 5"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "09:27:44"]
+
+5... h6 { Black might play this move immediately thinking "oh, white has to move back to h3, what a bad situation!" But now we strike them with... } 6. Nxf7! { The move that signals danger for black's position. Now black will have to play accurately to avoid destruction of their king. } 6... Kxf7 7. Ne5+! { From here, blacks king has only one move in this position, Kg8. First we should analyze bad moves for blacks king and punish their mistakes. } 7... Ke8 8. Bd3 { Aiming for the light squares, which are weak in blacks position. } 8... e6 9. Bg6+ Ke7 10. Nf7 { Setting up a fork of the rook and the queen. } 10... Qd5 11. O-O! { Make sure not to take the rook! Qxg2 would mess things up for your plans. } 11... Rg8 12. d4 Bd7 13. Bf4 Be8 14. c4 Qa5 15. Bd6+ Kd7 { And I dont think you need an engine to tell that black is in trouble. } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): 9. Ke6"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "9. Ke6"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/xvjtsMfM"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbqkb1r/pp2pppp/2p2n2/6N1/8/5N2/PPPP1PPP/R1BQKB1R b KQkq - 2 5"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "09:41:31"]
+
+5... h6 6. Nxf7 Kxf7 7. Ne5+ Ke6?? { The worst place to put your king, } 8. d4! { This move is the only move that keeps a giant advantage for white. } 8... Nbd7 (8... b5 { Stopping Bc4 } 9. Be2 { But now white goes for Bg5! } 9... Qe8 10. O-O Nbd7 11. Re1) 9. Bc4+! Nd5 10. Bxd5+ cxd5 11. Qg4+! Kd6 (11... Kf6 12. Qg6#) 12. Nf7+ { And black can resign. } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): 9. Kg8"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "9. Kg8"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/fP88Vqwz"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/4N3/8/8/PPPP1PPP/R1BQKB1R b KQ - 1 7"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "09:46:56"]
+
+7... Kg8 { By far best move for black } 8. Bc4+ e6 9. d4 Bd6 { Black tries to challenge this knight off the board and quickly trade pieces } 10. f4 Bxe5? { This is a big mistake for black as it allows for white to get an open F file, which will come to haunt black. } 11. fxe5 Nd5 12. O-O! { Immediately activating the rook on the most open file available. } 12... Nd7? 13. Qh5 Nf8 14. Qf7+ { Black resigned here. This was a real game between Jeremy Kane (the inventor) and Anna M. Sargsyan and it goes to show how dangerous this opening can be! } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): 5. e6?"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "5. e6?"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/tKuR3e6s"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbqkb1r/pp2pppp/2p2n2/6N1/8/5N2/PPPP1PPP/R1BQKB1R b KQkq - 2 5"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "09:55:51"]
+
+5... e6? { This is a bad move for black, as it allows for white to attack the f7 square very easily. } 6. Ne5! Qe7 7. d4 Nbd7 8. Nexf7 Rg8 9. Ne5 Nxe5 10. dxe5 Nd7 11. Bd3 g6 12. Ne4 Nxe5 13. Bg5 Qc7 { The main ideas of the sideline is to simply take the f7 square and get rapid development. } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): 5. Bf5"]
+[Date "2021.11.20"]
+[White "Caro Kane outline"]
+[Result "1-0"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "5. Bf5"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/pSxa0ilS"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbqkb1r/pp2pppp/2p2n2/6N1/8/5N2/PPPP1PPP/R1BQKB1R b KQkq - 0 5"]
+[SetUp "1"]
+
+{ cls:orange }
+5... Bf5 6. Ne5 { The same idea. } 6... Bg6 7. Bc4 e6 8. Qe2 Nbd7?? { This move is a big blunder for black, as it allows.. } 9. Nxg6 hxg6 (9... fxg6 10. Nf7 Qe7 11. Nxh8 { A simple fork. } 11... O-O-O) 10. Nxf7!! { A brilliant move! Targeting the weak f7 square through tactics. } 10... Kxf7? 11. Qxe6# { 1-0 White wins. } 1-0
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): A chapter for interesting variations"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "A chapter for interesting variations"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/SKWq3xSs"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[UTCDate "2024.01.31"]
+[UTCTime "10:02:34"]
+
+1. e4 c6 2. Nf3 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Neg5 h6 6. Nxf7 Kxf7 7. Ne5+ Ke8 8. Qh5+ g6 9. Nxg6 Bxg6 10. Qxg6+ Kd7 11. Qg4+ Ke8 12. Bc4 Nf6 13. Qg6+ Kd7 14. Qf5+ Kc7 15. d4 *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): Alien Gambit"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "Alien Gambit"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/YXFjtxfH"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[UTCDate "2024.01.31"]
+[UTCTime "10:08:09"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7! { The Signature move of the Alien Gambit, named after Witty_Alien (Volen Dyulgerov). } 6... Kxf7 7. Nf3 { This position has occurred in Witty_Alien's openingtree.com database 456 times, with an 79.1% (!!) winrate for white! } (7. Bd3 Bg4 8. Nf3 Nbd7 (8... h5 9. Ne5+ Ke8 10. Bg6#) 9. Ne5+) 7... Bg4?? (7... Nbd7) (7... e6 8. Bd3) (7... Ke8 8. Bd3 Bg4) 8. Ne5+! Ke8 9. Nxg4 $18 *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): Quick Tactical Attacks"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "Quick Tactical Attacks"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/3R1knzYY"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/8/PPP2PPP/R1BQKBNR w KQ - 0 7"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "10:13:24"]
+
+7. Nf3 Nbd7 8. Bd3! { Aiming for the weak light squares. } 8... e6 9. O-O Bd6 10. Re1 { Bringing the rook into the position! } 10... Re8 11. Ne5+ { Centralizing the knight... } 11... Bxe5?? { Not a good move for black. } (11... Kg8 12. Qf3 c5 13. c3 Nb6) 12. dxe5 Nd5 13. Qh5+! { A great move! Pressuring the king with check and forcing a push back which causes more tacticial brilliants! } 13... Kg8 14. Bxh6!! { Dont boo, Spam the brilliant emote!! We will see what happen if black takes here. } 14... gxh6 (14... Nf8 { What if black doesnt accept the sacrifice? Here black doesnt defend the very important g7 pawn, which allows... } 15. Bxg7!! { Completely brutalizing black. } 15... Kxg7 16. Re4 { And black can resign in this position due to all of the mates threatened here! }) 15. Qg6+ Kh8 (15... Kf8 16. Qxh6+ Kg8 17. Bh7+ Kf7 (17... Kh8 18. Bg6+ Kg8 19. Qh7+ Kf8 20. Qf7#) 18. Bg6+ Kg8 19. Qh7+ Kf8 20. Qf7#) 16. Qh7# *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): Bxe5 --> Kg8"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "Bxe5 --> Kg8"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/t9k27k1g"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/5N2/PPP2PPP/R1BQKB1R b KQ - 1 7"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "10:52:23"]
+
+7... e6 { This position has occurred in Witty_Alien's openingtree.com database 136 times. } 8. Bd3 Bd6 9. O-O Re8 10. Re1 Kg8 11. Ne5 Nbd7 { This is similar to our last chapter, but now black has played Kg8 instead of the bad Bxe5. } 12. Qf3 Qc7 13. Bf4 Nd5 14. Bxh6 Nxe5 15. dxe5 Bxe5 { And we have reached a position where black is up a knight for a pawn but white has loads of tactical ideas! } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): 7. c5"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "From Position"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "7. c5"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/rZzoE6QU"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[FEN "rnbq1b1r/pp2pkp1/2p2n1p/8/3P4/5N2/PPP2PPP/R1BQKB1R b KQ - 1 7"]
+[SetUp "1"]
+[UTCDate "2024.01.31"]
+[UTCTime "11:00:33"]
+
+7... c5! { The best move for black. } 8. c3 (8. Bc4+ e6 9. Ne5+ Kg8 10. Be3 cxd4 11. Bxd4) 8... Nc6 (8... e6 { [%csl Gf1] } 9. Bd3 Nc6 (9... cxd4 10. cxd4 Bb4+ 11. Kf1 Re8 12. Ne5+ Kg8 13. Bxh6 (13. h4))) 9. Bd3 cxd4 (9... e6) 10. O-O! { Dont waste time recapturing the d pawn, get right to work! } 10... dxc3 11. Re1 e6 (11... cxb2? 12. Bxb2 e6 13. Ne5+ { This move seems like a trade but it sets up something really special... } 13... Nxe5 14. Bg6+!! { The queens are staring at each other, but the king is more important! } 14... Nxg6 15. Qxd8 { And both sides are quite equal here. }) 12. bxc3 Bd6 13. Rb1 { And Black has a good position, but white can create quick attacks that can damage positions. } *
+
+
+[Event "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit): Differences"]
+[Date "2024.01.31"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Caro-Kann: Targetting f7 (Caro-Kane and Alien Gambit)"]
+[ChapterName "Differences"]
+[ChapterURL "https://lichess.org/study/uH0K6sSf/ZV4A2MVu"]
+[Annotator "https://lichess.org/@/captainamogus"]
+[UTCDate "2024.01.31"]
+[UTCTime "11:09:07"]
+
+{ The Alien Gambit and the Caro-Kane are both interesting gambits that involve an f7 square being exploited. However, the Alien Gambit is a bit more positional, as we can see through moves like O-O-, Re1. In the Caro-Kane, we are trying open up the F File for our rook through f4. However in the Alien Gambit, we bring our Re1 and play for rook lifts in the future. }
+ *
+
+
