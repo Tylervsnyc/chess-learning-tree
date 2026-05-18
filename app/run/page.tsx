@@ -48,6 +48,7 @@ import {
   todayISO,
   totalLevelsForRun,
 } from '@/lib/run/seed';
+import { getRunIdForDate, getTodayInTZ, isValidDate } from '@/lib/run/daily';
 import { buildShareString } from '@/lib/run/share';
 import { fromSquare, toSquare } from '@/lib/run/types';
 import type { BoardState, Coord, RunPuzzle } from '@/lib/run/types';
@@ -60,19 +61,21 @@ import type { BoardState, Coord, RunPuzzle } from '@/lib/run/types';
  * permanent for the run and live in the rack below the board.
  */
 
-function readUrlParams(): { runId: string; startLevelIndex: number } {
+function readUrlParams(): { runId: string; startLevelIndex: number; date: string } {
   if (typeof window === 'undefined') {
-    return { runId: '', startLevelIndex: 0 };
+    return { runId: '', startLevelIndex: 0, date: '' };
   }
   const params = new URLSearchParams(window.location.search);
   const runId = params.get('run') ?? '';
+  const dateParam = params.get('date') ?? '';
+  const date = isValidDate(dateParam) ? dateParam : '';
   const levelStr = params.get('level');
   let startLevelIndex = 0;
   if (levelStr) {
     const n = parseInt(levelStr, 10);
     if (!Number.isNaN(n) && n >= 1) startLevelIndex = n - 1;
   }
-  return { runId, startLevelIndex };
+  return { runId, startLevelIndex, date };
 }
 
 function readSavedRunId(): string {
@@ -98,19 +101,34 @@ function freshRun(
 export default function RookiesRunPage() {
   const meta: RunMeta = useMemo(() => {
     const url = readUrlParams();
-    let runId = url.runId || readSavedRunId();
-    // Surface separation: a bare /run with no ?run= must never resolve to an
-    // STC run from a stale localStorage entry — STC lives behind /run/stc only.
-    if (!url.runId && runId.startsWith('stc-')) {
-      runId = DEFAULT_RUN_ID;
+    const tz = typeof window !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+      : 'UTC';
+    const iso = url.date || (typeof window !== 'undefined' ? getTodayInTZ(tz) : todayISO());
+    // Date-locked deep links (e.g. /run/[date] → /run?date=...&run=...) always
+    // win. Otherwise: explicit ?run= → localStorage → today's daily rotation.
+    const dailyRunForDate = getRunIdForDate(iso);
+    let runId: string;
+    if (url.date) {
+      runId = url.runId && RUNS.some((r) => r.id === url.runId) ? url.runId : dailyRunForDate;
+    } else {
+      runId = url.runId || readSavedRunId();
+      // Surface separation: a bare /run with no ?run= must never resolve to an
+      // STC run from a stale localStorage entry — STC lives behind /run/stc only.
+      if (!url.runId && runId.startsWith('stc-')) {
+        runId = dailyRunForDate;
+      }
+      if (!url.runId && !localStorage.getItem('rookies-run-current')) {
+        runId = dailyRunForDate;
+      }
     }
-    const validRunId = RUNS.some((r) => r.id === runId) ? runId : DEFAULT_RUN_ID;
-    if (typeof window !== 'undefined') {
+    const validRunId = RUNS.some((r) => r.id === runId) ? runId : dailyRunForDate;
+    if (typeof window !== 'undefined' && !url.date) {
       localStorage.setItem('rookies-run-current', validRunId);
     }
     const maxLevel = totalLevelsForRun(validRunId) - 1;
     const startLevelIndex = Math.min(url.startLevelIndex, maxLevel);
-    return { iso: todayISO(), runId: validRunId, startLevelIndex };
+    return { iso, runId: validRunId, startLevelIndex };
   }, []);
 
   const runDef = useMemo(() => getRunById(meta.runId), [meta.runId]);
@@ -351,6 +369,22 @@ export default function RookiesRunPage() {
     if (levelIndex >= totalLevels - 1) {
       setRunComplete(true);
       trackEvent('run_completed', { iso: meta.iso, run: meta.runId });
+      // Record completion for streak (auth-only on the server; silent for anon).
+      // Only record when this is the actual daily for that date — not, e.g.,
+      // an STC run or a hand-picked non-daily run via ?run=.
+      if (!isStc && meta.runId === getRunIdForDate(meta.iso)) {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        fetch('/api/run/complete', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            runId: meta.runId,
+            runDate: meta.iso,
+            levelsCleared: totalLevels,
+            tz,
+          }),
+        }).catch(() => {});
+      }
     } else {
       setShowLevelCleared(true);
     }
