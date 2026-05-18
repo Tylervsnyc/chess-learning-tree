@@ -92,7 +92,7 @@ function freshRun(
   startLevelIndex: number,
 ): { state: BoardState; puzzle: RunPuzzle } {
   const puzzle = puzzleForDate(iso, startLevelIndex, runId);
-  return { state: puzzleToBoardState(puzzle), puzzle };
+  return { state: puzzleToBoardState(puzzle, { runId }), puzzle };
 }
 
 export default function RookiesRunPage() {
@@ -503,6 +503,7 @@ export default function RookiesRunPage() {
         abilities: state.abilities,
         tempo: state.tempo,
         pendingOffer: state.pendingOffer,
+        runId: meta.runId,
       }),
     );
     setSelectedSquare(null);

@@ -130,6 +130,8 @@ export function puzzleToBoardState(
     abilities?: BoardState['abilities'];
     pendingOffer?: BoardState['pendingOffer'];
     aiRngSeed?: number;
+    /** Run id — only STC mini-runs lock Rookie into a non-rook form. */
+    runId?: string;
   } = {},
 ): BoardState {
   const abilities = refreshAbilityUses(carry.abilities ?? []);
@@ -149,8 +151,10 @@ export function puzzleToBoardState(
     form: 'rook',
     formMovesLeft: 0,
     ...((): Partial<BoardState> => {
-      // STC / teaching runs: lock Rookie into a single non-rook form for the
-      // whole level. Triggered by allowedForms = [<single non-rook form>].
+      // STC mini-runs only: lock Rookie into a single non-rook form for the
+      // whole level. Non-STC themed runs (Knight's Academy etc.) use
+      // allowedForms to restrict transforms, not to override the starting form.
+      if (!carry.runId?.startsWith('stc-')) return {};
       const af = puzzle.allowedForms;
       if (af && af.length === 1 && af[0] !== 'rook') {
         return { form: af[0], formMovesLeft: -1 };
