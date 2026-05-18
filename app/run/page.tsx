@@ -9,6 +9,7 @@ import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunIntroModal } from '@/components/run/RunIntroModal';
 import { RulesInline } from '@/components/run/RulesInline';
+import { TempoHelpModal } from '@/components/run/TempoHelpModal';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
 import { RookiesRunLogo } from '@/components/run/RookiesRunLogo';
 import { StcRunLogo } from '@/components/run/StcRunLogo';
@@ -237,13 +238,6 @@ export default function RookiesRunPage() {
   }, []);
 
   const [showIntro, setShowIntro] = useState(false);
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!localStorage.getItem('rookies-run-intro-seen')) {
-      setShowIntro(true);
-      trackEvent('run_intro_shown', { iso: meta.iso });
-    }
-  }, [meta.iso]);
 
   const dismissIntro = useCallback(() => {
     ensureAudioWarm();
@@ -254,10 +248,13 @@ export default function RookiesRunPage() {
     trackEvent('run_intro_dismissed', { iso: meta.iso });
   }, [meta.iso, ensureAudioWarm]);
 
-  const openIntro = useCallback(() => {
-    setShowIntro(true);
-    trackEvent('run_intro_reopened', { iso: meta.iso });
-  }, [meta.iso]);
+  const [showTempoHelp, setShowTempoHelp] = useState(false);
+  const openTempoHelp = useCallback(() => {
+    ensureAudioWarm();
+    setShowTempoHelp(true);
+    trackEvent('run_tempo_help_opened', { iso: meta.iso });
+  }, [meta.iso, ensureAudioWarm]);
+  const closeTempoHelp = useCallback(() => setShowTempoHelp(false), []);
 
   const trackedStartRef = useRef(false);
   useEffect(() => {
@@ -557,13 +554,13 @@ export default function RookiesRunPage() {
       }
       if (typeof window !== 'undefined') {
         localStorage.setItem('rookies-run-current', runId);
-        const url = new URL(window.location.href);
-        url.searchParams.delete('run');
-        url.searchParams.delete('level');
-        window.history.replaceState({}, '', url.toString());
+        trackEvent('run_picked', { from: meta.runId, to: runId });
+        // Always navigate to /run?run=<id>. /run/stc redirects to stc-king,
+        // so staying on that pathname would clobber the picked run.
+        window.location.href = `/run?run=${encodeURIComponent(runId)}`;
+        return;
       }
       trackEvent('run_picked', { from: meta.runId, to: runId });
-      if (typeof window !== 'undefined') window.location.reload();
     },
     [meta.runId],
   );
@@ -607,45 +604,47 @@ export default function RookiesRunPage() {
   return (
     <div className="h-full overflow-auto bg-chess-page">
       <div className="max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-3">
-        <header className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setShowRunPicker(true)}
-            className="text-left active:opacity-70 transition-opacity"
-            aria-label="Switch run"
-          >
-            {isStc ? <StcRunLogo scale={0.45} /> : <RookiesRunLogo scale={0.45} />}
-          </button>
-
-          <div className="flex-1 flex justify-end items-center gap-2">
-            <div className="bg-chess-surface rounded-lg px-3 py-1.5 shadow-sm inline-flex items-center gap-1.5 leading-none">
-              <span className="text-[9px] font-black uppercase tracking-[0.14em] text-chess-text-muted">
-                Lvl
-              </span>
-              <span className="text-sm font-black text-chess-text tabular-nums">
-                {levelIndex + 1}
-                <span className="text-chess-text-faint">/{totalLevels}</span>
-              </span>
-            </div>
+        <header className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button
+              type="button"
+              onClick={() => setShowRunPicker(true)}
+              className="text-left active:opacity-70 transition-opacity shrink-0"
+              aria-label="Switch run"
+            >
+              {isStc ? <StcRunLogo scale={0.45} /> : <RookiesRunLogo scale={0.45} />}
+            </button>
+            <RulesInline />
           </div>
 
+          <div className="bg-chess-surface rounded-lg px-3 py-1.5 shadow-sm inline-flex items-center gap-1.5 leading-none shrink-0">
+            <span className="text-[9px] font-black uppercase tracking-[0.14em] text-chess-text-muted">
+              Lvl
+            </span>
+            <span className="text-sm font-black text-chess-text tabular-nums">
+              {levelIndex + 1}
+              <span className="text-chess-text-faint">/{totalLevels}</span>
+            </span>
+          </div>
+        </header>
+
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <TempoBar
+              tempo={state.tempo}
+              form={state.form}
+              formMovesLeft={state.formMovesLeft}
+            />
+          </div>
           <button
             type="button"
-            onClick={openIntro}
-            aria-label="How to play"
+            onClick={openTempoHelp}
+            aria-label="How tempo works"
             className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
           >
             ?
           </button>
-        </header>
-
-        <RulesInline />
-
-        <TempoBar
-          tempo={state.tempo}
-          form={state.form}
-          formMovesLeft={state.formMovesLeft}
-        />
+        </div>
 
         <div className="w-full">
           <RunBoard
@@ -663,6 +662,7 @@ export default function RookiesRunPage() {
             abilityTier={activeAbilityTier}
             onSquareClick={onSquareClick}
             onPieceDrop={onPieceDrop}
+            vanillaPieces={isStc}
           />
         </div>
 
@@ -713,6 +713,8 @@ export default function RookiesRunPage() {
           tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
         />
       )}
+
+      {showTempoHelp && <TempoHelpModal onClose={closeTempoHelp} />}
 
       {showRunPicker && (
         <RunPickerModal
