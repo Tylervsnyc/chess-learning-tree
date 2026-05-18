@@ -262,10 +262,20 @@ export default function RookiesRunPage() {
 
   const [showIntro, setShowIntro] = useState(false);
 
+  // Show the MTG-style intro card once per (run date), keyed by ISO.
+  // Past-day links (vault) get the intro too the first time they're opened.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const key = `rookies-run-intro-seen:${meta.iso}`;
+    if (!localStorage.getItem(key)) {
+      setShowIntro(true);
+    }
+  }, [meta.iso]);
+
   const dismissIntro = useCallback(() => {
     ensureAudioWarm();
     if (typeof window !== 'undefined') {
-      localStorage.setItem('rookies-run-intro-seen', '1');
+      localStorage.setItem(`rookies-run-intro-seen:${meta.iso}`, '1');
     }
     setShowIntro(false);
     trackEvent('run_intro_dismissed', { iso: meta.iso });
@@ -760,6 +770,7 @@ export default function RookiesRunPage() {
         <RunIntroModal
           onClose={dismissIntro}
           tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
+          runName={runDef.name}
         />
       )}
 
