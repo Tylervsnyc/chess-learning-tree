@@ -334,7 +334,13 @@ export default function TestCoachPage() {
       });
     }
 
-    // Send to Claude
+    // Stockfish is done — show eval bar / board review even if Claude fails
+    setAnalyzedMoves(analyzed);
+    setReviewIndex(-1);
+    setReviewFen(START_FEN);
+    setPhase('review');
+
+    // Send to Claude for commentary (optional — eval bar works without it)
     setAnalysisProgress('Rookie is writing commentary...');
 
     try {
@@ -351,16 +357,12 @@ export default function TestCoachPage() {
 
       const data = await res.json();
       if (data.review) {
-        setAnalyzedMoves(analyzed);
         setReview(data.review);
-        setReviewIndex(-1);
-        setReviewFen(START_FEN);
-        setPhase('review');
       } else {
-        setAnalysisProgress('Review failed. Try again.');
+        setAnalysisProgress('Commentary unavailable, but eval bar is ready.');
       }
     } catch {
-      setAnalysisProgress('Review failed. Try again.');
+      setAnalysisProgress('Commentary unavailable, but eval bar is ready.');
     }
   }, []);
 
