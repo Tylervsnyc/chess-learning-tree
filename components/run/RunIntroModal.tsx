@@ -6,8 +6,6 @@ interface RunIntroModalProps {
   onClose: () => void;
   /** Optional tagline shown in the flavor text area (e.g. STC co-brand). */
   tagline?: string;
-  /** Today's run name, shown as the card title. Falls back to "Rookie's Run". */
-  runName?: string;
 }
 
 const RULES: { n: number; text: string }[] = [
@@ -16,8 +14,8 @@ const RULES: { n: number; text: string }[] = [
   { n: 3, text: 'Show no mercy.' },
 ];
 
-export function RunIntroModal({ onClose, tagline, runName }: RunIntroModalProps) {
-  const title = runName || "Rookie's Run";
+export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
+  const title = "Rookie's Run";
 
   return (
     <>
@@ -48,11 +46,11 @@ export function RunIntroModal({ onClose, tagline, runName }: RunIntroModalProps)
         }
         .mtg-art {
           background:
-            radial-gradient(ellipse at 50% 30%, #1f3a7a 0%, #0a1840 60%, #060b25 100%);
+            radial-gradient(ellipse at 50% 30%, #fbe9b8 0%, #e9c976 55%, #b88f3a 100%);
           box-shadow:
             inset 0 0 0 1px #6b4a1a,
-            inset 0 0 12px rgba(0,0,0,0.7),
-            inset 0 2px 0 rgba(0,0,0,0.4);
+            inset 0 0 14px rgba(80,40,0,0.35),
+            inset 0 2px 0 rgba(255,235,180,0.4);
         }
         .mtg-textbox {
           background: linear-gradient(180deg, #f3e5c2 0%, #e6d4a3 100%);
@@ -123,7 +121,7 @@ export function RunIntroModal({ onClose, tagline, runName }: RunIntroModalProps)
           <div className="mtg-art mt-2 rounded-md h-[180px] flex items-center justify-center overflow-hidden relative">
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <div
-                className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 style={{ animation: 'mtgShine 2.4s ease-in-out 0.6s 1 backwards' }}
               />
             </div>

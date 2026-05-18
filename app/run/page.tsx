@@ -770,7 +770,6 @@ export default function RookiesRunPage() {
         <RunIntroModal
           onClose={dismissIntro}
           tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
-          runName={runDef.name}
         />
       )}
 
