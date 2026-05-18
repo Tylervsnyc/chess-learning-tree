@@ -557,7 +557,6 @@ export default function RookiesRunPage() {
       return;
     }
     trackEvent('run_advanced', { from: meta.runId, to: nextRunId });
-    if (typeof window !== 'undefined') window.location.reload();
   }, [meta.runId]);
 
   const [showRunPicker, setShowRunPicker] = useState(false);
