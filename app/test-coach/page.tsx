@@ -9,6 +9,7 @@ import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { useClickToMove } from '@/hooks/useClickToMove';
 import { maia, type MaiaStatus } from '@/lib/maia/maia-adapter';
 import type { MoveAnalysis } from '@/app/api/coach-review/route';
+import { evalToWinPercent, mateToEquivalentCp } from '@/lib/game-eval';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
@@ -35,17 +36,26 @@ interface ReviewData {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function cpToPawns(cp: number | null): string {
+function formatEval(cp: number | null, mate: number | null): string {
+  if (mate !== null) {
+    // Mate-in-0 means current side is mated — show from white-perspective sign
+    if (mate === 0) return 'M';
+    return mate > 0 ? `M${mate}` : `-M${Math.abs(mate)}`;
+  }
   if (cp === null) return '0.0';
   const val = cp / 100;
   return (val >= 0 ? '+' : '') + val.toFixed(1);
 }
 
-function evalBarPercent(cp: number | null): number {
-  if (cp === null) return 50;
-  // Sigmoid-ish mapping: +-500cp = roughly 90/10
-  const clamped = Math.max(-1000, Math.min(1000, cp));
-  return 50 + 50 * (2 / (1 + Math.exp(-clamped / 200)) - 1);
+function evalBarPercent(cp: number | null, mate: number | null): number {
+  if (cp === null && mate === null) return 50;
+  // Shared Lichess sigmoid via lib/game-eval — handles mate via mateToEquivalentCp
+  return evalToWinPercent(cp, mate);
+}
+
+function evalSign(cp: number | null, mate: number | null): number {
+  if (mate !== null) return mate >= 0 ? 1 : -1;
+  return (cp ?? 0) >= 0 ? 1 : -1;
 }
 
 function getClassificationLabel(cls: MoveAnalysis['classification']): string | null {
@@ -92,6 +102,8 @@ export default function TestCoachPage() {
   const liveEvalsRef = useRef<Map<number, {
     evalBefore: number | null;
     evalAfter: number | null;
+    mateBefore: number | null;
+    mateAfter: number | null;
     bestMove: string | null;
     threat: string | null;
   }>>(new Map());
@@ -154,6 +166,8 @@ export default function TestCoachPage() {
         liveEvalsRef.current.set(moveIdx, {
           evalBefore: fullBefore?.cp ?? null,
           evalAfter: fullAfter?.cp ?? null,
+          mateBefore: fullBefore?.mate ?? null,
+          mateAfter: fullAfter?.mate ?? null,
           bestMove: fullBefore?.bestMove ?? null,
           threat: fullAfter?.bestMove ?? null,
         });
@@ -277,19 +291,24 @@ export default function TestCoachPage() {
         cached = {
           evalBefore: fullBefore?.cp ?? null,
           evalAfter: fullAfter?.cp ?? null,
+          mateBefore: fullBefore?.mate ?? null,
+          mateAfter: fullAfter?.mate ?? null,
           bestMove: fullBefore?.bestMove ?? null,
           threat: fullAfter?.bestMove ?? null,
         };
       }
 
-      const { evalBefore, evalAfter, bestMove, threat } = cached;
+      const { evalBefore, evalAfter, mateBefore, mateAfter, bestMove, threat } = cached;
 
-      // Classify based on eval swing
+      // Collapse cp+mate into a single cp-equivalent for swing classification
+      const cpEqBefore = mateBefore !== null ? mateToEquivalentCp(mateBefore) : evalBefore;
+      const cpEqAfter = mateAfter !== null ? mateToEquivalentCp(mateAfter) : evalAfter;
+
       let classification: MoveAnalysis['classification'] = null;
-      if (evalBefore !== null && evalAfter !== null) {
+      if (cpEqBefore !== null && cpEqAfter !== null) {
         const swing = m.color === 'white'
-          ? evalBefore - evalAfter
-          : evalAfter - evalBefore;
+          ? cpEqBefore - cpEqAfter
+          : cpEqAfter - cpEqBefore;
 
         if (swing > 300) classification = 'blunder';
         else if (swing > 150) classification = 'mistake';
@@ -307,6 +326,8 @@ export default function TestCoachPage() {
         fen: m.fenBefore,
         evalBefore,
         evalAfter,
+        mateBefore,
+        mateAfter,
         bestMove,
         threat,
         classification,
@@ -355,8 +376,9 @@ export default function TestCoachPage() {
   const currentAnalysis = reviewIndex >= 0 ? analyzedMoves[reviewIndex] : null;
   const currentRecord = reviewIndex >= 0 ? moveHistoryRef.current[reviewIndex] : null;
 
-  // Current eval (after this move)
+  // Current eval (after this move) — cp + mate
   const currentEval = currentAnalysis?.evalAfter ?? (reviewIndex === -1 ? 0 : null);
+  const currentMate = currentAnalysis?.mateAfter ?? null;
 
   // Commentary for current move
   const currentCommentary = useMemo(() => {
@@ -548,13 +570,13 @@ export default function TestCoachPage() {
               <div className="relative h-5 rounded-md overflow-hidden bg-[#333]">
                 <div
                   className="h-full bg-white transition-all duration-500 ease-out"
-                  style={{ width: `${evalBarPercent(currentEval)}%` }}
+                  style={{ width: `${evalBarPercent(currentEval, currentMate)}%` }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className={`text-[11px] font-bold font-mono ${
-                    (currentEval ?? 0) >= 0 ? 'text-black/70' : 'text-white/70'
+                    evalSign(currentEval, currentMate) >= 0 ? 'text-black/70' : 'text-white/70'
                   }`}>
-                    {cpToPawns(currentEval)}
+                    {formatEval(currentEval, currentMate)}
                   </span>
                 </div>
               </div>

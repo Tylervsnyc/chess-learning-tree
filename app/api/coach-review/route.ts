@@ -12,9 +12,12 @@ export interface MoveAnalysis {
   san: string;
   uci: string;
   fen: string;
-  /** Stockfish eval in centipawns (from white's perspective) */
+  /** Stockfish eval in centipawns (from white's perspective). Null when mate is set. */
   evalBefore: number | null;
   evalAfter: number | null;
+  /** Mate-in-N from white's perspective (positive = white mates). Null when cp is set. */
+  mateBefore: number | null;
+  mateAfter: number | null;
   /** Stockfish best move for this position (UCI) */
   bestMove: string | null;
   /** Opponent's best response after this move = "threat" (UCI) */
@@ -74,9 +77,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Build compact game data — every move with eval
+    const fmtEval = (cp: number | null, mate: number | null): string => {
+      if (mate !== null) return mate > 0 ? `M${mate}` : `M${mate}`;
+      if (cp !== null) return (cp / 100).toFixed(1);
+      return '?';
+    };
     const moveLines = moves.map(m => {
-      const evalBefore = m.evalBefore !== null ? (m.evalBefore / 100).toFixed(1) : '?';
-      const evalAfter = m.evalAfter !== null ? (m.evalAfter / 100).toFixed(1) : '?';
+      const evalBefore = fmtEval(m.evalBefore, m.mateBefore);
+      const evalAfter = fmtEval(m.evalAfter, m.mateAfter);
       const best = m.bestMove ? ` best:${m.bestMove}` : '';
       const cls = m.classification && m.classification !== 'good' ? ` [${m.classification}]` : '';
       return `${m.moveNumber}${m.color === 'white' ? '.' : '...'} ${m.san} (${evalBefore}→${evalAfter}${best})${cls}`;
