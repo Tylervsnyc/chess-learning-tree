@@ -99,11 +99,11 @@ export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
       `}</style>
 
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-6 overflow-auto"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-3 py-3 overflow-auto"
         onClick={onClose}
       >
         <div
-          className="mtg-card relative w-full max-w-[320px] rounded-[14px] p-2.5"
+          className="mtg-card relative w-full max-w-[300px] rounded-[14px] p-2"
           style={{ animation: 'mtgCardEntry 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.1) backwards', perspective: '1000px' }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -118,27 +118,27 @@ export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
           </div>
 
           {/* Art box */}
-          <div className="mtg-art mt-2 rounded-md h-[180px] flex items-center justify-center overflow-hidden relative">
+          <div className="mtg-art mt-1.5 rounded-md h-[130px] flex items-center justify-center overflow-hidden relative">
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <div
                 className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 style={{ animation: 'mtgShine 2.4s ease-in-out 0.6s 1 backwards' }}
               />
             </div>
-            <div style={{ transform: 'scale(0.7)' }}>
-              <RookiesRunLogo scale={0.7} />
+            <div style={{ transform: 'scale(0.55)' }}>
+              <RookiesRunLogo scale={0.55} />
             </div>
           </div>
 
           {/* Type line */}
-          <div className="mtg-typeline mt-2 rounded-md px-3 py-1">
+          <div className="mtg-typeline mt-1.5 rounded-md px-3 py-1">
             <p className="text-[10px] font-black text-[#f3e5c2] uppercase tracking-[0.14em] leading-none">
               Daily · Roguelike Run
             </p>
           </div>
 
           {/* Text box */}
-          <div className="mtg-textbox mt-2 rounded-md px-3 py-3 flex flex-col gap-2">
+          <div className="mtg-textbox mt-1.5 rounded-md px-3 py-2.5 flex flex-col gap-1.5">
             {RULES.map((r, i) => (
               <div
                 key={r.n}
@@ -152,7 +152,7 @@ export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
               </div>
             ))}
 
-            <div className="mt-1 pt-2 border-t border-[#6b4a1a]/30">
+            <div className="mt-0.5 pt-1.5 border-t border-[#6b4a1a]/30">
               <p className="text-[11px] italic leading-snug text-[#5a3a14]">
                 {tagline || '"She\'s got this. (She does not have this.)"'}
               </p>
@@ -160,11 +160,11 @@ export function RunIntroModal({ onClose, tagline }: RunIntroModalProps) {
           </div>
 
           {/* Power/toughness slot — repurposed as the Begin CTA */}
-          <div className="mt-2 flex items-end justify-between gap-2">
+          <div className="mt-1.5 flex items-end justify-between gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="mtg-begin flex-1 py-2.5 rounded-md text-[13px] font-black uppercase tracking-[0.18em] transition-all"
+              className="mtg-begin flex-1 py-2 rounded-md text-[13px] font-black uppercase tracking-[0.18em] transition-all"
             >
               Begin
             </button>

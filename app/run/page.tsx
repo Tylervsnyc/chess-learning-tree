@@ -662,7 +662,7 @@ export default function RookiesRunPage() {
 
   return (
     <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-3">
+      <div className="max-w-md mx-auto w-full px-4 pt-1.5 pb-3 flex flex-col gap-2">
         <header className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <button
