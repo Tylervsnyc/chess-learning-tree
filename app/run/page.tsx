@@ -550,10 +550,11 @@ export default function RookiesRunPage() {
     }
     if (typeof window !== 'undefined') {
       localStorage.setItem('rookies-run-current', nextRunId);
-      const url = new URL(window.location.href);
-      url.searchParams.delete('run');
-      url.searchParams.delete('level');
-      window.history.replaceState({}, '', url.toString());
+      trackEvent('run_advanced', { from: meta.runId, to: nextRunId });
+      // Navigate explicitly so STC runs land back inside the STC surface.
+      // A bare /run with no ?run= would kick STC runs back to DEFAULT_RUN_ID.
+      window.location.href = `/run?run=${encodeURIComponent(nextRunId)}`;
+      return;
     }
     trackEvent('run_advanced', { from: meta.runId, to: nextRunId });
     if (typeof window !== 'undefined') window.location.reload();
