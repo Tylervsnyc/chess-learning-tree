@@ -98,9 +98,23 @@ function randomizedRookieStart(puzzle: RunPuzzle): { file: number; rank: number 
   for (const h of puzzle.hazards ?? []) {
     if (h.rank === startRank) occupied.add(h.file);
   }
+  // A file is "open" if nothing blocks Rookie from sliding straight to rank 8.
+  const blockersAhead = new Set<number>();
+  for (const p of puzzle.pieces) {
+    if (p.rank > startRank && p.rank <= 8) blockersAhead.add(p.file);
+  }
+  for (const h of puzzle.hazards ?? []) {
+    if (h.rank > startRank && h.rank <= 8) blockersAhead.add(h.file);
+  }
   const available: number[] = [];
   for (let f = 1; f <= 8; f++) {
-    if (!occupied.has(f)) available.push(f);
+    if (!occupied.has(f) && blockersAhead.has(f)) available.push(f);
+  }
+  // Fallback: if every file is open, allow any unoccupied file rather than crash.
+  if (available.length === 0) {
+    for (let f = 1; f <= 8; f++) {
+      if (!occupied.has(f)) available.push(f);
+    }
   }
   if (available.length === 0) return { ...puzzle.rookieStart };
   return {
@@ -134,6 +148,15 @@ export function puzzleToBoardState(
     tempo,
     form: 'rook',
     formMovesLeft: 0,
+    ...((): Partial<BoardState> => {
+      // STC / teaching runs: lock Rookie into a single non-rook form for the
+      // whole level. Triggered by allowedForms = [<single non-rook form>].
+      const af = puzzle.allowedForms;
+      if (af && af.length === 1 && af[0] !== 'rook') {
+        return { form: af[0], formMovesLeft: -1 };
+      }
+      return {};
+    })(),
     moveLimit: puzzle.moveLimit ?? null,
     enemiesPerTurn: puzzle.enemiesPerTurn ?? 1,
     enemyMovedSquares: [],
