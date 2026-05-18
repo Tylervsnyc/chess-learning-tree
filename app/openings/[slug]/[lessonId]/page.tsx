@@ -76,6 +76,7 @@ import { getScandinavianLesson } from '@/data/openings/scandinavian-lessons'
 import { getWittyAlienLesson } from '@/data/openings/witty-alien-lessons'
 import { getWittyAlienMartianLesson } from '@/data/openings/witty-alien-martian-lessons'
 import { getWittyAlienTwoKnightsLesson } from '@/data/openings/witty-alien-two-knights-lessons'
+import { getWittyAlienBonjourLesson } from '@/data/openings/witty-alien-bonjour-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -222,6 +223,7 @@ export default function OpeningLessonPage() {
       'witty-alien': getWittyAlienLesson,
       'witty-alien-martian': getWittyAlienMartianLesson,
       'witty-alien-two-knights': getWittyAlienTwoKnightsLesson,
+      'witty-alien-bonjour': getWittyAlienBonjourLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])

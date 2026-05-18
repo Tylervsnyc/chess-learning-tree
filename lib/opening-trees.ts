@@ -49,6 +49,7 @@ import { SCANDINAVIAN_DEFENSE } from '@/data/openings/scandinavian'
 import { WITTY_ALIEN } from '@/data/openings/witty-alien'
 import { WITTY_ALIEN_MARTIAN } from '@/data/openings/witty-alien-martian'
 import { WITTY_ALIEN_TWO_KNIGHTS } from '@/data/openings/witty-alien-two-knights'
+import { WITTY_ALIEN_BONJOUR } from '@/data/openings/witty-alien-bonjour'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -98,6 +99,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'witty-alien': WITTY_ALIEN,
   'witty-alien-martian': WITTY_ALIEN_MARTIAN,
   'witty-alien-two-knights': WITTY_ALIEN_TWO_KNIGHTS,
+  'witty-alien-bonjour': WITTY_ALIEN_BONJOUR,
 }
 
 /** Get total lesson count for an opening */

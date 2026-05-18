@@ -277,7 +277,7 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     variations: [
       { name: 'Martian Gambit', subtitle: "vs 4...Nd7 — Ne6 instead of f7", icon: 'knight', hasData: true, slug: 'witty-alien-martian' },
       { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: true, slug: 'witty-alien-two-knights' },
-      { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: false, slug: 'witty-alien-bonjour' },
+      { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: true, slug: 'witty-alien-bonjour' },
     ],
     alwaysUnlockVariations: true,
   },
