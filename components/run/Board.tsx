@@ -840,6 +840,28 @@ export function RunBoard({
                 mixBlendMode: 'screen',
               }}
             />
+            {/* GOAL label — faint gold text centered across rank 8 so the
+                finish line reads instantly without breaking the dawn vibe. */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 'clamp(9px, 2.2cqw, 14px)',
+                fontWeight: 900,
+                letterSpacing: '0.5em',
+                paddingLeft: '0.5em',
+                color: 'rgba(120, 60, 0, 0.55)',
+                textShadow:
+                  '0 1px 0 rgba(255,245,200,0.85), 0 0 6px rgba(255,220,140,0.7)',
+                textTransform: 'uppercase',
+                userSelect: 'none',
+              }}
+            >
+              Goal
+            </div>
             {/* Drifting motes — scattered across the row, not tile-repeated. */}
             {GOAL_MOTES.map((m, i) => (
               <span

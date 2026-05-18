@@ -1,177 +1,79 @@
 'use client';
 
-import { useState } from 'react';
-
 interface RunIntroModalProps {
   onClose: () => void;
 }
 
-interface Slide {
-  title: string;
-  body: string;
-  icon: React.ReactNode;
-}
-
-const GOAL_GRADIENT =
-  'linear-gradient(180deg, #fff1b8 0%, #ffd56a 45%, #e89c1a 100%)';
-const LIGHT_SQ = '#ebecd0';
-const DARK_SQ = '#739552';
-
-function MiniBoardWithArrow() {
-  return (
-    <div className="relative w-24 h-24">
-      <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-sm overflow-hidden shadow-md">
-        {Array.from({ length: 64 }, (_, i) => {
-          const row = Math.floor(i / 8);
-          const col = i % 8;
-          const isGoal = row === 0;
-          const isLight = (row + col) % 2 === 0;
-          return (
-            <div
-              key={i}
-              style={
-                isGoal
-                  ? {
-                      backgroundImage: GOAL_GRADIENT,
-                      boxShadow: 'inset 0 0 0 0.5px rgba(255,245,200,0.5)',
-                    }
-                  : { backgroundColor: isLight ? LIGHT_SQ : DARK_SQ }
-              }
-            />
-          );
-        })}
-      </div>
-      <svg
-        className="absolute -left-6 top-0 h-8 w-8"
-        viewBox="0 0 32 32"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ color: '#e89c1a' }}
-      >
-        <path d="M4 16 L26 16" />
-        <path d="M18 8 L26 16 L18 24" />
-      </svg>
-    </div>
-  );
-}
-
-const SLIDES: Slide[] = [
-  {
-    title: 'Climb to the 8th rank',
-    body: 'Get Rookie to the top of the board. Ten levels. One daily run.',
-    icon: <MiniBoardWithArrow />,
-  },
-  {
-    title: 'Capture to charge tempo',
-    body: 'Every piece Rookie takes fills the tempo meter. Bigger piece, bigger boost.',
-    icon: (
-      <div className="flex gap-1 px-4 w-full">
-        {Array.from({ length: 8 }, (_, i) => (
-          <div
-            key={i}
-            className="flex-1 h-4 rounded-sm bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.7)]"
-            style={{
-              animation: `rookiesRunFillBar 1.6s ease-in-out ${i * 0.08}s infinite`,
-            }}
-          />
-        ))}
-      </div>
-    ),
-  },
-  {
-    title: 'Collect up to 3 powers',
-    body: 'When tempo fills, choose 1 of 3 cards. Powers stick for the whole run — pick them again to level them up. Max 3 in your rack.',
-    icon: (
-      <div className="flex gap-2 px-2 items-end">
-        <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-zinc-200 to-zinc-400 border-2 border-zinc-500 shadow-md -rotate-6" />
-        <div className="w-16 h-24 rounded-lg bg-gradient-to-br from-emerald-300 to-emerald-500 border-2 border-emerald-600 shadow-lg" />
-        <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-sky-300 to-sky-500 border-2 border-sky-600 shadow-md rotate-6" />
-      </div>
-    ),
-  },
-  {
-    title: 'Stack them. Get loud.',
-    body: 'Bishop steps, freeze rays, detonations, time rewinds. Five tiers each — pick the same power again to upgrade it. Uses refill every level.',
-    icon: (
-      <div className="flex items-center justify-center text-5xl text-amber-500 font-black">
-        <span style={{ textShadow: '0 0 16px rgba(251,191,36,0.65)' }}>★</span>
-      </div>
-    ),
-  },
+const RULES: { n: number; text: string }[] = [
+  { n: 1, text: 'Reach the 8th rank' },
+  { n: 2, text: 'Capture to charge tempo' },
+  { n: 3, text: 'Show no mercy' },
 ];
 
 export function RunIntroModal({ onClose }: RunIntroModalProps) {
-  const [step, setStep] = useState(0);
-  const slide = SLIDES[step];
-  const isLast = step === SLIDES.length - 1;
-
   return (
     <>
       <style>{`
-        @keyframes rookiesRunFillBar {
-          0%, 100% { opacity: 0.4; transform: scaleY(0.7); }
-          50%      { opacity: 1;   transform: scaleY(1); }
-        }
         @keyframes rookiesRunIntroPop {
-          0%   { opacity: 0; transform: scale(0.9) translateY(20px); }
+          0%   { opacity: 0; transform: scale(0.92) translateY(12px); }
           100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes rookiesRunRuleSlide {
+          0%   { opacity: 0; transform: translateX(-8px); }
+          100% { opacity: 1; transform: translateX(0); }
         }
       `}</style>
 
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-        style={{ animation: 'rookiesRunIntroPop 0.3s ease-out backwards' }}
+        onClick={onClose}
       >
-        <div className="w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl flex flex-col relative overflow-hidden">
+        <div
+          className="w-full max-w-xs bg-chess-surface rounded-2xl shadow-2xl relative overflow-hidden"
+          style={{ animation: 'rookiesRunIntroPop 0.25s ease-out backwards' }}
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             type="button"
             onClick={onClose}
-            aria-label="Skip intro"
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted transition-all z-10"
+            aria-label="Close"
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted transition-all"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
 
-          <div className="px-6 pt-8 pb-4 flex flex-col items-center gap-5">
-            <div className="h-24 w-full flex items-center justify-center">
-              {slide.icon}
-            </div>
-
-            <div className="text-center">
-              <h2 className="text-2xl font-black text-chess-text leading-tight">
-                {slide.title}
-              </h2>
-              <p className="text-sm text-chess-text-muted mt-2 leading-snug px-2">
-                {slide.body}
-              </p>
-            </div>
+          <div className="px-5 pt-5 pb-3">
+            <h2 className="text-base font-black text-chess-text uppercase tracking-wide">
+              How to play
+            </h2>
           </div>
 
-          <div className="flex items-center justify-center gap-1.5 pb-3">
-            {SLIDES.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === step ? 'w-6 bg-chess-text' : 'w-1.5 bg-chess-text/25'
-                }`}
-              />
+          <ul className="px-5 pb-5 flex flex-col gap-2.5">
+            {RULES.map((r, i) => (
+              <li
+                key={r.n}
+                className="flex items-center gap-3"
+                style={{ animation: `rookiesRunRuleSlide 0.3s ease-out ${0.1 + i * 0.08}s backwards` }}
+              >
+                <span className="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-black flex items-center justify-center shrink-0">
+                  {r.n}
+                </span>
+                <span className="text-sm font-bold text-chess-text leading-tight">
+                  {r.text}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
 
-          <div className="px-5 pb-5">
-            <button
-              type="button"
-              onClick={() => (isLast ? onClose() : setStep(step + 1))}
-              className="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] text-white font-black text-base shadow-lg transition-all"
-            >
-              {isLast ? 'Play' : 'Next'}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 active:scale-[0.99] text-white font-black text-sm uppercase tracking-wide transition-all"
+          >
+            Got it
+          </button>
         </div>
       </div>
     </>
