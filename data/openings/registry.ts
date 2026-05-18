@@ -275,8 +275,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       subtitle: "5.Ng5 h6 6.Nxf7! — the signature sacrifice · 10 lessons",
     },
     variations: [
-      { name: 'Martian Gambit', subtitle: "vs 4...Nd7 — Ne6 instead of f7", icon: 'knight', hasData: false, slug: 'witty-alien-martian' },
-      { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: false, slug: 'witty-alien-two-knights' },
+      { name: 'Martian Gambit', subtitle: "vs 4...Nd7 — Ne6 instead of f7", icon: 'knight', hasData: true, slug: 'witty-alien-martian' },
+      { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: true, slug: 'witty-alien-two-knights' },
       { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: false, slug: 'witty-alien-bonjour' },
     ],
     alwaysUnlockVariations: true,
