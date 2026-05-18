@@ -15,7 +15,7 @@ const mvpPages = [
 const pantryPages = [
   { name: 'Landing', path: '/', description: 'Public marketing page' },
   { name: 'Home Dashboard', path: '/home', description: 'Feature card navigation' },
-  { name: 'The Daily Rook', path: '/daily-challenge', description: '5-min timed mode with lives' },
+  { name: "Rookie's Run", path: '/run', description: 'Daily roguelike — replaced Daily Rook' },
   { name: 'Puzzle Viewer', path: '/puzzle/fork', description: 'Browse puzzles by theme' },
   { name: 'Review Tool', path: '/review', description: 'Admin: approve/reject puzzles' },
   { name: 'Flagged Puzzles', path: '/flagged', description: 'Admin: problematic puzzles' },

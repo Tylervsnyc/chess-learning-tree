@@ -122,18 +122,18 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
               {/* Learn dropdown */}
               <LearnDropdown pathname={pathname} />
 
-              {/* Daily */}
+              {/* Run (Rookie's Run — the daily) */}
               <Link
-                href="/daily-challenge"
+                href="/run"
                 className={`relative px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
-                  pathname === '/daily-challenge' ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
+                  pathname?.startsWith('/run') ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
                 }`}
                 style={{
                   background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
                 }}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
-                <span className="relative">Daily</span>
+                <span className="relative">Run</span>
               </Link>
 
               {/* Patron — free users only, hidden when monetization is off. Wait for profile to load to avoid flash. */}

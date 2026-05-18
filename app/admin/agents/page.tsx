@@ -126,7 +126,7 @@ const fileTree: { path: string; agent: AgentType; indent: number }[] = [
   { path: 'app/layout.tsx', agent: 'style', indent: 1 },
   { path: 'app/learn/', agent: 'feature', indent: 1 },
   { path: 'app/lesson/', agent: 'feature', indent: 1 },
-  { path: 'app/daily-challenge/', agent: 'feature', indent: 1 },
+  { path: 'app/run/', agent: 'feature', indent: 1 },
   { path: 'components/', agent: 'style', indent: 0 },
   { path: 'data/staging/', agent: 'content', indent: 1 },
   { path: 'data/lesson-pools/', agent: 'content', indent: 1 },

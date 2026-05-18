@@ -18,7 +18,7 @@ import { normalizeMove, processPuzzleWithSAN, BOARD_COLORS, isAlternateCheckmate
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { DailyRookDisplay, BlockResult } from '@/components/daily-challenge/DailyRookDisplay';
+import { DailyRookDisplay, BlockResult } from '@/components/_archive/daily-challenge/DailyRookDisplay';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';

@@ -382,9 +382,9 @@ export function ActivityComplete({
                 </svg>
                 Learn
               </Link>
-              {/* Daily — orange */}
+              {/* Run — orange (Rookie's Run, the daily) */}
               <Link
-                href="/daily-challenge"
+                href="/run"
                 className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
                 style={{
                   backgroundColor: ritualDaily ? '#e2e8f0' : '#FF9500',
@@ -396,7 +396,7 @@ export function ActivityComplete({
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
-                Daily
+                Run
               </Link>
             </div>
           )}
