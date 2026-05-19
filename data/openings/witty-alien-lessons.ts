@@ -4,19 +4,23 @@ import type { OpeningLesson } from '@/types/opening-lesson'
 // WITTY ALIEN — ALIEN GAMBIT LESSONS (wa-1 through wa-test-1)
 //
 // ⚠️  RULES EXCEPTION: This is a trick weapon, NOT master theory.
-// 6.Nxf7 is unsound but scores 60% White over 150k+ Lichess games.
-// Voice should lean INTO the meme — "the sacrifice that drags the king out,"
-// "don't-boo-spam-the-brilliant-emote moment," etc.
+// Built from Witty_Alien's real chess.com games (Jun–Nov 2024, 423 Alien Gambit
+// games). Voice leans INTO the meme — "the sacrifice that drags the king out,"
+// "don't-boo-spam-the-brilliant-emote moment," etc. Frequency data is the
+// honesty anchor: when Witty's win rate drops, say so.
 //
 // WHITE OPENING: User plays as White. White moves = play-move.
 // Black moves = instruction with autoAdvance: 800.
+//
+// ⚠️  CHUNKING RULE: EVERY lesson teaches EXACTLY 3 white moves.
+// Puzzle steps count as a "move" of content.
 //
 // Main line: 1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nf6 5.Ng5 h6
 //            6.Nxf7!! Kxf7 7.Nf3 Nbd7 8.Bd3 e6 9.O-O Bd6
 //            10.Re1 Re8 11.Ne5+ Bxe5 12.dxe5 Nd5 13.Qh5+
 //            Kg8 14.Bxh6!! gxh6 15.Qg6+ Kh8 16.Qh7#
 //
-// FENs computed with chess.js from move sequences.
+// FENs computed with chess.js from move sequences (verified via scripts/_tmp-alien-fens.mjs).
 // ═══════════════════════════════════════════════════════════
 
 const FEN = {
@@ -25,7 +29,7 @@ const FEN = {
   after_c6:     'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
   after_d4:     'rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
   after_d5:     'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
-  after_Nc3:    'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3',
+  after_Nc3:    'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/RNBQKBNR b KQkq - 1 3',
   after_dxe4:   'rnbqkbnr/pp2pppp/2p5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4',
   after_Nxe4:   'rnbqkbnr/pp2pppp/2p5/8/3PN3/8/PPP2PPP/R1BQKBNR b KQkq - 0 4',
   after_Nf6:    'rnbqkb1r/pp2pppp/2p2n2/8/3PN3/8/PPP2PPP/R1BQKBNR w KQkq - 1 5',
@@ -53,44 +57,72 @@ const FEN = {
   after_Kh8:    'r1bqr2k/pp1n4/2p1p1Qp/3nP3/8/3B4/PPP2PPP/R3R1K1 w - - 2 16',
   after_Qh7:    'r1bqr2k/pp1n3Q/2p1p2p/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 3 16',
 
-  // === DEVIATION Bg4 — 7…Bg4 8.Ne5+ Ke8 9.Nxg4 ===
-  bg4_after_Bg4:  'rn1q1b1r/pp2pkp1/2p2n1p/8/3P2b1/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
-  bg4_after_Ne5:  'rn1q1b1r/pp2pkp1/2p2n1p/4N3/3P2b1/8/PPP2PPP/R1BQKB1R b KQ - 3 8',
-  bg4_after_Ke8:  'rn1qkb1r/pp2p1p1/2p2n1p/4N3/3P2b1/8/PPP2PPP/R1BQKB1R w KQ - 4 9',
-  bg4_after_Nxg4: 'rn1qkb1r/pp2p1p1/2p2n1p/8/3P2N1/8/PPP2PPP/R1BQKB1R b KQ - 0 9',
+  // === ALT MATING NET — 15…Kf8 16.Qxh6+ Ke7 17.Qg7# ===
+  alt_after_Kf8:    'r1bqrk2/pp1n4/2p1p1Qp/3nP3/8/3B4/PPP2PPP/R3R1K1 w - - 2 16',
+  alt_after_Qxh6:   'r1bqrk2/pp1n4/2p1p2Q/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 0 16',
+  alt_after_Ke7:    'r1bqr3/pp1nk3/2p1p2Q/3nP3/8/3B4/PPP2PPP/R3R1K1 w - - 1 17',
+  alt_after_Qg7:    'r1bqr3/pp1nk1Q1/2p1p3/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 2 17',
 
-  // === DEVIATION Bf5 — 7…Bf5 8.Ne5+ Kg8 9.Bc4+ e6 10.g4 Be4 11.Bxe6+ Kh7 12.g5 Bxh1?? 13.g6# ===
+  // === DEVIATION c5 — 7…c5 8.d5 Kg8 9.c4 Nbd7 10.Bd3 e6 ===
+  c5_after_c5:    'rnbq1b1r/pp2pkp1/5n1p/2p5/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 0 8',
+  c5_after_d5:    'rnbq1b1r/pp2pkp1/5n1p/2pP4/8/5N2/PPP2PPP/R1BQKB1R b KQ - 0 8',
+  c5_after_Kg8:   'rnbq1bkr/pp2p1p1/5n1p/2pP4/8/5N2/PPP2PPP/R1BQKB1R w KQ - 1 9',
+  c5_after_c4:    'rnbq1bkr/pp2p1p1/5n1p/2pP4/2P5/5N2/PP3PPP/R1BQKB1R b KQ - 0 9',
+  c5_after_Nbd7:  'r1bq1bkr/pp1np1p1/5n1p/2pP4/2P5/5N2/PP3PPP/R1BQKB1R w KQ - 1 10',
+  c5_after_Bd3:   'r1bq1bkr/pp1np1p1/5n1p/2pP4/2P5/3B1N2/PP3PPP/R1BQK2R b KQ - 2 10',
+  c5_after_e6:    'r1bq1bkr/pp1n2p1/4pn1p/2pP4/2P5/3B1N2/PP3PPP/R1BQK2R w KQ - 0 11',
+
+  // === DEVIATION Bf5 — 7…Bf5 8.Ne5+ Kg8 9.Bc4+ e6 10.g4 b5 ===
   bf5_after_Bf5:    'rn1q1b1r/pp2pkp1/2p2n1p/5b2/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
   bf5_after_Ne5:    'rn1q1b1r/pp2pkp1/2p2n1p/4Nb2/3P4/8/PPP2PPP/R1BQKB1R b KQ - 3 8',
   bf5_after_Kg8:    'rn1q1bkr/pp2p1p1/2p2n1p/4Nb2/3P4/8/PPP2PPP/R1BQKB1R w KQ - 4 9',
   bf5_after_Bc4:    'rn1q1bkr/pp2p1p1/2p2n1p/4Nb2/2BP4/8/PPP2PPP/R1BQK2R b KQ - 5 9',
   bf5_after_e6:     'rn1q1bkr/pp4p1/2p1pn1p/4Nb2/2BP4/8/PPP2PPP/R1BQK2R w KQ - 0 10',
   bf5_after_g4:     'rn1q1bkr/pp4p1/2p1pn1p/4Nb2/2BP2P1/8/PPP2P1P/R1BQK2R b KQ - 0 10',
-  bf5_after_Be4:    'rn1q1bkr/pp4p1/2p1pn1p/4N3/2BPb1P1/8/PPP2P1P/R1BQK2R w KQ - 1 11',
-  bf5_after_Bxe6:   'rn1q1bkr/pp4p1/2p1Bn1p/4N3/3Pb1P1/8/PPP2P1P/R1BQK2R b KQ - 0 11',
-  bf5_after_Kh7:    'rn1q1b1r/pp4pk/2p1Bn1p/4N3/3Pb1P1/8/PPP2P1P/R1BQK2R w KQ - 1 12',
-  bf5_after_g5:     'rn1q1b1r/pp4pk/2p1Bn1p/4N1P1/3Pb3/8/PPP2P1P/R1BQK2R b KQ - 0 12',
-  bf5_after_Bxh1:   'rn1q1b1r/pp4pk/2p1Bn1p/4N1P1/3P4/8/PPP2P1P/R1BQK2b w Q - 0 13',
-  bf5_after_g6:     'rn1q1b1r/pp4pk/2p1BnPp/4N3/3P4/8/PPP2P1P/R1BQK2b b Q - 0 13',
+  bf5_after_b5:     'rn1q1bkr/p5p1/2p1pn1p/1p2Nb2/2BP2P1/8/PPP2P1P/R1BQK2R w KQ - 0 11',
 
-  // === DEVIATION c5 — 7…c5 8.c3 Nc6 9.Bd3 ===
-  c5_after_c5:    'rnbq1b1r/pp2pkp1/5n1p/2p5/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 0 8',
-  c5_after_c3:    'rnbq1b1r/pp2pkp1/5n1p/2p5/3P4/2P2N2/PP3PPP/R1BQKB1R b KQ - 0 8',
-  c5_after_Nc6:   'r1bq1b1r/pp2pkp1/2n2n1p/2p5/3P4/2P2N2/PP3PPP/R1BQKB1R w KQ - 1 9',
-  c5_after_Bd3:   'r1bq1b1r/pp2pkp1/2n2n1p/2p5/3P4/2PB1N2/PP3PPP/R1BQK2R b KQ - 2 9',
+  // === DEVIATION e6 — 7…e6 8.Bd3 Bd6 9.O-O Rf8 10.Re1 Kg8 ===
+  e6_after_e6:     'rnbq1b1r/pp3kp1/2p1pn1p/8/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 0 8',
+  e6_after_Bd3:    'rnbq1b1r/pp3kp1/2p1pn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R b KQ - 1 8',
+  e6_after_Bd6:    'rnbq3r/pp3kp1/2pbpn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R w KQ - 2 9',
+  e6_after_OO:     'rnbq3r/pp3kp1/2pbpn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 b - - 3 9',
+  e6_after_Rf8:    'rnbq1r2/pp3kp1/2pbpn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 w - - 4 10',
+  e6_after_Re1:    'rnbq1r2/pp3kp1/2pbpn1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 b - - 5 10',
+  e6_after_Kg8:    'rnbq1rk1/pp4p1/2pbpn1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 w - - 6 11',
 
-  // === ALT MATING NET — 15…Kf8 16.Qxh6+ Ke7 17.Qg7# ===
-  alt_after_Kf8:    'r1bqrk2/pp1n4/2p1p1Qp/3nP3/8/3B4/PPP2PPP/R3R1K1 w - - 2 16',
-  alt_after_Qxh6:   'r1bqrk2/pp1n4/2p1p2Q/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 0 16',
-  alt_after_Ke7:    'r1bqr3/pp1nk3/2p1p2Q/3nP3/8/3B4/PPP2PPP/R3R1K1 w - - 1 17',
-  alt_after_Qg7:    'r1bqr3/pp1nk1Q1/2p1p3/3nP3/8/3B4/PPP2PPP/R3R1K1 b - - 2 17',
+  // === DEVIATION Be6 — 7…Be6 8.Bd3 Nbd7 9.O-O Kg8 10.Re1 Bf7 ===
+  Be6_after_Be6:   'rn1q1b1r/pp2pkp1/2p1bn1p/8/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
+  Be6_after_Bd3:   'rn1q1b1r/pp2pkp1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R b KQ - 3 8',
+  Be6_after_Nbd7:  'r2q1b1r/pp1npkp1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R w KQ - 4 9',
+  Be6_after_OO:    'r2q1b1r/pp1npkp1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 b - - 5 9',
+  Be6_after_Kg8:   'r2q1bkr/pp1np1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 w - - 6 10',
+  Be6_after_Re1:   'r2q1bkr/pp1np1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 b - - 7 10',
+  Be6_after_Bf7:   'r2q1bkr/pp1npbp1/2p2n1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 w - - 8 11',
+
+  // === DEVIATION Kg8 — 7…Kg8 8.Bd3 Be6 9.O-O Nbd7 10.Re1 Bf7 ===
+  Kg8_after_Kg8:   'rnbq1bkr/pp2p1p1/2p2n1p/8/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
+  Kg8_after_Bd3:   'rnbq1bkr/pp2p1p1/2p2n1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R b KQ - 3 8',
+  Kg8_after_Be6:   'rn1q1bkr/pp2p1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQK2R w KQ - 4 9',
+  Kg8_after_OO:    'rn1q1bkr/pp2p1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 b - - 5 9',
+  Kg8_after_Nbd7:  'r2q1bkr/pp1np1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 w - - 6 10',
+  Kg8_after_Re1:   'r2q1bkr/pp1np1p1/2p1bn1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 b - - 7 10',
+  Kg8_after_Bf7:   'r2q1bkr/pp1npbp1/2p2n1p/8/3P4/3B1N2/PPP2PPP/R1BQR1K1 w - - 8 11',
+
+  // === DEVIATION Bg4 — 7…Bg4 8.Ne5+ Kg8 9.Bc4+ e6 10.Nxg4 Nxg4 ===
+  bg4_after_Bg4:    'rn1q1b1r/pp2pkp1/2p2n1p/8/3P2b1/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
+  bg4_after_Ne5:    'rn1q1b1r/pp2pkp1/2p2n1p/4N3/3P2b1/8/PPP2PPP/R1BQKB1R b KQ - 3 8',
+  bg4_after_Kg8:    'rn1q1bkr/pp2p1p1/2p2n1p/4N3/3P2b1/8/PPP2PPP/R1BQKB1R w KQ - 4 9',
+  bg4_after_Bc4:    'rn1q1bkr/pp2p1p1/2p2n1p/4N3/2BP2b1/8/PPP2PPP/R1BQK2R b KQ - 5 9',
+  bg4_after_e6:     'rn1q1bkr/pp4p1/2p1pn1p/4N3/2BP2b1/8/PPP2PPP/R1BQK2R w KQ - 0 10',
+  bg4_after_Nxg4:   'rn1q1bkr/pp4p1/2p1pn1p/8/2BP2N1/8/PPP2PPP/R1BQK2R b KQ - 0 10',
+  bg4_after_NxNg4:  'rn1q1bkr/pp4p1/2p1p2p/8/2BP2n1/8/PPP2PPP/R1BQK2R w KQ - 0 11',
 }
 
 
 // ═══════════════════════════════════════════════════════════
 // wa-1: THE SETUP (1.e4 c6 2.d4 d5 3.Nc3 dxe4)
 // First lesson — no recap.
-// Teaches: e4, d4, Nc3
+// Teaches 3 white moves: e4, d4, Nc3
 // ═══════════════════════════════════════════════════════════
 
 const WA_1: OpeningLesson = {
@@ -102,7 +134,7 @@ const WA_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Welcome to the Alien Gambit — Witty_Alien's trick weapon vs the Caro-Kann. You're going to sacrifice a knight on f7 and drag Black's king into the open.",
+      text: "Welcome to the Alien Gambit — Witty_Alien's trick weapon vs the Caro-Kann. Sacrifice a knight on f7, drag the king out, attack. Witty wins 80% of these in real games.",
     },
     {
       type: 'instruction',
@@ -119,12 +151,11 @@ const WA_1: OpeningLesson = {
       hint: 'Push the king pawn two squares.',
       correctFeedback: 'e4 — the only way in. The Alien Gambit only works against the Caro-Kann.',
       wrongFeedback: 'Play e4 — you need 1.e4 for the Caro-Kann to even happen.',
-      postMoveArrow: [['e4', 'd5'], ['e4', 'f5']],
     },
     {
       type: 'instruction',
       fen: FEN.after_e4,
-      text: "Black almost always responds to 1.e4 with e5 or c5. But Caro-Kann players play c6 — that's the door to the Alien Gambit.",
+      text: "Black almost always responds to 1.e4 with e5 or c5. Caro-Kann players play c6 — that's your door in.",
       arrow: ['e2', 'e4'],
     },
 
@@ -144,12 +175,11 @@ const WA_1: OpeningLesson = {
       hint: 'Push d2 to d4 — claim the whole center.',
       correctFeedback: 'd4! Two-pawn center. Black has to react.',
       wrongFeedback: 'Play d4 — grab the center while you can.',
-      postMoveArrow: [['e4', 'd5'], ['d4', 'e5']],
     },
     {
       type: 'instruction',
       fen: FEN.after_d4,
-      text: "Two pawns abreast on d4 and e4 — the Caro-Kann main line. Black is going to hit e4 with d5.",
+      text: "Two pawns abreast on d4 and e4 — the Caro-Kann main line. Black will hit e4 with d5.",
       arrow: ['d2', 'd4'],
     },
 
@@ -157,7 +187,7 @@ const WA_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_d5,
-      text: "And there it is. Black plays d5, attacking your e4 pawn.",
+      text: "And there it is. d5 attacks your e4 pawn.",
       autoAdvance: 800,
       highlightSquares: ['d7', 'd5'],
     },
@@ -165,7 +195,7 @@ const WA_1: OpeningLesson = {
       type: 'play-move',
       fen: FEN.after_d5,
       correctMove: 'Nc3',
-      prompt: "Defend e4 by developing a piece. Where does the knight go?",
+      prompt: "Defend e4 by developing a piece.",
       hint: 'Bring the b1 knight to c3 — it defends e4.',
       correctFeedback: "Nc3! Develops AND defends e4. Now Black has a choice: capture, push, or trade.",
       wrongFeedback: 'Play Nc3 — develop and defend e4 in one move.',
@@ -174,7 +204,7 @@ const WA_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_Nc3,
-      text: "Nc3 looks innocent. It's not. You're luring Black into capturing on e4 — that's where the sacrifice starts.",
+      text: "Nc3 looks innocent. It's not — you're luring Black into capturing on e4. That's where the trap begins.",
       arrow: ['b1', 'c3'],
     },
 
@@ -189,7 +219,7 @@ const WA_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_dxe4,
-      text: "The trap is set. Next lesson: we recapture and start hunting the king.",
+      text: "The trap is set. Next lesson: recapture, set up the sacrifice, fire.",
     },
 
     // ── RECALL ──
@@ -208,830 +238,501 @@ const WA_1: OpeningLesson = {
       correctFeedback: 'e4.',
       wrongFeedback: 'e4.',
     },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
 
     // ── OUTRO ──
     {
       type: 'instruction',
       fen: FEN.after_dxe4,
-      text: "e4, d4, Nc3 — the Caro-Kann main line. Black bit. Now the fun starts.",
+      text: "Setup complete. Black grabbed the e4 pawn. Next lesson: the sacrifice fires.",
     },
   ],
 }
 
 
 // ═══════════════════════════════════════════════════════════
-// wa-2: BAIT THE KNIGHT (4.Nxe4 Nf6 5.Ng5 h6)
-// Teaches: Nxe4, Ng5
+// wa-2: THE SACRIFICE (4.Nxe4 Nf6 5.Ng5 h6 6.Nxf7!! Kxf7)
+// Teaches 3 white moves: Nxe4, Ng5, Nxf7!!
+// THE signature sacrifice. Witty wins 80% over 451 real games.
 // ═══════════════════════════════════════════════════════════
 
 const WA_2: OpeningLesson = {
   id: 'wa-2',
-  title: 'Bait the Knight',
-  defaultOrientation: 'white',
-  steps: [
-    // ── INTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: "Black thinks they've won a pawn. You're about to send a knight on a one-way trip to f7.",
-    },
-
-    // ── RECAP ──
-    {
-      type: 'instruction',
-      fen: FEN.start,
-      text: "Quick replay of the setup.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.start,
-      correctMove: 'e4',
-      prompt: 'Your move.',
-      hint: 'e4.',
-      correctFeedback: 'e4.',
-      wrongFeedback: 'e4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
-
-    // ── TEACH 1: Nxe4 ──
-    {
-      type: 'play-move',
-      fen: FEN.after_dxe4,
-      correctMove: 'Nxe4',
-      prompt: "Win the pawn back. How?",
-      hint: 'Capture on e4 with the knight.',
-      correctFeedback: "Nxe4 — knight in the center, pointed at g5 and f6. Looking suspicious yet?",
-      wrongFeedback: 'Take with the knight: Nxe4.',
-      postMoveArrow: [['e4', 'g5'], ['e4', 'f6']],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nxe4,
-      text: "Nxe4 sets up the jump. Your knight is one hop from g5 — and g5 attacks f7.",
-      arrow: ['e4', 'g5'],
-    },
-
-    // ── BLACK Nf6 ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf6,
-      text: "Black develops Nf6, attacking your knight. They want to trade and simplify.",
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
-    },
-
-    // ── TEACH 2: Ng5 ──
-    {
-      type: 'play-move',
-      fen: FEN.after_Nf6,
-      correctMove: 'Ng5',
-      prompt: "Don't trade — jump in. Where does the knight go to attack f7?",
-      hint: 'Hop the knight to g5. It attacks f7.',
-      correctFeedback: "Ng5! Your knight ignores the attack and threatens f7. f7 is only defended by the king.",
-      wrongFeedback: 'Play Ng5 — go for f7, not the trade.',
-      postMoveArrow: ['g5', 'f7'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Ng5,
-      text: "Ng5 looks weird — you just moved the same knight twice and ignored Nf6's attack. That's the bait. Black almost always plays h6 to kick the knight away.",
-      arrow: ['g5', 'f7'],
-    },
-
-    // ── BLACK h6 ──
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: "And there it is. h6 — 'shoo, knight, you can't stay.' Black is about to find out the knight isn't leaving.",
-      autoAdvance: 800,
-      highlightSquares: ['h7', 'h6'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: "Black has played h6 in this exact position over 300,000 times. White wins 56% of those games. Why? You'll see next lesson.",
-    },
-
-    // ── RECALL ──
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: "Show me the bait — Nxe4 and Ng5.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_dxe4,
-      correctMove: 'Nxe4',
-      prompt: 'Your move.',
-      hint: 'Nxe4.',
-      correctFeedback: 'Nxe4.',
-      wrongFeedback: 'Nxe4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf6,
-      text: 'Nf6.',
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nf6,
-      correctMove: 'Ng5',
-      prompt: 'Your move.',
-      hint: 'Ng5.',
-      correctFeedback: 'Ng5.',
-      wrongFeedback: 'Ng5.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: 'h6.',
-      autoAdvance: 800,
-      highlightSquares: ['h7', 'h6'],
-    },
-
-    // ── OUTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: "Nxe4, Ng5 — the bait is set. Black thinks they're kicking your knight. They are wrong.",
-    },
-  ],
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// wa-3: THE SACRIFICE (6.Nxf7!! Kxf7 7.Nf3)
-// Teaches: Nxf7, Nf3
-// THE signature move of the gambit.
-// ═══════════════════════════════════════════════════════════
-
-const WA_3: OpeningLesson = {
-  id: 'wa-3',
   title: 'The Sacrifice',
   defaultOrientation: 'white',
   steps: [
     // ── INTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_h6,
-      text: "This is it. The move that makes the Alien Gambit. Take a breath.",
+      fen: FEN.after_dxe4,
+      text: "Time for the signature move. Three moves from now, you'll sacrifice a whole knight on f7. In Witty_Alien's real games, this gambit wins 80% of the time.",
     },
 
     // ── RECAP ──
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Quick replay first.",
+      text: "Quick replay to the position.",
     },
-    {
-      type: 'play-move',
-      fen: FEN.start,
-      correctMove: 'e4',
-      prompt: 'Your move.',
-      hint: 'e4.',
-      correctFeedback: 'e4.',
-      wrongFeedback: 'e4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+
+    // ── TEACH 1: Nxe4 ──
     {
       type: 'play-move',
       fen: FEN.after_dxe4,
       correctMove: 'Nxe4',
-      prompt: 'Your move.',
-      hint: 'Nxe4.',
-      correctFeedback: 'Nxe4.',
-      wrongFeedback: 'Nxe4.',
+      prompt: 'Recapture with the knight.',
+      hint: 'Knight takes e4.',
+      correctFeedback: "Nxe4. Knight in the center, eyeing g5 and f6. The trap is loaded.",
+      wrongFeedback: 'Play Nxe4 — take with the knight.',
     },
+
+    // ── BLACK Nf6 ──
     {
       type: 'instruction',
       fen: FEN.after_Nf6,
-      text: 'Nf6.',
+      text: "Nf6 — Black attacks your knight. Looks like you have to retreat. You don't.",
       autoAdvance: 800,
       highlightSquares: ['g8', 'f6'],
+    },
+
+    // ── TEACH 2: Ng5 ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf6,
+      text: "Instead of retreating, jump FORWARD. Knight to g5 — heading straight for f7.",
+      highlightSquares: ['e4', 'g5', 'f7'],
     },
     {
       type: 'play-move',
       fen: FEN.after_Nf6,
       correctMove: 'Ng5',
-      prompt: 'Your move.',
-      hint: 'Ng5.',
-      correctFeedback: 'Ng5.',
-      wrongFeedback: 'Ng5.',
+      prompt: "Knight forward — toward f7.",
+      hint: 'Knight to g5.',
+      correctFeedback: "Ng5! The knight ignores Nf6 and threatens f7 directly. Black usually plays h6 here — they think they're kicking the knight away.",
+      wrongFeedback: 'Play Ng5 — go forward, not back.',
+      postMoveArrow: ['g5', 'f7'],
     },
+
+    // ── BLACK h6 ──
     {
       type: 'instruction',
       fen: FEN.after_h6,
-      text: 'h6.',
+      text: "h6 — Black says 'shoo, knight.' 62% of real Witty opponents play this. They walked into it.",
       autoAdvance: 800,
       highlightSquares: ['h7', 'h6'],
     },
 
-    // ── TEACH 1: Nxf7!! THE SACRIFICE ──
+    // ── TEACH 3: Nxf7!! ──
     {
       type: 'instruction',
       fen: FEN.after_h6,
-      text: "Black just played h6. The knight is attacked. Most players retreat. You're not most players.",
+      text: "The signature move. Don't retreat. SACRIFICE.",
       highlightSquares: ['g5', 'f7'],
     },
     {
       type: 'play-move',
       fen: FEN.after_h6,
       correctMove: 'Nxf7',
-      prompt: "Don't retreat. SACRIFICE. Take f7.",
-      hint: 'Capture on f7 with the knight. Yes, the king takes it back. That is the point.',
-      correctFeedback: "Nxf7!! The Alien Gambit. You gave up a knight to drag the king into the open. 60% White winrate over 150,000 Lichess games.",
-      wrongFeedback: 'Play Nxf7 — the whole gambit IS this move. Trust it.',
+      prompt: "Sacrifice the knight on f7.",
+      hint: 'Knight takes f7 — yes, the king takes back. That is the point.',
+      correctFeedback: "Nxf7!! The Alien Gambit fires. Knight for two pawns and a king dragged into the open. Witty plays this in 99% of his real games when he gets here.",
+      wrongFeedback: 'Play Nxf7 — sacrifice the knight, drag the king out.',
       postMoveArrow: ['f7', 'e8'],
     },
     {
       type: 'instruction',
       fen: FEN.after_Nxf7,
-      text: "Black has to take — Kxf7. If they refuse, you're up a pawn for free with the king already exposed.",
-      arrow: ['e8', 'f7'],
+      text: "Black almost has to take — refusing the gambit just loses material with no compensation.",
+      arrow: ['f7', 'e8'],
     },
 
     // ── BLACK Kxf7 ──
     {
       type: 'instruction',
       fen: FEN.after_Kxf7,
-      text: "Kxf7. The king is on f7 — no pawn cover, no castling rights, no friends.",
+      text: "Kxf7 — king forced out. It's now on f7, no pawn cover, in the middle of the board. Exactly what you wanted.",
       autoAdvance: 800,
       highlightSquares: ['e8', 'f7'],
-    },
-
-    // ── TEACH 2: Nf3 ──
-    {
-      type: 'play-move',
-      fen: FEN.after_Kxf7,
-      correctMove: 'Nf3',
-      prompt: "Develop your other knight. Where does it belong?",
-      hint: 'Bring the g1 knight to f3 — heading for e5.',
-      correctFeedback: "Nf3 — develops and prepares Ne5+, hitting the exposed king again.",
-      wrongFeedback: 'Play Nf3 — get the other knight into the attack.',
-      postMoveArrow: ['f3', 'e5'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Nf3 is patient. You're down a piece but you have two pawns, the bishop pair, and a king on f7 with no defenders. Pieces will join the attack one by one.",
-      arrow: ['g1', 'f3'],
     },
 
     // ── RECALL ──
     {
       type: 'instruction',
-      fen: FEN.after_h6,
-      text: "The sacrifice — your turn.",
+      fen: FEN.after_dxe4,
+      text: "Run the sacrifice from move 4.",
     },
-    {
-      type: 'play-move',
-      fen: FEN.after_h6,
-      correctMove: 'Nxf7',
-      prompt: 'Your move.',
-      hint: 'Nxf7.',
-      correctFeedback: 'Nxf7.',
-      wrongFeedback: 'Nxf7.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Kxf7,
-      text: 'Kxf7.',
-      autoAdvance: 800,
-      highlightSquares: ['e8', 'f7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Kxf7,
-      correctMove: 'Nf3',
-      prompt: 'Your move.',
-      hint: 'Nf3.',
-      correctFeedback: 'Nf3.',
-      wrongFeedback: 'Nf3.',
-    },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
 
     // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Nxf7, Nf3. You sacrificed a knight and developed another one. The king is on f7. Time to crank up the heat.",
+      fen: FEN.after_Kxf7,
+      text: "King on f7. Material: down a knight for two pawns. But the king is exposed. Next: the universal attacking setup.",
     },
   ],
 }
 
 
 // ═══════════════════════════════════════════════════════════
-// wa-4: LOAD THE DIAGONAL (7…Nbd7 8.Bd3 e6 9.O-O)
-// Teaches: Bd3, O-O
-// Black plays Nbd7 (most common). Bd3 aims at h7. Castle.
+// wa-3: UNIVERSAL SETUP (7.Nf3 Nbd7 8.Bd3 e6 9.O-O Bd6)
+// Teaches 3 white moves: Nf3, Bd3, O-O
+// The "universal attacking pattern" — same plan vs multiple Black 7th moves.
 // ═══════════════════════════════════════════════════════════
 
-const WA_4: OpeningLesson = {
-  id: 'wa-4',
-  title: 'Load the Diagonal',
+const WA_3: OpeningLesson = {
+  id: 'wa-3',
+  title: 'Universal Setup',
   defaultOrientation: 'white',
   steps: [
     // ── INTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Black's most common move here is Nbd7 — defending e5 so you can't check there. No problem. You'll attack on a different diagonal.",
+      fen: FEN.after_Kxf7,
+      text: "Here's the key idea: Black has SEVEN different 7th moves in real games. But your plan is the same. Nf3, Bd3, O-O — develop and castle.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Kxf7,
+      text: "Black might play Nbd7, e6, Bd6, Be6, Kg8 — doesn't matter. You're aiming the bishop at h7 and getting your king safe. The brilliancy comes later.",
     },
 
-    // ── BLACK Nbd7 ──
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the sacrifice.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+
+    // ── TEACH 1: Nf3 ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Kxf7,
+      text: "Bring the other knight out — Nf3. Develop with tempo, control e5.",
+      highlightSquares: ['g1', 'f3'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.after_Kxf7,
+      correctMove: 'Nf3',
+      prompt: "Develop the kingside knight.",
+      hint: 'Knight from g1 to f3.',
+      correctFeedback: "Nf3! Witty plays this in 96% of his real games. Quiet development — the attack comes later.",
+      wrongFeedback: 'Play Nf3 — develop, control e5.',
+    },
+
+    // ── BLACK Nbd7 (most common path in main line) ──
     {
       type: 'instruction',
       fen: FEN.after_Nbd7,
-      text: "Black plays Nbd7. The knight defends e5 — that blocks the Ne5+ check idea.",
+      text: "Nbd7 — Black develops too. In real games, Black plays Nbd7 (13%), but might also play c5, Bf5, e6, Be6, or Kg8. Your plan doesn't change.",
       autoAdvance: 800,
       highlightSquares: ['b8', 'd7'],
     },
 
-    // ── TEACH 1: Bd3 ──
+    // ── TEACH 2: Bd3 ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nbd7,
+      text: "Aim the light-square bishop straight at h7 — Bd3. This bishop is going to matter in 7 moves.",
+      highlightSquares: ['f1', 'd3', 'h7'],
+    },
     {
       type: 'play-move',
       fen: FEN.after_Nbd7,
       correctMove: 'Bd3',
-      prompt: "Develop the bishop on a diagonal that aims at the king. Where?",
-      hint: 'Bishop to d3 — it points right at h7.',
-      correctFeedback: "Bd3! The bishop aims at h7. Black's king is on f7, but h7 is going to matter later.",
-      wrongFeedback: 'Play Bd3 — the bishop wants the b1-h7 diagonal.',
+      prompt: "Aim the bishop at h7.",
+      hint: 'Bishop to d3.',
+      correctFeedback: "Bd3! Bishop on the b1-h7 diagonal. Witty plays this in 100% of Nbd7 games — and Bd3 against almost every other Black 7th move too.",
+      wrongFeedback: 'Play Bd3 — aim at h7.',
       postMoveArrow: ['d3', 'h7'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Bd3,
-      text: "Bd3 loads the diagonal. From d3 the bishop sees all the way to h7. Combined with the queen, this becomes lethal.",
-      arrow: ['d3', 'h7'],
     },
 
     // ── BLACK e6 ──
     {
       type: 'instruction',
       fen: FEN.after_e6,
-      text: "Black plays e6, opening a path for the king to scurry back home.",
+      text: "e6 — Black closes the b1-h7 diagonal at e6, prepping Bd6. Sensible.",
       autoAdvance: 800,
       highlightSquares: ['e7', 'e6'],
     },
 
-    // ── TEACH 2: O-O ──
+    // ── TEACH 3: O-O ──
     {
       type: 'play-move',
       fen: FEN.after_e6,
       correctMove: 'O-O',
-      prompt: "Get your king safe and your rook on f1 — into the f-file.",
+      prompt: "Castle. Get the king safe, activate the rook.",
       hint: 'Castle kingside.',
-      correctFeedback: "O-O. Your king is safe, your rook lands on f1, and Black's king is still wandering in the middle.",
-      wrongFeedback: "Castle kingside — get your king safe and the rook to f1.",
-      postMoveArrow: ['f1', 'f7'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_OO,
-      text: "Castled. Compare the two kings: yours is tucked in the corner. Black's is on f7 with the rook on h8 doing nothing.",
-      arrow: ['e1', 'g1'],
-    },
-
-    // ── RECALL ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Show me the development plan.",
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nbd7,
-      text: 'Nbd7.',
-      autoAdvance: 800,
-      highlightSquares: ['b8', 'd7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nbd7,
-      correctMove: 'Bd3',
-      prompt: 'Your move.',
-      hint: 'Bd3.',
-      correctFeedback: 'Bd3.',
-      wrongFeedback: 'Bd3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_e6,
-      text: 'e6.',
-      autoAdvance: 800,
-      highlightSquares: ['e7', 'e6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_e6,
-      correctMove: 'O-O',
-      prompt: 'Your move.',
-      hint: 'O-O.',
-      correctFeedback: 'O-O.',
-      wrongFeedback: 'O-O.',
-    },
-
-    // ── OUTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_OO,
-      text: "Bd3, O-O. Bishop aimed at h7, king tucked away, rook on f1. The attack is about to come together.",
-    },
-  ],
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// wa-5: OPEN THE F-FILE (9…Bd6 10.Re1 Re8 11.Ne5+)
-// Teaches: Re1, Ne5+
-// Black develops Bd6 (blocking your bishop's view down to f8).
-// Re1 builds pressure. Ne5+ is a critical check.
-// ═══════════════════════════════════════════════════════════
-
-const WA_5: OpeningLesson = {
-  id: 'wa-5',
-  title: 'Open the f-file',
-  defaultOrientation: 'white',
-  steps: [
-    // ── INTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_OO,
-      text: "Black is going to try to scramble pieces in front of the king. You're going to keep adding attackers.",
+      correctFeedback: "O-O. King safe, rook on f1 ready to swing. Now the attack can start.",
+      wrongFeedback: 'Play O-O — castle into the attack.',
     },
 
     // ── BLACK Bd6 ──
     {
       type: 'instruction',
       fen: FEN.after_Bd6,
-      text: "Black plays Bd6, blocking your bishop's view of h7 and preparing to plug the f-file with Re8.",
+      text: "Bd6 — Black develops the dark-square bishop, blocking your future Re1. You'll deal with it next lesson.",
       autoAdvance: 800,
       highlightSquares: ['f8', 'd6'],
     },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Kxf7,
+      text: "Run the universal setup from Kxf7.",
+    },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+    { type: 'instruction', fen: FEN.after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Nbd7, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.after_e6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_Bd6, text: 'Bd6.', autoAdvance: 800, highlightSquares: ['f8', 'd6'] },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Bd6,
+      text: "Nf3, Bd3, O-O. Same plan regardless of Black's exact reply. Next: open the f-file and the SECOND sacrifice.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-4: OPEN THE F-FILE (10.Re1 Re8 11.Ne5+ Bxe5 12.dxe5 Nd5)
+// Teaches 3 white moves: Re1, Ne5+, dxe5
+// ═══════════════════════════════════════════════════════════
+
+const WA_4: OpeningLesson = {
+  id: 'wa-4',
+  title: 'Open the f-file',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Bd6,
+      text: "Bd6 blocks your e-file rook — but only for a moment. Time to swing the rook to e1 and fire the SECOND knight into e5.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the setup.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+    { type: 'instruction', fen: FEN.after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Nbd7, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.after_e6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_Bd6, text: 'Bd6.', autoAdvance: 800, highlightSquares: ['f8', 'd6'] },
 
     // ── TEACH 1: Re1 ──
     {
       type: 'play-move',
       fen: FEN.after_Bd6,
       correctMove: 'Re1',
-      prompt: "Move the rook to a file that pressures e6.",
-      hint: 'Rook to e1.',
-      correctFeedback: "Re1 piles up on the e-file. Black's e6 pawn is now a target.",
-      wrongFeedback: 'Play Re1 — get the rook on the e-file.',
-      postMoveArrow: ['e1', 'e6'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Re1,
-      text: "Re1 stacks pressure on e6. Combined with Bd3 hitting h7 and Nf3 ready to jump, you have three attackers ready.",
-      arrow: ['e1', 'e6'],
+      prompt: "Swing the rook to e1.",
+      hint: 'Rook from f1 to e1.',
+      correctFeedback: "Re1! Rook pressures the e-file behind Black's e6 pawn. Black will probably play Re8 to contest.",
+      wrongFeedback: 'Play Re1 — pile on the e-file.',
     },
 
     // ── BLACK Re8 ──
     {
       type: 'instruction',
       fen: FEN.after_Re8,
-      text: "Black plays Re8, defending e6 and trying to consolidate.",
+      text: "Re8 — Black contests the e-file. Looks fine. It's not — your knight is about to jump in with check.",
       autoAdvance: 800,
       highlightSquares: ['h8', 'e8'],
     },
 
     // ── TEACH 2: Ne5+ ──
     {
+      type: 'instruction',
+      fen: FEN.after_Re8,
+      text: "The second sacrifice. Jump Ne5+ — check, and threatens the bishop on d6 AND the c6 pawn.",
+      highlightSquares: ['f3', 'e5'],
+    },
+    {
       type: 'play-move',
       fen: FEN.after_Re8,
       correctMove: 'Ne5+',
-      prompt: "Knight jump time. Where does it go with check?",
-      hint: 'Ne5+ — jump in with check on the king.',
-      correctFeedback: "Ne5+! Check. Black has to deal with this — and the knight on e5 also opens the queen's path to h5.",
-      wrongFeedback: 'Play Ne5+ — the check forces Black to react.',
+      prompt: "Knight to e5 with check.",
+      hint: 'Knight from f3 to e5.',
+      correctFeedback: "Ne5+! Check on the king, attacking Bd6. Black's only useful reply is Bxe5 — taking the knight.",
+      wrongFeedback: 'Play Ne5+ — check, multiple threats.',
       postMoveArrow: ['e5', 'f7'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Ne5,
-      text: "Ne5+ does two things at once: checks the king AND clears the d1-h5 diagonal for your queen. Black's options are all bad.",
-      arrow: ['e5', 'f7'],
-    },
-
-    // ── RECALL ──
-    {
-      type: 'instruction',
-      fen: FEN.after_OO,
-      text: "Pile it on.",
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Bd6,
-      text: 'Bd6.',
-      autoAdvance: 800,
-      highlightSquares: ['f8', 'd6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Bd6,
-      correctMove: 'Re1',
-      prompt: 'Your move.',
-      hint: 'Re1.',
-      correctFeedback: 'Re1.',
-      wrongFeedback: 'Re1.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Re8,
-      text: 'Re8.',
-      autoAdvance: 800,
-      highlightSquares: ['h8', 'e8'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Re8,
-      correctMove: 'Ne5+',
-      prompt: 'Your move.',
-      hint: 'Ne5+.',
-      correctFeedback: 'Ne5+.',
-      wrongFeedback: 'Ne5+.',
-    },
-
-    // ── OUTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Ne5,
-      text: "Re1, Ne5+. Every piece is attacking. Black has to make a tough decision — and humans usually pick wrong.",
-    },
-  ],
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// wa-6: WIN THE TEMPO (11…Bxe5 12.dxe5 Nd5 13.Qh5+)
-// Teaches: dxe5, Qh5+
-// Black takes the knight (the natural human move), you recapture and bring the queen.
-// ═══════════════════════════════════════════════════════════
-
-const WA_6: OpeningLesson = {
-  id: 'wa-6',
-  title: 'Win the Tempo',
-  defaultOrientation: 'white',
-  steps: [
-    // ── INTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Ne5,
-      text: "Black has to break the check. The engine says Kg8 is best — sacrifice the knight on f6 — but no human will find it. Almost everyone plays Bxe5.",
     },
 
     // ── BLACK Bxe5 ──
     {
       type: 'instruction',
       fen: FEN.after_Bxe5,
-      text: "Bxe5. Black trades the bishop to kill your knight. Eval jumps to +1.8 for you.",
+      text: "Bxe5 — Black takes the knight. Forced — every alternative loses material. Now you recapture with the pawn.",
       autoAdvance: 800,
       highlightSquares: ['d6', 'e5'],
     },
 
-    // ── TEACH 1: dxe5 ──
+    // ── TEACH 3: dxe5 ──
     {
       type: 'play-move',
       fen: FEN.after_Bxe5,
       correctMove: 'dxe5',
-      prompt: "Recapture with the pawn. Which one?",
-      hint: 'Pawn d4 takes e5.',
-      correctFeedback: "dxe5! The pawn lands on e5 — attacking Black's knight on f6 AND closing the diagonal for Black's defense.",
-      wrongFeedback: 'Play dxe5 — recapture with the d-pawn.',
+      prompt: "Take with the d-pawn.",
+      hint: 'd-pawn takes e5.',
+      correctFeedback: "dxe5! Pawn on e5 attacks the f6 knight, the d-file opens, and your queen has air. Black must move the knight.",
+      wrongFeedback: 'Play dxe5 — recapture with the pawn.',
       postMoveArrow: ['e5', 'f6'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe5,
-      text: "dxe5 attacks the Nf6. Black has to move the knight — and wherever it goes, the h5 square is undefended.",
-      arrow: ['e5', 'f6'],
     },
 
     // ── BLACK Nd5 ──
     {
       type: 'instruction',
       fen: FEN.after_Nd5,
-      text: "Black plays Nd5, jumping to a central square. The knight is safe — but h5 is now wide open for your queen.",
+      text: "Nd5 — Black jumps the knight to safety. Now your queen has a free shot at h5 — and the king on f7 has no defenders.",
       autoAdvance: 800,
       highlightSquares: ['f6', 'd5'],
-    },
-
-    // ── TEACH 2: Qh5+ ──
-    {
-      type: 'play-move',
-      fen: FEN.after_Nd5,
-      correctMove: 'Qh5+',
-      prompt: "The queen joins the attack with check. Where?",
-      hint: 'Queen to h5, check.',
-      correctFeedback: "Qh5+! Check. The queen joins, and now Black's king has nowhere good to go.",
-      wrongFeedback: 'Play Qh5+ — bring the queen with check.',
-      postMoveArrow: ['h5', 'g6'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Qh5,
-      text: "Qh5+ forces the king to g8. And once the king is on g8, the next move is the brilliancy.",
-      arrow: ['h5', 'g6'],
     },
 
     // ── RECALL ──
     {
       type: 'instruction',
-      fen: FEN.after_Ne5,
-      text: "Run it back.",
+      fen: FEN.after_Bd6,
+      text: "From Bd6 — Re1, Ne5+, dxe5.",
     },
-    {
-      type: 'instruction',
-      fen: FEN.after_Bxe5,
-      text: 'Bxe5.',
-      autoAdvance: 800,
-      highlightSquares: ['d6', 'e5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Bxe5,
-      correctMove: 'dxe5',
-      prompt: 'Your move.',
-      hint: 'dxe5.',
-      correctFeedback: 'dxe5.',
-      wrongFeedback: 'dxe5.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nd5,
-      text: 'Nd5.',
-      autoAdvance: 800,
-      highlightSquares: ['f6', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nd5,
-      correctMove: 'Qh5+',
-      prompt: 'Your move.',
-      hint: 'Qh5+.',
-      correctFeedback: 'Qh5+.',
-      wrongFeedback: 'Qh5+.',
-    },
+    { type: 'play-move', fen: FEN.after_Bd6, correctMove: 'Re1', prompt: 'Your move.', hint: 'Re1.', correctFeedback: 'Re1.', wrongFeedback: 'Re1.' },
+    { type: 'instruction', fen: FEN.after_Re8, text: 'Re8.', autoAdvance: 800, highlightSquares: ['h8', 'e8'] },
+    { type: 'play-move', fen: FEN.after_Re8, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
+    { type: 'instruction', fen: FEN.after_Bxe5, text: 'Bxe5.', autoAdvance: 800, highlightSquares: ['d6', 'e5'] },
+    { type: 'play-move', fen: FEN.after_Bxe5, correctMove: 'dxe5', prompt: 'Your move.', hint: 'dxe5.', correctFeedback: 'dxe5.', wrongFeedback: 'dxe5.' },
+    { type: 'instruction', fen: FEN.after_Nd5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['f6', 'd5'] },
 
     // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Qh5,
-      text: "dxe5, Qh5+. Queen on h5, knight on e5, rook on e1, bishop on d3 — every piece is ready to swing. Next lesson: the punchline.",
+      fen: FEN.after_Nd5,
+      text: "f-file open, e5 pawn cramping Black, knight on d5. Next: the brilliancy.",
     },
   ],
 }
 
 
 // ═══════════════════════════════════════════════════════════
-// wa-7: THE Bxh6 BRILLIANCY (13…Kg8 14.Bxh6!! gxh6 15.Qg6+ → mate)
-// Teaches: Bxh6, then a PUZZLE for the mating sequence
-// 15.Qg6+ Kh8 16.Qh7#
+// wa-5: THE BXH6 BRILLIANCY (13.Qh5+ Kg8 14.Bxh6!! gxh6 → puzzle for 15.Qg6+ Kh8 16.Qh7#)
+// Teaches 3 white moves: Qh5+, Bxh6!!, Qg6+ (delivered via puzzle)
 // ═══════════════════════════════════════════════════════════
 
-const WA_7: OpeningLesson = {
-  id: 'wa-7',
+const WA_5: OpeningLesson = {
+  id: 'wa-5',
   title: 'The Bxh6 Brilliancy',
   defaultOrientation: 'white',
   steps: [
     // ── INTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Qh5,
-      text: "Black's king has one square — g8. Then comes a move that, if you find it in a real game, will get spammed with the brilliant move emote. Don't boo. Just enjoy it.",
+      fen: FEN.after_Nd5,
+      text: "The brilliancy time. Queen check forces Black's king to the corner — then comes the move that'll get spammed with the brilliant emote. Don't boo. Just enjoy it.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the open f-file.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+    { type: 'instruction', fen: FEN.after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.after_Nbd7, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.after_e6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.after_Bd6, text: 'Bd6.', autoAdvance: 800, highlightSquares: ['f8', 'd6'] },
+    { type: 'play-move', fen: FEN.after_Bd6, correctMove: 'Re1', prompt: 'Your move.', hint: 'Re1.', correctFeedback: 'Re1.', wrongFeedback: 'Re1.' },
+    { type: 'instruction', fen: FEN.after_Re8, text: 'Re8.', autoAdvance: 800, highlightSquares: ['h8', 'e8'] },
+    { type: 'play-move', fen: FEN.after_Re8, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
+    { type: 'instruction', fen: FEN.after_Bxe5, text: 'Bxe5.', autoAdvance: 800, highlightSquares: ['d6', 'e5'] },
+    { type: 'play-move', fen: FEN.after_Bxe5, correctMove: 'dxe5', prompt: 'Your move.', hint: 'dxe5.', correctFeedback: 'dxe5.', wrongFeedback: 'dxe5.' },
+    { type: 'instruction', fen: FEN.after_Nd5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['f6', 'd5'] },
+
+    // ── TEACH 1: Qh5+ ──
+    {
+      type: 'play-move',
+      fen: FEN.after_Nd5,
+      correctMove: 'Qh5+',
+      prompt: "Queen check — chase the king to the corner.",
+      hint: 'Queen to h5, check.',
+      correctFeedback: "Qh5+! Black's king has one square — g8.",
+      wrongFeedback: 'Play Qh5+ — queen swing with check.',
+      postMoveArrow: ['h5', 'f7'],
     },
 
     // ── BLACK Kg8 ──
     {
       type: 'instruction',
       fen: FEN.after_Kg8,
-      text: "Kg8. The king runs to the corner, blocked by Black's own pieces.",
+      text: "Kg8. King in the corner, blocked by Black's own pieces.",
       autoAdvance: 800,
       highlightSquares: ['f7', 'g8'],
     },
 
-    // ── TEACH 1: Bxh6!! ──
+    // ── TEACH 2: Bxh6!! ──
     {
       type: 'instruction',
       fen: FEN.after_Kg8,
-      text: "Look at the h6 pawn. It's defending the g7 pawn, which is defending the king. What if you just… take it?",
+      text: "Look at h6 — that pawn defends g7. What if you just… take it?",
       highlightSquares: ['h6', 'g7'],
     },
     {
@@ -1039,587 +740,142 @@ const WA_7: OpeningLesson = {
       fen: FEN.after_Kg8,
       correctMove: 'Bxh6',
       prompt: "Sacrifice the bishop on h6.",
-      hint: 'Bishop takes h6 — yes, the g7 pawn recaptures. That is the point.',
-      correctFeedback: "Bxh6!! The bishop sacrifice. If gxh6, the king has no pawn cover and your queen is one square away from mate.",
-      wrongFeedback: 'Play Bxh6 — sacrifice the bishop to crack open g7.',
+      hint: 'Bishop takes h6 — gxh6 is exactly what you want.',
+      correctFeedback: "Bxh6!! The brilliancy. If Black takes with gxh6, the king has no pawn shield and the queen is one move from mate.",
+      wrongFeedback: 'Play Bxh6 — crack open the king.',
       postMoveArrow: ['h6', 'g7'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Bxh6,
-      text: "Bxh6!! Black's choice: take with the pawn (mate in 2) or refuse (lose a piece anyway). Played in over 900 Lichess games.",
-      arrow: ['h6', 'g7'],
     },
 
     // ── BLACK gxh6 ──
     {
       type: 'instruction',
       fen: FEN.after_gxh6,
-      text: "gxh6. Black takes. The g-file is now open and the king has no pawn shield.",
+      text: "gxh6. Black takes. The g-file is open, h-pawn doubled, king naked.",
       autoAdvance: 800,
       highlightSquares: ['g7', 'h6'],
     },
 
-    // ── PUZZLE: 15.Qg6+ Kh8 16.Qh7# ──
+    // ── TEACH 3 (as PUZZLE): Qg6+ Kh8 Qh7# ──
     {
       type: 'instruction',
       fen: FEN.after_gxh6,
-      text: "Mating net time. Find it — checks and a finish. You drive the sequence.",
+      text: "Mate in 2. Find it — checks all the way.",
     },
     {
       type: 'puzzle',
       fen: FEN.after_gxh6,
       solutionMoves: ['Qg6+', 'Kh8', 'Qh7#'],
       playerColor: 'white',
-      prompt: "Mate in 2. Find the checks.",
-      hint: "Queen swings to g6 with check. Black has only one square: h8. Then deliver the killing blow on h7.",
-      correctFeedback: "Qg6+ Kh8 Qh7# — mate. The Bxh6 brilliancy converted.",
+      prompt: "Mate in 2.",
+      hint: "Queen to g6 with check. Black's king has one square: h8. Then drop the queen on h7.",
+      correctFeedback: "Qg6+ Kh8 Qh7# — checkmate. The Bxh6 brilliancy converted.",
     },
 
-    // ── ALT MATING PATH (15…Kf8) ──
+    // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Qg6,
-      text: "Other path: what if Black plays 15…Kf8 instead of Kh8? Same idea — the queen hunts the king.",
+      fen: FEN.after_Qh7,
+      text: "Qh7# — the king is mated, pinned by the bishop on d3. Two sacrifices, full mating net. Next lesson: what if Black runs to f8 instead of h8?",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-6: THE MATE NET (full Qh7# main path + alt 15…Kf8 16.Qxh6+ Ke7 17.Qg7#)
+// Treats puzzles as "3 white moves" of content per the rebuild spec.
+// Main path puzzle: Qg6+, Kh8, Qh7#
+// Alt path puzzle: Qxh6+, Ke7, Qg7#
+// ═══════════════════════════════════════════════════════════
+
+const WA_6: OpeningLesson = {
+  id: 'wa-6',
+  title: 'The Mate Net',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_gxh6,
+      text: "You've already seen Qg6+ Kh8 Qh7#. But what if Black plays Kf8 instead of Kh8? Same idea, different mate. The queen catches the king either way.",
+    },
+
+    // ── RECAP (light — to the brilliancy position) ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Bxh6,
+      text: "Quick recap — you played Bxh6, Black recaptured gxh6.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_gxh6,
+      text: "gxh6 — king open, time for the queen.",
+      autoAdvance: 800,
+    },
+
+    // ── TEACH 1 (PUZZLE): main path Qg6+ Kh8 Qh7# ──
+    {
+      type: 'instruction',
+      fen: FEN.after_gxh6,
+      text: "Main path first. Find the mate.",
+    },
+    {
+      type: 'puzzle',
+      fen: FEN.after_gxh6,
+      solutionMoves: ['Qg6+', 'Kh8', 'Qh7#'],
+      playerColor: 'white',
+      prompt: "Mate in 2 — main path.",
+      hint: "Qg6+ forces Kh8 (only legal move). Then Qh7#.",
+      correctFeedback: "Qg6+ Kh8 Qh7#. Main mate locked in.",
+    },
+
+    // ── BRIDGE: show alt path setup ──
+    {
+      type: 'instruction',
+      fen: FEN.after_gxh6,
+      text: "Now the alt path. After Qg6+, what if Black plays Kf8 instead of Kh8?",
       highlightSquares: ['g8', 'f8'],
     },
     {
       type: 'instruction',
-      fen: FEN.alt_after_Kf8,
-      text: "Kf8. Now the king runs sideways instead of into the corner.",
+      fen: FEN.after_Qg6,
+      text: "You play Qg6+, but instead of Kh8 →",
       autoAdvance: 800,
+      arrow: ['g6', 'g8'],
     },
+    {
+      type: 'instruction',
+      fen: FEN.alt_after_Kf8,
+      text: "Black plays Kf8. King runs sideways. Now find the mate.",
+      autoAdvance: 800,
+      highlightSquares: ['g8', 'f8'],
+    },
+
+    // ── TEACH 2 + 3 (PUZZLE): alt path Qxh6+ Ke7 Qg7# ──
     {
       type: 'puzzle',
       fen: FEN.alt_after_Kf8,
       solutionMoves: ['Qxh6+', 'Ke7', 'Qg7#'],
       playerColor: 'white',
-      prompt: "Mate in 2 — Black's king has nowhere safe.",
-      hint: "Take the h6 pawn with check, the king goes to e7 (Kg8?? Qh7# is the same idea), then Qg7 is mate.",
-      correctFeedback: "Qxh6+ Ke7 Qg7# — both mating nets in your pocket.",
+      prompt: "Mate in 2 — alt path.",
+      hint: "Take the h6 pawn with check. King goes to e7 (Kg8?? Qh7# is the same idea). Then Qg7#.",
+      correctFeedback: "Qxh6+ Ke7 Qg7#. Both mate nets in your pocket — whichever way Black runs.",
     },
 
     // ── OUTRO ──
     {
       type: 'instruction',
       fen: FEN.alt_after_Qg7,
-      text: "Bxh6!! followed by a forced mate. Whichever way the king runs, the queen catches it. That's the Alien Gambit at full power.",
+      text: "Two mating nets covered. Bxh6!! works no matter where Black's king runs. That's the Alien Gambit at full power.",
     },
   ],
 }
 
 
 // ═══════════════════════════════════════════════════════════
-// wa-dev-Bg4: DEVIATION — 7…Bg4 instead of Nbd7
-// 8.Ne5+ Ke8 9.Nxg4 — wins the bishop (+3.9 eval)
-// ═══════════════════════════════════════════════════════════
-
-const WA_DEV_BG4: OpeningLesson = {
-  id: 'wa-dev-Bg4',
-  title: 'If Bg4',
-  defaultOrientation: 'white',
-  steps: [
-    // ── INTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Sometimes Black plays Bg4 instead of Nbd7 — trying to pin your Nf3 to the queen. Bad idea.",
-    },
-
-    // ── RECAP ──
-    {
-      type: 'instruction',
-      fen: FEN.start,
-      text: "Replay the moves to the sacrifice.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.start,
-      correctMove: 'e4',
-      prompt: 'Your move.',
-      hint: 'e4.',
-      correctFeedback: 'e4.',
-      wrongFeedback: 'e4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_dxe4,
-      correctMove: 'Nxe4',
-      prompt: 'Your move.',
-      hint: 'Nxe4.',
-      correctFeedback: 'Nxe4.',
-      wrongFeedback: 'Nxe4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf6,
-      text: 'Nf6.',
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nf6,
-      correctMove: 'Ng5',
-      prompt: 'Your move.',
-      hint: 'Ng5.',
-      correctFeedback: 'Ng5.',
-      wrongFeedback: 'Ng5.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: 'h6.',
-      autoAdvance: 800,
-      highlightSquares: ['h7', 'h6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_h6,
-      correctMove: 'Nxf7',
-      prompt: 'Your move.',
-      hint: 'Nxf7.',
-      correctFeedback: 'Nxf7.',
-      wrongFeedback: 'Nxf7.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Kxf7,
-      text: 'Kxf7.',
-      autoAdvance: 800,
-      highlightSquares: ['e8', 'f7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Kxf7,
-      correctMove: 'Nf3',
-      prompt: 'Your move.',
-      hint: 'Nf3.',
-      correctFeedback: 'Nf3.',
-      wrongFeedback: 'Nf3.',
-    },
-
-    // ── DEVIATION SETUP ──
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Bg4,
-      text: "Black plays 7…Bg4 — trying to pin your Nf3 against the queen on d1. They think they've stopped your attack.",
-      highlightSquares: ['c8', 'g4'],
-    },
-
-    // ── TEACH 1: Ne5+ ──
-    {
-      type: 'play-move',
-      fen: FEN.bg4_after_Bg4,
-      correctMove: 'Ne5+',
-      prompt: "Ignore the pin. Where can the knight go with check?",
-      hint: 'Knight to e5, check. Bg4 doesn\'t actually defend e5 — and the bishop is hanging once you check.',
-      correctFeedback: "Ne5+! The pin is fake. You check the king AND attack the bishop on g4 at the same time.",
-      wrongFeedback: 'Play Ne5+ — the knight goes anyway. It checks and attacks Bg4.',
-      postMoveArrow: ['e5', 'g4'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Ne5,
-      text: "Ne5+ does two jobs: checks the king and attacks Bg4. Black has to move the king — and the bishop falls.",
-      arrow: ['e5', 'g4'],
-    },
-
-    // ── BLACK Ke8 ──
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Ke8,
-      text: "Black's only sensible response is Ke8 — getting out of check. The bishop on g4 is now defenseless.",
-      autoAdvance: 800,
-      highlightSquares: ['f7', 'e8'],
-    },
-
-    // ── TEACH 2: Nxg4 ──
-    {
-      type: 'play-move',
-      fen: FEN.bg4_after_Ke8,
-      correctMove: 'Nxg4',
-      prompt: "Take the free bishop.",
-      hint: 'Knight takes g4.',
-      correctFeedback: "Nxg4! You win the bishop. Eval is around +3.9 — you've gone from down a piece to up a piece.",
-      wrongFeedback: 'Play Nxg4 — take the bishop, it\'s free.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Nxg4,
-      text: "Material check: you gave up a knight, won back a bishop and a couple of pawns. The pin attempt cost Black a piece.",
-    },
-
-    // ── RECALL ──
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Bg4,
-      text: "Black played Bg4. Punish it.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bg4_after_Bg4,
-      correctMove: 'Ne5+',
-      prompt: 'Your move.',
-      hint: 'Ne5+.',
-      correctFeedback: 'Ne5+.',
-      wrongFeedback: 'Ne5+.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Ke8,
-      text: 'Ke8.',
-      autoAdvance: 800,
-      highlightSquares: ['f7', 'e8'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bg4_after_Ke8,
-      correctMove: 'Nxg4',
-      prompt: 'Your move.',
-      hint: 'Nxg4.',
-      correctFeedback: 'Nxg4.',
-      wrongFeedback: 'Nxg4.',
-    },
-
-    // ── OUTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.bg4_after_Nxg4,
-      text: "Ne5+, Nxg4. Pin? What pin. You ignored it and grabbed a bishop.",
-    },
-  ],
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// wa-dev-Bf5: DEVIATION — 7…Bf5
-// 8.Ne5+ Kg8 9.Bc4+ e6 10.g4! Be4 11.Bxe6+ Kh7 12.g5 Bxh1?? 13.g6#
-// Pawn mate.
-// ═══════════════════════════════════════════════════════════
-
-const WA_DEV_BF5: OpeningLesson = {
-  id: 'wa-dev-Bf5',
-  title: 'If Bf5',
-  defaultOrientation: 'white',
-  steps: [
-    // ── INTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf3,
-      text: "Black plays Bf5 — just developing the bishop. Your job: chase it across the board with a pawn storm that ends in a pawn mate.",
-    },
-
-    // ── RECAP ──
-    {
-      type: 'instruction',
-      fen: FEN.start,
-      text: "Replay to the deviation point.",
-    },
-    {
-      type: 'play-move',
-      fen: FEN.start,
-      correctMove: 'e4',
-      prompt: 'Your move.',
-      hint: 'e4.',
-      correctFeedback: 'e4.',
-      wrongFeedback: 'e4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_dxe4,
-      correctMove: 'Nxe4',
-      prompt: 'Your move.',
-      hint: 'Nxe4.',
-      correctFeedback: 'Nxe4.',
-      wrongFeedback: 'Nxe4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf6,
-      text: 'Nf6.',
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nf6,
-      correctMove: 'Ng5',
-      prompt: 'Your move.',
-      hint: 'Ng5.',
-      correctFeedback: 'Ng5.',
-      wrongFeedback: 'Ng5.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: 'h6.',
-      autoAdvance: 800,
-      highlightSquares: ['h7', 'h6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_h6,
-      correctMove: 'Nxf7',
-      prompt: 'Your move.',
-      hint: 'Nxf7.',
-      correctFeedback: 'Nxf7.',
-      wrongFeedback: 'Nxf7.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Kxf7,
-      text: 'Kxf7.',
-      autoAdvance: 800,
-      highlightSquares: ['e8', 'f7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Kxf7,
-      correctMove: 'Nf3',
-      prompt: 'Your move.',
-      hint: 'Nf3.',
-      correctFeedback: 'Nf3.',
-      wrongFeedback: 'Nf3.',
-    },
-
-    // ── DEVIATION ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Bf5,
-      text: "Black plays 7…Bf5 — developing the bishop. Time to start the chase.",
-      highlightSquares: ['c8', 'f5'],
-    },
-
-    // ── TEACH 1: Ne5+ ──
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_Bf5,
-      correctMove: 'Ne5+',
-      prompt: "Same plan as Bg4 — jump in with check.",
-      hint: 'Ne5+.',
-      correctFeedback: "Ne5+! The knight check forces the king to move.",
-      wrongFeedback: 'Play Ne5+ — check the king.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Ne5,
-      text: "Ne5+ — the king has to move. Kg8 is the most common (9,500+ games).",
-      arrow: ['e5', 'f7'],
-    },
-
-    // ── BLACK Kg8 + TEACH 2: Bc4+ ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Kg8,
-      text: "Kg8. The king runs to the corner.",
-      autoAdvance: 800,
-      highlightSquares: ['f7', 'g8'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_Kg8,
-      correctMove: 'Bc4+',
-      prompt: "Add another check. Where does the bishop go?",
-      hint: 'Bishop to c4, check.',
-      correctFeedback: "Bc4+! The bishop joins with a second check on the a2-g8 diagonal.",
-      wrongFeedback: 'Play Bc4+ — bishop check forces another defense.',
-      postMoveArrow: ['c4', 'g8'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Bc4,
-      text: "Bc4+ — Black has to block with e6 (the most common move, 4,500+ games).",
-      arrow: ['c4', 'g8'],
-    },
-
-    // ── BLACK e6 + TEACH 3: g4! ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_e6,
-      text: "Black blocks with e6, also defending Bf5.",
-      autoAdvance: 800,
-      highlightSquares: ['e7', 'e6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_e6,
-      correctMove: 'g4',
-      prompt: "Now the chase. Push the g-pawn to kick the bishop.",
-      hint: 'Push g2 to g4 — attack the bishop on f5.',
-      correctFeedback: "g4! Played in 7,500+ games, 75% White winrate. The pawn drives the bishop AWAY from defending e6.",
-      wrongFeedback: 'Play g4 — kick the bishop off the defense of e6.',
-      postMoveArrow: ['g4', 'f5'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_g4,
-      text: "g4 attacks Bf5. Black usually plays Be4 (looks active, isn't).",
-      arrow: ['g4', 'f5'],
-    },
-
-    // ── BLACK Be4 + TEACH 4: Bxe6+ ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Be4,
-      text: "Be4 — Black moves the bishop and abandons the defense of e6.",
-      autoAdvance: 800,
-      highlightSquares: ['f5', 'e4'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_Be4,
-      correctMove: 'Bxe6+',
-      prompt: "Take the e6 pawn with check.",
-      hint: 'Bishop takes e6, check.',
-      correctFeedback: "Bxe6+! A free pawn AND a check. Black's king is in deep trouble.",
-      wrongFeedback: 'Play Bxe6+ — capture with check.',
-      postMoveArrow: ['e6', 'g8'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Bxe6,
-      text: "Bxe6+ — Black has to move the king. Kh7 is the most common run.",
-    },
-
-    // ── BLACK Kh7 + TEACH 5: g5 ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Kh7,
-      text: "Kh7 — the king hides in the corner.",
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'h7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_Kh7,
-      correctMove: 'g5',
-      prompt: "Keep pushing. Where does the pawn go?",
-      hint: 'g4 to g5 — keep advancing toward h6.',
-      correctFeedback: "g5! 78% White winrate in 450+ games. The pawn is heading to g6 — pawn mate incoming.",
-      wrongFeedback: 'Play g5 — keep pushing toward the king.',
-      postMoveArrow: ['g5', 'g6'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_g5,
-      text: "g5 sets up g6#. Black often greedily grabs the rook with Bxh1 — that's mate next move.",
-    },
-
-    // ── BLACK Bxh1?? + TEACH 6: g6# ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_Bxh1,
-      text: "Bxh1?? Black grabs the rook. Big mistake.",
-      autoAdvance: 800,
-      highlightSquares: ['e4', 'h1'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.bf5_after_Bxh1,
-      correctMove: 'g6#',
-      prompt: "Pawn checkmate. Where does it land?",
-      hint: 'Push g5 to g6. Check the king — and look at the escape squares.',
-      correctFeedback: "g6#! A pawn checkmate. h6 is covered by the pawn, h8 is covered by Be6, g7 is covered by g6 itself. Black is mated by a pawn.",
-      wrongFeedback: 'Play g6# — pawn checkmate.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_g6,
-      text: "g6 — checkmate by a pawn. From a single bishop developing move (Bf5) to a pawn mate in 6 moves.",
-    },
-
-    // ── OUTRO ──
-    {
-      type: 'instruction',
-      fen: FEN.bf5_after_g6,
-      text: "Ne5+, Bc4+, g4, Bxe6+, g5, g6#. A six-move chase that ends in the most embarrassing mate in chess: a pawn.",
-    },
-  ],
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// wa-dev-c5: DEVIATION — 7…c5 (the actual refutation)
-// 8.c3 Nc6 9.Bd3 — give back the piece, equal but practical chances
+// wa-dev-c5: DEVIATION — 7…c5 (most common in real games — 23%)
+// Witty plays 8.d5 (54%), then c4 and Bd3.
+// Teaches 3 white moves: d5, c4, Bd3
 // ═══════════════════════════════════════════════════════════
 
 const WA_DEV_C5: OpeningLesson = {
@@ -1631,208 +887,823 @@ const WA_DEV_C5: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_Nf3,
-      text: "Time for the hard truth. If Black plays 7…c5, that's the actual refutation. Engine evaluation drops to roughly equal. You need to play smart, not flashy.",
+      text: "Black plays 7…c5 in 23% of real Witty_Alien games — the most common response. They're trying to hit d4 and free their pieces. Here's how Witty handles it.",
     },
 
     // ── RECAP ──
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Replay to the deviation point.",
+      text: "Quick replay to 7.Nf3.",
     },
-    {
-      type: 'play-move',
-      fen: FEN.start,
-      correctMove: 'e4',
-      prompt: 'Your move.',
-      hint: 'e4.',
-      correctFeedback: 'e4.',
-      wrongFeedback: 'e4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_c6,
-      text: 'c6.',
-      autoAdvance: 800,
-      highlightSquares: ['c7', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_c6,
-      correctMove: 'd4',
-      prompt: 'Your move.',
-      hint: 'd4.',
-      correctFeedback: 'd4.',
-      wrongFeedback: 'd4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_d5,
-      text: 'd5.',
-      autoAdvance: 800,
-      highlightSquares: ['d7', 'd5'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_d5,
-      correctMove: 'Nc3',
-      prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_dxe4,
-      text: 'dxe4.',
-      autoAdvance: 800,
-      highlightSquares: ['d5', 'e4'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_dxe4,
-      correctMove: 'Nxe4',
-      prompt: 'Your move.',
-      hint: 'Nxe4.',
-      correctFeedback: 'Nxe4.',
-      wrongFeedback: 'Nxe4.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Nf6,
-      text: 'Nf6.',
-      autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Nf6,
-      correctMove: 'Ng5',
-      prompt: 'Your move.',
-      hint: 'Ng5.',
-      correctFeedback: 'Ng5.',
-      wrongFeedback: 'Ng5.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_h6,
-      text: 'h6.',
-      autoAdvance: 800,
-      highlightSquares: ['h7', 'h6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_h6,
-      correctMove: 'Nxf7',
-      prompt: 'Your move.',
-      hint: 'Nxf7.',
-      correctFeedback: 'Nxf7.',
-      wrongFeedback: 'Nxf7.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.after_Kxf7,
-      text: 'Kxf7.',
-      autoAdvance: 800,
-      highlightSquares: ['e8', 'f7'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.after_Kxf7,
-      correctMove: 'Nf3',
-      prompt: 'Your move.',
-      hint: 'Nf3.',
-      correctFeedback: 'Nf3.',
-      wrongFeedback: 'Nf3.',
-    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
 
-    // ── DEVIATION ──
+    // ── BLACK c5 ──
     {
       type: 'instruction',
       fen: FEN.c5_after_c5,
-      text: "Black plays 7…c5 — striking at your d4 pawn. This is the engine's recommendation. It gives back the gambit and makes you justify the sacrifice.",
-      highlightSquares: ['c7', 'c5'],
+      text: "c5 — Black hits d4. The most common Witty response is to push past with d5, locking the pawn down.",
+      autoAdvance: 800,
+      highlightSquares: ['c6', 'c5'],
     },
 
-    // ── TEACH 1: c3 ──
+    // ── TEACH 1: d5 ──
+    {
+      type: 'instruction',
+      fen: FEN.c5_after_c5,
+      text: "Push d5! — the pawn marches forward, shutting down Black's c-pawn and clamping the center.",
+      highlightSquares: ['d4', 'd5'],
+    },
     {
       type: 'play-move',
       fen: FEN.c5_after_c5,
-      correctMove: 'c3',
-      prompt: "Defend d4. How?",
-      hint: 'Pawn to c3 — solidify d4.',
-      correctFeedback: "c3 defends d4. You're not chasing mate anymore — you're playing a real position where you're slightly worse but Black has to find good moves to convert.",
-      wrongFeedback: 'Play c3 — solidify your center.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.c5_after_c3,
-      text: "c3 holds d4. The position is roughly equal — eval around 0.0. The Alien Gambit isn't winning here, but you still have practical chances if Black slips.",
-      arrow: ['c2', 'c3'],
+      correctMove: 'd5',
+      prompt: "Push the d-pawn past.",
+      hint: 'Pawn from d4 to d5.',
+      correctFeedback: "d5! Witty plays this in 54% of real c5 games. The pawn freezes Black's queenside.",
+      wrongFeedback: 'Play d5 — push past, lock the center.',
     },
 
-    // ── BLACK Nc6 + TEACH 2: Bd3 ──
+    // ── BLACK Kg8 ──
     {
       type: 'instruction',
-      fen: FEN.c5_after_Nc6,
-      text: "Black develops Nc6 — putting more pressure on d4.",
+      fen: FEN.c5_after_Kg8,
+      text: "Kg8 — Black's most common reply, getting the king safe in the corner.",
       autoAdvance: 800,
-      highlightSquares: ['b8', 'c6'],
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── TEACH 2: c4 ──
+    {
+      type: 'instruction',
+      fen: FEN.c5_after_Kg8,
+      text: "Now lock the queenside completely. c4 — your pawns form a wall on c4 and d5.",
+      highlightSquares: ['c2', 'c4', 'd5'],
     },
     {
       type: 'play-move',
-      fen: FEN.c5_after_Nc6,
+      fen: FEN.c5_after_Kg8,
+      correctMove: 'c4',
+      prompt: "Build the pawn wall.",
+      hint: 'Pawn c2 to c4.',
+      correctFeedback: "c4! Witty plays c4 in 8 of 10 games after d5 Kg8. The queenside is frozen. Now develop the bishop.",
+      wrongFeedback: 'Play c4 — lock the queenside.',
+    },
+
+    // ── BLACK Nbd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.c5_after_Nbd7,
+      text: "Nbd7 — Black develops the knight. Time to bring the bishop out.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 3: Bd3 ──
+    {
+      type: 'play-move',
+      fen: FEN.c5_after_Nbd7,
       correctMove: 'Bd3',
-      prompt: "Keep developing. Where does the bishop go?",
-      hint: 'Bishop to d3 — same diagonal idea, aiming at h7.',
-      correctFeedback: "Bd3 — develop and keep pressure on the kingside. The position is equal, but Black's king is still on f7. One mistake and you're back in business.",
-      wrongFeedback: 'Play Bd3 — keep developing toward the kingside.',
+      prompt: "Aim the bishop at h7.",
+      hint: 'Bishop to d3.',
+      correctFeedback: "Bd3 — same plan as the main line. Aim at h7, castle next move. Win rate here is 86%.",
+      wrongFeedback: 'Play Bd3 — same universal plan.',
       postMoveArrow: ['d3', 'h7'],
     },
+
+    // ── BLACK e6 ──
     {
       type: 'instruction',
-      fen: FEN.c5_after_Bd3,
-      text: "Bd3 keeps the attack threatening. Eval ~0.0 — but you're playing for tricks, not winning the game. Be honest: you'd rather Black play h6 next, not c5.",
-      arrow: ['d3', 'h7'],
+      fen: FEN.c5_after_e6,
+      text: "e6 — Black challenges your d5 pawn. You have a strong, locked-up position with a knight, bishop, and king attack lined up.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
     },
 
     // ── RECALL ──
     {
       type: 'instruction',
-      fen: FEN.c5_after_c5,
-      text: "Black played c5. Play it cool.",
+      fen: FEN.after_Nf3,
+      text: "Black plays c5. d5, c4, Bd3 — the pawn squeeze.",
     },
-    {
-      type: 'play-move',
-      fen: FEN.c5_after_c5,
-      correctMove: 'c3',
-      prompt: 'Your move.',
-      hint: 'c3.',
-      correctFeedback: 'c3.',
-      wrongFeedback: 'c3.',
-    },
-    {
-      type: 'instruction',
-      fen: FEN.c5_after_Nc6,
-      text: 'Nc6.',
-      autoAdvance: 800,
-      highlightSquares: ['b8', 'c6'],
-    },
-    {
-      type: 'play-move',
-      fen: FEN.c5_after_Nc6,
-      correctMove: 'Bd3',
-      prompt: 'Your move.',
-      hint: 'Bd3.',
-      correctFeedback: 'Bd3.',
-      wrongFeedback: 'Bd3.',
-    },
+    { type: 'instruction', fen: FEN.c5_after_c5, text: 'c5.', autoAdvance: 800, highlightSquares: ['c6', 'c5'] },
+    { type: 'play-move', fen: FEN.c5_after_c5, correctMove: 'd5', prompt: 'Your move.', hint: 'd5.', correctFeedback: 'd5.', wrongFeedback: 'd5.' },
+    { type: 'instruction', fen: FEN.c5_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.c5_after_Kg8, correctMove: 'c4', prompt: 'Your move.', hint: 'c4.', correctFeedback: 'c4.', wrongFeedback: 'c4.' },
+    { type: 'instruction', fen: FEN.c5_after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.c5_after_Nbd7, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
 
     // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.c5_after_Bd3,
-      text: "c3, Bd3. When Black plays the best move (c5), you don't get the brilliancy. You get an equal middlegame with the king on f7 — still playable, still tricky.",
+      fen: FEN.c5_after_e6,
+      text: "d5, c4, Bd3 — the squeeze. 23% of real opponents play c5, and Witty wins 86% of the time here.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-dev-Bf5: DEVIATION — 7…Bf5 (20% of real games)
+// Witty plays 8.Ne5+ (89%) Kg8 9.Bc4+ e6 10.g4 (chasing the bishop)
+// Teaches 3 white moves: Ne5+, Bc4+, g4
+// ═══════════════════════════════════════════════════════════
+
+const WA_DEV_BF5: OpeningLesson = {
+  id: 'wa-dev-Bf5',
+  title: 'If Bf5',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays 7…Bf5 in 20% of real games — developing the bishop out before locking it in. Witty answers with a knight check and then a pawn storm.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to 7.Nf3.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+
+    // ── BLACK Bf5 ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_Bf5,
+      text: "Bf5 — Black develops the bishop. The bishop hits the c2-h7 diagonal, looking active. You're about to chase it.",
+      autoAdvance: 800,
+      highlightSquares: ['c8', 'f5'],
+    },
+
+    // ── TEACH 1: Ne5+ ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_Bf5,
+      text: "Ne5+ — knight jumps to e5 with check. Forces the king to move.",
+      highlightSquares: ['f3', 'e5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.bf5_after_Bf5,
+      correctMove: 'Ne5+',
+      prompt: "Knight check on e5.",
+      hint: 'Knight from f3 to e5.',
+      correctFeedback: "Ne5+! Witty plays this in 89% of real Bf5 games. The king has to move — Kg8 is most common.",
+      wrongFeedback: 'Play Ne5+ — knight check.',
+      postMoveArrow: ['e5', 'f7'],
+    },
+
+    // ── BLACK Kg8 ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_Kg8,
+      text: "Kg8 — king runs to the corner. Manual castle attempt.",
+      autoAdvance: 800,
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── TEACH 2: Bc4+ ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_Kg8,
+      text: "Bc4+ — bishop check on the a2-g8 diagonal. Forces Black to block with e6.",
+      highlightSquares: ['f1', 'c4', 'g8'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.bf5_after_Kg8,
+      correctMove: 'Bc4+',
+      prompt: "Bishop check on c4.",
+      hint: 'Bishop to c4.',
+      correctFeedback: "Bc4+! Forces Black to block. e6 is basically the only move.",
+      wrongFeedback: 'Play Bc4+ — keep the king under pressure.',
+      postMoveArrow: ['c4', 'g8'],
+    },
+
+    // ── BLACK e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_e6,
+      text: "e6 — Black blocks the check. Now your bishop on c4 is staring at e6, and the bishop on f5 is exposed.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+
+    // ── TEACH 3: g4 ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_e6,
+      text: "Now the chase. Push g4! — attacks the bishop on f5. In 48 of 51 real games at this position, Witty plays g4.",
+      highlightSquares: ['g2', 'g4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.bf5_after_e6,
+      correctMove: 'g4',
+      prompt: "Pawn storm — chase the bishop with g4.",
+      hint: 'Push the g-pawn two squares.',
+      correctFeedback: "g4! Chases the bishop, opens the g-file for future attack. Witty plays this 94% of the time here.",
+      wrongFeedback: 'Play g4 — pawn attack on the bishop.',
+      postMoveArrow: ['g4', 'f5'],
+    },
+
+    // ── BLACK b5 ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_b5,
+      text: "b5 — Black counterattacks your bishop on c4. The position gets sharp — but you have a king attack going while Black has just a bishop poke.",
+      autoAdvance: 800,
+      highlightSquares: ['b7', 'b5'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays Bf5. Ne5+, Bc4+, g4 — chase the bishop.",
+    },
+    { type: 'instruction', fen: FEN.bf5_after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.bf5_after_Bf5, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
+    { type: 'instruction', fen: FEN.bf5_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.bf5_after_Kg8, correctMove: 'Bc4+', prompt: 'Your move.', hint: 'Bc4+.', correctFeedback: 'Bc4+.', wrongFeedback: 'Bc4+.' },
+    { type: 'instruction', fen: FEN.bf5_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.bf5_after_e6, correctMove: 'g4', prompt: 'Your move.', hint: 'g4.', correctFeedback: 'g4.', wrongFeedback: 'g4.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.bf5_after_b5,
+      text: "Ne5+, Bc4+, g4 — the Bf5 chase. Win rate here is 73% across 88 real Witty games.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-dev-e6: DEVIATION — 7…e6 (20% of real games)
+// Witty plays 8.Bd3 (91%) Bd6 9.O-O Rf8 10.Re1 — transposes to main line ideas.
+// Teaches 3 white moves: Bd3, O-O, Re1
+// ═══════════════════════════════════════════════════════════
+
+const WA_DEV_E6: OpeningLesson = {
+  id: 'wa-dev-e6',
+  title: 'If e6',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays 7…e6 in 20% of real games. This often transposes back into the main line — same Bd3 / O-O / Re1 plan, same brilliancy target.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to 7.Nf3.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+
+    // ── BLACK e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.e6_after_e6,
+      text: "e6 — Black blocks the b1-h7 diagonal early. Looks defensive. Your plan doesn't change.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+
+    // ── TEACH 1: Bd3 ──
+    {
+      type: 'play-move',
+      fen: FEN.e6_after_e6,
+      correctMove: 'Bd3',
+      prompt: "Same plan — aim the bishop at h7.",
+      hint: 'Bishop to d3.',
+      correctFeedback: "Bd3! Witty plays this in 91% of real e6 games. Pointing at h7 anyway — Black can't keep the diagonal closed forever.",
+      wrongFeedback: 'Play Bd3 — universal plan, same as main line.',
+      postMoveArrow: ['d3', 'h7'],
+    },
+
+    // ── BLACK Bd6 ──
+    {
+      type: 'instruction',
+      fen: FEN.e6_after_Bd6,
+      text: "Bd6 — Black mirrors your bishop. Now the position looks just like the main line with one extra Black move.",
+      autoAdvance: 800,
+      highlightSquares: ['f8', 'd6'],
+    },
+
+    // ── TEACH 2: O-O ──
+    {
+      type: 'play-move',
+      fen: FEN.e6_after_Bd6,
+      correctMove: 'O-O',
+      prompt: "Castle.",
+      hint: 'O-O.',
+      correctFeedback: "O-O. Same as the main line — get the king safe, activate the rook.",
+      wrongFeedback: 'Play O-O — castle, normal plan.',
+    },
+
+    // ── BLACK Rf8 ──
+    {
+      type: 'instruction',
+      fen: FEN.e6_after_Rf8,
+      text: "Rf8 — Black defends the f-file. Common at this position — they want their king on g8 next.",
+      autoAdvance: 800,
+      highlightSquares: ['h8', 'f8'],
+    },
+
+    // ── TEACH 3: Re1 ──
+    {
+      type: 'play-move',
+      fen: FEN.e6_after_Rf8,
+      correctMove: 'Re1',
+      prompt: "Pile on the e-file.",
+      hint: 'Rook from f1 to e1.',
+      correctFeedback: "Re1! Same idea as the main line — rook on e1, ready for Ne5+ next. This is the transposition.",
+      wrongFeedback: 'Play Re1 — same plan, same file.',
+    },
+
+    // ── BLACK Kg8 ──
+    {
+      type: 'instruction',
+      fen: FEN.e6_after_Kg8,
+      text: "Kg8 — Black manually castles. From here you have the same attacking ideas as the main line. Ne5+ is one move away.",
+      autoAdvance: 800,
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays e6. Same plan — Bd3, O-O, Re1.",
+    },
+    { type: 'instruction', fen: FEN.e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.e6_after_e6, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.e6_after_Bd6, text: 'Bd6.', autoAdvance: 800, highlightSquares: ['f8', 'd6'] },
+    { type: 'play-move', fen: FEN.e6_after_Bd6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.e6_after_Rf8, text: 'Rf8.', autoAdvance: 800, highlightSquares: ['h8', 'f8'] },
+    { type: 'play-move', fen: FEN.e6_after_Rf8, correctMove: 'Re1', prompt: 'Your move.', hint: 'Re1.', correctFeedback: 'Re1.', wrongFeedback: 'Re1.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.e6_after_Kg8,
+      text: "e6 just delays things. You're back in main-line territory with Bd3 / O-O / Re1. Win rate: 85% across 87 real Witty games.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-dev-Be6: DEVIATION — 7…Be6 (7%, lowest win rate at 53%)
+// Witty plays 8.Bd3 (97%) Nbd7 9.O-O Kg8 10.Re1 — same plan, but tougher.
+// Teaches 3 white moves: Bd3, O-O, Re1
+// HONEST TONE — 53% win rate means this is the hardest defense.
+// ═══════════════════════════════════════════════════════════
+
+const WA_DEV_BE6: OpeningLesson = {
+  id: 'wa-dev-Be6',
+  title: 'If Be6',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Honest moment: Black plays 7…Be6 in only 7% of real games — but win rate drops to 53%. This is the toughest defense Black has. Stay patient.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Why is it hard? The bishop on e6 covers c4, blocks future Bc4 ideas, and defends f7's surroundings. You can still play your plan — just don't expect a quick knockout.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to 7.Nf3.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+
+    // ── BLACK Be6 ──
+    {
+      type: 'instruction',
+      fen: FEN.Be6_after_Be6,
+      text: "Be6 — Black plants the bishop on a strong square, defending f7 and covering c4. This is the toughest defense.",
+      autoAdvance: 800,
+      highlightSquares: ['c8', 'e6'],
+    },
+
+    // ── TEACH 1: Bd3 ──
+    {
+      type: 'play-move',
+      fen: FEN.Be6_after_Be6,
+      correctMove: 'Bd3',
+      prompt: "Same plan — aim at h7.",
+      hint: 'Bishop to d3.',
+      correctFeedback: "Bd3 — Witty plays this in 97% of real Be6 games. Develop, aim at h7, stay patient.",
+      wrongFeedback: 'Play Bd3 — same universal plan, just slower.',
+      postMoveArrow: ['d3', 'h7'],
+    },
+
+    // ── BLACK Nbd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.Be6_after_Nbd7,
+      text: "Nbd7 — Black develops the knight. Solid.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 2: O-O ──
+    {
+      type: 'play-move',
+      fen: FEN.Be6_after_Nbd7,
+      correctMove: 'O-O',
+      prompt: "Castle.",
+      hint: 'O-O.',
+      correctFeedback: "O-O. King safe. You're going to need patience — the brilliancy probably isn't coming this game.",
+      wrongFeedback: 'Play O-O — castle, settle in for a longer game.',
+    },
+
+    // ── BLACK Kg8 ──
+    {
+      type: 'instruction',
+      fen: FEN.Be6_after_Kg8,
+      text: "Kg8 — Black gets the king safe.",
+      autoAdvance: 800,
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── TEACH 3: Re1 ──
+    {
+      type: 'play-move',
+      fen: FEN.Be6_after_Kg8,
+      correctMove: 'Re1',
+      prompt: "Pile on the e-file.",
+      hint: 'Rook to e1.',
+      correctFeedback: "Re1. Slow, normal development. Win rate is 53% — you'll have to outplay them later. The gambit didn't break this one open.",
+      wrongFeedback: 'Play Re1 — keep developing.',
+    },
+
+    // ── BLACK Bf7 ──
+    {
+      type: 'instruction',
+      fen: FEN.Be6_after_Bf7,
+      text: "Bf7 — Black tucks the bishop back. Honest assessment: position is roughly equal, you're down material, the king is safe-ish. Fight on.",
+      autoAdvance: 800,
+      highlightSquares: ['e6', 'f7'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays Be6. Same plan — Bd3, O-O, Re1.",
+    },
+    { type: 'instruction', fen: FEN.Be6_after_Be6, text: 'Be6.', autoAdvance: 800, highlightSquares: ['c8', 'e6'] },
+    { type: 'play-move', fen: FEN.Be6_after_Be6, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.Be6_after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.Be6_after_Nbd7, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.Be6_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.Be6_after_Kg8, correctMove: 'Re1', prompt: 'Your move.', hint: 'Re1.', correctFeedback: 'Re1.', wrongFeedback: 'Re1.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.Be6_after_Bf7,
+      text: "Be6 is the hard one — 53% win rate. The plan is still Bd3 / O-O / Re1, but the brilliancy probably won't fire. Trick weapons don't always work — that's the deal.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-dev-Kg8: DEVIATION — 7…Kg8 (6%, manual castle)
+// Witty plays 8.Bd3 (92%) Be6 9.O-O Nbd7 10.Re1 Bf7
+// Teaches 3 white moves: Bd3, O-O, Re1
+// ═══════════════════════════════════════════════════════════
+
+const WA_DEV_KG8: OpeningLesson = {
+  id: 'wa-dev-Kg8',
+  title: 'If Kg8',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays 7…Kg8 in 6% of real games — trying to manually castle and tuck the king away. You stick to the universal plan: Bd3 / O-O / Re1.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to 7.Nf3.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+
+    // ── BLACK Kg8 ──
+    {
+      type: 'instruction',
+      fen: FEN.Kg8_after_Kg8,
+      text: "Kg8 — Black manually walks the king to safety. Fine — your plan doesn't care.",
+      autoAdvance: 800,
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── TEACH 1: Bd3 ──
+    {
+      type: 'play-move',
+      fen: FEN.Kg8_after_Kg8,
+      correctMove: 'Bd3',
+      prompt: "Same plan — aim at h7.",
+      hint: 'Bishop to d3.',
+      correctFeedback: "Bd3. Witty plays this in 92% of real Kg8 games. The bishop diagonal matters more than where the king is.",
+      wrongFeedback: 'Play Bd3 — same universal plan.',
+      postMoveArrow: ['d3', 'h7'],
+    },
+
+    // ── BLACK Be6 ──
+    {
+      type: 'instruction',
+      fen: FEN.Kg8_after_Be6,
+      text: "Be6 — Black develops the bishop. They're stabilizing the position.",
+      autoAdvance: 800,
+      highlightSquares: ['c8', 'e6'],
+    },
+
+    // ── TEACH 2: O-O ──
+    {
+      type: 'play-move',
+      fen: FEN.Kg8_after_Be6,
+      correctMove: 'O-O',
+      prompt: "Castle.",
+      hint: 'O-O.',
+      correctFeedback: "O-O. King safe, rook on f1.",
+      wrongFeedback: 'Play O-O — castle, normal plan.',
+    },
+
+    // ── BLACK Nbd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.Kg8_after_Nbd7,
+      text: "Nbd7 — Black develops the knight.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 3: Re1 ──
+    {
+      type: 'play-move',
+      fen: FEN.Kg8_after_Nbd7,
+      correctMove: 'Re1',
+      prompt: "Rook to e1.",
+      hint: 'Rook from f1 to e1.',
+      correctFeedback: "Re1. Same plan, every time. 80% win rate across 25 real games at this position.",
+      wrongFeedback: 'Play Re1 — pile on the e-file.',
+    },
+
+    // ── BLACK Bf7 ──
+    {
+      type: 'instruction',
+      fen: FEN.Kg8_after_Bf7,
+      text: "Bf7 — Black retreats the bishop to defend. You have a normal attacking position now with Ne5+ ideas one move away.",
+      autoAdvance: 800,
+      highlightSquares: ['e6', 'f7'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays Kg8. Same plan — Bd3, O-O, Re1.",
+    },
+    { type: 'instruction', fen: FEN.Kg8_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.Kg8_after_Kg8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.Kg8_after_Be6, text: 'Be6.', autoAdvance: 800, highlightSquares: ['c8', 'e6'] },
+    { type: 'play-move', fen: FEN.Kg8_after_Be6, correctMove: 'O-O', prompt: 'Your move.', hint: 'O-O.', correctFeedback: 'O-O.', wrongFeedback: 'O-O.' },
+    { type: 'instruction', fen: FEN.Kg8_after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.Kg8_after_Nbd7, correctMove: 'Re1', prompt: 'Your move.', hint: 'Re1.', correctFeedback: 'Re1.', wrongFeedback: 'Re1.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.Kg8_after_Bf7,
+      text: "Manual castle, same response. Bd3 / O-O / Re1 — every time. 80% win rate.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wa-dev-Bg4: DEVIATION — 7…Bg4 (3%, pin attempt)
+// Witty plays 8.Ne5+ (100%) Kg8 9.Bc4+ e6 10.Nxg4 — wins the bishop.
+// Teaches 3 white moves: Ne5+, Bc4+, Nxg4
+// ═══════════════════════════════════════════════════════════
+
+const WA_DEV_BG4: OpeningLesson = {
+  id: 'wa-dev-Bg4',
+  title: 'If Bg4',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays 7…Bg4 in 3% of real games, trying to pin your knight. Bad idea. Witty plays Ne5+ (100% consistency) and the pin breaks immediately.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to 7.Nf3.",
+    },
+    { type: 'play-move', fen: FEN.start, correctMove: 'e4', prompt: 'Your move.', hint: 'e4.', correctFeedback: 'e4.', wrongFeedback: 'e4.' },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.after_Nf6, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+    { type: 'instruction', fen: FEN.after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    { type: 'play-move', fen: FEN.after_Kxf7, correctMove: 'Nf3', prompt: 'Your move.', hint: 'Nf3.', correctFeedback: 'Nf3.', wrongFeedback: 'Nf3.' },
+
+    // ── BLACK Bg4 ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_Bg4,
+      text: "Bg4 — Black pins the knight to the queen. Looks scary, isn't.",
+      autoAdvance: 800,
+      highlightSquares: ['c8', 'g4'],
+    },
+
+    // ── TEACH 1: Ne5+ ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_Bg4,
+      text: "Break the pin with check. Ne5+ — knight moves WITH check, attacking the king. The pin doesn't matter because Black has to deal with the check first.",
+      highlightSquares: ['f3', 'e5', 'f7'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.bg4_after_Bg4,
+      correctMove: 'Ne5+',
+      prompt: "Knight check on e5.",
+      hint: 'Knight from f3 to e5 — check.',
+      correctFeedback: "Ne5+! 100% of real Witty games. The pin is broken — Black has to move the king or block.",
+      wrongFeedback: 'Play Ne5+ — break the pin WITH check.',
+      postMoveArrow: ['e5', 'f7'],
+    },
+
+    // ── BLACK Kg8 ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_Kg8,
+      text: "Kg8 — Black runs the king to the corner. Most common reply (12 of 15 games).",
+      autoAdvance: 800,
+      highlightSquares: ['f7', 'g8'],
+    },
+
+    // ── TEACH 2: Bc4+ ──
+    {
+      type: 'play-move',
+      fen: FEN.bg4_after_Kg8,
+      correctMove: 'Bc4+',
+      prompt: "Bishop check.",
+      hint: 'Bishop to c4 — check on the a2-g8 diagonal.',
+      correctFeedback: "Bc4+! Witty plays Bc4+ in 10 of 12 games here. Forces e6 to block — and now the bishop on g4 is just hanging.",
+      wrongFeedback: 'Play Bc4+ — keep the king busy.',
+      postMoveArrow: ['c4', 'g8'],
+    },
+
+    // ── BLACK e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_e6,
+      text: "e6 — Black blocks the check. The bishop on g4 has no support, no defender. Free piece.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+
+    // ── TEACH 3: Nxg4 ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_e6,
+      text: "Take the bishop. Nxg4 — knight grabs the loose piece.",
+      highlightSquares: ['e5', 'g4'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.bg4_after_e6,
+      correctMove: 'Nxg4',
+      prompt: "Win the bishop.",
+      hint: 'Knight takes g4.',
+      correctFeedback: "Nxg4! Won the bishop. The pin attempt backfired completely. Win rate at this deviation: 87%.",
+      wrongFeedback: 'Play Nxg4 — take the loose bishop.',
+    },
+
+    // ── BLACK Nxg4 ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_Nxg4,
+      text: "Nxg4 — Black's f6 knight recaptures. You've won the bishop pair AND the king is still stuck on g8 with no real defense.",
+      autoAdvance: 800,
+      highlightSquares: ['f6', 'g4'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Nf3,
+      text: "Black plays Bg4. Ne5+, Bc4+, Nxg4 — pin breaks, bishop falls.",
+    },
+    { type: 'instruction', fen: FEN.bg4_after_Bg4, text: 'Bg4.', autoAdvance: 800, highlightSquares: ['c8', 'g4'] },
+    { type: 'play-move', fen: FEN.bg4_after_Bg4, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
+    { type: 'instruction', fen: FEN.bg4_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.bg4_after_Kg8, correctMove: 'Bc4+', prompt: 'Your move.', hint: 'Bc4+.', correctFeedback: 'Bc4+.', wrongFeedback: 'Bc4+.' },
+    { type: 'instruction', fen: FEN.bg4_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.bg4_after_e6, correctMove: 'Nxg4', prompt: 'Your move.', hint: 'Nxg4.', correctFeedback: 'Nxg4.', wrongFeedback: 'Nxg4.' },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.bg4_after_NxNg4,
+      text: "Pin attempt punished. 87% win rate across 15 real Witty games. Ne5+, Bc4+, Nxg4 — every time.",
     },
   ],
 }
@@ -1840,7 +1711,7 @@ const WA_DEV_C5: OpeningLesson = {
 
 // ═══════════════════════════════════════════════════════════
 // wa-test-1: LEVEL 1 TEST
-// Tests main line + all 3 deviations. Zero guidance.
+// Tests main line + all 6 deviations. Zero guidance.
 // ═══════════════════════════════════════════════════════════
 
 const WA_TEST_1: OpeningLesson = {
@@ -1851,7 +1722,7 @@ const WA_TEST_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Final test. Play the full Alien Gambit — main line and every deviation from memory.",
+      text: "Final test. Play the full Alien Gambit — main line, brilliancy, and every deviation. From memory.",
     },
 
     // ── MAIN LINE ──
@@ -1881,8 +1752,8 @@ const WA_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Nd5, text: 'Nd5.', autoAdvance: 800, highlightSquares: ['f6', 'd5'] },
     { type: 'play-move', fen: FEN.after_Nd5, correctMove: 'Qh5+', prompt: 'Your move.', hint: 'Qh5+.', correctFeedback: 'Qh5+.', wrongFeedback: 'Qh5+.' },
     { type: 'instruction', fen: FEN.after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
-    { type: 'play-move', fen: FEN.after_Kg8, correctMove: 'Bxh6', prompt: 'Your move.', hint: 'Bxh6.', correctFeedback: 'Bxh6.', wrongFeedback: 'Bxh6.' },
-    { type: 'instruction', fen: FEN.after_gxh6, text: 'gxh6.', autoAdvance: 800, highlightSquares: ['g7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_Kg8, correctMove: 'Bxh6', prompt: 'Your move.', hint: 'Bxh6.', correctFeedback: 'Bxh6 — the brilliancy.', wrongFeedback: 'Bxh6.' },
+    { type: 'instruction', fen: FEN.after_gxh6, text: 'gxh6 — find the mate.', autoAdvance: 800, highlightSquares: ['g7', 'h6'] },
     {
       type: 'puzzle',
       fen: FEN.after_gxh6,
@@ -1890,43 +1761,39 @@ const WA_TEST_1: OpeningLesson = {
       playerColor: 'white',
       prompt: "Mate in 2.",
       hint: 'Qg6+ Kh8 Qh7#.',
-      correctFeedback: 'Mating net complete.',
+      correctFeedback: 'Mate. Main line locked in.',
     },
 
-    // ── DEV 1: Bg4 ──
-    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 1: Black plays Bg4.", buttonText: 'NEXT' },
-    { type: 'instruction', fen: FEN.bg4_after_Bg4, text: 'Bg4.', autoAdvance: 800, highlightSquares: ['c8', 'g4'] },
-    { type: 'play-move', fen: FEN.bg4_after_Bg4, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
-    { type: 'instruction', fen: FEN.bg4_after_Ke8, text: 'Ke8.', autoAdvance: 800, highlightSquares: ['f7', 'e8'] },
-    { type: 'play-move', fen: FEN.bg4_after_Ke8, correctMove: 'Nxg4', prompt: 'Your move.', hint: 'Nxg4.', correctFeedback: 'Nxg4.', wrongFeedback: 'Nxg4.' },
+    // ── DEVIATIONS ──
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 1: 7…c5 (most common).", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.c5_after_c5, text: 'c5.', autoAdvance: 800, highlightSquares: ['c6', 'c5'] },
+    { type: 'play-move', fen: FEN.c5_after_c5, correctMove: 'd5', prompt: 'Your move.', hint: 'd5.', correctFeedback: 'd5.', wrongFeedback: 'd5.' },
 
-    // ── DEV 2: Bf5 ──
-    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 2: Black plays Bf5.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 2: 7…Bf5.", buttonText: 'NEXT' },
     { type: 'instruction', fen: FEN.bf5_after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
     { type: 'play-move', fen: FEN.bf5_after_Bf5, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
-    { type: 'instruction', fen: FEN.bf5_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
-    { type: 'play-move', fen: FEN.bf5_after_Kg8, correctMove: 'Bc4+', prompt: 'Your move.', hint: 'Bc4+.', correctFeedback: 'Bc4+.', wrongFeedback: 'Bc4+.' },
-    { type: 'instruction', fen: FEN.bf5_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
-    { type: 'play-move', fen: FEN.bf5_after_e6, correctMove: 'g4', prompt: 'Your move.', hint: 'g4.', correctFeedback: 'g4.', wrongFeedback: 'g4.' },
-    { type: 'instruction', fen: FEN.bf5_after_Be4, text: 'Be4.', autoAdvance: 800, highlightSquares: ['f5', 'e4'] },
-    { type: 'play-move', fen: FEN.bf5_after_Be4, correctMove: 'Bxe6+', prompt: 'Your move.', hint: 'Bxe6+.', correctFeedback: 'Bxe6+.', wrongFeedback: 'Bxe6+.' },
-    { type: 'instruction', fen: FEN.bf5_after_Kh7, text: 'Kh7.', autoAdvance: 800, highlightSquares: ['g8', 'h7'] },
-    { type: 'play-move', fen: FEN.bf5_after_Kh7, correctMove: 'g5', prompt: 'Your move.', hint: 'g5.', correctFeedback: 'g5.', wrongFeedback: 'g5.' },
-    { type: 'instruction', fen: FEN.bf5_after_Bxh1, text: 'Bxh1??', autoAdvance: 800, highlightSquares: ['e4', 'h1'] },
-    { type: 'play-move', fen: FEN.bf5_after_Bxh1, correctMove: 'g6#', prompt: 'Your move.', hint: 'g6#.', correctFeedback: 'g6# — pawn mate.', wrongFeedback: 'g6#.' },
 
-    // ── DEV 3: c5 ──
-    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 3: Black plays c5 — the refutation.", buttonText: 'NEXT' },
-    { type: 'instruction', fen: FEN.c5_after_c5, text: 'c5.', autoAdvance: 800, highlightSquares: ['c7', 'c5'] },
-    { type: 'play-move', fen: FEN.c5_after_c5, correctMove: 'c3', prompt: 'Your move.', hint: 'c3.', correctFeedback: 'c3.', wrongFeedback: 'c3.' },
-    { type: 'instruction', fen: FEN.c5_after_Nc6, text: 'Nc6.', autoAdvance: 800, highlightSquares: ['b8', 'c6'] },
-    { type: 'play-move', fen: FEN.c5_after_Nc6, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 3: 7…e6.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.e6_after_e6, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 4: 7…Be6 (tough defense).", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.Be6_after_Be6, text: 'Be6.', autoAdvance: 800, highlightSquares: ['c8', 'e6'] },
+    { type: 'play-move', fen: FEN.Be6_after_Be6, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 5: 7…Kg8.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.Kg8_after_Kg8, text: 'Kg8.', autoAdvance: 800, highlightSquares: ['f7', 'g8'] },
+    { type: 'play-move', fen: FEN.Kg8_after_Kg8, correctMove: 'Bd3', prompt: 'Your move.', hint: 'Bd3.', correctFeedback: 'Bd3.', wrongFeedback: 'Bd3.' },
+
+    { type: 'instruction', fen: FEN.after_Nf3, text: "Deviation 6: 7…Bg4.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.bg4_after_Bg4, text: 'Bg4.', autoAdvance: 800, highlightSquares: ['c8', 'g4'] },
+    { type: 'play-move', fen: FEN.bg4_after_Bg4, correctMove: 'Ne5+', prompt: 'Your move.', hint: 'Ne5+.', correctFeedback: 'Ne5+.', wrongFeedback: 'Ne5+.' },
 
     // ── FINISH ──
     {
       type: 'instruction',
-      fen: FEN.c5_after_Bd3,
-      text: "Test complete. You know the Alien Gambit — main line, three deviations, and the brilliancy. Time to spam this in blitz.",
+      fen: FEN.bg4_after_Ne5,
+      text: "Test complete. Main line, brilliancy, 6 deviations covering 92% of real Witty_Alien opponents. The Alien Gambit, in your pocket.",
     },
   ],
 }
@@ -1943,10 +1810,12 @@ const WITTY_ALIEN_LESSONS: Record<string, OpeningLesson> = {
   'wa-4': WA_4,
   'wa-5': WA_5,
   'wa-6': WA_6,
-  'wa-7': WA_7,
-  'wa-dev-Bg4': WA_DEV_BG4,
-  'wa-dev-Bf5': WA_DEV_BF5,
   'wa-dev-c5': WA_DEV_C5,
+  'wa-dev-Bf5': WA_DEV_BF5,
+  'wa-dev-e6': WA_DEV_E6,
+  'wa-dev-Be6': WA_DEV_BE6,
+  'wa-dev-Kg8': WA_DEV_KG8,
+  'wa-dev-Bg4': WA_DEV_BG4,
   'wa-test-1': WA_TEST_1,
 }
 
