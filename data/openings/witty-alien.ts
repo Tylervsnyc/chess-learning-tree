@@ -12,7 +12,7 @@
 //          /tmp/witty/2024-*.pgn (raw game data)
 //
 // WHITE OPENING: The user plays as White.
-// Main line: 1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nf6 5.Ng5 h6
+// Main line: 1.e4 c6 2.d4 d5 3.Nd2 dxe4 4.Nxe4 Nf6 5.Ng5 h6
 //            6.Nxf7!! Kxf7 7.Nf3 Nbd7 8.Bd3 e6 9.O-O Bd6
 //            10.Re1 Re8 11.Ne5+ Bxe5 12.dxe5 Nd5 13.Qh5+
 //            Kg8 14.Bxh6!! gxh6 15.Qg6+ Kh8 16.Qh7#
@@ -70,7 +70,7 @@ export const WITTY_ALIEN: OpeningTree = {
     {
       id: 'wa-1',
       name: 'The Setup',
-      moves: ['1.e4 c6', '2.d4 d5', '3.Nc3 dxe4'],
+      moves: ['1.e4 c6', '2.d4 d5', '3.Nd2 dxe4'],
       description: 'Enter the Caro-Kann main line. Knight to c3 invites Black to capture.',
       type: 'main',
       row: 0,

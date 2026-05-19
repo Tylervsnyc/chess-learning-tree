@@ -12,7 +12,7 @@
 // real games — frequencies in the data show below.
 //
 // WHITE OPENING: The user plays as White.
-// Main line: 1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5
+// Main line: 1.e4 c6 2.d4 d5 3.Nd2 dxe4 4.Nxe4 Bf5
 //            5.Ng5 Bg6 6.N1f3 h6 7.Ne6!! fxe6
 //            8.Ne5 Bf7 9.Bc4 Nd7 10.Nxf7! Kxf7
 //            11.Qg4 Qa5+ 12.Bd2 Qc7
@@ -85,7 +85,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
     {
       id: 'wam-1',
       name: 'The Setup',
-      moves: ['1.e4 c6', '2.d4 d5', '3.Nc3 dxe4'],
+      moves: ['1.e4 c6', '2.d4 d5', '3.Nd2 dxe4'],
       description: 'Enter the Caro-Kann main line. Knight to c3 invites Black to capture on e4 — and they do.',
       type: 'main',
       row: 0,
