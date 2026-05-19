@@ -11,9 +11,9 @@ import type { OpeningLesson } from '@/types/opening-lesson'
 // WHITE OPENING: User plays as White. White moves = play-move.
 // Black moves = instruction with autoAdvance: 800.
 //
-// ⚠️  CHUNKING RULE: EVERY main-line lesson teaches EXACTLY 3 white moves.
-// 7 main lessons × 3 = 21 white moves + 1 puzzle move (Qf5+) = 22 total.
-// Deviations also teach 3 white moves each.
+// ⚠️  CHUNKING RULE: EVERY lesson teaches EXACTLY 3 white moves.
+// Main: 7 main lessons × 3 = 21 white moves + 1 puzzle move (Qf5+) = 22 total.
+// Deviations: 7 deviations × 3 = 21 additional white moves.
 //
 // Main line: 1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5
 //            5.Ng5 Bg6 6.N1f3 h6 7.Ne6!! fxe6
@@ -24,8 +24,14 @@ import type { OpeningLesson } from '@/types/opening-lesson'
 //            18.dxc5 Nxc5 19.Rad1!! Nxe6 20.Bxa5+ Kc8
 //            21.Bxc7 Nxc7 22.Qf5+ (winning)
 //
-// Source: research/alien-gambit-oneandonly.pgn — "Martian gambit" chapter
-//         research/alien-gambit-ishaan.pgn — Trap 7 (Bf5 sideline when no h6)
+// Deviations (Witty's actual play, June-Nov 2024 chess.com archive):
+//   wam-dev-5-e6   — 5…e6 (62 games) → 6.N1f3 Nd7 7.Nh4 Bg6 8.Bc4
+//   wam-dev-5-h6   — 5…h6 (33 games) → 6.Nxf7! Kxf7 7.Nf3 Nd7 8.Ne5+ (the Alien transposition)
+//   wam-dev-5-Nf6  — 5…Nf6 (24 games) → 6.N1f3 Nbd7 7.Bc4 e6 8.Ne5
+//   wam-dev-6-e6   — 6…e6 (22 games) → 7.Ne5 Nd7 8.Nxg6 hxg6 9.Bc4
+//   wam-dev-6-Nd7  — 6…Nd7 (18 games) → 7.Bc4 e6 8.Qe2 Ngf6 9.O-O
+//   wam-dev-8-Bf5  — 8…Bf5 (71 games) → 9.Bc4 Nd7 10.Bxe6 Nxe5 11.Bxf5
+//   wam-dev-8-Be4  — 8…Be4 (21 games, 100% wins!) → 9.Bc4 Nd7 10.Qe2 Nxe5 11.dxe5
 //
 // FENs computed with chess.js from move sequences (verified).
 // ═══════════════════════════════════════════════════════════
@@ -36,7 +42,7 @@ const FEN = {
   after_c6:     'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
   after_d4:     'rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
   after_d5:     'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
-  after_Nc3:    'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3',
+  after_Nc3:    'rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/RNBQKBNR b KQkq - 1 3',
   after_dxe4:   'rnbqkbnr/pp2pppp/2p5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4',
   after_Nxe4:   'rnbqkbnr/pp2pppp/2p5/8/3PN3/8/PPP2PPP/R1BQKBNR b KQkq - 0 4',
   after_Bf5:    'rn1qkbnr/pp2pppp/2p5/5b2/3PN3/8/PPP2PPP/R1BQKBNR w KQkq - 1 5',
@@ -76,21 +82,61 @@ const FEN = {
   after_Nxc7:   'r1k2b1r/1pn1p1p1/5nQp/8/2P5/8/PP3PPP/3RR1K1 w - - 0 22',
   after_Qf5:    'r1k2b1r/1pn1p1p1/5n1p/5Q2/2P5/8/PP3PPP/3RR1K1 b - - 1 22',
 
-  // === DEVIATION no-h6: 6…e6 7.Ne5! Nf6 8.Bd3 Bxd3 9.Qxd3 ===
-  noh6_after_e6:    'rn1qkbnr/pp3ppp/2p1p1b1/6N1/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 0 7',
-  noh6_after_Ne5:   'rn1qkbnr/pp3ppp/2p1p1b1/4N1N1/3P4/8/PPP2PPP/R1BQKB1R b KQkq - 1 7',
-  noh6_after_Nf6:   'rn1qkb1r/pp3ppp/2p1pnb1/4N1N1/3P4/8/PPP2PPP/R1BQKB1R w KQkq - 2 8',
-  noh6_after_Bd3:   'rn1qkb1r/pp3ppp/2p1pnb1/4N1N1/3P4/3B4/PPP2PPP/R1BQK2R b KQkq - 3 8',
-  noh6_after_Bxd3:  'rn1qkb1r/pp3ppp/2p1pn2/4N1N1/3P4/3b4/PPP2PPP/R1BQK2R w KQkq - 0 9',
-  noh6_after_Qxd3:  'rn1qkb1r/pp3ppp/2p1pn2/4N1N1/3P4/3Q4/PPP2PPP/R1B1K2R b KQkq - 0 9',
+  // === DEVIATION wam-dev-5-e6: 5…e6 6.N1f3 Nd7 7.Nh4 Bg6 8.Bc4 ===
+  dev5e6_after_e6:    'rn1qkbnr/pp3ppp/2p1p3/5bN1/3P4/8/PPP2PPP/R1BQKBNR w KQkq - 0 6',
+  dev5e6_after_N1f3:  'rn1qkbnr/pp3ppp/2p1p3/5bN1/3P4/5N2/PPP2PPP/R1BQKB1R b KQkq - 1 6',
+  dev5e6_after_Nd7:   'r2qkbnr/pp1n1ppp/2p1p3/5bN1/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 2 7',
+  dev5e6_after_Nh4:   'r2qkbnr/pp1n1ppp/2p1p3/5bN1/3P3N/8/PPP2PPP/R1BQKB1R b KQkq - 3 7',
+  dev5e6_after_Bg6:   'r2qkbnr/pp1n1ppp/2p1p1b1/6N1/3P3N/8/PPP2PPP/R1BQKB1R w KQkq - 4 8',
+  dev5e6_after_Bc4:   'r2qkbnr/pp1n1ppp/2p1p1b1/6N1/2BP3N/8/PPP2PPP/R1BQK2R b KQkq - 5 8',
 
-  // === DEVIATION decline: 7…Qa5+ 8.Bd2 Qxd2+ 9.Qxd2 fxe6 10.Bd3 ===
-  dec_after_Qa5:    'rn2kbnr/pp2ppp1/2p1N1bp/q7/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 2 8',
-  dec_after_Bd2:    'rn2kbnr/pp2ppp1/2p1N1bp/q7/3P4/5N2/PPPB1PPP/R2QKB1R b KQkq - 3 8',
-  dec_after_Qxd2:   'rn2kbnr/pp2ppp1/2p1N1bp/8/3P4/5N2/PPPq1PPP/R2QKB1R w KQkq - 0 9',
-  dec_after_QxQd2:  'rn2kbnr/pp2ppp1/2p1N1bp/8/3P4/5N2/PPPQ1PPP/R3KB1R b KQkq - 0 9',
-  dec_after_fxe6:   'rn2kbnr/pp2p1p1/2p1p1bp/8/3P4/5N2/PPPQ1PPP/R3KB1R w KQkq - 0 10',
-  dec_after_Bd3:    'rn2kbnr/pp2p1p1/2p1p1bp/8/3P4/3B1N2/PPPQ1PPP/R3K2R b KQkq - 1 10',
+  // === DEVIATION wam-dev-5-h6: 5…h6 6.Nxf7 Kxf7 7.Nf3 Nd7 8.Ne5+ ===
+  dev5h6_after_h6:    'rn1qkbnr/pp2ppp1/2p4p/5bN1/3P4/8/PPP2PPP/R1BQKBNR w KQkq - 0 6',
+  dev5h6_after_Nxf7:  'rn1qkbnr/pp2pNp1/2p4p/5b2/3P4/8/PPP2PPP/R1BQKBNR b KQkq - 0 6',
+  dev5h6_after_Kxf7:  'rn1q1bnr/pp2pkp1/2p4p/5b2/3P4/8/PPP2PPP/R1BQKBNR w KQ - 0 7',
+  dev5h6_after_Nf3:   'rn1q1bnr/pp2pkp1/2p4p/5b2/3P4/5N2/PPP2PPP/R1BQKB1R b KQ - 1 7',
+  dev5h6_after_Nd7:   'r2q1bnr/pp1npkp1/2p4p/5b2/3P4/5N2/PPP2PPP/R1BQKB1R w KQ - 2 8',
+  dev5h6_after_Ne5:   'r2q1bnr/pp1npkp1/2p4p/4Nb2/3P4/8/PPP2PPP/R1BQKB1R b KQ - 3 8',
+
+  // === DEVIATION wam-dev-5-Nf6: 5…Nf6 6.N1f3 Nbd7 7.Bc4 e6 8.Ne5 ===
+  dev5Nf6_after_Nf6:  'rn1qkb1r/pp2pppp/2p2n2/5bN1/3P4/8/PPP2PPP/R1BQKBNR w KQkq - 3 6',
+  dev5Nf6_after_N1f3: 'rn1qkb1r/pp2pppp/2p2n2/5bN1/3P4/5N2/PPP2PPP/R1BQKB1R b KQkq - 4 6',
+  dev5Nf6_after_Nbd7: 'r2qkb1r/pp1npppp/2p2n2/5bN1/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 5 7',
+  dev5Nf6_after_Bc4:  'r2qkb1r/pp1npppp/2p2n2/5bN1/2BP4/5N2/PPP2PPP/R1BQK2R b KQkq - 6 7',
+  dev5Nf6_after_e6:   'r2qkb1r/pp1n1ppp/2p1pn2/5bN1/2BP4/5N2/PPP2PPP/R1BQK2R w KQkq - 0 8',
+  dev5Nf6_after_Ne5:  'r2qkb1r/pp1n1ppp/2p1pn2/4NbN1/2BP4/8/PPP2PPP/R1BQK2R b KQkq - 1 8',
+
+  // === DEVIATION wam-dev-6-e6: 6…e6 7.Ne5 Nd7 8.Nxg6 hxg6 9.Bc4 ===
+  dev6e6_after_e6:    'rn1qkbnr/pp3ppp/2p1p1b1/6N1/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 0 7',
+  dev6e6_after_Ne5:   'rn1qkbnr/pp3ppp/2p1p1b1/4N1N1/3P4/8/PPP2PPP/R1BQKB1R b KQkq - 1 7',
+  dev6e6_after_Nd7:   'r2qkbnr/pp1n1ppp/2p1p1b1/4N1N1/3P4/8/PPP2PPP/R1BQKB1R w KQkq - 2 8',
+  dev6e6_after_Nxg6:  'r2qkbnr/pp1n1ppp/2p1p1N1/6N1/3P4/8/PPP2PPP/R1BQKB1R b KQkq - 0 8',
+  dev6e6_after_hxg6:  'r2qkbnr/pp1n1pp1/2p1p1p1/6N1/3P4/8/PPP2PPP/R1BQKB1R w KQkq - 0 9',
+  dev6e6_after_Bc4:   'r2qkbnr/pp1n1pp1/2p1p1p1/6N1/2BP4/8/PPP2PPP/R1BQK2R b KQkq - 1 9',
+
+  // === DEVIATION wam-dev-6-Nd7: 6…Nd7 7.Bc4 e6 8.Qe2 Ngf6 9.O-O ===
+  dev6Nd7_after_Nd7:  'r2qkbnr/pp1npppp/2p3b1/6N1/3P4/5N2/PPP2PPP/R1BQKB1R w KQkq - 5 7',
+  dev6Nd7_after_Bc4:  'r2qkbnr/pp1npppp/2p3b1/6N1/2BP4/5N2/PPP2PPP/R1BQK2R b KQkq - 6 7',
+  dev6Nd7_after_e6:   'r2qkbnr/pp1n1ppp/2p1p1b1/6N1/2BP4/5N2/PPP2PPP/R1BQK2R w KQkq - 0 8',
+  dev6Nd7_after_Qe2:  'r2qkbnr/pp1n1ppp/2p1p1b1/6N1/2BP4/5N2/PPP1QPPP/R1B1K2R b KQkq - 1 8',
+  dev6Nd7_after_Ngf6: 'r2qkb1r/pp1n1ppp/2p1pnb1/6N1/2BP4/5N2/PPP1QPPP/R1B1K2R w KQkq - 2 9',
+  dev6Nd7_after_OO:   'r2qkb1r/pp1n1ppp/2p1pnb1/6N1/2BP4/5N2/PPP1QPPP/R1B2RK1 b kq - 3 9',
+
+  // === DEVIATION wam-dev-8-Bf5: 8…Bf5 9.Bc4 Nd7 10.Bxe6 Nxe5 11.Bxf5 ===
+  dev8Bf5_after_Bf5:  'rn1qkbnr/pp2p1p1/2p1p2p/4Nb2/3P4/8/PPP2PPP/R1BQKB1R w KQkq - 2 9',
+  dev8Bf5_after_Bc4:  'rn1qkbnr/pp2p1p1/2p1p2p/4Nb2/2BP4/8/PPP2PPP/R1BQK2R b KQkq - 3 9',
+  dev8Bf5_after_Nd7:  'r2qkbnr/pp1np1p1/2p1p2p/4Nb2/2BP4/8/PPP2PPP/R1BQK2R w KQkq - 4 10',
+  dev8Bf5_after_Bxe6: 'r2qkbnr/pp1np1p1/2p1B2p/4Nb2/3P4/8/PPP2PPP/R1BQK2R b KQkq - 0 10',
+  dev8Bf5_after_Nxe5: 'r2qkbnr/pp2p1p1/2p1B2p/4nb2/3P4/8/PPP2PPP/R1BQK2R w KQkq - 0 11',
+  dev8Bf5_after_Bxf5: 'r2qkbnr/pp2p1p1/2p4p/4nB2/3P4/8/PPP2PPP/R1BQK2R b KQkq - 0 11',
+
+  // === DEVIATION wam-dev-8-Be4: 8…Be4 9.Bc4 Nd7 10.Qe2 Nxe5 11.dxe5 ===
+  dev8Be4_after_Be4:  'rn1qkbnr/pp2p1p1/2p1p2p/4N3/3Pb3/8/PPP2PPP/R1BQKB1R w KQkq - 2 9',
+  dev8Be4_after_Bc4:  'rn1qkbnr/pp2p1p1/2p1p2p/4N3/2BPb3/8/PPP2PPP/R1BQK2R b KQkq - 3 9',
+  dev8Be4_after_Nd7:  'r2qkbnr/pp1np1p1/2p1p2p/4N3/2BPb3/8/PPP2PPP/R1BQK2R w KQkq - 4 10',
+  dev8Be4_after_Qe2:  'r2qkbnr/pp1np1p1/2p1p2p/4N3/2BPb3/8/PPP1QPPP/R1B1K2R b KQkq - 5 10',
+  dev8Be4_after_Nxe5: 'r2qkbnr/pp2p1p1/2p1p2p/4n3/2BPb3/8/PPP1QPPP/R1B1K2R w KQkq - 0 11',
+  dev8Be4_after_dxe5: 'r2qkbnr/pp2p1p1/2p1p2p/4P3/2B1b3/8/PPP1QPPP/R1B1K2R b KQkq - 0 11',
 }
 
 
@@ -1247,21 +1293,516 @@ const WAM_7: OpeningLesson = {
 
 
 // ═══════════════════════════════════════════════════════════
-// wam-dev-no-h6: DEVIATION — 6…e6 instead of h6 (Ishaan Trap 7)
-// Teaches 3 white moves: Ne5, Bd3, Qxd3
-// Black's 7…Nf6 8…Bxd3 are the natural continuation.
+// wam-dev-5-e6: DEVIATION — Black plays 5…e6 (16%, 62 games)
+// Teaches 3 white moves: N1f3, Nh4, Bc4
+// Witty plays N1f3 in 98% of games. Then attacks the f5 bishop with Nh4.
 // ═══════════════════════════════════════════════════════════
 
-const WAM_DEV_NO_H6: OpeningLesson = {
-  id: 'wam-dev-no-h6',
-  title: 'If e6 (no h6)',
+const WAM_DEV_5_E6: OpeningLesson = {
+  id: 'wam-dev-5-e6',
+  title: 'If 5…e6',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Black plays e6 instead of Bg6 here — 16% of the time, 62 games. The bishop stays on f5. Witty plays N1f3 in 98% of these games — same setup, you just attack the bishop instead of the king.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the position.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.start,
+      correctMove: 'e4',
+      prompt: 'Your move.',
+      hint: 'e4.',
+      correctFeedback: 'e4.',
+      wrongFeedback: 'e4.',
+    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Bf5, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+
+    // ── DEVIATION: Black plays 5…e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_e6,
+      text: "e6 — Black plays this instead of Bg6. They're getting the e-pawn out to free their dark-squared bishop.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_e6,
+      text: "The Ne6 sac doesn't work here (Black already has an e6 pawn). But your plan barely changes — develop N1f3, then attack the f5 bishop.",
+      highlightSquares: ['f5', 'g1', 'f3'],
+    },
+
+    // ── TEACH 1: N1f3 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_e6,
+      correctMove: 'N1f3',
+      prompt: "Develop the g1 knight.",
+      hint: 'Knight from g1 to f3.',
+      correctFeedback: "N1f3 — same developing move as the main line. Witty plays this in 60 of 61 games (98%). Black usually responds with Nd7 (37 games), preparing to develop more.",
+      wrongFeedback: 'Play N1f3 — Witty plays this 98% of the time here.',
+    },
+
+    // ── BLACK Nd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_Nd7,
+      text: "Nd7 — Black's most common response (37 of 60 games). They're developing toward the kingside. Bishop on f5 still hanging out there.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 2: Nh4 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_Nd7,
+      text: "Attack the bishop on f5. Knight to h4 hits it — Black has to move the bishop or lose it.",
+      highlightSquares: ['f3', 'h4', 'f5'],
+    },
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_Nd7,
+      correctMove: 'Nh4',
+      prompt: "Knight to h4 — attack the bishop on f5.",
+      hint: 'Knight from f3 to h4.',
+      correctFeedback: "Nh4! Attacks the bishop on f5. Witty plays this in 18 of 37 games after Nd7 — the most common attacking choice. Black almost always retreats to Bg6.",
+      wrongFeedback: 'Play Nh4 — hit the f5 bishop and force it to move.',
+      postMoveArrow: ['h4', 'f5'],
+    },
+
+    // ── BLACK Bg6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_Bg6,
+      text: "Bg6 — Black retreats. The bishop ends up on g6 anyway — same spot as the main line. Now you finish developing.",
+      autoAdvance: 800,
+      highlightSquares: ['f5', 'g6'],
+    },
+
+    // ── TEACH 3: Bc4 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_Bg6,
+      correctMove: 'Bc4',
+      prompt: "Develop the bishop toward f7.",
+      hint: 'Bishop to c4 — aim at the f7 square.',
+      correctFeedback: "Bc4 — bishop on c4 aiming at f7. Same idea as the main line: get all your pieces pointed at the Black king before going hunting. Position is good — 59% win rate over 61 games.",
+      wrongFeedback: 'Play Bc4 — point the bishop at f7, same as the main line.',
+      postMoveArrow: ['c4', 'f7'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_Bc4,
+      text: "Two knights, bishop on c4, all pointing at the kingside. The Ne6 sac didn't fire, but you have a healthy attacking setup. Black to move.",
+      highlightSquares: ['c4', 'g5', 'h4'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Black plays e6. Run the sequence.",
+    },
+    { type: 'instruction', fen: FEN.dev5e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_e6,
+      correctMove: 'N1f3',
+      prompt: 'Your move.',
+      hint: 'N1f3.',
+      correctFeedback: 'N1f3.',
+      wrongFeedback: 'N1f3.',
+    },
+    { type: 'instruction', fen: FEN.dev5e6_after_Nd7, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_Nd7,
+      correctMove: 'Nh4',
+      prompt: 'Your move.',
+      hint: 'Nh4.',
+      correctFeedback: 'Nh4.',
+      wrongFeedback: 'Nh4.',
+    },
+    { type: 'instruction', fen: FEN.dev5e6_after_Bg6, text: 'Bg6.', autoAdvance: 800, highlightSquares: ['f5', 'g6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5e6_after_Bg6,
+      correctMove: 'Bc4',
+      prompt: 'Your move.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5e6_after_Bc4,
+      text: "When Black plays e6, you adapt: N1f3, then Nh4 to harass the bishop, then Bc4 for the pile-on. The sacrifice didn't fire — but your setup did.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wam-dev-5-h6: DEVIATION — Black plays 5…h6 (8%, 33 games)
+// Teaches 3 white moves: Nxf7, Nf3, Ne5+
+// The crazy one — Black kicks the knight, you sac on f7 anyway.
+// Witty plays Nxf7 in 100% of these 33 games — transposes to the Alien Gambit!
+// ═══════════════════════════════════════════════════════════
+
+const WAM_DEV_5_H6: OpeningLesson = {
+  id: 'wam-dev-5-h6',
+  title: 'If 5…h6 (Alien Sac)',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "This one's wild. Black plays h6 here — 8% of games, 33 of them. They think they're kicking your knight. You sac on f7 anyway. Same sacrifice as the Alien Gambit, just from a Bf5 starting position.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Witty has played this position 33 times. 33 times he played Nxf7. Win rate: 79%. Different opening, same sac.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the position.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.start,
+      correctMove: 'e4',
+      prompt: 'Your move.',
+      hint: 'e4.',
+      correctFeedback: 'e4.',
+      wrongFeedback: 'e4.',
+    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Bf5, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+
+    // ── DEVIATION: 5…h6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_h6,
+      text: "h6 — Black kicks the knight. Most people would retreat. You don't.",
+      autoAdvance: 800,
+      highlightSquares: ['h7', 'h6'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_h6,
+      text: "Look at f7. Only the king defends it. Sound familiar? This is the Alien Gambit position — except Black's bishop is already on f5 instead of waiting on c8.",
+      highlightSquares: ['f7', 'g5', 'e8'],
+    },
+
+    // ── TEACH 1: Nxf7! ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_h6,
+      correctMove: 'Nxf7',
+      prompt: "Sacrifice on f7 — same as the Alien.",
+      hint: 'Knight takes f7.',
+      correctFeedback: "Nxf7!! The same sac, different opening. Black has no choice — Kxf7 is forced. Now you bring out the second knight and start the king hunt.",
+      wrongFeedback: 'Play Nxf7 — sacrifice the knight, drag out the king. Trust the line.',
+      postMoveArrow: ['f7', 'e8'],
+    },
+
+    // ── BLACK Kxf7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_Kxf7,
+      text: "Kxf7 — king forced to the middle of the board. No pawn cover, no defenders. Time to develop with pressure.",
+      autoAdvance: 800,
+      highlightSquares: ['e8', 'f7'],
+    },
+
+    // ── TEACH 2: Nf3 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_Kxf7,
+      correctMove: 'Nf3',
+      prompt: "Develop the other knight.",
+      hint: 'Knight to f3 — same as the Alien Gambit follow-up.',
+      correctFeedback: "Nf3! Witty plays this 100% of the time after the sac — 33 of 33 games. Develops AND blocks any …Qxd4 ideas. Black's most common reply: Nd7 (17 games).",
+      wrongFeedback: 'Play Nf3 — develop the knight, block Qd4 threats.',
+    },
+
+    // ── BLACK Nd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_Nd7,
+      text: "Nd7 — Black develops, prepping Nf6 next. The most common response (17 of 33 games).",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 3: Ne5+ ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_Nd7,
+      correctMove: 'Ne5+',
+      prompt: "Knight to e5 with check.",
+      hint: 'Knight jumps from f3 to e5 — check from the knight.',
+      correctFeedback: "Ne5+! Discovered check from the knight AND attacks the bishop on f5. Witty plays this in 14 of 33 games — the most common attacking continuation. Black has to move the king.",
+      wrongFeedback: 'Play Ne5+ — knight check that also attacks the bishop on f5.',
+      postMoveArrow: ['e5', 'f7'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_Ne5,
+      text: "Knight on e5 giving check, bishop on f5 hanging, king on f7 stranded. Black has to react — and any king move loses tempo. Material: down a knight, but the attack continues.",
+      highlightSquares: ['e5', 'f5', 'f7'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Black plays h6. You sac anyway. Run it.",
+    },
+    { type: 'instruction', fen: FEN.dev5h6_after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_h6,
+      correctMove: 'Nxf7',
+      prompt: 'Your move.',
+      hint: 'Nxf7.',
+      correctFeedback: 'Nxf7.',
+      wrongFeedback: 'Nxf7.',
+    },
+    { type: 'instruction', fen: FEN.dev5h6_after_Kxf7, text: 'Kxf7.', autoAdvance: 800, highlightSquares: ['e8', 'f7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_Kxf7,
+      correctMove: 'Nf3',
+      prompt: 'Your move.',
+      hint: 'Nf3.',
+      correctFeedback: 'Nf3.',
+      wrongFeedback: 'Nf3.',
+    },
+    { type: 'instruction', fen: FEN.dev5h6_after_Nd7, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5h6_after_Nd7,
+      correctMove: 'Ne5+',
+      prompt: 'Your move.',
+      hint: 'Ne5+.',
+      correctFeedback: 'Ne5+.',
+      wrongFeedback: 'Ne5+.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5h6_after_Ne5,
+      text: "Different opening, same sacrifice. When Black plays h6 here, the Alien fires. 79% win rate over 33 games.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wam-dev-5-Nf6: DEVIATION — Black plays 5…Nf6 (6%, 24 games)
+// Teaches 3 white moves: N1f3, Bc4, Ne5
+// Witty plays N1f3 in 100% of games, Bc4 in 12 of 24 (50%, most common).
+// ═══════════════════════════════════════════════════════════
+
+const WAM_DEV_5_NF6: OpeningLesson = {
+  id: 'wam-dev-5-Nf6',
+  title: 'If 5…Nf6',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Black plays Nf6 here — 6% of games, 24 games total. Witty's win rate: 88% (21 wins, 3 losses). Black develops to defend f7 and h7.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay to the position.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.start,
+      correctMove: 'e4',
+      prompt: 'Your move.',
+      hint: 'e4.',
+      correctFeedback: 'e4.',
+      wrongFeedback: 'e4.',
+    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Bf5, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+
+    // ── DEVIATION: 5…Nf6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5Nf6_after_Nf6,
+      text: "Nf6 — Black develops a defender, eyes the e4 knight (already moved) and indirectly defends h7.",
+      autoAdvance: 800,
+      highlightSquares: ['g8', 'f6'],
+    },
+
+    // ── TEACH 1: N1f3 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_Nf6,
+      correctMove: 'N1f3',
+      prompt: "Develop the other knight.",
+      hint: 'Knight from g1 to f3.',
+      correctFeedback: "N1f3 — 100% of 24 games. You develop normally and wait for Black to commit. Most common Black response: Nbd7 (7 games) or h6 (9 games) — and if h6, you sac with Nxf7!",
+      wrongFeedback: 'Play N1f3 — develop the knight, wait for Black to commit.',
+    },
+
+    // ── BLACK Nbd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5Nf6_after_Nbd7,
+      text: "Nbd7 — Black brings the other knight out, defending and preparing to control e5. (If Black had played h6 instead, you'd sac on f7 — same Alien pattern.)",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 2: Bc4 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_Nbd7,
+      correctMove: 'Bc4',
+      prompt: "Develop the bishop toward f7.",
+      hint: 'Bishop to c4.',
+      correctFeedback: "Bc4 — Witty plays this in 12 of 24 games (50%, most common). Bishop aims at f7 — same theme as the main line. Black usually plays e6 to block the diagonal.",
+      wrongFeedback: 'Play Bc4 — point the bishop at f7.',
+      postMoveArrow: ['c4', 'f7'],
+    },
+
+    // ── BLACK e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5Nf6_after_e6,
+      text: "e6 — Black blocks the bishop's diagonal. Now you finish your setup.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+
+    // ── TEACH 3: Ne5 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_e6,
+      correctMove: 'Ne5',
+      prompt: "Jump the f3 knight to e5 — central outpost.",
+      hint: 'Knight from f3 to e5.',
+      correctFeedback: "Ne5 — both knights eyeing f7 again. Attacks Black's bishop on f5 indirectly (defends e5 outpost). Witty plays this in 9 of 24 games — most aggressive continuation.",
+      wrongFeedback: 'Play Ne5 — central knight outpost, both knights pointed at f7.',
+      postMoveArrow: ['e5', 'f7'],
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev5Nf6_after_Ne5,
+      text: "Two knights on g5 and e5, bishop on c4 — every piece pointed at the f7 square. 88% win rate from this position. Black is in trouble.",
+      highlightSquares: ['e5', 'g5', 'c4', 'f7'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ng5,
+      text: "Black plays Nf6. Run the sequence.",
+    },
+    { type: 'instruction', fen: FEN.dev5Nf6_after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_Nf6,
+      correctMove: 'N1f3',
+      prompt: 'Your move.',
+      hint: 'N1f3.',
+      correctFeedback: 'N1f3.',
+      wrongFeedback: 'N1f3.',
+    },
+    { type: 'instruction', fen: FEN.dev5Nf6_after_Nbd7, text: 'Nbd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_Nbd7,
+      correctMove: 'Bc4',
+      prompt: 'Your move.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
+    },
+    { type: 'instruction', fen: FEN.dev5Nf6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev5Nf6_after_e6,
+      correctMove: 'Ne5',
+      prompt: 'Your move.',
+      hint: 'Ne5.',
+      correctFeedback: 'Ne5.',
+      wrongFeedback: 'Ne5.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev5Nf6_after_Ne5,
+      text: "When Black plays Nf6: develop, drop the bishop, double down on f7. 88% win rate over 24 games.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wam-dev-6-e6: DEVIATION — Black plays 6…e6 (9%, 22 games)
+// Teaches 3 white moves: Ne5, Nxg6, Bc4
+// Witty plays Ne5 in 10 of 22 games (45%). 82% win rate (18W/4L).
+// ═══════════════════════════════════════════════════════════
+
+const WAM_DEV_6_E6: OpeningLesson = {
+  id: 'wam-dev-6-e6',
+  title: 'If 6…e6',
   defaultOrientation: 'white',
   steps: [
     // ── INTRO ──
     {
       type: 'instruction',
       fen: FEN.after_N1f3,
-      text: "Sometimes Black skips h6 and plays e6 first — trying to control e5 and stop your second knight from jumping in. You get to e5 anyway, and now BOTH knights are eyeing f7.",
+      text: "After 5…Bg6 6.N1f3, Black plays e6 instead of h6 — 9% of games, 22 games. They're skipping the kick and developing. Witty plays Ne5 attacking the bishop on g6 — 18 wins, 4 losses (82%).",
     },
 
     // ── RECAP ──
@@ -1290,157 +1831,304 @@ const WAM_DEV_NO_H6: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_Bg6, text: 'Bg6.', autoAdvance: 800, highlightSquares: ['f5', 'g6'] },
     { type: 'play-move', fen: FEN.after_Bg6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
 
-    // ── DEVIATION: Black plays e6 instead of h6 ──
+    // ── DEVIATION: 6…e6 ──
     {
       type: 'instruction',
-      fen: FEN.noh6_after_e6,
-      text: "e6 — Black plays this instead of h6. They're prepping Bd6 to fight for e5 and stop your knight from jumping in.",
+      fen: FEN.dev6e6_after_e6,
+      text: "e6 — Black plays this instead of h6. No kick, but no fight for e5 either.",
       autoAdvance: 800,
       highlightSquares: ['e7', 'e6'],
     },
-    {
-      type: 'instruction',
-      fen: FEN.noh6_after_e6,
-      text: "Don't let them set up. Jump to e5 anyway — your f3 knight goes RIGHT NOW, and both knights end up forking f7.",
-      highlightSquares: ['f3', 'e5', 'g5'],
-    },
 
-    // ── TEACH 1: Ne5! ──
+    // ── TEACH 1: Ne5 ──
     {
       type: 'play-move',
-      fen: FEN.noh6_after_e6,
+      fen: FEN.dev6e6_after_e6,
       correctMove: 'Ne5',
-      prompt: "Knight to e5 — beat them to it.",
+      prompt: "Jump the knight to e5 — attack the bishop on g6.",
       hint: 'Knight from f3 to e5.',
-      correctFeedback: "Ne5! Both your knights now point at f7 — the g5 knight and the e5 knight. Black has a real problem defending.",
-      wrongFeedback: 'Play Ne5 — get to e5 before Black can stop you.',
-      postMoveArrow: [['e5', 'f7'], ['g5', 'f7']],
+      correctFeedback: "Ne5! Both knights eyeing g6 now. Witty plays this in 10 of 22 games (45%). Win rate from here: 100% in this branch (10 wins, 0 losses).",
+      wrongFeedback: 'Play Ne5 — attack the bishop on g6 with the central knight.',
+      postMoveArrow: ['e5', 'g6'],
     },
 
-    // ── BLACK Nf6 ──
+    // ── BLACK Nd7 ──
     {
       type: 'instruction',
-      fen: FEN.noh6_after_Nf6,
-      text: "Nf6 — Black develops, defending h7 and preparing to contest the kingside. Sensible move. The sacrifice can't fire here — Black's bishop on g6 has support now.",
+      fen: FEN.dev6e6_after_Nd7,
+      text: "Nd7 — Black develops, hoping to challenge your e5 knight. Doesn't help — your knight on g5 still wants to capture on g6.",
       autoAdvance: 800,
-      highlightSquares: ['g8', 'f6'],
+      highlightSquares: ['b8', 'd7'],
     },
 
-    // ── TEACH 2: Bd3 ──
-    {
-      type: 'instruction',
-      fen: FEN.noh6_after_Nf6,
-      text: "Switch gears. Challenge Black's bishop on g6 — Bd3 attacks it down the b1-h7 diagonal.",
-      highlightSquares: ['f1', 'd3', 'g6'],
-    },
+    // ── TEACH 2: Nxg6 ──
     {
       type: 'play-move',
-      fen: FEN.noh6_after_Nf6,
-      correctMove: 'Bd3',
-      prompt: "Challenge the bishop on g6.",
-      hint: 'Bishop to d3.',
-      correctFeedback: "Bd3 — your bishop and Black's bishop face off. Black has to trade or retreat.",
-      wrongFeedback: 'Play Bd3 — challenge the bishop on g6.',
-      postMoveArrow: ['d3', 'g6'],
+      fen: FEN.dev6e6_after_Nd7,
+      correctMove: 'Nxg6',
+      prompt: "Take the bishop on g6.",
+      hint: 'Knight from g5 captures g6 (the g5 knight, the OTHER one — N5xg6 if needed).',
+      correctFeedback: "Nxg6! Bishop captured. Black has to recapture with the h-pawn — and that opens the h-file for your rook.",
+      wrongFeedback: 'Play Nxg6 — take the bishop. Black recaptures with the h-pawn.',
+      postMoveArrow: ['g6', 'h7'],
     },
 
-    // ── BLACK Bxd3 ──
+    // ── BLACK hxg6 ──
     {
       type: 'instruction',
-      fen: FEN.noh6_after_Bxd3,
-      text: "Bxd3 — Black trades bishops. Now you recapture and your queen gets a great square.",
+      fen: FEN.dev6e6_after_hxg6,
+      text: "hxg6 — Black recaptures with the h-pawn (forced — the f-pawn can't reach g6). The h-file is now wide open for your rook on h1.",
       autoAdvance: 800,
-      highlightSquares: ['g6', 'd3'],
+      highlightSquares: ['h7', 'g6', 'h1', 'h8'],
     },
 
-    // ── TEACH 3: Qxd3 ──
+    // ── TEACH 3: Bc4 ──
     {
       type: 'play-move',
-      fen: FEN.noh6_after_Bxd3,
-      correctMove: 'Qxd3',
-      prompt: "Recapture with the queen.",
-      hint: 'Queen takes d3.',
-      correctFeedback: "Qxd3 — queen recaptures, eyeing the b1-h7 diagonal and h7 in particular. Position is roughly equal but very playable.",
-      wrongFeedback: 'Play Qxd3 — take with the queen.',
-      postMoveArrow: ['d3', 'h7'],
+      fen: FEN.dev6e6_after_hxg6,
+      correctMove: 'Bc4',
+      prompt: "Develop the bishop toward f7.",
+      hint: 'Bishop to c4.',
+      correctFeedback: "Bc4 — finish development. Open h-file ready for the rook, bishop on c4 aiming at f7. Black's kingside is wrecked, you're up the bishop pair.",
+      wrongFeedback: 'Play Bc4 — finish your setup, aim at f7.',
+      postMoveArrow: ['c4', 'f7'],
     },
     {
       type: 'instruction',
-      fen: FEN.noh6_after_Qxd3,
-      text: "Two knights eyeing f7, queen pointing at h7, clean development. The Martian sacrifice didn't fire — but you have a normal, playable attacking position.",
-      highlightSquares: ['e5', 'g5', 'd3'],
+      fen: FEN.dev6e6_after_Bc4,
+      text: "Open h-file, bishop on c4, knight on g5. Black's pawn structure is shattered. Attack is rolling.",
+      highlightSquares: ['c4', 'g5'],
     },
 
     // ── RECALL ──
     {
       type: 'instruction',
       fen: FEN.after_N1f3,
-      text: "Black plays e6. Run the sequence.",
+      text: "Black plays e6. Hit g6 and open the h-file.",
     },
-    { type: 'instruction', fen: FEN.noh6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'instruction', fen: FEN.dev6e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     {
       type: 'play-move',
-      fen: FEN.noh6_after_e6,
+      fen: FEN.dev6e6_after_e6,
       correctMove: 'Ne5',
       prompt: 'Your move.',
       hint: 'Ne5.',
       correctFeedback: 'Ne5.',
       wrongFeedback: 'Ne5.',
     },
-    { type: 'instruction', fen: FEN.noh6_after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'instruction', fen: FEN.dev6e6_after_Nd7, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
     {
       type: 'play-move',
-      fen: FEN.noh6_after_Nf6,
-      correctMove: 'Bd3',
+      fen: FEN.dev6e6_after_Nd7,
+      correctMove: 'Nxg6',
       prompt: 'Your move.',
-      hint: 'Bd3.',
-      correctFeedback: 'Bd3.',
-      wrongFeedback: 'Bd3.',
+      hint: 'Nxg6.',
+      correctFeedback: 'Nxg6.',
+      wrongFeedback: 'Nxg6.',
     },
-    { type: 'instruction', fen: FEN.noh6_after_Bxd3, text: 'Bxd3.', autoAdvance: 800, highlightSquares: ['g6', 'd3'] },
+    { type: 'instruction', fen: FEN.dev6e6_after_hxg6, text: 'hxg6.', autoAdvance: 800, highlightSquares: ['h7', 'g6'] },
     {
       type: 'play-move',
-      fen: FEN.noh6_after_Bxd3,
-      correctMove: 'Qxd3',
+      fen: FEN.dev6e6_after_hxg6,
+      correctMove: 'Bc4',
       prompt: 'Your move.',
-      hint: 'Qxd3.',
-      correctFeedback: 'Qxd3.',
-      wrongFeedback: 'Qxd3.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
     },
 
     // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.noh6_after_Qxd3,
-      text: "When Black skips h6, you skip the Ne6 sac. Trade bishops, queen on d3, normal position. The trick weapon is back in the holster.",
+      fen: FEN.dev6e6_after_Bc4,
+      text: "Ne5, Nxg6, Bc4. Trade off the bishop, blast open the h-file, finish development. 82% win rate over 22 games.",
     },
   ],
 }
 
 
 // ═══════════════════════════════════════════════════════════
-// wam-dev-decline: DEVIATION — 7…Qa5+ (Black declines with check)
-// Teaches 3 white moves: Bd2, Qxd2, Bd3
-// Queens get traded; Black wins the knight on e6 but you finish developing.
+// wam-dev-6-Nd7: DEVIATION — Black plays 6…Nd7 (7%, 18 games)
+// Teaches 3 white moves: Bc4, Qe2, O-O
+// Witty plays Bc4 in 14 of 18 games (78%). Cleanest follow-up: Qe2, O-O.
 // ═══════════════════════════════════════════════════════════
 
-const WAM_DEV_DECLINE: OpeningLesson = {
-  id: 'wam-dev-decline',
-  title: 'If Qa5+ (decline)',
+const WAM_DEV_6_ND7: OpeningLesson = {
+  id: 'wam-dev-6-Nd7',
+  title: 'If 6…Nd7',
   defaultOrientation: 'white',
   steps: [
     // ── INTRO ──
     {
       type: 'instruction',
-      fen: FEN.after_Ne6,
-      text: "Honest moment: if Black sees the trap, they play Qa5+ instead of fxe6. The queen moves AND gives check — your sacrifice is declined. You've got to know how to handle it.",
+      fen: FEN.after_N1f3,
+      text: "After 5…Bg6 6.N1f3, Black plays Nd7 instead of h6 — 7% of games, 18 of them. Witty plays Bc4 in 14 of those 18. You set up like the main line and look for the Ne6 sac next.",
     },
 
     // ── RECAP ──
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Quick replay to the sacrifice.",
+      text: "Quick replay to the position.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.start,
+      correctMove: 'e4',
+      prompt: 'Your move.',
+      hint: 'e4.',
+      correctFeedback: 'e4.',
+      wrongFeedback: 'e4.',
+    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Bf5, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_Bg6, text: 'Bg6.', autoAdvance: 800, highlightSquares: ['f5', 'g6'] },
+    { type: 'play-move', fen: FEN.after_Bg6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
+
+    // ── DEVIATION: 6…Nd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev6Nd7_after_Nd7,
+      text: "Nd7 — Black develops, defending f7 and preparing Ngf6 next. No kick on the g5 knight.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 1: Bc4 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_Nd7,
+      correctMove: 'Bc4',
+      prompt: "Develop the bishop — aim at f7.",
+      hint: 'Bishop to c4.',
+      correctFeedback: "Bc4 — Witty's choice in 14 of 18 games (78%). Bishop on c4 aims at f7, sets up the same attacking pattern as the main line. Black usually plays e6 to defend.",
+      wrongFeedback: 'Play Bc4 — same theme as the main line, aim at f7.',
+      postMoveArrow: ['c4', 'f7'],
+    },
+
+    // ── BLACK e6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev6Nd7_after_e6,
+      text: "e6 — Black's most common reply (9 of 14 games), blocking the bishop's diagonal. Now you finish development.",
+      autoAdvance: 800,
+      highlightSquares: ['e7', 'e6'],
+    },
+
+    // ── TEACH 2: Qe2 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_e6,
+      correctMove: 'Qe2',
+      prompt: "Queen to e2 — support the center, prep castling.",
+      hint: 'Queen from d1 to e2.',
+      correctFeedback: "Qe2 — Witty plays this in 7 of 14 games (50%). Queen supports e6 ideas, gets out of the way for castling. Quiet, strong development.",
+      wrongFeedback: 'Play Qe2 — queen development, clear the way for castling.',
+    },
+
+    // ── BLACK Ngf6 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev6Nd7_after_Qe2,
+      text: "Ngf6 — Black brings the other knight out, defending h7 and contesting the center.",
+      autoAdvance: 800,
+      highlightSquares: ['g8', 'f6'],
+    },
+
+    // ── TEACH 3: O-O ──
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_Qe2,
+      correctMove: 'O-O',
+      prompt: "Castle kingside — finish development.",
+      hint: 'Castle short.',
+      correctFeedback: "O-O — king safe, rook on f1. Setup is clean: bishop on c4, queen on e2, knights ready. Look for Ne6 sac next when Black plays the wrong move.",
+      wrongFeedback: 'Play O-O — castle and activate the rook.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev6Nd7_after_OO,
+      text: "Fully developed, castled, two knights eyeing f7. Black is solid but cramped. The position is comfortable for White.",
+      highlightSquares: ['c4', 'e2', 'g5', 'f3'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_N1f3,
+      text: "Black plays Nd7. Run the setup.",
+    },
+    { type: 'instruction', fen: FEN.dev6Nd7_after_Nd7, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_Nd7,
+      correctMove: 'Bc4',
+      prompt: 'Your move.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
+    },
+    { type: 'instruction', fen: FEN.dev6Nd7_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_e6,
+      correctMove: 'Qe2',
+      prompt: 'Your move.',
+      hint: 'Qe2.',
+      correctFeedback: 'Qe2.',
+      wrongFeedback: 'Qe2.',
+    },
+    { type: 'instruction', fen: FEN.dev6Nd7_after_Qe2, text: 'Ngf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev6Nd7_after_Qe2,
+      correctMove: 'O-O',
+      prompt: 'Your move.',
+      hint: 'O-O.',
+      correctFeedback: 'O-O.',
+      wrongFeedback: 'O-O.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev6Nd7_after_OO,
+      text: "Bc4, Qe2, O-O. No sacrifice fired, but you have a clean developing setup — and the Ne6 sac is still in the holster if Black slips.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wam-dev-8-Bf5: DEVIATION — Black plays 8…Bf5 (40%, 71 games — huge!)
+// Teaches 3 white moves: Bc4, Bxe6, Bxf5
+// Witty plays Bc4 in 39 of 69 (57%), then 100% Bxe6 after Nd7, then Bxf5.
+// 81% win rate over 69 games.
+// ═══════════════════════════════════════════════════════════
+
+const WAM_DEV_8_BF5: OpeningLesson = {
+  id: 'wam-dev-8-Bf5',
+  title: 'If 8…Bf5',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ne5,
+      text: "After 8.Ne5, Black plays Bf5 instead of the coffin Bf7 — 40% of the time, 71 games. Almost as common as Bf7. Witty plays Bc4 in 57% of these games. The plan: grab the e6 pawn, then the f5 bishop.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay through the first sacrifice.",
     },
     {
       type: 'play-move',
@@ -1463,122 +2151,287 @@ const WAM_DEV_DECLINE: OpeningLesson = {
     { type: 'play-move', fen: FEN.after_Bg6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
     { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
     { type: 'play-move', fen: FEN.after_h6, correctMove: 'Ne6', prompt: 'Your move.', hint: 'Ne6.', correctFeedback: 'Ne6.', wrongFeedback: 'Ne6.' },
+    { type: 'instruction', fen: FEN.after_fxe6, text: 'fxe6.', autoAdvance: 800, highlightSquares: ['f7', 'e6'] },
+    { type: 'play-move', fen: FEN.after_fxe6, correctMove: 'Ne5', prompt: 'Your move.', hint: 'Ne5.', correctFeedback: 'Ne5.', wrongFeedback: 'Ne5.' },
 
-    // ── DEVIATION: 7…Qa5+ ──
+    // ── DEVIATION: 8…Bf5 ──
     {
       type: 'instruction',
-      fen: FEN.dec_after_Qa5,
-      text: "Qa5+ — Black's best response. The queen escapes the knight's attack AND gives check at the same time. The sacrifice didn't land.",
+      fen: FEN.dev8Bf5_after_Bf5,
+      text: "Bf5 — instead of the coffin retreat to f7, Black drops the bishop on f5. Active square, eyes c2. But f7 is open AND e6 is undefended.",
       autoAdvance: 800,
-      highlightSquares: ['d8', 'a5'],
-    },
-    {
-      type: 'instruction',
-      fen: FEN.dec_after_Qa5,
-      text: "You have to block. Bd2 is the only good square — blocks the check and develops.",
-      highlightSquares: ['a5', 'e1'],
+      highlightSquares: ['g6', 'f5'],
     },
 
-    // ── TEACH 1: Bd2 ──
+    // ── TEACH 1: Bc4 ──
     {
       type: 'play-move',
-      fen: FEN.dec_after_Qa5,
-      correctMove: 'Bd2',
-      prompt: "Block the check with a developing piece.",
-      hint: 'Bishop to d2 — blocks AND develops.',
-      correctFeedback: "Bd2 — blocks the check. But watch: your bishop on d2 is ALSO attacking Black's queen on a5 (a5-e1 diagonal). Black has to decide.",
-      wrongFeedback: 'Play Bd2 — block with the bishop, two jobs at once.',
-      postMoveArrow: ['d2', 'a5'],
+      fen: FEN.dev8Bf5_after_Bf5,
+      correctMove: 'Bc4',
+      prompt: "Bishop to c4 — attack e6.",
+      hint: 'Bishop to c4 — it attacks the e6 pawn.',
+      correctFeedback: "Bc4! Witty plays this in 39 of 69 games (57%). Hits e6 — and the f7 pawn is GONE so e6 only has the d-pawn defending it. Black usually plays Nd7 to defend.",
+      wrongFeedback: 'Play Bc4 — bishop attacks e6, which has no f7 pawn to defend it anymore.',
+      postMoveArrow: ['c4', 'e6'],
     },
 
-    // ── BLACK Qxd2+ ──
+    // ── BLACK Nd7 ──
     {
       type: 'instruction',
-      fen: FEN.dec_after_Qxd2,
-      text: "Qxd2+ — Black trades queens. Smart — they don't want your queen to escape and they're already winning material. You're forced to recapture.",
+      fen: FEN.dev8Bf5_after_Bc4,
+      text: "Nd7 — most common (13 of 39 games). Black develops AND attacks your knight on e5. Looks scary. It isn't.",
       autoAdvance: 800,
-      highlightSquares: ['a5', 'd2'],
+      highlightSquares: ['b8', 'd7'],
     },
 
-    // ── TEACH 2: Qxd2 ──
+    // ── TEACH 2: Bxe6 ──
     {
       type: 'play-move',
-      fen: FEN.dec_after_Qxd2,
-      correctMove: 'Qxd2',
-      prompt: "Recapture the queen.",
-      hint: 'Queen takes d2.',
-      correctFeedback: "Qxd2 — queens off. Now Black can finally grab your knight on e6.",
-      wrongFeedback: 'Play Qxd2 — recapture with the queen.',
+      fen: FEN.dev8Bf5_after_Nd7,
+      correctMove: 'Bxe6',
+      prompt: "Take the e6 pawn.",
+      hint: 'Bishop captures e6.',
+      correctFeedback: "Bxe6! Witty plays this in 100% of 13 games after Nd7. You grab the pawn and the e-file opens. Black has to react — usually with Nxe5 trading the knight.",
+      wrongFeedback: 'Play Bxe6 — grab the pawn, open the e-file.',
+      postMoveArrow: ['e6', 'e8'],
     },
 
-    // ── BLACK fxe6 ──
+    // ── BLACK Nxe5 ──
     {
       type: 'instruction',
-      fen: FEN.dec_after_fxe6,
-      text: "fxe6 — Black takes the knight. You're down a piece for a pawn in an endgame. Time to finish development and make it as hard as possible.",
+      fen: FEN.dev8Bf5_after_Bxe6,
+      text: "Nxe5 — Black trades off your strong knight. They had to — your bishop and queen were lining up on the king.",
       autoAdvance: 800,
-      highlightSquares: ['f7', 'e6'],
+      highlightSquares: ['d7', 'e5'],
     },
 
-    // ── TEACH 3: Bd3 ──
+    // ── TEACH 3: Bxf5 ──
     {
       type: 'play-move',
-      fen: FEN.dec_after_fxe6,
-      correctMove: 'Bd3',
-      prompt: "Develop the last bishop — toward h7.",
-      hint: 'Bishop to d3.',
-      correctFeedback: "Bd3 — challenges Black's bishop on g6, finishes development. You're worse but the position is playable. Time to fight on.",
-      wrongFeedback: 'Play Bd3 — develop the bishop and challenge g6.',
-      postMoveArrow: ['d3', 'g6'],
+      fen: FEN.dev8Bf5_after_Nxe5,
+      correctMove: 'Bxf5',
+      prompt: "Take the bishop on f5.",
+      hint: 'Bishop from e6 takes f5.',
+      correctFeedback: "Bxf5! Witty plays this in 10 of 13 games (77%). You've now captured a pawn AND a bishop. Black is down material with a stranded king. 81% win rate from this position.",
+      wrongFeedback: 'Play Bxf5 — take the second bishop, pile up the material.',
     },
     {
       type: 'instruction',
-      fen: FEN.dec_after_Bd3,
-      text: "Honest assessment: when Black finds Qa5+, the gambit goes from 'attacking masterpiece' to 'down a piece, fight for the draw.' Trick weapons don't always work — that's the deal.",
+      fen: FEN.dev8Bf5_after_Bxf5,
+      text: "Two bishops captured, knight grabbed back. Material is even-ish but Black's king is exposed and you have a winning attack setup. 81% win rate over 69 games.",
+      highlightSquares: ['f5', 'e8'],
     },
 
     // ── RECALL ──
     {
       type: 'instruction',
-      fen: FEN.after_Ne6,
-      text: "Black declines with Qa5+. Block, trade queens, develop.",
+      fen: FEN.after_Ne5,
+      text: "Black plays Bf5 instead of the coffin. Bc4, Bxe6, Bxf5.",
     },
-    { type: 'instruction', fen: FEN.dec_after_Qa5, text: 'Qa5+.', autoAdvance: 800, highlightSquares: ['d8', 'a5'] },
+    { type: 'instruction', fen: FEN.dev8Bf5_after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['g6', 'f5'] },
     {
       type: 'play-move',
-      fen: FEN.dec_after_Qa5,
-      correctMove: 'Bd2',
+      fen: FEN.dev8Bf5_after_Bf5,
+      correctMove: 'Bc4',
       prompt: 'Your move.',
-      hint: 'Bd2.',
-      correctFeedback: 'Bd2.',
-      wrongFeedback: 'Bd2.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
     },
-    { type: 'instruction', fen: FEN.dec_after_Qxd2, text: 'Qxd2+.', autoAdvance: 800, highlightSquares: ['a5', 'd2'] },
+    { type: 'instruction', fen: FEN.dev8Bf5_after_Bc4, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
     {
       type: 'play-move',
-      fen: FEN.dec_after_Qxd2,
-      correctMove: 'Qxd2',
+      fen: FEN.dev8Bf5_after_Nd7,
+      correctMove: 'Bxe6',
       prompt: 'Your move.',
-      hint: 'Qxd2.',
-      correctFeedback: 'Qxd2.',
-      wrongFeedback: 'Qxd2.',
+      hint: 'Bxe6.',
+      correctFeedback: 'Bxe6.',
+      wrongFeedback: 'Bxe6.',
     },
-    { type: 'instruction', fen: FEN.dec_after_fxe6, text: 'fxe6.', autoAdvance: 800, highlightSquares: ['f7', 'e6'] },
+    { type: 'instruction', fen: FEN.dev8Bf5_after_Bxe6, text: 'Nxe5.', autoAdvance: 800, highlightSquares: ['d7', 'e5'] },
     {
       type: 'play-move',
-      fen: FEN.dec_after_fxe6,
-      correctMove: 'Bd3',
+      fen: FEN.dev8Bf5_after_Nxe5,
+      correctMove: 'Bxf5',
       prompt: 'Your move.',
-      hint: 'Bd3.',
-      correctFeedback: 'Bd3.',
-      wrongFeedback: 'Bd3.',
+      hint: 'Bxf5.',
+      correctFeedback: 'Bxf5.',
+      wrongFeedback: 'Bxf5.',
     },
 
     // ── OUTRO ──
     {
       type: 'instruction',
-      fen: FEN.dec_after_Bd3,
-      text: "Bd2, Qxd2, Bd3 — the decline sequence. Most opponents under 2000 won't find Qa5+. When they do, you fight on a piece down.",
+      fen: FEN.dev8Bf5_after_Bxf5,
+      text: "Bc4, Bxe6, Bxf5 — eat the bishop pair. The 40% deviation, handled. 81% win rate over 69 games.",
+    },
+  ],
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// wam-dev-8-Be4: DEVIATION — Black plays 8…Be4 (12%, 21 games, 100% Witty wins!)
+// Teaches 3 white moves: Bc4, Qe2, dxe5
+// Witty plays Bc4 in 17 of 21 (81%), then Qe2 in 12 of 17 (most common after Nd7).
+// 21 games, 21 wins. 100% win rate.
+// ═══════════════════════════════════════════════════════════
+
+const WAM_DEV_8_BE4: OpeningLesson = {
+  id: 'wam-dev-8-Be4',
+  title: 'If 8…Be4 (100% wins)',
+  defaultOrientation: 'white',
+  steps: [
+    // ── INTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ne5,
+      text: "Witty has played this position 21 times. He has won 21 times. 100% win rate. Black's bishop on e4 is a dead piece — it walks into the trap on its own.",
+    },
+    {
+      type: 'instruction',
+      fen: FEN.after_Ne5,
+      text: "Black plays Be4 — trying to be active, going for c2 threats. It's wrong. You don't even need the sacrifice anymore — just clean development wins.",
+    },
+
+    // ── RECAP ──
+    {
+      type: 'instruction',
+      fen: FEN.start,
+      text: "Quick replay through the first sacrifice.",
+    },
+    {
+      type: 'play-move',
+      fen: FEN.start,
+      correctMove: 'e4',
+      prompt: 'Your move.',
+      hint: 'e4.',
+      correctFeedback: 'e4.',
+      wrongFeedback: 'e4.',
+    },
+    { type: 'instruction', fen: FEN.after_c6, text: 'c6.', autoAdvance: 800, highlightSquares: ['c7', 'c6'] },
+    { type: 'play-move', fen: FEN.after_c6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
+    { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
+    { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
+    { type: 'instruction', fen: FEN.after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['c8', 'f5'] },
+    { type: 'play-move', fen: FEN.after_Bf5, correctMove: 'Ng5', prompt: 'Your move.', hint: 'Ng5.', correctFeedback: 'Ng5.', wrongFeedback: 'Ng5.' },
+    { type: 'instruction', fen: FEN.after_Bg6, text: 'Bg6.', autoAdvance: 800, highlightSquares: ['f5', 'g6'] },
+    { type: 'play-move', fen: FEN.after_Bg6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
+    { type: 'instruction', fen: FEN.after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.after_h6, correctMove: 'Ne6', prompt: 'Your move.', hint: 'Ne6.', correctFeedback: 'Ne6.', wrongFeedback: 'Ne6.' },
+    { type: 'instruction', fen: FEN.after_fxe6, text: 'fxe6.', autoAdvance: 800, highlightSquares: ['f7', 'e6'] },
+    { type: 'play-move', fen: FEN.after_fxe6, correctMove: 'Ne5', prompt: 'Your move.', hint: 'Ne5.', correctFeedback: 'Ne5.', wrongFeedback: 'Ne5.' },
+
+    // ── DEVIATION: 8…Be4 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev8Be4_after_Be4,
+      text: "Be4 — Black drops the bishop on e4 going for c2 threats. The bishop is exposed and the king is still on e8 with no f7 pawn.",
+      autoAdvance: 800,
+      highlightSquares: ['g6', 'e4'],
+    },
+
+    // ── TEACH 1: Bc4 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Be4,
+      correctMove: 'Bc4',
+      prompt: "Bishop to c4 — aim at e6.",
+      hint: 'Bishop to c4.',
+      correctFeedback: "Bc4! 17 of 21 Witty games (81%). Bishop on c4 hits e6 and supports the kingside attack. Black usually plays Nd7 trying to defend (10 of 17 games).",
+      wrongFeedback: 'Play Bc4 — aim at the weak e6 pawn.',
+      postMoveArrow: ['c4', 'e6'],
+    },
+
+    // ── BLACK Nd7 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev8Be4_after_Bc4,
+      text: "Nd7 — Black develops. Now the position is set: your knight on e5 is the strongest piece on the board, both bishops are pointed at the kingside.",
+      autoAdvance: 800,
+      highlightSquares: ['b8', 'd7'],
+    },
+
+    // ── TEACH 2: Qe2 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Nd7,
+      correctMove: 'Qe2',
+      prompt: "Queen to e2 — support the knight, prep castling.",
+      hint: 'Queen to e2.',
+      correctFeedback: "Qe2! Witty plays this in 12 of 17 games (71%). Queen supports the e-file, defends the knight, sets up castling. Quiet but devastating.",
+      wrongFeedback: 'Play Qe2 — queen development, support the knight.',
+    },
+
+    // ── BLACK Nxe5 ──
+    {
+      type: 'instruction',
+      fen: FEN.dev8Be4_after_Qe2,
+      text: "Nxe5 — Black trades knights. They had to — your knight was too strong. But now they've used the d7 knight, and the king is even more exposed.",
+      autoAdvance: 800,
+      highlightSquares: ['d7', 'e5'],
+    },
+
+    // ── TEACH 3: dxe5 ──
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Nxe5,
+      correctMove: 'dxe5',
+      prompt: "Recapture with the d-pawn.",
+      hint: 'd-pawn takes e5.',
+      correctFeedback: "dxe5! Pawn on e5 dominates the board — blockades the e-file, attacks any piece on f6, supports any future Bxe6+. The Black bishop on e4 is now hanging in the air with nothing to do.",
+      wrongFeedback: 'Play dxe5 — recapture with the pawn, take over the center.',
+    },
+    {
+      type: 'instruction',
+      fen: FEN.dev8Be4_after_dxe5,
+      text: "Position locked: pawn on e5, bishops aimed at the king, queen on e2, ready to castle. Black has tried this 21 times. Witty has won 21 times. The bishop on e4 is a dead piece — just go finish the job.",
+      highlightSquares: ['e5', 'c4', 'e4'],
+    },
+
+    // ── RECALL ──
+    {
+      type: 'instruction',
+      fen: FEN.after_Ne5,
+      text: "Black plays Be4 — the 100%-loss line. Bc4, Qe2, dxe5.",
+    },
+    { type: 'instruction', fen: FEN.dev8Be4_after_Be4, text: 'Be4.', autoAdvance: 800, highlightSquares: ['g6', 'e4'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Be4,
+      correctMove: 'Bc4',
+      prompt: 'Your move.',
+      hint: 'Bc4.',
+      correctFeedback: 'Bc4.',
+      wrongFeedback: 'Bc4.',
+    },
+    { type: 'instruction', fen: FEN.dev8Be4_after_Bc4, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Nd7,
+      correctMove: 'Qe2',
+      prompt: 'Your move.',
+      hint: 'Qe2.',
+      correctFeedback: 'Qe2.',
+      wrongFeedback: 'Qe2.',
+    },
+    { type: 'instruction', fen: FEN.dev8Be4_after_Qe2, text: 'Nxe5.', autoAdvance: 800, highlightSquares: ['d7', 'e5'] },
+    {
+      type: 'play-move',
+      fen: FEN.dev8Be4_after_Qe2,
+      correctMove: 'dxe5',
+      prompt: 'Your move.',
+      hint: 'dxe5.',
+      correctFeedback: 'dxe5.',
+      wrongFeedback: 'dxe5.',
+    },
+
+    // ── OUTRO ──
+    {
+      type: 'instruction',
+      fen: FEN.dev8Be4_after_dxe5,
+      text: "21 games. 21 wins. The bishop on e4 walks into a position it cannot survive. Bc4, Qe2, dxe5 — and Black is losing.",
     },
   ],
 }
@@ -1586,7 +2439,7 @@ const WAM_DEV_DECLINE: OpeningLesson = {
 
 // ═══════════════════════════════════════════════════════════
 // wam-test-1: LEVEL 1 TEST
-// Tests main line + both deviations. Zero guidance.
+// Tests main line + every deviation. Zero guidance.
 // ═══════════════════════════════════════════════════════════
 
 const WAM_TEST_1: OpeningLesson = {
@@ -1597,7 +2450,7 @@ const WAM_TEST_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.start,
-      text: "Final test. Play the full Martian Gambit — both knight sacrifices, the king hunt, and every deviation. From memory.",
+      text: "Final test. Play the full Martian Gambit — both knight sacrifices, the king hunt, and all seven real-play deviations: 5…e6, 5…h6, 5…Nf6, 6…e6, 6…Nd7, 8…Bf5, 8…Be4. From memory.",
     },
 
     // ── MAIN LINE ──
@@ -1630,21 +2483,46 @@ const WAM_TEST_1: OpeningLesson = {
     { type: 'play-move', fen: FEN.after_Ke8, correctMove: 'Qg6+', prompt: 'Your move.', hint: 'Qg6+.', correctFeedback: 'Qg6+.', wrongFeedback: 'Qg6+.' },
     { type: 'instruction', fen: FEN.after_Kd8, text: 'Kd8 — winning attack.', autoAdvance: 800, highlightSquares: ['e8', 'd8'] },
 
-    // ── DEV 1: e6 (no h6) ──
-    { type: 'instruction', fen: FEN.after_N1f3, text: "Deviation 1: Black plays e6 instead of h6.", buttonText: 'NEXT' },
-    { type: 'instruction', fen: FEN.noh6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
-    { type: 'play-move', fen: FEN.noh6_after_e6, correctMove: 'Ne5', prompt: 'Your move.', hint: 'Ne5.', correctFeedback: 'Ne5.', wrongFeedback: 'Ne5.' },
+    // ── DEV 1: 5…e6 ──
+    { type: 'instruction', fen: FEN.after_Ng5, text: "Deviation 1: Black plays 5…e6.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev5e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.dev5e6_after_e6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
 
-    // ── DEV 2: Qa5+ (decline) ──
-    { type: 'instruction', fen: FEN.after_Ne6, text: "Deviation 2: Black declines with Qa5+.", buttonText: 'NEXT' },
-    { type: 'instruction', fen: FEN.dec_after_Qa5, text: 'Qa5+.', autoAdvance: 800, highlightSquares: ['d8', 'a5'] },
-    { type: 'play-move', fen: FEN.dec_after_Qa5, correctMove: 'Bd2', prompt: 'Your move.', hint: 'Bd2.', correctFeedback: 'Bd2.', wrongFeedback: 'Bd2.' },
+    // ── DEV 2: 5…h6 ──
+    { type: 'instruction', fen: FEN.after_Ng5, text: "Deviation 2: Black plays 5…h6. Sac on f7 anyway.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev5h6_after_h6, text: 'h6.', autoAdvance: 800, highlightSquares: ['h7', 'h6'] },
+    { type: 'play-move', fen: FEN.dev5h6_after_h6, correctMove: 'Nxf7', prompt: 'Your move.', hint: 'Nxf7.', correctFeedback: 'Nxf7.', wrongFeedback: 'Nxf7.' },
+
+    // ── DEV 3: 5…Nf6 ──
+    { type: 'instruction', fen: FEN.after_Ng5, text: "Deviation 3: Black plays 5…Nf6.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev5Nf6_after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
+    { type: 'play-move', fen: FEN.dev5Nf6_after_Nf6, correctMove: 'N1f3', prompt: 'Your move.', hint: 'N1f3.', correctFeedback: 'N1f3.', wrongFeedback: 'N1f3.' },
+
+    // ── DEV 4: 6…e6 ──
+    { type: 'instruction', fen: FEN.after_N1f3, text: "Deviation 4: Black plays 6…e6.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev6e6_after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
+    { type: 'play-move', fen: FEN.dev6e6_after_e6, correctMove: 'Ne5', prompt: 'Your move.', hint: 'Ne5.', correctFeedback: 'Ne5.', wrongFeedback: 'Ne5.' },
+
+    // ── DEV 5: 6…Nd7 ──
+    { type: 'instruction', fen: FEN.after_N1f3, text: "Deviation 5: Black plays 6…Nd7.", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev6Nd7_after_Nd7, text: 'Nd7.', autoAdvance: 800, highlightSquares: ['b8', 'd7'] },
+    { type: 'play-move', fen: FEN.dev6Nd7_after_Nd7, correctMove: 'Bc4', prompt: 'Your move.', hint: 'Bc4.', correctFeedback: 'Bc4.', wrongFeedback: 'Bc4.' },
+
+    // ── DEV 6: 8…Bf5 ──
+    { type: 'instruction', fen: FEN.after_Ne5, text: "Deviation 6: Black plays 8…Bf5 (40% of games).", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev8Bf5_after_Bf5, text: 'Bf5.', autoAdvance: 800, highlightSquares: ['g6', 'f5'] },
+    { type: 'play-move', fen: FEN.dev8Bf5_after_Bf5, correctMove: 'Bc4', prompt: 'Your move.', hint: 'Bc4.', correctFeedback: 'Bc4.', wrongFeedback: 'Bc4.' },
+
+    // ── DEV 7: 8…Be4 ──
+    { type: 'instruction', fen: FEN.after_Ne5, text: "Deviation 7: Black plays 8…Be4 (100% Witty wins).", buttonText: 'NEXT' },
+    { type: 'instruction', fen: FEN.dev8Be4_after_Be4, text: 'Be4.', autoAdvance: 800, highlightSquares: ['g6', 'e4'] },
+    { type: 'play-move', fen: FEN.dev8Be4_after_Be4, correctMove: 'Bc4', prompt: 'Your move.', hint: 'Bc4.', correctFeedback: 'Bc4.', wrongFeedback: 'Bc4.' },
 
     // ── FINISH ──
     {
       type: 'instruction',
-      fen: FEN.dec_after_Bd2,
-      text: "Test complete. Two knight sacrifices, the bishop coffin, the king hunt, the e6 skip, the Qa5+ decline — the whole Martian, in your pocket.",
+      fen: FEN.dev8Be4_after_Bc4,
+      text: "Test complete. Two knight sacrifices, the king hunt, and every real-play deviation Witty faces — all of it, in your pocket.",
     },
   ],
 }
@@ -1662,8 +2540,13 @@ const WITTY_ALIEN_MARTIAN_LESSONS: Record<string, OpeningLesson> = {
   'wam-5': WAM_5,
   'wam-6': WAM_6,
   'wam-7': WAM_7,
-  'wam-dev-no-h6': WAM_DEV_NO_H6,
-  'wam-dev-decline': WAM_DEV_DECLINE,
+  'wam-dev-5-e6': WAM_DEV_5_E6,
+  'wam-dev-5-h6': WAM_DEV_5_H6,
+  'wam-dev-5-Nf6': WAM_DEV_5_NF6,
+  'wam-dev-6-e6': WAM_DEV_6_E6,
+  'wam-dev-6-Nd7': WAM_DEV_6_ND7,
+  'wam-dev-8-Bf5': WAM_DEV_8_BF5,
+  'wam-dev-8-Be4': WAM_DEV_8_BE4,
   'wam-test-1': WAM_TEST_1,
 }
 

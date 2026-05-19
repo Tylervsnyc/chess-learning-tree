@@ -4,12 +4,12 @@
 // ⚠️  OPENING-RULES.md HARD RULE #0 EXCEPTION (Tyler-approved):
 // Every move here is NOT #1 in the masters database — this is a meme/trick weapon.
 // The Martian Gambit is a long, theatrical attacking line with two knight sacs.
-// We use OneAndOnly's Lichess study annotations as the source of truth.
 // Lean INTO the "trick weapon" framing — this is a streamer's double sacrifice,
 // not master theory.
 //
-// Source: research/alien-gambit-oneandonly.pgn — "Martian gambit" chapter
-//         research/alien-gambit-ishaan.pgn — Trap 7 (Bf5 sideline when no h6)
+// Source: Witty_Alien's chess.com archives, June-November 2024 (1,472 White-side
+// Caro-Kann games). Every deviation's response is what Witty actually plays in his
+// real games — frequencies in the data show below.
 //
 // WHITE OPENING: The user plays as White.
 // Main line: 1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5
@@ -28,22 +28,28 @@
 //
 // LESSON CHUNKING RULE (Tyler-approved):
 // EVERY main-line lesson teaches EXACTLY 3 white moves. 7 main lessons × 3 = 21
-// white moves, plus 1 puzzle move (22.Qf5+) at the end of wam-7 = 22 total. No
-// 2-move or 1-move main lessons. Ever.
+// white moves, plus 1 puzzle move (22.Qf5+) at the end of wam-7 = 22 total.
+// Every deviation lesson ALSO teaches 3 white moves. No exceptions.
 //
-// GRID LAYOUT (10 lessons):
-//   Row 7:   wam-test-1 (col 0)
-//   Row 6:   wam-7 (col 0)
-//   Row 5:   wam-6 (col 0)
-//   Row 4:   wam-5 (col 0)              wam-dev-decline (col -1)
-//   Row 3:   wam-4 (col 0)              wam-dev-no-h6 (col -1)
-//   Row 2:   wam-3 (col 0)
-//   Row 1:   wam-2 (col 0)
+// GRID LAYOUT (15 lessons):
+//   Row 8:   wam-test-1 (col 0)
+//   Row 7:   wam-7 (col 0)
+//   Row 6:   wam-6 (col 0)
+//   Row 5:   wam-5 (col 0)              wam-dev-8-Be4 (col -1)
+//   Row 4:   wam-4 (col 0)              wam-dev-8-Bf5 (col -1)
+//   Row 3:   wam-3 (col 0)              wam-dev-6-Nd7 (col -1)
+//   Row 2:   wam-dev-5-Nf6 (col -2)     wam-dev-6-e6 (col -1)              wam-2 (col 0)
+//   Row 1:   wam-dev-5-h6  (col -2)     wam-dev-5-e6 (col -1)              wam-2 redundant
 //   Row 0:   wam-1 (col 0)
 //
-// Deviations:
-//   wam-dev-no-h6  — after 6.N1f3, Black plays 6…e6 instead of h6 → 7.Ne5! 8.Bd3 9.Qxd3
-//   wam-dev-decline — after 7.Ne6, Black plays 7…Qa5+ to decline → 8.Bd2 9.Qxd2 10.Bd3
+// Deviations (real-play frequencies, June-Nov 2024):
+//   wam-dev-5-e6   — After 4…Bf5 5.Ng5, Black plays 5…e6 (16%, 62 games) → 6.N1f3 (98%)
+//   wam-dev-5-h6   — After 4…Bf5 5.Ng5, Black plays 5…h6 (8%, 33 games) → 6.Nxf7! (100%, transposes to Alien Gambit)
+//   wam-dev-5-Nf6  — After 4…Bf5 5.Ng5, Black plays 5…Nf6 (6%, 24 games) → 6.N1f3 (100%)
+//   wam-dev-6-e6   — After 5…Bg6 6.N1f3, Black plays 6…e6 (9%, 22 games) → 7.Ne5 (45%)
+//   wam-dev-6-Nd7  — After 5…Bg6 6.N1f3, Black plays 6…Nd7 (7%, 18 games) → 7.Bc4 (78%)
+//   wam-dev-8-Bf5  — After 7.Ne6 fxe6 8.Ne5, Black plays 8…Bf5 (40%, 71 games) → 9.Bc4 (58%)
+//   wam-dev-8-Be4  — After 7.Ne6 fxe6 8.Ne5, Black plays 8…Be4 (12%, 21 games, 100% Witty wins!) → 9.Bc4 (81%)
 //
 // All unlockedBy are null (Tyler-approved sandbox — every lesson always available).
 // All lines are purely horizontal or vertical. No diagonals.
@@ -60,11 +66,16 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
   completionOrder: [
     'wam-1',
     'wam-2',
+    'wam-dev-5-e6',
+    'wam-dev-5-h6',
+    'wam-dev-5-Nf6',
     'wam-3',
-    'wam-dev-no-h6',
+    'wam-dev-6-e6',
+    'wam-dev-6-Nd7',
     'wam-4',
+    'wam-dev-8-Bf5',
+    'wam-dev-8-Be4',
     'wam-5',
-    'wam-dev-decline',
     'wam-6',
     'wam-7',
     'wam-test-1',
@@ -156,28 +167,92 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       side: 'white',
     },
 
-    // === DEVIATIONS (col -1) ===
+    // === DEVIATIONS — Black's 5th move alternatives (after 4…Bf5 5.Ng5) ===
     {
-      id: 'wam-dev-no-h6',
-      name: 'If e6 (no h6)',
-      moves: ['7.Ne5! Nf6', '8.Bd3 Bxd3', '9.Qxd3'],
-      description: "Black skips h6 and plays e6 instead — trying to control e5 first. You get there anyway with Ne5, both knights fork f7. Black develops, you challenge the bishop with Bd3, recapture with the queen. Roughly equal — the sac doesn't fire but you have a clean position.",
+      id: 'wam-dev-5-e6',
+      name: 'If 5…e6',
+      moves: ['6.N1f3 Nd7', '7.Nh4 Bg6', '8.Bc4 ...'],
+      description: "Black plays e6 first instead of Bg6 (16% of games, 62 games). You play N1f3 anyway — develops and waits for Black to commit. Then Nh4 attacks Black's bishop, and Bc4 lines up on f7.",
       type: 'deviation',
-      row: 3,
+      row: 1,
       col: -1,
-      lineFrom: 'wam-4',
+      lineFrom: 'wam-2',
       unlockedBy: null,
       side: 'white',
     },
     {
-      id: 'wam-dev-decline',
-      name: 'If Qa5+ (decline)',
-      moves: ['8.Bd2 Qxd2+', '9.Qxd2 fxe6', '10.Bd3'],
-      description: "Black smells the trap and declines with Qa5+ — both saving the queen AND giving check. Block with Bd2, queens get traded, Black grabs the knight on e6, and you finish development with Bd3. You've lost the gambit but you have a playable position.",
+      id: 'wam-dev-5-h6',
+      name: 'If 5…h6 (ALIEN SAC)',
+      moves: ['6.Nxf7! Kxf7', '7.Nf3 Nd7', '8.Ne5+ ...'],
+      description: "Black plays h6 (8% of games, 33 games) thinking it kicks your knight. You sacrifice on f7 anyway — same as the Alien Gambit. 79% win rate over 33 games. Different opening, same sac.",
+      type: 'deviation',
+      row: 1,
+      col: -2,
+      lineFrom: 'wam-2',
+      unlockedBy: null,
+      side: 'white',
+    },
+    {
+      id: 'wam-dev-5-Nf6',
+      name: 'If 5…Nf6',
+      moves: ['6.N1f3 Nbd7', '7.Bc4 e6', '8.Ne5 ...'],
+      description: "Black plays Nf6 (6% of games, 24 games). You develop N1f3, then drop the bishop on c4 aiming at f7, then Ne5 attacks Black's bishop AND covers f7. 88% win rate (21W/3L).",
+      type: 'deviation',
+      row: 2,
+      col: -2,
+      lineFrom: 'wam-2',
+      unlockedBy: null,
+      side: 'white',
+    },
+
+    // === DEVIATIONS — Black's 6th move alternatives (after 5…Bg6 6.N1f3) ===
+    {
+      id: 'wam-dev-6-e6',
+      name: 'If 6…e6',
+      moves: ['7.Ne5 Nd7', '8.Nxg6 hxg6', '9.Bc4 ...'],
+      description: "Black plays e6 instead of h6 (9% of games, 22 games). You jump to e5 attacking the bishop, capture it on g6 (Black must recapture with the h-pawn opening the h-file), then bring the bishop to c4. 82% win rate.",
+      type: 'deviation',
+      row: 2,
+      col: -1,
+      lineFrom: 'wam-3',
+      unlockedBy: null,
+      side: 'white',
+    },
+    {
+      id: 'wam-dev-6-Nd7',
+      name: 'If 6…Nd7',
+      moves: ['7.Bc4 e6', '8.Qe2 Ngf6', '9.O-O ...'],
+      description: "Black plays Nd7 instead of h6 (7% of games, 18 games). You drop the bishop on c4 aiming at f7, queen to e2 supporting Ne6 ideas, then castle into the attack. Witty plays Bc4 in 14 of 18 games.",
+      type: 'deviation',
+      row: 3,
+      col: -1,
+      lineFrom: 'wam-3',
+      unlockedBy: null,
+      side: 'white',
+    },
+
+    // === DEVIATIONS — Black's 8th move alternatives (after 7.Ne6 fxe6 8.Ne5) ===
+    {
+      id: 'wam-dev-8-Bf5',
+      name: 'If 8…Bf5',
+      moves: ['9.Bc4 Nd7', '10.Bxe6 Nxe5', '11.Bxf5 ...'],
+      description: "Black plays Bf5 instead of the coffin Bf7 (40% of games — almost as common as Bf7!). You play Bc4 attacking e6, grab the e6 pawn with the bishop, and after Black's knight trade, take the f5 bishop too. Two pieces ahead. 81% win rate over 69 games.",
       type: 'deviation',
       row: 4,
       col: -1,
-      lineFrom: 'wam-5',
+      lineFrom: 'wam-3',
+      unlockedBy: null,
+      side: 'white',
+    },
+    {
+      id: 'wam-dev-8-Be4',
+      name: 'If 8…Be4 (100% wins)',
+      moves: ['9.Bc4 Nd7', '10.Qe2 Nxe5', '11.dxe5 ...'],
+      description: "Black plays Be4 — a defensive idea (12% of games). Witty has played this 21 times. He's won 21 times. 100% win rate. You play Bc4, then Qe2 supporting Ne5, and when Black trades the knight, you recapture with the pawn keeping the e-file blockade.",
+      type: 'deviation',
+      row: 5,
+      col: -1,
+      lineFrom: 'wam-3',
       unlockedBy: null,
       side: 'white',
     },
@@ -187,7 +262,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       id: 'wam-test-1',
       name: 'Lvl 1 Test',
       moves: [],
-      description: 'Play the full Martian Gambit — both knight sacrifices, the king hunt, and every deviation.',
+      description: 'Play the full Martian Gambit — both knight sacrifices, the king hunt, and all seven real-play deviations (5…e6, 5…h6, 5…Nf6, 6…e6, 6…Nd7, 8…Bf5, 8…Be4).',
       type: 'test',
       row: 7,
       col: 0,
