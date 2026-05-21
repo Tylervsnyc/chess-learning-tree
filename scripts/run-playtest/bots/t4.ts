@@ -58,7 +58,11 @@ function decideT4(state: BoardState, ctx: BotContext): BotDecision {
     };
   }
 
-  const scores = candidates.map((c) => searchDepth(state, c, /* depth */ 2));
+  // Ability candidates get +1 depth so 2-ply T4 can see a freeze/leap
+  // payoff that takes one extra rookie turn to materialize.
+  const scores = candidates.map((c) =>
+    searchDepth(state, c, c.kind === 'move' ? 2 : 3),
+  );
   const idx = softmaxSample(scores, 1.5, ctx.rng); // sharper than T3, mild noise
   const chosen = candidates[idx];
   const action = candidateToAction(chosen);

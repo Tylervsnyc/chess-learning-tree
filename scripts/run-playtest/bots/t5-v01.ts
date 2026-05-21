@@ -11,6 +11,12 @@
  * Performance note: 3-ply is significantly slower than 2-ply. We cap the
  * candidate branching by sorting candidates by 1-ply eval and only deep-
  * searching the top-K. K=6 is a reasonable trade between strength and speed.
+ *
+ * Iteration: ability candidates always survive the top-K cutoff and get a
+ * +1 depth extension, so plans like "freeze → walk → walk" become visible
+ * at nominal depth 3. Without this, ability candidates that score poorly
+ * at depth 1 get pruned and the bot never sees their downstream payoff —
+ * which is what kept the ablation flatlining even after board-aware eval.
  */
 
 import type { BoardState } from '../../../lib/run/types';
@@ -25,6 +31,7 @@ import { settleEnemyTurns } from './t3';
 import type { Bot, BotAction, BotContext } from '../types';
 
 const DEEP_BRANCH_K = 6;
+const ABILITY_DEPTH_BONUS = 1;
 
 export const T5_V01: Bot = {
   id: 'T5',
@@ -40,19 +47,32 @@ export const T5_V01: Bot = {
       return { kind: 'move', target: { ...state.rookie } };
     }
 
-    // First pass: 1-ply score on every candidate.
+    // Shallow score for ranking.
     const shallow = candidates.map((c, i) => ({
       i,
       score: searchDepth(state, c, 1),
     }));
     shallow.sort((a, b) => b.score - a.score);
 
-    // Deep-search the top-K candidates.
-    const topK = shallow.slice(0, Math.min(DEEP_BRANCH_K, shallow.length));
-    let bestIdx = topK[0].i;
+    // Build the deep-search set: top-K regular candidates, but ALL ability
+    // candidates always make the cut. A freeze on the wrong target may
+    // score poorly at 1-ply (charge consumed for no visible gain) yet pay
+    // off across 3-4 plies once the board reorganizes — without inclusion
+    // we'd prune those plans before they were tested.
+    const deepIdxs = new Set<number>();
+    for (const { i } of shallow.slice(0, Math.min(DEEP_BRANCH_K, shallow.length))) {
+      deepIdxs.add(i);
+    }
+    for (let i = 0; i < candidates.length; i++) {
+      if (candidates[i].kind !== 'move') deepIdxs.add(i);
+    }
+
+    let bestIdx = shallow[0].i;
     let bestScore = -Infinity;
-    for (const { i } of topK) {
-      const s = searchDepth(state, candidates[i], 3);
+    for (const i of deepIdxs) {
+      const isAbility = candidates[i].kind !== 'move';
+      const depth = 3 + (isAbility ? ABILITY_DEPTH_BONUS : 0);
+      const s = searchDepth(state, candidates[i], depth);
       if (s > bestScore) {
         bestScore = s;
         bestIdx = i;
