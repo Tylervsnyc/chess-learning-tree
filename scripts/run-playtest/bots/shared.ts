@@ -192,14 +192,20 @@ export function evalState(state: BoardState): number {
   // no enemy and no hazard between rookie's current rank and rank 7
   // (inclusive). Rank 8 itself can be empty or capturable.
   //
-  // This is the rook-can-fly principle: an open file from rank 2 is more
-  // valuable than being on rank 7 of a blocked file.
+  // Frozen / poisoned (about to die) pieces are treated as walkable: Rookie
+  // can step in and capture them (frozen can't fight back, poisoned will
+  // die soon anyway). This is what makes a Freeze or Poison on a blocker
+  // visibly open a path in the eval.
+  const frozen = new Set(state.frozenSquares);
+  const poisoned = new Set(state.poisonedSquares);
   let openPathCount = 0;
   let rookieFileIsOpen = false;
   for (let f = 1; f <= 8; f++) {
     let clear = true;
     for (let r = state.rookie.rank + 1; r <= 7; r++) {
-      if (state.pieces.some((p) => p.file === f && p.rank === r)) {
+      const sq = toSquare({ file: f, rank: r });
+      const blocker = state.pieces.find((p) => p.file === f && p.rank === r);
+      if (blocker && !frozen.has(sq) && !poisoned.has(sq)) {
         clear = false;
         break;
       }
@@ -229,22 +235,123 @@ export function evalState(state: BoardState): number {
     score += Math.min(slack, 8) * 1.5;
   }
 
-  // Tempo + abilities — latent power. Owning matters; "has uses" is small
-  // so bots happily spend charges instead of hoarding them.
+  // Tempo + abilities — latent power. Tempo is a flat board credit.
+  // Ability value is BOARD-AWARE (see latentAbilityValue) so the eval can
+  // detect "I own Freeze Ray AND there's a queen blocking me" vs "I own
+  // Freeze Ray and the board is benign." Without this the ablation
+  // flatlines: removing any ability changes the latent score by the same
+  // tier-based constant and the bot makes the same choices.
   score += (state.tempo / TEMPO_MAX) * 4;
-  for (const a of state.abilities) {
-    score += 3 + a.tier;
-    if (a.usesLeftThisLevel > 0 || a.usesLeftThisLevel === -1) score += 0.5;
-  }
+  score += latentAbilityValue(state);
   if (state.shieldUp) score += 6;
   if (state.bonusMovesLeft > 0) score += state.bonusMovesLeft * 5;
 
-  // Material penalty by chess piece value — removing a queen is worth ~7
-  // points to the bot instead of the prior 0.4 (any piece equal). Makes
-  // Freeze / Poison / Rabies attractive when they clear or disable blockers.
-  for (const p of state.pieces) score -= PIECE_VALUE[p.type] * 0.8;
+  // Material penalty by chess piece value, discounted by status. Frozen
+  // pieces don't attack and can be captured for free; poisoned will die
+  // soon; rabid pieces may capture their own teammates. All three are
+  // "softly removed" from the threat picture.
+  for (const p of state.pieces) {
+    const sq = toSquare({ file: p.file, rank: p.rank });
+    let mult = 0.8;
+    if (frozen.has(sq)) mult = 0.16;
+    else if (poisoned.has(sq)) mult = 0.32;
+    else if (state.rabidSquares.includes(sq)) mult = 0.48;
+    score -= PIECE_VALUE[p.type] * mult;
+  }
 
   return score;
+}
+
+/**
+ * Board-aware latent value of currently-owned abilities.
+ *
+ * Replaces the prior flat `+3 + tier` per owned ability — that constant
+ * made the eval insensitive to whether the ability was actually useful on
+ * this board, which is why the nightly ablation kept flatlining at 0pp.
+ *
+ * For each owned ability we ask: "if I activated you on the best legal
+ * target right now, roughly how much would the board improve?" Cheap
+ * O(#enemies) heuristics per ability — no recursion, no applyBotAction.
+ *
+ * Exhausted-but-owned abilities still get a token credit (0.5) so two
+ * states that differ only by "what's in the ability slot" still order
+ * stably and the offer-picker has a small prior on existence.
+ */
+export function latentAbilityValue(state: BoardState): number {
+  let total = 0;
+  for (const a of state.abilities) {
+    total += abilityHeuristic(state, a.id, a.tier, a.usesLeftThisLevel);
+  }
+  return total;
+}
+
+/** Per-ability "what's it worth right now" heuristic. Tier scales potency. */
+export function abilityHeuristic(
+  state: BoardState,
+  id: AbilityId,
+  tier: number,
+  usesLeftThisLevel: number,
+): number {
+  // Unlimited (-1) and >0 = usable. 0 = exhausted, small fixed credit.
+  const usable = usesLeftThisLevel !== 0;
+  if (!usable) return 0.5;
+
+  const tierMult = 1 + tier * 0.25; // T1=1.25, T5=2.25
+  const threatened = rookieInThreat(state);
+
+  switch (id) {
+    case 'aegis':
+      // Defensive — high when needed, low when safe.
+      return (threatened ? 12 : 2) * tierMult;
+    case 'surge':
+      // Bonus moves: universally useful, especially with progress to make.
+      return (4 + Math.max(0, 8 - state.rookie.rank) * 0.5) * tierMult;
+    case 'freeze-ray':
+    case 'poison-dart':
+    case 'rabies-dart':
+      // Value scales with the heaviest visible enemy (the thing we'd zap).
+      // Big bonus if a heavy piece is on Rookie's file (likely blocker).
+      return targetedEnemyValue(state) * tierMult;
+    case 'decoy':
+      return (threatened ? 6 : 2) * tierMult;
+    case 'phase-step':
+    case 'leap':
+      // Worth more when blockers stand between Rookie and rank 8.
+      return blockerCountAhead(state) * 2 * tierMult;
+    case 'bishop-step':
+    case 'knight-hop':
+    case 'queen-pulse':
+      // Transforms get value from distance-to-go + presence of mobility need.
+      return (2 + Math.max(0, 8 - state.rookie.rank) * 0.5) * tierMult;
+    case 'become-king':
+      return (threatened ? 10 : 3) * tierMult;
+    default:
+      // Safe default for any ability not customized above. Beats the flat
+      // 3+tier prior modestly but stays board-agnostic.
+      return 2 * tierMult;
+  }
+}
+
+function targetedEnemyValue(state: BoardState): number {
+  const seen = visibleEnemySquares(state);
+  let best = 0;
+  for (const c of seen) {
+    const enemy = state.pieces.find((p) => p.file === c.file && p.rank === c.rank);
+    if (!enemy) continue;
+    let v = PIECE_VALUE[enemy.type];
+    // Same-file enemy is a more attractive zap (clears the path).
+    if (enemy.file === state.rookie.file) v *= 1.5;
+    if (v > best) best = v;
+  }
+  return best * 0.8;
+}
+
+function blockerCountAhead(state: BoardState): number {
+  let n = 0;
+  for (const p of state.pieces) {
+    if (p.rank > state.rookie.rank && p.rank <= 7) n++;
+  }
+  return Math.min(n, 4);
 }
 
 /**
@@ -382,4 +489,25 @@ export function inferCapturer(prev: BoardState, next: BoardState): PieceType | u
 /** Sum of material remaining on the board. Used as a tiebreaker / signal. */
 export function materialOnBoard(pieces: EnemyPiece[]): number {
   return pieces.reduce((sum, p) => sum + (PIECE_VALUE[p.type] ?? 0), 0);
+}
+
+/**
+ * Score an offer slot by how useful that ability would be on THIS board.
+ *
+ * Pre-spike: bots used a static `3 + tier + (new ? 1 : 0)` — the offer pick
+ * was board-blind. Now we synthesize an owned-with-one-charge view and run
+ * the same `abilityHeuristic` the eval uses, so e.g. a Freeze Ray offer
+ * facing a queen on Rookie's file outscores the same offer on an empty
+ * board. A small tier prior keeps T5 upgrades preferred at ties.
+ */
+export function valueOfOffer(
+  state: BoardState,
+  id: AbilityId,
+  tier: number,
+  kind: 'new' | 'upgrade',
+): number {
+  const latent = abilityHeuristic(state, id, tier, 1);
+  // Tiny static prior so high-tier offers still beat low-tier ties on a
+  // benign board, and "new" beats "upgrade" all-else-equal.
+  return latent + tier * 0.5 + (kind === 'new' ? 0.5 : 0);
 }

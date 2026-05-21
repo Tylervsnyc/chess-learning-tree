@@ -21,6 +21,7 @@ import {
   evalState,
   legalCandidates,
   rookieCanBeCapturedThisTurn,
+  valueOfOffer,
 } from './shared';
 import { describeAction } from '../utils/reason';
 import type { Bot, BotAction, BotContext, BotDecision } from '../types';
@@ -115,18 +116,15 @@ function pickOfferSharp(state: BoardState, ctx: BotContext): BotAction {
       return { kind: 'pick-offer', optionIndex: i as 0 | 1 };
     }
   }
-  // T4 scores each offer option by trying it on the current state and seeing
-  // which yields higher eval immediately. Lightweight — doesn't recurse into
-  // the future — but better than "always option 0."
+  // Board-aware: each option scored by what it would do on THIS board.
   let bestIdx = -1;
   let bestScore = -Infinity;
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
     if (ctx.forcedSkipIds.has(opt.id)) return;
-    // Approximate "value of taking this offer": +3 + tier (mirror eval bonus)
-    const synth = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
-    if (synth > bestScore) {
-      bestScore = synth;
+    const v = valueOfOffer(state, opt.id, opt.tier, opt.kind);
+    if (v > bestScore) {
+      bestScore = v;
       bestIdx = i;
     }
   });

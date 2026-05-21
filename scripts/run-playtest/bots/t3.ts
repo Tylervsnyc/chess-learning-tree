@@ -18,6 +18,7 @@ import {
   evalState,
   legalCandidates,
   rookieCanBeCapturedThisTurn,
+  valueOfOffer,
 } from './shared';
 import { describeAction } from '../utils/reason';
 import type { Bot, BotAction, BotContext, BotDecision } from '../types';
@@ -127,15 +128,23 @@ function pickOfferCasual(state: BoardState, ctx: BotContext): BotAction {
       return { kind: 'pick-offer', optionIndex: i as 0 | 1 };
     }
   }
-  const eligible: { idx: 0 | 1 }[] = [];
+  // Casual = noisier, but still board-aware. Score each eligible slot by
+  // its board-conditioned value; sample with high temperature so the
+  // beginner-bot doesn't always take the optimal pick.
+  const scored: { idx: 0 | 1; score: number }[] = [];
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
-    // forcedSkipIds: refuse this slot. If the other slot is also blocked,
-    // we fall through to dismiss below.
     if (ctx.forcedSkipIds.has(opt.id)) return;
-    eligible.push({ idx: i as 0 | 1 });
+    scored.push({
+      idx: i as 0 | 1,
+      score: valueOfOffer(state, opt.id, opt.tier, opt.kind),
+    });
   });
-  if (eligible.length === 0) return { kind: 'dismiss-offer' };
-  // Casual preference: take whichever is offered first that isn't excluded.
-  return { kind: 'pick-offer', optionIndex: eligible[0].idx };
+  if (scored.length === 0) return { kind: 'dismiss-offer' };
+  const idx = softmaxSample(
+    scored.map((s) => s.score),
+    4,
+    ctx.rng,
+  );
+  return { kind: 'pick-offer', optionIndex: scored[idx].idx };
 }

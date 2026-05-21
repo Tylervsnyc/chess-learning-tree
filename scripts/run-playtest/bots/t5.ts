@@ -55,6 +55,7 @@ import {
   evalState,
   legalCandidates,
   rookieCanBeCapturedThisTurn,
+  valueOfOffer,
 } from './shared';
 import { settleEnemyTurns } from './t3';
 import { T5_V01 } from './t5-v01';
@@ -215,9 +216,9 @@ function pickOfferExpert(state: BoardState, ctx: BotContext): BotAction {
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
     if (ctx.forcedSkipIds.has(opt.id)) return;
-    const synth = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
-    if (synth > bestScore) {
-      bestScore = synth;
+    const v = valueOfOffer(state, opt.id, opt.tier, opt.kind);
+    if (v > bestScore) {
+      bestScore = v;
       bestIdx = i;
     }
   });

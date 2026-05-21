@@ -15,7 +15,12 @@
 
 import type { BoardState } from '../../../lib/run/types';
 import { applyBotAction } from './apply';
-import { evalState, legalCandidates, rookieCanBeCapturedThisTurn } from './shared';
+import {
+  evalState,
+  legalCandidates,
+  rookieCanBeCapturedThisTurn,
+  valueOfOffer,
+} from './shared';
 import { settleEnemyTurns } from './t3';
 import type { Bot, BotAction, BotContext } from '../types';
 
@@ -106,9 +111,9 @@ function pickOfferExpert(state: BoardState, ctx: BotContext): BotAction {
   let bestScore = -Infinity;
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
-    const synth = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
-    if (synth > bestScore) {
-      bestScore = synth;
+    const v = valueOfOffer(state, opt.id, opt.tier, opt.kind);
+    if (v > bestScore) {
+      bestScore = v;
       bestIdx = i;
     }
   });
