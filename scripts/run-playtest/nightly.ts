@@ -44,6 +44,7 @@ import { aggregate } from './aggregate';
 import { runAblation } from './ablation';
 import { runAbilityImpact } from './simulate-run';
 import type { AbilityForceMode } from './simulate-run';
+import type { AbilityId } from '../../lib/run/abilities';
 import { generateLevels } from './generate-levels';
 import { T3 } from './bots/t3';
 import { extractFeatures } from './features';
@@ -80,9 +81,29 @@ interface CliOpts {
   enableLevelGen: boolean;
   levelGenTrials: number;
   levelGenSeedOffset: number;
-  abilityImpactRunId: string;
+  abilityImpactRunIds: string[];
   abilityImpactTrials: number;
 }
+
+// Default ability-impact run set — six runs spanning different difficulty
+// regimes and piece compositions. This is the cross-section we measure
+// ability impact across so the ranking isn't dominated by quirks of a
+// single run. Past nightlies only covered `the-gauntlet`, which had the
+// best signal-to-noise but was a single point.
+//   - the-gauntlet → high-stakes, queen-heavy late levels
+//   - daily        → the daily run, the experience most players actually have
+//   - iron-curtain → queen-heavy throughout
+//   - hornets-nest → knight-dense, lots of forks
+//   - bishops-path → bishop-dense, diagonal pressure
+//   - royal-court  → royal pieces, mixed material
+const DEFAULT_ABILITY_IMPACT_RUNS = [
+  'the-gauntlet',
+  'daily',
+  'iron-curtain',
+  'hornets-nest',
+  'bishops-path',
+  'royal-court',
+];
 
 function parseArgs(): CliOpts {
   // WHY these defaults: the nightly remote agent has a runtime cap (~60 min).
@@ -103,9 +124,10 @@ function parseArgs(): CliOpts {
     enableLevelGen: false,
     levelGenTrials: 20,
     levelGenSeedOffset: 0,
-    // the-gauntlet at T3 has the best signal-to-noise — baseline 2.00 levels,
-    // so any ability that helps shows up clearly. Cost: ~3 min at 5 trials.
-    abilityImpactRunId: 'the-gauntlet',
+    // Default set covers six runs (see DEFAULT_ABILITY_IMPACT_RUNS) so the
+    // ability ranking aggregates signal across run archetypes instead of
+    // depending on the-gauntlet's idiosyncrasies. Cost: ~18 min at 5 trials.
+    abilityImpactRunIds: [...DEFAULT_ABILITY_IMPACT_RUNS],
     abilityImpactTrials: 5,
   };
   let hypothesesExplicit = false;
@@ -117,9 +139,19 @@ function parseArgs(): CliOpts {
     else if (arg === '--skip-features') opts.skipFeatures = true;
     else if (arg === '--skip-hypotheses') opts.skipHypotheses = true;
     else if (arg === '--skip-ability-impact') opts.skipAbilityImpact = true;
-    else if (arg.startsWith('--ability-impact-run='))
-      opts.abilityImpactRunId = arg.split('=')[1];
-    else if (arg.startsWith('--ability-impact-trials='))
+    else if (arg.startsWith('--ability-impact-run=')) {
+      // Singular form: replace the list with a single run (back-compat).
+      opts.abilityImpactRunIds = [arg.split('=')[1]];
+    } else if (arg.startsWith('--ability-impact-runs=')) {
+      const value = arg.split('=')[1];
+      if (value === 'all') {
+        // Lazy-import RUNS to avoid pulling level data into arg parsing.
+        const { RUNS } = require('../../lib/run/runs') as typeof import('../../lib/run/runs');
+        opts.abilityImpactRunIds = RUNS.map((r) => r.id);
+      } else {
+        opts.abilityImpactRunIds = value.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+    } else if (arg.startsWith('--ability-impact-trials='))
       opts.abilityImpactTrials = parseInt(arg.split('=')[1], 10);
     else if (arg.startsWith('--sweep-trials='))
       opts.sweepTrials = parseInt(arg.split('=')[1], 10);
@@ -148,6 +180,10 @@ function parseArgs(): CliOpts {
     opts.ablationTrials = 10;
     if (!hypothesesExplicit) opts.hypothesesPerNight = 1;
     opts.experimentTrials = 10;
+    // Trim ability-impact too: 3 trials × first 2 runs (~3 min) so --quick
+    // stays under a 10 min wall-clock for fast local iteration.
+    opts.abilityImpactTrials = 3;
+    opts.abilityImpactRunIds = opts.abilityImpactRunIds.slice(0, 2);
   }
   return opts;
 }
@@ -210,43 +246,106 @@ async function main(): Promise<void> {
   // full run, measures end-of-run levels reached vs no-ability baseline.
   // Catches what the per-level ablation misses: cross-level resource value
   // and abilities the offer system rarely fires.
-  let abilityImpact: ReturnType<typeof runAbilityImpact> | null = null;
+  //
+  // Per-run results are saved individually AND aggregated into a per-ability
+  // mean-Δ table so the digest can rank abilities across runs instead of
+  // depending on a single run's quirks.
+  type AbilityImpactResult = ReturnType<typeof runAbilityImpact>;
+  const abilityImpactByRun: { runId: string; result: AbilityImpactResult }[] = [];
   if (!opts.skipAbilityImpact) {
     console.log(
-      `[nightly] ability-impact (${opts.abilityImpactTrials} trials × 11 abilities on ${opts.abilityImpactRunId} at T3)`,
+      `[nightly] ability-impact (${opts.abilityImpactTrials} trials × 11 abilities × ${opts.abilityImpactRunIds.length} runs at T3)`,
     );
     const tI = Date.now();
-    abilityImpact = runAbilityImpact({
-      trials: opts.abilityImpactTrials,
-      bot: T3,
-      runId: opts.abilityImpactRunId,
-      rookieStart: { file: 4, rank: 1 },
-      modes: ['fixed-t3'],
-      onProgress: (s) => console.log(s),
-    });
+    for (const runId of opts.abilityImpactRunIds) {
+      console.log(`[nightly] ability-impact run=${runId}`);
+      const result = runAbilityImpact({
+        trials: opts.abilityImpactTrials,
+        bot: T3,
+        runId,
+        rookieStart: { file: 4, rank: 1 },
+        modes: ['fixed-t3'],
+        onProgress: (s) => console.log(s),
+      });
+      abilityImpactByRun.push({ runId, result });
+      writeFileSync(
+        join(rawDir, `ability-impact-${runId}.json`),
+        JSON.stringify(
+          {
+            runId,
+            baseline: result.baseline,
+            byAbility: Array.from(result.byAbility.entries()).map(
+              ([id, byMode]) => ({
+                ability: id,
+                modes: Array.from(byMode.entries()).map(([mode, row]) => ({ mode, ...row })),
+              }),
+            ),
+          },
+          null,
+          2,
+        ),
+      );
+    }
+    // Aggregate: for each ability, average the Δ-mean-levels-completed and
+    // Δ-full-run-rate vs that run's own baseline. Equal-weighted across
+    // runs so a tough run (the-gauntlet) and an easy run (bishops-path)
+    // count equally — the per-ability impact is a relative measure anyway.
+    const aggRows: {
+      ability: AbilityId;
+      runs: number;
+      meanDeltaLevels: number;
+      meanDeltaFullRun: number;
+      perRun: { runId: string; dLevels: number; dFullRun: number }[];
+    }[] = [];
+    const allAbilities = abilityImpactByRun[0]
+      ? Array.from(abilityImpactByRun[0].result.byAbility.keys())
+      : [];
+    for (const ability of allAbilities) {
+      const perRun: { runId: string; dLevels: number; dFullRun: number }[] = [];
+      for (const { runId, result } of abilityImpactByRun) {
+        const byMode = result.byAbility.get(ability);
+        if (!byMode) continue;
+        const row = byMode.get('fixed-t3') ?? byMode.values().next().value;
+        if (!row) continue;
+        perRun.push({
+          runId,
+          dLevels: row.meanLevelsCompleted - result.baseline.meanLevelsCompleted,
+          dFullRun: row.fullRunRate - result.baseline.fullRunRate,
+        });
+      }
+      const n = Math.max(1, perRun.length);
+      aggRows.push({
+        ability,
+        runs: perRun.length,
+        meanDeltaLevels: perRun.reduce((s, r) => s + r.dLevels, 0) / n,
+        meanDeltaFullRun: perRun.reduce((s, r) => s + r.dFullRun, 0) / n,
+        perRun,
+      });
+    }
+    aggRows.sort((a, b) => b.meanDeltaLevels - a.meanDeltaLevels);
     writeFileSync(
-      join(rawDir, 'ability-impact.json'),
+      join(rawDir, 'ability-impact-aggregate.json'),
       JSON.stringify(
         {
-          runId: opts.abilityImpactRunId,
-          baseline: abilityImpact.baseline,
-          byAbility: Array.from(abilityImpact.byAbility.entries()).map(
-            ([id, byMode]) => ({
-              ability: id,
-              modes: Array.from(byMode.entries()).map(([mode, row]) => ({ mode, ...row })),
-            }),
-          ),
+          trialsPerRun: opts.abilityImpactTrials,
+          runs: opts.abilityImpactRunIds,
+          byAbility: aggRows,
         },
         null,
         2,
       ),
     );
     console.log(
-      `[nightly] ability-impact done in ${((Date.now() - tI) / 1000).toFixed(1)}s`,
+      `[nightly] ability-impact done in ${((Date.now() - tI) / 1000).toFixed(1)}s across ${opts.abilityImpactRunIds.length} runs`,
     );
   } else {
     caveats.push('Ability impact skipped this run.');
   }
+  // Primary single-run reference for the digest renderer (unchanged shape).
+  // We pick the first run in the list so existing digest code keeps rendering;
+  // a follow-up will surface the aggregate table in the digest itself.
+  const abilityImpact = abilityImpactByRun[0]?.result ?? null;
+  const abilityImpactPrimaryRunId = abilityImpactByRun[0]?.runId ?? opts.abilityImpactRunIds[0];
 
   // ─── Features + correlations ──────────────────────────────────────────
   if (!opts.skipFeatures) {
@@ -361,9 +460,29 @@ async function main(): Promise<void> {
       publishResult,
       abilityImpact: abilityImpact
         ? {
-            runId: opts.abilityImpactRunId,
+            runId: abilityImpactPrimaryRunId,
             baseline: abilityImpact.baseline,
             byAbility: abilityImpact.byAbility,
+          }
+        : null,
+      abilityImpactAggregate: abilityImpactByRun.length > 1
+        ? {
+            runs: opts.abilityImpactRunIds,
+            byAbility: abilityImpactByRun
+              .reduce<Map<AbilityId, { dLevels: number[]; dFullRun: number[] }>>(
+                (acc, { result }) => {
+                  for (const [ability, byMode] of result.byAbility) {
+                    const row = byMode.get('fixed-t3') ?? byMode.values().next().value;
+                    if (!row) continue;
+                    if (!acc.has(ability)) acc.set(ability, { dLevels: [], dFullRun: [] });
+                    const slot = acc.get(ability)!;
+                    slot.dLevels.push(row.meanLevelsCompleted - result.baseline.meanLevelsCompleted);
+                    slot.dFullRun.push(row.fullRunRate - result.baseline.fullRunRate);
+                  }
+                  return acc;
+                },
+                new Map<AbilityId, { dLevels: number[]; dFullRun: number[] }>(),
+              ),
           }
         : null,
       caveats,

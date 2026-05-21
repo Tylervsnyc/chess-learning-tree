@@ -48,6 +48,17 @@ export interface DigestInput {
     baseline: { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number };
     byAbility: Map<AbilityId, Map<string, { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number; meanAbilitiesAtEnd: number }>>;
   } | null;
+  /**
+   * Run-level ability impact AGGREGATED across multiple runs — each
+   * per-run delta (mean levels completed vs that run's baseline, plus
+   * full-run rate delta) is collected and averaged equal-weight per
+   * ability. This is the canonical cross-run ranking once the nightly
+   * sweeps more than one run.
+   */
+  abilityImpactAggregate?: {
+    runs: string[];
+    byAbility: Map<AbilityId, { dLevels: number[]; dFullRun: number[] }>;
+  } | null;
   caveats: string[];
 }
 
@@ -110,11 +121,51 @@ export function renderDigest(input: DigestInput): string {
   }
   lines.push(``);
 
-  // ─── 5. Ability Impact (run-level) ──────────────────────────────────────
-  // Canonical ability ranking — force-seeds each ability at T3 across all
-  // 10 levels of a single run, measures end-of-run levels reached.
-  // Replaces "did the bot use it" (ablation) with "what if every player
-  // got it from level 1 onward" — the real product question.
+  // ─── 5a. Ability Impact (aggregated across runs) ────────────────────────
+  // The cross-run canonical ranking. Each row is the mean Δ in levels
+  // completed (vs that run's own baseline) when the ability is pre-seeded
+  // at T3 from level 1. Averaged equal-weight across runs so easy and
+  // hard runs both contribute.
+  if (
+    input.abilityImpactAggregate &&
+    input.abilityImpactAggregate.byAbility.size > 0
+  ) {
+    const agg = input.abilityImpactAggregate;
+    lines.push(`## Ability Impact — Aggregated`);
+    lines.push(``);
+    lines.push(
+      `Force-seed each ability at T3 from level 1 of every listed run. Compare end-of-run levels-completed against that run's own no-ability baseline, then average per-ability Δ across runs (equal-weight). The per-level ablation often flatlines because bots rarely earn offers organically — this measure bypasses the offer pipeline.`,
+    );
+    lines.push(``);
+    lines.push(`**Runs included:** ${agg.runs.join(', ')}.`);
+    lines.push(``);
+    lines.push(
+      `| Rank | Ability | Mean Δ levels | Mean Δ full-run rate | Helps in N/${agg.runs.length} runs |`,
+    );
+    lines.push(`|---|---|---:|---:|---:|`);
+    const rows = [...agg.byAbility.entries()]
+      .map(([id, perRun]) => {
+        const n = Math.max(1, perRun.dLevels.length);
+        const meanLevels = perRun.dLevels.reduce((s, v) => s + v, 0) / n;
+        const meanFullRun = perRun.dFullRun.reduce((s, v) => s + v, 0) / n;
+        const helps = perRun.dLevels.filter((v) => v > 0).length;
+        return { id, meanLevels, meanFullRun, helps };
+      })
+      .sort((a, b) => b.meanLevels - a.meanLevels);
+    for (const r of rows) {
+      const sign = r.meanLevels > 0 ? '+' : '';
+      const signFR = r.meanFullRun > 0 ? '+' : '';
+      lines.push(
+        `| ${rows.indexOf(r) + 1} | ${ABILITY_DEFS[r.id].name} | ${sign}${r.meanLevels.toFixed(2)} | ${signFR}${(r.meanFullRun * 100).toFixed(1)}pp | ${r.helps} |`,
+      );
+    }
+    lines.push(``);
+  }
+
+  // ─── 5b. Ability Impact (run-level) ─────────────────────────────────────
+  // Detailed view of the first run's impact — kept so the digest still
+  // shows per-level breakdowns and the absolute baseline. The aggregate
+  // above is the headline ranking.
   if (input.abilityImpact && input.abilityImpact.byAbility.size > 0) {
     const ai = input.abilityImpact;
     lines.push(`## Ability Impact (run-level)`);
