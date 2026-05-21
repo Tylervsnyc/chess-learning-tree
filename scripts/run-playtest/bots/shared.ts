@@ -235,13 +235,28 @@ export function evalState(state: BoardState): number {
     score += Math.min(slack, 8) * 1.5;
   }
 
-  // Tempo + abilities — latent power. Tempo is a flat board credit.
-  // Ability value is BOARD-AWARE (see latentAbilityValue) so the eval can
-  // detect "I own Freeze Ray AND there's a queen blocking me" vs "I own
-  // Freeze Ray and the board is benign." Without this the ablation
-  // flatlines: removing any ability changes the latent score by the same
-  // tier-based constant and the bot makes the same choices.
-  score += (state.tempo / TEMPO_MAX) * 4;
+  // Tempo + abilities — latent power. Tempo is the gate for ability offers,
+  // so a bot that ignores tempo never sees offers and can't benefit from
+  // abilities. Pre-iteration-3 we weighted tempo at +4 across the full bar,
+  // which was dwarfed by the +60 rank-8 reach bonus — bots sprinted to
+  // rank 8 ignoring captures, the offer pipeline starved, and ability
+  // ablation flatlined because abilities never entered play.
+  //
+  // Now: tempo is worth meaningfully more, especially when an offer
+  // hasn't fired yet. This nudges bots to take detour captures the way
+  // a real player does (e.g. let a pawn promote, then capture it for
+  // queen-tier tempo).
+  const tempoFrac = state.tempo / TEMPO_MAX;
+  if (state.pendingOffer === null) {
+    // Pre-offer: tempo is the only path to abilities. Big payoff for
+    // filling the bar (offer about to fire) and steady payoff for
+    // partial progress.
+    score += tempoFrac * 16;
+    if (state.tempo >= TEMPO_MAX - 1) score += 6; // about to fire an offer
+  } else {
+    // Offer pending: tempo is decorative at this moment.
+    score += tempoFrac * 4;
+  }
   score += latentAbilityValue(state);
   if (state.shieldUp) score += 6;
   if (state.bonusMovesLeft > 0) score += state.bonusMovesLeft * 5;
