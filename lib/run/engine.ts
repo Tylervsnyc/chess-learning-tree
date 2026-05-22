@@ -51,19 +51,24 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
 
   // Form bookkeeping — decrement, revert to rook when expired.
   // formMovesLeft < 0 = locked form (STC mini-runs); no decrement, no revert.
+  // King form is special: its value is invulnerability across enemy turns,
+  // not extra moves. Its formMovesLeft counts enemy turns and decrements in
+  // stepEnemyTurn.endTurn, NOT here. So Rookie stays king through her own
+  // move and reverts at the end of the next enemy turn.
   const formLocked = state.formMovesLeft < 0;
-  const movesLeftAfter = formLocked
+  const isKingProtective = state.form === 'king';
+  const movesLeftAfter = formLocked || isKingProtective
     ? state.formMovesLeft
     : state.form === 'rook'
       ? 0
       : state.formMovesLeft - 1;
   const nextForm: RookieForm =
-    formLocked || state.form === 'rook'
+    formLocked || isKingProtective || state.form === 'rook'
       ? state.form
       : movesLeftAfter <= 0
         ? 'rook'
         : state.form;
-  const nextFormMovesLeft = formLocked
+  const nextFormMovesLeft = formLocked || isKingProtective
     ? state.formMovesLeft
     : nextForm === 'rook'
       ? 0

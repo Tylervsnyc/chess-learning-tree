@@ -767,12 +767,26 @@ export function stepEnemyTurn(state: BoardState): BoardState {
         delete nextFrozenTurnsLeft[sq];
       }
     }
+    // Become King: formMovesLeft on king form counts enemy turns of
+    // invulnerability. Decrement at end of enemy turn, revert to rook when
+    // expired. T5 sets formMovesLeft=999 so it effectively lasts forever.
+    let nextForm = s.form;
+    let nextFormMovesLeft = s.formMovesLeft;
+    if (s.form === 'king' && s.formMovesLeft > 0) {
+      nextFormMovesLeft = s.formMovesLeft - 1;
+      if (nextFormMovesLeft <= 0) {
+        nextForm = 'rook';
+        nextFormMovesLeft = 0;
+      }
+    }
     return {
       ...s,
       pieces,
       captures,
       tempo,
       turn: 'rookie',
+      form: nextForm,
+      formMovesLeft: nextFormMovesLeft,
       enemyMovedSquares: [],
       enemyVacatedSquares: [],
       frozenSquares: nextFrozenSquares,

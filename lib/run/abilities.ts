@@ -177,8 +177,12 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier <= 4) return 2;
       return 1;
     case 'become-king':
-      if (tier === 4) return 2;
-      return 1;
+      // 1/2/2/3/3 — each tier adds +1 turn OR +1 use, never both.
+      if (tier === 1) return 1;
+      if (tier === 2) return 2;
+      if (tier === 3) return 2;
+      if (tier === 4) return 3;
+      return 3;
     case 'freeze-ray':
       if (tier === 3 || tier === 4) return 2;
       return 1;
@@ -246,8 +250,14 @@ export function transformDurationForTier(
     return 3;
   }
   if (id === 'become-king') {
+    // Counts ENEMY turns of invulnerability — decrement happens at end of
+    // enemy turn (see endTurn in pawn-ai.ts), not at end of Rookie's move
+    // like the movement transforms. So "N turns" = N protected enemy turns.
+    // 1/1/2/2/3 — paired with uses 1/2/2/3/3 for a gradual curve.
     if (tier === 1) return 1;
-    if (tier === 2 || tier === 3) return 2;
+    if (tier === 2) return 1;
+    if (tier === 3) return 2;
+    if (tier === 4) return 2;
     return 3;
   }
   return 0;
@@ -312,10 +322,10 @@ function whatForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier >= 2) return 'Move any direction for 2 turns.';
       return 'Move any direction for 1 turn.';
     case 'become-king':
-      if (tier === 5)
-        return 'Become a king. Nothing can capture you for the rest of the level.';
-      if (tier === 4) return 'Become a king for 3 turns. Nothing can capture you.';
-      if (tier >= 2) return 'Become a king for 2 turns. Nothing can capture you.';
+      if (tier === 5) return 'Become a king for 3 turns. Nothing can capture you.';
+      if (tier === 4) return 'Become a king for 2 turns. Nothing can capture you.';
+      if (tier === 3) return 'Become a king for 2 turns. Nothing can capture you.';
+      if (tier === 2) return 'Become a king for 1 turn. Nothing can capture you.';
       return 'Become a king for 1 turn. Nothing can capture you.';
     case 'freeze-ray':
       if (tier === 5) return 'Freeze an enemy. It never moves again.';
@@ -386,7 +396,7 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
     case 'become-king':
       if (tier === 5) return 'King for rest of level.';
       if (tier === 4) return 'King for 3 turns. 2/level.';
-      if (tier === 3) return 'King for 2 turns. 1/level.';
+      if (tier === 3) return 'King for 2 turns. 2/level.';
       if (tier === 2) return 'King for 2 turns. 1/level.';
       return 'King for 1 turn. 1/level.';
     case 'freeze-ray':
