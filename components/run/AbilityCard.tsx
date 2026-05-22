@@ -528,7 +528,7 @@ export function AbilityCardFull({
       onClick={onClick}
       className="relative w-full max-w-[200px] mx-auto group active:scale-[0.98] transition-transform"
       style={{
-        aspectRatio: '5 / 7',
+        aspectRatio: '4 / 7',
         background: t.border,
         borderRadius: 14,
         padding: 5,
@@ -559,29 +559,35 @@ export function AbilityCardFull({
           </div>
         ) : null}
 
-        {/* Top banner — ability name in display font */}
+        {/* Top banner — fixed height so name length never shifts the art. */}
         <div
-          className="px-3 pt-2.5 pb-1.5 text-center"
+          className="px-3 text-center flex items-center justify-center shrink-0"
           style={{
+            height: '12%',
             fontFamily:
               'ui-serif, Georgia, "Times New Roman", serif',
             fontWeight: 900,
-            fontSize: 17,
+            fontSize: 'clamp(13px, 3.6cqw, 17px)',
             lineHeight: 1.05,
             letterSpacing: '0.01em',
             color: t.text,
             textShadow: t.foil ? '0 1px 2px rgba(255,255,255,0.7)' : 'none',
+            containerType: 'inline-size',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
           }}
         >
           {def.name}
         </div>
 
-        {/* Art window */}
+        {/* Art window — fixed height so all cards line up. */}
         <div
-          className="mx-2.5 rounded-md overflow-hidden relative"
+          className="mx-2.5 rounded-md overflow-hidden relative shrink-0"
           style={{
             background: t.art,
-            height: '60%',
+            height: '54%',
             boxShadow:
               'inset 0 0 14px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(0,0,0,0.18)',
           }}
@@ -595,29 +601,41 @@ export function AbilityCardFull({
           />
         </div>
 
-        {/* Text box — WHAT (bold), HOW (muted), limit (smaller). */}
-        <div className="mx-2.5 mt-2 mb-2 flex-1 rounded-md px-2.5 py-2 flex flex-col gap-1.5"
+        {/* Text box — fills remaining space; text shrinks to fit. */}
+        <div
+          className="mx-2.5 mt-2 mb-7 flex-1 min-h-0 rounded-md px-2.5 py-1.5 flex flex-col gap-1 overflow-hidden"
           style={{
             background: 'rgba(255,255,255,0.6)',
             boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)',
+            containerType: 'inline-size',
           }}
         >
           <p
-            className="text-[11.5px] leading-snug font-black"
-            style={{ color: '#241b08' }}
+            className="leading-snug font-black"
+            style={{
+              color: '#241b08',
+              fontSize: 'clamp(9.5px, 2.6cqw, 11.5px)',
+            }}
           >
             {description.what}
           </p>
           <p
-            className="text-[10px] leading-snug font-medium"
-            style={{ color: '#4a3a18' }}
+            className="leading-snug font-medium"
+            style={{
+              color: '#4a3a18',
+              fontSize: 'clamp(8.5px, 2.3cqw, 10px)',
+            }}
           >
             {description.how}
           </p>
           {description.limit ? (
             <p
-              className="text-[9px] leading-none font-bold uppercase tracking-wider mt-auto pt-0.5"
-              style={{ color: '#6b5223', opacity: 0.8 }}
+              className="leading-none font-bold uppercase tracking-wider mt-auto pt-0.5"
+              style={{
+                color: '#6b5223',
+                opacity: 0.8,
+                fontSize: 'clamp(7.5px, 2cqw, 9px)',
+              }}
             >
               {description.limit}
             </p>

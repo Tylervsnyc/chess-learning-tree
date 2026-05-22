@@ -6,7 +6,6 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { RookieCell } from './RookieCell';
 import { rookieLegalMoves } from '@/lib/run/movement';
 import { nextEnemyMovers } from '@/lib/run/pawn-ai';
-import { visibleEnemySquares } from '@/lib/run/abilities';
 import type { AbilityTier } from '@/lib/run/abilities';
 import type { BoardState, Coord, PieceType, RookieForm } from '@/lib/run/types';
 import { fromSquare, toSquare } from '@/lib/run/types';
@@ -303,27 +302,8 @@ export function RunBoard({
       }
     }
 
-    // Dart-style abilities (freeze ray, poison dart, rabies dart) highlight
-    // every enemy Rookie can currently SEE — line-of-sight per current form.
-    const activeId = state.activeAbility?.id;
-    const isDartActive =
-      activeId === 'freeze-ray' ||
-      activeId === 'poison-dart' ||
-      activeId === 'rabies-dart';
-    if (isDartActive && state.activeAbility?.step === 'pick-enemy') {
-      const color = ABILITY_TIER_DOT[(abilityTier ?? 1) as AbilityTier];
-      for (const c of visibleEnemySquares(state)) {
-        const sq = toSquare(c);
-        const prev = styles[sq] ?? {};
-        const ring = `radial-gradient(circle, transparent 58%, ${color} 58% 68%, transparent 68%)`;
-        styles[sq] = {
-          ...prev,
-          backgroundImage: prev.backgroundImage
-            ? `${ring}, ${prev.backgroundImage}`
-            : ring,
-        };
-      }
-    }
+    // Dart-style abilities (freeze ray, poison dart, rabies dart) — no
+    // target-circle highlights; the cursor + piece tap is enough.
 
     // Aegis shield — light-blue inset ring + wash on Rookie's square whenever
     // her shield is currently raised. Layered with whatever's already on that
@@ -1324,10 +1304,11 @@ function PoisonDeathLayer({
       style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 6 }}
     >
       <style>{`
-        @keyframes rrPoisonSink-${idKey} {
-          0%   { transform: translate(-50%, -50%) scale(1);    filter: saturate(1)   hue-rotate(0deg)   brightness(1);   opacity: 1; }
-          40%  { transform: translate(-50%, -40%) scale(0.92); filter: saturate(0.4) hue-rotate(70deg)  brightness(0.85); opacity: 0.9; }
-          100% { transform: translate(-50%, -25%) scale(0.55); filter: saturate(0.2) hue-rotate(110deg) brightness(0.55); opacity: 0; }
+        @keyframes rrPoisonDissolve-${idKey} {
+          0%   { transform: translate(-50%, -50%) scale(1);    filter: saturate(1)   hue-rotate(0deg)   brightness(1)   blur(0px); opacity: 1; }
+          35%  { transform: translate(-50%, -52%) scale(1.04); filter: saturate(0.5) hue-rotate(80deg)  brightness(0.95) blur(0.5px); opacity: 0.9; }
+          70%  { transform: translate(-50%, -55%) scale(1.12); filter: saturate(0.25) hue-rotate(110deg) brightness(0.85) blur(2px);  opacity: 0.5; }
+          100% { transform: translate(-50%, -60%) scale(1.25); filter: saturate(0.1)  hue-rotate(120deg) brightness(0.7)  blur(6px);  opacity: 0; }
         }
         @keyframes rrPoisonPuddle-${idKey} {
           0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
@@ -1373,7 +1354,7 @@ function PoisonDeathLayer({
                   top: `${cy}%`,
                   width: '12.5%',
                   height: '12.5%',
-                  animation: `rrPoisonSink-${idKey} 900ms ease-in forwards`,
+                  animation: `rrPoisonDissolve-${idKey} 900ms ease-out forwards`,
                   transformOrigin: 'center center',
                 }}
               >
