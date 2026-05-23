@@ -13,7 +13,13 @@ import {
   isLegalRookieMove,
   rookieLegalMoves,
 } from './movement';
-import { clearStatusOnSquare, offerIsExhausted, rollOffer } from './abilities';
+import {
+  clearStatusOnSquare,
+  offerIsExhausted,
+  rollOffer,
+  stepAllyTurn,
+  stepDroneTurn,
+} from './abilities';
 import { stepEnemyTurn } from './pawn-ai';
 import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
@@ -158,13 +164,29 @@ export function applyRookieMove(state: BoardState, target: Coord): BoardState {
     return { ...withOffer, status: 'lost', turn: 'rookie' };
   }
 
-  // Hand off to enemy. UI ticks `stepEnemyTurn` so each enemy move animates
-  // separately — no more mystery "rook disappeared" mid-batch.
+  // Rainbow allies get their own visible phase between Rookie and enemies.
+  // If we're not in a Surge bonus chain and we have allies, redirect turn to
+  // 'allies' and the UI ticks stepAllyTurn one ally at a time. Otherwise hand
+  // straight to the enemy as before.
+  const allyPhaseNeeded = !hasBonus && withOffer.allies.length > 0;
+  if (allyPhaseNeeded) {
+    return {
+      ...withOffer,
+      turn: 'allies',
+      allyTurnIndex: 0,
+      enemyMovedSquares: [],
+      enemyVacatedSquares: [],
+    };
+  }
   return { ...withOffer, enemyMovedSquares: [], enemyVacatedSquares: [] };
 }
 
 /** Re-export the single-step enemy advance for the UI. */
 export { stepEnemyTurn };
+/** Re-export the single-step ally advance for the UI. */
+export { stepAllyTurn };
+/** Re-export the single-step drone advance for the UI. */
+export { stepDroneTurn };
 
 /** Re-export helpers for the renderer. */
 export { rookieLegalMoves };

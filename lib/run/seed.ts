@@ -6,7 +6,12 @@
  * column (and tomorrow we can rotate level orderings if needed).
  */
 
-import { offerIsExhausted, refreshAbilityUses, rollOffer } from './abilities';
+import {
+  offerIsExhausted,
+  refreshAbilityUses,
+  rollOffer,
+  squadSpawnFor,
+} from './abilities';
 import { DEFAULT_RUN_ID, getRunById } from './runs';
 import { TEMPO_MAX } from './scoring';
 import type { BoardState, Coord, RunPuzzle } from './types';
@@ -139,10 +144,22 @@ export function puzzleToBoardState(
   // hasn't hit one organically, force one so progression doesn't stall.
   let pendingOffer = carry.pendingOffer ?? null;
   let tempo = carry.tempo ?? 0;
+  const rookieStart = randomizedRookieStart(puzzle);
+  const piecesCopy = puzzle.pieces.map((p) => ({ ...p }));
+  const hazardsCopy = (puzzle.hazards ?? []).map((h) => ({ ...h }));
+  // Squad is a passive: whenever Rookie owns the squad ability, her roster
+  // spawns each level. Roster size scales with the owned tier.
+  const ownedSquad = abilities.find((a) => a.id === 'squad');
+  const allies = ownedSquad
+    ? squadSpawnFor(ownedSquad.tier, rookieStart, piecesCopy, hazardsCopy)
+    : [];
   const base: BoardState = {
-    rookie: randomizedRookieStart(puzzle),
-    pieces: puzzle.pieces.map((p) => ({ ...p })),
-    hazards: (puzzle.hazards ?? []).map((h) => ({ ...h })),
+    rookie: rookieStart,
+    pieces: piecesCopy,
+    allies,
+    drones: [],
+    allyTurnIndex: 0,
+    hazards: hazardsCopy,
     turn: 'rookie',
     status: 'playing',
     moveCount: 0,
@@ -161,6 +178,7 @@ export function puzzleToBoardState(
       }
       return {};
     })(),
+    runId: carry.runId,
     moveLimit: puzzle.moveLimit ?? null,
     enemiesPerTurn: puzzle.enemiesPerTurn ?? 1,
     enemyMovedSquares: [],

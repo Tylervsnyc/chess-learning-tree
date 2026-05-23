@@ -9,9 +9,18 @@
  */
 
 import { rookieLegalMoves } from './movement';
-import { TEMPO_MAX } from './scoring';
+import { getRunById } from './runs';
+import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
 import { toSquare } from './types';
-import type { BoardState, Coord, EnemyPiece, RookieForm } from './types';
+import type {
+  AllyPiece,
+  BoardState,
+  Coord,
+  Drone,
+  EnemyPiece,
+  PieceType,
+  RookieForm,
+} from './types';
 
 export type AbilityId =
   | 'bishop-step'
@@ -21,8 +30,9 @@ export type AbilityId =
   | 'freeze-ray'
   | 'poison-dart'
   | 'rabies-dart'
-  | 'phase-step'
-  | 'leap'
+  | 'convert'
+  | 'drones'
+  | 'squad'
   | 'surge'
   | 'aegis'
   | 'decoy';
@@ -111,19 +121,26 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Targeted · Bow',
     description: 'Drive an enemy mad. It attacks the nearest piece.',
   },
-  'phase-step': {
-    id: 'phase-step',
-    name: 'Phase Step',
-    activation: 'movement',
-    typeLine: 'Movement · Tactical',
-    description: 'Walk through pieces.',
+  convert: {
+    id: 'convert',
+    name: 'Convert',
+    activation: 'targeted',
+    typeLine: 'Targeted · Defect',
+    description: 'Flip an enemy onto your team.',
   },
-  leap: {
-    id: 'leap',
-    name: 'Leap',
-    activation: 'movement',
-    typeLine: 'Movement · Leap',
-    description: 'Jump over pieces to an empty square.',
+  drones: {
+    id: 'drones',
+    name: 'Drones',
+    activation: 'instant',
+    typeLine: 'Instant · Swarm',
+    description: 'Launch mini-Rookies that capture in fixed directions.',
+  },
+  squad: {
+    id: 'squad',
+    name: 'Squad',
+    activation: 'passive',
+    typeLine: 'Passive · Spawn',
+    description: 'Allies spawn each level. They march and capture.',
   },
   surge: {
     id: 'surge',
@@ -198,13 +215,21 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier === 3) return 2;
       if (tier === 4) return 2;
       return 2;
-    case 'phase-step':
-      return 1;
-    case 'leap':
-      if (tier <= 2) return 1;
+    case 'convert':
+      if (tier === 1) return 1;
+      if (tier === 2) return 1;
       if (tier === 3) return 2;
       if (tier === 4) return 2;
-      return 3;
+      return 2;
+    case 'drones':
+      if (tier === 1) return 1;
+      if (tier === 2) return 1;
+      if (tier === 3) return 2;
+      if (tier === 4) return 2;
+      return 2;
+    case 'squad':
+      // Passive — no per-activation uses.
+      return -1;
     case 'surge':
       if (tier === 1) return 1;
       if (tier === 2) return 2;
@@ -280,8 +305,9 @@ const HOW: Record<AbilityId, string> = {
   'freeze-ray': 'Tap card, then tap an enemy you can see.',
   'poison-dart': 'Tap card, then tap an enemy you can see.',
   'rabies-dart': 'Tap card, then tap an enemy you can see.',
-  'phase-step': 'Tap card, then tap a square past a piece.',
-  leap: 'Tap card, then tap a forward jump square.',
+  convert: 'Tap card, then tap an eligible enemy.',
+  drones: 'Tap card. Drones launch in fixed directions.',
+  squad: 'Passive — allies spawn each level.',
   surge: 'Tap card. You get an extra move.',
   aegis: 'Tap card. Shield stays up until used.',
   decoy: 'Tap card, then tap an enemy.',
@@ -344,18 +370,20 @@ function whatForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier >= 2)
         return 'Drive an enemy mad for 2 turns. It attacks its own side.';
       return 'Drive an enemy mad for 1 turn. It attacks its own side.';
-    case 'phase-step':
-      if (tier === 5) return 'Teleport to any empty square.';
-      if (tier === 4) return 'Walk through everything in a straight line.';
-      if (tier === 3) return 'Walk through 1 piece, up to 3 squares.';
-      if (tier === 2) return 'Walk through 1 piece, up to 2 squares.';
-      return 'Walk through 1 piece, 1 square.';
-    case 'leap':
-      if (tier === 5) return 'Jump 2 to 6 squares in any direction.';
-      if (tier === 4) return 'Jump 2 to 4 squares up, down, left, or right.';
-      if (tier === 3) return 'Jump 2 to 4 squares forward.';
-      if (tier === 2) return 'Jump 2 or 3 squares forward.';
-      return 'Jump exactly 2 squares forward.';
+    case 'convert':
+      if (tier === 5) return 'Flip any enemy (except king) onto your team.';
+      if (tier === 4) return 'Flip any enemy rook, queen, knight, bishop, or pawn.';
+      if (tier === 3) return 'Flip an enemy rook or queen onto your team.';
+      if (tier === 2) return 'Flip an enemy knight or bishop onto your team.';
+      return 'Flip an enemy pawn onto your team.';
+    case 'drones':
+      if (tier === 5) return 'Launch 6 drones (3 front, sides, back).';
+      if (tier === 4) return 'Launch drones front, sides, and back.';
+      if (tier === 3) return 'Launch drones front, left, and right.';
+      if (tier === 2) return 'Launch drones front and left.';
+      return 'Launch a drone forward.';
+    case 'squad':
+      return 'Allies spawn in front of Rookie each level.';
     case 'surge':
       if (tier === 5) return 'Take 3 extra moves this turn.';
       if (tier >= 3) return 'Take 2 extra moves this turn.';
@@ -417,18 +445,20 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return 'Rabid 2 turns. 2/level.';
       if (tier === 2) return 'Rabid 2 turns. 1/level.';
       return 'Rabid 1 turn. 1/level.';
-    case 'phase-step':
-      if (tier === 5) return 'Teleport anywhere empty.';
-      if (tier === 4) return 'Any line, through everything.';
-      if (tier === 3) return '3 sq any dir, through 1 piece.';
-      if (tier === 2) return '2 sq any dir, through 1 piece.';
-      return '1 sq any dir, through 1 piece.';
-    case 'leap':
-      if (tier === 5) return 'Jump 2-6 sq any of 8 dirs. 3/level.';
-      if (tier === 4) return 'Jump 2-4 sq any cardinal. 2/level.';
-      if (tier === 3) return 'Jump 2-4 sq forward. 2/level.';
-      if (tier === 2) return 'Jump 2 or 3 sq forward. 1/level.';
-      return 'Jump exactly 2 sq forward. 1/level.';
+    case 'convert':
+      if (tier === 5) return 'Flip any non-king. 2/level.';
+      if (tier === 4) return 'Flip pawn/minor/major. 2/level.';
+      if (tier === 3) return 'Flip rook/queen. 2/level.';
+      if (tier === 2) return 'Flip knight/bishop. 1/level.';
+      return 'Flip an enemy pawn. 1/level.';
+    case 'drones':
+      if (tier === 5) return '6 drones (3 front + sides + back). 2/level.';
+      if (tier === 4) return '4 drones (front, sides, back). 2/level.';
+      if (tier === 3) return '3 drones (front + sides). 2/level.';
+      if (tier === 2) return '2 drones (front, left). 1/level.';
+      return '1 drone (front). 1/level.';
+    case 'squad':
+      return 'Passive: allies spawn each level.';
     case 'surge':
       if (tier === 5) return '+3 extra moves this turn. 2/level.';
       if (tier === 4) return '+2 extra moves this turn. 2/level.';
@@ -476,8 +506,21 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   const ownedCount = owned.size;
   const atCap = ownedCount >= MAX_OWNED_ABILITIES;
 
+  // Per-run allowlist (e.g. abilities-v2 test run). When set, restrict both
+  // new offers AND upgrade offers to listed ids.
+  const runAllowed = state.runId
+    ? (() => {
+        try {
+          const r = getRunById(state.runId);
+          return r.allowedAbilities ? new Set(r.allowedAbilities as string[]) : null;
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+
   const newPool: AbilityOfferOption[] = ALL_ABILITY_IDS.filter(
-    (id) => !owned.has(id),
+    (id) => !owned.has(id) && (!runAllowed || runAllowed.has(id)),
   ).map((id) => ({
     kind: 'new',
     id,
@@ -486,7 +529,7 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
   }));
 
   const upgradePool: AbilityOfferOption[] = [...owned.values()]
-    .filter((a) => a.tier < 5)
+    .filter((a) => a.tier < 5 && (!runAllowed || runAllowed.has(a.id)))
     .map((a) => {
       const next = (a.tier + 1) as AbilityTier;
       return {
@@ -573,7 +616,19 @@ export function applyOfferPick(
       };
     });
   }
-  return { ...state, abilities, pendingOffer: null, tempo: 0 };
+  // Squad is a passive whose payoff is the spawn itself. Spawn immediately on
+  // pick / upgrade so the player sees pieces this turn (instead of waiting for
+  // the next level). Existing allies are preserved; new spawns drop into any
+  // empty roster slots that aren't already occupied.
+  let allies = state.allies;
+  if (option.id === 'squad') {
+    const tier = option.kind === 'new' ? 1 : option.tier;
+    const roster = squadSpawnFor(tier, state.rookie, state.pieces, state.hazards);
+    const occupied = new Set(allies.map((a) => `${a.file},${a.rank}`));
+    const fresh = roster.filter((r) => !occupied.has(`${r.file},${r.rank}`));
+    allies = [...allies, ...fresh];
+  }
+  return { ...state, abilities, allies, pendingOffer: null, tempo: 0 };
 }
 
 export function applyDismissOffer(state: BoardState): BoardState {
@@ -589,128 +644,53 @@ export function applyDismissOffer(state: BoardState): BoardState {
 // Legal-move computation (for movement-style abilities only).
 // ---------------------------------------------------------------------------
 
-function inBounds(c: Coord): boolean {
-  return c.file >= 1 && c.file <= 8 && c.rank >= 1 && c.rank <= 8;
-}
-
-function isHazard(state: BoardState, c: Coord): boolean {
-  return state.hazards.some((h) => h.file === c.file && h.rank === c.rank);
-}
-
-function enemyAt(state: BoardState, c: Coord): EnemyPiece | undefined {
-  return state.pieces.find((p) => p.file === c.file && p.rank === c.rank);
-}
-
-function phaseStepMoves(state: BoardState, tier: AbilityTier): Coord[] {
-  const out: Coord[] = [];
-  const { rookie } = state;
-  if (tier === 5) {
-    for (let f = 1; f <= 8; f++) {
-      for (let r = 1; r <= 8; r++) {
-        if (f === rookie.file && r === rookie.rank) continue;
-        const c = { file: f, rank: r };
-        if (isHazard(state, c)) continue;
-        if (enemyAt(state, c)) continue;
-        out.push(c);
-      }
-    }
-    return out;
-  }
-  const maxDist = tier === 4 ? 8 : tier;
-  const phaseThrough = tier === 4 ? Infinity : 1;
-  const DIRS = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-    [1, 1],
-    [1, -1],
-    [-1, 1],
-    [-1, -1],
-  ] as const;
-  for (const [df, dr] of DIRS) {
-    let phased = 0;
-    let f = rookie.file + df;
-    let r = rookie.rank + dr;
-    for (let d = 1; d <= maxDist; d++, f += df, r += dr) {
-      const c = { file: f, rank: r };
-      if (!inBounds(c)) break;
-      if (isHazard(state, c)) break;
-      const piece = enemyAt(state, c);
-      if (piece) {
-        phased++;
-        if (phased > phaseThrough) break;
-        out.push(c);
-        continue;
-      }
-      out.push(c);
-    }
-  }
-  return out;
-}
-
-function leapMoves(state: BoardState, tier: AbilityTier): Coord[] {
-  const FORWARD: ReadonlyArray<readonly [number, number]> = [[0, 1]];
-  const CARDINALS: ReadonlyArray<readonly [number, number]> = [
-    [0, 1],
-    [0, -1],
-    [1, 0],
-    [-1, 0],
-  ];
-  const ALL_DIRS: ReadonlyArray<readonly [number, number]> = [
-    [0, 1],
-    [0, -1],
-    [1, 0],
-    [-1, 0],
-    [1, 1],
-    [1, -1],
-    [-1, 1],
-    [-1, -1],
-  ];
-
-  let dirs: ReadonlyArray<readonly [number, number]>;
-  let distances: number[];
-  if (tier === 1) {
-    dirs = FORWARD;
-    distances = [2];
-  } else if (tier === 2) {
-    dirs = FORWARD;
-    distances = [2, 3];
-  } else if (tier === 3) {
-    dirs = FORWARD;
-    distances = [2, 3, 4];
-  } else if (tier === 4) {
-    dirs = CARDINALS;
-    distances = [2, 3, 4];
-  } else {
-    dirs = ALL_DIRS;
-    distances = [2, 3, 4, 5, 6];
-  }
-
-  const out: Coord[] = [];
-  const { rookie } = state;
-  for (const [df, dr] of dirs) {
-    for (const d of distances) {
-      const c = { file: rookie.file + df * d, rank: rookie.rank + dr * d };
-      if (!inBounds(c)) continue;
-      if (isHazard(state, c)) continue;
-      if (enemyAt(state, c)) continue;
-      out.push(c);
-    }
-  }
-  return out;
-}
+// (inBounds/isHazard/enemyAt removed with leap/phase-step.)
 
 export function abilityLegalMoves(
   state: BoardState,
   abilityId: AbilityId,
 ): Coord[] {
-  const owned = state.abilities.find((a) => a.id === abilityId);
-  if (!owned) return [];
-  if (abilityId === 'phase-step') return phaseStepMoves(state, owned.tier);
-  if (abilityId === 'leap') return leapMoves(state, owned.tier);
+  // v2: no movement abilities remain; convert/drones use other UI paths.
+  void state;
+  void abilityId;
   return [];
 }
+
+/**
+ * Convert targeting: which enemy piece types are eligible at this tier.
+ * King is never targetable.
+ */
+export function convertEligibleTypes(tier: AbilityTier): Set<'pawn' | 'knight' | 'bishop' | 'queen'> {
+  if (tier === 1) return new Set(['pawn']);
+  if (tier === 2) return new Set(['pawn', 'knight', 'bishop']);
+  return new Set(['pawn', 'knight', 'bishop', 'queen']);
+}
+
+/** Enemy squares the active Convert ability can target. */
+export function convertTargets(state: BoardState): Coord[] {
+  const owned = state.abilities.find((a) => a.id === 'convert');
+  if (!owned) return [];
+  const elig = convertEligibleTypes(owned.tier);
+  return state.pieces
+    .filter((p) => elig.has(p.type as 'pawn' | 'knight' | 'bishop' | 'queen'))
+    .map((p) => ({ file: p.file, rank: p.rank }));
+}
+
+/** Directions each Drones tier launches in. dx/dy from Rookie's perspective. */
+function droneDirs(tier: AbilityTier): Array<[number, number]> {
+  // dr = +1 means "toward rank 8" (forward).
+  const FRONT: [number, number] = [0, 1];
+  const LEFT: [number, number] = [-1, 0];
+  const RIGHT: [number, number] = [1, 0];
+  const BACK: [number, number] = [0, -1];
+  if (tier === 1) return [FRONT];
+  if (tier === 2) return [FRONT, LEFT];
+  if (tier === 3) return [FRONT, LEFT, RIGHT];
+  if (tier === 4) return [FRONT, LEFT, RIGHT, BACK];
+  return [FRONT, FRONT, FRONT, LEFT, RIGHT, BACK];
+}
+
+// firstEnemyAlongRay inlined in applyDrones for clarity.
 
 // ---------------------------------------------------------------------------
 // Activation.
@@ -751,6 +731,9 @@ export function applyAbilityActivate(
   }
   if (abilityId === 'aegis') {
     return applyAegis(state);
+  }
+  if (abilityId === 'drones') {
+    return applyDrones(state);
   }
 
   // All targeted abilities (freeze ray, poison dart, rabies dart, decoy)
@@ -902,12 +885,8 @@ export function applyAbilityMove(
   const nextTurn: BoardState['turn'] = hasBonus ? 'rookie' : 'enemy';
   const nextBonus = hasBonus ? state.bonusMovesLeft - 1 : state.bonusMovesLeft;
 
-  const fxKind: 'phase-step' | 'leap' | null =
-    abilityId === 'phase-step'
-      ? 'phase-step'
-      : abilityId === 'leap'
-        ? 'leap'
-        : null;
+  // No movement-style abilities remain in v2 — fx unchanged.
+  const fxKind: null = null;
 
   const afterMove: BoardState = {
     ...state,
@@ -1008,6 +987,35 @@ export function applyAbilityTargeted(
         kind: 'poison-dart',
         from: toSquare(state.rookie),
         to: toSquare(target),
+        id: Date.now() + Math.random(),
+      },
+    };
+  }
+
+  if (abilityId === 'convert') {
+    const hit = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    if (!hit) return state;
+    const elig = convertEligibleTypes(owned.tier);
+    if (!elig.has(hit.type as 'pawn' | 'knight' | 'bishop' | 'queen')) return state;
+    const sq = toSquare(target);
+    const cleared = clearStatusOnSquare(state, sq);
+    return {
+      ...state,
+      ...cleared,
+      pieces: state.pieces.filter((p) => p !== hit),
+      allies: [
+        ...state.allies,
+        { id: Date.now() + Math.random(), type: hit.type, file: hit.file, rank: hit.rank, source: 'convert' },
+      ],
+      abilities: decrementUse(state.abilities, abilityId),
+      activeAbility: null,
+      cancellableActivation: undefined,
+      lastAbilityFx: {
+        kind: 'convert',
+        from: toSquare(state.rookie),
+        to: sq,
         id: Date.now() + Math.random(),
       },
     };
@@ -1180,6 +1188,413 @@ export function clearStatusOnSquare(
     rabidTurnsLeft,
     frozenSquares,
     frozenTurnsLeft,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Drones — spawns N mini-Rookies that wander the board randomly. Each drone
+// vanishes when it lands on an enemy (= capture). UI-driven: stepDroneTurn
+// advances every live drone one square per tick.
+// ---------------------------------------------------------------------------
+
+/** Hard cap so a drone never wanders forever on a sparse board. */
+export const DRONE_MAX_STEPS = 8;
+
+/** Drones move like rooks — N/S/E/W only. */
+const DRONE_4_DIRS: ReadonlyArray<[number, number]> = [
+  [-1, 0], [1, 0], [0, -1], [0, 1],
+];
+
+function droneCountForTier(tier: AbilityTier): number {
+  // Scale drones with tier. T1=1 → T5=6.
+  switch (tier) {
+    case 1: return 1;
+    case 2: return 2;
+    case 3: return 3;
+    case 4: return 4;
+    case 5: return 6;
+    default: return 1;
+  }
+}
+
+function applyDrones(state: BoardState): BoardState {
+  const owned = state.abilities.find((a) => a.id === 'drones');
+  if (!owned) return state;
+  if (owned.usesLeftThisLevel === 0) return state;
+  const count = droneCountForTier(owned.tier);
+  const now = Date.now();
+  const drones: Drone[] = Array.from({ length: count }, (_, i) => ({
+    id: now + i,
+    file: state.rookie.file,
+    rank: state.rookie.rank,
+    alive: true,
+    steps: 0,
+  }));
+  return {
+    ...state,
+    drones,
+    turn: 'drones',
+    abilities: decrementUse(state.abilities, 'drones'),
+    activeAbility: null,
+    cancellableActivation: undefined,
+  };
+}
+
+/**
+ * Advance every live drone one random step. Drones that land on an enemy
+ * capture it and die. Drones that hit the step cap die unfed. When all
+ * drones are dead, the phase ends and turn flips to 'enemy'.
+ */
+export function stepDroneTurn(state: BoardState): BoardState {
+  if (state.turn !== 'drones' || state.status !== 'playing') return state;
+  const liveCount = state.drones.filter((d) => d.alive).length;
+  if (liveCount === 0) {
+    return {
+      ...state,
+      drones: [],
+      turn: 'enemy',
+      enemyMovedSquares: [],
+      enemyVacatedSquares: [],
+    };
+  }
+  let pieces = state.pieces;
+  let captures = state.captures;
+  let tempo = state.tempo;
+  let statusAccum: BoardState = state;
+  const nextDrones = state.drones.map((d) => {
+    if (!d.alive) return d;
+    if (d.steps >= DRONE_MAX_STEPS) return { ...d, alive: false };
+    // Pick a random rook direction, then SLIDE that way until we hit an
+    // enemy (capture & vanish) or the board edge (stop at the last square).
+    const order = [...DRONE_4_DIRS].sort(() => Math.random() - 0.5);
+    let chosen: [number, number] | null = null;
+    for (const [df, dr] of order) {
+      const f = d.file + df;
+      const r = d.rank + dr;
+      if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+      chosen = [df, dr];
+      break;
+    }
+    if (!chosen) return { ...d, alive: false };
+    let nf = d.file;
+    let nr = d.rank;
+    let captured: EnemyPiece | null = null;
+    let f = d.file + chosen[0];
+    let r = d.rank + chosen[1];
+    while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+      const enemy = pieces.find((p) => p.file === f && p.rank === r);
+      if (enemy) {
+        captured = enemy;
+        nf = f;
+        nr = r;
+        break;
+      }
+      nf = f;
+      nr = r;
+      f += chosen[0];
+      r += chosen[1];
+    }
+    if (captured) {
+      const sq = toSquare(captured);
+      const overlay = clearStatusOnSquare(statusAccum, sq);
+      statusAccum = { ...statusAccum, ...overlay };
+      pieces = pieces.filter((p) => p !== captured);
+      captures = [...captures, captured.type];
+      tempo = Math.min(TEMPO_MAX, tempo + (TEMPO_REWARD[captured.type] ?? 0));
+      return { ...d, file: nf, rank: nr, alive: false, steps: d.steps + 1 };
+    }
+    return { ...d, file: nf, rank: nr, steps: d.steps + 1 };
+  });
+  return {
+    ...state,
+    ...statusAccum,
+    drones: nextDrones,
+    pieces,
+    captures,
+    tempo,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Squad — passive. Spawns rainbow allies at level start. Scales with the
+// `level` field on BoardState (1..N).
+// ---------------------------------------------------------------------------
+
+/**
+ * Compute the squad roster for a given level / rookie start square. Doesn't
+ * collide with enemies — squares that would overlap are simply skipped.
+ */
+/**
+ * Squad roster scales with the ABILITY's tier (T1 → T5), not the run level.
+ * Squad is now an offerable passive: Rookie owns it after picking it from a
+ * tempo offer; upgrading promotes her roster.
+ */
+export function squadSpawnFor(
+  tier: AbilityTier,
+  rookie: Coord,
+  pieces: EnemyPiece[],
+  hazards: Coord[],
+): AllyPiece[] {
+  const out: AllyPiece[] = [];
+  const taken = (file: number, rank: number): boolean => {
+    if (file < 1 || file > 8 || rank < 1 || rank > 8) return true;
+    if (rookie.file === file && rookie.rank === rank) return true;
+    if (pieces.some((p) => p.file === file && p.rank === rank)) return true;
+    if (hazards.some((h) => h.file === file && h.rank === rank)) return true;
+    if (out.some((a) => a.file === file && a.rank === rank)) return true;
+    return false;
+  };
+  const add = (type: PieceType, file: number, rank: number): void => {
+    if (taken(file, rank)) return;
+    out.push({ id: Date.now() * 1000 + out.length, type, file, rank, source: 'squad' });
+  };
+  // Everything spawns in front of Rookie (rank+1 or rank+2) so her east/west
+  // axes stay open and she always has a legal first move.
+  const front = rookie.rank + 1;
+  const front2 = rookie.rank + 2;
+  const t = Math.max(1, tier);
+  if (t >= 1) {
+    add('pawn', rookie.file, front);
+  }
+  if (t >= 2) {
+    add('pawn', rookie.file - 1, front);
+    add('pawn', rookie.file + 1, front);
+  }
+  if (t >= 3) {
+    add('knight', rookie.file - 2, front);
+  }
+  if (t >= 4) {
+    add('bishop', rookie.file + 2, front);
+  }
+  if (t >= 5) {
+    add('pawn', rookie.file, front2);
+    add('pawn', rookie.file - 2, front2);
+    add('pawn', rookie.file + 2, front2);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Ally movement — runs between Rookie's move and the enemy turn.
+// Each ally tries to capture, otherwise pushes toward rank 8.
+// ---------------------------------------------------------------------------
+
+const ALLY_KNIGHT_DELTAS: ReadonlyArray<[number, number]> = [
+  [1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1],
+];
+const ALLY_BISHOP_DIRS: ReadonlyArray<[number, number]> = [
+  [1, 1], [1, -1], [-1, 1], [-1, -1],
+];
+const ALLY_ROOK_DIRS: ReadonlyArray<[number, number]> = [
+  [1, 0], [-1, 0], [0, 1], [0, -1],
+];
+const ALLY_QUEEN_DIRS: ReadonlyArray<[number, number]> = [
+  ...ALLY_ROOK_DIRS, ...ALLY_BISHOP_DIRS,
+];
+
+function allyOccupied(state: BoardState, file: number, rank: number, self: AllyPiece): boolean {
+  if (state.rookie.file === file && state.rookie.rank === rank) return true;
+  if (state.allies.some((a) => a !== self && a.file === file && a.rank === rank)) return true;
+  return false;
+}
+
+function allyInBounds(f: number, r: number): boolean {
+  return f >= 1 && f <= 8 && r >= 1 && r <= 8;
+}
+
+function allyIsHazard(state: BoardState, f: number, r: number): boolean {
+  return state.hazards.some((h) => h.file === f && h.rank === r);
+}
+
+/** Possible (target, capturedEnemy|null) moves for an ally piece. */
+function allyMoves(
+  state: BoardState,
+  ally: AllyPiece,
+): Array<{ to: Coord; capture: EnemyPiece | null }> {
+  const out: Array<{ to: Coord; capture: EnemyPiece | null }> = [];
+  const tryLand = (f: number, r: number): { to: Coord; capture: EnemyPiece | null } | null => {
+    if (!allyInBounds(f, r)) return null;
+    if (allyIsHazard(state, f, r)) return null;
+    if (allyOccupied(state, f, r, ally)) return null;
+    const enemy = state.pieces.find((p) => p.file === f && p.rank === r);
+    return { to: { file: f, rank: r }, capture: enemy ?? null };
+  };
+  switch (ally.type) {
+    case 'pawn': {
+      // Advance forward (toward rank 8) one square if empty.
+      const forward = tryLand(ally.file, ally.rank + 1);
+      if (forward && !forward.capture) out.push(forward);
+      // Diagonal captures.
+      for (const df of [-1, 1]) {
+        const m = tryLand(ally.file + df, ally.rank + 1);
+        if (m && m.capture) out.push(m);
+      }
+      return out;
+    }
+    case 'knight': {
+      for (const [df, dr] of ALLY_KNIGHT_DELTAS) {
+        const m = tryLand(ally.file + df, ally.rank + dr);
+        if (m) out.push(m);
+      }
+      return out;
+    }
+    case 'bishop':
+    case 'queen': {
+      const dirs = ally.type === 'queen' ? ALLY_QUEEN_DIRS : ALLY_BISHOP_DIRS;
+      for (const [df, dr] of dirs) {
+        let f = ally.file + df;
+        let r = ally.rank + dr;
+        while (allyInBounds(f, r)) {
+          if (allyIsHazard(state, f, r)) break;
+          if (allyOccupied(state, f, r, ally)) break;
+          const enemy = state.pieces.find((p) => p.file === f && p.rank === r);
+          out.push({ to: { file: f, rank: r }, capture: enemy ?? null });
+          if (enemy) break;
+          f += df;
+          r += dr;
+        }
+      }
+      return out;
+    }
+  }
+}
+
+/**
+ * Heuristic score for an ally choosing a move. Higher is better.
+ * - Capture bonus scales with victim value.
+ * - Otherwise prefer moves that advance toward rank 8.
+ * - Penalty if the resulting square is attacked by any remaining enemy (so the
+ *   ally doesn't walk into a free capture).
+ */
+function allyScoreMove(
+  state: BoardState,
+  ally: AllyPiece,
+  move: { to: Coord; capture: EnemyPiece | null },
+): number {
+  const VALUE: Record<PieceType, number> = { queen: 9, bishop: 3, knight: 3, pawn: 1 };
+  let score = 0;
+  if (move.capture) score += 100 + VALUE[move.capture.type] * 10;
+  score += move.to.rank * 2; // advance bonus
+  // Safety check — count enemies that could capture this square next turn.
+  const attacked = squareAttackedByEnemy(state, move.to, ally, move.capture);
+  if (attacked) score -= 30;
+  return score;
+}
+
+/** Cheap "is this square attacked by some enemy?" using direct geometry. */
+function squareAttackedByEnemy(
+  state: BoardState,
+  sq: Coord,
+  movingAlly: AllyPiece,
+  capturedEnemy: EnemyPiece | null,
+): boolean {
+  for (const e of state.pieces) {
+    if (e === capturedEnemy) continue;
+    // Pawn diagonal attacks (enemy moves toward rank 1).
+    if (e.type === 'pawn') {
+      if (e.rank - 1 === sq.rank && (e.file - 1 === sq.file || e.file + 1 === sq.file)) {
+        return true;
+      }
+      continue;
+    }
+    if (e.type === 'knight') {
+      for (const [df, dr] of ALLY_KNIGHT_DELTAS) {
+        if (e.file + df === sq.file && e.rank + dr === sq.rank) return true;
+      }
+      continue;
+    }
+    const dirs = e.type === 'queen' ? ALLY_QUEEN_DIRS : ALLY_BISHOP_DIRS;
+    if (e.type === 'queen') {
+      // queens cover all 8.
+    }
+    for (const [df, dr] of (e.type === 'bishop' ? ALLY_BISHOP_DIRS : e.type === 'queen' ? ALLY_QUEEN_DIRS : dirs)) {
+      let f = e.file + df;
+      let r = e.rank + dr;
+      while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+        if (f === sq.file && r === sq.rank) return true;
+        // Stop at any blocker — Rookie, ally (not the moving one) or enemy.
+        if (state.rookie.file === f && state.rookie.rank === r) break;
+        if (state.allies.some((a) => a !== movingAlly && a.file === f && a.rank === r)) break;
+        if (state.pieces.some((p) => p !== e && p.file === f && p.rank === r)) break;
+        f += df;
+        r += dr;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Advance ONE ally per call. Driven by the UI tick when `turn === 'allies'`
+ * so each move animates separately (mirrors `stepEnemyTurn`'s pattern). The
+ * ally at index `state.allyTurnIndex` acts, then the index advances. When
+ * every ally has had a turn, control passes to the enemy.
+ *
+ * Captures take precedence; pawns promote to queen on rank 8.
+ * Source=convert allies are slightly less consistent (30% random move,
+ * 70% best-by-score) so they sometimes walk into trouble.
+ */
+export function stepAllyTurn(state: BoardState): BoardState {
+  if (state.turn !== 'allies' || state.status !== 'playing') return state;
+  // No allies, or every ally has moved — hand off to enemy.
+  if (state.allyTurnIndex >= state.allies.length) {
+    return { ...state, turn: 'enemy', allyTurnIndex: 0 };
+  }
+  const idx = state.allyTurnIndex;
+  const ally = state.allies[idx];
+  // Ally either can't move or no longer exists — skip it.
+  if (!ally) {
+    return { ...state, allyTurnIndex: idx + 1 };
+  }
+  const moves = allyMoves(state, ally);
+  if (moves.length === 0) {
+    return { ...state, allyTurnIndex: idx + 1 };
+  }
+  let pick: { to: Coord; capture: EnemyPiece | null };
+  if (ally.source === 'convert' && Math.random() < 0.3) {
+    pick = moves[Math.floor(Math.random() * moves.length)];
+  } else {
+    let best = moves[0];
+    let bestScore = allyScoreMove(state, ally, best);
+    for (const m of moves.slice(1)) {
+      const s = allyScoreMove(state, ally, m);
+      if (s > bestScore) {
+        bestScore = s;
+        best = m;
+      }
+    }
+    pick = best;
+  }
+  const nextAllies = state.allies.map((a, i) =>
+    i === idx
+      ? {
+          ...a,
+          file: pick.to.file,
+          rank: pick.to.rank,
+          type: a.type === 'pawn' && pick.to.rank === 8 ? ('queen' as PieceType) : a.type,
+        }
+      : a,
+  );
+  let nextPieces = state.pieces;
+  let nextCaptures = state.captures;
+  let nextTempo = state.tempo;
+  let statusClear: ReturnType<typeof clearStatusOnSquare> | null = null;
+  if (pick.capture) {
+    const sq = toSquare(pick.capture);
+    statusClear = clearStatusOnSquare(state, sq);
+    nextPieces = nextPieces.filter((p) => p !== pick.capture);
+    nextCaptures = [...nextCaptures, pick.capture.type];
+    const gain = TEMPO_REWARD[pick.capture.type] ?? 0;
+    nextTempo = Math.min(TEMPO_MAX, state.tempo + gain);
+  }
+  return {
+    ...state,
+    ...(statusClear ?? {}),
+    allies: nextAllies,
+    pieces: nextPieces,
+    captures: nextCaptures,
+    tempo: nextTempo,
+    allyTurnIndex: idx + 1,
   };
 }
 

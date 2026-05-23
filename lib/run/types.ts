@@ -31,12 +31,47 @@ export interface EnemyPiece {
   rank: number;
 }
 
-export type Turn = 'rookie' | 'enemy';
+/**
+ * Rainbow ally piece — spawned by Squad (passive) or Convert (active).
+ * `source` lets Convert allies use slightly worse AI than Squad allies.
+ */
+export interface AllyPiece {
+  id: number;
+  type: PieceType;
+  file: number;
+  rank: number;
+  source: 'squad' | 'convert';
+}
+
+export type Turn = 'rookie' | 'allies' | 'drones' | 'enemy';
+
+/**
+ * Active drone — a mini-Rookie wandering the board, spawned by the Drones
+ * ability. Each tick it moves one square in a random 8-way direction, and
+ * vanishes (alive=false) on contact with an enemy (= capture) or after
+ * `DRONE_MAX_STEPS` random walks with no capture.
+ */
+export interface Drone {
+  id: number;
+  file: number;
+  rank: number;
+  alive: boolean;
+  steps: number;
+}
 export type GameStatus = 'playing' | 'won' | 'lost';
 
 export interface BoardState {
   rookie: Coord;
   pieces: EnemyPiece[];
+  /** Rainbow ally pieces — spawned by Squad / Convert. Play after Rookie's move. */
+  allies: AllyPiece[];
+  /**
+   * Active drones (mini-Rookies). Populated when Drones ability fires; cleared
+   * when the drone phase ends. Empty outside the drone phase.
+   */
+  drones: Drone[];
+  // (allies is required, but legacy fixture states in /test pages may omit it;
+  // see harden notes — we keep it required for runtime invariants.)
   hazards: Coord[]; // no-go squares for Rookie (introduced level 8+)
   turn: Turn;
   status: GameStatus;
@@ -97,6 +132,13 @@ export interface BoardState {
   rabidSquares: string[];
   /** Remaining enemy turns each rabid square stays rabid. */
   rabidTurnsLeft: Record<string, number>;
+  /**
+   * Index of the next ally to act when `turn === 'allies'`. Each tick of
+   * `stepAllyTurn` moves `state.allies[allyTurnIndex]`, increments, and when
+   * it reaches `state.allies.length` the phase ends (turn → 'enemy', index
+   * resets to 0). Outside ally phase this is 0.
+   */
+  allyTurnIndex: number;
   /** Permanent abilities Rookie has accrued this run. */
   abilities: OwnedAbility[];
   /** When the tempo meter fills, the player is offered 3 ability choices. */
@@ -105,6 +147,8 @@ export interface BoardState {
   activeAbility: { id: AbilityId; step: 'pick-square' | 'pick-enemy' } | null;
   /** Current level number (1-based) — drives pawn promotion options. */
   level: number;
+  /** Which run this state belongs to — used to filter ability offers. */
+  runId?: string;
   /**
    * Extra Rookie moves queued by Surge. While > 0, the turn stays with Rookie
    * after a move or ability instead of handing off to the enemy. Decremented
@@ -137,11 +181,11 @@ export interface BoardState {
    */
   lastAbilityFx?: {
     kind:
-      | 'phase-step'
-      | 'leap'
       | 'freeze-ray'
       | 'poison-dart'
-      | 'rabies-dart';
+      | 'rabies-dart'
+      | 'convert'
+      | 'drones';
     from: string;
     to: string;
     id: number;
