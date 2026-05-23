@@ -154,7 +154,14 @@ export function RunBoard({
     () => state.rookie.file,
   );
   const [introScale, setIntroScale] = useState(1);
+  // Guard against React StrictMode double-invoke in dev. Without this the
+  // emerge keyframe + Rookie strobe fire twice on each level start (the first
+  // pass leaks its 650ms CSS keyframe after cleanup, then the second pass
+  // restarts the sweep on top).
+  const lastIntroLevelRef = useRef<number | null>(null);
   useEffect(() => {
+    if (lastIntroLevelRef.current === state.level) return;
+    lastIntroLevelRef.current = state.level;
     setIntroId(Date.now());
     setIntroPlaying(true);
 
