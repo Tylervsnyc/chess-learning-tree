@@ -726,17 +726,16 @@ function applyAction(state: BoardState, action: EnemyAction): BoardState {
   if (allyHit) {
     const nextAllies = state.allies.filter((a) => a !== allyHit);
     const relocated = relocateStatusMarkers(state, fromSq, toSq);
+    // Allies live in AllyOverlay (not the chessboard's position map), so the
+    // destination square has no piece for react-chessboard to "swap" with.
+    // Skip lastEnemyCaptureFx here — the natural slide animation is smooth;
+    // the overlay-based FX is for enemy-on-enemy captures where the diff
+    // would otherwise snap.
     return {
       ...state,
       ...relocated,
       pieces: newPieces,
       allies: nextAllies,
-      lastEnemyCaptureFx: {
-        fromSq,
-        toSq,
-        pieceType: mover.type,
-        id: Date.now() + Math.random(),
-      },
     };
   }
   const relocated = relocateStatusMarkers(state, fromSq, toSq);
