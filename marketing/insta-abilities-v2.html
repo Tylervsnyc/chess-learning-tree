@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rookie's Run — 3 New Abilities</title>
+    <style>
+      :root {
+        --page: #eef6fc;
+        --surface: #ffffff;
+        --text: #2a3c45;
+        --muted: #6b7c8a;
+        --faint: #94a3b8;
+        --green: #58cc02;
+        --blue: #1cb0f6;
+        --gold: #ffd700;
+        --gold-dark: #b8860b;
+        --purple: #ce82ff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+          Arial, sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        background: var(--page);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .frame {
+        width: 1080px;
+        height: 1350px;
+        background:
+          radial-gradient(
+            ellipse at top left,
+            #ffe3b3 0%,
+            transparent 45%
+          ),
+          radial-gradient(
+            ellipse at top right,
+            #ffd1f0 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at bottom left,
+            #b8e8ff 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at bottom right,
+            #d9ffc1 0%,
+            transparent 50%
+          ),
+          linear-gradient(180deg, #f7fbff 0%, #eef6fc 100%);
+        position: relative;
+        overflow: hidden;
+        padding: 72px 64px 60px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Subtle confetti dots */
+      .frame::before,
+      .frame::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(circle, rgba(255, 211, 71, 0.55) 2px, transparent 2.5px),
+          radial-gradient(circle, rgba(28, 176, 246, 0.45) 2px, transparent 2.5px),
+          radial-gradient(circle, rgba(206, 130, 255, 0.45) 2px, transparent 2.5px);
+        background-size: 220px 220px, 280px 280px, 340px 340px;
+        background-position: 30px 40px, 120px 160px, 200px 80px;
+        opacity: 0.6;
+      }
+
+      .frame::after {
+        background-position: 60px 900px, 400px 1100px, 800px 950px;
+        opacity: 0.5;
+      }
+
+      .header {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--surface);
+        border: 2px solid #d6e4ed;
+        padding: 10px 22px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 22px;
+        color: var(--text);
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 0 #d6e4ed;
+      }
+
+      .eyebrow .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 4px rgba(88, 204, 2, 0.18);
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+      }
+
+      h1 {
+        font-size: 96px;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -2px;
+        margin-top: 26px;
+        background: linear-gradient(
+          135deg,
+          #1cb0f6 0%,
+          #ce82ff 50%,
+          #58cc02 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 6px 0 rgba(0, 0, 0, 0.04);
+      }
+
+      .subhead {
+        margin-top: 22px;
+        font-size: 30px;
+        color: var(--muted);
+        font-weight: 600;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.3;
+      }
+
+      .subhead .accent {
+        color: var(--text);
+        font-weight: 800;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-top: 56px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 24px;
+        padding: 28px 32px;
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 26px;
+        align-items: center;
+        position: relative;
+        box-shadow:
+          0 6px 0 var(--shadow, #d6e4ed),
+          0 16px 40px -16px rgba(42, 60, 69, 0.18);
+        border: 3px solid var(--border, #d6e4ed);
+      }
+
+      .card.squad {
+        --border: #b3e6c1;
+        --shadow: #8fd9a8;
+        --accent: var(--green);
+        --accent-bg: #eafbe1;
+      }
+
+      .card.convert {
+        --border: #b5dffb;
+        --shadow: #87caf3;
+        --accent: var(--blue);
+        --accent-bg: #e1f4fe;
+      }
+
+      .card.drones {
+        --border: #ffe2a1;
+        --shadow: #f3c462;
+        --accent: var(--gold-dark);
+        --accent-bg: #fff5d6;
+      }
+
+      .icon {
+        width: 130px;
+        height: 130px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-bg);
+        position: relative;
+      }
+
+      .icon svg {
+        width: 86px;
+        height: 86px;
+      }
+
+      .card-body h2 {
+        font-size: 46px;
+        font-weight: 900;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+      }
+
+      .card-body h2 .type {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--accent);
+        background: var(--accent-bg);
+        padding: 6px 12px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        line-height: 1;
+      }
+
+      .card-body p {
+        margin-top: 8px;
+        font-size: 24px;
+        color: var(--muted);
+        font-weight: 500;
+        line-height: 1.35;
+      }
+
+      .card-body p .em {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .footer {
+        margin-top: auto;
+        padding-top: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .brand .logo {
+        width: 76px;
+        height: 76px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #1cb0f6, #ce82ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        color: white;
+        font-weight: 900;
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+      }
+
+      .brand-text {
+        line-height: 1.1;
+      }
+
+      .brand-text .title {
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--text);
+      }
+
+      .brand-text .sub {
+        font-size: 20px;
+        color: var(--muted);
+        font-weight: 600;
+        margin-top: 2px;
+      }
+
+      .cta {
+        background: var(--green);
+        color: white;
+        font-size: 26px;
+        font-weight: 900;
+        padding: 18px 28px;
+        border-radius: 18px;
+        box-shadow: 0 6px 0 #46a302;
+        letter-spacing: 0.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="header">
+        <div class="eyebrow">
+          <span class="dot"></span> NEW IN ROOKIE'S RUN
+        </div>
+        <h1>
+          You're not<br />alone anymore.
+        </h1>
+        <p class="subhead">
+          Three new abilities just landed — <span class="accent">Rookie can build a team.</span>
+        </p>
+      </div>
+
+      <div class="cards">
+        <!-- SQUAD -->
+        <div class="card squad">
+          <div class="icon">
+            <!-- Three little pawns -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g fill="#58cc02">
+                <circle cx="22" cy="38" r="10" />
+                <path d="M14 78 L30 78 L32 60 Q22 52 12 60 Z" />
+                <rect x="10" y="78" width="24" height="6" rx="2" />
+              </g>
+              <g fill="#58cc02">
+                <circle cx="50" cy="32" r="11" />
+                <path d="M40 78 L60 78 L62 55 Q50 46 38 55 Z" />
+                <rect x="38" y="78" width="24" height="7" rx="2" />
+              </g>
+              <g fill="#58cc02">
+                <circle cx="78" cy="38" r="10" />
+                <path d="M70 78 L86 78 L88 60 Q78 52 68 60 Z" />
+                <rect x="66" y="78" width="24" height="6" rx="2" />
+              </g>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h2>Squad <span class="type">Passive</span></h2>
+            <p>
+              <span class="em">Allies spawn at the start of every level.</span>
+              They march down the board and capture for you. Rookie has friends now.
+            </p>
+          </div>
+        </div>
+
+        <!-- CONVERT -->
+        <div class="card convert">
+          <div class="icon">
+            <!-- Black piece flipping rainbow -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="rainbow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ff4b4b" />
+                  <stop offset="33%" stop-color="#ffd700" />
+                  <stop offset="66%" stop-color="#58cc02" />
+                  <stop offset="100%" stop-color="#1cb0f6" />
+                </linearGradient>
+              </defs>
+              <!-- left: enemy -->
+              <g transform="translate(8 26)">
+                <circle cx="14" cy="12" r="10" fill="#2a3c45" />
+                <path d="M4 48 L24 48 L26 30 Q14 22 2 30 Z" fill="#2a3c45" />
+                <rect x="0" y="46" width="28" height="6" rx="2" fill="#2a3c45" />
+              </g>
+              <!-- arrow -->
+              <path
+                d="M40 50 L60 50 M55 44 L62 50 L55 56"
+                stroke="#1cb0f6"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <!-- right: converted (rainbow) -->
+              <g transform="translate(64 26)">
+                <circle cx="14" cy="12" r="10" fill="url(#rainbow)" />
+                <path d="M4 48 L24 48 L26 30 Q14 22 2 30 Z" fill="url(#rainbow)" />
+                <rect x="0" y="46" width="28" height="6" rx="2" fill="url(#rainbow)" />
+              </g>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h2>Convert <span class="type">Targeted</span></h2>
+            <p>
+              Tap an enemy and <span class="em">flip them onto your team.</span>
+              Their own pawn just joined you. Awkward for them.
+            </p>
+          </div>
+        </div>
+
+        <!-- DRONES -->
+        <div class="card drones">
+          <div class="icon">
+            <!-- Mini-Rookies launching outward -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- arrows / motion lines -->
+              <g
+                stroke="#b8860b"
+                stroke-width="3"
+                stroke-linecap="round"
+                fill="none"
+                opacity="0.55"
+              >
+                <path d="M50 50 L50 16 M44 22 L50 14 L56 22" />
+                <path d="M50 50 L16 50 M22 44 L14 50 L22 56" />
+                <path d="M50 50 L84 50 M78 44 L86 50 L78 56" />
+              </g>
+              <!-- center Rookie (rook) -->
+              <g transform="translate(38 38)">
+                <rect x="0" y="6" width="24" height="14" rx="2" fill="#b8860b" />
+                <rect x="2" y="2" width="4" height="6" fill="#b8860b" />
+                <rect x="10" y="2" width="4" height="6" fill="#b8860b" />
+                <rect x="18" y="2" width="4" height="6" fill="#b8860b" />
+                <rect x="-2" y="20" width="28" height="4" rx="1" fill="#b8860b" />
+              </g>
+              <!-- mini drones at edges -->
+              <g fill="#ffd700" stroke="#b8860b" stroke-width="1.5">
+                <rect x="44" y="2" width="12" height="8" rx="1" />
+                <rect x="2" y="44" width="12" height="8" rx="1" />
+                <rect x="86" y="44" width="12" height="8" rx="1" />
+              </g>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h2>Drones <span class="type">Instant</span></h2>
+            <p>
+              Launch <span class="em">mini-Rookies that fire off in fixed directions</span>
+              and capture anything in their path. The board gets loud.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="brand">
+          <div class="logo">♜</div>
+          <div class="brand-text">
+            <div class="title">Rookie's Run</div>
+            <div class="sub">A new run in The Chess Path</div>
+          </div>
+        </div>
+        <div class="cta">Play free →</div>
+      </div>
+    </div>
+  </body>
+</html>
