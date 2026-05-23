@@ -327,7 +327,7 @@ export default function RookiesRunPage() {
     if (state.turn !== 'enemy' || state.status !== 'playing') return;
     const t = setTimeout(() => {
       setState((s) => (s.turn === 'enemy' && s.status === 'playing' ? stepEnemyTurn(s) : s));
-    }, 360);
+    }, 220);
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.enemyMovedSquares.length]);
 
@@ -336,7 +336,7 @@ export default function RookiesRunPage() {
     if (state.turn !== 'allies' || state.status !== 'playing') return;
     const t = setTimeout(() => {
       setState((s) => (s.turn === 'allies' && s.status === 'playing' ? stepAllyTurn(s) : s));
-    }, 420);
+    }, 240);
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.allyTurnIndex]);
 
@@ -345,7 +345,7 @@ export default function RookiesRunPage() {
     if (state.turn !== 'drones' || state.status !== 'playing') return;
     const t = setTimeout(() => {
       setState((s) => (s.turn === 'drones' && s.status === 'playing' ? stepDroneTurn(s) : s));
-    }, 220);
+    }, 140);
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.drones]);
 

@@ -624,19 +624,12 @@ export function applyOfferPick(
       };
     });
   }
-  // Squad is a passive whose payoff is the spawn itself. Spawn immediately on
-  // pick / upgrade so the player sees pieces this turn (instead of waiting for
-  // the next level). Existing allies are preserved; new spawns drop into any
-  // empty roster slots that aren't already occupied.
-  let allies = state.allies;
-  if (option.id === 'squad') {
-    const tier = option.kind === 'new' ? 1 : option.tier;
-    const roster = squadSpawnFor(tier, state.rookie, state.pieces, state.hazards);
-    const occupied = new Set(allies.map((a) => `${a.file},${a.rank}`));
-    const fresh = roster.filter((r) => !occupied.has(`${r.file},${r.rank}`));
-    allies = [...allies, ...fresh];
-  }
-  return { ...state, abilities, allies, pendingOffer: null, tempo: 0 };
+  // Squad is a passive — its payoff lands at the START of the next level
+  // (seed.ts reads the owned tier and spawns the roster). Picking or upgrading
+  // mid-level does NOT spawn a fresh squad on top of the current board; that
+  // gave a confusing burst of pieces and let the player double-dip by picking
+  // squad after killing existing allies.
+  return { ...state, abilities, pendingOffer: null, tempo: 0 };
 }
 
 export function applyDismissOffer(state: BoardState): BoardState {

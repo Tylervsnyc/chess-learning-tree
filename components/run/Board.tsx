@@ -844,7 +844,7 @@ export function RunBoard({
             onPieceDrop: ({ sourceSquare, targetSquare }) =>
               targetSquare ? onPieceDrop(sourceSquare, targetSquare) : false,
             onSquareClick: ({ square }) => onSquareClick(square),
-            animationDurationInMs: 300,
+            animationDurationInMs: 180,
           }}
         />
         {state.status === 'playing' && (
@@ -1516,7 +1516,7 @@ function AllyOverlay({ allies }: { allies: ReadonlyArray<AllyPiece> }) {
               top: `${(8 - a.rank) * 12.5}%`,
               width: '12.5%',
               height: '12.5%',
-              transition: 'left 280ms cubic-bezier(0.4,0,0.2,1), top 280ms cubic-bezier(0.4,0,0.2,1)',
+              transition: 'left 180ms cubic-bezier(0.4,0,0.2,1), top 180ms cubic-bezier(0.4,0,0.2,1)',
               filter:
                 'drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 0 10px rgba(167,139,250,0.65))',
             }}
@@ -1551,7 +1551,7 @@ function DroneOverlay({ drones }: { drones: ReadonlyArray<Drone> }) {
               top: `${(8 - d.rank) * 12.5}%`,
               width: '12.5%',
               height: '12.5%',
-              transition: 'left 180ms ease, top 180ms ease',
+              transition: 'left 120ms ease, top 120ms ease',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
