@@ -175,6 +175,13 @@ export function RunBoard({
       RR_LAST_INTRO.level === state.level &&
       now - RR_LAST_INTRO.at < 1500
     ) {
+      // Guard fired (StrictMode double-mount). The intro already played on
+      // the first mount, so just hand off to real Rookie immediately —
+      // otherwise introFile stays non-null and Rookie never shows up in the
+      // position map.
+      setIntroFile(null);
+      setIntroScale(1);
+      setIntroPlaying(false);
       return;
     }
     RR_LAST_INTRO.level = state.level;
