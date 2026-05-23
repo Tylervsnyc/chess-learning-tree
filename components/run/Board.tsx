@@ -154,7 +154,9 @@ export function RunBoard({
   // Level-start intro — bump introId whenever the level changes so the
   // emerge animation replays. Pieces rise from below the square in a
   // bottom→top wave (staggered by rank). Suppress wiggle while playing.
-  const [introId, setIntroId] = useState(() => Date.now());
+  // Start with a deterministic value so SSR and first client render produce
+  // matching keyframe names — the effect below bumps it to Date.now() on mount.
+  const [introId, setIntroId] = useState(0);
   const [introPlaying, setIntroPlaying] = useState(true);
   // Rookie's strobe-sweep entrance — overlay-driven so we can animate her
   // across files. `introFile` is the file (1..8) the overlay currently shows;
