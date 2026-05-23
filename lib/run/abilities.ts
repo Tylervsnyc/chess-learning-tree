@@ -383,7 +383,11 @@ function whatForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 2) return 'Launch drones front and left.';
       return 'Launch a drone forward.';
     case 'squad':
-      return 'Allies spawn in front of Rookie each level.';
+      if (tier === 5) return '7 allies: 3 pawns (front), knight, bishop, 3 more pawns (rank+2).';
+      if (tier === 4) return '5 allies: 3 pawns (front), knight, bishop.';
+      if (tier === 3) return '4 allies: 3 pawns + a knight.';
+      if (tier === 2) return '3 pawns in front of Rookie.';
+      return '1 pawn in front of Rookie.';
     case 'surge':
       if (tier === 5) return 'Take 3 extra moves this turn.';
       if (tier >= 3) return 'Take 2 extra moves this turn.';
@@ -458,7 +462,11 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 2) return '2 drones (front, left). 1/level.';
       return '1 drone (front). 1/level.';
     case 'squad':
-      return 'Passive: allies spawn each level.';
+      if (tier === 5) return 'Passive: 7 allies / level.';
+      if (tier === 4) return 'Passive: 5 allies / level.';
+      if (tier === 3) return 'Passive: 4 allies / level.';
+      if (tier === 2) return 'Passive: 3 allies / level.';
+      return 'Passive: 1 ally / level.';
     case 'surge':
       if (tier === 5) return '+3 extra moves this turn. 2/level.';
       if (tier === 4) return '+2 extra moves this turn. 2/level.';
@@ -1249,12 +1257,14 @@ export function stepDroneTurn(state: BoardState): BoardState {
   if (state.turn !== 'drones' || state.status !== 'playing') return state;
   const liveCount = state.drones.filter((d) => d.alive).length;
   if (liveCount === 0) {
+    // Drones are a free action — return control to Rookie when the swarm
+    // finishes (Tyler: activating drones must not cost a turn / let black
+    // move). If a real Rookie move follows it'll hand off to allies/enemy
+    // normally.
     return {
       ...state,
       drones: [],
-      turn: 'enemy',
-      enemyMovedSquares: [],
-      enemyVacatedSquares: [],
+      turn: 'rookie',
     };
   }
   let pieces = state.pieces;
@@ -1344,32 +1354,44 @@ export function squadSpawnFor(
     if (out.some((a) => a.file === file && a.rank === rank)) return true;
     return false;
   };
-  const add = (type: PieceType, file: number, rank: number): void => {
-    if (taken(file, rank)) return;
-    out.push({ id: Date.now() * 1000 + out.length, type, file, rank, source: 'squad' });
+  // Try a list of preferred files in order; spawn at the first that's free.
+  // Lets us mirror to the other side when Rookie is on an edge file so squad
+  // size stays consistent at the a/h-files.
+  const tryAdd = (type: PieceType, files: number[], rank: number): void => {
+    for (const f of files) {
+      if (!taken(f, rank)) {
+        out.push({ id: Date.now() * 1000 + out.length, type, file: f, rank, source: 'squad' });
+        return;
+      }
+    }
   };
   // Everything spawns in front of Rookie (rank+1 or rank+2) so her east/west
   // axes stay open and she always has a legal first move.
   const front = rookie.rank + 1;
   const front2 = rookie.rank + 2;
   const t = Math.max(1, tier);
+  // T1: center pawn in front. Fallback to adjacent files if blocked.
   if (t >= 1) {
-    add('pawn', rookie.file, front);
+    tryAdd('pawn', [rookie.file, rookie.file - 1, rookie.file + 1], front);
   }
+  // T2: flanking pawns. Each falls back to the next valid file outward.
   if (t >= 2) {
-    add('pawn', rookie.file - 1, front);
-    add('pawn', rookie.file + 1, front);
+    tryAdd('pawn', [rookie.file - 1, rookie.file + 2, rookie.file - 2], front);
+    tryAdd('pawn', [rookie.file + 1, rookie.file - 2, rookie.file + 2], front);
   }
+  // T3: knight, prefers two left of Rookie, mirrors right if off-board.
   if (t >= 3) {
-    add('knight', rookie.file - 2, front);
+    tryAdd('knight', [rookie.file - 2, rookie.file + 2, rookie.file - 3, rookie.file + 3], front);
   }
+  // T4: bishop, mirrors of knight.
   if (t >= 4) {
-    add('bishop', rookie.file + 2, front);
+    tryAdd('bishop', [rookie.file + 2, rookie.file - 2, rookie.file + 3, rookie.file - 3], front);
   }
+  // T5: three pawns on rank+2.
   if (t >= 5) {
-    add('pawn', rookie.file, front2);
-    add('pawn', rookie.file - 2, front2);
-    add('pawn', rookie.file + 2, front2);
+    tryAdd('pawn', [rookie.file, rookie.file - 1, rookie.file + 1], front2);
+    tryAdd('pawn', [rookie.file - 2, rookie.file - 1, rookie.file + 2, rookie.file + 1], front2);
+    tryAdd('pawn', [rookie.file + 2, rookie.file + 1, rookie.file - 2, rookie.file - 1], front2);
   }
   return out;
 }
