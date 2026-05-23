@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { defaultPieces } from 'react-chessboard';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { RookieCell } from './RookieCell';
@@ -209,6 +209,12 @@ export function RunBoard({
     [state.status, state.pieces, state.rookie],
   );
 
+  // Keep the position object reference stable across renders when content
+  // hasn't changed. react-chessboard's [position] effect flushes any in-flight
+  // slide on every new reference, so an unrelated re-render mid-slide (tempo,
+  // captures, pendingOffer) would teleport the moving piece — visible as a
+  // "blink" on enemy moves right after a Rookie capture.
+  const positionRef = useRef<Record<string, { pieceType: string }>>({});
   const position = useMemo(() => {
     const map: Record<string, { pieceType: string }> = {};
     for (const p of state.pieces) {
@@ -224,6 +230,20 @@ export function RunBoard({
     if (state.status !== 'lost' && introFile === null) {
       map[rookieSq] = { pieceType: rookieSprite };
     }
+    const prev = positionRef.current;
+    const prevKeys = Object.keys(prev);
+    const nextKeys = Object.keys(map);
+    if (prevKeys.length === nextKeys.length) {
+      let same = true;
+      for (const k of nextKeys) {
+        if (prev[k]?.pieceType !== map[k].pieceType) {
+          same = false;
+          break;
+        }
+      }
+      if (same) return prev;
+    }
+    positionRef.current = map;
     return map;
   }, [state.pieces, rookieSprite, state.status, rookieSq, enemyCaptureFx, introFile]);
 
