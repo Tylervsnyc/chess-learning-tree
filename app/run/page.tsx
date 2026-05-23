@@ -119,7 +119,11 @@ export default function RookiesRunPage() {
       if (!url.runId && runId.startsWith('stc-')) {
         runId = dailyRunForDate;
       }
-      if (!url.runId && !localStorage.getItem('rookies-run-current')) {
+      if (
+        !url.runId &&
+        typeof window !== 'undefined' &&
+        !localStorage.getItem('rookies-run-current')
+      ) {
         runId = dailyRunForDate;
       }
     }
