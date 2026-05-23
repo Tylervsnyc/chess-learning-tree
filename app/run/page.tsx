@@ -32,10 +32,11 @@ import {
   applyAbilityTargeted,
   applyDismissOffer,
   applyOfferPick,
+  convertTargets as computeConvertTargets,
   type AbilityId,
   type AbilityOfferOption,
 } from '@/lib/run/abilities';
-import { applyRookieMove, stepEnemyTurn } from '@/lib/run/engine';
+import { applyRookieMove, stepAllyTurn, stepDroneTurn, stepEnemyTurn } from '@/lib/run/engine';
 import {
   DEFAULT_RUN_ID,
   getNextRunId,
@@ -197,11 +198,11 @@ export default function RookiesRunPage() {
   useEffect(() => {
     if (!abilityFx) return;
     const durations: Record<AbilityFx['kind'], number> = {
-      'phase-step': 600,
-      leap: 700,
       'freeze-ray': 700,
       'poison-dart': 900,
       'rabies-dart': 900,
+      convert: 500,
+      drones: 800,
     };
     const t = setTimeout(() => setAbilityFx(null), durations[abilityFx.kind]);
     return () => clearTimeout(t);
@@ -244,6 +245,20 @@ export default function RookiesRunPage() {
   }, [enemyCaptureFx]);
 
   const [levelsCleared, setLevelsCleared] = useState(0);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Recorder — captures every Rookie / ally / drone / enemy event so we can
+  // replay sessions for bot training. POSTed to /api/run-trace on run end.
+  // ─────────────────────────────────────────────────────────────────────────
+  const traceEventsRef = useRef<Array<Record<string, unknown>>>([]);
+  const traceStartRef = useRef<number>(Date.now());
+  const tracePostedRef = useRef(false);
+  const recordEvent = useCallback(
+    (ev: Record<string, unknown>) => {
+      traceEventsRef.current.push({ t: Date.now() - traceStartRef.current, ...ev });
+    },
+    [],
+  );
 
   // Phase flags.
   const [dying, setDying] = useState(false);
@@ -311,6 +326,75 @@ export default function RookiesRunPage() {
     }, 360);
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.enemyMovedSquares.length]);
+
+  // Ally phase — tick one ally at a time so each move animates.
+  useEffect(() => {
+    if (state.turn !== 'allies' || state.status !== 'playing') return;
+    const t = setTimeout(() => {
+      setState((s) => (s.turn === 'allies' && s.status === 'playing' ? stepAllyTurn(s) : s));
+    }, 420);
+    return () => clearTimeout(t);
+  }, [state.turn, state.status, state.allyTurnIndex]);
+
+  // Drone phase — tick all live drones in parallel until the swarm finishes.
+  useEffect(() => {
+    if (state.turn !== 'drones' || state.status !== 'playing') return;
+    const t = setTimeout(() => {
+      setState((s) => (s.turn === 'drones' && s.status === 'playing' ? stepDroneTurn(s) : s));
+    }, 220);
+    return () => clearTimeout(t);
+  }, [state.turn, state.status, state.drones]);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Recorder watchers — dedupe-aware ticks for ally / drone / enemy phases.
+  // ─────────────────────────────────────────────────────────────────────────
+  const lastDroneKeyRef = useRef<string>('');
+  useEffect(() => {
+    if (state.turn !== 'drones') return;
+    const key = `${state.level}|${state.drones.map((d) => `${d.id}:${d.file},${d.rank},${d.alive ? 1 : 0},${d.steps}`).join(';')}`;
+    if (key === lastDroneKeyRef.current) return;
+    lastDroneKeyRef.current = key;
+    recordEvent({
+      kind: 'drone-tick',
+      level: state.level,
+      drones: state.drones.map((d) => ({ id: d.id, file: d.file, rank: d.rank, alive: d.alive, steps: d.steps })),
+      enemyCount: state.pieces.length,
+    });
+  }, [state.turn, state.level, state.drones, state.pieces.length, recordEvent]);
+
+  const lastAllyKeyRef = useRef<string>('');
+  useEffect(() => {
+    if (state.turn !== 'allies') return;
+    const key = `${state.level}|${state.allyTurnIndex}|${state.allies.map((a) => `${a.id}:${a.file},${a.rank},${a.type}`).join(';')}`;
+    if (key === lastAllyKeyRef.current) return;
+    lastAllyKeyRef.current = key;
+    recordEvent({
+      kind: 'ally-tick',
+      level: state.level,
+      index: state.allyTurnIndex,
+      allies: state.allies.map((a) => ({ id: a.id, file: a.file, rank: a.rank, type: a.type, source: a.source })),
+      enemyCount: state.pieces.length,
+    });
+  }, [state.turn, state.level, state.allyTurnIndex, state.allies, state.pieces.length, recordEvent]);
+
+  const lastEnemyTickLenRef = useRef<number>(0);
+  useEffect(() => {
+    if (state.turn !== 'enemy') {
+      lastEnemyTickLenRef.current = 0;
+      return;
+    }
+    const len = state.enemyMovedSquares.length;
+    if (len <= lastEnemyTickLenRef.current) return;
+    lastEnemyTickLenRef.current = len;
+    recordEvent({
+      kind: 'enemy-tick',
+      level: state.level,
+      movedToSq: state.enemyMovedSquares[len - 1],
+      rookie: toSquare(state.rookie),
+      enemyCount: state.pieces.length,
+      allyCount: state.allies.length,
+    });
+  }, [state.turn, state.enemyMovedSquares, state.level, state.rookie, state.pieces.length, state.allies.length, recordEvent]);
 
   useEffect(() => {
     if (state.status !== 'lost') return;
@@ -426,6 +510,13 @@ export default function RookiesRunPage() {
     return state.abilities.find((a) => a.id === state.activeAbility!.id)?.tier;
   }, [state.activeAbility, state.abilities]);
 
+  // Convert: while the ability is in pick-enemy mode, ring every eligible
+  // enemy so the player can see which pieces are legal targets.
+  const convertTargets = useMemo(() => {
+    if (state.activeAbility?.id !== 'convert') return undefined;
+    return computeConvertTargets(state);
+  }, [state]);
+
   const onActivateAbility = useCallback(
     (id: AbilityId) => {
       ensureAudioWarm();
@@ -436,11 +527,21 @@ export default function RookiesRunPage() {
       }
       const next = applyAbilityActivate(state, id);
       if (next !== state) {
+        recordEvent({
+          kind: 'ability-activate',
+          level: state.level,
+          ability: id,
+          rookie: toSquare(state.rookie),
+          enemyCount: state.pieces.length,
+          allyCount: state.allies.length,
+          droneCount: next.drones.length,
+          turnAfter: next.turn,
+        });
         setSelectedSquare(null);
         setState(next);
       }
     },
-    [state, ensureAudioWarm],
+    [state, ensureAudioWarm, recordEvent],
   );
 
   const onSquareClick = useCallback(
@@ -462,15 +563,29 @@ export default function RookiesRunPage() {
         if (def.activation === 'movement') {
           const next = applyAbilityMove(state, state.activeAbility.id, coord);
           if (next !== state) {
+            recordEvent({
+              kind: 'ability-move',
+              level: state.level,
+              ability: state.activeAbility.id,
+              target: square,
+            });
             setState(next);
             playCardPlaySound();
           }
           return;
         }
 
-        // Targeted (freeze ray / poison dart / rabies dart / decoy).
+        // Targeted (freeze ray / poison dart / rabies dart / decoy / convert).
         const next = applyAbilityTargeted(state, state.activeAbility.id, coord);
         if (next !== state) {
+          recordEvent({
+            kind: 'ability-target',
+            level: state.level,
+            ability: state.activeAbility.id,
+            target: square,
+            enemyCount: state.pieces.length,
+            allyCount: state.allies.length,
+          });
           setState(next);
           playCardPlaySound();
           trackEvent('run_ability_used', {
@@ -492,11 +607,23 @@ export default function RookiesRunPage() {
       const target = fromSquare(square);
       const next = applyRookieMove(state, target);
       if (next !== state) {
+        const grew = next.captures.length > state.captures.length;
+        recordEvent({
+          kind: 'rookie-move',
+          level: state.level,
+          from: toSquare(state.rookie),
+          to: square,
+          form: state.form,
+          captured: grew ? next.captures[next.captures.length - 1] : null,
+          tempo: next.tempo,
+          enemyCount: next.pieces.length,
+          allyCount: next.allies.length,
+        });
         setState(next);
       }
       setSelectedSquare(null);
     },
-    [state, selectedSquare, meta.iso, levelIndex, ensureAudioWarm],
+    [state, selectedSquare, meta.iso, levelIndex, ensureAudioWarm, recordEvent],
   );
 
   const onPieceDrop = useCallback(
@@ -507,17 +634,35 @@ export default function RookiesRunPage() {
       const target = fromSquare(targetSquare);
       const next = applyRookieMove(state, target);
       if (next === state) return false;
+      const grew = next.captures.length > state.captures.length;
+      recordEvent({
+        kind: 'rookie-move',
+        level: state.level,
+        from: toSquare(state.rookie),
+        to: targetSquare,
+        form: state.form,
+        captured: grew ? next.captures[next.captures.length - 1] : null,
+        tempo: next.tempo,
+        enemyCount: next.pieces.length,
+        allyCount: next.allies.length,
+      });
       setState(next);
       setSelectedSquare(null);
       return true;
     },
-    [state, ensureAudioWarm],
+    [state, ensureAudioWarm, recordEvent],
   );
 
   const onOfferPick = useCallback(
     (option: AbilityOfferOption) => {
       const next = applyOfferPick(state, option);
       if (next !== state) {
+        recordEvent({
+          kind: 'offer-pick',
+          level: state.level,
+          option: { kind: option.kind, id: option.id, tier: option.tier },
+          choices: state.pendingOffer?.map((o) => ({ kind: o.kind, id: o.id, tier: o.tier })),
+        });
         setState(next);
         trackEvent('run_offer_picked', {
           iso: meta.iso,
@@ -528,19 +673,24 @@ export default function RookiesRunPage() {
         });
       }
     },
-    [state, meta.iso, levelIndex],
+    [state, meta.iso, levelIndex, recordEvent],
   );
 
   const onOfferSkip = useCallback(() => {
     const next = applyDismissOffer(state);
     if (next !== state) {
+      recordEvent({
+        kind: 'offer-skip',
+        level: state.level,
+        choices: state.pendingOffer?.map((o) => ({ kind: o.kind, id: o.id, tier: o.tier })),
+      });
       setState(next);
       trackEvent('run_offer_skipped', {
         iso: meta.iso,
         level: levelIndex + 1,
       });
     }
-  }, [state, meta.iso, levelIndex]);
+  }, [state, meta.iso, levelIndex, recordEvent]);
 
   const goToNextLevel = useCallback(() => {
     const nextIdx = levelIndex + 1;
@@ -573,6 +723,9 @@ export default function RookiesRunPage() {
     trackedStartRef.current = false;
     trackedLossRef.current = false;
     runRecordedRef.current = false;
+    tracePostedRef.current = false;
+    traceEventsRef.current = [];
+    traceStartRef.current = Date.now();
     trackEvent('run_replayed', { iso: meta.iso, run: meta.runId });
   }, [meta.iso, meta.runId, meta.startLevelIndex]);
 
@@ -629,6 +782,42 @@ export default function RookiesRunPage() {
     : state.status === 'lost'
       ? levelIndex + 1
       : Math.max(1, levelsCleared);
+
+  // Run-end recorder POST — fires once when the run finishes (won or lost).
+  useEffect(() => {
+    if (tracePostedRef.current) return;
+    if (!runComplete && state.status !== 'lost') return;
+    tracePostedRef.current = true;
+    if (state.status === 'lost') {
+      recordEvent({
+        kind: 'death',
+        level: state.level,
+        rookie: toSquare(state.rookie),
+        turn: state.turn,
+        pieces: state.pieces.map((p) => ({ type: p.type, sq: toSquare(p) })),
+        allies: state.allies.map((a) => ({ id: a.id, type: a.type, sq: toSquare(a) })),
+        drones: state.drones.map((d) => ({ id: d.id, file: d.file, rank: d.rank, alive: d.alive, steps: d.steps })),
+        moveCount: state.moveCount,
+        captures: state.captures,
+      });
+    }
+    const body = {
+      meta: {
+        runId: meta.runId,
+        iso: meta.iso,
+        level: state.level,
+        totalLevels,
+        outcome: runComplete ? 'won' : 'lost',
+        startedAt: new Date(traceStartRef.current).toISOString(),
+      },
+      events: traceEventsRef.current,
+    };
+    fetch('/api/run-trace', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch(() => {});
+  }, [runComplete, state, meta.runId, meta.iso, totalLevels, recordEvent]);
 
   // Record the finished run once, then read history for stats.
   const runRecordedRef = useRef(false);
@@ -719,6 +908,7 @@ export default function RookiesRunPage() {
             enemyCaptureFx={enemyCaptureFx}
             legalAbilityMoves={legalAbilityMoves}
             abilityTier={activeAbilityTier}
+            convertTargets={convertTargets}
             onSquareClick={onSquareClick}
             onPieceDrop={onPieceDrop}
             vanillaPieces={isStc}
@@ -730,6 +920,13 @@ export default function RookiesRunPage() {
           activeId={state.activeAbility?.id ?? null}
           onActivate={onActivateAbility}
         />
+
+        {state.abilities.some((a) => a.id === 'squad') && (
+          <div className="flex items-center justify-center gap-1.5 text-[10px] font-black tracking-wide uppercase text-fuchsia-700 dark:text-fuchsia-300">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-fuchsia-500 animate-pulse" />
+            Passive: Squad
+          </div>
+        )}
 
         {state.status === 'playing' && state.activeAbility && (
           <div className="flex items-center gap-2 rounded-lg bg-indigo-500/15 border border-indigo-400/40 px-3 py-2">
