@@ -7,8 +7,9 @@ import { RookieCell } from './RookieCell';
 import { rookieLegalMoves } from '@/lib/run/movement';
 import { nextEnemyMovers } from '@/lib/run/pawn-ai';
 import type { AbilityTier } from '@/lib/run/abilities';
-import type { BoardState, Coord, PieceType, RookieForm } from '@/lib/run/types';
+import type { AllyPiece, BoardState, Coord, Drone, PieceType, RookieForm } from '@/lib/run/types';
 import { fromSquare, toSquare } from '@/lib/run/types';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 interface BoardProps {
   state: BoardState;
@@ -25,11 +26,11 @@ interface BoardProps {
   /** Transient per-ability cast VFX (charge / phase / leap / dart casts). */
   abilityFx?: {
     kind:
-      | 'phase-step'
-      | 'leap'
       | 'freeze-ray'
       | 'poison-dart'
-      | 'rabies-dart';
+      | 'rabies-dart'
+      | 'convert'
+      | 'drones';
     from: string;
     to: string;
     id: number;
@@ -53,6 +54,8 @@ interface BoardProps {
   legalAbilityMoves?: Coord[];
   /** Tier of the active ability — drives highlight color. */
   abilityTier?: AbilityTier;
+  /** Enemy squares the active Convert ability can target (pulsing rings). */
+  convertTargets?: Coord[];
   onSquareClick: (square: string) => void;
   /** Called when Rookie is dragged onto a square. Return true to accept the
    *  move, false to snap her back. */
@@ -132,6 +135,7 @@ export function RunBoard({
   telekinesisTarget = null,
   legalAbilityMoves,
   abilityTier,
+  convertTargets,
   onSquareClick,
   onPieceDrop,
   vanillaPieces = false,
@@ -663,17 +667,6 @@ export function RunBoard({
           70%  { transform: scale(0.95) skewX(3deg);  filter: drop-shadow(0 0 6px rgba(255,140,40,0.7)); }
           100% { transform: scale(1)    skewX(0deg);  filter: drop-shadow(0 0 0 rgba(255,140,40,0)); }
         }
-        ${abilityFx && abilityFx.kind === 'phase-step'
-          ? `[data-square="${abilityFx.to}"] > div {
-               animation: rrSpritePhaseLand 600ms ease-out both;
-             }`
-          : ''}
-        ${abilityFx && abilityFx.kind === 'leap'
-          ? `[data-square="${abilityFx.to}"] > div {
-               animation: rrSpriteLeapLand 700ms cubic-bezier(0.5, 0, 0.4, 1.4) both;
-               transform-origin: 50% 100%;
-             }`
-          : ''}
         ${wiggleSquares
           .map(
             (sq) => `[data-square="${sq}"] > div > img,
@@ -906,6 +899,14 @@ export function RunBoard({
             <RookieCell form={state.form} />
           </div>
         )}
+        {state.allies.length > 0 && <AllyOverlay allies={state.allies} />}
+        {state.drones.length > 0 && <DroneOverlay drones={state.drones} />}
+        {convertTargets && convertTargets.length > 0 && (
+          <ConvertTargetsOverlay targets={convertTargets} />
+        )}
+        {abilityFx?.kind === 'convert' && (
+          <ConvertFlashOverlay sq={abilityFx.to} id={abilityFx.id} />
+        )}
         {abilityFx && fxGeom && (
           <AbilityFxLayer fx={abilityFx} geom={fxGeom} />
         )}
@@ -985,7 +986,7 @@ interface AbilityFxLayerProps {
 function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
   const { fromX, fromY, toX, toY, midX, midY, length, angleDeg } = geom;
 
-  if (fx.kind === 'phase-step') {
+  if ((fx.kind as string) === 'phase-step') {
     // Two ghost-rooks: one fading out at origin, one fading in at target.
     // Plus a thin ghost-blue dashed line linking them.
     return (
@@ -1064,7 +1065,7 @@ function AbilityFxLayer({ fx, geom }: AbilityFxLayerProps) {
     );
   }
 
-  if (fx.kind === 'leap') {
+  if ((fx.kind as string) === 'leap') {
     // Curved dashed arc from origin to target + landing shockwave on target.
     // The arc is approximated by a quadratic-bezier SVG path.
     const ctrlX = midX;
@@ -1451,5 +1452,154 @@ function EnemyCaptureSlide({
         {PieceComp ? <PieceComp /> : null}
       </div>
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AllyOverlay — rainbow allies float above the board with smooth transitions.
+// Renders plain white piece sprites (defaultPieces) keyed by stable id so
+// React tracks each ally across move ticks.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ALLY_SPRITE: Record<PieceType, keyof typeof defaultPieces> = {
+  pawn: 'wP',
+  knight: 'wN',
+  bishop: 'wB',
+  queen: 'wQ',
+};
+
+function AllyOverlay({ allies }: { allies: ReadonlyArray<AllyPiece> }) {
+  return (
+    <div
+      aria-hidden
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3 }}
+    >
+      {allies.map((a) => {
+        const PieceComp = defaultPieces[ALLY_SPRITE[a.type]];
+        return (
+          <div
+            key={a.id}
+            style={{
+              position: 'absolute',
+              left: `${(a.file - 1) * 12.5}%`,
+              top: `${(8 - a.rank) * 12.5}%`,
+              width: '12.5%',
+              height: '12.5%',
+              transition: 'left 280ms cubic-bezier(0.4,0,0.2,1), top 280ms cubic-bezier(0.4,0,0.2,1)',
+              filter:
+                'drop-shadow(0 0 6px rgba(255,255,255,0.85)) drop-shadow(0 0 10px rgba(167,139,250,0.65))',
+            }}
+          >
+            {PieceComp ? <PieceComp /> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DroneOverlay — mini-Rookies (BreathingRook at 0.5 scale) sliding between
+// squares while the drone phase runs.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function DroneOverlay({ drones }: { drones: ReadonlyArray<Drone> }) {
+  return (
+    <div
+      aria-hidden
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}
+    >
+      {drones
+        .filter((d) => d.alive)
+        .map((d) => (
+          <div
+            key={d.id}
+            style={{
+              position: 'absolute',
+              left: `${(d.file - 1) * 12.5}%`,
+              top: `${(8 - d.rank) * 12.5}%`,
+              width: '12.5%',
+              height: '12.5%',
+              transition: 'left 180ms ease, top 180ms ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{ transform: 'scale(0.5)' }}>
+              <BreathingRook size="xs" animate mood="neutral" />
+            </div>
+          </div>
+        ))}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Convert overlays — pulsing rainbow rings on eligible enemies while the
+// ability is active, and a prism-flash spin on the targeted square on cast.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ConvertTargetsOverlay({ targets }: { targets: ReadonlyArray<Coord> }) {
+  return (
+    <>
+      <style>{`
+        @keyframes rrConvertPulse {
+          0%, 100% { box-shadow: 0 0 0 2px rgba(217,70,239,0.85), inset 0 0 12px rgba(125,211,252,0.55); transform: scale(0.96); }
+          50%      { box-shadow: 0 0 0 3px rgba(125,211,252,0.95), inset 0 0 18px rgba(217,70,239,0.7);  transform: scale(1.04); }
+        }
+      `}</style>
+      <div
+        aria-hidden
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}
+      >
+        {targets.map((t, i) => (
+          <div
+            key={`${t.file}-${t.rank}-${i}`}
+            style={{
+              position: 'absolute',
+              left: `${(t.file - 1) * 12.5 + 1.5}%`,
+              top: `${(8 - t.rank) * 12.5 + 1.5}%`,
+              width: '9.5%',
+              height: '9.5%',
+              borderRadius: '50%',
+              animation: 'rrConvertPulse 1.1s ease-in-out infinite',
+            }}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function ConvertFlashOverlay({ sq, id }: { sq: string; id: number }) {
+  const c = fromSquare(sq);
+  const idKey = Math.floor(id);
+  return (
+    <>
+      <style key={idKey}>{`
+        @keyframes rrConvertFlash-${idKey} {
+          0%   { transform: rotate(0deg)   scale(1);    filter: hue-rotate(0deg)   brightness(1)   drop-shadow(0 0 0 rgba(217,70,239,0)); opacity: 1; }
+          40%  { transform: rotate(120deg) scale(1.18); filter: hue-rotate(180deg) brightness(1.5) drop-shadow(0 0 12px rgba(125,211,252,0.95)); opacity: 1; }
+          100% { transform: rotate(180deg) scale(1);    filter: hue-rotate(360deg) brightness(1)   drop-shadow(0 0 0 rgba(217,70,239,0)); opacity: 1; }
+        }
+      `}</style>
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: `${(c.file - 1) * 12.5}%`,
+          top: `${(8 - c.rank) * 12.5}%`,
+          width: '12.5%',
+          height: '12.5%',
+          pointerEvents: 'none',
+          zIndex: 5,
+          animation: `rrConvertFlash-${idKey} 360ms ease-out forwards`,
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(217,70,239,0.35) 40%, rgba(125,211,252,0.25) 70%, transparent 100%)',
+          borderRadius: '50%',
+        }}
+      />
+    </>
   );
 }
