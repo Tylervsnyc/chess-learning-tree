@@ -54,6 +54,9 @@ function artFile(id: AbilityId): string {
   if (id === 'rabies-dart') return 'rabies-dart-2.png';
   if (id === 'freeze-ray') return 'freeze-ray-2.png';
   if (id === 'become-king') return 'become-king-2.png';
+  if (id === 'convert' || id === 'drones' || id === 'squad') {
+    return `${id}-1.png`;
+  }
   return `${id}-1.webp`;
 }
 
@@ -181,22 +184,37 @@ function AbilityIcon({ id, size }: { id: AbilityId; size: number }) {
           <path d="M14 4l3 3 3-3 1 3-3 1-3-1z" />
         </svg>
       );
-    case 'phase-step':
-      // ghost
+    case 'convert':
+      // swirl arrows — flipping allegiance
       return (
         <svg {...props}>
-          <path d="M5 11a7 7 0 0 1 14 0v10l-2-2-2 2-2-2-2 2-2-2-2 2-2-2V11z" />
-          <circle cx="9.5" cy="11" r="0.6" fill="currentColor" />
-          <circle cx="14.5" cy="11" r="0.6" fill="currentColor" />
+          <path d="M4 12a8 8 0 0 1 14-5" />
+          <path d="M18 7v5h-5" />
+          <path d="M20 12a8 8 0 0 1-14 5" />
+          <path d="M6 17v-5h5" />
         </svg>
       );
-    case 'leap':
-      // upward chevron / forward leap arrow
+    case 'drones':
+      // little dots radiating outward
       return (
         <svg {...props}>
-          <path d="M12 20V6" />
-          <path d="M5 13l7-7 7 7" />
-          <path d="M5 19l7-7 7 7" opacity="0.55" />
+          <circle cx="12" cy="12" r="2" />
+          <circle cx="12" cy="4" r="1.5" />
+          <circle cx="12" cy="20" r="1.5" />
+          <circle cx="4" cy="12" r="1.5" />
+          <circle cx="20" cy="12" r="1.5" />
+        </svg>
+      );
+    case 'squad':
+      // three pawn-shaped marks
+      return (
+        <svg {...props}>
+          <circle cx="6" cy="10" r="2" />
+          <path d="M4 18h4l-1-6h-2z" />
+          <circle cx="12" cy="8" r="2" />
+          <path d="M10 18h4l-1-8h-2z" />
+          <circle cx="18" cy="10" r="2" />
+          <path d="M16 18h4l-1-6h-2z" />
         </svg>
       );
     case 'surge':

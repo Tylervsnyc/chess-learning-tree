@@ -36,6 +36,9 @@ function buildInitialState(): BoardState {
       { type: 'bishop', color: 'black', file: 8, rank: 6 }, // h6
       { type: 'pawn', color: 'black', file: 6, rank: 5 }, // f5
     ],
+    allies: [],
+    drones: [],
+    allyTurnIndex: 0,
     hazards: [],
     turn: 'rookie',
     status: 'playing',
