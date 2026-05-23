@@ -55,6 +55,11 @@ function isHazard(hazards: Coord[], at: Coord): boolean {
   return hazards.some((h) => h.file === at.file && h.rank === at.rank);
 }
 
+/** True if a friendly ally occupies this square — blocks Rookie's movement. */
+function isAlly(state: BoardState, at: Coord): boolean {
+  return (state.allies ?? []).some((a) => a.file === at.file && a.rank === at.rank);
+}
+
 function slideMoves(
   state: BoardState,
   dirs: ReadonlyArray<[number, number]>,
@@ -67,6 +72,7 @@ function slideMoves(
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
       const square = { file: f, rank: r };
       if (isHazard(hazards, square)) break; // hazard blocks the ray
+      if (isAlly(state, square)) break; // friendly ally — can't pass through
       const blocker = enemyAt(pieces, square);
       if (blocker) {
         moves.push(square);
@@ -89,6 +95,7 @@ function knightMoves(state: BoardState): Coord[] {
     if (f < 1 || f > 8 || r < 1 || r > 8) continue;
     const square = { file: f, rank: r };
     if (isHazard(hazards, square)) continue;
+    if (isAlly(state, square)) continue;
     moves.push(square);
   }
   return moves;
@@ -101,7 +108,8 @@ function pawnMoves(state: BoardState): Coord[] {
   if (
     forward.rank <= 8 &&
     !isHazard(hazards, forward) &&
-    !enemyAt(pieces, forward)
+    !enemyAt(pieces, forward) &&
+    !isAlly(state, forward)
   ) {
     moves.push(forward);
   }
@@ -109,6 +117,7 @@ function pawnMoves(state: BoardState): Coord[] {
     const sq = { file: rookie.file + df, rank: rookie.rank + 1 };
     if (sq.file < 1 || sq.file > 8 || sq.rank > 8) continue;
     if (isHazard(hazards, sq)) continue;
+    if (isAlly(state, sq)) continue;
     if (enemyAt(pieces, sq)) moves.push(sq);
   }
   return moves;
@@ -123,6 +132,7 @@ function kingMoves(state: BoardState): Coord[] {
     if (f < 1 || f > 8 || r < 1 || r > 8) continue;
     const square = { file: f, rank: r };
     if (isHazard(hazards, square)) continue;
+    if (isAlly(state, square)) continue;
     moves.push(square);
   }
   return moves;
