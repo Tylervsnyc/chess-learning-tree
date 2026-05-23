@@ -122,6 +122,15 @@ const ENEMY_SPRITE: Record<PieceType, string> = {
   queen: 'bQ',
 };
 
+// Module-scoped guard against React StrictMode's double-mount in dev. The
+// CSS keyframe started by the first effect run can't be canceled, so we'd
+// see the emerge + strobe play twice. A simple "did we just play the
+// intro for this level?" check survives remounts (refs don't).
+const RR_LAST_INTRO: { level: number | null; at: number } = {
+  level: null,
+  at: 0,
+};
+
 export function RunBoard({
   state,
   selectedSquare,
@@ -154,15 +163,21 @@ export function RunBoard({
     () => state.rookie.file,
   );
   const [introScale, setIntroScale] = useState(1);
-  // Guard against React StrictMode double-invoke in dev. Without this the
-  // emerge keyframe + Rookie strobe fire twice on each level start (the first
-  // pass leaks its 650ms CSS keyframe after cleanup, then the second pass
-  // restarts the sweep on top).
-  const lastIntroLevelRef = useRef<number | null>(null);
   useEffect(() => {
-    if (lastIntroLevelRef.current === state.level) return;
-    lastIntroLevelRef.current = state.level;
-    setIntroId(Date.now());
+    // Guard against React StrictMode double-invoke in dev. Refs reset on
+    // remount, so we use a module-scoped marker (RR_LAST_INTRO_LEVEL just
+    // below the component) plus a timestamp window — if the same level
+    // fired its intro within the last 1.5s, skip the duplicate.
+    const now = Date.now();
+    if (
+      RR_LAST_INTRO.level === state.level &&
+      now - RR_LAST_INTRO.at < 1500
+    ) {
+      return;
+    }
+    RR_LAST_INTRO.level = state.level;
+    RR_LAST_INTRO.at = now;
+    setIntroId(now);
     setIntroPlaying(true);
 
     // Strobe-sweep sequence: two fast L→R passes across the whole rank,
