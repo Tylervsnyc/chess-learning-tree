@@ -19,6 +19,12 @@ export interface RunDef {
   name: string;
   blurb: string;
   levels: ReadonlyArray<LevelBuilder>;
+  /**
+   * If set, the ability-offer pool is restricted to these ids only.
+   * Used by Abilities Test Run to force convert/drones offers (Squad is
+   * passive and lives outside the offer pool).
+   */
+  allowedAbilities?: ReadonlyArray<string>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3117,6 +3123,149 @@ const RUN_STC_QUEEN: RunDef = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Abilities Test Run — Convert / Squad (passive) / Drones playable test.
+// Squad spawns automatically each level (handled in seed.ts when runId match).
+// Offers are filtered to convert + drones only (Squad is passive).
+
+const RUN_ABILITIES_V2: RunDef = {
+  id: 'abilities-v2',
+  name: 'Abilities Test Run',
+  blurb: 'Trying out Convert, Squad, and Drones.',
+  allowedAbilities: ['convert', 'drones', 'squad'],
+  levels: [
+    make(
+      1,
+      [
+        pawn(2, 4), pawn(5, 4), pawn(7, 4),
+        pawn(3, 6), pawn(6, 6),
+        pawn(4, 7), pawn(6, 7),
+      ],
+      { enemiesPerTurn: 1 },
+    ),
+    make(
+      2,
+      [
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        knight(4, 5),
+        pawn(2, 6), pawn(6, 6),
+        bishop(5, 7),
+      ],
+      { enemiesPerTurn: 2 },
+    ),
+    make(
+      3,
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 4), pawn(4, 4), pawn(6, 4), pawn(8, 4),
+        knight(3, 6), knight(6, 6),
+        bishop(5, 7),
+      ],
+      { enemiesPerTurn: 2 },
+    ),
+    make(
+      4,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3),
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        bishop(3, 6), knight(6, 6),
+        queen(5, 7),
+      ],
+      { enemiesPerTurn: 3, moveLimit: 18 },
+    ),
+    make(
+      5,
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 4), pawn(4, 4), pawn(6, 4), pawn(8, 4),
+        knight(3, 6), bishop(5, 6), knight(7, 6),
+        queen(4, 8), queen(5, 8),
+      ],
+      { enemiesPerTurn: 3, moveLimit: 20 },
+    ),
+    make(
+      6,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3),
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        bishop(3, 6), knight(5, 6), bishop(7, 6),
+        knight(4, 7), bishop(6, 7),
+      ],
+      { enemiesPerTurn: 3, moveLimit: 20 },
+    ),
+    make(
+      7,
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 4), pawn(4, 4), pawn(6, 4), pawn(8, 4),
+        knight(3, 6), bishop(6, 6),
+        bishop(2, 7), knight(5, 7), bishop(7, 7),
+        queen(4, 8),
+      ],
+      {
+        enemiesPerTurn: 3,
+        moveLimit: 22,
+        hazards: [{ file: 4, rank: 5 }, { file: 5, rank: 5 }],
+      },
+    ),
+    make(
+      8,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3),
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        bishop(2, 6), knight(5, 6), bishop(7, 6),
+        knight(3, 7), bishop(5, 7), knight(6, 7),
+        queen(4, 8),
+      ],
+      {
+        enemiesPerTurn: 3,
+        moveLimit: 22,
+        hazards: [
+          { file: 4, rank: 5 }, { file: 5, rank: 5 },
+          { file: 1, rank: 6 }, { file: 8, rank: 6 },
+        ],
+      },
+    ),
+    make(
+      9,
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 4), pawn(4, 4), pawn(6, 4), pawn(8, 4),
+        knight(2, 6), bishop(5, 6), knight(7, 6),
+        bishop(3, 7), knight(6, 7),
+        queen(4, 8), queen(5, 8),
+      ],
+      {
+        enemiesPerTurn: 4,
+        moveLimit: 24,
+        hazards: [
+          { file: 1, rank: 5 }, { file: 8, rank: 5 },
+          { file: 4, rank: 5 }, { file: 5, rank: 5 },
+        ],
+      },
+    ),
+    make(
+      10,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(6, 3), pawn(8, 3),
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        knight(2, 6), bishop(4, 6), bishop(5, 6), knight(7, 6),
+        bishop(3, 7), knight(6, 7),
+        queen(3, 8), queen(4, 8), queen(5, 8), queen(6, 8),
+      ],
+      {
+        enemiesPerTurn: 4,
+        moveLimit: 26,
+        hazards: [
+          { file: 1, rank: 5 }, { file: 8, rank: 5 },
+          { file: 4, rank: 5 }, { file: 5, rank: 5 },
+          { file: 2, rank: 7 }, { file: 7, rank: 7 },
+        ],
+      },
+    ),
+  ],
+};
+
 export const STC_RUN_IDS = [
   'stc-king',
   'stc-bishop',
@@ -3128,6 +3277,7 @@ export const STC_RUN_IDS = [
 export const RUNS: ReadonlyArray<RunDef> = [
 
   RUN_DAILY,
+  RUN_ABILITIES_V2,
   RUN_KNIGHT_ACADEMY,
   RUN_BISHOPS_PATH,
   RUN_SPEED_DEMON,
