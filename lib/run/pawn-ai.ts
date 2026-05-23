@@ -85,6 +85,11 @@ function isHazard(hazards: Coord[], at: Coord): boolean {
   return hazards.some((h) => h.file === at.file && h.rank === at.rank);
 }
 
+/** True if a rainbow ally occupies this square — treat like a friendly blocker. */
+function isAllyAt(state: BoardState, at: Coord): boolean {
+  return (state.allies ?? []).some((a) => a.file === at.file && a.rank === at.rank);
+}
+
 /**
  * "Ghost blockers" — squares vacated by enemies earlier in this same turn.
  * Subsequent enemies treat them as still occupied so the player can plan
@@ -151,20 +156,20 @@ function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
         inBounds(target) &&
         !isHazard(state.hazards, target) &&
         !enemyAt(state.pieces, target) &&
+        !isAllyAt(state, target) &&
         !isVacated(vacated, target) &&
         !(state.rookie.file === target.file && state.rookie.rank === target.rank)
       ) {
         out.push(target);
       }
-      // Diagonal captures of Rookie.
+      // Diagonal captures of Rookie OR any ally.
       for (const df of [-1, 1]) {
         const cap: Coord = { file: piece.file + df, rank: piece.rank + BLACK_FORWARD };
-        if (
-          inBounds(cap) &&
-          !isHazard(state.hazards, cap) &&
-          state.rookie.file === cap.file &&
-          state.rookie.rank === cap.rank
-        ) {
+        if (!inBounds(cap)) continue;
+        if (isHazard(state.hazards, cap)) continue;
+        const hitsRookie = state.rookie.file === cap.file && state.rookie.rank === cap.rank;
+        const hitsAlly = isAllyAt(state, cap);
+        if (hitsRookie || hitsAlly) {
           out.push(cap);
         }
       }
@@ -179,7 +184,7 @@ function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
         if (isVacated(vacated, c)) continue; // ghost blocker
         const blocker = enemyAt(state.pieces, c);
         if (blocker && blocker !== piece) continue; // can't land on friendly
-        out.push(c);
+        out.push(c); // allies are capturable, not blockers
       }
       return out;
     }
@@ -207,10 +212,11 @@ function slidingMoves(
       if (isVacated(vacated, c)) break; // ghost blocker — stop before
       const blocker = enemyAt(state.pieces, c);
       const isRookie = state.rookie.file === f && state.rookie.rank === r;
+      const hitsAlly = isAllyAt(state, c);
       if (blocker && blocker !== piece) break; // friendly blocker — stop before
-      if (isRookie) {
+      if (isRookie || hitsAlly) {
         out.push(c);
-        break; // capture and stop
+        break; // capture and stop the ray
       }
       out.push(c);
       f += df;
@@ -401,20 +407,53 @@ function chooseEnemyActionAgainst(
 
   const isNormallyEligible = (p: EnemyPiece) =>
     !isExcluded(p) && !rabid.has(coordKey(p));
-  // 1) Capture priority. Among pieces tied on threat value, pick randomly so
-  // the same defensive layout doesn't always trigger the same attacker.
-  const capturers = state.pieces.filter(
-    (p) => isNormallyEligible(p) && canCapture(p, state),
-  );
+  // 1) Capture priority. Enemies treat allies as equal-priority targets to
+  // Rookie — both score by victim value (Rookie = queen-tier). Among ties,
+  // the highest-threat attacker takes the shot.
+  type Capturer = {
+    piece: EnemyPiece;
+    target: Coord;
+    isRookie: boolean;
+    victimValue: number;
+    attackerThreat: number;
+  };
+  const capturers: Capturer[] = [];
+  for (const p of state.pieces) {
+    if (!isNormallyEligible(p)) continue;
+    const moves = pieceLegalMoves(p, state);
+    let best: { coord: Coord; isRookie: boolean; value: number } | null = null;
+    for (const m of moves) {
+      const hitsRookie = m.file === state.rookie.file && m.rank === state.rookie.rank;
+      const hitAlly = state.allies.find((a) => a.file === m.file && a.rank === m.rank);
+      if (!hitsRookie && !hitAlly) continue;
+      const value = hitsRookie
+        ? PIECE_THREAT.queen
+        : (PIECE_THREAT[hitAlly!.type] ?? 0);
+      if (!best || value > best.value) {
+        best = { coord: m, isRookie: hitsRookie, value };
+      }
+    }
+    if (best) {
+      capturers.push({
+        piece: p,
+        target: best.coord,
+        isRookie: best.isRookie,
+        victimValue: best.value,
+        attackerThreat: PIECE_THREAT[p.type] ?? 0,
+      });
+    }
+  }
   if (capturers.length > 0) {
-    const bestThreat = Math.max(
-      ...capturers.map((p) => PIECE_THREAT[p.type] ?? 0),
-    );
-    const tied = capturers.filter(
-      (p) => (PIECE_THREAT[p.type] ?? 0) === bestThreat,
-    );
+    const bestVal = Math.max(...capturers.map((c) => c.victimValue));
+    const topVal = capturers.filter((c) => c.victimValue === bestVal);
+    const bestThreat = Math.max(...topVal.map((c) => c.attackerThreat));
+    const tied = topVal.filter((c) => c.attackerThreat === bestThreat);
     const pick = pickRandom(tied, rng);
-    return { mover: pick, target: { ...state.rookie }, isCapture: true };
+    return {
+      mover: pick.piece,
+      target: pick.target,
+      isCapture: pick.isRookie,
+    };
   }
 
   // 2) Movers: pawns advance toward rank 1; others approach Rookie.
@@ -429,6 +468,7 @@ function chooseEnemyActionAgainst(
         inBounds(target) &&
         !isHazard(state.hazards, target) &&
         !enemyAt(state.pieces, target) &&
+        !isAllyAt(state, target) &&
         !isVacated(vacated, target) &&
         !(state.rookie.file === target.file && state.rookie.rank === target.rank) &&
         applyRoyalAura(p, [target], state).length > 0
@@ -675,8 +715,29 @@ function applyAction(state: BoardState, action: EnemyAction): BoardState {
     }
     return moved;
   });
+  // Rookie capture — game over.
   if (isCapture) {
     return { ...state, pieces: newPieces, status: 'lost' };
+  }
+  // Ally capture — remove the ally; not a loss.
+  const allyHit = state.allies.find(
+    (a) => a.file === target.file && a.rank === target.rank,
+  );
+  if (allyHit) {
+    const nextAllies = state.allies.filter((a) => a !== allyHit);
+    const relocated = relocateStatusMarkers(state, fromSq, toSq);
+    return {
+      ...state,
+      ...relocated,
+      pieces: newPieces,
+      allies: nextAllies,
+      lastEnemyCaptureFx: {
+        fromSq,
+        toSq,
+        pieceType: mover.type,
+        id: Date.now() + Math.random(),
+      },
+    };
   }
   const relocated = relocateStatusMarkers(state, fromSq, toSq);
   return { ...state, ...relocated, pieces: newPieces };
