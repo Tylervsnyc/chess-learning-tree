@@ -3266,6 +3266,150 @@ const RUN_ABILITIES_V2: RunDef = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Run — The Switchback: two walls force an S-curve.
+//
+// Wall A (rank 6, files a-g) blocks every file except h.
+// Wall B (rank 4, files b-h) blocks every file except a.
+// Forced path: a1-area → a-file up to a5 → rank 5 corridor across → h-file
+// up through h6 gap → rank 8.
+//
+// Geometry note: sliders parked ON rank 5 are stuck — all 4 diagonals and
+// both file directions hit a wall. Knights are the only mobile threat in
+// the corridor, which the level progression leans into.
+
+const SWITCHBACK_WALLS: Coord[] = [
+  { file: 1, rank: 6 }, { file: 2, rank: 6 }, { file: 3, rank: 6 },
+  { file: 4, rank: 6 }, { file: 5, rank: 6 }, { file: 6, rank: 6 },
+  { file: 7, rank: 6 },
+  { file: 2, rank: 4 }, { file: 3, rank: 4 }, { file: 4, rank: 4 },
+  { file: 5, rank: 4 }, { file: 6, rank: 4 }, { file: 7, rank: 4 },
+  { file: 8, rank: 4 },
+];
+
+const RUN_SWITCHBACK: RunDef = {
+  id: 'switchback',
+  name: 'The Switchback',
+  blurb: 'Two walls, one path. Up the a-file, across, up the h-file.',
+  levels: [
+    make(
+      1,
+      [pawn(2, 5), pawn(8, 7)],
+      { hazards: [...SWITCHBACK_WALLS] },
+    ),
+    make(
+      2,
+      [pawn(2, 5), pawn(5, 5), pawn(7, 7), pawn(8, 7)],
+      { hazards: [...SWITCHBACK_WALLS] },
+    ),
+    make(
+      3,
+      [
+        pawn(7, 3),
+        pawn(2, 5), pawn(5, 5),
+        pawn(7, 7), pawn(8, 7),
+      ],
+      { hazards: [...SWITCHBACK_WALLS] },
+    ),
+    make(
+      4,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(5, 5),
+        pawn(7, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight'],
+        moveLimit: 16,
+      },
+    ),
+    make(
+      5,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(4, 5), knight(6, 5),
+        pawn(7, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight'],
+        moveLimit: 16,
+      },
+    ),
+    make(
+      6,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(7, 3),
+        knight(4, 5), knight(6, 5),
+        bishop(4, 7), bishop(6, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 15,
+      },
+    ),
+    make(
+      7,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(7, 3),
+        knight(3, 5), pawn(5, 5), knight(7, 5),
+        bishop(7, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 17,
+      },
+    ),
+    make(
+      8,
+      [
+        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        knight(3, 5), knight(5, 5), knight(7, 5),
+        knight(4, 7), bishop(6, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 16,
+      },
+    ),
+    make(
+      9,
+      [
+        pawn(2, 3), pawn(5, 3), pawn(7, 3),
+        knight(3, 5), knight(5, 5), knight(7, 5),
+        knight(4, 7), bishop(6, 7), queen(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 18,
+      },
+    ),
+    make(
+      10,
+      [
+        pawn(2, 3), pawn(4, 3), pawn(7, 3),
+        queen(2, 5), knight(3, 5), queen(8, 5),
+        knight(4, 7), bishop(6, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...SWITCHBACK_WALLS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 17,
+      },
+    ),
+  ],
+};
+
 export const STC_RUN_IDS = [
   'stc-king',
   'stc-bishop',
@@ -3308,6 +3452,7 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_STC_PAWN,
   RUN_STC_KNIGHT,
   RUN_STC_QUEEN,
+  RUN_SWITCHBACK,
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;
