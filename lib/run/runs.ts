@@ -3563,53 +3563,58 @@ const RUN_X: RunDef = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Run — The Bridge: rank 5 is a river with one ford square.
+// Run — The Bridge: two rivers, two fords, on opposite ends.
 //
-// Rank 5 is fully hazardous except d5 (the ford). Every climb from rank 1 to
-// rank 8 funnels through that one square — defenders covering d5 own the
-// level.
+// Rank 3 is a wall except g3. Rank 6 is a wall except b6. Rookie must
+// sidestep east to cross the first river, traverse the open rank 4-5
+// corridor, then sidestep west to cross the second river. Forced zigzag.
 
 const BRIDGE_HAZARDS: Coord[] = [
-  { file: 1, rank: 5 }, { file: 2, rank: 5 }, { file: 3, rank: 5 },
-  { file: 5, rank: 5 }, { file: 6, rank: 5 }, { file: 7, rank: 5 },
-  { file: 8, rank: 5 },
+  { file: 1, rank: 3 }, { file: 2, rank: 3 }, { file: 3, rank: 3 },
+  { file: 4, rank: 3 }, { file: 5, rank: 3 }, { file: 6, rank: 3 },
+  { file: 8, rank: 3 },
+  { file: 1, rank: 6 }, { file: 3, rank: 6 }, { file: 4, rank: 6 },
+  { file: 5, rank: 6 }, { file: 6, rank: 6 }, { file: 7, rank: 6 },
+  { file: 8, rank: 6 },
 ];
 
 const RUN_BRIDGE: RunDef = {
   id: 'the-bridge',
   name: 'The Bridge',
-  blurb: 'Rank 5 is a river. Only one square crosses it.',
+  blurb: 'Two rivers, two fords. Zigzag east then west to reach the top.',
   levels: [
     make(
       1,
-      [pawn(4, 7)],
+      [pawn(2, 7)],
       { hazards: [...BRIDGE_HAZARDS] },
     ),
     make(
       2,
-      [pawn(4, 5), pawn(4, 7)],
+      [pawn(2, 7), pawn(2, 5), pawn(7, 5)],
       { hazards: [...BRIDGE_HAZARDS] },
     ),
     make(
       3,
-      [pawn(4, 5), pawn(4, 6), pawn(4, 7), pawn(2, 3), pawn(7, 3)],
+      [
+        pawn(2, 7), pawn(2, 5), pawn(5, 5), pawn(7, 5),
+        pawn(4, 4),
+      ],
       { hazards: [...BRIDGE_HAZARDS] },
     ),
     make(
       4,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6), pawn(4, 7),
-        pawn(3, 7),
+        pawn(2, 7), pawn(2, 5), pawn(5, 5), pawn(7, 5),
+        pawn(6, 4),
       ],
       { hazards: [...BRIDGE_HAZARDS], allowedForms: ['knight'] },
     ),
     make(
       5,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6), pawn(4, 7),
-        pawn(3, 7), pawn(5, 7),
+        pawn(2, 7), bishop(3, 8),
+        pawn(2, 5), pawn(7, 5),
+        pawn(6, 4),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3620,10 +3625,9 @@ const RUN_BRIDGE: RunDef = {
     make(
       6,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6), pawn(4, 7),
-        pawn(3, 7), pawn(5, 7),
-        knight(3, 6),
+        pawn(2, 7), bishop(3, 8),
+        pawn(2, 5), pawn(7, 5),
+        pawn(6, 4), pawn(8, 4),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3635,10 +3639,10 @@ const RUN_BRIDGE: RunDef = {
     make(
       7,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6),
-        knight(3, 7), knight(5, 7),
-        pawn(4, 8),
+        pawn(2, 7), pawn(3, 7), bishop(3, 8),
+        pawn(2, 5), pawn(7, 5),
+        pawn(6, 4), pawn(8, 4),
+        knight(5, 4),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3650,10 +3654,11 @@ const RUN_BRIDGE: RunDef = {
     make(
       8,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6),
-        bishop(3, 7), bishop(5, 7),
-        queen(4, 8),
+        pawn(2, 7), pawn(3, 7), bishop(3, 8),
+        pawn(2, 5), pawn(7, 5),
+        pawn(6, 4), pawn(8, 4),
+        knight(5, 4),
+        queen(7, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3665,11 +3670,11 @@ const RUN_BRIDGE: RunDef = {
     make(
       9,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6),
-        knight(3, 6), knight(5, 6),
-        knight(3, 7), knight(5, 7),
-        queen(4, 8),
+        pawn(2, 7), pawn(3, 7), bishop(3, 8), knight(1, 8),
+        pawn(2, 5), pawn(7, 5),
+        pawn(6, 4), pawn(8, 4),
+        knight(5, 4),
+        queen(7, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3681,11 +3686,11 @@ const RUN_BRIDGE: RunDef = {
     make(
       10,
       [
-        pawn(2, 3), pawn(7, 3),
-        pawn(4, 5), pawn(4, 6), pawn(4, 7),
-        knight(3, 6), knight(5, 6),
-        bishop(3, 7), bishop(5, 7),
-        queen(3, 8), queen(4, 8), queen(5, 8),
+        pawn(2, 7), pawn(3, 7), bishop(3, 8), knight(1, 8),
+        pawn(2, 5), pawn(5, 5), pawn(7, 5),
+        pawn(6, 4), pawn(8, 4),
+        knight(5, 4), bishop(4, 5),
+        queen(2, 8), queen(7, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
