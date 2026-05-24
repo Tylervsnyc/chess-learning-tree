@@ -3410,6 +3410,158 @@ const RUN_SWITCHBACK: RunDef = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Run — The X: two diagonal hazard lines form a giant X across the board.
+//
+// Diag NE: a3 → f8.  Diag NW: h3 → c8.
+// Every file is blocked partway up. Rooks get trapped in the central
+// pocket (max d5/e5). Bishops travel diagonals that run PARALLEL to the
+// hazards and can reach corner squares (h8 from e5 NE, a8 from d5 NW)
+// in a single slide. The map is fundamentally bishop-required.
+
+const X_HAZARDS: Coord[] = [
+  { file: 1, rank: 3 }, { file: 2, rank: 4 }, { file: 3, rank: 5 },
+  { file: 4, rank: 6 }, { file: 5, rank: 7 }, { file: 6, rank: 8 },
+  { file: 8, rank: 3 }, { file: 7, rank: 4 }, { file: 6, rank: 5 },
+  { file: 5, rank: 6 }, { file: 4, rank: 7 }, { file: 3, rank: 8 },
+];
+
+// Early-level variant: X with the central crossing-squares (e6, e7) removed
+// so a determined rook can race up the e-file. Lets L1-L3 stay rook-friendly
+// before the full trap closes in L4+.
+const X_HAZARDS_OPEN_E: Coord[] = X_HAZARDS.filter(
+  (h) => !(h.file === 5 && (h.rank === 6 || h.rank === 7)),
+);
+
+const RUN_X: RunDef = {
+  id: 'the-x',
+  name: 'The X',
+  blurb: 'Two diagonal walls cross the board. Bishops thrive — rooks get stuck.',
+  levels: [
+    make(
+      1,
+      [pawn(5, 5)],
+      { hazards: [...X_HAZARDS_OPEN_E], allowedForms: ['bishop'] },
+    ),
+    make(
+      2,
+      [pawn(5, 3), pawn(5, 5), pawn(4, 5)],
+      { hazards: [...X_HAZARDS_OPEN_E], allowedForms: ['bishop'] },
+    ),
+    make(
+      3,
+      [
+        pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        knight(4, 4),
+      ],
+      { hazards: [...X_HAZARDS_OPEN_E], allowedForms: ['bishop'] },
+    ),
+    make(
+      4,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+      },
+    ),
+    make(
+      5,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        bishop(2, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 2,
+      },
+    ),
+    make(
+      6,
+      [
+        pawn(3, 3), pawn(5, 3), pawn(4, 5),
+        pawn(6, 6), bishop(2, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 2,
+        moveLimit: 15,
+      },
+    ),
+    make(
+      7,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        queen(7, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 2,
+        moveLimit: 18,
+      },
+    ),
+    make(
+      8,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        queen(2, 7), queen(7, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 2,
+        moveLimit: 18,
+      },
+    ),
+    make(
+      9,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        bishop(2, 5), bishop(7, 5),
+        queen(2, 7), queen(7, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 3,
+        moveLimit: 19,
+      },
+    ),
+    make(
+      10,
+      [
+        pawn(2, 3), pawn(3, 3), pawn(4, 3),
+        pawn(5, 3), pawn(6, 3), pawn(7, 3),
+        pawn(4, 5), pawn(5, 5),
+        bishop(2, 5), bishop(7, 5),
+        knight(3, 7), knight(6, 7),
+        queen(2, 7), queen(7, 7),
+      ],
+      {
+        hazards: [...X_HAZARDS],
+        allowedForms: ['bishop', 'knight'],
+        enemiesPerTurn: 3,
+        moveLimit: 20,
+      },
+    ),
+  ],
+};
+
 export const STC_RUN_IDS = [
   'stc-king',
   'stc-bishop',
@@ -3453,6 +3605,7 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_STC_KNIGHT,
   RUN_STC_QUEEN,
   RUN_SWITCHBACK,
+  RUN_X,
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;
