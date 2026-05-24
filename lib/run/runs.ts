@@ -3562,6 +3562,278 @@ const RUN_X: RunDef = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Run — The Bridge: rank 5 is a river with one ford square.
+//
+// Rank 5 is fully hazardous except d5 (the ford). Every climb from rank 1 to
+// rank 8 funnels through that one square — defenders covering d5 own the
+// level.
+
+const BRIDGE_HAZARDS: Coord[] = [
+  { file: 1, rank: 5 }, { file: 2, rank: 5 }, { file: 3, rank: 5 },
+  { file: 5, rank: 5 }, { file: 6, rank: 5 }, { file: 7, rank: 5 },
+  { file: 8, rank: 5 },
+];
+
+const RUN_BRIDGE: RunDef = {
+  id: 'the-bridge',
+  name: 'The Bridge',
+  blurb: 'Rank 5 is a river. Only one square crosses it.',
+  levels: [
+    make(
+      1,
+      [pawn(4, 7)],
+      { hazards: [...BRIDGE_HAZARDS] },
+    ),
+    make(
+      2,
+      [pawn(4, 5), pawn(4, 7)],
+      { hazards: [...BRIDGE_HAZARDS] },
+    ),
+    make(
+      3,
+      [pawn(4, 5), pawn(4, 6), pawn(4, 7), pawn(2, 3), pawn(7, 3)],
+      { hazards: [...BRIDGE_HAZARDS] },
+    ),
+    make(
+      4,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6), pawn(4, 7),
+        pawn(3, 7),
+      ],
+      { hazards: [...BRIDGE_HAZARDS], allowedForms: ['knight'] },
+    ),
+    make(
+      5,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6), pawn(4, 7),
+        pawn(3, 7), pawn(5, 7),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+      },
+    ),
+    make(
+      6,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6), pawn(4, 7),
+        pawn(3, 7), pawn(5, 7),
+        knight(3, 6),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 14,
+      },
+    ),
+    make(
+      7,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6),
+        knight(3, 7), knight(5, 7),
+        pawn(4, 8),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 15,
+      },
+    ),
+    make(
+      8,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6),
+        bishop(3, 7), bishop(5, 7),
+        queen(4, 8),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 16,
+      },
+    ),
+    make(
+      9,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6),
+        knight(3, 6), knight(5, 6),
+        knight(3, 7), knight(5, 7),
+        queen(4, 8),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 17,
+      },
+    ),
+    make(
+      10,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(4, 5), pawn(4, 6), pawn(4, 7),
+        knight(3, 6), knight(5, 6),
+        bishop(3, 7), bishop(5, 7),
+        queen(3, 8), queen(4, 8), queen(5, 8),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 18,
+      },
+    ),
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Run — The Plus: a cross of hazards splits the board into four quadrants.
+//
+// Vertical bar d3-d7 + horizontal bar b5-f5 (skipping the shared d5 center).
+// Files a, g, h are open all the way up — the edges are Rookie's natural
+// routes. Late levels fortify the edges with queens, forcing inner-quadrant
+// routing.
+
+const PLUS_HAZARDS: Coord[] = [
+  { file: 4, rank: 3 }, { file: 4, rank: 4 }, { file: 4, rank: 5 },
+  { file: 4, rank: 6 }, { file: 4, rank: 7 },
+  { file: 2, rank: 5 }, { file: 3, rank: 5 },
+  { file: 5, rank: 5 }, { file: 6, rank: 5 },
+];
+
+const RUN_PLUS: RunDef = {
+  id: 'the-plus',
+  name: 'The Plus',
+  blurb: 'A cross of barriers splits the board into four quadrants.',
+  levels: [
+    make(
+      1,
+      [pawn(1, 7)],
+      { hazards: [...PLUS_HAZARDS] },
+    ),
+    make(
+      2,
+      [pawn(1, 7), pawn(8, 7), pawn(2, 3), pawn(7, 3)],
+      { hazards: [...PLUS_HAZARDS] },
+    ),
+    make(
+      3,
+      [
+        pawn(1, 3), pawn(2, 3), pawn(7, 3), pawn(8, 3),
+        pawn(1, 7), pawn(8, 7),
+      ],
+      { hazards: [...PLUS_HAZARDS] },
+    ),
+    make(
+      4,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(1, 7), pawn(8, 7),
+        knight(3, 6), knight(6, 6),
+      ],
+      { hazards: [...PLUS_HAZARDS], allowedForms: ['knight'] },
+    ),
+    make(
+      5,
+      [
+        pawn(2, 3), pawn(7, 3),
+        bishop(1, 5), bishop(8, 5),
+        pawn(1, 7), pawn(8, 7),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+      },
+    ),
+    make(
+      6,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(3, 6), knight(6, 6),
+        bishop(1, 5), bishop(8, 5),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 15,
+      },
+    ),
+    make(
+      7,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(3, 6), knight(6, 6),
+        queen(1, 7),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 15,
+      },
+    ),
+    make(
+      8,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(3, 6), knight(6, 6),
+        queen(1, 7), queen(8, 7),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 2,
+        moveLimit: 16,
+      },
+    ),
+    make(
+      9,
+      [
+        pawn(2, 3), pawn(7, 3),
+        knight(3, 6), knight(6, 6),
+        bishop(1, 5), bishop(8, 5),
+        queen(1, 7), queen(8, 7),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 17,
+      },
+    ),
+    make(
+      10,
+      [
+        pawn(2, 3), pawn(7, 3),
+        pawn(1, 6), pawn(8, 6),
+        knight(3, 6), knight(6, 6),
+        bishop(1, 5), bishop(8, 5),
+        knight(2, 8), knight(7, 8),
+        queen(1, 7), queen(8, 7),
+      ],
+      {
+        hazards: [...PLUS_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 3,
+        moveLimit: 18,
+      },
+    ),
+  ],
+};
+
 export const STC_RUN_IDS = [
   'stc-king',
   'stc-bishop',
@@ -3606,6 +3878,8 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_STC_QUEEN,
   RUN_SWITCHBACK,
   RUN_X,
+  RUN_BRIDGE,
+  RUN_PLUS,
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;
