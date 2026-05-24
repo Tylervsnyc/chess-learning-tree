@@ -3581,25 +3581,27 @@ const BRIDGE_HAZARDS: Coord[] = [
 const RUN_BRIDGE: RunDef = {
   id: 'the-bridge',
   name: 'The Bridge',
-  blurb: 'Two rivers, two fords. Knights and queens guard every crossing.',
+  blurb: 'Two rivers, two fords. Knights everywhere — each level a different gauntlet.',
   levels: [
+    // L1 — corner knights + center knight
     make(
       1,
       [
+        knight(3, 4), knight(7, 4),
+        knight(2, 5), knight(5, 5),
+        bishop(4, 8),
         pawn(2, 7),
-        knight(7, 4), knight(4, 4),
-        knight(2, 5),
-        bishop(3, 8),
       ],
       { hazards: [...BRIDGE_HAZARDS], allowedForms: ['knight'] },
     ),
+    // L2 — alternate knight pattern, shifted right
     make(
       2,
       [
-        pawn(2, 7),
-        knight(7, 4), knight(4, 4),
-        knight(2, 5), knight(7, 5),
-        bishop(3, 8),
+        knight(2, 4), knight(5, 4), knight(8, 4),
+        knight(4, 5), knight(7, 5),
+        bishop(6, 8),
+        pawn(3, 7),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3607,14 +3609,15 @@ const RUN_BRIDGE: RunDef = {
         enemiesPerTurn: 2,
       },
     ),
+    // L3 — dense rank 4
     make(
       3,
       [
-        pawn(2, 7),
-        knight(7, 4), knight(4, 4),
-        knight(2, 5), knight(7, 5),
-        knight(4, 7),
+        knight(3, 4), knight(5, 4), knight(7, 4),
+        knight(2, 5), knight(4, 5), knight(7, 5),
         bishop(3, 8),
+        knight(4, 7),
+        pawn(2, 7),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3622,15 +3625,15 @@ const RUN_BRIDGE: RunDef = {
         enemiesPerTurn: 2,
       },
     ),
+    // L4 — first queen joins
     make(
       4,
       [
+        knight(2, 4), knight(6, 4),
+        knight(3, 5), knight(5, 5), knight(8, 5),
+        queen(2, 8),
+        knight(3, 7), bishop(7, 8),
         pawn(2, 7),
-        knight(7, 4), knight(4, 4),
-        knight(2, 5), knight(7, 5),
-        knight(4, 7),
-        bishop(3, 8),
-        queen(7, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3638,15 +3641,14 @@ const RUN_BRIDGE: RunDef = {
         enemiesPerTurn: 2,
       },
     ),
+    // L5 — knight wall on rank 5
     make(
       5,
       [
-        pawn(2, 7),
         knight(3, 4), knight(5, 4), knight(7, 4),
-        knight(2, 5), knight(6, 5),
-        knight(4, 7),
-        bishop(3, 8),
-        queen(7, 8),
+        knight(2, 5), knight(4, 5), knight(6, 5), knight(8, 5),
+        queen(4, 8),
+        knight(5, 7), bishop(3, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3655,30 +3657,33 @@ const RUN_BRIDGE: RunDef = {
         moveLimit: 16,
       },
     ),
+    // L6 — twin queens at rank 8 corners
     make(
       6,
       [
-        pawn(2, 7), pawn(3, 7),
-        knight(3, 4), knight(5, 4), knight(7, 4),
-        knight(2, 5), knight(6, 5),
-        knight(4, 7), bishop(3, 8),
-        queen(7, 8),
+        knight(2, 4), knight(4, 4), knight(6, 4), knight(8, 4),
+        knight(3, 5), knight(5, 5), knight(7, 5),
+        queen(2, 8), queen(7, 8),
+        knight(4, 7),
+        bishop(5, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
         allowedForms: ['knight', 'bishop'],
-        enemiesPerTurn: 2,
+        enemiesPerTurn: 3,
         moveLimit: 15,
       },
     ),
+    // L7 — queen takes the corridor
     make(
       7,
       [
-        pawn(2, 7), pawn(3, 7),
         knight(3, 4), knight(5, 4), knight(7, 4),
-        knight(2, 5), knight(6, 5),
-        knight(4, 7), bishop(3, 8), knight(1, 8),
-        queen(2, 8), queen(7, 8),
+        queen(2, 5), knight(4, 5), knight(6, 5), queen(8, 5),
+        queen(7, 8),
+        knight(3, 7), knight(5, 7),
+        bishop(3, 8),
+        pawn(2, 7),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3687,30 +3692,16 @@ const RUN_BRIDGE: RunDef = {
         moveLimit: 15,
       },
     ),
+    // L8 — knight wall + queens
     make(
       8,
       [
-        pawn(2, 7), pawn(3, 7),
-        knight(3, 4), knight(5, 4), knight(7, 4),
-        queen(4, 5), knight(2, 5), knight(6, 5),
-        knight(4, 7), bishop(3, 8), knight(1, 8),
-        queen(2, 8), queen(7, 8),
-      ],
-      {
-        hazards: [...BRIDGE_HAZARDS],
-        allowedForms: ['knight', 'bishop'],
-        enemiesPerTurn: 3,
-        moveLimit: 15,
-      },
-    ),
-    make(
-      9,
-      [
-        pawn(2, 7), pawn(3, 7), pawn(1, 7),
-        knight(3, 4), knight(5, 4), knight(6, 4), knight(7, 4),
-        queen(4, 5), knight(2, 5), knight(6, 5),
-        knight(4, 7), bishop(3, 8), knight(1, 8),
-        queen(2, 8), queen(7, 8),
+        knight(2, 4), knight(4, 4), knight(6, 4), queen(8, 4),
+        knight(3, 5), queen(5, 5), knight(7, 5),
+        queen(2, 8),
+        knight(4, 7), knight(6, 7),
+        bishop(5, 8), bishop(7, 8),
+        pawn(2, 7),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
@@ -3719,15 +3710,35 @@ const RUN_BRIDGE: RunDef = {
         moveLimit: 14,
       },
     ),
+    // L9 — three queens, dense everywhere
+    make(
+      9,
+      [
+        knight(3, 4), knight(5, 4), knight(7, 4), queen(2, 4),
+        knight(4, 5), queen(6, 5), knight(8, 5),
+        queen(3, 8), queen(7, 8),
+        knight(5, 7), knight(6, 7),
+        bishop(4, 8),
+        pawn(2, 7), pawn(3, 7),
+      ],
+      {
+        hazards: [...BRIDGE_HAZARDS],
+        allowedForms: ['knight', 'bishop'],
+        enemiesPerTurn: 4,
+        moveLimit: 13,
+      },
+    ),
+    // L10 — boss: ford pawns + multi-layer defense
     make(
       10,
       [
         pawn(7, 3), pawn(2, 6),
-        knight(3, 4), knight(5, 4), knight(7, 4),
-        queen(4, 5), knight(2, 5), knight(6, 5),
-        pawn(1, 7), pawn(2, 7), pawn(3, 7),
-        knight(4, 7), bishop(3, 8), knight(1, 8),
-        queen(2, 8), queen(7, 8),
+        knight(2, 4), knight(5, 4), knight(6, 4), knight(8, 4),
+        queen(3, 5), knight(5, 5), knight(7, 5),
+        pawn(1, 7), pawn(3, 7),
+        knight(4, 7), knight(6, 7),
+        bishop(2, 8), knight(7, 8),
+        queen(4, 8), queen(8, 8),
       ],
       {
         hazards: [...BRIDGE_HAZARDS],
