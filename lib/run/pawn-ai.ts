@@ -637,6 +637,20 @@ function applyAction(state: BoardState, action: EnemyAction): BoardState {
   const fromSq = toSquare({ file: mover.file, rank: mover.rank });
   const toSq = toSquare(target);
 
+  // Defensive backstop: if Rookie is in king form and this is a real capture
+  // (not friendly fire), refuse to apply the move. The intended guard lives
+  // upstream in stepEnemyTurn (impervious bounce) — if we reach here with
+  // form='king' and isCapture, something bypassed that guard. Log so we can
+  // diagnose, then drop the move so the player doesn't lose unfairly.
+  if (isCapture && !isDecoyCapture && state.form === 'king') {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[king-form] capture reached applyAction while form=king — guard bypassed',
+      { mover, target, isRabidCapture, formMovesLeft: state.formMovesLeft },
+    );
+    return state;
+  }
+
   // Friendly-fire on the decoy: remove the marked piece, mover takes its
   // square, Rookie banks the capture (+ tempo), decoy mark clears. NOT a loss.
   if (isDecoyCapture) {

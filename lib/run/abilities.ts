@@ -10,6 +10,7 @@
 
 import { rookieLegalMoves } from './movement';
 import { getRunById } from './runs';
+import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
 import { toSquare } from './types';
 import type {
@@ -1267,18 +1268,44 @@ export function stepDroneTurn(state: BoardState): BoardState {
   const nextDrones = state.drones.map((d) => {
     if (!d.alive) return d;
     if (d.steps >= DRONE_MAX_STEPS) return { ...d, alive: false };
-    // Pick a random rook direction, then SLIDE that way until we hit an
-    // enemy (capture & vanish) or the board edge (stop at the last square).
-    const order = [...DRONE_4_DIRS].sort(() => Math.random() - 0.5);
-    let chosen: [number, number] | null = null;
-    for (const [df, dr] of order) {
-      const f = d.file + df;
-      const r = d.rank + dr;
-      if (f < 1 || f > 8 || r < 1 || r > 8) continue;
-      chosen = [df, dr];
-      break;
+    // Pick a direction biased toward enemies: scan all 4 rays from the drone,
+    // find which ones contain an enemy, and prefer the ray with the CLOSEST
+    // enemy. If no ray has an enemy, fall back to a uniformly random valid
+    // direction so the drone keeps moving instead of stalling.
+    // RNG is seeded per-drone-tick so playtest stays deterministic.
+    const validDirs = DRONE_4_DIRS.filter(
+      ([df, dr]) =>
+        d.file + df >= 1 && d.file + df <= 8 && d.rank + dr >= 1 && d.rank + dr <= 8,
+    );
+    if (validDirs.length === 0) return { ...d, alive: false };
+    const rng = mulberry32(
+      (state.level * 7919 + state.moveCount * 31 + Number(d.id) * 13 + d.steps * 5) >>> 0,
+    );
+    // For each valid direction, find distance to nearest enemy along the ray
+    // (Infinity if none). Smallest distance wins; ties broken by RNG.
+    const rayScans = validDirs.map(([df, dr]) => {
+      let f = d.file + df;
+      let r = d.rank + dr;
+      let dist = 1;
+      while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+        if (pieces.some((p) => p.file === f && p.rank === r)) {
+          return { dir: [df, dr] as [number, number], dist };
+        }
+        f += df;
+        r += dr;
+        dist += 1;
+      }
+      return { dir: [df, dr] as [number, number], dist: Infinity };
+    });
+    const withEnemy = rayScans.filter((s) => s.dist !== Infinity);
+    let chosen: [number, number];
+    if (withEnemy.length > 0) {
+      const minDist = Math.min(...withEnemy.map((s) => s.dist));
+      const closest = withEnemy.filter((s) => s.dist === minDist);
+      chosen = closest[Math.floor(rng() * closest.length)].dir;
+    } else {
+      chosen = validDirs[Math.floor(rng() * validDirs.length)];
     }
-    if (!chosen) return { ...d, alive: false };
     let nf = d.file;
     let nr = d.rank;
     let captured: EnemyPiece | null = null;
