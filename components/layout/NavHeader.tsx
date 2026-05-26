@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
+import { DailyWorkoutBadge } from '@/components/shared/DailyWorkoutBadge';
 import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
 
 function LearnDropdown({ pathname }: { pathname: string | null }) {
@@ -151,6 +152,9 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
                   Patron
                 </Link>
               )}
+
+              {/* Daily workout streak — Play + Path + Run completed today */}
+              {user && <DailyWorkoutBadge />}
 
               {/* Guest sign up */}
               {!loading && !user && (

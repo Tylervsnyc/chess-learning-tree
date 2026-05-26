@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import './globals.css';
 import { NavHeader } from '@/components/layout/NavHeader';
+import { DailyWorkoutWatcher } from '@/components/shared/DailyWorkoutWatcher';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
@@ -70,6 +71,7 @@ export default function RootLayout({
                 {children}
               </RookieErrorBoundary>
             </main>
+            <DailyWorkoutWatcher />
           </PostHogProvider>
         </Suspense>
       </body>
