@@ -7,7 +7,7 @@ import { RunSummaryModal } from '@/components/run/RunSummaryModal';
 import { computeStats, readHistory, recordRun } from '@/lib/run/history';
 import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
-import { RunIntroModal } from '@/components/run/RunIntroModal';
+import { RunLanding } from '@/components/run/RunLanding';
 import { RulesInline } from '@/components/run/RulesInline';
 import { TempoHelpModal } from '@/components/run/TempoHelpModal';
 import { RunPickerModal } from '@/components/run/RunPickerModal';
@@ -853,6 +853,26 @@ export default function RookiesRunPage() {
 
   void puzzle;
 
+  if (showIntro) {
+    const dateLabel = (() => {
+      try {
+        const d = new Date(meta.iso + 'T00:00:00');
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+      } catch {
+        return undefined;
+      }
+    })();
+    return (
+      <div className="h-full overflow-auto">
+        <RunLanding
+          onStart={dismissIntro}
+          tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
+          dateLabel={dateLabel}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full overflow-auto bg-chess-page">
       <div className="max-w-md mx-auto w-full px-4 pt-1.5 pb-3 flex flex-col gap-2">
@@ -964,13 +984,6 @@ export default function RookiesRunPage() {
           offer={state.pendingOffer}
           onPick={onOfferPick}
           onSkip={onOfferSkip}
-        />
-      )}
-
-      {showIntro && (
-        <RunIntroModal
-          onClose={dismissIntro}
-          tagline={isStc ? 'Powered by the Story Time Chess method' : undefined}
         />
       )}
 

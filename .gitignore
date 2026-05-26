@@ -53,6 +53,9 @@ logs/builds/*.log
 og-*.png
 public/Gameplay/
 
+# Small product assets must be tracked
+!public/run/landing-board.mp4
+
 # MCP config (local tool integrations)
 .mcp.json
 
