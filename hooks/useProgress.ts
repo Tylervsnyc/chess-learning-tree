@@ -814,6 +814,19 @@ export function useLessonProgress() {
     });
   }, []);
 
+  // Record learn/tactics activity for daily workout tracking.
+  // Opening lessons live in their own progress store, so they need this hook
+  // to mark the workout's Learn slot — regular path lessons set it inline.
+  const recordRitualTactics = useCallback(() => {
+    setProgress(prev => {
+      const today = new Date().toISOString().split('T')[0];
+      if (prev.ritualTacticsDate === today) return prev;
+      const newProgress = { ...prev, ritualTacticsDate: today };
+      saveProgress(newProgress);
+      return newProgress;
+    });
+  }, []);
+
   // Dismiss streak celebration popup
   const dismissStreakCelebration = useCallback(() => {
     setStreakJustExtended(false);
@@ -858,5 +871,6 @@ export function useLessonProgress() {
     ritualTacticsDate: progress.ritualTacticsDate,
     ritualDailyDate: progress.ritualDailyDate,
     recordRitualPlay,
+    recordRitualTactics,
   };
 }

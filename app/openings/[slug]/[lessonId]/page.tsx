@@ -80,6 +80,7 @@ import { getWittyAlienBonjourLesson } from '@/data/openings/witty-alien-bonjour-
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
+import { useLessonProgress } from '@/hooks/useProgress'
 import { useUser } from '@/hooks/useUser'
 
 // ═══════════════════════════════════════════
@@ -172,6 +173,7 @@ export default function OpeningLessonPage() {
 
   useAudioWarmup()
   const { completeLesson } = useOpeningProgress()
+  const { recordRitualTactics } = useLessonProgress()
   const { user } = useUser()
 
   const lesson = useMemo((): OpeningLesson | undefined => {
@@ -315,6 +317,7 @@ export default function OpeningLessonPage() {
       LearningEvents.lessonCompleted(lessonId, accuracy, timeSpent, { source: 'opening', openingSlug: slug })
       writeBreadcrumb({ type: 'opening', lessonName: lesson.title, openingName, lessonId, score: correctCount, total: interactiveCount })
       completeLesson(slug, lessonId)
+      recordRitualTactics()
       // Log Honcho summary + trigger dream
       if (user?.id && honchoSessionIdRef.current) {
         const predictSteps = lesson.steps.filter(s => s.type === 'play-move' && s.prompt !== 'Your move.')
@@ -363,7 +366,7 @@ export default function OpeningLessonPage() {
     setPuzzleMoveIndex(0)
     setPuzzleFen('')
     advancingRef.current = false
-  }, [lesson, currentStepIndex, getStepOrientation, correctCount, lessonId, slug, completeLesson])
+  }, [lesson, currentStepIndex, getStepOrientation, correctCount, lessonId, slug, completeLesson, recordRitualTactics])
 
   // ─── Auto-advance for instruction steps with autoAdvance ───
   useEffect(() => {

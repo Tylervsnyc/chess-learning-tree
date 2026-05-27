@@ -351,55 +351,71 @@ export function ActivityComplete({
           )}
 
           {/* ─── Daily Workout: 3-part button ─── */}
-          {(
-            <div className="w-full flex rounded-2xl overflow-hidden" style={{ height: 52 }}>
-              {/* Play — blue */}
-              <Link
-                href="/play"
-                className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
-                style={{
-                  backgroundColor: workoutPlay ? '#e2e8f0' : '#1CB0F6',
-                  color: workoutPlay ? '#94a3b8' : '#ffffff',
-                  pointerEvents: workoutPlay ? 'none' : undefined,
-                }}
-              >
-                <span className="scale-75 origin-center"><BreathingRook size="xs" mood={workoutPlay ? 'neutral' : 'happy'} /></span>
-                Play
-              </Link>
-              {/* Learn — green */}
-              <Link
-                href="/path"
-                className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-x-2 border-white/30"
-                style={{
-                  backgroundColor: workoutLearn ? '#e2e8f0' : '#58CC02',
-                  color: workoutLearn ? '#94a3b8' : '#ffffff',
-                  pointerEvents: workoutLearn ? 'none' : undefined,
-                }}
-              >
-                {/* Book icon */}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                Learn
-              </Link>
-              {/* Run — orange (Rookie's Run, the daily) */}
-              <Link
-                href="/run"
-                className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
-                style={{
-                  backgroundColor: workoutDaily ? '#e2e8f0' : '#FF9500',
-                  color: workoutDaily ? '#94a3b8' : '#ffffff',
-                  pointerEvents: workoutDaily ? 'none' : undefined,
-                }}
-              >
-                {/* Lightning bolt icon */}
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-                Run
-              </Link>
-            </div>
-          )}
+          {/* Completed slots become gold "trophy" cells with a check overlay.
+              Incomplete slots keep their original brand color. */}
+          {(() => {
+            const GOLD_BG = 'linear-gradient(135deg, #FFD43B 0%, #FFAA00 100%)'
+            const GOLD_SHADOW = 'inset 0 0 0 1px rgba(255,255,255,0.55), 0 2px 8px rgba(255,170,0,0.35)'
+            const CheckBadge = () => (
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )
+            return (
+              <div className="w-full flex rounded-2xl overflow-hidden" style={{ height: 52 }}>
+                {/* Play */}
+                <Link
+                  href="/play"
+                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
+                  style={{
+                    background: workoutPlay ? GOLD_BG : '#1CB0F6',
+                    boxShadow: workoutPlay ? GOLD_SHADOW : undefined,
+                    color: '#ffffff',
+                    pointerEvents: workoutPlay ? 'none' : undefined,
+                  }}
+                >
+                  {workoutPlay ? <CheckBadge /> : <span className="scale-75 origin-center"><BreathingRook size="xs" mood="happy" /></span>}
+                  Play
+                </Link>
+                {/* Learn */}
+                <Link
+                  href="/path"
+                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-x-2 border-white/30"
+                  style={{
+                    background: workoutLearn ? GOLD_BG : '#58CC02',
+                    boxShadow: workoutLearn ? GOLD_SHADOW : undefined,
+                    color: '#ffffff',
+                    pointerEvents: workoutLearn ? 'none' : undefined,
+                  }}
+                >
+                  {workoutLearn ? <CheckBadge /> : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  )}
+                  Learn
+                </Link>
+                {/* Run */}
+                <Link
+                  href="/run"
+                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
+                  style={{
+                    background: workoutDaily ? GOLD_BG : '#FF9500',
+                    boxShadow: workoutDaily ? GOLD_SHADOW : undefined,
+                    color: '#ffffff',
+                    pointerEvents: workoutDaily ? 'none' : undefined,
+                  }}
+                >
+                  {workoutDaily ? <CheckBadge /> : (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                  )}
+                  Run
+                </Link>
+              </div>
+            )
+          })()}
         </div>
       </div>
 
