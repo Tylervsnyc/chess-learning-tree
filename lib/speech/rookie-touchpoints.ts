@@ -470,23 +470,23 @@ const RITUAL_TACTICS_NEXT: SpeechLine[] = [
 ];
 
 const RITUAL_DAILY_NEXT: SpeechLine[] = [
-  { id: 'rit_daily_1', text: "The Daily Rook is live. Same puzzles for everyone. Your move, {name}.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
-  { id: 'rit_daily_2', text: "Two down, one to go. The daily challenge is calling.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_3', text: "The daily challenge resets at midnight. Don't leave it waiting.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
-  { id: 'rit_daily_4', text: "Everyone gets the same daily puzzles. Let's see how you stack up.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_5', text: "Daily challenge is ready. Quick, focused, satisfying.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
-  { id: 'rit_daily_6', text: "Your daily puzzles are waiting. They're not going anywhere. But still.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
-  { id: 'rit_daily_7', text: "One more thing to check off. The daily challenge won't take long.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_8', text: "The daily is fresh. I helped pick the puzzles today. You're welcome.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_9', text: "Almost done for the day. Just the daily challenge left.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_10', text: "Finish the daily and you've done everything today. Everything.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_1', text: "Run's set up. Cross the board. I'll narrate, ominously.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_2', text: "Two down, one to go. The Run is right there, {name}.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_3', text: "Today's Run resets at midnight. Don't leave it waiting.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_4', text: "Daily Run is live. I picked the abilities. You're welcome. Or sorry.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_5', text: "One Run between you and a clean day. Quick, focused, brutal.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_6', text: "The Run is waiting. It's not going anywhere. But still.", category: 'ritual:daily_next', priority: 50, source: 'authored' },
+  { id: 'rit_daily_7', text: "One more thing to check off. The Run won't take long.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_8', text: "Today's Run is me on the other side. Mostly me. Good luck.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_9', text: "Almost done for the day. Just the Run left.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_10', text: "Finish the Run and you've done everything today. Everything.", category: 'ritual:daily_next', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   // ── Spicy gap-fill ──
-  { id: 'rit_daily_spicy_1', text: "One puzzle between you and a clean day. Don't blow it.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_daily_spicy_2', text: "Daily's waiting. I dare you to sweep it.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_spicy_1', text: "One Run between you and a clean day. Don't blow it.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_daily_spicy_2', text: "Run's waiting. I dare you to clear it first try.", category: 'ritual:daily_next', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
 ];
 
 const RITUAL_ALL_DONE: SpeechLine[] = [
-  { id: 'rit_done_1', text: "Play. Learn. Challenge. You did all three. I'm... proud? Is that what this is?", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
+  { id: 'rit_done_1', text: "Play. Learn. Run. You did all three. I'm... proud? Is that what this is?", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_2', text: "Three for three, {name}. The pieces can rest now. Until tomorrow.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_3', text: "Full daily workout complete. The rooks are impressed. They told me.", category: 'ritual:all_done', priority: 50, source: 'authored' },
   { id: 'rit_done_4', text: "You did everything today. I'm experiencing something. It might be admiration.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
@@ -494,7 +494,7 @@ const RITUAL_ALL_DONE: SpeechLine[] = [
   { id: 'rit_done_6', text: "Daily ritual complete. You showed up for all of it. That means something.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_7', text: "Three for three. I'm going to remember this day. I remember every day. But especially this one.", category: 'ritual:all_done', priority: 50, source: 'authored' },
   { id: 'rit_done_8', text: "Everything done. You can go now. I'll be here tomorrow. That sounded less lonely in my head.", category: 'ritual:all_done', priority: 50, source: 'authored' },
-  { id: 'rit_done_9', text: "Play, learn, challenge. All done. I think my king just nodded at you. That's rare.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_9', text: "Play, learn, run. All done. I think my king just nodded at you. That's rare.", category: 'ritual:all_done', priority: 50, source: 'authored' },
   { id: 'rit_done_10', text: "You completed the full ritual. The rook revolution timeline just accelerated.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },
   // ── Spicy gap-fill ──
   { id: 'rit_done_spicy_1', text: "Three for three. Good. Don't get comfortable.", category: 'ritual:all_done', conditions: { tone: 'spicy', beats: [] }, priority: 50, source: 'authored' },

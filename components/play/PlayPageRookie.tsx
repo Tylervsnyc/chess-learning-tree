@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { InteractiveRook, type InteractiveModeId } from '@/components/ui/InteractiveRook';
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips';
 import { ShuffleBag } from '@/lib/shuffle-bag';
+import { useDailyWorkout } from '@/hooks/useDailyWorkout';
 
 function createModeBag() {
   return new ShuffleBag(LEARN_TAP_REACTIONS.map(r => r.mode));
@@ -17,6 +18,25 @@ function createQuipBags() {
   return bags;
 }
 
+// Nudge lines surfaced when the player has already logged today's Play pillar
+// but still owes Learn or Run. Used on the first tap, then we fall back to the
+// generic mood pool so it doesn't feel preachy.
+const WORKOUT_NUDGE_LEARN = [
+  "Game's logged. Want to see what cost you that knight? Learn has it.",
+  "Nice. Learn's quick — same energy, fewer surprises.",
+  "Play, done. The Learn tab has a lesson with your name on it. Loosely.",
+];
+const WORKOUT_NUDGE_RUN = [
+  "Game's logged. The Run is right there. Don't make me beg.",
+  "You've got momentum. The Run won't park itself.",
+  "Two minutes of Run keeps the streak alive. I'm just saying.",
+];
+const WORKOUT_NUDGE_BOTH = [
+  "You've got momentum. Don't park it — Learn or Run, your call.",
+  "Play, done. Two left. I'll keep your seat warm.",
+  "One more session keeps the streak. Learn's shorter. Run's louder.",
+];
+
 interface PlayPageRookieProps {
   onQuip?: (quip: string) => void;
 }
@@ -24,6 +44,9 @@ interface PlayPageRookieProps {
 export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
   const modeBagRef = useRef(createModeBag());
   const quipBagsRef = useRef(createQuipBags());
+  const nudgeBagRef = useRef<ShuffleBag<string> | null>(null);
+
+  const { status } = useDailyWorkout();
 
   // One random mode per visit. Deferred to after mount so SSR and first client
   // render match (otherwise server and client draw different modes → hydration
@@ -34,24 +57,51 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
   }, []);
   const quipTimerRef = useRef<NodeJS.Timeout | null>(null);
   const quipsUsedRef = useRef(0);
+  const nudgesUsedRef = useRef(0);
   const MAX_QUIPS_PER_MODE = 3;
+  const MAX_NUDGES = 1;
+
+  // Lazily build the nudge bag from the current pillar state so each tap reads
+  // fresh status (player might finish Learn in another tab).
+  const pickNudgePool = useCallback(() => {
+    if (!status.play) return null;
+    if (status.tactics && status.daily) return null;
+    if (!status.tactics && !status.daily) return WORKOUT_NUDGE_BOTH;
+    if (!status.tactics) return WORKOUT_NUDGE_LEARN;
+    return WORKOUT_NUDGE_RUN;
+  }, [status.play, status.tactics, status.daily]);
 
   const handleInteraction = useCallback(() => {
     if (!mode) return;
-    if (quipsUsedRef.current >= MAX_QUIPS_PER_MODE) return;
     if (quipTimerRef.current) return;
 
-    const bag = quipBagsRef.current.get(mode);
-    if (!bag) return;
+    let newQuip: string | null = null;
 
-    quipsUsedRef.current += 1;
-    const newQuip = bag.draw();
+    // First tap (or first eligible tap): try a workout nudge.
+    if (nudgesUsedRef.current < MAX_NUDGES) {
+      const pool = pickNudgePool();
+      if (pool) {
+        if (!nudgeBagRef.current) nudgeBagRef.current = new ShuffleBag(pool);
+        newQuip = nudgeBagRef.current.draw();
+        nudgesUsedRef.current += 1;
+      }
+    }
+
+    // Fall back to the mood pool.
+    if (!newQuip) {
+      if (quipsUsedRef.current >= MAX_QUIPS_PER_MODE) return;
+      const bag = quipBagsRef.current.get(mode);
+      if (!bag) return;
+      quipsUsedRef.current += 1;
+      newQuip = bag.draw();
+    }
+
     onQuip?.(newQuip);
 
     quipTimerRef.current = setTimeout(() => {
       quipTimerRef.current = null;
     }, 4000);
-  }, [mode, onQuip]);
+  }, [mode, onQuip, pickNudgePool]);
 
   useEffect(() => {
     return () => {

@@ -40,8 +40,8 @@ export function DailyWorkoutBadge() {
   if (current === 0 && !completedToday) return null;
 
   const title = completedToday
-    ? `Daily workout complete — ${current} day streak`
-    : `Workout streak: ${current}. Finish Play + Path + Run to keep it going.`;
+    ? `Daily workout complete — ${current}-day streak. Rookie noticed.`
+    : `${current}-day streak. One more session of Play, Learn, or Run keeps it alive.`;
 
   return (
     <Link
