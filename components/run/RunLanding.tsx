@@ -20,65 +20,63 @@ const RULES: { n: number; title: string; sub: string }[] = [
 
 export function RunLanding({ onStart, tagline, dateLabel }: RunLandingProps) {
   return (
-    <div className="min-h-full w-full bg-chess-page text-chess-text">
-      <div className="mx-auto max-w-[420px] px-3 py-4">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-chess-text/10 flex flex-col gap-3">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <RookiesRunLogo scale={0.32} />
-            {dateLabel && (
-              <span className="text-[10px] uppercase tracking-[0.2em] text-chess-text-muted font-bold">
-                {dateLabel}
-              </span>
-            )}
-          </div>
-
-          {/* Headline */}
-          <div>
-            <p className="text-[19px] font-black text-chess-text leading-tight">
-              Get Rookie to the other side.
-            </p>
-            <p className="text-[12px] text-chess-text-muted italic leading-snug mt-0.5">
-              {tagline ?? 'By any means necessary.'}
-            </p>
-          </div>
-
-          {/* Footage */}
-          <div className="relative rounded-xl overflow-hidden border border-chess-text/15 bg-chess-page">
-            <video
-              src={VIDEO_SRC}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="block w-full h-auto"
-            />
-          </div>
-
-          {/* Rules */}
-          <ol className="flex flex-col gap-1.5">
-            {RULES.map((r) => (
-              <li key={r.n} className="flex items-baseline gap-2.5">
-                <span className="shrink-0 w-5 h-5 rounded-full bg-chess-text text-white font-black flex items-center justify-center text-[10px]">
-                  {r.n}
-                </span>
-                <p className="text-[13px] leading-snug">
-                  <span className="font-black text-chess-text">{r.title}</span>{' '}
-                  <span className="text-chess-text-muted">{r.sub}</span>
-                </p>
-              </li>
-            ))}
-          </ol>
-
-          <button
-            type="button"
-            onClick={onStart}
-            className="w-full py-3.5 rounded-2xl bg-chess-text text-white font-black text-[15px] tracking-wide active:translate-y-px transition-transform"
-            style={{ boxShadow: '0 4px 0 #1a2c33, 0 6px 12px rgba(0,0,0,0.12)' }}
-          >
-            Play Today&apos;s Run <span className="opacity-80">→</span>
-          </button>
+    <div className="h-full w-full bg-chess-page text-chess-text flex items-center justify-center px-3 py-2">
+      <div className="w-full max-w-[360px] bg-white rounded-2xl p-3 shadow-sm border border-chess-text/10 flex flex-col gap-2.5">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <RookiesRunLogo scale={0.26} />
+          {dateLabel && (
+            <span className="text-[10px] uppercase tracking-[0.2em] text-chess-text-muted font-bold">
+              {dateLabel}
+            </span>
+          )}
         </div>
+
+        {/* Headline */}
+        <div>
+          <p className="text-[16px] font-black text-chess-text leading-tight">
+            Get Rookie to the other side.
+          </p>
+          <p className="text-[11px] text-chess-text-muted italic leading-snug mt-0.5">
+            {tagline ?? 'By any means necessary.'}
+          </p>
+        </div>
+
+        {/* Footage — capped height so the page fits a phone */}
+        <div className="relative rounded-xl overflow-hidden border border-chess-text/15 bg-chess-page">
+          <video
+            src={VIDEO_SRC}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="block w-full h-[260px] object-contain"
+          />
+        </div>
+
+        {/* Rules */}
+        <ol className="flex flex-col gap-1">
+          {RULES.map((r) => (
+            <li key={r.n} className="flex items-baseline gap-2">
+              <span className="shrink-0 w-4 h-4 rounded-full bg-chess-text text-white font-black flex items-center justify-center text-[9px]">
+                {r.n}
+              </span>
+              <p className="text-[12px] leading-snug">
+                <span className="font-black text-chess-text">{r.title}</span>{' '}
+                <span className="text-chess-text-muted">{r.sub}</span>
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <button
+          type="button"
+          onClick={onStart}
+          className="w-full py-3 rounded-2xl bg-chess-text text-white font-black text-[14px] tracking-wide active:translate-y-px transition-transform"
+          style={{ boxShadow: '0 4px 0 #1a2c33, 0 6px 12px rgba(0,0,0,0.12)' }}
+        >
+          Play Today&apos;s Run <span className="opacity-80">→</span>
+        </button>
       </div>
     </div>
   );
