@@ -368,7 +368,7 @@ profiles.last_activity_date   -- YYYY-MM-DD format
 
 ## 12. The Daily Rook
 
-> **ARCHIVED 2026-05-18.** Replaced by Rookie's Run (§49) as the app's daily ritual.
+> **ARCHIVED 2026-05-18.** Replaced by Rookie's Run (§49) as part of the app's Daily Workout (Play + Path + Run).
 > Code lives in `app/_archive/daily-challenge/` — no live route, not in the nav, not in the sitemap. The `daily_challenge_results` table is preserved for historical scores. The rules below stay as reference in case the feature is ever resurrected.
 
 ### Header Nav:

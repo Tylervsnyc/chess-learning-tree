@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ActivityComplete, type ActivitySource } from '@/components/shared/ActivityComplete';
 
-export default function DailyRitualTestPage() {
+export default function DailyWorkoutTestPage() {
   const [active, setActive] = useState<ActivitySource | null>(null);
 
   return (

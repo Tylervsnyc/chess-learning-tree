@@ -488,7 +488,7 @@ const RITUAL_DAILY_NEXT: SpeechLine[] = [
 const RITUAL_ALL_DONE: SpeechLine[] = [
   { id: 'rit_done_1', text: "Play. Learn. Challenge. You did all three. I'm... proud? Is that what this is?", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_2', text: "Three for three, {name}. The pieces can rest now. Until tomorrow.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
-  { id: 'rit_done_3', text: "Full daily ritual complete. The rooks are impressed. They told me.", category: 'ritual:all_done', priority: 50, source: 'authored' },
+  { id: 'rit_done_3', text: "Full daily workout complete. The rooks are impressed. They told me.", category: 'ritual:all_done', priority: 50, source: 'authored' },
   { id: 'rit_done_4', text: "You did everything today. I'm experiencing something. It might be admiration.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_5', text: "That's all three. I don't have a trophy but I have this warm feeling. Take it.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },
   { id: 'rit_done_6', text: "Daily ritual complete. You showed up for all of it. That means something.", category: 'ritual:all_done', conditions: { tone: 'polite', beats: [] }, priority: 50, source: 'authored' },

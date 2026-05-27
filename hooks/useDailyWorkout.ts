@@ -5,19 +5,18 @@ import { QUIP_POOL } from '@/lib/quips/quip-pool';
 import { toneForLevel } from '@/lib/quips/tone';
 import { useUser } from '@/hooks/useUser';
 
-export type RitualActivity = 'play' | 'tactics' | 'daily';
+export type WorkoutActivity = 'play' | 'tactics' | 'daily';
 
-export interface DailyRitualStatus {
+export interface DailyWorkoutStatus {
   play: boolean;
   tactics: boolean;
   daily: boolean;
   allDone: boolean;
   completedCount: number;
-  nextActivity: RitualActivity | null;
+  nextActivity: WorkoutActivity | null;
 }
 
-/** Natural next activity after completing one */
-const NEXT_MAP: Record<RitualActivity, RitualActivity[]> = {
+const NEXT_MAP: Record<WorkoutActivity, WorkoutActivity[]> = {
   play: ['tactics', 'daily'],
   tactics: ['daily', 'play'],
   daily: ['play', 'tactics'],
@@ -27,7 +26,7 @@ function getToday(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-export function useDailyRitual(justCompleted?: RitualActivity) {
+export function useDailyWorkout(justCompleted?: WorkoutActivity) {
   const {
     ritualPlayDate,
     ritualTacticsDate,
@@ -37,7 +36,7 @@ export function useDailyRitual(justCompleted?: RitualActivity) {
   const { attitudeLevel } = useUser();
   const tone = toneForLevel(attitudeLevel ?? 3);
 
-  const status: DailyRitualStatus = useMemo(() => {
+  const status: DailyWorkoutStatus = useMemo(() => {
     const today = getToday();
     const play = ritualPlayDate === today;
     const tactics = ritualTacticsDate === today;
@@ -45,18 +44,16 @@ export function useDailyRitual(justCompleted?: RitualActivity) {
     const completedCount = [play, tactics, daily].filter(Boolean).length;
     const allDone = completedCount === 3;
 
-    // Find next uncompleted activity
-    let nextActivity: RitualActivity | null = null;
+    let nextActivity: WorkoutActivity | null = null;
     if (!allDone && justCompleted) {
       const order = NEXT_MAP[justCompleted];
-      const statusMap: Record<RitualActivity, boolean> = { play, tactics, daily };
+      const statusMap: Record<WorkoutActivity, boolean> = { play, tactics, daily };
       nextActivity = order.find(a => !statusMap[a]) ?? null;
     }
 
     return { play, tactics, daily, allDone, completedCount, nextActivity };
   }, [ritualPlayDate, ritualTacticsDate, ritualDailyDate, justCompleted]);
 
-  // Pick a Rookie line for the suggestion
   const suggestionLine = useMemo(() => {
     if (status.allDone) {
       return selectByCategory(QUIP_POOL, 'ritual:all_done', undefined, undefined, { tone })?.text ?? null;

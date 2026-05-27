@@ -45,6 +45,12 @@
   --animate-expand: expand 0.3s ease-out;
   --animate-scale-tap: scale-tap 0.1s ease-out;
   --animate-shimmer: shimmer 2s infinite;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
 }
 
 :root {

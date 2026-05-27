@@ -50,7 +50,7 @@ export function DailyWorkoutBadge() {
       className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black text-white transition-all ${
         completedToday
           ? 'bg-chess-text shadow-[0_2px_0_0_var(--color-chess-gold-dark,#cc9a00)]'
-          : 'bg-chess-text/70'
+          : 'bg-chess-text/60 animate-pulse-soft'
       }`}
     >
       <MiniRookieIcon active={completedToday} gold={current >= 100} size={20} />

@@ -14,7 +14,7 @@ import { InteractiveRook, type InteractiveModeId } from '@/components/ui/Interac
 import { BreathingRook } from '@/components/ui/BreathingRook'
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips'
 import { ShuffleBag } from '@/lib/shuffle-bag'
-import { useDailyRitual, type RitualActivity } from '@/hooks/useDailyRitual'
+import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
 
@@ -49,8 +49,8 @@ export interface ActivityCompleteProps {
   onRetry?: () => void
 }
 
-// Map source → ritual activity
-function toRitualActivity(source: ActivitySource): RitualActivity {
+// Map source → workout activity
+function toWorkoutActivity(source: ActivitySource): WorkoutActivity {
   if (source === 'play') return 'play'
   if (source === 'daily') return 'daily'
   return 'tactics' // path + opening = learn/tactics
@@ -102,16 +102,16 @@ export function ActivityComplete({
   const shouldCelebrate = source === 'play' ? isWin : !didFail
   const canShare = !!shareConfig
 
-  // ─── Daily ritual ───
-  const ritualActivity = toRitualActivity(source)
-  const { status: ritualStatus } = useDailyRitual(ritualActivity)
+  // ─── Daily workout ───
+  const workoutActivity = toWorkoutActivity(source)
+  const { status: workoutStatus } = useDailyWorkout(workoutActivity)
   const { attitudeLevel } = useUser()
   const tone = toneForLevel(attitudeLevel ?? 3)
 
   // Mark the current activity as done too (it just completed)
-  const ritualPlay = ritualStatus.play || ritualActivity === 'play'
-  const ritualLearn = ritualStatus.tactics || ritualActivity === 'tactics'
-  const ritualDaily = ritualStatus.daily || ritualActivity === 'daily'
+  const workoutPlay = workoutStatus.play || workoutActivity === 'play'
+  const workoutLearn = workoutStatus.tactics || workoutActivity === 'tactics'
+  const workoutDaily = workoutStatus.daily || workoutActivity === 'daily'
 
   // ─── Transition line ───
   const transitionLine = useMemo(() => {
@@ -350,7 +350,7 @@ export function ActivityComplete({
             </>
           )}
 
-          {/* ─── Daily Ritual: 3-part button ─── */}
+          {/* ─── Daily Workout: 3-part button ─── */}
           {(
             <div className="w-full flex rounded-2xl overflow-hidden" style={{ height: 52 }}>
               {/* Play — blue */}
@@ -358,12 +358,12 @@ export function ActivityComplete({
                 href="/play"
                 className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
                 style={{
-                  backgroundColor: ritualPlay ? '#e2e8f0' : '#1CB0F6',
-                  color: ritualPlay ? '#94a3b8' : '#ffffff',
-                  pointerEvents: ritualPlay ? 'none' : undefined,
+                  backgroundColor: workoutPlay ? '#e2e8f0' : '#1CB0F6',
+                  color: workoutPlay ? '#94a3b8' : '#ffffff',
+                  pointerEvents: workoutPlay ? 'none' : undefined,
                 }}
               >
-                <span className="scale-75 origin-center"><BreathingRook size="xs" mood={ritualPlay ? 'neutral' : 'happy'} /></span>
+                <span className="scale-75 origin-center"><BreathingRook size="xs" mood={workoutPlay ? 'neutral' : 'happy'} /></span>
                 Play
               </Link>
               {/* Learn — green */}
@@ -371,9 +371,9 @@ export function ActivityComplete({
                 href="/path"
                 className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-x-2 border-white/30"
                 style={{
-                  backgroundColor: ritualLearn ? '#e2e8f0' : '#58CC02',
-                  color: ritualLearn ? '#94a3b8' : '#ffffff',
-                  pointerEvents: ritualLearn ? 'none' : undefined,
+                  backgroundColor: workoutLearn ? '#e2e8f0' : '#58CC02',
+                  color: workoutLearn ? '#94a3b8' : '#ffffff',
+                  pointerEvents: workoutLearn ? 'none' : undefined,
                 }}
               >
                 {/* Book icon */}
@@ -387,9 +387,9 @@ export function ActivityComplete({
                 href="/run"
                 className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
                 style={{
-                  backgroundColor: ritualDaily ? '#e2e8f0' : '#FF9500',
-                  color: ritualDaily ? '#94a3b8' : '#ffffff',
-                  pointerEvents: ritualDaily ? 'none' : undefined,
+                  backgroundColor: workoutDaily ? '#e2e8f0' : '#FF9500',
+                  color: workoutDaily ? '#94a3b8' : '#ffffff',
+                  pointerEvents: workoutDaily ? 'none' : undefined,
                 }}
               >
                 {/* Lightning bolt icon */}
