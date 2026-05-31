@@ -4,6 +4,27 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 ---
 
+## Growth Mandate — Road to 10K DAU
+
+**Mission:** grow chesspath.app to 10,000 daily active users. Claude runs growth — measure, build behind flags, ship, report daily. Tyler sets direction and keeps veto. Budget: organic + small tools (posting API, render/TTS credits); no paid ads until retention is proven.
+
+**North Star = engaged DAU** (users who come back and *do* something), not signups or visitors. DAU is a retention metric.
+
+**Verified baseline (2026-05-30, DB = source of truth):** 77 users · ~19 signups/60d (newest today) · 22 premium-flagged, ~4 actually paying (~$20 MRR) · ~25 visitors/day, Instagram-driven (~1,500/60d) · **engaged DAU ≈ 0.6.** The gap is RETENTION, not traffic or signups — people arrive, some sign up, almost none return. (The earlier "0 signups / 0% conversion" reading was a date-window bug in `scripts/daily-report.ts`, now fixed; PostHog ingestion was always fine. Pull DB truth with `scripts/db-baseline.ts`.)
+
+**Strategy order:** see clearly → fix retention (email / push / daily-loop) → scale the channel (Instagram + content + comment-seeding) → compound (SEO, referral). Never pour traffic into a bucket that leaks at "coming back."
+
+**Capability map (how Claude does the work):**
+- *Measure:* Supabase (truth) · `scripts/db-baseline.ts` · PostHog + `scripts/daily-report.ts` (fixed) · Stripe / `revenue_snapshots`
+- *Acquire:* Instagram (proven, manual) · Remotion content pipeline (built; needs a posting API) · comment-seeding (Claude drafts in Rookie's voice, Tyler posts) · WebSearch · Canva
+- *Convert / Retain:* the app (features / flags / A-B) · **Resend email** (`lib/email`, `sendEmail()`, already "from Rookie" — underused, primary near-term lever) · web push (TO BUILD) · daily loop (workout / rook / run)
+- *Operate:* Linear (track) · Slack (daily report) · Cron / Schedule (heartbeat) · Google Drive (queues)
+- *Gaps:* no social posting API · no web push · no safe browser automation for posting
+
+**Guardrails:** never touch live Stripe/billing without Tyler · everything behind flags · nothing posts externally until Tyler okays the posting setup · hard spend cap · daily report.
+
+---
+
 ## Working With Tyler
 
 - **Vibe coder** — explain simply, no jargon dumps. Short responses preferred.

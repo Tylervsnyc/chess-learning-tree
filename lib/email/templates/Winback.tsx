@@ -2,14 +2,12 @@ import { Section, Text, Hr, Img, Link } from '@react-email/components';
 import * as React from 'react';
 import { EmailLayout, SmallRookIcon } from './components/EmailLayout';
 import { ChessButton } from './components/ChessButton';
-import type { DripDay3Props } from '@/types/email';
+import type { WinbackProps } from '@/types/email';
 
-const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day3';
+const UTM_BASE = 'utm_source=email&utm_medium=winback&utm_campaign=winback_14d';
 
 const FEATURE_IMAGES = {
   run: 'https://chesspath.app/email/rookies-run-board.jpg',
-  path: 'https://chesspath.app/email/chesspath.png',
-  openings: 'https://chesspath.app/email/openingtree.png',
   dailyRook: 'https://chesspath.app/email/dailyrook.png',
 };
 
@@ -120,17 +118,19 @@ function FeatureCard({
   );
 }
 
-export function DripDay3LeftOff({
+export function Winback({
   displayName,
   appUrl,
   unsubscribeUrl,
-}: DripDay3Props) {
+}: WinbackProps) {
+  const greeting = displayName ? `${displayName}. ` : '';
+  const runHref = `${appUrl}/run?${UTM_BASE}&utm_content=run`;
   return (
     <EmailLayout
-      preview="You made Rookie cry. Come back!"
+      preview="The board's still set up. It's been set up the whole time."
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={heading}>You Made Rookie Cry!</Text>
+      <Text style={heading}>The Board&apos;s Still Set Up</Text>
 
       <Section style={rookQuote}>
         <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
@@ -141,9 +141,13 @@ export function DripDay3LeftOff({
               </td>
               <td style={{ verticalAlign: 'top' }}>
                 <Text style={quoteText}>
-                  &ldquo;I haven&apos;t seen you in 3 days! I thought we had
-                  something special! There&apos;s a fresh Run today and I&apos;m
-                  out there outnumbered. Come back to me -- here&apos;s how:&rdquo;
+                  &ldquo;{greeting}It&apos;s been a while. I won&apos;t make it
+                  weird. I&apos;ll just say I kept the board set up. It&apos;s
+                  been set up the whole time. I taught a bishop to feel regret
+                  while you were gone -- unrelated, mostly -- and I caught myself
+                  thinking the Runs would&apos;ve been more fun with you here. Which
+                  is a thing I apparently think now. There&apos;s a fresh one today.
+                  The board&apos;s ready when you are.&rdquo;
                 </Text>
               </td>
             </tr>
@@ -156,44 +160,22 @@ export function DripDay3LeftOff({
       <FeatureCard
         title="Rookie's Run"
         titleColor="orange"
-        tagline="A Fresh Run, Every Day"
-        description="It&apos;s me against a board full of enemies, fighting to the other side -- a brand-new one every day. Unlock abilities, win ugly, watch me insist I don&apos;t need help. Today&apos;s Run is live right now."
-        href={`${appUrl}/run?${UTM_BASE}&utm_content=run`}
+        tagline="One Tap. A Fresh Run Today."
+        description="No catching up, no guilt. There&apos;s a brand-new Run today, same as every day -- me against a board full of enemies, fighting to the other side. Play one. That&apos;s the whole ask. Today is a perfectly good day to start from."
+        href={runHref}
         cta="Play Today's Run"
         imageUrl={FEATURE_IMAGES.run}
         imageAlt="Rookie's Run -- daily roguelike chess"
       />
 
-      <FeatureCard
-        title="Path"
-        titleColor="green"
-        tagline="Tactical Trainer"
-        description="Pick up right where you left off. The puzzles are still there, getting progressively harder as you level up."
-        href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
-        cta="Continue Training"
-        imageUrl={FEATURE_IMAGES.path}
-        imageAlt="The Path -- structured chess lessons"
-      />
-
-      <FeatureCard
-        title="Openings"
-        titleColor="purple"
-        tagline="Opening Theory Trainer"
-        description="Learn real opening lines move by move. The Italian Game, Sicilian Defense, London System, and more are waiting."
-        href={`${appUrl}/openings?${UTM_BASE}&utm_content=openings`}
-        cta="Learn An Opening"
-        imageUrl={FEATURE_IMAGES.openings}
-        imageAlt="Openings -- interactive opening trainer"
-      />
-
       <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/run?${UTM_BASE}&utm_content=cta`}>
-          Come Back To Rookie
+        <ChessButton href={runHref}>
+          Come Back To The Board
         </ChessButton>
       </Section>
 
       <Text style={signoff}>
-        Waiting on the board for you,<br />
+        I&apos;ll be right here,<br />
         Rookie
       </Text>
     </EmailLayout>
@@ -276,4 +258,4 @@ const signoff = {
   margin: '0',
 };
 
-export default DripDay3LeftOff;
+export default Winback;

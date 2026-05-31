@@ -37,7 +37,10 @@ function shouldSendEmail(
 
   // Check specific preference
   switch (emailType) {
+    case 'drip_day1':
     case 'drip_day3':
+    case 'drip_day7':
+    case 'winback':
     case 'update_april_2026':
       return preferences.marketing;
     default:

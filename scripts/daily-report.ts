@@ -42,6 +42,39 @@ const prevDate = new Date(new Date(`${targetDate}T00:00:00Z`).getTime() - 864000
 const isRange = rangeDays > 1;
 const rangeLabel = isRange ? `${rangeDays}-day summary ending ${targetDate}` : targetDate;
 
+// ---------------------------------------------------------------------------
+// Slack mirroring: capture everything we print so we can post it to a channel.
+// Posts when --slack is passed or SLACK_WEBHOOK_URL is set in the env.
+// ---------------------------------------------------------------------------
+const slackBuffer: string[] = [];
+const baseLog = console.log.bind(console);
+console.log = (...a: unknown[]) => {
+  slackBuffer.push(a.map(String).join(' '));
+  baseLog(...a);
+};
+
+const wantSlack = args.includes('--slack') || !!process.env.SLACK_WEBHOOK_URL;
+
+async function postToSlack(text: string) {
+  const url = process.env.SLACK_WEBHOOK_URL;
+  if (!url) {
+    console.warn('  [slack] SLACK_WEBHOOK_URL not set — skipping Slack post');
+    return;
+  }
+  // Slack messages cap at 40k chars; code blocks render the monospace report well.
+  const body = '```' + text.slice(0, 38000) + '```';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: body }),
+  });
+  if (!res.ok) {
+    baseLog(`  [slack] post failed ${res.status}: ${(await res.text()).slice(0, 150)}`);
+  } else {
+    baseLog('  [slack] posted report to channel');
+  }
+}
+
 console.log(`\n  Chess Path 3.0 — Daily Report`);
 console.log(`  ${rangeLabel}\n`);
 
@@ -72,8 +105,13 @@ function dayFilter(dateStr: string, days = 1) {
   const now = new Date();
   const target = new Date(`${dateStr}T00:00:00Z`);
   const daysAgo = Math.ceil((now.getTime() - target.getTime()) / 86400000);
-  const daysAgoEnd = daysAgo - days;
-  return `timestamp >= now() - interval ${daysAgo} day AND timestamp < now() - interval ${daysAgoEnd} day`;
+  // Window of `days` width ending at dateStr. The older (>=) bound grows with the
+  // range; the newer (<) bound is the end of dateStr. Previously the newer bound was
+  // `daysAgo - days`, which went negative (into the future) for any multi-day range,
+  // so every range report only ever saw ~1 day of data and returned near-zeros.
+  const startInterval = daysAgo + days - 1;
+  const endInterval = daysAgo - 1;
+  return `timestamp >= now() - interval ${startInterval} day AND timestamp < now() - interval ${endInterval} day`;
 }
 
 const f = dayFilter(targetDate, rangeDays);
@@ -428,7 +466,11 @@ async function main() {
   console.log(`  Report complete.\n`);
 }
 
-main().catch(err => {
-  console.error('Error:', err.message);
-  process.exit(1);
-});
+main()
+  .then(async () => {
+    if (wantSlack) await postToSlack(slackBuffer.join('\n'));
+  })
+  .catch(err => {
+    console.error('Error:', err.message);
+    process.exit(1);
+  });

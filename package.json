@@ -15,6 +15,7 @@
     "test:e2e:headed": "playwright test --headed",
     "video:studio": "remotion studio remotion/index.ts",
     "video:render": "npx tsx scripts/render-daily-video.ts",
+    "reel:run": "npx tsx scripts/render-run-reel.ts",
     "build-openings": "npx tsx scripts/run-opening-builds.ts",
     "build-opening": "npx tsx scripts/build-opening.ts"
   },
@@ -24,8 +25,10 @@
     "@react-email/components": "^1.0.6",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@types/web-push": "^3.6.4",
     "canvas-confetti": "^1.9.4",
     "chess.js": "^1.4.0",
+    "html-to-image": "^1.11.13",
     "next": "^16.1.2",
     "onnxruntime-web": "^1.23.0",
     "openai": "^6.37.0",
@@ -37,7 +40,8 @@
     "resend": "^6.8.0",
     "stockfish": "^18.0.5",
     "stockfish.wasm": "^0.10.0",
-    "stripe": "^20.2.0"
+    "stripe": "^20.2.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",

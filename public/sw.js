@@ -31,6 +31,50 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Push: show a notification (CHE-345 / Engine 2 — Retain).
+// Server payload shape: { title, body, url?, icon?, badge?, tag? }.
+// Note: this only fires when the server actually sends. All real sends are
+// gated server-side by WEB_PUSH_ENABLED — nothing reaches here until that's on.
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = { title: 'Chess Path', body: event.data ? event.data.text() : '' };
+  }
+
+  const title = payload.title || 'Chess Path';
+  const options = {
+    body: payload.body || '',
+    icon: payload.icon || '/brand/icon-192.png',
+    badge: payload.badge || '/brand/icon-96.svg',
+    tag: payload.tag,
+    data: { url: payload.url || '/' },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Notification click: focus an existing tab if open, else open the app.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
 // Fetch: routing strategy
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getOpeningContent, getAllOpeningSlugs } from '@/lib/seo/opening-content';
-import { learningResourceJsonLd, faqJsonLd } from '@/lib/seo/structured-data';
+import { learningResourceJsonLd, faqJsonLd, courseJsonLd } from '@/lib/seo/structured-data';
 import { StaticBoard } from '@/components/seo/StaticBoard';
 
 type Params = { opening: string };
@@ -60,6 +60,10 @@ export default async function LearnOpeningPage({ params }: { params: Promise<Par
 
   return (
     <article className="px-5 py-8 sm:py-12 w-full overflow-y-auto flex-1 min-h-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd(content, url)) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd(content, url)) }}

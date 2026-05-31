@@ -2,7 +2,10 @@
 
 export type EmailType =
   | 'welcome'
+  | 'drip_day1'
   | 'drip_day3'
+  | 'drip_day7'
+  | 'winback'
   | 'update_april_2026';
 
 export interface EmailPreferences {
@@ -56,6 +59,26 @@ export interface DripDay3Props {
   displayName: string;
   currentLevel: string;
   currentLesson: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface DripDay1Props {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface DripDay7Props {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  // Optional progress signals to personalize the week-one check-in.
+  currentStreak?: number;
+}
+
+export interface WinbackProps {
+  displayName?: string;
   appUrl: string;
   unsubscribeUrl: string;
 }

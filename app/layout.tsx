@@ -6,6 +6,7 @@ import { DailyWorkoutWatcher } from '@/components/shared/DailyWorkoutWatcher';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
+import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
   title: 'The Chess Path',
@@ -62,6 +63,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
+        />
         <Suspense fallback={null}>
           <AbortErrorSuppressor />
           <PostHogProvider>

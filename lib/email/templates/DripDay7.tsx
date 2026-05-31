@@ -2,14 +2,13 @@ import { Section, Text, Hr, Img, Link } from '@react-email/components';
 import * as React from 'react';
 import { EmailLayout, SmallRookIcon } from './components/EmailLayout';
 import { ChessButton } from './components/ChessButton';
-import type { DripDay3Props } from '@/types/email';
+import type { DripDay7Props } from '@/types/email';
 
-const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day3';
+const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day7';
 
 const FEATURE_IMAGES = {
   run: 'https://chesspath.app/email/rookies-run-board.jpg',
   path: 'https://chesspath.app/email/chesspath.png',
-  openings: 'https://chesspath.app/email/openingtree.png',
   dailyRook: 'https://chesspath.app/email/dailyrook.png',
 };
 
@@ -120,17 +119,20 @@ function FeatureCard({
   );
 }
 
-export function DripDay3LeftOff({
+export function DripDay7({
   displayName,
   appUrl,
   unsubscribeUrl,
-}: DripDay3Props) {
+  currentStreak,
+}: DripDay7Props) {
+  const greeting = displayName ? `${displayName}, ` : '';
+  const hasStreak = typeof currentStreak === 'number' && currentStreak > 0;
   return (
     <EmailLayout
-      preview="You made Rookie cry. Come back!"
+      preview="One week in. I'm keeping notes. Don't worry about it."
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={heading}>You Made Rookie Cry!</Text>
+      <Text style={heading}>It&apos;s Been A Week</Text>
 
       <Section style={rookQuote}>
         <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
@@ -141,9 +143,13 @@ export function DripDay3LeftOff({
               </td>
               <td style={{ verticalAlign: 'top' }}>
                 <Text style={quoteText}>
-                  &ldquo;I haven&apos;t seen you in 3 days! I thought we had
-                  something special! There&apos;s a fresh Run today and I&apos;m
-                  out there outnumbered. Come back to me -- here&apos;s how:&rdquo;
+                  &ldquo;{greeting}it&apos;s been seven days since you joined. I&apos;ve
+                  been keeping notes. Not on you, specifically. Mostly on me. I think
+                  I&apos;m -- attached? My king says that&apos;s &lsquo;unprofessional.&rsquo;
+                  He filed something. Point is, the players who show up every day are
+                  the ones who actually get good. There&apos;s a fresh Run waiting --
+                  one a day, every day. Show up for today&apos;s and keep the streak
+                  going.&rdquo;
                 </Text>
               </td>
             </tr>
@@ -151,13 +157,21 @@ export function DripDay3LeftOff({
         </table>
       </Section>
 
+      {hasStreak && (
+        <Section style={streakBadge}>
+          <Text style={streakText}>
+            Your streak right now: <strong style={{ color: '#FF9600' }}>{currentStreak} {currentStreak === 1 ? 'day' : 'days'}</strong>. Today&apos;s Run keeps it alive.
+          </Text>
+        </Section>
+      )}
+
       <Hr style={divider} />
 
       <FeatureCard
         title="Rookie's Run"
         titleColor="orange"
-        tagline="A Fresh Run, Every Day"
-        description="It&apos;s me against a board full of enemies, fighting to the other side -- a brand-new one every day. Unlock abilities, win ugly, watch me insist I don&apos;t need help. Today&apos;s Run is live right now."
+        tagline="Your Daily Reason To Show Up"
+        description="A fresh Run drops every day -- me against a board full of enemies, fighting to the other side. It&apos;s the same idea as a streak, except it&apos;s also me, in peril, asking you to show up. Rooks understand consistency. Today&apos;s Run is waiting."
         href={`${appUrl}/run?${UTM_BASE}&utm_content=run`}
         cta="Play Today's Run"
         imageUrl={FEATURE_IMAGES.run}
@@ -167,33 +181,22 @@ export function DripDay3LeftOff({
       <FeatureCard
         title="Path"
         titleColor="green"
-        tagline="Tactical Trainer"
-        description="Pick up right where you left off. The puzzles are still there, getting progressively harder as you level up."
+        tagline="The Habit That Compounds"
+        description="A few puzzles a day is all it takes. Each one builds on the last -- forks lead to pins, pins lead to skewers, and one day the pattern just appears in your head before you finish reading the board."
         href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
         cta="Continue Training"
         imageUrl={FEATURE_IMAGES.path}
         imageAlt="The Path -- structured chess lessons"
       />
 
-      <FeatureCard
-        title="Openings"
-        titleColor="purple"
-        tagline="Opening Theory Trainer"
-        description="Learn real opening lines move by move. The Italian Game, Sicilian Defense, London System, and more are waiting."
-        href={`${appUrl}/openings?${UTM_BASE}&utm_content=openings`}
-        cta="Learn An Opening"
-        imageUrl={FEATURE_IMAGES.openings}
-        imageAlt="Openings -- interactive opening trainer"
-      />
-
       <Section style={buttonContainer}>
         <ChessButton href={`${appUrl}/run?${UTM_BASE}&utm_content=cta`}>
-          Come Back To Rookie
+          Play Today's Run
         </ChessButton>
       </Section>
 
       <Text style={signoff}>
-        Waiting on the board for you,<br />
+        Taking notes, fondly,<br />
         Rookie
       </Text>
     </EmailLayout>
@@ -221,6 +224,22 @@ const quoteText = {
   fontSize: '15px',
   lineHeight: '24px',
   fontStyle: 'italic' as const,
+  margin: '0',
+};
+
+const streakBadge = {
+  backgroundColor: '#FFF7E6',
+  borderRadius: '10px',
+  border: '1px solid #FFE2A8',
+  padding: '10px 14px',
+  margin: '0 0 8px 0',
+  textAlign: 'center' as const,
+};
+
+const streakText = {
+  color: '#2A3C45',
+  fontSize: '14px',
+  lineHeight: '20px',
   margin: '0',
 };
 
@@ -276,4 +295,4 @@ const signoff = {
   margin: '0',
 };
 
-export default DripDay3LeftOff;
+export default DripDay7;
