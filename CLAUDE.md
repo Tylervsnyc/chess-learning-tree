@@ -6,26 +6,35 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 ## Growth Mandate — Road to 10K DAU
 
-**Mission:** grow chesspath.app to 10,000 daily active users. Claude runs growth — measure, build behind flags, ship, report daily. Tyler sets direction and keeps veto. Budget: organic + small tools (posting API, render/TTS credits); no paid ads until retention is proven.
+**Mission:** grow chesspath.app to 10,000 daily active users. Claude runs growth — measure, build behind flags, ship, report daily. Tyler sets direction and keeps veto. Budget: organic + small tools; no paid ads until retention is proven AND measured.
 
-**North Star = engaged DAU** (users who come back and *do* something), not signups or visitors. DAU is a retention metric.
+**North Star = engaged DAU** (users who come back and *do* something) — a retention metric, not signups or visitors.
 
-**Verified baseline (2026-05-30, DB = source of truth):** 77 users · ~19 signups/60d (newest today) · 22 premium-flagged, ~4 actually paying (~$20 MRR) · ~25 visitors/day, Instagram-driven (~1,500/60d) · **engaged DAU ≈ 0.6.** The gap is RETENTION, not traffic or signups — people arrive, some sign up, almost none return. (The earlier "0 signups / 0% conversion" reading was a date-window bug in `scripts/daily-report.ts`, now fixed; PostHog ingestion was always fine. Pull DB truth with `scripts/db-baseline.ts`.)
+**Verified baseline (2026-05-30, DB = source of truth):** 77 users · ~19 signups/60d · 22 premium-flagged, ~4 actually paying (~$20 MRR) · ~25 visitors/day, Instagram-driven · **engaged DAU ≈ 0.6.** Today's stored engagement report: active_users=4, signups_7d=0, lessons −59% WoW. The gap is RETENTION — and as of 2026-06-01 the retention SURFACE is largely built (Chess Boxing workout + reworked streak + profile) but we still **cannot see return-rate.** The new bottleneck is measurement, not more product. (Pull DB truth with `scripts/db-baseline.ts`.)
 
-**Strategy order:** see clearly → fix retention (email / push / daily-loop) → scale the channel (Instagram + content + comment-seeding) → compound (SEO, referral). Never pour traffic into a bucket that leaks at "coming back."
+**Strategy order:** see clearly (now = measure RETURN-RATE) → fix the #1 capture leak + activate retention levers → scale the channel (Instagram) → compound (SEO, referral). Never pour traffic into a bucket that leaks at "coming back," and never build more bucket before you can read whether the last one holds.
+
+**Next priority (explicit) — MEASURE + capture, NOT more loop features:**
+1. Instrument the loop: PostHog `workout_started/completed` + `streak_extended`, and a real D1/D7 signup-cohort read in `daily-report.ts` (today there's only a crude period-overlap proxy). The new workout/streak fires ZERO analytics.
+2. **CHE-339** signup capture AT the win moment (not any game-over) + A/B — the verified #1 leak (~1% of landers convert), still untouched.
+3. Email lifecycle: review Rookie's voice, then flip `EMAIL_LIFECYCLE_ENABLED` on — cheapest retention lever, built but has sent to ZERO users.
 
 **Capability map (how Claude does the work):**
-- *Measure:* Supabase (truth) · `scripts/db-baseline.ts` · PostHog + `scripts/daily-report.ts` (fixed) · Stripe / `revenue_snapshots`
-- *Acquire:* **Instagram auto-posting LIVE** (Instagram Login API direct → Vercel Blob queue → daily cron `/api/cron/ig-post` at 8am ET; `lib/instagram.ts`, `lib/ig-queue.ts`; queue seeded with 99 videos ≈ 99 days; gated by `IG_AUTOPOST`) · Remotion content pipeline (built; renders locally) · comment-seeding (Claude drafts in Rookie's voice, Tyler posts) · WebSearch · Canva
-- *Convert / Retain:* the app (features / flags / A-B) · **Resend email** (`lib/email`, `sendEmail()`, already "from Rookie" — underused, primary near-term lever) · web push (TO BUILD) · daily loop (workout / rook / run)
-- *Operate:* Linear (track) · Slack (daily report) · Cron / Schedule (heartbeat) · Google Drive (queues) · Vercel Blob (media)
-- *Gaps:* no web push · no safe browser automation for posting · IG token needs App Secret to self-refresh past 60 days (see [[project_ig_business_setup]])
+- *Measure:* Supabase (truth) · `scripts/db-baseline.ts` · PostHog. **No cohort retention (D1/D7/D30) — only a period-overlap proxy in `scripts/daily-report.ts`. The 4 Vercel report crons STORE to `dashboard_reports` but don't post to Slack (CHE-338); Slack still needs a manual CLI run. The new workout/streak surface is uninstrumented.**
+- *Acquire:* Instagram auto-post **LIVE + CONFIRMED 2026-06-01** (`/api/cron/ig-post`, daily 8am ET, `IG_AUTOPOST=true`; `lib/instagram.ts`, `lib/ig-queue.ts`) — a test fire posted a real Reel (mediaId logged, queue 99→98) and the heartbeat went green. Top up content via `npx tsx scripts/ig-upload-queue.ts`. Note: the #1 capture leak (CHE-339) is still unpatched, so most of this traffic won't convert yet. · reel-sized share cards (`app/api/og/workout`) fire post-win on lesson/play/openings/workout · Remotion pipeline (renders locally) · comment-seeding · WebSearch · Canva
+- *Convert / Retain:* the app (features / flags / A-B) · **daily loop = Play + Learn + Chess Boxing workout (`/workout`, live, Beta), do-anything streak as the spine** · Resend lifecycle emails (`lib/email`, Day1/Day7/Winback rebuilt 2026-06-01, NEVER sent — held OFF pending Tyler's voice review) · web push (TO BUILD)
+- *Operate:* Linear · Slack · Cron / Schedule · Google Drive · Vercel Blob
+- *Gaps:* no cohort-retention measurement (the North Star blind spot) · report crons don't post to Slack (CHE-338) · CHE-339 capture untouched · no web push · IG token needs an App Secret to self-refresh past 60 days or the channel silently dies (see [[project_ig_business_setup]])
 
-**Instagram posting (LIVE 2026-06-01):** Tyler authorized full auto-post. Daily puzzle Reels post from a Blob queue via Vercel cron — no manual step. To add more content: render locally, then `npx tsx scripts/ig-upload-queue.ts` to top up the queue. Kill switch: set `IG_AUTOPOST` ≠ `true`. TODO: App Secret for token auto-refresh; rotate the token (came through chat).
+**Daily loop (reconciled 2026-06-01):** Chess Boxing workout + do-anything streak shipped (CHE-346..357). **Rookie's Run was formally dropped from the loop** — off nav, and the streak no longer reads `run_completions` (which has 0 rows ever, CHE-342). Run survives as a standalone route. Treat the workout as a retention HYPOTHESIS until return-rate is instrumented.
 
-**Deploy infra (FIXED 2026-06-01):** Vercel git auto-deploy had been broken ~55 days (repo recased `tylervsnyc`→`Tylervsnyc`). Reconnected via `vercel git connect` + remote URL fix; also fixed a `CRON_SECRET` whitespace error blocking builds. Pushes to `main` now deploy. **Always verify a deploy actually lands before calling a feature live.**
+**Patron tier (LIVE on prod 2026-06-01):** $4.99/mo support-only, gold profile, NO features (`is_patron`, full checkout/webhook path). 0 patrons so far. Revenue-only — does NOT move the North Star; track separately.
 
-**Guardrails:** never touch live Stripe/billing without Tyler · everything behind flags · external posting is now AUTHORIZED for Instagram (Tyler okayed auto-post 2026-06-01); still confirm before opening any NEW external channel · hard spend cap · daily report.
+**Billing/data hardening (2026-06-01, CHE-358 — DONE):** closed an RLS hole where any logged-in user could self-grant Premium *or admin* by PATCHing `profiles` directly with the public anon key. Now locked to the service role by a `BEFORE UPDATE` trigger (`protect_privileged_profile_columns`, live on prod) over `subscription_status / subscription_expires_at / is_patron / is_admin / stripe_customer_id`; the 4 user-context Stripe writers (`verify-subscription`, `checkout`, `sync-subscription`) route through the service client. `/api/workout/finish` is now idempotent (client session id + unique constraint — no double-counted points). **`schema.sql` had drifted from the live DB** (prod has `puzzle_attempts.attempted_at`, not `created_at`) — reconciled; always trust the live DB, not the file ([[project_schema_sql_drift]]). Known open: `sync-subscription` still grants Premium for *any* paid Stripe `sessionId` without an ownership check.
+
+**Flags & verification (hard-won 2026-06-01):** the Vercel CLI (`vercel env add`) **silently stores EMPTY values** in this version, and **Sensitive** vars can't be read back via `vercel env pull` anyway. Result: every IG/blob var on `chess-path` prod was silently empty, so the ig-post cron failed on every fire (`No blob credentials`) — it had never actually posted. **Set + verify env via the Vercel REST API** (token in `~/Library/Application Support/com.vercel.cli/auth.json`; create as `type:"encrypted"` so values are verifiable), then redeploy, then confirm by the feature's behavior (cron endpoint JSON / `cron_heartbeats.error`), NEVER by the env dump or the CLI's "Added" message. See [[project_vercel_deploy_broken]]. Email lifecycle has sent to nobody (DB-confirmed) and is held OFF by choice pending Tyler's voice review.
+
+**Guardrails:** never touch live Stripe/billing without Tyler · everything behind flags · IG posting AUTHORIZED and now ON · confirm before any NEW external channel · hard spend cap · daily report. **Verify the deploy AND the feature's real behavior before calling it live — a flag you can't read is not a confirmation.**
 
 ---
 
