@@ -242,6 +242,10 @@ export default function WorkoutPage() {
   // Missed puzzles collected this session, stored for later replay.
   const missedRef = useRef<WorkoutPuzzleData[]>([]);
 
+  // Every puzzle id shown this session (solved + missed). Sent on finish so
+  // future workouts can exclude them and stay fresh.
+  const seenIdsRef = useRef<string[]>([]);
+
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
 
@@ -279,6 +283,7 @@ export default function WorkoutPage() {
           wrong,
           perfect,
           missedPuzzles: missedRef.current,
+          seenPuzzleIds: seenIdsRef.current,
         }),
       });
       if (res.ok) {
@@ -326,6 +331,7 @@ export default function WorkoutPage() {
     comboRef.current = 0;
     setPuzzlePos(0);
     missedRef.current = [];
+    seenIdsRef.current = [];
     setFinishResult(null);
     finishingRef.current = false;
     setPhase('running');
@@ -353,6 +359,7 @@ export default function WorkoutPage() {
     comboRef.current = snap.combo;
     setPuzzlePos(snap.puzzlePos);
     missedRef.current = snap.missed ?? [];
+    seenIdsRef.current = snap.seenIds ?? [];
     setFinishResult(null);
     finishingRef.current = false;
     setPhase('running');
@@ -371,6 +378,12 @@ export default function WorkoutPage() {
 
   // On mount, surface any resumable in-progress workout on the setup screen.
   useEffect(() => {
+    // ?preview=result — show the completion popup with sample data.
+    if (new URLSearchParams(window.location.search).get('preview') === 'result') {
+      setFinishResult({ sessionPoints: 420, lifetime: 3180, right: 14, wrong: 0, perfect: true });
+      setPhase('done');
+      return;
+    }
     const snap = loadResume();
     if (snap) setResumable(snap);
   }, []);
@@ -388,6 +401,7 @@ export default function WorkoutPage() {
       combo,
       puzzlePos,
       missed: missedRef.current,
+      seenIds: seenIdsRef.current,
       queue,
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, queue]);
@@ -410,6 +424,8 @@ export default function WorkoutPage() {
     | undefined;
 
   const handleCorrect = useCallback(() => {
+    const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
+    if (seenId) seenIdsRef.current.push(seenId);
     const rating = currentPuzzle?.rating ?? 1000;
     const nextStreak = comboRef.current + 1;
     comboRef.current = nextStreak;
@@ -420,6 +436,8 @@ export default function WorkoutPage() {
   }, [currentPuzzle]);
 
   const handleWrong = useCallback(() => {
+    const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
+    if (seenId) seenIdsRef.current.push(seenId);
     // Wrong = 0 points; the cost is losing the combo back to ×1.
     comboRef.current = 0;
     setCombo(0);
@@ -458,7 +476,7 @@ export default function WorkoutPage() {
       <div className="h-full overflow-auto bg-chess-page">
         <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
           <header className="text-center">
-            <h1 className="text-xl font-black text-chess-text">Mind &amp; Body Workout</h1>
+            <h1 className="text-xl font-black text-chess-text">Chess Boxing</h1>
           </header>
 
           {/* Explanation — kept directly below the title */}
@@ -625,7 +643,7 @@ export default function WorkoutPage() {
           `}</style>
           <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-5 text-center">
             <Icon path={ICONS.trophy} className="w-14 h-14 text-chess-gold" />
-            <h1 className="text-2xl font-black text-chess-text -mt-1">Workout complete</h1>
+            <h1 className="text-2xl font-black text-chess-text -mt-1">Chess Boxing complete</h1>
 
             <div className="w-full flex flex-col gap-4">
               <div>
