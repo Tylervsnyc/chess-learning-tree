@@ -210,10 +210,10 @@ export default function OpeningDetailPage({
       }}
     >
       {/* Back button */}
-      <div className="px-4 pt-4 pb-2">
+      <div className="mx-auto w-full max-w-lg md:max-w-2xl px-4 md:px-6 pt-4 pb-2">
         <button
           onClick={() => router.push('/openings')}
-          className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-1.5 min-h-[44px] hover:opacity-80 transition-opacity"
         >
           <span className="text-lg text-chess-text">←</span>
           <span className="text-xs font-medium text-chess-text/60">Back</span>
@@ -221,7 +221,7 @@ export default function OpeningDetailPage({
       </div>
 
       {/* Sticky 3D Floating Header */}
-      <div className="sticky top-2 z-40 px-4 py-2 mb-6">
+      <div className="sticky top-2 z-40 mx-auto w-full max-w-lg md:max-w-2xl px-4 md:px-6 py-2 mb-6">
         <div className="relative">
           {/* Back layers for 3D depth */}
           <div
@@ -322,7 +322,7 @@ export default function OpeningDetailPage({
       </div>
 
       {/* Main content */}
-      <div className="px-6 py-8 max-w-2xl mx-auto">
+      <div className="mx-auto w-full max-w-lg md:max-w-2xl px-4 md:px-6 py-8">
         {/* Main Line Section */}
         <div className="mb-10">
           <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">

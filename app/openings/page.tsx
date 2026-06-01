@@ -349,11 +349,12 @@ export default function OpeningsPage() {
   return (
     <div className="h-full overflow-auto bg-chess-page">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-chess-page border-b border-chess-text-faint/10 px-4 py-4">
+      <div className="sticky top-0 z-10 bg-chess-page border-b border-chess-text-faint/10 px-4 md:px-6 py-4">
+        <div className="mx-auto w-full max-w-lg md:max-w-2xl">
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={() => router.push('/')}
-            className="p-2 rounded-lg hover:bg-white/50 transition-colors"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-white/50 transition-colors"
           >
             <svg
               className="w-5 h-5 text-chess-text"
@@ -413,10 +414,11 @@ export default function OpeningsPage() {
             ))}
           </div>
         </div>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="px-4 py-6 max-w-2xl mx-auto">
+      <div className="mx-auto w-full max-w-lg md:max-w-2xl px-4 md:px-6 py-6">
         {/* My Openings Tab */}
         {activeTab === 'my-openings' && (
           <div className="space-y-4">

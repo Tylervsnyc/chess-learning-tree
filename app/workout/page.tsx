@@ -14,7 +14,7 @@ import {
   type Segment,
   type SegmentKind,
 } from '@/lib/workout/schedule';
-import { warmupAudio, playButtonClick } from '@/lib/sounds';
+import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -197,6 +197,8 @@ export default function WorkoutPage() {
 
   // ── Advance to the next segment (or finish) ───────────────────────────────
   const advanceSegment = useCallback(() => {
+    // Boxing bell rings at the end of every stage (timer-out or Skip).
+    playBoxingBell();
     setSegIndex((i) => {
       const next = i + 1;
       if (next >= schedule.length) {
@@ -241,6 +243,8 @@ export default function WorkoutPage() {
       advanceSegment();
       return;
     }
+    // Wood-clap warning when 10 seconds remain in the stage.
+    if (secondsLeft === 10) playWoodClap();
     const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [phase, secondsLeft, advanceSegment]);
@@ -284,7 +288,7 @@ export default function WorkoutPage() {
   if (phase === 'setup') {
     return (
       <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto px-5 py-8 flex flex-col gap-6">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-8 flex flex-col gap-6">
           <header className="text-center">
             <h1 className="text-3xl font-black text-chess-text">Interval Workout</h1>
             <p className="text-chess-text-muted mt-2 text-sm leading-relaxed">
@@ -357,7 +361,7 @@ export default function WorkoutPage() {
   if (phase === 'done' && finishResult) {
     return (
       <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto px-5 py-10 flex flex-col items-center gap-6 text-center">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-10 flex flex-col items-center gap-6 text-center">
           <Icon path={ICONS.trophy} className="w-16 h-16 text-chess-gold" />
           <h1 className="text-3xl font-black text-chess-text">Workout complete</h1>
 
@@ -437,7 +441,7 @@ export default function WorkoutPage() {
     <div className="h-full overflow-auto bg-chess-page flex flex-col">
       {/* Header: progress + score + timer */}
       <div className="bg-chess-surface border-b border-slate-200">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">
               Segment {segIndex + 1} of {schedule.length}
@@ -448,7 +452,7 @@ export default function WorkoutPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             {isChess && combo >= 2 && (
               <div
                 className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 transition-colors ${
@@ -495,7 +499,7 @@ export default function WorkoutPage() {
       {/* Body */}
       <div className="flex-1 flex flex-col">
         {isChess ? (
-          <div className="max-w-md mx-auto w-full px-4 py-5 flex flex-col gap-4">
+          <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
             <p className="text-center text-sm font-semibold text-chess-text-muted">
               {promptFor('chess')}
             </p>
@@ -542,13 +546,13 @@ export default function WorkoutPage() {
 
       {/* Footer: skip + end */}
       <div className="bg-chess-surface border-t border-slate-200">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center gap-3">
           <button
             onClick={() => {
               playButtonClick();
               advanceSegment();
             }}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 text-chess-text font-bold py-3 hover:bg-chess-page transition"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 text-chess-text font-bold py-3 min-h-[44px] hover:bg-chess-page transition"
           >
             <Icon path={ICONS.skip} className="w-4 h-4" />
             Skip
@@ -558,7 +562,7 @@ export default function WorkoutPage() {
               playButtonClick();
               finishSession();
             }}
-            className="rounded-xl px-4 text-chess-text-muted font-bold py-3 hover:text-chess-text transition"
+            className="rounded-xl px-4 text-chess-text-muted font-bold py-3 min-h-[44px] hover:text-chess-text transition"
           >
             End
           </button>

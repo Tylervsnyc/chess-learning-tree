@@ -1070,11 +1070,11 @@ export default function LessonPage() {
     }
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 md:px-6 py-3 flex-shrink-0">
+          <div className="mx-auto w-full max-w-md md:max-w-lg flex items-center justify-between">
             <button
               onClick={() => router.push('/')}
-              className="text-chess-text-muted hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1159,11 +1159,11 @@ export default function LessonPage() {
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
         <style>{progressBarStyles}</style>
-        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 md:px-6 py-3 flex-shrink-0">
+          <div className="mx-auto w-full max-w-md md:max-w-lg flex items-center justify-between">
             <button
               onClick={() => router.push('/')}
-              className="text-chess-text-muted hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1172,13 +1172,13 @@ export default function LessonPage() {
             </div>
           </div>
         </div>
-        <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
-          <div className="w-full max-w-lg">
+        <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-1 overflow-hidden">
+          <div className="mx-auto w-full max-w-md md:max-w-lg">
             <div className="flex items-center justify-between mb-2 h-8">
               <div className="h-5 w-24 bg-gray-700 rounded animate-pulse" />
               <div className="h-5 w-28 bg-gray-700 rounded animate-pulse" />
             </div>
-            <div className="aspect-square bg-gray-800 rounded-lg animate-pulse" />
+            <div className="mx-auto w-full max-w-[min(92vw,440px)] md:max-w-[520px] aspect-square bg-gray-800 rounded-lg animate-pulse" />
           </div>
         </div>
       </div>
@@ -1189,11 +1189,11 @@ export default function LessonPage() {
   if (error) {
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
-          <div className="max-w-4xl mx-auto">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 md:px-6 py-3 flex-shrink-0">
+          <div className="mx-auto w-full max-w-md md:max-w-lg">
             <button
               onClick={() => router.push('/')}
-              className="text-chess-text-muted hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1271,11 +1271,11 @@ export default function LessonPage() {
   if (!currentPuzzle) {
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
-        <div className="bg-chess-bg-light border-b border-white/10 px-4 py-3 flex-shrink-0">
-          <div className="max-w-4xl mx-auto">
+        <div className="bg-chess-bg-light border-b border-white/10 px-4 md:px-6 py-3 flex-shrink-0">
+          <div className="mx-auto w-full max-w-md md:max-w-lg">
             <button
               onClick={() => router.push('/')}
-              className="text-chess-text-muted hover:text-white"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-muted hover:text-white"
             >
               ✕
             </button>
@@ -1297,8 +1297,8 @@ export default function LessonPage() {
         }
       `}</style>
       {/* Header */}
-      <div className="bg-chess-page border-b border-gray-200 px-4 py-3 flex-shrink-0">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+      <div className="bg-chess-page border-b border-gray-200 px-4 md:px-6 py-3 flex-shrink-0">
+        <div className="mx-auto w-full max-w-md md:max-w-lg flex items-center justify-between">
           <button
             onClick={() => {
               if (!lessonComplete && puzzles.length > 0) {
@@ -1306,7 +1306,7 @@ export default function LessonPage() {
               }
               router.push('/');
             }}
-            className="text-chess-text-faint hover:text-chess-text-muted"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-faint hover:text-chess-text-muted"
           >
             ✕
           </button>
@@ -1326,8 +1326,8 @@ export default function LessonPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-hidden">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-1 overflow-hidden">
+        <div className="mx-auto w-full max-w-md md:max-w-lg">
           {/* Theme + Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <div className="flex items-center gap-2">
@@ -1345,8 +1345,9 @@ export default function LessonPage() {
           </div>
 
           {/* Chessboard with intro popup overlay */}
-          <div className="relative">
+          <div className="relative mx-auto w-full max-w-[min(92vw,440px)] md:max-w-[520px]">
             <div
+              className="aspect-square"
               style={{
                 opacity: isBoardTransitioning ? 0 : 1,
                 transition: 'opacity 150ms ease-in-out',

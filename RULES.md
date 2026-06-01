@@ -2721,4 +2721,79 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 
 ---
 
+## 50. Responsive Design (Mobile / iPad / Desktop)
+
+**Status:** Core rule — applies to EVERY production page and component. Part of the 10K DAU mandate: the site must feel intentional on a phone, an iPad, and a laptop. No page ships looking like a phone layout floating in desktop whitespace.
+
+### The model: scaled centered column
+
+We are mobile-first with ONE column everywhere. We do **not** build separate desktop layouts (no sidebars, no 2-up content reflows). On bigger screens the same column simply gets a comfortable max-width and larger board/type. This matches Duolingo and keeps all 67 pages consistent and cheap to maintain.
+
+```
+Phone   (<640px):  full-width column, edge padding
+iPad    (≥768px):  same column, wider cap, bigger board + type
+Desktop (≥1024px): same column, capped, centered, never sprawling
+```
+
+### The three breakpoints (only these)
+
+Tailwind v4 defaults. Use ONLY these three prefixes for layout — do not invent custom pixel breakpoints for page layout.
+
+| Prefix | Min width | Target device |
+|--------|-----------|---------------|
+| (none) | 0 | Phone (design here first) |
+| `md:` | 768px | iPad / small tablet |
+| `lg:` | 1024px | Laptop / desktop |
+
+`sm:` and `xl:` are allowed for fine-tuning but are not required. Always design the **base (no-prefix) styles for the phone**, then layer `md:` and `lg:` on top.
+
+### Container width — the standard scale
+
+The global `<main>` is capped at `max-w-3xl` (768px) and centered. **Page content must live inside one of these standard caps** — stop hand-picking widths per page:
+
+| Content type | Width class |
+|--------------|-------------|
+| Reading / forms / lessons / single-board flows | `max-w-md md:max-w-lg` |
+| Wider content (path, dashboards, lists) | `max-w-lg md:max-w-2xl` |
+| Full-bleed marketing / landing sections | `w-full` (manage inner padding) |
+| Admin / data tables (internal only) | `max-w-5xl` to `max-w-7xl` |
+
+Every page wrapper gets `mx-auto w-full px-4 md:px-6`. Never let content touch the screen edge on phone; never let it sprawl on desktop.
+
+### The chess board
+
+The board is the most size-sensitive element. It must scale with the viewport, never overflow, never force horizontal scroll.
+
+- Board container: `w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square`.
+- Always use the `ChessPathBoard` wrapper (it already handles square sizing) — never raw `Chessboard`.
+- On phone the board fills the column with a little breathing room; on iPad/desktop it caps so it doesn't become comically large.
+
+### Touch targets & type
+
+- **Interactive elements ≥ 44×44px** on touch (`min-h-[44px]`, adequate padding). This is non-negotiable for mobile.
+- Type may step up one notch on desktop where it helps readability: `text-base md:text-lg` for body, `text-2xl md:text-3xl` for page titles. Don't over-scale.
+
+### Test-page exception
+
+Test pages (`/test/*`, `/test-*`) still require `overflow-auto` on their container (body is `overflow: hidden` globally). They are exempt from the column standard but should still not break on mobile.
+
+### Definition of done (every page must pass)
+
+A page is **not** responsive-complete until it passes all four:
+
+1. **No horizontal scroll** at 360px, 768px, and 1280px widths.
+2. **Content is centered and capped** at iPad/desktop — no phone-column-in-whitespace, no edge-to-edge sprawl.
+3. **Board (if present) scales** and never overflows the column.
+4. **All tap targets ≥ 44px**; nothing is clipped or overlapping at any of the three widths.
+
+### How to verify
+
+```bash
+./scripts/ensure-dev.sh && open http://localhost:3000/{page}
+```
+
+Then resize the browser through phone (360px) → iPad (768px) → desktop (1280px). Chrome DevTools device toolbar covers all three.
+
+---
+
 *This document is the source of truth. If code disagrees with this document, either the code is wrong or this document needs updating. There is no third option.*

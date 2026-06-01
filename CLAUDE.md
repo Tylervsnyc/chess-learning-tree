@@ -97,7 +97,7 @@ Use `offset` and `limit` to read only the section you need — never read the fu
                                                               §47 Welcome Funnel       L2538
                                                               §48 Rookie Play Engine   L2623
                                                               §49 Rookie's Run         L2669
-§15 Pages                L556   §30 Work In Progress    L1519
+§15 Pages                L556   §30 Work In Progress    L1519   §50 Responsive Design   L2726
 ```
 
 ---
@@ -159,6 +159,8 @@ That script checks if the server is already running and only starts it if needed
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
 4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Remove the thing causing the problem instead of adding code to counteract it.
 5. **If it's failed 3+ times, question the rules.** Repeated failures likely mean RULES.md is prescribing a broken pattern. Trace the actual code and fix RULES.md.
+
+**Responsive is non-negotiable (RULES.md §50).** Every production page must work on phone (360px), iPad (768px), and desktop (1280px): mobile-first single column, centered + capped on big screens, no horizontal scroll, board scales, tap targets ≥44px. Read §50 before building or editing any page.
 
 ---
 

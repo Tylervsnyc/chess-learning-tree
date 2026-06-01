@@ -228,7 +228,7 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
   }, [moveIndex, status, selected, game, processed.lastMoveFrom, processed.lastMoveTo]);
 
   return (
-    <div className="w-full max-w-[440px] mx-auto">
+    <div className="w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square">
       <div
         className="relative w-full"
         style={{

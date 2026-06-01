@@ -345,7 +345,7 @@ export default function RookiesRunPage() {
     if (state.turn !== 'drones' || state.status !== 'playing') return;
     const t = setTimeout(() => {
       setState((s) => (s.turn === 'drones' && s.status === 'playing' ? stepDroneTurn(s) : s));
-    }, 140);
+    }, 320);
     return () => clearTimeout(t);
   }, [state.turn, state.status, state.drones]);
 
@@ -875,7 +875,7 @@ export default function RookiesRunPage() {
 
   return (
     <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-md mx-auto w-full px-4 pt-1.5 pb-3 flex flex-col gap-2">
+      <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 pt-1.5 pb-3 flex flex-col gap-2">
         <header className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <button
@@ -912,13 +912,15 @@ export default function RookiesRunPage() {
             type="button"
             onClick={openTempoHelp}
             aria-label="How tempo works"
-            className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 active:scale-90 flex items-center justify-center text-chess-text-muted text-xs font-black transition-all shrink-0"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-90 transition-transform shrink-0"
           >
-            ?
+            <span className="w-7 h-7 rounded-full bg-chess-text/10 hover:bg-chess-text/20 flex items-center justify-center text-chess-text-muted text-xs font-black">
+              ?
+            </span>
           </button>
         </div>
 
-        <div className="w-full">
+        <div className="w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto">
           <RunBoard
             key={`level-${levelIndex}-${state.level}`}
             state={state}
@@ -965,7 +967,7 @@ export default function RookiesRunPage() {
             <button
               type="button"
               onClick={() => setState((s) => applyAbilityCancel(s))}
-              className="px-2 py-1 rounded bg-chess-text/10 text-chess-text text-[11px] font-bold active:scale-95"
+              className="px-3 min-h-[44px] rounded bg-chess-text/10 text-chess-text text-[11px] font-bold active:scale-95 shrink-0"
             >
               Cancel
             </button>
@@ -979,7 +981,7 @@ export default function RookiesRunPage() {
         )}
       </div>
 
-      {!isStc && state.pendingOffer && state.status === 'playing' && !showIntro && (
+      {!isStc && state.pendingOffer && state.status === 'playing' && (
         <AbilityOfferModal
           offer={state.pendingOffer}
           onPick={onOfferPick}
