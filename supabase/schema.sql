@@ -338,21 +338,21 @@ CREATE POLICY "Users can insert own seen puzzles" ON public.workout_seen_puzzles
 CREATE OR REPLACE FUNCTION public.protect_privileged_profile_columns()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-AS $$
+AS $protect$
 BEGIN
   IF current_user IN ('authenticated', 'anon') THEN
-    IF NEW.subscription_status      IS DISTINCT FROM OLD.subscription_status
+    IF NEW.subscription_status     IS DISTINCT FROM OLD.subscription_status
        OR NEW.subscription_expires_at IS DISTINCT FROM OLD.subscription_expires_at
-       OR NEW.is_patron             IS DISTINCT FROM OLD.is_patron
-       OR NEW.stripe_customer_id    IS DISTINCT FROM OLD.stripe_customer_id THEN
-      RAISE EXCEPTION
-        'profiles: billing columns cannot be modified directly'
+       OR NEW.is_patron            IS DISTINCT FROM OLD.is_patron
+       OR NEW.is_admin             IS DISTINCT FROM OLD.is_admin
+       OR NEW.stripe_customer_id   IS DISTINCT FROM OLD.stripe_customer_id THEN
+      RAISE EXCEPTION 'profiles: privileged columns cannot be modified directly'
         USING ERRCODE = 'insufficient_privilege';
     END IF;
   END IF;
   RETURN NEW;
 END;
-$$;
+$protect$;
 DROP TRIGGER IF EXISTS protect_privileged_profile_columns ON public.profiles;
 CREATE TRIGGER protect_privileged_profile_columns
   BEFORE UPDATE ON public.profiles
