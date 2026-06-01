@@ -624,6 +624,20 @@ export default function ProfilePage() {
         {/* ── Estimated rating + trend ─────────────────────────────────── */}
         <EloCard data={elo} loading={eloLoading} />
 
+        {/* Lifetime stat tiles */}
+        <div>
+          <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
+            Lifetime Stats
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            <StatTile kind="lessons" label="Lessons completed" value={stats?.lessonsCompleted} loading={dataLoading} />
+            <StatTile kind="puzzles" label="Puzzles solved" value={stats?.puzzlesSolved} loading={dataLoading} />
+            <StatTile kind="games" label="Games played" value={stats?.gamesPlayed} loading={dataLoading} />
+            <StatTile kind="levels" label="Levels unlocked" value={stats?.levelsUnlocked} loading={dataLoading} />
+            <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
+          </div>
+        </div>
+
         {/* ── Beta product — the daily workout experiment ──────────────── */}
         <div className="mt-2 flex flex-col gap-4">
           <div className="flex items-center gap-2 px-1">
@@ -653,20 +667,6 @@ export default function ProfilePage() {
 
           {/* Recent workouts — tappable when there are missed puzzles to review */}
           <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
-
-          {/* Lifetime stat tiles */}
-          <div>
-            <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
-              Lifetime Stats
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
-              <StatTile kind="lessons" label="Lessons completed" value={stats?.lessonsCompleted} loading={dataLoading} />
-              <StatTile kind="puzzles" label="Puzzles solved" value={stats?.puzzlesSolved} loading={dataLoading} />
-              <StatTile kind="games" label="Games played" value={stats?.gamesPlayed} loading={dataLoading} />
-              <StatTile kind="levels" label="Levels unlocked" value={stats?.levelsUnlocked} loading={dataLoading} />
-              <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
-            </div>
-          </div>
         </div>
       </div>
     </div>
