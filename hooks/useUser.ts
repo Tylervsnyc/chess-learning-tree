@@ -12,6 +12,8 @@ interface Profile {
   subscription_status: 'free' | 'premium' | 'trial';
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
+  /** Support-only patron flag — grants NO features, only a gold profile. */
+  is_patron?: boolean;
   is_admin?: boolean;
   unlocked_levels?: number[];
   current_streak?: number;

@@ -6,6 +6,8 @@ export type SubscriptionStatus = 'free' | 'premium' | 'trial';
 export interface SubscriptionInfo {
   status: SubscriptionStatus;
   isPremium: boolean;
+  /** Support-only patron flag — grants NO features, only a gold profile. */
+  isPatron: boolean;
   dailyPuzzlesUsed: number;
   dailyPuzzlesRemaining: number;
   canSolvePuzzle: boolean;
@@ -64,7 +66,7 @@ export async function getSubscriptionInfo(
   // Get profile
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('subscription_status, subscription_expires_at')
+    .select('subscription_status, subscription_expires_at, is_patron')
     .eq('id', userId)
     .single();
 
@@ -73,6 +75,7 @@ export async function getSubscriptionInfo(
     return {
       status: 'free',
       isPremium: false,
+      isPatron: false,
       dailyPuzzlesUsed: 0,
       dailyPuzzlesRemaining: FREE_TIER.DAILY_PUZZLE_LIMIT,
       canSolvePuzzle: true,
@@ -83,12 +86,14 @@ export async function getSubscriptionInfo(
   const status = profile.subscription_status as SubscriptionStatus || 'free';
   const expiresAt = profile.subscription_expires_at;
   const isPremium = isPremiumSubscription(status, expiresAt);
+  const isPatron = profile.is_patron === true;
 
   // If premium, no need to count puzzles
   if (isPremium) {
     return {
       status,
       isPremium: true,
+      isPatron,
       dailyPuzzlesUsed: 0,
       dailyPuzzlesRemaining: Infinity,
       canSolvePuzzle: true,
@@ -103,6 +108,7 @@ export async function getSubscriptionInfo(
   return {
     status,
     isPremium: false,
+    isPatron,
     dailyPuzzlesUsed,
     dailyPuzzlesRemaining,
     canSolvePuzzle: dailyPuzzlesRemaining > 0,

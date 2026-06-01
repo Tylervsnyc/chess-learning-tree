@@ -29,6 +29,14 @@ export const stripe = {
 export const PRICES = {
   MONTHLY: process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
   YEARLY: process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY!,
+  // Patron: support-only $4.99/mo. Unlocks no features — just a gold profile.
+  // Reuses the monthly premium price unless a dedicated patron price is set.
+  // (Patron vs premium is told apart by `is_patron` metadata, not the price id.)
+  PATRON:
+    process.env.STRIPE_PRICE_PATRON ||
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_PATRON ||
+    process.env.STRIPE_PRICE_MONTHLY ||
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY!,
 };
 
 // Price details for display

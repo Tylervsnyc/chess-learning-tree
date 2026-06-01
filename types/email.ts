@@ -6,7 +6,8 @@ export type EmailType =
   | 'drip_day3'
   | 'drip_day7'
   | 'winback'
-  | 'update_april_2026';
+  | 'update_april_2026'
+  | 'patron_thank_you';
 
 export interface EmailPreferences {
   user_id: string;

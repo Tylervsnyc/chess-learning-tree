@@ -18,7 +18,7 @@ export async function POST() {
     // Get user's profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('subscription_status, stripe_customer_id, subscription_expires_at')
+      .select('subscription_status, stripe_customer_id, subscription_expires_at, is_patron')
       .eq('id', user.id)
       .single();
 
@@ -51,17 +51,31 @@ export async function POST() {
     const subscriptions = await stripe.subscriptions.list({
       customer: profile.stripe_customer_id,
       status: 'active',
-      limit: 1,
+      limit: 10,
     });
 
     // Also check for trialing subscriptions
     const trialingSubscriptions = await stripe.subscriptions.list({
       customer: profile.stripe_customer_id,
       status: 'trialing',
-      limit: 1,
+      limit: 10,
     });
 
-    const activeSubscription = subscriptions.data[0] || trialingSubscriptions.data[0];
+    // Patron subscriptions share the premium price but unlock NOTHING — they must
+    // never be synced into premium status. Only a non-patron sub counts here.
+    const isPatronSub = (s: { metadata?: Record<string, string> | null }) =>
+      s.metadata?.is_patron === 'true';
+    const allSubs = [...subscriptions.data, ...trialingSubscriptions.data];
+    const activeSubscription = allSubs.find((s) => !isPatronSub(s));
+
+    // Self-heal the patron flag (catches a missed webhook) — independent of premium.
+    const hasPatronSub = allSubs.some(isPatronSub);
+    if (hasPatronSub !== (profile.is_patron === true)) {
+      await supabase
+        .from('profiles')
+        .update({ is_patron: hasPatronSub })
+        .eq('id', user.id);
+    }
 
     if (!activeSubscription) {
       // No active subscription in Stripe - user is correctly free

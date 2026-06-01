@@ -3,6 +3,7 @@ import { DripDay1 } from '@/lib/email/templates/DripDay1';
 import { DripDay3LeftOff } from '@/lib/email/templates/DripDay3LeftOff';
 import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
+import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -13,6 +14,18 @@ const SAMPLE = {
 
 export default async function EmailPreviewPage() {
   const previews: { label: string; angle: string; html: string }[] = [
+    {
+      label: 'patron_thank_you — sent when someone becomes a patron',
+      angle: 'A personal note from Tyler (not Rookie) with his headshot. "I love chess, I love making things for people who love chess, your support means a lot." No upsell — patron unlocks nothing but the gold profile.',
+      html: await render(
+        PatronThankYou({
+          displayName: SAMPLE.displayName,
+          // Local origin so the headshot loads in this preview (prod is stale).
+          appUrl: 'http://localhost:3000',
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+        }),
+      ),
+    },
     {
       label: 'drip_day1 — ~1 day post-signup, no return',
       angle: 'Warm, curious nudge. Rookie noticed she was "waiting" — featuring today\'s Run as the come-back hook. Primary CTA → /run.',

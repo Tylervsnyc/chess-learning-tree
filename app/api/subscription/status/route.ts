@@ -14,6 +14,7 @@ export async function GET() {
       return NextResponse.json({
         status: 'free',
         isPremium: false,
+        isPatron: false,
         dailyPuzzlesUsed: 0,
         dailyPuzzlesRemaining: FREE_TIER.DAILY_PUZZLE_LIMIT,
         canSolvePuzzle: true,

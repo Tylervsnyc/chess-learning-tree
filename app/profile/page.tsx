@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { ActionButton } from '@/components/ui/ActionButton';
+import { PatronModal } from '@/components/subscription/PatronModal';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -169,6 +170,22 @@ function SubscriptionBadge({ status }: { status: 'free' | 'premium' | 'trial' })
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wide ${m.cls}`}>
       {m.label}
+    </span>
+  );
+}
+
+// Gold "Patron" pill — shown only for supporters. Purely cosmetic, no features.
+function PatronBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wide text-amber-800"
+      style={{ background: 'linear-gradient(135deg, #FFF1C2, #FFD968)' }}
+    >
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+        <path d="M5 19a2 2 0 012-2h10a2 2 0 012 2 2 2 0 01-2 2H7a2 2 0 01-2-2z" />
+      </svg>
+      Patron
     </span>
   );
 }
@@ -432,8 +449,9 @@ function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | nu
 }
 
 export default function ProfilePage() {
-  const { user, profile, loading: userLoading } = useUser();
+  const { user, profile, loading: userLoading, refetchProfile } = useUser();
 
+  const [patronOpen, setPatronOpen] = useState(false);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [stats, setStats] = useState<LifetimeStats | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
@@ -472,6 +490,23 @@ export default function ProfilePage() {
       cancelled = true;
     };
   }, [user]);
+
+  // Returning from patron checkout (?patron=1): the webhook flips is_patron
+  // server-side, so poll the profile a few times until the gold flag lands.
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('patron') !== '1') return;
+    let tries = 0;
+    const id = setInterval(() => {
+      tries += 1;
+      refetchProfile();
+      if (tries >= 5) clearInterval(id);
+    }, 1500);
+    // Clean the URL so a refresh doesn't re-trigger the poll.
+    window.history.replaceState({}, '', '/profile');
+    return () => clearInterval(id);
+  }, [user, refetchProfile]);
 
   // Weekly chart + recent sessions load independently.
   useEffect(() => {
@@ -546,6 +581,7 @@ export default function ProfilePage() {
 
   const displayName = profile?.display_name?.trim() || 'Chess Player';
   const subStatus = profile?.subscription_status ?? 'free';
+  const isPatron = profile?.is_patron === true;
   const initial = displayName.charAt(0).toUpperCase();
 
   const current = streak?.current ?? 0;
@@ -558,18 +594,52 @@ export default function ProfilePage() {
       <div className="max-w-lg md:max-w-2xl mx-auto w-full px-4 md:px-6 pt-4 pb-10 flex flex-col gap-4">
         {/* Header — name + subscription badge */}
         <header className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-chess-blue/15 flex items-center justify-center shrink-0">
-            <span className="text-xl font-black text-chess-blue">{initial}</span>
+          <div
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+              isPatron ? '' : 'bg-chess-blue/15'
+            }`}
+            style={isPatron ? { background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' } : undefined}
+          >
+            <span className={`text-xl font-black ${isPatron ? 'text-amber-800' : 'text-chess-blue'}`}>
+              {initial}
+            </span>
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-black text-chess-text truncate leading-tight">
+            <h1
+              className={`text-xl font-black truncate leading-tight ${
+                isPatron ? 'text-amber-700' : 'text-chess-text'
+              }`}
+            >
               {userLoading ? '…' : displayName}
             </h1>
-            <div className="mt-1">
+            <div className="mt-1 flex items-center gap-1.5">
               {!userLoading && <SubscriptionBadge status={subStatus} />}
+              {!userLoading && isPatron && <PatronBadge />}
             </div>
           </div>
         </header>
+
+        {/* Become a Patron — support-only, no features. Hidden once a patron. */}
+        {!userLoading && user && !isPatron && (
+          <button
+            onClick={() => setPatronOpen(true)}
+            className="w-full rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition-transform shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #FFF8E1, #FFECB3)' }}
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-amber-400/40">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-700" aria-hidden>
+                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                <path d="M5 19a2 2 0 012-2h10a2 2 0 012 2 2 2 0 01-2 2H7a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-black text-amber-900 leading-tight">Become a Patron</div>
+              <div className="text-xs text-amber-700/80 leading-snug">
+                Support chesspath.app and turn your profile gold.
+              </div>
+            </div>
+          </button>
+        )}
 
         {/* ── Streak hero ──────────────────────────────────────────────── */}
         <div
@@ -669,6 +739,8 @@ export default function ProfilePage() {
           <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
         </div>
       </div>
+
+      <PatronModal isOpen={patronOpen} onClose={() => setPatronOpen(false)} />
     </div>
   );
 }

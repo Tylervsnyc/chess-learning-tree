@@ -18,6 +18,8 @@ CREATE TABLE public.profiles (
   subscription_status TEXT DEFAULT 'free' CHECK (subscription_status IN ('free', 'premium', 'trial')),
   subscription_expires_at TIMESTAMPTZ,
   stripe_customer_id TEXT,
+  -- Patron: support-only flag. Independent of subscription_status — grants NO features, only a gold profile.
+  is_patron BOOLEAN DEFAULT FALSE,
   -- Unlocked levels (array of level numbers, e.g., {1, 2})
   unlocked_levels INTEGER[] DEFAULT '{1}',
   -- Admin flag (all lessons unlocked, admin dashboard access)

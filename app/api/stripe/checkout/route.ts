@@ -27,19 +27,24 @@ export async function POST(request: NextRequest) {
     // Get request body
     const { priceId, variant } = await request.json();
 
-    if (!priceId || (priceId !== 'monthly' && priceId !== 'yearly')) {
+    if (!priceId || (priceId !== 'monthly' && priceId !== 'yearly' && priceId !== 'patron')) {
       return NextResponse.json(
         { error: 'Invalid price ID' },
         { status: 400 }
       );
     }
 
+    // Patron is a support-only subscription — flat price, no pricing experiment.
+    const isPatron = priceId === 'patron';
+
     // Resolve Stripe price ID — use experiment variant if provided, otherwise default
     let stripePriceId: string;
     const validVariants: PricingVariant[] = ['control', 'low', 'high'];
     const resolvedVariant: PricingVariant = variant && validVariants.includes(variant) ? variant : 'control';
 
-    if (resolvedVariant !== 'control' && EXPERIMENT_PRICES[resolvedVariant]) {
+    if (isPatron) {
+      stripePriceId = PRICES.PATRON;
+    } else if (resolvedVariant !== 'control' && EXPERIMENT_PRICES[resolvedVariant]) {
       stripePriceId = priceId === 'monthly'
         ? EXPERIMENT_PRICES[resolvedVariant].monthly
         : EXPERIMENT_PRICES[resolvedVariant].yearly;
@@ -92,16 +97,21 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${request.nextUrl.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: isPatron
+        ? `${request.nextUrl.origin}/profile?patron=1`
+        : `${request.nextUrl.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.nextUrl.origin}/subscription/cancelled`,
       metadata: {
         supabase_user_id: user.id,
         pricing_variant: resolvedVariant,
+        ...(isPatron ? { is_patron: 'true' } : {}),
       },
       subscription_data: {
         metadata: {
           supabase_user_id: user.id,
           pricing_variant: resolvedVariant,
+          // Webhook reads this to set is_patron WITHOUT touching subscription_status.
+          ...(isPatron ? { is_patron: 'true' } : {}),
         },
       },
     });

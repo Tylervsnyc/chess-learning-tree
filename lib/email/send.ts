@@ -29,7 +29,7 @@ function shouldSendEmail(
   if (!preferences) return true;
 
   // Transactional emails always send regardless of preferences
-  const alwaysSendTypes: EmailType[] = ['welcome'];
+  const alwaysSendTypes: EmailType[] = ['welcome', 'patron_thank_you'];
   if (alwaysSendTypes.includes(emailType)) return true;
 
   // Global unsubscribe blocks everything except transactional

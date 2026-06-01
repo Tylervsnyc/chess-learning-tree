@@ -6,6 +6,7 @@ import { SubscriptionEvents } from '@/lib/analytics/posthog';
 interface SubscriptionState {
   status: 'free' | 'premium' | 'trial';
   isPremium: boolean;
+  isPatron: boolean;
   dailyPuzzlesUsed: number;
   dailyPuzzlesRemaining: number;
   canSolvePuzzle: boolean;
@@ -18,6 +19,7 @@ interface SubscriptionState {
 const initialState: SubscriptionState = {
   status: 'free',
   isPremium: false,
+  isPatron: false,
   dailyPuzzlesUsed: 0,
   dailyPuzzlesRemaining: 15,
   canSolvePuzzle: true,
@@ -39,6 +41,7 @@ export function useSubscription() {
       setState({
         status: data.status,
         isPremium: data.isPremium,
+        isPatron: data.isPatron ?? false,
         dailyPuzzlesUsed: data.dailyPuzzlesUsed,
         dailyPuzzlesRemaining: data.dailyPuzzlesRemaining,
         canSolvePuzzle: data.canSolvePuzzle,
@@ -85,6 +88,31 @@ export function useSubscription() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      throw error;
+    }
+  };
+
+  // Patron: support-only $4.99/mo. Unlocks nothing — just turns the profile gold.
+  const startPatron = async () => {
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: 'patron' }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to start patron checkout');
+      }
+
+      const { url } = data;
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Patron checkout error:', error);
       throw error;
     }
   };
@@ -139,6 +167,7 @@ export function useSubscription() {
     ...state,
     refresh: fetchStatus,
     startCheckout,
+    startPatron,
     startGuestCheckout,
     openPortal,
   };

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
+import { sendEmail, getAppUrl, getUnsubscribeUrl } from '@/lib/email/send';
+import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
 import Stripe from 'stripe';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -76,6 +78,22 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/**
+ * A patron subscription is a support-only sub that must NEVER affect
+ * subscription_status. It shares the $4.99/mo price with premium, so it is
+ * told apart purely by `is_patron: 'true'` metadata — NOT by price id (that
+ * would false-positive real premium subs). We persist this metadata onto the
+ * subscription at checkout so it survives into later updated/deleted events.
+ */
+function isPatronSubscription(
+  session: Stripe.Checkout.Session | null,
+  subscription: Stripe.Subscription
+): boolean {
+  if (session?.metadata?.is_patron === 'true') return true;
+  if (subscription.metadata?.is_patron === 'true') return true;
+  return false;
 }
 
 async function handleCheckoutComplete(
@@ -167,6 +185,54 @@ async function handleCheckoutComplete(
       session.subscription as string
     );
 
+    // Patron: support-only. Set the gold flag, NEVER touch subscription_status
+    // (a patron unlocks no features — a free user must stay free).
+    if (isPatronSubscription(session, subscription)) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          is_patron: true,
+          stripe_customer_id: session.customer as string,
+        })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error setting patron flag after checkout:', error);
+        throw new Error(`Failed to set patron flag: ${error.message}`);
+      }
+
+      // Persist user ID on the subscription so future patron webhooks resolve it.
+      await stripe.subscriptions.update(session.subscription as string, {
+        metadata: { supabase_user_id: userId, is_patron: 'true' },
+      });
+
+      // Personal thank-you note from Tyler. Best-effort — never block the webhook.
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('email, display_name')
+          .eq('id', userId)
+          .maybeSingle();
+        const to = profile?.email || guestEmail;
+        if (to) {
+          await sendEmail({
+            to,
+            userId,
+            type: 'patron_thank_you',
+            subject: 'A thank you, from Tyler',
+            react: PatronThankYou({
+              displayName: profile?.display_name || undefined,
+              appUrl: getAppUrl(),
+              unsubscribeUrl: getUnsubscribeUrl(userId, 'patron_thank_you'),
+            }),
+          });
+        }
+      } catch (emailErr) {
+        console.error('Failed to send patron thank-you email:', emailErr);
+      }
+      return;
+    }
+
     // Get expiration date from the first subscription item
     let expiresAt: string | null = null;
     const firstItem = subscription.items?.data?.[0];
@@ -229,9 +295,20 @@ async function updateSubscriptionStatus(
   userId: string,
   subscription: Stripe.Subscription
 ) {
-  const status = subscription.status === 'active' || subscription.status === 'trialing'
-    ? 'premium'
-    : 'free';
+  const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+
+  // Patron sub: only flip the gold flag. Leave subscription_status / expiry alone
+  // so a user who is both patron and premium keeps each independently.
+  if (isPatronSubscription(null, subscription)) {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_patron: isActive })
+      .eq('id', userId);
+    if (error) console.error('Error updating patron flag:', error);
+    return;
+  }
+
+  const status = isActive ? 'premium' : 'free';
 
   // Get expiration date from the first subscription item
   let expiresAt: string | null = null;
@@ -275,6 +352,16 @@ async function handleSubscriptionDeleted(
       return;
     }
     targetUserId = profile.id;
+  }
+
+  // Patron sub cancelled: drop the gold flag only — never touch subscription_status.
+  if (isPatronSubscription(null, subscription)) {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_patron: false })
+      .eq('id', targetUserId);
+    if (error) console.error('Error clearing patron flag:', error);
+    return;
   }
 
   // Revert to free
