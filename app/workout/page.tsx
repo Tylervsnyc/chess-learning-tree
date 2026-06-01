@@ -365,10 +365,16 @@ export default function WorkoutPage() {
     finishingRef.current = false;
     setPhase('running');
 
-    fetch(`/api/workout/puzzles?minutes=${snap.minutes}`)
-      .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-      .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-      .catch(() => setQueue([]));
+    // Restore the exact saved queue so the same puzzle comes back up.
+    if (snap.queue?.length) {
+      setQueue(snap.queue);
+    } else {
+      // Older snapshot without a queue — fall back to a fresh fetch.
+      fetch(`/api/workout/puzzles?minutes=${snap.minutes}`)
+        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
+        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
+        .catch(() => setQueue([]));
+    }
   }, []);
 
   // On mount, surface any resumable in-progress workout on the setup screen.
@@ -390,8 +396,9 @@ export default function WorkoutPage() {
       combo,
       puzzlePos,
       missed: missedRef.current,
+      queue,
     });
-  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos]);
+  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, queue]);
 
   // ── Countdown timer ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -443,7 +450,6 @@ export default function WorkoutPage() {
 
   // Preview of the circuit for the chosen duration (setup screen).
   const previewSchedule = useMemo(() => buildSchedule(minutes), [minutes]);
-  const previewRounds = Math.max(1, previewSchedule.length / ROUND_LENGTH);
 
   // Round bookkeeping for the running view.
   const roundCount = Math.max(1, Math.ceil(schedule.length / ROUND_LENGTH));
@@ -458,14 +464,9 @@ export default function WorkoutPage() {
   if (phase === 'setup') {
     return (
       <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-8 flex flex-col gap-6">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
           <header className="text-center">
-            <h1 className="text-3xl font-black text-chess-text">Interval Workout</h1>
-            <p className="text-chess-text-muted mt-2 text-sm leading-relaxed">
-              A timed circuit that mixes chess puzzles with quick physical
-              bursts. Solve puzzles for points, then move your body, then go
-              again.
-            </p>
+            <h1 className="text-xl font-black text-chess-text">Mind &amp; Body Workout</h1>
           </header>
 
           {resumable && (
@@ -497,40 +498,57 @@ export default function WorkoutPage() {
             </div>
           )}
 
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
-            <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide">
-              How it works
-            </h2>
-            <p className="text-sm text-chess-text leading-relaxed">
-              Combining mental and physical fitness — 3 min of puzzles, a 1 min
-              break, 3 min of exercise, a 1 min break. That's one round.
-            </p>
-            <div>
-              <div className="mb-1.5">
-                <div className="text-xs font-black text-chess-text uppercase tracking-wide">
-                  One round
-                  {previewRounds > 1 && (
-                    <span className="text-chess-text-muted"> · {previewRounds} total</span>
-                  )}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">
-                  Chess → Rest → Workout → Rest
-                </div>
-              </div>
-              <CircuitTimeline segments={previewSchedule.slice(0, ROUND_LENGTH)} />
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold">
-              <Legend color={colorForKind('chess')} label="Puzzles" />
-              <Legend color={colorForKind('workout')} label="Exercise" />
-              <Legend color={colorForKind('break')} label="Break" />
+          {/* One Round — bold title with two lines encompassing the bars */}
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 pt-5">
+            <div className="relative rounded-xl border-2 border-chess-text/15 px-3 pt-6 pb-3">
+              {/* "One Round" sits on the top border; the side borders are the two
+                  lines that wrap the bars below. */}
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-chess-surface px-2.5 text-base font-black text-chess-text">
+                One Round
+              </span>
+
+              {(() => {
+                const round = previewSchedule.slice(0, ROUND_LENGTH);
+                const total = round.reduce((s, seg) => s + seg.seconds, 0) || 1;
+                const fmt = (sec: number) => `${Math.round(sec / 60)} min`;
+                return (
+                  <>
+                    {/* Time labels — aligned over each bar */}
+                    <div className="flex gap-1.5 w-full mb-1.5">
+                      {round.map((seg, i) => (
+                        <div
+                          key={i}
+                          className="text-center text-[10px] font-bold text-chess-text-muted leading-none"
+                          style={{ width: `${(seg.seconds / total) * 100}%` }}
+                        >
+                          {fmt(seg.seconds)}
+                        </div>
+                      ))}
+                    </div>
+                    <CircuitTimeline segments={round} />
+                  </>
+                );
+              })()}
             </div>
           </div>
 
+          {/* Points — its own window */}
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1.5">
+            <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide text-center">
+              Points
+            </h2>
+            <p className="text-xs text-chess-text-muted text-center leading-relaxed">
+              Solve puzzles for points. Chain correct answers to grow a combo up
+              to <span className="font-black text-chess-text">×2</span> — finish
+              clean for a <span className="font-black text-chess-text">+50</span> bonus.
+            </p>
+          </div>
+
           <div>
-            <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide mb-3 text-center">
+            <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide mb-2 text-center">
               How many rounds?
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-4 gap-2">
               {DURATION_PRESETS.map((m) => {
                 const rounds = Math.max(1, Math.round((m * 60) / ROUND_SECONDS));
                 return (
@@ -540,16 +558,16 @@ export default function WorkoutPage() {
                       playButtonClick();
                       setMinutes(m);
                     }}
-                    className={`rounded-2xl border-2 py-4 transition flex flex-col items-center gap-0.5 ${
+                    className={`rounded-xl border-2 py-2.5 transition flex flex-col items-center leading-none ${
                       minutes === m
                         ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
                         : 'border-slate-200 bg-chess-surface text-chess-text'
                     }`}
                   >
-                    <span className="font-black text-xl">
-                      {rounds} Round{rounds > 1 ? 's' : ''}
+                    <span className="font-black text-lg">{rounds}</span>
+                    <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                      {m} min
                     </span>
-                    <span className="text-xs font-semibold text-chess-text-muted">{m} min</span>
                   </button>
                 );
               })}
@@ -558,7 +576,7 @@ export default function WorkoutPage() {
 
           <button
             onClick={begin}
-            className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-lg py-4 shadow-sm transition"
+            className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3.5 shadow-sm transition"
           >
             Begin
           </button>

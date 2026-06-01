@@ -13,7 +13,7 @@
 import type { WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 
 const KEY = 'workout-in-progress';
-const VERSION = 1;
+const VERSION = 2; // bumped: snapshot now includes the puzzle queue
 const MAX_AGE_MS = 3 * 60 * 60 * 1000; // 3 hours
 
 export interface WorkoutResumeState {
@@ -28,6 +28,8 @@ export interface WorkoutResumeState {
   combo: number;
   puzzlePos: number;
   missed: WorkoutPuzzleData[];
+  /** The exact puzzle queue, so resume lands on the same puzzle. */
+  queue: WorkoutPuzzleData[];
 }
 
 export function saveResume(state: Omit<WorkoutResumeState, 'v' | 'savedAt'>): void {
