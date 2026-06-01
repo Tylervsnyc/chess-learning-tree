@@ -17,6 +17,22 @@ interface LocalProgress {
  * POST /api/progress/sync
  * Bulk sync localStorage data on login - merges local with server and returns canonical state
  */
+
+/**
+ * When the time a lesson was completed locally is imported on login, use the
+ * day the user actually last did a lesson (or was last active) rather than the
+ * current time. Falls back to a fixed past timestamp when no local date exists,
+ * so a migration import can never trip today's streak by itself.
+ */
+function importTimestamp(local: LocalProgress): string {
+  const day = local.lastLessonDate || local.lastActivityDate;
+  if (day && /^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    // Noon UTC of that day — lands on the right calendar day in essentially all TZs.
+    return new Date(`${day}T12:00:00Z`).toISOString();
+  }
+  // No local date info: backdate well into the past so it isn't counted as today.
+  return '2020-01-01T00:00:00Z';
+}
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
@@ -56,13 +72,21 @@ export async function POST(request: NextRequest) {
   // Merge completed lessons (union)
   const newLessons = localProgress.completedLessons.filter((id) => !serverLessons.has(id));
 
-  // Insert new lessons
+  // Insert new lessons.
+  // These are completions imported from localStorage on login — they happened
+  // in an EARLIER session, not "now". Stamping them with the current time would
+  // re-date old guest progress to today and falsely trip today's streak (the
+  // streak is derived from lesson_progress.completed_at). So we backdate them to
+  // the day the user actually last did a lesson locally. This still preserves the
+  // intended happy path (finish the tutorial today as a guest → sign up → day-1
+  // streak), while stale progress from a prior day no longer counts as today.
   if (newLessons.length > 0) {
+    const importedCompletedAt = importTimestamp(localProgress);
     const lessonRows = newLessons.map((lessonId) => ({
       user_id: user.id,
       lesson_id: lessonId,
       tree_id: getTreeIdFromLessonId(lessonId),
-      completed_at: new Date().toISOString(),
+      completed_at: importedCompletedAt,
     }));
 
     const { error: lessonError } = await supabase.from('lesson_progress').upsert(lessonRows, {

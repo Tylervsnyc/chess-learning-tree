@@ -935,11 +935,16 @@ export default function PlayRookiePage() {
     if (movedBy === 'rookie') moveStartRef.current = Date.now();
   }, [playerColor, rookieMood, user?.id]);
 
-  const endSession = useCallback((g: Chess) => {
+  const endSession = useCallback((g: Chess, override?: { result: GameResult; method?: ResultMethod }) => {
     let result: GameResult | undefined;
     let method: ResultMethod | undefined;
 
-    if (g.isCheckmate()) {
+    if (override) {
+      // Explicit outcome (e.g. resignation) — the board isn't checkmate/draw,
+      // so derive nothing from it; record what actually happened.
+      result = override.result;
+      method = override.method;
+    } else if (g.isCheckmate()) {
       const loser = g.turn();
       const playerLost = (loser === 'w' && playerColor === 'white') || (loser === 'b' && playerColor === 'black');
       result = playerLost ? 'loss' : 'win';
@@ -1802,7 +1807,7 @@ export default function PlayRookiePage() {
       playerColor,
     });
     const g = new Chess(fen);
-    endSession(g);
+    endSession(g, { result: 'loss', method: 'resignation' });
     setPhase('gameover');
     setShowActivityComplete(true);
     setResignArmed(false);
