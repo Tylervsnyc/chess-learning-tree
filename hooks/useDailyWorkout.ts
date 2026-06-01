@@ -5,21 +5,19 @@ import { QUIP_POOL } from '@/lib/quips/quip-pool';
 import { toneForLevel } from '@/lib/quips/tone';
 import { useUser } from '@/hooks/useUser';
 
-export type WorkoutActivity = 'play' | 'tactics' | 'daily';
+export type WorkoutActivity = 'play' | 'tactics';
 
 export interface DailyWorkoutStatus {
   play: boolean;
   tactics: boolean;
-  daily: boolean;
   allDone: boolean;
   completedCount: number;
   nextActivity: WorkoutActivity | null;
 }
 
 const NEXT_MAP: Record<WorkoutActivity, WorkoutActivity[]> = {
-  play: ['tactics', 'daily'],
-  tactics: ['daily', 'play'],
-  daily: ['play', 'tactics'],
+  play: ['tactics'],
+  tactics: ['play'],
 };
 
 function getToday(): string {
@@ -31,7 +29,7 @@ function getToday(): string {
 // lesson_progress, and run_completions). Multiple consumers mount this hook
 // per page (ActivityComplete, PlayPageRookie), so dedupe with a tiny cache.
 
-type Pillars = { play: boolean; tactics: boolean; daily: boolean };
+type Pillars = { play: boolean; tactics: boolean };
 let pillarCache: { date: string; pillars: Pillars; fetchedAt: number } | null = null;
 let inFlight: Promise<Pillars | null> | null = null;
 const CACHE_TTL_MS = 15_000;
@@ -48,12 +46,11 @@ async function fetchPillars(): Promise<Pillars | null> {
     : 'UTC';
   inFlight = fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : null))
-    .then((data: { todayPillars?: { play: boolean; path: boolean; run: boolean } } | null) => {
+    .then((data: { todayPillars?: { play: boolean; path: boolean } } | null) => {
       if (!data?.todayPillars) return null;
       const pillars: Pillars = {
         play: !!data.todayPillars.play,
         tactics: !!data.todayPillars.path,
-        daily: !!data.todayPillars.run,
       };
       pillarCache = { date: today, pillars, fetchedAt: Date.now() };
       return pillars;
@@ -73,7 +70,6 @@ export function useDailyWorkout(justCompleted?: WorkoutActivity) {
   const {
     ritualPlayDate,
     ritualTacticsDate,
-    ritualDailyDate,
     recordRitualPlay,
   } = useLessonProgress();
   const { attitudeLevel } = useUser();
@@ -98,23 +94,21 @@ export function useDailyWorkout(justCompleted?: WorkoutActivity) {
     const base = serverPillars ?? {
       play: ritualPlayDate === today,
       tactics: ritualTacticsDate === today,
-      daily: ritualDailyDate === today,
     };
     const play = base.play || justCompleted === 'play';
     const tactics = base.tactics || justCompleted === 'tactics';
-    const daily = base.daily || justCompleted === 'daily';
-    const completedCount = [play, tactics, daily].filter(Boolean).length;
-    const allDone = completedCount === 3;
+    const completedCount = [play, tactics].filter(Boolean).length;
+    const allDone = completedCount === 2;
 
     let nextActivity: WorkoutActivity | null = null;
     if (!allDone && justCompleted) {
       const order = NEXT_MAP[justCompleted];
-      const statusMap: Record<WorkoutActivity, boolean> = { play, tactics, daily };
+      const statusMap: Record<WorkoutActivity, boolean> = { play, tactics };
       nextActivity = order.find(a => !statusMap[a]) ?? null;
     }
 
-    return { play, tactics, daily, allDone, completedCount, nextActivity };
-  }, [serverPillars, ritualPlayDate, ritualTacticsDate, ritualDailyDate, justCompleted]);
+    return { play, tactics, allDone, completedCount, nextActivity };
+  }, [serverPillars, ritualPlayDate, ritualTacticsDate, justCompleted]);
 
   const suggestionLine = useMemo(() => {
     if (status.allDone) {

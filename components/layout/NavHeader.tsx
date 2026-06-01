@@ -123,18 +123,17 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
               {/* Learn dropdown */}
               <LearnDropdown pathname={pathname} />
 
-              {/* Run (Rookie's Run — the daily) */}
+              {/* Profile */}
               <Link
-                href="/run"
-                className={`relative px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 overflow-hidden whitespace-nowrap ${
-                  pathname?.startsWith('/run') ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
+                href="/profile"
+                className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 text-xs text-white font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap bg-chess-blue ${
+                  pathname?.startsWith('/profile') ? 'shadow-[0_2px_0_0_var(--color-chess-blue-shadow)]' : 'opacity-70'
                 }`}
-                style={{
-                  background: 'linear-gradient(135deg, #1CB0F6 0%, #0d9ee0 100%)',
-                }}
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" />
-                <span className="relative">Run</span>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profile
               </Link>
 
               {/* Patron — free users only, hidden when monetization is off. Wait for profile to load to avoid flash. */}
@@ -153,7 +152,7 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
                 </Link>
               )}
 
-              {/* Daily workout streak — Play + Path + Run completed today */}
+              {/* Daily workout streak — Play + Path completed today */}
               {user && <DailyWorkoutBadge />}
 
               {/* Guest sign up */}

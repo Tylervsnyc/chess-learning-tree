@@ -49,10 +49,11 @@ export interface ActivityCompleteProps {
   onRetry?: () => void
 }
 
-// Map source → workout activity
-function toWorkoutActivity(source: ActivitySource): WorkoutActivity {
+// Map source → workout activity. 'daily' (Rookie's Run) is no longer a
+// workout pillar, so it doesn't count toward either Play or Learn.
+function toWorkoutActivity(source: ActivitySource): WorkoutActivity | undefined {
   if (source === 'play') return 'play'
-  if (source === 'daily') return 'daily'
+  if (source === 'daily') return undefined
   return 'tactics' // path + opening = learn/tactics
 }
 
@@ -111,7 +112,6 @@ export function ActivityComplete({
   // Mark the current activity as done too (it just completed)
   const workoutPlay = workoutStatus.play || workoutActivity === 'play'
   const workoutLearn = workoutStatus.tactics || workoutActivity === 'tactics'
-  const workoutDaily = workoutStatus.daily || workoutActivity === 'daily'
 
   // ─── Transition line ───
   const transitionLine = useMemo(() => {
@@ -350,7 +350,7 @@ export function ActivityComplete({
             </>
           )}
 
-          {/* ─── Daily Workout: 3-part button ─── */}
+          {/* ─── Daily Workout: 2-part button ─── */}
           {/* Completed slots become gold "trophy" cells with a check overlay.
               Incomplete slots keep their original brand color. */}
           {(() => {
@@ -380,7 +380,7 @@ export function ActivityComplete({
                 {/* Learn */}
                 <Link
                   href="/path"
-                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-x-2 border-white/30"
+                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-l-2 border-white/30"
                   style={{
                     background: workoutLearn ? GOLD_BG : '#58CC02',
                     boxShadow: workoutLearn ? GOLD_SHADOW : undefined,
@@ -394,24 +394,6 @@ export function ActivityComplete({
                     </svg>
                   )}
                   Learn
-                </Link>
-                {/* Run */}
-                <Link
-                  href="/run"
-                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
-                  style={{
-                    background: workoutDaily ? GOLD_BG : '#FF9500',
-                    boxShadow: workoutDaily ? GOLD_SHADOW : undefined,
-                    color: '#ffffff',
-                    pointerEvents: workoutDaily ? 'none' : undefined,
-                  }}
-                >
-                  {workoutDaily ? <CheckBadge /> : (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                    </svg>
-                  )}
-                  Run
                 </Link>
               </div>
             )

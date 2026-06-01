@@ -9,7 +9,7 @@ type WorkoutResponse = {
   current: number;
   longest: number;
   completedToday: boolean;
-  todayPillars: { play: boolean; path: boolean; run: boolean };
+  todayPillars: { play: boolean; path: boolean };
 };
 
 export function DailyWorkoutBadge() {
@@ -41,7 +41,7 @@ export function DailyWorkoutBadge() {
 
   const title = completedToday
     ? `Daily workout complete — ${current}-day streak. Rookie noticed.`
-    : `${current}-day streak. One more session of Play, Learn, or Run keeps it alive.`;
+    : `${current}-day streak. One more session of Play or Learn keeps it alive.`;
 
   return (
     <Link

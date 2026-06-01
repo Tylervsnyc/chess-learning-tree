@@ -5,11 +5,11 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
 /**
  * GET /api/workout/streak?tz=America/Los_Angeles
  *
- * A "Daily Workout" day is one where the user completed Play + Path + Run on
+ * A "Daily Workout" day is one where the user completed Play + Path on
  * the same calendar day in their local TZ. The streak walks back from today
  * until the first day missing any pillar.
  *
- * Returns { current, longest, completedToday, todayPillars: { play, path, run } }.
+ * Returns { current, longest, completedToday, todayPillars: { play, path } }.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -27,11 +27,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [runs, lessons, games] = await Promise.all([
-    supabase
-      .from('run_completions')
-      .select('run_date')
-      .eq('user_id', user.id),
+  const [lessons, games] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -45,25 +41,23 @@ export async function GET(request: NextRequest) {
       .gte('ended_at', since),
   ]);
 
-  if (runs.error || lessons.error || games.error) {
-    console.error('workout streak read failed', { runs: runs.error, lessons: lessons.error, games: games.error });
+  if (lessons.error || games.error) {
+    console.error('workout streak read failed', { lessons: lessons.error, games: games.error });
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
-  const runDays = new Set<string>((runs.data ?? []).map((r) => r.run_date as string));
   const pathDays = toLocalDateSet((lessons.data ?? []).map((r) => r.completed_at as string), tz);
   const playDays = toLocalDateSet((games.data ?? []).map((r) => r.ended_at as string), tz);
 
   const workoutDays = new Set<string>();
-  for (const d of runDays) {
-    if (pathDays.has(d) && playDays.has(d)) workoutDays.add(d);
+  for (const d of playDays) {
+    if (pathDays.has(d)) workoutDays.add(d);
   }
 
   const completedToday = workoutDays.has(today);
   const todayPillars = {
     play: playDays.has(today),
     path: pathDays.has(today),
-    run: runDays.has(today),
   };
 
   // Current: walk back from today (or yesterday if today not done — streak still alive).

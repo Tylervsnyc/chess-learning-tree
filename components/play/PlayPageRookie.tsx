@@ -26,16 +26,6 @@ const WORKOUT_NUDGE_LEARN = [
   "Nice. Learn's quick — same energy, fewer surprises.",
   "Play, done. The Learn tab has a lesson with your name on it. Loosely.",
 ];
-const WORKOUT_NUDGE_RUN = [
-  "Game's logged. The Run is right there. Don't make me beg.",
-  "You've got momentum. The Run won't park itself.",
-  "Two minutes of Run keeps the streak alive. I'm just saying.",
-];
-const WORKOUT_NUDGE_BOTH = [
-  "You've got momentum. Don't park it — Learn or Run, your call.",
-  "Play, done. Two left. I'll keep your seat warm.",
-  "One more session keeps the streak. Learn's shorter. Run's louder.",
-];
 
 interface PlayPageRookieProps {
   onQuip?: (quip: string) => void;
@@ -65,11 +55,9 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
   // fresh status (player might finish Learn in another tab).
   const pickNudgePool = useCallback(() => {
     if (!status.play) return null;
-    if (status.tactics && status.daily) return null;
-    if (!status.tactics && !status.daily) return WORKOUT_NUDGE_BOTH;
-    if (!status.tactics) return WORKOUT_NUDGE_LEARN;
-    return WORKOUT_NUDGE_RUN;
-  }, [status.play, status.tactics, status.daily]);
+    if (status.tactics) return null;
+    return WORKOUT_NUDGE_LEARN;
+  }, [status.play, status.tactics]);
 
   const handleInteraction = useCallback(() => {
     if (!mode) return;
