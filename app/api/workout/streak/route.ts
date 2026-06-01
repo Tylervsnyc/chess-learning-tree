@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [lessons, games, puzzles, openings, runs] = await Promise.all([
+  const [lessons, games, puzzles, openings] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -49,25 +49,21 @@ export async function GET(request: NextRequest) {
       .select('completed_at')
       .eq('user_id', user.id)
       .gte('completed_at', since),
-    supabase
-      .from('run_completions')
-      .select('run_date')
-      .eq('user_id', user.id)
-      .gte('run_date', shiftDate(today, -400)),
   ]);
 
-  if (lessons.error || games.error || puzzles.error || openings.error || runs.error) {
+  if (lessons.error || games.error || puzzles.error || openings.error) {
     console.error('workout streak read failed', {
       lessons: lessons.error,
       games: games.error,
       puzzles: puzzles.error,
       openings: openings.error,
-      runs: runs.error,
     });
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
-  // Any activity at all makes the day count.
+  // Any activity at all makes the day count. Rookie's Run is intentionally NOT
+  // part of the streak: it was dropped from the daily loop (2026-06-01) and its
+  // run_completions table has never logged a row (CHE-342).
   const activeDays = toLocalDateSet(
     [
       ...(lessons.data ?? []).map((r) => r.completed_at as string),
@@ -77,10 +73,6 @@ export async function GET(request: NextRequest) {
     ],
     tz,
   );
-
-  // run_date is already a local YYYY-MM-DD (the day the run belongs to), so it
-  // goes straight into the set — no timestamp→TZ conversion needed.
-  for (const r of runs.data ?? []) activeDays.add(r.run_date as string);
 
   const completedToday = activeDays.has(today);
 

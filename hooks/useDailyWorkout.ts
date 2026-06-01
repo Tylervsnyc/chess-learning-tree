@@ -26,7 +26,8 @@ function getToday(): string {
 
 // ─── Server-derived pillar cache ──────────────────────────────────────────
 // The authoritative source is /api/workout/streak (it reads game_sessions,
-// lesson_progress, and run_completions). Multiple consumers mount this hook
+// lesson_progress, puzzle_attempts, and opening_progress — Rookie's Run was
+// dropped from the loop 2026-06-01). Multiple consumers mount this hook
 // per page (ActivityComplete, PlayPageRookie), so dedupe with a tiny cache.
 
 type Pillars = { play: boolean; tactics: boolean };
