@@ -628,22 +628,35 @@ export default function ProfilePage() {
               {!userLoading && isPatron && <PatronBadge />}
             </div>
           </div>
+        </header>
 
-          {/* Become a Patron — gold CTA next to the name. Hidden once gold. */}
-          {!userLoading && user && !isGold && (
-            <button
-              onClick={() => setPatronOpen(true)}
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-full pl-2.5 pr-3 py-2 text-xs font-black text-amber-900 shadow-sm active:scale-[0.97] transition-transform"
-              style={{ background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' }}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-amber-700" aria-hidden>
+        {/* Become a Patron — big, fun gold CTA. Hidden once gold. */}
+        {!userLoading && user && !isGold && (
+          <button
+            onClick={() => setPatronOpen(true)}
+            className="group w-full rounded-3xl p-5 flex items-center gap-4 text-left active:scale-[0.99] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #FFD968 0%, #FFB628 55%, #F59E0B 100%)',
+              boxShadow: '0 6px 0 #C77F0B, 0 10px 22px rgba(217,160,23,0.35)',
+            }}
+          >
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-white/30 ring-1 ring-white/40">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" className="text-amber-900" aria-hidden>
                 <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
                 <path d="M5 19a2 2 0 012-2h10a2 2 0 012 2 2 2 0 01-2 2H7a2 2 0 01-2-2z" />
               </svg>
-              Become a Patron
-            </button>
-          )}
-        </header>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-lg font-black text-amber-950 leading-tight">Become a Patron</div>
+              <div className="text-sm font-semibold text-amber-900/80 leading-snug">
+                Support chesspath.app and turn your profile gold.
+              </div>
+            </div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" className="text-amber-900/70 shrink-0 group-active:translate-x-0.5 transition-transform" aria-hidden>
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
 
         {/* ── Streak hero ──────────────────────────────────────────────── */}
         <div

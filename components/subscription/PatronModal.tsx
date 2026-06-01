@@ -103,12 +103,18 @@ export function PatronModal({ isOpen, onClose }: PatronModalProps) {
           <button
             onClick={handlePatron}
             disabled={loading}
-            className="w-full py-3 rounded-xl font-bold text-white active:translate-y-[2px] transition-all text-sm disabled:opacity-60"
+            className="w-full py-4 rounded-2xl font-black text-base text-amber-950 flex items-center justify-center gap-2 active:translate-y-[3px] transition-all disabled:opacity-60"
             style={{
-              background: 'linear-gradient(135deg, #D4A017, #B8860B)',
-              boxShadow: '0 3px 0 #8B6508',
+              background: 'linear-gradient(135deg, #FFD968 0%, #FFB628 55%, #F59E0B 100%)',
+              boxShadow: '0 4px 0 #C77F0B, 0 8px 18px rgba(217,160,23,0.4)',
             }}
           >
+            {!loading && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-900" aria-hidden>
+                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                <path d="M5 19a2 2 0 012-2h10a2 2 0 012 2 2 2 0 01-2 2H7a2 2 0 01-2-2z" />
+              </svg>
+            )}
             {loading ? 'Opening checkout…' : 'Support chesspath.app'}
           </button>
           <button
