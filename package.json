@@ -26,6 +26,7 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
     "@types/web-push": "^3.6.4",
+    "@vercel/blob": "^2.4.0",
     "canvas-confetti": "^1.9.4",
     "chess.js": "^1.4.0",
     "html-to-image": "^1.11.13",

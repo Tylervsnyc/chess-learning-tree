@@ -1,0 +1,72 @@
+name: Render and post daily puzzle to Instagram
+
+on:
+  schedule:
+    # 15:00 UTC daily (~10am ET / 7am PT) — strong US engagement window.
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Render only, do not post (true/false)'
+        required: false
+        default: 'false'
+
+# Kill switch: set repo variable IG_AUTOPOST to "true" to enable posting.
+# Anything else (or unset) renders + commits usage but skips the live post.
+jobs:
+  render-and-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install system deps for Remotion (ffmpeg, fonts, chromium libs)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-liberation libnss3 libatk1.0-0 libatk-bridge2.0-0 libgbm1
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Render daily puzzle video
+        run: npm run video:render
+
+      - name: Refresh Instagram token (best-effort, keeps the 60-day token alive)
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -z "$GH_PAT" ]; then echo "No GH_PAT — skipping token refresh (run scripts/ig-refresh-token.ts locally monthly)"; exit 0; fi
+          NEW=$(npx tsx -e "import {refreshLongLived} from './lib/instagram-token'; refreshLongLived(process.env.IG_ACCESS_TOKEN).then(r=>process.stdout.write(r.token)).catch(()=>process.exit(0))")
+          if [ -n "$NEW" ]; then
+            echo "$NEW" | gh secret set IG_ACCESS_TOKEN --body -
+            echo "Token refreshed and saved to repo secret."
+          fi
+
+      - name: Post to Instagram
+        if: ${{ github.event.inputs.dry_run != 'true' && vars.IG_AUTOPOST == 'true' }}
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCOUNT_ID: ${{ secrets.IG_ACCOUNT_ID }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: npx tsx scripts/ig-post-daily.ts
+
+      - name: Note when posting is disabled
+        if: ${{ github.event.inputs.dry_run != 'true' && vars.IG_AUTOPOST != 'true' }}
+        run: echo "IG_AUTOPOST repo variable is not 'true' — rendered but did not post. Set it to enable live posting."
+
+      - name: Commit puzzle usage so tomorrow does not repeat
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/video-puzzle-usage.json
+          git diff --staged --quiet || git commit -m "chore: mark daily puzzle as used [skip ci]"
+          git push
