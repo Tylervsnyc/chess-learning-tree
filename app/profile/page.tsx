@@ -417,7 +417,7 @@ export default function ProfilePage() {
   if (!userLoading && !user) {
     return (
       <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto w-full px-4 py-10 flex flex-col items-center text-center gap-5">
+        <div className="max-w-lg md:max-w-2xl mx-auto w-full px-4 md:px-6 py-10 flex flex-col items-center text-center gap-5">
           <h1 className="text-2xl font-black text-chess-text">Your Profile</h1>
           <p className="text-sm text-chess-text-muted max-w-xs">
             Sign in to start a streak, track your lifetime stats, and pick up
@@ -450,7 +450,7 @@ export default function ProfilePage() {
 
   return (
     <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-md mx-auto w-full px-4 pt-4 pb-10 flex flex-col gap-4">
+      <div className="max-w-lg md:max-w-2xl mx-auto w-full px-4 md:px-6 pt-4 pb-10 flex flex-col gap-4">
         {/* Header — name + subscription badge */}
         <header className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-chess-blue/15 flex items-center justify-center shrink-0">

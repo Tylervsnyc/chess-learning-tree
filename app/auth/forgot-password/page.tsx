@@ -43,8 +43,8 @@ function ForgotPasswordContent() {
     return (
       <div className="h-full md:h-auto bg-chess-page flex flex-col overflow-hidden">
         <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
-        <div className="flex-1 flex flex-col items-center justify-center px-3">
-          <div className="max-w-sm w-full">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6">
+          <div className="mx-auto w-full max-w-md md:max-w-lg">
             <div className="bg-chess-surface border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
               <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
               <h1 className="text-2xl font-bold text-chess-text mb-2">Check your email</h1>
@@ -57,7 +57,7 @@ function ForgotPasswordContent() {
               </p>
               <Link
                 href="/auth/login"
-                className="inline-block w-full py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4] bg-chess-blue text-center"
+                className="inline-flex items-center justify-center w-full min-h-[44px] py-3 rounded-2xl font-bold text-white transition-all active:translate-y-[2px] shadow-[0_4px_0_#0d7ec4] bg-chess-blue text-center"
               >
                 Back to sign in
               </Link>
@@ -73,7 +73,7 @@ function ForgotPasswordContent() {
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
-      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-6 min-h-0">
         {/* Brand header */}
         <div className="mb-6 text-center">
           <Image
@@ -86,7 +86,7 @@ function ForgotPasswordContent() {
           />
         </div>
 
-        <div className="w-full max-w-sm">
+        <div className="mx-auto w-full max-w-md md:max-w-lg">
           {/* Card container */}
           <div className="bg-chess-surface border border-slate-200 rounded-2xl p-5 shadow-sm">
             <h1 className="text-xl font-bold text-chess-text text-center mb-1">Reset your password</h1>

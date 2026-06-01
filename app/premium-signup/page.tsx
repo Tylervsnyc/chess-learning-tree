@@ -129,8 +129,8 @@ function PremiumSignupContent() {
       {/* Gradient accent */}
       <div className="h-1 w-full bg-gradient-to-r from-chess-gold via-chess-orange to-chess-gold" />
 
-      <div className="flex-1 flex flex-col justify-start px-4 pt-3">
-        <div className="max-w-sm w-full mx-auto">
+      <div className="flex-1 flex flex-col justify-start px-4 md:px-6 pt-3">
+        <div className="max-w-md md:max-w-lg w-full mx-auto">
           {/* Header with premium rook */}
           <div className="text-center mb-2">
             <div className="mx-auto mb-1">

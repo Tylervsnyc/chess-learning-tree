@@ -138,8 +138,8 @@ function SignupContent() {
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
-      <div className="flex-1 flex flex-col items-center px-4 pt-5 min-h-0">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-5 min-h-0">
+        <div className="mx-auto w-full max-w-md md:max-w-lg">
 
           {/* Hero section — sell the value before asking for anything */}
           <div className="text-center mb-5">

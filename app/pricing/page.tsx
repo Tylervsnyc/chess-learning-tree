@@ -97,17 +97,21 @@ function PricingContent() {
     <div className="flex flex-col h-[calc(100dvh-45px)]">
       {/* Success/Cancel Messages — overlay at top if present */}
       {success && (
-        <div className="mx-4 mt-2 p-3 bg-chess-green/10 border border-chess-green rounded-xl text-center">
-          <p className="text-chess-green-dark font-medium text-sm">
-            Welcome to Premium! Your subscription is now active.
-          </p>
+        <div className="mx-auto mt-2 w-full max-w-md md:max-w-lg px-4 md:px-6">
+          <div className="p-3 bg-chess-green/10 border border-chess-green rounded-xl text-center">
+            <p className="text-chess-green-dark font-medium text-sm">
+              Welcome to Premium! Your subscription is now active.
+            </p>
+          </div>
         </div>
       )}
       {canceled && (
-        <div className="mx-4 mt-2 p-3 bg-yellow-500/10 border border-yellow-500 rounded-xl text-center">
-          <p className="text-yellow-600 font-medium text-sm">
-            Checkout was canceled. Feel free to try again.
-          </p>
+        <div className="mx-auto mt-2 w-full max-w-md md:max-w-lg px-4 md:px-6">
+          <div className="p-3 bg-yellow-500/10 border border-yellow-500 rounded-xl text-center">
+            <p className="text-yellow-600 font-medium text-sm">
+              Checkout was canceled. Feel free to try again.
+            </p>
+          </div>
         </div>
       )}
 
@@ -116,7 +120,7 @@ function PricingContent() {
           <BreathingRook size="md" animate />
         </div>
       ) : isPremium ? (
-        <div className="flex-1 flex flex-col justify-center items-center px-4">
+        <div className="flex-1 flex flex-col justify-center items-center mx-auto w-full max-w-md md:max-w-lg px-4 md:px-6">
           <div className="w-16 h-16 mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
             <BreathingRook size="xs" />
           </div>
@@ -124,14 +128,14 @@ function PricingContent() {
           <p className="text-chess-text-muted mb-4 text-sm">Unlimited access to all features.</p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:brightness-105 transition-opacity"
+            className="min-h-[44px] px-6 py-3 bg-chess-green text-white font-bold rounded-xl hover:brightness-105 transition-opacity"
             style={{ boxShadow: '0 4px 0 var(--color-chess-green-shadow)' }}
           >
             Continue Learning
           </button>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col px-4 pt-3 pb-4 max-w-lg mx-auto w-full">
+        <div className="flex-1 flex flex-col px-4 md:px-6 pt-3 pb-4 max-w-md md:max-w-lg mx-auto w-full">
           {/* Logo + Heading — compact */}
           <div className="text-center mb-3">
             <div className="flex justify-center mb-2">

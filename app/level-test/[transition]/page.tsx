@@ -417,9 +417,9 @@ export default function LevelTestPage() {
   // Invalid transition
   if (isValid === false) {
     return (
-      <div className="h-full bg-chess-page flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-chess-text mb-2">Invalid Test</h1>
+      <div className="h-full bg-chess-page flex items-center justify-center px-4 md:px-6">
+        <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
+          <h1 className="text-2xl md:text-3xl font-bold text-chess-text mb-2">Invalid Test</h1>
           <p className="text-chess-text-muted mb-6">
             The test &quot;{transition}&quot; doesn&apos;t exist.
           </p>
@@ -447,8 +447,8 @@ export default function LevelTestPage() {
   // Intro screen - show test parameters before starting
   if (testState === 'intro') {
     return (
-      <div className="h-full bg-chess-page flex flex-col items-center pt-6 px-4">
-        <div className="text-center max-w-sm w-full">
+      <div className="h-full bg-chess-page flex flex-col items-center pt-6 px-4 md:px-6">
+        <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
           <div className="flex justify-center mb-3">
             <AnimatedLogo
               theme="light"
@@ -518,8 +518,8 @@ export default function LevelTestPage() {
   // Test passed
   if (testState === 'passed') {
     return (
-      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
-        <div className="text-center max-w-sm w-full">
+      <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
+        <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
           <div className="flex justify-center mb-6">
             <AnimatedLogo
               theme="light"
@@ -567,8 +567,8 @@ export default function LevelTestPage() {
   // Test failed
   if (testState === 'failed') {
     return (
-      <div className="min-h-screen bg-chess-page flex items-center justify-center p-4">
-        <div className="text-center max-w-sm w-full">
+      <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
+        <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
           <div className="flex justify-center gap-1 mb-4">
             {[0, 1, 2].map(i => (
               <svg key={i} className="w-8 h-8 text-chess-disabled" fill="currentColor" viewBox="0 0 24 24">
@@ -653,11 +653,11 @@ export default function LevelTestPage() {
       <style>{progressBarStyles}</style>
 
       {/* Header */}
-      <div className="bg-chess-surface border-b border-chess-text-faint/10 px-4 py-3 flex-shrink-0 shadow-sm">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+      <div className="bg-chess-surface border-b border-chess-text-faint/10 px-4 md:px-6 py-3 flex-shrink-0 shadow-sm">
+        <div className="max-w-md md:max-w-lg mx-auto w-full flex items-center justify-between">
           <button
             onClick={handleBackToLearn}
-            className="text-chess-text-muted hover:text-chess-text"
+            className="text-chess-text-muted hover:text-chess-text min-h-[44px] min-w-[44px] flex items-center justify-center -ml-2"
           >
             ✕
           </button>
@@ -674,8 +674,8 @@ export default function LevelTestPage() {
       </div>
 
       {/* Test info banner */}
-      <div className="bg-chess-surface/50 px-4 py-2 border-b border-chess-text-faint/10">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+      <div className="bg-chess-surface/50 px-4 md:px-6 py-2 border-b border-chess-text-faint/10">
+        <div className="max-w-md md:max-w-lg mx-auto w-full flex items-center justify-between">
           <span className="text-sm">
             <span className="text-chess-green font-semibold">{correctCount}</span>
             <span className="text-chess-text-faint"> correct</span>
@@ -701,8 +701,8 @@ export default function LevelTestPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-hidden">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-2 overflow-hidden">
+        <div className="w-full max-w-md md:max-w-lg mx-auto">
           {/* Turn indicator */}
           <div className="flex items-center justify-between mb-2 h-8">
             <div className="text-base font-semibold text-chess-text-muted">
@@ -714,7 +714,7 @@ export default function LevelTestPage() {
           </div>
 
           {/* Chessboard */}
-          <div className="relative">
+          <div className="relative w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square">
             <ChessPathBoard
               options={{
                 position: currentFen,

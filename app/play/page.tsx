@@ -1929,7 +1929,7 @@ export default function PlayRookiePage() {
     return (
       <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
         {/* Top: Level progress bar */}
-        <div className="px-5 pt-4 pb-2 flex-shrink-0">
+        <div className="px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto">
           <div className="relative">
             <LevelProgressBar
               currentLevel={levelBarAnim ? levelBarAnim.level : unlockedLevel}
@@ -1950,8 +1950,8 @@ export default function PlayRookiePage() {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-5 pb-4">
-          <div className="w-full max-w-sm space-y-5">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-4">
+          <div className="w-full max-w-sm md:max-w-md mx-auto space-y-5">
             {/* Level badge + Rookie */}
             <div className="flex flex-col items-center gap-2">
               <div
@@ -2075,8 +2075,8 @@ export default function PlayRookiePage() {
       <div className="h-2 flex-shrink-0" />
 
       {/* Board area */}
-      <div className="flex-1 flex items-start justify-center px-4 pt-2 min-h-0">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0">
+        <div className="w-full max-w-md md:max-w-lg mx-auto">
 
           {/* Above board: Rookie always in same spot, content changes by phase */}
           {isReview ? (
@@ -2244,6 +2244,7 @@ export default function PlayRookiePage() {
           </div>
 
           {/* Chess board */}
+          <div className="w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square">
           <ChessPathBoard
             options={{
               position: fen,
@@ -2258,6 +2259,7 @@ export default function PlayRookiePage() {
               ...(isReview && reviewArrows.length > 0 ? { arrows: reviewArrows } : {}),
             }}
           />
+          </div>
 
           {/* Below board area */}
           <div className="mt-0.5 space-y-1">

@@ -131,7 +131,7 @@ function LoginContent() {
       {/* Gradient top bar */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #4ade80, #38bdf8, #a78bfa)' }} />
 
-      <div className="flex-1 flex flex-col items-center px-3 pt-6 min-h-0">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-6 min-h-0">
         {/* Brand header */}
         <div className="mb-6 text-center">
           <Image
@@ -144,7 +144,7 @@ function LoginContent() {
           />
         </div>
 
-        <div className="w-full max-w-sm">
+        <div className="mx-auto w-full max-w-md md:max-w-lg">
           {/* Card container */}
           <div className="bg-chess-surface border border-slate-200 rounded-2xl p-5 shadow-sm">
             <h1 className="text-xl font-bold text-chess-text text-center mb-1">Welcome back</h1>

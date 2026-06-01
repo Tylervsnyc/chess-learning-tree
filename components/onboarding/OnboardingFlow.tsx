@@ -211,7 +211,7 @@ export function OnboardingFlow() {
 
       {/* Speech bubble with typewriter — fixed height so layout doesn't shift */}
       <div
-        className="px-6 max-w-sm mx-auto w-full mt-4"
+        className="px-4 md:px-6 max-w-sm md:max-w-md mx-auto w-full mt-4"
         style={{
           opacity: phase >= 3 ? 1 : 0,
           transform: phase >= 3 ? 'translateY(0)' : 'translateY(10px)',
@@ -248,7 +248,7 @@ export function OnboardingFlow() {
       <div className="flex-[0.8]" />
 
       {/* Play / Learn */}
-      <div className="px-6 max-w-sm mx-auto w-full space-y-2.5">
+      <div className="px-4 md:px-6 max-w-sm md:max-w-md mx-auto w-full space-y-2.5">
         <div
           onPointerEnter={() => setHoveredBtn('play')}
           onPointerLeave={() => setHoveredBtn(null)}

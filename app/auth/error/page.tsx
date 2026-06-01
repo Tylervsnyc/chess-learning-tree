@@ -29,8 +29,8 @@ function ErrorContent() {
   };
 
   return (
-    <div className="min-h-screen bg-chess-page flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
+    <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6">
+      <div className="mx-auto w-full max-w-md md:max-w-lg text-center">
         <div className="mb-6">
           <div className="flex justify-center mb-4">
             <BreathingRook size="md" mood="defeated" animate />
@@ -48,21 +48,21 @@ function ErrorContent() {
           <div className="flex flex-col gap-3">
             <Link
               href="/auth/login"
-              className="w-full py-3 bg-chess-blue hover:bg-chess-blue-dark text-white font-bold rounded-xl transition-colors text-center"
+              className="w-full min-h-[44px] flex items-center justify-center py-3 bg-chess-blue hover:bg-chess-blue-dark text-white font-bold rounded-xl transition-colors text-center"
             >
               Try Signing In
             </Link>
 
             <Link
               href="/auth/signup"
-              className="w-full py-3 bg-chess-page hover:bg-slate-100 text-chess-text font-bold rounded-xl transition-colors border border-slate-200 text-center"
+              className="w-full min-h-[44px] flex items-center justify-center py-3 bg-chess-page hover:bg-slate-100 text-chess-text font-bold rounded-xl transition-colors border border-slate-200 text-center"
             >
               Create New Account
             </Link>
 
             <Link
               href="/"
-              className="text-chess-text-muted hover:text-chess-text text-sm transition-colors"
+              className="min-h-[44px] flex items-center justify-center text-chess-text-muted hover:text-chess-text text-sm transition-colors"
             >
               Back to Home
             </Link>
