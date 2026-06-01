@@ -154,6 +154,9 @@ export default function WorkoutPage() {
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
 
+  // Missed puzzles collected this session, stored for later replay.
+  const missedRef = useRef<WorkoutPuzzleData[]>([]);
+
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
 
@@ -171,7 +174,14 @@ export default function WorkoutPage() {
       const res = await fetch('/api/workout/finish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ points: sessionPoints }),
+        body: JSON.stringify({
+          points: sessionPoints,
+          durationMinutes: minutes,
+          correct: right,
+          wrong,
+          perfect,
+          missedPuzzles: missedRef.current,
+        }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -183,7 +193,7 @@ export default function WorkoutPage() {
 
     setFinishResult({ sessionPoints, lifetime, right, wrong, perfect });
     setPhase('done');
-  }, [score, right, wrong]);
+  }, [score, right, wrong, minutes]);
 
   // ── Advance to the next segment (or finish) ───────────────────────────────
   const advanceSegment = useCallback(() => {
@@ -212,6 +222,7 @@ export default function WorkoutPage() {
     setCombo(0);
     comboRef.current = 0;
     setPuzzlePos(0);
+    missedRef.current = [];
     setFinishResult(null);
     finishingRef.current = false;
     setPhase('running');
@@ -253,8 +264,18 @@ export default function WorkoutPage() {
     comboRef.current = 0;
     setCombo(0);
     setWrong((w) => w + 1);
+    // Stash the missed puzzle (replay data) so the user can revisit it later.
+    if (currentPuzzle) {
+      missedRef.current.push({
+        puzzleId: currentPuzzle.puzzleId,
+        id: currentPuzzle.id,
+        fen: currentPuzzle.fen,
+        moves: currentPuzzle.moves,
+        rating: currentPuzzle.rating,
+      });
+    }
     setPuzzlePos((p) => p + 1);
-  }, []);
+  }, [currentPuzzle]);
 
   const liveScore = Math.max(0, score);
   const multiplier = comboMultiplier(combo);
