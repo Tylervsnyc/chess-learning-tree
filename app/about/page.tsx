@@ -18,8 +18,8 @@ export default function AboutPage() {
   return (
     <div className="h-full md:h-auto bg-chess-page text-chess-text flex flex-col overflow-hidden">
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-6 pt-10 overflow-y-auto">
-        <div className="max-w-md w-full">
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 pt-10 overflow-y-auto">
+        <div className="mx-auto w-full max-w-md md:max-w-lg">
           {/* Heading + Logo */}
           <div className="flex justify-center mb-3">
             <BreathingRook size="md" mood="happy" animate />
