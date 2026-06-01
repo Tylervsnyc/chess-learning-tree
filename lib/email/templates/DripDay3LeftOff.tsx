@@ -1,16 +1,14 @@
 import { Section, Text, Hr, Img, Link } from '@react-email/components';
 import * as React from 'react';
 import { EmailLayout, SmallRookIcon } from './components/EmailLayout';
-import { ChessButton } from './components/ChessButton';
 import type { DripDay3Props } from '@/types/email';
 
 const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day3';
 
 const FEATURE_IMAGES = {
-  run: 'https://chesspath.app/email/rookies-run-board.jpg',
-  path: 'https://chesspath.app/email/chesspath.png',
-  openings: 'https://chesspath.app/email/openingtree.png',
-  dailyRook: 'https://chesspath.app/email/dailyrook.png',
+  play: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/play-thumb-lQaKaUIMzuK25yTmglKIYmS4A7Puao.png',
+  tactics: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/tactics-thumb-0FdHyIdLSWaIKLUKNWfuUGIhdJVpmN.png',
+  learn: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/learn-thumb-PAGdUJevECbwv0sH116nkvDXuaNHCU.png',
 };
 
 const PILL_COLORS: Record<string, { bg: string; shadow: string }> = {
@@ -69,28 +67,32 @@ function FeatureCard({
       <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
         <tbody>
           <tr>
-            <td style={textCell}>
-              <div style={{ marginBottom: '6px' }}>
+            <td style={{ verticalAlign: 'middle', width: '120px', paddingRight: '14px' }}>
+              <Link href={href}>
+                <Img src={imageUrl} alt={imageAlt} width="120" height="120" style={featureImage} />
+              </Link>
+            </td>
+            <td style={{ verticalAlign: 'middle' }}>
+              <div style={{ marginBottom: '4px' }}>
                 <PillTitle text={title} color={titleColor} href={href} />
               </div>
               <Text style={featureTagline}>{tagline}</Text>
-              <Text style={featureDesc}>{description}</Text>
               <table cellPadding="0" cellSpacing="0" role="presentation">
                 <tbody>
                   <tr>
                     <td
                       style={{
                         backgroundColor: c.bg,
-                        borderRadius: '10px',
-                        padding: '10px 20px',
-                        boxShadow: `0 3px 0 0 ${c.shadow}`,
+                        borderRadius: '8px',
+                        padding: '6px 14px',
+                        boxShadow: `0 2px 0 0 ${c.shadow}`,
                       }}
                     >
                       <Link
                         href={href}
                         style={{
                           color: '#FFFFFF',
-                          fontSize: '14px',
+                          fontSize: '13px',
                           fontWeight: 'bold',
                           textDecoration: 'none',
                         }}
@@ -101,17 +103,6 @@ function FeatureCard({
                   </tr>
                 </tbody>
               </table>
-            </td>
-            <td style={imageCell}>
-              <Link href={href}>
-                <Img
-                  src={imageUrl}
-                  alt={imageAlt}
-                  width={200}
-                  height={200}
-                  style={featureImage}
-                />
-              </Link>
             </td>
           </tr>
         </tbody>
@@ -141,9 +132,8 @@ export function DripDay3LeftOff({
               </td>
               <td style={{ verticalAlign: 'top' }}>
                 <Text style={quoteText}>
-                  &ldquo;I haven&apos;t seen you in 3 days! I thought we had
-                  something special! There&apos;s a fresh Run today and I&apos;m
-                  out there outnumbered. Come back to me -- here&apos;s how:&rdquo;
+                  &ldquo;Three days. The board&apos;s still sitting here, still your
+                  move. Come back.&rdquo;
                 </Text>
               </td>
             </tr>
@@ -154,48 +144,37 @@ export function DripDay3LeftOff({
       <Hr style={divider} />
 
       <FeatureCard
-        title="Rookie's Run"
+        title="Play"
         titleColor="orange"
-        tagline="A Fresh Run, Every Day"
-        description="It&apos;s me against a board full of enemies, fighting to the other side -- a brand-new one every day. Unlock abilities, win ugly, watch me insist I don&apos;t need help. Today&apos;s Run is live right now."
-        href={`${appUrl}/run?${UTM_BASE}&utm_content=run`}
-        cta="Play Today's Run"
-        imageUrl={FEATURE_IMAGES.run}
-        imageAlt="Rookie's Run -- daily roguelike chess"
+        tagline="Play Me. Right Now."
+        description="One game, and I narrate."
+        href={`${appUrl}/play?${UTM_BASE}&utm_content=play`}
+        cta="Play Rookie"
+        imageUrl={FEATURE_IMAGES.play}
+        imageAlt="Play Rookie"
       />
 
       <FeatureCard
-        title="Path"
+        title="Tactics"
         titleColor="green"
-        tagline="Tactical Trainer"
-        description="Pick up right where you left off. The puzzles are still there, getting progressively harder as you level up."
+        tagline="Pick Up Where You Left Off"
+        description="Your puzzles are right where you left them."
         href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
         cta="Continue Training"
-        imageUrl={FEATURE_IMAGES.path}
-        imageAlt="The Path -- structured chess lessons"
+        imageUrl={FEATURE_IMAGES.tactics}
+        imageAlt="Daily tactics"
       />
 
       <FeatureCard
-        title="Openings"
+        title="Learn"
         titleColor="purple"
-        tagline="Opening Theory Trainer"
-        description="Learn real opening lines move by move. The Italian Game, Sicilian Defense, London System, and more are waiting."
+        tagline="Learn A Real Opening"
+        description="Real lines, one move at a time."
         href={`${appUrl}/openings?${UTM_BASE}&utm_content=openings`}
         cta="Learn An Opening"
-        imageUrl={FEATURE_IMAGES.openings}
-        imageAlt="Openings -- interactive opening trainer"
+        imageUrl={FEATURE_IMAGES.learn}
+        imageAlt="Learn openings"
       />
-
-      <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/run?${UTM_BASE}&utm_content=cta`}>
-          Come Back To Rookie
-        </ChessButton>
-      </Section>
-
-      <Text style={signoff}>
-        Waiting on the board for you,<br />
-        Rookie
-      </Text>
     </EmailLayout>
   );
 }
@@ -230,50 +209,30 @@ const featureCard = {
   backgroundColor: '#EEF6FC',
   borderRadius: '12px',
   border: '1px solid #DCE8F0',
-  padding: '16px',
+  padding: '12px',
   margin: '0 0 12px 0',
-};
-
-const textCell = {
-  verticalAlign: 'top' as const,
-  paddingRight: '12px',
-  width: '50%',
-};
-
-const imageCell = {
-  verticalAlign: 'top' as const,
-  width: '50%',
 };
 
 const featureImage = {
   borderRadius: '8px',
-  width: '100%',
-  height: 'auto',
+  width: '120px',
+  height: '120px',
   display: 'block' as const,
 };
 
 const featureTagline = {
   color: '#2A3C45',
-  fontSize: '15px',
+  fontSize: '14px',
   fontWeight: 'bold' as const,
-  lineHeight: '20px',
-  margin: '0 0 6px 0',
+  lineHeight: '18px',
+  margin: '0 0 8px 0',
 };
 
 const featureDesc = {
   color: '#6B7C8A',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '0 0 14px 0',
-};
-
-const buttonContainer = { margin: '24px 0', textAlign: 'center' as const };
-
-const signoff = {
-  color: '#6B7C8A',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '0',
+  fontSize: '13px',
+  lineHeight: '18px',
+  margin: '0 0 8px 0',
 };
 
 export default DripDay3LeftOff;

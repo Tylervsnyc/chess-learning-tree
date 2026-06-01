@@ -1,15 +1,14 @@
 import { Section, Text, Hr, Img, Link } from '@react-email/components';
 import * as React from 'react';
 import { EmailLayout, SmallRookIcon } from './components/EmailLayout';
-import { ChessButton } from './components/ChessButton';
 import type { DripDay1Props } from '@/types/email';
 
 const UTM_BASE = 'utm_source=email&utm_medium=drip&utm_campaign=drip_day1';
 
 const FEATURE_IMAGES = {
-  run: 'https://chesspath.app/email/rookies-run-board.jpg',
-  path: 'https://chesspath.app/email/chesspath.png',
-  dailyRook: 'https://chesspath.app/email/dailyrook.png',
+  play: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/play-thumb-lQaKaUIMzuK25yTmglKIYmS4A7Puao.png',
+  tactics: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/tactics-thumb-0FdHyIdLSWaIKLUKNWfuUGIhdJVpmN.png',
+  learn: 'https://iklsd8qlm1eiwekn.public.blob.vercel-storage.com/email/learn-thumb-PAGdUJevECbwv0sH116nkvDXuaNHCU.png',
 };
 
 const PILL_COLORS: Record<string, { bg: string; shadow: string }> = {
@@ -68,28 +67,32 @@ function FeatureCard({
       <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
         <tbody>
           <tr>
-            <td style={textCell}>
-              <div style={{ marginBottom: '6px' }}>
+            <td style={{ verticalAlign: 'middle', width: '120px', paddingRight: '14px' }}>
+              <Link href={href}>
+                <Img src={imageUrl} alt={imageAlt} width="120" height="120" style={featureImage} />
+              </Link>
+            </td>
+            <td style={{ verticalAlign: 'middle' }}>
+              <div style={{ marginBottom: '4px' }}>
                 <PillTitle text={title} color={titleColor} href={href} />
               </div>
               <Text style={featureTagline}>{tagline}</Text>
-              <Text style={featureDesc}>{description}</Text>
               <table cellPadding="0" cellSpacing="0" role="presentation">
                 <tbody>
                   <tr>
                     <td
                       style={{
                         backgroundColor: c.bg,
-                        borderRadius: '10px',
-                        padding: '10px 20px',
-                        boxShadow: `0 3px 0 0 ${c.shadow}`,
+                        borderRadius: '8px',
+                        padding: '6px 14px',
+                        boxShadow: `0 2px 0 0 ${c.shadow}`,
                       }}
                     >
                       <Link
                         href={href}
                         style={{
                           color: '#FFFFFF',
-                          fontSize: '14px',
+                          fontSize: '13px',
                           fontWeight: 'bold',
                           textDecoration: 'none',
                         }}
@@ -100,17 +103,6 @@ function FeatureCard({
                   </tr>
                 </tbody>
               </table>
-            </td>
-            <td style={imageCell}>
-              <Link href={href}>
-                <Img
-                  src={imageUrl}
-                  alt={imageAlt}
-                  width={200}
-                  height={200}
-                  style={featureImage}
-                />
-              </Link>
             </td>
           </tr>
         </tbody>
@@ -127,7 +119,7 @@ export function DripDay1({
   const greeting = displayName ? `${displayName}, ` : '';
   return (
     <EmailLayout
-      preview="One puzzle. That's all I'm asking. Maybe two."
+      preview="One game. That's all I'm asking. Against me."
       unsubscribeUrl={unsubscribeUrl}
     >
       <Text style={heading}>Did You Forget About Me Already?</Text>
@@ -141,12 +133,8 @@ export function DripDay1({
               </td>
               <td style={{ verticalAlign: 'top' }}>
                 <Text style={quoteText}>
-                  &ldquo;{greeting}you signed up, and then you left. I&apos;ve
-                  been here. Just sitting on the board. Thinking. I noticed I was
-                  -- waiting? Is that the word? I don&apos;t usually wait for
-                  things. Anyway. There&apos;s a fresh Run today -- I have to get
-                  to the other side, and I would prefer not to do it alone. One
-                  Run. That&apos;s all I&apos;m asking.&rdquo;
+                  &ldquo;{greeting}you left, and I caught myself waiting. That&apos;s
+                  new. The board&apos;s still set up.&rdquo;
                 </Text>
               </td>
             </tr>
@@ -157,37 +145,37 @@ export function DripDay1({
       <Hr style={divider} />
 
       <FeatureCard
-        title="Rookie's Run"
+        title="Play"
         titleColor="orange"
-        tagline="A New Run Drops Today"
-        description="It&apos;s me against a board full of enemies, climbing to the other side -- and there&apos;s a brand-new one every single day. I unlock abilities, I win ugly, I insist I don&apos;t need help. Come watch me get to the other side."
-        href={`${appUrl}/run?${UTM_BASE}&utm_content=run`}
-        cta="Play Today's Run"
-        imageUrl={FEATURE_IMAGES.run}
-        imageAlt="Rookie's Run -- daily roguelike chess"
+        tagline="Play Me. A Real Game."
+        description="One game, and I narrate."
+        href={`${appUrl}/play?${UTM_BASE}&utm_content=play`}
+        cta="Play Rookie"
+        imageUrl={FEATURE_IMAGES.play}
+        imageAlt="Play Rookie"
       />
 
       <FeatureCard
-        title="Path"
+        title="Tactics"
         titleColor="green"
         tagline="Your First Real Win"
-        description="It starts gentle. A fork here, a pin there -- and somewhere in the first few minutes you solve one and go &lsquo;oh, I get it.&rsquo; That moment is the whole point. Let&apos;s go find it."
+        description="Solve one. It clicks."
         href={`${appUrl}/path?${UTM_BASE}&utm_content=path`}
-        cta="Solve One Puzzle"
-        imageUrl={FEATURE_IMAGES.path}
-        imageAlt="The Path -- structured chess lessons"
+        cta="Start Training"
+        imageUrl={FEATURE_IMAGES.tactics}
+        imageAlt="Daily tactics"
       />
 
-      <Section style={buttonContainer}>
-        <ChessButton href={`${appUrl}/run?${UTM_BASE}&utm_content=cta`}>
-          Play Today's Run
-        </ChessButton>
-      </Section>
-
-      <Text style={signoff}>
-        Still here, oddly patient,<br />
-        Rookie
-      </Text>
+      <FeatureCard
+        title="Learn"
+        titleColor="purple"
+        tagline="Learn A Real Opening"
+        description="Real lines, one move at a time."
+        href={`${appUrl}/openings?${UTM_BASE}&utm_content=openings`}
+        cta="Learn An Opening"
+        imageUrl={FEATURE_IMAGES.learn}
+        imageAlt="Learn openings"
+      />
     </EmailLayout>
   );
 }
@@ -222,50 +210,30 @@ const featureCard = {
   backgroundColor: '#EEF6FC',
   borderRadius: '12px',
   border: '1px solid #DCE8F0',
-  padding: '16px',
+  padding: '12px',
   margin: '0 0 12px 0',
-};
-
-const textCell = {
-  verticalAlign: 'top' as const,
-  paddingRight: '12px',
-  width: '50%',
-};
-
-const imageCell = {
-  verticalAlign: 'top' as const,
-  width: '50%',
 };
 
 const featureImage = {
   borderRadius: '8px',
-  width: '100%',
-  height: 'auto',
+  width: '120px',
+  height: '120px',
   display: 'block' as const,
 };
 
 const featureTagline = {
   color: '#2A3C45',
-  fontSize: '15px',
+  fontSize: '14px',
   fontWeight: 'bold' as const,
-  lineHeight: '20px',
-  margin: '0 0 6px 0',
+  lineHeight: '18px',
+  margin: '0 0 8px 0',
 };
 
 const featureDesc = {
   color: '#6B7C8A',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '0 0 14px 0',
-};
-
-const buttonContainer = { margin: '24px 0', textAlign: 'center' as const };
-
-const signoff = {
-  color: '#6B7C8A',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '0',
+  fontSize: '13px',
+  lineHeight: '18px',
+  margin: '0 0 8px 0',
 };
 
 export default DripDay1;
