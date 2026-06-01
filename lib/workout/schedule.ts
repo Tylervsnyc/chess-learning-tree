@@ -6,9 +6,8 @@
  * breaks.
  *
  * A "block" = one active segment (3 min) + one break (1 min) = 4 min.
- * Active segments alternate: chess -> physical -> chess -> physical ...
- * and the physical ones alternate workout -> boxing. So the active sequence is:
- *   chess, workout, chess, boxing, chess, workout, chess, boxing, ...
+ * Active segments alternate: chess -> exercise -> chess -> exercise ...
+ * So one full 8-min loop is: puzzles, break, exercise, break.
  *
  * A 1-min break is inserted AFTER each active segment, except we never end on
  * a break (the trailing break is dropped).
@@ -50,7 +49,7 @@ export function pointsForCorrect(rating: number, streakAfter: number): number {
   return Math.round(basePoints(rating) * comboMultiplier(streakAfter));
 }
 
-export type SegmentKind = 'chess' | 'workout' | 'boxing' | 'break';
+export type SegmentKind = 'chess' | 'workout' | 'break';
 
 export interface Segment {
   kind: SegmentKind;
@@ -67,49 +66,24 @@ export const DURATION_PRESETS = [8, 16, 24, 32] as const;
  * Generates blocks (active + break) until elapsed time reaches the requested
  * total, then drops a trailing break so the session never ends on a rest.
  */
+/** One round = puzzles, break, exercise, break. */
+export const ROUND: SegmentKind[] = ['chess', 'break', 'workout', 'break'];
+export const ROUND_LENGTH = ROUND.length; // 4 segments
+export const ROUND_SECONDS = ACTIVE_SECONDS * 2 + BREAK_SECONDS * 2; // 8 min
+
 export function buildSchedule(totalMinutes: number): Segment[] {
-  const totalSeconds = Math.max(0, Math.round(totalMinutes * 60));
+  const totalSeconds = Math.max(ROUND_SECONDS, Math.round(totalMinutes * 60));
+  const rounds = Math.max(1, Math.round(totalSeconds / ROUND_SECONDS));
+
   const segments: Segment[] = [];
-
-  // The active sequence: chess, then alternating physical (workout/boxing),
-  // back to chess, and so on.
-  const activeOrder: SegmentKind[] = [];
-  let elapsed = 0;
-  let activeCount = 0; // how many active segments placed so far
-  let physicalCount = 0; // how many physical segments placed (to alternate workout/boxing)
   let index = 0;
-
-  while (elapsed < totalSeconds) {
-    // Determine this active segment's kind.
-    // Even active positions (0, 2, 4...) are chess; odd are physical.
-    let kind: SegmentKind;
-    if (activeCount % 2 === 0) {
-      kind = 'chess';
-    } else {
-      kind = physicalCount % 2 === 0 ? 'workout' : 'boxing';
-      physicalCount += 1;
+  for (let r = 0; r < rounds; r++) {
+    for (const kind of ROUND) {
+      const seconds = kind === 'break' ? BREAK_SECONDS : ACTIVE_SECONDS;
+      segments.push({ kind, seconds, index: index++ });
     }
-    activeCount += 1;
-    activeOrder.push(kind);
-
-    // Active segment
-    segments.push({ kind, seconds: ACTIVE_SECONDS, index: index++ });
-    elapsed += ACTIVE_SECONDS;
-
-    if (elapsed >= totalSeconds) break;
-
-    // Break after the active segment
-    segments.push({ kind: 'break', seconds: BREAK_SECONDS, index: index++ });
-    elapsed += BREAK_SECONDS;
   }
-
-  // Never end on a break.
-  while (segments.length > 0 && segments[segments.length - 1].kind === 'break') {
-    segments.pop();
-  }
-
-  // Re-index in case we popped trailing breaks (keep indices contiguous).
-  return segments.map((seg, i) => ({ ...seg, index: i }));
+  return segments;
 }
 
 /** Human-readable label for a segment kind. */
@@ -118,9 +92,7 @@ export function labelFor(kind: SegmentKind): string {
     case 'chess':
       return 'Puzzles';
     case 'workout':
-      return 'Bodyweight workout';
-    case 'boxing':
-      return 'Boxing';
+      return 'Exercise';
     case 'break':
       return 'Break';
   }
@@ -132,9 +104,7 @@ export function promptFor(kind: SegmentKind): string {
     case 'chess':
       return 'Solve as many as you can';
     case 'workout':
-      return 'Now: bodyweight workout';
-    case 'boxing':
-      return 'Now: boxing';
+      return 'Move your body';
     case 'break':
       return 'Break — catch your breath';
   }
