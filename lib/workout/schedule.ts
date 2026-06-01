@@ -14,10 +14,41 @@
  * a break (the trailing break is dropped).
  */
 
-export const POINTS_CORRECT = 10;
-export const POINTS_WRONG = -5;
 export const ACTIVE_SECONDS = 180; // 3 minutes
 export const BREAK_SECONDS = 60; // 1 minute
+
+/** Flat bonus for finishing a whole session with zero wrong answers. */
+export const PERFECT_SESSION_BONUS = 50;
+
+// ─── Scoring: base points × combo multiplier ────────────────────────────────
+// Harder puzzles are worth more (base tiers). A run of correct answers grows a
+// combo multiplier; a single wrong answer breaks the combo back to ×1 and
+// scores 0 (no negative — losing the streak is the cost). Combo persists across
+// the whole session; breaks/workout segments don't reset it.
+
+/** Base points for a correct puzzle, by puzzle rating. */
+export function basePoints(rating: number): number {
+  if (rating < 1000) return 10;
+  if (rating < 1400) return 15;
+  if (rating < 1800) return 20;
+  return 25;
+}
+
+/** Combo multiplier for the current correct-streak length. */
+export function comboMultiplier(streak: number): number {
+  if (streak >= 8) return 2;
+  if (streak >= 5) return 1.5;
+  if (streak >= 3) return 1.25;
+  return 1;
+}
+
+/**
+ * Points awarded for a correct answer given the streak length AFTER this
+ * answer (i.e. pass `prevStreak + 1`). Rounded to a whole number.
+ */
+export function pointsForCorrect(rating: number, streakAfter: number): number {
+  return Math.round(basePoints(rating) * comboMultiplier(streakAfter));
+}
 
 export type SegmentKind = 'chess' | 'workout' | 'boxing' | 'break';
 

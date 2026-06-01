@@ -8,8 +8,9 @@ import {
   labelFor,
   promptFor,
   DURATION_PRESETS,
-  POINTS_CORRECT,
-  POINTS_WRONG,
+  PERFECT_SESSION_BONUS,
+  pointsForCorrect,
+  comboMultiplier,
   type Segment,
   type SegmentKind,
 } from '@/lib/workout/schedule';
@@ -79,6 +80,7 @@ const ICONS = {
       <path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3" />
     </>
   ),
+  bolt: <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />,
 } as const;
 
 function iconFor(kind: SegmentKind): keyof typeof ICONS {
@@ -130,6 +132,7 @@ interface FinishResult {
   lifetime: number | null;
   right: number;
   wrong: number;
+  perfect: boolean;
 }
 
 export default function WorkoutPage() {
@@ -145,6 +148,8 @@ export default function WorkoutPage() {
   const [score, setScore] = useState(0); // raw, can go negative
   const [right, setRight] = useState(0);
   const [wrong, setWrong] = useState(0);
+  const [combo, setCombo] = useState(0); // current correct-streak length
+  const comboRef = useRef(0); // mirror for stale-closure-free reads in handlers
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
@@ -159,7 +164,8 @@ export default function WorkoutPage() {
     if (finishingRef.current) return;
     finishingRef.current = true;
 
-    const sessionPoints = Math.max(0, score);
+    const perfect = wrong === 0 && right > 0;
+    const sessionPoints = Math.max(0, score) + (perfect ? PERFECT_SESSION_BONUS : 0);
     let lifetime: number | null = null;
     try {
       const res = await fetch('/api/workout/finish', {
@@ -175,7 +181,7 @@ export default function WorkoutPage() {
       // Network/auth failure — still show the session summary.
     }
 
-    setFinishResult({ sessionPoints, lifetime, right, wrong });
+    setFinishResult({ sessionPoints, lifetime, right, wrong, perfect });
     setPhase('done');
   }, [score, right, wrong]);
 
@@ -203,6 +209,8 @@ export default function WorkoutPage() {
     setScore(0);
     setRight(0);
     setWrong(0);
+    setCombo(0);
+    comboRef.current = 0;
     setPuzzlePos(0);
     setFinishResult(null);
     finishingRef.current = false;
@@ -226,22 +234,30 @@ export default function WorkoutPage() {
     return () => clearTimeout(t);
   }, [phase, secondsLeft, advanceSegment]);
 
+  const currentPuzzle = queue[puzzlePos % Math.max(1, queue.length)] as
+    | WorkoutPuzzleData
+    | undefined;
+
   const handleCorrect = useCallback(() => {
-    setScore((s) => s + POINTS_CORRECT);
+    const rating = currentPuzzle?.rating ?? 1000;
+    const nextStreak = comboRef.current + 1;
+    comboRef.current = nextStreak;
+    setCombo(nextStreak);
+    setScore((s) => s + pointsForCorrect(rating, nextStreak));
     setRight((r) => r + 1);
     setPuzzlePos((p) => p + 1);
-  }, []);
+  }, [currentPuzzle]);
 
   const handleWrong = useCallback(() => {
-    setScore((s) => s + POINTS_WRONG);
+    // Wrong = 0 points; the cost is losing the combo back to ×1.
+    comboRef.current = 0;
+    setCombo(0);
     setWrong((w) => w + 1);
     setPuzzlePos((p) => p + 1);
   }, []);
 
   const liveScore = Math.max(0, score);
-  const currentPuzzle = queue[puzzlePos % Math.max(1, queue.length)] as
-    | WorkoutPuzzleData
-    | undefined;
+  const multiplier = comboMultiplier(combo);
 
   // ── SETUP ─────────────────────────────────────────────────────────────────
   if (phase === 'setup') {
@@ -334,6 +350,13 @@ export default function WorkoutPage() {
               </div>
             </div>
 
+            {finishResult.perfect && (
+              <div className="flex items-center justify-center gap-1.5 text-sm font-bold text-chess-gold">
+                <Icon path={ICONS.bolt} className="w-4 h-4" />
+                Flawless run · +{PERFECT_SESSION_BONUS} bonus
+              </div>
+            )}
+
             {finishResult.lifetime !== null && (
               <div className="text-sm text-chess-text-muted">
                 Lifetime total:{' '}
@@ -405,6 +428,20 @@ export default function WorkoutPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {isChess && combo >= 2 && (
+              <div
+                className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 transition-colors ${
+                  multiplier > 1
+                    ? 'bg-chess-gold/15 text-chess-gold'
+                    : 'bg-chess-page text-chess-text-muted'
+                }`}
+              >
+                <Icon path={ICONS.bolt} className="w-4 h-4" />
+                <span className="text-sm font-black tabular-nums leading-none">
+                  {combo} · {multiplier % 1 === 0 ? `×${multiplier}` : `×${multiplier.toFixed(1)}`}
+                </span>
+              </div>
+            )}
             <div className="flex flex-col items-end">
               <span className="text-xs font-semibold text-chess-text-muted">Points</span>
               <span className="text-lg font-black text-chess-green tabular-nums leading-none">
@@ -447,6 +484,7 @@ export default function WorkoutPage() {
                 puzzle={currentPuzzle}
                 onCorrect={handleCorrect}
                 onWrong={handleWrong}
+                comboIndex={combo}
               />
             ) : (
               <div className="text-center text-chess-text-muted py-12">

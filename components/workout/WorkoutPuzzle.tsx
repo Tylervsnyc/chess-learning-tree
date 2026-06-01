@@ -44,9 +44,11 @@ interface Props {
   puzzle: WorkoutPuzzleData;
   onCorrect: () => void;
   onWrong: () => void;
+  /** Current correct-streak length — drives the ascending chromatic pitch. */
+  comboIndex?: number;
 }
 
-export function WorkoutPuzzle({ puzzle, onCorrect, onWrong }: Props) {
+export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Props) {
   // Normalize moves to a string[] and build the processed (post-setup) puzzle.
   const processed = useMemo(() => {
     const movesArr = Array.isArray(puzzle.moves)
@@ -101,10 +103,10 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong }: Props) {
     if (advancedRef.current) return;
     advancedRef.current = true;
     setStatus('done');
-    playCorrectSound(0);
+    playCorrectSound(comboIndex);
     vibrateOnCorrect();
     setTimeout(() => onCorrect(), 450);
-  }, [onCorrect]);
+  }, [onCorrect, comboIndex]);
 
   const tryMove = useCallback(
     (from: Square, to: Square): boolean => {
