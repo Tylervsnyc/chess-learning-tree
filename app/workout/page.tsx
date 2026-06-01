@@ -9,6 +9,7 @@ import {
   promptFor,
   DURATION_PRESETS,
   ROUND_LENGTH,
+  ROUND_SECONDS,
   PERFECT_SESSION_BONUS,
   pointsForCorrect,
   comboMultiplier,
@@ -421,8 +422,16 @@ export default function WorkoutPage() {
               break, 3 min of exercise, a 1 min break. That's one round.
             </p>
             <div>
-              <div className="text-xs font-black text-chess-text uppercase tracking-wide mb-1.5">
-                Round 1 {previewRounds > 1 && <span className="text-chess-text-muted">of {previewRounds}</span>}
+              <div className="mb-1.5">
+                <div className="text-xs font-black text-chess-text uppercase tracking-wide">
+                  One round
+                  {previewRounds > 1 && (
+                    <span className="text-chess-text-muted"> · {previewRounds} total</span>
+                  )}
+                </div>
+                <div className="text-[11px] font-semibold text-chess-text-muted">
+                  Chess → Rest → Workout → Rest
+                </div>
               </div>
               <CircuitTimeline segments={previewSchedule.slice(0, ROUND_LENGTH)} />
             </div>
@@ -435,25 +444,31 @@ export default function WorkoutPage() {
 
           <div>
             <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide mb-3 text-center">
-              Choose a duration
+              How many rounds?
             </h2>
             <div className="grid grid-cols-2 gap-3">
-              {DURATION_PRESETS.map((m) => (
-                <button
-                  key={m}
-                  onClick={() => {
-                    playButtonClick();
-                    setMinutes(m);
-                  }}
-                  className={`rounded-2xl border-2 py-5 font-black text-xl transition ${
-                    minutes === m
-                      ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
-                      : 'border-slate-200 bg-chess-surface text-chess-text'
-                  }`}
-                >
-                  {m} min
-                </button>
-              ))}
+              {DURATION_PRESETS.map((m) => {
+                const rounds = Math.max(1, Math.round((m * 60) / ROUND_SECONDS));
+                return (
+                  <button
+                    key={m}
+                    onClick={() => {
+                      playButtonClick();
+                      setMinutes(m);
+                    }}
+                    className={`rounded-2xl border-2 py-4 transition flex flex-col items-center gap-0.5 ${
+                      minutes === m
+                        ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
+                        : 'border-slate-200 bg-chess-surface text-chess-text'
+                    }`}
+                  >
+                    <span className="font-black text-xl">
+                      {rounds} Round{rounds > 1 ? 's' : ''}
+                    </span>
+                    <span className="text-xs font-semibold text-chess-text-muted">{m} min</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
