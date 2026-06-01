@@ -18,6 +18,7 @@ import {
 } from '@/lib/workout/schedule';
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -99,9 +100,13 @@ const ROOKIE_LINES: Record<Exclude<SegmentKind, 'chess'>, string[]> = {
     "I'll just be here, calculating. You move the body parts.",
   ],
   break: [
-    "Breathe. Even I need a moment to cool my circuits.",
-    "Rest now. The next puzzles won't go easy on you.",
-    "Catch your breath. We're not done yet.",
+    "Breathe in… and out. I'm doing it too. Metaphorically.",
+    "Shake it out. The board will still be there.",
+    "Nothing to solve right now. Wild concept, I know.",
+    "I'll keep the timer warm. You keep breathing.",
+    "Resting is strategy. Trust me, I read a paper on it.",
+    "Roll the shoulders. Even rooks get stiff. Probably.",
+    "Just us and the quiet. Pretty nice, honestly.",
   ],
 };
 
@@ -155,19 +160,6 @@ function CircuitTimeline({
   const total = segments.reduce((s, seg) => s + seg.seconds, 0) || 1;
   const preview = activeIndex === undefined;
 
-  // Elapsed fraction (0..1) of this round, for the moving playhead.
-  let overall = 0;
-  if (!preview && activeIndex !== undefined) {
-    let elapsed = 0;
-    for (let i = 0; i < segments.length; i++) {
-      if (i < activeIndex) elapsed += segments[i].seconds;
-      else if (i === activeIndex && secondsLeft !== undefined) {
-        elapsed += segments[i].seconds - secondsLeft;
-      }
-    }
-    overall = Math.min(1, Math.max(0, elapsed / total));
-  }
-
   return (
     <div className="relative w-full">
       <div className="flex gap-1.5 w-full h-8">
@@ -205,16 +197,6 @@ function CircuitTimeline({
           );
         })}
       </div>
-
-      {/* Moving playhead — travels across the round as time ticks down */}
-      {!preview && (
-        <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-[left] duration-1000 ease-linear pointer-events-none"
-          style={{ left: `${overall * 100}%` }}
-        >
-          <div className="w-5 h-5 rounded-full bg-white shadow-lg ring-[3px] ring-chess-text/70" />
-        </div>
-      )}
     </div>
   );
 }
@@ -266,7 +248,17 @@ export default function WorkoutPage() {
   // Resume-on-kill: a saved in-progress workout found on mount (setup screen).
   const [resumable, setResumable] = useState<WorkoutResumeState | null>(null);
 
+  // "End" early → confirm dialog (save / discard / keep going).
+  const [endConfirmOpen, setEndConfirmOpen] = useState(false);
+
   const current = schedule[segIndex];
+
+  // ── Discard: leave without recording the session ──────────────────────────
+  const discardSession = useCallback(() => {
+    clearResume();
+    setEndConfirmOpen(false);
+    router.push('/profile');
+  }, [router]);
 
   // ── Finish: post points, show end screen ──────────────────────────────────
   const finishSession = useCallback(async () => {
@@ -469,6 +461,12 @@ export default function WorkoutPage() {
             <h1 className="text-xl font-black text-chess-text">Mind &amp; Body Workout</h1>
           </header>
 
+          {/* Explanation — kept directly below the title */}
+          <p className="-mt-1 text-sm text-chess-text-muted text-center leading-relaxed">
+            Solve chess puzzles between bursts of exercise. Puzzles start easy and
+            climb toward master level as you go.
+          </p>
+
           {resumable && (
             <div className="rounded-2xl border-2 border-chess-blue/40 bg-chess-blue/5 p-4 flex flex-col gap-3">
               <div>
@@ -513,6 +511,10 @@ export default function WorkoutPage() {
                 const fmt = (sec: number) => `${Math.round(sec / 60)} min`;
                 return (
                   <>
+                    {/* Total round length, under the title */}
+                    <div className="text-center text-xs font-bold text-chess-text-muted mb-2.5">
+                      {Math.round(total / 60)} Minutes
+                    </div>
                     {/* Time labels — aligned over each bar */}
                     <div className="flex gap-1.5 w-full mb-1.5">
                       {round.map((seg, i) => (
@@ -530,18 +532,6 @@ export default function WorkoutPage() {
                 );
               })()}
             </div>
-          </div>
-
-          {/* Points — its own window */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1.5">
-            <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide text-center">
-              Points
-            </h2>
-            <p className="text-xs text-chess-text-muted text-center leading-relaxed">
-              Solve puzzles for points. Chain correct answers to grow a combo up
-              to <span className="font-black text-chess-text">×2</span> — finish
-              clean for a <span className="font-black text-chess-text">+50</span> bonus.
-            </p>
           </div>
 
           <div>
@@ -574,6 +564,43 @@ export default function WorkoutPage() {
             </div>
           </div>
 
+          {/* Points — its own fun window, below the rounds picker */}
+          <div
+            className="rounded-2xl border border-amber-200 shadow-sm p-4 flex flex-col items-center gap-3 text-center"
+            style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' }}
+          >
+            <div className="flex items-center gap-1.5">
+              <Icon path={ICONS.bolt} className="w-4 h-4 text-amber-500" />
+              <h2 className="text-[11px] font-black text-amber-700 uppercase tracking-wide">
+                How points work
+              </h2>
+            </div>
+            <p className="text-xs text-amber-800/80 leading-relaxed">
+              The harder the puzzle, the more it&apos;s worth. Solve a streak in a
+              row to stack a combo on top.
+            </p>
+            <div className="flex gap-2 w-full">
+              <div
+                className="flex-1 rounded-xl p-3 text-white"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)' }}
+              >
+                <div className="text-2xl font-black leading-none">10–25</div>
+                <div className="text-[10px] font-bold mt-1 leading-tight opacity-95">
+                  Tougher puzzles pay more
+                </div>
+              </div>
+              <div
+                className="flex-1 rounded-xl p-3 text-white"
+                style={{ background: 'linear-gradient(135deg, #fbbf24, #f97316)' }}
+              >
+                <div className="text-2xl font-black leading-none">×2</div>
+                <div className="text-[10px] font-bold mt-1 leading-tight opacity-95">
+                  Chain a streak for a combo
+                </div>
+              </div>
+            </div>
+          </div>
+
           <button
             onClick={begin}
             className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3.5 shadow-sm transition"
@@ -588,66 +615,70 @@ export default function WorkoutPage() {
   // ── DONE ──────────────────────────────────────────────────────────────────
   if (phase === 'done' && finishResult) {
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-10 flex flex-col items-center gap-6 text-center">
-          <Icon path={ICONS.trophy} className="w-16 h-16 text-chess-gold" />
-          <h1 className="text-3xl font-black text-chess-text">Workout complete</h1>
+      <div className="h-full bg-chess-page">
+        {/* Results popup — celebratory modal over the page */}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 workout-result-overlay">
+          <style>{`
+            @keyframes workoutResultIn { 0% { opacity:0; transform: scale(.7) translateY(16px);} 60%{opacity:1; transform: scale(1.04);} 100%{transform: scale(1);} }
+            .workout-result-overlay { animation: workoutResultIn .3s ease-out; }
+            .workout-result-card { animation: workoutResultIn .45s cubic-bezier(.2,.9,.3,1.2); }
+          `}</style>
+          <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-5 text-center">
+            <Icon path={ICONS.trophy} className="w-14 h-14 text-chess-gold" />
+            <h1 className="text-2xl font-black text-chess-text -mt-1">Workout complete</h1>
 
-          <div className="w-full bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col gap-4">
-            <div>
-              <div className="text-5xl font-black text-chess-green tabular-nums">
-                +{finishResult.sessionPoints}
+            <div className="w-full flex flex-col gap-4">
+              <div>
+                <div className="text-5xl font-black text-chess-green tabular-nums">
+                  +{finishResult.sessionPoints}
+                </div>
+                <div className="text-sm font-semibold text-chess-text-muted mt-1">
+                  points this session
+                </div>
               </div>
-              <div className="text-sm font-semibold text-chess-text-muted mt-1">
-                points this session
+
+              {finishResult.perfect && (
+                <div className="flex items-center justify-center gap-1.5 text-sm font-bold text-chess-gold">
+                  <Icon path={ICONS.bolt} className="w-4 h-4" />
+                  Flawless run · +{PERFECT_SESSION_BONUS} bonus
+                </div>
+              )}
+
+              {finishResult.lifetime !== null && (
+                <div className="text-sm text-chess-text-muted">
+                  Lifetime total:{' '}
+                  <span className="font-bold text-chess-text tabular-nums">
+                    {finishResult.lifetime.toLocaleString()}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-center gap-6 pt-2 border-t border-slate-100">
+                <div>
+                  <div className="text-2xl font-black text-chess-green tabular-nums">
+                    {finishResult.right}
+                  </div>
+                  <div className="text-xs font-semibold text-chess-text-muted">solved</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-black text-chess-red tabular-nums">
+                    {finishResult.wrong}
+                  </div>
+                  <div className="text-xs font-semibold text-chess-text-muted">missed</div>
+                </div>
               </div>
             </div>
 
-            {finishResult.perfect && (
-              <div className="flex items-center justify-center gap-1.5 text-sm font-bold text-chess-gold">
-                <Icon path={ICONS.bolt} className="w-4 h-4" />
-                Flawless run · +{PERFECT_SESSION_BONUS} bonus
-              </div>
-            )}
-
-            {finishResult.lifetime !== null && (
-              <div className="text-sm text-chess-text-muted">
-                Lifetime total:{' '}
-                <span className="font-bold text-chess-text tabular-nums">
-                  {finishResult.lifetime.toLocaleString()}
-                </span>
-              </div>
-            )}
-
-            <div className="flex justify-center gap-6 pt-2 border-t border-slate-100">
-              <div>
-                <div className="text-2xl font-black text-chess-green tabular-nums">
-                  {finishResult.right}
-                </div>
-                <div className="text-xs font-semibold text-chess-text-muted">
-                  solved
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-black text-chess-red tabular-nums">
-                  {finishResult.wrong}
-                </div>
-                <div className="text-xs font-semibold text-chess-text-muted">
-                  missed
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={() => {
+                playButtonClick();
+                router.push('/profile');
+              }}
+              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-3.5 shadow-sm transition"
+            >
+              Done
+            </button>
           </div>
-
-          <button
-            onClick={() => {
-              playButtonClick();
-              router.push('/profile');
-            }}
-            className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition"
-          >
-            Done
-          </button>
         </div>
       </div>
     );
@@ -673,7 +704,9 @@ export default function WorkoutPage() {
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">Now</span>
             <span className="text-sm font-bold text-chess-text flex items-center gap-1.5">
-              <Icon path={ICONS[iconFor(current.kind)]} className="w-4 h-4 text-chess-blue" />
+              {current.kind !== 'break' && (
+                <Icon path={ICONS[iconFor(current.kind)]} className="w-4 h-4 text-chess-blue" />
+              )}
               {labelFor(current.kind)}
             </span>
           </div>
@@ -744,14 +777,22 @@ export default function WorkoutPage() {
               </div>
             )}
           </div>
+        ) : current.kind === 'break' ? (
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-6">
+            <BreathingRook size="xl" animate mood="zen" />
+            <div className="text-7xl font-black text-chess-text tabular-nums">
+              {fmtTime(secondsLeft)}
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-chess-text">Rest</h2>
+              <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
+                {pick(ROOKIE_LINES.break, lineSeed)}
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-6">
-            <Icon
-              path={ICONS[iconFor(current.kind)]}
-              className={`w-20 h-20 ${
-                current.kind === 'workout' ? 'text-chess-green' : 'text-chess-text-muted'
-              }`}
-            />
+            <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
             <div className="text-7xl font-black text-chess-text tabular-nums">
               {fmtTime(secondsLeft)}
             </div>
@@ -760,7 +801,7 @@ export default function WorkoutPage() {
                 {promptFor(current.kind)}
               </h2>
               <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
-                {pick(ROOKIE_LINES[current.kind as Exclude<SegmentKind, 'chess'>], lineSeed)}
+                {pick(ROOKIE_LINES.workout, lineSeed)}
               </p>
             </div>
           </div>
@@ -783,7 +824,7 @@ export default function WorkoutPage() {
           <button
             onClick={() => {
               playButtonClick();
-              finishSession();
+              setEndConfirmOpen(true);
             }}
             className="rounded-xl px-4 text-chess-text-muted font-bold py-3 min-h-[44px] hover:text-chess-text transition"
           >
@@ -791,6 +832,57 @@ export default function WorkoutPage() {
           </button>
         </div>
       </div>
+
+      {/* End-early confirm: save / discard / keep going */}
+      {endConfirmOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          onClick={() => setEndConfirmOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col gap-4 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div>
+              <h2 className="text-xl font-black text-chess-text">End your workout?</h2>
+              <p className="text-sm text-chess-text-muted mt-1.5 leading-snug">
+                Save your progress to keep the {liveScore} point{liveScore === 1 ? '' : 's'} you&apos;ve
+                earned, or discard this session.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                playButtonClick();
+                setEndConfirmOpen(false);
+                finishSession();
+              }}
+              className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3.5 shadow-sm transition"
+            >
+              Save &amp; finish
+            </button>
+            <button
+              onClick={() => {
+                playButtonClick();
+                discardSession();
+              }}
+              className="w-full rounded-2xl border-2 border-slate-200 text-chess-red font-black text-base py-3 hover:bg-chess-page transition"
+            >
+              Discard
+            </button>
+            <button
+              onClick={() => {
+                playButtonClick();
+                setEndConfirmOpen(false);
+              }}
+              className="text-sm font-bold text-chess-text-muted hover:text-chess-text py-1 transition"
+            >
+              Keep going
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
