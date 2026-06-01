@@ -19,6 +19,8 @@ import {
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { MiniRookieIcon } from '@/components/shared/MiniRookieIcon';
+import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import confetti from 'canvas-confetti';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
@@ -121,6 +123,16 @@ function fmtTime(s: number): string {
   return `${m}:${sec.toString().padStart(2, '0')}`;
 }
 
+// ─── Adaptive difficulty ─────────────────────────────────────────────────────
+// The next puzzle is chosen by ELO proximity to a running target. A correct
+// answer nudges the target up; a wrong answer drops it 100 so a struggling
+// solver gets an easier puzzle next instead of getting discouraged.
+const START_ELO = 800;
+const ELO_UP_ON_CORRECT = 60;
+const ELO_DOWN_ON_WRONG = 100;
+const MIN_ELO = 600;
+const MAX_ELO = 2000;
+
 // ─── Circuit progress bar ────────────────────────────────────────────────────
 // Shows the whole session as proportional blocks (one per segment), colored by
 // kind. In preview mode (no segIndex) it just shows the plan. While running, it
@@ -222,6 +234,7 @@ interface FinishResult {
   isPersonalBest: boolean;
   previousBest: number;
   recentPoints: number[]; // chronological, this session last
+  rookieLine: string; // Rookie's post-workout encouragement
 }
 
 export default function WorkoutPage() {
@@ -242,6 +255,7 @@ export default function WorkoutPage() {
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
+  const [targetElo, setTargetElo] = useState(START_ELO);
 
   // Missed puzzles collected this session, stored for later replay.
   const missedRef = useRef<WorkoutPuzzleData[]>([]);
@@ -279,6 +293,7 @@ export default function WorkoutPage() {
     let isPersonalBest = false;
     let previousBest = 0;
     let recentPoints: number[] = [sessionPoints];
+    const rookieLine = pickWorkoutFinishLine();
     try {
       const res = await fetch('/api/workout/finish', {
         method: 'POST',
@@ -316,6 +331,7 @@ export default function WorkoutPage() {
       isPersonalBest,
       previousBest,
       recentPoints,
+      rookieLine,
     });
     setPhase('done');
   }, [score, right, wrong, minutes]);
@@ -351,6 +367,7 @@ export default function WorkoutPage() {
     setCombo(0);
     comboRef.current = 0;
     setPuzzlePos(0);
+    setTargetElo(START_ELO);
     missedRef.current = [];
     seenIdsRef.current = [];
     setFinishResult(null);
@@ -379,6 +396,7 @@ export default function WorkoutPage() {
     setCombo(snap.combo);
     comboRef.current = snap.combo;
     setPuzzlePos(snap.puzzlePos);
+    setTargetElo(snap.targetElo ?? START_ELO);
     missedRef.current = snap.missed ?? [];
     seenIdsRef.current = snap.seenIds ?? [];
     setFinishResult(null);
@@ -410,6 +428,7 @@ export default function WorkoutPage() {
         isPersonalBest: true,
         previousBest: 360,
         recentPoints: [180, 240, 300, 210, 360, 280, 420],
+        rookieLine: pickWorkoutFinishLine(),
       });
       setPhase('done');
       return;
@@ -430,11 +449,12 @@ export default function WorkoutPage() {
       wrong,
       combo,
       puzzlePos,
+      targetElo,
       missed: missedRef.current,
       seenIds: seenIdsRef.current,
       queue,
     });
-  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, queue]);
+  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, queue]);
 
   // Confetti when the results popup appears — extra burst on a personal best.
   useEffect(() => {
@@ -471,9 +491,31 @@ export default function WorkoutPage() {
     return () => clearTimeout(t);
   }, [phase, secondsLeft, advanceSegment]);
 
-  const currentPuzzle = queue[puzzlePos % Math.max(1, queue.length)] as
-    | WorkoutPuzzleData
-    | undefined;
+  // Pick the next puzzle by ELO proximity to the adaptive target. Prefer puzzles
+  // not yet shown; only repeat if the queue is fully exhausted. puzzlePos is in
+  // the deps so this recomputes after each answer (seenIds is a ref).
+  const currentPuzzle = useMemo<WorkoutPuzzleData | undefined>(() => {
+    if (!queue.length) return undefined;
+    const used = new Set(seenIdsRef.current);
+    let bestUnused: WorkoutPuzzleData | undefined;
+    let bestUnusedDiff = Infinity;
+    let bestAny: WorkoutPuzzleData | undefined;
+    let bestAnyDiff = Infinity;
+    for (const p of queue) {
+      const id = p.puzzleId || p.id || '';
+      const diff = Math.abs((p.rating ?? 1000) - targetElo);
+      if (diff < bestAnyDiff) {
+        bestAny = p;
+        bestAnyDiff = diff;
+      }
+      if (!used.has(id) && diff < bestUnusedDiff) {
+        bestUnused = p;
+        bestUnusedDiff = diff;
+      }
+    }
+    return bestUnused ?? bestAny;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queue, targetElo, puzzlePos]);
 
   const handleCorrect = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
@@ -484,6 +526,7 @@ export default function WorkoutPage() {
     setCombo(nextStreak);
     setScore((s) => s + pointsForCorrect(rating, nextStreak));
     setRight((r) => r + 1);
+    setTargetElo((e) => Math.min(MAX_ELO, e + ELO_UP_ON_CORRECT));
     setPuzzlePos((p) => p + 1);
   }, [currentPuzzle]);
 
@@ -504,6 +547,8 @@ export default function WorkoutPage() {
         rating: currentPuzzle.rating,
       });
     }
+    // Ease off: drop the target so the next puzzle is easier, not harder.
+    setTargetElo((e) => Math.max(MIN_ELO, e - ELO_DOWN_ON_WRONG));
     setPuzzlePos((p) => p + 1);
   }, [currentPuzzle]);
 
@@ -694,15 +739,8 @@ export default function WorkoutPage() {
             .workout-result-card { animation: workoutResultIn .45s cubic-bezier(.2,.9,.3,1.2); }
           `}</style>
           <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-4 text-center">
-            {/* Gold medal badge */}
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md shrink-0"
-              style={{ background: 'linear-gradient(135deg, #FFE9A8, #F4B40A)' }}
-            >
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" aria-hidden>
-                <path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.3 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2Z" />
-              </svg>
-            </div>
+            {/* Rookie, celebrating with you */}
+            <MiniRookieIcon active gold={finishResult.isPersonalBest} size={88} />
 
             {finishResult.isPersonalBest && (
               <div
@@ -715,6 +753,11 @@ export default function WorkoutPage() {
             )}
 
             <h1 className="text-2xl font-black text-chess-text">Chess Boxing complete</h1>
+
+            {/* Rookie's encouragement */}
+            <div className="w-full rounded-2xl bg-chess-page px-4 py-3 text-sm font-semibold text-chess-text leading-snug">
+              {finishResult.rookieLine}
+            </div>
 
             <div className="w-full flex flex-col gap-4">
               <div>

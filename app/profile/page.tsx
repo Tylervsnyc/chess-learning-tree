@@ -417,7 +417,7 @@ function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | nu
   return (
     <div>
       <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
-        Recent Workouts
+        Recent Chess Boxing
       </h2>
       <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {loading || sessions === null ? (
@@ -736,15 +736,15 @@ export default function ProfilePage() {
             </span>
           </div>
 
-          {/* Daily Workout — the focal CTA */}
+          {/* Chess Boxing — the focal CTA */}
           <Link href="/workout" className="block">
             <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
               <div>
-                <h2 className="text-lg font-bold text-chess-text leading-tight">Daily Workout</h2>
+                <h2 className="text-lg font-bold text-chess-text leading-tight">Chess Boxing</h2>
                 <p className="text-sm text-chess-text-muted">Chess + exercise circuit</p>
               </div>
               <ActionButton color="green" size="lg" fullWidth>
-                Start Workout
+                Start Chess Boxing
               </ActionButton>
             </div>
           </Link>

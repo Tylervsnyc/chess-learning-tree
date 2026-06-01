@@ -64,10 +64,12 @@ export async function GET(request: NextRequest) {
   const minutes = parseInt(request.nextUrl.searchParams.get('minutes') || '16');
   const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : 16;
 
-  // Estimate how many puzzles we need: ~12 per chess segment.
+  // Estimate how many puzzles we need. Difficulty is adaptive (it can drop on a
+  // wrong answer, so the user may revisit a band), so we over-provision: ~20 per
+  // chess segment. A 32-min session = 4 chess segments → ~80 puzzles.
   const schedule = buildSchedule(safeMinutes);
   const chessSegments = schedule.filter((s) => s.kind === 'chess').length || 1;
-  const targetCount = Math.min(80, Math.max(24, chessSegments * 12));
+  const targetCount = Math.min(120, Math.max(40, chessSegments * 20));
 
   // How many puzzles to take from each band so the ramp spans the bands evenly.
   const perBand = Math.ceil(targetCount / BANDS.length);
