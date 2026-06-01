@@ -56,10 +56,10 @@ export function DailyWorkoutBadge() {
     <Link
       href="/profile"
       title={title}
-      className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black text-white transition-all ${
+      className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black transition-all ${
         completedToday
-          ? 'bg-chess-orange shadow-[0_2px_0_0_#c2410c]'
-          : 'bg-chess-text/50 animate-pulse-soft'
+          ? 'bg-orange-200 text-orange-800 shadow-[0_2px_0_0_#f59e0b]'
+          : 'bg-chess-text/50 text-white animate-pulse-soft'
       }`}
     >
       <MiniRookieIcon active={completedToday} gold={current >= 100} size={20} />
