@@ -41,9 +41,9 @@ export async function GET(request: NextRequest) {
       .gte('ended_at', since),
     supabase
       .from('puzzle_attempts')
-      .select('created_at')
+      .select('attempted_at')
       .eq('user_id', user.id)
-      .gte('created_at', since),
+      .gte('attempted_at', since),
     supabase
       .from('opening_progress')
       .select('completed_at')
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
     [
       ...(lessons.data ?? []).map((r) => r.completed_at as string),
       ...(games.data ?? []).map((r) => r.ended_at as string),
-      ...(puzzles.data ?? []).map((r) => r.created_at as string),
+      ...(puzzles.data ?? []).map((r) => r.attempted_at as string),
       ...(openings.data ?? []).map((r) => r.completed_at as string),
     ],
     tz,
