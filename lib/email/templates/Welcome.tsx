@@ -9,7 +9,6 @@ const UTM_BASE = 'utm_source=email&utm_medium=welcome&utm_campaign=welcome_featu
 const FEATURE_IMAGES = {
   path: 'https://chesspath.app/email/chesspath.png',
   openings: 'https://chesspath.app/email/openingtree.png',
-  dailyRook: 'https://chesspath.app/email/dailyrook.png',
 };
 
 const PILL_COLORS: Record<string, { bg: string; shadow: string }> = {
@@ -141,7 +140,7 @@ export function Welcome({
                 <Text style={quoteText}>
                   &ldquo;I&apos;m Rookie, and I&apos;m here to make sure you
                   actually get better at chess -- the fun way. Here are the
-                  three ways to play:&rdquo;
+                  two ways to play:&rdquo;
                 </Text>
               </td>
             </tr>
@@ -171,17 +170,6 @@ export function Welcome({
         cta="Learn An Opening"
         imageUrl={FEATURE_IMAGES.openings}
         imageAlt="Openings -- interactive opening trainer"
-      />
-
-      <FeatureCard
-        title="Daily"
-        titleColor="blue"
-        tagline="Wordle, But For Chess"
-        description="22 fresh puzzles every single day, climbing from 400 to 2300 ELO. It&apos;s a mini boss fight for your brain. A new set drops at midnight -- see how far you can get."
-        href={`${appUrl}/daily-challenge?${UTM_BASE}&utm_content=daily_rook`}
-        cta="Play Today's"
-        imageUrl={FEATURE_IMAGES.dailyRook}
-        imageAlt="The Daily Rook -- daily puzzle challenge"
       />
 
       <Section style={buttonContainer}>
