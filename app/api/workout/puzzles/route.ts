@@ -6,6 +6,7 @@ import {
 } from '@/lib/puzzle-selector';
 import { CleanPuzzle, loadPuzzleFile } from '@/lib/puzzle-file-loader';
 import { buildSchedule } from '@/lib/workout/schedule';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * GET /api/workout/puzzles?minutes=16
@@ -71,6 +72,26 @@ export async function GET(request: NextRequest) {
   // How many puzzles to take from each band so the ramp spans the bands evenly.
   const perBand = Math.ceil(targetCount / BANDS.length);
 
+  // Puzzles this user has already been served in past workouts. We exclude
+  // these so every session feels fresh. Anonymous users (or a DB read failure)
+  // get an empty set — i.e. the original, repeat-allowing behavior.
+  const excludeHistory = new Set<string>();
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: seenRows } = await supabase
+        .from('workout_seen_puzzles')
+        .select('puzzle_id')
+        .eq('user_id', user.id);
+      for (const row of seenRows ?? []) {
+        if (typeof row.puzzle_id === 'string') excludeHistory.add(row.puzzle_id);
+      }
+    }
+  } catch (err) {
+    console.error('workout puzzles: seen-set read failed', err);
+  }
+
   const orderedPuzzles: Puzzle[] = [];
   const seen = new Set<string>();
 
@@ -91,23 +112,42 @@ export async function GET(request: NextRequest) {
     // selectPuzzlesForLesson caps at ~6, so call it per theme until we have
     // enough for this band, then sort the band ascending by rating.
     const bandSelected: Puzzle[] = [];
-    for (const theme of THEMES) {
-      if (bandSelected.length >= perBand) break;
 
-      const criteria: LessonSelectionCriteria = {
-        themes: [theme],
-        isMixedPractice: false,
-        ratingMin: band.min,
-        ratingMax: band.max,
-        minPlays: 1000,
-        excludePuzzleIds: [...seen, ...bandSelected.map((p) => p.id)],
-      };
+    // Fill the band, excluding the user's history. If history exhausts the
+    // band (far-future: thousands of puzzles seen), do a second pass that
+    // allows repeats so the queue is never short — a stale puzzle beats a gap.
+    const fillBand = (allowRepeats: boolean) => {
+      for (const theme of THEMES) {
+        if (bandSelected.length >= perBand) break;
 
-      const result = selectPuzzlesForLesson(bandPool, criteria);
-      for (const p of result.puzzles) {
-        if (seen.has(p.id) || bandSelected.some((s) => s.id === p.id)) continue;
-        bandSelected.push(p);
+        const criteria: LessonSelectionCriteria = {
+          themes: [theme],
+          isMixedPractice: false,
+          ratingMin: band.min,
+          ratingMax: band.max,
+          minPlays: 1000,
+          excludePuzzleIds: [
+            ...seen,
+            ...bandSelected.map((p) => p.id),
+            ...(allowRepeats ? [] : excludeHistory),
+          ],
+        };
+
+        const result = selectPuzzlesForLesson(bandPool, criteria);
+        for (const p of result.puzzles) {
+          if (seen.has(p.id) || bandSelected.some((s) => s.id === p.id)) continue;
+          bandSelected.push(p);
+        }
       }
+    };
+
+    fillBand(false);
+    if (bandSelected.length < perBand && excludeHistory.size > 0) {
+      console.warn(
+        `workout puzzles: band ${band.min}-${band.max} ran dry after history ` +
+          `exclusion (${bandSelected.length}/${perBand}); allowing repeats`,
+      );
+      fillBand(true);
     }
 
     // Ascending within the band so difficulty climbs smoothly.

@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
     wrong?: unknown;
     perfect?: unknown;
     missedPuzzles?: unknown;
+    seenPuzzleIds?: unknown;
   };
   try {
     body = await request.json();
@@ -62,6 +63,16 @@ export async function POST(request: NextRequest) {
     ? body.missedPuzzles.slice(0, MAX_MISSED)
     : [];
 
+  // Every puzzle shown this session (solved + missed). Recorded so future
+  // workouts can exclude them and stay fresh. Cap to bound a single upsert.
+  const seenPuzzleIds = Array.isArray(body.seenPuzzleIds)
+    ? Array.from(
+        new Set(
+          body.seenPuzzleIds.filter((id): id is string => typeof id === 'string' && id.length > 0),
+        ),
+      ).slice(0, 200)
+    : [];
+
   const { data: profile, error: readError } = await supabase
     .from('profiles')
     .select('workout_points')
@@ -75,6 +86,21 @@ export async function POST(request: NextRequest) {
 
   const current = typeof profile?.workout_points === 'number' ? profile.workout_points : 0;
   const next = Math.max(0, current + points);
+
+  // Personal-best + recent history for the results popup. Read BEFORE inserting
+  // this session so "previous best" reflects only prior sessions.
+  const sessionStored = Math.max(0, Math.trunc(points));
+  const { data: prior } = await supabase
+    .from('workout_sessions')
+    .select('points')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(9);
+  const priorPoints = (prior ?? []).map((r) => (r.points as number) ?? 0); // newest first
+  const previousBest = priorPoints.length ? Math.max(...priorPoints) : 0;
+  const isPersonalBest = sessionStored > previousBest && sessionStored > 0;
+  // Chronological points for the chart, with this session last.
+  const recentPoints = [...priorPoints].reverse().concat(sessionStored);
 
   const { error: updateError } = await supabase
     .from('profiles')
@@ -109,5 +135,24 @@ export async function POST(request: NextRequest) {
     sessionId = session?.id ?? null;
   }
 
-  return NextResponse.json({ workoutPoints: next, sessionId });
+  // Record the puzzles this user has now seen so future workouts skip them.
+  // Conflict-do-nothing keeps the first seen_at and makes this idempotent.
+  // Non-fatal: a failure here just means a puzzle might repeat someday.
+  if (seenPuzzleIds.length > 0) {
+    const { error: seenError } = await supabase
+      .from('workout_seen_puzzles')
+      .upsert(
+        seenPuzzleIds.map((puzzle_id) => ({ user_id: user.id, puzzle_id })),
+        { onConflict: 'user_id,puzzle_id', ignoreDuplicates: true },
+      );
+    if (seenError) console.error('workout seen-puzzle upsert failed', seenError);
+  }
+
+  return NextResponse.json({
+    workoutPoints: next,
+    sessionId,
+    isPersonalBest,
+    previousBest,
+    recentPoints,
+  });
 }
