@@ -5,11 +5,11 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
 /**
  * GET /api/workout/streak?tz=America/Los_Angeles
  *
- * A "Daily Workout" day is one where the user completed Play + Path on
- * the same calendar day in their local TZ. The streak walks back from today
- * until the first day missing any pillar.
+ * The streak is dead simple: a day counts if the user did *anything* on the
+ * app that day (in their local TZ) — completed a lesson, played a game, or
+ * solved a puzzle. The streak walks back from today until the first empty day.
  *
- * Returns { current, longest, completedToday, todayPillars: { play, path } }.
+ * Returns { current, longest, completedToday }.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [lessons, games] = await Promise.all([
+  const [lessons, games, puzzles] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -39,38 +39,45 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
       .not('ended_at', 'is', null)
       .gte('ended_at', since),
+    supabase
+      .from('puzzle_attempts')
+      .select('created_at')
+      .eq('user_id', user.id)
+      .gte('created_at', since),
   ]);
 
-  if (lessons.error || games.error) {
-    console.error('workout streak read failed', { lessons: lessons.error, games: games.error });
+  if (lessons.error || games.error || puzzles.error) {
+    console.error('workout streak read failed', {
+      lessons: lessons.error,
+      games: games.error,
+      puzzles: puzzles.error,
+    });
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
-  const pathDays = toLocalDateSet((lessons.data ?? []).map((r) => r.completed_at as string), tz);
-  const playDays = toLocalDateSet((games.data ?? []).map((r) => r.ended_at as string), tz);
+  // Any activity at all makes the day count.
+  const activeDays = toLocalDateSet(
+    [
+      ...(lessons.data ?? []).map((r) => r.completed_at as string),
+      ...(games.data ?? []).map((r) => r.ended_at as string),
+      ...(puzzles.data ?? []).map((r) => r.created_at as string),
+    ],
+    tz,
+  );
 
-  const workoutDays = new Set<string>();
-  for (const d of playDays) {
-    if (pathDays.has(d)) workoutDays.add(d);
-  }
-
-  const completedToday = workoutDays.has(today);
-  const todayPillars = {
-    play: playDays.has(today),
-    path: pathDays.has(today),
-  };
+  const completedToday = activeDays.has(today);
 
   // Current: walk back from today (or yesterday if today not done — streak still alive).
   let current = 0;
   let cursor = today;
   if (!completedToday) cursor = shiftDate(cursor, -1);
-  while (workoutDays.has(cursor)) {
+  while (activeDays.has(cursor)) {
     current++;
     cursor = shiftDate(cursor, -1);
   }
 
-  // Longest run of consecutive Workout days.
-  const sorted = [...workoutDays].sort();
+  // Longest run of consecutive active days.
+  const sorted = [...activeDays].sort();
   let longest = 0;
   let run = 0;
   let prev: string | null = null;
@@ -81,7 +88,7 @@ export async function GET(request: NextRequest) {
     prev = d;
   }
 
-  return NextResponse.json({ current, longest, completedToday, todayPillars });
+  return NextResponse.json({ current, longest, completedToday });
 }
 
 function toLocalDateSet(timestamps: string[], tz: string): Set<string> {

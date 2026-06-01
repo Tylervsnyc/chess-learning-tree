@@ -9,7 +9,6 @@ type WorkoutResponse = {
   current: number;
   longest: number;
   completedToday: boolean;
-  todayPillars: { play: boolean; path: boolean };
 };
 
 export function DailyWorkoutBadge() {
@@ -36,21 +35,20 @@ export function DailyWorkoutBadge() {
   const current = data?.current ?? 0;
   const completedToday = data?.completedToday ?? false;
 
-  // Hide entirely if no streak yet — the nav stays clean for brand-new users.
-  if (current === 0 && !completedToday) return null;
-
   const title = completedToday
-    ? `Daily workout complete — ${current}-day streak. Rookie noticed.`
-    : `${current}-day streak. One more session of Play or Learn keeps it alive.`;
+    ? `${current}-day streak — you showed up today. Rookie noticed.`
+    : current > 0
+      ? `${current}-day streak. Do anything today to keep it alive.`
+      : 'Do anything today to start your streak.';
 
   return (
     <Link
-      href="/"
+      href="/profile"
       title={title}
       className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black text-white transition-all ${
         completedToday
-          ? 'bg-chess-text shadow-[0_2px_0_0_var(--color-chess-gold-dark,#cc9a00)]'
-          : 'bg-chess-text/60 animate-pulse-soft'
+          ? 'bg-chess-orange shadow-[0_2px_0_0_#c2410c]'
+          : 'bg-chess-text/50 animate-pulse-soft'
       }`}
     >
       <MiniRookieIcon active={completedToday} gold={current >= 100} size={20} />
