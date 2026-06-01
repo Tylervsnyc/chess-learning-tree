@@ -54,6 +54,17 @@ interface WorkoutSession {
   missedCount: number;
 }
 
+interface EloSeriesPoint {
+  date: string; // YYYY-MM-DD
+  elo: number;
+}
+
+interface EloData {
+  current: number;
+  events: number;
+  series: EloSeriesPoint[];
+}
+
 function todayLocalKey(): string {
   // YYYY-MM-DD in the user's local timezone (matches the week endpoint's tz).
   const d = new Date();
@@ -162,31 +173,112 @@ function SubscriptionBadge({ status }: { status: 'free' | 'premium' | 'trial' })
   );
 }
 
-function QuickAction({
-  href,
-  label,
-  sublabel,
-  color,
-  children,
-}: {
-  href: string;
-  label: string;
-  sublabel: string;
-  color: 'green' | 'purple';
-  children: React.ReactNode;
-}) {
-  const ring = color === 'green' ? 'bg-chess-green/15 text-chess-green' : 'bg-chess-purple/15 text-chess-purple';
+function EloCard({ data, loading }: { data: EloData | null; loading: boolean }) {
+  const hasSeries = !!data && data.series.length >= 2 && data.events > 0;
+
+  // ── Build the SVG line path in a 0–100 × 0–100 viewBox ──────────────────
+  const W = 100;
+  const H = 100;
+  const PAD_Y = 8;
+
+  let linePath = '';
+  let areaPath = '';
+  let lastPt: { x: number; y: number } | null = null;
+  let lo = 0;
+  let hi = 0;
+
+  if (hasSeries) {
+    const pts = data!.series;
+    const elos = pts.map((p) => p.elo);
+    lo = Math.min(...elos);
+    hi = Math.max(...elos);
+    const span = Math.max(1, hi - lo);
+    const n = pts.length;
+
+    const coords = pts.map((p, i) => {
+      const x = n === 1 ? W : (i / (n - 1)) * W;
+      const y = PAD_Y + (1 - (p.elo - lo) / span) * (H - PAD_Y * 2);
+      return { x, y };
+    });
+
+    linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(' ');
+    areaPath = `${linePath} L${W},${H} L0,${H} Z`;
+    lastPt = coords[coords.length - 1];
+  }
+
   return (
-    <Link
-      href={href}
-      className="flex-1 bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-2 active:scale-[0.98] transition-transform"
-    >
-      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${ring}`}>{children}</div>
-      <div>
-        <div className="text-sm font-bold text-chess-text leading-tight">{label}</div>
-        <div className="text-xs text-chess-text-muted leading-tight">{sublabel}</div>
+    <div className="bg-chess-surface rounded-3xl border border-slate-200 shadow-sm p-5">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+              Estimated Rating
+            </h2>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-chess-blue/10 text-chess-blue">
+              Beta
+            </span>
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-4xl font-black text-chess-text tabular-nums leading-none">
+              {loading || !data ? '–' : data.current.toLocaleString()}
+            </span>
+            <span className="text-sm font-bold text-chess-text-muted">ELO</span>
+          </div>
+        </div>
       </div>
-    </Link>
+
+      {loading || !data ? (
+        <div className="mt-4 h-28 bg-slate-100 rounded-xl animate-pulse" />
+      ) : !hasSeries ? (
+        <p className="mt-4 text-sm text-chess-text-muted leading-snug">
+          Solve a few puzzles or play Rookie and we&apos;ll estimate your rating — then track it here over time.
+        </p>
+      ) : (
+        <>
+          <div className="mt-4 relative">
+            <svg
+              viewBox={`0 0 ${W} ${H}`}
+              preserveAspectRatio="none"
+              className="w-full h-28"
+              aria-hidden
+            >
+              <defs>
+                <linearGradient id="eloFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d={areaPath} fill="url(#eloFill)" />
+              <path
+                d={linePath}
+                fill="none"
+                stroke="var(--color-chess-blue, #3b82f6)"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              {lastPt && (
+                <circle
+                  cx={lastPt.x}
+                  cy={lastPt.y}
+                  r={3.5}
+                  fill="var(--color-chess-blue, #3b82f6)"
+                  stroke="white"
+                  strokeWidth={2}
+                  vectorEffect="non-scaling-stroke"
+                />
+              )}
+            </svg>
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-chess-text-faint">
+            <span>Low {lo.toLocaleString()}</span>
+            <span>Estimated from your puzzles &amp; games</span>
+            <span>High {hi.toLocaleString()}</span>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -346,6 +438,9 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<LifetimeStats | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
 
+  const [elo, setElo] = useState<EloData | null>(null);
+  const [eloLoading, setEloLoading] = useState(false);
+
   const [week, setWeek] = useState<WeekData | null>(null);
   const [weekLoading, setWeekLoading] = useState(false);
   const [sessions, setSessions] = useState<WorkoutSession[] | null>(null);
@@ -406,6 +501,16 @@ export default function ProfilePage() {
         if (cancelled) return;
         setSessions(Array.isArray(data?.sessions) ? (data.sessions as WorkoutSession[]) : []);
         setSessionsLoading(false);
+      });
+
+    setEloLoading(true);
+    fetch('/api/profile/elo', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((e) => {
+        if (cancelled) return;
+        if (e) setElo(e as EloData);
+        setEloLoading(false);
       });
 
     return () => {
@@ -516,51 +621,51 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ── Quick actions — keep the streak alive ────────────────────── */}
-        <div className="flex gap-3">
-          <QuickAction href="/play" label="Play" sublabel="Beat Rookie" color="green">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="6 4 20 12 6 20 6 4" />
-            </svg>
-          </QuickAction>
-          <QuickAction href="/path" label="Learn" sublabel="Tactics & openings" color="purple">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
-            </svg>
-          </QuickAction>
-        </div>
+        {/* ── Estimated rating + trend ─────────────────────────────────── */}
+        <EloCard data={elo} loading={eloLoading} />
 
-        {/* Daily Workout — the focal CTA */}
-        <Link href="/workout" className="block">
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-            <div>
-              <h2 className="text-lg font-bold text-chess-text leading-tight">Daily Workout</h2>
-              <p className="text-sm text-chess-text-muted">Chess + exercise circuit</p>
-            </div>
-            <ActionButton color="green" size="lg" fullWidth>
-              Start Workout
-            </ActionButton>
+        {/* ── Beta product — the daily workout experiment ──────────────── */}
+        <div className="mt-2 flex flex-col gap-4">
+          <div className="flex items-center gap-2 px-1">
+            <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+              Beta Product
+            </h2>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-chess-purple/10 text-chess-purple">
+              Beta
+            </span>
           </div>
-        </Link>
 
-        {/* This week — workout points bar chart */}
-        <WeekChart data={week} loading={weekLoading} />
+          {/* Daily Workout — the focal CTA */}
+          <Link href="/workout" className="block">
+            <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-chess-text leading-tight">Daily Workout</h2>
+                <p className="text-sm text-chess-text-muted">Chess + exercise circuit</p>
+              </div>
+              <ActionButton color="green" size="lg" fullWidth>
+                Start Workout
+              </ActionButton>
+            </div>
+          </Link>
 
-        {/* Recent workouts — tappable when there are missed puzzles to review */}
-        <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
+          {/* This week — workout points bar chart */}
+          <WeekChart data={week} loading={weekLoading} />
 
-        {/* Lifetime stat tiles */}
-        <div>
-          <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
-            Lifetime Stats
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            <StatTile kind="lessons" label="Lessons completed" value={stats?.lessonsCompleted} loading={dataLoading} />
-            <StatTile kind="puzzles" label="Puzzles solved" value={stats?.puzzlesSolved} loading={dataLoading} />
-            <StatTile kind="games" label="Games played" value={stats?.gamesPlayed} loading={dataLoading} />
-            <StatTile kind="levels" label="Levels unlocked" value={stats?.levelsUnlocked} loading={dataLoading} />
-            <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
+          {/* Recent workouts — tappable when there are missed puzzles to review */}
+          <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
+
+          {/* Lifetime stat tiles */}
+          <div>
+            <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
+              Lifetime Stats
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              <StatTile kind="lessons" label="Lessons completed" value={stats?.lessonsCompleted} loading={dataLoading} />
+              <StatTile kind="puzzles" label="Puzzles solved" value={stats?.puzzlesSolved} loading={dataLoading} />
+              <StatTile kind="games" label="Games played" value={stats?.gamesPlayed} loading={dataLoading} />
+              <StatTile kind="levels" label="Levels unlocked" value={stats?.levelsUnlocked} loading={dataLoading} />
+              <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
+            </div>
           </div>
         </div>
       </div>
