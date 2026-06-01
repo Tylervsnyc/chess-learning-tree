@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
+import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
 import { MiniRookieIcon } from './MiniRookieIcon';
 
 type WorkoutResponse = {
@@ -15,20 +16,30 @@ export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const [data, setData] = useState<WorkoutResponse | null>(null);
 
-  useEffect(() => {
+  const refetch = useCallback(() => {
     if (!user) return;
-    let cancelled = false;
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (!cancelled && d) setData(d as WorkoutResponse);
+        if (d) setData(d as WorkoutResponse);
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
   }, [user]);
+
+  // Fetch on mount, and again whenever an activity is recorded (e.g. a run
+  // finishes on this same page) or the tab regains focus.
+  useEffect(() => {
+    if (!user) return;
+    refetch();
+    const onActivity = () => refetch();
+    window.addEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
+    window.addEventListener('focus', onActivity);
+    return () => {
+      window.removeEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
+      window.removeEventListener('focus', onActivity);
+    };
+  }, [user, refetch]);
 
   if (loading || !user) return null;
 

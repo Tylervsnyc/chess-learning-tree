@@ -5,6 +5,7 @@ import { RunBoard } from '@/components/run/Board';
 import { LevelClearedModal } from '@/components/run/LevelClearedModal';
 import { RunSummaryModal } from '@/components/run/RunSummaryModal';
 import { computeStats, readHistory, recordRun } from '@/lib/run/history';
+import { notifyWorkoutActivity } from '@/lib/daily-workout/events';
 import { AbilityRack } from '@/components/run/AbilityRack';
 import { AbilityOfferModal } from '@/components/run/AbilityOfferModal';
 import { RunLanding } from '@/components/run/RunLanding';
@@ -481,7 +482,9 @@ export default function RookiesRunPage() {
             levelsCleared: totalLevels,
             tz,
           }),
-        }).catch(() => {});
+        })
+          .then(() => notifyWorkoutActivity())
+          .catch(() => {});
       }
     } else {
       setShowLevelCleared(true);
