@@ -17,6 +17,7 @@ import {
   type SegmentKind,
 } from '@/lib/workout/schedule';
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
+import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -262,6 +263,9 @@ export default function WorkoutPage() {
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
 
+  // Resume-on-kill: a saved in-progress workout found on mount (setup screen).
+  const [resumable, setResumable] = useState<WorkoutResumeState | null>(null);
+
   const current = schedule[segIndex];
 
   // ── Finish: post points, show end screen ──────────────────────────────────
@@ -293,6 +297,7 @@ export default function WorkoutPage() {
       // Network/auth failure — still show the session summary.
     }
 
+    clearResume(); // session over — drop the resume snapshot
     setFinishResult({ sessionPoints, lifetime, right, wrong, perfect });
     setPhase('done');
   }, [score, right, wrong, minutes]);
@@ -316,6 +321,8 @@ export default function WorkoutPage() {
   const begin = useCallback(() => {
     warmupAudio();
     playButtonClick();
+    clearResume(); // fresh start — discard any stale resume snapshot
+    setResumable(null);
     const sched = buildSchedule(minutes);
     setSchedule(sched);
     setSegIndex(0);
@@ -337,6 +344,54 @@ export default function WorkoutPage() {
       .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
       .catch(() => setQueue([]));
   }, [minutes]);
+
+  // ── Resume a workout that was killed mid-session ──────────────────────────
+  const resume = useCallback((snap: WorkoutResumeState) => {
+    warmupAudio();
+    playButtonClick();
+    setResumable(null);
+    setMinutes(snap.minutes);
+    setSchedule(buildSchedule(snap.minutes));
+    setSegIndex(snap.segIndex);
+    setSecondsLeft(snap.secondsLeft);
+    setScore(snap.score);
+    setRight(snap.right);
+    setWrong(snap.wrong);
+    setCombo(snap.combo);
+    comboRef.current = snap.combo;
+    setPuzzlePos(snap.puzzlePos);
+    missedRef.current = snap.missed ?? [];
+    setFinishResult(null);
+    finishingRef.current = false;
+    setPhase('running');
+
+    fetch(`/api/workout/puzzles?minutes=${snap.minutes}`)
+      .then((r) => (r.ok ? r.json() : { puzzles: [] }))
+      .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
+      .catch(() => setQueue([]));
+  }, []);
+
+  // On mount, surface any resumable in-progress workout on the setup screen.
+  useEffect(() => {
+    const snap = loadResume();
+    if (snap) setResumable(snap);
+  }, []);
+
+  // Persist in-progress state so an OS kill can resume (not for backgrounding).
+  useEffect(() => {
+    if (phase !== 'running') return;
+    saveResume({
+      minutes,
+      segIndex,
+      secondsLeft,
+      score,
+      right,
+      wrong,
+      combo,
+      puzzlePos,
+      missed: missedRef.current,
+    });
+  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos]);
 
   // ── Countdown timer ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -412,6 +467,35 @@ export default function WorkoutPage() {
               again.
             </p>
           </header>
+
+          {resumable && (
+            <div className="rounded-2xl border-2 border-chess-blue/40 bg-chess-blue/5 p-4 flex flex-col gap-3">
+              <div>
+                <div className="text-sm font-black text-chess-text">Resume your workout?</div>
+                <div className="text-xs text-chess-text-muted mt-0.5">
+                  You left off on round {Math.floor(resumable.segIndex / ROUND_LENGTH) + 1} of{' '}
+                  {Math.max(1, Math.round((resumable.minutes * 60) / ROUND_SECONDS))}.
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => resume(resumable)}
+                  className="flex-1 rounded-xl bg-chess-blue text-white font-black text-sm py-3 shadow-sm active:translate-y-[1px] transition"
+                >
+                  Resume
+                </button>
+                <button
+                  onClick={() => {
+                    clearResume();
+                    setResumable(null);
+                  }}
+                  className="rounded-xl bg-chess-surface border border-slate-200 text-chess-text-muted font-black text-sm px-4 py-3 active:translate-y-[1px] transition"
+                >
+                  Start over
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
             <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide">
