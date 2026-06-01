@@ -8,6 +8,7 @@ import {
   labelFor,
   promptFor,
   DURATION_PRESETS,
+  ROUND_LENGTH,
   PERFECT_SESSION_BONUS,
   pointsForCorrect,
   comboMultiplier,
@@ -55,12 +56,6 @@ const ICONS = {
       <path d="M3 10v4M21 10v4M9 12h6" />
     </>
   ),
-  boxing: (
-    <>
-      <path d="M7 11a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4h-3a2 2 0 0 1-2-2" />
-      <path d="M7 11H5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h2" />
-    </>
-  ),
   rest: (
     <>
       <path d="M3 18v-2a4 4 0 0 1 4-4h6" />
@@ -89,8 +84,6 @@ function iconFor(kind: SegmentKind): keyof typeof ICONS {
       return 'chess';
     case 'workout':
       return 'dumbbell';
-    case 'boxing':
-      return 'boxing';
     case 'break':
       return 'rest';
   }
@@ -102,11 +95,6 @@ const ROOKIE_LINES: Record<Exclude<SegmentKind, 'chess'>, string[]> = {
     "I can't do push-ups. No arms. So you're doing them for both of us.",
     "Blood to the muscles, blood to the brain. That's the theory anyway.",
     "I'll just be here, calculating. You move the body parts.",
-  ],
-  boxing: [
-    "Throw some punches. I'd join, but I'm mostly opinions.",
-    "Imagine the board is your opponent. Now jab it.",
-    "Footwork matters in boxing AND chess. Wild, right?",
   ],
   break: [
     "Breathe. Even I need a moment to cool my circuits.",
@@ -123,6 +111,119 @@ function fmtTime(s: number): string {
   const m = Math.floor(s / 60);
   const sec = s % 60;
   return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+// ─── Circuit progress bar ────────────────────────────────────────────────────
+// Shows the whole session as proportional blocks (one per segment), colored by
+// kind. In preview mode (no segIndex) it just shows the plan. While running, it
+// fills completed segments and animates the current one — an at-a-glance view of
+// where you are in the whole circuit.
+
+function colorForKind(kind: SegmentKind): string {
+  switch (kind) {
+    case 'chess':
+      return 'bg-gradient-to-r from-violet-500 to-fuchsia-500';
+    case 'workout':
+      return 'bg-gradient-to-r from-amber-400 to-orange-500';
+    case 'break':
+      return 'bg-gradient-to-r from-cyan-300 to-sky-400';
+  }
+}
+
+function labelForKind(kind: SegmentKind): string {
+  switch (kind) {
+    case 'chess':
+      return 'Chess';
+    case 'workout':
+      return 'Workout';
+    case 'break':
+      return 'Rest';
+  }
+}
+
+function CircuitTimeline({
+  segments,
+  activeIndex,
+  secondsLeft,
+}: {
+  segments: Segment[];
+  activeIndex?: number;
+  secondsLeft?: number;
+}) {
+  const total = segments.reduce((s, seg) => s + seg.seconds, 0) || 1;
+  const preview = activeIndex === undefined;
+
+  // Elapsed fraction (0..1) of this round, for the moving playhead.
+  let overall = 0;
+  if (!preview && activeIndex !== undefined) {
+    let elapsed = 0;
+    for (let i = 0; i < segments.length; i++) {
+      if (i < activeIndex) elapsed += segments[i].seconds;
+      else if (i === activeIndex && secondsLeft !== undefined) {
+        elapsed += segments[i].seconds - secondsLeft;
+      }
+    }
+    overall = Math.min(1, Math.max(0, elapsed / total));
+  }
+
+  return (
+    <div className="relative w-full">
+      <div className="flex gap-1.5 w-full h-8">
+        {segments.map((seg, i) => {
+          const widthPct = (seg.seconds / total) * 100;
+          let fill = 0; // 0..1, completed fraction of this block
+          if (!preview && activeIndex !== undefined) {
+            if (i < activeIndex) fill = 1;
+            else if (i === activeIndex && secondsLeft !== undefined) {
+              fill = seg.seconds > 0 ? (seg.seconds - secondsLeft) / seg.seconds : 0;
+            }
+          }
+          const color = colorForKind(seg.kind);
+          return (
+            <div
+              key={i}
+              className="relative h-full rounded-full overflow-hidden"
+              style={{ width: `${widthPct}%` }}
+            >
+              <div className={`absolute inset-0 ${color} ${preview ? '' : 'opacity-25'}`} />
+              {!preview && (
+                <div
+                  className={`absolute inset-y-0 left-0 ${color} transition-[width] duration-1000 ease-linear`}
+                  style={{ width: `${fill * 100}%` }}
+                />
+              )}
+              <span
+                className={`absolute inset-0 flex items-center justify-center px-0.5 font-black uppercase tracking-wide text-white truncate [text-shadow:0_1px_2px_rgba(0,0,0,0.35)] pointer-events-none ${
+                  widthPct < 14 ? 'text-[8px] tracking-normal' : 'text-[10px]'
+                }`}
+              >
+                {labelForKind(seg.kind)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Moving playhead — travels across the round as time ticks down */}
+      {!preview && (
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-[left] duration-1000 ease-linear pointer-events-none"
+          style={{ left: `${overall * 100}%` }}
+        >
+          <div className="w-5 h-5 rounded-full bg-white shadow-lg ring-[3px] ring-chess-text/70" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Legend({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-chess-text-muted">
+      <span className={`w-2.5 h-2.5 rounded-full ${color}`} />
+      {label}
+    </span>
+  );
 }
 
 type Phase = 'setup' | 'running' | 'done';
@@ -284,6 +385,19 @@ export default function WorkoutPage() {
   const liveScore = Math.max(0, score);
   const multiplier = comboMultiplier(combo);
 
+  // Preview of the circuit for the chosen duration (setup screen).
+  const previewSchedule = useMemo(() => buildSchedule(minutes), [minutes]);
+  const previewRounds = Math.max(1, previewSchedule.length / ROUND_LENGTH);
+
+  // Round bookkeeping for the running view.
+  const roundCount = Math.max(1, Math.ceil(schedule.length / ROUND_LENGTH));
+  const roundIndex = Math.floor(segIndex / ROUND_LENGTH);
+  const roundSegments = schedule.slice(
+    roundIndex * ROUND_LENGTH,
+    roundIndex * ROUND_LENGTH + ROUND_LENGTH,
+  );
+  const localSegIndex = segIndex % ROUND_LENGTH;
+
   // ── SETUP ─────────────────────────────────────────────────────────────────
   if (phase === 'setup') {
     return (
@@ -298,28 +412,25 @@ export default function WorkoutPage() {
             </p>
           </header>
 
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide mb-3">
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
+            <h2 className="text-sm font-bold text-chess-text-muted uppercase tracking-wide">
               How it works
             </h2>
-            <ul className="flex flex-col gap-3">
-              <li className="flex items-center gap-3 text-sm text-chess-text">
-                <Icon path={ICONS.chess} className="w-5 h-5 text-chess-blue shrink-0" />
-                3 min of puzzles — climbing difficulty, points for every solve
-              </li>
-              <li className="flex items-center gap-3 text-sm text-chess-text">
-                <Icon path={ICONS.dumbbell} className="w-5 h-5 text-chess-green shrink-0" />
-                3 min of bodyweight exercise
-              </li>
-              <li className="flex items-center gap-3 text-sm text-chess-text">
-                <Icon path={ICONS.boxing} className="w-5 h-5 text-chess-orange shrink-0" />
-                3 min of boxing
-              </li>
-              <li className="flex items-center gap-3 text-sm text-chess-text">
-                <Icon path={ICONS.rest} className="w-5 h-5 text-chess-text-muted shrink-0" />
-                1 min breaks between each
-              </li>
-            </ul>
+            <p className="text-sm text-chess-text leading-relaxed">
+              Combining mental and physical fitness — 3 min of puzzles, a 1 min
+              break, 3 min of exercise, a 1 min break. That's one round.
+            </p>
+            <div>
+              <div className="text-xs font-black text-chess-text uppercase tracking-wide mb-1.5">
+                Round 1 {previewRounds > 1 && <span className="text-chess-text-muted">of {previewRounds}</span>}
+              </div>
+              <CircuitTimeline segments={previewSchedule.slice(0, ROUND_LENGTH)} />
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold">
+              <Legend color={colorForKind('chess')} label="Puzzles" />
+              <Legend color={colorForKind('workout')} label="Exercise" />
+              <Legend color={colorForKind('break')} label="Break" />
+            </div>
           </div>
 
           <div>
@@ -443,9 +554,7 @@ export default function WorkoutPage() {
       <div className="bg-chess-surface border-b border-slate-200">
         <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-chess-text-muted">
-              Segment {segIndex + 1} of {schedule.length}
-            </span>
+            <span className="text-xs font-semibold text-chess-text-muted">Now</span>
             <span className="text-sm font-bold text-chess-text flex items-center gap-1.5">
               <Icon path={ICONS[iconFor(current.kind)]} className="w-4 h-4 text-chess-blue" />
               {labelFor(current.kind)}
@@ -481,17 +590,18 @@ export default function WorkoutPage() {
             </div>
           </div>
         </div>
-        {/* Segment progress bar */}
-        <div className="h-1.5 bg-slate-100">
-          <div
-            className="h-full bg-chess-blue transition-[width] duration-1000 ease-linear"
-            style={{
-              width: `${
-                current.seconds > 0
-                  ? ((current.seconds - secondsLeft) / current.seconds) * 100
-                  : 0
-              }%`,
-            }}
+        {/* Round progress bar — 4 parts, with the moving playhead */}
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 pb-3.5">
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="text-xs font-black text-chess-text uppercase tracking-wide">
+              Round {roundIndex + 1}{' '}
+              <span className="text-chess-text-muted">of {roundCount}</span>
+            </span>
+          </div>
+          <CircuitTimeline
+            segments={roundSegments}
+            activeIndex={localSegIndex}
+            secondsLeft={secondsLeft}
           />
         </div>
       </div>
@@ -522,11 +632,7 @@ export default function WorkoutPage() {
             <Icon
               path={ICONS[iconFor(current.kind)]}
               className={`w-20 h-20 ${
-                current.kind === 'workout'
-                  ? 'text-chess-green'
-                  : current.kind === 'boxing'
-                    ? 'text-chess-orange'
-                    : 'text-chess-text-muted'
+                current.kind === 'workout' ? 'text-chess-green' : 'text-chess-text-muted'
               }`}
             />
             <div className="text-7xl font-black text-chess-text tabular-nums">
