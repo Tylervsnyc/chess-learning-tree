@@ -13,7 +13,7 @@
 import type { WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 
 const KEY = 'workout-in-progress';
-const VERSION = 4; // bumped: snapshot now includes the adaptive targetElo
+const VERSION = 5; // bumped: snapshot now includes the idempotency clientSessionId
 const MAX_AGE_MS = 3 * 60 * 60 * 1000; // 3 hours
 
 export interface WorkoutResumeState {
@@ -32,6 +32,8 @@ export interface WorkoutResumeState {
   missed: WorkoutPuzzleData[];
   /** Ids of every puzzle shown so far, so finish records them after a resume. */
   seenIds: string[];
+  /** Idempotency key for this workout, so a resumed-then-finished session can't double-award points. */
+  clientSessionId: string;
   /** The exact puzzle queue, so resume lands on the same puzzle. */
   queue: WorkoutPuzzleData[];
 }

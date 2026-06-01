@@ -18,6 +18,7 @@ import {
 } from '@/lib/workout/schedule';
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
+import { notifyWorkoutActivity } from '@/lib/daily-workout/events';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import confetti from 'canvas-confetti';
@@ -263,6 +264,10 @@ export default function WorkoutPage() {
   // future workouts can exclude them and stay fresh.
   const seenIdsRef = useRef<string[]>([]);
 
+  // Stable id for THIS workout, re-sent on every /api/workout/finish retry so the
+  // server awards points exactly once (set in begin(), restored on resume()).
+  const clientSessionIdRef = useRef<string>('');
+
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
   const confettiFiredRef = useRef(false); // fire results confetti once (StrictMode double-mounts effects)
@@ -306,6 +311,7 @@ export default function WorkoutPage() {
           perfect,
           missedPuzzles: missedRef.current,
           seenPuzzleIds: seenIdsRef.current,
+          clientSessionId: clientSessionIdRef.current,
         }),
       });
       if (res.ok) {
@@ -316,6 +322,9 @@ export default function WorkoutPage() {
         if (Array.isArray(data?.recentPoints) && data.recentPoints.length) {
           recentPoints = data.recentPoints;
         }
+        // Session recorded server-side — tell the header streak badge to refetch
+        // so the streak ticks live without a reload.
+        notifyWorkoutActivity();
       }
     } catch {
       // Network/auth failure — still show the session summary.
@@ -370,6 +379,7 @@ export default function WorkoutPage() {
     setTargetElo(START_ELO);
     missedRef.current = [];
     seenIdsRef.current = [];
+    clientSessionIdRef.current = crypto.randomUUID();
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
@@ -400,6 +410,9 @@ export default function WorkoutPage() {
     setTargetElo(snap.targetElo ?? START_ELO);
     missedRef.current = snap.missed ?? [];
     seenIdsRef.current = snap.seenIds ?? [];
+    // Reuse the original session id so finishing a resumed workout is idempotent
+    // with any earlier finish attempt. Older snapshots won't have one.
+    clientSessionIdRef.current = snap.clientSessionId ?? crypto.randomUUID();
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
@@ -454,6 +467,7 @@ export default function WorkoutPage() {
       targetElo,
       missed: missedRef.current,
       seenIds: seenIdsRef.current,
+      clientSessionId: clientSessionIdRef.current,
       queue,
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, queue]);

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { stripe } from '@/lib/stripe';
 
 // This endpoint checks if a user has an active Stripe subscription
@@ -68,10 +69,15 @@ export async function POST() {
     const allSubs = [...subscriptions.data, ...trialingSubscriptions.data];
     const activeSubscription = allSubs.find((s) => !isPatronSub(s));
 
+    // Privileged columns (is_patron / subscription_status / expiry) are locked
+    // to the service role by the protect_privileged_profile_columns trigger, so
+    // these server-validated self-heal writes go through the service client.
+    const admin = createServiceClient();
+
     // Self-heal the patron flag (catches a missed webhook) — independent of premium.
     const hasPatronSub = allSubs.some(isPatronSub);
     if (hasPatronSub !== (profile.is_patron === true)) {
-      await supabase
+      await admin
         .from('profiles')
         .update({ is_patron: hasPatronSub })
         .eq('id', user.id);
@@ -95,7 +101,7 @@ export async function POST() {
       ? new Date(currentPeriodEnd * 1000).toISOString()
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // Fallback: 30 days
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await admin
       .from('profiles')
       .update({
         subscription_status: 'premium',

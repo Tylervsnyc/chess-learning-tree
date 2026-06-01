@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { stripe, PRICES, EXPERIMENT_PRICES } from '@/lib/stripe';
 import type { PricingVariant } from '@/lib/posthog-flags';
 
@@ -79,8 +80,10 @@ export async function POST(request: NextRequest) {
       });
       customerId = customer.id;
 
-      // Save customer ID to profile
-      await supabase
+      // Save customer ID to profile. stripe_customer_id is locked to the service
+      // role by the protect_privileged_profile_columns trigger, so this write
+      // (set after creating the Stripe customer server-side) uses the service client.
+      await createServiceClient()
         .from('profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', user.id);

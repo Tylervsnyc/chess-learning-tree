@@ -20,6 +20,8 @@ CREATE TABLE public.profiles (
   stripe_customer_id TEXT,
   -- Patron: support-only flag. Independent of subscription_status — grants NO features, only a gold profile.
   is_patron BOOLEAN DEFAULT FALSE,
+  -- Lifetime Chess Boxing (workout) points. Awarded server-side by /api/workout/finish.
+  workout_points INTEGER NOT NULL DEFAULT 0,
   -- Unlocked levels (array of level numbers, e.g., {1, 2})
   unlocked_levels INTEGER[] DEFAULT '{1}',
   -- Admin flag (all lessons unlocked, admin dashboard access)
@@ -70,7 +72,9 @@ CREATE TABLE public.puzzle_attempts (
   lesson_id TEXT,  -- Which lesson this was part of (optional)
   correct BOOLEAN NOT NULL,
   attempts INTEGER DEFAULT 1,  -- How many tries before getting it right
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  -- NOTE: the live DB column is `attempted_at` (not created_at). The workout
+  -- streak endpoint queries attempted_at; keep this in sync with prod.
+  attempted_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -281,6 +285,78 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- CHESS BOXING (WORKOUT) TABLES
+-- Added 2026-06-01. See supabase/migrations/2026-06-01-workout-*.sql.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- One row per completed Daily Workout / Chess Boxing circuit.
+CREATE TABLE public.workout_sessions (
+  id                UUID        NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id           UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  duration_minutes  INTEGER,
+  points            INTEGER     NOT NULL DEFAULT 0,
+  correct_count     INTEGER     NOT NULL DEFAULT 0,
+  wrong_count       INTEGER     NOT NULL DEFAULT 0,
+  perfect           BOOLEAN     NOT NULL DEFAULT FALSE,
+  missed_puzzles    JSONB       NOT NULL DEFAULT '[]'::jsonb,
+  -- Client-generated idempotency key; a replay skips the points increment.
+  client_session_id TEXT,
+  CONSTRAINT workout_sessions_user_client_uniq UNIQUE (user_id, client_session_id)
+);
+CREATE INDEX idx_workout_sessions_user_created
+  ON public.workout_sessions (user_id, created_at DESC);
+ALTER TABLE public.workout_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own workout sessions" ON public.workout_sessions
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own workout sessions" ON public.workout_sessions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- One row per (user, puzzle) the user has been served, so workouts stay fresh.
+CREATE TABLE public.workout_seen_puzzles (
+  user_id   UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  puzzle_id TEXT        NOT NULL,
+  seen_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, puzzle_id)
+);
+CREATE INDEX idx_workout_seen_user_seen_at
+  ON public.workout_seen_puzzles (user_id, seen_at ASC);
+ALTER TABLE public.workout_seen_puzzles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own seen puzzles" ON public.workout_seen_puzzles
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own seen puzzles" ON public.workout_seen_puzzles
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- BILLING COLUMN PROTECTION
+-- Blocks end users (authenticated/anon) from editing billing columns on their
+-- own profile row. See 2026-06-01-protect-privileged-profile-columns.sql.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.protect_privileged_profile_columns()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF current_user IN ('authenticated', 'anon') THEN
+    IF NEW.subscription_status      IS DISTINCT FROM OLD.subscription_status
+       OR NEW.subscription_expires_at IS DISTINCT FROM OLD.subscription_expires_at
+       OR NEW.is_patron             IS DISTINCT FROM OLD.is_patron
+       OR NEW.stripe_customer_id    IS DISTINCT FROM OLD.stripe_customer_id THEN
+      RAISE EXCEPTION
+        'profiles: billing columns cannot be modified directly'
+        USING ERRCODE = 'insufficient_privilege';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS protect_privileged_profile_columns ON public.profiles;
+CREATE TRIGGER protect_privileged_profile_columns
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.protect_privileged_profile_columns();
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- MIGRATION NOTES

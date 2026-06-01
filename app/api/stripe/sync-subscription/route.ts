@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,8 +50,11 @@ export async function POST(request: NextRequest) {
       ? new Date(subscription.current_period_end * 1000).toISOString()
       : null;
 
-    // Update user profile to premium
-    const { error: updateError } = await supabase
+    // Update user profile to premium. These billing columns are locked to the
+    // service role by the protect_privileged_profile_columns trigger, so the
+    // write (after server-validating the paid Stripe session above) uses the
+    // service client.
+    const { error: updateError } = await createServiceClient()
       .from('profiles')
       .update({
         subscription_status: 'premium',
