@@ -224,6 +224,38 @@ export async function playErrorSound(): Promise<void> {
   osc2.stop(ctx.currentTime + 0.3);
 }
 
+/**
+ * Boxing-ring bell — real recording (public/sounds/boxing-bell.mp3), lazily
+ * loaded and cached on first use. Played at the END of a workout stage.
+ */
+let bellBuffer: AudioBuffer | null = null;
+let bellLoading: Promise<AudioBuffer | null> | null = null;
+
+export async function playBoxingBell(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  if (!bellBuffer) {
+    if (!bellLoading) bellLoading = loadBuffer('/sounds/boxing-bell.mp3');
+    bellBuffer = await bellLoading;
+  }
+  if (bellBuffer) await playBuffer(bellBuffer);
+}
+
+/**
+ * Hand claps — real recording (public/sounds/clap-warning.mp3), lazily loaded
+ * and cached. Played as a 10-second warning before a stage ends.
+ */
+let clapBuffer: AudioBuffer | null = null;
+let clapLoading: Promise<AudioBuffer | null> | null = null;
+
+export async function playWoodClap(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  if (!clapBuffer) {
+    if (!clapLoading) clapLoading = loadBuffer('/sounds/clap-warning.mp3');
+    clapBuffer = await clapLoading;
+  }
+  if (clapBuffer) await playBuffer(clapBuffer);
+}
+
 // Celebration sound - bright C Major arpeggio with compressor to prevent clipping
 async function playCelebration(): Promise<void> {
   const ctx = await ensureAudioReady();
