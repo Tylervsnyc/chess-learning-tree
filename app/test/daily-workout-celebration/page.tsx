@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration';
+import { shareWorkoutStreak } from '@/lib/daily-workout/share';
 
 const MILESTONES = [1, 2, 3, 6, 7, 14, 30, 50, 99, 100, 365];
 
@@ -28,13 +29,32 @@ export default function DailyWorkoutCelebrationPreview() {
             </button>
           ))}
         </div>
+
+        <h2 className="text-lg font-black text-chess-text mt-10 mb-2">Share asset (reel-sized, 1080×1920)</h2>
+        <p className="text-sm text-chess-text-muted mb-4">
+          What the Share button posts: a vertical card saying what they did + their streak.
+          Tap to open the live image for any milestone.
+        </p>
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {MILESTONES.map((n) => (
+            <a
+              key={n}
+              href={`/api/og/workout?streak=${n}`}
+              target="_blank"
+              rel="noreferrer"
+              className="py-3 px-4 rounded-xl bg-chess-surface text-chess-text font-black shadow-sm hover:shadow-md active:translate-y-[1px] transition-all text-center"
+            >
+              Card {n}
+            </a>
+          ))}
+        </div>
       </div>
 
       <DailyWorkoutCelebration
         streak={streak ?? 0}
         open={streak !== null}
         onClose={() => setStreak(null)}
-        onShare={() => alert('Share would open here')}
+        onShare={() => shareWorkoutStreak(streak ?? 0)}
       />
     </div>
   );

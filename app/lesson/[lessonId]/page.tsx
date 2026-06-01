@@ -52,6 +52,7 @@ import { TutorialFlow, ROOK_PUZZLES, ROOK_TUTORIAL_CONFIG } from '@/components/t
 import { getTutorialForLesson, ThemeTutorial } from '@/data/theme-tutorials';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
+import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import confetti from 'canvas-confetti';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
@@ -163,6 +164,9 @@ export default function LessonPage() {
 
   // Session tracking for coaching
   const { startSession, recordPuzzleResult, endSession: endGameSession } = useGameSession('lesson', user?.id);
+
+  // Overall daily streak for the share card (null until loaded)
+  const dailyStreak = useDailyStreak();
 
   // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -282,6 +286,24 @@ export default function LessonPage() {
       }
     }
     return maxTheme;
+  }, [puzzles]);
+
+  // Final solved position of the LAST puzzle (for the reel share card).
+  // puzzleFen is the position after the opponent's setup move (moves[0]); the
+  // solver plays solutionMoves (SAN) from there. Apply them all to get the
+  // final FEN. orient = the solver's color. Returns null if data is missing.
+  const lastPuzzleShare = useMemo((): { fen: string; orient: 'white' | 'black' } | null => {
+    const last = puzzles[puzzles.length - 1];
+    if (!last?.puzzleFen || !last.solutionMoves?.length) return null;
+    try {
+      const chess = new Chess(last.puzzleFen);
+      for (const san of last.solutionMoves) {
+        if (!chess.move(san)) return null;
+      }
+      return { fen: chess.fen(), orient: last.playerColor };
+    } catch {
+      return null;
+    }
   }, [puzzles]);
 
   // Fetch lesson data and puzzles
@@ -1118,10 +1140,15 @@ export default function LessonPage() {
           correctCount={tutorialCorrectCount}
           totalCount={6}
           playerName={profile?.display_name ?? undefined}
-          shareConfig={{
+          shareConfig={dailyStreak === null ? undefined : {
             shareUrl: `https://chesspath.app/lesson/${lessonId}/share/${tutorialCorrectCount === 6 ? 'perfect' : 'completed'}`,
-            ogEndpoint: '/api/og/lesson',
-            ogParams: { score: `${tutorialCorrectCount}/6`, lesson: 'Queen Checkmate: Easy', level: String(getLevelFromLessonId(lessonId) || 1) },
+            ogEndpoint: '/api/og/workout',
+            ogParams: {
+              streak: String(dailyStreak),
+              kind: 'puzzle',
+              label: 'Queen Checkmate: Easy',
+              result: tutorialCorrectCount === 6 ? 'Perfect' : 'Solved',
+            },
             source: 'lesson',
             title: 'Queen Checkmate: Easy | Chess Path',
             text: 'I completed "Queen Checkmate: Easy" on Chess Path!',
@@ -1228,10 +1255,16 @@ export default function LessonPage() {
             activityName={lessonName}
             playerName={profile?.display_name ?? undefined}
 
-            shareConfig={{
+            shareConfig={dailyStreak === null ? undefined : {
               shareUrl: `https://chesspath.app/lesson/${lessonId}/share/${firstAttemptCorrectCount === puzzles.length ? 'perfect' : 'completed'}`,
-              ogEndpoint: '/api/og/lesson',
-              ogParams: { score: `${firstAttemptCorrectCount}/${puzzles.length}`, lesson: lessonName, level: String(getLevelFromLessonId(lessonId) || 1) },
+              ogEndpoint: '/api/og/workout',
+              ogParams: {
+                streak: String(dailyStreak),
+                kind: 'puzzle',
+                label: lessonName,
+                result: firstAttemptCorrectCount === puzzles.length ? 'Perfect' : 'Solved',
+                ...(lastPuzzleShare ? { fen: lastPuzzleShare.fen, orient: lastPuzzleShare.orient } : {}),
+              },
               source: 'lesson',
               title: `${lessonName} | Chess Path`,
               text: `I completed "${lessonName}" on Chess Path!`,

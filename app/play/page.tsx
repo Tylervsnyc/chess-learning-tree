@@ -39,6 +39,7 @@ import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
 import { useRookieMood } from '@/hooks/useRookieMood';
+import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
@@ -393,6 +394,7 @@ export default function PlayRookiePage() {
 
   // Unified mood system
   const moodSystem = useRookieMood(playerColor);
+  const dailyStreak = useDailyStreak();
   const rookieMood = moodSystem.mood;
   const rookieAlarm = moodSystem.alarmVariant;
 
@@ -2404,17 +2406,29 @@ export default function PlayRookiePage() {
               : 'draw'
           }
           playerName={playerName || undefined}
-          shareConfig={{
+          shareConfig={dailyStreak !== null ? {
             shareUrl: 'https://chesspath.app/play',
-            ogEndpoint: '/api/og/play',
+            ogEndpoint: '/api/og/workout',
             ogParams: {
+              streak: String(dailyStreak),
+              kind: 'game',
+              fen: fen.split(' ')[0],
+              orient: playerColor,
               outcome: gameResult === 'You win!' ? 'win' : gameResult === 'Rookie wins!' || gameResult === 'You resigned' ? 'loss' : 'draw',
-              level: String(rookieLevel),
+              ...(gameResult === 'You win!' || gameResult === 'Rookie wins!'
+                ? { result: 'Checkmate' }
+                : gameResult === 'You resigned'
+                  ? { result: 'Resigned' }
+                  : gameResult === 'Stalemate!'
+                    ? { result: 'Stalemate' }
+                    : gameResult === 'Draw!'
+                      ? { result: 'Draw' }
+                      : {}),
             },
             source: 'play',
             title: 'Play Rookie | Chess Path',
             text: gameResult === 'You win!' ? 'I beat Rookie on Chess Path!' : 'I just played Rookie on Chess Path!',
-          }}
+          } : undefined}
           onDismiss={() => {
             setShowActivityComplete(false);
             setReviewMoveIndex(-1);

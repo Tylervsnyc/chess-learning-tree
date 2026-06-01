@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { DailyWorkoutCelebration } from './DailyWorkoutCelebration';
+import { shareWorkoutStreak } from '@/lib/daily-workout/share';
 
 type WorkoutResponse = {
   current: number;
@@ -75,6 +76,7 @@ export function DailyWorkoutWatcher() {
       streak={streak}
       open
       onClose={() => setStreak(null)}
+      onShare={() => shareWorkoutStreak(streak)}
     />
   );
 }

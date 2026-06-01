@@ -82,6 +82,7 @@ import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
 import { useLessonProgress } from '@/hooks/useProgress'
 import { useUser } from '@/hooks/useUser'
+import { useDailyStreak } from '@/hooks/useDailyStreak'
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -175,6 +176,7 @@ export default function OpeningLessonPage() {
   const { completeLesson } = useOpeningProgress()
   const { recordRitualTactics } = useLessonProgress()
   const { user } = useUser()
+  const dailyStreak = useDailyStreak()
 
   const lesson = useMemo((): OpeningLesson | undefined => {
     const lookups: Record<string, (id: string) => OpeningLesson | undefined> = {
@@ -979,18 +981,25 @@ export default function OpeningLessonPage() {
           mode="terminal"
           activityName={lesson.title}
           accentColor={openingConfig?.color ?? '#FF9600'}
-          shareConfig={{
-            shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/perfect`,
-            ogEndpoint: '/api/og/opening',
-            ogParams: {
-              opening: openingConfig?.name ?? 'Opening',
-              score: 'perfect',
-              color: openingConfig?.color ?? '#FF9600',
-            },
-            source: 'opening',
-            title: `${lesson.title} | Chess Path`,
-            text: `I completed "${lesson.title}" on Chess Path!`,
-          }}
+          shareConfig={
+            dailyStreak !== null
+              ? {
+                  shareUrl: `https://chesspath.app/openings/${slug}/${lessonId}/share/perfect`,
+                  ogEndpoint: '/api/og/workout',
+                  ogParams: {
+                    streak: String(dailyStreak),
+                    kind: 'opening',
+                    label: lesson.title,
+                    result: 'Learned',
+                    ...(lesson.steps.at(-1)?.fen ? { fen: lesson.steps.at(-1)!.fen } : {}),
+                    orient: lesson.defaultOrientation,
+                  },
+                  source: 'opening',
+                  title: `${lesson.title} | Chess Path`,
+                  text: `I completed "${lesson.title}" on Chess Path!`,
+                }
+              : undefined
+          }
           onContinue={() => router.push(`/openings/${slug}/tree`)}
         />
       )}
