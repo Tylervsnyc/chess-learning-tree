@@ -704,6 +704,14 @@ export default function WorkoutPage() {
               <li className="flex items-center gap-2">
                 <span className="text-chess-red">✗</span> Wrong answer = ELO −100
               </li>
+              <li className="flex items-center gap-2">
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                Harder puzzle = more points (10–25)
+              </li>
+              <li className="flex items-center gap-2">
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                Solve a streak = combo up to ×2
+              </li>
             </ul>
           </div>
 
