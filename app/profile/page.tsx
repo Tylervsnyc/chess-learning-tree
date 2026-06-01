@@ -452,6 +452,8 @@ export default function ProfilePage() {
   const { user, profile, loading: userLoading, refetchProfile } = useUser();
 
   const [patronOpen, setPatronOpen] = useState(false);
+  // ?preview=gold — see the gold profile without a premium/patron account.
+  const [previewGold, setPreviewGold] = useState(false);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [stats, setStats] = useState<LifetimeStats | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
@@ -490,6 +492,13 @@ export default function ProfilePage() {
       cancelled = true;
     };
   }, [user]);
+
+  // ?preview=gold — local-only visual preview of the gold (premium/patron) state.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('preview') === 'gold') {
+      setPreviewGold(true);
+    }
+  }, []);
 
   // Returning from patron checkout (?patron=1): the webhook flips is_patron
   // server-side, so poll the profile a few times until the gold flag lands.
@@ -582,6 +591,8 @@ export default function ProfilePage() {
   const displayName = profile?.display_name?.trim() || 'Chess Player';
   const subStatus = profile?.subscription_status ?? 'free';
   const isPatron = profile?.is_patron === true;
+  // Profile turns gold for supporters AND premium members (or ?preview=gold).
+  const isGold = isPatron || subStatus === 'premium' || previewGold;
   const initial = displayName.charAt(0).toUpperCase();
 
   const current = streak?.current ?? 0;
@@ -592,22 +603,22 @@ export default function ProfilePage() {
   return (
     <div className="h-full overflow-auto bg-chess-page">
       <div className="max-w-lg md:max-w-2xl mx-auto w-full px-4 md:px-6 pt-4 pb-10 flex flex-col gap-4">
-        {/* Header — name + subscription badge */}
+        {/* Header — name + subscription badge + gold CTA */}
         <header className="flex items-center gap-3">
           <div
             className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
-              isPatron ? '' : 'bg-chess-blue/15'
+              isGold ? '' : 'bg-chess-blue/15'
             }`}
-            style={isPatron ? { background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' } : undefined}
+            style={isGold ? { background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' } : undefined}
           >
-            <span className={`text-xl font-black ${isPatron ? 'text-amber-800' : 'text-chess-blue'}`}>
+            <span className={`text-xl font-black ${isGold ? 'text-amber-800' : 'text-chess-blue'}`}>
               {initial}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <h1
               className={`text-xl font-black truncate leading-tight ${
-                isPatron ? 'text-amber-700' : 'text-chess-text'
+                isGold ? 'text-amber-700' : 'text-chess-text'
               }`}
             >
               {userLoading ? '…' : displayName}
@@ -617,29 +628,22 @@ export default function ProfilePage() {
               {!userLoading && isPatron && <PatronBadge />}
             </div>
           </div>
-        </header>
 
-        {/* Become a Patron — support-only, no features. Hidden once a patron. */}
-        {!userLoading && user && !isPatron && (
-          <button
-            onClick={() => setPatronOpen(true)}
-            className="w-full rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition-transform shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #FFF8E1, #FFECB3)' }}
-          >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-amber-400/40">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-700" aria-hidden>
+          {/* Become a Patron — gold CTA next to the name. Hidden once gold. */}
+          {!userLoading && user && !isGold && (
+            <button
+              onClick={() => setPatronOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-full pl-2.5 pr-3 py-2 text-xs font-black text-amber-900 shadow-sm active:scale-[0.97] transition-transform"
+              style={{ background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-amber-700" aria-hidden>
                 <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
                 <path d="M5 19a2 2 0 012-2h10a2 2 0 012 2 2 2 0 01-2 2H7a2 2 0 01-2-2z" />
               </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-black text-amber-900 leading-tight">Become a Patron</div>
-              <div className="text-xs text-amber-700/80 leading-snug">
-                Support chesspath.app and turn your profile gold.
-              </div>
-            </div>
-          </button>
-        )}
+              Become a Patron
+            </button>
+          )}
+        </header>
 
         {/* ── Streak hero ──────────────────────────────────────────────── */}
         <div
