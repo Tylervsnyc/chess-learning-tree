@@ -152,7 +152,7 @@ function colorForKind(kind: SegmentKind): string {
 function labelForKind(kind: SegmentKind): string {
   switch (kind) {
     case 'chess':
-      return 'Chess';
+      return 'Chess Puzzles';
     case 'workout':
       return 'Workout';
     case 'break':
@@ -265,6 +265,7 @@ export default function WorkoutPage() {
 
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
+  const confettiFiredRef = useRef(false); // fire results confetti once (StrictMode double-mounts effects)
 
   // Resume-on-kill: a saved in-progress workout found on mount (setup screen).
   const [resumable, setResumable] = useState<WorkoutResumeState | null>(null);
@@ -371,6 +372,7 @@ export default function WorkoutPage() {
     seenIdsRef.current = [];
     setFinishResult(null);
     finishingRef.current = false;
+    confettiFiredRef.current = false;
     setPhase('running');
 
     // Prefetch the ramped puzzle queue.
@@ -400,6 +402,7 @@ export default function WorkoutPage() {
     seenIdsRef.current = snap.seenIds ?? [];
     setFinishResult(null);
     finishingRef.current = false;
+    confettiFiredRef.current = false;
     setPhase('running');
 
     // Restore the exact saved queue so the same puzzle comes back up.
@@ -458,6 +461,8 @@ export default function WorkoutPage() {
   // Confetti when the results popup appears — extra burst on a personal best.
   useEffect(() => {
     if (phase !== 'done' || !finishResult) return;
+    if (confettiFiredRef.current) return; // guard StrictMode double-invoke
+    confettiFiredRef.current = true;
     const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF4B4B', '#A560E8', '#FF9600'];
     confetti({ particleCount: 90, spread: 70, origin: { x: 0.2, y: 0.5 }, colors });
     confetti({ particleCount: 90, spread: 70, origin: { x: 0.8, y: 0.5 }, colors });
@@ -570,16 +575,19 @@ export default function WorkoutPage() {
   if (phase === 'setup') {
     return (
       <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
-          <header className="text-center">
-            <h1 className="text-xl font-black text-chess-text">Chess Boxing</h1>
-          </header>
-
-          {/* Explanation — kept directly below the title */}
-          <p className="-mt-1 text-sm text-chess-text-muted text-center leading-relaxed">
-            Solve chess puzzles between bursts of exercise. Puzzles start easy and
-            climb toward master level as you go.
-          </p>
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-4 flex flex-col gap-3">
+          {/* Title in its own fun window */}
+          <div
+            className="rounded-2xl p-3.5 text-center shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef, #f97316)' }}
+          >
+            <h1
+              className="text-2xl font-black text-white tracking-tight"
+              style={{ textShadow: '0 2px 6px rgba(0,0,0,0.25)' }}
+            >
+              Chess Boxing
+            </h1>
+          </div>
 
           {resumable && (
             <div className="rounded-2xl border-2 border-chess-blue/40 bg-chess-blue/5 p-4 flex flex-col gap-3">
@@ -678,41 +686,25 @@ export default function WorkoutPage() {
             </div>
           </div>
 
-          {/* Points — its own fun window, below the rounds picker */}
+          {/* Difficulty adapts — compact bullets */}
           <div
-            className="rounded-2xl border border-amber-200 shadow-sm p-4 flex flex-col items-center gap-3 text-center"
+            className="rounded-2xl border border-amber-200 shadow-sm p-3"
             style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' }}
           >
-            <div className="flex items-center gap-1.5">
-              <Icon path={ICONS.bolt} className="w-4 h-4 text-amber-500" />
+            <div className="flex items-center gap-1.5 mb-2">
+              <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500" />
               <h2 className="text-[11px] font-black text-amber-700 uppercase tracking-wide">
-                How points work
+                How it works
               </h2>
             </div>
-            <p className="text-xs text-amber-800/80 leading-relaxed">
-              The harder the puzzle, the more it&apos;s worth. Solve a streak in a
-              row to stack a combo on top.
-            </p>
-            <div className="flex gap-2 w-full">
-              <div
-                className="flex-1 rounded-xl p-3 text-white"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)' }}
-              >
-                <div className="text-2xl font-black leading-none">10–25</div>
-                <div className="text-[10px] font-bold mt-1 leading-tight opacity-95">
-                  Tougher puzzles pay more
-                </div>
-              </div>
-              <div
-                className="flex-1 rounded-xl p-3 text-white"
-                style={{ background: 'linear-gradient(135deg, #fbbf24, #f97316)' }}
-              >
-                <div className="text-2xl font-black leading-none">×2</div>
-                <div className="text-[10px] font-bold mt-1 leading-tight opacity-95">
-                  Chain a streak for a combo
-                </div>
-              </div>
-            </div>
+            <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
+              <li className="flex items-center gap-2">
+                <span className="text-chess-green">✓</span> Correct answer = ELO +60
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-chess-red">✗</span> Wrong answer = ELO −100
+              </li>
+            </ul>
           </div>
 
           <button
