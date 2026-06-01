@@ -110,6 +110,9 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
             </>
           ) : (
             <>
+              {/* Daily workout streak — to the left of Play */}
+              {user && <DailyWorkoutBadge />}
+
               {/* Play */}
               <Link
                 href="/play"
@@ -151,9 +154,6 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
                   Patron
                 </Link>
               )}
-
-              {/* Daily workout streak — Play + Path completed today */}
-              {user && <DailyWorkoutBadge />}
 
               {/* Guest sign up */}
               {!loading && !user && (

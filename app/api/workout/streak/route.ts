@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [lessons, games, puzzles] = await Promise.all([
+  const [lessons, games, puzzles, openings] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -44,13 +44,19 @@ export async function GET(request: NextRequest) {
       .select('created_at')
       .eq('user_id', user.id)
       .gte('created_at', since),
+    supabase
+      .from('opening_progress')
+      .select('completed_at')
+      .eq('user_id', user.id)
+      .gte('completed_at', since),
   ]);
 
-  if (lessons.error || games.error || puzzles.error) {
+  if (lessons.error || games.error || puzzles.error || openings.error) {
     console.error('workout streak read failed', {
       lessons: lessons.error,
       games: games.error,
       puzzles: puzzles.error,
+      openings: openings.error,
     });
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
@@ -61,6 +67,7 @@ export async function GET(request: NextRequest) {
       ...(lessons.data ?? []).map((r) => r.completed_at as string),
       ...(games.data ?? []).map((r) => r.ended_at as string),
       ...(puzzles.data ?? []).map((r) => r.created_at as string),
+      ...(openings.data ?? []).map((r) => r.completed_at as string),
     ],
     tz,
   );
