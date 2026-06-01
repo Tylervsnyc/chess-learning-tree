@@ -19,6 +19,7 @@ import {
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import confetti from 'canvas-confetti';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -218,6 +219,9 @@ interface FinishResult {
   right: number;
   wrong: number;
   perfect: boolean;
+  isPersonalBest: boolean;
+  previousBest: number;
+  recentPoints: number[]; // chronological, this session last
 }
 
 export default function WorkoutPage() {
@@ -272,6 +276,9 @@ export default function WorkoutPage() {
     const perfect = wrong === 0 && right > 0;
     const sessionPoints = Math.max(0, score) + (perfect ? PERFECT_SESSION_BONUS : 0);
     let lifetime: number | null = null;
+    let isPersonalBest = false;
+    let previousBest = 0;
+    let recentPoints: number[] = [sessionPoints];
     try {
       const res = await fetch('/api/workout/finish', {
         method: 'POST',
@@ -289,13 +296,27 @@ export default function WorkoutPage() {
       if (res.ok) {
         const data = await res.json();
         if (typeof data?.workoutPoints === 'number') lifetime = data.workoutPoints;
+        if (typeof data?.isPersonalBest === 'boolean') isPersonalBest = data.isPersonalBest;
+        if (typeof data?.previousBest === 'number') previousBest = data.previousBest;
+        if (Array.isArray(data?.recentPoints) && data.recentPoints.length) {
+          recentPoints = data.recentPoints;
+        }
       }
     } catch {
       // Network/auth failure — still show the session summary.
     }
 
     clearResume(); // session over — drop the resume snapshot
-    setFinishResult({ sessionPoints, lifetime, right, wrong, perfect });
+    setFinishResult({
+      sessionPoints,
+      lifetime,
+      right,
+      wrong,
+      perfect,
+      isPersonalBest,
+      previousBest,
+      recentPoints,
+    });
     setPhase('done');
   }, [score, right, wrong, minutes]);
 
@@ -380,7 +401,16 @@ export default function WorkoutPage() {
   useEffect(() => {
     // ?preview=result — show the completion popup with sample data.
     if (new URLSearchParams(window.location.search).get('preview') === 'result') {
-      setFinishResult({ sessionPoints: 420, lifetime: 3180, right: 14, wrong: 0, perfect: true });
+      setFinishResult({
+        sessionPoints: 420,
+        lifetime: 3180,
+        right: 14,
+        wrong: 0,
+        perfect: true,
+        isPersonalBest: true,
+        previousBest: 360,
+        recentPoints: [180, 240, 300, 210, 360, 280, 420],
+      });
       setPhase('done');
       return;
     }
@@ -405,6 +435,28 @@ export default function WorkoutPage() {
       queue,
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, queue]);
+
+  // Confetti when the results popup appears — extra burst on a personal best.
+  useEffect(() => {
+    if (phase !== 'done' || !finishResult) return;
+    const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF4B4B', '#A560E8', '#FF9600'];
+    confetti({ particleCount: 90, spread: 70, origin: { x: 0.2, y: 0.5 }, colors });
+    confetti({ particleCount: 90, spread: 70, origin: { x: 0.8, y: 0.5 }, colors });
+    if (finishResult.isPersonalBest) {
+      const t = setTimeout(
+        () =>
+          confetti({
+            particleCount: 180,
+            spread: 120,
+            startVelocity: 48,
+            origin: { x: 0.5, y: 0.45 },
+            colors: ['#FFE9A8', '#F4B40A', '#FFD24A', ...colors],
+          }),
+        320,
+      );
+      return () => clearTimeout(t);
+    }
+  }, [phase, finishResult]);
 
   // ── Countdown timer ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -641,13 +693,36 @@ export default function WorkoutPage() {
             .workout-result-overlay { animation: workoutResultIn .3s ease-out; }
             .workout-result-card { animation: workoutResultIn .45s cubic-bezier(.2,.9,.3,1.2); }
           `}</style>
-          <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-5 text-center">
-            <Icon path={ICONS.trophy} className="w-14 h-14 text-chess-gold" />
-            <h1 className="text-2xl font-black text-chess-text -mt-1">Chess Boxing complete</h1>
+          <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-4 text-center">
+            {/* Gold medal badge */}
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md shrink-0"
+              style={{ background: 'linear-gradient(135deg, #FFE9A8, #F4B40A)' }}
+            >
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" aria-hidden>
+                <path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.3 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2Z" />
+              </svg>
+            </div>
+
+            {finishResult.isPersonalBest && (
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wide text-amber-900 -mt-1"
+                style={{ background: 'linear-gradient(135deg, #FFE9A8, #FFD24A)' }}
+              >
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5" />
+                New personal best
+              </div>
+            )}
+
+            <h1 className="text-2xl font-black text-chess-text">Chess Boxing complete</h1>
 
             <div className="w-full flex flex-col gap-4">
               <div>
-                <div className="text-5xl font-black text-chess-green tabular-nums">
+                <div
+                  className={`text-5xl font-black tabular-nums ${
+                    finishResult.isPersonalBest ? 'text-chess-gold' : 'text-chess-green'
+                  }`}
+                >
                   +{finishResult.sessionPoints}
                 </div>
                 <div className="text-sm font-semibold text-chess-text-muted mt-1">
@@ -659,6 +734,46 @@ export default function WorkoutPage() {
                 <div className="flex items-center justify-center gap-1.5 text-sm font-bold text-chess-gold">
                   <Icon path={ICONS.bolt} className="w-4 h-4" />
                   Flawless run · +{PERFECT_SESSION_BONUS} bonus
+                </div>
+              )}
+
+              {/* Where this session lands vs recent sessions */}
+              {finishResult.recentPoints.length > 1 && (
+                <div className="w-full pt-1">
+                  {(() => {
+                    const pts = finishResult.recentPoints.slice(-8);
+                    const max = Math.max(1, ...pts);
+                    const lastIdx = pts.length - 1;
+                    return (
+                      <div className="flex items-end justify-center gap-1.5 h-20">
+                        {pts.map((p, i) => {
+                          const isLast = i === lastIdx;
+                          const h = Math.max(6, Math.round((p / max) * 72));
+                          return (
+                            <div
+                              key={i}
+                              className="flex-1 max-w-[26px] rounded-t-md"
+                              style={{
+                                height: h,
+                                background: isLast
+                                  ? finishResult.isPersonalBest
+                                    ? '#F4B40A'
+                                    : '#58CC02'
+                                  : '#D6E2EC',
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                  <div className="text-xs font-semibold text-chess-text-muted mt-2">
+                    {finishResult.isPersonalBest
+                      ? 'Your highest score yet'
+                      : finishResult.previousBest > 0
+                        ? `This session vs recent · best ${finishResult.previousBest}`
+                        : 'Your first session'}
+                  </div>
                 </div>
               )}
 
@@ -702,7 +817,7 @@ export default function WorkoutPage() {
     );
   }
 
-  // ── RUNNING ───────────────────────────────────────────────────────────────
+  // ── RUNNING (and confetti on the results popup) ───────────────────────────
   if (!current) {
     return (
       <div className="h-full overflow-auto bg-chess-page flex items-center justify-center">
