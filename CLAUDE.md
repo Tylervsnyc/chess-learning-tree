@@ -16,12 +16,16 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 **Capability map (how Claude does the work):**
 - *Measure:* Supabase (truth) · `scripts/db-baseline.ts` · PostHog + `scripts/daily-report.ts` (fixed) · Stripe / `revenue_snapshots`
-- *Acquire:* Instagram (proven, manual) · Remotion content pipeline (built; needs a posting API) · comment-seeding (Claude drafts in Rookie's voice, Tyler posts) · WebSearch · Canva
+- *Acquire:* **Instagram auto-posting LIVE** (Instagram Login API direct → Vercel Blob queue → daily cron `/api/cron/ig-post` at 8am ET; `lib/instagram.ts`, `lib/ig-queue.ts`; queue seeded with 99 videos ≈ 99 days; gated by `IG_AUTOPOST`) · Remotion content pipeline (built; renders locally) · comment-seeding (Claude drafts in Rookie's voice, Tyler posts) · WebSearch · Canva
 - *Convert / Retain:* the app (features / flags / A-B) · **Resend email** (`lib/email`, `sendEmail()`, already "from Rookie" — underused, primary near-term lever) · web push (TO BUILD) · daily loop (workout / rook / run)
-- *Operate:* Linear (track) · Slack (daily report) · Cron / Schedule (heartbeat) · Google Drive (queues)
-- *Gaps:* no social posting API · no web push · no safe browser automation for posting
+- *Operate:* Linear (track) · Slack (daily report) · Cron / Schedule (heartbeat) · Google Drive (queues) · Vercel Blob (media)
+- *Gaps:* no web push · no safe browser automation for posting · IG token needs App Secret to self-refresh past 60 days (see [[project_ig_business_setup]])
 
-**Guardrails:** never touch live Stripe/billing without Tyler · everything behind flags · nothing posts externally until Tyler okays the posting setup · hard spend cap · daily report.
+**Instagram posting (LIVE 2026-06-01):** Tyler authorized full auto-post. Daily puzzle Reels post from a Blob queue via Vercel cron — no manual step. To add more content: render locally, then `npx tsx scripts/ig-upload-queue.ts` to top up the queue. Kill switch: set `IG_AUTOPOST` ≠ `true`. TODO: App Secret for token auto-refresh; rotate the token (came through chat).
+
+**Deploy infra (FIXED 2026-06-01):** Vercel git auto-deploy had been broken ~55 days (repo recased `tylervsnyc`→`Tylervsnyc`). Reconnected via `vercel git connect` + remote URL fix; also fixed a `CRON_SECRET` whitespace error blocking builds. Pushes to `main` now deploy. **Always verify a deploy actually lands before calling a feature live.**
+
+**Guardrails:** never touch live Stripe/billing without Tyler · everything behind flags · external posting is now AUTHORIZED for Instagram (Tyler okayed auto-post 2026-06-01); still confirm before opening any NEW external channel · hard spend cap · daily report.
 
 ---
 
