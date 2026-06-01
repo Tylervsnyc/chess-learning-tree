@@ -58,7 +58,7 @@ export function DailyWorkoutBadge() {
       title={title}
       className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black transition-all ${
         completedToday
-          ? 'bg-orange-200 text-orange-800 shadow-[0_2px_0_0_#f59e0b]'
+          ? 'bg-orange-100 text-orange-800 shadow-[0_2px_0_0_#fbbf24]'
           : 'bg-chess-text/50 text-white animate-pulse-soft'
       }`}
     >
