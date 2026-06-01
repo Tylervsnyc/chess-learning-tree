@@ -19,7 +19,6 @@ import {
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 import { BreathingRook } from '@/components/ui/BreathingRook';
-import { MiniRookieIcon } from '@/components/shared/MiniRookieIcon';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import confetti from 'canvas-confetti';
 
@@ -738,111 +737,106 @@ export default function WorkoutPage() {
             .workout-result-overlay { animation: workoutResultIn .3s ease-out; }
             .workout-result-card { animation: workoutResultIn .45s cubic-bezier(.2,.9,.3,1.2); }
           `}</style>
-          <div className="workout-result-card w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-4 text-center">
-            {/* Rookie, celebrating with you */}
-            <MiniRookieIcon active gold={finishResult.isPersonalBest} size={88} />
+          <div className="workout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col items-center gap-2.5 text-center">
+            <h1 className="text-lg font-black text-chess-text">Chess Boxing complete</h1>
+
+            {/* Rookie, breathing calmly, with her line right below */}
+            <BreathingRook size="sm" animate />
+            <div className="w-full rounded-xl bg-chess-page px-3 py-2 text-xs font-semibold text-chess-text leading-snug">
+              {finishResult.rookieLine}
+            </div>
 
             {finishResult.isPersonalBest && (
               <div
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wide text-amber-900 -mt-1"
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide text-amber-900"
                 style={{ background: 'linear-gradient(135deg, #FFE9A8, #FFD24A)' }}
               >
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5" />
+                <Icon path={ICONS.bolt} className="w-3 h-3" />
                 New personal best
               </div>
             )}
 
-            <h1 className="text-2xl font-black text-chess-text">Chess Boxing complete</h1>
-
-            {/* Rookie's encouragement */}
-            <div className="w-full rounded-2xl bg-chess-page px-4 py-3 text-sm font-semibold text-chess-text leading-snug">
-              {finishResult.rookieLine}
+            <div>
+              <div
+                className={`text-4xl font-black tabular-nums leading-none ${
+                  finishResult.isPersonalBest ? 'text-chess-gold' : 'text-chess-green'
+                }`}
+              >
+                +{finishResult.sessionPoints}
+              </div>
+              <div className="text-xs font-semibold text-chess-text-muted mt-1">
+                points this session
+              </div>
             </div>
 
-            <div className="w-full flex flex-col gap-4">
+            {finishResult.perfect && (
+              <div className="flex items-center justify-center gap-1 text-xs font-bold text-chess-gold">
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5" />
+                Flawless run · +{PERFECT_SESSION_BONUS} bonus
+              </div>
+            )}
+
+            {/* Where this session lands vs recent sessions */}
+            {finishResult.recentPoints.length > 1 && (
+              <div className="w-full">
+                {(() => {
+                  const pts = finishResult.recentPoints.slice(-8);
+                  const max = Math.max(1, ...pts);
+                  const lastIdx = pts.length - 1;
+                  return (
+                    <div className="flex items-end justify-center gap-1.5 h-12">
+                      {pts.map((p, i) => {
+                        const isLast = i === lastIdx;
+                        const h = Math.max(5, Math.round((p / max) * 44));
+                        return (
+                          <div
+                            key={i}
+                            className="flex-1 max-w-[22px] rounded-t"
+                            style={{
+                              height: h,
+                              background: isLast
+                                ? finishResult.isPersonalBest
+                                  ? '#F4B40A'
+                                  : '#58CC02'
+                                : '#D6E2EC',
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+                <div className="text-[11px] font-semibold text-chess-text-muted mt-1.5">
+                  {finishResult.isPersonalBest
+                    ? 'Your highest score yet'
+                    : finishResult.previousBest > 0
+                      ? `Best ${finishResult.previousBest}`
+                      : 'Your first session'}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-center gap-6 w-full pt-2 border-t border-slate-100">
               <div>
-                <div
-                  className={`text-5xl font-black tabular-nums ${
-                    finishResult.isPersonalBest ? 'text-chess-gold' : 'text-chess-green'
-                  }`}
-                >
-                  +{finishResult.sessionPoints}
+                <div className="text-xl font-black text-chess-green tabular-nums">
+                  {finishResult.right}
                 </div>
-                <div className="text-sm font-semibold text-chess-text-muted mt-1">
-                  points this session
-                </div>
+                <div className="text-[11px] font-semibold text-chess-text-muted">solved</div>
               </div>
-
-              {finishResult.perfect && (
-                <div className="flex items-center justify-center gap-1.5 text-sm font-bold text-chess-gold">
-                  <Icon path={ICONS.bolt} className="w-4 h-4" />
-                  Flawless run · +{PERFECT_SESSION_BONUS} bonus
+              <div>
+                <div className="text-xl font-black text-chess-red tabular-nums">
+                  {finishResult.wrong}
                 </div>
-              )}
-
-              {/* Where this session lands vs recent sessions */}
-              {finishResult.recentPoints.length > 1 && (
-                <div className="w-full pt-1">
-                  {(() => {
-                    const pts = finishResult.recentPoints.slice(-8);
-                    const max = Math.max(1, ...pts);
-                    const lastIdx = pts.length - 1;
-                    return (
-                      <div className="flex items-end justify-center gap-1.5 h-20">
-                        {pts.map((p, i) => {
-                          const isLast = i === lastIdx;
-                          const h = Math.max(6, Math.round((p / max) * 72));
-                          return (
-                            <div
-                              key={i}
-                              className="flex-1 max-w-[26px] rounded-t-md"
-                              style={{
-                                height: h,
-                                background: isLast
-                                  ? finishResult.isPersonalBest
-                                    ? '#F4B40A'
-                                    : '#58CC02'
-                                  : '#D6E2EC',
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-                  <div className="text-xs font-semibold text-chess-text-muted mt-2">
-                    {finishResult.isPersonalBest
-                      ? 'Your highest score yet'
-                      : finishResult.previousBest > 0
-                        ? `This session vs recent · best ${finishResult.previousBest}`
-                        : 'Your first session'}
-                  </div>
-                </div>
-              )}
-
+                <div className="text-[11px] font-semibold text-chess-text-muted">missed</div>
+              </div>
               {finishResult.lifetime !== null && (
-                <div className="text-sm text-chess-text-muted">
-                  Lifetime total:{' '}
-                  <span className="font-bold text-chess-text tabular-nums">
+                <div>
+                  <div className="text-xl font-black text-chess-text tabular-nums">
                     {finishResult.lifetime.toLocaleString()}
-                  </span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-chess-text-muted">lifetime</div>
                 </div>
               )}
-
-              <div className="flex justify-center gap-6 pt-2 border-t border-slate-100">
-                <div>
-                  <div className="text-2xl font-black text-chess-green tabular-nums">
-                    {finishResult.right}
-                  </div>
-                  <div className="text-xs font-semibold text-chess-text-muted">solved</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-black text-chess-red tabular-nums">
-                    {finishResult.wrong}
-                  </div>
-                  <div className="text-xs font-semibold text-chess-text-muted">missed</div>
-                </div>
-              </div>
             </div>
 
             <button
@@ -850,7 +844,7 @@ export default function WorkoutPage() {
                 playButtonClick();
                 router.push('/profile');
               }}
-              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-3.5 shadow-sm transition"
+              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
             >
               Done
             </button>
