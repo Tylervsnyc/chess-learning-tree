@@ -13,10 +13,21 @@
  */
 
 import { config } from 'dotenv';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 config({ path: '.env.local' });
 
 const PH_API_KEY = process.env.POSTHOG_PERSONAL_API_KEY!;
 const PH_PROJECT_ID = process.env.POSTHOG_PROJECT_ID || '296329';
+
+// Supabase service-role client — the DB is the source of truth for cohort
+// retention. PostHog distinct_id mapping is unreliable on our tiny base, so
+// D1/D7 are computed straight from signups + activity rows (see getCohortRetention).
+function makeServiceClient(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.replace(/\s+/g, '');
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
+}
 
 // ---------------------------------------------------------------------------
 // Args
@@ -322,6 +333,121 @@ async function getPlayDetails(filter: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Cohort retention (D1 / D7) — DB is the source of truth
+// ---------------------------------------------------------------------------
+//
+// A real signup-cohort read, not the period-overlap proxy above. For each
+// signup we bucket their own activity by whole days SINCE signup (UTC), then:
+//   D1 retained  = active on the day after signup (offset == 1)
+//   D7 retained  = active on ANY day in offsets 1..7 (rolling return-within-a-week)
+// Only "matured" cohorts count: a user must have signed up long enough ago that
+// the window has fully elapsed (>= 2 days for D1, >= 8 days for D7), else they'd
+// drag the rate down for not-yet-possible activity.
+type CohortRetention = {
+  available: boolean;
+  d1: { cohort: number; retained: number };
+  d7: { cohort: number; retained: number };
+  windowDays: number;
+};
+
+const DAY_MS = 86400000;
+const dayIndex = (ts: string | Date) => Math.floor(new Date(ts).getTime() / DAY_MS); // UTC day number
+
+async function getCohortRetention(windowDays = 60): Promise<CohortRetention> {
+  const empty: CohortRetention = {
+    available: false,
+    d1: { cohort: 0, retained: 0 },
+    d7: { cohort: 0, retained: 0 },
+    windowDays,
+  };
+  const sb = makeServiceClient();
+  if (!sb) {
+    console.warn('  [cohort] no Supabase service creds — skipping D1/D7');
+    return empty;
+  }
+
+  const since = new Date(Date.now() - windowDays * DAY_MS).toISOString();
+
+  // Signups in the window: user id -> signup UTC day index.
+  const { data: signups, error: sErr } = await sb
+    .from('profiles')
+    .select('id, created_at')
+    .gte('created_at', since)
+    .order('created_at', { ascending: true });
+  if (sErr || !signups) {
+    console.warn(`  [cohort] signups read failed: ${sErr?.message ?? 'no data'}`);
+    return empty;
+  }
+  const signupDay = new Map<string, number>();
+  for (const r of signups) {
+    if (r.id && r.created_at) signupDay.set(r.id as string, dayIndex(r.created_at as string));
+  }
+  if (signupDay.size === 0) return { ...empty, available: true };
+
+  // Activity rows across every loop surface. Probed defensively — a missing
+  // table/column is skipped + logged, matching db-baseline. Matches the streak
+  // definition of "active" (do-anything), plus workout sessions.
+  const sources: { table: string; ts: string }[] = [
+    { table: 'puzzle_attempts', ts: 'attempted_at' },
+    { table: 'lesson_progress', ts: 'started_at' },
+    { table: 'game_sessions', ts: 'ended_at' },
+    { table: 'daily_challenge_results', ts: 'created_at' },
+    { table: 'opening_progress', ts: 'completed_at' },
+    { table: 'workout_sessions', ts: 'created_at' },
+  ];
+
+  // user id -> set of day-offsets-since-signup on which they were active.
+  const offsets = new Map<string, Set<number>>();
+  for (const { table, ts } of sources) {
+    const { data, error } = await sb
+      .from(table)
+      .select(`user_id, ${ts}`)
+      .gte(ts, since)
+      .not(ts, 'is', null)
+      .limit(50000);
+    if (error) {
+      console.warn(`  [cohort] skip ${table}.${ts}: ${error.message}`);
+      continue;
+    }
+    const rows = (data ?? []) as unknown as Array<Record<string, unknown>>;
+    for (const row of rows) {
+      const uid = row.user_id as string | null;
+      const when = row[ts] as string | null;
+      if (!uid || !when) continue;
+      const start = signupDay.get(uid);
+      if (start === undefined) continue; // activity from a pre-window signup
+      const offset = dayIndex(when) - start;
+      if (offset <= 0) continue; // signup-day activity isn't "return"
+      let set = offsets.get(uid);
+      if (!set) { set = new Set(); offsets.set(uid, set); }
+      set.add(offset);
+    }
+  }
+
+  const today = dayIndex(new Date());
+  let d1Cohort = 0, d1Ret = 0, d7Cohort = 0, d7Ret = 0;
+  for (const [uid, start] of signupDay) {
+    const age = today - start;
+    const set = offsets.get(uid);
+    if (age >= 2) { // day+1 has fully elapsed
+      d1Cohort++;
+      if (set?.has(1)) d1Ret++;
+    }
+    if (age >= 8) { // days 1..7 have fully elapsed
+      d7Cohort++;
+      if (set && [1, 2, 3, 4, 5, 6, 7].some((o) => set.has(o))) d7Ret++;
+    }
+  }
+
+  return {
+    available: true,
+    d1: { cohort: d1Cohort, retained: d1Ret },
+    d7: { cohort: d7Cohort, retained: d7Ret },
+    windowDays,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
@@ -361,6 +487,9 @@ async function main() {
     getDeviceSplit(f), getTopPages(f), getPlayDetails(f),
   ]);
 
+  // Cohort retention — straight from the DB, independent of PostHog.
+  const cohort = await getCohortRetention();
+
   // ---------------------------------------------------------------------------
   // Print report
   // ---------------------------------------------------------------------------
@@ -373,6 +502,21 @@ async function main() {
   console.log(`  Total events:     ${overview.events}`);
   console.log(`  Mobile/Desktop:   ${devices.mobile}/${devices.desktop}  (${pct(devices.mobile, devices.total)} mobile)`);
   console.log(`  Returning users:  ${returning}  (${pct(returning, overview.users)} of total)`);
+
+  console.log(section(`COHORT RETENTION (DB truth, last ${cohort.windowDays}d of signups)`));
+  if (!cohort.available) {
+    console.log('  Unavailable — no Supabase service creds in env.');
+  } else if (cohort.d1.cohort === 0) {
+    console.log('  No matured signup cohorts in window yet.');
+  } else {
+    console.log(`  D1 (active day after signup):   ${cohort.d1.retained}/${cohort.d1.cohort}  (${pct(cohort.d1.retained, cohort.d1.cohort)})`);
+    if (cohort.d7.cohort > 0) {
+      console.log(`  D7 (returned within a week):    ${cohort.d7.retained}/${cohort.d7.cohort}  (${pct(cohort.d7.retained, cohort.d7.cohort)})`);
+    } else {
+      console.log(`  D7: no cohort old enough (need signups >= 8d ago)`);
+    }
+    console.log(`  Note: D1 = active on signup-day+1; D7 = active any day in offsets 1-7 (UTC).`);
+  }
 
   if (sources.length > 0) {
     console.log(`\n  Traffic sources:`);
