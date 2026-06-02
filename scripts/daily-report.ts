@@ -211,30 +211,31 @@ const IG_SOURCE = `(
  * extra WHERE predicate (e.g. IG_SOURCE).
  */
 async function getSourceFunnel(filter: string, sourceClause: string) {
+  // After onboarding, users branch to a game OR a lesson/tutorial — parallel,
+  // not sequential. Collapse them into one "started an activity" step so the
+  // funnel stays monotonic and the real cliff is unambiguous.
   const r = await hogql(`
     SELECT
       uniqIf(person_id, event = '$pageview' AND (properties.$pathname = '/' OR properties.$pathname = '/welcome')) as landing,
       uniqIf(person_id, event = 'onboarding_started') as onb_started,
       uniqIf(person_id, event = 'onboarding_completed') as onb_completed,
-      uniqIf(person_id, event = 'tutorial_started') as tut_started,
-      uniqIf(person_id, event = 'game_started') as game_started,
+      uniqIf(person_id, event IN ('game_started', 'tutorial_started', 'lesson_started')) as activity_started,
       uniqIf(person_id, event = 'onboarding_signup_prompt_shown') as prompt_shown,
       uniqIf(person_id, event = 'onboarding_signup_prompt_oauth_started') as oauth_started,
       uniqIf(person_id, event = 'signup_completed') as signup_completed,
       uniq(person_id) as any_person
     FROM events WHERE ${filter} AND ${sourceClause}
   `, 'ig-funnel');
-  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0];
   return {
     landing: num(row[0]),
     onbStarted: num(row[1]),
     onbCompleted: num(row[2]),
-    tutStarted: num(row[3]),
-    gameStarted: num(row[4]),
-    promptShown: num(row[5]),
-    oauthStarted: num(row[6]),
-    signupCompleted: num(row[7]),
-    anyPerson: num(row[8]),
+    activityStarted: num(row[3]),
+    promptShown: num(row[4]),
+    oauthStarted: num(row[5]),
+    signupCompleted: num(row[6]),
+    anyPerson: num(row[7]),
   };
 }
 
@@ -603,9 +604,8 @@ async function main() {
     const igSteps = [
       { label: 'Landed (/ or /welcome)', count: igFunnel.landing },
       { label: 'Onboarding started', count: igFunnel.onbStarted },
-      { label: 'Onboarding completed', count: igFunnel.onbCompleted },
-      { label: 'Tutorial started', count: igFunnel.tutStarted },
-      { label: 'Game started (/play)', count: igFunnel.gameStarted },
+      { label: 'Picked a path', count: igFunnel.onbCompleted },
+      { label: 'Started an activity', count: igFunnel.activityStarted },
       { label: 'Signup prompt shown', count: igFunnel.promptShown },
       { label: 'One-tap OAuth started', count: igFunnel.oauthStarted },
       { label: 'Signup completed', count: igFunnel.signupCompleted },

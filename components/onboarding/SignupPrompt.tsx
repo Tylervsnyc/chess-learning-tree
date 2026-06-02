@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -52,14 +52,20 @@ export function SignupPrompt({
   valueLabel?: string;
 }) {
   const router = useRouter();
-  const variant = useExperiment('win_signup_capture', 'treatment');
+  const { variant, ready } = useExperiment('win_signup_capture', 'treatment');
   const isTreatment = variant !== 'control';
   const [line] = useState(pickLine);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
 
+  // Log the impression exactly once, after the variant has settled — never the
+  // fallback first and the resolved value second (which would double-count and
+  // split one impression across two variant cells).
+  const shownLogged = useRef(false);
   useEffect(() => {
+    if (!ready || shownLogged.current) return;
+    shownLogged.current = true;
     OnboardingEvents.signupPromptShown(source, variant);
-  }, [source, variant]);
+  }, [ready, source, variant]);
 
   const dismiss = (method: 'x' | 'backdrop' | 'maybe_later') => {
     OnboardingEvents.signupPromptDismissed(source, method, variant);

@@ -176,8 +176,11 @@ export function useUser() {
         if (sessionUser) {
           fetchProfile(sessionUser.id, sessionUser.email || '');
 
-          // Track Google OAuth completions (signup/login pages set 'auth_method' in localStorage)
-          if (event === 'SIGNED_IN' && localStorage.getItem('auth_method') === 'google') {
+          // Track OAuth completions (signup/login surfaces set 'auth_method' in
+          // localStorage before redirecting). Covers Google AND Apple — the
+          // win-moment one-tap prompt offers both, so Apple must count too.
+          const authMethod = localStorage.getItem('auth_method');
+          if (event === 'SIGNED_IN' && (authMethod === 'google' || authMethod === 'apple')) {
             localStorage.removeItem('auth_method');
             identifyUser(sessionUser.id, { email: sessionUser.email });
 
@@ -186,7 +189,7 @@ export function useUser() {
             const isNewSignup = Date.now() - createdAt < 60_000;
 
             if (isNewSignup) {
-              AuthEvents.signupCompleted('google');
+              AuthEvents.signupCompleted(authMethod);
             } else {
               AuthEvents.loginCompleted();
             }
