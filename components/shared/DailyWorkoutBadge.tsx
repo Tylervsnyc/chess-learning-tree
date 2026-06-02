@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
+import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { MiniRookieIcon } from './MiniRookieIcon';
 
 type WorkoutResponse = {
@@ -15,6 +16,9 @@ type WorkoutResponse = {
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const [data, setData] = useState<WorkoutResponse | null>(null);
+  // Last `current` we've seen, to detect a live increase. null = no read yet
+  // (the first read is a baseline, not an extension — don't fire on mount).
+  const lastStreakRef = useRef<number | null>(null);
 
   const refetch = useCallback(() => {
     if (!user) return;
@@ -22,7 +26,14 @@ export function DailyWorkoutBadge() {
     fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (d) setData(d as WorkoutResponse);
+        if (!d) return;
+        const next = d as WorkoutResponse;
+        const prev = lastStreakRef.current;
+        if (prev !== null && next.current > prev) {
+          WorkoutEvents.streakExtended(next.current, next.longest);
+        }
+        lastStreakRef.current = next.current;
+        setData(next);
       })
       .catch(() => {});
   }, [user]);

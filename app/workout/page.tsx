@@ -19,6 +19,7 @@ import {
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 import { notifyWorkoutActivity } from '@/lib/daily-workout/events';
+import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import confetti from 'canvas-confetti';
@@ -330,6 +331,15 @@ export default function WorkoutPage() {
       // Network/auth failure — still show the session summary.
     }
 
+    WorkoutEvents.completed({
+      minutes,
+      points: sessionPoints,
+      correct: right,
+      wrong,
+      perfect,
+      isPersonalBest,
+    });
+
     clearResume(); // session over — drop the resume snapshot
     setFinishResult({
       sessionPoints,
@@ -364,6 +374,7 @@ export default function WorkoutPage() {
   const begin = useCallback(() => {
     warmupAudio();
     playButtonClick();
+    playBoxingBell(); // ring the bell to open the session
     clearResume(); // fresh start — discard any stale resume snapshot
     setResumable(null);
     const sched = buildSchedule(minutes);
@@ -384,6 +395,7 @@ export default function WorkoutPage() {
     finishingRef.current = false;
     confettiFiredRef.current = false;
     setPhase('running');
+    WorkoutEvents.started(minutes, false);
 
     // Prefetch the ramped puzzle queue.
     fetch(`/api/workout/puzzles?minutes=${minutes}`)
@@ -396,6 +408,7 @@ export default function WorkoutPage() {
   const resume = useCallback((snap: WorkoutResumeState) => {
     warmupAudio();
     playButtonClick();
+    playBoxingBell(); // ring the bell to open the session
     setResumable(null);
     setMinutes(snap.minutes);
     setSchedule(buildSchedule(snap.minutes));
@@ -417,6 +430,7 @@ export default function WorkoutPage() {
     finishingRef.current = false;
     confettiFiredRef.current = false;
     setPhase('running');
+    WorkoutEvents.started(snap.minutes, true);
 
     // Restore the exact saved queue so the same puzzle comes back up.
     if (snap.queue?.length) {

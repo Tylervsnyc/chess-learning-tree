@@ -134,6 +134,23 @@ export const PlayEvents = {
   ) => trackEvent('play_quip_shown', { category, quipKey: text.slice(0, 60) }),
 };
 
+// Chess Boxing workout + do-anything streak (the daily retention loop)
+export const WorkoutEvents = {
+  started: (minutes: number, resumed: boolean) =>
+    trackEvent('workout_started', { minutes, resumed }),
+  completed: (data: {
+    minutes: number | null;
+    points: number;
+    correct: number;
+    wrong: number;
+    perfect: boolean;
+    isPersonalBest: boolean;
+  }) => trackEvent('workout_completed', data),
+  // Fires whenever the do-anything streak grows (any activity), observed live.
+  streakExtended: (current: number, longest: number) =>
+    trackEvent('streak_extended', { current, longest }),
+};
+
 // Level test funnel
 export const LevelTestEvents = {
   started: (transition: string) => trackEvent('level_test_started', { transition }),
