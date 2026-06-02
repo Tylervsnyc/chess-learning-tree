@@ -108,12 +108,18 @@ export const OnboardingEvents = {
     trackEvent('onboarding_completed', data),
   nameSubmitted: (source: OnboardingSource) =>
     trackEvent('onboarding_name_submitted', { source }),
-  signupPromptShown: (source: OnboardingSource) =>
-    trackEvent('onboarding_signup_prompt_shown', { source }),
-  signupPromptClicked: (source: OnboardingSource, action: 'signup' | 'login') =>
-    trackEvent('onboarding_signup_prompt_clicked', { source, action }),
-  signupPromptDismissed: (source: OnboardingSource, method: 'x' | 'backdrop' | 'maybe_later') =>
-    trackEvent('onboarding_signup_prompt_dismissed', { source, method }),
+  // CHE-339: the optional `variant` ties each event to the win_signup_capture
+  // experiment cell so the funnel can be read per-variant.
+  signupPromptShown: (source: OnboardingSource, variant?: string) =>
+    trackEvent('onboarding_signup_prompt_shown', { source, variant }),
+  signupPromptClicked: (source: OnboardingSource, action: 'signup' | 'login', variant?: string) =>
+    trackEvent('onboarding_signup_prompt_clicked', { source, action, variant }),
+  // One-tap OAuth kicked off straight from the win-moment prompt (no detour to
+  // the form). The actual signup_completed fires after the OAuth callback.
+  signupPromptOAuthStarted: (source: OnboardingSource, provider: 'google' | 'apple', variant?: string) =>
+    trackEvent('onboarding_signup_prompt_oauth_started', { source, provider, variant }),
+  signupPromptDismissed: (source: OnboardingSource, method: 'x' | 'backdrop' | 'maybe_later', variant?: string) =>
+    trackEvent('onboarding_signup_prompt_dismissed', { source, method, variant }),
 };
 
 // Play Rookie funnel

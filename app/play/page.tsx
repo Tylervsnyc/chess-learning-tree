@@ -2452,7 +2452,17 @@ export default function PlayRookiePage() {
 
       {/* Guest signup prompt after game */}
       {showSignupPrompt && (
-        <SignupPrompt source="play" onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }} />
+        <SignupPrompt
+          source="play"
+          valueLabel={
+            dailyStreak && dailyStreak > 0
+              ? `${dailyStreak}-day streak`
+              : gameResult === 'You win!'
+                ? 'win'
+                : 'progress'
+          }
+          onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }}
+        />
       )}
 
       {/* Rookie asks for the player's name mid-game */}
