@@ -193,6 +193,51 @@ async function getWelcomeFunnel(filter: string) {
   };
 }
 
+// Instagram-acquired visitors only. Uses PostHog's first-touch PERSON
+// properties so EVERY event a person fires (not just the landing pageview) is
+// attributed to how they arrived — utm_source lives only on the first pageview,
+// person.$initial_* persists across the whole session. Catches both the tagged
+// ad (utm_source=instagram) and organic IG referrals.
+const IG_SOURCE = `(
+  person.properties.$initial_utm_source = 'instagram'
+  OR person.properties.$initial_referring_domain ILIKE '%instagram%'
+  OR person.properties.$initial_referring_domain ILIKE '%l.instagram%'
+)`;
+
+/**
+ * Per-PERSON funnel for one acquisition source. Unlike getWelcomeFunnel (which
+ * counts events), this counts DISTINCT people who reached each step — the right
+ * unit for "of the N who landed, how many converted." `sourceClause` is an
+ * extra WHERE predicate (e.g. IG_SOURCE).
+ */
+async function getSourceFunnel(filter: string, sourceClause: string) {
+  const r = await hogql(`
+    SELECT
+      uniqIf(person_id, event = '$pageview' AND (properties.$pathname = '/' OR properties.$pathname = '/welcome')) as landing,
+      uniqIf(person_id, event = 'onboarding_started') as onb_started,
+      uniqIf(person_id, event = 'onboarding_completed') as onb_completed,
+      uniqIf(person_id, event = 'tutorial_started') as tut_started,
+      uniqIf(person_id, event = 'game_started') as game_started,
+      uniqIf(person_id, event = 'onboarding_signup_prompt_shown') as prompt_shown,
+      uniqIf(person_id, event = 'onboarding_signup_prompt_oauth_started') as oauth_started,
+      uniqIf(person_id, event = 'signup_completed') as signup_completed,
+      uniq(person_id) as any_person
+    FROM events WHERE ${filter} AND ${sourceClause}
+  `, 'ig-funnel');
+  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  return {
+    landing: num(row[0]),
+    onbStarted: num(row[1]),
+    onbCompleted: num(row[2]),
+    tutStarted: num(row[3]),
+    gameStarted: num(row[4]),
+    promptShown: num(row[5]),
+    oauthStarted: num(row[6]),
+    signupCompleted: num(row[7]),
+    anyPerson: num(row[8]),
+  };
+}
+
 async function getNewSignups(filter: string) {
   const r = await hogql(`
     SELECT
@@ -490,6 +535,10 @@ async function main() {
   // Cohort retention — straight from the DB, independent of PostHog.
   const cohort = await getCohortRetention();
 
+  // Instagram-only acquisition funnel (per-person). The read that tells us
+  // where cold IG traffic dies once the ad is live.
+  const igFunnel = await getSourceFunnel(f, IG_SOURCE);
+
   // ---------------------------------------------------------------------------
   // Print report
   // ---------------------------------------------------------------------------
@@ -545,6 +594,33 @@ async function main() {
     console.log(`  ${step.label.padEnd(25)} ${String(step.count).padStart(5)}  ${bar(step.count, maxFunnel)}${dropoff}`);
   }
   console.log(`\n  Overall conversion (landing -> signup): ${pct(funnel.signupCompleted, funnel.landing)}`);
+
+  console.log(section('INSTAGRAM FUNNEL (per-person, first-touch = IG)'));
+  if (igFunnel.anyPerson === 0) {
+    console.log('  No IG-acquired visitors in window.');
+    console.log('  (Tag the ad URL ?utm_source=instagram so cold clicks are attributed here.)');
+  } else {
+    const igSteps = [
+      { label: 'Landed (/ or /welcome)', count: igFunnel.landing },
+      { label: 'Onboarding started', count: igFunnel.onbStarted },
+      { label: 'Onboarding completed', count: igFunnel.onbCompleted },
+      { label: 'Tutorial started', count: igFunnel.tutStarted },
+      { label: 'Game started (/play)', count: igFunnel.gameStarted },
+      { label: 'Signup prompt shown', count: igFunnel.promptShown },
+      { label: 'One-tap OAuth started', count: igFunnel.oauthStarted },
+      { label: 'Signup completed', count: igFunnel.signupCompleted },
+    ];
+    const igMax = Math.max(...igSteps.map(s => s.count), 1);
+    for (let i = 0; i < igSteps.length; i++) {
+      const step = igSteps[i];
+      const drop = i > 0 && igSteps[i - 1].count > 0
+        ? `  drop: ${pct(igSteps[i - 1].count - step.count, igSteps[i - 1].count)}`
+        : '';
+      console.log(`  ${step.label.padEnd(25)} ${String(step.count).padStart(5)}  ${bar(step.count, igMax)}${drop}`);
+    }
+    console.log(`\n  IG people in window: ${igFunnel.anyPerson}  ·  landing -> signup: ${pct(igFunnel.signupCompleted, igFunnel.landing)}`);
+    console.log(`  Note: distinct people, attributed by first-touch UTM/referrer (persists across the session).`);
+  }
 
   console.log(section('NEW SIGNUPS'));
   console.log(`  Total:   ${signups.total}  (prev: ${prevSignups.total}, ${delta(signups.total, prevSignups.total)})`);
