@@ -77,9 +77,12 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 4. If green: `git add` only the files you changed, commit (Co-Authored-By line), `git push`
    to `main` (auto-deploys to `chess-path`). Stay on `main`.
 5. Append a `DONE` entry to the Progress Log (day, date, flag, commit SHA, one-line what).
-6. **Slack report** via `npx tsx scripts/daily-report.ts --days=10 --slack` (posts the funnel),
-   then a short human note: what shipped today, the flag, and yesterday→today movement in the
-   PAID IG AD FUNNEL picked-a-path rate.
+6. **Slack report → channel `#all-learnthroughstories` (id `C09J5AV49FT`) via the Slack
+   connector.** Generate the report by running `npx tsx scripts/daily-report.ts --days=10`
+   (capture stdout — do NOT rely on `--slack`, the webhook isn't configured). Post the report
+   text to that channel via the Slack connector, then a one-line human note: what shipped
+   today, the flag, and yesterday→today movement in the PAID IG AD FUNNEL picked-a-path rate.
+   If the report script can't run (missing env), still post the one-line note + commit SHA.
 
 **Environment notes (you run in a fresh cloud sandbox):**
 - Run `npm install` first if `node_modules` is missing.
