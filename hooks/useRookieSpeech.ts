@@ -69,6 +69,8 @@ export interface UseRookieSpeechOptions {
     playerName: string;
     rookieWon: boolean;
     accuracy?: number;
+    /** Lens instruction for this game's recap (from lib/speech/angles.ts). */
+    angle?: string;
     gameSummary?: {
       result: string;
       moveCount: number;
@@ -401,7 +403,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
       mistakes: number;
       brilliantMoves: number;
       keyMoments?: string;
-    }) => {
+    }, angle?: string) => {
       // Update beat to post_game (0 pawns = neutral for post-game)
       const beatResult = updateBeat(beatRef.current, {
         moveNumber: beatRef.current.moveCount,
@@ -431,6 +433,7 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
               playerName: playerNameRef.current,
               rookieWon: rookieWon ?? false,
               accuracy,
+              angle,
               gameSummary,
             })
           : undefined,

@@ -12,6 +12,8 @@ export interface HonchoPlayerSummary {
 export interface RookieMemoryContext {
   usedRecently: string[];
   playerFacts: string[];
+  /** Last few LLM-generated opening + game-end lines, so Rookie doesn't repeat herself. */
+  recentLines: string[];
   gamesPlayed: number;
   totalWins: number;
   totalLosses: number;
@@ -34,6 +36,7 @@ export const EMPTY_HONCHO_SUMMARY: HonchoPlayerSummary = {
 export const EMPTY_ROOKIE_MEMORY: RookieMemoryContext = {
   usedRecently: [],
   playerFacts: [],
+  recentLines: [],
   gamesPlayed: 0,
   totalWins: 0,
   totalLosses: 0,
@@ -54,6 +57,7 @@ export function buildRookieMemoryContext(input?: {
   return {
     usedRecently: speechMemory?.usedRecently ?? [],
     playerFacts: speechMemory?.playerFacts ?? [],
+    recentLines: speechMemory?.recentLines ?? [],
     gamesPlayed: speechMemory?.gamesPlayed ?? 0,
     totalWins: speechMemory?.totalWins ?? 0,
     totalLosses: speechMemory?.totalLosses ?? 0,
@@ -68,6 +72,7 @@ export function toSpeechMemory(memory: RookieMemoryContext): SpeechMemory {
   return {
     usedRecently: memory.usedRecently,
     playerFacts: memory.playerFacts,
+    recentLines: memory.recentLines,
     gamesPlayed: memory.gamesPlayed,
     totalWins: memory.totalWins,
     totalLosses: memory.totalLosses,

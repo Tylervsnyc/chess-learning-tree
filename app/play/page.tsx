@@ -35,6 +35,7 @@ import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extract
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
+import { pickAngle } from '@/lib/speech/angles';
 import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
 import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
@@ -564,6 +565,11 @@ export default function PlayRookiePage() {
     });
     const data = await res.json();
     if (!res.ok || !data.text) throw new Error('Failed');
+    // Remember this line so Rookie doesn't repeat herself (in-session + persisted on game end).
+    rookieMemoryRef.current = {
+      ...rookieMemoryRef.current,
+      recentLines: [...rookieMemoryRef.current.recentLines, data.text as string].slice(-6),
+    };
     return data.text;
   }, [attitudeLevel]);
 
@@ -571,6 +577,7 @@ export default function PlayRookiePage() {
     playerName: string;
     rookieWon: boolean;
     accuracy?: number;
+    angle?: string;
     gameSummary?: {
       result: string;
       moveCount: number;
@@ -595,6 +602,11 @@ export default function PlayRookiePage() {
     });
     const data = await res.json();
     if (!res.ok || !data.text) throw new Error('Failed');
+    // Remember this line so Rookie doesn't repeat herself (in-session + persisted on game end).
+    rookieMemoryRef.current = {
+      ...rookieMemoryRef.current,
+      recentLines: [...rookieMemoryRef.current.recentLines, data.text as string].slice(-6),
+    };
     return data.text;
   }, [narrative, attitudeLevel]);
 
@@ -1124,7 +1136,12 @@ export default function PlayRookiePage() {
             .map(m => `${m.type}: ${m.moveSan} on move ${m.moveNumber}`)
             .join('. ') || undefined,
         };
-        speech.onPostGame(analysis.playerAccuracy, rookieWon, gameSummary);
+        const angle = pickAngle({
+          hadSwing: analysis.blunders > 0 || analysis.brilliantMoves > 0,
+          hadEndgame: moves.length >= 60,
+          hadBrilliant: analysis.brilliantMoves > 0,
+        }).lens;
+        speech.onPostGame(analysis.playerAccuracy, rookieWon, gameSummary, angle);
       }
     }
 

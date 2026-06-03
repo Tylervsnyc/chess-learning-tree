@@ -15,6 +15,8 @@ import { createClient } from '@/lib/supabase/client';
 export interface SpeechMemory {
   usedRecently: string[];
   playerFacts: string[];
+  /** Last few LLM-generated opening + game-end lines, so Rookie doesn't repeat herself. */
+  recentLines: string[];
   gamesPlayed: number;
   totalWins: number;
   totalLosses: number;
@@ -24,6 +26,7 @@ export interface SpeechMemory {
 const EMPTY_MEMORY: SpeechMemory = {
   usedRecently: [],
   playerFacts: [],
+  recentLines: [],
   gamesPlayed: 0,
   totalWins: 0,
   totalLosses: 0,
@@ -34,6 +37,8 @@ const EMPTY_MEMORY: SpeechMemory = {
 const MAX_USED_RECENTLY = 200;
 // Cap player facts — keep most recent 20
 const MAX_PLAYER_FACTS = 20;
+// Cap recent LLM lines — keep last 6 (enough to dodge repeats without bloating the prompt)
+const MAX_RECENT_LINES = 6;
 
 // ════════════════════════════════
 // LOAD
@@ -43,9 +48,10 @@ const MAX_PLAYER_FACTS = 20;
 export async function loadSpeechMemory(userId: string): Promise<SpeechMemory> {
   const supabase = createClient();
 
+  // select('*') so a not-yet-migrated recent_lines column never errors the read.
   const { data, error } = await supabase
     .from('speech_memory')
-    .select('used_recently, player_facts, games_played, total_wins, total_losses, total_draws')
+    .select('*')
     .eq('user_id', userId)
     .single();
 
@@ -54,6 +60,7 @@ export async function loadSpeechMemory(userId: string): Promise<SpeechMemory> {
   return {
     usedRecently: (data.used_recently as string[]) ?? [],
     playerFacts: (data.player_facts as string[]) ?? [],
+    recentLines: (data.recent_lines as string[]) ?? [],
     gamesPlayed: data.games_played ?? 0,
     totalWins: data.total_wins ?? 0,
     totalLosses: data.total_losses ?? 0,
@@ -75,22 +82,30 @@ export async function saveSpeechMemory(
   // Trim to caps
   const usedRecently = memory.usedRecently.slice(-MAX_USED_RECENTLY);
   const playerFacts = memory.playerFacts.slice(-MAX_PLAYER_FACTS);
+  const recentLines = memory.recentLines.slice(-MAX_RECENT_LINES);
 
-  const { error } = await supabase
+  const row = {
+    user_id: userId,
+    used_recently: usedRecently,
+    player_facts: playerFacts,
+    recent_lines: recentLines,
+    games_played: memory.gamesPlayed,
+    total_wins: memory.totalWins,
+    total_losses: memory.totalLosses,
+    total_draws: memory.totalDraws,
+    updated_at: new Date().toISOString(),
+  };
+
+  let { error } = await supabase
     .from('speech_memory')
-    .upsert(
-      {
-        user_id: userId,
-        used_recently: usedRecently,
-        player_facts: playerFacts,
-        games_played: memory.gamesPlayed,
-        total_wins: memory.totalWins,
-        total_losses: memory.totalLosses,
-        total_draws: memory.totalDraws,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'user_id' },
-    );
+    .upsert(row, { onConflict: 'user_id' });
+
+  // If recent_lines hasn't been migrated yet, don't lose facts/stats — retry without it.
+  if (error && /recent_lines/.test(error.message)) {
+    const { recent_lines, ...rest } = row;
+    void recent_lines;
+    ({ error } = await supabase.from('speech_memory').upsert(rest, { onConflict: 'user_id' }));
+  }
 
   if (error) console.error('Failed to save speech memory:', error);
 }
