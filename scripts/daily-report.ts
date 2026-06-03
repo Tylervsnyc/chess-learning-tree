@@ -204,6 +204,13 @@ const IG_SOURCE = `(
   OR person.properties.$initial_referring_domain ILIKE '%l.instagram%'
 )`;
 
+// PAID IG only — the boosted ad tags its link utm_medium=paid, so this isolates
+// the spend from organic IG posts/referrals. See data/growth/ig-ad-sprint-2026-06.md.
+const PAID_IG_SOURCE = `(
+  person.properties.$initial_utm_source = 'instagram'
+  AND person.properties.$initial_utm_medium = 'paid'
+)`;
+
 /**
  * Per-PERSON funnel for one acquisition source. Unlike getWelcomeFunnel (which
  * counts events), this counts DISTINCT people who reached each step — the right
@@ -536,9 +543,10 @@ async function main() {
   // Cohort retention — straight from the DB, independent of PostHog.
   const cohort = await getCohortRetention();
 
-  // Instagram-only acquisition funnel (per-person). The read that tells us
-  // where cold IG traffic dies once the ad is live.
+  // Instagram acquisition funnels (per-person). `igFunnel` = all IG (paid +
+  // organic); `paidFunnel` = the boosted ad only (utm_medium=paid).
   const igFunnel = await getSourceFunnel(f, IG_SOURCE);
+  const paidFunnel = await getSourceFunnel(f, PAID_IG_SOURCE);
 
   // ---------------------------------------------------------------------------
   // Print report
@@ -596,31 +604,42 @@ async function main() {
   }
   console.log(`\n  Overall conversion (landing -> signup): ${pct(funnel.signupCompleted, funnel.landing)}`);
 
-  console.log(section('INSTAGRAM FUNNEL (per-person, first-touch = IG)'));
-  if (igFunnel.anyPerson === 0) {
-    console.log('  No IG-acquired visitors in window.');
-    console.log('  (Tag the ad URL ?utm_source=instagram so cold clicks are attributed here.)');
-  } else {
-    const igSteps = [
-      { label: 'Landed (/ or /welcome)', count: igFunnel.landing },
-      { label: 'Onboarding started', count: igFunnel.onbStarted },
-      { label: 'Picked a path', count: igFunnel.onbCompleted },
-      { label: 'Started an activity', count: igFunnel.activityStarted },
-      { label: 'Signup prompt shown', count: igFunnel.promptShown },
-      { label: 'One-tap OAuth started', count: igFunnel.oauthStarted },
-      { label: 'Signup completed', count: igFunnel.signupCompleted },
-    ];
-    const igMax = Math.max(...igSteps.map(s => s.count), 1);
-    for (let i = 0; i < igSteps.length; i++) {
-      const step = igSteps[i];
-      const drop = i > 0 && igSteps[i - 1].count > 0
-        ? `  drop: ${pct(igSteps[i - 1].count - step.count, igSteps[i - 1].count)}`
-        : '';
-      console.log(`  ${step.label.padEnd(25)} ${String(step.count).padStart(5)}  ${bar(step.count, igMax)}${drop}`);
+  const printFunnel = (title: string, fn: typeof igFunnel, emptyNote: string) => {
+    console.log(section(title));
+    if (fn.anyPerson === 0) {
+      console.log(`  ${emptyNote}`);
+      return;
     }
-    console.log(`\n  IG people in window: ${igFunnel.anyPerson}  ·  landing -> signup: ${pct(igFunnel.signupCompleted, igFunnel.landing)}`);
-    console.log(`  Note: distinct people, attributed by first-touch UTM/referrer (persists across the session).`);
-  }
+    const steps = [
+      { label: 'Landed (/ or /welcome)', count: fn.landing },
+      { label: 'Onboarding started', count: fn.onbStarted },
+      { label: 'Picked a path', count: fn.onbCompleted },
+      { label: 'Started an activity', count: fn.activityStarted },
+      { label: 'Signup prompt shown', count: fn.promptShown },
+      { label: 'One-tap OAuth started', count: fn.oauthStarted },
+      { label: 'Signup completed', count: fn.signupCompleted },
+    ];
+    const max = Math.max(...steps.map(s => s.count), 1);
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const drop = i > 0 && steps[i - 1].count > 0
+        ? `  drop: ${pct(steps[i - 1].count - step.count, steps[i - 1].count)}`
+        : '';
+      console.log(`  ${step.label.padEnd(25)} ${String(step.count).padStart(5)}  ${bar(step.count, max)}${drop}`);
+    }
+    console.log(`\n  People in window: ${fn.anyPerson}  ·  landing -> signup: ${pct(fn.signupCompleted, fn.landing)}`);
+  };
+
+  printFunnel(
+    'INSTAGRAM FUNNEL (all IG, per-person, first-touch)',
+    igFunnel,
+    'No IG-acquired visitors in window.',
+  );
+  printFunnel(
+    'PAID IG AD FUNNEL (utm_medium=paid only)',
+    paidFunnel,
+    'No paid-IG visitors yet — once the boosted ad delivers clicks they land here (the $5/10d probe, see data/growth/ig-ad-sprint-2026-06.md).',
+  );
 
   console.log(section('NEW SIGNUPS'));
   console.log(`  Total:   ${signups.total}  (prev: ${prevSignups.total}, ${delta(signups.total, prevSignups.total)})`);
