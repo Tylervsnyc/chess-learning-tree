@@ -190,8 +190,41 @@ function PatronBadge() {
   );
 }
 
+type EloRange = 'week' | 'month' | 'all';
+
+const ELO_RANGES: { key: EloRange; label: string }[] = [
+  { key: 'week', label: 'Week' },
+  { key: 'month', label: 'Month' },
+  { key: 'all', label: 'Since start' },
+];
+
+// Earliest YYYY-MM-DD (local) that falls inside the selected window.
+function rangeCutoff(range: EloRange): string | null {
+  if (range === 'all') return null;
+  const d = new Date();
+  d.setDate(d.getDate() - (range === 'week' ? 7 : 30));
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function EloCard({ data, loading }: { data: EloData | null; loading: boolean }) {
-  const hasSeries = !!data && data.series.length >= 2 && data.events > 0;
+  const [range, setRange] = useState<EloRange>('all'); // default: since they started
+
+  // Slice the full daily series down to the selected window for the graph.
+  // The big number stays the all-time current rating; only the chart re-scopes.
+  const fullSeries = data?.series ?? [];
+  const cutoff = rangeCutoff(range);
+  let windowSeries = cutoff ? fullSeries.filter((p) => p.date >= cutoff) : fullSeries;
+  // Anchor the line to where the rating actually was entering the window, so a
+  // short window still draws a real trend instead of a flat single point.
+  if (cutoff && windowSeries.length < fullSeries.length) {
+    const priorIdx = fullSeries.findIndex((p) => p.date >= cutoff) - 1;
+    if (priorIdx >= 0) windowSeries = [fullSeries[priorIdx], ...windowSeries];
+  }
+
+  const hasSeries = !!data && windowSeries.length >= 2 && data.events > 0;
 
   // ── Build the SVG line path in a 0–100 × 0–100 viewBox ──────────────────
   const W = 100;
@@ -205,7 +238,7 @@ function EloCard({ data, loading }: { data: EloData | null; loading: boolean }) 
   let hi = 0;
 
   if (hasSeries) {
-    const pts = data!.series;
+    const pts = windowSeries;
     const elos = pts.map((p) => p.elo);
     lo = Math.min(...elos);
     hi = Math.max(...elos);
@@ -244,11 +277,30 @@ function EloCard({ data, loading }: { data: EloData | null; loading: boolean }) 
         </div>
       </div>
 
+      <div className="mt-3 inline-flex rounded-full bg-slate-100 p-0.5">
+        {ELO_RANGES.map((r) => (
+          <button
+            key={r.key}
+            type="button"
+            onClick={() => setRange(r.key)}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
+              range === r.key
+                ? 'bg-white text-chess-text shadow-sm'
+                : 'text-chess-text-muted'
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
       {loading || !data ? (
         <div className="mt-4 h-28 bg-slate-100 rounded-xl animate-pulse" />
       ) : !hasSeries ? (
         <p className="mt-4 text-sm text-chess-text-muted leading-snug">
-          Solve a few puzzles or play Rookie and we&apos;ll estimate your rating — then track it here over time.
+          {data.events > 0 && range !== 'all'
+            ? `No rating activity in the last ${range === 'week' ? '7 days' : '30 days'}. Try "Since start" to see your full history.`
+            : 'Solve a few puzzles or play Rookie and we’ll estimate your rating — then track it here over time.'}
         </p>
       ) : (
         <>
