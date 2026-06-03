@@ -37,7 +37,7 @@ export function BreathingHeaderLogo({ className = '' }: BreathingHeaderLogoProps
       viewBox="0 0 520 120"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`flex-shrink-0 w-[110px] sm:w-[140px] md:w-[160px] h-auto ${className}`}
+      className={`flex-shrink min-w-0 w-[88px] sm:w-[140px] md:w-[160px] h-auto ${className}`}
       aria-label="Chess Path"
       role="img"
     >

@@ -96,12 +96,12 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
 
   return (
     <header className="sticky top-0 z-50 bg-chess-surface border-b border-slate-200 shadow-sm">
-      <div className="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
-        <Link href="/" className="flex items-center flex-shrink-0">
+      <div className="max-w-3xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-1">
+        <Link href="/" className="flex items-center flex-shrink min-w-0">
           <BreathingHeaderLogo />
         </Link>
 
-        <nav className="flex items-center gap-1 sm:gap-1.5">
+        <nav className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
           {loading ? (
             <>
               <div className="w-12 h-6 bg-slate-200 rounded-md animate-pulse" />
