@@ -41,36 +41,87 @@ Everything downstream (activity → signup prompt → signup) is gated by this. 
 
 ---
 
-## Daily plan
+## Daily ship plan (one experiment/day)
 
-| Day | Date | Focus |
-|---|---|---|
-| 0 | **Jun 3** | ✅ Ad live + UTM link in. ✅ Paid-only funnel built into `daily-report.ts`. ✅ One-tap win-moment signup live. Record day-0 baseline. |
-| 1–2 | Jun 4–5 | **Fix the landing cliff** (the whole ballgame — see below). Ship behind a flag. |
-| 3 | Jun 6 | First read of the paid funnel. Confirm clicks are landing + attributing to `utm_medium=paid`. Sanity-check CPC vs expectation. |
-| 4–5 | Jun 7–8 | Iterate the landing fix on what the paid+organic IG funnel shows. Confirm the one-tap prompt is actually *reached* and `oauth_started` fires. |
-| 6–7 | Jun 9–10 | Watch for first paid signups. If any signed up: do they come back (D1)? Email lifecycle (day1) should fire. |
-| 8–9 | Jun 11–12 | Hold changes steady to get a clean tail-end read. Don't move the destination URL mid-flight. |
-| 10 | **Jun 13** | **Readout + decision** (template below). Kill, scale, or fix-and-retry. |
+Days 1–5 attack the landing cliff from different angles; 6 capture, 7–8 retention, 9 viral, 10 lock-in.
+
+| Day | Ship | Flag (`IG_SPRINT_FLAGS`) | Metric it moves |
+|---|---|---|---|
+| 1 | Fast-path landing (instant CTAs) | `IG_LANDING_FASTPATH` | picked-a-path |
+| 2 | Single dominant "Play" CTA (kill the fork) | `IG_SINGLE_CTA` | picked-a-path |
+| 3 | Landing copy echoes the ad hook | `IG_LANDING_COPY` | picked-a-path |
+| 4 | Drop straight into a game (skip setup) | `IG_AUTOPLAY` | activity-started |
+| 5 | Rigged first win → hit one-tap signup at peak | `IG_EASY_FIRST_WIN` | win-rate, prompt-shown |
+| 6 | Win-prompt timing + copy iteration | (tune `win_signup_capture`) | prompt→oauth→signup |
+| 7 | Post-signup activation (push 2nd action) | `IG_ACTIVATION` | D0 2nd-action |
+| 8 | Explicit "come back tomorrow" + day-1 email | `IG_D1_NUDGE` | D1 (cohort) |
+| 9 | Post-win share nudge | `IG_SHARE_LOOP` | share_clicked |
+| 10 | Lock winners, kill losers, decision doc | — | full paid funnel before/after |
 
 ---
 
-## Day 1–2: fix the landing cliff (highest leverage)
+## DAILY AGENT RUNBOOK (read this — you run one day per fire)
 
-The ad lands on `/` (OnboardingFlow). Cold IG traffic from a video hits a Play-vs-Learn
-choice and 95% bounce. Leading hypotheses, cheapest-first:
+You are a scheduled agent firing once each morning. Do **exactly one** day, then stop.
 
-1. **Choice paralysis.** They came from a 15-second video; a two-option fork kills momentum.
-   → Detect IG/paid traffic (the UTM is in the URL) and serve **one dominant CTA** — lead with
-   "Play Rookie" / drop them closer to the first move. Learn stays as a secondary link.
-2. **Slow entrance.** Rookie's power-on animation delays time-to-tappable. → Fast-path the
-   intro for UTM visitors so the CTA is instant.
-3. **Value mismatch.** The landing headline should echo the ad's hook, not a generic line.
+**Procedure:**
+1. Read the **Progress Log** below. Do the lowest-numbered day NOT marked `DONE`.
+   If yesterday's day is marked `BLOCKED`, retry it (don't skip ahead).
+2. Read that day's spec under **Per-day specs**. Implement it:
+   - Add/flip the day's flag in `lib/config/feature-flags.ts` (`IG_SPRINT_FLAGS`).
+   - Gate ALL new behavior behind `isIgCohort()` (`lib/growth/ig-cohort.ts`) so only
+     cold IG traffic is affected. Default the flag ON (= live for the IG cohort).
+3. Run `npm run check` then `npm run build`. **If either fails, fix it; if you can't in
+   reasonable effort, mark the day `BLOCKED` in the log, ship NOTHING, Slack-report the
+   blocker, and stop.**
+4. If green: `git add` only the files you changed, commit (Co-Authored-By line), `git push`
+   to `main` (auto-deploys to `chess-path`). Stay on `main`.
+5. Append a `DONE` entry to the Progress Log (day, date, flag, commit SHA, one-line what).
+6. **Slack report** via `npx tsx scripts/daily-report.ts --days=10 --slack` (posts the funnel),
+   then a short human note: what shipped today, the flag, and yesterday→today movement in the
+   PAID IG AD FUNNEL picked-a-path rate.
 
-**Approach:** keep the destination `/?utm_source=instagram&utm_medium=paid` (don't change the
-ad), and make **OnboardingFlow read the UTM and adapt** — streamlined single-CTA variant for
-cold traffic, behind a flag. That way we control the experience in code without touching the ad
-or muddying attribution. Tracked in Linear: **CHE-359**.
+**Hard safety rules (never violate):**
+- NEVER touch Stripe, billing, `subscription_status`, `is_admin`, auth security, or the RLS
+  triggers. Funnel/landing/onboarding/play UX only.
+- EVERYTHING gated by `isIgCohort()` + a flag. Non-IG users must see zero change. If a change
+  can't be cohort-scoped, mark `BLOCKED` and report — do not ship it broadly.
+- Ship only if `npm run build` passes. No `--no-verify`. One commit, one day.
+- Do NOT change the ad's destination URL or anything in Meta/Instagram (Tyler-only).
+- Respect the $50 cap — you don't control spend, just the funnel.
+- If the PAID funnel shows picked-a-path *dropping* vs the prior day after your last ship,
+  flag it loudly in Slack (a regression may need reverting).
+
+---
+
+## Per-day specs
+
+**Day 1 — `IG_LANDING_FASTPATH`** ✅ done. `OnboardingFlow` jumps to phase 5 for the IG cohort so CTAs are instant (no staged power-on). Also fixed the `/`→`/welcome` redirect to preserve the UTM.
+
+**Day 2 — `IG_SINGLE_CTA`.** In `OnboardingFlow`, for IG cohort: render ONE large "Play" CTA with full attention; demote "Learn" to a small secondary text link beneath. Kills the choice paralysis of the dual Play/Learn fork. Metric: picked-a-path.
+
+**Day 3 — `IG_LANDING_COPY`.** For IG cohort, swap Rookie's opening line/headline to a punchy value hook that matches the ad ("Beat me in 60 seconds?" / "Chess, the fun way — your first game's on me"). One strong line, not the idle quip cycle. Metric: picked-a-path.
+
+**Day 4 — `IG_AUTOPLAY`.** For IG cohort, the Play CTA routes into `/play` and auto-starts a game (skip the /play setup screen) — land them as close to the first move as possible. `/play` reads a query/flag to autostart. Metric: activity-started (`game_started`).
+
+**Day 5 — `IG_EASY_FIRST_WIN`.** For the IG cohort's first game, start Rookie at a low skill level / blunder-prone so they get a fast win and hit the (already-live) one-tap signup at the dopamine peak. Metric: new-session win-rate, prompt-shown.
+
+**Day 6 — win-prompt iteration.** Tune the live `win_signup_capture` prompt for IG: timing (fire immediately on win vs after the celebration) and `valueLabel`/copy. Metric: prompt-shown → `oauth_started`.
+
+**Day 7 — `IG_ACTIVATION`.** After an IG signup, nudge the new user toward a 2nd action (start the streak / a 2nd game) instead of dropping them at home — reduce one-and-done. Metric: D0 second-action rate.
+
+**Day 8 — `IG_D1_NUDGE`.** Make the "come back tomorrow" promise explicit at the IG win moment, and verify the day-1 lifecycle email fires for the IG cohort. Metric: D1 (cohort read).
+
+**Day 9 — `IG_SHARE_LOOP`.** Nudge IG visitors to share the post-win share card (viral coefficient). Metric: `share_clicked` from the paid/IG cohort.
+
+**Day 10 — lock-in.** No new feature. Read the full paid funnel before/after, set winning flags to stay ON and losers to `false`, fill in the Decision template below, and post the final readout to Slack.
+
+---
+
+## Progress log (the daily agent appends here)
+
+- **Day 0** — 2026-06-03 — `DONE` — ad live + UTM, paid funnel + cohort retention in daily-report, one-tap win capture (CHE-339). Baseline picked-a-path (IG) ~6%.
+- **Day 1** — 2026-06-03 — `DONE` — `IG_LANDING_FASTPATH` — commit 33497fb — instant landing for IG cohort + UTM-preserving redirect fix.
 
 ---
 
