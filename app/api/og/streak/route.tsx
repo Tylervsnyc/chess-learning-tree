@@ -74,21 +74,19 @@ export async function GET(req: Request) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#DBEBF7',
+          background: '#FFFFFF',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          padding: 60,
         }}
       >
-        {/* One clean card — mirrors the in-app streak popup */}
+        {/* One clean card — mirrors the in-app streak popup, full-bleed */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
+            height: '100%',
             background: '#FFFFFF',
-            borderRadius: 56,
             overflow: 'hidden',
-            boxShadow: '0 30px 80px rgba(21,50,74,0.25)',
           }}
         >
           {/* Blue dome header */}
@@ -126,7 +124,7 @@ export async function GET(req: Request) {
           </div>
 
           {/* Body */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 70px 88px', gap: 48, marginTop: -40 }}>
+          <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 70px 88px', gap: 48, marginTop: -40 }}>
             {/* Clear headline */}
             <div
               style={{
