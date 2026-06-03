@@ -9,7 +9,9 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
  * app that day (in their local TZ) — completed a lesson, played a game, or
  * solved a puzzle. The streak walks back from today until the first empty day.
  *
- * Returns { current, longest, completedToday }.
+ * Returns { current, longest, completedToday, activeDays }.
+ * `activeDays` is the sorted list of YYYY-MM-DD days (user TZ) with any activity,
+ * so the client can render a practice calendar.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -97,7 +99,7 @@ export async function GET(request: NextRequest) {
     prev = d;
   }
 
-  return NextResponse.json({ current, longest, completedToday });
+  return NextResponse.json({ current, longest, completedToday, activeDays: sorted });
 }
 
 function toLocalDateSet(timestamps: string[], tz: string): Set<string> {

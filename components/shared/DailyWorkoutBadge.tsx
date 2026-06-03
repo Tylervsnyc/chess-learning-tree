@@ -1,16 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { MiniRookieIcon } from './MiniRookieIcon';
+import { StreakModal } from './StreakModal';
 
 type WorkoutResponse = {
   current: number;
   longest: number;
   completedToday: boolean;
+  activeDays: string[];
 };
 
 const cacheKey = (userId: string) => `cp:workout-streak:${userId}`;
@@ -27,6 +28,7 @@ function readCache(userId: string): WorkoutResponse | null {
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const [data, setData] = useState<WorkoutResponse | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   // Last `current` we've seen, to detect a live increase. null = no read yet
   // (the first read is a baseline, not an extension — don't fire on mount).
   const lastStreakRef = useRef<number | null>(null);
@@ -83,18 +85,29 @@ export function DailyWorkoutBadge() {
       ? `${current}-day streak. Do anything today to keep it alive.`
       : 'Do anything today to start your streak.';
 
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+
   return (
-    <Link
-      href="/profile"
-      title={title}
-      className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black transition-all ${
-        completedToday
-          ? 'bg-orange-100 text-orange-800 shadow-[0_2px_0_0_#fbbf24]'
-          : 'bg-chess-text/50 text-white animate-pulse-soft'
-      }`}
-    >
-      <MiniRookieIcon active={completedToday} gold={current >= 100} size={20} />
-      <span className="tabular-nums text-sm">{current}</span>
-    </Link>
+    <>
+      <button
+        type="button"
+        onClick={() => setModalOpen(true)}
+        title={title}
+        className={`inline-flex items-center gap-1.5 leading-none shrink-0 rounded-md px-2 py-1 font-black transition-all ${
+          completedToday
+            ? 'bg-orange-100 text-orange-800 shadow-[0_2px_0_0_#fbbf24]'
+            : 'bg-chess-text/50 text-white animate-pulse-soft'
+        }`}
+      >
+        <MiniRookieIcon active={completedToday} gold={current >= 100} size={20} />
+        <span className="tabular-nums text-sm">{current}</span>
+      </button>
+      <StreakModal open={modalOpen} onClose={() => setModalOpen(false)} data={data} today={today} />
+    </>
   );
 }
