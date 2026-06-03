@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { getLevelElo } from '@/lib/rookie-levels';
 import { estimateElo, type EloEvent } from '@/lib/elo/estimate';
 import ratingIndex from '@/data/puzzle-rating-index.json';
@@ -32,6 +34,68 @@ function scoreFromResult(result: string | null): number | null {
   }
 }
 
+/**
+ * The heavy part — read every puzzle attempt + game, replay through the Elo
+ * model — is the same answer for ~minutes at a time and barely moves between
+ * page loads. Cache it per-user for 5 minutes so navigating to /profile is
+ * instant after the first hit. Uses the service client (RLS-bypassing) and
+ * filters by user_id explicitly, because cookie-bound clients can't be read
+ * inside an unstable_cache callback.
+ */
+const computeEloForUser = (userId: string) =>
+  unstable_cache(
+    async () => {
+      const supabase = createServiceClient();
+
+      const [puzzles, games] = await Promise.all([
+        supabase
+          .from('puzzle_attempts')
+          .select('puzzle_id, correct, attempted_at')
+          .eq('user_id', userId)
+          .order('attempted_at', { ascending: true })
+          .limit(10000),
+        supabase
+          .from('game_sessions')
+          .select('rookie_difficulty, result, ended_at')
+          .eq('user_id', userId)
+          .not('ended_at', 'is', null)
+          .order('ended_at', { ascending: true })
+          .limit(5000),
+      ]);
+
+      if (puzzles.error) console.error('elo: puzzle read failed', puzzles.error);
+      if (games.error) console.error('elo: game read failed', games.error);
+
+      const events: EloEvent[] = [];
+
+      for (const p of puzzles.data ?? []) {
+        const rating = PUZZLE_RATINGS[p.puzzle_id as string];
+        if (typeof rating !== 'number' || !p.attempted_at) continue;
+        events.push({
+          at: p.attempted_at,
+          kind: 'puzzle',
+          opponent: rating,
+          score: p.correct ? 1 : 0,
+        });
+      }
+
+      for (const g of games.data ?? []) {
+        const score = scoreFromResult(g.result as string | null);
+        if (score === null || !g.ended_at) continue;
+        events.push({
+          at: g.ended_at,
+          kind: 'game',
+          opponent: getLevelElo((g.rookie_difficulty as number) ?? 1),
+          score,
+        });
+      }
+
+      return estimateElo(events);
+    },
+    ['profile-elo', userId],
+    { revalidate: 300 },
+  )();
+
 export async function GET() {
   const supabase = await createClient();
   const {
@@ -41,49 +105,6 @@ export async function GET() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const [puzzles, games] = await Promise.all([
-    supabase
-      .from('puzzle_attempts')
-      .select('puzzle_id, correct, attempted_at')
-      .eq('user_id', user.id)
-      .order('attempted_at', { ascending: true })
-      .limit(10000),
-    supabase
-      .from('game_sessions')
-      .select('rookie_difficulty, result, ended_at')
-      .eq('user_id', user.id)
-      .not('ended_at', 'is', null)
-      .order('ended_at', { ascending: true })
-      .limit(5000),
-  ]);
-
-  if (puzzles.error) console.error('elo: puzzle read failed', puzzles.error);
-  if (games.error) console.error('elo: game read failed', games.error);
-
-  const events: EloEvent[] = [];
-
-  for (const p of puzzles.data ?? []) {
-    const rating = PUZZLE_RATINGS[p.puzzle_id as string];
-    if (typeof rating !== 'number' || !p.attempted_at) continue;
-    events.push({
-      at: p.attempted_at,
-      kind: 'puzzle',
-      opponent: rating,
-      score: p.correct ? 1 : 0,
-    });
-  }
-
-  for (const g of games.data ?? []) {
-    const score = scoreFromResult(g.result as string | null);
-    if (score === null || !g.ended_at) continue;
-    events.push({
-      at: g.ended_at,
-      kind: 'game',
-      opponent: getLevelElo((g.rookie_difficulty as number) ?? 1),
-      score,
-    });
-  }
-
-  const estimate = estimateElo(events);
+  const estimate = await computeEloForUser(user.id);
   return NextResponse.json(estimate);
 }

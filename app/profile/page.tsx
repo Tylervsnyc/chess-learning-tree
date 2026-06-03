@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
+import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
+import { RookieRatingModal } from '@/components/profile/RookieRatingModal';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -518,12 +520,12 @@ export default function ProfilePage() {
   const [sessions, setSessions] = useState<WorkoutSession[] | null>(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
+  // Fire data fetches on mount — the API routes authenticate from the cookie
+  // themselves, so we don't wait for useUser()'s auth round-trip first. This
+  // removes a full round-trip from the critical path; streak/stats/elo load in
+  // parallel with the auth check instead of after it. (Logged-out users get a
+  // 401 handled gracefully below, and the logged-out gate renders regardless.)
   useEffect(() => {
-    if (!user) {
-      setStreak(null);
-      setStats(null);
-      return;
-    }
     let cancelled = false;
     setDataLoading(true);
     const tz = getTz();
@@ -543,7 +545,7 @@ export default function ProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, []);
 
   // ?preview=gold — local-only visual preview of the gold (premium/patron) state.
   useEffect(() => {
@@ -569,13 +571,8 @@ export default function ProfilePage() {
     return () => clearInterval(id);
   }, [user, refetchProfile]);
 
-  // Weekly chart + recent sessions load independently.
+  // Weekly chart + recent sessions + elo load independently, on mount.
   useEffect(() => {
-    if (!user) {
-      setWeek(null);
-      setSessions(null);
-      return;
-    }
     let cancelled = false;
     const tz = getTz();
 
@@ -612,7 +609,7 @@ export default function ProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, []);
 
   // ── Logged-out gate ──────────────────────────────────────────────────────
   if (!userLoading && !user) {
@@ -760,7 +757,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ── Estimated rating + trend ─────────────────────────────────── */}
+        {/* ── Estimated rating: Rookie's fun window + detailed chart ─────── */}
+        <RookieRatingCard data={elo} loading={eloLoading} />
         <EloCard data={elo} loading={eloLoading} />
 
         {/* Lifetime stat tiles */}
@@ -810,6 +808,7 @@ export default function ProfilePage() {
       </div>
 
       <PatronModal isOpen={patronOpen} onClose={() => setPatronOpen(false)} />
+      <RookieRatingModal data={elo} />
     </div>
   );
 }
