@@ -638,7 +638,7 @@ async function main() {
   printFunnel(
     'PAID IG AD FUNNEL (utm_medium=paid only)',
     paidFunnel,
-    'No paid-IG visitors yet — once the boosted ad delivers clicks they land here (the $5/10d probe, see data/growth/ig-ad-sprint-2026-06.md).',
+    'No paid-IG visitors yet — once the boosted ad delivers clicks they land here ($5/day x 10d probe, see data/growth/ig-ad-sprint-2026-06.md).',
   );
 
   console.log(section('NEW SIGNUPS'));

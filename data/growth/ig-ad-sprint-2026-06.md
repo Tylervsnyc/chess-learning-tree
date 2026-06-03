@@ -1,6 +1,6 @@
-# IG Ad Sprint — $5 / 10 days (2026-06-03 → 2026-06-13)
+# IG Ad Sprint — $5/day × 10 days ($50) (2026-06-03 → 2026-06-13)
 
-**The probe:** Instagram in-app boost, **$5 total over 10 days** (~$0.50/day), goal = website visits.
+**The probe:** Instagram in-app boost, **$5/day for 10 days = $50 total**, goal = website visits.
 **Destination:** `https://chesspath.app/?utm_source=instagram&utm_medium=paid&utm_campaign=ad1`
 **Started:** 2026-06-03 by Tyler.
 
@@ -8,16 +8,23 @@
 
 ## Reality check (read this first)
 
-$0.50/day is a **micro-probe, not a traffic firehose.** At a typical $0.10–0.30 CPC that's
-~**2–5 clicks/day → 20–50 total** over the 10 days. With the funnel as it stands today
-(95% of cold IG visitors bounce on the landing screen, 0 signups in 30 days), 20–50 raw
-clicks would produce **~0–1 signups** if we change nothing.
+$5/day is a **real sample.** At a typical $0.10–0.30 CPC that's ~**20–50 clicks/day →
+~200–500 total** over the 10 days (consistent with Tyler's "~50/day" estimate). That's
+enough to read the funnel clearly day-by-day and to do a clean **before/after** on a landing
+fix — though still well short of A/B statistical significance.
 
-So the spend's job is **not to buy users.** Its job is to:
-1. Establish a **clean, isolated paid-IG baseline** (separate from organic IG).
-2. **Force us to fix the landing cliff** — and measure whether the fix moves the one number that gates everything.
+But here's the catch: against the funnel as it stands today (94–95% of cold IG visitors bounce
+on the landing screen, 0 signups in 30 days), those ~50 clicks/day would produce **~0–1
+signups/day** — i.e. we'd spend $50 mostly re-confirming the bounce. **Every day we run the ad
+before fixing the landing screen, ~50 clicks die on screen one.**
 
-If we just let it run against today's funnel, we'll spend $5 to re-confirm what we already know. The win is fixing the funnel *during* the 10 days.
+So the urgent move is to **fix the landing cliff in the first day or two**, so the bulk of the
+~500 clicks flow through the better funnel. With picked-a-path lifted 6% → 20% and the one-tap
+capture that's already live, ~500 clicks could realistically yield **a handful to a dozen+
+signups** — which would roughly double the *entire* recent signup rate. That's the prize.
+
+The spend's job: (1) a clean isolated paid-IG baseline, and (2) a real before/after that proves
+(or kills) the landing fix.
 
 ---
 
@@ -95,6 +102,6 @@ existing traffic.
 
 ## Guardrails
 
-- **$5 hard cap.** This is a learning probe, not a budget to grow. No top-ups without Tyler.
+- **$50 hard cap** ($5/day × 10 days). This is a learning probe, not a budget to grow. No top-ups or daily-budget increases without Tyler.
 - **Don't change the destination URL mid-flight** (breaks attribution) — change the *experience* in code instead.
 - Everything behind flags. Daily report watch. No new external channels without Tyler.

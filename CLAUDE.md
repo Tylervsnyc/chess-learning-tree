@@ -6,7 +6,7 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 
 ## Growth Mandate — Road to 10K DAU
 
-**Mission:** grow chesspath.app to 10,000 daily active users. Claude runs growth — measure, build behind flags, ship, report daily. Tyler sets direction and keeps veto. Budget: organic + small tools; no paid ads AT SCALE until retention is proven. (Retention is now measured as of 2026-06-02; a $5/10-day IG micro-test is authorized + live 2026-06-03 as a funnel probe — see Next priority.)
+**Mission:** grow chesspath.app to 10,000 daily active users. Claude runs growth — measure, build behind flags, ship, report daily. Tyler sets direction and keeps veto. Budget: organic + small tools; no paid ads AT SCALE until retention is proven. (Retention is now measured as of 2026-06-02; a $50 IG test — $5/day × 10 days — is authorized + live 2026-06-03 as a funnel probe, see Next priority.)
 
 **North Star = engaged DAU** (users who come back and *do* something) — a retention metric, not signups or visitors.
 
@@ -17,7 +17,7 @@ A mobile-first chess learning app (Duolingo for chess). Next.js 16, React 19, Ty
 **Next priority (explicit) — FIX THE LANDING CLIFF, then convert the paid probe:**
 DONE 2026-06-02..03: loop instrumented (PostHog `workout_started/completed` + `streak_extended`); **real D1/D7 cohort read LIVE in `daily-report.ts` — D1 29%, D7 40%** (no longer just the overlap proxy); **CHE-339 one-tap win-moment capture SHIPPED** — concrete value copy ("Save your win") + inline Google/Apple OAuth, behind the `win_signup_capture` experiment (default treatment), returns user via `/auth/callback?next=`.
 1. **THE CLIFF IS THE LANDING SCREEN, not the signup prompt.** New per-person IG funnel (`getSourceFunnel`/`IG_SOURCE` in `daily-report.ts`) shows: ~358 organic IG visitors/30d → 355 see the Play/Learn CTAs → only **19 pick a path (95% bounce)** → **0 signups**. Fixing `/` (OnboardingFlow) for cold IG traffic gates everything downstream — more capture polish is wasted until they get past screen one.
-2. **LIVE paid probe (started 2026-06-03):** $5 over 10 days, IG in-app boost → `/?utm_source=instagram&utm_medium=paid&utm_campaign=ad1`. Tiny sample (tens of clicks total at this spend) — the goal is a clean paid baseline + forcing the landing fix, NOT volume. Plan + daily checklist: `data/growth/ig-ad-sprint-2026-06.md`. Watch the paid-only line in the daily report.
+2. **LIVE paid probe (started 2026-06-03):** **$5/day × 10 days ($50)**, IG in-app boost → `/?utm_source=instagram&utm_medium=paid&utm_campaign=ad1`. Real sample (~20–50 clicks/day, ~200–500 total) — enough for a clean before/after, not A/B significance. **Every day it runs before the landing fix (CHE-359) ships, ~50 clicks/day die on screen one** — so fix the cliff first. Plan + daily checklist: `data/growth/ig-ad-sprint-2026-06.md`. Watch the paid-only line in the daily report.
 3. Email lifecycle is **ON** (`EMAIL_LIFECYCLE_ENABLED=true`) — day1/day7/winback fire as users hit those windows. Watch open/click + unsubscribe rates.
 
 **Capability map (how Claude does the work):**
