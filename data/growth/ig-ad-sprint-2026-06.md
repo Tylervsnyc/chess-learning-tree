@@ -81,6 +81,17 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
    then a short human note: what shipped today, the flag, and yesterday→today movement in the
    PAID IG AD FUNNEL picked-a-path rate.
 
+**Environment notes (you run in a fresh cloud sandbox):**
+- Run `npm install` first if `node_modules` is missing.
+- There is likely NO `.env.local` here (no Supabase/PostHog/Slack/Stripe keys). So:
+  - **Hard gate = `npm run check`** (lint + typecheck — needs no env vars). It MUST pass.
+  - Attempt `npm run build`, but it may fail purely from missing env — that's NOT a code
+    failure. If `check` is green and the only build error is missing-env, proceed: Vercel
+    builds with the real env on deploy, and if Vercel's build fails, prod simply stays on the
+    last good deploy (safe). If you cannot even run `npm run check`, mark `BLOCKED`.
+  - If `scripts/daily-report.ts --slack` fails for missing keys, post your report via the
+    **Slack connector** instead (a short note: day shipped, flag, commit). Don't block on it.
+
 **Hard safety rules (never violate):**
 - NEVER touch Stripe, billing, `subscription_status`, `is_admin`, auth security, or the RLS
   triggers. Funnel/landing/onboarding/play UX only.
