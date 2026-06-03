@@ -7,6 +7,8 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { OnboardingEvents } from '@/lib/analytics/posthog';
 import { playButtonClick } from '@/lib/sounds';
+import { isIgCohort } from '@/lib/growth/ig-cohort';
+import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { useBubblePopGame } from './BubblePopGame';
 
 // ─── Rookie's quips — cycles through on idle ───
@@ -98,7 +100,15 @@ export function OnboardingFlow() {
 
   // Orchestrated entrance: Rookie first, then buttons, then logo
   // 1=Rookie appears, 2=powerOn anim, 3=speech bubble, 4=buttons, 5=logo+sign in
+  //
+  // Day 1 of the IG sprint (CHE-359): cold ad traffic bounces 94% on this
+  // screen, and the staged reveal hides the CTAs until 1000ms. For the IG
+  // cohort only, jump straight to fully-visible so the buttons are instant.
   useEffect(() => {
+    if (IG_SPRINT_FLAGS.IG_LANDING_FASTPATH && isIgCohort()) {
+      setPhase(5);
+      return;
+    }
     const timers = [
       setTimeout(() => setPhase(1), 50),
       setTimeout(() => setPhase(2), 150),

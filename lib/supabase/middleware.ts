@@ -4,6 +4,16 @@ import { NextResponse, type NextRequest } from 'next/server';
 // Public paths that don't need auth checks - skip to avoid latency
 const PUBLIC_PATHS = ['/about', '/pricing', '/auth/', '/api/cron/', '/path', '/play', '/welcome'];
 
+// Redirect to `path` while PRESERVING the query string. The root redirect
+// (/ -> /welcome) must carry ?utm_source=instagram&utm_medium=paid through, or
+// the IG ad becomes unattributable: PostHog's first pageview would fire on the
+// destination with no UTM, and isIgCohort() would never trip. (CHE-359)
+function redirectPreservingQuery(path: string, request: NextRequest) {
+  const url = new URL(path, request.url);
+  url.search = request.nextUrl.search;
+  return NextResponse.redirect(url);
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -17,7 +27,7 @@ export async function updateSession(request: NextRequest) {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.redirect(new URL('/welcome', request.url));
+      return redirectPreservingQuery('/welcome', request);
     }
 
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -39,9 +49,9 @@ export async function updateSession(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      return NextResponse.redirect(new URL('/play', request.url));
+      return redirectPreservingQuery('/play', request);
     }
-    return NextResponse.redirect(new URL('/welcome', request.url));
+    return redirectPreservingQuery('/welcome', request);
   }
 
   // Skip auth check for public paths - no need to hit Supabase
