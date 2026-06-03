@@ -129,7 +129,11 @@ function SignupContent() {
     // Send welcome email (fire-and-forget)
     fetch('/api/email/welcome', { method: 'POST' }).catch(() => {});
 
-    router.push(redirectTo || '/');
+    // Go straight into the app. Routing through '/' bounces a fresh signup to
+    // /welcome (onboarding) because middleware re-checks auth on the server
+    // before the just-set client login cookie is readable there. /play is a
+    // public path, so it loads and reads the in-memory session directly.
+    router.push(redirectTo || '/play');
     router.refresh();
   };
 
