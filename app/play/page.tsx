@@ -1329,7 +1329,7 @@ export default function PlayRookiePage() {
 
     log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish sampled (level=${rookieLevel}, skill=${cfg.skillLevel}, depth=${cfg.depth}, pool=${cfg.poolSize}/${cfg.multiPV})`, details: { engine: 'stockfish-sampled', rookieLevel, ...cfg } });
     const thinkStart = Date.now();
-    stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize).then((uciMove) => {
+    stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize, cfg.tolerance).then((uciMove) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
       if (!uciMove) { fallbackRandomMove(currentFen, gen); return; }
       const from = uciMove.slice(0, 2);

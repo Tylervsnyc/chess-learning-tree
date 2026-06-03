@@ -45,6 +45,15 @@ export interface RookieEngineConfig {
   poolSize: number;
   /** 0..1 chance of playing a totally random legal move. Beginner "hung piece" feel. */
   randomMoveChance?: number;
+  /**
+   * Centipawn tolerance for eval-gated sampling. When set, Rookie picks uniformly
+   * among every candidate within this many cp of the best move instead of always
+   * taking the single best (argmax). This is what stops the high levels from
+   * replaying identical games against identical play — she only deviates onto
+   * near-equal moves, so strength holds but the game diverges wherever there's a
+   * real choice. Requires multiPV >= 2 to have alternatives to gate over.
+   */
+  tolerance?: number;
 }
 
 const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
@@ -54,10 +63,13 @@ const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
   4:  { skillLevel: 3,  depth: 5,  multiPV: 4, poolSize: 4 },
   5:  { skillLevel: 8,  depth: 8,  multiPV: 2, poolSize: 2 },
   6:  { skillLevel: 11, depth: 10, multiPV: 2, poolSize: 2 },
-  7:  { skillLevel: 14, depth: 12, multiPV: 2, poolSize: 1 },
-  8:  { skillLevel: 16, depth: 12, multiPV: 1, poolSize: 1 },
-  9:  { skillLevel: 18, depth: 13, multiPV: 1, poolSize: 1 },
-  10: { skillLevel: 20, depth: 14, multiPV: 1, poolSize: 1 },
+  // L7-L10 were poolSize:1 = pure argmax = identical games every time. Eval-gated
+  // sampling (tolerance) breaks that without weakening her: tighter tolerance as the
+  // level climbs so the top levels only ever swap between genuinely near-equal moves.
+  7:  { skillLevel: 14, depth: 12, multiPV: 3, poolSize: 3, tolerance: 60 },
+  8:  { skillLevel: 16, depth: 12, multiPV: 3, poolSize: 3, tolerance: 50 },
+  9:  { skillLevel: 18, depth: 13, multiPV: 3, poolSize: 3, tolerance: 40 },
+  10: { skillLevel: 20, depth: 14, multiPV: 3, poolSize: 3, tolerance: 30 },
 };
 
 export const ROOKIE_LEVELS: RookieLevel[] = [

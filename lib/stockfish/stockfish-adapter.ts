@@ -141,6 +141,14 @@ class StockfishEngine {
    * Get a move sampled from Stockfish's top MultiPV candidates.
    * At low Skill + shallow depth + wide pool, Rookie plays like a weak human
    * who considered several plausible moves — not an engine that hangs a queen.
+   *
+   * `tolerance` (centipawns) switches on EVAL-GATED sampling: instead of taking
+   * the single best move (pure argmax, which makes Rookie replay identical games
+   * from identical positions), she picks uniformly among every candidate within
+   * `tolerance` of the top eval. One clearly-best move → she plays it. Two near-
+   * equal moves → she varies. Strength holds because she never picks a move that's
+   * meaningfully worse than best — but games diverge wherever a real choice exists.
+   * When `tolerance` is undefined, behavior is the original top-`poolSize` uniform pick.
    */
   getBestMoveSampled(
     fen: string,
@@ -148,19 +156,39 @@ class StockfishEngine {
     depth: number,
     multiPV: number,
     poolSize: number,
+    tolerance?: number,
   ): Promise<string | null> {
     const candidates: (string | null)[] = new Array(multiPV).fill(null);
+    const scores: (number | null)[] = new Array(multiPV).fill(null);
 
     return this.enqueue((resolve) => {
       this.pendingCallback = (result) => {
-        const populated = candidates.filter((m): m is string => !!m);
-        const pool = populated.slice(0, Math.min(poolSize, populated.length));
-        if (pool.length === 0) {
+        const populated = candidates
+          .map((move, i) => ({ move, score: scores[i] }))
+          .filter((c): c is { move: string; score: number | null } => !!c.move);
+
+        if (populated.length === 0) {
           resolve(result.bestMove);
           return;
         }
-        const pick = pool[Math.floor(Math.random() * pool.length)];
-        resolve(pick);
+
+        // Eval-gated sampling — pick among moves within `tolerance` cp of the best.
+        // Scores are from the side-to-move's perspective (higher = better for Rookie).
+        if (tolerance !== undefined) {
+          const scored = populated.filter(
+            (c): c is { move: string; score: number } => c.score !== null,
+          );
+          if (scored.length > 0) {
+            const best = Math.max(...scored.map((c) => c.score));
+            const near = scored.filter((c) => best - c.score <= tolerance);
+            resolve(near[Math.floor(Math.random() * near.length)].move);
+            return;
+          }
+        }
+
+        // Default — uniform pick from the top `poolSize` candidates.
+        const pool = populated.slice(0, Math.min(poolSize, populated.length));
+        resolve(pool[Math.floor(Math.random() * pool.length)].move);
       };
 
       this.infoListener = (line: string) => {
@@ -170,6 +198,17 @@ class StockfishEngine {
         const idx = parseInt(mpvMatch[1], 10) - 1;
         if (idx < 0 || idx >= multiPV) return;
         candidates[idx] = pvMatch[1];
+
+        // Capture this line's eval so we can gate by it. Mate scores collapse to a
+        // huge cp value (mate-in-1 beats mate-in-5), so a mate always clears tolerance.
+        const cpMatch = line.match(/ score cp (-?\d+)/);
+        const mateMatch = line.match(/ score mate (-?\d+)/);
+        if (cpMatch) {
+          scores[idx] = parseInt(cpMatch[1], 10);
+        } else if (mateMatch) {
+          const m = parseInt(mateMatch[1], 10);
+          scores[idx] = m > 0 ? 100000 - m : -100000 - m;
+        }
       };
 
       this.worker!.postMessage('setoption name UCI_LimitStrength value false');

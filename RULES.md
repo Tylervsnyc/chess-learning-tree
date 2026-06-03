@@ -2630,23 +2630,25 @@ Rookie's move selection at each of the 10 difficulty levels. Three engines in on
 1. **Opening book** (`lib/rookie-opening-book.ts`) — walks the combined opening trie from `data/openings/registry.ts`. Capped at L1–L4 to Rookie's first 5 moves; L5+ use the full trie.
 2. **Maia-2** (`lib/maia/maia-adapter.ts`) — fires only at L5/L6 when the model is downloaded and ready. ONNX model at `public/maia3/maia3_simplified.onnx` (~45 MB, lazy-downloaded, IndexedDB cached).
 3. **Random move injection** — at L1/L2/L3 only. Probabilistic (30%/15%/5%). Picks uniformly from all legal moves. This is how we get sub-1000 effective ELO — vanilla Stockfish can't play that weakly on its own.
-4. **Stockfish sampled** (`lib/stockfish/stockfish-adapter.ts::getBestMoveSampled`) — MultiPV top-N candidate pool, uniform random pick from the pool. Handles everything that falls through 1–3.
+4. **Stockfish sampled** (`lib/stockfish/stockfish-adapter.ts::getBestMoveSampled`) — MultiPV top-N candidate pool. L1–L6 take a uniform random pick from the top `poolSize`. L7–L10 use **eval-gated sampling**: a `tolerance` (cp) picks uniformly among every candidate within that many centipawns of the best move. Handles everything that falls through 1–3.
 
 ### Engine configs per level
 Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 
-| Level | Engine | Skill | Depth | Pool | Random % | Nominal ELO |
-|---|---|---|---|---|---|---|
-| 1 | SF sampled | 0 | 3 | 8/8 | 30% | 200 |
-| 2 | SF sampled | 0 | 3 | 8/8 | 15% | 400 |
-| 3 | SF sampled | 1 | 4 | 5/6 | 5% | 600 |
-| 4 | SF sampled | 3 | 5 | 4/4 | — | 800 |
-| 5 | Maia eloSelf=1300 | — | — | — | — | 1000 |
-| 6 | Maia eloSelf=1500 | — | — | — | — | 1200 |
-| 7 | SF sampled | 14 | 12 | 1/2 | — | 1400 |
-| 8 | SF sampled | 16 | 12 | 1/1 | — | 1600 |
-| 9 | SF sampled | 18 | 13 | 1/1 | — | 1800 |
-| 10 | SF sampled | 20 | 14 | 1/1 | — | 2000 |
+| Level | Engine | Skill | Depth | Pool | Random % | Tolerance (cp) | Nominal ELO |
+|---|---|---|---|---|---|---|---|
+| 1 | SF sampled | 0 | 3 | 8/8 | 30% | — | 200 |
+| 2 | SF sampled | 0 | 3 | 8/8 | 15% | — | 400 |
+| 3 | SF sampled | 1 | 4 | 5/6 | 5% | — | 600 |
+| 4 | SF sampled | 3 | 5 | 4/4 | — | — | 800 |
+| 5 | Maia eloSelf=1300 | — | — | — | — | — | 1000 |
+| 6 | Maia eloSelf=1500 | — | — | — | — | — | 1200 |
+| 7 | SF sampled | 14 | 12 | 3/3 | — | 60 | 1400 |
+| 8 | SF sampled | 16 | 12 | 3/3 | — | 50 | 1600 |
+| 9 | SF sampled | 18 | 13 | 3/3 | — | 40 | 1800 |
+| 10 | SF sampled | 20 | 14 | 3/3 | — | 30 | 2000 |
+
+**Eval-gated sampling (L7–L10):** these levels were `poolSize:1` = pure argmax, so identical play produced byte-identical games every time (and Rookie's speech, keyed to game state, repeated too). Now they sample uniformly among moves within `tolerance` cp of the best. One clearly-best move → she plays it; near-equal moves → she varies. Strength holds (she never picks a meaningfully worse move) but games diverge wherever a real choice exists. Tolerance tightens as the level climbs.
 
 "Nominal ELO" is the label shown in `ROOKIE_LEVELS`. Effective strength is usually +100–300 above nominal at the low end because of Stockfish's implicit floor.
 
@@ -2661,6 +2663,7 @@ Source: `lib/rookie-levels.ts::ENGINE_CONFIGS`.
 - **Never raise L10's depth above 14.** Without that cap, unrestricted Stockfish 18 plays ~2800+ and nobody can beat L10. Current L10 targets ~2100 (strong club / weak expert).
 - **Never skip the opening book at L1–L3.** Beginners still see plausible openings; the *middlegame* is where the 30% random move kicks in.
 - **Never make `poolSize > multiPV`.** It's clamped at runtime but the config should match.
+- **Never put L7–L10 back to pure argmax** (`poolSize:1` / `multiPV:1` with no `tolerance`). That is the "identical game every time" bug — Stockfish is deterministic, so argmax replays the same game (and the same speech) against the same play. Keep eval-gated `tolerance` with `multiPV >= 2`.
 
 ### Dev-only tools
 - `/play` floating bottom-right panel (`process.env.NODE_ENV === 'development'` only): engine log per move + 1–10 level picker.
