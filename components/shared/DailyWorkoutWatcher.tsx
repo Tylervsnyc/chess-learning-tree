@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { DailyWorkoutCelebration } from './DailyWorkoutCelebration';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
+import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
 
 type WorkoutResponse = {
   current: number;
@@ -12,10 +13,17 @@ type WorkoutResponse = {
 };
 
 /**
- * Polls /api/workout/streak on mount + window focus. When `completedToday`
- * is true, atomically claims the celebration via POST /api/workout/celebrate.
- * The first claim per (user, date) wins — fires the popup. Subsequent calls
- * (same day, any device) return `claimed: false` and stay quiet.
+ * Checks /api/workout/streak on mount and whenever an activity completes
+ * (the WORKOUT_ACTIVITY_EVENT signal — finishing a lesson/puzzle set/run/
+ * workout). When `completedToday` is true, atomically claims the celebration
+ * via POST /api/workout/celebrate. The first claim per (user, date) wins —
+ * fires the popup. Subsequent calls (same day, any device) return
+ * `claimed: false` and stay quiet.
+ *
+ * We deliberately do NOT poll on window focus/visibility: that fired the
+ * celebration at random moments (e.g. mid-puzzle) once the day was already
+ * marked complete. Firing on the explicit completion event keeps it at a
+ * natural break instead.
  */
 export function DailyWorkoutWatcher() {
   const { user } = useUser();
@@ -59,13 +67,10 @@ export function DailyWorkoutWatcher() {
   useEffect(() => {
     if (!user) return;
     check();
-    const onFocus = () => check();
-    const onVisible = () => { if (!document.hidden) check(); };
-    window.addEventListener('focus', onFocus);
-    document.addEventListener('visibilitychange', onVisible);
+    const onActivity = () => check();
+    window.addEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
     return () => {
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
     };
   }, [user, check]);
 

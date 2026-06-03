@@ -13,6 +13,17 @@ type WorkoutResponse = {
   completedToday: boolean;
 };
 
+const cacheKey = (userId: string) => `cp:workout-streak:${userId}`;
+
+function readCache(userId: string): WorkoutResponse | null {
+  try {
+    const raw = localStorage.getItem(cacheKey(userId));
+    return raw ? (JSON.parse(raw) as WorkoutResponse) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const [data, setData] = useState<WorkoutResponse | null>(null);
@@ -34,6 +45,11 @@ export function DailyWorkoutBadge() {
         }
         lastStreakRef.current = next.current;
         setData(next);
+        try {
+          localStorage.setItem(cacheKey(user.id), JSON.stringify(next));
+        } catch {
+          // ignore quota / private-mode errors
+        }
       })
       .catch(() => {});
   }, [user]);
@@ -42,6 +58,10 @@ export function DailyWorkoutBadge() {
   // finishes on this same page) or the tab regains focus.
   useEffect(() => {
     if (!user) return;
+    // Show the last-known streak instantly while we revalidate in the
+    // background, so the badge doesn't flash 0 for ~2s on every load.
+    const cached = readCache(user.id);
+    if (cached) setData(cached);
     refetch();
     const onActivity = () => refetch();
     window.addEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
