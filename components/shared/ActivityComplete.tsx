@@ -366,7 +366,7 @@ export function ActivityComplete({
                 {/* Play */}
                 <Link
                   href="/play"
-                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
+                  className="flex-1 min-w-0 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90"
                   style={{
                     background: workoutPlay ? GOLD_BG : '#1CB0F6',
                     boxShadow: workoutPlay ? GOLD_SHADOW : undefined,
@@ -380,7 +380,7 @@ export function ActivityComplete({
                 {/* Learn */}
                 <Link
                   href="/path"
-                  className="flex-1 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-l-2 border-white/30"
+                  className="flex-1 min-w-0 flex items-center justify-center gap-1.5 text-[13px] font-bold transition-all active:brightness-90 border-l-2 border-white"
                   style={{
                     background: workoutLearn ? GOLD_BG : '#58CC02',
                     boxShadow: workoutLearn ? GOLD_SHADOW : undefined,
