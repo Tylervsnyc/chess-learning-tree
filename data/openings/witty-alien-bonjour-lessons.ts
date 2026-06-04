@@ -11,7 +11,7 @@ import type { OpeningLesson } from '@/types/opening-lesson'
 // WHITE OPENING: User plays as White. White moves = play-move.
 // Black moves = instruction with autoAdvance: 800.
 //
-// Main line: 1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nf6 5.Ng5 h6
+// Main line: 1.e4 e6 2.d4 d5 3.Nd2 dxe4 4.Nxe4 Nf6 5.Ng5 h6
 //            6.Nxf7!! Kxf7 7.Nf3 Nbd7 8.Bd3 Bd6 9.O-O Re8
 //            10.Re1 Kg8 11.Ne5 Bxe5 12.dxe5 Nd5 13.Qg4 Kh8
 //            14.Bxh6!! gxh6 15.Qg6 Nf8 16.Qxh6+ Kg8 17.Re4 Kf7
@@ -37,8 +37,8 @@ const FEN = {
   after_e6:     'rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
   after_d4:     'rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
   after_d5:     'rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
-  after_Nc3:    'rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 3',
-  after_dxe4:   'rnbqkbnr/ppp2ppp/4p3/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4',
+  after_Nd2:    'rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPPN1PPP/R1BQKBNR b KQkq - 1 3',
+  after_dxe4:   'rnbqkbnr/ppp2ppp/4p3/8/3Pp3/8/PPPN1PPP/R1BQKBNR w KQkq - 0 4',
   after_Nxe4:   'rnbqkbnr/ppp2ppp/4p3/8/3PN3/8/PPP2PPP/R1BQKBNR b KQkq - 0 4',
   after_Nf6:    'rnbqkb1r/ppp2ppp/4pn2/8/3PN3/8/PPP2PPP/R1BQKBNR w KQkq - 1 5',
   after_Ng5:    'rnbqkb1r/ppp2ppp/4pn2/6N1/3P4/8/PPP2PPP/R1BQKBNR b KQkq - 2 5',
@@ -92,9 +92,9 @@ const FEN = {
 
 
 // ═══════════════════════════════════════════════════════════
-// wab-1: BONJOUR, FRANCE (1.e4 e6 2.d4 d5 3.Nc3 dxe4)
+// wab-1: BONJOUR, FRANCE (1.e4 e6 2.d4 d5 3.Nd2 dxe4)
 // First lesson — no recap.
-// Teaches: e4, d4, Nc3
+// Teaches: e4, d4, Nd2
 // ═══════════════════════════════════════════════════════════
 
 const WAB_1: OpeningLesson = {
@@ -157,7 +157,7 @@ const WAB_1: OpeningLesson = {
       arrow: ['d2', 'd4'],
     },
 
-    // ── TEACH 3: Nc3 ──
+    // ── TEACH 3: Nd2 ──
     {
       type: 'instruction',
       fen: FEN.after_d5,
@@ -168,18 +168,18 @@ const WAB_1: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.after_d5,
-      correctMove: 'Nc3',
+      correctMove: 'Nd2',
       prompt: "Defend e4 by developing a piece. Where does the knight go?",
-      hint: 'Bring the b1 knight to c3 — it defends e4.',
-      correctFeedback: "Nc3! Develops AND defends e4. Same setup as the Alien Gambit, just one pawn move different.",
-      wrongFeedback: 'Play Nc3 — develop and defend e4 in one move.',
-      postMoveArrow: ['c3', 'e4'],
+      hint: 'Bring the b1 knight to d2 — it still covers e4, and it is how Witty plays it.',
+      correctFeedback: "Nd2! The Tarrasch move order — the exact way Witty_Alien plays it (564 of 565 real games). Same Alien Gambit, one square over.",
+      wrongFeedback: 'Play Nd2 — develop, defend e4, and match Witty\'s real move order.',
+      postMoveArrow: ['d2', 'e4'],
     },
     {
       type: 'instruction',
-      fen: FEN.after_Nc3,
-      text: "Nc3 invites Black to capture on e4. If they take, we're in the Rubinstein French — and the gambit is on.",
-      arrow: ['b1', 'c3'],
+      fen: FEN.after_Nd2,
+      text: "Nd2 invites Black to capture on e4. If they take, we're in the Rubinstein French — and the gambit is on.",
+      arrow: ['b1', 'd2'],
     },
 
     // ── BLACK CAPTURES ──
@@ -238,11 +238,11 @@ const WAB_1: OpeningLesson = {
     {
       type: 'play-move',
       fen: FEN.after_d5,
-      correctMove: 'Nc3',
+      correctMove: 'Nd2',
       prompt: 'Your move.',
-      hint: 'Nc3.',
-      correctFeedback: 'Nc3.',
-      wrongFeedback: 'Nc3.',
+      hint: 'Nd2.',
+      correctFeedback: 'Nd2.',
+      wrongFeedback: 'Nd2.',
     },
     {
       type: 'instruction',
@@ -256,7 +256,7 @@ const WAB_1: OpeningLesson = {
     {
       type: 'instruction',
       fen: FEN.after_dxe4,
-      text: "e4, d4, Nc3 — the Rubinstein French is on the board. Black bit. Now the fun starts.",
+      text: "e4, d4, Nd2 — the Rubinstein French is on the board. Black bit. Now the fun starts.",
     },
   ],
 }
@@ -297,7 +297,7 @@ const WAB_2: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     { type: 'play-move', fen: FEN.after_e6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
     { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
-    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
     { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
 
     // ── TEACH 1: Nxe4 ──
@@ -423,7 +423,7 @@ const WAB_3: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     { type: 'play-move', fen: FEN.after_e6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
     { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
-    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
     { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
     { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
     { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
@@ -1013,7 +1013,7 @@ const WAB_DEV_NC6: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     { type: 'play-move', fen: FEN.after_e6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
     { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
-    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
     { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
     { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
     { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
@@ -1211,7 +1211,7 @@ const WAB_DEV_C5: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     { type: 'play-move', fen: FEN.after_e6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
     { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
-    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
     { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
     { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
     { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },
@@ -1335,7 +1335,7 @@ const WAB_TEST_1: OpeningLesson = {
     { type: 'instruction', fen: FEN.after_e6, text: 'e6.', autoAdvance: 800, highlightSquares: ['e7', 'e6'] },
     { type: 'play-move', fen: FEN.after_e6, correctMove: 'd4', prompt: 'Your move.', hint: 'd4.', correctFeedback: 'd4.', wrongFeedback: 'd4.' },
     { type: 'instruction', fen: FEN.after_d5, text: 'd5.', autoAdvance: 800, highlightSquares: ['d7', 'd5'] },
-    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nc3', prompt: 'Your move.', hint: 'Nc3.', correctFeedback: 'Nc3.', wrongFeedback: 'Nc3.' },
+    { type: 'play-move', fen: FEN.after_d5, correctMove: 'Nd2', prompt: 'Your move.', hint: 'Nd2.', correctFeedback: 'Nd2.', wrongFeedback: 'Nd2.' },
     { type: 'instruction', fen: FEN.after_dxe4, text: 'dxe4.', autoAdvance: 800, highlightSquares: ['d5', 'e4'] },
     { type: 'play-move', fen: FEN.after_dxe4, correctMove: 'Nxe4', prompt: 'Your move.', hint: 'Nxe4.', correctFeedback: 'Nxe4.', wrongFeedback: 'Nxe4.' },
     { type: 'instruction', fen: FEN.after_Nf6, text: 'Nf6.', autoAdvance: 800, highlightSquares: ['g8', 'f6'] },

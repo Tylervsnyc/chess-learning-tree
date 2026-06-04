@@ -50,6 +50,10 @@ import { WITTY_ALIEN } from '@/data/openings/witty-alien'
 import { WITTY_ALIEN_MARTIAN } from '@/data/openings/witty-alien-martian'
 import { WITTY_ALIEN_TWO_KNIGHTS } from '@/data/openings/witty-alien-two-knights'
 import { WITTY_ALIEN_BONJOUR } from '@/data/openings/witty-alien-bonjour'
+import { WITTY_ALIEN_ELEPHANT } from '@/data/openings/witty-alien-elephant'
+import { WITTY_ALIEN_ENGLUND } from '@/data/openings/witty-alien-englund'
+import { WITTY_ALIEN_DANISH } from '@/data/openings/witty-alien-danish'
+import { WITTY_ALIEN_SCANDI } from '@/data/openings/witty-alien-scandi'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -100,6 +104,10 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'witty-alien-martian': WITTY_ALIEN_MARTIAN,
   'witty-alien-two-knights': WITTY_ALIEN_TWO_KNIGHTS,
   'witty-alien-bonjour': WITTY_ALIEN_BONJOUR,
+  'witty-alien-elephant': WITTY_ALIEN_ELEPHANT,
+  'witty-alien-englund': WITTY_ALIEN_ENGLUND,
+  'witty-alien-danish': WITTY_ALIEN_DANISH,
+  'witty-alien-scandi': WITTY_ALIEN_SCANDI,
 }
 
 /** Get total lesson count for an opening */

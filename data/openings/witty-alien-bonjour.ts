@@ -14,7 +14,7 @@
 //     including the full mating sequence and c5 refutation)
 //
 // WHITE OPENING: The user plays as White.
-// Main line: 1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nf6 5.Ng5 h6
+// Main line: 1.e4 e6 2.d4 d5 3.Nd2 dxe4 4.Nxe4 Nf6 5.Ng5 h6
 //            6.Nxf7!! Kxf7 7.Nf3 Nbd7 8.Bd3 Bd6 9.O-O Re8
 //            10.Re1 Kg8 11.Ne5 Bxe5 12.dxe5 Nd5 13.Qg4 Kh8
 //            14.Bxh6!! gxh6 15.Qg6 Nf8 16.Qxh6+ Kg8 17.Re4 Kf7
@@ -58,8 +58,8 @@ export const WITTY_ALIEN_BONJOUR: OpeningTree = {
     {
       id: 'wab-1',
       name: 'Bonjour, France',
-      moves: ['1.e4 e6', '2.d4 d5', '3.Nc3 dxe4'],
-      description: 'Witty\'s third Alien — same sac, different opening. Black plays the French; you trick them into the Rubinstein.',
+      moves: ['1.e4 e6', '2.d4 d5', '3.Nd2 dxe4'],
+      description: 'Witty\'s third Alien — same sac, different opening. Black plays the French; you answer with the Tarrasch (3.Nd2) and trick them into the Rubinstein.',
       type: 'main',
       row: 0,
       col: 0,
