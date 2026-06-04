@@ -90,6 +90,10 @@ scripts/generate-puzzle-voice.ts
 
 # Rookie's Run playtest — raw sweep data is large + regenerable. Digests stay.
 data/run-playtest/raw/
+# Human trace recordings — local-only by default.
+data/run-playtest/human-traces/
 
 # Agent scratch files
 scripts/_tmp-*
+.env*
+data/witty-games/
