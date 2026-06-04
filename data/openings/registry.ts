@@ -276,7 +276,10 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     },
     variations: [
       { name: 'Martian Gambit', subtitle: 'vs 4...Bf5 — two knight sacrifices', icon: 'knight', hasData: true, slug: 'witty-alien-martian' },
-      { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: true, slug: 'witty-alien-two-knights' },
+      // Pulled 2026-06-04: witty_alien has only ~4 real games with the 2.Nc3 move order
+      // (they just transpose to the Alien's Nxf7 sac). No real data to teach — hidden
+      // pending a decision to fold this into the Alien Gambit or drop it. See /build-trick-weapon.
+      { name: 'Two Knights Trap', subtitle: "2.Nc3 move order — Hikaru's mate", icon: 'lightning', hasData: false, slug: 'witty-alien-two-knights' },
       { name: 'Bonjour Variation', subtitle: 'vs the French Defense', icon: 'pawn', hasData: true, slug: 'witty-alien-bonjour' },
       { name: 'Elephant Gambit', subtitle: 'Black vs 1.e4 — the 2...d5 gambit', icon: 'queen', hasData: true, slug: 'witty-alien-elephant' },
       { name: 'Englund Gambit', subtitle: 'Black vs 1.d4 — the 1...e5 gambit', icon: 'pawn', hasData: true, slug: 'witty-alien-englund' },
