@@ -4,7 +4,7 @@
 // fast-development gambit — NOT the fabricated Qxd5 queen-hang.
 import { writeFileSync } from 'fs'
 import { join } from 'path'
-import { buildBlackOpening, serializeTree, serializeLessons, type OpeningSpec, type PlySpec } from './lib/build-black-opening'
+import { buildOpening, serializeTree, serializeLessons, type OpeningSpec, type PlySpec } from './lib/build-opening'
 
 // ── MAIN LINE (shared by we-1/we-2/we-3) ──────────────────────────────
 // 1.e4 e5 2.Nf3 d5 3.exd5 e4 4.Qe2 Nf6 5.Nc3 Be7 6.Nxe4 O-O 7.Nxf6+ Bxf6 8.d4 Bf5 9.Be3 Re8
@@ -117,7 +117,7 @@ const spec: OpeningSpec = {
     outro: "Level 1 complete. The real Elephant is in your head: the development gambit main line, the 3.Nxe5 test, and the sidelines. Go play it." },
 }
 
-const { tree, lessons } = buildBlackOpening(spec)
+const { tree, lessons } = buildOpening({ ...spec, playerColor: 'black' })
 writeFileSync(join(process.cwd(), 'data/openings/witty-alien-elephant.ts'), serializeTree(tree, 'WITTY_ALIEN_ELEPHANT'))
 writeFileSync(join(process.cwd(), 'data/openings/witty-alien-elephant-lessons.ts'), serializeLessons(lessons, 'getWittyAlienElephantLesson', 'WITTY_ALIEN_ELEPHANT_LESSONS'))
 console.log('Wrote witty-alien-elephant.ts + witty-alien-elephant-lessons.ts')
