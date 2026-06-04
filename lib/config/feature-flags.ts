@@ -29,4 +29,6 @@ export const FEATURE_FLAGS = {
 export const IG_SPRINT_FLAGS = {
   /** Day 1 — skip the staged power-on entrance so the CTAs are instant. */
   IG_LANDING_FASTPATH: true,
+  /** Day 2 — one dominant "Play" CTA; demote "Learn" to a small text link (kills the fork). */
+  IG_SINGLE_CTA: true,
 } as const;
