@@ -48,7 +48,7 @@ export interface OpeningSpec {
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 const moveNo = (ply: number) => Math.floor(ply / 2) + 1
-const sanLabel = (ply: number, san: string) => `${moveNo(ply)}.${san}`
+const sanLabel = (ply: number, san: string) => `${moveNo(ply)}${ply % 2 === 0 ? '.' : '...'}${san}`
 
 function replay(plies: PlySpec[]) {
   const c = new Chess()
