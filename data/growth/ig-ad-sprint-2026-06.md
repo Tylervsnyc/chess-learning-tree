@@ -67,6 +67,14 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 **Procedure:**
 1. Read the **Progress Log** below. Do the lowest-numbered day NOT marked `DONE`.
    If yesterday's day is marked `BLOCKED`, retry it (don't skip ahead).
+1b. **Reconcile before you build (anti-collision — this is mandatory).** An interactive
+   session (Claude + Tyler) may have shipped a lever out of order while you were idle. Before
+   implementing anything: run `git log --oneline -15` and read `IG_SPRINT_FLAGS` in
+   `lib/config/feature-flags.ts`. If today's lever — or its *goal* — already shipped, do NOT
+   build a competing version. Instead: update the Progress Log to point at the existing commit,
+   mark that day `DONE`, and move on to the next genuinely-undone lever (or iterate on what
+   shipped). **One goal = one implementation, ever.** Shipping a second take of an
+   already-solved day is the failure this step exists to prevent.
 2. Read that day's spec under **Per-day specs**. Implement it:
    - Add/flip the day's flag in `lib/config/feature-flags.ts` (`IG_SPRINT_FLAGS`).
    - Gate ALL new behavior behind `isIgCohort()` (`lib/growth/ig-cohort.ts`) so only
@@ -112,9 +120,9 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 
 **Day 1 — `IG_LANDING_FASTPATH`** ✅ done. `OnboardingFlow` jumps to phase 5 for the IG cohort so CTAs are instant (no staged power-on). Also fixed the `/`→`/welcome` redirect to preserve the UTM.
 
-**Day 2 — `IG_SINGLE_CTA`.** In `OnboardingFlow`, for IG cohort: render ONE large "Play" CTA with full attention; demote "Learn" to a small secondary text link beneath. Kills the choice paralysis of the dual Play/Learn fork. Metric: picked-a-path.
+**Day 2 — `IG_LANDING_VALUE_CTA`** ✅ done (shipped as `ColdLanding`, commit c4a3399). For the IG cohort, replace the whole Play/Learn fork with a value-led screen: "Learn chess in 5 minutes. Free." headline + ONE dominant "Start playing" CTA, basics demoted to a link. Kills choice paralysis AND adds the value hook. Metric: picked-a-path. (Superseded the removed `IG_SINGLE_CTA` take.)
 
-**Day 3 — `IG_LANDING_COPY`.** For IG cohort, swap Rookie's opening line/headline to a punchy value hook that matches the ad ("Beat me in 60 seconds?" / "Chess, the fun way — your first game's on me"). One strong line, not the idle quip cycle. Metric: picked-a-path.
+**Day 3 — `IG_LANDING_COPY`.** The value headline already shipped in `ColdLanding` (Day 2), so this is now **copy iteration only**: tune the existing `ColdLanding` headline text to match the live ad creative (e.g. "Beat me in 60 seconds?" / "Chess, the fun way — your first game's on me"). Edit the headline in `components/onboarding/ColdLanding.tsx` — do NOT add a new flag or a competing landing. Metric: picked-a-path.
 
 **Day 4 — `IG_AUTOPLAY`.** For IG cohort, the Play CTA routes into `/play` and auto-starts a game (skip the /play setup screen) — land them as close to the first move as possible. `/play` reads a query/flag to autostart. Metric: activity-started (`game_started`).
 
@@ -136,7 +144,8 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 
 - **Day 0** — 2026-06-03 — `DONE` — ad live + UTM, paid funnel + cohort retention in daily-report, one-tap win capture (CHE-339). Baseline picked-a-path (IG) ~6%.
 - **Day 1** — 2026-06-03 — `DONE` — `IG_LANDING_FASTPATH` — commit 33497fb — instant landing for IG cohort + UTM-preserving redirect fix.
-- **Day 2** — 2026-06-04 — `DONE` — `IG_SINGLE_CTA` — commit 1f1a8ad — one dominant Play CTA for IG cohort; Learn demoted to a small text link (kills the fork).
+- **Day 2** — 2026-06-04 — `DONE` — `IG_LANDING_VALUE_CTA` — commit c4a3399 — value-led `ColdLanding` for the IG cohort: **"Learn chess in 5 minutes. Free."** headline + ONE dominant "Start playing" CTA, basics demoted to a link (`components/onboarding/ColdLanding.tsx`). Supersedes the earlier `IG_SINGLE_CTA`/1f1a8ad take, which was **removed** — same single-CTA goal *plus* the value hook. **This also delivers Day 3's value-copy intent**, so Day 3 = copy iteration on this headline, not a new mechanism.
+  > Collision note: `IG_SINGLE_CTA` (1f1a8ad) and `ColdLanding` (c4a3399) were two parallel implementations of Day 2 — the scheduled agent and an interactive session shipped the same day at once. Resolved to one. See the anti-collision step in the runbook.
 
 ---
 

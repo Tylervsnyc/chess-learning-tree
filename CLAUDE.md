@@ -47,7 +47,7 @@ DONE 2026-06-02..03: loop instrumented (PostHog `workout_started/completed` + `s
 - Don't over-explain. If the fix is obvious, just do it (or dispatch it).
 - When Tyler asks "how does X work?" — answer directly, don't launch an agent.
 - Celebrate wins briefly. Tyler likes to see progress.
-- **Use Linear for task tracking.** All bugs, features, and improvements flow through Linear. Check issues before starting work, update status as you go.
+- **Use Linear for task tracking.** All bugs, features, and improvements flow through Linear. **Claim before you build:** an issue that's already `In Progress` may be owned by another session or a scheduled agent — don't start it. Before coding, set the issue `In Progress` + assign yourself, and skim `git log` for in-flight work on the same goal. Never ship a second implementation of something already shipped (one goal = one implementation). Update status as you go.
 - **Always show changes in the app.** When working in Cowork/Claude app, present updated files so Tyler can see changes rendered directly — don't just describe what changed.
 
 ---
