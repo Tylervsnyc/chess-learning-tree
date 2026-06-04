@@ -136,6 +136,7 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 
 - **Day 0** — 2026-06-03 — `DONE` — ad live + UTM, paid funnel + cohort retention in daily-report, one-tap win capture (CHE-339). Baseline picked-a-path (IG) ~6%.
 - **Day 1** — 2026-06-03 — `DONE` — `IG_LANDING_FASTPATH` — commit 33497fb — instant landing for IG cohort + UTM-preserving redirect fix.
+- **Day 2** — 2026-06-04 — `DONE` — `IG_SINGLE_CTA` — commit 1f1a8ad — one dominant Play CTA for IG cohort; Learn demoted to a small text link (kills the fork).
 
 ---
 
