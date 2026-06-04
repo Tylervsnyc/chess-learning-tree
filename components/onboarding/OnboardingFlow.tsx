@@ -10,6 +10,7 @@ import { playButtonClick } from '@/lib/sounds';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { useBubblePopGame } from './BubblePopGame';
+import { ColdLanding } from './ColdLanding';
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
@@ -90,10 +91,10 @@ export function OnboardingFlow() {
   const [phase, setPhase] = useState(0);
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
   const [learnExpanded, setLearnExpanded] = useState(false);
-  // Day 2 of the IG sprint (CHE-359): for cold ad traffic, collapse the dual
-  // Play/Learn fork into ONE dominant Play CTA so there's no choice paralysis.
-  // Client-only (isIgCohort reads sessionStorage), so resolve it in an effect.
-  const [igSingleCta, setIgSingleCta] = useState(false);
+  // Day-2 cold-traffic landing (CHE-359). Client-only — false on SSR/first paint
+  // (matches the default flow, no hydration mismatch), flips on after mount for
+  // the IG cohort. Existing users never enter this branch.
+  const [coldVariant, setColdVariant] = useState(false);
 
   const { displayed: typedQuip, done: typingDone, fading } = useTypewriter(
     ROOKIE_QUIPS, 800, 30000, 28,
@@ -109,9 +110,15 @@ export function OnboardingFlow() {
   // screen, and the staged reveal hides the CTAs until 1000ms. For the IG
   // cohort only, jump straight to fully-visible so the buttons are instant.
   useEffect(() => {
-    const ig = isIgCohort();
-    if (IG_SPRINT_FLAGS.IG_SINGLE_CTA && ig) setIgSingleCta(true);
-    if (IG_SPRINT_FLAGS.IG_LANDING_FASTPATH && ig) {
+    // Day 2: value-led cold landing. Render our own screen and jump to phase 5
+    // so the phase>=4 effect still fires `onboarding_started` (the funnel's
+    // landing->started step) for this variant too.
+    if (IG_SPRINT_FLAGS.IG_LANDING_VALUE_CTA && isIgCohort()) {
+      setColdVariant(true);
+      setPhase(5);
+      return;
+    }
+    if (IG_SPRINT_FLAGS.IG_LANDING_FASTPATH && isIgCohort()) {
       setPhase(5);
       return;
     }
@@ -163,6 +170,17 @@ export function OnboardingFlow() {
     OnboardingEvents.completed({ level: id });
     router.push(route);
   }, [markOnboarded, router]);
+
+  // ─── Day-2 cold-traffic landing (CHE-359) — value headline + one dominant CTA ───
+  if (coldVariant) {
+    return (
+      <ColdLanding
+        onPlay={() => handleRoute('play', '/play')}
+        onBasics={() => handleRoute('learn', '/basics')}
+        onSignIn={() => { playButtonClick(); router.push('/auth/login'); }}
+      />
+    );
+  }
 
   return (
     <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
@@ -276,11 +294,11 @@ export function OnboardingFlow() {
         >
           <ActionButton
             color="green"
-            size={igSingleCta ? 'lg' : 'md'}
+            size="md"
             fullWidth
             onClick={() => handleRoute('play', '/play')}
           >
-            <span className="font-black block" style={{ fontSize: igSingleCta ? 'clamp(22px, 6vw, 28px)' : 'clamp(18px, 5vw, 22px)' }}>
+            <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
               Play
             </span>
             <span className="block mt-0.5 font-semibold" style={{ fontSize: 'clamp(13px, 3.2vw, 15px)', opacity: 0.85 }}>
@@ -289,23 +307,6 @@ export function OnboardingFlow() {
           </ActionButton>
         </div>
 
-        {igSingleCta ? (
-          /* IG cohort (Day 2): demote Learn to a small secondary text link. */
-          <div
-            className="text-center pt-1"
-            style={{
-              opacity: phase >= 4 ? 1 : 0,
-              transition: 'opacity 0.6s ease-out 80ms',
-            }}
-          >
-            <button
-              onClick={() => handleRoute('learn', '/basics')}
-              className="text-[14px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 px-4"
-            >
-              or learn how the pieces move first
-            </button>
-          </div>
-        ) : (
         <div
           onPointerEnter={() => setHoveredBtn('learn')}
           onPointerLeave={() => setHoveredBtn(null)}
@@ -360,7 +361,6 @@ export function OnboardingFlow() {
             </div>
           )}
         </div>
-        )}
       </div>
 
       <div className="flex-[0.6]" />

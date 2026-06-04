@@ -29,6 +29,12 @@ export const FEATURE_FLAGS = {
 export const IG_SPRINT_FLAGS = {
   /** Day 1 — skip the staged power-on entrance so the CTAs are instant. */
   IG_LANDING_FASTPATH: true,
-  /** Day 2 — one dominant "Play" CTA; demote "Learn" to a small text link (kills the fork). */
-  IG_SINGLE_CTA: true,
+  /**
+   * Day 2 (CHE-359) — value-led landing for cold traffic. Day 1 made the CTAs
+   * instant and ALL 18 paid clicks saw them, yet only 2 tapped: speed wasn't the
+   * cliff, the missing value prop was. This replaces the Play/Learn fork with a
+   * single dominant "Start playing" CTA under a "Learn chess in 5 minutes. Free."
+   * headline (basics demoted to a link). Existing users never see it.
+   */
+  IG_LANDING_VALUE_CTA: true,
 } as const;

@@ -109,20 +109,36 @@ async function hogql(query: string, label?: string): Promise<QResult> {
 }
 
 /**
- * Build a timestamp filter using `now() - interval N day` so ClickHouse
- * can prune partitions (toDateTime literals skip pruning and time out).
+ * Build a timestamp filter aligned to UTC CALENDAR days.
+ *
+ * We anchor on `toStartOfDay(now(), 'UTC')` rather than bare `now()`. Bare
+ * `now()` makes the window a rolling noon-to-noon slice (whatever time-of-day
+ * the report runs), so "yesterday" silently straddled two calendar days — an
+ * ad whose clicks landed after the run-time cutoff showed up as zero. Anchoring
+ * to the start-of-day boundary makes "yesterday" mean the real UTC calendar day,
+ * matching getTargetDate() (which is UTC) and the DB-truth cohort queries.
+ *
+ * `toStartOfDay(now())` is a deterministic function of now(), evaluated once at
+ * query planning — so ClickHouse still prunes partitions (the thing that timed
+ * out before was toDateTime *literals*, not now()-derived expressions).
  */
 function dayFilter(dateStr: string, days = 1) {
+  // Whole UTC days between the start of dateStr and the start of today — an
+  // exact integer because both endpoints are midnights.
   const now = new Date();
-  const target = new Date(`${dateStr}T00:00:00Z`);
-  const daysAgo = Math.ceil((now.getTime() - target.getTime()) / 86400000);
-  // Window of `days` width ending at dateStr. The older (>=) bound grows with the
-  // range; the newer (<) bound is the end of dateStr. Previously the newer bound was
-  // `daysAgo - days`, which went negative (into the future) for any multi-day range,
-  // so every range report only ever saw ~1 day of data and returned near-zeros.
-  const startInterval = daysAgo + days - 1;
-  const endInterval = daysAgo - 1;
-  return `timestamp >= now() - interval ${startInterval} day AND timestamp < now() - interval ${endInterval} day`;
+  const startOfTodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const targetStartUTC = Date.parse(`${dateStr}T00:00:00Z`);
+  const daysAgo = Math.round((startOfTodayUTC - targetStartUTC) / 86400000);
+  // Window covers the `days` calendar days ending at (and including) dateStr.
+  const startInterval = daysAgo + days - 1; // older bound: start of first day in window
+  const endInterval = daysAgo - 1;          // newer bound: start of the day AFTER dateStr
+  const anchor = `toStartOfDay(now(), 'UTC')`;
+  // endInterval is -1 only when dateStr is today; the day-after boundary is then
+  // start-of-tomorrow. Avoid emitting `interval -1 day` (keep it unambiguous).
+  const endBound = endInterval >= 0
+    ? `${anchor} - interval ${endInterval} day`
+    : `${anchor} + interval ${-endInterval} day`;
+  return `timestamp >= ${anchor} - interval ${startInterval} day AND timestamp < ${endBound}`;
 }
 
 const f = dayFilter(targetDate, rangeDays);
