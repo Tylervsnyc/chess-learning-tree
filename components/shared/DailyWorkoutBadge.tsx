@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
-import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { MiniRookieIcon } from './MiniRookieIcon';
 import { StreakModal } from './StreakModal';
@@ -27,6 +27,7 @@ function readCache(userId: string): WorkoutResponse | null {
 
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
+  const pathname = usePathname();
   const [data, setData] = useState<WorkoutResponse | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   // Last `current` we've seen, to detect a live increase. null = no read yet
@@ -56,8 +57,9 @@ export function DailyWorkoutBadge() {
       .catch(() => {});
   }, [user]);
 
-  // Fetch on mount, and again whenever an activity is recorded (e.g. a run
-  // finishes on this same page) or the tab regains focus.
+  // Refetch on mount, on every navigation (any completion flow ends by
+  // navigating), and when the tab regains focus. `pathname` in the deps drives
+  // the route-change refresh — same single trigger the celebration uses.
   useEffect(() => {
     if (!user) return;
     // Show the last-known streak instantly while we revalidate in the
@@ -65,14 +67,12 @@ export function DailyWorkoutBadge() {
     const cached = readCache(user.id);
     if (cached) setData(cached);
     refetch();
-    const onActivity = () => refetch();
-    window.addEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
-    window.addEventListener('focus', onActivity);
+    const onFocus = () => refetch();
+    window.addEventListener('focus', onFocus);
     return () => {
-      window.removeEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
-      window.removeEventListener('focus', onActivity);
+      window.removeEventListener('focus', onFocus);
     };
-  }, [user, refetch]);
+  }, [user, pathname, refetch]);
 
   if (loading || !user) return null;
 

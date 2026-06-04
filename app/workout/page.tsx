@@ -18,7 +18,6 @@ import {
 } from '@/lib/workout/schedule';
 import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
-import { notifyWorkoutActivity } from '@/lib/daily-workout/events';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
@@ -323,9 +322,6 @@ export default function WorkoutPage() {
         if (Array.isArray(data?.recentPoints) && data.recentPoints.length) {
           recentPoints = data.recentPoints;
         }
-        // Session recorded server-side — tell the header streak badge to refetch
-        // so the streak ticks live without a reload.
-        notifyWorkoutActivity();
       }
     } catch {
       // Network/auth failure — still show the session summary.

@@ -171,9 +171,6 @@ export function useLessonProgress() {
   const [syncState, setSyncState] = useState<SyncState>('idle');
   const [pendingSyncs, setPendingSyncs] = useState<PendingSync[]>([]);
   const [isOnline, setIsOnline] = useState(true);
-  // Streak popup state
-  const [streakJustExtended, setStreakJustExtended] = useState(false);
-  const [previousStreak, setPreviousStreak] = useState(0);
   const { user, profile, loading: userLoading } = useUser();
   const hasSyncedRef = useRef(false);
   const previousUserIdRef = useRef<string | null>(null);
@@ -539,10 +536,7 @@ export function useLessonProgress() {
       // Streak updates even on fail — they practiced today
       const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
 
-      // Trigger streak popup if streak was extended
       if (streakResult.extended) {
-        setPreviousStreak(streakResult.previousStreak);
-        setStreakJustExtended(true);
         EngagementEvents.streakUpdated(streakResult.newStreak);
       }
 
@@ -614,7 +608,7 @@ export function useLessonProgress() {
         totalPuzzlesAttempted: prev.totalPuzzlesAttempted + 1,
         totalPuzzlesSolved: correct ? prev.totalPuzzlesSolved + 1 : prev.totalPuzzlesSolved,
         // Don't update streak or lastActivityDate for individual puzzle attempts
-        // Streak is managed by completeLesson() and recordDailyActivity()
+        // Streak is managed by completeLesson()
       };
       saveProgress(newProgress);
 
@@ -766,43 +760,6 @@ export function useLessonProgress() {
     }
   }, [user]);
 
-  // Record daily activity (for daily challenge completion)
-  // This updates the streak using day-based logic
-  const recordDailyActivity = useCallback(() => {
-    setProgress(prev => {
-      const today = new Date().toISOString().split('T')[0];
-
-      // Update streak using day-based logic (per RULES.md Section 11)
-      const streakResult = calculateNewStreak(prev.currentStreak, prev.lastActivityDate);
-
-      // Trigger streak popup if streak was extended
-      if (streakResult.extended) {
-        setPreviousStreak(streakResult.previousStreak);
-        setStreakJustExtended(true);
-        EngagementEvents.streakUpdated(streakResult.newStreak);
-      }
-
-      const newProgress = {
-        ...prev,
-        currentStreak: streakResult.newStreak,
-        lastActivityDate: today,
-        ritualDailyDate: today,
-      };
-      saveProgress(newProgress);
-
-      // Sync to server
-      if (user) {
-        syncToServer('puzzle', {
-          puzzleId: 'daily-challenge',
-          correct: true,
-          updateStreak: true,
-        });
-      }
-
-      return newProgress;
-    });
-  }, [user, syncToServer]);
-
   // Record play activity for daily ritual tracking
   const recordRitualPlay = useCallback(() => {
     setProgress(prev => {
@@ -825,11 +782,6 @@ export function useLessonProgress() {
       saveProgress(newProgress);
       return newProgress;
     });
-  }, []);
-
-  // Dismiss streak celebration popup
-  const dismissStreakCelebration = useCallback(() => {
-    setStreakJustExtended(false);
   }, []);
 
   return {
@@ -861,11 +813,6 @@ export function useLessonProgress() {
     hasPendingSyncs: pendingSyncs.length > 0,
     retryPendingSyncs,
     isOnline,
-    // Streak celebration
-    streakJustExtended,
-    previousStreak,
-    dismissStreakCelebration,
-    recordDailyActivity,
     // Daily ritual tracking
     ritualPlayDate: progress.ritualPlayDate,
     ritualTacticsDate: progress.ritualTacticsDate,

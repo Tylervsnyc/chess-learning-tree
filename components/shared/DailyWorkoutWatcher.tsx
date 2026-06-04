@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { DailyWorkoutCelebration } from './DailyWorkoutCelebration';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
-import { WORKOUT_ACTIVITY_EVENT } from '@/lib/daily-workout/events';
 
 type WorkoutResponse = {
   current: number;
@@ -13,20 +13,25 @@ type WorkoutResponse = {
 };
 
 /**
- * Checks /api/workout/streak on mount and whenever an activity completes
- * (the WORKOUT_ACTIVITY_EVENT signal — finishing a lesson/puzzle set/run/
- * workout). When `completedToday` is true, atomically claims the celebration
- * via POST /api/workout/celebrate. The first claim per (user, date) wins —
- * fires the popup. Subsequent calls (same day, any device) return
- * `claimed: false` and stay quiet.
+ * Fires the once-per-day "you showed up today" streak celebration.
  *
- * We deliberately do NOT poll on window focus/visibility: that fired the
- * celebration at random moments (e.g. mid-puzzle) once the day was already
- * marked complete. Firing on the explicit completion event keeps it at a
- * natural break instead.
+ * SINGLE TRIGGER: every route change. When `/api/workout/streak` says
+ * `completedToday`, we atomically claim the celebration via POST
+ * /api/workout/celebrate — the first claim per (user, date) wins and fires the
+ * popup; later calls (same day, any device) return `claimed: false`.
+ *
+ * Why route changes, and only route changes: a navigation is a natural break,
+ * and EVERY completion flow (lesson, opening, /play game, puzzle, workout, run,
+ * and anything built later) ends by navigating somewhere. So this one trigger
+ * catches them all with zero per-flow wiring — no flow has to remember to
+ * announce itself, which is exactly what kept silently breaking. It can't fire
+ * mid-puzzle because the route doesn't change mid-puzzle. And re-checking on
+ * every nav is safe: the claim is atomic + idempotent per (user, date), so it
+ * fires at most once a day no matter how often we check.
  */
 export function DailyWorkoutWatcher() {
   const { user } = useUser();
+  const pathname = usePathname();
   const [streak, setStreak] = useState<number | null>(null);
   const checkingRef = useRef(false);
   const firedThisSessionRef = useRef(false);
@@ -64,15 +69,12 @@ export function DailyWorkoutWatcher() {
     }
   }, [user, tz]);
 
+  // Re-check on mount and on every navigation. `pathname` in the deps means
+  // this re-runs each time the route changes — the universal catch-all.
   useEffect(() => {
     if (!user) return;
     check();
-    const onActivity = () => check();
-    window.addEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
-    return () => {
-      window.removeEventListener(WORKOUT_ACTIVITY_EVENT, onActivity);
-    };
-  }, [user, check]);
+  }, [user, pathname, check]);
 
   if (streak === null) return null;
 

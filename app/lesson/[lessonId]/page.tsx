@@ -56,7 +56,6 @@ import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import confetti from 'canvas-confetti';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
-import { notifyWorkoutActivity } from '@/lib/daily-workout/events';
 
 
 interface Puzzle {
@@ -150,7 +149,7 @@ export default function LessonPage() {
   const [tutorialCorrectCount, setTutorialCorrectCount] = useState(6);
 
   // Progress tracking (Supabase + localStorage)
-  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded, currentStreak } = useLessonProgress();
+  const { completeLesson, recordPuzzleAttempt, syncState, retryPendingSyncs, isLessonUnlocked, loaded: progressLoaded } = useLessonProgress();
 
   // User and permissions
   const { user, profile, loading: userLoading } = useUser();
@@ -953,11 +952,6 @@ export default function LessonPage() {
     if (lessonComplete && lessonPassed === null) {
       const passed = firstAttemptCorrectCount >= 4;
       setLessonPassed(passed);
-
-      // The puzzles just attempted count toward the do-anything daily streak.
-      // Wake the celebration watcher so the streak animation fires (workout/run
-      // already do this; the tactics flow was missing it).
-      notifyWorkoutActivity();
 
       if (passed) {
         // Pass: advance to next lesson
