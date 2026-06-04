@@ -6,7 +6,6 @@ import { useUser } from '@/hooks/useUser';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
-import { RookieRatingModal } from '@/components/profile/RookieRatingModal';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -189,167 +188,6 @@ function PatronBadge() {
       </svg>
       Patron
     </span>
-  );
-}
-
-type EloRange = 'week' | 'month' | 'all';
-
-const ELO_RANGES: { key: EloRange; label: string }[] = [
-  { key: 'week', label: 'Week' },
-  { key: 'month', label: 'Month' },
-  { key: 'all', label: 'Since start' },
-];
-
-// Earliest YYYY-MM-DD (local) that falls inside the selected window.
-function rangeCutoff(range: EloRange): string | null {
-  if (range === 'all') return null;
-  const d = new Date();
-  d.setDate(d.getDate() - (range === 'week' ? 7 : 30));
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function EloCard({ data, loading }: { data: EloData | null; loading: boolean }) {
-  const [range, setRange] = useState<EloRange>('all'); // default: since they started
-
-  // Slice the full daily series down to the selected window for the graph.
-  // The big number stays the all-time current rating; only the chart re-scopes.
-  const fullSeries = data?.series ?? [];
-  const cutoff = rangeCutoff(range);
-  let windowSeries = cutoff ? fullSeries.filter((p) => p.date >= cutoff) : fullSeries;
-  // Anchor the line to where the rating actually was entering the window, so a
-  // short window still draws a real trend instead of a flat single point.
-  if (cutoff && windowSeries.length < fullSeries.length) {
-    const priorIdx = fullSeries.findIndex((p) => p.date >= cutoff) - 1;
-    if (priorIdx >= 0) windowSeries = [fullSeries[priorIdx], ...windowSeries];
-  }
-
-  const hasSeries = !!data && windowSeries.length >= 2 && data.events > 0;
-
-  // ── Build the SVG line path in a 0–100 × 0–100 viewBox ──────────────────
-  const W = 100;
-  const H = 100;
-  const PAD_Y = 8;
-
-  let linePath = '';
-  let areaPath = '';
-  let lastPt: { x: number; y: number } | null = null;
-  let lo = 0;
-  let hi = 0;
-
-  if (hasSeries) {
-    const pts = windowSeries;
-    const elos = pts.map((p) => p.elo);
-    lo = Math.min(...elos);
-    hi = Math.max(...elos);
-    const span = Math.max(1, hi - lo);
-    const n = pts.length;
-
-    const coords = pts.map((p, i) => {
-      const x = n === 1 ? W : (i / (n - 1)) * W;
-      const y = PAD_Y + (1 - (p.elo - lo) / span) * (H - PAD_Y * 2);
-      return { x, y };
-    });
-
-    linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(' ');
-    areaPath = `${linePath} L${W},${H} L0,${H} Z`;
-    lastPt = coords[coords.length - 1];
-  }
-
-  return (
-    <div className="bg-chess-surface rounded-3xl border border-slate-200 shadow-sm p-5">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
-              Estimated Rating
-            </h2>
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-chess-blue/10 text-chess-blue">
-              Beta
-            </span>
-          </div>
-          <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-4xl font-black text-chess-text tabular-nums leading-none">
-              {loading || !data ? '–' : data.current.toLocaleString()}
-            </span>
-            <span className="text-sm font-bold text-chess-text-muted">ELO</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 inline-flex rounded-full bg-slate-100 p-0.5">
-        {ELO_RANGES.map((r) => (
-          <button
-            key={r.key}
-            type="button"
-            onClick={() => setRange(r.key)}
-            className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${
-              range === r.key
-                ? 'bg-white text-chess-text shadow-sm'
-                : 'text-chess-text-muted'
-            }`}
-          >
-            {r.label}
-          </button>
-        ))}
-      </div>
-
-      {loading || !data ? (
-        <div className="mt-4 h-28 bg-slate-100 rounded-xl animate-pulse" />
-      ) : !hasSeries ? (
-        <p className="mt-4 text-sm text-chess-text-muted leading-snug">
-          {data.events > 0 && range !== 'all'
-            ? `No rating activity in the last ${range === 'week' ? '7 days' : '30 days'}. Try "Since start" to see your full history.`
-            : 'Solve a few puzzles or play Rookie and we’ll estimate your rating — then track it here over time.'}
-        </p>
-      ) : (
-        <>
-          <div className="mt-4 relative">
-            <svg
-              viewBox={`0 0 ${W} ${H}`}
-              preserveAspectRatio="none"
-              className="w-full h-28"
-              aria-hidden
-            >
-              <defs>
-                <linearGradient id="eloFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d={areaPath} fill="url(#eloFill)" />
-              <path
-                d={linePath}
-                fill="none"
-                stroke="var(--color-chess-blue, #3b82f6)"
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
-              />
-              {lastPt && (
-                <circle
-                  cx={lastPt.x}
-                  cy={lastPt.y}
-                  r={3.5}
-                  fill="var(--color-chess-blue, #3b82f6)"
-                  stroke="white"
-                  strokeWidth={2}
-                  vectorEffect="non-scaling-stroke"
-                />
-              )}
-            </svg>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-chess-text-faint">
-            <span>Low {lo.toLocaleString()}</span>
-            <span>Estimated from your puzzles &amp; games</span>
-            <span>High {hi.toLocaleString()}</span>
-          </div>
-        </>
-      )}
-    </div>
   );
 }
 
@@ -757,9 +595,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ── Estimated rating: Rookie's fun window + detailed chart ─────── */}
+        {/* ── Estimated rating: Rookie's voice + detailed chart, one card ── */}
         <RookieRatingCard data={elo} loading={eloLoading} />
-        <EloCard data={elo} loading={eloLoading} />
 
         {/* Lifetime stat tiles */}
         <div>
@@ -808,7 +645,6 @@ export default function ProfilePage() {
       </div>
 
       <PatronModal isOpen={patronOpen} onClose={() => setPatronOpen(false)} />
-      <RookieRatingModal data={elo} />
     </div>
   );
 }
