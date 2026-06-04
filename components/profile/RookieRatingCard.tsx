@@ -97,7 +97,7 @@ export function RookieRatingCard({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-black uppercase tracking-wide text-chess-blue">
-              From Rookie
+              Estimated ELO
             </h2>
             <span className="inline-flex items-center rounded-full bg-chess-blue/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-chess-blue">
               Beta
@@ -109,19 +109,12 @@ export function RookieRatingCard({
         </div>
       </div>
 
-      {/* The number + tier */}
-      <div className="mt-4 flex items-end justify-between">
-        <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-black leading-none tabular-nums text-chess-text">
-            {loading || !hasData ? '–' : data!.current.toLocaleString()}
-          </span>
-          <span className="text-sm font-bold text-chess-text-muted">ELO</span>
-        </div>
-        {r && (
-          <span className="rounded-full bg-chess-blue px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-white">
-            {r.tier}
-          </span>
-        )}
+      {/* The number */}
+      <div className="mt-4 flex items-baseline gap-2">
+        <span className="text-5xl font-black leading-none tabular-nums text-chess-text">
+          {loading || !hasData ? '–' : data!.current.toLocaleString()}
+        </span>
+        <span className="text-sm font-bold text-chess-text-muted">ELO</span>
       </div>
 
       {/* Range toggle */}
@@ -193,16 +186,6 @@ export function RookieRatingCard({
             <span>High {hi.toLocaleString()}</span>
           </div>
         </>
-      )}
-
-      {/* Rookie's quote */}
-      {r && (
-        <div className="mt-3 rounded-2xl border-l-[3px] border-chess-blue bg-chess-blue/5 px-3.5 py-3">
-          <p className="text-[13.5px] italic leading-relaxed text-chess-text">{r.line}</p>
-          {r.trend && (
-            <p className="mt-1.5 text-[12.5px] italic leading-relaxed text-chess-text-muted">{r.trend}</p>
-          )}
-        </div>
       )}
     </div>
   );
