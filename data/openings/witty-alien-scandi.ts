@@ -12,6 +12,7 @@ export const WITTY_ALIEN_SCANDI: OpeningTree = {
   "completionOrder": [
     "wsc-1",
     "wsc-2",
+    "wsc-dev-Nc3",
     "wsc-test-1"
   ],
   "nodes": [
@@ -43,6 +44,22 @@ export const WITTY_ALIEN_SCANDI: OpeningTree = {
       "type": "main",
       "row": 1,
       "col": 0,
+      "lineFrom": "wsc-1",
+      "unlockedBy": null,
+      "side": "black"
+    },
+    {
+      "id": "wsc-dev-Nc3",
+      "name": "If 3.Nc3",
+      "moves": [
+        "3.Nc3 Nf6",
+        "4.d4 cxd5",
+        "5.Nf3 Nc6"
+      ],
+      "description": "White declines the second pawn with 3.Nc3, holding d5. No sac here — just develop and win the pawn back.",
+      "type": "deviation",
+      "row": 0,
+      "col": -1,
       "lineFrom": "wsc-1",
       "unlockedBy": null,
       "side": "black"

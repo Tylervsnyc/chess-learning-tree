@@ -699,6 +699,204 @@ const WITTY_ALIEN_ENGLUND_LESSONS: Record<string, OpeningLesson> = {
       }
     ]
   },
+  "weng-dev-c4": {
+    "id": "weng-dev-c4",
+    "title": "If 2.c4",
+    "defaultOrientation": "black",
+    "steps": [
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "text": "Instead of taking on e5, White plays 2.c4. Grab the d4 pawn and develop with tempo against the early queen."
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "Quick recap to the position."
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+        "text": "1.d4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d2",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+        "correctMove": "e5",
+        "prompt": "Your move.",
+        "hint": "e5.",
+        "correctFeedback": "e5.",
+        "wrongFeedback": "e5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "text": "2.c4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "c2",
+          "c4"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "text": "White played 2.c4. Take the center pawn — exd4.",
+        "highlightSquares": [
+          "e5",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "correctMove": "exd4",
+        "prompt": "Play exd4.",
+        "hint": "Pawn e5xd4.",
+        "correctFeedback": "exd4. A pawn in hand.",
+        "wrongFeedback": "Play exd4.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "text": "3.Qxd4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d1",
+          "d4"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "text": "Develop AND hit the queen — Nc6 gains a tempo.",
+        "highlightSquares": [
+          "b8",
+          "c6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "correctMove": "Nc6",
+        "prompt": "Develop Nc6.",
+        "hint": "Knight b8-c6.",
+        "correctFeedback": "Nc6! The queen must move.",
+        "wrongFeedback": "Play Nc6.",
+        "orientation": "black",
+        "postMoveArrow": [
+          "c6",
+          "d4"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "text": "4.Qd1.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "d1"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "text": "Keep developing. The queen got chased home; you're already comfortable.",
+        "highlightSquares": [
+          "g8",
+          "f6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "correctMove": "Nf6",
+        "prompt": "Develop Nf6.",
+        "hint": "Knight g8-f6.",
+        "correctFeedback": "Nf6. Easy, active game.",
+        "wrongFeedback": "Play Nf6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkb1r/pppp1ppp/2n2n2/8/2P5/2N5/PP2PPPP/R1BQKBNR b KQkq - 4 5",
+        "text": "5.Nc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b1",
+          "c3"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "text": "Recall: exd4, Nc6, Nf6."
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "correctMove": "exd4",
+        "prompt": "Your move.",
+        "hint": "exd4.",
+        "correctFeedback": "exd4.",
+        "wrongFeedback": "exd4.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "text": "3.Qxd4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d1",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "correctMove": "Nc6",
+        "prompt": "Your move.",
+        "hint": "Nc6.",
+        "correctFeedback": "Nc6.",
+        "wrongFeedback": "Nc6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "text": "4.Qd1.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "d1"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "correctMove": "Nf6",
+        "prompt": "Your move.",
+        "hint": "Nf6.",
+        "correctFeedback": "Nf6.",
+        "wrongFeedback": "Nf6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkb1r/pppp1ppp/2n2n2/8/2P5/2N5/PP2PPPP/R1BQKBNR b KQkq - 4 5",
+        "text": "exd4, Nc6, Nf6 — you win a tempo on White's queen and come out comfortable."
+      }
+    ]
+  },
   "weng-test-1": {
     "id": "weng-test-1",
     "title": "Lvl 1 Test",
@@ -904,6 +1102,91 @@ const WITTY_ALIEN_ENGLUND_LESSONS: Record<string, OpeningLesson> = {
           "c3",
           "d5"
         ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "— If 2.c4 —"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+        "text": "1.d4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d2",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+        "correctMove": "e5",
+        "prompt": "Your move.",
+        "hint": "e5.",
+        "correctFeedback": "e5.",
+        "wrongFeedback": "e5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "text": "2.c4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "c2",
+          "c4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+        "correctMove": "exd4",
+        "prompt": "Your move.",
+        "hint": "exd4.",
+        "correctFeedback": "exd4.",
+        "wrongFeedback": "exd4.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "text": "3.Qxd4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d1",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/2PQ4/8/PP2PPPP/RNB1KBNR b KQkq - 0 3",
+        "correctMove": "Nc6",
+        "prompt": "Your move.",
+        "hint": "Nc6.",
+        "correctFeedback": "Nc6.",
+        "wrongFeedback": "Nc6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "text": "4.Qd1.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "d1"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/8/2P5/8/PP2PPPP/RNBQKBNR b KQkq - 2 4",
+        "correctMove": "Nf6",
+        "prompt": "Your move.",
+        "hint": "Nf6.",
+        "correctFeedback": "Nf6.",
+        "wrongFeedback": "Nf6.",
+        "orientation": "black"
       },
       {
         "type": "instruction",

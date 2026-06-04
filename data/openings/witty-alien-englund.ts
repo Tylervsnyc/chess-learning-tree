@@ -13,6 +13,7 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
     "weng-1",
     "weng-2",
     "weng-3",
+    "weng-dev-c4",
     "weng-test-1"
   ],
   "nodes": [
@@ -61,6 +62,22 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "weng-2",
+      "unlockedBy": null,
+      "side": "black"
+    },
+    {
+      "id": "weng-dev-c4",
+      "name": "If 2.c4",
+      "moves": [
+        "2.c4 exd4",
+        "3.Qxd4 Nc6",
+        "4.Qd1 Nf6"
+      ],
+      "description": "Instead of taking on e5, White plays 2.c4. Grab the d4 pawn and develop with tempo against the early queen.",
+      "type": "deviation",
+      "row": 0,
+      "col": -1,
+      "lineFrom": "weng-1",
       "unlockedBy": null,
       "side": "black"
     },

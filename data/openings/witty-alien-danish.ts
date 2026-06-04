@@ -13,6 +13,7 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
     "wd-1",
     "wd-2",
     "wd-3",
+    "wd-dev-d5",
     "wd-test-1"
   ],
   "nodes": [
@@ -61,6 +62,22 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wd-2",
+      "unlockedBy": null,
+      "side": "white"
+    },
+    {
+      "id": "wd-dev-d5",
+      "name": "If 3...d5",
+      "moves": [
+        "3...d5 e5",
+        "4...dxc3 Nf3",
+        "5...Nc6 Bd3"
+      ],
+      "description": "Solid players decline the gambit with 3...d5. No problem — push past with e5 and keep a space edge.",
+      "type": "deviation",
+      "row": 1,
+      "col": -1,
+      "lineFrom": "wd-1",
       "unlockedBy": null,
       "side": "white"
     },

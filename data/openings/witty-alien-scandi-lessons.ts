@@ -413,6 +413,210 @@ const WITTY_ALIEN_SCANDI_LESSONS: Record<string, OpeningLesson> = {
       }
     ]
   },
+  "wsc-dev-Nc3": {
+    "id": "wsc-dev-Nc3",
+    "title": "If 3.Nc3",
+    "defaultOrientation": "black",
+    "steps": [
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "text": "White declines the second pawn with 3.Nc3, holding d5. No sac here — just develop and win the pawn back."
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "Quick recap to the position."
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "text": "1.e4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e2",
+          "e4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "correctMove": "d5",
+        "prompt": "Your move.",
+        "hint": "d5.",
+        "correctFeedback": "d5.",
+        "wrongFeedback": "d5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+        "text": "2.exd5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e4",
+          "d5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+        "correctMove": "c6",
+        "prompt": "Your move.",
+        "hint": "c6.",
+        "correctFeedback": "c6.",
+        "wrongFeedback": "c6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "text": "3.Nc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b1",
+          "c3"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "text": "White holds d5 with Nc3. Develop and attack it — Nf6.",
+        "highlightSquares": [
+          "g8",
+          "f6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "correctMove": "Nf6",
+        "prompt": "Develop Nf6.",
+        "hint": "Knight g8-f6.",
+        "correctFeedback": "Nf6. Pressuring d5.",
+        "wrongFeedback": "Play Nf6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "text": "4.d4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d2",
+          "d4"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "text": "Win your pawn back — cxd5.",
+        "highlightSquares": [
+          "c6",
+          "d5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "correctMove": "cxd5",
+        "prompt": "Play cxd5.",
+        "hint": "Pawn c6xd5.",
+        "correctFeedback": "cxd5. Material restored.",
+        "wrongFeedback": "Play cxd5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "text": "5.Nf3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "g1",
+          "f3"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "text": "Develop with tempo — Nc6. A clean, equal game.",
+        "highlightSquares": [
+          "b8",
+          "c6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "correctMove": "Nc6",
+        "prompt": "Develop Nc6.",
+        "hint": "Knight b8-c6.",
+        "correctFeedback": "Nc6. Comfortable.",
+        "wrongFeedback": "Play Nc6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "text": "Recall: Nf6, cxd5, Nc6."
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "correctMove": "Nf6",
+        "prompt": "Your move.",
+        "hint": "Nf6.",
+        "correctFeedback": "Nf6.",
+        "wrongFeedback": "Nf6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "text": "4.d4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d2",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "correctMove": "cxd5",
+        "prompt": "Your move.",
+        "hint": "cxd5.",
+        "correctFeedback": "cxd5.",
+        "wrongFeedback": "cxd5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "text": "5.Nf3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "g1",
+          "f3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "correctMove": "Nc6",
+        "prompt": "Your move.",
+        "hint": "Nc6.",
+        "correctFeedback": "Nc6.",
+        "wrongFeedback": "Nc6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 2 6",
+        "text": "Nf6, cxd5, Nc6 — you regain the pawn with a free, comfortable game."
+      }
+    ]
+  },
   "wsc-test-1": {
     "id": "wsc-test-1",
     "title": "Lvl 1 Test",
@@ -558,6 +762,111 @@ const WITTY_ALIEN_SCANDI_LESSONS: Record<string, OpeningLesson> = {
           "c1",
           "e3"
         ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "— If 3.Nc3 —"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "text": "1.e4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e2",
+          "e4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "correctMove": "d5",
+        "prompt": "Your move.",
+        "hint": "d5.",
+        "correctFeedback": "d5.",
+        "wrongFeedback": "d5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+        "text": "2.exd5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e4",
+          "d5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+        "correctMove": "c6",
+        "prompt": "Your move.",
+        "hint": "c6.",
+        "correctFeedback": "c6.",
+        "wrongFeedback": "c6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "text": "3.Nc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b1",
+          "c3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pp2pppp/2p5/3P4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+        "correctMove": "Nf6",
+        "prompt": "Your move.",
+        "hint": "Nf6.",
+        "correctFeedback": "Nf6.",
+        "wrongFeedback": "Nf6.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "text": "4.d4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d2",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/2p2n2/3P4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4",
+        "correctMove": "cxd5",
+        "prompt": "Your move.",
+        "hint": "cxd5.",
+        "correctFeedback": "cxd5.",
+        "wrongFeedback": "cxd5.",
+        "orientation": "black"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "text": "5.Nf3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "g1",
+          "f3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkb1r/pp2pppp/5n2/3p4/3P4/2N2N2/PPP2PPP/R1BQKB1R b KQkq - 1 5",
+        "correctMove": "Nc6",
+        "prompt": "Your move.",
+        "hint": "Nc6.",
+        "correctFeedback": "Nc6.",
+        "wrongFeedback": "Nc6.",
+        "orientation": "black"
       },
       {
         "type": "instruction",

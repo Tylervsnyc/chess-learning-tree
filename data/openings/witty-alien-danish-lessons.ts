@@ -677,6 +677,230 @@ const WITTY_ALIEN_DANISH_LESSONS: Record<string, OpeningLesson> = {
       }
     ]
   },
+  "wd-dev-d5": {
+    "id": "wd-dev-d5",
+    "title": "If 3...d5",
+    "defaultOrientation": "white",
+    "steps": [
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "text": "Solid players decline the gambit with 3...d5. No problem — push past with e5 and keep a space edge."
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "Quick recap to the position."
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "correctMove": "e4",
+        "prompt": "Your move.",
+        "hint": "e4.",
+        "correctFeedback": "e4.",
+        "wrongFeedback": "e4.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "text": "1...e5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e7",
+          "e5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "correctMove": "d4",
+        "prompt": "Your move.",
+        "hint": "d4.",
+        "correctFeedback": "d4.",
+        "wrongFeedback": "d4.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+        "text": "2...exd4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e5",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+        "correctMove": "c3",
+        "prompt": "Your move.",
+        "hint": "c3.",
+        "correctFeedback": "c3.",
+        "wrongFeedback": "c3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "text": "3...d5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d7",
+          "d5"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "text": "Black declines with d5 — push past it. e5 grabs space and keeps the initiative.",
+        "highlightSquares": [
+          "e4",
+          "e5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "correctMove": "e5",
+        "prompt": "Play e5.",
+        "hint": "Pawn e4-e5.",
+        "correctFeedback": "e5! Space and initiative.",
+        "wrongFeedback": "Play e5.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "text": "4...dxc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "c3"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "text": "Develop with tempo — Nf3.",
+        "highlightSquares": [
+          "g1",
+          "f3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "correctMove": "Nf3",
+        "prompt": "Develop Nf3.",
+        "hint": "Knight g1-f3.",
+        "correctFeedback": "Nf3.",
+        "wrongFeedback": "Play Nf3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "text": "5...Nc6.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b8",
+          "c6"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "text": "Aim the bishop at the kingside — Bd3.",
+        "highlightSquares": [
+          "f1",
+          "d3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "correctMove": "Bd3",
+        "prompt": "Develop Bd3.",
+        "hint": "Bishop f1-d3.",
+        "correctFeedback": "Bd3. Comfortable space and development.",
+        "wrongFeedback": "Play Bd3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "r2qkbnr/ppp2ppp/2n5/3pP3/6b1/2pB1N2/PP3PPP/RNBQK2R w KQkq - 4 7",
+        "text": "6...Bg4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "c8",
+          "g4"
+        ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "text": "Recall: e5, Nf3, Bd3."
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "correctMove": "e5",
+        "prompt": "Your move.",
+        "hint": "e5.",
+        "correctFeedback": "e5.",
+        "wrongFeedback": "e5.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "text": "4...dxc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "c3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "correctMove": "Nf3",
+        "prompt": "Your move.",
+        "hint": "Nf3.",
+        "correctFeedback": "Nf3.",
+        "wrongFeedback": "Nf3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "text": "5...Nc6.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b8",
+          "c6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "correctMove": "Bd3",
+        "prompt": "Your move.",
+        "hint": "Bd3.",
+        "correctFeedback": "Bd3.",
+        "wrongFeedback": "Bd3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "r2qkbnr/ppp2ppp/2n5/3pP3/6b1/2pB1N2/PP3PPP/RNBQK2R w KQkq - 4 7",
+        "text": "e5, Nf3, Bd3 — Black declined, but you have more space and easy development."
+      }
+    ]
+  },
   "wd-test-1": {
     "id": "wd-test-1",
     "title": "Lvl 1 Test",
@@ -872,6 +1096,121 @@ const WITTY_ALIEN_DANISH_LESSONS: Record<string, OpeningLesson> = {
           "f6",
           "e4"
         ]
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "text": "— If 3...d5 —"
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "correctMove": "e4",
+        "prompt": "Your move.",
+        "hint": "e4.",
+        "correctFeedback": "e4.",
+        "wrongFeedback": "e4.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "text": "1...e5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e7",
+          "e5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "correctMove": "d4",
+        "prompt": "Your move.",
+        "hint": "d4.",
+        "correctFeedback": "d4.",
+        "wrongFeedback": "d4.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+        "text": "2...exd4.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "e5",
+          "d4"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/pppp1ppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+        "correctMove": "c3",
+        "prompt": "Your move.",
+        "hint": "c3.",
+        "correctFeedback": "c3.",
+        "wrongFeedback": "c3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "text": "3...d5.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d7",
+          "d5"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4",
+        "correctMove": "e5",
+        "prompt": "Your move.",
+        "hint": "e5.",
+        "correctFeedback": "e5.",
+        "wrongFeedback": "e5.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "text": "4...dxc3.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "d4",
+          "c3"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "rnbqkbnr/ppp2ppp/8/3pP3/8/2p5/PP3PPP/RNBQKBNR w KQkq - 0 5",
+        "correctMove": "Nf3",
+        "prompt": "Your move.",
+        "hint": "Nf3.",
+        "correctFeedback": "Nf3.",
+        "wrongFeedback": "Nf3.",
+        "orientation": "white"
+      },
+      {
+        "type": "instruction",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "text": "5...Nc6.",
+        "autoAdvance": 800,
+        "highlightSquares": [
+          "b8",
+          "c6"
+        ]
+      },
+      {
+        "type": "play-move",
+        "fen": "r1bqkbnr/ppp2ppp/2n5/3pP3/8/2p2N2/PP3PPP/RNBQKB1R w KQkq - 2 6",
+        "correctMove": "Bd3",
+        "prompt": "Your move.",
+        "hint": "Bd3.",
+        "correctFeedback": "Bd3.",
+        "wrongFeedback": "Bd3.",
+        "orientation": "white"
       },
       {
         "type": "instruction",
