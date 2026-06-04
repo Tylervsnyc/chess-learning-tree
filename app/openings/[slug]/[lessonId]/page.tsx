@@ -75,7 +75,6 @@ import { getQueensGambitAcceptedLesson } from '@/data/openings/queens-gambit-acc
 import { getScandinavianLesson } from '@/data/openings/scandinavian-lessons'
 import { getWittyAlienLesson } from '@/data/openings/witty-alien-lessons'
 import { getWittyAlienMartianLesson } from '@/data/openings/witty-alien-martian-lessons'
-import { getWittyAlienTwoKnightsLesson } from '@/data/openings/witty-alien-two-knights-lessons'
 import { getWittyAlienBonjourLesson } from '@/data/openings/witty-alien-bonjour-lessons'
 import { getWittyAlienElephantLesson } from '@/data/openings/witty-alien-elephant-lessons'
 import { getWittyAlienEnglundLesson } from '@/data/openings/witty-alien-englund-lessons'
@@ -230,7 +229,6 @@ export default function OpeningLessonPage() {
       'scandinavian': getScandinavianLesson,
       'witty-alien': getWittyAlienLesson,
       'witty-alien-martian': getWittyAlienMartianLesson,
-      'witty-alien-two-knights': getWittyAlienTwoKnightsLesson,
       'witty-alien-bonjour': getWittyAlienBonjourLesson,
       'witty-alien-elephant': getWittyAlienElephantLesson,
       'witty-alien-englund': getWittyAlienEnglundLesson,

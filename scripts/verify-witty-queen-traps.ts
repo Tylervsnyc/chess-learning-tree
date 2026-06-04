@@ -6,7 +6,6 @@ import { Chess } from 'chess.js'
 
 import { WITTY_ALIEN } from '../data/openings/witty-alien'
 import { WITTY_ALIEN_MARTIAN } from '../data/openings/witty-alien-martian'
-import { WITTY_ALIEN_TWO_KNIGHTS } from '../data/openings/witty-alien-two-knights'
 import { WITTY_ALIEN_BONJOUR } from '../data/openings/witty-alien-bonjour'
 import { WITTY_ALIEN_ELEPHANT } from '../data/openings/witty-alien-elephant'
 import { WITTY_ALIEN_ENGLUND } from '../data/openings/witty-alien-englund'
@@ -14,7 +13,6 @@ import { WITTY_ALIEN_DANISH } from '../data/openings/witty-alien-danish'
 import { WITTY_ALIEN_SCANDI } from '../data/openings/witty-alien-scandi'
 import { getWittyAlienLesson } from '../data/openings/witty-alien-lessons'
 import { getWittyAlienMartianLesson } from '../data/openings/witty-alien-martian-lessons'
-import { getWittyAlienTwoKnightsLesson } from '../data/openings/witty-alien-two-knights-lessons'
 import { getWittyAlienBonjourLesson } from '../data/openings/witty-alien-bonjour-lessons'
 import { getWittyAlienElephantLesson } from '../data/openings/witty-alien-elephant-lessons'
 import { getWittyAlienEnglundLesson } from '../data/openings/witty-alien-englund-lessons'
@@ -24,7 +22,6 @@ import { getWittyAlienScandiLesson } from '../data/openings/witty-alien-scandi-l
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
   { tree: WITTY_ALIEN_MARTIAN, get: getWittyAlienMartianLesson },
-  { tree: WITTY_ALIEN_TWO_KNIGHTS, get: getWittyAlienTwoKnightsLesson },
   { tree: WITTY_ALIEN_BONJOUR, get: getWittyAlienBonjourLesson },
   { tree: WITTY_ALIEN_ELEPHANT, get: getWittyAlienElephantLesson },
   { tree: WITTY_ALIEN_ENGLUND, get: getWittyAlienEnglundLesson },

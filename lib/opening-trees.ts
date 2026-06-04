@@ -48,7 +48,6 @@ import { QUEENS_GAMBIT_ACCEPTED } from '@/data/openings/queens-gambit-accepted'
 import { SCANDINAVIAN_DEFENSE } from '@/data/openings/scandinavian'
 import { WITTY_ALIEN } from '@/data/openings/witty-alien'
 import { WITTY_ALIEN_MARTIAN } from '@/data/openings/witty-alien-martian'
-import { WITTY_ALIEN_TWO_KNIGHTS } from '@/data/openings/witty-alien-two-knights'
 import { WITTY_ALIEN_BONJOUR } from '@/data/openings/witty-alien-bonjour'
 import { WITTY_ALIEN_ELEPHANT } from '@/data/openings/witty-alien-elephant'
 import { WITTY_ALIEN_ENGLUND } from '@/data/openings/witty-alien-englund'
@@ -102,7 +101,6 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'scandinavian': SCANDINAVIAN_DEFENSE,
   'witty-alien': WITTY_ALIEN,
   'witty-alien-martian': WITTY_ALIEN_MARTIAN,
-  'witty-alien-two-knights': WITTY_ALIEN_TWO_KNIGHTS,
   'witty-alien-bonjour': WITTY_ALIEN_BONJOUR,
   'witty-alien-elephant': WITTY_ALIEN_ELEPHANT,
   'witty-alien-englund': WITTY_ALIEN_ENGLUND,
