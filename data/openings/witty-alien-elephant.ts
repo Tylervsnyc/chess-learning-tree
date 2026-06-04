@@ -50,7 +50,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "we-1",
-      "unlockedBy": null,
+      "unlockedBy": "we-1",
       "side": "black"
     },
     {
@@ -66,7 +66,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "we-2",
-      "unlockedBy": null,
+      "unlockedBy": "we-2",
       "side": "black"
     },
     {
@@ -82,7 +82,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 0,
       "col": -1,
       "lineFrom": "we-1",
-      "unlockedBy": null,
+      "unlockedBy": "we-3",
       "side": "black"
     },
     {
@@ -98,7 +98,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 1,
       "col": -1,
       "lineFrom": "we-1",
-      "unlockedBy": null,
+      "unlockedBy": "we-dev-Nxe5",
       "side": "black"
     },
     {
@@ -114,7 +114,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 2,
       "col": -1,
       "lineFrom": "we-1",
-      "unlockedBy": null,
+      "unlockedBy": "we-dev-d4",
       "side": "black"
     },
     {
@@ -130,7 +130,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 1,
       "col": 1,
       "lineFrom": "we-2",
-      "unlockedBy": null,
+      "unlockedBy": "we-dev-Nc3",
       "side": "black"
     },
     {
@@ -146,7 +146,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 2,
       "col": 1,
       "lineFrom": "we-2",
-      "unlockedBy": null,
+      "unlockedBy": "we-dev-Nd4",
       "side": "black"
     },
     {
@@ -158,7 +158,7 @@ export const WITTY_ALIEN_ELEPHANT: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "we-3",
-      "unlockedBy": null,
+      "unlockedBy": "we-dev-Ng1",
       "side": "black"
     }
   ]

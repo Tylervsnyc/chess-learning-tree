@@ -48,7 +48,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "wa-1",
-      "unlockedBy": null,
+      "unlockedBy": "wa-1",
       "side": "white"
     },
     {
@@ -64,7 +64,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wa-2",
-      "unlockedBy": null,
+      "unlockedBy": "wa-2",
       "side": "white"
     },
     {
@@ -80,7 +80,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "wa-3",
-      "unlockedBy": null,
+      "unlockedBy": "wa-3",
       "side": "white"
     },
     {
@@ -96,7 +96,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 1,
       "col": -1,
       "lineFrom": "wa-2",
-      "unlockedBy": null,
+      "unlockedBy": "wa-4",
       "side": "white"
     },
     {
@@ -112,7 +112,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 2,
       "col": -1,
       "lineFrom": "wa-2",
-      "unlockedBy": null,
+      "unlockedBy": "wa-dev-Bf5",
       "side": "white"
     },
     {
@@ -124,7 +124,7 @@ export const WITTY_ALIEN: OpeningTree = {
       "row": 4,
       "col": 0,
       "lineFrom": "wa-4",
-      "unlockedBy": null,
+      "unlockedBy": "wa-dev-e6",
       "side": "white"
     }
   ]

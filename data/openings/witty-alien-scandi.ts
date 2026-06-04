@@ -45,7 +45,7 @@ export const WITTY_ALIEN_SCANDI: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "wsc-1",
-      "unlockedBy": null,
+      "unlockedBy": "wsc-1",
       "side": "black"
     },
     {
@@ -61,7 +61,7 @@ export const WITTY_ALIEN_SCANDI: OpeningTree = {
       "row": 0,
       "col": -1,
       "lineFrom": "wsc-1",
-      "unlockedBy": null,
+      "unlockedBy": "wsc-2",
       "side": "black"
     },
     {
@@ -73,7 +73,7 @@ export const WITTY_ALIEN_SCANDI: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wsc-2",
-      "unlockedBy": null,
+      "unlockedBy": "wsc-dev-Nc3",
       "side": "black"
     }
   ]

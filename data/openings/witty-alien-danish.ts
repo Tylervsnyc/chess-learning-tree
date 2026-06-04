@@ -46,7 +46,7 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "wd-1",
-      "unlockedBy": null,
+      "unlockedBy": "wd-1",
       "side": "white"
     },
     {
@@ -62,7 +62,7 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wd-2",
-      "unlockedBy": null,
+      "unlockedBy": "wd-2",
       "side": "white"
     },
     {
@@ -78,7 +78,7 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
       "row": 1,
       "col": -1,
       "lineFrom": "wd-1",
-      "unlockedBy": null,
+      "unlockedBy": "wd-3",
       "side": "white"
     },
     {
@@ -90,7 +90,7 @@ export const WITTY_ALIEN_DANISH: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "wd-3",
-      "unlockedBy": null,
+      "unlockedBy": "wd-dev-d5",
       "side": "white"
     }
   ]

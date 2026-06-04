@@ -46,7 +46,7 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "weng-1",
-      "unlockedBy": null,
+      "unlockedBy": "weng-1",
       "side": "black"
     },
     {
@@ -62,7 +62,7 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "weng-2",
-      "unlockedBy": null,
+      "unlockedBy": "weng-2",
       "side": "black"
     },
     {
@@ -78,7 +78,7 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
       "row": 0,
       "col": -1,
       "lineFrom": "weng-1",
-      "unlockedBy": null,
+      "unlockedBy": "weng-3",
       "side": "black"
     },
     {
@@ -90,7 +90,7 @@ export const WITTY_ALIEN_ENGLUND: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "weng-3",
-      "unlockedBy": null,
+      "unlockedBy": "weng-dev-c4",
       "side": "black"
     }
   ]

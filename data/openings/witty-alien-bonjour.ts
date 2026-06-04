@@ -46,7 +46,7 @@ export const WITTY_ALIEN_BONJOUR: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "wab-1",
-      "unlockedBy": null,
+      "unlockedBy": "wab-1",
       "side": "white"
     },
     {
@@ -62,7 +62,7 @@ export const WITTY_ALIEN_BONJOUR: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wab-2",
-      "unlockedBy": null,
+      "unlockedBy": "wab-2",
       "side": "white"
     },
     {
@@ -78,7 +78,7 @@ export const WITTY_ALIEN_BONJOUR: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "wab-3",
-      "unlockedBy": null,
+      "unlockedBy": "wab-3",
       "side": "white"
     },
     {
@@ -90,7 +90,7 @@ export const WITTY_ALIEN_BONJOUR: OpeningTree = {
       "row": 4,
       "col": 0,
       "lineFrom": "wab-4",
-      "unlockedBy": null,
+      "unlockedBy": "wab-4",
       "side": "white"
     }
   ]

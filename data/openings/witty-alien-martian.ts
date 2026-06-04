@@ -49,7 +49,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 1,
       "col": 0,
       "lineFrom": "wam-1",
-      "unlockedBy": null,
+      "unlockedBy": "wam-1",
       "side": "white"
     },
     {
@@ -65,7 +65,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 2,
       "col": 0,
       "lineFrom": "wam-2",
-      "unlockedBy": null,
+      "unlockedBy": "wam-2",
       "side": "white"
     },
     {
@@ -81,7 +81,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 3,
       "col": 0,
       "lineFrom": "wam-3",
-      "unlockedBy": null,
+      "unlockedBy": "wam-3",
       "side": "white"
     },
     {
@@ -97,7 +97,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 1,
       "col": -1,
       "lineFrom": "wam-2",
-      "unlockedBy": null,
+      "unlockedBy": "wam-4",
       "side": "white"
     },
     {
@@ -113,7 +113,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 2,
       "col": -1,
       "lineFrom": "wam-2",
-      "unlockedBy": null,
+      "unlockedBy": "wam-dev-5e6",
       "side": "white"
     },
     {
@@ -129,7 +129,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 3,
       "col": -1,
       "lineFrom": "wam-3",
-      "unlockedBy": null,
+      "unlockedBy": "wam-dev-5h6",
       "side": "white"
     },
     {
@@ -141,7 +141,7 @@ export const WITTY_ALIEN_MARTIAN: OpeningTree = {
       "row": 4,
       "col": 0,
       "lineFrom": "wam-4",
-      "unlockedBy": null,
+      "unlockedBy": "wam-dev-8Bf5",
       "side": "white"
     }
   ]

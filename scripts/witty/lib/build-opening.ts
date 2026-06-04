@@ -77,6 +77,18 @@ function buildContext(spec: OpeningSpec) {
 export function buildOpening(spec: OpeningSpec) {
   const ctx = buildContext(spec)
 
+  // Reveal lessons ONE AT A TIME: each node unlocks when the node before it in
+  // completionOrder is completed (mirrors the hand-authored openings, e.g.
+  // ruy-lopez sets rl-3.unlockedBy = its completionOrder predecessor rl-dev-b5).
+  // Without this every node had unlockedBy:null, so the whole tree popped in at
+  // once on a brand-new opening. The first node stays null = visible up front.
+  const orderIdx = new Map(spec.completionOrder.map((id, i) => [id, i]))
+  const unlockedByFor = (id: string, lineFrom: string | null): string | null => {
+    const i = orderIdx.get(id)
+    if (i === undefined) return lineFrom // not in completionOrder → fall back to structural parent
+    return i === 0 ? null : spec.completionOrder[i - 1]
+  }
+
   // ---- TREE ----
   const nodes: any[] = []
   for (const line of spec.lines) {
@@ -90,13 +102,13 @@ export function buildOpening(spec: OpeningSpec) {
     nodes.push({
       id: line.id, name: line.title, moves, description: line.intro,
       type: line.type, row: line.row, col: line.col, lineFrom: line.lineFrom,
-      unlockedBy: null, side: ctx.player,
+      unlockedBy: unlockedByFor(line.id, line.lineFrom), side: ctx.player,
     })
   }
   nodes.push({
     id: spec.test.id, name: spec.test.title, moves: [], description: spec.test.intro,
     type: 'test', row: spec.test.row, col: spec.test.col, lineFrom: spec.test.lineFrom,
-    unlockedBy: null, side: ctx.player,
+    unlockedBy: unlockedByFor(spec.test.id, spec.test.lineFrom), side: ctx.player,
   })
 
   const tree = {
