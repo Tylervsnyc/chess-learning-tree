@@ -69,12 +69,13 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
    If yesterday's day is marked `BLOCKED`, retry it (don't skip ahead).
 1b. **Reconcile before you build (anti-collision — this is mandatory).** An interactive
    session (Claude + Tyler) may have shipped a lever out of order while you were idle. Before
-   implementing anything: run `git log --oneline -15` and read `IG_SPRINT_FLAGS` in
-   `lib/config/feature-flags.ts`. If today's lever — or its *goal* — already shipped, do NOT
-   build a competing version. Instead: update the Progress Log to point at the existing commit,
-   mark that day `DONE`, and move on to the next genuinely-undone lever (or iterate on what
-   shipped). **One goal = one implementation, ever.** Shipping a second take of an
-   already-solved day is the failure this step exists to prevent.
+   implementing anything: run `git log --oneline -15`, `gh pr list` (look for open
+   `ig-sprint/*` PRs), and read `IG_SPRINT_FLAGS` in `lib/config/feature-flags.ts`. If today's
+   lever — or its *goal* — already shipped OR has an open PR, do NOT build a competing version.
+   Instead: point the Progress Log at the existing commit/PR, mark that day `DONE`/`IN REVIEW`,
+   and move on to the next genuinely-undone lever (or iterate on what shipped). **One goal = one
+   implementation, ever.** Shipping a second take of an already-solved day is the failure this
+   step exists to prevent.
 2. Read that day's spec under **Per-day specs**. Implement it:
    - Add/flip the day's flag in `lib/config/feature-flags.ts` (`IG_SPRINT_FLAGS`).
    - Gate ALL new behavior behind `isIgCohort()` (`lib/growth/ig-cohort.ts`) so only
@@ -82,15 +83,27 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 3. Run `npm run check` then `npm run build`. **If either fails, fix it; if you can't in
    reasonable effort, mark the day `BLOCKED` in the log, ship NOTHING, Slack-report the
    blocker, and stop.**
-4. If green: `git add` only the files you changed, commit (Co-Authored-By line), `git push`
-   to `main` (auto-deploys to `chess-path`). Stay on `main`.
-5. Append a `DONE` entry to the Progress Log (day, date, flag, commit SHA, one-line what).
+4. If green: **NEVER push to `main`.** Interactive sessions (Claude + Tyler) work live on
+   `main`; pushing there is exactly what caused the Day-2 collision. Use a branch + PR:
+   - `git checkout -b ig-sprint/day-N-<flag>`
+   - `git add` only the files you changed, commit (Co-Authored-By line).
+   - `git push -u origin ig-sprint/day-N-<flag>`
+   - Open a PR: `gh pr create --base main --title "IG sprint Day N — <flag>" --body "<spec + how to verify>"`.
+     If `gh` isn't authed in the sandbox, skip it and Slack the one-click PR link instead:
+     `https://github.com/Tylervsnyc/chess-learning-tree/compare/main...ig-sprint/day-N-<flag>?expand=1`
+   - **Do NOT merge it yourself.** Tyler (or an interactive session) reviews + merges — that's
+     when it deploys and goes live for the IG cohort. The PR gets a Vercel **preview** URL;
+     verify your change on it with `?utm_source=instagram&utm_medium=paid` before reporting.
+5. Append an `IN REVIEW` entry to the Progress Log (day, date, flag, branch, PR # or link,
+   one-line what). It flips to `DONE` only once the PR is merged — until then, step 1b treats
+   it as in-flight so the next fire won't rebuild it.
 6. **Slack report → channel `#all-learnthroughstories` (id `C09J5AV49FT`) via the Slack
    connector.** Generate the report by running `npx tsx scripts/daily-report.ts --days=10`
    (capture stdout — do NOT rely on `--slack`, the webhook isn't configured). Post the report
-   text to that channel via the Slack connector, then a one-line human note: what shipped
-   today, the flag, and yesterday→today movement in the PAID IG AD FUNNEL picked-a-path rate.
-   If the report script can't run (missing env), still post the one-line note + commit SHA.
+   text to that channel via the Slack connector, then a one-line human note: the day + flag +
+   **PR link**, an explicit "⏳ awaiting Tyler's merge — not live yet," and yesterday→today
+   movement in the PAID IG AD FUNNEL picked-a-path rate. If the report script can't run (missing
+   env), still post the one-line note + PR link.
 
 **Environment notes (you run in a fresh cloud sandbox):**
 - Run `npm install` first if `node_modules` is missing.
