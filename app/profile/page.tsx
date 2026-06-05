@@ -93,6 +93,28 @@ function getTz(): string {
     : 'UTC';
 }
 
+// ─── Streak copy ────────────────────────────────────────────────────────────
+// Lines shown when the streak is kept today. Picked daily-stable (same line all
+// day, changes tomorrow) so it stays fresh without flickering on re-render.
+const STREAK_KEPT_LINES = [
+  'You kept the fire going today.',
+  "Fire's still going. Nice work.",
+  'Another log on the fire.',
+  "Today's done — the fire stays lit.",
+  'You showed up. The fire\'s happy.',
+  'Still burning bright. See you tomorrow.',
+  'One more day, one more flame.',
+  'The fire lives another day.',
+  "Streak's alive and the fire's roaring.",
+  'You fed the fire today. Good.',
+];
+
+function pickDailyKeptLine(): string {
+  const d = new Date();
+  const dayKey = d.getFullYear() * 1000 + d.getMonth() * 31 + d.getDate();
+  return STREAK_KEPT_LINES[dayKey % STREAK_KEPT_LINES.length];
+}
+
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
 const STAT_ICONS = {
@@ -337,6 +359,8 @@ export default function ProfilePage() {
   const { user, profile, loading: userLoading, refetchProfile } = useUser();
 
   const [patronOpen, setPatronOpen] = useState(false);
+  // Daily-stable streak line (computed once, won't flicker on re-render).
+  const [keptLine] = useState(pickDailyKeptLine);
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
   const [streak, setStreak] = useState<StreakData | null>(null);
@@ -572,9 +596,9 @@ export default function ProfilePage() {
                 {!streakReady
                   ? 'Loading your streak…'
                   : done
-                    ? "Rookie's on fire. Keep her burning."
+                    ? keptLine
                     : current > 0
-                      ? 'She cooled off — do anything to reignite.'
+                      ? "Don't let the fire go out — do anything today."
                       : 'Do anything today to spark your streak.'}
               </p>
             </div>
