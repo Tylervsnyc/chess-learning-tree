@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
+import RookieCampfire from '@/components/shared/RookieCampfire';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -93,14 +94,6 @@ function getTz(): string {
 }
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
-
-function FlameIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M12 2c.3 3.2-1.8 4.6-3 6-1.4 1.6-2 3.2-2 5a5 5 0 0 0 10 0c0-1.4-.5-2.6-1.3-3.6.2 1-.3 2-1.2 2.4.6-1.8-.1-3.7-1.3-5C11.9 5.6 11.7 3.7 12 2Z" />
-    </svg>
-  );
-}
 
 const STAT_ICONS = {
   lessons: (
@@ -545,51 +538,45 @@ export default function ProfilePage() {
           </button>
         )}
 
-        {/* ── Streak hero ──────────────────────────────────────────────── */}
+        {/* ── Streak hero — Rookie catches fire when your streak is alive ── */}
         <div
-          className={`relative overflow-hidden rounded-3xl p-5 shadow-sm border transition-colors ${
+          className={`relative overflow-hidden rounded-3xl p-5 shadow-sm border transition-colors text-white ${
             done
-              ? 'border-chess-orange/30 bg-gradient-to-br from-chess-orange/15 via-chess-orange/5 to-transparent'
-              : 'border-slate-200 bg-chess-surface'
+              ? 'border-chess-orange/40 bg-gradient-to-b from-[#2A3C45] via-[#33373f] to-[#3a2e26]'
+              : 'border-slate-600/40 bg-gradient-to-b from-slate-700 to-slate-800'
           }`}
         >
           <div className="flex items-center gap-4">
-            <div
-              className={`relative w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 ${
-                done ? 'bg-chess-orange/20' : 'bg-chess-text/5'
-              }`}
-            >
-              <FlameIcon
-                className={`w-11 h-11 ${done ? 'text-chess-orange' : 'text-chess-text/30'}`}
-              />
+            <div className="shrink-0 flex items-end justify-center" style={{ width: 88 }}>
+              <RookieCampfire blockSize={14} active={streakReady && done} blaze={Math.max(0.3, Math.min(1, current / 60))} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black text-chess-text tabular-nums leading-none">
+                <span className="text-5xl font-black text-white tabular-nums leading-none">
                   {streakReady ? current : '–'}
                 </span>
-                <span className="text-base font-bold text-chess-text-muted">
+                <span className="text-base font-bold text-white/55">
                   day{current === 1 ? '' : 's'}
                 </span>
               </div>
-              <p className="text-sm font-semibold text-chess-text-muted mt-1.5 leading-snug">
+              <p className="text-sm font-semibold text-white/70 mt-1.5 leading-snug">
                 {!streakReady
                   ? 'Loading your streak…'
                   : done
-                    ? 'You showed up today. Streak safe.'
+                    ? "Rookie's on fire. Keep her burning."
                     : current > 0
-                      ? 'Do anything today to keep it alive.'
-                      : 'Do anything today to start your streak.'}
+                      ? 'She cooled off — do anything to reignite.'
+                      : 'Do anything today to spark your streak.'}
               </p>
             </div>
           </div>
 
           {/* Footer row — the rule + longest */}
-          <div className="mt-4 pt-3.5 border-t border-slate-200/70 flex items-center justify-between text-xs">
-            <span className="font-semibold text-chess-text-faint">
+          <div className="mt-4 pt-3.5 border-t border-white/10 flex items-center justify-between text-xs">
+            <span className="font-semibold text-white/45">
               A lesson, a game, or a puzzle — anything counts.
             </span>
-            <span className="font-bold text-chess-text-muted whitespace-nowrap ml-2">
+            <span className="font-bold text-amber-300 whitespace-nowrap ml-2">
               Best {streakReady ? longest : '–'}
             </span>
           </div>
