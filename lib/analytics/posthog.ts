@@ -103,6 +103,12 @@ export const TutorialEvents = {
 export type OnboardingSource = 'play' | 'basics' | 'checkmate' | 'lesson_complete' | 'test';
 export const OnboardingEvents = {
   started: () => trackEvent('onboarding_started'),
+  // CHE-359 checkmate landing: the two previously-blind steps. boardTouched =
+  // first piece interaction (did the board pull ANY action?); checkmateWon = the
+  // mate-in-1 solved. Together they expose "landed-but-untouched" vs
+  // "touched-but-didn't-win" in the IG funnel (scripts/daily-report.ts).
+  boardTouched: () => trackEvent('onboarding_board_touched'),
+  checkmateWon: () => trackEvent('onboarding_checkmate_won'),
   routeSelected: (route: 'play' | 'learn') => trackEvent('onboarding_route_selected', { route }),
   completed: (data: { level: string }) =>
     trackEvent('onboarding_completed', data),

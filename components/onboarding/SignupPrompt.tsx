@@ -20,11 +20,13 @@ function pickLine() {
   return ROOKIE_LINES[Math.floor(Math.random() * ROOKIE_LINES.length)];
 }
 
-// Build a callback URL that returns the user to the page they're on after OAuth.
-function returnUrl(): string {
-  const next = typeof window !== 'undefined'
+// Build a callback URL that returns the user to a destination after OAuth.
+// `override` lets a caller send the user somewhere specific (e.g. continue a
+// lesson) instead of back to the page they're on. Defaults to the current path.
+function returnUrl(override?: string): string {
+  const next = override ?? (typeof window !== 'undefined'
     ? window.location.pathname + window.location.search
-    : '/';
+    : '/');
   const url = new URL('/auth/callback', window.location.origin);
   url.searchParams.set('next', next);
   return url.toString();
@@ -46,10 +48,14 @@ export function SignupPrompt({
   onDismiss,
   source,
   valueLabel,
+  nextOverride,
 }: {
   onDismiss: () => void;
   source: OnboardingSource;
   valueLabel?: string;
+  /** Where to send the user after auth (OAuth callback / form redirect). Defaults
+   *  to the current path. Use to carry momentum into a specific next screen. */
+  nextOverride?: string;
 }) {
   const router = useRouter();
   const { variant, ready } = useExperiment('win_signup_capture', 'treatment');
@@ -76,18 +82,18 @@ export function SignupPrompt({
   const goToSignup = () => {
     OnboardingEvents.signupPromptClicked(source, 'signup', variant);
     playButtonClick();
-    const next = typeof window !== 'undefined'
+    const next = nextOverride ?? (typeof window !== 'undefined'
       ? window.location.pathname + window.location.search
-      : undefined;
+      : undefined);
     router.push(next ? `/auth/signup?redirect=${encodeURIComponent(next)}` : '/auth/signup');
   };
 
   const goToLogin = () => {
     OnboardingEvents.signupPromptClicked(source, 'login', variant);
     playButtonClick();
-    const next = typeof window !== 'undefined'
+    const next = nextOverride ?? (typeof window !== 'undefined'
       ? window.location.pathname + window.location.search
-      : undefined;
+      : undefined);
     router.push(next ? `/auth/login?redirect=${encodeURIComponent(next)}` : '/auth/login');
   };
 
@@ -101,7 +107,7 @@ export function SignupPrompt({
       localStorage.setItem('auth_method', provider);
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: returnUrl() },
+        options: { redirectTo: returnUrl(nextOverride) },
       });
       // On success the browser redirects — don't reset loading.
       if (error) {

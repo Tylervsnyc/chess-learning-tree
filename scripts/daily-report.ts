@@ -241,6 +241,8 @@ async function getSourceFunnel(filter: string, sourceClause: string) {
     SELECT
       uniqIf(person_id, event = '$pageview' AND (properties.$pathname = '/' OR properties.$pathname = '/welcome')) as landing,
       uniqIf(person_id, event = 'onboarding_started') as onb_started,
+      uniqIf(person_id, event = 'onboarding_board_touched') as board_touched,
+      uniqIf(person_id, event = 'onboarding_checkmate_won') as checkmate_won,
       uniqIf(person_id, event = 'onboarding_completed') as onb_completed,
       uniqIf(person_id, event IN ('game_started', 'tutorial_started', 'lesson_started')) as activity_started,
       uniqIf(person_id, event = 'onboarding_signup_prompt_shown') as prompt_shown,
@@ -249,16 +251,18 @@ async function getSourceFunnel(filter: string, sourceClause: string) {
       uniq(person_id) as any_person
     FROM events WHERE ${filter} AND ${sourceClause}
   `, 'ig-funnel');
-  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0];
+  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   return {
     landing: num(row[0]),
     onbStarted: num(row[1]),
-    onbCompleted: num(row[2]),
-    activityStarted: num(row[3]),
-    promptShown: num(row[4]),
-    oauthStarted: num(row[5]),
-    signupCompleted: num(row[6]),
-    anyPerson: num(row[7]),
+    boardTouched: num(row[2]),   // CHE-359 checkmate landing: first board interaction
+    checkmateWon: num(row[3]),   // CHE-359 checkmate landing: solved the mate-in-1
+    onbCompleted: num(row[4]),
+    activityStarted: num(row[5]),
+    promptShown: num(row[6]),
+    oauthStarted: num(row[7]),
+    signupCompleted: num(row[8]),
+    anyPerson: num(row[9]),
   };
 }
 
@@ -629,6 +633,8 @@ async function main() {
     const steps = [
       { label: 'Landed (/ or /welcome)', count: fn.landing },
       { label: 'Onboarding started', count: fn.onbStarted },
+      { label: 'Board touched', count: fn.boardTouched },
+      { label: 'Checkmate won', count: fn.checkmateWon },
       { label: 'Picked a path', count: fn.onbCompleted },
       { label: 'Started an activity', count: fn.activityStarted },
       { label: 'Signup prompt shown', count: fn.promptShown },

@@ -46,4 +46,14 @@ export const IG_SPRINT_FLAGS = {
    * false to fall back to the Day-2 value headline. IG cohort only.
    */
   IG_LANDING_COPY: true,
+  /**
+   * Day 5 (CHE-359) — message-match the ad. The paid creative shows lesson
+   * 1.1.1's highlighted checkmate-in-1, but the landing showed a menu: 47/48
+   * paid clicks (2026-06-04) tapped nothing. This drops cold IG traffic STRAIGHT
+   * onto that exact board (Qd3→h7#, h7 glows green) — the product starts before
+   * they choose anything — then captures signup at the win. Takes precedence over
+   * IG_LANDING_VALUE_CTA (which becomes the fallback if this is off). Existing
+   * users + non-IG traffic never see it. Attempt log: data/growth/landing-page-log.md.
+   */
+  IG_LANDING_CHECKMATE: true,
 } as const;

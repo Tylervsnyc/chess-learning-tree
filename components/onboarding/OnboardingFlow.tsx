@@ -11,6 +11,7 @@ import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { useBubblePopGame } from './BubblePopGame';
 import { ColdLanding } from './ColdLanding';
+import { CheckmateLanding } from './CheckmateLanding';
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
@@ -95,6 +96,10 @@ export function OnboardingFlow() {
   // (matches the default flow, no hydration mismatch), flips on after mount for
   // the IG cohort. Existing users never enter this branch.
   const [coldVariant, setColdVariant] = useState(false);
+  // Day-5 checkmate landing (CHE-359). Highest-precedence cold variant — same
+  // SSR-safe pattern as coldVariant (false on first paint, flips post-mount for
+  // the IG cohort). See the IG sprint useEffect below.
+  const [checkmateVariant, setCheckmateVariant] = useState(false);
 
   const { displayed: typedQuip, done: typingDone, fading } = useTypewriter(
     ROOKIE_QUIPS, 800, 30000, 28,
@@ -110,6 +115,14 @@ export function OnboardingFlow() {
   // screen, and the staged reveal hides the CTAs until 1000ms. For the IG
   // cohort only, jump straight to fully-visible so the buttons are instant.
   useEffect(() => {
+    // Day 5: drop cold IG traffic straight onto the ad's checkmate-in-1 board.
+    // Highest precedence — wins over the value-CTA / copy cold landing. Jump to
+    // phase 5 so the phase>=4 effect still fires `onboarding_started`.
+    if (IG_SPRINT_FLAGS.IG_LANDING_CHECKMATE && isIgCohort()) {
+      setCheckmateVariant(true);
+      setPhase(5);
+      return;
+    }
     // Day 2: value-led cold landing. Render our own screen and jump to phase 5
     // so the phase>=4 effect still fires `onboarding_started` (the funnel's
     // landing->started step) for this variant too.
@@ -170,6 +183,16 @@ export function OnboardingFlow() {
     OnboardingEvents.completed({ level: id });
     router.push(route);
   }, [markOnboarded, router]);
+
+  // ─── Day-5 checkmate landing (CHE-359) — interactive mate-in-1, message-matches the ad ───
+  if (checkmateVariant) {
+    return (
+      <CheckmateLanding
+        onContinue={(route) => handleRoute('learn', route)}
+        onSignIn={() => { playButtonClick(); router.push('/auth/login'); }}
+      />
+    );
+  }
 
   // ─── Day-2 cold-traffic landing (CHE-359) — value headline + one dominant CTA ───
   // Day 3 (IG_LANDING_COPY): swap the headline to challenge-framed copy that
