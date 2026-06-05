@@ -206,11 +206,13 @@ export function CheckmateLanding({
     // The glowing mate target — always on (the tap target); brighter on idle / after a miss.
     styles[PUZZLE.checkmateSquare] = greenTarget(nudge || wrongCount > 0);
 
-    // Subtle blue ring on the queen so beginners know what to tap first.
+    // Highlight the piece to move (blue = "start here"; the arrow + green target
+    // complete the picture so a total beginner doesn't need to know it's a queen).
     if (selectedSquare !== PUZZLE.pieceSquare) {
       styles[PUZZLE.pieceSquare] = {
         ...styles[PUZZLE.pieceSquare],
-        boxShadow: 'inset 0 0 0 3px rgba(28, 176, 246, 0.9)',
+        backgroundColor: 'rgba(28, 176, 246, 0.30)',
+        boxShadow: 'inset 0 0 0 4px rgba(28, 176, 246, 0.95)',
       };
     }
 
@@ -238,11 +240,19 @@ export function CheckmateLanding({
     return styles;
   }, [game, selectedSquare, solved, nudge, wrongCount, showCheckmateHighlights]);
 
+  // Arrow showing the exact move (your piece -> the green square). Shown until the
+  // piece is picked up or the puzzle is solved — guides the very first action with
+  // zero chess knowledge required.
+  const boardArrows = useMemo(() => {
+    if (solved || selectedSquare) return [];
+    return [{ startSquare: PUZZLE.pieceSquare, endSquare: PUZZLE.checkmateSquare, color: 'rgba(28, 176, 246, 0.9)' }];
+  }, [solved, selectedSquare]);
+
   const hintMessage = solved
     ? quip
     : wrongCount > 0
-      ? 'So close. The queen reaches the glowing square — give it another tap.'
-      : 'Tap the queen, then the glowing square.';
+      ? 'So close. Follow the arrow — tap your piece, then the green square.'
+      : 'Follow the arrow: tap your piece, then the green square.';
 
   return (
     <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
@@ -287,6 +297,7 @@ export function CheckmateLanding({
                 onPieceDrop: (solved ? undefined : onPieceDrop) as never,
                 allowDragging: !solved,
                 squareStyles,
+                arrows: boardArrows,
                 animationDurationInMs: 250,
                 draggingPieceGhostStyle: { opacity: 1 },
                 darkSquareStyle: { backgroundColor: BOARD_COLORS.dark },
