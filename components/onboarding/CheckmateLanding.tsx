@@ -251,8 +251,8 @@ export function CheckmateLanding({
   const hintMessage = solved
     ? quip
     : wrongCount > 0
-      ? 'So close. Follow the arrow — tap your piece, then the green square.'
-      : 'Follow the arrow: tap your piece, then the green square.';
+      ? 'So close! Tap the queen, follow the arrow, and checkmate the black king!'
+      : 'Tap the queen, follow the arrow, and checkmate the black king!';
 
   return (
     <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
