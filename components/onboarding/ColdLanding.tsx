@@ -1,8 +1,15 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { ActionButton } from '@/components/ui/ActionButton';
+
+// Day-2 value-led copy. Default fallback when the Day-3 ad-hook copy is off.
+const DEFAULT_HEADLINE = (
+  <>Learn chess in<br />5 minutes. Free.</>
+);
+const DEFAULT_SUBHEAD = 'No account needed. Just start.';
 
 /**
  * Cold-traffic landing (CHE-359, Day 2). Value headline + one dominant CTA,
@@ -10,16 +17,25 @@ import { ActionButton } from '@/components/ui/ActionButton';
  * IG_SPRINT_FLAGS.IG_LANDING_VALUE_CTA (see OnboardingFlow). Presentational —
  * the parent wires what each action does so this stays testable in isolation.
  *
+ * Day 3 (IG_LANDING_COPY): the parent passes `headline`/`subhead` to echo the
+ * paid ad hook; omit them to keep the Day-2 value copy.
+ *
  * Mobile-first, centered + capped, ≥44px tap targets (RULES.md §50).
  */
 export function ColdLanding({
   onPlay,
   onBasics,
   onSignIn,
+  headline = DEFAULT_HEADLINE,
+  subhead = DEFAULT_SUBHEAD,
+  ctaLabel = 'Start playing',
 }: {
   onPlay: () => void;
   onBasics: () => void;
   onSignIn: () => void;
+  headline?: ReactNode;
+  subhead?: string;
+  ctaLabel?: string;
 }) {
   return (
     <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
@@ -35,13 +51,13 @@ export function ColdLanding({
           className="mt-6 font-black text-chess-text leading-[1.05]"
           style={{ fontSize: 'clamp(28px, 8.5vw, 40px)' }}
         >
-          Learn chess in<br />5 minutes. Free.
+          {headline}
         </h1>
         <p
           className="mt-3 text-chess-text-muted font-semibold"
           style={{ fontSize: 'clamp(14px, 4vw, 16px)' }}
         >
-          No account needed. Just start.
+          {subhead}
         </p>
       </div>
 
@@ -49,7 +65,7 @@ export function ColdLanding({
       <div className="px-6 max-w-sm md:max-w-md mx-auto w-full space-y-1">
         <ActionButton color="green" size="lg" fullWidth onClick={onPlay}>
           <span className="font-black block" style={{ fontSize: 'clamp(19px, 5.2vw, 23px)' }}>
-            Start playing
+            {ctaLabel}
           </span>
         </ActionButton>
         <button

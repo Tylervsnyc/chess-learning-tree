@@ -37,4 +37,13 @@ export const IG_SPRINT_FLAGS = {
    * headline (basics demoted to a link). Existing users never see it.
    */
   IG_LANDING_VALUE_CTA: true,
+  /**
+   * Day 3 — landing copy echoes the ad hook. The value-led headline already
+   * shipped in `ColdLanding` (Day 2); this swaps it to challenge-framed copy
+   * that continues the paid IG creative ("Beat me in 60 seconds?") instead of a
+   * generic "learn" promise — reframing work → game to lift picked-a-path.
+   * Copy-only, inside the existing ColdLanding (no competing landing). Flip to
+   * false to fall back to the Day-2 value headline. IG cohort only.
+   */
+  IG_LANDING_COPY: true,
 } as const;

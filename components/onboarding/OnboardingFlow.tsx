@@ -172,12 +172,25 @@ export function OnboardingFlow() {
   }, [markOnboarded, router]);
 
   // ─── Day-2 cold-traffic landing (CHE-359) — value headline + one dominant CTA ───
+  // Day 3 (IG_LANDING_COPY): swap the headline to challenge-framed copy that
+  // continues the paid IG ad hook ("Beat me in 60 seconds?") — reframes the
+  // screen from "learn" (work) to "play me" (a game) to lift picked-a-path.
+  // Off → falls back to the Day-2 value copy. IG cohort only (this branch only
+  // renders for the cohort).
   if (coldVariant) {
+    const adHookCopy = IG_SPRINT_FLAGS.IG_LANDING_COPY
+      ? {
+          headline: <>Beat me in<br />60 seconds?</>,
+          subhead: 'Your first game’s on me. No account needed.',
+          ctaLabel: 'Play me now',
+        }
+      : {};
     return (
       <ColdLanding
         onPlay={() => handleRoute('play', '/play')}
         onBasics={() => handleRoute('learn', '/basics')}
         onSignIn={() => { playButtonClick(); router.push('/auth/login'); }}
+        {...adHookCopy}
       />
     );
   }
