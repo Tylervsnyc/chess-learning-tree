@@ -68,9 +68,14 @@ export function DailyWorkoutBadge() {
     if (cached) setData(cached);
     refetch();
     const onFocus = () => refetch();
+    // A finished /play game resets on the same route (no nav), so revalidate on
+    // the activity signal too — otherwise the badge count lags a navigation.
+    const onActivity = () => refetch();
     window.addEventListener('focus', onFocus);
+    window.addEventListener('cp:activity-recorded', onActivity);
     return () => {
       window.removeEventListener('focus', onFocus);
+      window.removeEventListener('cp:activity-recorded', onActivity);
     };
   }, [user, pathname, refetch]);
 

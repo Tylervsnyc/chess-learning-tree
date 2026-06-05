@@ -1704,6 +1704,13 @@ export default function PlayRookiePage() {
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
     setupGreetingSpokenRef.current = false;
     setPhase('setup');
+    // A finished game returns here without changing route, so the workout
+    // watcher's route-change trigger never sees it. Signal it directly so the
+    // streak celebration fires now (after the game-over modal is dismissed),
+    // not on the next unrelated navigation.
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cp:activity-recorded'));
+    }
   }, [speech, moodSystem, postGame, rookieLevel]);
 
   // ════════════════════════════════

@@ -103,6 +103,12 @@ export function DailyWorkoutCelebration({ streak, open, onClose, onShare }: Dail
         .workout-celebration-card    { animation: workoutPopIn 0.55s cubic-bezier(.2,.9,.3,1.2); }
         .workout-big-rookie          { animation: workoutBigBob 1.4s ease-in-out infinite; transform-origin: center 95%; }
         .workout-number              { animation: workoutNumberPunch 0.35s ease-out; }
+        @keyframes workoutShareWiggle {
+          0%, 100% { transform: rotate(0deg); }
+          25%      { transform: rotate(-12deg) scale(1.12); }
+          75%      { transform: rotate(12deg) scale(1.12); }
+        }
+        .workout-share-btn:hover .workout-share-icon { animation: workoutShareWiggle 0.45s ease-in-out; }
       `}</style>
 
       <div
@@ -145,8 +151,12 @@ export function DailyWorkoutCelebration({ streak, open, onClose, onShare }: Dail
           {onShare && (
             <button
               onClick={onShare}
-              className="flex-1 py-3 rounded-xl font-black text-sm bg-chess-bg text-chess-text hover:bg-slate-200 transition-colors"
+              className="workout-share-btn group flex-1 py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 text-white bg-chess-blue shadow-[0_3px_0_0_var(--color-chess-blue-shadow)] active:translate-y-[1px] active:shadow-[0_2px_0_0_var(--color-chess-blue-shadow)] transition-all"
             >
+              <svg className="workout-share-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+                <line x1="8.6" y1="10.5" x2="15.4" y2="6.5" /><line x1="8.6" y1="13.5" x2="15.4" y2="17.5" />
+              </svg>
               Share
             </button>
           )}

@@ -76,6 +76,19 @@ export function DailyWorkoutWatcher() {
     check();
   }, [user, pathname, check]);
 
+  // Also re-check the instant a completion write commits. Route change alone
+  // races the DB write (e.g. /play's `session.end()` is fire-and-forget), so a
+  // fast click-through could land on the next screen before the streak flips —
+  // making the celebration fire a navigation late. This catches the write the
+  // moment it lands. `check()` is idempotent + atomically claimed, so the extra
+  // trigger can't double-fire.
+  useEffect(() => {
+    if (!user) return;
+    const onActivity = () => check();
+    window.addEventListener('cp:activity-recorded', onActivity);
+    return () => window.removeEventListener('cp:activity-recorded', onActivity);
+  }, [user, check]);
+
   if (streak === null) return null;
 
   return (
