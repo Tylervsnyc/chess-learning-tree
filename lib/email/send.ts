@@ -42,6 +42,8 @@ function shouldSendEmail(
     case 'drip_day7':
     case 'winback':
     case 'update_april_2026':
+    case 'rating_reveal':
+    case 'streak_science':
       return preferences.marketing;
     default:
       return true;

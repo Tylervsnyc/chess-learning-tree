@@ -333,10 +333,10 @@ export default function StreakIGPage() {
     setRaw(v ? Number(v) : null);
   }, []);
 
-  // Raw mode: single native-size post for screenshot capture.
+  // Raw mode: single native-size post for screenshot capture (target #ig-card).
   if (raw) {
     const post = POSTS.find((p) => p.id === raw);
-    return <div style={{ width: 1080, height: 1350 }}>{post ? post.render() : null}</div>;
+    return <div id="ig-card" style={{ width: 1080, height: 1350 }}>{post ? post.render() : null}</div>;
   }
 
   return (
