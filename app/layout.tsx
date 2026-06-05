@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: 'The Chess Path',
     images: [
       {
-        url: 'https://chesspath.app/api/og/default',
+        url: 'https://chesspath.app/og/default.png',
         width: 1200,
         height: 630,
         alt: 'The Chess Path - The Fun Way to Learn Chess.',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'The Chess Path',
     description: 'The Fun Way to Learn Chess.',
-    images: ['https://chesspath.app/api/og/default'],
+    images: ['https://chesspath.app/og/default.png'],
   },
 };
 
