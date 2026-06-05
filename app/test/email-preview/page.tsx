@@ -4,6 +4,7 @@ import { DripDay3LeftOff } from '@/lib/email/templates/DripDay3LeftOff';
 import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
 import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
+import { StreakScience } from '@/lib/email/templates/StreakScience';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -14,6 +15,17 @@ const SAMPLE = {
 
 export default async function EmailPreviewPage() {
   const previews: { label: string; angle: string; html: string }[] = [
+    {
+      label: 'streak_science — standalone broadcast to the list',
+      angle: 'Explains the new streak feature + the real learning science behind why daily practice works (spacing effect, pattern recognition, retrieval practice, streak accountability). From Rookie, no emojis, no em-dashes. Primary CTA -> start your streak.',
+      html: await render(
+        StreakScience({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+        }),
+      ),
+    },
     {
       label: 'patron_thank_you — sent when someone becomes a patron',
       angle: 'A personal note from Tyler (not Rookie) with his headshot. "I love chess, I love making things for people who love chess, your support means a lot." No upsell — patron unlocks nothing but the gold profile.',

@@ -7,7 +7,9 @@ export type EmailType =
   | 'drip_day7'
   | 'winback'
   | 'update_april_2026'
-  | 'patron_thank_you';
+  | 'rating_reveal'
+  | 'patron_thank_you'
+  | 'streak_science';
 
 export interface EmailPreferences {
   user_id: string;
@@ -52,6 +54,12 @@ export interface EmailRecipient {
 // Template-specific props
 export interface WelcomeProps {
   displayName: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
+export interface StreakScienceProps {
+  displayName?: string;
   appUrl: string;
   unsubscribeUrl: string;
 }
