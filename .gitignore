@@ -98,3 +98,6 @@ data/run-playtest/human-traces/
 scripts/_tmp-*
 .env*
 data/witty-games/
+
+# Test page depends on gitignored remotion/ modules — keep local only
+app/test/rookie-instagram/
