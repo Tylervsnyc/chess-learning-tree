@@ -159,6 +159,7 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 - **Day 1** — 2026-06-03 — `DONE` — `IG_LANDING_FASTPATH` — commit 33497fb — instant landing for IG cohort + UTM-preserving redirect fix.
 - **Day 2** — 2026-06-04 — `DONE` — `IG_LANDING_VALUE_CTA` — commit c4a3399 — value-led `ColdLanding` for the IG cohort: **"Learn chess in 5 minutes. Free."** headline + ONE dominant "Start playing" CTA, basics demoted to a link (`components/onboarding/ColdLanding.tsx`). Supersedes the earlier `IG_SINGLE_CTA`/1f1a8ad take, which was **removed** — same single-CTA goal *plus* the value hook. **This also delivers Day 3's value-copy intent**, so Day 3 = copy iteration on this headline, not a new mechanism.
   > Collision note: `IG_SINGLE_CTA` (1f1a8ad) and `ColdLanding` (c4a3399) were two parallel implementations of Day 2 — the scheduled agent and an interactive session shipped the same day at once. Resolved to one. See the anti-collision step in the runbook.
+- **Day 3** — 2026-06-05 — `DONE` — `IG_LANDING_COPY` — commit 483395a — copy iteration on the existing `ColdLanding` (no new landing): swap the headline to challenge-framed copy that echoes the paid IG ad hook — **"Beat me in 60 seconds?"** + "Your first game's on me. No account needed." + CTA "Play me now". Reframes the screen from "learn" (work) to "play me" (a game). Gated behind `IG_SPRINT_FLAGS.IG_LANDING_COPY` (default ON) + `isIgCohort()`; off → falls back to the Day-2 value headline. `npm run check` + `npm run build` both green. Metric: picked-a-path.
 
 ---
 
