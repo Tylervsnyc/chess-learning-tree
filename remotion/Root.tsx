@@ -3,6 +3,7 @@ import { Composition } from 'remotion';
 import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
 import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
 import { StrategyReel } from './StrategyReel';
+import { StreakReel, STREAK_REEL_FRAMES } from './StreakReel';
 import {
   MarketingReelCheckmate,
   MarketingReelBeginner,
@@ -21,6 +22,20 @@ import { RookFullStory, FULL_STORY_FRAMES } from './RookFullStory';
 import { PuzzleExplainerReel, PUZZLE_EXPLAINER_TOTAL } from './PuzzleExplainerReel';
 import { DataRiverDailyReel, DATA_RIVER_DAILY_TOTAL } from './DataRiverDailyReel';
 import { DataRiverWomensDailyReel, DATA_RIVER_WOMENS_DAILY_TOTAL } from './DataRiverWomensDailyReel';
+import {
+  RookiesRunDailyReel,
+  ROOKIES_RUN_REEL_INTRO,
+  ROOKIES_RUN_REEL_OUTRO,
+  type RookiesRunDailyReelProps,
+} from './RookiesRunDailyReel';
+import { buildAutoplaySequence } from './lib/run-autoplay';
+import { getRunById } from '@/lib/run/runs';
+
+const DEFAULT_RUN_LEVEL = getRunById('knight-academy').levels[0]({ file: 4, rank: 1 });
+const DEFAULT_AUTOPLAY = buildAutoplaySequence(DEFAULT_RUN_LEVEL, {
+  fixedStart: { file: 4, rank: 1 },
+  maxMoves: 10,
+});
 import {
   FPS,
   FRAME_W,
@@ -106,6 +121,15 @@ export const Root: React.FC = () => {
         id="StrategyReel"
         component={StrategyReel as any} // eslint-disable-line
         durationInFrames={STRAT_TOTAL_FRAMES}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={{}}
+      />
+      <Composition
+        id="StreakReel"
+        component={StreakReel as any} // eslint-disable-line
+        durationInFrames={STREAK_REEL_FRAMES}
         fps={FPS}
         width={FRAME_W}
         height={FRAME_H}
@@ -219,6 +243,49 @@ export const Root: React.FC = () => {
         width={FRAME_W}
         height={FRAME_H}
         defaultProps={{}}
+      />
+      <Composition
+        id="RookiesRunDailyReel"
+        component={RookiesRunDailyReel as any} // eslint-disable-line
+        durationInFrames={ROOKIES_RUN_REEL_INTRO + 12 * FPS + ROOKIES_RUN_REEL_OUTRO}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+        defaultProps={
+          {
+            date: '2026-05-21',
+            runName: "Knight's Academy",
+            audioSrc: '/run-reel/sample/voice.wav',
+            alignSrc: undefined,
+            themeMusicSrc: undefined,
+            captions: [
+              { text: "Today's run.", startSec: 0, endSec: 1.6 },
+              { text: "Knight's Academy.", startSec: 1.95, endSec: 3.6 },
+              {
+                text: 'L-shaped problems. One knight more than I would prefer.',
+                startSec: 3.95,
+                endSec: 7.2,
+              },
+              {
+                text: "Cross the board. Don't die.",
+                startSec: 7.55,
+                endSec: 10.2,
+              },
+            ],
+            durationFrames: ROOKIES_RUN_REEL_INTRO + 12 * FPS + ROOKIES_RUN_REEL_OUTRO,
+            pieceCounts: { pawn: 12, knight: 3, bishop: 0, queen: 0 },
+            hasHazards: false,
+            moveLimit: null,
+            enemiesPerTurn: null,
+            totalLevels: 10,
+            autoplay: DEFAULT_AUTOPLAY,
+            hazards: [],
+          } satisfies RookiesRunDailyReelProps as unknown as Record<string, unknown>
+        }
+        calculateMetadata={({ props }) => {
+          const p = props as unknown as RookiesRunDailyReelProps;
+          return { durationInFrames: p.durationFrames };
+        }}
       />
     </>
   );
