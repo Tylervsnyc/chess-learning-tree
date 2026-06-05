@@ -19,7 +19,7 @@ const TEST_EMAIL = TEST_ARG ? TEST_ARG.split('=')[1] : null;
 const DRY_RUN = !process.argv.includes('--send') && !TEST_EMAIL;
 const BATCH_DELAY_MS = 500;
 const EMAIL_TYPE = 'streak_science' as const;
-const SUBJECT = 'Introducing: Streaks, Showing Up Builds Talent';
+const SUBJECT = 'Introducing: Streaks, Showing Up Beats Talent';
 
 async function main() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
