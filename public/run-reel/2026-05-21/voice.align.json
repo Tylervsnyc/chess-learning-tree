@@ -1,0 +1,900 @@
+{
+  "text": "New day, new board. Today's run is the Gauntlet. The job is simple: get from Rank 1 to Rank 8. Take their pieces, fill the meter, pick a power. That is the loop. One board a day. After midnight, it's a new one. Two bishops, diagonals everywhere. It is going to be a lot of diagonals, multiple knights which, yes, fine L-shaped problems. You have until midnight, then it's gone. Then it's a different board.",
+  "words": [
+    {
+      "word": "",
+      "start": 0.099,
+      "end": 0.219,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 0.219,
+      "end": 0.299,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 0.299,
+      "end": 0.62,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 0.62,
+      "end": 0.839,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 0.839,
+      "end": 0.939,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 0.939,
+      "end": 1.039,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 1.039,
+      "end": 1.439,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 1.439,
+      "end": 1.619,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 1.62,
+      "end": 2.019,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 2.019,
+      "end": 2.099,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 2.099,
+      "end": 2.299,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 2.299,
+      "end": 2.359,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 2.359,
+      "end": 2.5,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 2.5,
+      "end": 2.539,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 2.539,
+      "end": 2.599,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 2.599,
+      "end": 2.679,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 2.679,
+      "end": 3.22,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 3.22,
+      "end": 3.379,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 3.379,
+      "end": 3.48,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 3.48,
+      "end": 3.519,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 3.519,
+      "end": 3.759,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 3.759,
+      "end": 3.799,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 3.799,
+      "end": 3.919,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 3.919,
+      "end": 3.979,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 3.98,
+      "end": 4.38,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 4.38,
+      "end": 4.659,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 4.659,
+      "end": 4.799,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 4.799,
+      "end": 4.839,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 4.839,
+      "end": 4.98,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 4.98,
+      "end": 5.019,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 5.019,
+      "end": 5.279,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 5.279,
+      "end": 5.539,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 5.539,
+      "end": 5.579,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 5.579,
+      "end": 5.659,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 5.659,
+      "end": 5.719,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 5.719,
+      "end": 5.799,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 5.799,
+      "end": 6.039,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 6.039,
+      "end": 6.279,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 6.279,
+      "end": 6.42,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 6.42,
+      "end": 6.639,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 6.639,
+      "end": 6.819,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 6.819,
+      "end": 6.879,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 6.879,
+      "end": 7,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 7,
+      "end": 7.099,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 7.099,
+      "end": 7.619,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 7.619,
+      "end": 7.799,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 7.799,
+      "end": 7.979,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 7.979,
+      "end": 8.019,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 8.019,
+      "end": 8.079,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 8.079,
+      "end": 8.179,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 8.179,
+      "end": 8.579,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 8.579,
+      "end": 8.779,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 8.779,
+      "end": 8.939,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 8.939,
+      "end": 8.979,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 8.979,
+      "end": 9.019,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 9.019,
+      "end": 9.099,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 9.099,
+      "end": 9.539,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 9.539,
+      "end": 9.799,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 9.8,
+      "end": 9.92,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 9.92,
+      "end": 9.979,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 9.979,
+      "end": 10.139,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 10.139,
+      "end": 10.199,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 10.199,
+      "end": 10.259,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 10.259,
+      "end": 10.34,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 10.34,
+      "end": 10.639,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 10.639,
+      "end": 10.96,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 10.96,
+      "end": 11.079,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 11.079,
+      "end": 11.139,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 11.139,
+      "end": 11.399,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 11.399,
+      "end": 11.439,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 11.439,
+      "end": 11.46,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 11.46,
+      "end": 11.559,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 11.559,
+      "end": 11.859,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 11.859,
+      "end": 12.179,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 12.179,
+      "end": 12.399,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 12.399,
+      "end": 12.479,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 12.479,
+      "end": 12.819,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 12.819,
+      "end": 12.92,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 12.92,
+      "end": 13.059,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 13.059,
+      "end": 13.099,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 13.099,
+      "end": 13.119,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 13.119,
+      "end": 13.239,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 13.239,
+      "end": 13.34,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 13.34,
+      "end": 13.479,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 13.479,
+      "end": 13.679,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 13.679,
+      "end": 13.899,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 13.899,
+      "end": 14.019,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 14.019,
+      "end": 14.079,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 14.079,
+      "end": 14.579,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 14.579,
+      "end": 14.759,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 14.759,
+      "end": 15.339,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 15.339,
+      "end": 15.439,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 15.439,
+      "end": 15.959,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 15.959,
+      "end": 16.139,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.139,
+      "end": 16.199,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.199,
+      "end": 16.259,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.26,
+      "end": 16.36,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.36,
+      "end": 16.44,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.44,
+      "end": 16.6,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.6,
+      "end": 16.639,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.639,
+      "end": 16.719,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.719,
+      "end": 16.779,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.779,
+      "end": 16.84,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.84,
+      "end": 16.899,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 16.899,
+      "end": 16.92,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 16.92,
+      "end": 17.079,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 17.079,
+      "end": 17.26,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 17.26,
+      "end": 17.299,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 17.299,
+      "end": 17.359,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 17.359,
+      "end": 17.479,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 17.479,
+      "end": 18.1,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 18.1,
+      "end": 18.42,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 18.42,
+      "end": 18.859,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 18.859,
+      "end": 18.899,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 18.899,
+      "end": 19.499,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 19.499,
+      "end": 19.579,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 19.579,
+      "end": 19.92,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 19.92,
+      "end": 20.159,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 20.159,
+      "end": 20.559,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 20.559,
+      "end": 20.799,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 20.799,
+      "end": 21.379,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 21.379,
+      "end": 21.639,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 21.639,
+      "end": 22.239,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 22.239,
+      "end": 22.299,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 22.299,
+      "end": 22.979,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 22.979,
+      "end": 23.319,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 23.319,
+      "end": 23.439,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 23.439,
+      "end": 23.559,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 23.559,
+      "end": 23.799,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 23.799,
+      "end": 23.859,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 23.859,
+      "end": 24.18,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 24.18,
+      "end": 24.239,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 24.239,
+      "end": 24.699,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 24.699,
+      "end": 24.859,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 24.859,
+      "end": 24.979,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 24.979,
+      "end": 25.019,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 25.019,
+      "end": 25.239,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 25.239,
+      "end": 25.319,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 25.319,
+      "end": 25.659,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 25.659,
+      "end": 26,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 26,
+      "end": 26.099,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 26.099,
+      "end": 26.159,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 26.159,
+      "end": 26.299,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 26.299,
+      "end": 26.339,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 26.34,
+      "end": 26.399,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 26.399,
+      "end": 26.459,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 26.459,
+      "end": 26.819,
+      "type": "word"
+    },
+    {
+      "word": "",
+      "start": 26.819,
+      "end": 26.879,
+      "type": "spacing"
+    },
+    {
+      "word": "",
+      "start": 26.879,
+      "end": 27.299,
+      "type": "word"
+    }
+  ],
+  "duration": 27.299
+}

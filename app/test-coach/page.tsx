@@ -279,24 +279,23 @@ export default function TestCoachPage() {
   const runAnalysis = useCallback(async (moves: MoveRecord[], result: string) => {
     const analyzed: MoveAnalysis[] = [];
 
-    // Use live evals collected during play, only re-analyze if missing
+    // Always re-evaluate at depth 20 during review (live in-game depth 14 has
+    // tactical ghosts — single-move spikes 4+ pawns off from neighbors that
+    // don't survive deeper search). Overwrites the shallow live cache.
+    const REVIEW_DEPTH = 20;
     for (let i = 0; i < moves.length; i++) {
       const m = moves[i];
-      let cached = liveEvalsRef.current.get(i);
-
-      if (!cached) {
-        setAnalysisProgress(`Finishing analysis: move ${i + 1}/${moves.length}...`);
-        const fullBefore = await stockfish.getFullEval(m.fenBefore, 14);
-        const fullAfter = await stockfish.getFullEval(m.fenAfter, 14);
-        cached = {
-          evalBefore: fullBefore?.cp ?? null,
-          evalAfter: fullAfter?.cp ?? null,
-          mateBefore: fullBefore?.mate ?? null,
-          mateAfter: fullAfter?.mate ?? null,
-          bestMove: fullBefore?.bestMove ?? null,
-          threat: fullAfter?.bestMove ?? null,
-        };
-      }
+      setAnalysisProgress(`Deep analysis: move ${i + 1}/${moves.length}...`);
+      const fullBefore = await stockfish.getFullEval(m.fenBefore, REVIEW_DEPTH);
+      const fullAfter = await stockfish.getFullEval(m.fenAfter, REVIEW_DEPTH);
+      const cached = {
+        evalBefore: fullBefore?.cp ?? null,
+        evalAfter: fullAfter?.cp ?? null,
+        mateBefore: fullBefore?.mate ?? null,
+        mateAfter: fullAfter?.mate ?? null,
+        bestMove: fullBefore?.bestMove ?? null,
+        threat: fullAfter?.bestMove ?? null,
+      };
 
       const { evalBefore, evalAfter, mateBefore, mateAfter, bestMove, threat } = cached;
 
@@ -627,6 +626,32 @@ export default function TestCoachPage() {
                   className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 disabled:opacity-30 rounded-lg transition-colors text-sm"
                 >
                   &#x23ED;
+                </button>
+                <button
+                  onClick={async () => {
+                    const moves = moveHistoryRef.current;
+                    if (moves.length === 0) return;
+                    // Build minimal PGN: [Event "..."]\n\n1. e4 e5 2. Nf3 ... *
+                    const header = '[Event "Rookie game"]\n[White "Player"]\n[Black "Rookie"]\n[Result "*"]\n\n';
+                    let body = '';
+                    moves.forEach((m, i) => {
+                      if (i % 2 === 0) body += `${Math.floor(i / 2) + 1}. `;
+                      body += `${m.san} `;
+                    });
+                    body += '*';
+                    const pgn = header + body;
+                    try {
+                      await navigator.clipboard.writeText(pgn);
+                      alert('PGN copied. Paste into lichess.org/paste to analyze.');
+                    } catch {
+                      // fallback: show prompt for manual copy
+                      prompt('Copy this PGN:', pgn);
+                    }
+                  }}
+                  className="ml-2 px-3 h-8 flex items-center justify-center bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors text-xs font-semibold"
+                  title="Copy PGN to clipboard"
+                >
+                  Copy PGN
                 </button>
               </div>
             </div>

@@ -110,6 +110,33 @@ const SPECS: Spec[] = [
     ],
   },
   {
+    id: 'convert',
+    variants: [
+      // A — Prism amulet refracting dark light into rainbow
+      'A magnificent ornate jeweled prism-amulet relic centered in frame, a perfect carved teardrop-prism of clear crystal mounted in ornate gold filigree, a beam of inky-black shadow-light entering from one side and refracting through the prism to emerge as a vivid rainbow spectrum on the other side (red, orange, yellow, green, blue, indigo, violet beams fanning outward in luminous painted bands), the gold mount inlaid with seven small faceted gems matching each rainbow color, ornate scrollwork curling around the prism setting, an enormous central diamond at the apex of the mount radiating beams of light, deep painted iridescent twilight velvet background with subtle prismatic shimmer, ' + RELIC_STYLE + '.',
+      // B — Two-faced flip medallion
+      'A magnificent ornate jeweled flip-medallion relic centered in frame, a circular pendant split vertically down the middle into two halves: the left half forged from blackened obsidian and tarnished silver filigree set with smoky onyx gems suggesting an enemy sigil, the right half forged from polished bright gold filigree set with vivid rainbow gems (ruby, citrine, emerald, sapphire, amethyst) suggesting a rainbow-allied sigil, an enormous central faceted prism-cut diamond straddling the seam radiating rainbow beams outward, ornate scrollwork around the rim, deep painted velvet background that fades from shadow-black on the left to iridescent rainbow shimmer on the right, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
+    id: 'squad',
+    variants: [
+      // A — Jeweled war-banner with marching pawn silhouettes
+      'A magnificent ornate jeweled war-banner relic centered in frame, an elaborate tall heraldic battle-standard of polished gold filigree with a rippling enamel banner inlaid with a procession of stylized chess-pawn silhouettes marching forward in raised gold relief, four faceted gemstones (ruby, sapphire, emerald, topaz) inset at the corners of the banner, an enormous central diamond at the top finial radiating beams of light, ornate fleur-de-lis scrollwork along the pole, tasseled cords of woven gold thread, deep painted royal-crimson velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+      // B — Jeweled war-horn with marching army
+      'A magnificent ornate jeweled war-horn relic centered in frame, an elaborate curved rallying horn forged of polished gold filigree wrapped in baroque scrollwork, the bell of the horn flared and inlaid with a frieze of tiny stylized chess-pawn-and-knight silhouettes in raised gold relief as if marching out of the horn, three faceted gems (ruby, emerald, sapphire) set along the body of the horn, an enormous central diamond at the mouthpiece radiating beams of light, golden sound-waves rippling outward from the bell, deep painted battlefield-amber velvet background with subtle gold dust shimmer, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
+    id: 'drones',
+    variants: [
+      // A — Rook tower with miniature rook satellites orbiting
+      'A magnificent ornate jeweled chess-rook tower relic centered in frame, an elaborate tall fortified rook-tower sculpted from polished gold filigree with crenellated battlements at the top, four miniature stylized chess-rook silhouettes orbiting around the central tower at the cardinal points (above, below, left, right) trailing rainbow comet-tails of prismatic light, each miniature rook inlaid with a different gem (ruby, sapphire, emerald, amethyst), the central tower inlaid with vertical bands of faceted citrines and a single enormous central diamond at its heart radiating beams of light, ornate scrollwork around the base, deep painted twilight-indigo velvet background with rainbow sparkles, ' + RELIC_STYLE + '.',
+      // B — Jeweled launcher cannon with mini-rook projectiles
+      'A magnificent ornate jeweled launcher-cannon relic centered in frame, an elaborate baroque cannon of polished gold filigree mounted on an ornate scrollwork carriage, the long barrel etched with fleur-de-lis filigree and inlaid with three faceted citrines along its length, the muzzle flared and aimed upward, three tiny stylized chess-rook projectiles erupting from the muzzle trailing vivid rainbow comet-trails of prismatic light, an enormous central diamond set into the breech radiating beams of light, ornate scrollwork curling around the base and wheels, deep painted stormy twilight velvet background with rainbow sparkles, ' + RELIC_STYLE + '.',
+    ],
+  },
+  {
     id: 'aegis',
     variants: [
       'A magnificent ornate heraldic kite-shield relic centered in frame, an elaborate gold filigree shield with raised border scrollwork, four faceted gemstones (ruby, sapphire, emerald, diamond) inset at the cardinal points of the shield face, an enormous central rampant-rook-tower emblem rendered in gold inlay with a glowing sapphire core, deep painted midnight-blue velvet background, ' + RELIC_STYLE + '.',

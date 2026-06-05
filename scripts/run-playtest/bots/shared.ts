@@ -17,7 +17,7 @@
 import type { AbilityId, OwnedAbility } from '../../../lib/run/abilities';
 import { abilityLegalMoves, visibleEnemySquares } from '../../../lib/run/abilities';
 import { rookieLegalMoves, enemyAt } from '../../../lib/run/movement';
-import { TEMPO_MAX } from '../../../lib/run/scoring';
+import { TEMPO_MAX, TEMPO_REWARD } from '../../../lib/run/scoring';
 import type {
   BoardState,
   Coord,
@@ -229,9 +229,35 @@ export function evalState(state: BoardState): number {
     score += Math.min(slack, 8) * 1.5;
   }
 
-  // Tempo + abilities — latent power. Owning matters; "has uses" is small
-  // so bots happily spend charges instead of hoarding them.
-  score += (state.tempo / TEMPO_MAX) * 4;
+  // Tempo + abilities — latent power.
+  //
+  // Tempo accumulation was previously underweighted (max +4 vs winningReach
+  // +60) so the bot raced to rank 8 every time and never farmed offers.
+  // Human traces (Pincer L1-L3 declined 16/26 winning moves to keep capturing)
+  // show offer-banking dominates rank-advancement on easy levels. Bumped to
+  // max +14 so a near-full meter is competitive with a winning slide.
+  score += (state.tempo / TEMPO_MAX) * 14;
+  // A pending offer is a free ability pick next turn — strong incentive
+  // to reach this state.
+  if (state.pendingOffer && state.pendingOffer.length > 0) score += 22;
+  // Safe captures reachable this turn close the gap to the next offer.
+  // Weighted by how much headroom there is in the tempo meter — if 1 capture
+  // would fill it, that's worth ~+15; if we'd need 8 tempo from 0 it's worth
+  // proportionally less.
+  if (state.tempo < TEMPO_MAX && !state.pendingOffer) {
+    const headroom = TEMPO_MAX - state.tempo;
+    let reachableCaptureTempo = 0;
+    for (const m of legal) {
+      if (attacked.has(toSquare(m))) continue;
+      const cap = state.pieces.find(
+        (p) => p.file === m.file && p.rank === m.rank,
+      );
+      if (!cap) continue;
+      reachableCaptureTempo += TEMPO_REWARD[cap.type] ?? 0;
+    }
+    const proximity = Math.min(1, reachableCaptureTempo / headroom);
+    score += proximity * 14;
+  }
   for (const a of state.abilities) {
     score += 3 + a.tier;
     if (a.usesLeftThisLevel > 0 || a.usesLeftThisLevel === -1) score += 0.5;

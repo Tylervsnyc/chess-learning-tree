@@ -67,6 +67,7 @@ supabase/.temp/
 
 # Voice design output
 voice-output/
+scripts/voice/
 scripts/voice/.venv/
 scripts/voice/glados-tts/
 

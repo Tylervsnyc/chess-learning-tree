@@ -16,6 +16,7 @@
 import type { BoardState } from '../../../lib/run/types';
 import { applyBotAction } from './apply';
 import { evalState, legalCandidates, rookieCanBeCapturedThisTurn } from './shared';
+import { strategicBonus } from './ability-eval';
 import { settleEnemyTurns } from './t3';
 import type { Bot, BotAction, BotContext } from '../types';
 
@@ -36,10 +37,11 @@ export const T5_V01: Bot = {
     }
 
     // First pass: 1-ply score on every candidate.
-    const shallow = candidates.map((c, i) => ({
-      i,
-      score: searchDepth(state, c, 1),
-    }));
+    const shallow = candidates.map((c, i) => {
+      const base = searchDepth(state, c, 1);
+      const action = toAction(c);
+      return { i, score: base + strategicBonus(state, action, 'T5') };
+    });
     shallow.sort((a, b) => b.score - a.score);
 
     // Deep-search the top-K candidates.
@@ -47,7 +49,8 @@ export const T5_V01: Bot = {
     let bestIdx = topK[0].i;
     let bestScore = -Infinity;
     for (const { i } of topK) {
-      const s = searchDepth(state, candidates[i], 3);
+      const base = searchDepth(state, candidates[i], 3);
+      const s = base + strategicBonus(state, toAction(candidates[i]), 'T5');
       if (s > bestScore) {
         bestScore = s;
         bestIdx = i;
@@ -61,6 +64,13 @@ export const T5_V01: Bot = {
     return { kind: 'ability-target', abilityId: chosen.abilityId!, target: chosen.target! };
   },
 };
+
+function toAction(c: ReturnType<typeof legalCandidates>[number]): BotAction {
+  if (c.kind === 'move') return { kind: 'move', target: c.target! };
+  if (c.kind === 'activate-ability')
+    return { kind: 'activate-ability', abilityId: c.abilityId! };
+  return { kind: 'ability-target', abilityId: c.abilityId!, target: c.target! };
+}
 
 function searchDepth(
   state: BoardState,

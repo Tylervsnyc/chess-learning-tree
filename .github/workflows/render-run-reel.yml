@@ -1,0 +1,54 @@
+name: Render Rookie's Run daily reel
+
+on:
+  schedule:
+    # 06:00 UTC daily — well ahead of US peak posting windows.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Override date (YYYY-MM-DD). Leave blank for today.'
+        required: false
+        default: ''
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install system deps for Remotion (ffmpeg, fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-liberation libnss3 libatk1.0-0 libatk-bridge2.0-0 libgbm1
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Render reel
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            npm run reel:run -- --date=${{ github.event.inputs.date }}
+          else
+            npm run reel:run
+          fi
+
+      - name: Upload reel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rookies-run-reel-${{ github.run_id }}
+          path: |
+            out/run-reel/**/reel.mp4
+            out/run-reel/**/caption.txt
+            out/run-reel/**/manifest.json
+          retention-days: 30
