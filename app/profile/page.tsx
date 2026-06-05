@@ -475,6 +475,14 @@ export default function ProfilePage() {
   const isGold = isPatron || subStatus === 'premium' || previewGold;
   const initial = displayName.charAt(0).toUpperCase();
 
+  // useUser() flips `loading` false on the first auth event but fetches the
+  // profile a beat later. Gate gold-dependent chrome (badges, Patron CTA) on
+  // the profile actually being known, so it doesn't flash in then disappear
+  // — which was shoving the streak hero down on load. preview=gold counts.
+  const profileReady = !userLoading && (!user || profile !== null || previewGold);
+  // Only show the gold treatment once we actually know — avoids a blue→gold snap.
+  const showGold = profileReady && isGold;
+
   const current = streak?.current ?? 0;
   const longest = streak?.longest ?? 0;
   const done = streak?.completedToday ?? false;
@@ -486,32 +494,33 @@ export default function ProfilePage() {
         {/* Header — name + subscription badge + gold CTA */}
         <header className="flex items-center gap-3">
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
-              isGold ? '' : 'bg-chess-blue/15'
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+              showGold ? '' : 'bg-chess-blue/15'
             }`}
-            style={isGold ? { background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' } : undefined}
+            style={showGold ? { background: 'linear-gradient(135deg, #FFE9A8, #FFCB45)' } : undefined}
           >
-            <span className={`text-xl font-black ${isGold ? 'text-amber-800' : 'text-chess-blue'}`}>
+            <span className={`text-xl font-black transition-colors ${showGold ? 'text-amber-800' : 'text-chess-blue'}`}>
               {initial}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <h1
-              className={`text-xl font-black truncate leading-tight ${
-                isGold ? 'text-amber-700' : 'text-chess-text'
+              className={`text-xl font-black truncate leading-tight transition-colors ${
+                showGold ? 'text-amber-700' : 'text-chess-text'
               }`}
             >
               {userLoading ? '…' : displayName}
             </h1>
             <div className="mt-1 flex items-center gap-1.5">
-              {!userLoading && <SubscriptionBadge status={subStatus} />}
-              {!userLoading && isPatron && <PatronBadge />}
+              {profileReady && <SubscriptionBadge status={subStatus} />}
+              {profileReady && isPatron && <PatronBadge />}
             </div>
           </div>
         </header>
 
-        {/* Become a Patron — big, fun gold CTA. Hidden once gold. */}
-        {!userLoading && user && !isGold && (
+        {/* Become a Patron — big, fun gold CTA. Hidden once gold. Gated on
+            profileReady so it never flashes in then out for gold users. */}
+        {profileReady && user && !isGold && (
           <button
             onClick={() => setPatronOpen(true)}
             className="group w-full rounded-3xl p-5 flex items-center gap-4 text-left active:scale-[0.99] transition-transform"
