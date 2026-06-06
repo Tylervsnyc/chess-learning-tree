@@ -266,14 +266,54 @@ async function getSourceFunnel(filter: string, sourceClause: string) {
   };
 }
 
-async function getNewSignups(filter: string) {
+// Cache the full auth-user list so the target + previous-period calls don't
+// double-fetch the admin API.
+let _authUsersCache: { created_at: string; provider: string }[] | null = null;
+async function fetchAuthUsers(sb: SupabaseClient): Promise<{ created_at: string; provider: string }[]> {
+  if (_authUsersCache) return _authUsersCache;
+  const out: { created_at: string; provider: string }[] = [];
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await sb.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error || !data?.users?.length) break;
+    for (const u of data.users) {
+      if (u.created_at) out.push({ created_at: u.created_at, provider: (u.app_metadata?.provider as string) || 'unknown' });
+    }
+    if (data.users.length < 1000) break;
+  }
+  _authUsersCache = out;
+  return out;
+}
+
+// New signups = accounts CREATED in the window (DB truth via auth.users).
+// The signup_completed event undercounts OAuth ~5x because the server OAuth
+// callback (app/auth/callback/route.ts) fires no analytics — so we count real
+// accounts and only fall back to the event if service creds are missing.
+async function getNewSignups(dateStr: string, days: number) {
+  const sb = makeServiceClient();
+  if (sb) {
+    const targetStart = Date.parse(`${dateStr}T00:00:00Z`);
+    const startMs = targetStart - (days - 1) * DAY_MS; // start of first day in window
+    const endMs = targetStart + DAY_MS;                // start of the day after dateStr
+    const users = await fetchAuthUsers(sb);
+    let total = 0, email = 0, google = 0, apple = 0;
+    for (const u of users) {
+      const t = Date.parse(u.created_at);
+      if (Number.isNaN(t) || t < startMs || t >= endMs) continue;
+      total++;
+      if (u.provider === 'email') email++;
+      else if (u.provider === 'google') google++;
+      else if (u.provider === 'apple') apple++;
+    }
+    return { total, email, google, apple };
+  }
+  // Fallback: event-based (KNOWN to undercount OAuth ~5x — service creds missing).
   const r = await hogql(`
     SELECT
       countIf(event = 'signup_completed') as signups,
       countIf(event = 'signup_completed' AND properties.method = 'email') as email,
       countIf(event = 'signup_completed' AND properties.method = 'google') as google,
       countIf(event = 'signup_completed' AND properties.method = 'apple') as apple
-    FROM events WHERE ${filter}
+    FROM events WHERE ${dayFilter(dateStr, days)}
   `, 'signups');
   const row = r.results[0] || [0, 0, 0, 0];
   return { total: num(row[0]), email: num(row[1]), google: num(row[2]), apple: num(row[3]) };
@@ -539,7 +579,7 @@ async function main() {
 
   // Batch 2
   const [signups, prevSignups, activity] = await Promise.all([
-    getNewSignups(f), getNewSignups(fp), getActivity(f),
+    getNewSignups(targetDate, rangeDays), getNewSignups(prevDate, rangeDays), getActivity(f),
   ]);
   await wait(500);
 
