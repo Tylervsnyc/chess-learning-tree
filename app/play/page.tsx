@@ -58,6 +58,8 @@ import {
 import { consumeBreadcrumb } from '@/lib/session-breadcrumb';
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
+import { isIgCohort } from '@/lib/growth/ig-cohort';
+import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 
 // ════════════════════════════════
 // LEVEL PERSISTENCE (localStorage)
@@ -1813,6 +1815,27 @@ export default function PlayRookiePage() {
 
     setPhase('playing');
   };
+
+  // ── Day 4 IG autoplay (CHE-359) ──
+  // For the IG cohort, the landing's Play CTA routes here with ?autostart=1 —
+  // start the game immediately, skipping the color/level setup screen, so cold
+  // traffic lands as close to the first move as possible. Cohort + flag + query
+  // gated, so existing users always see setup. Fires once. Cold IG traffic is
+  // first-touch so the saved level is 1 (the intended easy start).
+  const startGameRef = useRef(startGame);
+  startGameRef.current = startGame;
+  const igAutoStartedRef = useRef(false);
+  useEffect(() => {
+    if (igAutoStartedRef.current) return;
+    if (!IG_SPRINT_FLAGS.IG_AUTOPLAY || !isIgCohort()) return;
+    let autostart = false;
+    try {
+      autostart = new URLSearchParams(window.location.search).get('autostart') === '1';
+    } catch {}
+    if (!autostart) return;
+    igAutoStartedRef.current = true;
+    startGameRef.current();
+  }, []);
 
   const handleResign = useCallback(() => {
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);

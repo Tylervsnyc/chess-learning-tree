@@ -100,6 +100,10 @@ export function OnboardingFlow() {
   // SSR-safe pattern as coldVariant (false on first paint, flips post-mount for
   // the IG cohort). See the IG sprint useEffect below.
   const [checkmateVariant, setCheckmateVariant] = useState(false);
+  // Day-4 autoplay (CHE-359). When on for the IG cohort, the Play CTA routes to
+  // /play?autostart=1 so the game starts immediately (skips the setup screen).
+  // SSR-safe: false on first paint, flips post-mount for the cohort only.
+  const [igAutoplay, setIgAutoplay] = useState(false);
 
   const { displayed: typedQuip, done: typingDone, fading } = useTypewriter(
     ROOKIE_QUIPS, 800, 30000, 28,
@@ -115,6 +119,10 @@ export function OnboardingFlow() {
   // screen, and the staged reveal hides the CTAs until 1000ms. For the IG
   // cohort only, jump straight to fully-visible so the buttons are instant.
   useEffect(() => {
+    // Day 4: for the IG cohort, the Play CTA autostarts a game on /play.
+    if (IG_SPRINT_FLAGS.IG_AUTOPLAY && isIgCohort()) {
+      setIgAutoplay(true);
+    }
     // Day 5: drop cold IG traffic straight onto the ad's checkmate-in-1 board.
     // Highest precedence — wins over the value-CTA / copy cold landing. Jump to
     // phase 5 so the phase>=4 effect still fires `onboarding_started`.
@@ -184,6 +192,10 @@ export function OnboardingFlow() {
     router.push(route);
   }, [markOnboarded, router]);
 
+  // Day 4 (IG_AUTOPLAY): the IG cohort's Play CTA carries ?autostart=1 so /play
+  // skips its setup screen and starts the game immediately. Non-IG → plain /play.
+  const playRoute = igAutoplay ? '/play?autostart=1' : '/play';
+
   // ─── Day-5 checkmate landing (CHE-359) — interactive mate-in-1, message-matches the ad ───
   if (checkmateVariant) {
     return (
@@ -210,7 +222,7 @@ export function OnboardingFlow() {
       : {};
     return (
       <ColdLanding
-        onPlay={() => handleRoute('play', '/play')}
+        onPlay={() => handleRoute('play', playRoute)}
         onBasics={() => handleRoute('learn', '/basics')}
         onSignIn={() => { playButtonClick(); router.push('/auth/login'); }}
         {...adHookCopy}
@@ -332,7 +344,7 @@ export function OnboardingFlow() {
             color="green"
             size="md"
             fullWidth
-            onClick={() => handleRoute('play', '/play')}
+            onClick={() => handleRoute('play', playRoute)}
           >
             <span className="font-black block" style={{ fontSize: 'clamp(18px, 5vw, 22px)' }}>
               Play

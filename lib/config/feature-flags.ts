@@ -56,4 +56,13 @@ export const IG_SPRINT_FLAGS = {
    * users + non-IG traffic never see it. Attempt log: data/growth/landing-page-log.md.
    */
   IG_LANDING_CHECKMATE: true,
+  /**
+   * Day 4 (CHE-359) — autoplay. For the IG cohort, the landing's Play CTA routes
+   * to `/play?autostart=1` and the game starts immediately, skipping the
+   * color/level setup screen — land cold traffic as close to the first move as
+   * possible (the product starts before they pick anything). Gated by
+   * `isIgCohort()` + the `?autostart=1` query the cohort's CTA passes, so
+   * existing users always see the normal setup screen. Metric: `game_started`.
+   */
+  IG_AUTOPLAY: true,
 } as const;
