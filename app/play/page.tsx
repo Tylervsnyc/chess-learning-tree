@@ -18,6 +18,7 @@ import {
   getRookieLevel,
   getLevelElo,
   getLevelEngineConfig,
+  getEasyFirstWinConfig,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents } from '@/lib/analytics/posthog';
@@ -418,6 +419,14 @@ export default function PlayRookiePage() {
   // Game generation counter — increments on each new game.
   // Stale closures from previous games check this before applying moves.
   const gameGenRef = useRef(0);
+
+  // Day 5 IG sprint (IG_EASY_FIRST_WIN): rig the IG cohort's FIRST game of the
+  // session to be extra-easy so a cold beginner wins fast and hits the one-tap
+  // signup. sessionGameCountRef counts games started this session; igEasyActiveRef
+  // is true only while that first eased game is in progress. Engine-only — the
+  // displayed level never changes. Non-IG users: always false.
+  const sessionGameCountRef = useRef(0);
+  const igEasyActiveRef = useRef(false);
 
   // Session tracking for coaching
   const sessionRef = useRef<GameSession | null>(null);
@@ -1296,7 +1305,9 @@ export default function PlayRookiePage() {
     // stronger players legitimately know theory.
     const rookieMovesPlayed = gameMoves.filter((_, i) => (rookieColor === 'white' ? i % 2 === 0 : i % 2 === 1)).length;
     const bookCapped = rookieLevel <= 4 && rookieMovesPlayed >= 5;
-    const bookResult = !bookCapped
+    // Day 5 (IG_EASY_FIRST_WIN): skip book theory entirely in the eased first
+    // game so Rookie plays purely weak/random moves and hangs into a fast win.
+    const bookResult = !bookCapped && !igEasyActiveRef.current
       ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
       : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
     if (bookResult.inBook && bookResult.moveSan) {
@@ -1330,8 +1341,10 @@ export default function PlayRookiePage() {
       return;
     }
 
-    // Stockfish MultiPV sampling — weak-human feel via top-N candidate pool
-    const cfg = getLevelEngineConfig(rookieLevel);
+    // Stockfish MultiPV sampling — weak-human feel via top-N candidate pool.
+    // Day 5 (IG_EASY_FIRST_WIN): the IG cohort's first game uses an extra-easy,
+    // blunder-prone config so a cold beginner wins fast (engine-only; level stays 1).
+    const cfg = igEasyActiveRef.current ? getEasyFirstWinConfig() : getLevelEngineConfig(rookieLevel);
 
     // Random move injection for L1-L3 — true beginner "hung piece" feel that
     // Stockfish can't produce on its own (even at skill 0, its worst move is ~1000 ELO).
@@ -1722,6 +1735,12 @@ export default function PlayRookiePage() {
     // Prevent setup greeting from firing (onPointerDown fires before onClick)
     setupGreetingSpokenRef.current = true;
     warmupAudio();
+    // Day 5 (IG_EASY_FIRST_WIN): ease ONLY the IG cohort's first game of the
+    // session. Later games (and all non-IG / existing users) play normally.
+    const isFirstSessionGame = sessionGameCountRef.current === 0;
+    sessionGameCountRef.current++;
+    igEasyActiveRef.current =
+      isFirstSessionGame && IG_SPRINT_FLAGS.IG_EASY_FIRST_WIN && isIgCohort();
     gameGenRef.current++; // invalidate all stale closures from previous game
     speech.reset();
     stopAudio(); // kill any in-progress landing quip audio

@@ -206,6 +206,18 @@ export function getLevelEngineConfig(level: number): RookieEngineConfig {
   return ENGINE_CONFIGS[clamped];
 }
 
+/**
+ * Day 5 (IG sprint) — "rigged first win" engine for the IG cohort's first game.
+ * Weaker and far more blunder-prone than Level 1 (skill 0, depth 1, plays a
+ * random legal move ~60% of the time) so a complete beginner hangs into a fast
+ * win and reaches the one-tap signup at the dopamine peak. The displayed level
+ * stays 1; this only swaps the engine under the hood. Gated by isIgCohort() +
+ * IG_EASY_FIRST_WIN + first-game-of-session at the call site — never global.
+ */
+export function getEasyFirstWinConfig(): RookieEngineConfig {
+  return { skillLevel: 0, depth: 1, multiPV: 10, poolSize: 10, randomMoveChance: 0.6 };
+}
+
 // ════════════════════════════════
 // CONTEXTUAL GREETINGS
 // ════════════════════════════════

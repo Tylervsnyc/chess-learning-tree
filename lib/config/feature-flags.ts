@@ -65,4 +65,15 @@ export const IG_SPRINT_FLAGS = {
    * existing users always see the normal setup screen. Metric: `game_started`.
    */
   IG_AUTOPLAY: true,
+  /**
+   * Day 5 (CHE-359) — rigged first win. For the IG cohort's FIRST game of the
+   * session, swap Rookie's engine for an extra-easy, blunder-prone config (and
+   * skip the opening book) so a cold beginner gets a fast, satisfying win and
+   * hits the already-live one-tap signup at the dopamine peak. Engine-only: the
+   * displayed level stays 1, only the under-the-hood strength drops. Gated by
+   * `isIgCohort()` + first-game-of-session, so existing users + non-IG traffic
+   * are never affected, and only the IG cohort's opening game is eased (later
+   * games play normally). Metric: new-session win-rate, prompt-shown.
+   */
+  IG_EASY_FIRST_WIN: true,
 } as const;
