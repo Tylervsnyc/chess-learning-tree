@@ -3,12 +3,19 @@
 let _posthog: typeof import('posthog-js').default | null = null;
 
 async function getPostHog() {
-  if (_posthog) return _posthog;
   if (typeof window === 'undefined') return null;
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return null;
   try {
-    _posthog = (await import('posthog-js')).default;
-    return _posthog;
+    const ph = _posthog ?? (await import('posthog-js')).default;
+    _posthog = ph;
+    // PostHogProvider runs posthog.init() on browser idle. An event fired
+    // immediately on a post-OAuth landing (CHE-366) can beat init and be
+    // dropped — so wait briefly for it. Once loaded this is a no-op fast path.
+    const loaded = () => (ph as unknown as { __loaded?: boolean }).__loaded === true;
+    for (let i = 0; i < 25 && !loaded(); i++) {
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    return ph;
   } catch {
     return null;
   }

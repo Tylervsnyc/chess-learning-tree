@@ -29,6 +29,31 @@ const DEFAULT_TALKATIVENESS_LEVEL = 3;
 const clampAttitude = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 const clampTalkativeness = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 
+// CHE-366: fire the OAuth signup/login analytics event from the params the
+// server callback appended (?auth_event=signup|login&auth_method=google|apple).
+// This is reliable where the old approach wasn't — it doesn't depend on the
+// onAuthStateChange event type (the server-callback flow emits INITIAL_SESSION,
+// not SIGNED_IN), on localStorage (dropped by the IG in-app browser), or on the
+// client clock. Module-level guard + URL strip prevent a double fire if
+// onAuthStateChange emits more than once for the same page load.
+let authRedirectTracked = false;
+function maybeTrackAuthRedirect(userId: string, email: string | undefined) {
+  if (authRedirectTracked || typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  const evt = params.get('auth_event');
+  if (evt !== 'signup' && evt !== 'login') return;
+  authRedirectTracked = true;
+  const method = params.get('auth_method') || 'oauth';
+  identifyUser(userId, { email });
+  if (evt === 'signup') AuthEvents.signupCompleted(method);
+  else AuthEvents.loginCompleted();
+  // Strip the params so a refresh / re-render doesn't re-fire.
+  params.delete('auth_event');
+  params.delete('auth_method');
+  const qs = params.toString();
+  window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
+}
+
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -175,25 +200,10 @@ export function useUser() {
 
         if (sessionUser) {
           fetchProfile(sessionUser.id, sessionUser.email || '');
-
-          // Track OAuth completions (signup/login surfaces set 'auth_method' in
-          // localStorage before redirecting). Covers Google AND Apple — the
-          // win-moment one-tap prompt offers both, so Apple must count too.
-          const authMethod = localStorage.getItem('auth_method');
-          if (event === 'SIGNED_IN' && (authMethod === 'google' || authMethod === 'apple')) {
-            localStorage.removeItem('auth_method');
-            identifyUser(sessionUser.id, { email: sessionUser.email });
-
-            // If account was created within last 60 seconds, it's a new signup
-            const createdAt = new Date(sessionUser.created_at).getTime();
-            const isNewSignup = Date.now() - createdAt < 60_000;
-
-            if (isNewSignup) {
-              AuthEvents.signupCompleted(authMethod);
-            } else {
-              AuthEvents.loginCompleted();
-            }
-          }
+          // OAuth signup/login tracking is driven by the server callback via
+          // URL params (CHE-366) — reliable across the IG in-app browser and
+          // independent of the onAuthStateChange event type.
+          maybeTrackAuthRedirect(sessionUser.id, sessionUser.email);
         } else {
           setProfile(null);
         }

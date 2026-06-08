@@ -62,6 +62,28 @@ export async function GET(request: Request) {
       sendWelcomeIfNew(user.id, user.email ?? '', user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? 'Chess Player').catch(
         (err) => console.error('[Auth Callback] Welcome email error:', err)
       );
+
+      // CHE-366: the server is the source of truth for OAuth analytics. The
+      // client can't reliably fire signup_completed/login_completed itself —
+      // this server-callback flow emits INITIAL_SESSION (not SIGNED_IN) and the
+      // IG in-app browser drops the localStorage hint. So we tell the landing
+      // client what happened via the redirect URL and let it fire once.
+      // Only for OAuth: email confirmations already fire their event on the
+      // signup page, so tagging them here would double-count.
+      const provider = user.app_metadata?.provider;
+      if (provider === 'google' || provider === 'apple') {
+        // New vs returning from two DB timestamps (clock-skew-free): a first
+        // sign-in has last_sign_in_at ≈ created_at; a returning user's
+        // created_at is far older than this sign-in.
+        const created = user.created_at ? Date.parse(user.created_at) : 0;
+        const lastSignIn = user.last_sign_in_at ? Date.parse(user.last_sign_in_at) : created;
+        const isNewSignup = Math.abs(lastSignIn - created) < 60_000;
+
+        const dest = new URL(next, origin);
+        dest.searchParams.set('auth_event', isNewSignup ? 'signup' : 'login');
+        dest.searchParams.set('auth_method', provider);
+        response.headers.set('location', dest.toString());
+      }
     }
 
     // Return the response with cookies attached
