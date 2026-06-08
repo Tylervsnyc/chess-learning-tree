@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { MiniRookieIcon } from './MiniRookieIcon';
+import RookieCampfire from './RookieCampfire';
 import { pickCelebrationLine, isMilestone } from '@/lib/daily-workout/celebration-lines';
 
 interface DailyWorkoutCelebrationProps {
@@ -124,11 +124,15 @@ export function DailyWorkoutCelebration({ streak, open, onClose, onShare }: Dail
         </button>
 
         <div className="text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted mb-1">
-          Workout streak
+          The Streak Continues
         </div>
 
-        <div className="workout-big-rookie my-3">
-          <MiniRookieIcon active gold={streak >= 100} size={108} />
+        <div className="my-3 flex justify-center">
+          <RookieCampfire
+            blockSize={18}
+            active
+            blaze={Math.max(0.5, Math.min(1, streak / 60))}
+          />
         </div>
 
         <div

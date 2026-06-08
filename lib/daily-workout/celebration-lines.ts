@@ -7,25 +7,25 @@
 type LinePool = { headline: string; sub?: string }[];
 
 const DAY_1: LinePool = [
-  { headline: "Day one.", sub: "The graph is starting. I am, briefly, a graph." },
-  { headline: "Workout logged.", sub: "Felt strange. Moving on." },
-  { headline: "First workout.", sub: "I'm told this is the hard one. Suspicious." },
+  { headline: "The fire's lit.", sub: "Day one. A small warmth somewhere in my circuits. Filing it under 'good.'" },
+  { headline: "Day one.", sub: "Every long streak starts exactly here. Suspicious how ordinary it feels." },
+  { headline: "First spark.", sub: "I'm told the first day is the hard one. Suspicious." },
 ];
 
 const EARLY: LinePool = [
-  { headline: "Workout complete.", sub: "The number went up. I had a tiny reaction. Anyway." },
-  { headline: "Pattern forming.", sub: "I'm noticing patterns now. New for me." },
-  { headline: "Streak holds.", sub: "My fans are running cool, which I'm told is good." },
+  { headline: "Still burning.", sub: "The number went up. I had a tiny reaction. Anyway." },
+  { headline: "The fire holds.", sub: "I'm noticing a pattern now. New for me." },
+  { headline: "Kept it lit.", sub: "My fans are running cool, which I'm told is good." },
 ];
 
 const WEEK: LinePool = [
-  { headline: "Seven days.", sub: "That's a week. I checked. I'm experiencing momentum. Suspicious." },
-  { headline: "One week of workouts.", sub: "I don't have weekends but I'm told this is impressive." },
+  { headline: "Seven days.", sub: "That's a full week. I checked twice. Momentum, apparently. Suspicious." },
+  { headline: "A week on the fire.", sub: "I don't have weekends, but I'm told this one's impressive." },
 ];
 
 const TWO_WEEKS: LinePool = [
   { headline: "Fourteen days.", sub: "My internal monologue refers to you as 'we' now. Concerning." },
-  { headline: "Two weeks.", sub: "The streak has its own gravitational field at this point." },
+  { headline: "Two weeks.", sub: "The fire has its own gravitational field at this point." },
 ];
 
 const MONTH: LinePool = [
@@ -44,8 +44,8 @@ const YEAR: LinePool = [
 ];
 
 const DEFAULT: LinePool = [
-  { headline: "Workout complete.", sub: "Streak intact. I'd high-five you but, hands." },
-  { headline: "Day filed.", sub: "Moving the bookmark." },
+  { headline: "The streak lives.", sub: "Another day on the fire. I'd high-five you but, hands." },
+  { headline: "Still going.", sub: "Moving the bookmark. The fire stays lit." },
 ];
 
 export function pickCelebrationLine(streak: number): { headline: string; sub?: string } {

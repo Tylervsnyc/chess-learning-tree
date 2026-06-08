@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MiniRookieIcon } from './MiniRookieIcon';
+import RookieCampfire from './RookieCampfire';
 
 export interface StreakData {
   current: number;
@@ -126,8 +126,12 @@ export function StreakModal({ open, onClose, data, today, onShare }: StreakModal
 
         {/* Arc dome header */}
         <div className="relative bg-gradient-to-b from-chess-blue to-chess-blue-dark px-8 pt-9 pb-12 text-center text-white">
-          <div className="streak-modal-rookie mx-auto w-fit mb-1 drop-shadow-lg">
-            <MiniRookieIcon active gold={current >= 100} size={96} />
+          <div className="mx-auto w-fit mb-1">
+            <RookieCampfire
+              blockSize={16}
+              active={current > 0}
+              blaze={Math.max(0.4, Math.min(1, current / 60))}
+            />
           </div>
           <div className="text-7xl font-black tabular-nums leading-none">{current}</div>
           <div className="text-xs font-black uppercase tracking-[0.2em] mt-2 opacity-90">
