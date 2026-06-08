@@ -285,9 +285,11 @@ async function fetchAuthUsers(sb: SupabaseClient): Promise<{ created_at: string;
 }
 
 // New signups = accounts CREATED in the window (DB truth via auth.users).
-// The signup_completed event undercounts OAuth ~5x because the server OAuth
-// callback (app/auth/callback/route.ts) fires no analytics — so we count real
-// accounts and only fall back to the event if service creds are missing.
+// DB truth is the authority here: it can't be lost to client-side gaps. We
+// only fall back to the signup_completed event if service creds are missing —
+// and that fallback now undercounts OAuth (historically ~5x; CHE-366 fixed the
+// OAuth callback to fire analytics 2026-06-08, so new event data is reliable,
+// but older windows still under-report and DB truth sidesteps that entirely).
 async function getNewSignups(dateStr: string, days: number) {
   const sb = makeServiceClient();
   if (sb) {
