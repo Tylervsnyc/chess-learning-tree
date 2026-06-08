@@ -1882,10 +1882,15 @@ export default function PlayRookiePage() {
   // Auto-show signup prompt for guests after first game ends
   useEffect(() => {
     if (phase !== 'gameover' || user || showSignupPrompt) return;
-    // Let them see the result for 3 seconds before prompting
-    const timer = setTimeout(() => setShowSignupPrompt(true), 3000);
+    // Day 6 (IG_WIN_PROMPT): for a cold IG WIN, catch the dopamine peak — fire
+    // the one-tap prompt fast (~1.1s) instead of the flat 3s, which landed after
+    // the win had cooled. Win-only; a loss keeps the gentle 3s. Non-IG unchanged.
+    const igFastWin =
+      IG_SPRINT_FLAGS.IG_WIN_PROMPT && isIgCohort() && gameResult === 'You win!';
+    const delay = igFastWin ? 1100 : 3000;
+    const timer = setTimeout(() => setShowSignupPrompt(true), delay);
     return () => clearTimeout(timer);
-  }, [phase, user, showSignupPrompt]);
+  }, [phase, user, showSignupPrompt, gameResult]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -2524,7 +2529,11 @@ export default function PlayRookiePage() {
             dailyStreak && dailyStreak > 0
               ? `${dailyStreak}-day streak`
               : gameResult === 'You win!'
-                ? 'win'
+                // Day 6 (IG_WIN_PROMPT): make the IG win ask concrete — "Save your
+                // first win" beats the generic "Save your win". Non-IG unchanged.
+                ? IG_SPRINT_FLAGS.IG_WIN_PROMPT && isIgCohort()
+                  ? 'first win'
+                  : 'win'
                 : 'progress'
           }
           onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }}

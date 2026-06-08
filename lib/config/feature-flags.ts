@@ -76,4 +76,15 @@ export const IG_SPRINT_FLAGS = {
    * games play normally). Metric: new-session win-rate, prompt-shown.
    */
   IG_EASY_FIRST_WIN: true,
+  /**
+   * Day 6 (CHE-359) — win-prompt timing + copy. The one-tap signup prompt
+   * (`win_signup_capture`) waited a flat 3s after game-over for everyone, so for
+   * the IG cohort it landed AFTER the win dopamine had cooled. For a cold IG WIN
+   * this fires the prompt fast (~1.1s — at the celebration peak, not after it)
+   * and makes the ask more concrete ("Save your first win" instead of the generic
+   * "win"). Win-only: a loss keeps the original gentle 3s timing so we never rush
+   * a discouraging moment. Gated by `isIgCohort()`, so existing users + non-IG
+   * traffic see the unchanged 3s/generic behavior. Metric: prompt-shown → oauth_started.
+   */
+  IG_WIN_PROMPT: true,
 } as const;
