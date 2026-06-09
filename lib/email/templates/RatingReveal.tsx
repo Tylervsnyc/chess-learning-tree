@@ -53,7 +53,7 @@ export function RatingReveal({
 
       {/* The number */}
       <Section style={numberCard}>
-        <Text style={numberLabel}>YOUR ESTIMATED RATING</Text>
+        <Text style={numberLabel}>YOUR CHESS PATH ELO</Text>
         <Text style={numberValue}>{rating.toLocaleString()}</Text>
         <Text style={tierPill}>{r.tier}</Text>
       </Section>

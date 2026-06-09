@@ -18,6 +18,8 @@ import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
 import { StreakComplete } from '@/components/shared/StreakComplete'
+import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
+import { chessPathEloSeries, chessPathToday, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
 
 // ═══════════════════════════════════════════
 // ACTIVITY COMPLETE — unified post-activity screen
@@ -107,8 +109,27 @@ export function ActivityComplete({
   // ─── Daily workout ───
   const workoutActivity = toWorkoutActivity(source)
   const { status: workoutStatus } = useDailyWorkout(workoutActivity)
-  const { attitudeLevel } = useUser()
+  const { attitudeLevel, user } = useUser()
   const tone = toneForLevel(attitudeLevel ?? 3)
+
+  // ─── Chess Path ELO (CHE-370) ───
+  // Fetch a *fresh* (uncached) rating so the just-finished activity is included,
+  // then build the monotonic "only goes up" day-by-day series for the graph.
+  const [eloPoints, setEloPoints] = useState<ChessPathPoint[] | null>(null)
+  const showElo = FEATURE_FLAGS.CHESS_PATH_ELO && !!user && !didFail
+  useEffect(() => {
+    if (!showElo) return
+    let cancelled = false
+    fetch('/api/profile/elo?fresh=1')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data?.series) return
+        setEloPoints(chessPathEloSeries(data.series))
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [showElo])
+  const eloToday = eloPoints ? chessPathToday(eloPoints) : null
 
   // Mark the current activity as done too (it just completed)
   const workoutPlay = workoutStatus.play || workoutActivity === 'play'
@@ -323,6 +344,26 @@ export function ActivityComplete({
             </p>
           </div>
         </div>
+
+        {/* ─── Chess Path ELO — the rising "days of effort" line (CHE-370) ─── */}
+        {showElo && eloPoints && eloPoints.length >= 2 && eloToday && (
+          <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-black uppercase tracking-wide text-chess-blue">
+                Chess Path ELO
+              </span>
+              {eloToday.gainedToday > 0 && (
+                <span className="text-sm font-black text-emerald-500">+{eloToday.gainedToday} today</span>
+              )}
+            </div>
+            <div className="mt-1 text-3xl font-black tabular-nums leading-none text-chess-text">
+              {eloToday.current.toLocaleString()}
+            </div>
+            <div className="mt-3">
+              <ChessPathEloGraph points={eloPoints} />
+            </div>
+          </div>
+        )}
 
         {/* ─── Daily streak (folded in — replaces the separate modal) ─── */}
         {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (

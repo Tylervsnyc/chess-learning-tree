@@ -97,7 +97,7 @@ export function RookieRatingCard({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-black uppercase tracking-wide text-chess-blue">
-              Estimated ELO
+              Chess Path ELO
             </h2>
             <span className="inline-flex items-center rounded-full bg-chess-blue/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-chess-blue">
               Beta

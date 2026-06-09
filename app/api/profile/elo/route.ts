@@ -42,9 +42,9 @@ function scoreFromResult(result: string | null): number | null {
  * filters by user_id explicitly, because cookie-bound clients can't be read
  * inside an unstable_cache callback.
  */
-const computeEloForUser = (userId: string) =>
-  unstable_cache(
-    async () => {
+// The uncached compute — used directly for the completion-screen "fresh" read
+// so a just-finished lesson's attempts are reflected immediately.
+const runEloCompute = async (userId: string) => {
       const supabase = createServiceClient();
 
       const [puzzles, games] = await Promise.all([
@@ -91,12 +91,14 @@ const computeEloForUser = (userId: string) =>
       }
 
       return estimateElo(events);
-    },
-    ['profile-elo', userId],
-    { revalidate: 300 },
-  )();
+};
 
-export async function GET() {
+const computeEloForUser = (userId: string) =>
+  unstable_cache(() => runEloCompute(userId), ['profile-elo', userId], {
+    revalidate: 300,
+  })();
+
+export async function GET(request: Request) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -105,6 +107,9 @@ export async function GET() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const estimate = await computeEloForUser(user.id);
+  // `?fresh=1` bypasses the 5-min cache (completion screen needs the rating to
+  // include the lesson the user just finished).
+  const fresh = new URL(request.url).searchParams.get('fresh') === '1';
+  const estimate = fresh ? await runEloCompute(user.id) : await computeEloForUser(user.id);
   return NextResponse.json(estimate);
 }

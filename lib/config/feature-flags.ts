@@ -21,6 +21,12 @@ export const FEATURE_FLAGS = {
    * and the watcher stays inert. When false: legacy modal-on-navigation.
    */
   STREAK_ON_COMPLETE: true,
+  /**
+   * CHE-370 — show the "Chess Path ELO" rising day-by-day graph inside the
+   * activity completion popup (the legible progress-pride mechanic). Dark by
+   * default; flip on after verifying on real data.
+   */
+  CHESS_PATH_ELO: true,
 } as const;
 
 /**
