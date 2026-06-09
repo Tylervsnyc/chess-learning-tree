@@ -87,7 +87,21 @@ function main() {
     console.error('Re-word one side (run scripts/rookie-voice/dedupe.ts), or tag it frozen if intentional.');
   }
 
-  if (violations.length || dupes.length || nearDupes.length) {
+  // Outcome-gate guard: a game-over line that implies who won via `movedBy`
+  // must also gate the `events` (e.g. checkmate) — otherwise it mis-fires on a
+  // resignation/draw where the player moved last but did NOT win. (CHE-371.)
+  const outcomeLeaks = QUIP_POOL.filter((l) => {
+    const c = l.conditions;
+    if (!c?.beats?.some((b) => b === 'game_end' || b === 'post_game')) return false;
+    return !!c.movedBy && (!c.events || c.events.length === 0);
+  });
+  if (outcomeLeaks.length) {
+    console.error(`\n${outcomeLeaks.length} game-over line(s) infer outcome from movedBy but have no events gate (will mis-fire on resign/draw):`);
+    for (const l of outcomeLeaks) console.error(`  ${l.id}: "${l.text}"`);
+    console.error("Add an events gate (e.g. events: ['checkmate']) so it only fires on the right outcome.");
+  }
+
+  if (violations.length || dupes.length || nearDupes.length || outcomeLeaks.length) {
     console.error(`\nRookie voice lint FAILED — ${violations.length} line violation(s):\n`);
     for (const v of violations) console.error(`  [${v.problem}] ${v.id}: ${v.text}`);
     console.error('\nFix the line, or if it is intentional mood/sore-loser content, tag it tone:\'spicy\' or evalMoods:[\'losing\'/\'desperate\'].');
