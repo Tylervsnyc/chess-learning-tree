@@ -17,7 +17,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_2',
-    text: "First move is yours, {name}. No pressure. (There's pressure.)",
+    text: "First move is yours, {name}. No pressure. ...Okay, a little pressure.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',

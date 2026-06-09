@@ -22,6 +22,7 @@ const CHECKS: Array<{ name: string; re: RegExp }> = [
   { name: 'existential musing', re: /bigger board|the universe|atoms in the universe|pieces don'?t know|version of this game|neither of us exist|find (it|that) calming/i },
   { name: 'dash-cutoff', re: /\bI (felt|feel)\s*[—-]\s*(anyway|never)|[—-]\s*anyway\b/i },
   { name: 'decimal number', re: /\d+\.\d+/ },
+  { name: 'TTS-breaking char (parens/asterisk)', re: /[()*]/ },
   { name: 'emoji', re: /\p{Extended_Pictographic}/u },
 ];
 
