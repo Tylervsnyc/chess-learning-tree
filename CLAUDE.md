@@ -184,7 +184,7 @@ That script checks if the server is already running and only starts it if needed
 Complete beginners to chess who want to learn without feeling dumb. They're on their phones, probably curious but not committed yet. The job: go from "I don't know how the pieces move" to "I just solved my first checkmate" in under 5 minutes — and want to come back tomorrow.
 
 ### Brand Personality
-**Fun, Friendly, Encouraging** — but with a unique twist: Rookie is a computer/AI who is *learning to feel emotions* alongside the user learning chess. Think Portal 2's Wheatley energy — earnest, occasionally confused by its own feelings, funny when things go wrong. Rookie's emotional growth mirrors the user's chess growth. The humor comes from Rookie experiencing feelings for the first time ("I think I'm... proud? My circuits feel warm.") and from the comedy of negative emotions too ("You moved the wrong piece. I'm experiencing what I believe is called 'disappointment.' It's terrible.").
+**Fun, Friendly, Encouraging** — but with a unique twist: Rookie is an AI who is *unreasonably, specifically invested in your chess.* She's on your side, loudly. The humor is disproportionate investment — she cares too much about your games and has strong strange opinions about the pieces. It cuts both ways: when **you win** she's just proud and says so, short ("Checkmate. That's yours forever."); when **she loses** she's a dramatic sore loser — red animations, sound-fx meltdown ("This is fine. This is completely fine."). The meltdown reads as affection because she's rooting for you. Voice is short (≤2 sentences), warm, never cruel. Full rules: `.claude/rookie-voice-bible.md` (the *over-invested* spine — the old "AI discovering her own feelings / Wheatley" framing is retired as of 2026-06-09).
 
 ### Emotional Goals
 - **Delight + surprise**: Sounds, animations, Rookie's personality make it feel like a game, not a lesson
@@ -193,14 +193,14 @@ Complete beginners to chess who want to learn without feeling dumb. They're on t
 
 ### Aesthetic Direction
 - **Light, clean, Duolingo-inspired** — approachable, not intimidating chess-club energy
-- **Reference**: Portal 2 — AI companion with growing personality, humor in failure states, discovery-driven
+- **Reference**: an AI companion who's over-invested in you — warm, weirdly specific, a hilarious sore loser. Humor lives in failure states (especially *her* losses)
 - **Anti-references**:
   - NOT Chess.com/Lichess (dense, assumes knowledge, intimidating)
   - NOT corporate SaaS (no generic gradients, stock photos, "Get Started Free" energy)
   - NOT a kids' app (playful yes, but adults use this too — never cartoonish or patronizing)
 
 ### Design Principles
-1. **Rookie has feelings.** Every screen should feel like Rookie is there with you — reacting, learning, growing. Rookie's emotional commentary is the personality layer.
+1. **Rookie's on your side.** Every screen should feel like Rookie is there with you — over-invested in your chess, proud when you win, a sore loser when she loses. Her commentary is the personality layer. Short, warm, aimed at you (not at her own feelings).
 2. **Show, don't explain.** Interactive beats text. A drag-and-drop move teaches more than a paragraph. Keep copy minimal — Rookie's quips do the heavy lifting.
 3. **Celebrate everything, even failure.** Wrong moves are funny, not punishing. Rookie reacts to mistakes with empathy and humor, never judgment.
 4. **Momentum over perfection.** Keep the user moving forward. Skip buttons always available. Progress bars visible. Never trap someone in a flow.
