@@ -477,6 +477,10 @@ export default function PlayRookiePage() {
   const updateEval = useCallback((fenStr: string) => {
     if (!sfReadyRef.current || phase !== 'playing') return;
     const gen = gameGenRef.current;
+    // Per-move token: updateEval is called right after moveNumRef increments,
+    // so this captures the move this eval belongs to. If another move lands
+    // while the engine is thinking, the result is stale for UI/mood purposes.
+    const moveSeq = moveNumRef.current;
     stockfish.getFullEval(fenStr, 10).then((result) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
       if (!result) {
@@ -484,11 +488,10 @@ export default function PlayRookiePage() {
         return;
       }
       const { cp, mate, bestMove } = result;
-      evalCp.current = cp ?? 0;
-      evalMate.current = mate;
-      setEvalPct(evalToWhitePercent(cp, mate));
 
-      // Store eval for post-game analysis
+      // Always store for post-game analysis — the eval is correct for ITS
+      // position (engine requests resolve in order), and analyzeGameMoves
+      // needs one entry per move.
       positionEvalsRef.current.push({
         cp: cp,
         mate: mate,
@@ -496,6 +499,15 @@ export default function PlayRookiePage() {
         bestLine: [],
         depth: 10,
       });
+
+      // A newer move was played while this eval was in flight — don't drive
+      // the eval bar, mood, blunder speech, or Honcho logging off an outdated
+      // position. The newer move's own eval is already queued.
+      if (moveSeq !== moveNumRef.current) return;
+
+      evalCp.current = cp ?? 0;
+      evalMate.current = mate;
+      setEvalPct(evalToWhitePercent(cp, mate));
 
       // Drive Rookie's mood from eval via unified mood system
       const moodUpdate = moodSystem.onEval(cp, mate, moveNumRef.current);
@@ -1218,20 +1230,6 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // ROOKIE'S TURN
   // ════════════════════════════════
-  // Wait for Rookie to finish speaking before moving (Dr. Wolf style)
-  const waitForSpeech = useCallback((): Promise<void> => {
-    return new Promise((resolve) => {
-      const check = () => {
-        if (!isTalkingRef.current) {
-          resolve();
-        } else {
-          setTimeout(check, 100);
-        }
-      };
-      check();
-    });
-  }, [isTalkingRef]);
-
   const scheduleRookieMove = useCallback((currentFen: string) => {
     setRookieThinking(true);
     const gen = gameGenRef.current; // capture current generation
@@ -1407,19 +1405,22 @@ export default function PlayRookiePage() {
       log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `engine error → random fallback: ${pick.san}`, details: { engine: 'random-fallback', move: pick.san } });
       rookieTimerRef.current = setTimeout(() => applyRookieMove({ from: pick.from, to: pick.to, promotion: pick.promotion }), 300);
     }
-  }, [rookieLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, waitForSpeech, processNarrative, log, studiedSlugs]);
+  }, [rookieLevel, playerName, playerColor, speech, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log, studiedSlugs]);
   scheduleRookieMoveRef.current = scheduleRookieMove;
 
   // ════════════════════════════════
   // PLAYER'S MOVE
   // ════════════════════════════════
   const doPlayerMove = useCallback((from: Square, to: Square): boolean => {
-    const g = new Chess(fen);
-    const turn = g.turn();
+    // Read-only turn check on the memoized game (same FEN — no re-parse).
+    const turn = game.turn();
     const myTurn = (turn === 'w' && playerColor === 'white') || (turn === 'b' && playerColor === 'black');
     if (!myTurn) return false;
 
     try {
+      // Mutable copy — g.move() mutates, and the memoized game must stay
+      // pinned to the current `fen` state until setFen commits.
+      const g = new Chess(fen);
       const result = g.move({ from, to, promotion: 'q' });
       if (!result) return false;
 
@@ -1516,15 +1517,13 @@ export default function PlayRookiePage() {
     } catch {
       return false;
     }
-  }, [fen, playerColor, playerName, playerNameValue, gameResult, showSignupPrompt, showCoaching, isTalkingRef, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
+  }, [fen, game, playerColor, playerName, playerNameValue, gameResult, showSignupPrompt, showCoaching, isTalkingRef, speech, scheduleRookieMove, updateMood, recordMoveToSession, endSession, updateEval, processNarrative, log]);
 
   // ════════════════════════════════
-  // CLICK TO MOVE — shared hook
+  // CLICK TO MOVE — shared hook (reuses the memoized game — same FEN)
   // ════════════════════════════════
-  const clickGame = useMemo(() => { try { return new Chess(fen); } catch { return null; } }, [fen]);
-
   const onClickSquare = useClickToMove({
-    game: clickGame,
+    game,
     ownColor: playerColor === 'white' ? 'w' : 'b',
     selectedSquare: selected,
     setSelectedSquare: setSelected,
@@ -1660,22 +1659,24 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // SQUARE STYLES
   // ════════════════════════════════
+  // Review-only: last-move square color by classification. Isolated from the
+  // main style memo so async analysis updates (postGame.analysis) and review
+  // navigation can't recompute all 64 square styles during live play — in
+  // play/gameover this stays null, so sqStyles only depends on the position.
+  const reviewMoveColor = useMemo(() => {
+    if (phase !== 'review' || !coachReady || reviewMoveIndex < 0) return null;
+    const move = moveLogRef.current[reviewMoveIndex];
+    if (!move || !postGame.analysis) return null;
+    const cls = postGame.analysis.moves[reviewMoveIndex]?.classification;
+    if (cls === 'blunder' || cls === 'mistake') return 'rgba(239, 68, 68, 0.5)';
+    if (cls === 'inaccuracy') return 'rgba(234, 179, 8, 0.4)';
+    return null;
+  }, [phase, coachReady, reviewMoveIndex, postGame.analysis]);
+
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
     if (lastMv) {
-      // In review mode with analysis, color squares by classification
-      let moveColor = 'rgba(255, 170, 0, 0.4)'; // default orange
-      if (phase === 'review' && coachReady && reviewMoveIndex >= 0) {
-        const move = moveLogRef.current[reviewMoveIndex];
-        if (move && postGame.analysis) {
-          const moveEval = postGame.analysis.moves[reviewMoveIndex];
-          if (moveEval) {
-            const cls = moveEval.classification;
-            if (cls === 'blunder' || cls === 'mistake') moveColor = 'rgba(239, 68, 68, 0.5)';
-            else if (cls === 'inaccuracy') moveColor = 'rgba(234, 179, 8, 0.4)';
-          }
-        }
-      }
+      const moveColor = reviewMoveColor ?? 'rgba(255, 170, 0, 0.4)'; // default orange
       s[lastMv.from] = { background: moveColor };
       s[lastMv.to] = { background: moveColor };
     }
@@ -1695,9 +1696,9 @@ export default function PlayRookiePage() {
     }
     if (selected) {
       s[selected] = { ...s[selected], background: 'rgba(20, 85, 200, 0.5)' };
-      const g = new Chess(fen);
-      for (const m of g.moves({ square: selected, verbose: true })) {
-        const has = g.get(m.to as Square);
+      // Read-only legal-move query on the memoized game (same FEN — no re-parse)
+      for (const m of game.moves({ square: selected, verbose: true })) {
+        const has = game.get(m.to as Square);
         s[m.to] = {
           ...s[m.to],
           background: has
@@ -1707,7 +1708,7 @@ export default function PlayRookiePage() {
       }
     }
     return s;
-  }, [fen, game, lastMv, selected, phase, coachReady, reviewMoveIndex, postGame.analysis]);
+  }, [game, lastMv, selected, reviewMoveColor]);
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
@@ -1915,12 +1916,13 @@ export default function PlayRookiePage() {
       playerName: playerName || 'friend',
       playerColor,
     });
-    const g = new Chess(fen);
-    endSession(g, { result: 'loss', method: 'resignation' });
+    // endSession only reads the position (and with an explicit override it
+    // derives nothing from it) — reuse the memoized game, no re-parse.
+    endSession(game, { result: 'loss', method: 'resignation' });
     setPhase('gameover');
     setShowActivityComplete(true);
     setResignArmed(false);
-  }, [fen, endSession, speech, playerName, playerColor]);
+  }, [fen, game, endSession, speech, playerName, playerColor]);
 
   // Auto-show signup prompt for guests after first game ends
   useEffect(() => {

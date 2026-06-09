@@ -321,6 +321,11 @@ export async function playCaptureSound(): Promise<void> {
   return playBuffer(captureBuffer);
 }
 
+// Decoded SFX buffers, LRU by Map insertion order. Repeat plays of the same
+// effect were re-fetching + re-decoding every time; ~20 buffers ≈ a few MB.
+const SFX_CACHE_MAX = 20;
+const sfxCache = new Map<string, AudioBuffer>();
+
 /**
  * Play a sound effect file from /rookie-sfx/.
  * @param filename - file in /rookie-sfx/
@@ -331,13 +336,25 @@ export async function playSfx(filename: string, durationMs?: number): Promise<vo
   const ctx = await ensureAudioReady();
   if (!ctx) return;
   const url = `/rookie-sfx/${filename}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    console.warn('[playSfx] missing file', { filename, status: response.status });
-    return;
+  let audioBuffer = sfxCache.get(url);
+  if (audioBuffer) {
+    // Refresh LRU position.
+    sfxCache.delete(url);
+    sfxCache.set(url, audioBuffer);
+  } else {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn('[playSfx] missing file', { filename, status: response.status });
+      return;
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    sfxCache.set(url, audioBuffer);
+    if (sfxCache.size > SFX_CACHE_MAX) {
+      const oldest = sfxCache.keys().next().value;
+      if (oldest) sfxCache.delete(oldest);
+    }
   }
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
   return new Promise<void>((resolve) => {
     const source = ctx.createBufferSource();

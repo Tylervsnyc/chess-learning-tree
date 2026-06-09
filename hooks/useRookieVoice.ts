@@ -3,6 +3,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getSharedAudioContext } from '@/lib/sounds';
 
+// Decoded voice clips, LRU by Map insertion order, shared across hook
+// instances. Repeated lines were re-fetched + re-decoded on every play.
+const VOICE_CACHE_MAX = 20;
+const voiceBufferCache = new Map<string, AudioBuffer>();
+
 /**
  * Hook that manages Rookie's voice playback with real-time audio analysis.
  *
@@ -15,6 +20,12 @@ import { getSharedAudioContext } from '@/lib/sounds';
  * - isTalking: whether audio is currently playing
  * - stopAudio: cancel current playback
  */
+
+/** Window events fired when TTS playback starts/ends — the quip queue awaits
+ * these instead of polling isTalkingRef every 100ms. */
+export const SPEECH_START_EVENT = 'cp:speech-start';
+export const SPEECH_END_EVENT = 'cp:speech-end';
+
 export function useRookieVoice(audioOn: boolean) {
   const [isTalking, setIsTalking] = useState(false);
   const [intensity, setIntensity] = useState(0);
@@ -41,8 +52,16 @@ export function useRookieVoice(audioOn: boolean) {
     };
   }, []);
 
-  // Keep ref in sync for non-reactive reads (e.g. inside setTimeout)
-  useEffect(() => { isTalkingRef.current = isTalking; }, [isTalking]);
+  // Single transition point for talking state: updates the ref SYNCHRONOUSLY
+  // (the state mirror lags a render) and dispatches start/end events so the
+  // quip queue can await speech instead of polling.
+  const setTalking = useCallback((talking: boolean) => {
+    isTalkingRef.current = talking;
+    setIsTalking(talking);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(talking ? SPEECH_START_EVENT : SPEECH_END_EVENT));
+    }
+  }, []);
 
   // rAF amplitude loop
   useEffect(() => {
@@ -99,10 +118,10 @@ export function useRookieVoice(audioOn: boolean) {
       try { currentSourceRef.current.stop(); } catch {}
       currentSourceRef.current = null;
     }
-    setIsTalking(false);
-  }, []);
+    setTalking(false);
+  }, [setTalking]);
 
-  const playBuffer = useCallback(async (arrayBuffer: ArrayBuffer) => {
+  const playDecoded = useCallback(async (buf: AudioBuffer) => {
     const ctx = getAudioContext();
     const analyser = analyserRef.current!;
 
@@ -118,7 +137,6 @@ export function useRookieVoice(audioOn: boolean) {
       return;
     }
 
-    const buf = await ctx.decodeAudioData(arrayBuffer);
     const src = ctx.createBufferSource();
     src.buffer = buf;
     src.connect(analyser);
@@ -128,12 +146,18 @@ export function useRookieVoice(audioOn: boolean) {
       try { analyser.disconnect(); } catch {}
       currentSourceRef.current = null;
       lastSpokeAtRef.current = Date.now();
-      setIsTalking(false);
+      setTalking(false);
     };
     src.start();
     currentSourceRef.current = src;
-    setIsTalking(true);
-  }, [getAudioContext]);
+    setTalking(true);
+  }, [getAudioContext, setTalking]);
+
+  const playBuffer = useCallback(async (arrayBuffer: ArrayBuffer) => {
+    const ctx = getAudioContext();
+    const buf = await ctx.decodeAudioData(arrayBuffer);
+    return playDecoded(buf);
+  }, [getAudioContext, playDecoded]);
 
   const speakQuip = useCallback(async (text: string, voiceKey?: string) => {
     if (!audioOn) return;
@@ -152,9 +176,25 @@ export function useRookieVoice(audioOn: boolean) {
       const cacheKey = voiceKeyUsable ? voiceKey : textUsable ? text : null;
       if (cacheKey) {
         try {
-          const res = await fetch(`/rookie-voice/${manifest[cacheKey]}`);
+          const file = manifest[cacheKey];
+          // Decoded-buffer LRU: a repeated line plays from memory instead of
+          // re-fetching + re-decoding the clip (~200-400ms saved on 3G).
+          const cached = voiceBufferCache.get(file);
+          if (cached) {
+            voiceBufferCache.delete(file);
+            voiceBufferCache.set(file, cached);
+            await playDecoded(cached);
+            return;
+          }
+          const res = await fetch(`/rookie-voice/${file}`);
           if (res.ok) {
-            await playBuffer(await res.arrayBuffer());
+            const buf = await getSharedAudioContext()!.decodeAudioData(await res.arrayBuffer());
+            voiceBufferCache.set(file, buf);
+            if (voiceBufferCache.size > VOICE_CACHE_MAX) {
+              const oldest = voiceBufferCache.keys().next().value;
+              if (oldest) voiceBufferCache.delete(oldest);
+            }
+            await playDecoded(buf);
             return;
           }
         } catch {}
@@ -176,7 +216,7 @@ export function useRookieVoice(audioOn: boolean) {
         await playBuffer(bytes.buffer);
       }
     } catch {}
-  }, [audioOn, stopAudio, playBuffer]);
+  }, [audioOn, stopAudio, playBuffer, playDecoded]);
 
   /** Ref to timestamp (ms) when audio last finished playing */
   return { speakQuip, talkIntensity: intensity, isTalking, isTalkingRef, stopAudio, lastSpokeAtRef };
