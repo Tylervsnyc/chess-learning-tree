@@ -6,6 +6,7 @@ import { DailyWorkoutWatcher } from '@/components/shared/DailyWorkoutWatcher';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
+import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
@@ -74,13 +75,17 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <AbortErrorSuppressor />
           <PostHogProvider>
-            <NavHeader />
+            <SilentErrorBoundary label="NavHeader">
+              <NavHeader />
+            </SilentErrorBoundary>
             <main className="flex-1 min-h-0 flex flex-col max-w-3xl mx-auto w-full">
               <RookieErrorBoundary>
                 {children}
               </RookieErrorBoundary>
             </main>
-            <DailyWorkoutWatcher />
+            <SilentErrorBoundary label="DailyWorkoutWatcher">
+              <DailyWorkoutWatcher />
+            </SilentErrorBoundary>
           </PostHogProvider>
         </Suspense>
       </body>
