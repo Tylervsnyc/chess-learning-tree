@@ -1,16 +1,19 @@
 /**
  * lib/elo/chess-path-elo.ts
  *
- * "Chess Path ELO" — the user-facing, *encouraging* scoreboard.
+ * "Chess Path ELO" — display helpers for the rating estimate.
  *
- * It is derived from the honest rating estimate (lib/elo/estimate.ts) but with
- * one deliberate brand rule: **it only ever goes up or holds, never down.**
- * The honest estimate can dip on a bad day; Chess Path ELO is a running maximum,
- * so a day where you didn't gain simply holds flat. We never punish showing up.
+ * One source of truth (CHE-385): the rating IS the honest estimate from
+ * lib/elo/estimate.ts — the same number everywhere (popup headline = profile
+ * headline). Graphs plot the real curve, dips included; encouragement lives in
+ * the copy (a down day simply doesn't show a "+N" badge), never in the math.
+ * The old "running maximum, only ever goes up" transform is gone — it made the
+ * popup disagree with the profile and rendered flat lines on plateaus.
  *
- * It also fills *every calendar day* in the window (carry-forward on idle days)
- * so the completion-screen graph shows a continuous "days of effort" line with
- * one tick per day — and marks which days the user was actually active.
+ * What this module adds is shape, not value: it fills *every calendar day*
+ * (carry-forward on idle days) so the completion-screen graph shows a
+ * continuous "days of effort" line with one tick per day — and marks which
+ * days the user was actually active.
  *
  * Pure functions, no React/DOM — safe in a server route or a node script.
  */
@@ -24,7 +27,7 @@ export interface EloSeriesPoint {
 
 export interface ChessPathPoint {
   date: string; // YYYY-MM-DD (UTC)
-  elo: number; // monotonic, non-decreasing
+  elo: number; // honest end-of-day estimate (carried forward on idle days)
   active: boolean; // did the user do something this day?
 }
 
@@ -39,47 +42,45 @@ function todayUTC(): string {
 }
 
 /**
- * Build the Chess Path ELO line: a monotonic, every-calendar-day series ending
- * today. `windowDays` controls how many days of history to show (default 14).
+ * Build the Chess Path ELO line: the honest estimate as an every-calendar-day
+ * series ending today. By default it spans the user's whole journey (so the
+ * graph always shows the real climb arc, never an artificially flat window);
+ * pass `windowDays` to clip to the last N calendar days.
  */
 export function chessPathEloSeries(
   estimate: EloSeriesPoint[],
   opts: { windowDays?: number; today?: string } = {},
 ): ChessPathPoint[] {
-  const windowDays = opts.windowDays ?? 14;
   const today = opts.today ?? todayUTC();
 
   if (estimate.length === 0) return [];
 
-  // Running maximum per active day + the set of active days.
   const sorted = [...estimate].sort((a, b) => a.date.localeCompare(b.date));
-  const runningByDate = new Map<string, number>();
-  const activeDays = new Set<string>();
-  let running = sorted[0].elo;
-  for (const p of sorted) {
-    running = Math.max(running, p.elo);
-    runningByDate.set(p.date, running);
-    activeDays.add(p.date);
+  const eloByDate = new Map<string, number>();
+  for (const p of sorted) eloByDate.set(p.date, p.elo);
+
+  // Window: whole journey by default, or the last `windowDays` calendar days
+  // ending today (but never before the first day we have any data for).
+  const firstDay = sorted[0].date;
+  let start = firstDay;
+  if (opts.windowDays) {
+    const winStart = addDaysUTC(today, -(opts.windowDays - 1));
+    if (winStart > start) start = winStart;
   }
 
-  // Window: last `windowDays` calendar days ending today (but never before the
-  // first day we have any data for).
-  const firstDay = sorted[0].date;
-  let start = addDaysUTC(today, -(windowDays - 1));
-  if (start < firstDay) start = firstDay;
-
   // Walk every calendar day, carrying the last known value forward on idle days.
-  const points: ChessPathPoint[] = [];
-  let carried = runningByDate.get(firstDay) ?? sorted[0].elo;
-  // Seed `carried` with the running value as of the day *before* the window.
+  // Seed `carried` with the value as of the day *before* the window.
+  let carried = sorted[0].elo;
   for (const p of sorted) {
-    if (p.date < start) carried = runningByDate.get(p.date)!;
+    if (p.date < start) carried = p.elo;
     else break;
   }
 
+  const points: ChessPathPoint[] = [];
   for (let day = start; day <= today; day = addDaysUTC(day, 1)) {
-    if (runningByDate.has(day)) carried = runningByDate.get(day)!;
-    points.push({ date: day, elo: carried, active: activeDays.has(day) });
+    const dayElo = eloByDate.get(day);
+    if (dayElo !== undefined) carried = dayElo;
+    points.push({ date: day, elo: carried, active: dayElo !== undefined });
   }
 
   return points;
@@ -100,8 +101,9 @@ export interface SessionAttempt {
 const SESSION_DEFAULT_OPPONENT = 450;
 
 /**
- * Build a per-attempt, monotonic line for the current session — "you're getting
- * better right now." Index 0 is the baseline; each solved puzzle steps it up.
+ * Build a per-attempt line for the current session — "you're getting better
+ * right now." Index 0 is the baseline; each rated attempt moves the honest
+ * estimate (a miss can dip it — the "+N this session" badge hides when ≤ 0).
  */
 export function chessPathSessionSeries(attempts: SessionAttempt[]): ChessPathPoint[] {
   if (attempts.length === 0) return [];
@@ -113,11 +115,7 @@ export function chessPathSessionSeries(attempts: SessionAttempt[]): ChessPathPoi
     score: a.correct ? 1 : 0,
   }));
   const ratings = estimateEloPerEvent(events); // length = attempts + 1 (incl. baseline)
-  let run = ratings[0];
-  return ratings.map((r, i) => {
-    run = Math.max(run, r);
-    return { date: `s${i}`, elo: run, active: i > 0 };
-  });
+  return ratings.map((r, i) => ({ date: `s${i}`, elo: r, active: i > 0 }));
 }
 
 /** Friendly tier label for a rating (our own encouraging scale). */
@@ -147,15 +145,22 @@ export function projectChessPathElo(current: number, days = 5): number[] {
   return out;
 }
 
-/** Session headline: current rating + total gained across the session. */
+/**
+ * Session headline: current rating + net change across the session.
+ * `gained` is the REAL delta (can be negative) — display gates on > 0.
+ */
 export function chessPathSession(points: ChessPathPoint[]): { current: number; gained: number } {
   if (points.length === 0) return { current: 0, gained: 0 };
   const current = points[points.length - 1].elo;
   const start = points[0].elo;
-  return { current, gained: Math.max(0, current - start) };
+  return { current, gained: current - start };
 }
 
-/** Today's headline numbers for the completion popup. */
+/**
+ * Today's headline numbers for the completion popup.
+ * `gainedToday` is the REAL delta vs yesterday (can be negative) — display
+ * gates on > 0 so a down day just shows no badge.
+ */
 export function chessPathToday(points: ChessPathPoint[]): {
   current: number;
   previous: number;
@@ -164,5 +169,5 @@ export function chessPathToday(points: ChessPathPoint[]): {
   if (points.length === 0) return { current: 0, previous: 0, gainedToday: 0 };
   const current = points[points.length - 1].elo;
   const previous = points.length > 1 ? points[points.length - 2].elo : current;
-  return { current, previous, gainedToday: Math.max(0, current - previous) };
+  return { current, previous, gainedToday: current - previous };
 }

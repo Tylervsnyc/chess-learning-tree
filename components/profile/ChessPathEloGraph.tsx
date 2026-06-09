@@ -25,8 +25,9 @@ const backOut = (p: number) => {
  * breathing pulse. Dots are real round HTML elements positioned over the SVG —
  * SVG <circle>s distort into ellipses under preserveAspectRatio="none".
  *
- * Pass a windowed, monotonic series from chessPathEloSeries(). The last point
- * is "today"; the second-to-last is where the rise animates from.
+ * Pass a day-filled series from chessPathEloSeries() — the honest estimate,
+ * dips included. The last point is "today"; the second-to-last is where the
+ * final dot animates from.
  */
 export function ChessPathEloGraph({
   points,

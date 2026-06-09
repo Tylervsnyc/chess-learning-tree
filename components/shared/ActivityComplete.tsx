@@ -130,12 +130,12 @@ export function ActivityComplete({
   const { attitudeLevel, user, loading: userLoading } = useUser()
   const tone = toneForLevel(attitudeLevel ?? 3)
 
-  // ─── Chess Path ELO (CHE-370) ───
-  // Fetch a *fresh* (uncached) rating so the just-finished activity is included,
-  // then build the monotonic "only goes up" series for the graph. We show the
-  // user's WHOLE journey (windowDays large) so an established player still sees
-  // a climb instead of a flat recent plateau.
+  // ─── Chess Path ELO (CHE-370, CHE-385) ───
+  // One source of truth: the headline number is the API's `current` — the same
+  // value the profile shows — and the graph plots the honest day-by-day series
+  // across the whole journey (real movement, dips included, never a ratchet).
   const [eloPoints, setEloPoints] = useState<ChessPathPoint[] | null>(null)
+  const [eloCurrent, setEloCurrent] = useState<number | null>(null)
   const [eloLoaded, setEloLoaded] = useState(false)
   // Intent: as soon as we know we'll try the chart, commit to that layout (drop
   // Rookie, reserve space) so the popup doesn't flicker when data lands.
@@ -148,12 +148,13 @@ export function ActivityComplete({
       return
     }
     let cancelled = false
-    fetch('/api/profile/elo?fresh=1')
+    fetch('/api/profile/elo')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return
-        const pts = data?.series ? chessPathEloSeries(data.series, { windowDays: 5 }) : []
+        const pts = data?.series ? chessPathEloSeries(data.series) : []
         setEloPoints(pts.length >= 2 ? pts : [])
+        setEloCurrent(typeof data?.current === 'number' ? data.current : null)
         setEloLoaded(true)
       })
       .catch(() => { if (!cancelled) { setEloPoints([]); setEloLoaded(true) } })
@@ -547,7 +548,7 @@ export function ActivityComplete({
               )}
             </div>
             <div className="mt-0.5 text-3xl font-black tabular-nums leading-none text-chess-text">
-              {eloToday.current.toLocaleString()}
+              {(eloCurrent ?? eloToday.current).toLocaleString()}
             </div>
             <div className="mt-2">
               <ChessPathEloGraph points={eloPoints!} heightClass="h-24" />

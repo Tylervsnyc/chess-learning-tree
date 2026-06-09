@@ -26,7 +26,8 @@ function daysAgo(n: number): string {
 }
 
 // Typical-user journeys: [daysAgo, raw estimate]. The estimate wobbles (dips
-// happen!); the real pipeline turns it into the monotonic "only goes up" line.
+// happen!) and the graph plots it honestly (CHE-385) — same number and curve
+// the profile shows. Encouragement lives in copy: a down day hides the badge.
 const PERSONAS: { label: string; blurb: string; days: [number, number][] }[] = [
   {
     label: 'Day 3 — brand new',
@@ -68,7 +69,7 @@ export default function ChessPathEloTest() {
       date: daysAgo(n),
       elo,
     }));
-    const pts = chessPathEloSeries(series, { windowDays: 5 });
+    const pts = chessPathEloSeries(series); // whole journey — matches production
     return { points: pts, today: chessPathToday(pts) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [persona]);

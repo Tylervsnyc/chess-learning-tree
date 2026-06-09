@@ -1140,6 +1140,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 - **Computation:** `lib/elo/estimate.ts` — every rated event flows through `applyEloEvent` (shared by the batch replay and the incremental fold; never duplicate this step).
 - **Storage (CHE-375):** `profiles.estimated_elo` + `profiles.elo_updated_at`. Reads catch up incrementally — only events newer than the watermark are folded in; a NULL value triggers one full replay that seeds the column. Never recompute the full history on a hot path.
 - **API:** `GET /api/profile/elo` (and the dashboard route) return `{ current, events, series }` — `current` is always caught-up, `series` is a 5-min-cached full replay with today's point patched to `current`. The `?fresh=1` param is accepted but is a no-op.
+- **Display (CHE-385):** the honest estimate is THE Chess Path ELO everywhere — every surface's headline number is `current` (popup = profile, always identical) and graphs plot the real `series` (dips included; the popup day-fills it via `chessPathEloSeries`, whole journey). NEVER apply a monotonic/running-max/ratchet transform — it desyncs surfaces and renders flat lines. Encouragement lives in copy only: a down day hides the "+N today" badge (gate on `> 0`), never shows a red negative.
 - The stored value is cosmetic (not used for gating or matchmaking). Puzzles still have their own ELO ratings (400-2300) for difficulty selection.
 
 ---
