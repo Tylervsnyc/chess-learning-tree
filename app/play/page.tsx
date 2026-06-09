@@ -29,7 +29,7 @@ import { maia } from '@/lib/maia/maia-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
 import { useUser } from '@/hooks/useUser';
 import { selectByCategory } from '@/lib/speech/priority-queue';
-import { QUIP_POOL } from '@/lib/quips/quip-pool';
+import { getQuipPool } from '@/lib/quips/load-quip-pool';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
 import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
@@ -680,10 +680,11 @@ export default function PlayRookiePage() {
       setRookieLevel(newLevel);
       setWinsAtLevel(0);
       setLevelBarAnim(null);
-      const quip = speech.queueLevelUpQuip(newLevel);
-      if (quip) {
-        PlayEvents.quipShown('level_up', quip);
-      }
+      speech.queueLevelUpQuip(newLevel).then((quip) => {
+        if (quip) {
+          PlayEvents.quipShown('level_up', quip);
+        }
+      });
       try {
         localStorage.setItem('rookie-celebrated-level-' + newLevel, '1');
       } catch {}
@@ -728,10 +729,12 @@ export default function PlayRookiePage() {
         landingFiredRef.current = true;
         setupGreetingSpokenRef.current = true;
         PlayEvents.landingViewed('post_game', rookieLevel);
-        const line = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
-        if (line) {
-          PlayEvents.quipShown(pendingResult, line);
-        }
+        const linePromise = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
+        linePromise.then((line) => {
+          if (line) {
+            PlayEvents.quipShown(pendingResult, line);
+          }
+        });
         return;
       }
 
@@ -739,15 +742,16 @@ export default function PlayRookiePage() {
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
       const mem = rookieMemoryRef.current;
-      const line = speech.queueLandingQuip({
+      speech.queueLandingQuip({
         breadcrumb: consumeBreadcrumb(),
         gamesPlayed: mem.gamesPlayed,
         winsAtLevel,
         winsNeeded: WINS_TO_ADVANCE,
+      }).then((line) => {
+        if (line) {
+          PlayEvents.quipShown('landing', line);
+        }
       });
-      if (line) {
-        PlayEvents.quipShown('landing', line);
-      }
     }, 0);
 
     return () => { cancelled = true; clearTimeout(timer); };
@@ -2311,13 +2315,17 @@ export default function PlayRookiePage() {
                         onChange={(e) => setAttitudeLevel(Number(e.target.value))}
                         onPointerUp={(e) => {
                           const level = Number((e.target as HTMLInputElement).value);
-                          const pick = selectByCategory(QUIP_POOL, `attitude:${level}`);
-                          if (pick) speech.queueDirect(pick.text, 'high');
+                          getQuipPool().then((pool) => {
+                            const pick = selectByCategory(pool, `attitude:${level}`);
+                            if (pick) speech.queueDirect(pick.text, 'high');
+                          });
                         }}
                         onKeyUp={(e) => {
                           const level = Number((e.target as HTMLInputElement).value);
-                          const pick = selectByCategory(QUIP_POOL, `attitude:${level}`);
-                          if (pick) speech.queueDirect(pick.text, 'high');
+                          getQuipPool().then((pool) => {
+                            const pick = selectByCategory(pool, `attitude:${level}`);
+                            if (pick) speech.queueDirect(pick.text, 'high');
+                          });
                         }}
                         aria-label="Rookie's mood"
                         className="mt-2 w-full h-2 appearance-none bg-chess-disabled rounded-full accent-chess-green cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-chess-green [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-chess-green [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
@@ -2338,13 +2346,17 @@ export default function PlayRookiePage() {
                         onChange={(e) => setTalkativenessLevel(Number(e.target.value))}
                         onPointerUp={(e) => {
                           const level = Number((e.target as HTMLInputElement).value);
-                          const pick = selectByCategory(QUIP_POOL, `talk:${level}`);
-                          if (pick) speech.queueDirect(pick.text, 'high');
+                          getQuipPool().then((pool) => {
+                            const pick = selectByCategory(pool, `talk:${level}`);
+                            if (pick) speech.queueDirect(pick.text, 'high');
+                          });
                         }}
                         onKeyUp={(e) => {
                           const level = Number((e.target as HTMLInputElement).value);
-                          const pick = selectByCategory(QUIP_POOL, `talk:${level}`);
-                          if (pick) speech.queueDirect(pick.text, 'high');
+                          getQuipPool().then((pool) => {
+                            const pick = selectByCategory(pool, `talk:${level}`);
+                            if (pick) speech.queueDirect(pick.text, 'high');
+                          });
                         }}
                         aria-label="How often Rookie talks"
                         className="mt-2 w-full h-2 appearance-none bg-chess-disabled rounded-full accent-chess-green cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-chess-green [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-chess-green [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"

@@ -5,12 +5,9 @@ import RookieCampfire from './RookieCampfire';
 import { pickCelebrationLine } from '@/lib/daily-workout/celebration-lines';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { getStreak, type StreakData } from '@/lib/streak-client';
 
-type WorkoutResponse = {
-  current: number;
-  longest: number;
-  completedToday: boolean;
-};
+type WorkoutResponse = StreakData;
 
 type Phase =
   | { kind: 'loading' }
@@ -51,17 +48,11 @@ export function StreakComplete({ compact = false }: { compact?: boolean } = {}) 
     let cancelled = false;
     const tz = tzOf();
 
-    const fetchStreak = async (): Promise<WorkoutResponse | null> => {
-      try {
-        const res = await fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, {
-          cache: 'no-store',
-        });
-        if (!res.ok) return null;
-        return (await res.json()) as WorkoutResponse;
-      } catch {
-        return null;
-      }
-    };
+    // fresh: this surface exists to catch the completion write the moment it
+    // lands — a cached read would defeat the polling. The fresh result also
+    // updates the shared cache, so the badge/watcher see the new streak free.
+    const fetchStreak = async (): Promise<WorkoutResponse | null> =>
+      getStreak({ fresh: true });
 
     const claim = async (streak: number): Promise<boolean> => {
       try {

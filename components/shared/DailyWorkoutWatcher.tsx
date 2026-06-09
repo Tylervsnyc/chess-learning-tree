@@ -6,12 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { DailyWorkoutCelebration } from './DailyWorkoutCelebration';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-
-type WorkoutResponse = {
-  current: number;
-  longest: number;
-  completedToday: boolean;
-};
+import { getStreak, getTz } from '@/lib/streak-client';
 
 /**
  * Fires the once-per-day "you showed up today" streak celebration.
@@ -59,20 +54,19 @@ function DailyWorkoutWatcherInner() {
   const userRef = useRef(user);
   userRef.current = user;
 
-  const tz = typeof Intl !== 'undefined'
-    ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-    : 'UTC';
+  const tz = getTz();
 
-  const check = useCallback(async () => {
+  // `fresh` skips the shared streak cache — used when a completion write just
+  // landed (cp:activity-recorded), where a cached read would still say
+  // completedToday=false. Route-change checks read through the cache; the
+  // completion screens fresh-read on mount and update it, so the nav after a
+  // finish still sees the flipped day without another 4-table scan.
+  const check = useCallback(async (fresh = false) => {
     if (!userRef.current || checkingRef.current || firedThisSessionRef.current) return;
     checkingRef.current = true;
     try {
-      const streakRes = await fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, {
-        cache: 'no-store',
-      });
-      if (!streakRes.ok) return;
-      const data = (await streakRes.json()) as WorkoutResponse;
-      if (!data.completedToday) return;
+      const data = await getStreak(fresh ? { fresh: true } : undefined);
+      if (!data?.completedToday) return;
 
       const claimRes = await fetch(`/api/workout/celebrate?tz=${encodeURIComponent(tz)}`, {
         method: 'POST',
@@ -118,7 +112,7 @@ function DailyWorkoutWatcherInner() {
   // trigger can't double-fire.
   useEffect(() => {
     if (!user) return;
-    const onActivity = () => check();
+    const onActivity = () => check(true);
     window.addEventListener('cp:activity-recorded', onActivity);
     return () => window.removeEventListener('cp:activity-recorded', onActivity);
   }, [user, check]);

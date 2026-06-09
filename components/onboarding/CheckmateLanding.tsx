@@ -116,8 +116,11 @@ export function CheckmateLanding({
     playCorrectSound(0);
     vibrateOnCorrect();
     if (!wonFiredRef.current) { wonFiredRef.current = true; OnboardingEvents.checkmateWon(); }
-    const q = selectQuipByCategory('play:win');
-    setQuip(q?.text || 'Checkmate. You just won your first game of chess.');
+    // Pool loads on demand (CHE-373) — quip lands a beat later, fallback if it fails.
+    const fallback = 'Checkmate. You just won your first game of chess.';
+    selectQuipByCategory('play:win')
+      .then((q) => setQuip(q?.text || fallback))
+      .catch(() => setQuip(fallback));
     setShowCheckmateHighlights(true);
     setTimeout(() => setShowSignup(true), 1300);
   }, []);

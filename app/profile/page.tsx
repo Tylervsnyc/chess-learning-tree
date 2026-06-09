@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
+import { getStreak } from '@/lib/streak-client';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
@@ -383,11 +384,8 @@ export default function ProfilePage() {
   useEffect(() => {
     let cancelled = false;
     setDataLoading(true);
-    const tz = getTz();
     Promise.all([
-      fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
+      getStreak().catch(() => null),
       fetch('/api/profile/stats', { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null),

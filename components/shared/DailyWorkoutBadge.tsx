@@ -4,15 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
+import { getStreak, type StreakData } from '@/lib/streak-client';
 import { MiniRookieIcon } from './MiniRookieIcon';
 import { StreakModal } from './StreakModal';
 
-type WorkoutResponse = {
-  current: number;
-  longest: number;
-  completedToday: boolean;
-  activeDays: string[];
-};
+type WorkoutResponse = StreakData;
 
 const cacheKey = (userId: string) => `cp:workout-streak:${userId}`;
 
@@ -34,14 +30,11 @@ export function DailyWorkoutBadge() {
   // (the first read is a baseline, not an extension — don't fire on mount).
   const lastStreakRef = useRef<number | null>(null);
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback((fresh = false) => {
     if (!user) return;
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!d) return;
-        const next = d as WorkoutResponse;
+    getStreak(fresh ? { fresh: true } : undefined)
+      .then((next) => {
+        if (!next) return;
         const prev = lastStreakRef.current;
         if (prev !== null && next.current > prev) {
           WorkoutEvents.streakExtended(next.current, next.longest);
@@ -70,7 +63,8 @@ export function DailyWorkoutBadge() {
     const onFocus = () => refetch();
     // A finished /play game resets on the same route (no nav), so revalidate on
     // the activity signal too — otherwise the badge count lags a navigation.
-    const onActivity = () => refetch();
+    // Fresh: the completion write just landed, a cached read would miss it.
+    const onActivity = () => refetch(true);
     window.addEventListener('focus', onFocus);
     window.addEventListener('cp:activity-recorded', onActivity);
     return () => {

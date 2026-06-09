@@ -7,7 +7,7 @@ import { playCelebrationSound } from '@/lib/sounds'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
 import { selectByCategory } from '@/lib/speech/priority-queue'
 import { safeRenderText } from '@/lib/speech/sanitize'
-import { QUIP_POOL } from '@/lib/quips/quip-pool'
+import { getQuipPool } from '@/lib/quips/load-quip-pool'
 import { useShareOG, type ShareOGConfig } from '@/hooks/useShareOG'
 import { ActionButton } from '@/components/ui/ActionButton'
 import { InteractiveRook, type InteractiveModeId } from '@/components/ui/InteractiveRook'
@@ -15,6 +15,7 @@ import { BreathingRook } from '@/components/ui/BreathingRook'
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips'
 import { ShuffleBag } from '@/lib/shuffle-bag'
 import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
+import { getStreak } from '@/lib/streak-client'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
 import { StreakComplete } from '@/components/shared/StreakComplete'
@@ -210,13 +211,22 @@ export function ActivityComplete({
   const workoutLearn = workoutStatus.tactics || workoutActivity === 'tactics'
 
   // ─── Transition line ───
-  const transitionLine = useMemo(() => {
+  // Pool loads on demand (CHE-373) — the line fills in once the chunk arrives.
+  const [transitionLine, setTransitionLine] = useState<string | null>(null)
+  useEffect(() => {
     const category = source === 'path' || source === 'opening'
       ? 'transition:learn'
       : source === 'play'
         ? 'transition:play'
         : 'transition:daily'
-    return selectByCategory(QUIP_POOL, category, undefined, playerName ?? undefined, { tone })?.text ?? null
+    let cancelled = false
+    getQuipPool()
+      .then((pool) => {
+        if (cancelled) return
+        setTransitionLine(selectByCategory(pool, category, undefined, playerName ?? undefined, { tone })?.text ?? null)
+      })
+      .catch(() => { if (!cancelled) setTransitionLine(null) })
+    return () => { cancelled = true }
   }, [source, playerName, tone])
 
   // ─── Share hook ───
@@ -270,12 +280,10 @@ export function ActivityComplete({
     const tz = typeof Intl !== 'undefined'
       ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
       : 'UTC'
-    const fetchStreak = async () => {
-      try {
-        const r = await fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
-        return r.ok ? await r.json() : null
-      } catch { return null }
-    }
+    // fresh: this poll exists to catch the just-landed completion write — a
+    // cached read would miss it. The result updates the shared streak cache,
+    // so the badge/watcher see the new streak without their own scan.
+    const fetchStreak = async () => getStreak({ fresh: true })
     const claim = async (streak: number) => {
       try {
         const r = await fetch(`/api/workout/celebrate?tz=${encodeURIComponent(tz)}`, {

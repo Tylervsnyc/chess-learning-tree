@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { selectByCategory } from '@/lib/speech/priority-queue';
-import { QUIP_POOL } from '@/lib/quips/quip-pool';
+import { getQuipPool } from '@/lib/quips/load-quip-pool';
 import { toneForLevel } from '@/lib/quips/tone';
 import { useUser } from '@/hooks/useUser';
+import { getStreak, invalidateStreak } from '@/lib/streak-client';
 
 export type WorkoutActivity = 'play' | 'tactics';
 
@@ -27,43 +28,29 @@ function getToday(): string {
 // ─── Server-derived pillar cache ──────────────────────────────────────────
 // The authoritative source is /api/workout/streak (it reads game_sessions,
 // lesson_progress, puzzle_attempts, and opening_progress — Rookie's Run was
-// dropped from the loop 2026-06-01). Multiple consumers mount this hook
-// per page (ActivityComplete, PlayPageRookie), so dedupe with a tiny cache.
+// dropped from the loop 2026-06-01). Reads go through the shared
+// streak-client cache so the many consumers per page share one request.
+//
+// NOTE: the streak route does not currently return `todayPillars`, so this
+// resolves to null and callers fall back to local progress — same behavior
+// as before the shared cache, minus the wasted network round-trip.
 
 type Pillars = { play: boolean; tactics: boolean };
-let pillarCache: { date: string; pillars: Pillars; fetchedAt: number } | null = null;
-let inFlight: Promise<Pillars | null> | null = null;
-const CACHE_TTL_MS = 15_000;
 
 async function fetchPillars(): Promise<Pillars | null> {
-  const now = Date.now();
-  const today = getToday();
-  if (pillarCache && pillarCache.date === today && now - pillarCache.fetchedAt < CACHE_TTL_MS) {
-    return pillarCache.pillars;
-  }
-  if (inFlight) return inFlight;
-  const tz = typeof Intl !== 'undefined'
-    ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-    : 'UTC';
-  inFlight = fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
-    .then((r) => (r.ok ? r.json() : null))
-    .then((data: { todayPillars?: { play: boolean; path: boolean } } | null) => {
-      if (!data?.todayPillars) return null;
-      const pillars: Pillars = {
-        play: !!data.todayPillars.play,
-        tactics: !!data.todayPillars.path,
-      };
-      pillarCache = { date: today, pillars, fetchedAt: Date.now() };
-      return pillars;
-    })
-    .catch(() => null)
-    .finally(() => { inFlight = null; });
-  return inFlight;
+  const data = (await getStreak()) as
+    | ({ todayPillars?: { play: boolean; path: boolean } } & Record<string, unknown>)
+    | null;
+  if (!data?.todayPillars) return null;
+  return {
+    play: !!data.todayPillars.play,
+    tactics: !!data.todayPillars.path,
+  };
 }
 
 /** Force a re-fetch on next read — call after completing an activity. */
 export function invalidateWorkoutPillars() {
-  pillarCache = null;
+  invalidateStreak();
 }
 
 export function useDailyWorkout(justCompleted?: WorkoutActivity) {
@@ -111,14 +98,23 @@ export function useDailyWorkout(justCompleted?: WorkoutActivity) {
     return { play, tactics, allDone, completedCount, nextActivity };
   }, [serverPillars, ritualPlayDate, ritualTacticsDate, justCompleted]);
 
-  const suggestionLine = useMemo(() => {
-    if (status.allDone) {
-      return selectByCategory(QUIP_POOL, 'ritual:all_done', undefined, undefined, { tone })?.text ?? null;
-    }
-    if (status.nextActivity) {
-      return selectByCategory(QUIP_POOL, `ritual:${status.nextActivity}_next`, undefined, undefined, { tone })?.text ?? null;
-    }
-    return null;
+  // Pool loads on demand (CHE-373) — the line fills in once the chunk arrives.
+  const [suggestionLine, setSuggestionLine] = useState<string | null>(null);
+  useEffect(() => {
+    const category = status.allDone
+      ? 'ritual:all_done'
+      : status.nextActivity
+        ? `ritual:${status.nextActivity}_next`
+        : null;
+    if (!category) { setSuggestionLine(null); return; }
+    let cancelled = false;
+    getQuipPool()
+      .then((pool) => {
+        if (cancelled) return;
+        setSuggestionLine(selectByCategory(pool, category, undefined, undefined, { tone })?.text ?? null);
+      })
+      .catch(() => { if (!cancelled) setSuggestionLine(null); });
+    return () => { cancelled = true; };
   }, [status.allDone, status.nextActivity, tone]);
 
   return { status, suggestionLine, recordRitualPlay };

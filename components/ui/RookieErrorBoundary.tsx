@@ -3,13 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { BreathingRook } from '@/components/ui/BreathingRook';
-import { QUIP_POOL } from '@/lib/quips/quip-pool';
-import { selectByCategory } from '@/lib/speech/priority-queue';
+import { getQuipPool } from '@/lib/quips/load-quip-pool';
 
-function getRandomMessage() {
-  const result = selectByCategory(QUIP_POOL, 'error');
-  return result?.text ?? "Something went wrong. Try refreshing?";
-}
+// This component renders in the root layout, so it must not statically import
+// the quip pool (~282KB of speech data). The pool is loaded only when an
+// error is actually caught; until then (or if loading fails) we show this.
+const FALLBACK_MESSAGE = "Something went wrong. Try refreshing?";
 
 interface Props {
   children: React.ReactNode;
@@ -27,11 +26,20 @@ export class RookieErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(): Partial<State> {
-    return { hasError: true, message: getRandomMessage() };
+    return { hasError: true, message: FALLBACK_MESSAGE };
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error('[RookieErrorBoundary]', error, info.componentStack);
+    // Swap in a Rookie line once the pool chunk arrives; keep the fallback if it fails.
+    Promise.all([getQuipPool(), import('@/lib/speech/priority-queue')])
+      .then(([pool, { selectByCategory }]) => {
+        const text = selectByCategory(pool, 'error')?.text;
+        if (text) {
+          this.setState((s) => (s.hasError ? { hasError: true, message: text } : s));
+        }
+      })
+      .catch(() => { /* keep FALLBACK_MESSAGE */ });
   }
 
   handleReset = () => {
