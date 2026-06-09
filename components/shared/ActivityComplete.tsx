@@ -19,9 +19,10 @@ import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
 import { StreakComplete } from '@/components/shared/StreakComplete'
 import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration'
+import { FirstRatingReveal } from '@/components/shared/FirstRatingReveal'
 import { shareWorkoutStreak } from '@/lib/daily-workout/share'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
-import { chessPathEloSeries, chessPathToday, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
+import { chessPathEloSeries, chessPathToday, chessPathSessionSeries, chessPathSession, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
 
 // ═══════════════════════════════════════════
 // ACTIVITY COMPLETE — unified post-activity screen
@@ -57,6 +58,10 @@ export interface ActivityCompleteProps {
   debugEloPoints?: ChessPathPoint[]
   /** Test-only: force the streak pre-step to celebrate this streak number. */
   debugStreak?: number
+  /** Test-only: render the logged-out (anon) signup-teaser layout. */
+  debugAnon?: boolean
+  /** Test-only: force the first-rating ceremony for new users. */
+  debugFirstReveal?: boolean
 }
 
 // Map source → workout activity. 'daily' (Rookie's Run) is no longer a
@@ -94,6 +99,8 @@ export function ActivityComplete({
   onRetry,
   debugEloPoints,
   debugStreak,
+  debugAnon,
+  debugFirstReveal,
 }: ActivityCompleteProps) {
   const [entered, setEntered] = useState(false)
   const [tapQuip, setTapQuip] = useState<string | null>(null)
@@ -118,7 +125,7 @@ export function ActivityComplete({
   // ─── Daily workout ───
   const workoutActivity = toWorkoutActivity(source)
   const { status: workoutStatus } = useDailyWorkout(workoutActivity)
-  const { attitudeLevel, user } = useUser()
+  const { attitudeLevel, user, loading: userLoading } = useUser()
   const tone = toneForLevel(attitudeLevel ?? 3)
 
   // ─── Chess Path ELO (CHE-370) ───
@@ -130,7 +137,7 @@ export function ActivityComplete({
   const [eloLoaded, setEloLoaded] = useState(false)
   // Intent: as soon as we know we'll try the chart, commit to that layout (drop
   // Rookie, reserve space) so the popup doesn't flicker when data lands.
-  const chartIntent = !didFail && (!!debugEloPoints || (FEATURE_FLAGS.CHESS_PATH_ELO && !!user))
+  const chartIntent = !didFail && !debugAnon && (!!debugEloPoints || (FEATURE_FLAGS.CHESS_PATH_ELO && !!user))
   useEffect(() => {
     if (!chartIntent) return
     if (debugEloPoints) {
@@ -153,9 +160,49 @@ export function ActivityComplete({
   const hasChart = chartIntent && !!eloPoints && eloPoints.length >= 2
   const eloToday = hasChart ? chessPathToday(eloPoints!) : null
   const chartLoading = chartIntent && !eloLoaded
-  // Rookie shows unless we're committing to (or loading) the chart. If the chart
-  // turns out empty (no history), we fall back to Rookie.
-  const showRookie = !chartIntent || (eloLoaded && !hasChart)
+
+  // ─── Logged-out signup teaser (CHE-370): within-session climb ───
+  // A first-session visitor only has "today", so we plot the per-puzzle climb
+  // from their local attempts and pitch "Sign up to save your rating."
+  const isAnon = !userLoading && !user
+  const [sessionPoints, setSessionPoints] = useState<ChessPathPoint[] | null>(null)
+  const [revealedBefore, setRevealedBefore] = useState(true) // assume seen until localStorage says otherwise (avoid ceremony flash)
+  useEffect(() => {
+    if (didFail) return
+    if ((debugAnon || debugFirstReveal) && debugEloPoints) {
+      setSessionPoints(debugEloPoints)
+      setRevealedBefore(!debugFirstReveal)
+      return
+    }
+    if (!FEATURE_FLAGS.CHESS_PATH_ELO || !isAnon) return
+    try {
+      setRevealedBefore(localStorage.getItem('cp_elo_revealed') === '1')
+      const raw = localStorage.getItem('chess-learning-progress')
+      if (!raw) return
+      const attempts = (JSON.parse(raw)?.puzzleAttempts ?? []) as Array<{ rating?: number; correct: boolean; timestamp: number }>
+      const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0)
+      const todays = attempts.filter((a) => a.timestamp >= startOfToday.getTime())
+      const pts = chessPathSessionSeries(todays)
+      if (pts.length >= 2) setSessionPoints(pts)
+    } catch { /* ignore */ }
+  }, [isAnon, didFail, debugAnon, debugFirstReveal, debugEloPoints])
+  const anonRating = sessionPoints && sessionPoints.length >= 2 ? chessPathSession(sessionPoints).current : null
+  // First time a new (logged-out) user earns a rating → the ceremony.
+  const firstReveal = !didFail && (!!debugFirstReveal || (isAnon && anonRating != null && !revealedBefore))
+  // Returning logged-out user → the quieter within-session climb.
+  const anonChart = !firstReveal && !didFail && !!sessionPoints && sessionPoints.length >= 2 && (isAnon || !!debugAnon)
+  const sessionNow = anonChart ? chessPathSession(sessionPoints!) : null
+  // Remember we showed the ceremony so next time they get the within-session view.
+  useEffect(() => {
+    if (firstReveal && !debugFirstReveal) {
+      try { localStorage.setItem('cp_elo_revealed', '1') } catch { /* ignore */ }
+    }
+  }, [firstReveal, debugFirstReveal])
+  const signupHref = `/auth/signup?redirect=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/')}`
+
+  // Rookie shows unless we're committing to (or loading) a chart. If the
+  // logged-in chart turns out empty, we fall back to Rookie.
+  const showRookie = (!chartIntent && !anonChart) || (chartIntent && eloLoaded && !hasChart && !anonChart)
 
   // Mark the current activity as done too (it just completed)
   const workoutPlay = workoutStatus.play || workoutActivity === 'play'
@@ -302,7 +349,13 @@ export function ActivityComplete({
       onClose={() => setStreakPhase('main')}
       onShare={() => shareWorkoutStreak(streakNum)}
     />
-    {streakPhase === 'main' && (
+    {/* First-rating ceremony for brand-new logged-out users */}
+    {streakPhase === 'main' && firstReveal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-5" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <FirstRatingReveal rating={anonRating ?? 0} signupHref={signupHref} onKeepPlaying={handleContinue} />
+      </div>
+    )}
+    {streakPhase === 'main' && !firstReveal && (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-5"
       style={{
@@ -374,7 +427,7 @@ export function ActivityComplete({
           style={{ backgroundColor: '#f0f4f8' }}
         >
           {/* Little Rookie, inline — only in the chart-hero layout (no big rook) */}
-          {chartIntent && (
+          {(chartIntent || anonChart) && (
             <span className="shrink-0 -my-1">
               <BreathingRook size="xs" mood="happy" animate />
             </span>
@@ -477,6 +530,26 @@ export function ActivityComplete({
           </div>
         )}
 
+        {/* ─── Chess Path ELO — within-session climb for logged-out users ─── */}
+        {anonChart && sessionNow && (
+          <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-black uppercase tracking-wide text-chess-blue">
+                Chess Path ELO
+              </span>
+              {sessionNow.gained > 0 && (
+                <span className="text-sm font-black text-emerald-500">+{sessionNow.gained} this session</span>
+              )}
+            </div>
+            <div className="mt-0.5 text-3xl font-black tabular-nums leading-none text-chess-text">
+              {sessionNow.current.toLocaleString()}
+            </div>
+            <div className="mt-2">
+              <ChessPathEloGraph points={sessionPoints!} heightClass="h-24" todayLabel="Now" />
+            </div>
+          </div>
+        )}
+
         {/* ─── Daily streak (folded in — replaces the separate modal). Compact
             (one-line chip) when the ELO chart is the hero — still claims. ─── */}
         {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (
@@ -487,6 +560,22 @@ export function ActivityComplete({
 
         {/* ─── Buttons ─── */}
         <div className="w-full flex flex-col gap-2.5">
+          {anonChart ? (
+            <>
+              {/* Soft signup capture — never trap them, but pitch saving the rating */}
+              <Link
+                href={`/auth/signup?redirect=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/')}`}
+                className="w-full rounded-2xl py-4 text-center text-base font-black text-white transition-all active:translate-y-0.5"
+                style={{ background: 'linear-gradient(135deg,#FFD43B 0%,#FFAA00 100%)', boxShadow: '0 4px 0 #B8860B' }}
+              >
+                Save your rating — Sign up
+              </Link>
+              <button onClick={handleContinue} className="w-full py-2 text-sm font-bold text-chess-text-muted">
+                Keep playing
+              </button>
+            </>
+          ) : (
+          <>
           {didFail && onRetry ? (
             <>
               <ActionButton color="green" size="lg" onClick={onRetry} className="w-full">
@@ -560,6 +649,8 @@ export function ActivityComplete({
               </div>
             )
           })()}
+          </>
+          )}
         </div>
       </div>
 

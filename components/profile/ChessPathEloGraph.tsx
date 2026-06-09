@@ -32,11 +32,14 @@ export function ChessPathEloGraph({
   points,
   animateToday = true,
   heightClass = 'h-32',
+  todayLabel = 'Today',
 }: {
   points: ChessPathPoint[];
   animateToday?: boolean;
   /** Tailwind height for the chart area (popup uses a shorter one). */
   heightClass?: string;
+  /** Label under the final dot ("Today" for the day line, "Now" for a session). */
+  todayLabel?: string;
 }) {
   const [progress, setProgress] = useState(animateToday ? 0 : 1);
   const rafRef = useRef<number | null>(null);
@@ -152,7 +155,7 @@ export function ChessPathEloGraph({
         className="pointer-events-none absolute text-[9px] font-black uppercase tracking-wide text-chess-blue"
         style={{ left: `${(todayCoord.x / W) * 100}%`, bottom: '-2px', transform: 'translateX(-60%)' }}
       >
-        Today
+        {todayLabel}
       </div>
     </div>
   );

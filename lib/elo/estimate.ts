@@ -113,3 +113,27 @@ export function estimateElo(events: EloEvent[]): EloEstimate {
 
   return { current: Math.round(rating), events: sorted.length, series };
 }
+
+/**
+ * Replay events and return the rating AFTER each event (same model as
+ * estimateElo, but per-event instead of per-day). Index 0 is the baseline
+ * start. Used for the within-session "you're getting better right now" line
+ * shown to logged-out users.
+ */
+export function estimateEloPerEvent(events: EloEvent[]): number[] {
+  const sorted = [...events]
+    .filter((e) => Number.isFinite(e.opponent) && e.opponent > 0 && Number.isFinite(e.score))
+    .sort((a, b) => a.at.localeCompare(b.at));
+
+  let rating = ELO_BASELINE;
+  const out: number[] = [ELO_BASELINE];
+  sorted.forEach((e, i) => {
+    const base = e.kind === 'game' ? K_GAME : K_PUZZLE;
+    const provisional =
+      i < PROVISIONAL_EVENTS ? 1 + (PROVISIONAL_MULT - 1) * (1 - i / PROVISIONAL_EVENTS) : 1;
+    const k = base * provisional;
+    rating = clamp(rating + k * (e.score - expectedScore(rating, e.opponent)));
+    out.push(Math.round(rating));
+  });
+  return out;
+}
