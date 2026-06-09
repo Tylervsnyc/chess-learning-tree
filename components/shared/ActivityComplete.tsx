@@ -50,6 +50,9 @@ export interface ActivityCompleteProps {
   onContinue: () => void
   onDismiss?: () => void
   onRetry?: () => void
+
+  /** Test-only: inject a Chess Path ELO series instead of fetching the live one. */
+  debugEloPoints?: ChessPathPoint[]
 }
 
 // Map source → workout activity. 'daily' (Rookie's Run) is no longer a
@@ -85,6 +88,7 @@ export function ActivityComplete({
   onContinue,
   onDismiss,
   onRetry,
+  debugEloPoints,
 }: ActivityCompleteProps) {
   const [entered, setEntered] = useState(false)
   const [tapQuip, setTapQuip] = useState<string | null>(null)
@@ -121,21 +125,26 @@ export function ActivityComplete({
   const [eloLoaded, setEloLoaded] = useState(false)
   // Intent: as soon as we know we'll try the chart, commit to that layout (drop
   // Rookie, reserve space) so the popup doesn't flicker when data lands.
-  const chartIntent = FEATURE_FLAGS.CHESS_PATH_ELO && !!user && !didFail
+  const chartIntent = !didFail && (!!debugEloPoints || (FEATURE_FLAGS.CHESS_PATH_ELO && !!user))
   useEffect(() => {
     if (!chartIntent) return
+    if (debugEloPoints) {
+      setEloPoints(debugEloPoints.length >= 2 ? debugEloPoints : [])
+      setEloLoaded(true)
+      return
+    }
     let cancelled = false
     fetch('/api/profile/elo?fresh=1')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled) return
-        const pts = data?.series ? chessPathEloSeries(data.series, { windowDays: 400 }) : []
+        const pts = data?.series ? chessPathEloSeries(data.series, { windowDays: 5 }) : []
         setEloPoints(pts.length >= 2 ? pts : [])
         setEloLoaded(true)
       })
       .catch(() => { if (!cancelled) { setEloPoints([]); setEloLoaded(true) } })
     return () => { cancelled = true }
-  }, [chartIntent])
+  }, [chartIntent, debugEloPoints])
   const hasChart = chartIntent && !!eloPoints && eloPoints.length >= 2
   const eloToday = hasChart ? chessPathToday(eloPoints!) : null
   const chartLoading = chartIntent && !eloLoaded
@@ -287,9 +296,16 @@ export function ActivityComplete({
 
         {/* ─── Title + name + result card ─── */}
         <div
-          className="w-full rounded-xl px-4 py-2 text-center mt-1"
+          className="w-full rounded-xl px-4 py-2 mt-1 flex items-center justify-center gap-2"
           style={{ backgroundColor: '#f0f4f8' }}
         >
+          {/* Little Rookie, inline — only in the chart-hero layout (no big rook) */}
+          {chartIntent && (
+            <span className="shrink-0 -my-1">
+              <BreathingRook size="xs" mood="happy" animate />
+            </span>
+          )}
+          <div className="text-center min-w-0">
           <h2 className="text-[15px] font-black text-chess-text leading-tight">
             {didFail
               ? 'Not Quite!'
@@ -324,6 +340,7 @@ export function ActivityComplete({
                 </span>
               </>
             )}
+          </div>
           </div>
         </div>
 
