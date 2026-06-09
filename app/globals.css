@@ -1,5 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Nunito:wght@400;700;800;900&display=swap');
 @import "tailwindcss";
+
+/* Self-hosted DM Sans variable font (weights 400-800) — no render-blocking
+   Google Fonts request. Preloaded in app/layout.tsx. */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/dm-sans.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
   /* === Brand Colors === */
