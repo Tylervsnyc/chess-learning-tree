@@ -18,6 +18,8 @@ import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
 import { StreakComplete } from '@/components/shared/StreakComplete'
+import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration'
+import { shareWorkoutStreak } from '@/lib/daily-workout/share'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
 import { chessPathEloSeries, chessPathToday, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
 
@@ -53,6 +55,8 @@ export interface ActivityCompleteProps {
 
   /** Test-only: inject a Chess Path ELO series instead of fetching the live one. */
   debugEloPoints?: ChessPathPoint[]
+  /** Test-only: force the streak pre-step to celebrate this streak number. */
+  debugStreak?: number
 }
 
 // Map source → workout activity. 'daily' (Rookie's Run) is no longer a
@@ -89,6 +93,7 @@ export function ActivityComplete({
   onDismiss,
   onRetry,
   debugEloPoints,
+  debugStreak,
 }: ActivityCompleteProps) {
   const [entered, setEntered] = useState(false)
   const [tapQuip, setTapQuip] = useState<string | null>(null)
@@ -196,10 +201,67 @@ export function ActivityComplete({
     return () => clearTimeout(timer)
   }, [interactiveMode])
 
-  // ─── Confetti + sound ───
+  // ─── Streak pre-step (CHE-370): the streak window plays BEFORE this popup ───
+  // On a finished unit we atomically claim the day; if this is the first finish
+  // today (streak just extended) we celebrate it first, then reveal the popup.
+  // The claim is atomic + idempotent, so the DailyWorkoutWatcher backstop can't
+  // double-fire.
+  type StreakPhase = 'await' | 'celebrate' | 'main'
+  const [streakPhase, setStreakPhase] = useState<StreakPhase>(
+    debugStreak != null ? 'celebrate' : 'await',
+  )
+  const [streakNum, setStreakNum] = useState<number>(debugStreak ?? 0)
+  const streakRanRef = useRef(false)
+  useEffect(() => {
+    if (streakRanRef.current) return
+    streakRanRef.current = true
+    if (debugStreak != null) return // already 'celebrate'
+    if (didFail || !user) { setStreakPhase('main'); return } // no streak on fail / logged out
+
+    let cancelled = false
+    const tz = typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+      : 'UTC'
+    const fetchStreak = async () => {
+      try {
+        const r = await fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
+        return r.ok ? await r.json() : null
+      } catch { return null }
+    }
+    const claim = async (streak: number) => {
+      try {
+        const r = await fetch(`/api/workout/celebrate?tz=${encodeURIComponent(tz)}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ streak }),
+        })
+        if (!r.ok) return false
+        return !!(await r.json()).claimed
+      } catch { return false }
+    }
+    const run = async () => {
+      // Bounded poll for the completion write to land (~0, 700, 1400ms).
+      for (let i = 0; i < 3 && !cancelled; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 700))
+        const data = await fetchStreak()
+        if (cancelled) return
+        if (data?.completedToday) {
+          const claimed = await claim(data.current)
+          if (cancelled) return
+          if (claimed) { setStreakNum(data.current); setStreakPhase('celebrate') }
+          else setStreakPhase('main') // already claimed elsewhere → don't double-celebrate
+          return
+        }
+      }
+      if (!cancelled) setStreakPhase('main')
+    }
+    run()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ─── Confetti + sound (fires when the popup itself appears) ───
   const celebratedRef = useRef(false)
   useEffect(() => {
-    if (!shouldCelebrate || celebratedRef.current) return
+    if (streakPhase !== 'main' || !shouldCelebrate || celebratedRef.current) return
     celebratedRef.current = true
     const count = isPerfect || isWin ? 100 : (hasScore && correctCount! >= 5) ? 60 : 40
     const colors = isPerfect || isWin
@@ -208,17 +270,20 @@ export function ActivityComplete({
     confetti({ particleCount: count, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
     confetti({ particleCount: count, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
     if (source !== 'play') playCelebrationSound(correctCount)
-  }, [])
+  }, [streakPhase])
 
-  // ─── Entrance ───
+  // ─── Entrance (when the popup itself appears, i.e. after any streak step) ───
   useEffect(() => {
+    if (streakPhase !== 'main') return
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setEntered(true))
     })
-    return () => {
-      if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
-      if (quipLockRef.current) clearTimeout(quipLockRef.current)
-    }
+  }, [streakPhase])
+
+  // Timer cleanup on unmount
+  useEffect(() => () => {
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+    if (quipLockRef.current) clearTimeout(quipLockRef.current)
   }, [])
 
   const handleContinue = () => {
@@ -229,6 +294,15 @@ export function ActivityComplete({
   const displayLine = safeRenderText(rawDisplayLine, 'ActivityComplete.displayLine')
 
   return (
+    <>
+    {/* Streak window plays first when the streak just extended */}
+    <DailyWorkoutCelebration
+      streak={streakNum}
+      open={streakPhase === 'celebrate'}
+      onClose={() => setStreakPhase('main')}
+      onShare={() => shareWorkoutStreak(streakNum)}
+    />
+    {streakPhase === 'main' && (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-5"
       style={{
@@ -490,5 +564,7 @@ export function ActivityComplete({
       </div>
 
     </div>
+    )}
+    </>
   )
 }

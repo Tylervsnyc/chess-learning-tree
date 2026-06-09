@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import { chessPathEloSeries, type EloSeriesPoint } from '@/lib/elo/chess-path-elo';
 import { warmupAudio } from '@/lib/sounds';
@@ -20,11 +19,9 @@ const JOURNEY: [number, number][] = [
   [9, 618], [7, 640], [6, 631], [4, 672], [3, 690], [1, 706], [0, 738],
 ];
 
-type Stage = 'streak' | 'elo' | 'idle';
-
 export default function StreakThenEloTest() {
-  const [stage, setStage] = useState<Stage>('idle');
-  const [replayKey, setReplayKey] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [key, setKey] = useState(0);
 
   const points = useMemo(() => {
     const series: EloSeriesPoint[] = JOURNEY.map(([n, elo]) => ({ date: daysAgo(n), elo }));
@@ -33,8 +30,8 @@ export default function StreakThenEloTest() {
 
   const play = () => {
     warmupAudio();
-    setReplayKey((k) => k + 1);
-    setStage('streak');
+    setKey((k) => k + 1);
+    setOpen(true);
   };
 
   return (
@@ -45,7 +42,8 @@ export default function StreakThenEloTest() {
         </p>
         <h1 className="mt-1 text-xl font-black text-chess-text">Streak → then the ELO popup</h1>
         <p className="mt-2 text-sm text-chess-text-muted">
-          Stage: <span className="font-black text-chess-text">{stage}</span>
+          Real <code>ActivityComplete</code>: the streak window fires first (it owns the claim),
+          then the full lesson-complete popup with the ELO chart.
         </p>
         <button
           onClick={play}
@@ -53,30 +51,18 @@ export default function StreakThenEloTest() {
         >
           ▶ Play sequence
         </button>
-        <p className="mt-4 text-xs text-chess-text-faint">
-          Streak window fires first, then the full lesson-complete popup (real component, real buttons).
-        </p>
       </div>
 
-      {/* 1) Streak window FIRST */}
-      <DailyWorkoutCelebration
-        key={`streak-${replayKey}`}
-        streak={STREAK}
-        open={stage === 'streak'}
-        onClose={() => setStage('elo')}
-        onShare={() => {}}
-      />
-
-      {/* 2) THEN the real completion popup, fed a typical-user ELO series */}
-      {stage === 'elo' && (
+      {open && (
         <ActivityComplete
-          key={`elo-${replayKey}`}
+          key={key}
           source="path"
           mode="terminal"
           correctCount={5}
           totalCount={6}
           activityName="Forks & Skewers"
           playerName="Tyler"
+          debugStreak={STREAK}
           debugEloPoints={points}
           shareConfig={{
             shareUrl: 'https://chesspath.app/test',
@@ -86,7 +72,7 @@ export default function StreakThenEloTest() {
             title: 'Chess Path',
             text: 'I completed a lesson on Chess Path!',
           }}
-          onContinue={() => setStage('idle')}
+          onContinue={() => setOpen(false)}
         />
       )}
     </div>
