@@ -266,6 +266,46 @@ async function getSourceFunnel(filter: string, sourceClause: string) {
   };
 }
 
+/**
+ * Chess Path ELO funnel (CHE-370). Reach of the legible-progress surface by mode,
+ * the soft-signup CTR, and the headline conversion: of the new logged-out users
+ * who saw the first-rating ceremony, how many went on to complete signup.
+ */
+async function getEloFunnel(filter: string) {
+  const r = await hogql(`
+    SELECT
+      uniqIf(person_id, event = 'elo_revealed') as revealed,
+      uniqIf(person_id, event = 'elo_revealed' AND properties.mode = 'first_reveal') as revealed_first,
+      uniqIf(person_id, event = 'elo_revealed' AND properties.mode = 'session') as revealed_session,
+      uniqIf(person_id, event = 'elo_revealed' AND properties.mode = 'daily') as revealed_daily,
+      uniqIf(person_id, event = 'elo_signup_clicked' AND properties.mode = 'first_reveal') as clicked_first,
+      uniqIf(person_id, event = 'elo_keep_playing') as kept_playing
+    FROM events WHERE ${filter}
+  `, 'elo-funnel');
+  const row = r.results[0] || [0, 0, 0, 0, 0, 0];
+
+  // Person-level: saw the first-rating ceremony AND completed signup.
+  const conv = await hogql(`
+    SELECT count() FROM (
+      SELECT person_id FROM events WHERE ${filter}
+      GROUP BY person_id
+      HAVING countIf(event = 'elo_revealed' AND properties.mode = 'first_reveal') > 0
+         AND countIf(event = 'signup_completed') > 0
+    )
+  `, 'elo-first-signup');
+  const firstToSignup = num((conv.results[0] || [0])[0]);
+
+  return {
+    revealed: num(row[0]),
+    revealedFirst: num(row[1]),
+    revealedSession: num(row[2]),
+    revealedDaily: num(row[3]),
+    clickedFirst: num(row[4]),
+    keptPlaying: num(row[5]),
+    firstToSignup,
+  };
+}
+
 // Cache the full auth-user list so the target + previous-period calls don't
 // double-fetch the admin API.
 let _authUsersCache: { created_at: string; provider: string }[] | null = null;
@@ -610,6 +650,9 @@ async function main() {
   const igFunnel = await getSourceFunnel(f, IG_SOURCE);
   const paidFunnel = await getSourceFunnel(f, PAID_IG_SOURCE);
 
+  // Chess Path ELO (CHE-370) — legible-progress surface + new-user signup hook.
+  const elo = await getEloFunnel(f);
+
   // ---------------------------------------------------------------------------
   // Print report
   // ---------------------------------------------------------------------------
@@ -643,6 +686,20 @@ async function main() {
     for (const s of sources) {
       console.log(`    ${s.source.padEnd(30)} ${s.users} users`);
     }
+  }
+
+  console.log(section('CHESS PATH ELO (CHE-370 — legible progress + signup hook)'));
+  if (elo.revealed === 0) {
+    console.log('  No elo_revealed events yet in window (flag CHESS_PATH_ELO on prod).');
+  } else {
+    console.log(`  Revealed (people who saw the ELO surface):  ${elo.revealed}`);
+    console.log(`    first_reveal (new logged-out ceremony):   ${elo.revealedFirst}`);
+    console.log(`    session (returning logged-out climb):     ${elo.revealedSession}`);
+    console.log(`    daily (logged-in day line):               ${elo.revealedDaily}`);
+    console.log(`  New-user signup hook:`);
+    console.log(`    ceremony shown -> tapped "Save rating":   ${elo.clickedFirst}/${elo.revealedFirst}  (${pct(elo.clickedFirst, elo.revealedFirst)})`);
+    console.log(`    ceremony shown -> signup COMPLETED:       ${elo.firstToSignup}/${elo.revealedFirst}  (${pct(elo.firstToSignup, elo.revealedFirst)})`);
+    console.log(`    "Keep playing" taps (soft-ask escapes):   ${elo.keptPlaying}`);
   }
 
   console.log(section('WELCOME FUNNEL'));
