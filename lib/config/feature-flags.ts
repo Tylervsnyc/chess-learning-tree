@@ -87,4 +87,15 @@ export const IG_SPRINT_FLAGS = {
    * traffic see the unchanged 3s/generic behavior. Metric: prompt-shown → oauth_started.
    */
   IG_WIN_PROMPT: true,
+  /**
+   * Day 7 (CHE-359) — post-signup activation. A cold IG user who signs up at the
+   * win moment used to get dropped straight back where they were (one-and-done
+   * risk). For the IG cohort, the win-moment signup prompt now returns them to
+   * `/play?ig_activate=1`, and on arrival — once authenticated — we show a single
+   * activation nudge that frames a concrete 2nd action ("Play one more — keep your
+   * streak alive"). Tapping it starts another game. Gated by `isIgCohort()` + the
+   * `?ig_activate=1` query the post-signup return carries, so existing users + the
+   * normal autoplay path are untouched. Metric: D0 second-action rate.
+   */
+  IG_ACTIVATION: true,
 } as const;

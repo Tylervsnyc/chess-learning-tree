@@ -135,6 +135,15 @@ export const OnboardingEvents = {
     trackEvent('onboarding_signup_prompt_dismissed', { source, method, variant }),
 };
 
+// IG sprint Day 7 (CHE-359) — post-signup activation nudge. Fires only for the
+// IG cohort that returns authenticated to /play?ig_activate=1, to measure the D0
+// second-action rate (did the new signup take a 2nd action vs one-and-done).
+export const IgActivationEvents = {
+  shown: () => trackEvent('ig_activation_shown'),
+  action: () => trackEvent('ig_activation_action'),
+  dismissed: () => trackEvent('ig_activation_dismissed'),
+};
+
 // Play Rookie funnel
 export const PlayEvents = {
   gameStarted: (skillLevel: number, color: 'white' | 'black') =>

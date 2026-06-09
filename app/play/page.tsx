@@ -21,7 +21,7 @@ import {
   getEasyFirstWinConfig,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
-import { PlayEvents } from '@/lib/analytics/posthog';
+import { PlayEvents, IgActivationEvents } from '@/lib/analytics/posthog';
 import { useRookieSpeech, type EvalUpdate } from '@/hooks/useRookieSpeech';
 import { type GameEvent } from '@/lib/speech/priority-queue';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
@@ -82,6 +82,24 @@ function saveLevelProgress(level: number, wins: number) {
 }
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+// Day 7 (IG_ACTIVATION): where a cold IG signup returns after OAuth. We bring
+// them back to /play with a marker so the page knows to show the 2nd-action
+// nudge, and carry the IG utm so the cohort still resolves even if sessionStorage
+// didn't survive the OAuth round-trip (e.g. some in-app browsers).
+function igActivateReturnUrl(): string {
+  if (typeof window === 'undefined') return '/play?ig_activate=1';
+  const out = new URLSearchParams();
+  out.set('ig_activate', '1');
+  try {
+    const cur = new URLSearchParams(window.location.search);
+    const src = cur.get('utm_source');
+    const medium = cur.get('utm_medium');
+    if (src) out.set('utm_source', src);
+    if (medium) out.set('utm_medium', medium);
+  } catch {}
+  return `/play?${out.toString()}`;
+}
 const ANIM_MS = 300;
 
 // ════════════════════════════════
@@ -339,6 +357,8 @@ export default function PlayRookiePage() {
   const [showActivityComplete, setShowActivityComplete] = useState(false);
   const [resignArmed, setResignArmed] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  // Day 7 (IG_ACTIVATION): post-signup 2nd-action nudge for the IG cohort.
+  const [showActivation, setShowActivation] = useState(false);
 
   // Eval bar state
   const [evalPct, setEvalPct] = useState(50); // white percentage
@@ -1856,6 +1876,25 @@ export default function PlayRookiePage() {
     startGameRef.current();
   }, []);
 
+  // ── Day 7 IG activation (CHE-359) ──
+  // A cold IG user who just signed up at the win moment returns here with
+  // ?ig_activate=1. Once their session has hydrated (user present), greet them
+  // with a single 2nd-action nudge instead of dropping them where they were —
+  // reduce one-and-done. Cohort + flag + query + auth gated; fires once.
+  const igActivationShownRef = useRef(false);
+  useEffect(() => {
+    if (igActivationShownRef.current) return;
+    if (!IG_SPRINT_FLAGS.IG_ACTIVATION || !isIgCohort() || !user) return;
+    let activate = false;
+    try {
+      activate = new URLSearchParams(window.location.search).get('ig_activate') === '1';
+    } catch {}
+    if (!activate) return;
+    igActivationShownRef.current = true;
+    setShowActivation(true);
+    IgActivationEvents.shown();
+  }, [user]);
+
   const handleResign = useCallback(() => {
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     setRookieThinking(false);
@@ -2525,6 +2564,15 @@ export default function PlayRookiePage() {
       {showSignupPrompt && (
         <SignupPrompt
           source="play"
+          // Day 7 (IG_ACTIVATION): for the IG cohort, send the new signup back to
+          // /play?ig_activate=1 (carry utm so cohort re-detects) so we can greet
+          // them with the 2nd-action nudge instead of dropping them where they
+          // were. Non-IG users keep the default (return to current path).
+          nextOverride={
+            IG_SPRINT_FLAGS.IG_ACTIVATION && isIgCohort()
+              ? igActivateReturnUrl()
+              : undefined
+          }
           valueLabel={
             dailyStreak && dailyStreak > 0
               ? `${dailyStreak}-day streak`
@@ -2538,6 +2586,64 @@ export default function PlayRookiePage() {
           }
           onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }}
         />
+      )}
+
+      {/* Day 7 (IG_ACTIVATION): post-signup 2nd-action nudge for the IG cohort.
+          Frames a concrete next step (play one more) so a fresh signup doesn't
+          stop at one game. Cohort + flag + query + auth gated by the effect above. */}
+      {showActivation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <style>{`
+            @keyframes ig-act-backdrop { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes ig-act-card {
+              from { opacity: 0; transform: translateY(40px) scale(0.97); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
+          <div
+            className="absolute inset-0 bg-black/50"
+            style={{ animation: 'ig-act-backdrop 0.3s ease-out' }}
+            onClick={() => { IgActivationEvents.dismissed(); setShowActivation(false); }}
+          />
+          <div
+            className="relative bg-chess-page rounded-3xl max-w-sm w-full mx-4 shadow-2xl overflow-hidden"
+            style={{ animation: 'ig-act-card 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
+          >
+            <div className="flex flex-col items-center px-6 pt-8 pb-6">
+              <BreathingRook size="lg" animate mood="happy" />
+              <h2
+                className="mt-4 text-center font-black text-chess-text leading-tight"
+                style={{ fontSize: 'clamp(20px, 6vw, 26px)' }}
+              >
+                You&apos;re in! 🎉
+              </h2>
+              <p
+                className="mt-2 mb-6 text-center font-medium text-chess-text leading-relaxed"
+                style={{ fontSize: 'clamp(13px, 3.5vw, 15px)' }}
+              >
+                Your win is saved. Keep the momentum — play one more and start your streak.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  IgActivationEvents.action();
+                  setShowActivation(false);
+                  startGame();
+                }}
+                className="w-full py-3.5 rounded-2xl font-black text-white bg-chess-green transition-all active:translate-y-[2px] shadow-[0_4px_0_#3a7a1f]"
+                style={{ fontSize: 'clamp(16px, 4.5vw, 20px)' }}
+              >
+                Play one more
+              </button>
+              <button
+                onClick={() => { IgActivationEvents.dismissed(); setShowActivation(false); }}
+                className="mt-4 text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 px-4"
+              >
+                Maybe later
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Rookie asks for the player's name mid-game */}
