@@ -17,6 +17,7 @@ import { ShuffleBag } from '@/lib/shuffle-bag'
 import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
+import { StreakComplete } from '@/components/shared/StreakComplete'
 
 // ═══════════════════════════════════════════
 // ACTIVITY COMPLETE — unified post-activity screen
@@ -322,6 +323,13 @@ export function ActivityComplete({
             </p>
           </div>
         </div>
+
+        {/* ─── Daily streak (folded in — replaces the separate modal) ─── */}
+        {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (
+          <div className="w-full mb-4">
+            <StreakComplete />
+          </div>
+        )}
 
         {/* ─── Buttons ─── */}
         <div className="w-full flex flex-col gap-2.5">

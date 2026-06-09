@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { DailyWorkoutCelebration } from './DailyWorkoutCelebration';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 type WorkoutResponse = {
   current: number;
@@ -30,18 +31,40 @@ type WorkoutResponse = {
  * fires at most once a day no matter how often we check.
  */
 export function DailyWorkoutWatcher() {
+  // When the streak is folded into the completion screen (StreakComplete), that
+  // surface atomically claims + shows the day, so this navigation-based modal
+  // would only ever be a redundant backstop. Stay inert to avoid the separate
+  // popup the inline design replaces.
+  if (FEATURE_FLAGS.STREAK_ON_COMPLETE) return null;
+  return <DailyWorkoutWatcherInner />;
+}
+
+function DailyWorkoutWatcherInner() {
   const { user } = useUser();
   const pathname = usePathname();
   const [streak, setStreak] = useState<number | null>(null);
   const checkingRef = useRef(false);
   const firedThisSessionRef = useRef(false);
+  const initedRef = useRef(false);
+
+  // Hold the latest user in a ref so `check` stays referentially stable. If
+  // `check` (or an effect) depended on the `user` object directly, it would
+  // re-run every time Supabase hands back a NEW user object — which it does on
+  // every TOKEN_REFRESHED and on tab focus, with NO navigation. That churn was
+  // re-firing this check mid-lesson: once the first puzzle attempt writes a row
+  // the day counts (`completedToday` flips true), so a token refresh on
+  // question 3 would pop the celebration over the board instead of waiting for
+  // the user to finish. Keeping `user` in a ref means we only re-check on a real
+  // navigation or the explicit activity event — never on auth-token churn.
+  const userRef = useRef(user);
+  userRef.current = user;
 
   const tz = typeof Intl !== 'undefined'
     ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
     : 'UTC';
 
   const check = useCallback(async () => {
-    if (!user || checkingRef.current || firedThisSessionRef.current) return;
+    if (!userRef.current || checkingRef.current || firedThisSessionRef.current) return;
     checkingRef.current = true;
     try {
       const streakRes = await fetch(`/api/workout/streak?tz=${encodeURIComponent(tz)}`, {
@@ -67,14 +90,25 @@ export function DailyWorkoutWatcher() {
     } finally {
       checkingRef.current = false;
     }
-  }, [user, tz]);
+  }, [tz]);
 
-  // Re-check on mount and on every navigation. `pathname` in the deps means
-  // this re-runs each time the route changes — the universal catch-all.
+  // One-shot check the moment the user first loads (app entry). For a "first of
+  // the day" user nothing counts yet, so this is a safe baseline that won't pop.
+  // `initedRef` guards against re-firing on later user-identity churn.
   useEffect(() => {
-    if (!user) return;
+    if (!user || initedRef.current) return;
+    initedRef.current = true;
     check();
-  }, [user, pathname, check]);
+  }, [user, check]);
+
+  // Re-check on every REAL navigation. `check` is now referentially stable, so
+  // this effect's deps only change when `pathname` actually changes — i.e. a
+  // genuine route change, the natural end of every completion flow. It no longer
+  // re-runs on auth-token refreshes (the mid-lesson misfire).
+  useEffect(() => {
+    if (!userRef.current) return;
+    check();
+  }, [pathname, check]);
 
   // Also re-check the instant a completion write commits. Route change alone
   // races the DB write (e.g. /play's `session.end()` is fire-and-forget), so a

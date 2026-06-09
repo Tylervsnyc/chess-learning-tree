@@ -5,9 +5,12 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
 /**
  * GET /api/workout/streak?tz=America/Los_Angeles
  *
- * The streak is dead simple: a day counts if the user did *anything* on the
- * app that day (in their local TZ) — completed a lesson, played a game, or
- * solved a puzzle. The streak walks back from today until the first empty day.
+ * The streak is "finish a unit": a day counts if the user *finished* something
+ * on the app that day (in their local TZ) — completed a lesson, finished a Play
+ * or Daily-Rook game, completed an opening, or finished a Chess Boxing workout.
+ * Answering a single puzzle mid-lesson does NOT count (an abandoned lesson
+ * shouldn't earn the day) — only the completion does. The streak walks back
+ * from today until the first empty day.
  *
  * Returns { current, longest, completedToday, activeDays }.
  * `activeDays` is the sorted list of YYYY-MM-DD days (user TZ) with any activity,
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [lessons, games, puzzles, openings] = await Promise.all([
+  const [lessons, games, workouts, openings] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -42,10 +45,10 @@ export async function GET(request: NextRequest) {
       .not('ended_at', 'is', null)
       .gte('ended_at', since),
     supabase
-      .from('puzzle_attempts')
-      .select('attempted_at')
+      .from('workout_sessions')
+      .select('created_at')
       .eq('user_id', user.id)
-      .gte('attempted_at', since),
+      .gte('created_at', since),
     supabase
       .from('opening_progress')
       .select('completed_at')
@@ -53,24 +56,27 @@ export async function GET(request: NextRequest) {
       .gte('completed_at', since),
   ]);
 
-  if (lessons.error || games.error || puzzles.error || openings.error) {
+  if (lessons.error || games.error || workouts.error || openings.error) {
     console.error('workout streak read failed', {
       lessons: lessons.error,
       games: games.error,
-      puzzles: puzzles.error,
+      workouts: workouts.error,
       openings: openings.error,
     });
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
-  // Any activity at all makes the day count. Rookie's Run is intentionally NOT
-  // part of the streak: it was dropped from the daily loop (2026-06-01) and its
+  // A FINISHED unit makes the day count: a completed lesson, a finished game
+  // (Play or Daily Rook), a completed opening, or a finished Chess Boxing
+  // workout. Mid-lesson puzzle attempts are deliberately excluded — an
+  // abandoned lesson shouldn't earn the day. Rookie's Run is also NOT part of
+  // the streak: it was dropped from the daily loop (2026-06-01) and its
   // run_completions table has never logged a row (CHE-342).
   const activeDays = toLocalDateSet(
     [
       ...(lessons.data ?? []).map((r) => r.completed_at as string),
       ...(games.data ?? []).map((r) => r.ended_at as string),
-      ...(puzzles.data ?? []).map((r) => r.attempted_at as string),
+      ...(workouts.data ?? []).map((r) => r.created_at as string),
       ...(openings.data ?? []).map((r) => r.completed_at as string),
     ],
     tz,
