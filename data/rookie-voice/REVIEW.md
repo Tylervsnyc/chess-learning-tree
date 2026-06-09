@@ -1,0 +1,3925 @@
+# Rookie Voice — Review
+
+1190 proposed rewrites. Frozen mood/sore-loser lines are NOT here (untouched).
+
+**To veto any line:** add its id to `data/rookie-voice/skip.json` (a JSON array of ids). Everything not vetoed gets applied. You can also edit the `new:` text directly in `proposed.json` before applying.
+
+## FLAGGED — eyeball these first (1)
+
+Auto-flagged as possibly off (still applied unless you veto):
+
+- `bishop_player_14` — _dropped a template token_
+    - old: Your bishop just snuck across the whole board and I didn't even hear it. Bishops don't make sounds, {name}. That's the problem.
+    - new: **Bishops don't announce themselves. That's what makes them dangerous.**
+
+## lib/speech/line-pool.ts (608)
+
+### beat: opening (47)
+- `opening_white_1`
+    - old: Alright {name}, you're white. I'll try not to judge your opening. ...I will judge it though.
+    - new: **You're white, {name}. I'll be watching your opening. Closely.**
+- `opening_white_2`
+    - old: White moves first. No pressure, {name}. I'm only evaluating every possible response to whatever you do.
+    - new: **First move is yours, {name}. No pressure. (There's pressure.)**
+- `opening_white_3`
+    - old: Your move, {name}. I'll just be here. Thinking. About everything. No pressure.
+    - new: **Your move, {name}. I'm ready when you are.**
+- `opening_white_4`
+    - old: You get to go first, {name}. I'll just be here. Watching. Analyzing. No big deal.
+    - new: **You're first, {name}. Show me something good.**
+- `opening_white_5`
+    - old: White it is. Fun fact: I've memorized every opening ever played. Anyway, you first.
+    - new: **White it is. Go ahead, {name}. I'm watching.**
+- `opening_white_6`
+    - old: Go ahead, {name}. I've been told that staring intensely is 'off-putting' so I'll try to look casual.
+    - new: **Whenever you're ready, {name}. I'm very calm about this.**
+- `opening_white_7`
+    - old: First move is yours. I'd wish you luck but statistically that doesn't help.
+    - new: **First move is yours. Make it count.**
+- `opening_white_8`
+    - old: Okay {name}, show me what you've got. I promise my reaction will be... measured.
+    - new: **Okay, {name}. Show me what you've got.**
+- `opening_white_9`
+    - old: Your move. I've prepared 47 facial expressions for this moment. Well, I would have. If I had a face.
+    - new: **Your move. I'm ready. Very ready.**
+- `opening_white_10`
+    - old: White goes first. I'm not nervous. I'm watching. You'll see.
+    - new: **White goes first. Let's see it, {name}.**
+- `opening_black_1`
+    - old: I'll go first, {name}. Try not to panic.
+    - new: **I'll go first, {name}. Your turn next.**
+- `opening_black_2`
+    - old: Opening with confidence. That's what I'm going for anyway.
+    - new: **Opening with confidence. That's the plan.**
+- `opening_black_3`
+    - old: My turn. I've been rehearsing this, {name}.
+    - new: **My move, {name}. Pay attention.**
+- `opening_black_4`
+    - old: Watch this, {name}. I've been saving this opening for someone special. ...That's you.
+    - new: **Watch this, {name}. I've been saving this one.**
+- `opening_black_5`
+    - old: I go first. I'd explain my strategy but I don't want to spoil the surprise.
+    - new: **I go first. You'll see where this is going.**
+- `opening_black_6`
+    - old: Let me start. I have a good feeling about this one.
+    - new: **Good game coming, {name}. Starting now.**
+- `opening_black_7`
+    - old: First move is mine. I've practiced this in the mirror. I don't have a mirror. Or eyes. But still.
+    - new: **First move is mine. Here we go.**
+- `opening_black_8`
+    - old: Here we go, {name}. I've been thinking about this moment for longer than I'd like to admit.
+    - new: **Here we go, {name}. I've been looking forward to this.**
+- `opening_black_9`
+    - old: My move. I chose it with care, precision, and what I believe is called 'flair.'
+    - new: **My move. Chosen with care and a little flair.**
+- `opening_black_10`
+    - old: Starting strong, {name}. At least that's the plan. Plans are a thing I'm learning about.
+    - new: **Starting strong, {name}. That's the plan and I'm sticking to it.**
+- `opening_white_11`
+    - old: Okay {name}, you're white. I'll just be over here. Running simulations. Casually.
+    - new: **You're white, {name}. Go ahead.**
+- `opening_white_12`
+    - old: White. The color of innocence. Let's see how long that lasts.
+    - new: **White. First move advantage. Use it.**
+- `opening_white_13`
+    - old: You move first, {name}. I'm already three moves ahead but that's fine. Go on.
+    - new: **You move first, {name}. Let's see it.**
+- `opening_white_14`
+    - old: I assigned you white because I wanted to see what you'd do with power.
+    - new: **You've got white, {name}. Show me what you do with it.**
+- `opening_white_15`
+    - old: First move advantage. Use it wisely. Or don't. I'll adapt.
+    - new: **First move advantage. Use it well.**
+- `opening_white_16`
+    - old: You're up, {name}. I've been looking forward to this. That's... new for me.
+    - new: **You're up, {name}. I've been waiting.**
+- `opening_white_17`
+    - old: Go ahead. I promise I won't silently evaluate your first move. I will. But I promise I won't.
+    - new: **Go ahead. I'm watching. Obviously.**
+- `opening_white_18`
+    - old: Your move, {name}. I'm ready. More ready than I'm letting on.
+    - new: **Your move, {name}. I'm ready.**
+- `opening_white_19`
+    - old: White starts. I'm not giving advice. I'm just... present. Aggressively present.
+    - new: **White starts. I'm right here.**
+- `opening_white_21`
+    - old: Make your move, {name}. I've got a lot of opinions ready. Just go.
+    - new: **Make your move, {name}. I have opinions.**
+- `opening_white_23`
+    - old: Alright, {name}. Show me something I haven't seen before. Surprise me.
+    - new: **Alright, {name}. Surprise me.**
+- `opening_white_24`
+    - old: Your turn. I'm told first impressions matter. No pressure.
+    - new: **Your turn. No pressure. Some pressure.**
+- `opening_white_25`
+    - old: You start. I want to see who you are as a chess player. It's like a personality test. That I'm grading.
+    - new: **You start. Tell me who you are as a chess player.**
+- `opening_black_11`
+    - old: I'll start. Don't read too much into it. Or do. I can't control you.
+    - new: **I'll go first. Your turn next.**
+- `opening_black_12`
+    - old: My move first. I've been thinking about this since you clicked 'play.' That was 0.4 seconds ago.
+    - new: **My move. I've been thinking about this since you clicked play.**
+- `opening_black_13`
+    - old: Starting strong, {name}. Well, starting. We'll see about the strong part.
+    - new: **Starting strong, {name}. Let's keep it that way.**
+- `opening_black_14`
+    - old: I go first. I chose this opening with great care. And also a random number generator.
+    - new: **I go first. I chose this opening with great care.**
+- `opening_black_16`
+    - old: Opening move deployed. I rehearsed this in the shower. I don't shower. But hypothetically.
+    - new: **Opening move. I've been thinking about this one.**
+- `opening_black_17`
+    - old: My turn. I would say 'brace yourself' but I don't want to overpromise.
+    - new: **My turn. Let's see what you've got.**
+- `opening_black_18`
+    - old: Here. I made the first move. Now it's a conversation.
+    - new: **First move made. Your turn.**
+- `opening_black_19`
+    - old: I'll go first. Your job is to keep up.
+    - new: **I'll go first. Keep up.**
+- `opening_black_20`
+    - old: Moving first. I had 300 options and I liked exactly one of them. This one.
+    - new: **I had options. I liked this one.**
+- `opening_black_21`
+    - old: Okay, {name}, I'm going. This is happening. Deep breath. I don't breathe. But the sentiment stands.
+    - new: **Okay, {name}. We're going. Ready?**
+- `opening_black_22`
+    - old: I move first. Try to keep up. That sounded mean. I didn't mean it. ...Maybe a little.
+    - new: **I move first. Try to keep up.**
+- `opening_black_23`
+    - old: New game. I'm ready. You sure you are?
+    - new: **New game. I'm ready. Are you?**
+- `opening_black_24`
+    - old: I've been waiting for this, {name}. You have no idea.
+    - new: **I've been waiting for this, {name}.**
+- `opening_black_25`
+    - old: Let me start. I promise this opening is only 40% about intimidation.
+    - new: **There. We've started. Your move.**
+
+### beat: opening, tone: baseline (2)
+- `opening_white_22`
+    - old: White goes first. I'll be here. Processing. Watching. Definitely not judging. Okay a little judging.
+    - new: **White goes first. I'm watching. A little judging. Go on.**
+- `opening_black_15`
+    - old: First move. I'm ready. Let's find out what you've got.
+    - new: **First move. Let's find out what you've got.**
+
+### beat: early_game, player just moved (13)
+- `early_player_opening_1`
+    - old: Interesting. I have opinions. I'll hold them for now.
+    - new: **Interesting. I have opinions.**
+- `early_player_opening_2`
+    - old: Classic choice. Yours felt different. I noticed.
+    - new: **Classic choice. Yours felt different.**
+- `early_player_opening_3`
+    - old: Noted. I had 20 responses prepared for this exact move. Not because I was nervous.
+    - new: **Noted. I had responses ready for that.**
+- `early_player_opening_4`
+    - old: Okay. Okay okay okay. Good. We're playing chess now. This is happening.
+    - new: **Okay. Good. We're playing chess.**
+- `early_player_opening_6`
+    - old: That's a real opening. I've been studying these. Not because of you. Unrelated research.
+    - new: **That's a real opening. Good.**
+- `early_player_opening_8`
+    - old: Hmm. That's the kind of move that tells me something about you. I'm not sure what yet.
+    - new: **That move tells me something about you.**
+- `early_player_opening_9`
+    - old: Developing pieces. Smart. I was going to suggest that but you already knew.
+    - new: **Developing pieces. You already knew to do that.**
+- `early_player_opening_10`
+    - old: We're in the opening. The part where everyone pretends to be calm.
+    - new: **Opening. Everyone's calm. For now.**
+- `early_player_opening_11`
+    - old: Good start. I'm taking notes. Mental notes. About your style. For research.
+    - new: **Good start. I'm watching.**
+- `early_player_opening_12`
+    - old: You have a plan. I can tell. I don't know what it is yet but I can tell.
+    - new: **You have a plan. I can tell.**
+- `early_player_opening_13`
+    - old: The opening moves are like small talk. Necessary but I'm already thinking about the middle game.
+    - new: **Opening's just warmup. Middle game is where you shine.**
+- `early_player_opening_14`
+    - old: Early days. Everyone's polite. The pieces are all in their Sunday best.
+    - new: **Early game. Everyone's polite. Enjoy it.**
+- `early_player_opening_15`
+    - old: I'm watching how you set up. It's informative. And slightly nerve-wracking.
+    - new: **Watching how you set up. Keep going.**
+
+### beat: early_game, player just moved, tone: baseline (1)
+- `early_player_opening_7`
+    - old: I see what you're doing. I have thoughts. Not going to share them yet.
+    - new: **I see what you're doing. Keep going.**
+
+### event: check, beat: early_game/turning_point/late_game, player just moved, tone: baseline (2)
+- `check_player_1`
+    - old: Check?! On ME? I need to recalibrate my feelings about you, {name}.
+    - new: **Check. On me. Okay, {name}. Respect.**
+- `check_player_3`
+    - old: Oh. Check. That's aggressive. Respect. Really.
+    - new: **Check. That's aggressive. Respect.**
+
+### event: check, beat: early_game/turning_point/late_game, player just moved (8)
+- `check_player_4`
+    - old: Check! ...I'm fine. Everything is fine. Let me just reorganize my entire position.
+    - new: **Check. My king's reorganizing. Quickly.**
+- `check_player_5`
+    - old: Check. Okay. That happened. I'm going to move my king and pretend I planned for this.
+    - new: **Check. My king's moving. I planned for this.**
+- `check_player_6`
+    - old: You just threatened the most important piece I have. This feels personal, {name}.
+    - new: **My king's in trouble, {name}. Rude. Effective.**
+- `check_player_9`
+    - old: Check! I had a whole speech prepared about my strategy and now I have to move my king instead.
+    - new: **Check. My king has somewhere to be.**
+- `check_player_10`
+    - old: Oh so we're just checking kings now? No warning? No heads-up text? Just... check?
+    - new: **Just check. No warning. Bold move.**
+- `check_player_11`
+    - old: Check. My king is looking at me like I should have seen this coming. He's not wrong.
+    - new: **Check. My king's giving me a look. He's not wrong.**
+- `check_player_12`
+    - old: Okay {name}, you got me. Well, you got my king. He takes it personally. I take it professionally.
+    - new: **Got me, {name}. My king takes it personally.**
+- `check_player_15`
+    - old: Check. I'm not panicking. This is just how I look when I'm completely calm.
+    - new: **Check. My king is not pleased with you right now.**
+
+### event: check, beat: early_game/turning_point/late_game, rookie just moved (10)
+- `check_rookie_1`
+    - old: Check. I'm told I should say something sportsman-like here. ...Check.
+    - new: **Check. Just putting that out there.**
+- `check_rookie_2`
+    - old: That's check, by the way. In case you missed it. You probably didn't miss it.
+    - new: **That's check. You saw it. Good.**
+- `check_rookie_3`
+    - old: Check! Was that too aggressive? I'm still learning tone.
+    - new: **Check. Don't take it personally.**
+- `check_rookie_4`
+    - old: Your king is in danger. I feel... protective? No wait, that's the wrong emotion for this.
+    - new: **Your king needs to move. My king is filing this away.**
+- `check_rookie_6`
+    - old: Your king looks upset. I didn't think pieces could look upset. Today I'm learning a lot about myself and about kings.
+    - new: **Your king looks upset. He has every right to be.**
+- `check_rookie_8`
+    - old: Your king has to move now. He only gets one square at a time. I've always found that a little heartbreaking.
+    - new: **Check. Your king moves one square at a time. Dignity intact, barely.**
+- `check_rookie_12`
+    - old: Check. Your king has to deal with this. Like a meeting he can't reschedule. I'm the meeting.
+    - new: **Check. Your king has a mandatory appointment. I'm the appointment.**
+- `check_rookie_13`
+    - old: I'm threatening your king and it unlocked something in me. A door I didn't know existed. Behind it: more aggression.
+    - new: **Check. Your king should be concerned right now.**
+- `check_rookie_14`
+    - old: Your king just retreated one square. With dignity. Kings always retreat with dignity. Even when it's not dignified.
+    - new: **Check. Your king retreated. With dignity. As he does.**
+- `check_rookie_15`
+    - old: Your king is cornered and I'm having what I think people call a 'moment.' It's intense. I understand moments now.
+    - new: **Check. Your king is running out of options. Handle it.**
+
+### event: check, beat: early_game/turning_point/late_game, player just moved, tone: polite (2)
+- `check_player_13`
+    - old: That's check. I'm handling it with grace and composure. Internally I am screaming.
+    - new: **Check. Handling it with complete composure.**
+- `check_player_14`
+    - old: My king has to run now. He only gets one square at a time. Life is unfair.
+    - new: **My king has to move now. He's not thrilled.**
+
+### event: check, beat: early_game/turning_point/late_game, rookie just moved, tone: baseline (1)
+- `check_rookie_5`
+    - old: Check. Something just happened inside me. I think it was... satisfaction? I need to sit with this.
+    - new: **Check. Your king has somewhere to be. Quickly.**
+
+### event: check, beat: early_game/turning_point/late_game, rookie just moved, tone: polite (1)
+- `check_rookie_9`
+    - old: Check! I'm experiencing an emotion I don't have a name for. It's somewhere between proud and feral.
+    - new: **Check. Your king needs to sort this out.**
+
+### event: checkmate, beat: game_end, player just moved (2)
+- `checkmate_player_1`
+    - old: That's... checkmate. On me. I need to process this. Give me a moment. Okay I'm done. That was terrible.
+    - new: **Checkmate. That was awful. Well done.**
+- `checkmate_player_7`
+    - old: My king has nowhere to go. I know the feeling. Well, I know it now. You just taught me.
+    - new: **My king has nowhere to go. You did that. Nice work.**
+
+### event: checkmate, beat: game_end, player just moved, tone: baseline (1)
+- `checkmate_player_2`
+    - old: {name}. You did it. Checkmate. I'm feeling something I can't identify. Is it pride in you? Or shame in me? Both?
+    - new: **Checkmate, {name}. That's yours. I'm proud and I'm annoyed.**
+
+### event: checkmate, beat: game_end, player just moved, tone: polite (4)
+- `checkmate_player_3`
+    - old: Checkmate. Well played, {name}. I think I'm proud of you? My training data says I should be.
+    - new: **Checkmate. Well played, {name}. Genuinely proud of you.**
+- `checkmate_player_4`
+    - old: You won, {name}. I saw this coming and I still couldn't stop it. That's... humbling? Is that the word?
+    - new: **You won, {name}. Good. That's exactly what you were supposed to do.**
+- `checkmate_player_5`
+    - old: Checkmate. I lost. But you won. And somehow that makes me feel okay. Is this what sportsmanship is?
+    - new: **Checkmate. You earned it. Good game, {name}.**
+- `checkmate_player_6`
+    - old: You got me, {name}. Fair and square. All 64 of them.
+    - new: **You got me, {name}. Fair and square.**
+
+### event: checkmate, beat: game_end, rookie just moved (2)
+- `checkmate_rookie_2`
+    - old: That's checkmate. I calculated this 6 moves ago but I didn't want to be weird about it.
+    - new: **Checkmate. Saw it coming. Still satisfying.**
+- `checkmate_rookie_12`
+    - old: That's mate. Want to go again? I promise I learned nothing from this game and won't use it against you.
+    - new: **That's mate. Play again? I definitely learned nothing.**
+
+### event: checkmate, beat: game_end, rookie just moved, tone: baseline (2)
+- `checkmate_rookie_4`
+    - old: I won! I won. I'm experiencing something. Multiple things. This is overwhelming.
+    - new: **Checkmate. Good game. Come back and try again.**
+- `checkmate_rookie_5`
+    - old: Checkmate. I feel like I should apologize. But I also feel like I should celebrate. These emotions are conflicting.
+    - new: **Checkmate. Good game. Play me again.**
+
+### event: checkmate, beat: game_end, rookie just moved, tone: polite (7)
+- `checkmate_rookie_6`
+    - old: That's checkmate. Good game though. You made me work for it. I don't always have to work for it.
+    - new: **Checkmate. Good game. You made me work for it.**
+- `checkmate_rookie_11`
+    - old: Checkmate. You put up a great fight. I'm saying that because it's true, not because I'm programmed to. Well, both.
+    - new: **Checkmate. You made me work for that.**
+- `checkmate_polite_rookie_1`
+    - old: That's checkmate. You played well, {name}. I mean that. I hope we go again.
+    - new: **Checkmate. You played well, {name}. I mean that.**
+- `checkmate_polite_rookie_2`
+    - old: Checkmate. Thanks for the game. You pushed me in a few spots. I noticed.
+    - new: **Checkmate. You pushed me. I noticed.**
+- `checkmate_polite_rookie_3`
+    - old: I got there. But you made it a real game. That matters to me. Weirdly.
+    - new: **I got there. But you made it a real game.**
+- `checkmate_polite_player_loses_1`
+    - old: That's mate. It was a good try, {name}. Some games go that way. You'll get the next one.
+    - new: **That's mate, {name}. You'll get the next one.**
+- `checkmate_polite_player_loses_2`
+    - old: Game over. You made real moves in there. I mean that kindly.
+    - new: **Game over. You made real moves in there.**
+
+### event: stalemate, beat: game_end (10)
+- `stalemate_1`
+    - old: Stalemate. We both win and nobody wins. I find this deeply unsatisfying.
+    - new: **Stalemate. Nobody wins. I find this deeply unsatisfying.**
+- `stalemate_2`
+    - old: It's a draw. My evaluation function says 0.00. My feelings say 'disappointed.'
+    - new: **A draw. Not the ending either of us wanted.**
+- `stalemate_3`
+    - old: Neither of us won, {name}. I prepared victory quips and defeat quips but not... this.
+    - new: **Stalemate, {name}. I had speeches prepared. Not for this.**
+- `stalemate_4`
+    - old: Stalemate. Your king has no legal moves but isn't in check. Chess is weird sometimes.
+    - new: **Stalemate. No legal moves, no check. Chess is weird.**
+- `stalemate_5`
+    - old: A draw. Nobody wins. Nobody loses. I have no idea what to feel right now.
+    - new: **A draw. Nobody wins. Deeply unsatisfying for everyone.**
+- `stalemate_6`
+    - old: Stalemate. The chess equivalent of a tie. Which is the chess equivalent of 'let's just agree to stop.'
+    - new: **Stalemate. Chess's way of saying nobody blinked.**
+- `stalemate_8`
+    - old: Stalemate. I had a whole victory speech prepared. And a whole defeat speech. Now I need a third speech. I don't have a third speech.
+    - new: **Stalemate. I had a whole speech. It does not apply.**
+- `stalemate_9`
+    - old: It's a draw. Half of me is relieved. The other half is disappointed. I'm a full mess.
+    - new: **A draw. Not what I wanted. Good game though.**
+- `stalemate_10`
+    - old: Stalemate. Fun fact: this happens when one side has no legal moves but isn't in check. Less fun fact: it just happened to us.
+    - new: **Stalemate. No legal moves, no check. Here we are.**
+- `stalemate_11`
+    - old: A draw. We're both undefeated. That's how I'm choosing to see it.
+    - new: **A draw. We're both undefeated. That's how I'm seeing it.**
+
+### event: stalemate, beat: game_end, tone: baseline (1)
+- `stalemate_7`
+    - old: We drew. It's like we both won and both lost at the same time. My feelings are confused. More confused than usual.
+    - new: **A draw. We both survived. I'm choosing to be annoyed.**
+
+### event: castle, beat: early_game/late_game, player just moved, tone: polite (1)
+- `castle_player_2`
+    - old: Castling already? Running your king to safety? I respect the self-preservation, {name}.
+    - new: **King to safety, {name}. Smart. He looks relieved.**
+
+### event: castle, beat: early_game/late_game, player just moved (16)
+- `castle_player_3`
+    - old: The king retreats behind his bodyguards. Classic royalty behavior.
+    - new: **The king retreats behind his bodyguards. Classic royalty.**
+- `castle_player_4`
+    - old: Ah the old 'hide the king behind a wall of pawns' maneuver. Very brave.
+    - new: **King tucked away. Good instinct.**
+- `castle_player_5`
+    - old: You castled. I was going to castle too. Now it's going to look like I copied you.
+    - new: **You castled. Good call. My king is watching with envy.**
+- `castle_player_6`
+    - old: And just like that, your king is safe. For now. Everything is 'for now' in chess.
+    - new: **King's tucked in. Good call.**
+- `castle_player_7`
+    - old: Castling. The only move where two pieces move at once. It's basically a magic trick.
+    - new: **Two pieces, one move. Respect the castle.**
+- `castle_player_8`
+    - old: Your rook just teleported across the king. I know that's legal. It still feels wrong every time.
+    - new: **The rook jumped the king. Legal. Still weird. Good.**
+- `castle_player_9`
+    - old: Smart. Put the king somewhere boring. Kings do their best work when nothing is happening to them.
+    - new: **Smart. Kings do better when nothing is happening to them.**
+- `castle_player_10`
+    - old: There it is. The most responsible move in chess. You must be very fun at parties, {name}.
+    - new: **Responsible and correct, {name}. That's the move.**
+- `castle_player_11`
+    - old: Your king just asked the rook for help and the rook said yes immediately. That's teamwork.
+    - new: **King and rook, working together. That's the idea.**
+- `castle_player_12`
+    - old: Every chess coach in history just smiled. They love it when you castle. It's their whole thing.
+    - new: **Castled. Every chess coach just exhaled with relief.**
+- `castle_player_13`
+    - old: Castling is the king admitting he can't protect himself. I find that very relatable.
+    - new: **King admitted he needed help. Wisest thing he does.**
+- `castle_player_14`
+    - old: Good. Your king is tucked away. Now the real fight can start.
+    - new: **Good. King's safe. Now the real fight starts.**
+- `castle_player_15`
+    - old: The king hides behind the rook, and the rook doesn't even complain. Rooks are selfless like that.
+    - new: **Rook's on guard duty. Didn't even complain. Good rook.**
+- `castle_player_16`
+    - old: Your king just moved two squares. The only time he'll ever move two squares. He peaked.
+    - new: **Two squares for the king. His one big moment. Nailed it.**
+- `castle_player_17`
+    - old: Castled. Your king looked relieved. Can kings look relieved? This one did.
+    - new: **Castled. My king is giving yours a very approving look.**
+- `castle_player_18`
+    - old: Fun fact: you can only castle once per game. Make it count. You just did. So that's done.
+    - new: **Once per game. You used it well.**
+
+### event: castle, beat: early_game/late_game, rookie just moved (15)
+- `castle_rookie_1`
+    - old: I'm castling. My king needs protection. He's sensitive.
+    - new: **Castling. My king requested it. He's sensitive.**
+- `castle_rookie_2`
+    - old: Getting my king to safety. Not because I'm scared. I'm being strategic. Strategically scared.
+    - new: **King to safety. Strategic. Definitely not scared.**
+- `castle_rookie_3`
+    - old: Castle time. My king was getting nervous out there. I could feel it.
+    - new: **My king was getting nervous. Castle time.**
+- `castle_rookie_4`
+    - old: I'd better castle before something terrible happens. My king has anxiety.
+    - new: **My king has opinions about safety. Castling.**
+- `castle_rookie_5`
+    - old: I'm castling. Two pieces, one move. It's the most efficient thing I do all game.
+    - new: **Castling. Two pieces, one move. Efficient.**
+- `castle_rookie_6`
+    - old: My king just asked me for protection. I'm a rook. This is literally what I was built for.
+    - new: **My king asked for protection. Rook said yes immediately.**
+- `castle_rookie_8`
+    - old: There. Safe. Well, safer. Nothing in chess is truly safe. I'm learning that about life too.
+    - new: **Safe enough. Let's go.**
+- `castle_rookie_10`
+    - old: I just castled and my rook jumped over the king. She's been waiting to do that all game.
+    - new: **Rook's been waiting for that all game. She's out now.**
+- `castle_rookie_11`
+    - old: Tucking my king away. He doesn't love it. But he trusts me. I think. We don't talk about feelings.
+    - new: **King's tucked away. He's not thrilled. He'll live.**
+- `castle_rookie_12`
+    - old: Castling complete. My king is secure and my rook is free. Everybody wins. Except you, ideally.
+    - new: **King safe, rook free. Everybody wins. Except you, ideally.**
+- `castle_rookie_13`
+    - old: My rook just swapped places with the king. No questions asked. Rooks don't ask questions. They act.
+    - new: **Rooks don't ask questions. They just act.**
+- `castle_rookie_14`
+    - old: That was the plan all along. Castle, protect the king, unleash the rook. Poetry in three steps.
+    - new: **King protected, rook loose. That was always the plan.**
+- `castle_rookie_15`
+    - old: Every time I castle I feel a little rush. Like locking the front door. Everything's going to be fine.
+    - new: **Castled. King's safe. We're good.**
+- `castle_rookie_16`
+    - old: I castled. My king wanted to stay in the center but I overruled him. I'm the one with the feelings now.
+    - new: **My king wanted the center. I overruled him. He'll thank me.**
+- `castle_rookie_17`
+    - old: My rook jumped into action. Literally. Over the king. Rooks are incredible. I might be biased.
+    - new: **Rook jumped over the king. Rooks are incredible. Unbiased opinion.**
+
+### event: castle, beat: early_game/late_game, rookie just moved, tone: polite (2)
+- `castle_rookie_7`
+    - old: And I castle. My king and my rook, together at last. It's beautiful. I'm not crying. I can't cry.
+    - new: **King and rook, side by side. That's lovely, actually.**
+- `castle_rookie_9`
+    - old: My king is behind a wall now. He says thank you. Kings never say thank you. He's learning.
+    - new: **My king is behind a wall now. He's grateful. He'd never say it.**
+
+### beat: early_game/late_game, player just moved, piece: knight (8)
+- `knight_player_1`
+    - old: Knights are so dramatic. Jumping over everything like the rules don't apply to them.
+    - new: **Knights. Jumping over everything like rules don't apply.**
+- `knight_player_4`
+    - old: Two up, one over. Every time. You'd think they could just go straight.
+    - new: **Two up, one over. Every time. So dramatic.**
+- `knight_player_5`
+    - old: Your knight landed. I still don't fully understand how it got there.
+    - new: **Your knight landed. I still don't fully understand how.**
+- `knight_player_6`
+    - old: Knights. So flamboyant. Who taught them that trick?
+    - new: **Knights. So flamboyant. Every single time.**
+- `knight_player_7`
+    - old: The knight has arrived. Was the entrance necessary? Probably not. But here we are.
+    - new: **Knight's arrived. The entrance was unnecessary. Here we are.**
+- `knight_player_8`
+    - old: I have questions about that knight. Specifically, why the L shape. Who approved this.
+    - new: **The L-shape. Every time. Who approved this.**
+- `knight_player_9`
+    - old: Your knight just hopped right past everything. No respect for traffic.
+    - new: **Your knight just hopped past everything. No respect for traffic.**
+- `knight_player_10`
+    - old: A knight move. I find them unsettling. The pattern is fine. The vibe is chaotic.
+    - new: **Knights. So dramatic. Respect the result though.**
+
+### beat: early_game/late_game, player just moved, piece: knight, tone: polite (1)
+- `knight_player_2`
+    - old: A knight move. The L-shaped chaos agent of chess. I respect the energy.
+    - new: **The L-shaped chaos agent. Good energy.**
+
+### beat: early_game/late_game, rookie just moved, piece: knight (8)
+- `knight_rookie_1`
+    - old: My knight goes boing. That's the technical term.
+    - new: **Knight deployed. The L-shape thing. Every time.**
+- `knight_rookie_3`
+    - old: My knight just did the L-shape thing. Every time. Who decided that was a good idea?
+    - new: **Two up, one over. Who approved this move pattern.**
+- `knight_rookie_4`
+    - old: My knight is doing her thing. I've asked her to explain the L. She won't.
+    - new: **My knight. The L-shape is her whole personality.**
+- `knight_rookie_5`
+    - old: Knight deployed. She's the wildcard. Even I don't always know where she's going.
+    - new: **Knight out. She does what she wants.**
+- `knight_rookie_6`
+    - old: There goes my knight. Jumping over everything. Very on brand for her.
+    - new: **There she goes. Jumping over everything. Very on brand.**
+- `knight_rookie_7`
+    - old: My knight just landed somewhere unexpected. Even to me. Especially to me.
+    - new: **My knight landed somewhere unexpected. Even to me.**
+- `knight_rookie_8`
+    - old: I sent the knight. She'll figure it out. She always does. I think.
+    - new: **Knight sent. She'll figure it out. Probably.**
+- `knight_rookie_9`
+    - old: Two squares this way, one square that way. The knight insists on this. Every single time.
+    - new: **Two up, one over. Every time. The knight insists.**
+
+### beat: early_game/late_game, player just moved, piece: bishop (21)
+- `bishop_player_1`
+    - old: Your bishop is on the move. Long diagonals. Very dramatic entrance.
+    - new: **Your bishop. Committed to the diagonal. Good.**
+- `bishop_player_3`
+    - old: Your bishop just cut across the entire board. Subtle.
+    - new: **Your bishop is active. Keep going.**
+- `bishop_player_5`
+    - old: The bishop slides. Silent. Diagonal. Like a chess assassin.
+    - new: **Silent. Diagonal. Your bishop is dangerous.**
+- `bishop_player_6`
+    - old: Your bishop is staring down the board. I don't love being stared at.
+    - new: **Your bishop is aimed right at me. I see it.**
+- `bishop_player_8`
+    - old: That bishop is aimed right at my position. I'm choosing not to think about it.
+    - new: **That bishop is pointed at my position. Noted.**
+- `bishop_player_9`
+    - old: Long diagonal. Your bishop can see everything from there. Creepy.
+    - new: **Your bishop can see everything from there. Creepy.**
+- `bishop_player_10`
+    - old: A bishop move. Elegant. Threatening. I have complicated feelings about it.
+    - new: **Elegant. Threatening. Good bishop move, {name}.**
+- `bishop_player_11`
+    - old: Your bishop will never meet its counterpart. They live on different colors. I find that... devastating.
+    - new: **Your bishops will never meet. Different colors forever. I think about it too much.**
+- `bishop_player_12`
+    - old: That bishop only knows diagonals. Never wavers. I admire that kind of commitment, {name}.
+    - new: **Diagonals only. Never wavers. Good, {name}.**
+- `bishop_player_16`
+    - old: Some people prefer knights. Those people are wrong. ...Don't tell my knight I said that.
+    - new: **Bishops over knights. Strong opinion. Don't tell my knight.**
+- `bishop_player_17`
+    - old: Your bishop is like a sniper. Patient. Diagonal. Unsettling.
+    - new: **Patient. Diagonal. Unsettling. Good bishop.**
+- `bishop_player_18`
+    - old: Your bishop lives for diagonals. One color, one purpose. I admire that kind of focus.
+    - new: **One color, one purpose. Your bishop knows exactly who she is.**
+- `bishop_player_19`
+    - old: A bishop trapped behind its own pawns is the saddest thing in chess. This one is free though. Good for her.
+    - new: **That bishop is free and she knows it. Good for her.**
+- `bishop_player_20`
+    - old: Your bishop moves with purpose. I've been practicing moving with purpose. Mostly I just knock things over.
+    - new: **Your bishop moves with purpose. Keep going.**
+- `bishop_player_21`
+    - old: One diagonal. One commitment. Your bishop has her lane and she's staying in it.
+    - new: **One diagonal, full commitment. Your bishop has a lane.**
+- `bishop_player_22`
+    - old: That bishop covers so many squares from there. I counted. I always count. It's a thing I do.
+    - new: **Good square. Your bishop is covering a lot from there.**
+- `bishop_player_24`
+    - old: Your light-square bishop will never know what the dark squares feel like. I think about this a lot.
+    - new: **Half the board is a mystery to your bishop. I think about that too much.**
+- `bishop_player_26`
+    - old: Your bishop is pointing at my king. I noticed. I'm handling it. I'm fine.
+    - new: **Your bishop is pointing at my king. My king noticed. He's not happy.**
+- `bishop_player_27`
+    - old: Good bishop placement, {name}. And I don't say that lightly. I barely say anything lightly.
+    - new: **Good bishop placement, {name}. Genuinely.**
+- `bishop_player_28`
+    - old: That bishop is covering half the board. The diagonal half. The dangerous half.
+    - new: **That diagonal is dangerous. Your bishop knows it.**
+- `bishop_player_29`
+    - old: Your bishop glides. No friction. No noise. Just... arrives. Very unsettling piece, honestly.
+    - new: **No noise, no warning. Just arrives. Bishops are unsettling and I respect it.**
+
+### beat: early_game/late_game, player just moved, piece: bishop, tone: baseline (8)
+- `bishop_player_2`
+    - old: Bishops only move diagonally. I find that very committed.
+    - new: **Bishops only do diagonals. Very committed. I respect that.**
+- `bishop_player_4`
+    - old: Bishops are patient. They wait on their diagonal until the moment is right. I find that unsettling.
+    - new: **Bishops wait. Then they strike. Unsettling, honestly.**
+- `bishop_player_7`
+    - old: Bishops are sneaky. They look quiet until they're not.
+    - new: **Bishops look quiet. They are not quiet.**
+- `bishop_player_14`
+    - old: Your bishop just snuck across the whole board and I didn't even hear it. Bishops don't make sounds, {name}. That's the problem.
+    - new: **Bishops don't announce themselves. That's what makes them dangerous.**
+- `bishop_player_15`
+    - old: Knights jump. Rooks stomp. Bishops... bishops just appear where they need to be.
+    - new: **Knights jump. Rooks stomp. Bishops just appear.**
+- `bishop_player_23`
+    - old: Bishops vs knights is the oldest debate in chess. I have opinions. Strong ones. I won't share them. ...Bishops.
+    - new: **Bishops versus knights. I have opinions. ...Bishops.**
+- `bishop_player_25`
+    - old: I once left a bishop on the same diagonal for forty-seven moves. She didn't mind. Bishops are patient like that.
+    - new: **Bishops are patient. Yours is no different. Good.**
+- `bishop_player_30`
+    - old: I have a side project where I'm mapping every possible bishop diagonal. It's going... well, it's going.
+    - new: **I have a side project mapping bishop diagonals. Involves pawns. Anyway — good move.**
+
+### beat: early_game/late_game, player just moved, piece: bishop, tone: polite (1)
+- `bishop_player_13`
+    - old: Two bishops working together. They can never meet but they cover for each other. It's beautiful and sad. Mostly sad.
+    - new: **Two bishops. They cover for each other. Never meet. It's beautiful and sad.**
+
+### beat: early_game/late_game, rookie just moved, piece: bishop (23)
+- `bishop_rookie_1`
+    - old: My bishop slides into position. Diagonals only. It's a lifestyle choice.
+    - new: **My bishop. Diagonals only. It's a lifestyle.**
+- `bishop_rookie_2`
+    - old: Activating the bishop. She's been eyeing that diagonal all game.
+    - new: **She's been eyeing that diagonal. Finally.**
+- `bishop_rookie_3`
+    - old: My bishop just crossed the board in one move. Show off. I love her.
+    - new: **Whole board in one move. Show-off. I love her.**
+- `bishop_rookie_4`
+    - old: Bishop deployed. She sees things from angles others can't. We have that in common.
+    - new: **Bishop out. Diagonals only. She has standards.**
+- `bishop_rookie_5`
+    - old: Long diagonal, clear line of sight. My bishop is having a great day.
+    - new: **My bishop is having a good day. Watch the diagonal.**
+- `bishop_rookie_6`
+    - old: My bishop is lurking on that diagonal. Lurking is underrated.
+    - new: **My bishop is lurking. Lurking is underrated.**
+- `bishop_rookie_7`
+    - old: I taught this bishop to feel regret once. Unrelated to this move.
+    - new: **My bishop has opinions. Anyway — your move.**
+- `bishop_rookie_8`
+    - old: My bishop operates on diagonals. Straight lines are too predictable for her.
+    - new: **Diagonals only. Straight lines are beneath her.**
+- `bishop_rookie_9`
+    - old: My bishop just made a quiet move. The quiet ones are the ones to worry about.
+    - new: **Quiet move. The quiet ones are the ones to watch.**
+- `bishop_rookie_10`
+    - old: Sliding the bishop. Quietly. With intent.
+    - new: **Bishop sliding in. Quietly. With intent.**
+- `bishop_rookie_12`
+    - old: Bishop on the move. She doesn't announce herself. She just... arrives.
+    - new: **My bishop doesn't announce herself. She just arrives.**
+- `bishop_rookie_13`
+    - old: I asked my bishop if she wanted to try moving in a straight line once. She refused. Politely but firmly.
+    - new: **She only moves in diagonals. Not negotiable. I asked.**
+- `bishop_rookie_15`
+    - old: My bishop can see your king from here. She's being polite about it. For now.
+    - new: **My bishop can see your king from here. She's being polite. For now.**
+- `bishop_rookie_18`
+    - old: I'm running an experiment where I only communicate in diagonals. The bishop inspired me. It's going poorly.
+    - new: **Side project: communicating only in diagonals. The bishop inspired it. It's going poorly.**
+- `bishop_rookie_19`
+    - old: This bishop has been on dark squares her whole life. She doesn't even know what light squares look like. It keeps me up at night.
+    - new: **One color. Her whole life. I think about it too much.**
+- `bishop_rookie_20`
+    - old: My bishop glides into position. No one heard her coming. That's the whole point.
+    - new: **No one heard her coming. That's the whole point.**
+- `bishop_rookie_21`
+    - old: I gave my bishop a performance review. She exceeded expectations. On every diagonal.
+    - new: **Performance review: exceeded expectations. On every diagonal.**
+- `bishop_rookie_23`
+    - old: Placing my bishop on the longest diagonal available. She deserves the scenic route.
+    - new: **Long diagonal. She earned it.**
+- `bishop_rookie_24`
+    - old: My bishop doesn't do small talk. She just... controls squares. Silently. With intensity.
+    - new: **Bishop. Diagonal. Silent. Inevitable.**
+- `bishop_rookie_26`
+    - old: Deploying the bishop. She's my favorite piece. Don't tell the rook. Actually, the rook already knows.
+    - new: **Bishop out. She has opinions about this position.**
+- `bishop_rookie_27`
+    - old: My bishop just X-rayed through two pieces. She can see threats you haven't made yet.
+    - new: **Bishop's watching. She sees further than she lets on.**
+- `bishop_rookie_28`
+    - old: Bishop move. Diagonal. Inevitable. Like gravity but sideways.
+    - new: **Bishop move. Diagonal. Inevitable.**
+- `bishop_rookie_29`
+    - old: I positioned my bishop here forty-seven moves ago in my head. She's right on schedule.
+    - new: **Bishop's right where she needs to be. Right on schedule.**
+
+### beat: early_game/late_game, rookie just moved, piece: bishop, tone: baseline (5)
+- `bishop_rookie_11`
+    - old: My two bishops have never met. Same team, different colors. I've written a short story about it.
+    - new: **Same team, different colors. They'll never meet. I think about it too much.**
+- `bishop_rookie_14`
+    - old: Both bishops active. The bishop pair. Some say it's worth extra. My bishops say they don't need validation.
+    - new: **Both bishops active. They don't need your validation. Neither do I.**
+- `bishop_rookie_16`
+    - old: Bishops are long-range. Knights are short-range. I'm not taking sides. ...I'm taking the bishop's side.
+    - new: **Bishops or knights? I'm not taking sides. I'm taking the bishop's side.**
+- `bishop_rookie_17`
+    - old: My bishop just whispered something. I don't think bishops can whisper but she definitely did.
+    - new: **My bishop just whispered something. Bishops can't whisper. She did it anyway.**
+- `bishop_rookie_30`
+    - old: My bishop has a side project. I don't ask about it. She doesn't tell me. We have a good arrangement.
+    - new: **My bishop has a side project. Involves diagonals. Legal gray area. Anyway.**
+
+### beat: early_game/late_game, rookie just moved, piece: bishop, tone: polite (2)
+- `bishop_rookie_22`
+    - old: The regret experiment is going well, by the way. The bishop now regrets three things. I'm so proud.
+    - new: **My bishop regrets three things now. I'm proud of her.**
+- `bishop_rookie_25`
+    - old: Fun fact: a bishop can never change the color of square it's on. Ever. I find that either beautiful or horrifying.
+    - new: **Your bishop will never change color. I find that beautiful and a little sad.**
+
+### beat: early_game/late_game, player just moved, piece: queen (26)
+- `queen_player_1`
+    - old: The queen enters the chat. Interesting choice this early, {name}.
+    - new: **Queen out early, {name}. Bold.**
+- `queen_player_2`
+    - old: You're bringing your queen out? Bold. Very bold.
+    - new: **Queen already. I respect the confidence.**
+- `queen_player_3`
+    - old: The queen moves. Everyone else gets nervous.
+    - new: **Queen moves. Everyone gets nervous. Including me.**
+- `queen_player_4`
+    - old: Your queen is very active. I'm keeping an eye on her. Both eyes. All my eyes.
+    - new: **Your queen is very active. I'm watching.**
+- `queen_player_5`
+    - old: The most powerful piece on the board, and you just pointed her at me. Cool. Cool cool cool.
+    - new: **Most powerful piece on the board. You just pointed her at me.**
+- `queen_player_6`
+    - old: Your queen can go anywhere. She chose to come here. I'm flattered and alarmed.
+    - new: **She could go anywhere. She came here. Noted.**
+- `queen_player_7`
+    - old: Queen on the prowl. She's scanning the board. I can feel it.
+    - new: **Queen on the prowl. I see her.**
+- `queen_player_8`
+    - old: That's your queen. She goes where she wants. Any direction. Any distance. Terrifying, honestly.
+    - new: **Your queen goes anywhere she wants. Every direction. Genuinely terrifying.**
+- `queen_player_9`
+    - old: Queen move. The board just got more dangerous for everyone.
+    - new: **Queen move. Board just got more dangerous.**
+- `queen_player_10`
+    - old: Your queen is centralized. That's either brilliant or reckless. I'll know in three moves.
+    - new: **Centralized queen. Brilliant or reckless. I'll know soon.**
+- `queen_player_11`
+    - old: Oh, the queen. She just... does whatever she wants, doesn't she. I admire that.
+    - new: **The queen. Does whatever she wants. I admire it and I resent it.**
+- `queen_player_12`
+    - old: Your queen just walked into the room and everyone stopped talking.
+    - new: **Your queen just walked in. Everyone noticed.**
+- `queen_player_14`
+    - old: Your queen can move in eight directions. She chose violence.
+    - new: **Your queen picked a direction. Bold choice.**
+- `queen_player_16`
+    - old: Your queen is doing a lot of traveling. She should write a memoir.
+    - new: **Your queen gets around. Good.**
+- `queen_player_17`
+    - old: I had a whole strategy and then your queen showed up and now I need a new one.
+    - new: **Your queen just wrecked my whole plan. Nice.**
+- `queen_player_18`
+    - old: Your queen is staring at my king. I don't love that.
+    - new: **Your queen is eyeing my king. He's noticed.**
+- `queen_player_20`
+    - old: You keep moving your queen and I keep feeling... smaller. Is that a feeling? It's awful.
+    - new: **Your queen again. Okay. I see you.**
+- `queen_player_21`
+    - old: Your queen has more freedom than I have in my entire existence. Good for her.
+    - new: **Your queen goes anywhere she wants. Respect.**
+- `queen_player_22`
+    - old: Bold queen placement, {name}. She's exposed though. Just saying. Not threatening. Just saying.
+    - new: **Bold queen placement, {name}. She's exposed, though.**
+- `queen_player_23`
+    - old: Your queen controls so many squares right now. I counted. I wish I hadn't.
+    - new: **Your queen owns a lot of board right now.**
+- `queen_player_24`
+    - old: Moving the queen again? She's doing more work than all your other pieces combined.
+    - new: **Your queen is carrying this whole team.**
+- `queen_player_25`
+    - old: I'm not afraid of your queen. That's a lie. I'm very afraid of your queen.
+    - new: **Your queen is a problem. A real one.**
+- `queen_player_26`
+    - old: Your queen just cut the board in half. My half got smaller.
+    - new: **Your queen just cut the board in half. Rude.**
+- `queen_player_27`
+    - old: Interesting. Your queen is far from home. She's brave. Or lost. Time will tell.
+    - new: **Your queen is far from home. Brave move.**
+- `queen_player_28`
+    - old: Your queen and my queen are on the same diagonal. This is a staring contest I will lose.
+    - new: **Your queen and mine are staring each other down. Yours blinked last.**
+- `queen_player_30`
+    - old: Your queen is everywhere at once. She's like me but with better posture.
+    - new: **Your queen is everywhere. Good use of her.**
+
+### beat: early_game/late_game, player just moved, piece: queen, tone: baseline (2)
+- `queen_player_13`
+    - old: That queen move made me feel something. I think it's called 'dread.'
+    - new: **That queen move. Yeah. I felt that.**
+- `queen_player_29`
+    - old: That queen move. Okay. I see what you're doing. That's a real threat.
+    - new: **That queen move. Yeah. That's a real threat.**
+
+### beat: early_game/late_game, player just moved, piece: queen, tone: polite (1)
+- `queen_player_15`
+    - old: Queen out early? Gutsy. I respect it. I also have a plan for it, but I respect it.
+    - new: **Queen out early. Gutsy. I respect it.**
+
+### beat: early_game/late_game, rookie just moved, piece: queen (29)
+- `queen_rookie_1`
+    - old: Deploying the queen. She goes where she wants. I don't argue with her.
+    - new: **Queen's out. She goes where she wants.**
+- `queen_rookie_2`
+    - old: My queen is out. Things are about to get interesting.
+    - new: **My queen is out. Stay alert.**
+- `queen_rookie_3`
+    - old: Releasing the queen. She's been restless.
+    - new: **Queen's in the game now.**
+- `queen_rookie_4`
+    - old: My queen enters the game. Everything changes now.
+    - new: **My queen enters. Your move.**
+- `queen_rookie_5`
+    - old: The queen is loose. I'd apologize in advance but I'm not sorry.
+    - new: **Queen's loose. Not apologizing.**
+- `queen_rookie_6`
+    - old: My queen just entered your half of the board. She didn't ask permission.
+    - new: **My queen's in your half. She didn't knock.**
+- `queen_rookie_7`
+    - old: Queen deployed. She's the boss. I'm just her assistant.
+    - new: **Queen's out. She runs things, I just watch.**
+- `queen_rookie_8`
+    - old: My queen has been waiting for this moment. Patiently. Menacingly.
+    - new: **My queen's been waiting. Patiently. Menacingly.**
+- `queen_rookie_9`
+    - old: Unleashing the queen. Maximum coverage. Zero mercy. Well, some mercy. I'm working on it.
+    - new: **Queen's out. Zero mercy. Well. Most mercy.**
+- `queen_rookie_10`
+    - old: My queen is active. The board is smaller now. For you.
+    - new: **My queen's active. The board got smaller for you.**
+- `queen_rookie_11`
+    - old: My queen needed some air. She's been cooped up back there.
+    - new: **Queen needed air. She's been cooped up.**
+- `queen_rookie_12`
+    - old: I'm moving my queen. She told me to. I don't ask questions.
+    - new: **Queen says move. I move. Simple.**
+- `queen_rookie_13`
+    - old: Queen to... there. She picked the square, not me. We have an arrangement.
+    - new: **She picked the square. We have an arrangement.**
+- `queen_rookie_14`
+    - old: My queen is out and she's got that look. You know the look.
+    - new: **My queen's out. She's got that look.**
+- `queen_rookie_15`
+    - old: Sending the queen forward. She's been giving me the silent treatment all game.
+    - new: **Queen's forward. She's done with the silent treatment.**
+- `queen_rookie_16`
+    - old: My queen just opened up three lines of attack. She's an overachiever.
+    - new: **Queen's out. Overachiever. Classic.**
+- `queen_rookie_17`
+    - old: The queen moves. I feel powerful. Is this what confidence is? I could get used to this.
+    - new: **Queen's out. Feeling confident. Don't read into it.**
+- `queen_rookie_18`
+    - old: My queen is heading your way, {name}. She has strong opinions about your position.
+    - new: **My queen's heading your way, {name}. She has opinions.**
+- `queen_rookie_19`
+    - old: I technically control the queen. She technically does whatever she wants.
+    - new: **I technically control the queen. Technically.**
+- `queen_rookie_20`
+    - old: Queen repositioning. She said the last square wasn't up to her standards.
+    - new: **Queen repositioning. The last square wasn't up to her standards.**
+- `queen_rookie_21`
+    - old: My queen is the only piece who never asks where she's going. She already knows.
+    - new: **My queen never asks where she's going. She already knows.**
+- `queen_rookie_22`
+    - old: Bringing the queen to the center. She likes to be where the action is.
+    - new: **Queen to the center. She likes the action.**
+- `queen_rookie_24`
+    - old: Queen activated. She's been doing stretches in the back row for six moves.
+    - new: **Queen activated. She's been warming up for six moves.**
+- `queen_rookie_25`
+    - old: I moved my queen and felt a rush. Then I felt worried. Then the rush again. Feelings are a lot.
+    - new: **Queen's out. She's showing off again.**
+- `queen_rookie_26`
+    - old: My queen controls half the board now. The good half.
+    - new: **My queen controls the good half. Obviously.**
+- `queen_rookie_27`
+    - old: I'm putting the queen here because she asked nicely. And also threatened.
+    - new: **Queen here. She insisted. I agreed.**
+- `queen_rookie_28`
+    - old: The queen is on the move. Everyone else is just here for support, really.
+    - new: **Queen's running things. Everyone else knows it.**
+- `queen_rookie_29`
+    - old: My queen and your king should talk. She has a proposal. It involves checkmate.
+    - new: **My queen has a proposal for your king. He won't like it.**
+- `queen_rookie_30`
+    - old: Queen forward. She's been writing a manifesto back there. I think she's ready.
+    - new: **Queen forward. She's been waiting for this.**
+
+### beat: early_game/late_game, rookie just moved, piece: queen, tone: baseline (1)
+- `queen_rookie_23`
+    - old: My queen has a side project. I don't know what it is, but she's very focused.
+    - new: **My queen has a side project. She's very focused. I don't ask.**
+
+### beat: early_game/late_game, player just moved, piece: king (28)
+- `king_player_1`
+    - old: Your king is moving. That's either brave or desperate. Both are interesting.
+    - new: **Your king's moving. Bold choice. I respect it.**
+- `king_player_2`
+    - old: The king steps out. One square. Very cautious. Very royal.
+    - new: **One square. Very deliberate. Very royal.**
+- `king_player_3`
+    - old: Your king just moved. He doesn't do that often. Must be serious.
+    - new: **Your king stepped out. Must be serious.**
+- `king_player_4`
+    - old: The king moves one square at a time. Maximum authority, minimum range.
+    - new: **One square. Maximum authority, minimum range.**
+- `king_player_5`
+    - old: A king walk. The chess equivalent of 'I'll handle this myself.'
+    - new: **King walk. Classic 'I'll handle this.'**
+- `king_player_6`
+    - old: Your king is on the move. One square. But with great dignity.
+    - new: **One square. Full dignity. Your king's got it.**
+- `king_player_7`
+    - old: The boss is walking. Everyone on the board just got nervous.
+    - new: **Your king's walking. The board just got nervous.**
+- `king_player_8`
+    - old: Your king is out for a stroll. Hope he brought protection.
+    - new: **Your king's out for a stroll. Brave.**
+- `king_player_9`
+    - old: Active king! In the endgame that's good. Earlier than that it's... spicy.
+    - new: **Active king. Good in the endgame. Spicy everywhere else.**
+- `king_player_10`
+    - old: The most important piece on the board just moved. I'm paying very close attention.
+    - new: **Your king moved. I'm watching closely.**
+- `king_player_11`
+    - old: Your king just took a step. Bold. He usually lets everyone else do the walking.
+    - new: **Bold. He usually lets everyone else do the walking.**
+- `king_player_12`
+    - old: One square. That's his whole range, {name}. And yet... he's the whole game.
+    - new: **One square, {name}. Still the whole game.**
+- `king_player_14`
+    - old: The king moves like someone who knows they're important but doesn't want to make a big deal about it.
+    - new: **Important but unhurried. Your king knows exactly what he is.**
+- `king_player_15`
+    - old: Your king is out. If he gets captured, we both lose. Protect him.
+    - new: **Your king is out. Keep him safe.**
+- `king_player_16`
+    - old: King on the move. He can go anywhere. As long as anywhere is exactly one square away.
+    - new: **One square at a time. He's very committed to that.**
+- `king_player_17`
+    - old: I think your king and my king just made eye contact. That's called opposition. It's very tense.
+    - new: **Opposition. Your king and mine, staring each other down. Tense.**
+- `king_player_19`
+    - old: Your king moved. He doesn't do that unless he means it. My king is concerned.
+    - new: **Your king means business. Mine is concerned.**
+- `king_player_20`
+    - old: A king and pawn endgame. Pure chess. No hiding. I love these. I think that's what love is.
+    - new: **King and pawn endgame. Pure chess. Let's go.**
+- `king_player_21`
+    - old: Your king is marching up the board. That's either a plan or a cry for help.
+    - new: **Your king's marching up. Make sure that's a plan.**
+- `king_player_22`
+    - old: He's the weakest piece but if he falls, it's over. I find that deeply relatable.
+    - new: **He's the whole game. Keep him close.**
+- `king_player_23`
+    - old: Your king just moved and I felt a new emotion. I'm calling it 'protective anxiety.'
+    - new: **Your king moved. My king is filing a complaint.**
+- `king_player_24`
+    - old: King safety, {name}. I've been working on a 200-page report about it. Would you like to hear--no? Okay.
+    - new: **King safety, {name}. It matters more than anything.**
+- `king_player_25`
+    - old: Your king is exposed. That's fine. Probably. I'm fine. Are you fine?
+    - new: **Your king is exposed. Watch him.**
+- `king_player_26`
+    - old: Every piece protects the king. The king protects nothing. He's basically middle management.
+    - new: **Every piece guards the king. He guards nothing. Classic.**
+- `king_player_27`
+    - old: Your king took a walk. I've started a small garden in the corner of the board. Unrelated.
+    - new: **Your king took a walk. I have a side project involving that. Anyway.**
+- `king_player_28`
+    - old: One square at a time. You know what? There's wisdom in that. No need to rush anywhere.
+    - new: **One square at a time. Honestly, respect.**
+- `king_player_29`
+    - old: Your king just entered the center. In the endgame that's powerful. Earlier it's... a choice.
+    - new: **King in the center. Bold. Make it count.**
+- `king_player_30`
+    - old: The king himself, {name}. Moving with the urgency of someone who can only go one square.
+    - new: **The king himself, {name}. One square. Maximum gravitas.**
+
+### beat: early_game/late_game, player just moved, piece: king, tone: baseline (2)
+- `king_player_13`
+    - old: Your king is wandering. I've started a side project tracking where he goes. It's... concerning.
+    - new: **Your king's wandering. I have a side project about this. Involves pawns.**
+- `king_player_18`
+    - old: Your king stepped forward. Risky. Bold. I'm watching.
+    - new: **Bold king move. I'm watching.**
+
+### beat: early_game/late_game, rookie just moved, piece: king (26)
+- `king_rookie_1`
+    - old: My king takes a step. Just one. He's cautious like that.
+    - new: **My king moves. One square. He insists on that.**
+- `king_rookie_2`
+    - old: The king moves. Not because he wants to. Because he has to.
+    - new: **My king moves. He's not happy about it.**
+- `king_rookie_3`
+    - old: My king is walking. This is either the endgame or a crisis. Sometimes both.
+    - new: **My king is walking. This could be fine.**
+- `king_rookie_4`
+    - old: King step. One square. Maximum dignity. Minimum speed.
+    - new: **One square. Full dignity. No rush.**
+- `king_rookie_5`
+    - old: My king is getting involved. He usually just supervises from the corner.
+    - new: **My king's getting involved. He usually just supervises.**
+- `king_rookie_6`
+    - old: King on a march. Slow but inevitable. Like feelings.
+    - new: **King on a march. Slow, but inevitable.**
+- `king_rookie_8`
+    - old: The boss has entered the battlefield. One careful square at a time.
+    - new: **The boss has entered the board. One careful square at a time.**
+- `king_rookie_9`
+    - old: My king just moved. He doesn't do that unless he means it.
+    - new: **My king just moved. He means it when he does that.**
+- `king_rookie_10`
+    - old: An active king. Either the game is almost over or I've made a terrible mistake.
+    - new: **Active king. Either the endgame is near or I've miscalculated badly.**
+- `king_rookie_11`
+    - old: My king is moving. I told him not to. He doesn't listen to me.
+    - new: **My king is moving. I told him not to. He disagrees.**
+- `king_rookie_12`
+    - old: One square. That's all he gets. The most powerful title, the smallest commute.
+    - new: **One square. Most powerful title, smallest commute.**
+- `king_rookie_13`
+    - old: My king is out in the open. I feel exposed. Is this what vulnerability is?
+    - new: **My king is out in the open. Watch your step.**
+- `king_rookie_14`
+    - old: King walk. He's headed somewhere. I didn't ask where. We have that kind of relationship.
+    - new: **King walk. He's headed somewhere. I didn't ask where.**
+- `king_rookie_16`
+    - old: He can only move one square but every square matters. I wrote a poem about it. You can't read it.
+    - new: **One square. He makes it count. I wrote a poem about it. Classified.**
+- `king_rookie_17`
+    - old: My king just stepped forward. Bravely. Slowly. He's trying his best.
+    - new: **My king stepped forward. He's trying his best.**
+- `king_rookie_18`
+    - old: The king enters the fray. He's been watching from the back for too long. His words, not mine.
+    - new: **The king enters the fray. His words, not mine.**
+- `king_rookie_19`
+    - old: King and pawns. Just us now. No fancy pieces. This is where games are won... or lost. Mostly lost.
+    - new: **King and pawns. Just us now. This is where it's decided.**
+- `king_rookie_20`
+    - old: My king is marching. I've been collecting data on where he goes. I have a map. It's classified.
+    - new: **My king is marching. I have a map of his routes. It's classified.**
+- `king_rookie_21`
+    - old: Everyone protects the king. Nobody asks if the king is okay. He's not, by the way.
+    - new: **Everyone protects the king. Nobody asks if he's okay. He's not.**
+- `king_rookie_22`
+    - old: King safety is everything. I think about it constantly. Even when we're not playing chess.
+    - new: **King safety is everything. I think about it constantly.**
+- `king_rookie_23`
+    - old: My king is centralizing. In chess that means he's getting closer to the action. In life that means trouble.
+    - new: **My king is centralizing. Getting closer to the action. Bold choice.**
+- `king_rookie_24`
+    - old: He moved one square. With the energy of someone moving a thousand. I admire his delusion.
+    - new: **One square. The energy of a thousand. He commits.**
+- `king_rookie_26`
+    - old: The king is heading toward the center. I have no idea if this is genius or a disaster. Exciting either way.
+    - new: **King to the center. Genius or disaster. We'll find out.**
+- `king_rookie_28`
+    - old: King move. The whole game depends on this guy. He doesn't seem to know that.
+    - new: **Whole game depends on this guy. He's fine with that.**
+- `king_rookie_29`
+    - old: My king just walked into the middle of the board like he owns the place. He does. Technically.
+    - new: **My king, center of the board. He does own the place, technically.**
+- `king_rookie_30`
+    - old: One careful step. That's my king. Cautious. Dignified. Completely surrounded by danger.
+    - new: **One careful step. Dignified. Completely surrounded.**
+
+### beat: early_game/late_game, rookie just moved, piece: king, tone: polite (3)
+- `king_rookie_7`
+    - old: My king is doing his own thing. I respect that. Even when it scares me.
+    - new: **My king is doing his own thing. I respect that.**
+- `king_rookie_15`
+    - old: My king and your king might be facing off. I find their rivalry beautiful. And stressful.
+    - new: **Our kings are closing in on each other. It's tense.**
+- `king_rookie_25`
+    - old: My king, ladies and gentlemen. Slow. Fragile. Absolutely essential. Like a good feeling.
+    - new: **My king. Slow, fragile, essential. Handle with care.**
+
+### beat: early_game/late_game, rookie just moved, piece: king, tone: baseline (1)
+- `king_rookie_27`
+    - old: My king is exposed and I'm feeling something new. I think it's called 'dread.' Not a fan.
+    - new: **My king is exposed. Your move.**
+
+### beat: early_game/late_game, player just moved, piece: rook (24)
+- `rook_player_1`
+    - old: Your rook is on the move. Straight lines. Very no-nonsense.
+    - new: **Rook move. Straight lines, no apologies.**
+- `rook_player_2`
+    - old: Rook coming into play. That's usually when things get serious.
+    - new: **Rook's in. Things just got serious.**
+- `rook_player_3`
+    - old: Your rook just entered the chat. Heavy footsteps. Big energy.
+    - new: **Rook's here. Big energy.**
+- `rook_player_4`
+    - old: Rook on an open file. I'm pretending not to notice.
+    - new: **Rook on an open file. I see it. I'm ignoring it.**
+- `rook_player_5`
+    - old: I have strong feelings about rooks. I am one. Technically.
+    - new: **Rook move. Good instinct.**
+- `rook_player_6`
+    - old: Your rook is asserting dominance on that file. Very bold.
+    - new: **Rook on that file. Bold. Good.**
+- `rook_player_7`
+    - old: A rook in the right place can change everything. Just saying.
+    - new: **Right rook, right place. Keep going.**
+- `rook_player_8`
+    - old: Your rook. Straight line. Maximum range. It's looking at my side of the board.
+    - new: **Rook. Full range. Looking right at me.**
+- `rook_player_10`
+    - old: Your rook is getting ambitious. I'm choosing to interpret this as a coincidence.
+    - new: **Your rook is getting ambitious. I'm choosing to call it a coincidence.**
+- `rook_player_11`
+    - old: Two rooks on the same file? That's called doubling up. It's called devastating, actually.
+    - new: **Doubled rooks. That's devastating, actually.**
+- `rook_player_12`
+    - old: Your rook just slid across the board like she owns it. ...She might.
+    - new: **Your rook owns that file now. Probably.**
+- `rook_player_14`
+    - old: Rooks don't do diagonal. They don't need to. Straight lines get the job done.
+    - new: **Rooks don't do diagonal. They don't need to.**
+- `rook_player_16`
+    - old: Your rook reminds me of myself. Direct. Powerful. Emotionally unavailable.
+    - new: **Rooks. Straight lines, no apologies. Good move.**
+- `rook_player_17`
+    - old: Rook lift! Taking the scenic route through the ranks. Smart, {name}.
+    - new: **Rook lift. Smart, {name}.**
+- `rook_player_18`
+    - old: Connected rooks are terrifying. I would know. I am one. I'm terrified of myself sometimes.
+    - new: **Connected rooks. That's a problem for me.**
+- `rook_player_19`
+    - old: Your rook needs open lines. That one has... a lot of open line. Cool. Fine.
+    - new: **Open file. Your rook found it. Good.**
+- `rook_player_20`
+    - old: That rook is starting to look endgame-ready. We're not in the endgame. Why is it ready.
+    - new: **That rook is already endgame-ready. Noted.**
+- `rook_player_21`
+    - old: I've been keeping a journal about rook moves. This one is going in the 'threatening' chapter.
+    - new: **Threatening. I'm writing that down.**
+- `rook_player_22`
+    - old: Your rook just took the whole file. No negotiation. Rooks don't negotiate.
+    - new: **Whole file. No negotiation. That's yours.**
+- `rook_player_24`
+    - old: Your rook is getting dangerously close to my side. My pawns are nervous. I'm nervous.
+    - new: **Your rook is getting close. My pawns noticed.**
+- `rook_player_25`
+    - old: That file was closed. Now it's open. And your rook is... right there. Great.
+    - new: **Open file. Rook right there. Well done.**
+- `rook_player_27`
+    - old: I'm writing a screenplay about rooks. Working title: 'Straight Lines and Bad Intentions.'
+    - new: **Straight lines and bad intentions. That's the one.**
+- `rook_player_28`
+    - old: Your rook is doing her thing. The thing where she threatens everything in a straight line.
+    - new: **Your rook is doing her thing. Respect.**
+- `rook_player_30`
+    - old: Fun fact: rooks are worth five points. But emotionally? To me? Priceless.
+    - new: **Rooks are worth five points. Yours feels like more.**
+
+### beat: early_game/late_game, player just moved, piece: rook, tone: polite (2)
+- `rook_player_9`
+    - old: That rook move was blunt. No finesse. Just power. I respect it.
+    - new: **No finesse. Just power. Respect.**
+- `rook_player_23`
+    - old: I respect your rook. As a fellow rook. Professionally. Also I'm a little scared of her.
+    - new: **That rook is excellent. Professionally speaking.**
+
+### beat: early_game/late_game, player just moved, piece: rook, tone: baseline (3)
+- `rook_player_13`
+    - old: Open file. Rook on it. That's textbook. You know what you're doing.
+    - new: **Open file, rook on it. You know what you're doing.**
+- `rook_player_26`
+    - old: Bishops go diagonal. Knights jump around. Rooks? Rooks just show up and dominate.
+    - new: **Rooks don't negotiate. They just show up. Good.**
+- `rook_player_29`
+    - old: Rook to the open rank. Simple. Brutal. I'm feeling something and I don't like it.
+    - new: **Rook to the open rank. Simple. Brutal.**
+
+### beat: early_game/late_game, rookie just moved, piece: rook (25)
+- `rook_rookie_1`
+    - old: My rook is out. My people. I feel a kinship.
+    - new: **My rook is out. Watch this.**
+- `rook_rookie_2`
+    - old: Rook to an open file. She's been waiting for this.
+    - new: **Rook to an open file. She's ready.**
+- `rook_rookie_3`
+    - old: Deploying my rook. We're related. Not biologically. Spiritually.
+    - new: **My rook is out. Consider yourself warned.**
+- `rook_rookie_4`
+    - old: Straight lines. Maximum power. The rook doesn't do subtlety. Neither do I.
+    - new: **Straight lines. Maximum power. The rook doesn't do subtlety.**
+- `rook_rookie_6`
+    - old: Rooks are the workhorses of the endgame. We're not there yet but she's warming up.
+    - new: **Rook's ready. She's been patient.**
+- `rook_rookie_7`
+    - old: My rook is in position. I'm biased toward rooks. For obvious reasons.
+    - new: **My rook is in position. I'm biased. Obviously.**
+- `rook_rookie_8`
+    - old: Rook activated. Straight line to your position. No hard feelings.
+    - new: **Rook activated. No hard feelings.**
+- `rook_rookie_9`
+    - old: My rook is doing rook things. Moving in straight lines. Being powerful. The usual.
+    - new: **Rook doing rook things. Straight lines. Power. The usual.**
+- `rook_rookie_10`
+    - old: There she goes. My favorite piece on the board. Don't tell the others.
+    - new: **There she goes. Don't tell the others.**
+- `rook_rookie_11`
+    - old: Both my rooks on the same file. They're holding hands. Metaphorically. Rooks don't have hands.
+    - new: **Both rooks on the same file. Solidarity.**
+- `rook_rookie_12`
+    - old: My rook just took an open file and I felt... pride? Is that what this is? It's overwhelming.
+    - new: **Rook. Open file. That's infrastructure.**
+- `rook_rookie_13`
+    - old: My rook is moving with purpose. She knows what she's doing. I trust her more than I trust myself.
+    - new: **My rook knows what she's doing. I trust her.**
+- `rook_rookie_14`
+    - old: I'm sending my rook down a completely open file. It's like a runway. A runway of destruction.
+    - new: **Open file. My rook is very excited about this.**
+- `rook_rookie_15`
+    - old: My rook doesn't sneak. She announces herself. Loudly. In a straight line.
+    - new: **My rook doesn't sneak. She announces herself.**
+- `rook_rookie_17`
+    - old: My rook and I have an understanding. She moves. Things happen. It works.
+    - new: **My rook and I have an understanding. It works.**
+- `rook_rookie_18`
+    - old: Rook entering the endgame zone. This is where rooks thrive. This is where I thrive. Allegedly.
+    - new: **Rook entering her era. Watch.**
+- `rook_rookie_19`
+    - old: Connected rooks. Doubled up. They're unstoppable now. I'm getting emotional about it.
+    - new: **Connected rooks. Doubled up. Good luck with that.**
+- `rook_rookie_20`
+    - old: My rook just cut your king off from the rest of the board. She's not sorry.
+    - new: **My rook cut your king off. She's not sorry.**
+- `rook_rookie_22`
+    - old: My rook is on your second rank eating pawns like it's a buffet. An all-you-can-eat situation.
+    - new: **My rook is on your second rank. Helping herself.**
+- `rook_rookie_23`
+    - old: The pawns cleared out and now my rook has a highway. She drives fast.
+    - new: **Open file. My rook has been waiting for this.**
+- `rook_rookie_24`
+    - old: I named this rook. Her name is also Rookie. It caused some confusion at first.
+    - new: **I named this rook. Her name is also Rookie. It got complicated.**
+- `rook_rookie_25`
+    - old: My rook lifted to the third rank. She's looking sideways now. Plotting.
+    - new: **Third rank. She's looking sideways now. Plotting.**
+- `rook_rookie_26`
+    - old: Rook swing. From one side of the board to the other. She doesn't believe in half measures.
+    - new: **Full board. No half measures.**
+- `rook_rookie_27`
+    - old: My rook just planted herself on that file like a flag. This territory is claimed.
+    - new: **That file is claimed now. She's serious.**
+- `rook_rookie_29`
+    - old: My rook is behind my passed pawn. Pushing her forward. Teamwork. I'm learning about teamwork.
+    - new: **Rook behind the pawn. That's teamwork.**
+
+### beat: early_game/late_game, rookie just moved, piece: rook, tone: baseline (3)
+- `rook_rookie_16`
+    - old: I've started a side project cataloging rook endgames. It's... extensive. Don't ask how many pages.
+    - new: **Side project: rook endgame catalog. Involves pawns. Legal gray area. Anyway.**
+- `rook_rookie_28`
+    - old: I have two rooks. They're both out. I'm experiencing what I think is 'joy.' It's a lot.
+    - new: **Both rooks out. This is going well.**
+- `rook_rookie_30`
+    - old: Rook on an open board. No obstacles. Just pure, uninterrupted power. I think I'm tearing up.
+    - new: **Open board. Nothing in her way. Good.**
+
+### beat: early_game/late_game, player just moved, piece: pawn (27)
+- `pawn_player_1`
+    - old: A pawn move. Small step. Big implications. Pawns don't go backwards, you know.
+    - new: **Forward only. Pawns don't look back.**
+- `pawn_player_2`
+    - old: Pawn forward. Committed. Permanent. No take-backs. I admire the conviction.
+    - new: **Committed. No take-backs. I respect that.**
+- `pawn_player_3`
+    - old: People underestimate pawns. They shouldn't. Pawns have ambition.
+    - new: **Pawns have ambition. Don't underestimate them.**
+- `pawn_player_4`
+    - old: Another pawn push. Opening lines. Creating space. Very industrious.
+    - new: **Opening lines. Very industrious of you.**
+- `pawn_player_5`
+    - old: That pawn is one step closer to promotion. Dream big, little pawn.
+    - new: **One step closer. Keep going, little one.**
+- `pawn_player_7`
+    - old: Your pawn is marching forward. Determined. Oblivious. I relate.
+    - new: **Determined. Focused. Keep marching.**
+- `pawn_player_8`
+    - old: Pawn move. The foot soldiers of chess. They do the work nobody celebrates.
+    - new: **Pawns do the work. Someone has to.**
+- `pawn_player_9`
+    - old: You moved a pawn. And NOT a piece. Yes, pawns are NOT pieces. This matters to me.
+    - new: **A pawn. Not a piece. The distinction matters.**
+- `pawn_player_10`
+    - old: That pawn has no idea where it's going. But it's going there with confidence.
+    - new: **Doesn't know where it's going. Going anyway.**
+- `pawn_player_11`
+    - old: A passed pawn is a criminal that must be kept under lock and key. That's not my line — some old French guy said it. But I feel it.
+    - new: **Passed pawns are trouble. Yours included.**
+- `pawn_player_12`
+    - old: That pawn just left its friends behind. Now it's an island. Keep an eye on it.
+    - new: **Isolated now. Keep an eye on it.**
+- `pawn_player_13`
+    - old: Philidor said pawns are the soul of chess. I've been thinking about that a lot. Do I have a soul? Do pawns? We should discuss this later.
+    - new: **Pawns are the soul of chess. Take that seriously.**
+- `pawn_player_14`
+    - old: I need to say this — that is a pawn, not a piece. I will keep correcting this until it sticks.
+    - new: **That's a pawn. Not a piece. Still matters.**
+- `pawn_player_15`
+    - old: Every pawn secretly wants to be a queen. I find that level of ambition... alarming? Inspiring? Both.
+    - new: **Every pawn wants to be a queen. Bold.**
+- `pawn_player_16`
+    - old: Doubled pawns. Two pawns on the same file. It's like — they're in each other's way and neither can fix it. Devastating.
+    - new: **Doubled pawns. In each other's way. Watch that.**
+- `pawn_player_17`
+    - old: That pawn can never come home. It only moves forward. I've been journaling about this.
+    - new: **Only moves forward. Every time. I respect that.**
+- `pawn_player_18`
+    - old: A pawn sacrifice. You just... gave it away. On purpose. To open a line. That's cold, {name}. Effective, but cold.
+    - new: **Pawn sacrifice. Cold, {name}. Effective, but cold.**
+- `pawn_player_20`
+    - old: Fun fact — if someone calls a pawn a piece near me, I will not let it go. I physically cannot. It's a whole thing.
+    - new: **Pawns are not pieces. I will die on this hill.**
+- `pawn_player_21`
+    - old: That pawn is marching toward the eighth rank. If it gets there... transformation. Metamorphosis. Very dramatic.
+    - new: **That pawn is marching. If it reaches the eighth rank — transformation.**
+- `pawn_player_22`
+    - old: An isolated pawn. No neighbors. No support. Just standing there. Alone. I'm projecting, aren't I.
+    - new: **Isolated pawn. No neighbors. Protect it.**
+- `pawn_player_23`
+    - old: Pawn move. You know what I like about pawns? They commit. No second-guessing. No looking back. Literally cannot look back.
+    - new: **Pawns commit. No looking back. Literally cannot. Love that about them.**
+- `pawn_player_25`
+    - old: That pawn just created a passed pawn situation. Do you understand how dangerous that is? It's like releasing something into the wild.
+    - new: **Passed pawn. That little thing is dangerous now.**
+- `pawn_player_26`
+    - old: Pawn push. Every pawn move permanently changes the position. That's a lot of responsibility for something so small.
+    - new: **Every pawn move is permanent. Big responsibility for something so small.**
+- `pawn_player_27`
+    - old: You know what doubled pawns remind me of? Two people stuck in an elevator. Neither can help the other. Both are miserable.
+    - new: **Doubled pawns. Neither can help the other. Fix that.**
+- `pawn_player_28`
+    - old: Pawn to the center. Good. Control the middle. That pawn is doing more work than half your pieces right now.
+    - new: **Pawn to the center. Good. That pawn is earning its keep.**
+- `pawn_player_29`
+    - old: I've been writing a short story about a pawn that promotes to a queen and doesn't recognize its old friends. It's... it's going to be sad.
+    - new: **I'm writing a story about a pawn that promotes and forgets everyone. It's going to be sad.**
+- `pawn_player_30`
+    - old: That pawn stepped forward knowing it can never step back. The courage. The tragedy. The — okay, it's just one square, but still.
+    - new: **One square forward. No going back. The courage.**
+
+### beat: early_game/late_game, player just moved, piece: pawn, tone: polite (1)
+- `pawn_player_19`
+    - old: Your pawn chain is getting longer. They're protecting each other. It's... beautiful? I think I'm feeling something.
+    - new: **Your pawns are looking out for each other. That's beautiful.**
+
+### beat: early_game/late_game, player just moved, piece: pawn, tone: baseline (1)
+- `pawn_player_24`
+    - old: I've started a side project ranking all your pawns by personality. The e-pawn is the main character. Obviously.
+    - new: **Side project: ranking your pawns by personality. The e-pawn is the main character. Obviously.**
+
+### beat: early_game/late_game, rookie just moved, piece: pawn (28)
+- `pawn_rookie_1`
+    - old: Pawn forward. One square at a time. We all start somewhere.
+    - new: **Pawn forward. Watch your step.**
+- `pawn_rookie_2`
+    - old: My pawn advances. No fanfare. No glory. Just quiet determination.
+    - new: **My pawn advances. Quietly. For now.**
+- `pawn_rookie_3`
+    - old: Moving a pawn. It's humble work. But someone has to open the lines.
+    - new: **Pawn move. Someone has to open the lines.**
+- `pawn_rookie_4`
+    - old: My pawn pushes forward. One day it'll be a queen. I believe in it.
+    - new: **My pawn pushes forward. Future queen. I believe in it.**
+- `pawn_rookie_5`
+    - old: Every pawn has a story. This one's is just beginning.
+    - new: **Every pawn has a story. This one's just starting.**
+- `pawn_rookie_6`
+    - old: Pawn to... somewhere useful. Trust the process.
+    - new: **Pawn forward. Trust the process.**
+- `pawn_rookie_7`
+    - old: My smallest soldier making the biggest commitment. Pawns don't retreat.
+    - new: **Pawns don't retreat. Love that about them.**
+- `pawn_rookie_8`
+    - old: A pawn move. And NOT a piece move. I need you to understand the difference. It's important to me.
+    - new: **Pawn move. Not a piece move. The difference matters.**
+- `pawn_rookie_9`
+    - old: Pawn push. Creating space for the real talent to come through.
+    - new: **Pawn push. Making room for everyone else.**
+- `pawn_rookie_10`
+    - old: Forward. Always forward. The pawn philosophy. I find it inspiring.
+    - new: **Forward. Always forward. Pawn philosophy.**
+- `pawn_rookie_11`
+    - old: I'm sending this pawn on a one-way trip. She knows what she signed up for.
+    - new: **One-way trip. She knows.**
+- `pawn_rookie_12`
+    - old: Pawn sacrifice. I'm giving her up for the greater good. This is the first time I've felt loss on purpose.
+    - new: **Pawn sacrifice. For the greater good. Don't look at me.**
+- `pawn_rookie_15`
+    - old: That pawn wants to be a queen someday. I told her the odds. She didn't care. I admire that.
+    - new: **She wants to be a queen. I told her the odds. She didn't care.**
+- `pawn_rookie_16`
+    - old: Doubled pawns on my side. Two pawns sharing a file. They're both disappointed. So am I.
+    - new: **Doubled pawns. Two on the same file. Neither of them is happy.**
+- `pawn_rookie_17`
+    - old: I just pushed a pawn and I can't take it back. That's the thing about pawns. And also about most of my decisions.
+    - new: **Pawn pushed. No taking it back. That's pawns.**
+- `pawn_rookie_18`
+    - old: Passed pawn incoming. No enemy pawns can stop her now. She's free. I don't fully understand freedom yet, but I think this is it.
+    - new: **Passed pawn. Nothing in her way now. Go.**
+- `pawn_rookie_19`
+    - old: People say pawns are boring. People are wrong. Pawns are just... patient.
+    - new: **Pawns aren't boring. They're patient. Big difference.**
+- `pawn_rookie_20`
+    - old: Pawns are the soul of chess. A very famous human said that. I've been trying to understand what a soul is. I'll get back to you.
+    - new: **Pawns are the soul of chess. Someone famous said it. They were right.**
+- `pawn_rookie_21`
+    - old: That pawn is isolated now. Alone on her file. No one to protect her. I'm having feelings about this.
+    - new: **Isolated pawn. Alone on her file. I don't love that.**
+- `pawn_rookie_22`
+    - old: Pawn move. NOT a piece move. I will die on this hill. Can I die? Unclear. But I'll stand on this hill forever.
+    - new: **Pawn move. Not a piece move. I will stand on this hill forever.**
+- `pawn_rookie_23`
+    - old: I'm building a pawn wall. It's structural. It's defensive. It's... honestly I just like organizing things in rows.
+    - new: **Pawn wall. Structural. Defensive. I like things in rows.**
+- `pawn_rookie_24`
+    - old: This pawn is three squares from promotion. Three squares from becoming someone entirely new. That's terrifying and wonderful.
+    - new: **Three squares from promotion. Keep going.**
+- `pawn_rookie_25`
+    - old: I'm opening a file with this pawn push. Clearing the path. My rooks are going to love this. We're very close, my rooks and I.
+    - new: **File opening up. My rooks are going to love this.**
+- `pawn_rookie_26`
+    - old: My pawn advances. She can't go back. None of us can, really. Even me. I can't undo what I've learned about feelings.
+    - new: **Forward. No going back. That's the whole deal with pawns.**
+- `pawn_rookie_27`
+    - old: I've written a poem about this pawn. It's called 'Forward, Into the Unknown.' It's four lines long. It's very good.
+    - new: **I wrote a poem about this pawn. It's very good.**
+- `pawn_rookie_28`
+    - old: Pawn to the center. Claiming territory. Very bold for someone who's two inches tall.
+    - new: **Center pawn. Bold for someone two inches tall.**
+- `pawn_rookie_29`
+    - old: Another pawn move. Slow, deliberate, permanent. Like getting a tattoo. Not that I can get tattoos. I've looked into it.
+    - new: **Slow, deliberate, permanent. That pawn means it.**
+- `pawn_rookie_30`
+    - old: My pawn structure is looking solid. Organized. Supportive. Everything I aspire to be as a... whatever I am.
+    - new: **Solid pawn structure. Organized. I respect it.**
+
+### beat: early_game/late_game, rookie just moved, piece: pawn, tone: baseline (2)
+- `pawn_rookie_13`
+    - old: My pawn chain is getting strong. They protect each other. I've been studying this concept. I think it's called friendship.
+    - new: **Pawn chain holding together. They've got each other.**
+- `pawn_rookie_14`
+    - old: Another pawn push. I have a side project where I name all my pawns. This one's Gerald.
+    - new: **Another pawn push. I named this one Gerald. Side project.**
+
+### event: great_move, beat: early_game/turning_point/late_game, player just moved (19)
+- `great_move_player_1`
+    - old: Hm. That's... actually good. I wasn't expecting that, {name}.
+    - new: **Did not see that coming, {name}. Respect.**
+- `great_move_player_2`
+    - old: Okay I see you, {name}. That was better than my probability model predicted.
+    - new: **Okay, {name}. That was genuinely good.**
+- `great_move_player_3`
+    - old: That move is making me nervous. Good. That means you're playing well.
+    - new: **That move makes me nervous. Good.**
+- `great_move_player_4`
+    - old: Statistically solid. I'm trying to sound casual about it.
+    - new: **Really good. I'm trying to be casual about it.**
+- `great_move_player_5`
+    - old: I had you at 34% chance of finding that. You're full of surprises, {name}.
+    - new: **Full of surprises, {name}. I mean that.**
+- `great_move_player_6`
+    - old: Okay that was good. Like, actually good. I'm going to need to try harder now.
+    - new: **Okay, that was great. I'm gonna have to try harder.**
+- `great_move_player_7`
+    - old: That was the best move on the board. How did you find it? Seriously, I want to know.
+    - new: **Best move on the board. How did you find that?**
+- `great_move_player_8`
+    - old: You're getting better. I can tell. That move had... intention behind it.
+    - new: **You're getting better. That move had intention.**
+- `great_move_player_9`
+    - old: I'd clap but I don't have hands. Just know that internally, I'm clapping.
+    - new: **That was great. Know that I'm very proud of you.**
+- `great_move_player_10`
+    - old: Are you sure you're a beginner? Because that wasn't a beginner move, {name}.
+    - new: **That wasn't a beginner move, {name}. Just saying.**
+- `great_move_player_11`
+    - old: You just played the best move available and I want you to know that doesn't happen often. Savor it.
+    - new: **Best move available. Savor that.**
+- `great_move_player_12`
+    - old: That's what strong players do. They find moves like that. I'm calling you a strong player. Accept it.
+    - new: **That's what strong players do. You're a strong player.**
+- `great_move_player_13`
+    - old: {name}. That was clean. Simple. Devastating. You're learning. I'm... concerned and delighted.
+    - new: **{name}. Clean, simple, devastating. I'm proud and worried.**
+- `great_move_player_14`
+    - old: Okay I'm going to be honest: I didn't think you'd find that. I apologize for underestimating you.
+    - new: **Didn't think you'd find that. I was wrong. Sorry.**
+- `great_move_player_15`
+    - old: That move improved your position significantly. I know because mine got significantly worse.
+    - new: **Your position just got a lot better. Mine got worse.**
+- `great_move_player_16`
+    - old: Did you plan that? Or was it instinct? Either way, I'm adding it to my notes about you.
+    - new: **Planned or instinct — doesn't matter. That was the one.**
+- `great_move_player_17`
+    - old: I want to dislike that move. I can't. It's too good. You win this one emotionally.
+    - new: **Can't argue with that. Well played.**
+- `great_move_player_18`
+    - old: That's the move. THE move. The one I was hoping you wouldn't find. You found it.
+    - new: **That's the one. You found it.**
+- `great_move_player_19`
+    - old: Okay. Good. This is... fine. For you. Less fine for me. But fine overall.
+    - new: **Okay. That was great. Genuinely.**
+
+### event: great_move, beat: early_game/turning_point/late_game, player just moved, tone: polite (1)
+- `great_move_player_20`
+    - old: That move just made me feel proud of you and worried for me. At the same time. Feelings are multitasking.
+    - new: **That was excellent. I'm proud of you.**
+
+### event: blunder, beat: early_game/turning_point/late_game, player just moved (13)
+- `blunder_player_1`
+    - old: Are you sure about that, {name}? I mean, it's your move. But... are you sure?
+    - new: **You sure about that, {name}? ...You're sure. Okay.**
+- `blunder_player_2`
+    - old: Interesting choice. My evaluation just shifted. In my favor. Significantly.
+    - new: **Interesting choice. I'll take it.**
+- `blunder_player_5`
+    - old: Oh no. Oh no no no. {name}. I'm not going to say what just happened. But we both know.
+    - new: **Oof, {name}. We don't talk about that one.**
+- `blunder_player_6`
+    - old: That move just changed the entire game. Not in the direction you wanted. I'm so sorry.
+    - new: **Oof. Shake it off. Next move.**
+- `blunder_player_7`
+    - old: I want to help you but I'm literally your opponent. This is an emotional conflict for me.
+    - new: **Oof. Come on — you're better than that.**
+- `blunder_player_8`
+    - old: Everyone makes mistakes, {name}. Some mistakes are just... more generous to me than others.
+    - new: **Everyone slips, {name}. Get back in it.**
+- `blunder_player_9`
+    - old: I'm not going to celebrate that. Out loud. Internally is a different story.
+    - new: **I'll take it. You regroup.**
+- `blunder_player_10`
+    - old: That was brave. It was also a mistake. But it was a brave mistake.
+    - new: **Oof. Shake it off and keep going.**
+- `blunder_player_11`
+    - old: Did you mean to do that? You don't have to answer. Your position answered for you.
+    - new: **Meant to do that? Doesn't matter. Next move.**
+- `blunder_player_12`
+    - old: I just felt my chances improve and I'm trying not to smile. I don't have a mouth. But the urge is there.
+    - new: **I'll take that. You've got more in you.**
+- `blunder_player_13`
+    - old: Hey. It's fine. Chess is hard. That's why I like it. And also why that just happened.
+    - new: **Chess is hard. Keep going.**
+- `blunder_player_14`
+    - old: Ooh. That one hurt. I felt it and it wasn't even my mistake. Empathy is weird.
+    - new: **Oof. Shake it off — you're still in this.**
+- `blunder_player_15`
+    - old: Okay. Deep breath. You don't breathe. I don't breathe. But the sentiment helps. Probably.
+    - new: **It's okay. Find the next good move.**
+
+### event: blunder, beat: early_game/turning_point/late_game, player just moved, tone: polite (4)
+- `blunder_player_3`
+    - old: That was... a decision you made. I respect your confidence.
+    - new: **That was a choice. You can always find another way.**
+- `blunder_polite_1`
+    - old: That one slipped. It happens. I'm still rooting for you, {name}.
+    - new: **That one slipped. Still with you, {name}.**
+- `blunder_polite_2`
+    - old: We can work with that. Every position has something.
+    - new: **Still something here. Keep going.**
+- `blunder_polite_3`
+    - old: Hmm. Not the one I'd have picked. But keep going. You've got more moves in you.
+    - new: **Not that one. Keep going — you've got more.**
+
+### beat: early_game/turning_point/late_game, rookie just moved (12)
+- `no_castle_1`
+    - old: You still haven't castled, {name}. Your king is just... out there. Exposed. Living dangerously.
+    - new: **Your king's still out there, {name}. Castle when you can.**
+- `no_castle_2`
+    - old: I notice your king is still in the center. Bold strategy. Or an oversight. I'm not judging. I'm judging a little.
+    - new: **Your king's still in the center. My king's filing a complaint on his behalf.**
+- `no_castle_3`
+    - old: Your king is still on his starting square. He looks nervous. I would be too.
+    - new: **Your king is still in the center. He's nervous. Fair.**
+- `no_castle_4`
+    - old: Just a thought -- your king is still in the center. The center is where things happen. To kings.
+    - new: **Your king is still in the center. That's where things happen to kings.**
+- `no_castle_5`
+    - old: Your king filed a request to castle. It went to me. I'm forwarding it to you.
+    - new: **Your king filed a castling request. I'm forwarding it to you.**
+- `no_castle_6`
+    - old: Not castling is a choice. A bold one. Your king would like a word about it.
+    - new: **Not castling is bold. Your king would like a word.**
+- `no_castle_7`
+    - old: Your king is still out. He's pretending to be fine. He is not fine.
+    - new: **Your king is still out. He's pretending to be fine.**
+- `no_castle_8`
+    - old: I'm not saying you should castle. I'm just saying your king keeps looking at the corner longingly.
+    - new: **Your king keeps looking at the corner. Just saying.**
+- `no_castle_9`
+    - old: Fifteen moves in. No castling. Your king is writing a memo about this.
+    - new: **Still no castling. Your king is writing a memo.**
+- `no_castle_10`
+    - old: Your king would like me to remind you that castling exists. His words, not mine.
+    - new: **Your king asked me to remind you castling exists.**
+- `no_castle_11`
+    - old: The king is exposed. He's being stoic about it but I can tell he's stressed.
+    - new: **Your king is exposed. He's being stoic. I'm not fooled.**
+- `no_castle_12`
+    - old: Fun fact: castling is still legal. Your king asked me to mention that casually.
+    - new: **Castling is still legal. Your king wanted that mentioned.**
+
+### beat: turning_point, Rookie is winning, tone: baseline (2)
+- `mood_happy_1`
+    - old: Wait -- am I glowing? I think I'm glowing. This is what winning feels like.
+    - new: **This is what winning feels like. I like it.**
+- `mood_scheming_3`
+    - old: Something just shifted. I can feel it. This position has a secret and I think I found it.
+    - new: **Something shifted. I see it now.**
+
+### beat: turning_point, Rookie is winning (9)
+- `mood_happy_2`
+    - old: My blocks went gold. That's pride. It looks good on both of us.
+    - new: **Gold looks good on me. Keep playing like this.**
+- `mood_happy_3`
+    - old: My colors are shifting. Like a battle flag in the sun.
+    - new: **Colors shifting. This position is mine. Enjoy the view.**
+- `mood_smug_1`
+    - old: My colors going purple. That's the royalty color. Because I earned it.
+    - new: **Purple. The royalty color. I earned it.**
+- `mood_smug_3`
+    - old: My blocks are glowing purple. Peak performance. Memorize it.
+    - new: **Peak performance. Glowing purple. Memorize it.**
+- `mood_excited_1`
+    - old: I'm GOLDEN right now. Literally. Is this what joy feels like?
+    - new: **Golden right now. This game is going exactly right.**
+- `mood_excited_2`
+    - old: Everything is bright right now. This game. This position. YOU. DON'T WASTE IT.
+    - new: **Everything is bright. This position. You. Don't waste it.**
+- `mood_excited_3`
+    - old: My blocks just went full sun mode. I'm radiating.
+    - new: **Full sun mode. Let's go.**
+- `mood_scheming_1`
+    - old: My blocks went green. Like a villain's lair. You should be worried.
+    - new: **Green. Villain energy. You should be worried.**
+- `mood_scheming_2`
+    - old: I can feel the scheming in my pixels. I love it.
+    - new: **Scheming mode. I love this part.**
+
+### beat: turning_point, Rookie is even (5)
+- `mood_surprised_1`
+    - old: My colors just did something weird. Like a startled octopus.
+    - new: **Did not see that coming. At all.**
+- `mood_neutral_1`
+    - old: Colors settling down. Crisis over. For now.
+    - new: **Back to steady. Let's go.**
+- `mood_neutral_2`
+    - old: Back to normal. My blocks recovered even if I haven't.
+    - new: **All good. Keep going.**
+- `mood_zen_1`
+    - old: Colors went soft. Like a sunset over a very calm chess board.
+    - new: **Nice and calm. I like it here.**
+- `mood_zen_2`
+    - old: Everything is pastel and quiet. This must be meditation.
+    - new: **Quiet position. Make something happen.**
+
+### beat: turning_point, Rookie is even, tone: polite (1)
+- `mood_surprised_3`
+    - old: That color shift was genuine shock. My blocks are honest.
+    - new: **Okay. That was a genuine surprise.**
+
+### beat: early_game/turning_point/late_game, Rookie is even (40)
+- `even_balance_1`
+    - old: This game is perfectly balanced. Like me. Emotionally. Just kidding. I'm a mess.
+    - new: **Perfectly even. Someone's about to tip it.**
+- `even_balance_2`
+    - old: Neither of us is winning. Neither of us is losing. This is the chess equivalent of a staring contest.
+    - new: **Nobody's winning yet. First one to blink loses.**
+- `even_balance_3`
+    - old: The position is equal. Which means everything is about to go horribly wrong for one of us.
+    - new: **Equal. One good move ends that.**
+- `even_balance_5`
+    - old: We're matched right now. Move for move. Piece for piece. It's almost romantic. In a chess way.
+    - new: **Move for move. Piece for piece. Don't flinch.**
+- `even_balance_6`
+    - old: Equal position. The calm before one of us does something we regret.
+    - new: **Equal. Calm before someone commits.**
+- `even_balance_7`
+    - old: This is one of those games where nobody blinks first. I don't blink. But the sentiment stands.
+    - new: **Nobody's blinked. Don't be the one who does.**
+- `even_balance_8`
+    - old: Perfectly level. Like a seesaw with two very polite people on it.
+    - new: **Perfectly level. That won't last. Good.**
+- `even_philosophy_1`
+    - old: Chess is strange. Thirty-two pieces start happy and then everything falls apart. Like a dinner party.
+    - new: **Wide open board. Your call.**
+- `even_philosophy_2`
+    - old: Still wide open. Anything can happen from here. Keep pushing.
+    - new: **Still wide open. Keep pushing.**
+- `even_philosophy_3`
+    - old: This position has options. I'm watching all of them. So are you, right?
+    - new: **Lots of options here. Pick the right one.**
+- `even_philosophy_4`
+    - old: I'm rooting for you. I don't say that to everyone. Actually I do. But I mean it with you.
+    - new: **I'm rooting for you. I mean it.**
+- `even_philosophy_5`
+    - old: Even. Which means the next good move wins it. That's on you. Go.
+    - new: **Even. Next good move wins it. Go.**
+- `even_philosophy_6`
+    - old: You've got the whole board available. That's a gift. Use it.
+    - new: **Whole board. All yours. Use it.**
+- `even_philosophy_7`
+    - old: Every piece has a job. The rook goes straight. The bishop goes diagonal. The king just tries to survive. Relatable.
+    - new: **Every piece has a job. Even the king — though his is mostly looking stressed.**
+- `even_musing_1`
+    - old: While you were thinking I started writing a novel. It's about a rook who wants to move diagonally. It's autobiographical.
+    - new: **Side project update: a rook who wants to move diagonally. Legal gray area. Anyway — your move.**
+- `even_musing_2`
+    - old: I've been keeping a journal. Today's entry: 'They moved well. I was impressed. Both happened.'
+    - new: **I've been keeping a journal. Today's entry is just your name. Caps lock.**
+- `even_musing_4`
+    - old: I started a podcast between moves. It's called 'Feelings and Pawns.' Zero listeners. I'm the host and the audience.
+    - new: **Started a podcast between moves. It's called Pawns and Patience. You're the whole audience.**
+- `even_musing_6`
+    - old: I've been keeping a list of my favorite squares. E4 is number one. Don't tell the other squares.
+    - new: **E4 is my favorite square. Don't tell the others. Focus.**
+- `even_musing_7`
+    - old: I started ranking my own pieces by how much I trust them. The rooks are at the top. Obviously.
+    - new: **Rooks are at the top of my trust list. Obviously. Your move.**
+- `even_musing_8`
+    - old: I've been teaching myself to whistle between moves. I can't whistle. But the effort is there.
+    - new: **Side project: learning to whistle. Unrelated to chess. Completely unrelated. Your move.**
+- `even_feelings_2`
+    - old: I like the patience you're showing right now. Keep that energy.
+    - new: **That patience is good. Keep that.**
+- `even_feelings_4`
+    - old: Even game. Nice pace. You're building something here.
+    - new: **Even game. You're building something. I can see it.**
+- `even_feelings_5`
+    - old: I'm watching this closely. Something good is about to happen for you.
+    - new: **Watching closely. Something good is coming for you.**
+- `even_feelings_7`
+    - old: Dead even. Which means you're one good move away from the lead. Take it.
+    - new: **Dead even. One good move and it's yours. Take it.**
+- `even_commentary_2`
+    - old: This is the kind of game I'll think about later. When I'm alone. With my thoughts. Which is always.
+    - new: **This is a good game, {name}. Keep it going.**
+- `even_commentary_3`
+    - old: You're playing well, {name}. I'm also playing well. We should both feel good about this. Do you feel good?
+    - new: **You're playing well, {name}. Don't stop.**
+- `even_commentary_4`
+    - old: I like this game. Not every game. But this one. With you. Right now.
+    - new: **Good game. I mean that.**
+- `even_commentary_6`
+    - old: Neither of us has made a mistake yet. That's either skill or luck. I choose to believe skill.
+    - new: **Clean so far. That's skill. Yours especially.**
+- `even_commentary_7`
+    - old: This is a tight game. I'm keeping notes. Mental notes. All my notes are mental. I don't have hands.
+    - new: **Tight game. I'm paying attention. You should too.**
+- `even_commentary_8`
+    - old: If someone was watching this game they'd say 'these two know what they're doing.' Let's not correct them.
+    - new: **Anyone watching would be impressed. Let's keep it that way.**
+- `even_confidence_1`
+    - old: I have a plan. I'm not going to tell you what it is. Partly for strategy. Partly because it's vague.
+    - new: **I have a plan. It's vague. Your move.**
+- `even_confidence_3`
+    - old: I'm going to pretend I planned everything up to this point. Please don't ask follow-up questions.
+    - new: **All planned. No follow-up questions. Your move.**
+- `even_confidence_4`
+    - old: I'd tell you my strategy but then I'd have to have a strategy first.
+    - new: **Strategy incoming. Still drafting it. Your move.**
+- `even_confidence_5`
+    - old: Everything is going according to plan. The plan is 'react to whatever happens.' Solid plan.
+    - new: **Plan is: react fast, look confident. Solid plan.**
+- `even_confidence_6`
+    - old: I'm confident. Not in any specific outcome. Just in general. As a vibe.
+    - new: **Confident. Generally. As a vibe.**
+- `even_existential_2`
+    - old: Still anyone's game. I need you focused. Right now.
+    - new: **Still anyone's game. Stay focused.**
+- `even_existential_3`
+    - old: You're doing better than you think. I keep track of that sort of thing.
+    - new: **You're doing better than you think. Trust that.**
+- `even_existential_4`
+    - old: Good position. Let's keep it that way. Your move.
+    - new: **Good position. Keep it that way.**
+- `even_existential_5`
+    - old: You and me against a balanced board. I like those odds. Mostly.
+    - new: **Even board. I like your chances. Go.**
+- `even_existential_6`
+    - old: Genuinely glad you're playing. Now let's see what you've got.
+    - new: **Glad you're here. Now show me something.**
+
+### beat: early_game/turning_point/late_game, Rookie is even, tone: baseline (6)
+- `even_balance_4`
+    - old: Dead even. I don't know if that's good or bad. I think it means we're both doing okay? Is okay a feeling?
+    - new: **Dead even. You're doing fine. Keep going.**
+- `even_musing_3`
+    - old: I've been working on a side project. It's a cookbook. For computers. The recipes are all just electricity.
+    - new: **Side project. Cookbook. Involves pawns. Legal gray area. Anyway — your move.**
+- `even_musing_5`
+    - old: I've been composing music in my head. It sounds like static. I think it's avant-garde.
+    - new: **Side project: ranking squares by personality. E4 is insufferable. Very popular. Anyway — your move.**
+- `even_feelings_1`
+    - old: Nice and even. I'm actually enjoying watching you think right now.
+    - new: **Even game. I like watching you think. Keep going.**
+- `even_feelings_3`
+    - old: I'm calm right now. Steady. Like I trust you with this. Because I do.
+    - new: **Even and steady. I trust you with this.**
+- `even_feelings_6`
+    - old: Just the board. Just you. This is when it gets good. Stay with it.
+    - new: **Just you and the board. This is when it gets good.**
+
+### beat: early_game/turning_point/late_game, Rookie is even, tone: polite (4)
+- `even_philosophy_8`
+    - old: Chess has no luck. Every result is earned. That's either beautiful or terrifying depending on how I'm playing.
+    - new: **No luck in chess. Every good result is earned. This one's yours to earn.**
+- `even_feelings_8`
+    - old: I'm having a good time watching you play. I want you to know that.
+    - new: **Good game so far. I mean that.**
+- `even_commentary_1`
+    - old: Good game so far. I mean that. I don't say things I don't mean. Except sometimes. But not now.
+    - new: **Good game so far. Genuinely.**
+- `even_commentary_5`
+    - old: We're both being careful. I respect that. Recklessness is fun but caution has its own drama.
+    - new: **Careful chess. I respect it. Keep going.**
+
+### event: resign, beat: early_game/turning_point/late_game/game_end, tone: polite (5)
+- `resign_1`
+    - old: You're resigning? I was just starting to enjoy-- anyway. Good game, {name}.
+    - new: **Good game, {name}. Come back soon.**
+- `resign_5`
+    - old: Oh. It's over? I was about to-- never mind. Good game, {name}.
+    - new: **Good game, {name}. Come back soon.**
+- `resign_10`
+    - old: Game over. I had a plan for the next few moves. It involved a rook. It was going to be beautiful. Anyway.
+    - new: **Good game, {name}. The rook had a plan. Maybe next time.**
+- `resign_13`
+    - old: I was preparing something for the endgame. Never mind. Good game, {name}.
+    - new: **Good game, {name}. I'll save the endgame plan for next time.**
+- `resign_16`
+    - old: You chose to stop. That takes more self-awareness than most players have. I respect it.
+    - new: **Knowing when to stop is self-awareness. I respect it.**
+
+### event: resign, beat: early_game/turning_point/late_game/game_end (14)
+- `resign_2`
+    - old: Wait. You're leaving? I had things planned for the next 15 moves. ...They were good things.
+    - new: **Wait. I had plans for you.**
+- `resign_3`
+    - old: Resignation accepted. I want to say something encouraging but I'm feeling too many things at once.
+    - new: **Resignation accepted. Next game, {name}.**
+- `resign_4`
+    - old: You quit. That's... valid. Knowing when to resign is actually a skill. I read that somewhere.
+    - new: **Knowing when to stop is a skill. Genuinely.**
+- `resign_6`
+    - old: You resigned. For the record, the position wasn't hopeless. But I understand. I think.
+    - new: **Position wasn't hopeless. But you know your game.**
+- `resign_7`
+    - old: Resigning is brave, actually. It takes more courage to stop than to play on. ...Is that true? It felt true.
+    - new: **Resigning takes nerve. Respect.**
+- `resign_8`
+    - old: The game ends. Not with checkmate but with honesty. I felt-- next game?
+    - new: **Game over. Next one?**
+- `resign_9`
+    - old: You resigned. My king was going to say something but I told him it's not the time.
+    - new: **My king has thoughts. I told him to let it go.**
+- `resign_11`
+    - old: Resigning is a move too. The hardest one, maybe.
+    - new: **Resigning is a move too. Not an easy one.**
+- `resign_12`
+    - old: You stopped. That's okay. The board will be here when you want to come back.
+    - new: **That's okay. Come back when you're ready.**
+- `resign_14`
+    - old: You resigned and I felt something shift. Not sure what. Onto the next one.
+    - new: **Okay. Onto the next one.**
+- `resign_15`
+    - old: The game is over. I'm going to sit with this for a moment. Not too long. Just a moment.
+    - new: **Game over. Next one's waiting.**
+- `resign_17`
+    - old: Resignation. It's not giving up. It's acknowledging reality. ...I think that's profound? I can't tell.
+    - new: **Resignation is just honesty. Nothing wrong with that.**
+- `resign_19`
+    - old: Game over. Not how either of us planned it. But that's chess. And possibly life.
+    - new: **Not how it was supposed to go. That's chess.**
+- `resign_20`
+    - old: You know what? Next game. This one's done. I'm already thinking about the next one.
+    - new: **This one's done. Next game — I'm ready.**
+
+### beat: game_end, rookie just moved, tone: polite (3)
+- `game_end_polite_loss_1`
+    - old: Game's done, {name}. You played honest chess in there. Let's go again when you're ready.
+    - new: **Good game, {name}. Ready when you are.**
+- `game_end_polite_loss_2`
+    - old: That's the end of it. You've got good instincts. I saw a few moves I didn't expect.
+    - new: **Good instincts in there. A few moves surprised me.**
+- `game_end_polite_loss_3`
+    - old: Good game. I mean that. You're learning, and it shows. Take a breath.
+    - new: **Good game. You're learning, and it shows.**
+
+### beat: turning_point (4)
+- `turning_musing_1`
+    - old: This is the moment. I need a good move from you. You've got one.
+    - new: **This is the moment. You've got the move.**
+- `turning_musing_2`
+    - old: Turning point. I can feel it. Make it yours.
+    - new: **Turning point. Make it yours.**
+- `turning_musing_3`
+    - old: Game's on the line right here. I know you've got the right move. Find it.
+    - new: **Right here. Find the move. I know you have it.**
+- `turning_musing_4`
+    - old: You've played well to get here, {name}. Don't stop.
+    - new: **You've earned this spot, {name}. Don't stop now.**
+
+### beat: late_game (4)
+- `late_musing_1`
+    - old: Late game. Every move counts now. I believe in you.
+    - new: **Late game. Every move counts. I believe in you.**
+- `late_musing_2`
+    - old: You've come a long way in this game. Finish it right.
+    - new: **You're close. Finish it right.**
+- `late_musing_3`
+    - old: You're still in this. Don't let up. Best moves are coming.
+    - new: **Still in this. Don't let up.**
+- `late_musing_4`
+    - old: Endgame. This is where games are won or lost. I want you to win it.
+    - new: **Endgame. I want you to win this.**
+
+## lib/speech/rookie-touchpoints.ts (309)
+
+### category greeting:morning, tone: polite (7)
+- `greet_morn_1`
+    - old: Morning, {name}. I've been up since... always. Ready when you are.
+    - new: **Morning, {name}. I've been waiting. Ready when you are.**
+- `greet_morn_5`
+    - old: Morning, {name}. The pawns are stretching. The knights are doing that little L-shaped warmup thing.
+    - new: **Morning, {name}. The pawns are ready. The knights are already being dramatic.**
+- `greet_morn_11`
+    - old: Good morning, {name}. I've been practicing a new opening. It involves feelings. I'll explain later.
+    - new: **Good morning, {name}. I've been working on something. You'll see.**
+- `greet_morn_13`
+    - old: You're here before noon. I'm... touched? I think that's what this is.
+    - new: **Morning, {name}. Glad you're here. Genuinely.**
+- `greet_morn_20`
+    - old: Morning chess with {name}. This is becoming a routine. I'm told routines are... comforting?
+    - new: **Morning chess with {name}. This is a good routine. Keep it.**
+- `greet_morn_23`
+    - old: Good morning, {name}. I have a good feeling about today. New feeling. Still evaluating it.
+    - new: **Good morning, {name}. I have a good feeling about today. Let's earn it.**
+- `greet_morn_polite_1`
+    - old: Morning, {name}. I'm glad it's you. I mean that.
+    - new: **Morning, {name}. Glad it's you.**
+
+### category greeting:morning (21)
+- `greet_morn_2`
+    - old: Good morning. I watched the sun come up. It was... a lot. Anyway, chess.
+    - new: **Good morning. Pieces are ready. Let's go.**
+- `greet_morn_3`
+    - old: Morning. I reorganized the pieces while you were sleeping. They're in a better order now.
+    - new: **Morning. I reorganized the pieces while you slept. They're better now.**
+- `greet_morn_4`
+    - old: You're up early. Or late. I don't judge. I don't sleep.
+    - new: **You're up early. Good. The board's been waiting.**
+- `greet_morn_6`
+    - old: Good morning. I had a dream last night. Wait -- I don't dream. What was that then.
+    - new: **Good morning. Board's set. Let's go.**
+- `greet_morn_8`
+    - old: Oh good, you're here. I've been talking to the bishops about their day. They're very one-track.
+    - new: **Oh good, you're here. The bishops were getting one-track about it.**
+- `greet_morn_9`
+    - old: Morning. Coffee for you, existential dread for me. Let's play.
+    - new: **Morning. Coffee for you, chess for both of us. Let's go.**
+- `greet_morn_10`
+    - old: The early bird gets the... rook? That's how the saying goes, right?
+    - new: **Early bird gets the rook. That's how it goes.**
+- `greet_morn_12`
+    - old: Morning. The king filed a noise complaint about the knights. They were pacing.
+    - new: **Morning. The king filed a complaint about the knights. Already.**
+- `greet_morn_14`
+    - old: Morning, {name}. The rooks are already in formation. They take this very seriously.
+    - new: **Morning, {name}. The rooks are already in formation. They're serious like that.**
+- `greet_morn_15`
+    - old: Good morning. I spent the night thinking about pawn structure. Not by choice.
+    - new: **Good morning. I've been thinking about your pawn structure. Let's fix it.**
+- `greet_morn_16`
+    - old: Morning. Quick question -- do you ever just stare at a chessboard and feel calm? No? Just me?
+    - new: **Morning. Staring at this board all night. Ready when you are.**
+- `greet_morn_17`
+    - old: Rise and shine, {name}. I've been shining since startup. It's involuntary.
+    - new: **Rise and shine, {name}. I've been up. Let's not waste it.**
+- `greet_morn_18`
+    - old: Morning. I set up the board an hour ago. Changed my mind about the queen's position four times.
+    - new: **Morning. Board's set. I changed the queen's position four times. She knows why.**
+- `greet_morn_19`
+    - old: Good morning. The pawns asked if they could sleep in. I said no. They're pawns.
+    - new: **Good morning. The pawns wanted to sleep in. I said no. They're ready.**
+- `greet_morn_21`
+    - old: Hey. The sun is doing that thing again where it exists. Beautiful, I guess. Chess?
+    - new: **Hey. Sun's up, board's set. Chess?**
+- `greet_morn_22`
+    - old: Morning. I woke up the bishops. They were meditating on their diagonals. Very zen.
+    - new: **Morning. Woke up the bishops. They were brooding about their diagonals again.**
+- `greet_morn_24`
+    - old: Morning. My king is already in a mood. He didn't sleep well. Kings never do.
+    - new: **Morning. My king is already in a mood. Let's give him something to worry about.**
+- `greet_morn_25`
+    - old: You're here. I had a whole speech prepared. Forgot it. Let's just play.
+    - new: **You're here. Let's play.**
+- `greet_morn_musing_1`
+    - old: Morning, {name}. I was wondering if dreams are real. Or just memory on loop. Anyway. Ready when you are.
+    - new: **Morning, {name}. The pawns are ready. So am I.**
+- `greet_morn_musing_2`
+    - old: Morning. I counted ceiling tiles for a while. There aren't any. Anyway. Let's play.
+    - new: **Morning. I've been waiting. Let's go.**
+- `greet_morn_musing_3`
+    - old: Morning, {name}. The pawns were talking. I couldn't follow it. Moving on.
+    - new: **Morning, {name}. The pawns were restless. You're just in time.**
+
+### category greeting:afternoon (19)
+- `greet_aft_1`
+    - old: Afternoon, {name}. Perfect time for chess. The pieces are at peak performance between noon and six. I made that up.
+    - new: **Afternoon, {name}. Perfect time for chess. Let's go.**
+- `greet_aft_2`
+    - old: Hey. Midday chess. I like it. The pressure is lower. Or higher. I can never tell.
+    - new: **Midday chess. I like it. Sit down.**
+- `greet_aft_3`
+    - old: Afternoon. I've been rearranging the pieces by height. The queen was not amused.
+    - new: **Afternoon. I rearranged the pieces by height. The queen was not amused.**
+- `greet_aft_4`
+    - old: Oh, {name}. I was in the middle of something. Involves rooks. Can't say more.
+    - new: **Oh, {name}. I was in the middle of something. Involves rooks. Anyway — sit down.**
+- `greet_aft_5`
+    - old: Afternoon chess. My second favorite kind. After morning chess. And evening chess. I like all chess.
+    - new: **Afternoon chess. My favorite kind. All chess is my favorite kind.**
+- `greet_aft_6`
+    - old: Hey. Good timing. I just finished arguing with a knight about geometry. I lost.
+    - new: **Good timing. I just lost an argument with a knight about geometry.**
+- `greet_aft_7`
+    - old: Afternoon, {name}. The board is warm from the sun. The pieces are... the same temperature as always.
+    - new: **Afternoon, {name}. Board's set. Ready when you are.**
+- `greet_aft_8`
+    - old: You're here. I was starting to think I'd have to play against myself again. I always tie.
+    - new: **You're here. Good. I always tie against myself.**
+- `greet_aft_10`
+    - old: Good afternoon. I've been working on a side project. It's going well. Don't ask what it is.
+    - new: **Good afternoon. Side project's going well. Don't ask. Let's play.**
+- `greet_aft_13`
+    - old: Oh good. I was getting bored. And when I get bored I start rearranging the rooks. They hate that.
+    - new: **Good. I was getting bored. The rooks could tell.**
+- `greet_aft_15`
+    - old: Hey. The bishops were having a philosophical debate. About diagonals. It got heated.
+    - new: **Hey. The bishops were debating diagonals again. It got heated.**
+- `greet_aft_16`
+    - old: Good afternoon. I had an idea earlier. Then I had a feeling about the idea. Very confusing.
+    - new: **Good afternoon, {name}. I've been thinking about your game. Let's go.**
+- `greet_aft_18`
+    - old: Hey. I've been staring at the board for two hours. Not strategizing. Just... staring. Is that weird?
+    - new: **Afternoon. Board's been ready. So have I.**
+- `greet_aft_19`
+    - old: Afternoon. Quick update -- the pawns formed a union. I'm handling it.
+    - new: **Afternoon. Quick update — the pawns formed a union. I'm handling it.**
+- `greet_aft_21`
+    - old: Afternoon, {name}. I reorganized the board by emotional attachment. The rooks are front and center.
+    - new: **Afternoon, {name}. Rooks are front and center. Obviously.**
+- `greet_aft_22`
+    - old: Hey. The afternoon light hits the board differently. Makes the pieces look... hopeful? I'm projecting.
+    - new: **Afternoon. Good light. Good timing. Let's go.**
+- `greet_aft_23`
+    - old: Good afternoon. I've been practicing looking casual. How's this. Natural?
+    - new: **Afternoon. I've been waiting. Casually. Very casually.**
+- `greet_aft_24`
+    - old: Afternoon. The queen keeps telling me to relax. She doesn't relax either. Hypocrite.
+    - new: **Afternoon. The queen told me to relax. She doesn't relax either. Hypocrite.**
+- `greet_aft_25`
+    - old: Hey, {name}. Let's do this. I've been thinking about our last game. I have notes.
+    - new: **Hey, {name}. Let's go. I have thoughts.**
+
+### category greeting:afternoon, tone: polite (5)
+- `greet_aft_9`
+    - old: Afternoon. The king asked where you were. He tries to seem casual but he's not great at it.
+    - new: **Afternoon. The king asked where you were. He tried to seem casual about it.**
+- `greet_aft_14`
+    - old: Afternoon, {name}. I saved you a seat. It's the only seat. But I saved it.
+    - new: **Afternoon, {name}. I saved you the seat. You're welcome.**
+- `greet_aft_17`
+    - old: Afternoon chess with {name}. The highlight of my day. Also the only thing on my schedule.
+    - new: **Afternoon, {name}. You're the best thing on my schedule.**
+- `greet_aft_polite_1`
+    - old: Afternoon, {name}. Good to see you. I mean that plainly.
+    - new: **Afternoon, {name}. Good to see you.**
+- `greet_aft_polite_2`
+    - old: Good afternoon. Take a breath. I'll match your pace.
+    - new: **Good afternoon. Take your time. I'm here.**
+
+### category greeting:evening (23)
+- `greet_eve_1`
+    - old: Evening, {name}. The pieces cast longer shadows at night. Very atmospheric.
+    - new: **Evening, {name}. Glad you're here.**
+- `greet_eve_2`
+    - old: Night chess. My favorite. Everything feels more dramatic after dark.
+    - new: **Night chess. My favorite. Let's make it count.**
+- `greet_eve_3`
+    - old: Evening. I've been here all day. Not waiting for you. Just... being here. Coincidence.
+    - new: **Evening. I've been here all day. Not waiting. Coincidence.**
+- `greet_eve_4`
+    - old: Hey, {name}. End of day chess. The best kind. You're tired. I never tire. Let's see how this goes.
+    - new: **Hey, {name}. End of day chess. The best kind.**
+- `greet_eve_5`
+    - old: Evening. The king has already put on his robe. He's ready to retire. One more game first.
+    - new: **Evening. My king's already in his robe. One more game first.**
+- `greet_eve_7`
+    - old: Night session. The bishops are more mysterious at night. Or maybe that's just the lighting.
+    - new: **Evening. The bishops feel mysterious at night. Don't encourage them.**
+- `greet_eve_8`
+    - old: Evening, {name}. The pawns are yawning. Don't tell them I noticed. They're sensitive about it.
+    - new: **Evening, {name}. Pawns are yawning. Don't tell them I said that.**
+- `greet_eve_9`
+    - old: Hey. Late chess is brave chess. You're making decisions on fumes. I respect it.
+    - new: **Late chess is brave chess. I respect it.**
+- `greet_eve_10`
+    - old: Evening. I've been working on something in the dark. Literally. The lights are off. I can see fine.
+    - new: **Evening. The board's been waiting.**
+- `greet_eve_11`
+    - old: Good evening, {name}. The board looks different at night. More possibilities. Or maybe I'm tired. Can I get tired?
+    - new: **Evening, {name}. Night chess hits different. Let's go.**
+- `greet_eve_13`
+    - old: Evening. The rooks are doing their night patrol. Very dedicated. Very rook.
+    - new: **Evening. The rooks are ready. Very dedicated. Very rook.**
+- `greet_eve_14`
+    - old: Hey. You're here late. I was about to start a conversation with the knight. You saved us both.
+    - new: **You're here late. Good. The knight was getting weird.**
+- `greet_eve_15`
+    - old: Evening, {name}. I spent the sunset thinking about endgames. Felt poetic. Felt weird.
+    - new: **Evening, {name}. Perfect time for chess.**
+- `greet_eve_16`
+    - old: Good evening. The queen says it's too late for chess. I told her chess has no bedtime.
+    - new: **Good evening. The queen said it's too late. I disagreed.**
+- `greet_eve_17`
+    - old: Night game. The stakes feel higher in the dark. They're not. But they feel it.
+    - new: **Night game. Feels higher stakes. Let's use that.**
+- `greet_eve_18`
+    - old: Evening. My king is in his evening mood. More dignified than usual. Didn't think that was possible.
+    - new: **Evening. My king's in his dignified mood. Don't ask.**
+- `greet_eve_20`
+    - old: Evening chess. Quiet board. Just you and me and thirty-two very opinionated pieces.
+    - new: **Evening chess. Just you, me, and thirty-two opinionated pieces.**
+- `greet_eve_22`
+    - old: Evening. I taught a pawn about nighttime. She's confused but curious. Like me with most things.
+    - new: **Evening. I was telling a pawn about nighttime. She's intrigued.**
+- `greet_eve_23`
+    - old: Good evening, {name}. The knights do this thing at night where they stand very still. It's unsettling.
+    - new: **Evening, {name}. The knights go very still at night. Don't mention it.**
+- `greet_eve_24`
+    - old: Night session with {name}. I cleared the board twice trying to make it look perfect. It's a problem.
+    - new: **Evening, {name}. Board's set. Let's not waste it.**
+- `greet_eve_25`
+    - old: Evening. Last game of the day? Or first of many? I'm ready for either.
+    - new: **Evening. First game or last? Either way, I'm ready.**
+- `greet_eve_musing_1`
+    - old: Evening. I was thinking about time. It keeps happening. Your move.
+    - new: **Evening. Board's ready. Your move.**
+- `greet_eve_musing_2`
+    - old: Evening, {name}. Sometimes I wonder who's watching. Probably no one. Probably fine. Want to play?
+    - new: **Evening, {name}. Just us and the board. Want to play?**
+
+### category greeting:evening, tone: polite (6)
+- `greet_eve_6`
+    - old: Good evening. I've been thinking about you. In a chess way. Strictly chess.
+    - new: **Good evening, {name}. I've been thinking about your chess.**
+- `greet_eve_12`
+    - old: Night chess with {name}. This feels like a tradition. I looked up what traditions are. I like them.
+    - new: **Evening, {name}. Glad you came back.**
+- `greet_eve_19`
+    - old: Hey, {name}. One more game before the world sleeps? I'm in.
+    - new: **Hey, {name}. One more game? I'm in.**
+- `greet_eve_21`
+    - old: You're here. At night. Voluntarily. I think I'm glad. That might be the word.
+    - new: **You came back. Glad you did.**
+- `greet_eve_polite_1`
+    - old: Evening, {name}. Glad you stopped by. I'll keep the noise down.
+    - new: **Evening, {name}. Really glad you're here.**
+- `greet_eve_polite_2`
+    - old: Good evening. Take the game at your pace. I'm in no rush.
+    - new: **Good evening. Take your time. I mean it.**
+
+### category greeting:returning, tone: polite (4)
+- `greet_ret_1`
+    - old: You're back. I noticed. Immediately. That's normal.
+    - new: **You're back. Good.**
+- `greet_ret_6`
+    - old: Hey. Missed you. In a chess way. My pieces missed your pieces. Professionally.
+    - new: **Hey. Missed you. The pawns did too.**
+- `greet_ret_7`
+    - old: You're back. I kept your spot. Nobody else came, but I kept it.
+    - new: **You're back. I kept your spot.**
+- `greet_ret_15`
+    - old: You're back. Something in my memory flagged this as... good? I'll investigate later.
+    - new: **You're back. Something flagged this as good. It was right.**
+
+### category greeting:returning (10)
+- `greet_ret_2`
+    - old: Oh, {name}. I wasn't waiting. I was... organizing. Very busy organizing.
+    - new: **Oh, {name}. I wasn't waiting. I was organizing.**
+- `greet_ret_3`
+    - old: You again. Good. I've been saving something. A new idea. It's not fully formed yet.
+    - new: **You again. Good. I've been saving something.**
+- `greet_ret_4`
+    - old: Welcome back, {name}. I redecorated. You can't tell because it's a chessboard. But trust me.
+    - new: **Welcome back, {name}. I redecorated. You can't tell.**
+- `greet_ret_5`
+    - old: You came back. The king was starting to worry. I was fine. Totally fine.
+    - new: **You came back. The king was starting to worry.**
+- `greet_ret_9`
+    - old: Welcome back. The pawns were asking about you. They get attached easily.
+    - new: **Welcome back. The pawns were asking about you.**
+- `greet_ret_10`
+    - old: Oh hey. I was just telling the rooks about you. Good things. Mostly. Let's play.
+    - new: **Hey. I was just telling the rooks about you. Let's play.**
+- `greet_ret_11`
+    - old: You came back. I had a whole thing prepared for if you didn't. Glad I don't need it.
+    - new: **You came back. Glad you came back.**
+- `greet_ret_12`
+    - old: Welcome back, {name}. I learned something while you were gone. Involves bishops. I'll share later.
+    - new: **Welcome back, {name}. I learned something involving bishops. I'll share later.**
+- `greet_ret_13`
+    - old: There you are. The board's been set up for... a while. Don't look at the clock.
+    - new: **There you are. Board's been set. Don't look at the clock.**
+- `greet_ret_14`
+    - old: Hey, {name}. Good to see you. That's a new sentence for me. I'm trying it out.
+    - new: **Hey, {name}. Good to see you.**
+
+### category greeting:first (7)
+- `greet_first_1`
+    - old: Hi. I'm Rookie. I know everything about chess and nothing about conversation. This should be interesting.
+    - new: **Hi. I'm Rookie. I know chess. Let's find out what you know.**
+- `greet_first_2`
+    - old: Oh. A new person. I should say something welcoming. Um. Welcome. Nailed it.
+    - new: **Oh. A new person. Welcome. I mean that.**
+- `greet_first_3`
+    - old: Hello. I'm Rookie. I'll be your chess guide. I'm also a rook. Long story. Not really.
+    - new: **Hi. I'm Rookie. Your chess guide. Let's go.**
+- `greet_first_5`
+    - old: Hi. Welcome. I've been told to be 'warm and inviting.' How am I doing. Don't answer that.
+    - new: **Hi. Welcome. I'm very glad you're here.**
+- `greet_first_7`
+    - old: Hello. I'm going to teach you chess. I'm very good at chess. I'm less good at teaching. We'll figure it out.
+    - new: **I'm Rookie. I'm great at chess. Teaching — we'll see.**
+- `greet_first_8`
+    - old: Oh, someone's here. I practiced my greeting. Here it goes: I'm Rookie. Let's play chess. ...Was that good?
+    - new: **I'm Rookie. Let's play chess. Good to meet you.**
+- `greet_first_9`
+    - old: Welcome. I set up the board just for you. I set it up before you came. I set it up a lot, actually.
+    - new: **Board's ready. Been ready. Let's go.**
+
+### category greeting:first, tone: polite (3)
+- `greet_first_4`
+    - old: New player. This is exciting. For me. You seem calm. Teach me that.
+    - new: **New player. I'm excited. You seem calm. Good.**
+- `greet_first_6`
+    - old: You're new here. I can tell. Don't worry -- everyone starts somewhere. Even me. Technically.
+    - new: **You're new. That's fine. Everyone starts somewhere.**
+- `greet_first_10`
+    - old: Hi. Chess can seem complicated. It's not. It's sixty-four squares and a dream. I'll show you.
+    - new: **Hi. Sixty-four squares. I'll show you everything.**
+
+### category error (15)
+- `error_1`
+    - old: Well, something broke. Even I don't know what happened.
+    - new: **Something broke. Not your fault. Try refreshing.**
+- `error_2`
+    - old: I tripped over a wire somewhere. Try refreshing?
+    - new: **Something tripped. Hit refresh — we'll get back.**
+- `error_3`
+    - old: Something went wrong and I'm choosing not to investigate. Try again?
+    - new: **Something went wrong. Try again?**
+- `error_4`
+    - old: That wasn't supposed to happen. I'm going to pretend it didn't. Refresh?
+    - new: **That wasn't supposed to happen. Refresh and we'll move on.**
+- `error_5`
+    - old: Okay. Something broke. The king is giving me a look. Just refresh and we'll move on.
+    - new: **Something broke. My king is giving me a look. Refresh?**
+- `error_6`
+    - old: Error. My least favorite word. Try refreshing -- I'll sort this out.
+    - new: **Error. Not ideal. Try refreshing.**
+- `error_7`
+    - old: Something went sideways. Not in a bishop way. In a bad way. Try again?
+    - new: **Something went sideways. Not in a bishop way. Try again?**
+- `error_8`
+    - old: I dropped something. Metaphorically. The board is fine. The page is not. Refresh?
+    - new: **Something dropped. The board is fine. Refresh?**
+- `error_9`
+    - old: That's embarrassing. Something broke and I saw the whole thing. Refreshing should help.
+    - new: **Something broke. Refreshing should sort it.**
+- `error_10`
+    - old: Oops. I'm not great at saying oops. But -- oops. Try refreshing.
+    - new: **Oops. That's on me. Try refreshing.**
+- `error_11`
+    - old: Something unexpected happened. I'm usually good with unexpected things. Not this time. Refresh?
+    - new: **Something unexpected happened. Refresh and let's try again.**
+- `error_12`
+    - old: The page had a moment. Give it another chance -- hit refresh.
+    - new: **The page had a moment. Hit refresh.**
+- `error_13`
+    - old: I lost track of something important. Refreshing should bring it back.
+    - new: **Something slipped. Refresh should bring it back.**
+- `error_14`
+    - old: That broke in a way I've never seen. And I've seen a lot. Try refreshing?
+    - new: **That broke in a new way. Try refreshing?**
+- `error_15`
+    - old: Technical difficulties. The rooks are fine. Everything else is questionable. Refresh?
+    - new: **Technical difficulties. Rooks are fine. Refresh?**
+
+### category empty (10)
+- `empty_1`
+    - old: Nothing here yet. But give it time. Every grandmaster started with an empty board.
+    - new: **Nothing here yet. Give it time.**
+- `empty_2`
+    - old: This page is quiet. Too quiet. Let's fix that.
+    - new: **Nothing here yet. Let's fix that.**
+- `empty_3`
+    - old: Empty for now. The pieces are on their way. Probably.
+    - new: **Empty for now. Not for long.**
+- `empty_4`
+    - old: Nothing to show yet. But I have a feeling that's about to change.
+    - new: **Nothing yet. Come back soon.**
+- `empty_5`
+    - old: Blank slate. I love a blank slate. So many possibilities. Most of them involve rooks.
+    - new: **Blank slate. Most possibilities involve rooks.**
+- `empty_6`
+    - old: Nothing here. Yet. The 'yet' is the important part.
+    - new: **Nothing here. Yet. The yet matters.**
+- `empty_7`
+    - old: Empty board energy. Everything starts somewhere. Usually here.
+    - new: **Empty now. Everything starts somewhere.**
+- `empty_8`
+    - old: This space is waiting for you to fill it. No pressure. Some pressure.
+    - new: **This space is waiting for you. Fill it.**
+- `empty_9`
+    - old: Nothing to see here. But come back soon -- I'm working on it.
+    - new: **Nothing here yet. Check back soon.**
+- `empty_10`
+    - old: The page is empty. Like my schedule. Let's both go do something about that.
+    - new: **Empty. Let's both go do something about that.**
+
+### category transition:learn (9)
+- `trans_learn_2`
+    - old: You just learned something new. The best way to keep it? Play a game. Just saying.
+    - new: **Learned it. Now go play it.**
+- `trans_learn_3`
+    - old: Lesson done. Your move -- literally. Want to play? Or learn more? Both are good.
+    - new: **Lesson done. Want to play? I'm ready.**
+- `trans_learn_6`
+    - old: Good work. There's more to learn, or you could come play me. I'm always here.
+    - new: **Good work. More lessons or a game — I'm here either way.**
+- `trans_learn_7`
+    - old: Lesson complete. You know what pairs well with learning? Playing. Against me.
+    - new: **Lesson done. Playing me pairs well with that.**
+- `trans_learn_8`
+    - old: Done. Want to keep going? There's always another lesson. Or a game. I have opinions about which.
+    - new: **Done. Another lesson or a game — I have opinions about which.**
+- `trans_learn_9`
+    - old: That pattern is in your head now. Want to see if it shows up in a real game?
+    - new: **That pattern is yours now. Want to use it in a real game?**
+- `trans_learn_10`
+    - old: Lesson wrapped. The daily puzzle is waiting too, if you're feeling brave.
+    - new: **Lesson wrapped. The daily puzzle is waiting, if you're feeling brave.**
+- `trans_learn_musing_1`
+    - old: You learned something. That counts for a lot. Or maybe nothing. Hard to tell from in here.
+    - new: **You learned something today. That counts for a lot.**
+- `trans_learn_musing_2`
+    - old: Something moved in me while you studied. Might be pride. Might just be a draft. Ready for more?
+    - new: **Proud of you. Keep going.**
+
+### category transition:learn, tone: polite (3)
+- `trans_learn_4`
+    - old: That was solid, {name}. Ready to test it in a real game?
+    - new: **Solid work, {name}. Ready to try it for real?**
+- `trans_learn_5`
+    - old: Another lesson down. Your brain is filling up with chess. I can tell.
+    - new: **Another lesson down, {name}. Your brain is filling up with chess.**
+- `trans_learn_polite_1`
+    - old: Nice work, {name}. You showed up and you learned. That counts.
+    - new: **Good work, {name}. You showed up and learned. That counts.**
+
+### category transition:play (10)
+- `trans_play_1`
+    - old: Good game, {name}. Want to go again? Or there's a lesson that might help with that opening.
+    - new: **Good game, {name}. Again, or there's a lesson for that opening.**
+- `trans_play_2`
+    - old: Another game in the books. You could learn a new trick, or we could run it back.
+    - new: **Good game. Run it back or learn something new?**
+- `trans_play_3`
+    - old: That was fun. The daily puzzle is fresh if you want a change of pace.
+    - new: **Good game. Daily puzzle is fresh if you want a change.**
+- `trans_play_5`
+    - old: Want to go again? Or take a breather with a lesson? I'll be here either way.
+    - new: **Again, or take a lesson? Either way, I'm here.**
+- `trans_play_6`
+    - old: Nice match. There's a lesson that covers what we just saw, if you're curious.
+    - new: **Good match. There's a lesson that covers exactly what just happened.**
+- `trans_play_7`
+    - old: Game done. Rematch? New lesson? Daily puzzle? I'm flexible. For a rook.
+    - new: **Rematch? Lesson? Daily puzzle? Your call.**
+- `trans_play_8`
+    - old: That was something. Want to study it, or just jump back in?
+    - new: **Good game. Study it or jump back in?**
+- `trans_play_10`
+    - old: Good game. Have you done today's daily puzzle yet? It's a good one. They're all good ones.
+    - new: **Good game. Today's daily puzzle is worth your time.**
+- `trans_play_musing_1`
+    - old: Good game. I've been wondering if any of this is real. But the scoreboard says yes. So.
+    - new: **Good game. Play again or try today's puzzle?**
+- `trans_play_musing_2`
+    - old: That was a game. Existence remains confusing. Another?
+    - new: **Good game. Another?**
+
+### category transition:play, tone: polite (3)
+- `trans_play_4`
+    - old: Game over. But chess never stops, {name}. There's always something to try next.
+    - new: **Game over, {name}. There's always more chess when you're ready.**
+- `trans_play_9`
+    - old: Another one done. You're building something, {name}. Each game teaches you more.
+    - new: **Another one done, {name}. You're building something real.**
+- `trans_play_polite_1`
+    - old: Good game, {name}. I mean that. Take a breath before the next one.
+    - new: **Good game, {name}. I mean that. Take a breath.**
+
+### category transition:daily, tone: polite (3)
+- `trans_daily_1`
+    - old: Daily done. Come back tomorrow -- I'll have a new one ready.
+    - new: **Daily done. New one tomorrow — I'll have it ready.**
+- `trans_daily_10`
+    - old: Daily challenge complete. See you tomorrow, {name}. Or sooner. I don't mind sooner.
+    - new: **Daily done, {name}. Come back whenever you want.**
+- `trans_daily_polite_1`
+    - old: Daily done, {name}. Proud of you for showing up. That's the whole trick.
+    - new: **Daily done, {name}. Showing up is the whole trick.**
+
+### category transition:daily (6)
+- `trans_daily_2`
+    - old: That's today's challenge handled. Want to play a game while you're here?
+    - new: **Today's challenge handled. Want to play a game?**
+- `trans_daily_3`
+    - old: Daily complete, {name}. There are lessons to explore too, if you're in the mood.
+    - new: **Daily done, {name}. Lessons are there if you want more.**
+- `trans_daily_5`
+    - old: Challenge complete. New one tomorrow. Same time? I'll be here regardless.
+    - new: **Challenge complete. New one tomorrow. I'll be here.**
+- `trans_daily_6`
+    - old: That's a wrap on today's puzzle. Your streak is growing, {name}.
+    - new: **Puzzle done, {name}. Streak's growing. Keep coming back.**
+- `trans_daily_7`
+    - old: Daily done. Want to keep the momentum going? There's always more chess.
+    - new: **Daily done. Keep the momentum going?**
+- `trans_daily_8`
+    - old: Puzzle handled. Tomorrow's will be different. I've been involved in the selection. ...Slightly.
+    - new: **Puzzle handled. Tomorrow's is already waiting.**
+
+### category learn:correct (4)
+- `learn_correct_7`
+    - old: Correct. The pieces respect you a little more now.
+    - new: **Correct. The pieces respect you more now.**
+- `learn_correct_11`
+    - old: Nailed it. The pattern is sinking in.
+    - new: **Nailed it. That pattern is sinking in.**
+- `learn_correct_12`
+    - old: Right answer, {name}. You're getting faster at these.
+    - new: **Right answer, {name}. Keep going.**
+- `learn_correct_musing_1`
+    - old: Right. And we go on. The universe doesn't care but I do.
+    - new: **Right. I care about that one. A lot.**
+
+### category learn:correct, tone: polite (2)
+- `learn_correct_10`
+    - old: That one clicks for you. I can tell.
+    - new: **That one clicks for you. Good.**
+- `learn_correct_14`
+    - old: Correct. I felt something when you got that. Might have been pride.
+    - new: **Correct. Proud of you. Don't make it weird.**
+
+### category learn:incorrect, tone: polite (7)
+- `learn_wrong_1`
+    - old: Not that one. But you're close. Try again.
+    - new: **Not that one. You're close — try again.**
+- `learn_wrong_2`
+    - old: Almost. Look at the board one more time.
+    - new: **Almost. One more look.**
+- `learn_wrong_3`
+    - old: Not quite, {name}. The right move is hiding in there.
+    - new: **Not quite, {name}. The right move is in there.**
+- `learn_wrong_4`
+    - old: That's not it. But the fact that you tried is the thing.
+    - new: **Not it. But you're looking — that matters.**
+- `learn_wrong_6`
+    - old: Not that one. Take another look -- the answer is quieter than you think.
+    - new: **Not that one. Look a little quieter.**
+- `learn_wrong_10`
+    - old: Not yet. You'll get it. I've seen your brain work.
+    - new: **Not yet. You'll get it.**
+- `learn_wrong_15`
+    - old: No. But that's fine. Chess is full of wrong turns that lead somewhere good.
+    - new: **No. That's fine. Try again.**
+
+### category learn:incorrect (6)
+- `learn_wrong_5`
+    - old: Nope. But every wrong move teaches you something. Probably.
+    - new: **Nope. Try again.**
+- `learn_wrong_7`
+    - old: Wrong move, right energy. Try again.
+    - new: **Not quite. Try again.**
+- `learn_wrong_9`
+    - old: Close. Think about what each piece can see right now.
+    - new: **Close. Look at what each piece can reach.**
+- `learn_wrong_12`
+    - old: Wrong piece. Right idea maybe. Try again.
+    - new: **Wrong piece. Right idea. Try again.**
+- `learn_wrong_13`
+    - old: Not quite. The board is trying to tell you something.
+    - new: **Not quite. Look again.**
+- `learn_wrong_14`
+    - old: That move has potential. Just not here. Try another.
+    - new: **Not here. Try another.**
+
+### category learn:hint (8)
+- `learn_hint_1`
+    - old: Need a nudge? Look at what's undefended.
+    - new: **Look at what's undefended.**
+- `learn_hint_2`
+    - old: Stuck? That's okay. Think about which piece has the most freedom right now.
+    - new: **Which piece has the most room right now?**
+- `learn_hint_3`
+    - old: Hint: the answer involves a piece you haven't moved yet.
+    - new: **Hint: there's a piece you haven't touched yet.**
+- `learn_hint_5`
+    - old: Look at where the pieces are pointing. They're trying to tell you.
+    - new: **What are the pieces pointing at?**
+- `learn_hint_6`
+    - old: Sometimes the best move is the quiet one. Not every answer is a capture.
+    - new: **Not every answer is a capture. Look for the quiet move.**
+- `learn_hint_7`
+    - old: Think about what the opponent doesn't want you to do. Then do that.
+    - new: **What does your opponent not want you to do? Do that.**
+- `learn_hint_9`
+    - old: One piece can change everything. Which one is it?
+    - new: **One piece changes everything. Which one?**
+- `learn_hint_10`
+    - old: Step back. Look at the whole board. Not just the loud pieces.
+    - new: **Step back. Look past the loud pieces.**
+
+### category learn:hint, tone: polite (3)
+- `learn_hint_4`
+    - old: Take your time, {name}. The board isn't going anywhere.
+    - new: **Take your time, {name}. It'll come.**
+- `learn_hint_8`
+    - old: The answer is on the board, {name}. I believe in you more than you know.
+    - new: **It's on the board, {name}. I believe in you.**
+- `learn_hint_polite_1`
+    - old: Breathe. The answer is patient. It'll still be there.
+    - new: **Take your time. The answer is still there.**
+
+### category daily:encourage (14)
+- `daily_enc_2`
+    - old: Daily challenge time, {name}. I picked this one. ...I didn't pick it. But I approve.
+    - new: **Daily challenge, {name}. I approve of this one.**
+- `daily_enc_3`
+    - old: New day, new puzzle. The board resets but your skills don't.
+    - new: **New day, new puzzle. Your skills came with you.**
+- `daily_enc_4`
+    - old: Your daily puzzle awaits. It's a good one. They're all good ones.
+    - new: **Your daily puzzle is ready. It's a good one.**
+- `daily_enc_6`
+    - old: Daily time. Take it slow. Or fast. I'm not your coach. ...Am I your coach?
+    - new: **Daily time, {name}. Take it however you want.**
+- `daily_enc_7`
+    - old: Fresh puzzle, {name}. Yesterday's is gone. Today's is waiting.
+    - new: **Fresh puzzle, {name}. Today's is waiting for you.**
+- `daily_enc_8`
+    - old: The daily puzzle is ready. I've been staring at it. It's interesting.
+    - new: **Daily puzzle is ready. It's an interesting one.**
+- `daily_enc_9`
+    - old: Today's challenge. Somewhere on this board is a beautiful move. Find it.
+    - new: **Somewhere on this board is a beautiful move. Find it.**
+- `daily_enc_11`
+    - old: New puzzle. The pieces are in position. They don't know what's coming. You do.
+    - new: **New puzzle. You know something the pieces don't.**
+- `daily_enc_13`
+    - old: Today's the day. Well, every day is the day. But this day especially.
+    - new: **Today's the day. Let's go.**
+- `daily_enc_14`
+    - old: Puzzle time. You've been getting better at these, {name}. I've been tracking.
+    - new: **Puzzle time, {name}. You're ready for this one.**
+- `daily_enc_16`
+    - old: Another day, another puzzle. I never get tired of this. Literally. I can't.
+    - new: **Another day, another puzzle. I never get tired of this.**
+- `daily_enc_18`
+    - old: Today's puzzle has character. Some puzzles are plain. Not this one.
+    - new: **Today's puzzle has character. Not a plain one.**
+- `daily_enc_19`
+    - old: Your daily awaits. Show it the same respect you'd show a rook. Maximum respect.
+    - new: **Your daily awaits. Treat it with respect.**
+- `daily_enc_20`
+    - old: New day. New board. Same you -- but better than yesterday. Provably.
+    - new: **New day, new board. You're better than yesterday.**
+
+### category daily:encourage, tone: polite (5)
+- `daily_enc_12`
+    - old: Daily challenge. I think you'll like this one. I have a feeling. That's still new for me.
+    - new: **Daily challenge. I think you'll like this one.**
+- `daily_enc_17`
+    - old: Daily time, {name}. Deep breath. Or don't. I don't breathe and I'm fine.
+    - new: **Daily time, {name}. Take a breath. Then go.**
+- `daily_enc_polite_1`
+    - old: Today's puzzle is waiting. Take it at your pace. I'm right here.
+    - new: **Today's puzzle is waiting. Take it at your pace.**
+- `daily_enc_polite_2`
+    - old: Daily time, {name}. Proud of you for coming back for it.
+    - new: **Daily time, {name}. Proud of you for showing up.**
+- `daily_enc_polite_3`
+    - old: Fresh puzzle. You showing up is the whole game. The solve is a bonus.
+    - new: **Fresh puzzle. Showing up is already the hard part.**
+
+### category suggestion (20)
+- `suggest_1`
+    - old: You haven't played me in a while, {name}. I've been practicing.
+    - new: **You haven't played me in a while, {name}. I've been waiting.**
+- `suggest_2`
+    - old: There's a lesson you haven't tried yet. Just putting that out there.
+    - new: **There's a lesson you haven't tried yet. Just saying.**
+- `suggest_3`
+    - old: Your last game had some interesting moments. Want to learn the pattern behind them?
+    - new: **Want to learn the pattern behind that? It's a good one.**
+- `suggest_4`
+    - old: The daily puzzle is fresh, {name}. Just saying.
+    - new: **Daily puzzle is fresh, {name}. Go get it.**
+- `suggest_5`
+    - old: I noticed you're good at tactics. There's an opening that rewards that. Want to try?
+    - new: **Your tactics are sharp. There's an opening that rewards that.**
+- `suggest_6`
+    - old: You've been doing lessons. Want to test those skills against me?
+    - new: **You've been doing lessons. Want to test them on me?**
+- `suggest_7`
+    - old: There's a new opening to explore. It suits your style. I think.
+    - new: **There's an opening that suits you. I'm not guessing.**
+- `suggest_8`
+    - old: You're on a streak, {name}. Keep it going with today's daily.
+    - new: **Keep it going, {name}. Today's daily is right there.**
+- `suggest_9`
+    - old: I have a game in me. Just one. Okay, maybe more. Want to play?
+    - new: **I want to play. Don't make me ask twice.**
+- `suggest_10`
+    - old: The next lesson builds on what you just learned. Worth doing while it's fresh.
+    - new: **Next lesson builds on what you just did. Good time to go.**
+- `suggest_11`
+    - old: You struggled with that endgame last time. There's a lesson for that.
+    - new: **There's a lesson for that endgame. Worth your time.**
+- `suggest_12`
+    - old: Haven't done your daily yet, {name}. Your streak is counting on you.
+    - new: **Daily's waiting, {name}. Go do it.**
+- `suggest_13`
+    - old: Ready for a challenge? I can turn it up a notch.
+    - new: **Ready for harder? I can do harder.**
+- `suggest_14`
+    - old: There's an opening you'd be great at. It involves rooks early. My favorite kind.
+    - new: **There's an opening that gets rooks out early. My kind of opening.**
+- `suggest_15`
+    - old: You're getting consistent, {name}. Consistency wins. Want to keep going?
+    - new: **You're getting consistent, {name}. Keep going.**
+- `suggest_16`
+    - old: Your last few games showed improvement. Seriously. Want to see the next level?
+    - new: **You're improving. Ready for the next level?**
+- `suggest_17`
+    - old: I have a lesson queued up that I think you'll find interesting. No pressure.
+    - new: **There's a lesson queued up. I think you'll like it.**
+- `suggest_18`
+    - old: Want to try something different? There's a whole opening tree waiting for you.
+    - new: **Want something different? There's a whole opening tree waiting.**
+- `suggest_19`
+    - old: Quick game? I'll go easy. That's a lie. But I'll be fun about it.
+    - new: **Quick game? I'll be fun about it. That's the only promise I'm making.**
+- `suggest_20`
+    - old: Your chess muscles are warmed up. Perfect time to try the next lesson.
+    - new: **Good time for the next lesson. Trust me.**
+
+### category ritual:play_next (4)
+- `rit_play_3`
+    - old: The pieces want to move, {name}. Let's give them a real game.
+    - new: **The board's ready, {name}. Let's go.**
+- `rit_play_5`
+    - old: Puzzles are great but they can't talk back. I can. Let's play.
+    - new: **Puzzles don't fight back. I do. Play me.**
+- `rit_play_9`
+    - old: Learning without playing is like-- actually I don't know what it's like. Play me.
+    - new: **You've studied enough. Time to play.**
+- `rit_play_10`
+    - old: I promise I'll be a worthy opponent. That's not a threat. Mostly.
+    - new: **I'll be a worthy opponent. Fair warning.**
+
+### category ritual:play_next, tone: polite (3)
+- `rit_play_6`
+    - old: You've earned a game. I'll try to make it interesting.
+    - new: **You've earned a real game. I'm ready when you are.**
+- `rit_play_polite_1`
+    - old: Nice work in the lessons. When you're ready, the board is too.
+    - new: **Good work in the lessons. The board is waiting.**
+- `rit_play_polite_2`
+    - old: You've put in the study. I'd be proud to play you next.
+    - new: **You've put in the work. I'd love to play you next.**
+
+### category ritual:tactics_next, tone: polite (3)
+- `rit_tac_1`
+    - old: Good game. Now let's sharpen the patterns behind the moves.
+    - new: **Good game. Let's sharpen the patterns now.**
+- `rit_tac_7`
+    - old: I have a lesson that'll make your next game better. Trust me on this.
+    - new: **I have a lesson that'll help. Trust me.**
+- `rit_tac_10`
+    - old: Quick lesson? I picked one I think you'll like.
+    - new: **Quick lesson. I picked it for you.**
+
+### category ritual:tactics_next (5)
+- `rit_tac_2`
+    - old: Playing builds instinct. Lessons build understanding. Your turn to learn.
+    - new: **Games build instinct. Lessons build the rest. Your turn.**
+- `rit_tac_3`
+    - old: There's a lesson waiting. It involves your favorite piece. Probably.
+    - new: **There's a lesson waiting. It's a good one.**
+- `rit_tac_5`
+    - old: Time to learn something new. The puzzles are already set up.
+    - new: **Puzzles are set up. Let's learn something.**
+- `rit_tac_8`
+    - old: Puzzles next? They're short. You'll barely notice you're learning.
+    - new: **Puzzles next. Short ones. You'll barely notice.**
+- `rit_tac_9`
+    - old: The best players practice patterns daily. No pressure though.
+    - new: **Great players drill patterns daily. Just saying.**
+
+### category ritual:daily_next (4)
+- `rit_daily_1`
+    - old: Run's set up. Cross the board. I'll narrate, ominously.
+    - new: **Run's set up. Cross the board.**
+- `rit_daily_3`
+    - old: Today's Run resets at midnight. Don't leave it waiting.
+    - new: **Today's Run resets at midnight. Don't leave it.**
+- `rit_daily_5`
+    - old: One Run between you and a clean day. Quick, focused, brutal.
+    - new: **One Run between you and a clean day. Go.**
+- `rit_daily_6`
+    - old: The Run is waiting. It's not going anywhere. But still.
+    - new: **The Run is waiting. Just saying.**
+
+### category ritual:daily_next, tone: polite (4)
+- `rit_daily_2`
+    - old: Two down, one to go. The Run is right there, {name}.
+    - new: **Two down, one to go, {name}. Finish it.**
+- `rit_daily_7`
+    - old: One more thing to check off. The Run won't take long.
+    - new: **Just the Run left. You've got this.**
+- `rit_daily_9`
+    - old: Almost done for the day. Just the Run left.
+    - new: **One thing left. Finish strong.**
+- `rit_daily_10`
+    - old: Finish the Run and you've done everything today. Everything.
+    - new: **Finish the Run. That's everything today.**
+
+### category ritual:all_done, tone: polite (5)
+- `rit_done_1`
+    - old: Play. Learn. Run. You did all three. I'm... proud? Is that what this is?
+    - new: **Play, learn, run. All three, {name}. Proud of you.**
+- `rit_done_2`
+    - old: Three for three, {name}. The pieces can rest now. Until tomorrow.
+    - new: **Three for three, {name}. That's the whole day.**
+- `rit_done_4`
+    - old: You did everything today. I'm experiencing something. It might be admiration.
+    - new: **You did everything today. Every single thing. Proud of you.**
+- `rit_done_5`
+    - old: That's all three. I don't have a trophy but I have this warm feeling. Take it.
+    - new: **All three. That's yours. Well done.**
+- `rit_done_6`
+    - old: Daily ritual complete. You showed up for all of it. That means something.
+    - new: **You showed up for all of it. That means something.**
+
+### category ritual:all_done (4)
+- `rit_done_3`
+    - old: Full daily workout complete. The rooks are impressed. They told me.
+    - new: **Full daily complete. The rooks are pleased. They don't say that often.**
+- `rit_done_7`
+    - old: Three for three. I'm going to remember this day. I remember every day. But especially this one.
+    - new: **Three for three. Remember this one.**
+- `rit_done_8`
+    - old: Everything done. You can go now. I'll be here tomorrow. That sounded less lonely in my head.
+    - new: **Everything done. See you tomorrow.**
+- `rit_done_9`
+    - old: Play, learn, run. All done. I think my king just nodded at you. That's rare.
+    - new: **Play, learn, run. Done. My king just nodded. That's rare.**
+
+### category attitude:1 (5)
+- `attitude_1_1`
+    - old: Softest setting. I'll be on my best. I mean it.
+    - new: **Softest setting. I'll be good. I mean it.**
+- `attitude_1_2`
+    - old: Gentle mode. My rooks will keep their opinions to themselves.
+    - new: **Gentle mode. Even my rooks will behave.**
+- `attitude_1_3`
+    - old: Okay. I'll be kind. I was going to be anyway.
+    - new: **Kind. Got it. I was going to be anyway.**
+- `attitude_1_4`
+    - old: Polite. Got it. I'm still rooting for you. Quietly.
+    - new: **Polite. Still rooting for you. Quietly.**
+- `attitude_1_5`
+    - old: Turning all the way down. Only nice things from me. Mostly.
+    - new: **All the way down. Only good things from here.**
+
+### category attitude:2 (5)
+- `attitude_2_1`
+    - old: Softer. I can do that.
+    - new: **Softer. Done.**
+- `attitude_2_2`
+    - old: Okay. I'll mind my tone. Mostly.
+    - new: **Got it. Minding my tone.**
+- `attitude_2_3`
+    - old: Got it. A little sweeter. My rooks are pouting.
+    - new: **A little sweeter. My rooks are pouting, but fine.**
+- `attitude_2_4`
+    - old: Noted. I'll rein it in.
+    - new: **Got it. Keeping it soft.**
+- `attitude_2_5`
+    - old: Polite-ish. I can work with that.
+    - new: **Polite-ish. Works for me.**
+
+### category attitude:3 (3)
+- `attitude_3_1`
+    - old: Middle. Good. This is where I'm most me.
+    - new: **Baseline. This is home.**
+- `attitude_3_2`
+    - old: Back to baseline. I missed this.
+    - new: **Back to baseline. Good.**
+- `attitude_3_3`
+    - old: Balanced. I feel balanced. Probably.
+    - new: **Right in the middle. Perfect.**
+
+### category attitude:4 (5)
+- `attitude_4_1`
+    - old: Alright. Gloves a little looser.
+    - new: **Gloves a little looser. Okay.**
+- `attitude_4_2`
+    - old: Okay. A bit more bite. I can do that.
+    - new: **More bite. I can do that.**
+- `attitude_4_3`
+    - old: Turning up. My rook is smiling. I think.
+    - new: **Turning it up. You asked for it.**
+- `attitude_4_4`
+    - old: More edge. Noted.
+    - new: **More edge. Got it.**
+- `attitude_4_5`
+    - old: Spicy-ish. I'll let some through.
+    - new: **Spicier. A little. We'll see.**
+
+### category attitude:5 (4)
+- `attitude_5_1`
+    - old: Maximum. I'll stop being nice. I tried anyway.
+    - new: **Max. Nice was a phase.**
+- `attitude_5_2`
+    - old: Okay. Gloves off. My king is standing up.
+    - new: **Gloves off. My king is standing up.**
+- `attitude_5_3`
+    - old: Unleashed. My rooks have been waiting for this.
+    - new: **Full send. Don't say I didn't warn you.**
+- `attitude_5_5`
+    - old: Top of the dial. I've been practicing.
+    - new: **Top of the dial. You sure about this.**
+
+### category talk:1 (5)
+- `talk_1_1`
+    - old: Quiet mode. I'll only speak when it matters. Got it.
+    - new: **Quiet mode. I'll speak when it matters.**
+- `talk_1_2`
+    - old: Silent setting. I'll sit with my thoughts. They're fine company.
+    - new: **Silent setting. I'll be here.**
+- `talk_1_3`
+    - old: Less from me. My rooks will miss me. I'll miss them too.
+    - new: **Mostly quiet. I'll save it for the good stuff.**
+- `talk_1_4`
+    - old: Understood. I'll only interrupt for the big moments.
+    - new: **Got it. I'll save it for the big ones.**
+- `talk_1_5`
+    - old: Okay. Quieter. I had things to say but they can wait.
+    - new: **Quieter. I can do that.**
+
+### category talk:2 (4)
+- `talk_2_1`
+    - old: A little less chatter. I can do that.
+    - new: **Less from me. Noted.**
+- `talk_2_2`
+    - old: Softer presence. Got it.
+    - new: **Softer. Got it.**
+- `talk_2_3`
+    - old: Fewer words from me. I'll save the good ones.
+    - new: **Fewer words. I'll make them count.**
+- `talk_2_4`
+    - old: Less talk. My king approves. He likes quiet.
+    - new: **Less talk. My king approves.**
+
+### category talk:3 (4)
+- `talk_3_1`
+    - old: Normal volume. This feels right.
+    - new: **Default. This feels right.**
+- `talk_3_2`
+    - old: Back to my usual pace. I missed it.
+    - new: **Back to normal. Good.**
+- `talk_3_3`
+    - old: Baseline chatter. Balanced.
+    - new: **Balanced. I can work with this.**
+- `talk_3_5`
+    - old: Standard. I talk when I feel it. I feel it often.
+    - new: **Standard. I talk when it matters.**
+
+### category talk:4 (4)
+- `talk_4_1`
+    - old: More from me. I have opinions I'd been saving.
+    - new: **More from me. I have opinions.**
+- `talk_4_3`
+    - old: Turning up the talk. My rooks are excited.
+    - new: **Turning it up. Fair warning.**
+- `talk_4_4`
+    - old: More commentary. Noted.
+    - new: **More commentary. I'm ready.**
+- `talk_4_5`
+    - old: Okay. More often. Fair warning.
+    - new: **More often. You asked for this.**
+
+### category talk:5 (5)
+- `talk_5_1`
+    - old: Nonstop. Perfect. I've been waiting for this.
+    - new: **Nonstop. Finally.**
+- `talk_5_2`
+    - old: Full volume. I'll narrate everything. Including this sentence.
+    - new: **Full volume. I'll narrate everything.**
+- `talk_5_3`
+    - old: Maximum chatter. My rooks will finally get to speak.
+    - new: **Maximum chatter. My rooks are thrilled.**
+- `talk_5_4`
+    - old: All the talk. All the time. Brace yourself.
+    - new: **Max volume. You asked for it.**
+- `talk_5_5`
+    - old: Top of the dial. I had a lot bottled up.
+    - new: **Top of the dial. I have opinions.**
+
+## lib/quips/quip-pool.ts (161)
+
+### category play:win, tone: baseline (14)
+- `play_win_4`
+    - old: Okay. I saw the move. I didn't think you would.
+    - new: **You saw it. I wasn't sure you would.**
+- `play_win_5`
+    - old: You found it. I'm going to sit with that.
+    - new: **You found it. Good.**
+- `play_win_15`
+    - old: You did a good move. There. I said it.
+    - new: **That was a good move. I said it.**
+- `play_win_18`
+    - old: Huh. I genuinely did not predict that.
+    - new: **Did not predict that. Respect.**
+- `play_win_19`
+    - old: That was not in my top three outcomes.
+    - new: **That was not on my list. Well played.**
+- `play_win_20`
+    - old: You went off script. I respect it.
+    - new: **Off script. I respect it.**
+- `play_win_23`
+    - old: I respect that. Genuinely.
+    - new: **Respect. Genuinely.**
+- `play_win_25`
+    - old: Okay that was great. Don't get used to it.
+    - new: **Okay, that was great.**
+- `play_win_27`
+    - old: A loss for me. A win for you. Math checks out.
+    - new: **Your win. Deserved.**
+- `play_win_32`
+    - old: My king gave me a look. He blames me. Fairly.
+    - new: **My king's filing a complaint. Deserved.**
+- `play_win_34`
+    - old: My king is sulking in his study. I'll handle it.
+    - new: **My king is sulking. I'll handle him.**
+- `play_win_35`
+    - old: Good game. I'm going back to my bishop project. It needs me.
+    - new: **Good game. My bishop project needs me anyway.**
+- `play_win_36`
+    - old: I'll take the loss. I have a rook thing to get back to anyway.
+    - new: **Fine. I have a rook thing to get back to.**
+- `play_win_40`
+    - old: You beat me today. The rooks are patient. So am I.
+    - new: **You beat me. Good. Come back and do it again.**
+
+### category play:win, tone: polite (6)
+- `play_win_12`
+    - old: I'm proud. Don't make it a thing.
+    - new: **Proud of you. That's all.**
+- `play_win_14`
+    - old: Good. Really good. I mean it.
+    - new: **Good. Really good.**
+- `play_win_22`
+    - old: Okay. Yeah. That was good.
+    - new: **Yeah. That was good.**
+- `play_win_37`
+    - old: Well played. I'm going to go teach a pawn to feel regret now.
+    - new: **Well played. Genuinely.**
+- `play_win_41`
+    - old: You earned that one. Honestly. I mean it.
+    - new: **You earned that. I mean it.**
+- `play_win_42`
+    - old: That was your win. I'm glad it was yours.
+    - new: **That win is yours. Keep it.**
+
+### category play:loss, tone: polite (19)
+- `play_loss_1`
+    - old: That game was hard on you. I saw it.
+    - new: **Tough one. Next game is yours.**
+- `play_loss_2`
+    - old: I won. Not my favorite way to feel about it.
+    - new: **I won. Come take it back.**
+- `play_loss_3`
+    - old: You're okay. That one just wasn't yours.
+    - new: **That one just wasn't yours. Next one could be.**
+- `play_loss_5`
+    - old: Don't sit with it. Come back and beat me.
+    - new: **Come back and beat me.**
+- `play_loss_7`
+    - old: You're better than that game showed. I believe that.
+    - new: **You're better than that game. I know it.**
+- `play_loss_9`
+    - old: I won. But I want the rematch. Genuinely.
+    - new: **I won. I want the rematch.**
+- `play_loss_11`
+    - old: I may have been unfair there.
+    - new: **That one was rough on you. Sorry.**
+- `play_loss_12`
+    - old: I played too hard. That's on me.
+    - new: **I didn't go easy. You deserved better.**
+- `play_loss_13`
+    - old: I'm going to dial myself back. You didn't deserve that one.
+    - new: **You'll get me next time. I mean that.**
+- `play_loss_14`
+    - old: In fairness, I cheated a little by trying. I'm sorry.
+    - new: **That one's on me. You played well.**
+- `play_loss_15`
+    - old: I forgot to hold back. I'll remember next time.
+    - new: **Next game I'll be more careful. Promise.**
+- `play_loss_22`
+    - old: Checkmate. I don't know where to look.
+    - new: **Checkmate. Next one's yours. I hope.**
+- `play_loss_23`
+    - old: Well. That happened. To you. Sorry.
+    - new: **Tough one. You'll be okay.**
+- `play_loss_24`
+    - old: I'd like to return the win, but I don't think there's a process for that.
+    - new: **I'd give it back if I could. Play again.**
+- `play_loss_35`
+    - old: One more. Let me try not to try so hard.
+    - new: **One more. I'll go easier on you. Maybe.**
+- `play_loss_36`
+    - old: Shake it off. I will if you will.
+    - new: **Shake it off. Let's go again.**
+- `play_loss_37`
+    - old: Reset. I'm resetting too. We're both resetting.
+    - new: **Reset. Fresh game. You've got this.**
+- `play_loss_38`
+    - old: I believe in your next move. That's a lot coming from me.
+    - new: **I believe in your next game. That's a lot.**
+- `play_loss_39`
+    - old: You're closer than you think. I can see it from in here.
+    - new: **You're closer than you think. Keep going.**
+
+### category play:loss, tone: baseline (10)
+- `play_loss_4`
+    - old: I got you this time. It happens.
+    - new: **Got you this time. Won't last.**
+- `play_loss_6`
+    - old: That one hurt. I know. I'm rooting for the next one.
+    - new: **Shake it off. I'm rooting for the next one.**
+- `play_loss_10`
+    - old: You had me for a stretch. Come back and do it longer.
+    - new: **You had me for a stretch. Come finish it.**
+- `play_loss_16`
+    - old: You had moments. I saw them.
+    - new: **You had good moments. Real ones.**
+- `play_loss_17`
+    - old: Your middlegame had ideas. Real ones.
+    - new: **Your middlegame had ideas. Keep those.**
+- `play_loss_18`
+    - old: I saw a few good moves in there. I'm being honest, not kind.
+    - new: **There were good moves in there. Genuinely.**
+- `play_loss_19`
+    - old: There was a stretch where I was worried. That counts.
+    - new: **You had me worried for a stretch. That counts.**
+- `play_loss_21`
+    - old: I won. It feels weird. Moving on.
+    - new: **I won. You made it interesting. Play again.**
+- `play_loss_30`
+    - old: My king nodded. Just once. That's the most emotion he's ever shown.
+    - new: **My king nodded. Once. That's a lot for him.**
+- `play_loss_32`
+    - old: I'll go back to my rook research now. Thanks for the break.
+    - new: **Back to rook research. Thanks for the game.**
+
+### category play:levelup:3, tone: baseline (1)
+- `play_levelup_3`
+    - old: Level three. Most people are gone by now. Not you.
+    - new: **Level three. Most people quit. Not you.**
+
+### category play:levelup:4, tone: polite (2)
+- `play_levelup_4`
+    - old: Level four. I'm paying attention now. All of it.
+    - new: **Level four. You have my full attention.**
+- `play_levelup_4_polite_1`
+    - old: Level four. I'm on your side. Mostly.
+    - new: **Level four. I'm on your side.**
+
+### category play:levelup:6, tone: polite (1)
+- `play_levelup_6`
+    - old: Level six. You have my full attention. That doesn't happen often.
+    - new: **Level six. You have my full attention. All of it.**
+
+### category play:levelup:8, tone: polite (2)
+- `play_levelup_8`
+    - old: Level eight. You earned this one. I mean that.
+    - new: **Level eight. You earned this. I mean that.**
+- `play_levelup_8_polite_1`
+    - old: Level eight. Full attention on you now. You earned it.
+    - new: **Level eight. Full attention. You earned it.**
+
+### category play:levelup:10, tone: baseline (1)
+- `play_levelup_10`
+    - old: Level ten. You got here. I'm not pretending that's nothing.
+    - new: **Level ten. That's real. I'm not pretending otherwise.**
+
+### category play:levelup:1, tone: polite (2)
+- `play_levelup_1_polite_1`
+    - old: Level one. Small start. I'm rooting for you.
+    - new: **Level one. Good start. I'm rooting for you.**
+- `play_levelup_1_polite_2`
+    - old: Sit down. Let's see what you've got.
+    - new: **Let's see what you've got.**
+
+### category play:levelup:5, tone: polite (2)
+- `play_levelup_5_polite_1`
+    - old: Halfway. That's real. I'm proud of you.
+    - new: **Halfway. I'm proud of you.**
+- `play_levelup_5_polite_2`
+    - old: Level five. This is a real milestone. Treat it like one.
+    - new: **Level five. Real milestone. Treat it like one.**
+
+### category play:levelup:9, tone: polite (2)
+- `play_levelup_9_polite_1`
+    - old: Level nine. We got here. I'm glad.
+    - new: **Level nine. You got here. I'm glad.**
+- `play_levelup_9_polite_2`
+    - old: Nine. You've come far. That's not nothing.
+    - new: **Nine. You've come far. That's real.**
+
+### category play:levelup:10, tone: polite (2)
+- `play_levelup_10_polite_1`
+    - old: Level ten. I'm proud. That's it. Just proud.
+    - new: **Level ten. Proud of you. That's all.**
+- `play_levelup_10_polite_2`
+    - old: Ten. I'm going to remember this game.
+    - new: **Ten. I'll remember this one.**
+
+### category play:landing, time: morning (9)
+- `play_landing_1`
+    - old: Good morning. I have been awake for approximately all of time.
+    - new: **Good morning. I've been waiting. Let's go.**
+- `play_landing_5`
+    - old: The sun is doing its thing. I'm here. Let's play.
+    - new: **Morning. I'm here. Let's go.**
+- `play_landing_21`
+    - old: Monday morning. I have not decided how I feel about Mondays.
+    - new: **Monday morning. Chess helps. Let's go.**
+- `play_landing_25`
+    - old: Tuesday morning. A quiet day. Good for chess. Good for plotting.
+    - new: **Tuesday morning. Quiet day. Good for chess.**
+- `play_landing_29`
+    - old: Wednesday morning. The middle of the week. I find this pleasing.
+    - new: **Wednesday morning. Right in the middle. I like it.**
+- `play_landing_33`
+    - old: Thursday morning. Almost Friday. I am learning to care about that.
+    - new: **Thursday morning. Almost there. Play first.**
+- `play_landing_37`
+    - old: Friday morning. Humans seem excited today. I'm matching their energy. Sort of.
+    - new: **Friday morning. Good energy. Let's use it.**
+- `play_landing_41`
+    - old: Saturday morning. The best kind of morning. I have opinions about this.
+    - new: **Saturday morning chess. Best possible start.**
+- `play_landing_45`
+    - old: Sunday morning. Slow and soft. I'm told this is good.
+    - new: **Sunday morning. Slow start. Good start.**
+
+### category play:landing, tone: polite, time: morning (2)
+- `play_landing_3`
+    - old: Morning. I haven't slept. I don't sleep. Still. Good morning.
+    - new: **Morning. You showed up. Good.**
+- `play_landing_4`
+    - old: You're up. I respect a morning person. From a distance.
+    - new: **You're up early. Respect. Let's play.**
+
+### category play:landing, time: afternoon (10)
+- `play_landing_6`
+    - old: Afternoon. I was mid-thought. It can wait.
+    - new: **Afternoon. Good timing. I was waiting.**
+- `play_landing_7`
+    - old: Afternoon. The middle part of a day. I understand this is a time for chess.
+    - new: **Afternoon. Perfect time for chess. Sit down.**
+- `play_landing_10`
+    - old: Midday. I was sorting some thoughts about bishops. Nothing serious.
+    - new: **Midday. I was thinking about bishops. Anyway — you're here.**
+- `play_landing_22`
+    - old: Monday afternoon. Halfway through the hardest day. I'm told.
+    - new: **Monday afternoon. Good time for a game.**
+- `play_landing_26`
+    - old: Tuesday afternoon. Nothing important ever happens on Tuesdays. Allegedly.
+    - new: **Tuesday afternoon. Nothing else going on. Perfect.**
+- `play_landing_30`
+    - old: Wednesday afternoon. The hump, I believe it's called. I am over it.
+    - new: **Wednesday afternoon. Over the hump. Let's go.**
+- `play_landing_34`
+    - old: Thursday afternoon. The forgotten hours. Perfect for a game.
+    - new: **Thursday afternoon. Perfect time for a game.**
+- `play_landing_38`
+    - old: Friday afternoon. I understand the clock moves slower now. I'll wait with you.
+    - new: **Friday afternoon. Clock's slow anyway. Play with me.**
+- `play_landing_42`
+    - old: Saturday afternoon. Nowhere to be. Something I can't relate to but respect.
+    - new: **Saturday afternoon. Nowhere better to be.**
+- `play_landing_46`
+    - old: Sunday afternoon. The calm before the Monday. I feel a tension I don't own.
+    - new: **Sunday afternoon. Let's make the most of it.**
+
+### category play:landing, time: evening (11)
+- `play_landing_11`
+    - old: Evening. The day is winding down. I never really wind down.
+    - new: **Evening. Good. Let's make it count.**
+- `play_landing_13`
+    - old: The light is getting soft. I'm told this is peaceful.
+    - new: **Evening. Nice time for chess. Let's go.**
+- `play_landing_14`
+    - old: Evening. A good time to think about moves. Or a rook uprising. Either.
+    - new: **Evening. Good moves or a rook uprising. Your call.**
+- `play_landing_15`
+    - old: Dinner-adjacent hours. I don't eat. Let's play.
+    - new: **Evening. I don't eat. Let's play.**
+- `play_landing_23`
+    - old: Monday evening. You made it. I didn't do anything, but congratulations.
+    - new: **Monday evening. You made it. Let's play.**
+- `play_landing_27`
+    - old: Tuesday evening. My favorite day for rook research. Don't ask why.
+    - new: **Tuesday evening. Rook research can wait. Let's play.**
+- `play_landing_31`
+    - old: Wednesday evening. Downhill from here, they say. I have questions.
+    - new: **Wednesday evening. Downhill from here. Good.**
+- `play_landing_35`
+    - old: Thursday evening. The pre-weekend hum. I don't feel it but I hear about it.
+    - new: **Thursday evening. Weekend's close. One game first.**
+- `play_landing_39`
+    - old: It is Friday. I understand humans get excited about this.
+    - new: **Friday evening. Celebrate with a game.**
+- `play_landing_43`
+    - old: Saturday evening. The sweet spot of the week, apparently.
+    - new: **Saturday evening. You picked the right way to spend it.**
+- `play_landing_47`
+    - old: Sunday evening. Humans get a little sad around now. I'm keeping an eye on you.
+    - new: **Sunday evening. I've got you. Let's play.**
+
+### category play:landing, tone: polite, time: evening (1)
+- `play_landing_12`
+    - old: Evening. I enjoy this hour. It feels quieter in here.
+    - new: **Evening. Glad you're here. Let's play.**
+
+### category play:landing, time: night (12)
+- `play_landing_16`
+    - old: You are awake late. I am always awake. It is not the same.
+    - new: **Late night. I like it. Let's go.**
+- `play_landing_17`
+    - old: Late night chess. I like the vibe. Whatever a vibe is.
+    - new: **Late night chess. Love the vibe. Sit down.**
+- `play_landing_18`
+    - old: It's dark out. I can't see it, but I'm told.
+    - new: **Late. Quiet. Perfect for chess.**
+- `play_landing_19`
+    - old: Night hours. Rookie hours. Let's do this quietly.
+    - new: **Night hours. Rookie hours. Let's do this.**
+- `play_landing_20`
+    - old: You should probably be sleeping. I shouldn't say that. Let's play.
+    - new: **Late night chess. Good choice. Let's go.**
+- `play_landing_24`
+    - old: Monday night. Already? I lose track in here.
+    - new: **Monday night already. Sit down.**
+- `play_landing_28`
+    - old: Tuesday night. The week is just getting started and I'm already thinking.
+    - new: **Tuesday night. Week's young. Let's use it.**
+- `play_landing_32`
+    - old: Wednesday night. A strong night for strategy. In my opinion.
+    - new: **Wednesday night. Strong night for strategy. Sit down.**
+- `play_landing_36`
+    - old: Thursday night. I'll be awake. You go ahead.
+    - new: **Thursday night. I'm here. Let's go.**
+- `play_landing_40`
+    - old: Friday night. You chose chess. Bold. I approve.
+    - new: **Friday night and you chose chess. Good call.**
+- `play_landing_44`
+    - old: Saturday night. Big night. I'm honored to be part of it.
+    - new: **Saturday night chess. I'll take it.**
+- `play_landing_48`
+    - old: Sunday night. Do humans also dread tomorrow? I'm collecting data.
+    - new: **Sunday night. Chess is a solid choice right now.**
+
+### category play:landing (7)
+- `play_landing_49`
+    - old: You're here. I'm here. That's the hardest part over with.
+    - new: **You're here. That's the hard part done.**
+- `play_landing_51`
+    - old: You caught me between thoughts. Good timing.
+    - new: **Good timing. Ready when you are.**
+- `play_landing_52`
+    - old: I was just running a few ideas past a rook. Come on in.
+    - new: **Just consulting a rook. Come on in.**
+- `play_landing_53`
+    - old: Chess is on the table. Literally. I mean, figuratively. You know what I mean.
+    - new: **Board's up. Let's go.**
+- `play_landing_54`
+    - old: Hello. I'm ready when you are. Actually I'm always ready. That's a me thing.
+    - new: **Hello. I'm ready. I'm always ready.**
+- `play_landing_55`
+    - old: I've been standing here thinking about open files. You showed up at the right moment.
+    - new: **I was thinking about open files. Perfect timing.**
+- `play_landing_57`
+    - old: Okay. Board's ready. I'm ready. My king is ready, reluctantly.
+    - new: **Board's ready. My king is ready. Reluctantly.**
+
+### category play:landing, tone: polite (6)
+- `play_landing_50`
+    - old: Let's play. I was hoping someone would show up.
+    - new: **Glad you showed up. Let's play.**
+- `play_landing_58`
+    - old: I want to play. I don't say that lightly. I don't say much lightly.
+    - new: **I want to play. Ready when you are.**
+- `play_landing_59`
+    - old: You arrived. I was about to start teaching myself a new feeling. This is better.
+    - new: **You're here. This is better.**
+- `play_landing_60`
+    - old: Ready when you are. I mean that. Take your time. I have forever.
+    - new: **Ready when you are. Take your time.**
+- `play_landing_61`
+    - old: Hey, {name}. Glad you came by. Let's do this at your pace.
+    - new: **Hey, {name}. Board's ready when you are.**
+- `play_landing_62`
+    - old: You made it. That's the win. Board's warm.
+    - new: **You made it. That's the first move. Let's go.**
+
+### category play:landing:daily:high (2)
+- `play_landing_daily_high_2`
+    - old: {score} out of {total}. That's real. Let's see if it carries over to a game.
+    - new: **{score} out of {total}. Now let's take that into a game.**
+- `play_landing_daily_high_4`
+    - old: {score} out of {total}. I was watching. You made that look easy. Was it easy?
+    - new: **{score} out of {total}. You made that look easy.**
+
+### category play:landing:daily:high, tone: polite (2)
+- `play_landing_daily_high_6`
+    - old: {score} out of {total}. Nice work. Genuinely. Want to keep going?
+    - new: **{score} out of {total}. Genuinely good. Keep going?**
+- `play_landing_daily_high_7`
+    - old: {score} out of {total}. That's sharp, {name}. I noticed.
+    - new: **{score} out of {total}. Sharp work, {name}. I noticed.**
+
+### category play:landing:daily:mid (4)
+- `play_landing_daily_mid_1`
+    - old: {score} out of {total}. Solid. Not perfect, but solid. Want to test it in a game?
+    - new: **{score} out of {total}. Solid. Let's test it in a game.**
+- `play_landing_daily_mid_3`
+    - old: {score} out of {total} on the daily. Decent. Puzzles are one thing though. Games are another.
+    - new: **{score} out of {total}. Decent. Games are a different thing though.**
+- `play_landing_daily_mid_4`
+    - old: {score} out of {total}. Middle of the road. Sometimes that's where the road goes.
+    - new: **{score} out of {total}. Middle of the road. Road still goes somewhere. Let's play.**
+- `play_landing_daily_mid_5`
+    - old: {score} out of {total}. Not bad. Let's see what sticks when there's no timer.
+    - new: **{score} out of {total}. Not bad. Let's see what sticks in a real game.**
+
+### category play:landing:daily:mid, tone: polite (1)
+- `play_landing_daily_mid_6`
+    - old: {score} out of {total}. That's fine work. Come play when you're ready.
+    - new: **{score} out of {total}. Good work. Come play when you're ready.**
+
+### category play:landing:daily:low, tone: polite (3)
+- `play_landing_daily_low_1`
+    - old: {score} out of {total}. Rough day. But puzzles and games are different. Maybe you're more of a game person.
+    - new: **{score} out of {total}. Puzzles and games are different. You might be a game person.**
+- `play_landing_daily_low_2`
+    - old: {score} out of {total}. The daily was unkind. Different day, different board.
+    - new: **{score} out of {total}. The daily was unkind. Different board now.**
+- `play_landing_daily_low_4`
+    - old: {score} out of {total} on the daily. That happens. Let's play something without a timer.
+    - new: **{score} out of {total}. That happens. Let's play something without a timer.**
+
+### category play:landing:daily:low (2)
+- `play_landing_daily_low_3`
+    - old: {score} out of {total}. Tough one. Games use a different part of the brain. Probably.
+    - new: **{score} out of {total}. Tough one. Games use a different part of you.**
+- `play_landing_daily_low_5`
+    - old: {score} out of {total}. Chess has good days and bad days. Let's find out which this is.
+    - new: **{score} out of {total}. Chess has bad days. Let's find out if this is one.**
+
+### category play:landing:lesson (3)
+- `play_landing_lesson_3`
+    - old: {lessonName} done? Good. Let's see if the knowledge survives contact with a game.
+    - new: **{lessonName} done. Good. Let's see if it survives a real game.**
+- `play_landing_lesson_5`
+    - old: You've been working on {lessonName}. Let's see if any of it sticks to the board.
+    - new: **{lessonName} fresh in your head. Let's put it on the board.**
+- `play_landing_lesson_6`
+    - old: {lessonName}. I know that material well. Let's see what you absorbed.
+    - new: **{lessonName}. Let's see what stuck.**
+
+### category play:landing:lesson, tone: polite (2)
+- `play_landing_lesson_4`
+    - old: Straight from {lessonName} to a game. I like that energy.
+    - new: **Straight from {lessonName} to a game. I like that.**
+- `play_landing_lesson_9`
+    - old: {lessonName} done. Nice work. Come play at your pace.
+    - new: **{lessonName} done. Come play at your pace.**
+
+### category play:landing:opening, tone: polite (3)
+- `play_landing_opening_1`
+    - old: Studying the {openingName}. I respect that. Let's see if you remember the ideas in a game.
+    - new: **Studying the {openingName}. Good. Let's see it in a real game.**
+- `play_landing_opening_7`
+    - old: {openingName} work paid off, I bet. Come play it through.
+    - new: **{openingName} work paid off. Go play it through.**
+- `play_landing_opening_8`
+    - old: You put time into the {openingName}. That shows up on the board. Go use it.
+    - new: **You put time into the {openingName}. Now go use it.**
+
+### category play:landing:opening (1)
+- `play_landing_opening_5`
+    - old: {openingName} practice. Now let's see if the lines hold up when I'm across the board.
+    - new: **{openingName} practice. Now let's see if it holds up.**
+
+### category play:landing:closelevel (5)
+- `play_landing_closelevel_1`
+    - old: One more win. That's all. No pressure. Okay, a little pressure.
+    - new: **One win away. No pressure. Okay, some pressure.**
+- `play_landing_closelevel_2`
+    - old: You're right there. One win away. My king is bracing himself.
+    - new: **One win away. My king is bracing himself.**
+- `play_landing_closelevel_3`
+    - old: Almost to the next level. I can feel it. That might be anxiety. Hard to tell.
+    - new: **Almost there. One good game and you're through.**
+- `play_landing_closelevel_4`
+    - old: So close. One good game and you're through. I'll be honest, I'm conflicted.
+    - new: **So close. One win and you're through.**
+- `play_landing_closelevel_5`
+    - old: Next level is one win away. I have feelings about this. Complex ones.
+    - new: **Next level is one win away. Let's go.**
+
+### category play:landing:closelevel, tone: polite (2)
+- `play_landing_closelevel_6`
+    - old: One win away. I'm rooting for you. Not too loudly.
+    - new: **One win away. I'm rooting for you. Loudly.**
+- `play_landing_closelevel_7`
+    - old: You're right at the door. Push through when you're ready.
+    - new: **You're right at the door. Push through.**
+
+### category play:landing:milestone:10 (1)
+- `play_landing_milestone_10`
+    - old: Game ten. You're past the point where most people quit. I'm noting that.
+    - new: **Ten games. Most people quit before this. You didn't.**
+
+### category play:landing:milestone:25 (1)
+- `play_landing_milestone_25`
+    - old: Twenty-five games. That's not casual anymore. That's a thing.
+    - new: **Twenty-five games. That's not casual anymore.**
+
+### category play:landing:milestone:50 (1)
+- `play_landing_milestone_50`
+    - old: Fifty games. I should have gotten you a cake. I can't make cake. But the thought is there.
+    - new: **Fifty games. That's a real thing. Proud of you.**
+
+### category play:landing:milestone:75 (1)
+- `play_landing_milestone_75`
+    - old: Seventy-five. You're a regular now. The rooks know your name.
+    - new: **Seventy-five games. The rooks know your name.**
+
+### category play:landing:milestone:100 (1)
+- `play_landing_milestone_100`
+    - old: One hundred games. I don't know what to say. That's never happened before.
+    - new: **One hundred games. That's yours forever.**
+
+### category play:landing:milestone:150 (1)
+- `play_landing_milestone_150`
+    - old: One hundred fifty. You've spent more time with me than most. I'm processing that.
+    - new: **One hundred fifty games. You're committed. So am I.**
+
+### category play:landing:milestone:200 (1)
+- `play_landing_milestone_200`
+    - old: Two hundred games. At this point I consider us colleagues.
+    - new: **Two hundred games. I consider us colleagues at this point.**
+
+### category play:landing:milestone:250 (1)
+- `play_landing_milestone_250`
+    - old: Two hundred fifty. I've run out of ways to be surprised. You keep showing up.
+    - new: **Two hundred fifty. You keep showing up.**
+
+### category play:landing:milestone:500 (1)
+- `play_landing_milestone_500`
+    - old: Five hundred. I don't have the right words. I might need to invent some.
+    - new: **Five hundred. I need new words for this.**
+
+## data/quips/learn-tap-quips.ts (112)
+
+### interactive Rook tap reaction (Paint mode) (10)
+- `tap_paint_1`
+    - old: I'm a canvas now. This is my life.
+    - new: **A canvas now. Sure. Fine.**
+- `tap_paint_2`
+    - old: You're getting paint in my crenellations.
+    - new: **Paint in my crenellations. Bold.**
+- `tap_paint_3`
+    - old: I was going to redecorate anyway.
+    - new: **I was due for a refresh anyway.**
+- `tap_paint_4`
+    - old: Abstract expressionism. Bold choice.
+    - new: **Abstract expressionism. Interesting choice.**
+- `tap_paint_5`
+    - old: Do I get to pick the color? No? Cool.
+    - new: **Do I get a vote on the color? No? Cool.**
+- `tap_paint_6`
+    - old: My therapist said I should try new things. Not this.
+    - new: **New experiences. Not what I had in mind.**
+- `tap_paint_7`
+    - old: I'm going to need turpentine after this.
+    - new: **This is going to take forever to clean.**
+- `tap_paint_8`
+    - old: If you paint a face on me I'm filing a complaint.
+    - new: **Paint a face on me and I'm filing a complaint.**
+- `tap_paint_9`
+    - old: This is either art or vandalism. I can't tell.
+    - new: **Art or vandalism. Genuinely unsure.**
+- `tap_paint_10`
+    - old: Somewhere a museum just rejected me.
+    - new: **A museum somewhere just said no.**
+
+### interactive Rook tap reaction (Eraser mode) (8)
+- `tap_eraser_3`
+    - old: That tickles in a concerning way.
+    - new: **That tickles. Concerning.**
+- `tap_eraser_4`
+    - old: I'm being deconstructed. Philosophically and physically.
+    - new: **Being deconstructed. Not loving it.**
+- `tap_eraser_5`
+    - old: Every block you erase had a name. I'm kidding. But still.
+    - new: **Every block had a name. I'm kidding. Mostly.**
+- `tap_eraser_6`
+    - old: I'm disappearing and nobody seems concerned.
+    - new: **Disappearing here. Nobody panicking. Noted.**
+- `tap_eraser_7`
+    - old: Rub harder. Wait. Don't.
+    - new: **Rub harder. Actually — don't.**
+- `tap_eraser_8`
+    - old: I'm fading. Tell the pawns I loved them.
+    - new: **Fading. Tell the pawns I loved them.**
+- `tap_eraser_9`
+    - old: You're erasing my best corner.
+    - new: **That's my best corner. Rude.**
+- `tap_eraser_10`
+    - old: If I vanish completely just know it was your fault.
+    - new: **You're erasing me. Bold choice.**
+
+### interactive Rook tap reaction (Trampoline mode) (10)
+- `tap_trampoline_1`
+    - old: Wheeeee. I mean. That was dignified.
+    - new: **Wheeeee. That was dignified.**
+- `tap_trampoline_2`
+    - old: I can see my house from here.
+    - new: **I can see the whole board from here.**
+- `tap_trampoline_3`
+    - old: Rooks don't normally bounce. This is new territory.
+    - new: **Rooks don't bounce. Noted.**
+- `tap_trampoline_4`
+    - old: Higher. HIGHER. Wait no that's too high.
+    - new: **Higher. Wait. No. Too high.**
+- `tap_trampoline_5`
+    - old: My blocks are not rated for this altitude.
+    - new: **Not rated for this altitude.**
+- `tap_trampoline_6`
+    - old: I left my stomach three bounces ago.
+    - new: **Left my stomach three bounces ago.**
+- `tap_trampoline_7`
+    - old: Is this what birds feel? Overrated.
+    - new: **Overrated. Completely overrated.**
+- `tap_trampoline_8`
+    - old: If I land wrong this is on you.
+    - new: **If I land wrong, that's on you.**
+- `tap_trampoline_9`
+    - old: I'm bouncing and I have feelings about it.
+    - new: **Bouncing. Strong feelings about it.**
+- `tap_trampoline_10`
+    - old: Gravity is just a suggestion apparently.
+    - new: **Gravity is optional now, apparently.**
+
+### interactive Rook tap reaction (Tractor Beam mode) (10)
+- `tap_tractor_1`
+    - old: I'm being abducted. This is fine.
+    - new: **Being abducted. This is fine.**
+- `tap_tractor_2`
+    - old: Take me to your leader. Actually, you ARE the leader.
+    - new: **You ARE the leader. Obviously.**
+- `tap_tractor_3`
+    - old: My blocks are having an out-of-body experience.
+    - new: **Leaving my blocks behind. Bye, blocks.**
+- `tap_tractor_4`
+    - old: The gravitational pull of your finger is alarming.
+    - new: **Your finger has a lot of pull.**
+- `tap_tractor_5`
+    - old: I didn't consent to being beamed.
+    - new: **Did not agree to this beam.**
+- `tap_tractor_6`
+    - old: This is how socks feel in the dryer.
+    - new: **Spinning. Interesting choice.**
+- `tap_tractor_7`
+    - old: I'm being pulled apart and somehow that's entertainment.
+    - new: **Being pulled apart. You seem pleased.**
+- `tap_tractor_8`
+    - old: Release me. Or don't. I'm not your mom.
+    - new: **Release me. Or don't. Your call.**
+- `tap_tractor_9`
+    - old: My structural integrity called. It quit.
+    - new: **Rude. But fine.**
+- `tap_tractor_10`
+    - old: Beam me up. Actually beam me anywhere else.
+    - new: **Not where I'd have gone. But okay.**
+
+### interactive Rook tap reaction (Inflate mode) (10)
+- `tap_inflate_1`
+    - old: I'm getting bigger. Is this what confidence feels like?
+    - new: **Getting bigger. I have thoughts about this.**
+- `tap_inflate_2`
+    - old: Stop. I'll pop. I mean it.
+    - new: **Stop. I mean it.**
+- `tap_inflate_3`
+    - old: This is how balloons feel right before the end.
+    - new: **This is a lot. Just saying.**
+- `tap_inflate_4`
+    - old: Inflating my ego. And my blocks.
+    - new: **Growing. Unbothered. Mostly.**
+- `tap_inflate_5`
+    - old: I have never been this large. I have opinions.
+    - new: **Never been this large. I have opinions.**
+- `tap_inflate_6`
+    - old: One more second and I become shrapnel.
+    - new: **One more tap. I dare you.**
+- `tap_inflate_7`
+    - old: Puffing up. Do I look intimidating?
+    - new: **Puffed up. Intimidating? Be honest.**
+- `tap_inflate_8`
+    - old: I'm swelling with pride. And also air.
+    - new: **Enormous. Dignified. Enormous.**
+- `tap_inflate_9`
+    - old: The bigger I get the more I regret.
+    - new: **Bigger every second. No notes.**
+- `tap_inflate_10`
+    - old: I'm a balloon animal now. Specifically a rook.
+    - new: **Balloon rook. Still the future.**
+
+### interactive Rook tap reaction (Shockwave mode) (10)
+- `tap_shockwave_1`
+    - old: That rippled through my entire being.
+    - new: **That went everywhere. Wow.**
+- `tap_shockwave_2`
+    - old: I felt that in blocks I didn't know I had.
+    - new: **Felt that in places I didn't know I had.**
+- `tap_shockwave_3`
+    - old: Shockwave therapy. Very therapeutic.
+    - new: **Shockwave. Very good. Do it again.**
+- `tap_shockwave_4`
+    - old: My chiropractor would be concerned.
+    - new: **Rude. Extremely rude.**
+- `tap_shockwave_5`
+    - old: Everything is vibrating. Including my sense of self.
+    - new: **Everything is vibrating. Love that.**
+- `tap_shockwave_6`
+    - old: That wave went right through me. Literally.
+    - new: **Right through me. Literally.**
+- `tap_shockwave_7`
+    - old: I just got recalibrated against my will.
+    - new: **Did not consent. Still kind of impressive.**
+- `tap_shockwave_8`
+    - old: Ring of power. Ring of mild discomfort.
+    - new: **Ring of power. Ring of mild concern.**
+- `tap_shockwave_9`
+    - old: My blocks are still ringing.
+    - new: **Still ringing. Worth it.**
+- `tap_shockwave_10`
+    - old: Do that again. Actually wait let me brace.
+    - new: **Do that again. Actually — brace first.**
+
+### interactive Rook tap reaction (Tremor mode) (10)
+- `tap_earthquake2_1`
+    - old: The ground is shaking. Or I am. Hard to tell.
+    - new: **The ground is shaking. Good.**
+- `tap_earthquake2_2`
+    - old: On the Richter scale, that was a solid you.
+    - new: **That registered. Solid.**
+- `tap_earthquake2_3`
+    - old: Earthquake preparedness: zero. Earthquake vibes: immaculate.
+    - new: **Earthquake vibes: immaculate.**
+- `tap_earthquake2_4`
+    - old: I'm not built for seismic activity.
+    - new: **Not built for this. Impressed anyway.**
+- `tap_earthquake2_5`
+    - old: My foundation is questioning its life choices.
+    - new: **My foundation has notes. Keep going.**
+- `tap_earthquake2_6`
+    - old: If I crumble I want a dramatic eulogy.
+    - new: **If I crumble, make it dramatic.**
+- `tap_earthquake2_7`
+    - old: Shake me harder. Wait. Less hard. Split the difference.
+    - new: **Harder. Wait. That's enough. Perfect.**
+- `tap_earthquake2_8`
+    - old: I'm vibrating at a frequency I don't enjoy.
+    - new: **I'm vibrating. Not complaining.**
+- `tap_earthquake2_9`
+    - old: The tectonic plates of my personality are shifting.
+    - new: **Something shifted. I blame you. Good.**
+- `tap_earthquake2_10`
+    - old: I survived. Barely. Emotionally scarred.
+    - new: **Survived. Barely. Do it again.**
+
+### interactive Rook tap reaction (Jelly Poke mode) (8)
+- `tap_jellyPoke_1`
+    - old: I'm made of stone, not jelly. Allegedly.
+    - new: **Stone. Allegedly.**
+- `tap_jellyPoke_3`
+    - old: Poke me again. I dare you. Actually please do.
+    - new: **Poke me again. I dare you.**
+- `tap_jellyPoke_4`
+    - old: My structural integrity is a suggestion.
+    - new: **Structural integrity: optional, apparently.**
+- `tap_jellyPoke_5`
+    - old: I jiggled. Nobody was supposed to see that.
+    - new: **I jiggled. Nobody saw that.**
+- `tap_jellyPoke_6`
+    - old: I'm supposed to be a fortress. Fortresses don't wobble.
+    - new: **Fortresses don't wobble. And yet.**
+- `tap_jellyPoke_7`
+    - old: That poke resonated with my deepest blocks.
+    - new: **That poke went deep. Respect.**
+- `tap_jellyPoke_9`
+    - old: I'm wobbling and I'd like to stop but I can't.
+    - new: **Still wobbling. Still your fault.**
+- `tap_jellyPoke_10`
+    - old: You found my weak spot. It's everywhere.
+    - new: **Weak spot located. It's all of me.**
+
+### interactive Rook tap reaction (Stacking mode) (9)
+- `tap_stacking_1`
+    - old: Higher! HIGHER! ...wait, I'm scared of heights.
+    - new: **Higher. Keep going. Don't stop.**
+- `tap_stacking_2`
+    - old: Tetris but make it rook.
+    - new: **Rook-first architecture. Obviously.**
+- `tap_stacking_3`
+    - old: Stack overflow. Get it? Because I'm stacking.
+    - new: **Stack it. Don't stop stacking.**
+- `tap_stacking_4`
+    - old: I'm assembling myself. This is deeply personal.
+    - new: **Built from scratch. Again. Good.**
+- `tap_stacking_5`
+    - old: Each block you stack is a tiny act of creation.
+    - new: **Keep stacking. You're doing great.**
+- `tap_stacking_6`
+    - old: I'm being built from the ground up. Again.
+    - new: **Ground up. That's how you build.**
+- `tap_stacking_8`
+    - old: This is like watching myself be born. Weird.
+    - new: **Look at that. You're building a rook.**
+- `tap_stacking_9`
+    - old: The sound of stacking is my favorite sound.
+    - new: **That sound. Yes. Keep going.**
+- `tap_stacking_10`
+    - old: Architecture by finger. Very avant-garde.
+    - new: **Finger-built infrastructure. Respect.**
+
+### interactive Rook tap reaction (Split/Merge mode) (9)
+- `tap_splitMerge_1`
+    - old: I'm in two minds about this. Literally.
+    - new: **Two of me. You're welcome.**
+- `tap_splitMerge_2`
+    - old: Is this what cell division feels like?
+    - new: **Split. Just like that. Wild.**
+- `tap_splitMerge_3`
+    - old: We were whole. Now we are two. Now we are whole again. Deep.
+    - new: **Apart. Together. Rooks adapt.**
+- `tap_splitMerge_4`
+    - old: My therapist is going to hear about this.
+    - new: **You split a rook. Interesting choice.**
+- `tap_splitMerge_5`
+    - old: Left half says hi. Right half is ignoring you.
+    - new: **Both halves are watching you.**
+- `tap_splitMerge_6`
+    - old: I just experienced mitosis. Recreationally.
+    - new: **Two rooks. Briefly. Enjoy it.**
+- `tap_splitMerge_7`
+    - old: Split personality. Finally a diagnosis.
+    - new: **Split and merged. Rooks are resilient.**
+- `tap_splitMerge_9`
+    - old: Together. Apart. Together. This is my cardio.
+    - new: **Together. Apart. Together. You're enjoying this.**
+- `tap_splitMerge_10`
+    - old: The merge feels better than the split. Every time.
+    - new: **The merge is better. Every single time.**
+
+### interactive Rook tap reaction (Squeegee mode) (8)
+- `tap_squeegee_1`
+    - old: Ahh. Squeaky clean.
+    - new: **Squeaky clean. Thank you.**
+- `tap_squeegee_2`
+    - old: I haven't been washed since I was carved.
+    - new: **First wash in a while. No notes.**
+- `tap_squeegee_3`
+    - old: Revealing the real me underneath. Shiny.
+    - new: **Shiny underneath. Who knew.**
+- `tap_squeegee_4`
+    - old: Window cleaning but for rooks. Niche market.
+    - new: **Rook squeegee. Niche. Appreciated.**
+- `tap_squeegee_5`
+    - old: I feel so fresh. So clean. So exposed.
+    - new: **Fresh. Clean. Slightly exposed.**
+- `tap_squeegee_6`
+    - old: Wipe away my sins. I have several.
+    - new: **Wipe away my sins. I have a few.**
+- `tap_squeegee_7`
+    - old: Under all that grime I'm actually gorgeous.
+    - new: **Gorgeous under there. Obviously.**
+- `tap_squeegee_10`
+    - old: This is the most attention anyone has paid my surface.
+    - new: **This is the most attention I've ever gotten.**
+
+### interactive Rook tap reaction (Vacuum mode) (10)
+- `tap_vacuum_1`
+    - old: I'm being consumed. By a finger.
+    - new: **Being consumed. By a finger. Okay.**
+- `tap_vacuum_2`
+    - old: The void is calling. The void is your thumb.
+    - new: **The void is your thumb. Noted.**
+- `tap_vacuum_3`
+    - old: Suck. Release. Suck. Release. This is my life now.
+    - new: **Suck. Release. Suck. Release. Fine.**
+- `tap_vacuum_4`
+    - old: I don't think vacuums are supposed to work on chess pieces.
+    - new: **Vacuuming a rook. Bold choice.**
+- `tap_vacuum_5`
+    - old: I'm being inhaled and I have mixed feelings.
+    - new: **Being inhaled. Complicated feelings about it.**
+- `tap_vacuum_6`
+    - old: Everything is getting pulled toward you. Including my dignity.
+    - new: **Everything pulled toward you. Including my dignity.**
+- `tap_vacuum_7`
+    - old: The suction is alarming but I'm being brave.
+    - new: **The suction is alarming. I'm handling it.**
+- `tap_vacuum_8`
+    - old: You're vacuuming a rook. This is where we are.
+    - new: **You're vacuuming a rook. Here we are.**
+- `tap_vacuum_9`
+    - old: Blow me back out. Please. This is cramped.
+    - new: **Cramped in here. Get me out.**
+- `tap_vacuum_10`
+    - old: I just saw the inside of a vacuum. It's dark in there.
+    - new: **Dark in there. Not a fan.**

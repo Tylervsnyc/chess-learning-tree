@@ -101,3 +101,6 @@ data/witty-games/
 
 # Test page depends on gitignored remotion/ modules — keep local only
 app/test/rookie-instagram/
+
+# Rookie voice pipeline intermediates (keep REVIEW.md)
+data/rookie-voice/*.json
