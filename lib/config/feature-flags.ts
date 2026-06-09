@@ -20,7 +20,7 @@ export const FEATURE_FLAGS = {
    * modal via DailyWorkoutWatcher. When true: completion screens own the claim
    * and the watcher stays inert. When false: legacy modal-on-navigation.
    */
-  STREAK_ON_COMPLETE: true,
+  STREAK_ON_COMPLETE: false,
   /**
    * CHE-370 — show the "Chess Path ELO" rising day-by-day graph inside the
    * activity completion popup (the legible progress-pride mechanic). Dark by

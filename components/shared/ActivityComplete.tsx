@@ -114,24 +114,34 @@ export function ActivityComplete({
 
   // ─── Chess Path ELO (CHE-370) ───
   // Fetch a *fresh* (uncached) rating so the just-finished activity is included,
-  // then build the monotonic "only goes up" day-by-day series for the graph.
+  // then build the monotonic "only goes up" series for the graph. We show the
+  // user's WHOLE journey (windowDays large) so an established player still sees
+  // a climb instead of a flat recent plateau.
   const [eloPoints, setEloPoints] = useState<ChessPathPoint[] | null>(null)
-  const showElo = FEATURE_FLAGS.CHESS_PATH_ELO && !!user && !didFail
+  const [eloLoaded, setEloLoaded] = useState(false)
+  // Intent: as soon as we know we'll try the chart, commit to that layout (drop
+  // Rookie, reserve space) so the popup doesn't flicker when data lands.
+  const chartIntent = FEATURE_FLAGS.CHESS_PATH_ELO && !!user && !didFail
   useEffect(() => {
-    if (!showElo) return
+    if (!chartIntent) return
     let cancelled = false
     fetch('/api/profile/elo?fresh=1')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (cancelled || !data?.series) return
-        setEloPoints(chessPathEloSeries(data.series))
+        if (cancelled) return
+        const pts = data?.series ? chessPathEloSeries(data.series, { windowDays: 400 }) : []
+        setEloPoints(pts.length >= 2 ? pts : [])
+        setEloLoaded(true)
       })
-      .catch(() => {})
+      .catch(() => { if (!cancelled) { setEloPoints([]); setEloLoaded(true) } })
     return () => { cancelled = true }
-  }, [showElo])
-  const eloToday = eloPoints ? chessPathToday(eloPoints) : null
-  // When the chart is the hero we drop Rookie's avatar and shrink the streak.
-  const showChart = showElo && !!eloPoints && eloPoints.length >= 2 && !!eloToday
+  }, [chartIntent])
+  const hasChart = chartIntent && !!eloPoints && eloPoints.length >= 2
+  const eloToday = hasChart ? chessPathToday(eloPoints!) : null
+  const chartLoading = chartIntent && !eloLoaded
+  // Rookie shows unless we're committing to (or loading) the chart. If the chart
+  // turns out empty (no history), we fall back to Rookie.
+  const showRookie = !chartIntent || (eloLoaded && !hasChart)
 
   // Mark the current activity as done too (it just completed)
   const workoutPlay = workoutStatus.play || workoutActivity === 'play'
@@ -318,7 +328,7 @@ export function ActivityComplete({
         </div>
 
         {/* ─── Interactive Rookie (hidden when the ELO chart is the hero) ─── */}
-        {!showChart && (
+        {showRookie && (
           <div className="flex flex-col items-center">
             <div
               onPointerDown={handleInteraction}
@@ -350,18 +360,25 @@ export function ActivityComplete({
         </div>
 
         {/* ─── Chess Path ELO — the rising "days of effort" line (CHE-370) ─── */}
-        {showChart && (
+        {chartIntent && chartLoading && (
+          <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-3">
+            <div className="h-3 w-24 animate-pulse rounded bg-chess-blue/15" />
+            <div className="mt-2 h-7 w-20 animate-pulse rounded bg-chess-blue/15" />
+            <div className="mt-2 h-24 w-full animate-pulse rounded-lg bg-chess-blue/10" />
+          </div>
+        )}
+        {hasChart && eloToday && (
           <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-black uppercase tracking-wide text-chess-blue">
                 Chess Path ELO
               </span>
-              {eloToday!.gainedToday > 0 && (
-                <span className="text-sm font-black text-emerald-500">+{eloToday!.gainedToday} today</span>
+              {eloToday.gainedToday > 0 && (
+                <span className="text-sm font-black text-emerald-500">+{eloToday.gainedToday} today</span>
               )}
             </div>
             <div className="mt-0.5 text-3xl font-black tabular-nums leading-none text-chess-text">
-              {eloToday!.current.toLocaleString()}
+              {eloToday.current.toLocaleString()}
             </div>
             <div className="mt-2">
               <ChessPathEloGraph points={eloPoints!} heightClass="h-24" />
@@ -373,7 +390,7 @@ export function ActivityComplete({
             (one-line chip) when the ELO chart is the hero — still claims. ─── */}
         {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (
           <div className="w-full mb-4">
-            <StreakComplete compact={showChart} />
+            <StreakComplete compact={chartIntent} />
           </div>
         )}
 

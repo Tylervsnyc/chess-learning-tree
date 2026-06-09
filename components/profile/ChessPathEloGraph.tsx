@@ -123,14 +123,16 @@ export function ChessPathEloGraph({
         />
       </svg>
 
-      {/* a tick for every day */}
-      {pastCoords.map((c, i) => (
-        <div
-          key={i}
-          className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-white ring-[1.5px] ring-chess-blue/55"
-          style={{ left: `${(c.x / W) * 100}%`, top: `${(c.y / H) * 100}%`, transform: 'translate(-50%, -50%)' }}
-        />
-      ))}
+      {/* a tick per day — sampled so a long history doesn't crowd the line */}
+      {pastCoords.map((c, i) =>
+        i % Math.max(1, Math.ceil(pastCoords.length / 14)) === 0 ? (
+          <div
+            key={i}
+            className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-white ring-[1.5px] ring-chess-blue/55"
+            style={{ left: `${(c.x / W) * 100}%`, top: `${(c.y / H) * 100}%`, transform: 'translate(-50%, -50%)' }}
+          />
+        ) : null,
+      )}
 
       {/* today's dot — outer positions + pops, inner pulses */}
       <div
