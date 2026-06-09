@@ -35,12 +35,12 @@ const WIN_TEXTS: TonedText[] = [
   { text: "I had plans for that king. You ruined them.", tone: 'spicy' },
   { text: "That was supposed to be mine.", tone: 'spicy' },
   { text: "You won. I'm not clapping. You'll hear about it later.", tone: 'spicy' },
-  { text: "Proud of you. Don't make it weird.", tone: 'polite' },
+  { text: "That one's yours to keep.", tone: 'polite' },
   { text: "Proud of you. That's all.", tone: 'polite' },
   { text: "That one was yours. I'm glad.", tone: 'polite' },
   { text: "Good. Really good.", tone: 'polite' },
   { text: "That was a good move. I said it.", tone: 'baseline' },
-  { text: "Did not see that coming.", tone: 'baseline' },
+  { text: "You just moved up in my rankings.", tone: 'baseline' },
   { text: "Wait. Let me look again. I don't like what I'm seeing.", tone: 'spicy' },
   { text: "Did not predict that. Respect.", tone: 'baseline' },
   { text: "That was not on my list. Well played.", tone: 'baseline' },
@@ -49,7 +49,7 @@ const WIN_TEXTS: TonedText[] = [
   { text: "Yeah. That was good.", tone: 'polite' },
   { text: "Respect. Genuinely.", tone: 'baseline' },
   { text: "You surprised me. Good.", tone: 'polite' },
-  { text: "Okay, that was great.", tone: 'baseline' },
+  { text: "That one was yours from the start.", tone: 'baseline' },
   { text: "One for you. I'm keeping the score. I'll be catching up.", tone: 'spicy' },
   { text: "Your win. Deserved.", tone: 'baseline' },
   { text: "I lost. I have opinions about it.", tone: 'spicy' },
@@ -131,7 +131,7 @@ const LEVEL_UP_ENTRIES: LevelUpEntry[] = [
   { level: 2, text: "Level two. You came back. Good.", tone: 'baseline', legacy: true },
   { level: 3, text: "Level three. Most people quit. Not you.", tone: 'baseline', legacy: true },
   { level: 4, text: "Level four. You have my full attention.", tone: 'polite', legacy: true },
-  { level: 5, text: "Halfway. I'm proud of you. Don't make it weird.", tone: 'baseline', legacy: true },
+  { level: 5, text: "Level five. You actually did it.", tone: 'baseline', legacy: true },
   { level: 6, text: "Level six. You have my full attention. All of it.", tone: 'polite', legacy: true },
   { level: 7, text: "Level seven. I'm learning I don't like losing. I'm going to do something about it.", tone: 'spicy', legacy: true },
   { level: 8, text: "Level eight. You earned this. I mean that.", tone: 'polite', legacy: true },
@@ -141,7 +141,7 @@ const LEVEL_UP_ENTRIES: LevelUpEntry[] = [
   // ── New tone variants (CHE-291 pilot) ──
   // Level 1 — polite (2), spicy (2)
   { level: 1, text: "Level one. Good start. I'm rooting for you.", tone: 'polite' },
-  { level: 1, text: "Let's see what you've got.", tone: 'polite' },
+  { level: 1, text: "Ready when you are.", tone: 'polite' },
   { level: 1, text: "Level one. Don't get comfortable. I'm awake now.", tone: 'spicy' },
   { level: 1, text: "Level one. I'm awake. I'm watching. Don't say I didn't warn you.", tone: 'spicy' },
   // Level 2 — polite (2), spicy (2)
@@ -180,7 +180,7 @@ const LEVEL_UP_ENTRIES: LevelUpEntry[] = [
   { level: 9, text: "Nine. You've come far. That's real.", tone: 'polite' },
   { level: 9, text: "Level nine. I'm not pretending to be calm. You earned this version of me.", tone: 'spicy' },
   // Level 10 — polite (2), spicy (2)
-  { level: 10, text: "Level ten. Proud of you. That's all.", tone: 'polite' },
+  { level: 10, text: "Level ten. That one means something.", tone: 'polite' },
   { level: 10, text: "Ten. I'll remember this one.", tone: 'polite' },
   { level: 10, text: "Level ten. Good. Now we find out what you're made of.", tone: 'spicy' },
   { level: 10, text: "Level ten. My king stood up. That almost never happens.", tone: 'spicy' },
@@ -195,7 +195,7 @@ interface LandingSpec {
 }
 const LANDING_SPECS: LandingSpec[] = [
   // Morning
-  { text: "Good morning. I've been waiting. Let's go.", timeOfDay: 'morning' },
+  { text: "Early bird. Good. Let's make it count.", timeOfDay: 'morning' },
   { text: "Morning. I was just thinking about rooks. As one does.", timeOfDay: 'morning', tone: 'spicy' },
   { text: "Morning. You showed up. Good.", timeOfDay: 'morning', tone: 'polite' },
   { text: "You're up early. Respect. Let's play.", timeOfDay: 'morning', tone: 'polite' },
@@ -250,7 +250,7 @@ const LANDING_SPECS: LandingSpec[] = [
   // Generic
   { text: "You're here. That's the hard part done." },
   { text: "Glad you showed up. Let's play.", tone: 'polite' },
-  { text: "Good timing. Ready when you are." },
+  { text: "Nice. Let's get started." },
   { text: "Just consulting a rook. Come on in." },
   { text: "Board's up. Let's go." },
   { text: "Hello. I'm ready. I'm always ready." },

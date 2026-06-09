@@ -186,7 +186,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_15',
-    text: "First move advantage. Use it well.",
+    text: "You move first. Make it count.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
@@ -207,7 +207,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_18',
-    text: "Your move, {name}. I'm ready.",
+    text: "Clock's running, {name}. Let's go.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
@@ -267,7 +267,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ════════════════════════════════
   {
     id: 'opening_black_11',
-    text: "I'll go first. Your turn next.",
+    text: "First move's mine. Come on then.",
     conditions: { beats: ['opening'], playerColor: 'black' },
     priority: 50,
     source: 'authored',
@@ -4044,7 +4044,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ════════════════════════════════
   {
     id: 'mood_surprised_1',
-    text: 'Did not see that coming. At all.',
+    text: 'Okay. That changes things.',
     conditions: { beats: ['turning_point'], evalMoods: ['even'] },
     priority: 45,
     source: 'authored',
@@ -4354,7 +4354,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'even_commentary_4',
-    text: "Good game. I mean that.",
+    text: "Even match. I respect it.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
@@ -4508,7 +4508,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'resign_5',
-    text: "Good game, {name}. Come back soon.",
+    text: "Well played, {name}. I'll be here.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game', 'game_end'], events: ['resign'], tone: 'polite' },
     priority: 80,
     source: 'authored',

@@ -43,6 +43,28 @@ function check(line: Pick<SpeechLine, 'id' | 'text' | 'conditions'>, violations:
   for (const c of CHECKS) if (c.re.test(t)) violations.push({ id: line.id, text: t, problem: c.name });
 }
 
+// Near-duplicate detection — two eligible lines with near-identical wording
+// (different ids) defeat the runtime dedup and fire back-to-back. Catch twins.
+const NEAR_DUP = 0.78;
+const norm = (s: string) => s.toLowerCase().replace(/\{[^}]*\}/g, '').replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+const wordSet = (s: string) => new Set(norm(s).split(' ').filter(Boolean));
+function jaccard(a: Set<string>, b: Set<string>): number {
+  const inter = [...a].filter((x) => b.has(x)).length;
+  return inter / (a.size + b.size - inter || 1);
+}
+
+function findNearDupes(): Array<[string, string]> {
+  const eligible = QUIP_POOL.filter((l) => !isFrozen(l)).map((l) => ({ id: l.id, text: l.text, w: wordSet(l.text) }));
+  const out: Array<[string, string]> = [];
+  for (let i = 0; i < eligible.length; i++) {
+    for (let k = i + 1; k < eligible.length; k++) {
+      if (Math.abs(eligible[i].w.size - eligible[k].w.size) > 4) continue;
+      if (jaccard(eligible[i].w, eligible[k].w) >= NEAR_DUP) out.push([eligible[i].text, eligible[k].text]);
+    }
+  }
+  return out;
+}
+
 function main() {
   const violations: Violation[] = [];
 
@@ -58,7 +80,14 @@ function main() {
     r.quips.forEach((q, i) => check({ id: `tap_${r.mode}_${i + 1}`, text: q }, violations));
   }
 
-  if (violations.length || dupes.length) {
+  const nearDupes = findNearDupes();
+  if (nearDupes.length) {
+    console.error(`\n${nearDupes.length} near-duplicate pair(s) (>=${NEAR_DUP} word overlap) — they sound the same and defeat dedup:`);
+    for (const [a, b] of nearDupes) console.error(`  "${a}"  ==  "${b}"`);
+    console.error('Re-word one side (run scripts/rookie-voice/dedupe.ts), or tag it frozen if intentional.');
+  }
+
+  if (violations.length || dupes.length || nearDupes.length) {
     console.error(`\nRookie voice lint FAILED — ${violations.length} line violation(s):\n`);
     for (const v of violations) console.error(`  [${v.problem}] ${v.id}: ${v.text}`);
     console.error('\nFix the line, or if it is intentional mood/sore-loser content, tag it tone:\'spicy\' or evalMoods:[\'losing\'/\'desperate\'].');
