@@ -33,7 +33,7 @@ const K_GAME = 32;
 
 // Provisional period: the first PROVISIONAL_EVENTS updates are amplified so a
 // new user's estimate finds its level fast, then relaxes to the base K.
-const PROVISIONAL_EVENTS = 25;
+export const PROVISIONAL_EVENTS = 25;
 const PROVISIONAL_MULT = 2.5;
 
 export type EloEventKind = 'puzzle' | 'game';
@@ -74,13 +74,35 @@ function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }
 
+/** Only events with a real opponent rating and score feed the estimate. */
+export function isRatedEloEvent(e: EloEvent): boolean {
+  return Number.isFinite(e.opponent) && e.opponent > 0 && Number.isFinite(e.score);
+}
+
+/**
+ * THE single per-event Elo update step — shared by the batch replays below
+ * AND the incremental catch-up fold in lib/elo/profile-elo.ts, so the two
+ * can never drift. `index` is the event's 0-based position in the user's
+ * FULL chronological history: it drives the provisional-K ramp, and any
+ * value >= PROVISIONAL_EVENTS behaves identically (the ramp is over).
+ */
+export function applyEloEvent(rating: number, e: EloEvent, index: number): number {
+  const base = e.kind === 'game' ? K_GAME : K_PUZZLE;
+  const provisional =
+    index < PROVISIONAL_EVENTS
+      ? 1 + (PROVISIONAL_MULT - 1) * (1 - index / PROVISIONAL_EVENTS)
+      : 1;
+  const k = base * provisional;
+  return clamp(rating + k * (e.score - expectedScore(rating, e.opponent)));
+}
+
 /**
  * Replay events into a current rating + daily series.
  * Events may be unsorted; they are sorted by timestamp here.
  */
 export function estimateElo(events: EloEvent[]): EloEstimate {
   const sorted = [...events]
-    .filter((e) => Number.isFinite(e.opponent) && e.opponent > 0 && Number.isFinite(e.score))
+    .filter(isRatedEloEvent)
     .sort((a, b) => a.at.localeCompare(b.at));
 
   let rating = ELO_BASELINE;
@@ -97,13 +119,7 @@ export function estimateElo(events: EloEvent[]): EloEstimate {
   byDay.set(firstDay, ELO_BASELINE);
 
   sorted.forEach((e, i) => {
-    const base = e.kind === 'game' ? K_GAME : K_PUZZLE;
-    const provisional =
-      i < PROVISIONAL_EVENTS
-        ? 1 + (PROVISIONAL_MULT - 1) * (1 - i / PROVISIONAL_EVENTS)
-        : 1;
-    const k = base * provisional;
-    rating = clamp(rating + k * (e.score - expectedScore(rating, e.opponent)));
+    rating = applyEloEvent(rating, e, i);
     byDay.set(dayKey(e.at), Math.round(rating));
   });
 
@@ -122,17 +138,13 @@ export function estimateElo(events: EloEvent[]): EloEstimate {
  */
 export function estimateEloPerEvent(events: EloEvent[]): number[] {
   const sorted = [...events]
-    .filter((e) => Number.isFinite(e.opponent) && e.opponent > 0 && Number.isFinite(e.score))
+    .filter(isRatedEloEvent)
     .sort((a, b) => a.at.localeCompare(b.at));
 
   let rating = ELO_BASELINE;
   const out: number[] = [ELO_BASELINE];
   sorted.forEach((e, i) => {
-    const base = e.kind === 'game' ? K_GAME : K_PUZZLE;
-    const provisional =
-      i < PROVISIONAL_EVENTS ? 1 + (PROVISIONAL_MULT - 1) * (1 - i / PROVISIONAL_EVENTS) : 1;
-    const k = base * provisional;
-    rating = clamp(rating + k * (e.score - expectedScore(rating, e.opponent)));
+    rating = applyEloEvent(rating, e, i);
     out.push(Math.round(rating));
   });
   return out;

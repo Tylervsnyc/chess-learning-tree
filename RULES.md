@@ -1133,11 +1133,14 @@ The raw `Chessboard` component ships with default piece styling and no board col
 
 ---
 
-## 20. User ELO
+## 20. User ELO (Chess Path ELO)
 
-**DELETED** - We are NOT tracking user ELO.
+**LIVE since CHE-370 (2026-06-09).** "Chess Path ELO" is a derived rating estimated from the user's puzzle attempts + game results — the legible-progress mechanic shown at the completion popup (day-by-day graph, first-rating ceremony for new logged-out users).
 
-Puzzles still have ELO ratings (400-2000) for difficulty selection.
+- **Computation:** `lib/elo/estimate.ts` — every rated event flows through `applyEloEvent` (shared by the batch replay and the incremental fold; never duplicate this step).
+- **Storage (CHE-375):** `profiles.estimated_elo` + `profiles.elo_updated_at`. Reads catch up incrementally — only events newer than the watermark are folded in; a NULL value triggers one full replay that seeds the column. Never recompute the full history on a hot path.
+- **API:** `GET /api/profile/elo` (and the dashboard route) return `{ current, events, series }` — `current` is always caught-up, `series` is a 5-min-cached full replay with today's point patched to `current`. The `?fresh=1` param is accepted but is a no-op.
+- The stored value is cosmetic (not used for gating or matchmaking). Puzzles still have their own ELO ratings (400-2300) for difficulty selection.
 
 ---
 

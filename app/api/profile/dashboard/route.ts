@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getLifetimeStats } from '@/lib/profile/stats';
 import { getWorkoutWeek } from '@/lib/workout/week';
 import { getRecentWorkoutSessions } from '@/lib/workout/sessions';
-import { computeEloForUser } from '@/lib/elo/profile-elo';
+import { getEloEstimate } from '@/lib/elo/profile-elo';
 
 /**
  * GET /api/profile/dashboard?tz=America/Los_Angeles
@@ -17,7 +17,7 @@ import { computeEloForUser } from '@/lib/elo/profile-elo';
  *   stats:    LifetimeStats | null,          // lib/profile/stats.ts
  *   week:     WeekData | null,               // lib/workout/week.ts
  *   sessions: WorkoutSessionSummary[] | null,// lib/workout/sessions.ts (limit 10)
- *   elo:      { current, events, series } | null, // lib/elo/profile-elo.ts (5-min cache)
+ *   elo:      { current, events, series } | null, // lib/elo/profile-elo.ts (stored current + 5-min cached series)
  * }
  *
  * Each section degrades to null independently (matching the page's previous
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     getLifetimeStats(supabase, user.id).catch(() => null),
     getWorkoutWeek(supabase, user.id, tz).catch(() => null),
     getRecentWorkoutSessions(supabase, user.id, 10).catch(() => null),
-    computeEloForUser(user.id).catch((e) => {
+    getEloEstimate(user.id).catch((e) => {
       console.error('dashboard elo compute failed', e);
       return null;
     }),
