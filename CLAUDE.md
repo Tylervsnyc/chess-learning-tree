@@ -171,7 +171,7 @@ That script checks if the server is already running and only starts it if needed
 1. **Search before changing.** Search ALL code touching a feature before modifying any of it. Delete competing implementations first.
 2. **RULES.md is the source of truth.** If a feature keeps breaking, the behavior rule is correct but the implementation example may be wrong. Question the code pattern, not the goal.
 3. **Dispatch wisely.** Complex/multi-file work → agents. Simple single-file edits → do it inline.
-4. **Fix the cause, not the symptom.** If a bug has been "fixed" multiple times, the architecture is wrong. Remove the thing causing the problem instead of adding code to counteract it.
+4. **Fix the cause, not the symptom.** Before editing any code for a bug fix, state the root cause in 2-3 sentences. Never ship a cache layer, duplicate call, retry, or localStorage mask to hide a bug — if you can't name the root cause, you haven't found it yet. If a bug has been "fixed" multiple times, the architecture is wrong. Remove the thing causing the problem instead of adding code to counteract it.
 5. **If it's failed 3+ times, question the rules.** Repeated failures likely mean RULES.md is prescribing a broken pattern. Trace the actual code and fix RULES.md.
 
 **Responsive is non-negotiable (RULES.md §50).** Every production page must work on phone (360px), iPad (768px), and desktop (1280px): mobile-first single column, centered + capped on big screens, no horizontal scroll, board scales, tap targets ≥44px. Read §50 before building or editing any page.
