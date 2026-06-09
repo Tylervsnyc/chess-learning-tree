@@ -50,13 +50,10 @@ interface TierStyle {
  * dart-art picker at `/test/dart-art` is the tool used to compare options.
  */
 function artFile(id: AbilityId): string {
-  if (id === 'poison-dart') return 'poison-dart-2.png';
-  if (id === 'rabies-dart') return 'rabies-dart-2.png';
-  if (id === 'freeze-ray') return 'freeze-ray-2.png';
-  if (id === 'become-king') return 'become-king-2.png';
-  if (id === 'convert' || id === 'drones' || id === 'squad') {
-    return `${id}-1.png`;
-  }
+  if (id === 'poison-dart') return 'poison-dart-2.webp';
+  if (id === 'rabies-dart') return 'rabies-dart-2.webp';
+  if (id === 'freeze-ray') return 'freeze-ray-2.webp';
+  if (id === 'become-king') return 'become-king-2.webp';
   return `${id}-1.webp`;
 }
 
@@ -418,6 +415,8 @@ export function AbilityCardMini({
                 src={`/abilities/${artFile(ability.id)}`}
                 alt=""
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
                 draggable={false}
               />
             </div>
@@ -615,6 +614,8 @@ export function AbilityCardFull({
             src={`/abilities/${artFile(id)}`}
             alt=""
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
             draggable={false}
           />
         </div>
