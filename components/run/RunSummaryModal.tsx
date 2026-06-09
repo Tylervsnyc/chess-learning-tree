@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import type { RunStats } from '@/lib/run/history';
 
 interface RunSummaryModalProps {
@@ -34,7 +34,7 @@ export function RunSummaryModal({
   useEffect(() => {
     if (!completed) return;
     const palette = ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFD166'];
-    confetti({
+    fireConfetti({
       particleCount: 80,
       angle: 60,
       spread: 65,
@@ -43,7 +43,7 @@ export function RunSummaryModal({
       gravity: 1.1,
       ticks: 180,
     });
-    confetti({
+    fireConfetti({
       particleCount: 80,
       angle: 120,
       spread: 65,

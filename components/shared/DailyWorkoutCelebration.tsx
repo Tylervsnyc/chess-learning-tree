@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import RookieCampfire from './RookieCampfire';
 import { pickCelebrationLine, isMilestone } from '@/lib/daily-workout/celebration-lines';
 
@@ -31,12 +31,12 @@ export function DailyWorkoutCelebration({ streak, open, onClose, onShare }: Dail
       gravity: 1.05,
       ticks: 220,
     };
-    confetti({ ...baseOpts, angle: 60, origin: { x: 0.1, y: 0.6 } });
-    confetti({ ...baseOpts, angle: 120, origin: { x: 0.9, y: 0.6 } });
+    fireConfetti({ ...baseOpts, angle: 60, origin: { x: 0.1, y: 0.6 } });
+    fireConfetti({ ...baseOpts, angle: 120, origin: { x: 0.9, y: 0.6 } });
 
     if (milestone) {
       const t = setTimeout(() => {
-        confetti({
+        fireConfetti({
           particleCount: 160,
           spread: 110,
           startVelocity: 45,

@@ -15,7 +15,7 @@ import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { LevelTestEvents } from '@/lib/analytics/posthog';
@@ -388,14 +388,14 @@ export default function LevelTestPage() {
   useEffect(() => {
     if (testState === 'passed' && !confettiFired.current && typeof window !== 'undefined') {
       confettiFired.current = true;
-      confetti({
+      fireConfetti({
         particleCount: 100,
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.65 },
         colors: ['#58CC02', '#1CB0F6', '#FFC800', '#FFFFFF'],
       });
-      confetti({
+      fireConfetti({
         particleCount: 100,
         angle: 120,
         spread: 55,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { chessPathTier, projectChessPathElo } from '@/lib/elo/chess-path-elo';
 import { EloEvents } from '@/lib/analytics/posthog';
@@ -43,7 +43,7 @@ export function FirstRatingReveal({
         if (pr < 1) rafRef.current = requestAnimationFrame(tick);
         else {
           setPunch(true);
-          confetti({ particleCount: 90, spread: 75, origin: { x: 0.5, y: 0.4 }, colors: ['#FFD43B', '#FFAA00', '#1CB0F6', '#FFFFFF'], gravity: 1.1, ticks: 220 });
+          fireConfetti({ particleCount: 90, spread: 75, origin: { x: 0.5, y: 0.4 }, colors: ['#FFD43B', '#FFAA00', '#1CB0F6', '#FFFFFF'], gravity: 1.1, ticks: 220 });
         }
       };
       rafRef.current = requestAnimationFrame(tick);

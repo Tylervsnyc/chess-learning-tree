@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import confetti from 'canvas-confetti'
+import { fireConfetti } from '@/lib/confetti'
 import { playCelebrationSound } from '@/lib/sounds'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
 import { selectByCategory } from '@/lib/speech/priority-queue'
@@ -339,8 +339,8 @@ export function ActivityComplete({
     const colors = isPerfect || isWin
       ? ['#FFC800', '#FFAA00', '#FFFFFF']
       : ['#58CC02', '#1CB0F6', '#FF9600', '#FFFFFF']
-    confetti({ particleCount: count, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
-    confetti({ particleCount: count, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
+    fireConfetti({ particleCount: count, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
+    fireConfetti({ particleCount: count, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors, gravity: 1.2, ticks: 200 })
     if (source !== 'play') playCelebrationSound(correctCount)
   }, [streakPhase])
 

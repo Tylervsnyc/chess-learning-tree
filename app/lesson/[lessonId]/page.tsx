@@ -54,7 +54,6 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useGameSession } from '@/hooks/useGameSession';
 import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
-import confetti from 'canvas-confetti';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
 
 

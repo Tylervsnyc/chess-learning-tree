@@ -21,7 +21,7 @@ import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/
 import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 
@@ -490,12 +490,12 @@ export default function WorkoutPage() {
     if (confettiFiredRef.current) return; // guard StrictMode double-invoke
     confettiFiredRef.current = true;
     const colors = ['#58CC02', '#1CB0F6', '#FFC800', '#FF4B4B', '#A560E8', '#FF9600'];
-    confetti({ particleCount: 90, spread: 70, origin: { x: 0.2, y: 0.5 }, colors });
-    confetti({ particleCount: 90, spread: 70, origin: { x: 0.8, y: 0.5 }, colors });
+    fireConfetti({ particleCount: 90, spread: 70, origin: { x: 0.2, y: 0.5 }, colors });
+    fireConfetti({ particleCount: 90, spread: 70, origin: { x: 0.8, y: 0.5 }, colors });
     if (finishResult.isPersonalBest) {
       const t = setTimeout(
         () =>
-          confetti({
+          fireConfetti({
             particleCount: 180,
             spread: 120,
             startVelocity: 48,

@@ -14,7 +14,7 @@ import {
   playButtonClick,
   warmupAudio,
 } from '@/lib/sounds';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/confetti';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { TutorialEvents } from '@/lib/analytics/posthog';
@@ -448,12 +448,12 @@ function BasicsDoneScreen({ onContinue, playerName }: { onContinue: () => void; 
   const [entered, setEntered] = useState(false);
 
   React.useEffect(() => {
-    confetti({
+    fireConfetti({
       particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
       gravity: 1.2, ticks: 200,
     });
-    confetti({
+    fireConfetti({
       particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF', '#FFFFFF'],
       gravity: 1.2, ticks: 200,
@@ -849,12 +849,12 @@ export function BasicsTutorial() {
 
   // ── Mini confetti burst (for completing each piece) ──
   const firePieceConfetti = useCallback(() => {
-    confetti({
+    fireConfetti({
       particleCount: 40, angle: 60, spread: 50, origin: { x: 0.2, y: 0.5 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF'],
       gravity: 1.4, ticks: 120,
     });
-    confetti({
+    fireConfetti({
       particleCount: 40, angle: 120, spread: 50, origin: { x: 0.8, y: 0.5 },
       colors: ['#58CC02', '#1CB0F6', '#FF9600', '#CE82FF'],
       gravity: 1.4, ticks: 120,
