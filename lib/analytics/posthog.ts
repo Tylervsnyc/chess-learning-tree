@@ -82,6 +82,19 @@ export const EngagementEvents = {
   streakUpdated: (streak: number) => trackEvent('streak_updated', { streak }),
 };
 
+// Chess Path ELO (CHE-370) — the legible-progress mechanic + logged-out signup
+// capture. `mode`: 'first_reveal' (new logged-out user's ceremony) |
+// 'session' (returning logged-out within-session climb) | 'daily' (logged-in
+// day-by-day line). Use to gauge whether the ELO surface lifts signup/return.
+export const EloEvents = {
+  revealed: (mode: 'first_reveal' | 'session' | 'daily', props?: { rating?: number; gained?: number }) =>
+    trackEvent('elo_revealed', { mode, ...props }),
+  signupClicked: (mode: 'first_reveal' | 'session', rating?: number) =>
+    trackEvent('elo_signup_clicked', { mode, rating }),
+  keepPlaying: (mode: 'first_reveal' | 'session') =>
+    trackEvent('elo_keep_playing', { mode }),
+};
+
 // Subscription funnel
 export const SubscriptionEvents = {
   paywallViewed: (trigger: string) => trackEvent('paywall_viewed', { trigger }),

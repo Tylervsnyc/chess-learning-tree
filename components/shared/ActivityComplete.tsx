@@ -21,6 +21,7 @@ import { StreakComplete } from '@/components/shared/StreakComplete'
 import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration'
 import { FirstRatingReveal } from '@/components/shared/FirstRatingReveal'
 import { shareWorkoutStreak } from '@/lib/daily-workout/share'
+import { EloEvents } from '@/lib/analytics/posthog'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
 import { chessPathEloSeries, chessPathToday, chessPathSessionSeries, chessPathSession, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
 
@@ -305,6 +306,22 @@ export function ActivityComplete({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // ─── PostHog: fire once when the ELO surface actually shows (per mode) ───
+  const eloTrackedRef = useRef(false)
+  useEffect(() => {
+    if (eloTrackedRef.current || streakPhase !== 'main') return
+    if (firstReveal && anonRating != null) {
+      eloTrackedRef.current = true
+      EloEvents.revealed('first_reveal', { rating: anonRating })
+    } else if (anonChart && sessionNow) {
+      eloTrackedRef.current = true
+      EloEvents.revealed('session', { rating: sessionNow.current, gained: sessionNow.gained })
+    } else if (hasChart && eloToday) {
+      eloTrackedRef.current = true
+      EloEvents.revealed('daily', { rating: eloToday.current, gained: eloToday.gainedToday })
+    }
+  }, [streakPhase, firstReveal, anonChart, hasChart, anonRating, sessionNow, eloToday])
+
   // ─── Confetti + sound (fires when the popup itself appears) ───
   const celebratedRef = useRef(false)
   useEffect(() => {
@@ -564,13 +581,14 @@ export function ActivityComplete({
             <>
               {/* Soft signup capture — never trap them, but pitch saving the rating */}
               <Link
-                href={`/auth/signup?redirect=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/')}`}
+                href={signupHref}
+                onClick={() => EloEvents.signupClicked('session', sessionNow?.current)}
                 className="w-full rounded-2xl py-4 text-center text-base font-black text-white transition-all active:translate-y-0.5"
                 style={{ background: 'linear-gradient(135deg,#FFD43B 0%,#FFAA00 100%)', boxShadow: '0 4px 0 #B8860B' }}
               >
                 Save your rating — Sign up
               </Link>
-              <button onClick={handleContinue} className="w-full py-2 text-sm font-bold text-chess-text-muted">
+              <button onClick={() => { EloEvents.keepPlaying('session'); handleContinue() }} className="w-full py-2 text-sm font-bold text-chess-text-muted">
                 Keep playing
               </button>
             </>

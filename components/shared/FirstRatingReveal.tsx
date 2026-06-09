@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { chessPathTier, projectChessPathElo } from '@/lib/elo/chess-path-elo';
+import { EloEvents } from '@/lib/analytics/posthog';
 
 /**
  * FirstRatingReveal — the one-time ceremony a brand-new (logged-out) user sees
@@ -99,11 +100,12 @@ export function FirstRatingReveal({
       </div>
 
       <a href={signupHref}
+        onClick={() => EloEvents.signupClicked('first_reveal', rating)}
         className="mt-4 block w-full rounded-2xl py-4 text-center text-base font-black text-white transition-all active:translate-y-0.5"
         style={{ background: 'linear-gradient(135deg,#FFD43B 0%,#FFAA00 100%)', boxShadow: '0 4px 0 #B8860B' }}>
         Save your rating — Sign up
       </a>
-      <button onClick={onKeepPlaying} className="mt-2 w-full py-2 text-sm font-bold text-chess-text-muted">
+      <button onClick={() => { EloEvents.keepPlaying('first_reveal'); onKeepPlaying() }} className="mt-2 w-full py-2 text-sm font-bold text-chess-text-muted">
         Keep playing
       </button>
     </div>
