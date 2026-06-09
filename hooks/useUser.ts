@@ -89,27 +89,31 @@ export function useUser() {
     let mounted = true;
     const supabase = createClient();
 
-    // Verify subscription with Stripe if user has customer ID but is marked free
-    const verifySubscription = async (profileData: Profile) => {
-      if (profileData.stripe_customer_id && profileData.subscription_status === 'free') {
-        try {
-          const res = await fetch('/api/stripe/verify-subscription', { method: 'POST' });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.synced && data.status === 'premium') {
-              // Subscription was out of sync - update local state
-              return {
-                ...profileData,
-                subscription_status: 'premium' as const,
-                subscription_expires_at: data.expires_at,
-              };
-            }
+    // Verify subscription with Stripe if user has customer ID but is marked
+    // free. Fire-and-forget (CHE-381): runs AFTER profile state is set so app
+    // boot never waits on Stripe; patches state when it resolves. If the
+    // profile row already says premium this is skipped entirely, so valid
+    // subscribers see premium immediately with no flash.
+    const verifySubscriptionInBackground = (profileData: Profile) => {
+      if (!profileData.stripe_customer_id || profileData.subscription_status !== 'free') return;
+      fetch('/api/stripe/verify-subscription', { method: 'POST' })
+        .then(async (res) => {
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.synced && data.status === 'premium' && mounted) {
+            // Subscription was out of sync - update local state
+            setProfile((p) =>
+              p && p.id === profileData.id
+                ? {
+                    ...p,
+                    subscription_status: 'premium' as const,
+                    subscription_expires_at: data.expires_at,
+                  }
+                : p
+            );
           }
-        } catch (err) {
-          console.error('Error verifying subscription:', err);
-        }
-      }
-      return profileData;
+        })
+        .catch((err) => console.error('Error verifying subscription:', err));
     };
 
     // Fetch profile (don't try to create - that should happen via trigger)
@@ -123,11 +127,10 @@ export function useUser() {
 
         if (mounted) {
           if (data) {
-            // Verify subscription status if they have a Stripe customer ID
-            const verifiedProfile = await verifySubscription(data);
+            const profileData: Profile = data;
             // Migrate guest name from localStorage once, on first login
             // where the DB has no name yet.
-            if (!verifiedProfile.display_name || !verifiedProfile.display_name.trim()) {
+            if (!profileData.display_name || !profileData.display_name.trim()) {
               try {
                 const guestName = localStorage.getItem('chess_path_name')?.trim();
                 if (guestName) {
@@ -140,11 +143,14 @@ export function useUser() {
                       setProfile((p) => p ? { ...p, display_name: guestName } : p);
                     }
                   }).catch(() => {});
-                  verifiedProfile.display_name = guestName;
+                  profileData.display_name = guestName;
                 }
               } catch {}
             }
-            setProfile(verifiedProfile);
+            setProfile(profileData);
+            // Verify subscription status with Stripe AFTER profile state is
+            // set — non-blocking, patches state if Stripe says premium.
+            verifySubscriptionInBackground(profileData);
           } else if (error) {
             // No profile found - create a fake one for display purposes
             // The real one should be created by the DB trigger

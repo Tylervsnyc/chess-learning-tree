@@ -32,13 +32,14 @@ import { selectByCategory } from '@/lib/speech/priority-queue';
 import { getQuipPool } from '@/lib/quips/load-quip-pool';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
-import { evalToWinPercent, GameAnalysis, PositionEval, analyzeGameMoves, extractKeyMoments, KeyMoment } from '@/lib/game-eval';
+import { evalToWinPercent, analyzeGameMoves, extractKeyMoments } from '@/lib/game-eval';
+import type { GameAnalysis, PositionEval, KeyMoment } from '@/lib/game-eval';
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory } from '@/lib/speech/memory';
 import { extractFacts } from '@/lib/speech/fact-extractor';
 import { pickAngle } from '@/lib/speech/angles';
-import { generateFreeCoaching, CoachingScript } from '@/lib/coaching-prompt';
-import { CoachingDrawer } from '@/components/coaching/CoachingDrawer';
+import type { CoachingScript } from '@/lib/coaching-prompt';
+import nextDynamic from 'next/dynamic';
 import { useRookieNarrative, type NarrativeResult } from '@/hooks/useRookieNarrative';
 import { useRookieMood } from '@/hooks/useRookieMood';
 import { useDailyStreak } from '@/hooks/useDailyStreak';
@@ -61,6 +62,13 @@ import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
+
+// CHE-381: post-game-only UI — code-split so the coaching drawer (and the
+// coaching-prompt lib it pulls in) never loads on the play-page boot path.
+const CoachingDrawer = nextDynamic(
+  () => import('@/components/coaching/CoachingDrawer').then((m) => m.CoachingDrawer),
+  { ssr: false },
+);
 
 // ════════════════════════════════
 // LEVEL PERSISTENCE (localStorage)
@@ -1057,23 +1065,28 @@ export default function PlayRookiePage() {
         }
       });
 
-      // Generate coaching script with analysis data
-      const coaching = generateFreeCoaching(
-        {
-          themesSeen: [],
-          themesCorrect: [],
-          themesMissed: [],
-          puzzlesTotal: 0,
-          puzzlesCorrect: 0,
-          bestStreak: 0,
-          piecesHung: moves.filter(m => m.movedBy === 'player' && m.pieceHung).length,
-          capturesMissed: moves.filter(m => m.movedBy === 'player' && m.captureAvailable && !m.captureTaken).length,
-          result,
-        },
-        playerName || undefined,
-        analysis,
-      );
-      setCoachingScript(coaching);
+      // Generate coaching script with analysis data. coaching-prompt is
+      // code-split (CHE-381) — it's only needed post-game, so load it here.
+      import('@/lib/coaching-prompt')
+        .then(({ generateFreeCoaching }) => {
+          const coaching = generateFreeCoaching(
+            {
+              themesSeen: [],
+              themesCorrect: [],
+              themesMissed: [],
+              puzzlesTotal: 0,
+              puzzlesCorrect: 0,
+              bestStreak: 0,
+              piecesHung: moves.filter(m => m.movedBy === 'player' && m.pieceHung).length,
+              capturesMissed: moves.filter(m => m.movedBy === 'player' && m.captureAvailable && !m.captureTaken).length,
+              result,
+            },
+            playerName || undefined,
+            analysis,
+          );
+          setCoachingScript(coaching);
+        })
+        .catch((err) => console.error('[coaching] failed to load coaching-prompt:', err));
 
       // Fire Claude coaching commentary (non-blocking)
       (async () => {

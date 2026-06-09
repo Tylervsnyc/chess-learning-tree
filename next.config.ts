@@ -39,6 +39,9 @@ const LAMBDA_EXCLUDES = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['posthog-js'],
+  },
   outputFileTracingExcludes: {
     '**': LAMBDA_EXCLUDES,
   },
