@@ -130,6 +130,8 @@ export function ActivityComplete({
     return () => { cancelled = true }
   }, [showElo])
   const eloToday = eloPoints ? chessPathToday(eloPoints) : null
+  // When the chart is the hero we drop Rookie's avatar and shrink the streak.
+  const showChart = showElo && !!eloPoints && eloPoints.length >= 2 && !!eloToday
 
   // Mark the current activity as done too (it just completed)
   const workoutPlay = workoutStatus.play || workoutActivity === 'play'
@@ -315,16 +317,18 @@ export function ActivityComplete({
           </div>
         </div>
 
-        {/* ─── Interactive Rookie ─── */}
-        <div className="flex flex-col items-center">
-          <div
-            onPointerDown={handleInteraction}
-            className="relative my-1 flex items-center justify-center overflow-hidden"
-            style={{ width: 180, height: 180 }}
-          >
-            <InteractiveRook mode={interactiveMode} blockSize={24} />
+        {/* ─── Interactive Rookie (hidden when the ELO chart is the hero) ─── */}
+        {!showChart && (
+          <div className="flex flex-col items-center">
+            <div
+              onPointerDown={handleInteraction}
+              className="relative my-1 flex items-center justify-center overflow-hidden"
+              style={{ width: 180, height: 180 }}
+            >
+              <InteractiveRook mode={interactiveMode} blockSize={24} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ─── Speech bubble ─── */}
         <div className="relative w-full mt-2 mb-4">
@@ -346,29 +350,30 @@ export function ActivityComplete({
         </div>
 
         {/* ─── Chess Path ELO — the rising "days of effort" line (CHE-370) ─── */}
-        {showElo && eloPoints && eloPoints.length >= 2 && eloToday && (
-          <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-4">
+        {showChart && (
+          <div className="w-full mb-4 rounded-2xl border border-chess-blue/15 bg-gradient-to-b from-chess-blue/[0.06] to-white p-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-black uppercase tracking-wide text-chess-blue">
                 Chess Path ELO
               </span>
-              {eloToday.gainedToday > 0 && (
-                <span className="text-sm font-black text-emerald-500">+{eloToday.gainedToday} today</span>
+              {eloToday!.gainedToday > 0 && (
+                <span className="text-sm font-black text-emerald-500">+{eloToday!.gainedToday} today</span>
               )}
             </div>
-            <div className="mt-1 text-3xl font-black tabular-nums leading-none text-chess-text">
-              {eloToday.current.toLocaleString()}
+            <div className="mt-0.5 text-3xl font-black tabular-nums leading-none text-chess-text">
+              {eloToday!.current.toLocaleString()}
             </div>
-            <div className="mt-3">
-              <ChessPathEloGraph points={eloPoints} />
+            <div className="mt-2">
+              <ChessPathEloGraph points={eloPoints!} heightClass="h-24" />
             </div>
           </div>
         )}
 
-        {/* ─── Daily streak (folded in — replaces the separate modal) ─── */}
+        {/* ─── Daily streak (folded in — replaces the separate modal). Compact
+            (one-line chip) when the ELO chart is the hero — still claims. ─── */}
         {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (
           <div className="w-full mb-4">
-            <StreakComplete />
+            <StreakComplete compact={showChart} />
           </div>
         )}
 

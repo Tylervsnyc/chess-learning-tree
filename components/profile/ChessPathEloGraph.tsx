@@ -31,9 +31,12 @@ const backOut = (p: number) => {
 export function ChessPathEloGraph({
   points,
   animateToday = true,
+  heightClass = 'h-32',
 }: {
   points: ChessPathPoint[];
   animateToday?: boolean;
+  /** Tailwind height for the chart area (popup uses a shorter one). */
+  heightClass?: string;
 }) {
   const [progress, setProgress] = useState(animateToday ? 0 : 1);
   const rafRef = useRef<number | null>(null);
@@ -94,7 +97,7 @@ export function ChessPathEloGraph({
   const dotScale = animateToday ? backOut(Math.min(1, progress * 1.1)) : 1;
 
   return (
-    <div className="relative h-32 w-full">
+    <div className={`relative w-full ${heightClass}`}>
       <style>{`
         @keyframes rookieDotPulse {
           0%, 100% { transform: scale(1); box-shadow: 0 0 0 5px rgba(28,176,246,0.18); }

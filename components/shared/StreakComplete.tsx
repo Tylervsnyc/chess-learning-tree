@@ -39,7 +39,7 @@ const tzOf = () =>
  * both celebrate. When FEATURE_FLAGS.STREAK_ON_COMPLETE is on, the watcher is
  * inert and this owns the moment entirely.
  */
-export function StreakComplete() {
+export function StreakComplete({ compact = false }: { compact?: boolean } = {}) {
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });
   const ranRef = useRef(false);
 
@@ -102,7 +102,10 @@ export function StreakComplete() {
 
   if (phase.kind === 'loading' || phase.kind === 'hidden') return null;
 
-  if (phase.kind === 'kept') {
+  // Compact: the streak still claims on mount, but we render only the quiet
+  // one-line chip (no full campfire window) — used when the ELO chart is the
+  // hero of the completion screen.
+  if (compact || phase.kind === 'kept') {
     return (
       <div className="w-full flex items-center justify-center gap-2 rounded-xl bg-chess-page px-3 py-2">
         <span className="shrink-0">
