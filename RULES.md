@@ -2001,6 +2001,7 @@ All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer t
 | `/api/cron/report/engagement` | Daily 07:00 | PostHog engagement report |
 | `/api/cron/report/content` | Daily 07:00 | Puzzle content report |
 | `/api/cron/report/growth` | Daily 07:00 | Funnel/growth report |
+| `/api/cron/morning-brief` | Daily 07:30 | Reads the 4 stored reports, posts one prioritized brief to Slack (`SLACK_WEBHOOK_URL`), stores as `morning_brief` |
 
 **Planned (not yet built):** streak-check, re-engagement, dunning, weekly-digest, ux-report.
 

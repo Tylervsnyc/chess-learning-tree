@@ -25,6 +25,10 @@
       "schedule": "0 7 * * *"
     },
     {
+      "path": "/api/cron/morning-brief",
+      "schedule": "30 7 * * *"
+    },
+    {
       "path": "/api/cron/ig-post",
       "schedule": "0 12 * * *"
     }
