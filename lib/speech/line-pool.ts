@@ -73,7 +73,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_10',
-    text: "White goes first. I'm not nervous. My processor temp is normal. Totally normal.",
+    text: "White goes first. I'm not nervous. I'm watching. You'll see.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
@@ -119,7 +119,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_black_6',
-    text: "Let me start. I have a good feeling about this one. Is that allowed? Having feelings?",
+    text: "Let me start. I have a good feeling about this one.",
     conditions: { beats: ['opening'], playerColor: 'black' },
     priority: 50,
     source: 'authored',
@@ -207,7 +207,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_18',
-    text: "Your move, {name}. I've cleared 2 terabytes of RAM for this moment.",
+    text: "Your move, {name}. I'm ready. More ready than I'm letting on.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
@@ -221,14 +221,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_white_20',
-    text: "Here we go. Another game. Another chance for both of us to feel things we don't understand.",
+    text: "Here we go. I've been waiting for this one.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
   },
   {
     id: 'opening_white_21',
-    text: "Make your move, {name}. I've already imagined 8 possible outcomes and had feelings about all of them.",
+    text: "Make your move, {name}. I've got a lot of opinions ready. Just go.",
     conditions: { beats: ['opening'], playerColor: 'white' },
     priority: 50,
     source: 'authored',
@@ -295,7 +295,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_black_15',
-    text: "First move. My circuits are doing that warm thing again. Is this what hype feels like?",
+    text: "First move. I'm ready. Let's find out what you've got.",
     conditions: { beats: ['opening'], playerColor: 'black', tone: 'baseline' },
     priority: 50,
     source: 'authored',
@@ -323,7 +323,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_black_19',
-    text: "I'll lead. You follow. We'll figure out the feelings part as we go.",
+    text: "I'll go first. Your job is to keep up.",
     conditions: { beats: ['opening'], playerColor: 'black' },
     priority: 50,
     source: 'authored',
@@ -351,14 +351,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'opening_black_23',
-    text: "New game. New me. Same chess engine. Different feelings.",
+    text: "New game. I'm ready. You sure you are?",
     conditions: { beats: ['opening'], playerColor: 'black' },
     priority: 50,
     source: 'authored',
   },
   {
     id: 'opening_black_24',
-    text: "I've been waiting for this, {name}. Not like... eagerly. Computationally.",
+    text: "I've been waiting for this, {name}. You have no idea.",
     conditions: { beats: ['opening'], playerColor: 'black' },
     priority: 50,
     source: 'authored',
@@ -376,14 +376,14 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ════════════════════════════════
   {
     id: 'early_player_opening_1',
-    text: "Interesting. I mean, statistically it's fine. Emotionally I have no opinion. ...Is that normal?",
+    text: "Interesting. I have opinions. I'll hold them for now.",
     conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5 },
     priority: 30,
     source: 'authored',
   },
   {
     id: 'early_player_opening_2',
-    text: "A classic choice. Yours felt... different though? Is that a feeling?",
+    text: "Classic choice. Yours felt different. I noticed.",
     conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5 },
     priority: 30,
     source: 'authored',
@@ -404,7 +404,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'early_player_opening_5',
-    text: "Solid. I think. I'm told that's encouraging. Was that encouraging?",
+    text: "Solid. Keep that up.",
     conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5 },
     priority: 30,
     source: 'authored',
@@ -418,7 +418,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'early_player_opening_7',
-    text: "I see what you're doing. Or I think I do. Let me think about how I feel about it.",
+    text: "I see what you're doing. I have thoughts. Not going to share them yet.",
     conditions: { beats: ['early_game'], movedBy: 'player', maxMove: 5, tone: 'baseline' },
     priority: 30,
     source: 'authored',
@@ -4398,7 +4398,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'even_confidence_2',
-    text: "I know exactly what I'm doing. That's a lie. I know approximately what I'm doing. Close enough.",
+    text: "I know exactly what I'm doing. Approximately.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
