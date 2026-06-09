@@ -56,9 +56,16 @@ function greenTarget(strong: boolean): CSSProperties {
 export function CheckmateLanding({
   onContinue,
   onSignIn,
+  postWin = 'signup',
 }: {
   onContinue: (route: string) => void;
   onSignIn: () => void;
+  /**
+   * What happens after the win. 'signup' = capture prompt (cold traffic).
+   * 'continue' = a plain keep-going CTA — used on /solve for signed-in users
+   * arriving from the D1 email (CHE-368), who already have accounts.
+   */
+  postWin?: 'signup' | 'continue';
 }) {
   const [currentFen, setCurrentFen] = useState<string>(PUZZLE.fen);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
@@ -335,8 +342,8 @@ export function CheckmateLanding({
         </div>
       </div>
 
-      {/* Sign in (low-emphasis escape for returning users) */}
-      {!showSignup && (
+      {/* Sign in (low-emphasis escape for returning users; hidden when already signed in) */}
+      {!showSignup && postWin === 'signup' && (
         <div className="text-center pb-5">
           <button
             onClick={onSignIn}
@@ -348,13 +355,29 @@ export function CheckmateLanding({
       )}
 
       {/* Win → capture signup at the peak, then continue the real lesson 1.1.1 */}
-      {showSignup && (
+      {showSignup && postWin === 'signup' && (
         <SignupPrompt
           source="checkmate"
           valueLabel="first win"
           nextOverride={POST_WIN_ROUTE}
           onDismiss={() => onContinue(POST_WIN_ROUTE)}
         />
+      )}
+
+      {/* Win, signed-in: no capture needed — one big keep-going CTA */}
+      {showSignup && postWin === 'continue' && (
+        <div className="px-6 pb-6 max-w-lg mx-auto w-full" style={{ animation: 'cml-rise 0.3s ease-out' }}>
+          <button
+            onClick={() => onContinue(POST_WIN_ROUTE)}
+            className="w-full min-h-[52px] rounded-2xl font-black text-white text-lg"
+            style={{
+              backgroundColor: 'var(--color-chess-green)',
+              boxShadow: '0 4px 0 var(--color-chess-green-dark)',
+            }}
+          >
+            Keep going
+          </button>
+        </div>
       )}
     </div>
   );

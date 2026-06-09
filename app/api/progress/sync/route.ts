@@ -98,12 +98,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Merge streaks - but NOT for new users (prevents localStorage contamination from previous sessions)
-  // A "new user" has no completed lessons AND no activity date on server
-  const isNewUser = serverLessons.size === 0 && !serverProfile?.last_activity_date;
-  const mergedStreak = isNewUser
-    ? (serverProfile?.current_streak ?? 0)  // New user: use server default (0)
-    : Math.max(localProgress.currentStreak, serverProfile?.current_streak ?? 0);
+  // current_streak is NOT merged from localStorage anymore: the Math.max merge
+  // made stale local values immortal (ghost streaks, repaired in CHE-368).
+  // The real streak is derived from finished units via /api/workout/streak;
+  // the stored column is only read back, never client-merged.
   const mergedLastActivity =
     !localProgress.lastActivityDate
       ? serverProfile?.last_activity_date
@@ -148,7 +146,6 @@ export async function POST(request: NextRequest) {
   const { error: profileError } = await supabase
     .from('profiles')
     .update({
-      current_streak: mergedStreak,
       last_activity_date: mergedLastActivity,
       unlocked_levels: mergedUnlockedLevels,
       lessons_completed_today: mergedLessonsCompletedToday,
@@ -166,7 +163,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     completedLessons: allLessons,
-    currentStreak: mergedStreak,
+    currentStreak: serverProfile?.current_streak ?? 0,
     lastActivityDate: mergedLastActivity,
     lessonsCompletedToday: mergedLessonsCompletedToday,
     lastLessonDate: mergedLastLessonDate,

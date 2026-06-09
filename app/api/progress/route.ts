@@ -5,21 +5,6 @@ import { User } from '@supabase/supabase-js';
 import { getAllLessonIds, getTreeIdFromLessonId } from '@/lib/curriculum-registry';
 
 /**
- * Calculate new streak value based on last activity date.
- * Per RULES.md Section 11: streak tracks daily activity.
- */
-function calculateStreak(currentStreak: number, lastActivityDate: string | null): number {
-  const today = new Date().toISOString().split('T')[0];
-  if (lastActivityDate === today) return currentStreak;
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  if (lastActivityDate === yesterday.toISOString().split('T')[0]) return currentStreak + 1;
-
-  return 1;
-}
-
-/**
  * Ensure a user profile exists (for foreign key constraints).
  * Creates one if missing (e.g., Google OAuth users where trigger didn't fire).
  */
@@ -222,22 +207,19 @@ export async function POST(request: NextRequest) {
       const today = new Date().toISOString().split('T')[0];
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('lessons_completed_today, last_lesson_date, current_streak, last_activity_date')
+        .select('lessons_completed_today, last_lesson_date')
         .eq('id', user.id)
         .single();
 
       const isNewLessonDay = profileData?.last_lesson_date !== today;
       const newLessonCount = isNewLessonDay ? 1 : (profileData?.lessons_completed_today ?? 0) + 1;
 
-      const newStreak = calculateStreak(
-        profileData?.current_streak ?? 0,
-        profileData?.last_activity_date ?? null,
-      );
-
+      // current_streak is no longer written here: the streak is derived from
+      // finished units (/api/workout/streak). The stored column drifted into
+      // ghost streaks and was repaired in CHE-368 — don't re-corrupt it.
       updateData.lessons_completed_today = newLessonCount;
       updateData.last_lesson_date = today;
       updateData.last_activity_date = today;
-      updateData.current_streak = newStreak;
     }
 
     // Only update currentPosition if the user passed (score >= 4)
@@ -316,22 +298,12 @@ export async function POST(request: NextRequest) {
     if (updateStreak) {
       const today = new Date().toISOString().split('T')[0];
 
-      // Fetch current profile
-      const { data: streakProfile } = await supabase
-        .from('profiles')
-        .select('current_streak, last_activity_date')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      const newStreak = calculateStreak(
-        streakProfile?.current_streak ?? 0,
-        streakProfile?.last_activity_date ?? null,
-      );
-
+      // Only last_activity_date is maintained here; current_streak is derived
+      // from finished units (/api/workout/streak) and must not be incremented
+      // per-puzzle (CHE-368 ghost-streak repair).
       const { error: streakError } = await supabase
         .from('profiles')
         .update({
-          current_streak: newStreak,
           last_activity_date: today,
         })
         .eq('id', user.id);

@@ -7,6 +7,12 @@ import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
+import {
+  fetchActivityByUser,
+  fetchFirstActivityByUser,
+  fetchSolverSet,
+  currentStreakFromDays,
+} from '@/lib/streak/activity';
 import type { EmailType } from '@/types/email';
 
 interface DripDay {
@@ -37,8 +43,7 @@ interface LifecycleUser {
   id: string;
   email: string | null;
   display_name: string | null;
-  current_streak: number | null;
-  last_activity_date: string | null;
+  created_at: string;
   current_position: string | null;
   email_preferences:
     | { marketing: boolean | null; unsubscribed_all: boolean | null }
@@ -62,7 +67,39 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
     const results: Record<string, { sent: number; skipped: number; errors: number; dryRun?: number }> = {};
 
     // ----------------------------------------------------------------------
-    // Existing day-3 drip (activity-based, unchanged behavior — keeps sending)
+    // Shared targeting data (CHE-368): all selection runs on DERIVED activity
+    // from the real activity tables, never profiles.current_streak /
+    // last_activity_date — those columns drifted into ghost data (repaired
+    // 2026-06-09) and games/workouts/openings never updated them anyway.
+    // ----------------------------------------------------------------------
+    const PROFILE_SELECT = `
+      id,
+      email,
+      display_name,
+      created_at,
+      current_position,
+      email_preferences (
+        marketing,
+        unsubscribed_all
+      )
+    ` as const;
+
+    const [activityByUser, firstActivityByUser, solverSet, profilesRes] = await Promise.all([
+      fetchActivityByUser(supabase),
+      fetchFirstActivityByUser(supabase),
+      fetchSolverSet(supabase),
+      supabase.from('profiles').select(PROFILE_SELECT).not('email', 'is', null),
+    ]);
+
+    if (profilesRes.error) {
+      console.error('Drip profiles query error:', profilesRes.error);
+      return NextResponse.json({ error: 'profiles read failed' }, { status: 500 });
+    }
+    const allProfiles = (profilesRes.data ?? []) as unknown as LifecycleUser[];
+    const todayUtc = today.toISOString().split('T')[0];
+
+    // ----------------------------------------------------------------------
+    // Existing day-3 drip (last finished unit exactly N days ago)
     // ----------------------------------------------------------------------
     for (const { day, emailType } of DRIP_DAYS) {
       const dayResults = { sent: 0, skipped: 0, errors: 0 };
@@ -72,33 +109,14 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       targetDate.setDate(targetDate.getDate() - day);
       const targetDateStr = targetDate.toISOString().split('T')[0];
 
-      // Users whose last activity was exactly 3 days ago
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          email,
-          display_name,
-          current_position,
-          subscription_status,
-          email_preferences (
-            marketing,
-            unsubscribed_all
-          )
-        `)
-        .not('email', 'is', null)
-        .eq('last_activity_date', targetDateStr);
+      // Users whose last finished unit was exactly `day` days ago (derived).
+      const users = allProfiles.filter(
+        (u) => activityByUser.get(u.id)?.lastDay === targetDateStr,
+      );
 
-      if (error) {
-        console.error(`Database error for day ${day}:`, error);
-        dayResults.errors++;
-        continue;
-      }
-
-      for (const user of users || []) {
+      for (const user of users) {
         // Check email preferences
-        const prefs = user.email_preferences?.[0] || user.email_preferences;
-        if (prefs?.unsubscribed_all || prefs?.marketing === false) {
+        if (!user.email || isOptedOut(user)) {
           dayResults.skipped++;
           continue;
         }
@@ -155,19 +173,6 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
     if (!LIFECYCLE_ENABLED) {
       console.log('[drip] EMAIL_LIFECYCLE_ENABLED is OFF — lifecycle emails run as DRY-RUN (no real sends).');
     }
-
-    const PROFILE_SELECT = `
-      id,
-      email,
-      display_name,
-      current_streak,
-      last_activity_date,
-      current_position,
-      email_preferences (
-        marketing,
-        unsubscribed_all
-      )
-    ` as const;
 
     // Compute window boundaries as ISO timestamps.
     const startOfWindow = (daysAgo: number): string => {
@@ -240,111 +245,96 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       }
     }
 
-    // --- day1: signed up ~1 day ago, hasn't come back since signup ---
-    // created_at in [2 days ago, 1 day ago). i.e. account is between 1 and 2 days old.
+    // --- day1: the D1 return trigger (CHE-368) ---
+    // Fires ~20-48h after the user's FIRST activity (any engagement, incl. raw
+    // puzzle attempts; falls back to signup time if they never touched
+    // anything). Targets NON-SOLVERS only — the aha-moment is solving 1 puzzle
+    // within 48h (D7 50% vs 12%), so the email deep-links to ONE easy puzzle
+    // (/solve), not the home screen. The 28h-wide window plus the email_log
+    // dedup in processLifecycle guarantees at-most-once even though the cron
+    // only runs daily.
     {
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select(PROFILE_SELECT)
-        .not('email', 'is', null)
-        .gte('created_at', startOfWindow(2))
-        .lt('created_at', startOfWindow(1));
+      const windowStart = new Date(today.getTime() - 48 * 3600 * 1000).toISOString();
+      const windowEnd = new Date(today.getTime() - 20 * 3600 * 1000).toISOString();
 
-      if (error) {
-        console.error('Lifecycle day1 query error:', error);
-        const r = newLifecycleResult();
-        r.errors++;
-        results.day_1 = r;
-      } else {
-        const signupCutoff = new Date(today);
-        signupCutoff.setDate(signupCutoff.getDate() - 1);
-        const signupCutoffStr = signupCutoff.toISOString().split('T')[0];
+      const eligible = allProfiles.filter((u) => {
+        const first = firstActivityByUser.get(u.id) ?? u.created_at;
+        if (!first || first < windowStart || first >= windowEnd) return false;
+        return !solverSet.has(u.id);
+      });
 
-        // Only users who have NOT returned: no activity, or last activity is on/before signup day.
-        const eligible = (users || []).filter((u) => {
-          const la = (u as LifecycleUser).last_activity_date;
-          return !la || la <= signupCutoffStr;
-        }) as LifecycleUser[];
-
-        await processLifecycle('day_1', 'drip_day1', eligible, (user) => ({
-          subject: 'Did You Forget About Me Already?',
-          react: DripDay1({
-            displayName: user.display_name || undefined,
-            appUrl,
-            unsubscribeUrl: getUnsubscribeUrl(user.id, 'drip_day1'),
-          }),
-          metadata: { lifecycle: 'day1', current_position: user.current_position },
-        }));
-      }
+      await processLifecycle('day_1', 'drip_day1', eligible, (user) => ({
+        subject: 'One Move. One Win.',
+        react: DripDay1({
+          displayName: user.display_name || undefined,
+          appUrl,
+          unsubscribeUrl: getUnsubscribeUrl(user.id, 'drip_day1'),
+        }),
+        metadata: {
+          lifecycle: 'day1',
+          trigger: 'first_activity_20h',
+          current_position: user.current_position,
+        },
+      }));
     }
 
     // --- day7: signed up ~7 days ago (week-one check-in) ---
-    // created_at in [8 days ago, 7 days ago).
+    // created_at in [8 days ago, 7 days ago). Streak shown is DERIVED from
+    // real activity — never profiles.current_streak (ghost data, CHE-368).
     {
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select(PROFILE_SELECT)
-        .not('email', 'is', null)
-        .gte('created_at', startOfWindow(8))
-        .lt('created_at', startOfWindow(7));
+      const users = allProfiles.filter(
+        (u) => u.created_at >= startOfWindow(8) && u.created_at < startOfWindow(7),
+      );
 
-      if (error) {
-        console.error('Lifecycle day7 query error:', error);
-        const r = newLifecycleResult();
-        r.errors++;
-        results.day_7 = r;
-      } else {
-        await processLifecycle('day_7', 'drip_day7', (users || []) as LifecycleUser[], (user) => ({
+      await processLifecycle('day_7', 'drip_day7', users, (user) => {
+        const streak = currentStreakFromDays(
+          activityByUser.get(user.id)?.days ?? [],
+          todayUtc,
+        );
+        return {
           subject: 'One Week In — How Are We Doing?',
           react: DripDay7({
             displayName: user.display_name || undefined,
             appUrl,
             unsubscribeUrl: getUnsubscribeUrl(user.id, 'drip_day7'),
-            currentStreak: user.current_streak ?? undefined,
+            currentStreak: streak > 0 ? streak : undefined,
           }),
           metadata: {
             lifecycle: 'day7',
-            current_streak: user.current_streak,
+            current_streak: streak,
             current_position: user.current_position,
           },
-        }));
-      }
+        };
+      });
     }
 
     // --- winback: inactive 14+ days ---
-    // last_activity_date <= today - 14. Exclude brand-new accounts so this can
-    // never collide with the day1/day7 windows (a 14d-inactive user is older
-    // than the day7 window anyway; this guard is belt-and-suspenders).
+    // Derived last finished unit <= today - 14. Users with no finished unit
+    // ever are excluded (nothing to win back; day1 already covered them).
+    // Exclude brand-new accounts so this can never collide with the day1/day7
+    // windows (belt-and-suspenders; a 14d-inactive user is older anyway).
     {
       const inactiveCutoff = new Date(today);
       inactiveCutoff.setDate(inactiveCutoff.getDate() - WINBACK_INACTIVE_DAYS);
       const inactiveCutoffStr = inactiveCutoff.toISOString().split('T')[0];
 
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select(PROFILE_SELECT)
-        .not('email', 'is', null)
-        .not('last_activity_date', 'is', null)
-        .lte('last_activity_date', inactiveCutoffStr)
-        // Account must be older than the day7 window to avoid any window overlap.
-        .lt('created_at', startOfWindow(8));
+      const users = allProfiles.filter((u) => {
+        const lastDay = activityByUser.get(u.id)?.lastDay ?? null;
+        return lastDay !== null && lastDay <= inactiveCutoffStr && u.created_at < startOfWindow(8);
+      });
 
-      if (error) {
-        console.error('Lifecycle winback query error:', error);
-        const r = newLifecycleResult();
-        r.errors++;
-        results.winback = r;
-      } else {
-        await processLifecycle('winback', 'winback', (users || []) as LifecycleUser[], (user) => ({
-          subject: 'The Board’s Still Set Up',
-          react: Winback({
-            displayName: user.display_name || undefined,
-            appUrl,
-            unsubscribeUrl: getUnsubscribeUrl(user.id, 'winback'),
-          }),
-          metadata: { lifecycle: 'winback', last_activity_date: user.last_activity_date },
-        }));
-      }
+      await processLifecycle('winback', 'winback', users, (user) => ({
+        subject: 'The Board’s Still Set Up',
+        react: Winback({
+          displayName: user.display_name || undefined,
+          appUrl,
+          unsubscribeUrl: getUnsubscribeUrl(user.id, 'winback'),
+        }),
+        metadata: {
+          lifecycle: 'winback',
+          last_activity_day: activityByUser.get(user.id)?.lastDay ?? null,
+        },
+      }));
     }
 
     return NextResponse.json({
