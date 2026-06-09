@@ -116,7 +116,16 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 
 ---
 
-## Token Efficiency
+## Performance Conventions (2026-06-09 audit — do not regress)
+
+These shaved ~300KB off every page and ~20 DB queries per session. New code MUST follow them:
+
+- **QUIP_POOL is lazy.** Never static-import `lib/quips/quip-pool` (or `lib/speech/line-pool` / `rookie-touchpoints`) from anything reachable from a page or the root layout — that re-ships 282KB to every visitor. Use `getQuipPool()` from `lib/quips/load-quip-pool.ts`.
+- **Streak reads go through the cache.** Never `fetch('/api/workout/streak')` directly — use `getStreak()` from `lib/streak-client.ts` (`{ fresh: true }` only at completion surfaces). The raw endpoint is a 4-table scan.
+- **Confetti is lazy.** Use `fireConfetti()` from `lib/confetti.ts`, never `import confetti from 'canvas-confetti'`.
+- **Fonts are self-hosted.** DM Sans lives in `public/fonts/` with a preload in `app/layout.tsx`. Never add a Google Fonts `@import`/`<link>` to production CSS (render-blocking; killed in CHE-372). Test pages are exempt.
+- **Middleware skips static files by extension.** If you add a new binary asset type to `public/`, add its extension to the `middleware.ts` matcher exclusion — otherwise every request runs a Supabase auth call.
+- **Ability art ships as 512px WebP** (`public/abilities/*.webp`, ~20-30KB). The 1-2MB PNGs are source files only — never point `artFile()` at a `.png`; convert with sharp first (see CHE-377).
 
 - **Be concise.** Short paragraphs, not walls of text. No boilerplate summaries.
 - **RULES.md: read by section, not by file.** Use the index above. Read 50-100 lines at the offset, never the full file.
