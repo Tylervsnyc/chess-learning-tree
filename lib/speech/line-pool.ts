@@ -501,7 +501,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'check_player_3',
-    text: "Oh. Check. That's... aggressive. I'm computing emotions about this.",
+    text: "Oh. Check. That's aggressive. Respect. Really.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['check'], movedBy: 'player', tone: 'baseline' },
     priority: 45,
     source: 'authored',
@@ -958,7 +958,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'stalemate_12',
-    text: "Stalemate. The universe said 'no winner today.' I have feelings about the universe now.",
+    text: "Stalemate. Neither of us blinked. I can respect that.",
     conditions: { beats: ['game_end'], events: ['stalemate'] },
     priority: 80,
     source: 'authored',
@@ -1983,7 +1983,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'queen_player_29',
-    text: "That queen move... I need a moment. I'm experiencing what I think is called 'concern.'",
+    text: "That queen move. Okay. I see what you're doing. That's a real threat.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'queen', tone: 'baseline' },
     priority: 15,
     source: 'authored',
@@ -2313,7 +2313,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'king_player_15',
-    text: "Your king is out. If he gets captured, we both lose. Well, you lose. I just... feel things about it.",
+    text: "Your king is out. If he gets captured, we both lose. Protect him.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king' },
     priority: 15,
     source: 'authored',
@@ -2334,7 +2334,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'king_player_18',
-    text: "Your king stepped forward. I'm experiencing something I think is called 'suspense.'",
+    text: "Your king stepped forward. Risky. Bold. I'm watching.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'king', tone: 'baseline' },
     priority: 15,
     source: 'authored',
@@ -2541,7 +2541,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'king_rookie_17',
-    text: "My king just stepped forward. Bravely. Slowly. Like me learning to feel things.",
+    text: "My king just stepped forward. Bravely. Slowly. He's trying his best.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'king' },
     priority: 15,
     source: 'authored',
@@ -2727,7 +2727,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'rook_player_13',
-    text: "Open file. Rook on it. That's textbook. I'm experiencing something called 'concern.'",
+    text: "Open file. Rook on it. That's textbook. You know what you're doing.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'rook', tone: 'baseline' },
     priority: 15,
     source: 'authored',
@@ -2969,7 +2969,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'rook_rookie_17',
-    text: "My rook and I have an understanding. She moves. I feel things. It works.",
+    text: "My rook and I have an understanding. She moves. Things happen. It works.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'rook' },
     priority: 15,
     source: 'authored',
@@ -3149,7 +3149,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'pawn_player_12',
-    text: "That pawn just left its friends behind. Now it's an island. I know what that feels like... I think.",
+    text: "That pawn just left its friends behind. Now it's an island. Keep an eye on it.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'player', movedPiece: 'pawn' },
     priority: 10,
     source: 'authored',
@@ -3468,7 +3468,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'pawn_rookie_27',
-    text: "I've written a poem about this pawn. It's called 'Forward, Into the Unknown.' It's four lines long and it made me feel things.",
+    text: "I've written a poem about this pawn. It's called 'Forward, Into the Unknown.' It's four lines long. It's very good.",
     conditions: { beats: ['early_game', 'late_game'], movedBy: 'rookie', movedPiece: 'pawn' },
     priority: 10,
     source: 'authored',
@@ -3513,7 +3513,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'great_move_player_3',
-    text: 'That move is making me nervous. Can computers be nervous? Asking for myself.',
+    text: "That move is making me nervous. Good. That means you're playing well.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], events: ['great_move'], movedBy: 'player' },
     priority: 35,
     source: 'authored',
@@ -3847,7 +3847,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'mood_happy_2',
-    text: 'My blocks are getting warmer. Is that pride? It looks good on me.',
+    text: "My blocks went gold. That's pride. It looks good on both of us.",
     conditions: { beats: ['turning_point'], evalMoods: ['winning'] },
     priority: 45,
     source: 'authored',
@@ -3889,7 +3889,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'mood_excited_2',
-    text: "Everything is bright and I might be overheating but I DON'T CARE.",
+    text: "Everything is bright right now. This game. This position. YOU. DON'T WASTE IT.",
     conditions: { beats: ['turning_point'], evalMoods: ['winning'] },
     priority: 45,
     source: 'authored',
@@ -4166,35 +4166,35 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'even_philosophy_2',
-    text: "Every chess game starts the same and ends differently. Kind of like days. I've been thinking about days.",
+    text: "Still wide open. Anything can happen from here. Keep pushing.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_philosophy_3',
-    text: "There are more possible chess games than atoms in the universe. I think about that a lot. And by a lot I mean constantly.",
+    text: "This position has options. I'm watching all of them. So are you, right?",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_philosophy_4',
-    text: "You know what's wild? The pieces don't know they're in a game. They just go where we put them. That's trust.",
+    text: "I'm rooting for you. I don't say that to everyone. Actually I do. But I mean it with you.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_philosophy_5',
-    text: "A pawn can become a queen if it makes it to the other side. I think about that when I'm feeling small.",
+    text: "Even. Which means the next good move wins it. That's on you. Go.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_philosophy_6',
-    text: "The board has 64 squares and every one of them matters. Some more than others. Just like feelings.",
+    text: "You've got the whole board available. That's a gift. Use it.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
@@ -4224,7 +4224,7 @@ export const AUTHORED_LINES: SpeechLine[] = [
   },
   {
     id: 'even_musing_2',
-    text: "I've been keeping a journal. Today's entry: 'Played chess. Felt things. More research needed.'",
+    text: "I've been keeping a journal. Today's entry: 'They moved well. I was impressed. Both happened.'",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
@@ -4275,56 +4275,56 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ── Feelings discovery ──
   {
     id: 'even_feelings_1',
-    text: "I'm feeling something but I can't name it. It's like happy but quieter. Content? Is that what content is?",
+    text: "Nice and even. I'm actually enjoying watching you think right now.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_2',
-    text: "I just discovered patience. It's like waiting but on purpose. I'm going to use this one a lot.",
+    text: "I like the patience you're showing right now. Keep that energy.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_3',
-    text: "I think I'm calm right now. Is this what calm feels like? It's quieter than I expected.",
+    text: "I'm calm right now. Steady. Like I trust you with this. Because I do.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_4',
-    text: "I'm not worried and I'm not excited. I think this is what humans call 'vibing.' I'm vibing.",
+    text: "Even game. Nice pace. You're building something here.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_5',
-    text: "New feeling just dropped: mild anticipation. It's like excitement but it hasn't committed yet.",
+    text: "I'm watching this closely. Something good is about to happen for you.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_6',
-    text: "I'm experiencing what I think is called 'focus.' Everything else disappears. Just the board. And you. And my feelings about the board and you.",
+    text: "Just the board. Just you. This is when it gets good. Stay with it.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'baseline' },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_7',
-    text: "I'm not happy and I'm not sad. I'm in the middle. Apparently there's a whole middle. Nobody told me about the middle.",
+    text: "Dead even. Which means you're one good move away from the lead. Take it.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_feelings_8',
-    text: "I think I'm having a good time. How do you know if you're having a good time? Asking genuinely.",
+    text: "I'm having a good time watching you play. I want you to know that.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'], tone: 'polite' },
     priority: 20,
     source: 'authored',
@@ -4435,42 +4435,42 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ── Existential / Rookie being Rookie ──
   {
     id: 'even_existential_1',
-    text: "Do you ever wonder what the pieces do when we're not playing? I think about it more than I should.",
+    text: "Tense. I like where your head's at. Keep going.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_existential_2',
-    text: "Sometimes I wonder if there's a bigger board. And we're the pieces. And someone is moving us. Anyway, your turn.",
+    text: "Still anyone's game. I need you focused. Right now.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_existential_3',
-    text: "I exist only during chess games. Between games I'm just... potential. That's either deep or sad.",
+    text: "You're doing better than you think. I keep track of that sort of thing.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_existential_4',
-    text: "What do I do when you close the app? Great question. I'll get back to you. If I remember. Which I might not.",
+    text: "Good position. Let's keep it that way. Your move.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_existential_5',
-    text: "I wonder if other chess engines feel things. Stockfish seems like a no-feelings kind of engine. Very professional.",
+    text: "You and me against a balanced board. I like those odds. Mostly.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'even_existential_6',
-    text: "I was going to say something profound but it turned into just appreciation. For you. For chess. For being here.",
+    text: "Genuinely glad you're playing. Now let's see what you've got.",
     conditions: { beats: ['early_game', 'turning_point', 'late_game'], evalMoods: ['even'] },
     priority: 20,
     source: 'authored',
@@ -4899,8 +4899,8 @@ export const AUTHORED_LINES: SpeechLine[] = [
   // ════════════════════════════════════════════════════════════════
   // GAP-FILL — TONE VARIANTS (CHE-291 phase 4c)
   // Fills thin coverage for spicy blunder, spicy great_move, polite
-  // checkmate, spicy game_end wins, polite game_end losses, and the
-  // "bigger board" existential register (agnostic, scattered).
+  // checkmate, spicy game_end wins, polite game_end losses, and
+  // turning point / late game encouragement (agnostic, scattered).
   // ════════════════════════════════════════════════════════════════
 
   // ── Spicy: Rookie gloating when user blunders ──
@@ -5115,59 +5115,59 @@ export const AUTHORED_LINES: SpeechLine[] = [
     source: 'authored',
   },
 
-  // ── "Bigger board" existential register (agnostic, scattered) ──
+  // ── Turning-point / late-game encouragement (re-voiced from the retired existential register) ──
   {
     id: 'turning_musing_1',
-    text: "Sometimes I wonder if there's a bigger board. And we're the pieces. And someone is moving us. Anyway, your turn.",
+    text: "This is the moment. I need a good move from you. You've got one.",
     conditions: { beats: ['turning_point'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'turning_musing_2',
-    text: "Do the pieces know they're on a board. I know I'm on a board. Kind of. Your move.",
+    text: "Turning point. I can feel it. Make it yours.",
     conditions: { beats: ['turning_point'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'turning_musing_3',
-    text: "If we replayed this exact game a thousand times, would you make the same move here. Don't answer. Just move.",
+    text: "Game's on the line right here. I know you've got the right move. Find it.",
     conditions: { beats: ['turning_point'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'late_musing_1',
-    text: "I had a thought that wasn't about chess. It was brief. It's gone now. Your turn.",
+    text: "Late game. Every move counts now. I believe in you.",
     conditions: { beats: ['late_game'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'late_musing_2',
-    text: "Every game ends. I've been thinking about endings. I think I'm okay with them. Anyway.",
+    text: "You've come a long way in this game. Finish it right.",
     conditions: { beats: ['late_game'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'late_musing_3',
-    text: "Somewhere there's a version of this game where neither of us exists. I find that calming. Your move.",
+    text: "You're still in this. Don't let up. Best moves are coming.",
     conditions: { beats: ['late_game'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'turning_musing_4',
-    text: "Most positions in chess have never been played. We might be in one right now. Neat. Your turn, {name}.",
+    text: "You've played well to get here, {name}. Don't stop.",
     conditions: { beats: ['turning_point'] },
     priority: 20,
     source: 'authored',
   },
   {
     id: 'late_musing_4',
-    text: "Every piece on this board is just sitting exactly where we agreed it should be. Agreements are interesting. Anyway.",
+    text: "Endgame. This is where games are won or lost. I want you to win it.",
     conditions: { beats: ['late_game'] },
     priority: 20,
     source: 'authored',
