@@ -16,10 +16,10 @@ import RookieCampfire from '@/components/shared/RookieCampfire';
  * (a lesson, a game, a puzzle) and the day counts. Below it: quick actions to
  * keep the streak alive, then a grid of lifetime stat tiles.
  *
- * Data comes from existing endpoints — nothing is rebuilt here:
+ * Data comes from two calls (CHE-379):
  *   - profile/name/sub          → useUser()
- *   - streak                    → GET /api/workout/streak?tz=
- *   - lifetime stats            → GET /api/profile/stats
+ *   - streak                    → getStreak() (shared client cache)
+ *   - stats/week/sessions/elo   → GET /api/profile/dashboard?tz= (one round-trip)
  */
 
 interface StreakData {
@@ -376,24 +376,36 @@ export default function ProfilePage() {
   const [sessions, setSessions] = useState<WorkoutSession[] | null>(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
-  // Fire data fetches on mount — the API routes authenticate from the cookie
-  // themselves, so we don't wait for useUser()'s auth round-trip first. This
-  // removes a full round-trip from the critical path; streak/stats/elo load in
-  // parallel with the auth check instead of after it. (Logged-out users get a
-  // 401 handled gracefully below, and the logged-out gate renders regardless.)
+  // Fire data fetches on mount — the API route authenticates from the cookie
+  // itself, so we don't wait for useUser()'s auth round-trip first. This
+  // removes a full round-trip from the critical path; the dashboard data loads
+  // in parallel with the auth check instead of after it. (Logged-out users get
+  // a 401 handled gracefully below, and the logged-out gate renders regardless.)
+  // CHE-379: stats/week/sessions/elo come back in ONE /api/profile/dashboard
+  // call (was 4 separate authenticated requests); streak stays on the shared
+  // getStreak() client cache.
   useEffect(() => {
     let cancelled = false;
     setDataLoading(true);
+    setWeekLoading(true);
+    setSessionsLoading(true);
+    setEloLoading(true);
     Promise.all([
       getStreak().catch(() => null),
-      fetch('/api/profile/stats', { cache: 'no-store' })
+      fetch(`/api/profile/dashboard?tz=${encodeURIComponent(getTz())}`, { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null),
-    ]).then(([s, st]) => {
+    ]).then(([s, d]) => {
       if (cancelled) return;
       if (s) setStreak(s as StreakData);
-      if (st) setStats(st as LifetimeStats);
+      if (d?.stats) setStats(d.stats as LifetimeStats);
+      if (d?.week) setWeek(d.week as WeekData);
+      setSessions(Array.isArray(d?.sessions) ? (d.sessions as WorkoutSession[]) : []);
+      if (d?.elo) setElo(d.elo as EloData);
       setDataLoading(false);
+      setWeekLoading(false);
+      setSessionsLoading(false);
+      setEloLoading(false);
     });
     return () => {
       cancelled = true;
@@ -423,46 +435,6 @@ export default function ProfilePage() {
     window.history.replaceState({}, '', '/profile');
     return () => clearInterval(id);
   }, [user, refetchProfile]);
-
-  // Weekly chart + recent sessions + elo load independently, on mount.
-  useEffect(() => {
-    let cancelled = false;
-    const tz = getTz();
-
-    setWeekLoading(true);
-    fetch(`/api/workout/week?tz=${encodeURIComponent(tz)}`, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((w) => {
-        if (cancelled) return;
-        if (w) setWeek(w as WeekData);
-        setWeekLoading(false);
-      });
-
-    setSessionsLoading(true);
-    fetch('/api/workout/sessions?limit=10', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((data) => {
-        if (cancelled) return;
-        setSessions(Array.isArray(data?.sessions) ? (data.sessions as WorkoutSession[]) : []);
-        setSessionsLoading(false);
-      });
-
-    setEloLoading(true);
-    fetch('/api/profile/elo', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((e) => {
-        if (cancelled) return;
-        if (e) setElo(e as EloData);
-        setEloLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // ── Logged-out gate ──────────────────────────────────────────────────────
   if (!userLoading && !user) {

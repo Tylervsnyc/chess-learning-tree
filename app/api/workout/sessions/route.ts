@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getRecentWorkoutSessions } from '@/lib/workout/sessions';
 
 /**
  * GET /api/workout/sessions?limit=10
@@ -12,6 +13,9 @@ import { createClient } from '@/lib/supabase/server';
  *   sessions: [{ id, createdAt, points, correct, wrong, perfect,
  *               durationMinutes, missedCount }]
  * }
+ *
+ * The query lives in lib/workout/sessions.ts, shared with
+ * GET /api/profile/dashboard.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -23,30 +27,10 @@ export async function GET(request: NextRequest) {
   const rawLimit = Number(request.nextUrl.searchParams.get('limit'));
   const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(50, Math.trunc(rawLimit)) : 10;
 
-  const { data, error } = await supabase
-    .from('workout_sessions')
-    .select(
-      'id, created_at, points, correct_count, wrong_count, perfect, duration_minutes, missed_puzzles',
-    )
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(limit);
-
-  if (error) {
-    console.error('workout sessions read failed', error);
+  try {
+    const sessions = await getRecentWorkoutSessions(supabase, user.id, limit);
+    return NextResponse.json({ sessions });
+  } catch {
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
-
-  const sessions = (data ?? []).map((r) => ({
-    id: r.id as string,
-    createdAt: r.created_at as string,
-    points: (r.points as number) ?? 0,
-    correct: (r.correct_count as number) ?? 0,
-    wrong: (r.wrong_count as number) ?? 0,
-    perfect: (r.perfect as boolean) ?? false,
-    durationMinutes: (r.duration_minutes as number | null) ?? null,
-    missedCount: Array.isArray(r.missed_puzzles) ? r.missed_puzzles.length : 0,
-  }));
-
-  return NextResponse.json({ sessions });
 }
