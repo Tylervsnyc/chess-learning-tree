@@ -1,8 +1,13 @@
 import { type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
+import { captureFirstTouch } from '@/lib/growth/first-touch';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const response = await updateSession(request);
+  // CHE-387: freeze first-touch attribution in a cookie on the first landing
+  // (pure cookie/header reads — no extra network calls).
+  captureFirstTouch(request, response);
+  return response;
 }
 
 export const config = {

@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
+import { appendFirstTouchParam } from '@/lib/growth/first-touch';
 
 function SignupContent() {
   const router = useRouter();
@@ -48,6 +49,7 @@ function SignupContent() {
     if (redirectTo) {
       redirectUrl.searchParams.set('next', redirectTo);
     }
+    appendFirstTouchParam(redirectUrl); // CHE-387: survives the IG -> system browser handoff
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -76,6 +78,7 @@ function SignupContent() {
     if (redirectTo) {
       redirectUrl.searchParams.set('next', redirectTo);
     }
+    appendFirstTouchParam(redirectUrl); // CHE-387: survives the IG -> system browser handoff
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
@@ -128,6 +131,10 @@ function SignupContent() {
 
     // Send welcome email (fire-and-forget)
     fetch('/api/email/welcome', { method: 'POST' }).catch(() => {});
+
+    // CHE-387: stamp first-touch attribution onto the new profile (fire-and-forget).
+    // Email signups never hit /auth/callback, so this is their stamping path.
+    fetch('/api/attribution/stamp', { method: 'POST' }).catch(() => {});
 
     // Go straight into the app. Routing through '/' bounces a fresh signup to
     // /welcome (onboarding) because middleware re-checks auth on the server

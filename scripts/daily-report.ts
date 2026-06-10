@@ -267,6 +267,52 @@ async function getSourceFunnel(filter: string, sourceClause: string) {
 }
 
 /**
+ * CHE-387: DB-truth attributed signups. PostHog cannot see IG one-tap OAuth
+ * signups (the IG in-app -> system browser handoff returns the user as a fresh
+ * person, $initial_referring_domain = $direct), so the funnel showed 0 signups
+ * while signups actually succeeded. First-touch attribution is now frozen in a
+ * first-party cookie on landing and stamped onto profiles.first_touch_* at
+ * signup — counting those rows is the truth; the signup_completed event is
+ * kept as a secondary number so we can watch the gap close.
+ */
+async function getDbAttributedSignups(dateStr: string, days: number): Promise<{
+  available: boolean;
+  ig: number;
+  paid: number;
+}> {
+  const sb = makeServiceClient();
+  if (!sb) return { available: false, ig: 0, paid: 0 };
+
+  const targetStart = Date.parse(`${dateStr}T00:00:00Z`);
+  const startIso = new Date(targetStart - (days - 1) * DAY_MS).toISOString();
+  const endIso = new Date(targetStart + DAY_MS).toISOString();
+
+  const { data, error } = await sb
+    .from('profiles')
+    .select('first_touch_source, first_touch_medium, first_touch_referrer')
+    .gte('created_at', startIso)
+    .lt('created_at', endIso)
+    .not('first_touch_at', 'is', null);
+
+  if (error) {
+    // 42703 = first_touch_* migration not applied yet.
+    console.warn(`  [db-signups] ${error.code}: ${error.message}`);
+    return { available: false, ig: 0, paid: 0 };
+  }
+
+  let ig = 0;
+  let paid = 0;
+  for (const r of data ?? []) {
+    const src = ((r.first_touch_source as string | null) || '').toLowerCase();
+    const medium = ((r.first_touch_medium as string | null) || '').toLowerCase();
+    const referrer = ((r.first_touch_referrer as string | null) || '').toLowerCase();
+    if (src.includes('instagram') || referrer.includes('instagram')) ig++;
+    if (src.includes('instagram') && medium === 'paid') paid++;
+  }
+  return { available: true, ig, paid };
+}
+
+/**
  * Chess Path ELO funnel (CHE-370). Reach of the legible-progress surface by mode,
  * the soft-signup CTR, and the headline conversion: of the new logged-out users
  * who saw the first-rating ceremony, how many went on to complete signup.
@@ -650,6 +696,10 @@ async function main() {
   const igFunnel = await getSourceFunnel(f, IG_SOURCE);
   const paidFunnel = await getSourceFunnel(f, PAID_IG_SOURCE);
 
+  // CHE-387: DB-truth signup attribution (profiles.first_touch_*) — PostHog
+  // loses OAuth signups across the IG in-app -> system browser handoff.
+  const dbSignups = await getDbAttributedSignups(targetDate, rangeDays);
+
   // Chess Path ELO (CHE-370) — legible-progress surface + new-user signup hook.
   const elo = await getEloFunnel(f);
 
@@ -723,9 +773,9 @@ async function main() {
   }
   console.log(`\n  Overall conversion (landing -> signup): ${pct(funnel.signupCompleted, funnel.landing)}`);
 
-  const printFunnel = (title: string, fn: typeof igFunnel, emptyNote: string) => {
+  const printFunnel = (title: string, fn: typeof igFunnel, emptyNote: string, dbSignupCount: number | null) => {
     console.log(section(title));
-    if (fn.anyPerson === 0) {
+    if (fn.anyPerson === 0 && !dbSignupCount) {
       console.log(`  ${emptyNote}`);
       return;
     }
@@ -738,7 +788,9 @@ async function main() {
       { label: 'Started an activity', count: fn.activityStarted },
       { label: 'Signup prompt shown', count: fn.promptShown },
       { label: 'One-tap OAuth started', count: fn.oauthStarted },
-      { label: 'Signup completed', count: fn.signupCompleted },
+      // CHE-387: the DB is the truth for signups — PostHog can't see OAuth
+      // signups that cross the IG in-app -> system browser handoff.
+      { label: 'Signup completed', count: dbSignupCount ?? fn.signupCompleted },
     ];
     const max = Math.max(...steps.map(s => s.count), 1);
     for (let i = 0; i < steps.length; i++) {
@@ -748,18 +800,27 @@ async function main() {
         : '';
       console.log(`  ${step.label.padEnd(25)} ${String(step.count).padStart(5)}  ${bar(step.count, max)}${drop}`);
     }
-    console.log(`\n  People in window: ${fn.anyPerson}  ·  landing -> signup: ${pct(fn.signupCompleted, fn.landing)}`);
+    const signupTruth = dbSignupCount ?? fn.signupCompleted;
+    console.log(`\n  People in window: ${fn.anyPerson}  ·  landing -> signup: ${pct(signupTruth, fn.landing)}`);
+    if (dbSignupCount !== null) {
+      console.log(`  Signup completed: DB-truth ${dbSignupCount} · PostHog event ${fn.signupCompleted}`);
+      console.log(`  Note: DB attribution (profiles.first_touch_*) only exists for signups after 2026-06-10 (CHE-387).`);
+    } else {
+      console.log(`  Signup completed is the PostHog event count — DB attribution unavailable (first_touch_* migration not applied or no service creds).`);
+    }
   };
 
   printFunnel(
     'INSTAGRAM FUNNEL (all IG, per-person, first-touch)',
     igFunnel,
     'No IG-acquired visitors in window.',
+    dbSignups.available ? dbSignups.ig : null,
   );
   printFunnel(
     'PAID IG AD FUNNEL (utm_medium=paid only)',
     paidFunnel,
     'No paid-IG visitors yet — once the boosted ad delivers clicks they land here ($5/day x 10d probe, see data/growth/ig-ad-sprint-2026-06.md).',
+    dbSignups.available ? dbSignups.paid : null,
   );
 
   console.log(section('NEW SIGNUPS'));

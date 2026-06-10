@@ -6,6 +6,16 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { trackEvent, SubscriptionEvents, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { appendFirstTouchParam } from '@/lib/growth/first-touch';
+
+// CHE-387: OAuth callback URL carrying first-touch attribution through the
+// IG in-app -> system browser handoff (where cookies don't survive).
+function premiumCallbackUrl(): string {
+  const url = new URL('/auth/callback', window.location.origin);
+  url.searchParams.set('next', '/pricing');
+  appendFirstTouchParam(url);
+  return url.toString();
+}
 
 function PremiumSignupContent() {
   const router = useRouter();
@@ -29,16 +39,12 @@ function PremiumSignupContent() {
 
     const supabase = createClient();
 
-    // Build the callback URL
-    const callbackUrl = new URL('/auth/callback', window.location.origin);
-    callbackUrl.searchParams.set('next', '/pricing');
-
     // Create the account
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: callbackUrl.toString(),
+        emailRedirectTo: premiumCallbackUrl(),
       },
     });
 
@@ -54,6 +60,9 @@ function PremiumSignupContent() {
       identifyUser(data.user.id, { email });
     }
     trackEvent('signup_completed', { method: 'email', version: 'v2' });
+
+    // CHE-387: stamp first-touch attribution onto the new profile (fire-and-forget).
+    fetch('/api/attribution/stamp', { method: 'POST' }).catch(() => {});
 
     // Now start checkout for the newly created user
     try {
@@ -90,7 +99,7 @@ function PremiumSignupContent() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/pricing`,
+        redirectTo: premiumCallbackUrl(),
       },
     });
 
@@ -113,7 +122,7 @@ function PremiumSignupContent() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/pricing`,
+        redirectTo: premiumCallbackUrl(),
       },
     });
 

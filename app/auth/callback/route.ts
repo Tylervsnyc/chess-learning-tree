@@ -2,6 +2,8 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { sendWelcomeIfNew } from '@/lib/email/welcome';
+import { FIRST_TOUCH_COOKIE, parseFirstTouch } from '@/lib/growth/first-touch';
+import { stampFirstTouch } from '@/lib/growth/stamp-first-touch';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -70,15 +72,30 @@ export async function GET(request: Request) {
       // client what happened via the redirect URL and let it fire once.
       // Only for OAuth: email confirmations already fire their event on the
       // signup page, so tagging them here would double-count.
+      // New vs returning from two DB timestamps (clock-skew-free): a first
+      // sign-in has last_sign_in_at ≈ created_at; a returning user's
+      // created_at is far older than this sign-in.
+      const created = user.created_at ? Date.parse(user.created_at) : 0;
+      const lastSignIn = user.last_sign_in_at ? Date.parse(user.last_sign_in_at) : created;
+      const isNewSignup = Math.abs(lastSignIn - created) < 60_000;
+
+      // CHE-387: stamp first-touch attribution onto the new profile — the DB is
+      // the source of truth for signup attribution (PostHog loses the IG in-app
+      // -> system browser OAuth handoff). Cookie first; ?ft= (carried through
+      // the OAuth redirect URL) covers the cross-browser case where the cookie
+      // doesn't exist in the returning browser. Only new signups: a returning
+      // user's cookie may postdate their real first touch.
+      if (isNewSignup) {
+        const firstTouch = parseFirstTouch(
+          cookieStore.get(FIRST_TOUCH_COOKIE)?.value ?? searchParams.get('ft')
+        );
+        if (firstTouch) {
+          await stampFirstTouch(user.id, firstTouch);
+        }
+      }
+
       const provider = user.app_metadata?.provider;
       if (provider === 'google' || provider === 'apple') {
-        // New vs returning from two DB timestamps (clock-skew-free): a first
-        // sign-in has last_sign_in_at ≈ created_at; a returning user's
-        // created_at is far older than this sign-in.
-        const created = user.created_at ? Date.parse(user.created_at) : 0;
-        const lastSignIn = user.last_sign_in_at ? Date.parse(user.last_sign_in_at) : created;
-        const isNewSignup = Math.abs(lastSignIn - created) < 60_000;
-
         const dest = new URL(next, origin);
         dest.searchParams.set('auth_event', isNewSignup ? 'signup' : 'login');
         dest.searchParams.set('auth_method', provider);

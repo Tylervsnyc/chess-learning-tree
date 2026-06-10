@@ -1216,6 +1216,11 @@ Lesson limits and signup prompts are configured as **constants** in `types/permi
 profiles
   id, email, display_name, subscription_status, unlocked_levels,
   is_admin, current_streak, last_activity_date, current_position, created_at
+  -- CHE-387 signup attribution (stamped once at signup, frozen; DB is the
+  -- source of truth because PostHog loses IG in-app -> system browser OAuth):
+  first_touch_source, first_touch_medium, first_touch_campaign,
+  first_touch_referrer, first_touch_at
+  -- (migration: supabase/migrations/2026-06-10-first-touch-attribution.sql)
 
 lesson_progress
   id, user_id, lesson_id, completed_at, score

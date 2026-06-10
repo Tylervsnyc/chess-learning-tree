@@ -8,6 +8,7 @@ import { playButtonClick } from '@/lib/sounds';
 import { createClient } from '@/lib/supabase/client';
 import { useExperiment } from '@/hooks/useExperiment';
 import { OnboardingEvents, type OnboardingSource } from '@/lib/analytics/posthog';
+import { appendFirstTouchParam } from '@/lib/growth/first-touch';
 
 const ROOKIE_LINES = [
   "I saved your spot. Sign up so I don't forget.",
@@ -29,6 +30,7 @@ function returnUrl(override?: string): string {
     : '/');
   const url = new URL('/auth/callback', window.location.origin);
   url.searchParams.set('next', next);
+  appendFirstTouchParam(url); // CHE-387: survives the IG -> system browser handoff
   return url.toString();
 }
 
