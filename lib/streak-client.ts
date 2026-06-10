@@ -43,6 +43,7 @@ export type StreakClaim =
 
 const TTL_MS = 60_000;
 const SNAPSHOT_KEY = 'cp:workout-streak:v2';
+const USER_KEY = 'cp:uid';
 
 let cache: { data: StreakData; day: string; fetchedAt: number } | null = null;
 let inFlight: Promise<StreakData | null> | null = null;
@@ -86,8 +87,18 @@ function readSnapshot(userId: string): StreakData | null {
 function writeSnapshot(userId: string, day: string, data: StreakData) {
   try {
     localStorage.setItem(SNAPSHOT_KEY, JSON.stringify({ day, userId, data } satisfies Snapshot));
+    localStorage.setItem(USER_KEY, userId);
   } catch {
     // quota / private mode — snapshot is an optimization only
+  }
+}
+
+/** Last userId that wrote a streak snapshot — lets components peek before auth resolves. */
+export function getStoredUserId(): string | null {
+  try {
+    return localStorage.getItem(USER_KEY);
+  } catch {
+    return null;
   }
 }
 

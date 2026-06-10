@@ -4,14 +4,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
-import { getStreak, localDay, peekStreak, type StreakData } from '@/lib/streak-client';
+import { getStoredUserId, getStreak, localDay, peekStreak, type StreakData } from '@/lib/streak-client';
 import { MiniRookieIcon } from './MiniRookieIcon';
 import { StreakModal } from './StreakModal';
 
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const pathname = usePathname();
-  const [data, setData] = useState<StreakData | null>(null);
+  // Synchronous instant-paint: read the last-known snapshot before auth resolves.
+  const [data, setData] = useState<StreakData | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const uid = getStoredUserId();
+    return uid ? peekStreak(uid) : null;
+  });
   const [modalOpen, setModalOpen] = useState(false);
   // Last `current` we've seen, to detect a live increase. null = no read yet
   // (the first read is a baseline, not an extension — don't fire on mount).
@@ -56,7 +61,9 @@ export function DailyWorkoutBadge() {
     };
   }, [user, pathname, refetch]);
 
-  if (loading || !user) return null;
+  // Hide only when we're certain there's no user AND we have no cached data.
+  if (!loading && !user) return null;
+  if (loading && !data) return null;
 
   const current = data?.current ?? 0;
   const completedToday = data?.completedToday ?? false;

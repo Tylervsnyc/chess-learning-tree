@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
-import { getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
+import { getStoredUserId, getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
@@ -352,15 +352,12 @@ export default function ProfilePage() {
   const [keptLine] = useState(pickDailyKeptLine);
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
-  const [streak, setStreak] = useState<StreakData | null>(null);
-
-  // Instant paint from the shared day+user-validated snapshot — the SAME value
-  // the nav badge peeks, so the two can never disagree while the network read
-  // is in flight (or failing).
-  useEffect(() => {
-    if (!user) return;
-    setStreak((prev) => prev ?? peekStreak(user.id));
-  }, [user]);
+  // Synchronous instant-paint: peek the snapshot before auth resolves.
+  const [streak, setStreak] = useState<StreakData | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const uid = getStoredUserId();
+    return uid ? peekStreak(uid) : null;
+  });
   const [stats, setStats] = useState<LifetimeStats | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
 
@@ -476,7 +473,7 @@ export default function ProfilePage() {
   const current = streak?.current ?? 0;
   const longest = streak?.longest ?? 0;
   const done = streak?.completedToday ?? false;
-  const streakReady = !dataLoading && streak !== null;
+  const streakReady = streak !== null;
 
   return (
     <div className="h-full overflow-auto bg-chess-page">
