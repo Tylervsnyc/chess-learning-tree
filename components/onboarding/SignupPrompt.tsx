@@ -49,6 +49,7 @@ export function SignupPrompt({
   source,
   valueLabel,
   nextOverride,
+  promise,
 }: {
   onDismiss: () => void;
   source: OnboardingSource;
@@ -56,6 +57,10 @@ export function SignupPrompt({
   /** Where to send the user after auth (OAuth callback / form redirect). Defaults
    *  to the current path. Use to carry momentum into a specific next screen. */
   nextOverride?: string;
+  /** Day 8 (IG_D1_NUDGE): optional explicit "come back tomorrow" reassurance shown
+   *  under the ask, giving a concrete reason to RETURN (and previewing the day-1
+   *  email). Omit for the unchanged prompt. */
+  promise?: string;
 }) {
   const router = useRouter();
   const { variant, ready } = useExperiment('win_signup_capture', 'treatment');
@@ -186,6 +191,15 @@ export function SignupPrompt({
               </div>
             </div>
           </div>
+
+          {promise && (
+            <div className="-mt-3 mb-5 flex items-center justify-center gap-1.5 text-center">
+              <span aria-hidden>📅</span>
+              <span className="text-[13px] font-bold text-chess-green">
+                {promise}
+              </span>
+            </div>
+          )}
 
           {isTreatment ? (
             // One-tap capture — finish the account right here at the peak.

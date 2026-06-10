@@ -111,4 +111,15 @@ export const IG_SPRINT_FLAGS = {
    * normal autoplay path are untouched. Metric: D0 second-action rate.
    */
   IG_ACTIVATION: true,
+  /**
+   * Day 8 (CHE-359) — explicit "come back tomorrow" promise. At the IG win
+   * moment the one-tap signup ask says what they get, but not the reason to
+   * RETURN — and D1 is the North-Star metric. For a cold IG WIN this adds a
+   * short, explicit promise line to the win-moment SignupPrompt ("Sign up — I'll
+   * have a fresh challenge waiting tomorrow"), reinforcing the day-1 lifecycle
+   * email that already fires for this cohort (verified: drip's day1 window has no
+   * acquisition filter). Gated by `isIgCohort()` + win-only, so non-IG traffic +
+   * existing users see the unchanged prompt. Metric: D1 (cohort read).
+   */
+  IG_D1_NUDGE: true,
 } as const;

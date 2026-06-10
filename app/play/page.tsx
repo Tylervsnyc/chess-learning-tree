@@ -2611,6 +2611,15 @@ export default function PlayRookiePage() {
                   : 'win'
                 : 'progress'
           }
+          // Day 8 (IG_D1_NUDGE): for a cold IG WIN, add an explicit reason to come
+          // back tomorrow at the win moment — reinforces the day-1 lifecycle email
+          // that already fires for this cohort. Win-only; non-IG + existing users
+          // see the unchanged prompt (no promise line).
+          promise={
+            IG_SPRINT_FLAGS.IG_D1_NUDGE && isIgCohort() && gameResult === 'You win!'
+              ? "Sign up — a fresh challenge is waiting tomorrow"
+              : undefined
+          }
           onDismiss={() => { setShowSignupPrompt(false); resetToSetup(); }}
         />
       )}
