@@ -1757,10 +1757,11 @@ export default function PlayRookiePage() {
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
     setupGreetingSpokenRef.current = false;
     setPhase('setup');
-    // A finished game returns here without changing route, so the workout
-    // watcher's route-change trigger never sees it. Signal it directly so the
-    // streak celebration fires now (after the game-over modal is dismissed),
-    // not on the next unrelated navigation.
+    // A finished game returns here without changing route, so the nav badge's
+    // route-change refetch never sees it. Signal it directly so the badge
+    // fresh-reads the just-landed game_sessions write now, not on the next
+    // unrelated navigation. (The streak CELEBRATION is owned by the completion
+    // screen via claimStreakToday — this only wakes the badge count.)
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('cp:activity-recorded'));
     }

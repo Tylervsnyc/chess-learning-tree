@@ -22,7 +22,6 @@ import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
@@ -865,11 +864,9 @@ export default function WorkoutPage() {
               )}
             </div>
 
-            {FEATURE_FLAGS.STREAK_ON_COMPLETE && (
-              <div className="w-full pt-2 border-t border-slate-100">
-                <StreakComplete />
-              </div>
-            )}
+            <div className="w-full pt-2 border-t border-slate-100">
+              <StreakComplete />
+            </div>
 
             <button
               onClick={() => {

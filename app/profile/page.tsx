@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
-import { getStreak } from '@/lib/streak-client';
+import { getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
@@ -21,12 +21,6 @@ import RookieCampfire from '@/components/shared/RookieCampfire';
  *   - streak                    → getStreak() (shared client cache)
  *   - stats/week/sessions/elo   → GET /api/profile/dashboard?tz= (one round-trip)
  */
-
-interface StreakData {
-  current: number;
-  longest: number;
-  completedToday: boolean;
-}
 
 interface LifetimeStats {
   lessonsCompleted: number;
@@ -86,12 +80,6 @@ function fmtSessionDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function getTz(): string {
-  return typeof Intl !== 'undefined'
-    ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-    : 'UTC';
 }
 
 // ─── Streak copy ────────────────────────────────────────────────────────────
@@ -365,6 +353,14 @@ export default function ProfilePage() {
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
   const [streak, setStreak] = useState<StreakData | null>(null);
+
+  // Instant paint from the shared day+user-validated snapshot — the SAME value
+  // the nav badge peeks, so the two can never disagree while the network read
+  // is in flight (or failing).
+  useEffect(() => {
+    if (!user) return;
+    setStreak((prev) => prev ?? peekStreak(user.id));
+  }, [user]);
   const [stats, setStats] = useState<LifetimeStats | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
 
@@ -397,7 +393,7 @@ export default function ProfilePage() {
         .catch(() => null),
     ]).then(([s, d]) => {
       if (cancelled) return;
-      if (s) setStreak(s as StreakData);
+      if (s) setStreak(s);
       if (d?.stats) setStats(d.stats as LifetimeStats);
       if (d?.week) setWeek(d.week as WeekData);
       setSessions(Array.isArray(d?.sessions) ? (d.sessions as WorkoutSession[]) : []);

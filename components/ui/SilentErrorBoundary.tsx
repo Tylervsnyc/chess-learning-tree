@@ -18,7 +18,7 @@ interface State {
 /**
  * SilentErrorBoundary — contains a crash to itself.
  *
- * Global, non-essential widgets (NavHeader, DailyWorkoutWatcher) live OUTSIDE
+ * Global, non-essential widgets (e.g. NavHeader) live OUTSIDE
  * the page-level RookieErrorBoundary in the root layout, so a throw there used
  * to white-screen the ENTIRE app ("Application error: a client-side exception").
  * Wrapping each one here means a single widget failing just renders its

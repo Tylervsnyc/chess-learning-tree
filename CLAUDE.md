@@ -116,6 +116,15 @@ Use `offset` and `limit` to read only the section you need — never read the fu
 
 ---
 
+## Streak — ONE Source of Truth (CHE-388, 2026-06-10 — do not regress)
+
+The streak broke 3 times because every fix ADDED a layer instead of removing one (at the worst point: 4 competing implementations, 2 popup owners racing). The rule now is structural — one implementation per job, and any change that adds a second one is wrong by definition:
+
+- **What counts:** finish ONE unit today — lesson, /play game, opening lesson, or workout. Derived LIVE from the 4 completion tables (`lesson_progress`, `game_sessions`, `workout_sessions`, `opening_progress`) in the user's local timezone by `/api/workout/streak`. Nothing is stored as a counter; `profiles.current_streak` is write-dead ghost data (CHE-368) — never read or write it.
+- **All client reads** go through `lib/streak-client.ts` (`getStreak()` / `peekStreak()`): one shared cache + one day-and-user-validated localStorage snapshot. Every surface (nav badge, profile, completion screens) renders the same object, so two surfaces showing different numbers is impossible. Never fetch the endpoint directly, never keep a private copy.
+- **The celebration has ONE trigger:** `claimStreakToday()` (in streak-client), called ONLY from completion screens — `ActivityComplete`'s pre-step and `StreakComplete` (workout finish). It polls for the just-landed write, then atomically claims via POST `/api/workout/celebrate` (first claim per user+day wins). If the write lands too late, it celebrates at the NEXT finished unit. **NEVER add a global watcher, navigation trigger, or layout-mounted backstop that can pop the celebration mid-activity** — that was the mid-lesson popup, deleted in CHE-388 (`DailyWorkoutWatcher`).
+- **Server-side** (crons/emails) derives activity via `lib/streak/activity.ts` from the same 4 tables. Full rules: RULES.md §11.
+
 ## Performance Conventions (2026-06-09 audit — do not regress)
 
 These shaved ~300KB off every page and ~20 DB queries per session. New code MUST follow them:

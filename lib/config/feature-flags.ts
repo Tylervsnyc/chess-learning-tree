@@ -15,13 +15,6 @@ export const FEATURE_FLAGS = {
   /** Show Openings feature (v1 archived — new version TBD) */
   SHOW_OPENINGS: true,
   /**
-   * Fold the daily "you showed up today" streak into the completion screen
-   * (campfire + tick-up + share, inline) instead of firing it as a separate
-   * modal via DailyWorkoutWatcher. When true: completion screens own the claim
-   * and the watcher stays inert. When false: legacy modal-on-navigation.
-   */
-  STREAK_ON_COMPLETE: false,
-  /**
    * CHE-370 — show the "Chess Path ELO" rising day-by-day graph inside the
    * activity completion popup (the legible progress-pride mechanic). Dark by
    * default; flip on after verifying on real data.

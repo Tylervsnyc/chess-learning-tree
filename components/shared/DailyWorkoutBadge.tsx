@@ -4,27 +4,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
-import { getStreak, type StreakData } from '@/lib/streak-client';
+import { getStreak, localDay, peekStreak, type StreakData } from '@/lib/streak-client';
 import { MiniRookieIcon } from './MiniRookieIcon';
 import { StreakModal } from './StreakModal';
-
-type WorkoutResponse = StreakData;
-
-const cacheKey = (userId: string) => `cp:workout-streak:${userId}`;
-
-function readCache(userId: string): WorkoutResponse | null {
-  try {
-    const raw = localStorage.getItem(cacheKey(userId));
-    return raw ? (JSON.parse(raw) as WorkoutResponse) : null;
-  } catch {
-    return null;
-  }
-}
 
 export function DailyWorkoutBadge() {
   const { user, loading } = useUser();
   const pathname = usePathname();
-  const [data, setData] = useState<WorkoutResponse | null>(null);
+  const [data, setData] = useState<StreakData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   // Last `current` we've seen, to detect a live increase. null = no read yet
   // (the first read is a baseline, not an extension — don't fire on mount).
@@ -32,7 +19,7 @@ export function DailyWorkoutBadge() {
 
   const refetch = useCallback((fresh = false) => {
     if (!user) return;
-    getStreak(fresh ? { fresh: true } : undefined)
+    getStreak({ fresh, userId: user.id })
       .then((next) => {
         if (!next) return;
         const prev = lastStreakRef.current;
@@ -41,23 +28,19 @@ export function DailyWorkoutBadge() {
         }
         lastStreakRef.current = next.current;
         setData(next);
-        try {
-          localStorage.setItem(cacheKey(user.id), JSON.stringify(next));
-        } catch {
-          // ignore quota / private-mode errors
-        }
       })
       .catch(() => {});
   }, [user]);
 
   // Refetch on mount, on every navigation (any completion flow ends by
   // navigating), and when the tab regains focus. `pathname` in the deps drives
-  // the route-change refresh — same single trigger the celebration uses.
+  // the route-change refresh.
   useEffect(() => {
     if (!user) return;
     // Show the last-known streak instantly while we revalidate in the
-    // background, so the badge doesn't flash 0 for ~2s on every load.
-    const cached = readCache(user.id);
+    // background, so the badge doesn't flash 0 for ~2s on every load. The peek
+    // is day+user validated in streak-client — stale snapshots never paint.
+    const cached = peekStreak(user.id);
     if (cached) setData(cached);
     refetch();
     const onFocus = () => refetch();
@@ -84,12 +67,7 @@ export function DailyWorkoutBadge() {
       ? `${current}-day streak. Do anything today to keep it alive.`
       : 'Do anything today to start your streak.';
 
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
+  const today = localDay();
 
   return (
     <>

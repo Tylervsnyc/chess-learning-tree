@@ -349,20 +349,20 @@ const isAdmin = profile?.is_admin === true;
 
 ## 11. Streaks
 
-### How to Maintain Streak:
-Complete **1 lesson OR 1 Daily Rook** per day
+### How It Works (CHE-369 + CHE-388):
+Finish ONE unit per day — lesson, /play game, opening lesson, or workout.
+Derived live from the 4 completion tables in the USER's local timezone;
+missing a full local day breaks it. `profiles.current_streak` is WRITE-DEAD
+ghost data (CHE-368) — never read or write it.
 
-### How Streak Resets:
-Miss a full calendar day (UTC) → streak resets to 0
+### One owner (CHE-388 — do not regress):
+`lib/streak-client.ts` is the only client streak module (cache + snapshot +
+`claimStreakToday()`). The celebration fires ONLY on completion screens
+(ActivityComplete pre-step; StreakComplete on workout finish) via the atomic
+claim POST `/api/workout/celebrate`. NEVER add a global navigation watcher.
 
 ### Display:
-- Shown in header on `/` and `/daily-challenge` (currently feature-flagged off)
-
-### Stored In:
-```sql
-profiles.current_streak       -- Current count
-profiles.last_activity_date   -- YYYY-MM-DD format
-```
+Nav badge (`DailyWorkoutBadge`) + profile hero — both render `getStreak()`.
 
 ---
 

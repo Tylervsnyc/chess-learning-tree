@@ -15,10 +15,9 @@ import { BreathingRook } from '@/components/ui/BreathingRook'
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips'
 import { ShuffleBag } from '@/lib/shuffle-bag'
 import { useDailyWorkout, type WorkoutActivity } from '@/hooks/useDailyWorkout'
-import { getStreak } from '@/lib/streak-client'
+import { claimStreakToday } from '@/lib/streak-client'
 import { useUser } from '@/hooks/useUser'
 import { toneForLevel } from '@/lib/quips/tone'
-import { StreakComplete } from '@/components/shared/StreakComplete'
 import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration'
 import { FirstRatingReveal } from '@/components/shared/FirstRatingReveal'
 import { shareWorkoutStreak } from '@/lib/daily-workout/share'
@@ -260,11 +259,10 @@ export function ActivityComplete({
     return () => clearTimeout(timer)
   }, [interactiveMode])
 
-  // ─── Streak pre-step (CHE-370): the streak window plays BEFORE this popup ───
-  // On a finished unit we atomically claim the day; if this is the first finish
-  // today (streak just extended) we celebrate it first, then reveal the popup.
-  // The claim is atomic + idempotent, so the DailyWorkoutWatcher backstop can't
-  // double-fire.
+  // ─── Streak pre-step: the streak window plays BEFORE this popup ───
+  // On a finished unit, claimStreakToday() polls for the completion write and
+  // atomically claims the day. First finish today → celebrate first, then
+  // reveal the popup. Already claimed / no qualifying write → straight to main.
   type StreakPhase = 'await' | 'celebrate' | 'main'
   const [streakPhase, setStreakPhase] = useState<StreakPhase>(
     debugStreak != null ? 'celebrate' : 'await',
@@ -277,41 +275,20 @@ export function ActivityComplete({
     if (debugStreak != null) return // already 'celebrate'
     if (didFail || !user) { setStreakPhase('main'); return } // no streak on fail / logged out
 
-    let cancelled = false
-    const tz = typeof Intl !== 'undefined'
-      ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-      : 'UTC'
-    // fresh: this poll exists to catch the just-landed completion write — a
-    // cached read would miss it. The result updates the shared streak cache,
-    // so the badge/watcher see the new streak without their own scan.
-    const fetchStreak = async () => getStreak({ fresh: true })
-    const claim = async (streak: number) => {
-      try {
-        const r = await fetch(`/api/workout/celebrate?tz=${encodeURIComponent(tz)}`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ streak }),
-        })
-        if (!r.ok) return false
-        return !!(await r.json()).claimed
-      } catch { return false }
-    }
-    const run = async () => {
-      // Bounded poll for the completion write to land (~0, 700, 1400ms).
-      for (let i = 0; i < 3 && !cancelled; i++) {
-        if (i > 0) await new Promise((r) => setTimeout(r, 700))
-        const data = await fetchStreak()
-        if (cancelled) return
-        if (data?.completedToday) {
-          const claimed = await claim(data.current)
-          if (cancelled) return
-          if (claimed) { setStreakNum(data.current); setStreakPhase('celebrate') }
-          else setStreakPhase('main') // already claimed elsewhere → don't double-celebrate
-          return
-        }
+    // Short poll window (~2.1s) — this phase blocks the popup reveal, so don't
+    // hold a finished user hostage. A write that lands later just celebrates
+    // at the NEXT finished unit instead.
+    const signal = { cancelled: false }
+    claimStreakToday({ attempts: 4, delayMs: 700, signal }).then((res) => {
+      if (signal.cancelled) return
+      if (res.status === 'celebrated') {
+        setStreakNum(res.streak)
+        setStreakPhase('celebrate')
+      } else {
+        setStreakPhase('main')
       }
-      if (!cancelled) setStreakPhase('main')
-    }
-    run()
-    return () => { cancelled = true }
+    })
+    return () => { signal.cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -573,14 +550,6 @@ export function ActivityComplete({
             <div className="mt-2">
               <ChessPathEloGraph points={sessionPoints!} heightClass="h-24" todayLabel="Now" />
             </div>
-          </div>
-        )}
-
-        {/* ─── Daily streak (folded in — replaces the separate modal). Compact
-            (one-line chip) when the ELO chart is the hero — still claims. ─── */}
-        {FEATURE_FLAGS.STREAK_ON_COMPLETE && !didFail && (
-          <div className="w-full mb-4">
-            <StreakComplete compact={chartIntent} />
           </div>
         )}
 

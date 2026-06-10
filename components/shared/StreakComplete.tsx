@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import RookieCampfire from './RookieCampfire';
+import { useUser } from '@/hooks/useUser';
 import { pickCelebrationLine } from '@/lib/daily-workout/celebration-lines';
 import { shareWorkoutStreak } from '@/lib/daily-workout/share';
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { getStreak, type StreakData } from '@/lib/streak-client';
-
-type WorkoutResponse = StreakData;
+import { claimStreakToday } from '@/lib/streak-client';
 
 type Phase =
   | { kind: 'loading' }
@@ -15,81 +13,48 @@ type Phase =
   | { kind: 'earned'; streak: number } // first finish today — full celebration
   | { kind: 'kept'; streak: number }; // already celebrated today — quiet chip
 
-const tzOf = () =>
-  typeof Intl !== 'undefined'
-    ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-    : 'UTC';
-
 /**
  * StreakComplete — the daily "you showed up today" streak, folded INLINE into a
- * unit's completion screen (lesson / play / opening / workout) instead of the
- * separate DailyWorkoutCelebration modal.
+ * completion screen (used by the workout finish screen; ActivityComplete flows
+ * run the same claim via their streak pre-step window).
  *
- * On mount it reads /api/workout/streak. Because a unit's completion write can
- * still be in flight when the completion screen mounts (e.g. game_sessions.end()
- * is fire-and-forget), it polls a few times until `completedToday` flips true.
- * Once it does, it atomically claims the day via /api/workout/celebrate:
- *   - first claim of the day  → full celebration (campfire + tick-up + line)
+ * On mount, claimStreakToday() polls /api/workout/streak for the completion
+ * write to land, then atomically claims the day:
+ *   - first claim of the day → full celebration (campfire + tick-up + line)
  *   - already claimed (another surface today) → a quiet "streak alive" chip
- *
- * The atomic claim means this and the DailyWorkoutWatcher backstop can never
- * both celebrate. When FEATURE_FLAGS.STREAK_ON_COMPLETE is on, the watcher is
- * inert and this owns the moment entirely.
  */
 export function StreakComplete({ compact = false }: { compact?: boolean } = {}) {
+  const { user, loading } = useUser();
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });
   const ranRef = useRef(false);
 
-  useEffect(() => {
-    if (!FEATURE_FLAGS.STREAK_ON_COMPLETE) return;
-    if (ranRef.current) return;
-    ranRef.current = true;
-
-    let cancelled = false;
-    const tz = tzOf();
-
-    // fresh: this surface exists to catch the completion write the moment it
-    // lands — a cached read would defeat the polling. The fresh result also
-    // updates the shared cache, so the badge/watcher see the new streak free.
-    const fetchStreak = async (): Promise<WorkoutResponse | null> =>
-      getStreak({ fresh: true });
-
-    const claim = async (streak: number): Promise<boolean> => {
-      try {
-        const res = await fetch(`/api/workout/celebrate?tz=${encodeURIComponent(tz)}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ streak }),
-        });
-        if (!res.ok) return false;
-        const data = (await res.json()) as { claimed: boolean };
-        return !!data.claimed;
-      } catch {
-        return false;
-      }
-    };
-
-    const run = async () => {
-      // Poll for the completion write to land: now, +1.2s, +2.4s, +3.6s.
-      for (let attempt = 0; attempt < 4 && !cancelled; attempt++) {
-        if (attempt > 0) await new Promise((r) => setTimeout(r, 1200));
-        const data = await fetchStreak();
-        if (cancelled) return;
-        if (data?.completedToday) {
-          const claimed = await claim(data.current);
-          if (cancelled) return;
-          setPhase({ kind: claimed ? 'earned' : 'kept', streak: data.current });
-          return;
-        }
-      }
-      if (!cancelled) setPhase({ kind: 'hidden' });
-    };
-
-    run();
-    return () => {
-      cancelled = true;
-    };
+  // Cancel only on UNMOUNT. The claim effect below re-runs on user-identity
+  // churn (token refresh hands back a new object) — ranRef makes the re-run a
+  // no-op, and the cancel must not kill the poll already in flight.
+  const signalRef = useRef({ cancelled: false });
+  useEffect(() => () => {
+    signalRef.current.cancelled = true;
   }, []);
+
+  useEffect(() => {
+    if (loading || ranRef.current) return;
+    ranRef.current = true;
+    // No streak for logged-out users — skip the poll entirely (the streak
+    // endpoint would just 401 four times).
+    if (!user) {
+      setPhase({ kind: 'hidden' });
+      return;
+    }
+
+    const signal = signalRef.current;
+    // Poll window: now, +1.2s, +2.4s, +3.6s — this surface renders alongside
+    // the rest of the finish screen, so the longer window costs nothing.
+    claimStreakToday({ attempts: 4, delayMs: 1200, signal }).then((res) => {
+      if (signal.cancelled) return;
+      if (res.status === 'none') setPhase({ kind: 'hidden' });
+      else setPhase({ kind: res.status === 'celebrated' ? 'earned' : 'kept', streak: res.streak });
+    });
+  }, [loading, user]);
 
   if (phase.kind === 'loading' || phase.kind === 'hidden') return null;
 
