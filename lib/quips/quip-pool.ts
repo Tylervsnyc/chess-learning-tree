@@ -12,6 +12,18 @@
 import type { SpeechLine, TimeOfDay, Tone } from '@/lib/speech/priority-queue';
 import { AUTHORED_LINES } from '@/lib/speech/line-pool';
 import { TOUCHPOINT_LINES } from '@/lib/speech/rookie-touchpoints';
+import { isKnicksTime } from '@/lib/knicks-finals';
+import {
+  KNICKS_GAME_LINES,
+  KNICKS_WIN_TEXTS,
+  KNICKS_LOSS_TEXTS,
+  KNICKS_LANDING_TEXTS,
+} from '@/lib/speech/knicks-lines';
+
+// During the Knicks Finals window, Rookie's win/loss/landing voice is swapped
+// to the orange-and-blue pool (these categories are picked at random, so we
+// REPLACE rather than dilute) and her in-game lines outrank the normal pool.
+const KNICKS = isKnicksTime();
 
 // ────────────────────────────────────────────────────────────────
 // play-quips content (migrated from data/quips/play-quips.ts)
@@ -363,7 +375,7 @@ const MILESTONE_TEXTS: Record<number, string> = {
 const PLAY_LINES: SpeechLine[] = [];
 
 // Win quips → category: play:win, beats: ['post_game']
-WIN_TEXTS.forEach((entry, i) => {
+(KNICKS ? KNICKS_WIN_TEXTS : WIN_TEXTS).forEach((entry, i) => {
   const conditions: SpeechLine['conditions'] = { beats: [] };
   if (entry.tone) conditions.tone = entry.tone;
   PLAY_LINES.push({
@@ -377,7 +389,7 @@ WIN_TEXTS.forEach((entry, i) => {
 });
 
 // Loss quips → category: play:loss
-LOSS_TEXTS.forEach((entry, i) => {
+(KNICKS ? KNICKS_LOSS_TEXTS : LOSS_TEXTS).forEach((entry, i) => {
   const conditions: SpeechLine['conditions'] = { beats: [] };
   if (entry.tone) conditions.tone = entry.tone;
   PLAY_LINES.push({
@@ -416,7 +428,13 @@ LEVEL_UP_ENTRIES.forEach((entry) => {
 });
 
 // Landing quips → category: play:landing[:tod][:day]
-LANDING_SPECS.forEach((spec, i) => {
+const landingSource = (KNICKS ? KNICKS_LANDING_TEXTS : LANDING_SPECS) as Array<{
+  text: string;
+  tone?: Tone;
+  timeOfDay?: TimeOfDay;
+  days?: number[];
+}>;
+landingSource.forEach((spec, i) => {
   const conditions: SpeechLine['conditions'] = { beats: [] };
   if (spec.timeOfDay) conditions.timeOfDay = spec.timeOfDay;
   if (spec.days) conditions.dayOfWeek = spec.days;
@@ -447,35 +465,40 @@ function pushTemplates(templates: TonedTemplate[], idPrefix: string, category: s
     });
   });
 }
-pushTemplates(DAILY_HIGH_TEMPLATES, 'play_landing_daily_high', 'play:landing:daily:high', 'daily');
-pushTemplates(DAILY_MID_TEMPLATES, 'play_landing_daily_mid', 'play:landing:daily:mid', 'daily');
-pushTemplates(DAILY_LOW_TEMPLATES, 'play_landing_daily_low', 'play:landing:daily:low', 'daily');
-pushTemplates(LESSON_TEMPLATES, 'play_landing_lesson', 'play:landing:lesson', 'lesson');
-pushTemplates(OPENING_TEMPLATES, 'play_landing_opening', 'play:landing:opening', 'opening');
-// Close-to-levelup
-CLOSE_TO_LEVELUP_TEXTS.forEach((entry, i) => {
-  const conditions: SpeechLine['conditions'] = { beats: [] };
-  if (entry.tone) conditions.tone = entry.tone;
-  PLAY_LINES.push({
-    id: `play_landing_closelevel_${i + 1}`,
-    text: entry.text,
-    category: 'play:landing:closelevel',
-    conditions,
-    priority: 70,
-    source: 'authored',
+// Contextual breadcrumb landing + milestone lines outrank the generic
+// play:landing pool, so during the Knicks window we skip them — keeping the
+// landing voice fully orange-and-blue. They return automatically afterward.
+if (!KNICKS) {
+  pushTemplates(DAILY_HIGH_TEMPLATES, 'play_landing_daily_high', 'play:landing:daily:high', 'daily');
+  pushTemplates(DAILY_MID_TEMPLATES, 'play_landing_daily_mid', 'play:landing:daily:mid', 'daily');
+  pushTemplates(DAILY_LOW_TEMPLATES, 'play_landing_daily_low', 'play:landing:daily:low', 'daily');
+  pushTemplates(LESSON_TEMPLATES, 'play_landing_lesson', 'play:landing:lesson', 'lesson');
+  pushTemplates(OPENING_TEMPLATES, 'play_landing_opening', 'play:landing:opening', 'opening');
+  // Close-to-levelup
+  CLOSE_TO_LEVELUP_TEXTS.forEach((entry, i) => {
+    const conditions: SpeechLine['conditions'] = { beats: [] };
+    if (entry.tone) conditions.tone = entry.tone;
+    PLAY_LINES.push({
+      id: `play_landing_closelevel_${i + 1}`,
+      text: entry.text,
+      category: 'play:landing:closelevel',
+      conditions,
+      priority: 70,
+      source: 'authored',
+    });
   });
-});
-// Milestone — one per specific game-count key
-Object.entries(MILESTONE_TEXTS).forEach(([n, text]) => {
-  PLAY_LINES.push({
-    id: `play_landing_milestone_${n}`,
-    text,
-    category: `play:landing:milestone:${n}`,
-    conditions: { beats: [] },
-    priority: 90,
-    source: 'authored',
+  // Milestone — one per specific game-count key
+  Object.entries(MILESTONE_TEXTS).forEach(([n, text]) => {
+    PLAY_LINES.push({
+      id: `play_landing_milestone_${n}`,
+      text,
+      category: `play:landing:milestone:${n}`,
+      conditions: { beats: [] },
+      priority: 90,
+      source: 'authored',
+    });
   });
-});
+}
 
 // ────────────────────────────────────────────────────────────────
 // The unified pool.
@@ -485,6 +508,8 @@ export const QUIP_POOL: SpeechLine[] = [
   ...AUTHORED_LINES,
   ...TOUCHPOINT_LINES,
   ...PLAY_LINES,
+  // Knicks Finals in-game voice (priority > normal pool). Empty off-window.
+  ...(KNICKS ? KNICKS_GAME_LINES : []),
 ];
 
 // ────────────────────────────────────────────────────────────────
