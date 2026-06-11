@@ -1,6 +1,6 @@
 'use client';
 
-import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
+import { ROOK_BLOCKS, getMatteBackground, type RookBlock } from '@/lib/daily-rook-blocks';
 import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
 
 export type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
@@ -98,6 +98,8 @@ interface BreathingRookProps {
   poppedAt?: Map<string, number>;
   /** Single block key "x,y" that subtly pulses to invite a tap */
   teaseBlock?: string | null;
+  /** Optional color override for the 22 blocks (same grid coords). Defaults to ROOK_BLOCKS. */
+  blocks?: RookBlock[];
 }
 
 // Build a lookup map: "x,y" → block
@@ -430,7 +432,10 @@ const BLOCK_META_MAP = new Map<string, { normDist: number; angle: number }>();
   }
 }
 
-export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', alarmVariant, talkIntensity, onBlockTap, poppedAt, teaseBlock }: BreathingRookProps) {
+export function BreathingRook({ size = 'md', label, className = '', animate = false, animation, mood = 'neutral', alarmVariant, talkIntensity, onBlockTap, poppedAt, teaseBlock, blocks }: BreathingRookProps) {
+  // Optional color override (e.g. Knicks orange-and-blue). Geometry is shared,
+  // so only the color lookup swaps; default keeps the standard palette.
+  const blockMap = blocks ? new Map(blocks.map(b => [`${b.x},${b.y}`, b])) : BLOCK_MAP;
   const blockSize = SIZE_MAP[size];
   const gap = Math.max(1, Math.round(blockSize * 0.15));
   const radius = Math.max(1, Math.round(blockSize * 0.14));
@@ -458,7 +463,7 @@ export function BreathingRook({ size = 'md', label, className = '', animate = fa
         }}
       >
         {ALL_CELLS.map(({ x, y }) => {
-          const block = BLOCK_MAP.get(`${x},${y}`);
+          const block = blockMap.get(`${x},${y}`);
           if (!block) return null;
 
           const left = x * (blockSize + gap);

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { ROOK_BLOCKS, getMatteBackground, type RookBlock } from '@/lib/daily-rook-blocks';
 
 // ─── Block Data ───
 const BLOCK_MAP = new Map(ROOK_BLOCKS.map(b => [`${b.x},${b.y}`, b]));
@@ -1121,7 +1121,13 @@ function prevMouseX(mouse: MouseState): number { return mouse.x - mouse.velocity
 function prevMouseY(mouse: MouseState): number { return mouse.y - mouse.velocity * 0.3; }
 
 // ─── Interactive Rook Component ───
-export function InteractiveRook({ mode, blockSize = 28 }: { mode: InteractiveModeId; blockSize?: number }) {
+export function InteractiveRook({ mode, blockSize = 28, blocks }: { mode: InteractiveModeId; blockSize?: number; blocks?: RookBlock[] }) {
+  // Optional color override (e.g. Knicks orange-and-blue). Defaults to the
+  // standard rook palette.
+  const blockMap = useMemo(
+    () => (blocks ? new Map(blocks.map(b => [`${b.x},${b.y}`, b])) : BLOCK_MAP),
+    [blocks],
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [time, setTime] = useState(0);
   const rafRef = useRef<number>(0);
@@ -1207,7 +1213,7 @@ export function InteractiveRook({ mode, blockSize = 28 }: { mode: InteractiveMod
       physicsRef.current.forEach((p, i) => {
         const cellX = i % 5;
         const cellY = Math.floor(i / 5);
-        if (!BLOCK_MAP.has(`${cellX},${cellY}`)) return;
+        if (!blockMap.has(`${cellX},${cellY}`)) return;
 
         const bx = (cellX * (blockSize + gap) + blockSize / 2) / gridWidth;
         const by = (cellY * (blockSize + gap) + blockSize / 2) / gridHeight;
@@ -1422,7 +1428,7 @@ export function InteractiveRook({ mode, blockSize = 28 }: { mode: InteractiveMod
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [mode, blockSize, gap, gridWidth, gridHeight]);
+  }, [mode, blockSize, gap, gridWidth, gridHeight, blockMap]);
 
   return (
     <div
@@ -1445,7 +1451,7 @@ export function InteractiveRook({ mode, blockSize = 28 }: { mode: InteractiveMod
       }}
     >
       {ALL_CELLS.map(({ x, y }) => {
-        const block = BLOCK_MAP.get(`${x},${y}`);
+        const block = blockMap.get(`${x},${y}`);
         if (!block) return null;
 
         const baseLeft = x * (blockSize + gap);

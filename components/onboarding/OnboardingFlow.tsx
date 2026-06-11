@@ -12,6 +12,8 @@ import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { useBubblePopGame } from './BubblePopGame';
 import { ColdLanding } from './ColdLanding';
 import { CheckmateLanding } from './CheckmateLanding';
+import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
+import { KNICKS_WELCOME_LINES } from '@/lib/speech/knicks-lines';
 
 // ─── Rookie's quips — cycles through on idle ───
 const ROOKIE_QUIPS = [
@@ -32,6 +34,12 @@ const ROOKIE_QUIPS = [
   "Take your time. I've been waiting since you opened the app. Which was not long ago. But still.",
   "Oh good, you're still here. I was worried you left. I can't check. I don't have eyes.",
 ];
+
+// During the Knicks Finals window, new visitors get an orange-and-blue Rookie
+// who leads with "Go Knicks!" then settles into the normal welcome cycle.
+// Both consts are computed once; off-window they're the plain defaults.
+const KNICKS_BLOCKS = isKnicksTime() ? KNICKS_ROOK_BLOCKS : undefined;
+const WELCOME_QUIPS = isKnicksTime() ? [...KNICKS_WELCOME_LINES, ...ROOKIE_QUIPS] : ROOKIE_QUIPS;
 
 // ─── Typewriter hook with quip cycling ───
 function useTypewriter(quips: string[], startDelay: number, idleInterval: number, speed = 28) {
@@ -106,7 +114,7 @@ export function OnboardingFlow() {
   const [igAutoplay, setIgAutoplay] = useState(false);
 
   const { displayed: typedQuip, done: typingDone, fading } = useTypewriter(
-    ROOKIE_QUIPS, 800, 30000, 28,
+    WELCOME_QUIPS, 800, 30000, 28,
   );
 
   // Bubble-pop mini-game — activates after entrance finishes
@@ -286,6 +294,7 @@ export function OnboardingFlow() {
             onBlockTap={onBlockTap}
             poppedAt={poppedAt}
             teaseBlock={teaseBlock}
+            blocks={KNICKS_BLOCKS}
           />
         </div>
 

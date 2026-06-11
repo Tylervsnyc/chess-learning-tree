@@ -4,6 +4,10 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
+import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
+
+// Orange-and-blue rook body during the Knicks Finals window; undefined otherwise.
+const KNICKS_BLOCKS = isKnicksTime() ? KNICKS_ROOK_BLOCKS : undefined;
 import {
   playMoveSound,
   playCaptureSound,
@@ -2242,6 +2246,7 @@ export default function PlayRookiePage() {
                   mood={rookieMood}
                   alarmVariant={rookieAlarm}
                   talkIntensity={phase === 'playing' && isTalking && !rookieThinking ? talkIntensity : undefined}
+                  blocks={KNICKS_BLOCKS}
                 />
               </div>
               <div className="flex-1 min-w-0">
@@ -2647,7 +2652,7 @@ export default function PlayRookiePage() {
             style={{ animation: 'ig-act-card 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
           >
             <div className="flex flex-col items-center px-6 pt-8 pb-6">
-              <BreathingRook size="lg" animate mood="happy" />
+              <BreathingRook size="lg" animate mood="happy" blocks={KNICKS_BLOCKS} />
               <h2
                 className="mt-4 text-center font-black text-chess-text leading-tight"
                 style={{ fontSize: 'clamp(20px, 6vw, 26px)' }}

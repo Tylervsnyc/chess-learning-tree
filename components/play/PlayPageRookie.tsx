@@ -5,6 +5,7 @@ import { InteractiveRook, type InteractiveModeId } from '@/components/ui/Interac
 import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips';
 import { ShuffleBag } from '@/lib/shuffle-bag';
 import { useDailyWorkout } from '@/hooks/useDailyWorkout';
+import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
 
 function createModeBag() {
   return new ShuffleBag(LEARN_TAP_REACTIONS.map(r => r.mode));
@@ -102,7 +103,7 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
       onPointerDown={handleInteraction}
       className="my-1"
     >
-      {mode && <InteractiveRook mode={mode} blockSize={24} />}
+      {mode && <InteractiveRook mode={mode} blockSize={24} blocks={isKnicksTime() ? KNICKS_ROOK_BLOCKS : undefined} />}
     </div>
   );
 }
