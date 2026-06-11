@@ -218,6 +218,8 @@ export const KNICKS_LANDING_TEXTS: KnicksText[] = [
 // First-time welcome screen greetings (plain strings — the onboarding screen
 // doesn't use the quip pool).
 export const KNICKS_WELCOME_LINES: string[] = [
+  // Lead line — the 29-point comeback as the beginner's own hook.
+  "Down 29, won anyway — that was the Knicks last night. If they can come back, you can learn chess. Let's go.",
   "Go Knicks! Let's play some chess.",
   "Orange and blue today — welcome! Want to learn chess? I've got you.",
   "GO KNICKS. Also, hi. Ready to learn some chess?",
