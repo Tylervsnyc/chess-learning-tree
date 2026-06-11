@@ -115,4 +115,16 @@ export const IG_SPRINT_FLAGS = {
    * existing users see the unchanged prompt. Metric: D1 (cohort read).
    */
   IG_D1_NUDGE: true,
+  /**
+   * Day 9 (CHE-359) — post-win share loop (viral coefficient). The share card
+   * already renders post-win in `ActivityComplete`, but the only affordance is a
+   * tiny corner icon almost nobody taps. For a cold IG **celebratory** finish
+   * this adds ONE prominent "Share your win" button (above Continue) that fires
+   * the existing `useShareOG` flow — same OG card, same `share_clicked` event —
+   * so IG winners are actively nudged to post their checkmate back to the feed
+   * they came from. Additive + gated by `isIgCohort()` + a win/success +
+   * `shareConfig` present, so non-IG traffic + existing users see zero change.
+   * Metric: `share_clicked` from the paid/IG cohort.
+   */
+  IG_SHARE_LOOP: true,
 } as const;

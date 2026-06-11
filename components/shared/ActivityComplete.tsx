@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { fireConfetti } from '@/lib/confetti'
 import { playCelebrationSound } from '@/lib/sounds'
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags'
+import { FEATURE_FLAGS, IG_SPRINT_FLAGS } from '@/lib/config/feature-flags'
+import { isIgCohort } from '@/lib/growth/ig-cohort'
 import { selectByCategory } from '@/lib/speech/priority-queue'
 import { safeRenderText } from '@/lib/speech/sanitize'
 import { getQuipPool } from '@/lib/quips/load-quip-pool'
@@ -231,6 +232,18 @@ export function ActivityComplete({
 
   // ─── Share hook ───
   const { share, feedbackState } = useShareOG(canShare ? shareConfig : undefined)
+
+  // ─── Day 9 (IG_SHARE_LOOP): post-win share nudge for the cold IG cohort ───
+  // The corner share icon is almost never tapped. For a cold IG celebratory
+  // finish that has a share card, surface ONE prominent "Share your win" button
+  // (fires the same useShareOG flow + share_clicked event). isIgCohort() is
+  // client-only, so resolve it in an effect to avoid an SSR hydration mismatch.
+  const [igShareNudge, setIgShareNudge] = useState(false)
+  useEffect(() => {
+    if (IG_SPRINT_FLAGS.IG_SHARE_LOOP && FEATURE_FLAGS.SHOW_SHARING && canShare && shouldCelebrate) {
+      setIgShareNudge(isIgCohort())
+    }
+  }, [canShare, shouldCelebrate])
 
   // ─── Tap interaction ───
   const handleInteraction = useCallback(() => {
@@ -555,6 +568,25 @@ export function ActivityComplete({
 
         {/* ─── Buttons ─── */}
         <div className="w-full flex flex-col gap-2.5">
+          {/* Day 9 (IG_SHARE_LOOP): prominent share CTA for the cold IG cohort —
+              same useShareOG flow as the corner icon, just impossible to miss.
+              IG-cohort + win/success + shareConfig only; everyone else unchanged. */}
+          {igShareNudge && (
+            <button
+              onClick={share}
+              className="w-full rounded-2xl py-3.5 text-center text-base font-black text-white transition-all active:translate-y-0.5"
+              style={{
+                background: feedbackState === 'success'
+                  ? 'var(--color-chess-green-dark)'
+                  : 'linear-gradient(135deg,#58CC02 0%,#46A302 100%)',
+                boxShadow: '0 4px 0 #3A8500',
+              }}
+            >
+              {feedbackState === 'success'
+                ? 'Shared! 🎉'
+                : isWin ? '📲 Share your win' : '📲 Share this'}
+            </button>
+          )}
           {anonChart ? (
             <>
               {/* Soft signup capture — never trap them, but pitch saving the rating */}
