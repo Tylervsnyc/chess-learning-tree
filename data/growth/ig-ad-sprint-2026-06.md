@@ -166,7 +166,8 @@ You are a scheduled agent firing once each morning. Do **exactly one** day, then
 - **Day 8** — 2026-06-10 — `DONE` — `IG_D1_NUDGE` — commit 616014e — explicit "come back tomorrow" promise at the IG win moment. The one-tap win-moment signup said what they'd save but gave no reason to RETURN — and D1 is the North Star. For a cold IG **WIN** only, the win-moment `SignupPrompt` now carries a short, explicit promise line (📅 **"Sign up — a fresh challenge is waiting tomorrow"**), rendered under the ask in `components/onboarding/SignupPrompt.tsx` via a new optional `promise` prop, passed from `app/play/page.tsx`. This previews + reinforces the **day-1 lifecycle email**, which I verified DOES fire for this cohort: the drip `day_1` window (`app/api/cron/drip/route.ts`) selects every profile with first-activity 20–48h ago who hasn't solved a puzzle — there is **no acquisition-source filter**, so IG signups are fully eligible (the only gate is `EMAIL_LIFECYCLE_ENABLED`, ON in prod, applied to everyone). Gated by `IG_SPRINT_FLAGS.IG_D1_NUDGE` (default ON) + `isIgCohort()` + win-only; non-IG traffic + existing users + losses see the unchanged prompt (no promise line). `npm run check` (0 errors, EXIT=0) + `npm run build` (EXIT=0) both green. Metric: D1 (cohort read). Note: shipped directly to `main` per this run's instructions (not a PR).
 - **Day 6** — 2026-06-08 — `DONE` — `IG_WIN_PROMPT` — commit ed7efa3 — win-prompt timing + copy for the IG cohort. The one-tap signup prompt (`win_signup_capture`) waited a flat 3s after game-over for everyone, so for the IG cohort it landed AFTER the win's dopamine had cooled. Now, for a cold IG **WIN** only, the prompt fires fast (~1.1s — at the celebration peak, not after it) and the ask is more concrete: **"Save your first win"** instead of the generic "Save your win". A **loss** keeps the gentle 3s timing (never rush a discouraging moment). Gated by `IG_SPRINT_FLAGS.IG_WIN_PROMPT` (default ON) + `isIgCohort()` in the auto-show effect AND the `valueLabel` of the `SignupPrompt` in `app/play/page.tsx`; non-IG traffic + existing users keep the unchanged 3s / generic "win" behavior. `npm run check` (0 errors) + `npm run build` both green. Metric: prompt-shown → `oauth_started`. Note: shipped directly to `main` per this run's instructions (not a PR).
 - **Day 9** — 2026-06-11 — `DONE` — `IG_SHARE_LOOP` — commit 03fba97 — post-win share loop for the IG cohort (viral coefficient). The post-win share card already rendered in `ActivityComplete`, but the ONLY way to share it was a tiny corner icon almost nobody taps. For a cold IG **celebratory** finish that has a `shareConfig`, the popup now surfaces ONE prominent green **"📲 Share your win"** button above Continue, which fires the existing `useShareOG` flow — same OG card, same `share_clicked` PostHog event — so IG winners are actively nudged to post their checkmate back to the feed they came from. Purely additive: gated by `IG_SPRINT_FLAGS.IG_SHARE_LOOP` (default ON) + `isIgCohort()` (resolved in an effect to avoid an SSR hydration mismatch) + a win/success + `shareConfig` present, so non-IG traffic + existing users see zero change (their corner icon is untouched). `npm run check` (0 errors, EXIT=0) + `npm run build` (EXIT=0) both green. Metric: `share_clicked` from the paid/IG cohort. Note: shipped directly to `main` per this run's instructions (not a PR). **Sprint Days 1–9 all shipped — only Day 10 (lock-in / decision doc) remains.**
-- **Day 10** — 2026-06-12 — `DONE` — lock-in / decision doc (no new feature, no flag change). Read the full paid funnel via `npx tsx scripts/daily-report.ts --days=10` and filled in the Decision section above. **Paid funnel (10d, $50, `utm_medium=paid`):** Landed 296 → board-touched 18 (6%) → checkmate-won 5 → picked-a-path 6 (~2%) → signup-prompt-shown 8 → OAuth-started 3 → **signup-completed 0.** Picked-a-path stayed at/under the ~6% organic baseline across all 5 landing variants and **0 paid signups** for the full spend → **decision: do NOT scale spend.** The leak has moved downstream and is now legible: **OAuth-started → completed = 3→0 (paid), 7→1 (all-IG)** — that step is the `/auth/callback` round-trip, *downstream of every Day 1–9 flag*, so no sprint lever is the culprit (likely IG in-app webview breaking Google/Apple OAuth). **Flags: ALL Day 1–9 flags kept ON** — every one is additive + IG-cohort-scoped + zero-downside, and the single-digit sample can't declare any a statistical loser; turning one off would be acting on noise. So `feature-flags.ts` is unchanged. `npm run check` (0 errors, EXIT=0) green; daily-report ran (PostHog live; Supabase/cohort creds absent in sandbox → signup counts are PostHog floors, not DB truth). Note: shipped directly to `main` per this run's instructions. **Sprint COMPLETE — all 10 days DONE.**
+- **Day 10** — 2026-06-12 — `DONE` — lock-in / decision doc. The **Decision** section below is the single reconciled readout: paid funnel 296 landed → 18 board-touched → 5 mates won → 8 prompts → 3 OAuth starts → **0 signups**; do NOT scale spend; OAuth-in-IG-webview confirmed as the sealed capture exit (UA evidence via `scripts/check-oauth-webview.ts`). Flags locked (commit bdf6f6b): `IG_LANDING_CHECKMATE` stays ON; `IG_LANDING_FASTPATH`/`IG_LANDING_VALUE_CTA`/`IG_LANDING_COPY` killed on their own per-variant landing data; downstream win-moment flags kept ON (inconclusive, leak is downstream of them). Landing log results rows filled, Linear CHE-359 closed out. Ad delivery stopped ~Jun 9 (zero paid traffic Jun 10–12) — Tyler to check actual spend in Meta. **Sprint COMPLETE — all 10 days DONE. Scheduled agent: do NOT build anything further; the sprint is over.**
+  > Collision note: Day 10 ran TWICE in parallel — the scheduled agent (6267c89, doc-only, "all flags stay ON") and an interactive session (bdf6f6b, flags + docs + webview evidence), same morning. Both reached the same verdict (no more spend, OAuth webview = #1 suspect); the flag disagreement was resolved in the interactive session's favor because the killed landing flags are judged on their own step's per-variant tap data (not the downstream signup 0) and are unreachable behind `IG_LANDING_CHECKMATE` anyway. Merged here — the Decision section below is the single source of truth. Same failure mode as Day 2; the runbook's step 4 (never push to main) was violated by the agent's doc commit, but harmlessly.
 
 ---
 
@@ -182,37 +183,27 @@ existing traffic.
 
 ---
 
-## Decision (filled Jun 12, Day 10 — paid funnel via `daily-report.ts --days=10`)
+## Decision — FILLED 2026-06-12 (Day 10 lock-in; reconciled from two runs, see collision note in the log)
 
-> Source: PostHog (paid funnel = `utm_medium=paid`). Supabase service creds were not in
-> this sandbox, so DB signup attribution + cohort D1/D7 are "unavailable" in the run — signup
-> counts below are the PostHog event counts, which are a floor, not DB truth. Numbers are tiny
-> (single-digit conversions) — directional, NOT statistically significant.
+- Clicks delivered: **~296 unique landed** (8 → 48 → 53 → 58 → 57 → 54 → 24 by day; **delivery stopped ~Jun 9** — zero paid visitors Jun 10–12, actual spend unknown, Tyler to check Meta. If full $50: CPC ≈ $0.17.)
+- Picked-a-path rate (paid): **~2%** (6/296) — baseline 6%, target ≥20%. **MISSED.** Best engagement proxy: board-touched ~10% (18/193) after `IG_LANDING_CHECKMATE` went live Jun 6 — a real ~5x lift over the menu-shaped variants, but still a 90% bounce.
+- Signups (paid): **0** (PostHog AND DB-truth) · Cost per signup: **∞**
+- D1 return of any paid signups: n/a (no signups)
+- Full paid funnel (10d): Landed 296 → board-touched 18 → checkmate-won 5 → picked-a-path 6 → prompt-shown 8 → **OAuth-started 3 → signup-completed 0.** All-IG same window for context: 312 → 25 → 11 → 16 → 7 → **1**. Single-digit conversions — directional, not statistically significant.
+- Capture chain: **CONFIRMED via PostHog user agents (`scripts/check-oauth-webview.ts`): all 3 paid OAuth taps happened inside the Instagram in-app webview (Apple-on-iOS), and none completed.** A Google tap from Android's IG webview (Jun 8, organic) also never completed. One webview Apple OAuth finally completed 2026-06-11 (post CHE-387) — the only webview success in the dataset. The signup exit was likely sealed for ~100% of paid traffic during the spend window, meaning **every landing variant was measured against a broken capture step.** This sits in the `signInWithOAuth` → provider → `/auth/callback` round-trip, *downstream of every Day 1–9 flag* — no sprint lever caused the 0.
 
-- Clicks delivered: ~296 (PostHog "landed", paid) · CPC: ~$0.17 ($50 / 296) · Landed: 296
-- Picked-a-path rate (paid): **~2%** (6/296); board-touched **6%** (18/296) — the checkmate
-  landing's real engagement metric. (baseline 6%, target ≥20%.)
-- Signups (paid): **0** · Cost per signup: n/a ($50 → 0)
-- D1 return of any paid signups: n/a (0 paid signups; cohort retention unavailable — no Supabase creds)
+**Decision (per the template): picked-a-path <10% → the landing fixes didn't land. NO further paid spend** until (a) the webview-OAuth leak is fixed (webview detection → prefer Apple/magic-link, or an "open in browser" escape hatch) and (b) a cold IG visitor can demonstrably complete a signup end-to-end on a phone. Then reconsider creative / a dedicated paid landing page. $50 cap respected — probe complete.
 
-Full paid funnel (10d): Landed 296 → board-touched 18 (6%) → checkmate-won 5 → picked-a-path 6 →
-started-activity 8 → signup-prompt-shown 8 → **OAuth-started 3 → signup-completed 0.**
-All-IG (first-touch, for context): Landed 312 → board-touched 25 → won 11 → prompt 16 → OAuth 7 → **signup 1.**
+**Flag lock-in (shipped 2026-06-12, commit bdf6f6b):**
+- KEEP ON: `IG_LANDING_CHECKMATE` (only variant that moved a number).
+- KILLED: `IG_LANDING_FASTPATH`, `IG_LANDING_VALUE_CTA`, `IG_LANDING_COPY`. These are judged on their OWN step's per-variant data (18 clicks → 2 taps; 48 → 1; 53 → 3 — all ~95–98% bounce at the screen whose only job was the tap), NOT on the downstream signup 0. They're also unreachable while `IG_LANDING_CHECKMATE` takes precedence, so killing them is zero-risk simplification.
+- KEEP ON (inconclusive, no observed regression, plausibly good for any IG traffic): `IG_AUTOPLAY`, `IG_EASY_FIRST_WIN`, `IG_WIN_PROMPT`, `IG_ACTIVATION`, `IG_D1_NUDGE`, `IG_SHARE_LOOP` — too few people reached the win moment (8 prompts) to judge them, and the OAuth leak is downstream of all of them.
 
-**Decision: Picked-a-path still <10% AND 0 paid signups → the landing fix did not land for cold paid IG. Do NOT scale spend.**
-- Five landing variants (fastpath → value-CTA → ad-hook copy → autoplay → rigged-win checkmate board)
-  left top-of-funnel engagement flat at the ~6% organic baseline. Speed/copy/board-match were not the cliff.
-- The leak has MOVED downstream and is now legible: **OAuth-started → signup-completed = 3 → 0 (paid),
-  7 → 1 (all IG).** That step is the auth callback (`/auth/callback`), which sits *downstream of every
-  sprint flag* — so no Day 1–9 lever is the culprit, and none should be blamed/killed for the 0.
-- Next moves (post-sprint, Tyler's call): (1) debug the OAuth round-trip drop — cold mobile-IG webview
-  in-app browsers commonly break Google/Apple OAuth (the #1 suspect for 3→0); (2) a different ad creative
-  or a dedicated paid landing page before any more spend. Respect the $50 cap — probe is complete.
-
-**Flags: ALL Day 1–9 flags stay ON.** Every one is additive, IG-cohort-scoped (`isIgCohort()`), and
-zero-downside for non-IG users. With single-digit conversions the sample cannot declare any single lever
-a statistical loser, and the one sample-independent finding (0/3 OAuth completions) is downstream of all
-of them — so flipping any off would be acting on noise and risk killing a winner. No flag change this run.
+**What the $50 actually bought (the learnings):**
+1. Cold traffic won't choose — every menu-shaped landing bounced 95–98%; the board-as-the-screen was the only mover.
+2. Speed isn't the lever (D1), value copy isn't the lever (D2/D3).
+3. Paid IG traffic is colder than organic IG at every funnel stage.
+4. The leak to attack next is post-win capture (OAuth in the IG webview), not the landing.
 
 ---
 

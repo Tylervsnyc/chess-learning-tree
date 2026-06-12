@@ -33,16 +33,22 @@ export const FEATURE_FLAGS = {
  * Plan + per-day spec: data/growth/ig-ad-sprint-2026-06.md.
  */
 export const IG_SPRINT_FLAGS = {
-  /** Day 1 — skip the staged power-on entrance so the CTAs are instant. */
-  IG_LANDING_FASTPATH: true,
+  /**
+   * Day 1 — skip the staged power-on entrance so the CTAs are instant.
+   * KILLED at Day-10 lock-in: all 18 paid clicks saw instant CTAs, only 2
+   * tapped — speed was not the cliff.
+   */
+  IG_LANDING_FASTPATH: false,
   /**
    * Day 2 (CHE-359) — value-led landing for cold traffic. Day 1 made the CTAs
    * instant and ALL 18 paid clicks saw them, yet only 2 tapped: speed wasn't the
    * cliff, the missing value prop was. This replaces the Play/Learn fork with a
    * single dominant "Start playing" CTA under a "Learn chess in 5 minutes. Free."
    * headline (basics demoted to a link). Existing users never see it.
+   * KILLED at Day-10 lock-in: 48 paid landed → 1 tapped (98% bounce). A value
+   * headline + single button is still a menu cold traffic won't choose from.
    */
-  IG_LANDING_VALUE_CTA: true,
+  IG_LANDING_VALUE_CTA: false,
   /**
    * Day 3 — landing copy echoes the ad hook. The value-led headline already
    * shipped in `ColdLanding` (Day 2); this swaps it to challenge-framed copy
@@ -50,8 +56,10 @@ export const IG_SPRINT_FLAGS = {
    * generic "learn" promise — reframing work → game to lift picked-a-path.
    * Copy-only, inside the existing ColdLanding (no competing landing). Flip to
    * false to fall back to the Day-2 value headline. IG cohort only.
+   * KILLED at Day-10 lock-in: copy framing didn't move picked-a-path; the
+   * checkmate-board landing superseded the whole ColdLanding shape.
    */
-  IG_LANDING_COPY: true,
+  IG_LANDING_COPY: false,
   /**
    * Day 5 (CHE-359) — message-match the ad. The paid creative shows lesson
    * 1.1.1's highlighted checkmate-in-1, but the landing showed a menu: 47/48
@@ -60,6 +68,8 @@ export const IG_SPRINT_FLAGS = {
    * they choose anything — then captures signup at the win. Takes precedence over
    * IG_LANDING_VALUE_CTA (which becomes the fallback if this is off). Existing
    * users + non-IG traffic never see it. Attempt log: data/growth/landing-page-log.md.
+   * Day-10 lock-in WINNER: lifted "did anything" ~2% → ~10% (18/193 touched the
+   * board, 5 won the mate) — the only variant that moved a number. Stays ON.
    */
   IG_LANDING_CHECKMATE: true,
   /**
