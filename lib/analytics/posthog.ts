@@ -135,15 +135,17 @@ export const OnboardingEvents = {
   nameSubmitted: (source: OnboardingSource) =>
     trackEvent('onboarding_name_submitted', { source }),
   // CHE-339: the optional `variant` ties each event to the win_signup_capture
-  // experiment cell so the funnel can be read per-variant.
-  signupPromptShown: (source: OnboardingSource, variant?: string) =>
-    trackEvent('onboarding_signup_prompt_shown', { source, variant }),
+  // experiment cell so the funnel can be read per-variant. CHE-390: `inWebview`
+  // splits the funnel by in-app browser (IG/FB webview) vs real browser — the
+  // webview is where OAuth dies, so conversion must be readable per-context.
+  signupPromptShown: (source: OnboardingSource, variant?: string, inWebview?: boolean) =>
+    trackEvent('onboarding_signup_prompt_shown', { source, variant, in_webview: inWebview }),
   signupPromptClicked: (source: OnboardingSource, action: 'signup' | 'login', variant?: string) =>
     trackEvent('onboarding_signup_prompt_clicked', { source, action, variant }),
   // One-tap OAuth kicked off straight from the win-moment prompt (no detour to
   // the form). The actual signup_completed fires after the OAuth callback.
-  signupPromptOAuthStarted: (source: OnboardingSource, provider: 'google' | 'apple', variant?: string) =>
-    trackEvent('onboarding_signup_prompt_oauth_started', { source, provider, variant }),
+  signupPromptOAuthStarted: (source: OnboardingSource, provider: 'google' | 'apple', variant?: string, inWebview?: boolean) =>
+    trackEvent('onboarding_signup_prompt_oauth_started', { source, provider, variant, in_webview: inWebview }),
   signupPromptDismissed: (source: OnboardingSource, method: 'x' | 'backdrop' | 'maybe_later', variant?: string) =>
     trackEvent('onboarding_signup_prompt_dismissed', { source, method, variant }),
 };

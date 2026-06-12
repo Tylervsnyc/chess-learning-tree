@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
+import { isInAppWebview } from '@/lib/auth/webview';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function LoginContent() {
   const router = useRouter();
@@ -23,11 +25,17 @@ function LoginContent() {
   const [appleLoading, setAppleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showResetBanner, setShowResetBanner] = useState(resetSuccess);
+  // CHE-390: Google OAuth is blocked inside in-app webviews (IG/FB) — hide the
+  // dead button there. Resolved in an effect (SSR-safe).
+  const [inWebview, setInWebview] = useState(false);
+  useEffect(() => {
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+  }, []);
 
   const humanizeError = humanizeAuthError;
 
   useEffect(() => {
-    trackEvent('login_page_viewed', { version: 'v2' });
+    trackEvent('login_page_viewed', { version: 'v2', in_webview: isInAppWebview() });
   }, []);
 
   // Auto-clear reset banner after 5 seconds
@@ -162,6 +170,14 @@ function LoginContent() {
               </div>
             )}
 
+            {/* CHE-390: Google OAuth can't run in in-app webviews — hide it and
+                point Google-account users at a real browser instead. */}
+            {inWebview && (
+              <p className="text-chess-text-faint text-xs text-center mb-2">
+                Signed up with Google? Open chesspath.app in your browser to sign in.
+              </p>
+            )}
+            {!inWebview && (
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -185,6 +201,7 @@ function LoginContent() {
                 </>
               )}
             </button>
+            )}
 
             <button
               type="button"

@@ -8,6 +8,8 @@ import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
+import { isInAppWebview } from '@/lib/auth/webview';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function SignupContent() {
   const router = useRouter();
@@ -23,11 +25,17 @@ function SignupContent() {
   const [appleLoading, setAppleLoading] = useState(false);
   const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  // CHE-390: Google OAuth is blocked inside in-app webviews (IG/FB) — hide the
+  // dead button there and let email lead. Resolved in an effect (SSR-safe).
+  const [inWebview, setInWebview] = useState(false);
+  useEffect(() => {
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+  }, []);
 
   const humanizeError = humanizeAuthError;
 
   useEffect(() => {
-    trackEvent('signup_page_viewed', { version: 'v2' });
+    trackEvent('signup_page_viewed', { version: 'v2', in_webview: isInAppWebview() });
   }, []);
 
   // Auto-clear errors after 5 seconds (but not duplicate email — user needs time to find the link)
@@ -186,7 +194,8 @@ function SignupContent() {
               </div>
             )}
 
-            {/* Google — hero CTA */}
+            {/* Google — hero CTA (hidden in in-app webviews where Google blocks OAuth, CHE-390) */}
+            {!inWebview && (
             <button
               type="button"
               onClick={handleGoogleSignup}
@@ -210,6 +219,7 @@ function SignupContent() {
                 </>
               )}
             </button>
+            )}
 
             <button
               type="button"

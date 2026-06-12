@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useExperiment } from '@/hooks/useExperiment';
 import { OnboardingEvents, type OnboardingSource } from '@/lib/analytics/posthog';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
+import { isInAppWebview } from '@/lib/auth/webview';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 const ROOKIE_LINES = [
   "I saved your spot. Sign up so I don't forget.",
@@ -69,6 +71,13 @@ export function SignupPrompt({
   const isTreatment = variant !== 'control';
   const [line] = useState(pickLine);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
+  // CHE-390: inside the IG/FB in-app webview Google OAuth is hard-blocked, so
+  // the Google button is a guaranteed dead end there — swap it for email-first.
+  // Resolved in an effect to avoid an SSR hydration mismatch.
+  const [inWebview, setInWebview] = useState(false);
+  useEffect(() => {
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+  }, []);
 
   // Log the impression exactly once, after the variant has settled — never the
   // fallback first and the resolved value second (which would double-count and
@@ -77,7 +86,7 @@ export function SignupPrompt({
   useEffect(() => {
     if (!ready || shownLogged.current) return;
     shownLogged.current = true;
-    OnboardingEvents.signupPromptShown(source, variant);
+    OnboardingEvents.signupPromptShown(source, variant, isInAppWebview());
   }, [ready, source, variant]);
 
   const dismiss = (method: 'x' | 'backdrop' | 'maybe_later') => {
@@ -106,7 +115,7 @@ export function SignupPrompt({
 
   const oauth = async (provider: 'google' | 'apple') => {
     if (oauthLoading) return;
-    OnboardingEvents.signupPromptOAuthStarted(source, provider, variant);
+    OnboardingEvents.signupPromptOAuthStarted(source, provider, variant, isInAppWebview());
     playButtonClick();
     setOauthLoading(provider);
     try {
@@ -205,30 +214,40 @@ export function SignupPrompt({
 
           {isTreatment ? (
             // One-tap capture — finish the account right here at the peak.
+            // CHE-390: in an in-app webview Google OAuth is blocked outright,
+            // so the hero slot goes to email (works everywhere) instead.
             <div className="w-full space-y-2.5">
-              <button
-                type="button"
-                onClick={() => oauth('google')}
-                disabled={!!oauthLoading}
-                className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#4285F4] transition-all active:translate-y-[2px] shadow-[0_4px_0_#2a63b8] flex items-center justify-center gap-3 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
-              >
-                {oauthLoading === 'google' ? (
-                  <>
-                    <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Redirecting...
-                  </>
-                ) : (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff"/>
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fillOpacity="0.8"/>
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fillOpacity="0.6"/>
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fillOpacity="0.9"/>
-                    </svg>
-                    Continue with Google
-                  </>
-                )}
-              </button>
+              {inWebview ? (
+                <ActionButton color="green" size="md" fullWidth onClick={goToSignup}>
+                  <span className="font-black block" style={{ fontSize: 'clamp(15px, 4vw, 18px)' }}>
+                    Sign up with email
+                  </span>
+                </ActionButton>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => oauth('google')}
+                  disabled={!!oauthLoading}
+                  className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#4285F4] transition-all active:translate-y-[2px] shadow-[0_4px_0_#2a63b8] flex items-center justify-center gap-3 disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+                >
+                  {oauthLoading === 'google' ? (
+                    <>
+                      <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Redirecting...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fillOpacity="0.8"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fillOpacity="0.6"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fillOpacity="0.9"/>
+                      </svg>
+                      Continue with Google
+                    </>
+                  )}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -251,13 +270,15 @@ export function SignupPrompt({
                 )}
               </button>
 
-              <button
-                onClick={goToSignup}
-                disabled={!!oauthLoading}
-                className="w-full text-center text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 disabled:opacity-50"
-              >
-                Sign up with email
-              </button>
+              {!inWebview && (
+                <button
+                  onClick={goToSignup}
+                  disabled={!!oauthLoading}
+                  className="w-full text-center text-[13px] font-semibold text-chess-text-muted hover:text-chess-text transition-colors py-2 disabled:opacity-50"
+                >
+                  Sign up with email
+                </button>
+              )}
             </div>
           ) : (
             // Control — original redirect-to-form behavior.

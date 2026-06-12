@@ -20,6 +20,15 @@ export const FEATURE_FLAGS = {
    * default; flip on after verifying on real data.
    */
   CHESS_PATH_ELO: true,
+  /**
+   * CHE-390 — webview-safe auth. Inside social in-app browsers (Instagram,
+   * Facebook, TikTok), Google blocks OAuth outright (`disallowed_useragent`) —
+   * during the 2026-06 paid IG probe every webview OAuth tap died. When ON,
+   * auth surfaces detect the webview (`lib/auth/webview.ts`), hide the dead
+   * Google button, and lead with email (works everywhere); Apple stays as
+   * secondary. Normal browsers are unchanged.
+   */
+  WEBVIEW_SAFE_AUTH: true,
 } as const;
 
 /**
