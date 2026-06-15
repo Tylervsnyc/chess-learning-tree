@@ -16,7 +16,7 @@ import type { RookBlock } from '@/lib/daily-rook-blocks';
 
 /** Inclusive window the takeover is live (ET, YYYY-MM-DD). */
 const KNICKS_START = '2026-06-11';
-const KNICKS_END = '2026-06-19';
+const KNICKS_END = '2026-06-14'; // Takeover ended early — back to normal (was 2026-06-19).
 
 // Official New York Knicks palette.
 export const KNICKS_BLUE = '#1D428A';
