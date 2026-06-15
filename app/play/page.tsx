@@ -2017,49 +2017,65 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // REVIEW NAVIGATION
   // ════════════════════════════════
-  const ReviewNav = () => {
-    const totalMoves = moveLogRef.current.length;
-    return (
-      <div className="flex items-center justify-center gap-2 py-1">
-        <button
-          onClick={() => navigateToMove(-1)}
-          disabled={reviewMoveIndex <= -1}
-          className="w-10 h-10 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 active:scale-95 transition-all"
-        >
-          |&#9665;
-        </button>
-        <button
-          onClick={() => navigateToMove(reviewMoveIndex - 1)}
-          disabled={reviewMoveIndex <= -1}
-          className="w-10 h-10 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 active:scale-95 transition-all"
-        >
-          &#9665;
-        </button>
-        <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
-          {reviewMoveIndex < 0 ? 'Start' : (() => {
-            const m = moveLogRef.current[reviewMoveIndex];
-            const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
-            const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
-            return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
-          })()}
-        </span>
-        <button
-          onClick={() => navigateToMove(reviewMoveIndex + 1)}
-          disabled={reviewMoveIndex >= totalMoves - 1}
-          className="w-10 h-10 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 active:scale-95 transition-all"
-        >
-          &#9655;
-        </button>
-        <button
-          onClick={() => navigateToMove(totalMoves - 1)}
-          disabled={reviewMoveIndex >= totalMoves - 1}
-          className="w-10 h-10 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 active:scale-95 transition-all"
-        >
-          &#9655;|
-        </button>
-      </div>
-    );
-  };
+  // NOTE: This is an inline JSX value, NOT a nested <Component/>. Defining a
+  // component inside the parent render and mounting it as <ReviewNav/> gives it
+  // a fresh identity on every parent re-render, so React unmounts+remounts the
+  // whole button subtree each time an arrow is tapped. That tear-down swallowed
+  // taps and made the arrows feel dead (the #1 rage-clicked element on the site).
+  // Rendering inline reconciles the buttons in place.
+  const reviewTotalMoves = moveLogRef.current.length;
+  const atStart = reviewMoveIndex <= -1;
+  const atEnd = reviewMoveIndex >= reviewTotalMoves - 1;
+  const reviewBtn =
+    'w-11 h-11 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-transform select-none touch-manipulation';
+  const reviewNav = (
+    <div className="flex items-center justify-center gap-2 py-1">
+      <button
+        type="button"
+        aria-label="Jump to start"
+        onClick={() => navigateToMove(-1)}
+        disabled={atStart}
+        className={reviewBtn}
+      >
+        |&#9665;
+      </button>
+      <button
+        type="button"
+        aria-label="Previous move"
+        onClick={() => navigateToMove(reviewMoveIndex - 1)}
+        disabled={atStart}
+        className={reviewBtn}
+      >
+        &#9665;
+      </button>
+      <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
+        {reviewMoveIndex < 0 ? 'Start' : (() => {
+          const m = moveLogRef.current[reviewMoveIndex];
+          const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
+          const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
+          return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
+        })()}
+      </span>
+      <button
+        type="button"
+        aria-label="Next move"
+        onClick={() => navigateToMove(reviewMoveIndex + 1)}
+        disabled={atEnd}
+        className={reviewBtn}
+      >
+        &#9655;
+      </button>
+      <button
+        type="button"
+        aria-label="Jump to end"
+        onClick={() => navigateToMove(reviewTotalMoves - 1)}
+        disabled={atEnd}
+        className={reviewBtn}
+      >
+        &#9655;|
+      </button>
+    </div>
+  );
 
   // ════════════════════════════════
   // SETUP SCREEN
@@ -2493,7 +2509,7 @@ export default function PlayRookiePage() {
               </div>
             ) : phase === 'review' ? (
               <div className="space-y-2">
-                <ReviewNav />
+                {reviewNav}
                 <button
                   onClick={() => resetToSetup()}
                   className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
