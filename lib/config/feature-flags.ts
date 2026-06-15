@@ -29,6 +29,18 @@ export const FEATURE_FLAGS = {
    * secondary. Normal browsers are unchanged.
    */
   WEBVIEW_SAFE_AUTH: true,
+  /**
+   * CHE — IG fast landing. Cold Instagram traffic lands on /welcome, which
+   * renders the CLIENT <OnboardingFlow>: the screen is BLANK until ~1.2MB of JS
+   * hydrates (measured FCP 8.4s on throttled mobile / IG in-app webview), and
+   * ~346/384 cold-IG landers leave in under 3s — they bounce ~5s BEFORE the
+   * board paints. When ON, cold-IG visitors get a SERVER-RENDERED checkmate
+   * board (`ColdBoardLanding`) that is visible at FCP with a tiny client island
+   * for tap-to-move — no chess.js / react-chessboard on the critical path.
+   * Non-IG / desktop / existing users are unchanged. Gated additionally by
+   * cold-IG detection in app/welcome/page.tsx.
+   */
+  IG_FAST_LANDING: true,
 } as const;
 
 /**
