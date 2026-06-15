@@ -142,7 +142,22 @@ export function SignupPrompt({
     : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    // Outer layer fills the dynamic viewport and SCROLLS. On a short iOS Safari
+    // viewport the lower buttons (Google/Apple/email/Maybe later) used to fall
+    // under the browser bottom toolbar with no way to reach them — taps hit
+    // browser chrome, not the button (the top-right X worked because it sat up
+    // top). Now the container scrolls, sizes to the dynamic viewport (dvh, so it
+    // tracks the toolbar), centers when it fits, and reserves safe-area padding
+    // so no button can sit under the Safari toolbar.
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain"
+      style={{
+        minHeight: '100dvh',
+        paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)',
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
       <style>{`
         @keyframes sp-backdrop { from { opacity: 0; } to { opacity: 1; } }
         @keyframes sp-card {
@@ -151,16 +166,16 @@ export function SignupPrompt({
         }
       `}</style>
 
-      {/* Backdrop */}
+      {/* Backdrop — fixed so it always covers the full viewport even while scrolling */}
       <div
-        className="absolute inset-0 bg-black/50"
+        className="fixed inset-0 bg-black/50"
         style={{ animation: 'sp-backdrop 0.3s ease-out' }}
         onClick={() => dismiss('backdrop')}
       />
 
-      {/* Card */}
+      {/* Card — my-auto centers it when it fits, lets it scroll into view when it doesn't */}
       <div
-        className="relative bg-chess-page rounded-3xl max-w-sm w-full mx-4 shadow-2xl overflow-hidden"
+        className="relative my-auto bg-chess-page rounded-3xl max-w-sm w-full mx-4 shadow-2xl overflow-hidden"
         style={{ animation: 'sp-card 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
       >
         {/* Close button */}
