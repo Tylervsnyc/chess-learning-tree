@@ -2051,6 +2051,7 @@ export default function PlayRookiePage() {
       <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
         {reviewMoveIndex < 0 ? 'Start' : (() => {
           const m = moveLogRef.current[reviewMoveIndex];
+          if (!m) return 'Start';
           const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
           const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
           return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
