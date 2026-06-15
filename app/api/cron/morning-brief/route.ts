@@ -22,9 +22,18 @@ async function getLostIntentSessions(): Promise<{ sessions: LostSession[]; bounc
   // Yesterday's full UTC day — matches the brief's day-over-day cadence.
   const filter = `timestamp >= toStartOfDay(now(), 'UTC') - interval 1 day AND timestamp < toStartOfDay(now(), 'UTC')`;
   try {
+    // Persons who actually signed up yesterday — signup_completed fires
+    // server-side on the anonymous distinct_id the session events carry, so this
+    // clears OAUTH STALLED false-positives where the tap succeeded.
+    const { results: suRows } = await queryPostHog(
+      `SELECT DISTINCT distinct_id FROM events WHERE ${filter} AND event = 'signup_completed'`
+    );
+    const signedUp = new Set((suRows as unknown[][]).map((r) => String(r[0])));
+
     const { results } = await queryPostHog(`
       SELECT
         toString(properties.$session_id) AS sid,
+        any(distinct_id) AS did,
         any(properties.$os) AS os,
         any(properties.$browser) AS browser,
         any(properties.$referring_domain) AS ref,
@@ -46,20 +55,21 @@ async function getLostIntentSessions(): Promise<{ sessions: LostSession[]; bounc
     const sessions: LostSession[] = [];
     let bounced = 0;
     for (const row of results as unknown[][]) {
-      const engaged = Number(row[4] ?? 0);
-      const promptShown = Number(row[5] ?? 0);
-      const ctaClicked = Number(row[6] ?? 0);
-      const oauthStarted = Number(row[7] ?? 0);
-      const eloClicked = Number(row[8] ?? 0);
+      if (signedUp.has(String(row[1]))) continue; // distinct_id completed signup — not lost
+      const engaged = Number(row[5] ?? 0);
+      const promptShown = Number(row[6] ?? 0);
+      const ctaClicked = Number(row[7] ?? 0);
+      const oauthStarted = Number(row[8] ?? 0);
+      const eloClicked = Number(row[9] ?? 0);
       let kind: LostKind | null = null;
       if (oauthStarted > 0) kind = 'OAUTH STALLED';
       else if (ctaClicked > 0 || eloClicked > 0) kind = 'FORM LEFT';
       else if (promptShown > 0 && engaged > 0) kind = 'DEAD CTA?';
       else { bounced++; continue; }
       sessions.push({
-        os: String(row[1] ?? '?'),
-        browser: String(row[2] ?? '?'),
-        ref: String(row[3] ?? 'direct'),
+        os: String(row[2] ?? '?'),
+        browser: String(row[3] ?? '?'),
+        ref: String(row[4] ?? 'direct'),
         engaged, kind,
         replay: `https://us.posthog.com/project/${projectId}/replay/${String(row[0])}`,
       });

@@ -404,9 +404,19 @@ async function getLostIntent(filter: string): Promise<{
     LIMIT 60
   `, 'lost-intent');
 
+  // Persons who actually signed up in the window — signup_completed now fires
+  // server-side on the anonymous distinct_id (the same id the session's events
+  // carry), so this reliably clears OAUTH STALLED false-positives where the tap
+  // succeeded but the old client event never fired.
+  const su = await hogql(`
+    SELECT DISTINCT distinct_id FROM events WHERE ${filter} AND event = 'signup_completed'
+  `, 'lost-intent-signedup');
+  const signedUp = new Set(su.results.map(row => String(row[0])));
+
   const sessions: LostSession[] = [];
   let bouncedAtPrompt = 0;
   for (const row of r.results) {
+    if (signedUp.has(String(row[1]))) continue; // distinct_id completed signup — not lost
     const oauthStarted = num(row[10]);
     const ctaClicked = num(row[9]);
     const eloClicked = num(row[11]);

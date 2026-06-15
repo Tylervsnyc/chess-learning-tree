@@ -43,10 +43,12 @@ function maybeTrackAuthRedirect(userId: string, email: string | undefined) {
   const evt = params.get('auth_event');
   if (evt !== 'signup' && evt !== 'login') return;
   authRedirectTracked = true;
-  const method = params.get('auth_method') || 'oauth';
   identifyUser(userId, { email });
-  if (evt === 'signup') AuthEvents.signupCompleted(method);
-  else AuthEvents.loginCompleted();
+  // signup_completed is now fired SERVER-SIDE in /auth/callback (reliable; the
+  // client fire dropped ~57% of real OAuth signups). We still identify here for
+  // session stitching, but must NOT re-fire signup_completed (double-count).
+  // login_completed has no DB-truth backstop, so keep firing it client-side.
+  if (evt === 'login') AuthEvents.loginCompleted();
   // Strip the params so a refresh / re-render doesn't re-fire.
   params.delete('auth_event');
   params.delete('auth_method');

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { sendWelcomeIfNew } from '@/lib/email/welcome';
 import { FIRST_TOUCH_COOKIE, parseFirstTouch } from '@/lib/growth/first-touch';
 import { stampFirstTouch } from '@/lib/growth/stamp-first-touch';
+import { captureServerEvent, phDistinctIdFromCookie } from '@/lib/posthog-server';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -96,6 +97,18 @@ export async function GET(request: Request) {
 
       const provider = user.app_metadata?.provider;
       if (provider === 'google' || provider === 'apple') {
+        // The signup_completed EVENT is now fired here, server-side, because the
+        // client fire dropped ~57% of real signups (6 events for 14 DB signups
+        // over 14d) — the IG in-app->browser handoff and PostHog-not-loaded
+        // races. We attach it to the browser's anonymous distinct_id (PostHog
+        // cookie) so it lands on the same person/session as the pre-auth events.
+        // The client (useUser) still runs identify on the redirect for session
+        // stitching, but no longer fires signup_completed (would double-count).
+        if (isNewSignup) {
+          const phCookieName = `ph_${process.env.NEXT_PUBLIC_POSTHOG_KEY}_posthog`;
+          const anonId = phDistinctIdFromCookie(cookieStore.get(phCookieName)?.value) ?? user.id;
+          await captureServerEvent(anonId, 'signup_completed', { method: provider, source: 'oauth_callback' });
+        }
         const dest = new URL(next, origin);
         dest.searchParams.set('auth_event', isNewSignup ? 'signup' : 'login');
         dest.searchParams.set('auth_method', provider);
