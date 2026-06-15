@@ -1,6 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
+import { queryPostHog } from '@/lib/posthog-server';
+
+// ---------------------------------------------------------------------------
+// LOST INTENT watchdog (2026-06-15). We found the dead OAuth-button bug only
+// because Tyler manually watched a replay. This scans yesterday's sessions for
+// signup intent that FAILED and drops the high-signal ones (with a one-tap
+// replay link) straight into the morning brief, so the suspicious few get
+// watched instead of all of them. signup_completed is unreliable across the IG
+// webview->browser handoff (CHE-387), so reaching /auth/callback also counts as
+// success to avoid false alarms. Mirrors getLostIntent in scripts/daily-report.ts.
+// ---------------------------------------------------------------------------
+type LostKind = 'OAUTH STALLED' | 'DEAD CTA?' | 'FORM LEFT';
+interface LostSession {
+  os: string; browser: string; ref: string; engaged: number; kind: LostKind; replay: string;
+}
+
+async function getLostIntentSessions(): Promise<{ sessions: LostSession[]; bounced: number }> {
+  const projectId = process.env.POSTHOG_PROJECT_ID || '296329';
+  // Yesterday's full UTC day — matches the brief's day-over-day cadence.
+  const filter = `timestamp >= toStartOfDay(now(), 'UTC') - interval 1 day AND timestamp < toStartOfDay(now(), 'UTC')`;
+  try {
+    const { results } = await queryPostHog(`
+      SELECT
+        toString(properties.$session_id) AS sid,
+        any(properties.$os) AS os,
+        any(properties.$browser) AS browser,
+        any(properties.$referring_domain) AS ref,
+        countIf(event IN ('game_ended','lesson_completed','daily_challenge_completed')) AS engaged,
+        countIf(event = 'onboarding_signup_prompt_shown') AS prompt_shown,
+        countIf(event = 'onboarding_signup_prompt_clicked') AS cta_clicked,
+        countIf(event = 'onboarding_signup_prompt_oauth_started') AS oauth_started,
+        countIf(event = 'elo_signup_clicked') AS elo_clicked,
+        countIf(event = 'signup_completed') AS signup_done,
+        countIf(event = '$pageview' AND properties.$pathname = '/auth/callback') AS callback
+      FROM events
+      WHERE ${filter} AND properties.$session_id IS NOT NULL AND toString(properties.$session_id) != ''
+      GROUP BY sid
+      HAVING (prompt_shown > 0 OR oauth_started > 0 OR elo_clicked > 0 OR cta_clicked > 0)
+         AND signup_done = 0 AND callback = 0
+      ORDER BY oauth_started DESC, engaged DESC, prompt_shown DESC
+      LIMIT 60
+    `);
+    const sessions: LostSession[] = [];
+    let bounced = 0;
+    for (const row of results as unknown[][]) {
+      const engaged = Number(row[4] ?? 0);
+      const promptShown = Number(row[5] ?? 0);
+      const ctaClicked = Number(row[6] ?? 0);
+      const oauthStarted = Number(row[7] ?? 0);
+      const eloClicked = Number(row[8] ?? 0);
+      let kind: LostKind | null = null;
+      if (oauthStarted > 0) kind = 'OAUTH STALLED';
+      else if (ctaClicked > 0 || eloClicked > 0) kind = 'FORM LEFT';
+      else if (promptShown > 0 && engaged > 0) kind = 'DEAD CTA?';
+      else { bounced++; continue; }
+      sessions.push({
+        os: String(row[1] ?? '?'),
+        browser: String(row[2] ?? '?'),
+        ref: String(row[3] ?? 'direct'),
+        engaged, kind,
+        replay: `https://us.posthog.com/project/${projectId}/replay/${String(row[0])}`,
+      });
+    }
+    return { sessions, bounced };
+  } catch (err) {
+    // Never let the watchdog break the brief — degrade to nothing.
+    console.error('Morning brief: lost-intent query failed:', err);
+    return { sessions: [], bounced: 0 };
+  }
+}
 
 interface Suggestion {
   priority: 'high' | 'medium' | 'low';
@@ -109,6 +179,26 @@ export const GET = withCronHeartbeat('morning-brief', async (_request: NextReque
 
   const missingReports = REPORT_TYPES.filter((type) => !todayReport(type));
 
+  // --- LOST INTENT: sessions that tried to sign up yesterday and failed ---
+  const lost = await getLostIntentSessions();
+  const lostBugs = lost.sessions.filter(
+    (s) => s.kind === 'OAUTH STALLED' || s.kind === 'DEAD CTA?'
+  );
+  const lostIntentLines: string[] = lost.sessions.length === 0
+    ? [`- None flagged${lost.bounced > 0 ? ` (${lost.bounced} saw the prompt, didn't engage a CTA — normal bails)` : ''}.`]
+    : (() => {
+        const lines = [
+          `- ${lost.sessions.length} flagged, ${lostBugs.length} look like a BUG (engaged a CTA, went nowhere). Watch:`,
+        ];
+        for (const s of lost.sessions.slice(0, 8)) {
+          const icon = s.kind === 'FORM LEFT' ? '🟡' : '🔴';
+          const eng = s.engaged > 0 ? `engaged x${s.engaged}` : 'not engaged';
+          lines.push(`   ${icon} ${s.kind} · ${s.os}/${s.browser} · ${eng} · via ${s.ref} · <${s.replay}|watch>`);
+        }
+        if (lost.sessions.length > 8) lines.push(`   …and ${lost.sessions.length - 8} more.`);
+        return lines;
+      })();
+
   // --- WHAT CHANGED ---
   const changedLines: string[] = [];
   const flaggedSwings: string[] = [];
@@ -169,6 +259,9 @@ export const GET = withCronHeartbeat('morning-brief', async (_request: NextReque
   if (signupsToday === 0 && activeToday != null && activeToday > 0) {
     actions.push(`Signups at 0 while ${activeToday} users were active — check the capture funnel.`);
   }
+  if (lostBugs.length > 0) {
+    actions.push(`${lostBugs.length} session(s) tried to sign up and the CTA went nowhere — watch the replays in LOST INTENT (probable capture bug).`);
+  }
   for (const swing of flaggedSwings) {
     actions.push(`${swing} — dig into what moved it.`);
   }
@@ -195,6 +288,9 @@ export const GET = withCronHeartbeat('morning-brief', async (_request: NextReque
     '',
     '*ENGAGEMENT*',
     ...engagementLines,
+    '',
+    '*🚨 LOST INTENT* (tried to sign up yesterday & failed)',
+    ...lostIntentLines,
     '',
     '*CONTENT*',
     ...contentLines,

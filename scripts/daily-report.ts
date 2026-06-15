@@ -352,6 +352,91 @@ async function getEloFunnel(filter: string) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// LOST INTENT — session-level watchdog (added 2026-06-15).
+//
+// Why: we found the dead OAuth-button bug only because Tyler manually watched a
+// replay. This scans EVERY session's event stream for signup-intent that failed
+// and surfaces the high-signal ones with a one-tap PostHog replay link, so the
+// suspicious 3 get watched instead of all 200. Detects, by session:
+//   - OAUTH STALLED: tapped Google/Apple (oauth_started) but never returned
+//     (no /auth/callback, no signup_completed) = the dead-button signature.
+//   - DEAD CTA?:     engaged user saw the prompt but engaged ZERO call-to-action
+//     before leaving = today's exact bug (couldn't tap the buttons).
+//   - FORM LEFT:     clicked through to the form / elo soft-ask, never finished.
+// signup_completed is unreliable across the IG webview->browser handoff (CHE-387),
+// so reaching /auth/callback ALSO counts as success to avoid false alarms.
+// ---------------------------------------------------------------------------
+type LostSession = {
+  sid: string; did: string; started: string; ended: string;
+  os: string; browser: string; ref: string;
+  engaged: number; promptShown: number; ctaClicked: number;
+  oauthStarted: number; eloClicked: number;
+  kind: 'OAUTH STALLED' | 'DEAD CTA?' | 'FORM LEFT';
+  replay: string;
+};
+
+async function getLostIntent(filter: string): Promise<{
+  sessions: LostSession[]; bouncedAtPrompt: number;
+}> {
+  const r = await hogql(`
+    SELECT
+      toString(properties.$session_id) AS sid,
+      any(distinct_id) AS did,
+      toString(min(timestamp)) AS started,
+      toString(max(timestamp)) AS ended,
+      any(properties.$os) AS os,
+      any(properties.$browser) AS browser,
+      any(properties.$referring_domain) AS ref,
+      countIf(event IN ('game_ended','lesson_completed','daily_challenge_completed')) AS engaged,
+      countIf(event = 'onboarding_signup_prompt_shown') AS prompt_shown,
+      countIf(event = 'onboarding_signup_prompt_clicked') AS cta_clicked,
+      countIf(event = 'onboarding_signup_prompt_oauth_started') AS oauth_started,
+      countIf(event = 'elo_signup_clicked') AS elo_clicked,
+      countIf(event = 'signup_completed') AS signup_done,
+      countIf(event = '$pageview' AND properties.$pathname = '/auth/callback') AS callback
+    FROM events
+    WHERE ${filter} AND properties.$session_id IS NOT NULL AND toString(properties.$session_id) != ''
+    GROUP BY sid
+    HAVING (prompt_shown > 0 OR oauth_started > 0 OR elo_clicked > 0 OR cta_clicked > 0)
+       AND signup_done = 0 AND callback = 0
+    ORDER BY oauth_started DESC, engaged DESC, prompt_shown DESC
+    LIMIT 60
+  `, 'lost-intent');
+
+  const sessions: LostSession[] = [];
+  let bouncedAtPrompt = 0;
+  for (const row of r.results) {
+    const oauthStarted = num(row[10]);
+    const ctaClicked = num(row[9]);
+    const eloClicked = num(row[11]);
+    const promptShown = num(row[8]);
+    const engaged = num(row[7]);
+
+    // Classify by how far the intent got. High-signal subset only.
+    let kind: LostSession['kind'] | null = null;
+    if (oauthStarted > 0) kind = 'OAUTH STALLED';
+    else if (ctaClicked > 0 || eloClicked > 0) kind = 'FORM LEFT';
+    else if (promptShown > 0 && engaged > 0) kind = 'DEAD CTA?';
+    else { bouncedAtPrompt++; continue; } // saw prompt, not engaged, no tap — low signal, count only
+
+    const sid = String(row[0]);
+    sessions.push({
+      sid,
+      did: String(row[1]),
+      started: String(row[2]),
+      ended: String(row[3]),
+      os: String(row[4] ?? '?'),
+      browser: String(row[5] ?? '?'),
+      ref: String(row[6] ?? 'direct'),
+      engaged, promptShown, ctaClicked, oauthStarted, eloClicked,
+      kind,
+      replay: `https://us.posthog.com/project/${PH_PROJECT_ID}/replay/${sid}`,
+    });
+  }
+  return { sessions, bouncedAtPrompt };
+}
+
 // Cache the full auth-user list so the target + previous-period calls don't
 // double-fetch the admin API.
 let _authUsersCache: { created_at: string; provider: string }[] | null = null;
@@ -703,6 +788,9 @@ async function main() {
   // Chess Path ELO (CHE-370) — legible-progress surface + new-user signup hook.
   const elo = await getEloFunnel(f);
 
+  // LOST INTENT watchdog — sessions where signup intent fired but failed.
+  const lost = await getLostIntent(f);
+
   // ---------------------------------------------------------------------------
   // Print report
   // ---------------------------------------------------------------------------
@@ -736,6 +824,26 @@ async function main() {
     for (const s of sources) {
       console.log(`    ${s.source.padEnd(30)} ${s.users} users`);
     }
+  }
+
+  console.log(section('🚨 LOST INTENT (sessions that tried to sign up & failed)'));
+  if (lost.sessions.length === 0) {
+    console.log(`  None flagged. ${lost.bouncedAtPrompt > 0 ? `(${lost.bouncedAtPrompt} saw the prompt, didn't engage a CTA — normal bails.)` : ''}`);
+  } else {
+    const bug = lost.sessions.filter(s => s.kind === 'OAUTH STALLED' || s.kind === 'DEAD CTA?').length;
+    console.log(`  ${lost.sessions.length} flagged — ${bug} look like a BUG (tapped/engaged, went nowhere). WATCH THESE:`);
+    console.log('');
+    for (const s of lost.sessions.slice(0, 15)) {
+      const tag = s.kind === 'OAUTH STALLED' ? '🔴 OAUTH STALLED'
+        : s.kind === 'DEAD CTA?' ? '🔴 DEAD CTA?  '
+        : '🟡 FORM LEFT  ';
+      const did = s.engaged > 0 ? `engaged x${s.engaged}` : 'not engaged';
+      console.log(`  ${tag}  ${s.os}/${s.browser}  ${did}  via ${s.ref}`);
+      console.log(`     ${s.replay}`);
+    }
+    if (lost.sessions.length > 15) console.log(`  …and ${lost.sessions.length - 15} more.`);
+    if (lost.bouncedAtPrompt > 0) console.log(`\n  (+ ${lost.bouncedAtPrompt} more saw the prompt but engaged no CTA — likely normal bails, not shown.)`);
+    console.log(`\n  🔴 = tapped a button / engaged a CTA and it went nowhere = probable bug. Watch the replay.`);
   }
 
   console.log(section('CHESS PATH ELO (CHE-370 — legible progress + signup hook)'));
