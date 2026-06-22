@@ -12,6 +12,8 @@
 // Gated to cold-IG + FEATURE_FLAGS.IG_FAST_LANDING in app/welcome/page.tsx.
 
 import { ColdBoardIsland } from './ColdBoardIsland';
+import { CHESS_PIECE_SVG } from '@/components/seo/chessPieces';
+import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 
 // The ad's exact moment — lesson 1.1.1 PUZZLE_1 (Qd3->h7#, bishop on c2 defends
 // h7). Same FEN/squares as CheckmateLanding so the message-match holds.
@@ -22,11 +24,12 @@ const WIN_SQUARE = 'h7';
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = [8, 7, 6, 5, 4, 3, 2, 1] as const; // top-to-bottom, white at bottom
 
-// Unicode chess glyphs. Uppercase = white piece, lowercase = black.
-const GLYPHS: Record<string, string> = {
-  K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
-  k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟',
-};
+// Map a FEN letter (case = color) to a CHESS_PIECE_SVG key, e.g. 'Q' -> 'wQ',
+// 'n' -> 'bN'. Same cburnett set the interactive board + share cards use, so the
+// cold landing is on-brand — and it's inline SVG, so still zero image fetch.
+function pieceKey(piece: string): string {
+  return (piece === piece.toUpperCase() ? 'w' : 'b') + piece.toUpperCase();
+}
 
 /**
  * Tiny pure FEN parser (~15 lines, no chess.js). Returns a square->piece map
@@ -55,11 +58,10 @@ export function ColdBoardLanding() {
 
   return (
     <div className="h-[100dvh] flex flex-col bg-chess-page overflow-hidden relative">
-      {/* Logo — lightweight inline text mark, no heavy logo component / deps. */}
-      <div className="pt-5 pl-5">
-        <span className="font-black text-chess-text text-lg tracking-tight">
-          Chess<span style={{ color: 'var(--color-chess-green)' }}>Path</span>
-        </span>
+      {/* Logo — the real chesspath wordmark (breathing rook + gradient "path"),
+          server-rendered inline SVG so it still paints at FCP. */}
+      <div className="pt-4 pl-4">
+        <BreathingHeaderLogo />
       </div>
 
       {/* Headline — server text, instant at FCP. Message-matches the ad. */}
@@ -105,9 +107,12 @@ export function ColdBoardLanding() {
                 '0 4px 0 var(--color-chess-green-dark), 0 2px 8px rgba(88, 204, 2, 0.3)',
             }}
           >
-            <span className="text-2xl flex-shrink-0" aria-hidden>
-              {'♜'}
-            </span>
+            <svg
+              viewBox="0 0 45 45"
+              className="w-7 h-7 flex-shrink-0"
+              aria-hidden
+              dangerouslySetInnerHTML={{ __html: CHESS_PIECE_SVG.wR }}
+            />
             <p className="font-bold text-white leading-snug" style={{ fontSize: 15 }}>
               One move from checkmate. Tap the queen, then the glowing square.
             </p>
@@ -174,8 +179,6 @@ export function StaticBoard({
             boxShadow = 'inset 0 0 0 3px rgba(28,176,246,0.95)';
           }
 
-          const isWhitePiece = piece && piece === piece.toUpperCase();
-
           return (
             <div
               key={square}
@@ -191,20 +194,17 @@ export function StaticBoard({
                 // a ~360px column ≈ 45px; the board only grows on bigger screens).
               }}
             >
-              {piece && (
-                <span
-                  style={{
-                    fontSize: 'min(7vw, 38px)',
-                    lineHeight: 1,
-                    color: isWhitePiece ? '#fafafa' : '#1a1a1a',
-                    textShadow: isWhitePiece
-                      ? '0 1px 1px rgba(0,0,0,0.35)'
-                      : '0 1px 1px rgba(255,255,255,0.15)',
-                  }}
+              {piece && CHESS_PIECE_SVG[pieceKey(piece)] && (
+                <svg
+                  viewBox="0 0 45 45"
                   aria-hidden
-                >
-                  {GLYPHS[piece]}
-                </span>
+                  style={{
+                    width: '84%',
+                    height: '84%',
+                    filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.28))',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: CHESS_PIECE_SVG[pieceKey(piece)] }}
+                />
               )}
             </div>
           );
