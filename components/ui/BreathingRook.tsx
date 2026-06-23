@@ -130,9 +130,14 @@ function getBlockDelay(x: number, y: number, mode: AnimationMode): number {
     case 'talk':
       return normalized * 0.06; // very tight stagger — ripple from center
     case 'powerOn': {
-      // Pseudo-random but deterministic per cell position
+      // Pseudo-random but deterministic per cell position.
+      // Stagger must FINISH before the onboarding breathe handoff (~850ms after
+      // powerOn starts) or the last blocks are still at brightness(0.1) when the
+      // animation hard-switches to breathe — they snap bright and read as a
+      // re-load/"double" on cold load (CHE: welcome double-load). Max delay 0.3s
+      // + 0.5s anim = 0.8s, so every block is fully lit before breathe takes over.
       const seed = (x * 7 + y * 13) % 22;
-      return (seed / 22) * 2.5; // stagger over 2.5s so full animation ~3s
+      return (seed / 22) * 0.3;
     }
     case 'breathe':
     default:
