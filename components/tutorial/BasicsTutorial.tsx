@@ -1280,7 +1280,7 @@ export function BasicsTutorial() {
       return <SignupPrompt source="basics" onDismiss={() => {
         setShowSignupPrompt(false);
         try { localStorage.setItem('chess_path_onboarded', 'true'); } catch {}
-        router.push('/lesson/1-1-1?from=onboarding');
+        router.push('/lesson/1.1.1?from=onboarding');
       }} />;
     }
     return <BasicsDoneScreen playerName={playerName} onContinue={() => {
