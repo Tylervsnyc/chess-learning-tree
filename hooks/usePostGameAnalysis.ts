@@ -80,7 +80,12 @@ export function usePostGameAnalysis() {
 
       if (cancelledRef.current) return null;
 
-      const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
+      const moveInfos = moves.map((m, i) => ({
+        san: m.san,
+        movedBy: m.movedBy,
+        moveNumber: m.moveNumber,
+        fenBefore: fens[i], // fens[i] = position before move i
+      }));
       const analysis = analyzeGameMoves(evals, moveInfos, playerColor);
 
       setState({ analysis, isAnalyzing: false, progress: 100, error: null });

@@ -1049,7 +1049,12 @@ export default function PlayRookiePage() {
 
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
-    const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
+    const moveInfos = moves.map((m, i) => ({
+      san: m.san,
+      movedBy: m.movedBy,
+      moveNumber: m.moveNumber,
+      fenBefore: i > 0 ? moves[i - 1].fenAfter : START_FEN,
+    }));
     const analysis = moves.length > 0
       ? analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor)
       : null;

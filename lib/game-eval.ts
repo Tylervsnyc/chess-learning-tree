@@ -10,7 +10,13 @@
  * - Sigmoid: scalachess/core/src/main/scala/eval.scala
  * - Accuracy: modules/analyse/src/main/AccuracyPercent.scala
  * - Classification: modules/tree/src/main/Advice.scala
+ *
+ * Brilliant detection (Chess.com-style sacrifice check): lib/brilliant.ts,
+ * gated by FEATURE_FLAGS.BRILLIANT_MOVES.
  */
+
+import { isSacrifice } from '@/lib/brilliant';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // ════════════════════════════════
 // TYPES
@@ -132,6 +138,11 @@ const BLUNDER_THRESHOLD = 30;
 const MISTAKE_THRESHOLD = 20;
 const INACCURACY_THRESHOLD = 10;
 const GREAT_MOVE_THRESHOLD = 2; // within 2% of engine's best
+
+// Brilliant gates (Chess.com criteria): the sac isn't special if you were
+// already completely winning, and doesn't count if you're lost afterward.
+const BRILLIANT_MAX_WIN_BEFORE = 93; // ~+700cp — "winning anyways" cutoff
+const BRILLIANT_MIN_WIN_AFTER = 40;  // can't be in a bad position after
 
 /**
  * Classify a move based on win% delta.
@@ -315,7 +326,7 @@ export function extractKeyMoments(
       movedBy: 'player',
       winPercentDelta: m.winPercentDelta,
       description: m.classification === 'brilliant'
-        ? `${m.san} — the only winning move, and you found it.`
+        ? `${m.san} — you gave up material on purpose, and it was the best move on the board.`
         : `${m.san} — engine's top choice. You saw what Rookie saw.`,
     });
   }
@@ -370,7 +381,7 @@ export function extractKeyMoments(
  */
 export function analyzeGameMoves(
   positionEvals: PositionEval[],
-  moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number }[],
+  moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number; fenBefore?: string }[],
   playerColor: 'white' | 'black',
 ): GameAnalysis {
   const evaluatedMoves: MoveEvaluation[] = [];
@@ -400,7 +411,21 @@ export function analyzeGameMoves(
       move.san !== null; // We can't easily compare SAN to UCI here — use delta instead
     const effectivelyBest = delta <= GREAT_MOVE_THRESHOLD;
 
-    const classification = classifyMove(delta, effectivelyBest);
+    let classification = classifyMove(delta, effectivelyBest);
+
+    // Upgrade great → brilliant: best move that sacrifices material, while
+    // not already winning and not bad afterward (Chess.com criteria).
+    if (
+      FEATURE_FLAGS.BRILLIANT_MOVES &&
+      classification === 'great' &&
+      move.fenBefore &&
+      wpBefore < BRILLIANT_MAX_WIN_BEFORE &&
+      wpAfter >= BRILLIANT_MIN_WIN_AFTER &&
+      isSacrifice(move.fenBefore, move.san)
+    ) {
+      classification = 'brilliant';
+    }
+
     const accuracy = moveAccuracy(wpBefore, wpAfter);
 
     evaluatedMoves.push({

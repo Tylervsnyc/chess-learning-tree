@@ -30,6 +30,14 @@ export const FEATURE_FLAGS = {
    */
   WEBVIEW_SAFE_AUTH: true,
   /**
+   * Brilliant moves in post-game analysis. When ON, a best move that
+   * sacrifices material (Chess.com-style detection, lib/brilliant.ts) is
+   * classified 'brilliant' instead of 'great' — cyan badge in the /play
+   * post-game summary, Rookie speech angle, shareable count. Detection is
+   * pure chess.js + existing evals; no extra engine cost.
+   */
+  BRILLIANT_MOVES: true,
+  /**
    * CHE — IG fast landing. Cold Instagram traffic lands on /welcome, which
    * renders the CLIENT <OnboardingFlow>: the screen is BLANK until ~1.2MB of JS
    * hydrates (measured FCP 8.4s on throttled mobile / IG in-app webview), and
