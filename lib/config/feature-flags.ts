@@ -41,6 +41,15 @@ export const FEATURE_FLAGS = {
    * cold-IG detection in app/welcome/page.tsx.
    */
   IG_FAST_LANDING: true,
+  /**
+   * Camera punch counter in the Chess Boxing workout's exercise segments
+   * (components/workout/PunchTracker). Fully on-device (MediaPipe pose,
+   * self-hosted model — video never leaves the phone). Flag ON shows an
+   * opt-in "Count my punches" toggle in the exercise segment; the camera
+   * only ever starts after the user turns it on (preference remembered
+   * per device in localStorage).
+   */
+  WORKOUT_PUNCH_CAM: true,
 } as const;
 
 /**
