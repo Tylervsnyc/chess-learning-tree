@@ -74,11 +74,18 @@ export default function PunchGraderPage() {
     setResult(null);
     setLiveCount(0);
     try {
-      const stepped = Number(new URLSearchParams(window.location.search).get('step')) > 0;
+      const qp = new URLSearchParams(window.location.search);
+      const stepped = Number(qp.get('step')) > 0;
       // stepped mode feeds video-time timestamps (deterministic smoothing) —
       // needs its own landmarker instance; timestamps are monotonic per instance
       const detector = stepped ? await createFreshLandmarker() : await getLandmarker();
-      const punchDetector = createPunchDetector();
+      // ?refrac= / ?window= override detector timing for tuning experiments
+      const refrac = Number(qp.get('refrac'));
+      const win = Number(qp.get('window'));
+      const punchDetector = createPunchDetector({
+        refractoryS: refrac > 0 ? refrac : undefined,
+        pendingS: win > 0 ? win : undefined,
+      });
       const events: PunchEvent[] = [];
       const trace: GradeResult['trace'] = [];
       let frames = 0;

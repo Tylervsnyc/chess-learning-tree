@@ -28,11 +28,12 @@
 export const MIN_SCORE = 0.3;
 /**
  * Default speed threshold (shoulder-widths/sec over the fixed lookback
- * window). The UI "sensitivity". Fit on two 2026-07-13 field clips with
- * human ground truth (32 and 24 punches): TH=4 + 0.15s cross-hand
- * suppression scores 29/32 and 24/24 at deterministic 30fps sampling.
+ * window). The UI "sensitivity". Fit on three 2026-07-13 field clips with
+ * human ground truth (32/24/29 punches): TH=4.25 + 0.10s cross-hand window
+ * scores 30/25/25 at deterministic 30fps sampling — balanced slight
+ * undercount on fast combos, never inflated.
  */
-export const DEFAULT_SENSITIVITY = 4;
+export const DEFAULT_SENSITIVITY = 4.25;
 export const SENSITIVITY_MIN = 2.5;
 export const SENSITIVITY_MAX = 6.5;
 export const MIN_RADIAL = 1; // sw/s outward — gates out return strokes
@@ -47,7 +48,7 @@ export const MIN_SHOULDER_W = 0.05; // meters — degenerate-pose guard
  * the one with the higher ABSOLUTE wrist speed survives (the phantom wrist
  * barely moves in world space — the shoulder moves under it).
  */
-export const PENDING_S = 0.15;
+export const PENDING_S = 0.1;
 
 // MediaPipe PoseLandmarker indices (33-point topology)
 export const KP = { LS: 11, RS: 12, LE: 13, RE: 14, LW: 15, RW: 16 } as const;
@@ -81,7 +82,9 @@ const HISTORY_MAX_S = 0.4;
 const dist3 = (a: Keypoint, b: Keypoint) =>
   Math.hypot(a.x - b.x, a.y - b.y, (a.z ?? 0) - (b.z ?? 0));
 
-export function createPunchDetector() {
+export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: number }) {
+  const refractoryS = opts?.refractoryS ?? REFRACTORY_S;
+  const pendingS = opts?.pendingS ?? PENDING_S;
   const mkHand = (): HandState => ({
     armed: true,
     lastFire: -Infinity,
@@ -167,7 +170,7 @@ export function createPunchDetector() {
         hand.armed &&
         hand.speed > speedT &&
         hand.radial > MIN_RADIAL &&
-        tSeconds - hand.lastFire > REFRACTORY_S
+        tSeconds - hand.lastFire > refractoryS
       ) {
         hand.armed = false;
         hand.lastFire = tSeconds;
@@ -190,9 +193,9 @@ export function createPunchDetector() {
     }
     // emit pending fires once they survive the suppression window
     for (const p of pending) {
-      if (tSeconds - p.ev.t >= PENDING_S) events.push(p.ev);
+      if (tSeconds - p.ev.t >= pendingS) events.push(p.ev);
     }
-    pending = pending.filter((p) => tSeconds - p.ev.t < PENDING_S);
+    pending = pending.filter((p) => tSeconds - p.ev.t < pendingS);
     return { events, ext, speed, radial, abs };
   }
 
