@@ -11,16 +11,16 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { PoseLandmarker } from '@mediapipe/tasks-vision';
+import { getLandmarker } from '@/lib/punch/landmarker';
+import {
+  createPunchDetector,
+  DEFAULT_SENSITIVITY,
+  KP,
+  MIN_SCORE,
+  type Keypoint,
+} from '@/lib/punch/punch-detector';
 
 type Status = 'idle' | 'loading' | 'running' | 'error';
-
-type HandState = {
-  phase: 'retracted' | 'extended';
-  lastExt: number;
-  lastTime: number;
-  velocity: number;
-};
 
 const HYPE_LINES = [
   'Okay HANDS. I saw that.',
@@ -30,33 +30,6 @@ const HYPE_LINES = [
   'I would NOT want to be a heavy bag right now.',
 ];
 
-const RETRACT_T = 1.12; // ext below this = arm back home, re-arm the counter
-const MIN_SCORE = 0.3; // ignore low-visibility landmarks
-// MediaPipe PoseLandmarker indices (33-point topology)
-const KP = { LS: 11, RS: 12, LE: 13, RE: 14, LW: 15, RW: 16 } as const;
-// Self-hosted (no CDN): wasm copied by scripts/copy-mediapipe-wasm.mjs, model committed.
-const WASM_PATH = '/mediapipe/wasm';
-const MODEL_URL = '/models/pose_landmarker_lite.task';
-
-// One landmarker per tab — model load is ~6MB; rounds 2+ reuse it.
-let landmarkerPromise: Promise<PoseLandmarker> | null = null;
-function getLandmarker(): Promise<PoseLandmarker> {
-  if (!landmarkerPromise) {
-    landmarkerPromise = (async () => {
-      const { FilesetResolver, PoseLandmarker } = await import('@mediapipe/tasks-vision');
-      const fileset = await FilesetResolver.forVisionTasks(WASM_PATH);
-      return PoseLandmarker.createFromOptions(fileset, {
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
-        runningMode: 'VIDEO',
-        numPoses: 1,
-      });
-    })().catch((e) => {
-      landmarkerPromise = null; // allow retry after a failed load
-      throw e;
-    });
-  }
-  return landmarkerPromise;
-}
 
 export function PunchTracker({
   autoStart = false,
@@ -76,13 +49,10 @@ export function PunchTracker({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
-  const handsRef = useRef<{ left: HandState; right: HandState }>({
-    left: { phase: 'retracted', lastExt: 0, lastTime: 0, velocity: 0 },
-    right: { phase: 'retracted', lastExt: 0, lastTime: 0, velocity: 0 },
-  });
+  const detectorRef = useRef(createPunchDetector());
   const punchTimesRef = useRef<number[]>([]);
   const fpsRef = useRef<{ frames: number; since: number }>({ frames: 0, since: 0 });
-  const sensitivityRef = useRef(1.4);
+  const sensitivityRef = useRef(DEFAULT_SENSITIVITY);
   const onPunchRef = useRef(onPunch);
   // Generation counter: each start()/stop() bumps it, so a start superseded
   // mid-await (StrictMode double-mount, fast toggle) cleans up and bails
@@ -96,7 +66,7 @@ export function PunchTracker({
   const [fps, setFps] = useState(0);
   const [flash, setFlash] = useState(false);
   const [hype, setHype] = useState('');
-  const [sensitivity, setSensitivity] = useState(1.4);
+  const [sensitivity, setSensitivity] = useState(DEFAULT_SENSITIVITY);
   const [dbgExt, setDbgExt] = useState({ left: 0, right: 0 });
 
   useEffect(() => {
@@ -185,43 +155,16 @@ export function PunchTracker({
 
         if (lms) {
           // normalized 0-1 coords → pixel space
-          const kps = lms.map((l) => ({
+          const kps: Keypoint[] = lms.map((l) => ({
             x: l.x * video.videoWidth,
             y: l.y * video.videoHeight,
             vis: l.visibility ?? 1,
           }));
-          const ls = kps[KP.LS], rs = kps[KP.RS];
-          const shoulderW = Math.hypot(ls.x - rs.x, ls.y - rs.y);
           const ok = (i: number) => kps[i].vis > MIN_SCORE;
 
-          if (shoulderW > 20 && ok(KP.LS) && ok(KP.RS)) {
-            const sides = [
-              { side: 'left' as const, wrist: KP.LW, shoulder: KP.LS },
-              { side: 'right' as const, wrist: KP.RW, shoulder: KP.RS },
-            ];
-            const dbg = { left: 0, right: 0 };
-            for (const s of sides) {
-              if (!ok(s.wrist)) continue;
-              const w = kps[s.wrist], sh = kps[s.shoulder];
-              // extension: wrist distance from shoulder, in shoulder-widths
-              const ext = Math.hypot(w.x - sh.x, w.y - sh.y) / shoulderW;
-              dbg[s.side] = ext;
-              const hand = handsRef.current[s.side];
-              const dt = (now - hand.lastTime) / 1000;
-              if (dt > 0 && dt < 0.5) {
-                hand.velocity = (ext - hand.lastExt) / dt; // shoulder-widths per second
-              }
-              if (hand.phase === 'retracted' && ext > sensitivityRef.current && hand.velocity > 3) {
-                hand.phase = 'extended';
-                registerPunch(s.side);
-              } else if (hand.phase === 'extended' && ext < RETRACT_T) {
-                hand.phase = 'retracted';
-              }
-              hand.lastExt = ext;
-              hand.lastTime = now;
-            }
-            if (debug) setDbgExt(dbg);
-          }
+          const result = detectorRef.current.update(kps, now / 1000, sensitivityRef.current);
+          for (const ev of result.events) registerPunch(ev.side);
+          if (debug) setDbgExt(result.ext);
 
           if (ctx && canvas) {
             for (const [a, b] of [[KP.LS, KP.LE], [KP.LE, KP.LW], [KP.RS, KP.RE], [KP.RE, KP.RW], [KP.LS, KP.RS]]) {
