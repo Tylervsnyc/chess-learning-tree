@@ -29,15 +29,17 @@ export const MIN_SCORE = 0.3;
 /**
  * Default speed threshold (shoulder-widths/sec over the fixed lookback
  * window). The UI "sensitivity". Fit on three 2026-07-13 field clips with
- * human ground truth (32/24/29 punches): TH=4.25 + 0.10s cross-hand window
- * scores 30/25/25 at deterministic 30fps sampling — balanced slight
- * undercount on fast combos, never inflated.
+ * human ground truth (32/24/29 punches) via a full end-to-end matrix:
+ * TH=4 + 0.2s refractory + 0.10s cross-hand window scores 29/24/23 —
+ * exact at normal pace, ~10-20%% under on rapid-fire compact combos (those
+ * merge at the pose-model level; no threshold recovers them), never
+ * inflated. Tuning matrix: scripts/grade-punch-video.mjs --step=30.
  */
-export const DEFAULT_SENSITIVITY = 4.25;
+export const DEFAULT_SENSITIVITY = 4;
 export const SENSITIVITY_MIN = 2.5;
 export const SENSITIVITY_MAX = 6.5;
 export const MIN_RADIAL = 1; // sw/s outward — gates out return strokes
-export const REFRACTORY_S = 0.3; // min gap between counts on one hand
+export const REFRACTORY_S = 0.2; // min gap between counts on one hand
 export const HYSTERESIS = 0.6; // re-arm once speed < speedT * this
 export const MIN_SHOULDER_W = 0.05; // meters — degenerate-pose guard
 /**
