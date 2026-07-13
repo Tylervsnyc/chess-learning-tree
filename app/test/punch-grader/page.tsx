@@ -11,7 +11,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { getLandmarker } from '@/lib/punch/landmarker';
+import { createFreshLandmarker, getLandmarker } from '@/lib/punch/landmarker';
 import {
   createPunchDetector,
   DEFAULT_SENSITIVITY,
@@ -36,8 +36,11 @@ type GradeResult = {
   right: number;
   framesAnalyzed: number;
   events: { side: string; t: number; velocity: number }[];
-  /** per-frame extension / rel-speed / radial-velocity, for diagnosing misses */
-  trace: { t: number; eL: number; eR: number; sL: number; sR: number; rL: number; rR: number }[];
+  /** per-frame extension / rel-speed / radial / abs-speed, for diagnosing misses */
+  trace: {
+    t: number; eL: number; eR: number; sL: number; sR: number;
+    rL: number; rR: number; aL: number; aR: number;
+  }[];
 };
 
 export default function PunchGraderPage() {
@@ -71,7 +74,10 @@ export default function PunchGraderPage() {
     setResult(null);
     setLiveCount(0);
     try {
-      const detector = await getLandmarker();
+      const stepped = Number(new URLSearchParams(window.location.search).get('step')) > 0;
+      // stepped mode feeds video-time timestamps (deterministic smoothing) —
+      // needs its own landmarker instance; timestamps are monotonic per instance
+      const detector = stepped ? await createFreshLandmarker() : await getLandmarker();
       const punchDetector = createPunchDetector();
       const events: PunchEvent[] = [];
       const trace: GradeResult['trace'] = [];
@@ -80,11 +86,14 @@ export default function PunchGraderPage() {
 
       video.currentTime = 0;
       video.muted = true;
+      const params = new URLSearchParams(window.location.search);
       // ?rate=0.25 plays slower so slow (software-rendered/headless) machines
       // analyze more frames. Detection uses VIDEO time, so results don't skew.
-      const rate = Number(new URLSearchParams(window.location.search).get('rate'));
-      video.playbackRate = rate > 0 && rate <= 1 ? rate : 1;
-      await video.play();
+      const rate = Number(params.get('rate'));
+      // ?step=30 skips realtime playback entirely: seek frame-by-frame at an
+      // exact sampling fps. Deterministic (no dropped frames, no run-to-run
+      // jitter) — the mode used for tuning/grading on slow machines.
+      const stepFps = Number(params.get('step'));
 
       let finished = false;
       const finish = () => {
@@ -110,73 +119,63 @@ export default function PunchGraderPage() {
         setStatus('done');
       };
 
-      const step = () => {
-        if (runId !== runIdRef.current) return;
-        if (video.ended) {
-          finish();
-          return;
+      const processFrame = () => {
+        frames++;
+        // stepped: video-time ts (deterministic, phone-like 33ms spacing);
+        // realtime: wall clock. Punch timing always uses VIDEO time.
+        const ts = stepped ? video.currentTime * 1000 : performance.now();
+        const res = detector.detectForVideo(video, ts);
+        const lms = res.landmarks[0];
+        const world = res.worldLandmarks[0];
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (ctx && canvas) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-        if (video.currentTime !== lastVideoTime) {
-          lastVideoTime = video.currentTime;
-          frames++;
-          // landmarker needs a monotonic wall-clock ts; punch timing uses VIDEO time
-          const res = detector.detectForVideo(video, performance.now());
-          const lms = res.landmarks[0];
-          const world = res.worldLandmarks[0];
-          const canvas = canvasRef.current;
-          const ctx = canvas?.getContext('2d');
-          if (ctx && canvas) {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!lms) return;
+        const kps: Keypoint[] = lms.map((l) => ({
+          x: l.x * video.videoWidth,
+          y: l.y * video.videoHeight,
+          vis: l.visibility ?? 1,
+        }));
+        if (world) {
+          const wkps: Keypoint[] = world.map((l) => ({ ...l, vis: l.visibility ?? 1 }));
+          const r = punchDetector.update(wkps, video.currentTime, sensitivity);
+          if (r.events.length) {
+            events.push(...r.events);
+            setLiveCount(events.length);
           }
-          if (lms) {
-            const kps: Keypoint[] = lms.map((l) => ({
-              x: l.x * video.videoWidth,
-              y: l.y * video.videoHeight,
-              vis: l.visibility ?? 1,
-            }));
-            if (world) {
-              const wkps: Keypoint[] = world.map((l) => ({ ...l, vis: l.visibility ?? 1 }));
-              const r = punchDetector.update(wkps, video.currentTime, sensitivity);
-              if (r.events.length) {
-                events.push(...r.events);
-                setLiveCount(events.length);
-              }
-              if (trace.length < 800) {
-                const rnd = (n: number) => Math.round(n * 100) / 100;
-                trace.push({
-                  t: rnd(video.currentTime),
-                  eL: rnd(r.ext.left),
-                  eR: rnd(r.ext.right),
-                  sL: rnd(r.speed.left),
-                  sR: rnd(r.speed.right),
-                  rL: rnd(r.radial.left),
-                  rR: rnd(r.radial.right),
-                });
-              }
-            }
-            if (ctx && canvas) {
-              const ok = (i: number) => kps[i].vis > MIN_SCORE;
-              for (const [a, b] of [[KP.LS, KP.LE], [KP.LE, KP.LW], [KP.RS, KP.RE], [KP.RE, KP.RW], [KP.LS, KP.RS]]) {
-                if (!ok(a) || !ok(b)) continue;
-                ctx.beginPath();
-                ctx.moveTo(kps[a].x, kps[a].y);
-                ctx.lineTo(kps[b].x, kps[b].y);
-                ctx.strokeStyle = 'rgba(74, 222, 128, 0.9)';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-              }
-            }
+          if (trace.length < 800) {
+            const rnd = (n: number) => Math.round(n * 100) / 100;
+            trace.push({
+              t: rnd(video.currentTime),
+              eL: rnd(r.ext.left),
+              eR: rnd(r.ext.right),
+              sL: rnd(r.speed.left),
+              sR: rnd(r.speed.right),
+              rL: rnd(r.radial.left),
+              rR: rnd(r.radial.right),
+              aL: rnd(r.abs.left),
+              aR: rnd(r.abs.right),
+            });
           }
         }
-        const v = video as VideoWithRVFC;
-        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(step);
-        else requestAnimationFrame(step);
+        if (ctx && canvas) {
+          const ok = (i: number) => kps[i].vis > MIN_SCORE;
+          for (const [a, b] of [[KP.LS, KP.LE], [KP.LE, KP.LW], [KP.RS, KP.RE], [KP.RE, KP.RW], [KP.LS, KP.RS]]) {
+            if (!ok(a) || !ok(b)) continue;
+            ctx.beginPath();
+            ctx.moveTo(kps[a].x, kps[a].y);
+            ctx.lineTo(kps[b].x, kps[b].y);
+            ctx.strokeStyle = 'rgba(74, 222, 128, 0.9)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+          }
+        }
       };
-      // rvfc only fires on NEW frames — after the last frame it goes silent,
-      // so 'ended' is the reliable completion signal.
-      video.addEventListener('ended', finish, { once: true });
+
       video.addEventListener(
         'error',
         () => {
@@ -189,6 +188,45 @@ export default function PunchGraderPage() {
         },
         { once: true },
       );
+
+      if (stepFps > 0) {
+        // stepped mode: pause + seek through the whole file at exact intervals
+        if (Number.isNaN(video.duration)) {
+          await new Promise((res) => video.addEventListener('loadedmetadata', res, { once: true }));
+        }
+        video.pause();
+        const dt = 1 / stepFps;
+        for (let t = 0; t < video.duration; t += dt) {
+          if (runId !== runIdRef.current) return;
+          const seeked = new Promise((res) => video.addEventListener('seeked', res, { once: true }));
+          video.currentTime = Math.min(t, Math.max(0, video.duration - 0.001));
+          await seeked;
+          processFrame();
+        }
+        finish();
+        return;
+      }
+
+      video.playbackRate = rate > 0 && rate <= 1 ? rate : 1;
+      await video.play();
+
+      const step = () => {
+        if (runId !== runIdRef.current) return;
+        if (video.ended) {
+          finish();
+          return;
+        }
+        if (video.currentTime !== lastVideoTime) {
+          lastVideoTime = video.currentTime;
+          processFrame();
+        }
+        const v = video as VideoWithRVFC;
+        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(step);
+        else requestAnimationFrame(step);
+      };
+      // rvfc only fires on NEW frames — after the last frame it goes silent,
+      // so 'ended' is the reliable completion signal.
+      video.addEventListener('ended', finish, { once: true });
       step();
     } catch (e) {
       console.error('[punch-grader] failed:', e);

@@ -13,6 +13,7 @@ const args = process.argv.slice(2);
 const videoPath = args.find((a) => !a.startsWith('--'));
 const sensitivity = args.find((a) => a.startsWith('--sensitivity='))?.split('=')[1];
 const rate = args.find((a) => a.startsWith('--rate='))?.split('=')[1];
+const step = args.find((a) => a.startsWith('--step='))?.split('=')[1];
 const base = args.find((a) => a.startsWith('--base='))?.split('=')[1] ?? 'http://localhost:3000';
 if (!videoPath) {
   console.error('usage: node scripts/grade-punch-video.mjs <video-path> [--sensitivity=1.4] [--base=URL]');
@@ -24,8 +25,8 @@ const browser = await chromium.launch({ executablePath });
 const page = await browser.newPage({ viewport: { width: 480, height: 900 } });
 page.on('pageerror', (e) => console.error('[pageerror]', e.message));
 
-const query = rate ? `?rate=${rate}` : '';
-await page.goto(`${base}/test/punch-grader${query}`, { waitUntil: 'domcontentloaded' });
+const query = step ? `?step=${step}` : rate ? `?rate=${rate}` : '';
+await page.goto(`${base}/test/punch-grader${query}`, { waitUntil: 'domcontentloaded', timeout: 120000 });
 await page.waitForSelector('[data-testid="video-input"]', { timeout: 60000 });
 await page.setInputFiles('[data-testid="video-input"]', videoPath);
 

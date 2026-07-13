@@ -27,17 +27,27 @@
 
 export const MIN_SCORE = 0.3;
 /**
- * Default speed threshold (shoulder-widths/sec). The UI "sensitivity".
- * Tuned on the 2026-07-13 field clip: 31-34 detected vs 32 real punches at
- * 7.75-8 across runs (frame-sampling jitter moves counts a few percent).
+ * Default speed threshold (shoulder-widths/sec over the fixed lookback
+ * window). The UI "sensitivity". Fit on two 2026-07-13 field clips with
+ * human ground truth (32 and 24 punches): TH=4 + 0.15s cross-hand
+ * suppression scores 29/32 and 24/24 at deterministic 30fps sampling.
  */
-export const DEFAULT_SENSITIVITY = 7.75;
-export const SENSITIVITY_MIN = 6;
-export const SENSITIVITY_MAX = 10;
+export const DEFAULT_SENSITIVITY = 4;
+export const SENSITIVITY_MIN = 2.5;
+export const SENSITIVITY_MAX = 6.5;
 export const MIN_RADIAL = 1; // sw/s outward — gates out return strokes
 export const REFRACTORY_S = 0.3; // min gap between counts on one hand
 export const HYSTERESIS = 0.6; // re-arm once speed < speedT * this
 export const MIN_SHOULDER_W = 0.05; // meters — degenerate-pose guard
+/**
+ * Cross-hand phantom suppression: a hard punch rotates the torso, which
+ * whips the OTHER wrist relative to its shoulder and double-fires (seen on
+ * field video: app counter jumped +2 on single punches). Fires are held
+ * PENDING_S before emitting; if the other hand fires within the window, only
+ * the one with the higher ABSOLUTE wrist speed survives (the phantom wrist
+ * barely moves in world space — the shoulder moves under it).
+ */
+export const PENDING_S = 0.15;
 
 // MediaPipe PoseLandmarker indices (33-point topology)
 export const KP = { LS: 11, RS: 12, LE: 13, RE: 14, LW: 15, RW: 16 } as const;
@@ -46,15 +56,27 @@ export type Keypoint = { x: number; y: number; z?: number; vis: number };
 export type PunchSide = 'left' | 'right';
 export type PunchEvent = { side: PunchSide; t: number; ext: number; velocity: number };
 
+type Vec3 = { x: number; y: number; z: number };
+type Sample = { t: number; ext: number; rel: Vec3; wrist: Vec3 };
+
 type HandState = {
   armed: boolean;
   lastFire: number;
-  lastExt: number;
-  lastTime: number;
   radial: number;
   speed: number;
-  lastRel: { x: number; y: number; z: number } | null;
+  absSpeed: number;
+  history: Sample[];
 };
+
+/**
+ * Speeds are measured over a fixed ~120ms lookback window, NOT between
+ * consecutive frames — consecutive-frame speeds scale with camera FPS
+ * (undersampled spikes flatten), which made thresholds device-dependent.
+ * With a fixed window the same punch reads the same at 15fps and 60fps.
+ */
+const LOOKBACK_S = 0.12;
+const LOOKBACK_MIN_S = 0.05; // need at least this much span to trust a speed
+const HISTORY_MAX_S = 0.4;
 
 const dist3 = (a: Keypoint, b: Keypoint) =>
   Math.hypot(a.x - b.x, a.y - b.y, (a.z ?? 0) - (b.z ?? 0));
@@ -63,13 +85,14 @@ export function createPunchDetector() {
   const mkHand = (): HandState => ({
     armed: true,
     lastFire: -Infinity,
-    lastExt: 0,
-    lastTime: 0,
     radial: 0,
     speed: 0,
-    lastRel: null,
+    absSpeed: 0,
+    history: [],
   });
   const hands: Record<PunchSide, HandState> = { left: mkHand(), right: mkHand() };
+  // fires held for PENDING_S so a stronger cross-hand fire can cancel a phantom
+  let pending: { ev: PunchEvent; abs: number }[] = [];
 
   /**
    * Feed one frame of WORLD landmarks (meters). Returns punches fired this
@@ -84,17 +107,20 @@ export function createPunchDetector() {
     ext: Record<PunchSide, number>;
     speed: Record<PunchSide, number>;
     radial: Record<PunchSide, number>;
+    /** absolute wrist speed in world space (phantom check — see fire gate) */
+    abs: Record<PunchSide, number>;
   } {
     const events: PunchEvent[] = [];
     const ext: Record<PunchSide, number> = { left: 0, right: 0 };
     const speed: Record<PunchSide, number> = { left: 0, right: 0 };
     const radial: Record<PunchSide, number> = { left: 0, right: 0 };
+    const abs: Record<PunchSide, number> = { left: 0, right: 0 };
 
     const ok = (i: number) => (kps[i]?.vis ?? 0) > MIN_SCORE;
     const ls = kps[KP.LS], rs = kps[KP.RS];
-    if (!ls || !rs || !ok(KP.LS) || !ok(KP.RS)) return { events, ext, speed, radial };
+    if (!ls || !rs || !ok(KP.LS) || !ok(KP.RS)) return { events, ext, speed, radial, abs };
     const shoulderW = dist3(ls, rs);
-    if (shoulderW <= MIN_SHOULDER_W) return { events, ext, speed, radial };
+    if (shoulderW <= MIN_SHOULDER_W) return { events, ext, speed, radial, abs };
 
     const sides: { side: PunchSide; wrist: number; shoulder: number }[] = [
       { side: 'left', wrist: KP.LW, shoulder: KP.LS },
@@ -106,20 +132,36 @@ export function createPunchDetector() {
       const e = dist3(w, sh) / shoulderW;
       ext[s.side] = e;
       const hand = hands[s.side];
-      const dt = tSeconds - hand.lastTime;
       // wrist position relative to the shoulder (removes body translation)
       const rel = { x: w.x - sh.x, y: w.y - sh.y, z: (w.z ?? 0) - (sh.z ?? 0) };
-      if (dt > 0 && dt < 0.5) {
-        hand.radial = (e - hand.lastExt) / dt;
-        if (hand.lastRel) {
-          hand.speed =
-            Math.hypot(rel.x - hand.lastRel.x, rel.y - hand.lastRel.y, rel.z - hand.lastRel.z) /
-            shoulderW /
-            dt;
-        }
+      const wpos = { x: w.x, y: w.y, z: w.z ?? 0 };
+
+      // fixed-window speeds: measure against the sample nearest LOOKBACK_S ago
+      hand.history = hand.history.filter((p) => tSeconds - p.t <= HISTORY_MAX_S);
+      let ref: Sample | null = null;
+      for (const p of hand.history) {
+        const span = tSeconds - p.t;
+        if (span < LOOKBACK_MIN_S) break; // history is time-ordered
+        if (!ref || Math.abs(span - LOOKBACK_S) < Math.abs(tSeconds - ref.t - LOOKBACK_S)) ref = p;
       }
+      if (ref) {
+        const span = tSeconds - ref.t;
+        hand.radial = (e - ref.ext) / span;
+        hand.speed =
+          Math.hypot(rel.x - ref.rel.x, rel.y - ref.rel.y, rel.z - ref.rel.z) / shoulderW / span;
+        hand.absSpeed =
+          Math.hypot(wpos.x - ref.wrist.x, wpos.y - ref.wrist.y, wpos.z - ref.wrist.z) /
+          shoulderW /
+          span;
+      } else {
+        hand.radial = 0;
+        hand.speed = 0;
+        hand.absSpeed = 0;
+      }
+      hand.history.push({ t: tSeconds, ext: e, rel, wrist: wpos });
       speed[s.side] = hand.speed;
       radial[s.side] = hand.radial;
+      abs[s.side] = hand.absSpeed;
 
       if (
         hand.armed &&
@@ -129,16 +171,29 @@ export function createPunchDetector() {
       ) {
         hand.armed = false;
         hand.lastFire = tSeconds;
-        events.push({ side: s.side, t: tSeconds, ext: e, velocity: hand.speed });
+        const ev: PunchEvent = { side: s.side, t: tSeconds, ext: e, velocity: hand.speed };
+        // cross-hand phantom check: within PENDING_S only the higher
+        // absolute-wrist-speed fire survives
+        const rival = pending.find((p) => p.ev.side !== s.side);
+        if (rival) {
+          if (hand.absSpeed > rival.abs) {
+            pending = pending.filter((p) => p !== rival);
+            pending.push({ ev, abs: hand.absSpeed });
+          }
+          // else: this fire is the phantom — drop it
+        } else {
+          pending.push({ ev, abs: hand.absSpeed });
+        }
       } else if (!hand.armed && hand.speed < speedT * HYSTERESIS) {
         hand.armed = true;
       }
-
-      hand.lastExt = e;
-      hand.lastTime = tSeconds;
-      hand.lastRel = rel;
     }
-    return { events, ext, speed, radial };
+    // emit pending fires once they survive the suppression window
+    for (const p of pending) {
+      if (tSeconds - p.ev.t >= PENDING_S) events.push(p.ev);
+    }
+    pending = pending.filter((p) => tSeconds - p.ev.t < PENDING_S);
+    return { events, ext, speed, radial, abs };
   }
 
   return { update };
