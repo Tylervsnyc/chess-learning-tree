@@ -15,6 +15,8 @@ import { getLandmarker } from '@/lib/punch/landmarker';
 import {
   createPunchDetector,
   DEFAULT_SENSITIVITY,
+  SENSITIVITY_MIN,
+  SENSITIVITY_MAX,
   KP,
   MIN_SCORE,
   type Keypoint,
@@ -34,6 +36,8 @@ type GradeResult = {
   right: number;
   framesAnalyzed: number;
   events: { side: string; t: number; velocity: number }[];
+  /** per-frame extension / rel-speed / radial-velocity, for diagnosing misses */
+  trace: { t: number; eL: number; eR: number; sL: number; sR: number; rL: number; rR: number }[];
 };
 
 export default function PunchGraderPage() {
@@ -70,6 +74,7 @@ export default function PunchGraderPage() {
       const detector = await getLandmarker();
       const punchDetector = createPunchDetector();
       const events: PunchEvent[] = [];
+      const trace: GradeResult['trace'] = [];
       let frames = 0;
       let lastVideoTime = -1;
 
@@ -100,6 +105,7 @@ export default function PunchGraderPage() {
             t: Math.round(e.t * 100) / 100,
             velocity: Math.round(e.velocity * 10) / 10,
           })),
+          trace,
         });
         setStatus('done');
       };
@@ -114,7 +120,9 @@ export default function PunchGraderPage() {
           lastVideoTime = video.currentTime;
           frames++;
           // landmarker needs a monotonic wall-clock ts; punch timing uses VIDEO time
-          const lms = detector.detectForVideo(video, performance.now()).landmarks[0];
+          const res = detector.detectForVideo(video, performance.now());
+          const lms = res.landmarks[0];
+          const world = res.worldLandmarks[0];
           const canvas = canvasRef.current;
           const ctx = canvas?.getContext('2d');
           if (ctx && canvas) {
@@ -128,10 +136,25 @@ export default function PunchGraderPage() {
               y: l.y * video.videoHeight,
               vis: l.visibility ?? 1,
             }));
-            const r = punchDetector.update(kps, video.currentTime, sensitivity);
-            if (r.events.length) {
-              events.push(...r.events);
-              setLiveCount(events.length);
+            if (world) {
+              const wkps: Keypoint[] = world.map((l) => ({ ...l, vis: l.visibility ?? 1 }));
+              const r = punchDetector.update(wkps, video.currentTime, sensitivity);
+              if (r.events.length) {
+                events.push(...r.events);
+                setLiveCount(events.length);
+              }
+              if (trace.length < 800) {
+                const rnd = (n: number) => Math.round(n * 100) / 100;
+                trace.push({
+                  t: rnd(video.currentTime),
+                  eL: rnd(r.ext.left),
+                  eR: rnd(r.ext.right),
+                  sL: rnd(r.speed.left),
+                  sR: rnd(r.speed.right),
+                  rL: rnd(r.radial.left),
+                  rR: rnd(r.radial.right),
+                });
+              }
             }
             if (ctx && canvas) {
               const ok = (i: number) => kps[i].vis > MIN_SCORE;
@@ -194,10 +217,10 @@ export default function PunchGraderPage() {
 
         <div className="rounded-xl bg-chess-surface border border-slate-200 p-3 space-y-2">
           <div className="text-xs text-chess-text-muted">
-            Sensitivity (extension threshold: {sensitivity.toFixed(2)})
+            Sensitivity (speed threshold: {sensitivity.toFixed(2)})
           </div>
           <input
-            type="range" min="1.2" max="1.8" step="0.05" value={sensitivity}
+            type="range" min={SENSITIVITY_MIN} max={SENSITIVITY_MAX} step="0.25" value={sensitivity}
             disabled={status === 'grading'}
             onChange={(e) => setSensitivity(Number(e.target.value))}
             className="w-full"

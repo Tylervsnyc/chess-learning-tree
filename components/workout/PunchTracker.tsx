@@ -15,6 +15,8 @@ import { getLandmarker } from '@/lib/punch/landmarker';
 import {
   createPunchDetector,
   DEFAULT_SENSITIVITY,
+  SENSITIVITY_MIN,
+  SENSITIVITY_MAX,
   KP,
   MIN_SCORE,
   type Keypoint,
@@ -133,9 +135,12 @@ export function PunchTracker({
         if (gen !== genRef.current || !streamRef.current) return;
         const now = performance.now();
         let lms: { x: number; y: number; visibility?: number }[] | undefined;
+        let world: { x: number; y: number; z: number; visibility?: number }[] | undefined;
         if (video.currentTime !== lastVideoTime) {
           lastVideoTime = video.currentTime;
-          lms = detector.detectForVideo(video, now).landmarks[0];
+          const res = detector.detectForVideo(video, now);
+          lms = res.landmarks[0];
+          world = res.worldLandmarks[0];
         }
 
         const f = fpsRef.current;
@@ -154,7 +159,8 @@ export function PunchTracker({
         }
 
         if (lms) {
-          // normalized 0-1 coords → pixel space
+          // detection runs on WORLD landmarks (3D meters — rotation-proof);
+          // pixel-space landmarks are only for drawing the overlay
           const kps: Keypoint[] = lms.map((l) => ({
             x: l.x * video.videoWidth,
             y: l.y * video.videoHeight,
@@ -162,9 +168,12 @@ export function PunchTracker({
           }));
           const ok = (i: number) => kps[i].vis > MIN_SCORE;
 
-          const result = detectorRef.current.update(kps, now / 1000, sensitivityRef.current);
-          for (const ev of result.events) registerPunch(ev.side);
-          if (debug) setDbgExt(result.ext);
+          if (world) {
+            const wkps: Keypoint[] = world.map((l) => ({ ...l, vis: l.visibility ?? 1 }));
+            const result = detectorRef.current.update(wkps, now / 1000, sensitivityRef.current);
+            for (const ev of result.events) registerPunch(ev.side);
+            if (debug) setDbgExt(result.ext);
+          }
 
           if (ctx && canvas) {
             for (const [a, b] of [[KP.LS, KP.LE], [KP.LE, KP.LW], [KP.RS, KP.RE], [KP.RE, KP.RW], [KP.LS, KP.RS]]) {
@@ -265,17 +274,17 @@ export function PunchTracker({
 
           <div className="rounded-xl bg-chess-surface border border-slate-200 p-3 space-y-2">
             <div className="flex justify-between text-xs text-chess-text-muted">
-              <span>Sensitivity (extension threshold: {sensitivity.toFixed(2)})</span>
+              <span>Sensitivity (speed threshold: {sensitivity.toFixed(2)})</span>
               <span>L {dbgExt.left.toFixed(2)} · R {dbgExt.right.toFixed(2)}</span>
             </div>
             <input
-              type="range" min="1.2" max="1.8" step="0.05" value={sensitivity}
+              type="range" min={SENSITIVITY_MIN} max={SENSITIVITY_MAX} step="0.25" value={sensitivity}
               onChange={(e) => setSensitivity(Number(e.target.value))}
               className="w-full"
             />
             <p className="text-[11px] text-chess-text-muted">
               Lower = counts easier. If it counts arm waves, raise it. Live numbers on the
-              right show your current arm extension — throw a punch and watch it spike.
+              right show current arm extension — throw a punch and watch it spike.
             </p>
           </div>
 
