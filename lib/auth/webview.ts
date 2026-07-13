@@ -15,6 +15,7 @@ export function isInAppWebview(): boolean {
   if (typeof navigator === 'undefined') return false;
   const ua = navigator.userAgent || '';
   // Instagram + Facebook (FBAN/FBAV/FB_IAB) + TikTok identify themselves in the
-  // UA. Android webviews also carry the "; wv)" token.
-  return /Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|BytedanceWebview/i.test(ua) || /;\s?wv\)/.test(ua);
+  // UA. Android webviews also carry the "; wv)" token. ChessPathNative is our
+  // own iOS shell (ios-app/) — a WKWebView, so Google OAuth dies there too.
+  return /Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|BytedanceWebview|ChessPathNative/i.test(ua) || /;\s?wv\)/.test(ua);
 }

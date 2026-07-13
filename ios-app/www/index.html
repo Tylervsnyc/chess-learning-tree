@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Chess Boxing</title>
+    <style>
+      /* Fallback page — only shown if the remote app can't load (offline).
+         Normal launches load https://chesspath.app/workout directly. */
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef6fc;
+        font-family: -apple-system, system-ui, sans-serif;
+        text-align: center;
+        padding: 24px;
+      }
+      h1 { font-size: 22px; color: #1e293b; margin: 0 0 8px; }
+      p { color: #64748b; font-size: 15px; margin: 0 0 20px; }
+      button {
+        background: #58cc02; color: #fff; border: 0; border-radius: 16px;
+        font-size: 16px; font-weight: 800; padding: 14px 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Chess Boxing</h1>
+      <p>You look offline. Reconnect and try again — the round timer will wait.</p>
+      <button onclick="location.href='https://chesspath.app/workout'">Retry</button>
+    </div>
+  </body>
+</html>

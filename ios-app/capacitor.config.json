@@ -1,0 +1,22 @@
+{
+  "appId": "app.chesspath.chessboxing",
+  "appName": "Chess Boxing",
+  "webDir": "www",
+  "backgroundColor": "#eef6fc",
+  "server": {
+    "url": "https://chesspath.app/workout",
+    "allowNavigation": [
+      "chesspath.app",
+      "www.chesspath.app",
+      "*.supabase.co",
+      "appleid.apple.com"
+    ]
+  },
+  "ios": {
+    "contentInset": "always",
+    "appendUserAgent": "ChessPathNative/1.0",
+    "backgroundColor": "#eef6fc",
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}
