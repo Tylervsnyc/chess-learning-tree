@@ -1010,6 +1010,9 @@ export default function WorkoutPage() {
             <div className="text-5xl font-black text-chess-text tabular-nums">
               {fmtTime(secondsLeft)}
             </div>
+            <div className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+              🥊 Rookie&apos;s Corner
+            </div>
             <PunchTracker autoStart className="w-full max-w-xs" />
             <button
               onClick={togglePunchCam}
