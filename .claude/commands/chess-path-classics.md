@@ -35,6 +35,20 @@ Good episodes: famous studies (Saavedra, Réti, Lucena, Philidor), famous games
 (Opera Game, Immortal Game), famous ideas (windmill, smothered mate). The hook
 is always a surprising truth ("White is down a full rook — and wins").
 
+**Source material: `data/growth/pietro-reel-scripts.md`** — 6 full transcripts
+of @pietrocheckmate's biggest position explainers (496K–2.2M views) with
+structure notes. Adapt STRUCTURE, never lines. The devices that earn the views:
+- **The short formula wins biggest** (his 2.2M reel is 238 words): one "has
+  White blundered?" fake-out, two mysterious quiet moves, trap snaps shut.
+- **Fake-out before every payoff**: "So is this it? Well, not exactly." Every
+  apparent win gets refuted once before the real answer.
+- **Teach a rule mid-story, then break it**: "the king can never step toward
+  the center... Didn't we say that? Well, the situation has changed."
+- **Name the idea something memorable** (the staircase, the king walk).
+- **Put the emotional beat on the opponent's realization**, not the hero move.
+- **Drop ONE teachable principle per episode** ("piece activity is the real
+  king").
+
 **Verify every line yourself before writing a word.** Play each branch with
 chess.js or on a board. Every FEN in the comp must be hand-checked. If the
 episode covers "why the obvious move fails," verify the refutation too —
