@@ -50,17 +50,36 @@ structure notes. Adapt STRUCTURE, never lines. The devices that earn the views:
   king").
 
 **Verify every line yourself before writing a word.** Play each branch with
-chess.js or on a board. Every FEN in the comp must be hand-checked. If the
-episode covers "why the obvious move fails," verify the refutation too —
-including stalemate claims (enumerate the legal moves; do not trust memory).
+chess.js or on a board. If the episode covers "why the obvious move fails,"
+verify the refutation too — including stalemate claims (enumerate the legal
+moves; do not trust memory).
 
-**If the source is a reference video** (e.g. remaking a creator's format):
-Instagram blocks the normal player in the automated browser, but the EMBED
-player works — `instagram.com/p/<id>/embed/`. From there, control the `<video>`
-element with javascript_tool (seek stepwise) and tile cropped frames onto a
-canvas appended to the page, then screenshot the canvas — this reads burned-in
-captions and board states without downloading anything. Take the chess CONTENT
-only; never reuse the creator's signature phrases or script.
+**NEVER hand-write a FEN into a comp.** Every board-state FEN must be
+copy-pasted from the verify script's output — extend the script to emit any
+extra demo states you need. (Ep. 3 shipped a review round with a vanished b6
+pawn because one demo state was typed from memory. Tyler caught it.)
+
+**Before every render:** `npx tsx scripts/audit-classics-fens.ts` — replays
+each episode's verified lines and fails on any comp FEN that a legal replay
+cannot produce. Add the new episode's comp file + lines to it.
+
+**If the source is a reference video** — the proven pipeline (eps. 2-3):
+1. **Ask Tyler, then yt-dlp** the reel to the scratchpad (his established
+   workflow; state file + size when asking; DELETE the file after extraction).
+2. **Transcript**: `ffmpeg -vn` the audio to mp3, then
+   `scripts/voice/.venv/bin/python scripts/voice/align-voice.py <mp3>` —
+   ElevenLabs STT gives the full transcript.
+3. **Boards**: ffmpeg tile filter over the board crop, e.g.
+   `-vf "fps=1/3.5,crop=<board>,scale=262:262,tile=4x2"` → grid pages you can
+   read; then single large frames at the key moments. Watch for a composer
+   credit on the player plates (that's how Gurvich 1959 was confirmed).
+4. Reconstruct the line, then VERIFY it with chess.js — the video is a lead,
+   not a source of truth.
+Fallback if downloading is off the table: the IG EMBED player
+(`instagram.com/p/<id>/embed/`) sometimes loads where the normal player won't —
+drive the `<video>` with javascript_tool and tile cropped frames onto an
+appended canvas, then screenshot it. Either way: take the chess CONTENT only;
+never reuse the creator's signature phrases or script.
 
 ## 2. Script rules
 
@@ -86,7 +105,10 @@ Clone `scripts/generate-saavedra-teach-voice.ts` → `generate-<episode>-voice.t
 - Settings for the teaching read: `stability: 0.45, style: 0.45`,
   model `eleven_turbo_v2_5`, and **NO atempo speedup** (the 1.08 speedup used
   by older reels made Rookie sound rushed — Tyler flagged it).
-- Re-record a single line: `npx tsx scripts/generate-<episode>-voice.ts <segId>`.
+- Re-record a single line: `npx tsx scripts/generate-<episode>-voice.ts <segId>`,
+  then delete that clip's stale `.align.json` and re-run the bake. NOTE: a
+  re-recorded clip changes its duration, which SHIFTS every later beat's start
+  time — recompute beat times before frame-checking (ep. 3 lesson).
 - Removing a segment WITHOUT re-recording the rest: delete it from `SEGMENTS`,
   run with a bogus arg (`npx tsx ... __keep_existing__`) — existing clips are
   kept, the dropped id just leaves the json.
@@ -103,9 +125,22 @@ in `scripts/bake-saavedra-alignment.ts` and run it. It aligns any clip missing
 ## 5. Composition
 
 `remotion/SaavedraReel.tsx` has the factory: `buildReel(voiceData, opts)` where
-opts = `{ blackName, whiteName, title, states?, arrows?, xmarks? }`. For a new
-episode, follow its pattern (new file `remotion/<Episode>Reel.tsx` or extend
-the factory into a shared module once there are 3+ episodes):
+opts = `{ blackName, whiteName, title, states?, arrows?, xmarks?, badges? }`.
+New episodes import it (see `ZugzwangReel.tsx` / `ChosenOneReel.tsx` — ~100
+lines each: states + overlays + one buildReel call).
+
+The factory handles automatically — do NOT rebuild these:
+- **App move/capture sounds** on every state land (`sounds/move.mp3` /
+  `sounds/capture.mp3`; capture detected from 'x' in the label). Mark
+  rewind/reset states `silent: true` or the board clicks when it rewinds.
+- **/learn checkmate explainer** at any state with `redSquares` /
+  `yellowSquares` (red = attacked escapes, yellow = own-piece blocks). Compute
+  them with the app's `getCheckmateSquareHighlights` from lib/puzzle-utils —
+  never eyeball them. If cage X's precede the mate, END them at the cage beat
+  so they hand off to the yellow squares (no doubled overlays).
+- **Caption shows `chesspath.app`** while the voice says "chess path dot app".
+
+Details:
 
 - **Board states** are explicit `{ seg, frac, fen, from, to, label }` — frac is
   the fraction through that voice segment when the move lands. Explicit FENs
@@ -158,6 +193,12 @@ Chess Path Classics, No. <n>: <Position Name> (<year>).
 
 <What Rookie walks through, one paragraph.>
 
+<CREDIT LINE — always. Name the composer/players + year when known, and
+where we found it: e.g. "Study by A. Gurvich, 1959. We found it thanks to
+@pietrocheckmate." If the composer is unknown after a real search, say so
+and invite the comments: "Composer unknown to us — if you know this study,
+tell us in the comments.">
+
 A new classic position, explained simply, every week.
 
 The fun way to learn chess: chesspath.app — link in bio.
@@ -165,14 +206,30 @@ The fun way to learn chess: chesspath.app — link in bio.
 #chess #learnchess #chesspuzzle #endgame #chessstudy #chesshistory #chessreels #chesseducation
 ```
 
+Credit is non-negotiable (Tyler, 2026-07-18): every caption names the original
+composer/game when known AND the account/channel where we found the position.
+
 No emojis anywhere (captions run through `stripEmojis` anyway). Dry-run first;
 `--post` publishes via `lib/instagram.ts`.
+
+**Scheduled posts** ("post it tomorrow at 10"): prepare + dry-run the post
+script, then CronCreate a one-shot with the exact command — but it is
+SESSION-BOUND (dies if the Claude session closes), so ALWAYS also create a
+Penelope task with `scheduled_at` documenting the one-line fallback command.
+Close the task once the post is confirmed live.
 
 ## Episode log
 
 | No. | Position | Composition | Posted | Media id |
 |-----|----------|-------------|--------|----------|
 | 1 | The Saavedra Position (1895) | `SaavedraTeachReel` | 2026-07-17 | 18601938340033459 |
+| 2 | Zugzwang — A. Gurvich study (1959) | `ZugzwangReel` | 2026-07-18 | 18365382673244370 |
+| 3 | The Two-Pawn Checkmate (sacrifice cascade) | `ChosenOneReel` | 2026-07-19 | 17975966700100774 |
+
+Format note (Tyler, 2026-07-18): part of the fun is REVELING in the
+impossibility — show all the variations, take your time. The short formula is
+a tool, not a rule; when a study's joy is escalation (No. 3), let it breathe.
+Never spoil the payoff in the hook — tease the impossibility, not the moves.
 
 (The Saavedra also has a POV companion cut, `SaavedraReel` — Rookie AS the
 black rook, sore-loser register, `out/saavedra-reel.mp4`, unposted.)
