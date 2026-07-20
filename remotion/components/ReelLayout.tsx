@@ -1,5 +1,5 @@
 import React from 'react';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 import { ReelLogo, LOGO_H } from './ReelLogo';
 import { BoardSlot } from './BoardSlot';
 import { FooterTagline } from './FooterTagline';
@@ -8,6 +8,7 @@ import { FRAME_H, BOARD_SIZE, ZONE_H, SAFE_PAD } from '../lib/timing';
 const { fontFamily } = loadFont();
 
 const LOGO_TOP = 88; // pushed down so logo+badge feel centered in top zone
+const LOGO_TOP_WITH_SUBTEXT = 24; // lifted so badge + subtext line both fit above the board
 
 /**
  * 3-zone reel layout (1080x1920). Board is dead center, never moves.
@@ -20,7 +21,22 @@ export const ReelLayout: React.FC<{
   boardOverlay?: React.ReactNode;
   highlightFrom?: string;
   highlightTo?: string;
-}> = ({ fen, orientation, bottomContent, boardOverlay, highlightFrom, highlightTo }) => {
+  badgeText?: string;
+  badgeGradient?: string;
+  badgeShadow?: string;
+  badgeSubtext?: string;
+}> = ({
+  fen,
+  orientation,
+  bottomContent,
+  boardOverlay,
+  highlightFrom,
+  highlightTo,
+  badgeText = 'Daily Puzzle',
+  badgeGradient = 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+  badgeShadow = '0 8px 24px rgba(88,204,2,0.3)',
+  badgeSubtext,
+}) => {
   return (
     <div
       style={{
@@ -42,7 +58,7 @@ export const ReelLayout: React.FC<{
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
-            top: LOGO_TOP,
+            top: badgeSubtext ? LOGO_TOP_WITH_SUBTEXT : LOGO_TOP,
           }}
         >
           <ReelLogo />
@@ -53,7 +69,7 @@ export const ReelLayout: React.FC<{
             position: 'absolute',
             left: 0,
             right: 0,
-            top: LOGO_TOP + LOGO_H,
+            top: (badgeSubtext ? LOGO_TOP_WITH_SUBTEXT : LOGO_TOP) + LOGO_H,
             bottom: 0,
             display: 'flex',
             flexDirection: 'column',
@@ -73,13 +89,27 @@ export const ReelLayout: React.FC<{
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              background: 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+              background: badgeGradient,
               color: '#fff',
-              boxShadow: '0 8px 24px rgba(88,204,2,0.3)',
+              boxShadow: badgeShadow,
             }}
           >
-            Daily Puzzle
+            {badgeText}
           </span>
+          {badgeSubtext && (
+            <span
+              style={{
+                marginTop: 18,
+                fontSize: 34,
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#2A3C45',
+              }}
+            >
+              {badgeSubtext}
+            </span>
+          )}
         </div>
       </div>
 

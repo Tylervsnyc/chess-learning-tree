@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCurrentFrame, useVideoConfig, interpolate, AbsoluteFill } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from './lib/dm-sans';
 import { ROOK_BLOCKS, getMatteBackground } from '@/lib/daily-rook-blocks';
 import { FPS } from './lib/timing';
 

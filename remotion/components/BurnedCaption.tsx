@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCurrentFrame, interpolate, spring, useVideoConfig } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 
 const { fontFamily } = loadFont();
 

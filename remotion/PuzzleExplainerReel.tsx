@@ -6,7 +6,7 @@ import {
   interpolate,
   spring,
 } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from './lib/dm-sans';
 import { Chess } from 'chess.js';
 import { BoardSlot } from './components/BoardSlot';
 import { ReelLogo } from './components/ReelLogo';

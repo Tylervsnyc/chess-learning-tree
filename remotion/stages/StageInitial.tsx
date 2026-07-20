@@ -1,5 +1,5 @@
 import React from 'react';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 import { ReelLayout } from '../components/ReelLayout';
 import { BottomCard } from '../components/BottomCard';
 

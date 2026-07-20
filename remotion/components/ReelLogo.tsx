@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCurrentFrame } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 import { FPS } from '../lib/timing';
 
 const { fontFamily } = loadFont();

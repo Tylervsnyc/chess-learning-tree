@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCurrentFrame } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 import { ReelLayout } from '../components/ReelLayout';
 import { BottomCard } from '../components/BottomCard';
 import { COUNTDOWN_INTERVAL_FRAMES } from '../lib/timing';

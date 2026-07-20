@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useCurrentFrame } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from '../lib/dm-sans';
 import { Chess } from 'chess.js';
 import { parseUciMove } from '../../lib/puzzle-utils';
 import { ReelLayout } from '../components/ReelLayout';

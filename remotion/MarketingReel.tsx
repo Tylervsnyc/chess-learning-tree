@@ -9,7 +9,7 @@ import {
   OffthreadVideo,
   staticFile,
 } from 'remotion';
-import { loadFont } from '@remotion/google-fonts/DMSans';
+import { loadFont } from './lib/dm-sans';
 import { ReelLogo } from './components/ReelLogo';
 import { BurnedCaption, ScreenCaption, type Caption } from './components/BurnedCaption';
 import { FRAME_W, FRAME_H, FPS, MKT_CTA_FRAMES } from './lib/timing';
