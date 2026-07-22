@@ -21,6 +21,12 @@ const FPS = 30;
 const VOICE_DIRS = [
   'public/remotion/saavedra-voice',
   'public/remotion/saavedra-teach-voice',
+  'public/remotion/zugzwang-voice',
+  'public/remotion/chosen-one-voice',
+  'public/remotion/immortal-voice',
+  'public/remotion/marshall-voice',
+  'public/remotion/smothered-voice',
+  'public/remotion/legal-voice',
 ];
 
 interface AlignedWord {

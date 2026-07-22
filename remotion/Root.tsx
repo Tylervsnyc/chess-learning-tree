@@ -20,6 +20,19 @@ import {
 import { RookMultiplication, MULTIPLICATION_FRAMES } from './RookMultiplication';
 import { RookFullStory, FULL_STORY_FRAMES } from './RookFullStory';
 import { PuzzleExplainerReel, PUZZLE_EXPLAINER_TOTAL } from './PuzzleExplainerReel';
+import { OperaGameReel, OPERA_GAME_TOTAL } from './OperaGameReel';
+import {
+  SaavedraReel,
+  SAAVEDRA_TOTAL,
+  SaavedraTeachReel,
+  SAAVEDRA_TEACH_TOTAL,
+} from './SaavedraReel';
+import { ZugzwangReel, ZUGZWANG_TOTAL } from './ZugzwangReel';
+import { ChosenOneReel, CHOSEN_ONE_TOTAL } from './ChosenOneReel';
+import { ImmortalReel, IMMORTAL_TOTAL } from './ImmortalReel';
+import { MarshallReel, MARSHALL_TOTAL } from './MarshallReel';
+import { SmotheredReel, SMOTHERED_TOTAL } from './SmotheredReel';
+import { LegalReel, LEGAL_TOTAL } from './LegalReel';
 import { DataRiverDailyReel, DATA_RIVER_DAILY_TOTAL } from './DataRiverDailyReel';
 import { DataRiverWomensDailyReel, DATA_RIVER_WOMENS_DAILY_TOTAL } from './DataRiverWomensDailyReel';
 import {
@@ -79,6 +92,78 @@ export const Root: React.FC = () => {
           const moves = p.rawMoves.length - 1;
           return { durationInFrames: totalFrames(moves) };
         }}
+      />
+      <Composition
+        id="OperaGameReel"
+        component={OperaGameReel}
+        durationInFrames={OPERA_GAME_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="SaavedraReel"
+        component={SaavedraReel}
+        durationInFrames={SAAVEDRA_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="SaavedraTeachReel"
+        component={SaavedraTeachReel}
+        durationInFrames={SAAVEDRA_TEACH_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="ZugzwangReel"
+        component={ZugzwangReel}
+        durationInFrames={ZUGZWANG_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="ChosenOneReel"
+        component={ChosenOneReel}
+        durationInFrames={CHOSEN_ONE_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="ImmortalReel"
+        component={ImmortalReel}
+        durationInFrames={IMMORTAL_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="MarshallReel"
+        component={MarshallReel}
+        durationInFrames={MARSHALL_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="SmotheredReel"
+        component={SmotheredReel}
+        durationInFrames={SMOTHERED_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="LegalReel"
+        component={LegalReel}
+        durationInFrames={LEGAL_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
       />
       {/* Backwards-compatible alias for medium */}
       <Composition

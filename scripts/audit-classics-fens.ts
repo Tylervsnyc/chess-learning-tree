@@ -38,10 +38,35 @@ const CHO = '8/2pq4/bp6/p7/k1N1BK1R/3P4/PP6/8 w - - 0 1';
 replay(CHO, ['Nxb6+', 'cxb6', 'Bc6+', 'Qxc6', 'Ke5+', 'Kb5', 'a4+', 'Kc5', 'b4+', 'axb4', 'Rc4+', 'Bxc4', 'd4#']);
 replay(CHO, ['Nxb6+', 'cxb6', 'Bc6+', 'Qxc6', 'Ke5+', 'Kb5', 'a4+', 'Kc5', 'd4+', 'Kc4', 'd5+', 'Kc5', 'dxc6', 'Kxc6']);
 
+// No. 4 — The Immortal Game (1851): full game, reel opens after 17.Nd5
+const IMM = 'rnb1k1nr/p2p1ppp/5q2/1pbN1N1P/4PBP1/3P1Q2/PPP5/R4KR1 b kq - 4 17';
+replay(IMM, ['Qxb2', 'Bd6', 'Bxg1', 'e5', 'Qxa1+', 'Ke2', 'Na6', 'Nxg7+', 'Kd8', 'Qf6+', 'Nxf6', 'Be7#']);
+
+// No. 5 — Marshall's Golden Queen (1912): lead-in context + 23...Qg3!! + the three refutations
+const MAR22 = '5rk1/pp4pp/4p2r/4R1Q1/3n4/2q4B/P1P2PPP/5RK1 b - - 6 22'; // after 22.Qg5
+replay(MAR22, ['Rxh3', 'Rc5', 'Qg3']);
+const MARQ = '5rk1/pp4pp/4p3/2R3Q1/3n4/2q4r/P1P2PPP/5RK1 b - - 1 23'; // after 23.Rc5
+replay(MARQ, ['Qg3', 'hxg3', 'Ne2#']);
+replay(MARQ, ['Qg3', 'fxg3', 'Ne2+', 'Kh1', 'Rxf1#']);
+replay(MARQ, ['Qg3', 'Qxg3', 'Ne2+', 'Kh1', 'Nxg3+', 'Kg1', 'Nxf1']);
+
+// Smothered Mate (Philidor's Legacy pattern demo)
+const SMO = '5r1k/6pp/8/3Q2N1/8/8/8/6K1 w - - 0 1';
+replay(SMO, ['Nf7+', 'Kg8', 'Nh6+', 'Kh8', 'Qg8+', 'Rxg8', 'Nf7#']);
+
+// No. 6 — Légal's Mate (1750): reel opens after 3...Bg4 (the pin)
+const LEG = 'rn1qkbnr/ppp2ppp/3p4/4p3/2B1P1b1/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4';
+replay(LEG, ['Nc3', 'g6', 'Nxe5', 'Bxd1', 'Bxf7+', 'Ke7', 'Nd5#']);
+replay(LEG, ['Nc3', 'g6', 'Nxe5', 'dxe5', 'Qxg4']); // the declined branch
+
 const COMPS = [
   'remotion/SaavedraReel.tsx',
   'remotion/ZugzwangReel.tsx',
   'remotion/ChosenOneReel.tsx',
+  'remotion/ImmortalReel.tsx',
+  'remotion/MarshallReel.tsx',
+  'remotion/SmotheredReel.tsx',
+  'remotion/LegalReel.tsx',
 ];
 
 let bad = 0;

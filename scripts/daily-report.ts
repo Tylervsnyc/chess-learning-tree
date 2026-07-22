@@ -746,6 +746,59 @@ async function getCohortRetention(windowDays = 60): Promise<CohortRetention> {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+// ── Instagram post performance (read-only, Instagram Login API) ──
+interface IgPost {
+  date: string; views: number; reach: number; likes: number;
+  comments: number; saves: number; shares: number; title: string;
+}
+async function getInstagramPosts(windowDays = 5, limit = 20): Promise<{ available: boolean; posts: IgPost[] }> {
+  const TOKEN = process.env.IG_ACCESS_TOKEN;
+  const ACCOUNT = process.env.IG_ACCOUNT_ID;
+  if (!TOKEN || !ACCOUNT) return { available: false, posts: [] };
+  const IG_BASE = 'https://graph.instagram.com/v21.0';
+  const g = async (path: string, params: Record<string, string> = {}) => {
+    const url = new URL(`${IG_BASE}/${path}`);
+    url.searchParams.set('access_token', TOKEN);
+    for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error?.message ?? 'ig error');
+    return json;
+  };
+  const ins = async (id: string): Promise<Record<string, number>> => {
+    const out: Record<string, number> = {};
+    try {
+      const r = await g(`${id}/insights`, { metric: 'reach,views,likes,comments,saved,shares' });
+      for (const m of r.data ?? []) out[m.name] = m.values?.[0]?.value ?? 0;
+    } catch { /* metrics vary by media type / permission */ }
+    return out;
+  };
+  try {
+    const media = await g(`${ACCOUNT}/media`, {
+      fields: 'id,caption,timestamp,like_count,comments_count',
+      limit: String(limit),
+    });
+    const posts: IgPost[] = [];
+    for (const m of media.data ?? []) {
+      const i = await ins(m.id);
+      posts.push({
+        date: (m.timestamp ?? '').slice(0, 10),
+        views: i.views ?? 0, reach: i.reach ?? 0,
+        likes: i.likes ?? m.like_count ?? 0, comments: i.comments ?? m.comments_count ?? 0,
+        saves: i.saved ?? 0, shares: i.shares ?? 0,
+        title: (m.caption ?? '').split('\n')[0].slice(0, 40),
+      });
+    }
+    // Keep only posts published within the last `windowDays` (anchored to the
+    // report's target date) so the SOCIAL section is a rolling 5-day view.
+    const cutoff = new Date(`${targetDate}T00:00:00Z`);
+    cutoff.setUTCDate(cutoff.getUTCDate() - (windowDays - 1));
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    const windowed = posts.filter(p => p.date >= cutoffStr);
+    return { available: true, posts: windowed };
+  } catch { return { available: false, posts: [] }; }
+}
+
 async function main() {
   if (!PH_API_KEY) {
     console.error('  Missing POSTHOG_PERSONAL_API_KEY in .env.local');
@@ -786,6 +839,9 @@ async function main() {
   // Cohort retention — straight from the DB, independent of PostHog.
   const cohort = await getCohortRetention();
 
+  // Instagram post performance — from the IG Login API, independent of PostHog.
+  const igPosts = await getInstagramPosts(5);
+
   // Instagram acquisition funnels (per-person). `igFunnel` = all IG (paid +
   // organic); `paidFunnel` = the boosted ad only (utm_medium=paid).
   const igFunnel = await getSourceFunnel(f, IG_SOURCE);
@@ -813,6 +869,27 @@ async function main() {
   console.log(`  Total events:     ${overview.events}`);
   console.log(`  Mobile/Desktop:   ${devices.mobile}/${devices.desktop}  (${pct(devices.mobile, devices.total)} mobile)`);
   console.log(`  Returning users:  ${returning}  (${pct(returning, overview.users)} of total)`);
+
+  console.log(section('SOCIAL — INSTAGRAM (@chesspath.app, last 5 days)'));
+  if (!igPosts.available) {
+    console.log('  Unavailable — no IG_ACCESS_TOKEN/IG_ACCOUNT_ID in env (or insights not permitted).');
+  } else if (igPosts.posts.length === 0) {
+    console.log('  No posts in the last 5 days.');
+  } else {
+    console.log('  date         views  reach  likes  saves  shr  post');
+    const c = (v: number, w: number) => String(v).padStart(w);
+    for (const p of igPosts.posts) {
+      console.log(`  ${p.date}  ${c(p.views, 6)}  ${c(p.reach, 5)}  ${c(p.likes, 5)}  ${c(p.saves, 5)}  ${c(p.shares, 3)}  ${p.title}`);
+    }
+    const sum = (k: keyof IgPost) => igPosts.posts.reduce((t, p) => t + (p[k] as number), 0);
+    console.log(`\n  5-day totals (${igPosts.posts.length} posts):  ${sum('views')} views · ${sum('reach')} reach · ${sum('likes')} likes · ${sum('saves')} saves · ${sum('shares')} shares`);
+    const ranked = [...igPosts.posts].filter(p => p.views > 0).sort((a, b) => b.views - a.views);
+    if (ranked.length > 0) {
+      const best = ranked[0];
+      console.log(`  Top post (5d): "${best.title}" — ${best.views} views, ${best.saves} saves, ${best.shares} shares.`);
+      console.log(`  Note: newest posts are still accumulating views — judge a post after ~3 days.`);
+    }
+  }
 
   console.log(section(`COHORT RETENTION (DB truth, last ${cohort.windowDays}d of signups)`));
   if (!cohort.available) {
