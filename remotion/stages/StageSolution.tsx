@@ -20,7 +20,8 @@ export const StageSolution: React.FC<{
   solutionSanMoves: string[];
   setupFrom: string;
   setupTo: string;
-}> = ({ puzzleFen, orientation, solutionUciMoves, solutionSanMoves, setupFrom, setupTo }) => {
+  difficult?: boolean;
+}> = ({ puzzleFen, orientation, solutionUciMoves, solutionSanMoves, setupFrom, setupTo, difficult }) => {
   const frame = useCurrentFrame();
 
   // Which move are we on? One move every FRAMES_PER_MOVE frames.
@@ -79,6 +80,7 @@ export const StageSolution: React.FC<{
     <ReelLayout
       fen={currentFen}
       orientation={orientation}
+      difficult={difficult}
       highlightFrom={highlightFrom}
       highlightTo={highlightTo}
       bottomContent={

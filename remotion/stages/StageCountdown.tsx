@@ -16,7 +16,8 @@ export const StageCountdown: React.FC<{
   orientation: 'white' | 'black';
   setupFrom: string;
   setupTo: string;
-}> = ({ puzzleFen, orientation, setupFrom, setupTo }) => {
+  difficult?: boolean;
+}> = ({ puzzleFen, orientation, setupFrom, setupTo, difficult }) => {
   const frame = useCurrentFrame();
 
   // 30 frames per count: 0-29=3, 30-59=2, 60-89=1, 90+=GO!
@@ -28,6 +29,7 @@ export const StageCountdown: React.FC<{
     <ReelLayout
       fen={puzzleFen}
       orientation={orientation}
+      difficult={difficult}
       highlightFrom={setupFrom}
       highlightTo={setupTo}
       bottomContent={

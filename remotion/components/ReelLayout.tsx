@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCurrentFrame } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLogo, LOGO_H } from './ReelLogo';
 import { BoardSlot } from './BoardSlot';
@@ -20,7 +21,19 @@ export const ReelLayout: React.FC<{
   boardOverlay?: React.ReactNode;
   highlightFrom?: string;
   highlightTo?: string;
-}> = ({ fen, orientation, bottomContent, boardOverlay, highlightFrom, highlightTo }) => {
+  difficult?: boolean;
+}> = ({ fen, orientation, bottomContent, boardOverlay, highlightFrom, highlightTo, difficult }) => {
+  const frame = useCurrentFrame();
+
+  // Ambulance-siren pulse for the DIFFICULT pill: two opposite-phase glows
+  // (red + blue) breathe in and out on a ~0.8s cycle. Subtle — the pill stays
+  // red; only the glow alternates color.
+  const SIREN_CYCLE = 24; // frames per full cycle (~0.8s at 30fps)
+  const wave = (Math.sin((frame / SIREN_CYCLE) * Math.PI * 2) + 1) / 2; // 0..1
+  const redGlow = 0.18 + 0.5 * wave;
+  const blueGlow = 0.18 + 0.5 * (1 - wave);
+  const difficultShadow = `0 0 36px rgba(255,75,75,${redGlow.toFixed(3)}), 0 0 44px rgba(56,132,255,${blueGlow.toFixed(3)})`;
+
   return (
     <div
       style={{
@@ -73,12 +86,16 @@ export const ReelLayout: React.FC<{
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              background: 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+              background: difficult
+                ? 'linear-gradient(135deg, #FF4B4B 0%, #d63333 100%)'
+                : 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
               color: '#fff',
-              boxShadow: '0 8px 24px rgba(88,204,2,0.3)',
+              boxShadow: difficult
+                ? difficultShadow
+                : '0 8px 24px rgba(88,204,2,0.3)',
             }}
           >
-            Daily Puzzle
+            {difficult ? 'Difficult Puzzle' : 'Daily Puzzle'}
           </span>
         </div>
       </div>

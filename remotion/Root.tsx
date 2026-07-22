@@ -71,6 +71,7 @@ const defaultProps: DailyPuzzleVideoProps = {
   rating: 829,
   themes: ['exposedKing', 'kingsideAttack', 'mateIn3', 'sacrifice'],
   quip: 'That rook had places to be!',
+  difficult: false,
 };
 
 const numSolutionMoves = defaultProps.rawMoves.length - 1;

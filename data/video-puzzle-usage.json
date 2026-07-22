@@ -59,7 +59,10 @@
     "YFyeO",
     "4bI86",
     "1cK7I",
-    "gpHG8"
+    "gpHG8",
+    "Cwu4G",
+    "amUUt",
+    "6bIPi"
   ],
   "renders": [
     {
@@ -361,6 +364,24 @@
       "puzzleId": "gpHG8",
       "date": "4.10.26",
       "file": "daily.4.10.26-gpHG8.mp4"
+    },
+    {
+      "puzzleId": "Cwu4G",
+      "date": "7.23.26",
+      "file": "daily.7.23.26-Cwu4G.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "amUUt",
+      "date": "7.23.26",
+      "file": "daily.7.23.26-amUUt.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "6bIPi",
+      "date": "7.23.26",
+      "file": "daily.7.23.26-6bIPi.mp4",
+      "difficult": true
     }
   ]
 }

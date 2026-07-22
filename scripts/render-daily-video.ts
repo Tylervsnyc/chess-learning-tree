@@ -16,6 +16,7 @@ import { describeResult } from '../remotion/lib/describe-result';
 import { getVideoQuip } from '../remotion/lib/video-quips';
 
 const POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool.json');
+const HARD_POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool-hard.json');
 const USAGE_FILE = path.join(process.cwd(), 'data', 'video-puzzle-usage.json');
 const OUTPUT_DIR = path.join(process.cwd(), 'out', 'videos');
 const ENTRY_POINT = path.join(process.cwd(), 'remotion', 'index.ts');
@@ -32,7 +33,7 @@ interface PoolPuzzle {
 
 interface UsageData {
   usedPuzzleIds: string[];
-  renders: { puzzleId: string; date: string; file: string }[];
+  renders: { puzzleId: string; date: string; file: string; difficult?: boolean }[];
 }
 
 // Theme → hook text for captions
@@ -59,15 +60,29 @@ const HASHTAGS = [
   '#chesstactics', '#chesslife',
 ];
 
-function generateCaption(puzzle: PoolPuzzle, quip: string): string {
-  // Pick a hook based on theme
-  const hooks = THEME_HOOKS[puzzle.theme] || ['Can you solve this? 🤔', 'Find the best move!'];
+const DIFFICULT_HOOKS = [
+  "DIFFICULT PUZZLE 🔥 Only the sharp eyes get this one.",
+  "This one's TOUGH. Think you can crack it?",
+  "DIFFICULT PUZZLE. Most people miss it — can you?",
+];
+
+function generateCaption(puzzle: PoolPuzzle, quip: string, difficult = false): string {
   let hash = 0;
   for (let i = 0; i < puzzle.puzzleId.length; i++) {
     hash = ((hash << 7) - hash) + puzzle.puzzleId.charCodeAt(i);
     hash = hash & hash;
   }
+
+  // Pick a hook — difficult days get a harder framing
+  const hooks = difficult
+    ? DIFFICULT_HOOKS
+    : THEME_HOOKS[puzzle.theme] || ['Can you solve this? 🤔', 'Find the best move!'];
   const hook = hooks[Math.abs(hash) % hooks.length];
+
+  // Difficult days ask viewers to comment their guess before the reveal
+  const guessLine = difficult
+    ? '\nDrop your guess in the comments BEFORE you watch the solution 👇\n'
+    : '';
 
   // Pick 5-6 hashtags (always include core ones + rotate others)
   const core = ['#chess', '#chesspuzzle', '#chesspath', '#dailypuzzle'];
@@ -76,7 +91,7 @@ function generateCaption(puzzle: PoolPuzzle, quip: string): string {
   const tags = [...core, ...picked].join(' ');
 
   return `${hook}
-
+${guessLine}
 Rating: ${puzzle.rating} ⭐
 "${quip}"
 
@@ -94,17 +109,42 @@ function parseArgs() {
   return args;
 }
 
+// Difficult days = Thursday (4) + Saturday (6). dateStr is "M.D.YY".
+// Difficult days draw from a dedicated 2000+ pool (video-puzzle-pool-hard.json).
+const DIFFICULT_DAYS = new Set([4, 6]);
+
+function isDifficultDate(dateStr: string): boolean {
+  const [m, d, y] = dateStr.split('.').map((n) => parseInt(n, 10));
+  if (!m || !d || !y) return false;
+  const day = new Date(2000 + y, m - 1, d).getDay();
+  return DIFFICULT_DAYS.has(day);
+}
+
 function main() {
   const args = parseArgs();
   const minRating = args['min-rating'] ? parseInt(args['min-rating'], 10) : 0;
   const dateOverride = args['date']; // e.g. "2.14.26"
 
-  // Load pool
-  if (!fs.existsSync(POOL_FILE)) {
-    console.error('Pool file not found. Run: npx tsx scripts/curate-video-puzzles.ts');
+  // Resolve the target date (used for the output folder AND the difficult-day check)
+  const now = new Date();
+  const dateStr = dateOverride || `${now.getMonth() + 1}.${now.getDate()}.${String(now.getFullYear()).slice(-2)}`;
+
+  // Difficult puzzle on Thu/Sat (by target date), or forced via --difficult / --no-difficult
+  const forceOn = process.argv.includes('--difficult');
+  const forceOff = process.argv.includes('--no-difficult');
+  const difficult = forceOff ? false : forceOn || isDifficultDate(dateStr);
+
+  // Difficult days pull from the dedicated 2000+ hard pool; normal days from the main pool.
+  const poolFile = difficult ? HARD_POOL_FILE : POOL_FILE;
+  if (!fs.existsSync(poolFile)) {
+    const script = difficult ? 'scripts/curate-video-puzzles-hard.ts' : 'scripts/curate-video-puzzles.ts';
+    console.error(`Pool file not found (${path.basename(poolFile)}). Run: npx tsx ${script}`);
     process.exit(1);
   }
-  const pool: { puzzles: PoolPuzzle[] } = JSON.parse(fs.readFileSync(POOL_FILE, 'utf-8'));
+  const pool: { puzzles: PoolPuzzle[] } = JSON.parse(fs.readFileSync(poolFile, 'utf-8'));
+  if (difficult) {
+    console.log(`DIFFICULT day (${dateStr}) — selecting from the 2000+ hard pool`);
+  }
 
   // Load usage
   let usage: UsageData = { usedPuzzleIds: [], renders: [] };
@@ -123,8 +163,15 @@ function main() {
 
   console.log(`Selected puzzle: ${puzzle.puzzleId} (${puzzle.theme}, rating ${puzzle.rating})`);
 
-  const now = new Date();
-  const dateStr = dateOverride || `${now.getMonth() + 1}.${now.getDate()}.${String(now.getFullYear()).slice(-2)}`;
+  if (difficult) {
+    const remainingHard = pool.puzzles.filter(
+      (p) => !usedSet.has(p.puzzleId) && p.puzzleId !== puzzle.puzzleId,
+    ).length;
+    if (remainingHard < 10) {
+      console.warn(`⚠ Only ${remainingHard} unused puzzles left in the hard pool — top up via scripts/curate-video-puzzles-hard.ts`);
+    }
+  }
+
   const dayDir = path.join(OUTPUT_DIR, dateStr);
   fs.mkdirSync(dayDir, { recursive: true });
 
@@ -159,6 +206,7 @@ function main() {
     rating: puzzle.rating,
     themes: puzzle.allThemes,
     quip,
+    difficult,
   };
 
   const propsJson = JSON.stringify(inputProps);
@@ -178,7 +226,7 @@ function main() {
   }
 
   // Generate caption + hashtags
-  const caption = generateCaption(puzzle, quip);
+  const caption = generateCaption(puzzle, quip, difficult);
   const captionFile = outputFile.replace('.mp4', '.txt');
   fs.writeFileSync(captionFile, caption);
 
@@ -188,6 +236,7 @@ function main() {
     puzzleId: puzzle.puzzleId,
     date: dateStr,
     file: path.basename(outputFile),
+    difficult,
   });
   fs.writeFileSync(USAGE_FILE, JSON.stringify(usage, null, 2));
 

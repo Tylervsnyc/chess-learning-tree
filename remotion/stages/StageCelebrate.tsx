@@ -17,11 +17,13 @@ export const StageCelebrate: React.FC<{
   quip: string;
   lastMoveFrom: string;
   lastMoveTo: string;
-}> = ({ finalFen, orientation, result, quip, lastMoveFrom, lastMoveTo }) => {
+  difficult?: boolean;
+}> = ({ finalFen, orientation, result, quip, lastMoveFrom, lastMoveTo, difficult }) => {
   return (
     <ReelLayout
       fen={finalFen}
       orientation={orientation}
+      difficult={difficult}
       highlightFrom={lastMoveFrom}
       highlightTo={lastMoveTo}
       boardOverlay={<ResultPopup result={result} />}

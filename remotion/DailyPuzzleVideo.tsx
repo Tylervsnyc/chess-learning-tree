@@ -21,6 +21,7 @@ export interface DailyPuzzleVideoProps {
   rating: number;
   themes: string[];
   quip: string;
+  difficult?: boolean;
 }
 
 /**
@@ -31,6 +32,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
   rawMoves,
   themes,
   quip,
+  difficult,
 }) => {
   const puzzle = useMemo(() => {
     // Apply setup move to get puzzle position
@@ -97,6 +99,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           playerColorLabel={playerColorLabel}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
+          difficult={difficult}
         />
       </Sequence>
 
@@ -110,6 +113,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           orientation={puzzle.playerColor}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
+          difficult={difficult}
         />
       </Sequence>
 
@@ -125,6 +129,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           solutionSanMoves={puzzle.solutionSanMoves}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
+          difficult={difficult}
         />
       </Sequence>
 
@@ -140,6 +145,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           quip={quip}
           lastMoveFrom={puzzle.lastMoveFrom}
           lastMoveTo={puzzle.lastMoveTo}
+          difficult={difficult}
         />
       </Sequence>
     </div>

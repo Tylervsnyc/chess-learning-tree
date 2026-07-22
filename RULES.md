@@ -2322,6 +2322,8 @@ Rook icon (22 colored blocks, 2× scale) + "chesspath" wordmark (144px, DM Sans 
 
 Green pill below logo: `linear-gradient(135deg, #58CC02, #46a302)`, white text, 40px, font-700, uppercase, letter-spacing 0.12em.
 
+On **difficult days** (see below) this becomes a red **"Difficult Puzzle"** pill (`#FF4B4B → #d63333`) with an ambulance-siren glow — two opposite-phase red/blue box-shadows breathing on a ~0.8s cycle (`SIREN_CYCLE = 24` frames), driven by `useCurrentFrame` in `ReelLayout` (CSS animation doesn't survive Remotion render). Toggled by the `difficult` prop threaded from `DailyPuzzleVideo` → all 4 stages → `ReelLayout`.
+
 ### Bottom Card — 3D Layered Style
 
 - Dark card: `#1a2a33` background, `#58CC02` (green) 8px border, `border-radius: 32px`
@@ -2366,16 +2368,16 @@ Lichess-style amber squares:
 
 ### Puzzle Pool & Rendering
 
-**Pool file:** `data/video-puzzle-pool.json` (~200 puzzles)
-**Usage tracker:** `data/video-puzzle-usage.json`
-**Rating range:** 500–2000 (use `--min-rating=N` for harder puzzles)
+**Pool file:** `data/video-puzzle-pool.json` (~200 puzzles, normal days) · `data/video-puzzle-pool-hard.json` (2000+, difficult days — see below)
+**Usage tracker:** `data/video-puzzle-usage.json` (shared across both pools)
+**Rating range:** 500–2000 normal, 2000–2400 difficult
 **Solution moves:** 3–7 (not too short for video, not too long)
 **Preferred themes:** mateIn1-3, backRankMate, smotheredMate, fork, pin, skewer, sacrifice, discoveredAttack, kingsideAttack, queensideAttack, deflection, attraction
 
 **Render command:**
 ```bash
 npx tsx scripts/render-daily-video.ts                  # next unused puzzle
-npx tsx scripts/render-daily-video.ts --min-rating=1700  # hard puzzle
+npx tsx scripts/render-daily-video.ts --min-rating=1700  # extra rating floor (normal pool)
 ```
 
 **Refill pool:**
@@ -2384,6 +2386,23 @@ npx tsx scripts/curate-video-puzzles.ts
 ```
 
 **Output:** `out/videos/{M.DD.YY}/daily.{M.DD.YY}-{puzzleId}.mp4` + `.txt` caption file
+
+### Difficult Days (Thu + Sat)
+
+On **Thursday and Saturday** the render is automatically a DIFFICULT reel — a harder puzzle with a "guess in the comments" engagement hook. No flag needed: `render-daily-video.ts` derives the weekday from the **target date** (the `--date=M.DD.YY` you pass, or today), so keep dating each render for the day it will actually post (posting is FIFO by date).
+
+What differs on difficult days:
+- **Separate pool:** pulls from `data/video-puzzle-pool-hard.json` (2000+ puzzles, built from the raw Lichess `data/puzzles-by-rating/2000-plus` CSVs — the normal `clean-puzzles-v2` source caps at ~1999). Dedup is shared via the same `video-puzzle-usage.json`, so no repeats across pools. Normal days are untouched.
+- **Red siren badge** (see "Daily Puzzle" Badge above).
+- **Caption** swaps to a harder hook + a `Drop your guess in the comments BEFORE you watch the solution` line.
+
+**Override the weekday logic:** `--difficult` forces it on any day; `--no-difficult` forces a normal render on a Thu/Sat.
+
+**Refill the hard pool** (rare — the render warns when <10 unused remain):
+```bash
+npx tsx scripts/curate-video-puzzles-hard.ts   # 2000–2400, pop≥85, 3–8 moves
+```
+Band/size knobs (`MIN_RATING`/`MAX_RATING`/`PER_THEME`) live at the top of that script.
 
 ### Caption Format
 
@@ -2400,6 +2419,8 @@ Play daily puzzles free → chesspath.app
 #chess #chesspuzzle #chesspath #dailypuzzle {+2 rotating tags}
 ```
 
+On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT PUZZLE. Most people miss it — can you?") and a `Drop your guess in the comments BEFORE you watch the solution` line is inserted under it.
+
 ### Files
 
 | File | Purpose |
@@ -2415,6 +2436,9 @@ Play daily puzzles free → chesspath.app
 | `remotion/stages/StageCountdown.tsx` | Stage 2: countdown |
 | `remotion/stages/StageSolution.tsx` | Stage 3: animated solution |
 | `remotion/stages/StageCelebrate.tsx` | Stage 4: result + quip |
+| `scripts/render-daily-video.ts` | Selects puzzle (weekday-aware) + bakes caption + triggers render |
+| `scripts/curate-video-puzzles.ts` | Builds the normal pool from `clean-puzzles-v2` |
+| `scripts/curate-video-puzzles-hard.ts` | Builds the 2000+ hard pool from raw Lichess CSVs |
 | `remotion/lib/timing.ts` | FPS, frame counts, layout constants |
 | `remotion/lib/describe-result.ts` | Auto-generates result text from position |
 | `scripts/render-daily-video.ts` | Render pipeline (pick puzzle → render → caption → mark used) |

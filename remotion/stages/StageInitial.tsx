@@ -15,11 +15,13 @@ export const StageInitial: React.FC<{
   playerColorLabel: string;
   setupFrom: string;
   setupTo: string;
-}> = ({ puzzleFen, orientation, playerColorLabel, setupFrom, setupTo }) => {
+  difficult?: boolean;
+}> = ({ puzzleFen, orientation, playerColorLabel, setupFrom, setupTo, difficult }) => {
   return (
     <ReelLayout
       fen={puzzleFen}
       orientation={orientation}
+      difficult={difficult}
       highlightFrom={setupFrom}
       highlightTo={setupTo}
       bottomContent={
