@@ -104,3 +104,6 @@ app/test/rookie-instagram/
 
 # Rookie voice pipeline intermediates (keep REVIEW.md)
 data/rookie-voice/*.json
+
+# MediaPipe WASM runtime (copied from node_modules by scripts/copy-mediapipe-wasm.mjs)
+public/mediapipe/

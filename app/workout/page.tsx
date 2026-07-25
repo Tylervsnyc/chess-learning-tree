@@ -23,6 +23,8 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { PunchTracker } from '@/components/workout/PunchTracker';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -278,6 +280,20 @@ export default function WorkoutPage() {
 
   // "End" early → confirm dialog (save / discard / keep going).
   const [endConfirmOpen, setEndConfirmOpen] = useState(false);
+
+  // Camera punch counter (WORKOUT_PUNCH_CAM): opt-in, remembered per device.
+  // Camera only ever starts while a toggled-on exercise segment is on screen.
+  const [punchCam, setPunchCam] = useState(false);
+  useEffect(() => {
+    setPunchCam(localStorage.getItem('cp_punch_cam') === '1');
+  }, []);
+  const togglePunchCam = useCallback(() => {
+    playButtonClick();
+    setPunchCam((on) => {
+      localStorage.setItem('cp_punch_cam', on ? '0' : '1');
+      return !on;
+    });
+  }, []);
 
   const current = schedule[segIndex];
 
@@ -989,6 +1005,22 @@ export default function WorkoutPage() {
               </p>
             </div>
           </div>
+        ) : FEATURE_FLAGS.WORKOUT_PUNCH_CAM && punchCam ? (
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-4 text-center gap-3">
+            <div className="text-5xl font-black text-chess-text tabular-nums">
+              {fmtTime(secondsLeft)}
+            </div>
+            <div className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+              🥊 Rookie&apos;s Corner
+            </div>
+            <PunchTracker autoStart className="w-full max-w-xs" />
+            <button
+              onClick={togglePunchCam}
+              className="text-sm font-semibold text-chess-text-muted underline min-h-[44px]"
+            >
+              Turn off punch counting
+            </button>
+          </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-6">
             <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
@@ -1003,6 +1035,14 @@ export default function WorkoutPage() {
                 {pick(ROOKIE_LINES.workout, lineSeed)}
               </p>
             </div>
+            {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && (
+              <button
+                onClick={togglePunchCam}
+                className="flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-chess-surface px-4 py-3 min-h-[44px] font-bold text-chess-text hover:bg-chess-page transition"
+              >
+                📷 Count my punches
+              </button>
+            )}
           </div>
         )}
       </div>
