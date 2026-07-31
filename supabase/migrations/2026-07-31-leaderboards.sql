@@ -48,6 +48,34 @@ drop policy if exists "join self into crew" on public.crew_members;
 create policy "join self into crew" on public.crew_members
   for insert with check (auth.uid() = user_id);
 
+-- ── Hardening ────────────────────────────────────────────────────────────────
+
+-- Username rules must hold at the DB level: profiles has an own-row UPDATE
+-- policy, so a logged-in user can PATCH `username` via PostgREST and skip the
+-- API's regex + reserved-name checks entirely. citext needs the ::text cast
+-- for the regex.
+alter table public.profiles drop constraint if exists username_format;
+alter table public.profiles add constraint username_format check (
+  username is null
+  or (
+    username::text ~ '^[A-Za-z0-9_]{3,20}$'
+    and lower(username::text) not in
+      ('admin', 'rookie', 'chesspath', 'chessboxing', 'you', 'me',
+       'mod', 'moderator', 'staff', 'support', 'official', 'gleasons')
+  )
+);
+
+-- The "crews readable" policy alone would expose join_code to every logged-in
+-- user (SELECT * via PostgREST → enumerate every crew's code). Column-level
+-- grants hide the code; API join/lookup uses the service role, unaffected.
+revoke select on public.crews from authenticated, anon;
+grant select (id, name, created_at) on public.crews to authenticated;
+
+-- Leaderboards range-scan workout_sessions on created_at alone; the existing
+-- (user_id, created_at) index can't serve that.
+create index if not exists idx_workout_sessions_created_at
+  on public.workout_sessions (created_at);
+
 -- ── Seed the launch crew: CHESSBOXING NYC (Gleason's) ────────────────────────
 insert into public.crews (name, join_code)
 values ('CHESSBOXING NYC', 'NYC')

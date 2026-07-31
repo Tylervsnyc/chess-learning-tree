@@ -13,7 +13,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
  * `server.url` at your Mac's LAN IP (e.g. http://192.168.x.x:3009).
  */
 const config: CapacitorConfig = {
-  appId: 'app.chesspath.boxing',
+  appId: 'com.learnthroughstories.chessboxing',
   appName: 'Chess Boxing',
   // Local fallback bundle (shown only if the remote URL is unreachable).
   webDir: 'capacitor-shell',

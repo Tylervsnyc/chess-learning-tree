@@ -11,8 +11,12 @@ import { createServiceClient } from '@/lib/supabase/service';
  */
 
 const RE = /^[a-zA-Z0-9_]{3,20}$/;
-// Reserved / would-be-confusing handles.
-const RESERVED = new Set(['admin', 'rookie', 'chesspath', 'chessboxing', 'you', 'me']);
+// Reserved / would-be-confusing handles. Mirrored in the profiles
+// username_format CHECK constraint (2026-07-31-leaderboards.sql) — keep in sync.
+const RESERVED = new Set([
+  'admin', 'rookie', 'chesspath', 'chessboxing', 'you', 'me',
+  'mod', 'moderator', 'staff', 'support', 'official', 'gleasons',
+]);
 
 export async function GET() {
   const supabase = await createClient();

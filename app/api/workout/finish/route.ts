@@ -4,6 +4,14 @@ import { createClient } from '@/lib/supabase/server';
 // Cap stored missed puzzles to bound the row size.
 const MAX_MISSED = 30;
 
+// Server-side sanity caps. Points and punches come from the client and feed the
+// public leaderboard, so they must be bounded here: a legit session tops out
+// well under these (25 pts/puzzle × combo over ≤32 min; humans peak ~300
+// punches/min).
+const MAX_SESSION_POINTS = 5000;
+const MAX_PUNCHES_PER_MINUTE = 350;
+const MAX_SESSION_PUNCHES = 10000;
+
 /**
  * POST /api/workout/finish
  *
@@ -62,8 +70,12 @@ export async function POST(request: NextRequest) {
   const wrong = toInt(body.wrong);
   const perfect = body.perfect === true;
   // Camera-counted punches thrown during the exercise segments (0 if the user
-  // didn't enable the punch cam). Stored best-effort below.
-  const punches = toInt(body.punches);
+  // didn't enable the punch cam). Client-supplied → clamped to a human ceiling.
+  const punches = Math.min(
+    Math.max(0, toInt(body.punches)),
+    (durationMinutes && durationMinutes > 0 ? durationMinutes : 32) * MAX_PUNCHES_PER_MINUTE,
+    MAX_SESSION_PUNCHES,
+  );
   const missedPuzzles = Array.isArray(body.missedPuzzles)
     ? body.missedPuzzles.slice(0, MAX_MISSED)
     : [];
@@ -101,7 +113,7 @@ export async function POST(request: NextRequest) {
 
   // Personal-best + recent history for the results popup. Read BEFORE inserting
   // this session so "previous best" reflects only prior sessions.
-  const sessionStored = Math.max(0, Math.trunc(points));
+  const sessionStored = Math.min(Math.max(0, Math.trunc(points)), MAX_SESSION_POINTS);
   const { data: prior } = await supabase
     .from('workout_sessions')
     .select('points')
@@ -120,23 +132,34 @@ export async function POST(request: NextRequest) {
   // the points increment. A genuine insert error (not a conflict) still lets us
   // award points, matching the prior "a missing session log shouldn't cost the
   // user their points" behavior.
+  // Punches ride along in the insert (RLS only allows INSERT on
+  // workout_sessions — a post-hoc UPDATE would silently match 0 rows). If the
+  // punches migration hasn't run yet the whole insert fails on the unknown
+  // column, so retry once without it.
   let sessionId: string | null = null;
-  const { data: insertedRows, error: sessionError } = await supabase
-    .from('workout_sessions')
-    .upsert(
-      [{
-        user_id: user.id,
-        client_session_id: clientSessionId,
-        duration_minutes: durationMinutes,
-        points: sessionStored,
-        correct_count: correct,
-        wrong_count: wrong,
-        perfect,
-        missed_puzzles: missedPuzzles,
-      }],
-      { onConflict: 'user_id,client_session_id', ignoreDuplicates: true },
-    )
-    .select('id');
+  const sessionRow: Record<string, unknown> = {
+    user_id: user.id,
+    client_session_id: clientSessionId,
+    duration_minutes: durationMinutes,
+    points: sessionStored,
+    correct_count: correct,
+    wrong_count: wrong,
+    perfect,
+    missed_puzzles: missedPuzzles,
+    ...(punches > 0 ? { punches } : {}),
+  };
+  const upsertSession = (row: Record<string, unknown>) =>
+    supabase
+      .from('workout_sessions')
+      .upsert([row], { onConflict: 'user_id,client_session_id', ignoreDuplicates: true })
+      .select('id');
+
+  let { data: insertedRows, error: sessionError } = await upsertSession(sessionRow);
+  if (sessionError && punches > 0 && /punches/.test(sessionError.message ?? '')) {
+    console.error('workout session insert failed (punches column missing?), retrying without', sessionError);
+    const { punches: _dropped, ...withoutPunches } = sessionRow;
+    ({ data: insertedRows, error: sessionError } = await upsertSession(withoutPunches));
+  }
 
   if (sessionError) console.error('workout session insert failed', sessionError);
 
@@ -156,21 +179,10 @@ export async function POST(request: NextRequest) {
     sessionId = existing?.id ?? null;
   }
 
-  // Best-effort: store the session's punch count. The `punches` column is added
-  // by a migration; tolerate its absence (un-migrated DB) so finishing never
-  // breaks — a failed update here is logged, not fatal, and never blocks points.
-  if (!replayed && sessionId && punches > 0) {
-    const { error: punchErr } = await supabase
-      .from('workout_sessions')
-      .update({ punches })
-      .eq('id', sessionId);
-    if (punchErr) console.error('workout punches update failed (column missing?)', punchErr);
-  }
-
   // Award points + record seen puzzles exactly once per logical session.
   let nextTotal = current;
   if (!replayed) {
-    nextTotal = Math.max(0, current + points);
+    nextTotal = Math.max(0, current + Math.min(Math.trunc(points), MAX_SESSION_POINTS));
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ workout_points: nextTotal })
