@@ -2387,16 +2387,29 @@ npx tsx scripts/curate-video-puzzles.ts
 
 **Output:** `out/videos/{M.DD.YY}/daily.{M.DD.YY}-{puzzleId}.mp4` + `.txt` caption file
 
-### Difficult Days (Thu + Sat)
+### Posting Pipeline (queue → weekday-aware cron)
 
-On **Thursday and Saturday** the render is automatically a DIFFICULT reel — a harder puzzle with a "guess in the comments" engagement hook. No flag needed: `render-daily-video.ts` derives the weekday from the **target date** (the `--date=M.DD.YY` you pass, or today), so keep dating each render for the day it will actually post (posting is FIFO by date).
+Rendering (local) is decoupled from posting (daily Vercel cron `/api/cron/ig-post`, 8am ET) by a Blob queue manifest (`lib/ig-queue.ts`). **Two logical pools live in one queue**, tagged by a per-item `difficult` flag:
+
+- The cron uses `nextForDate(queue, now)`: on **difficult days — Mon/Tue/Thu/Fri/Sat (ET)** — it serves the oldest unposted **difficult** reel; on Wed/Sun the oldest **normal** reel. If the preferred pool is empty it falls back to the other pool so the account never skips a day. **Cadence is correct regardless of how deep the backlog is** — difficult reels always land on difficult days, no need to keep the queue real-time. The day set is the single source of truth `DIFFICULT_DOW` in `lib/ig-difficult-days.ts` (imported by both the poster and the renderer).
+- **Refill inventory with one command** (renders ahead + uploads, dedup by puzzleId, auto-tags difficult from caption, reports runway):
+  ```bash
+  npx tsx scripts/ig-refill.ts                 # upload any un-queued renders on disk
+  npx tsx scripts/ig-refill.ts --render=14     # render 14 days ahead first, then upload
+  npx tsx scripts/ig-refill.ts --dry           # preview, touch nothing
+  ```
+  It warns when the difficult pool drops below 4 (< ~1 week at 5 difficult days/wk). Puzzles are evergreen, so a stale-dated normal reel is fine to post; the difficult pool is the one to keep stocked. (Replaces the old `ig-upload-queue.ts`, which keyed by folder date and dropped multi-reel days.)
+
+### Difficult Days (Mon/Tue/Thu/Fri/Sat — 5×/week)
+
+Difficult reels are the top performers (~5x the views of normal reels, verified 2026-07-30), so they run **5 days a week — Mon, Tue, Thu, Fri, Sat**; only **Wed + Sun** stay normal. On a difficult day the render is automatically a DIFFICULT reel — a harder puzzle with a "guess in the comments" engagement hook. No flag needed: `render-daily-video.ts` derives the weekday from the **target date** (the `--date=M.DD.YY` you pass, or today) via the shared `DIFFICULT_DOW` set. Posting is **not** FIFO by date — the cron picks difficult vs normal by the real calendar day (see Posting Pipeline above), so a difficult reel dated for one difficult day can post on any later difficult day.
 
 What differs on difficult days:
 - **Separate pool:** pulls from `data/video-puzzle-pool-hard.json` (2000+ puzzles, built from the raw Lichess `data/puzzles-by-rating/2000-plus` CSVs — the normal `clean-puzzles-v2` source caps at ~1999). Dedup is shared via the same `video-puzzle-usage.json`, so no repeats across pools. Normal days are untouched.
 - **Red siren badge** (see "Daily Puzzle" Badge above).
 - **Caption** swaps to a harder hook + a `Drop your guess in the comments BEFORE you watch the solution` line.
 
-**Override the weekday logic:** `--difficult` forces it on any day; `--no-difficult` forces a normal render on a Thu/Sat.
+**Override the weekday logic:** `--difficult` forces it on any day; `--no-difficult` forces a normal render on a difficult day. **Cadence lives in one place:** `DIFFICULT_DOW` in `lib/ig-difficult-days.ts` (0=Sun..6=Sat), imported by both `render-daily-video.ts` and `lib/ig-queue.ts` — change the days there and both renderer + poster follow.
 
 **Refill the hard pool** (rare — the render warns when <10 unused remain):
 ```bash

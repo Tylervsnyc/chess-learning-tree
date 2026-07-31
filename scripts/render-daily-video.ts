@@ -14,6 +14,7 @@ import { execSync } from 'child_process';
 import { Chess } from 'chess.js';
 import { describeResult } from '../remotion/lib/describe-result';
 import { getVideoQuip } from '../remotion/lib/video-quips';
+import { DIFFICULT_DOW } from '../lib/ig-difficult-days';
 
 const POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool.json');
 const HARD_POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool-hard.json');
@@ -109,15 +110,14 @@ function parseArgs() {
   return args;
 }
 
-// Difficult days = Thursday (4) + Saturday (6). dateStr is "M.D.YY".
 // Difficult days draw from a dedicated 2000+ pool (video-puzzle-pool-hard.json).
-const DIFFICULT_DAYS = new Set([4, 6]);
-
+// Cadence is the canonical DIFFICULT_DOW set in lib/ig-queue (one source of truth).
+// dateStr is "M.D.YY"; local getDay() gives its calendar weekday.
 function isDifficultDate(dateStr: string): boolean {
   const [m, d, y] = dateStr.split('.').map((n) => parseInt(n, 10));
   if (!m || !d || !y) return false;
   const day = new Date(2000 + y, m - 1, d).getDay();
-  return DIFFICULT_DAYS.has(day);
+  return DIFFICULT_DOW.has(day);
 }
 
 function main() {

@@ -6,6 +6,7 @@
  * cron pops the oldest unposted item, publishes it, and saves the manifest back.
  */
 import { list, put } from '@vercel/blob';
+import { DIFFICULT_DOW } from './ig-difficult-days';
 
 const MANIFEST_PATH = 'ig-queue/manifest.json';
 
@@ -17,6 +18,21 @@ export interface QueueItem {
   posted: boolean;
   postedAt?: string;
   mediaId?: string;
+  difficult?: boolean; // true = a "Difficult Puzzle" reel (posts on difficult days)
+  puzzleId?: string;   // Lichess puzzle id, for dedup across folders/renders
+}
+
+/** Weekday (0=Sun..6=Sat) of a Date in America/New_York — the audience's day. */
+export function easternDayOfWeek(d: Date): number {
+  const wd = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    weekday: 'short',
+  }).format(d);
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(wd);
+}
+
+export function isDifficultDay(d: Date): boolean {
+  return DIFFICULT_DOW.has(easternDayOfWeek(d));
 }
 
 /** Parse "M.D.YY" into a sortable timestamp; falls back to 0 if unparseable. */
@@ -50,4 +66,39 @@ export function nextUnposted(queue: QueueItem[]): QueueItem | null {
   return queue
     .filter(i => !i.posted)
     .sort((a, b) => a.sortKey - b.sortKey)[0] ?? null;
+}
+
+const oldestUnposted = (queue: QueueItem[], difficult: boolean): QueueItem | null =>
+  queue
+    .filter(i => !i.posted && !!i.difficult === difficult)
+    .sort((a, b) => a.sortKey - b.sortKey)[0] ?? null;
+
+/**
+ * Weekday-aware pick for the daily poster. On difficult days (Thu/Sat ET) it
+ * serves the oldest unposted DIFFICULT reel; every other day the oldest NORMAL
+ * reel. If the preferred pool is empty it falls back to the other pool so the
+ * account never silently skips a day. Returns what was picked + why.
+ */
+export function nextForDate(
+  queue: QueueItem[],
+  when: Date,
+): { item: QueueItem; wantedDifficult: boolean; fellBack: boolean } | null {
+  const wantDifficult = isDifficultDay(when);
+  const preferred = oldestUnposted(queue, wantDifficult);
+  if (preferred) return { item: preferred, wantedDifficult: wantDifficult, fellBack: false };
+  const other = oldestUnposted(queue, !wantDifficult);
+  if (other) return { item: other, wantedDifficult: wantDifficult, fellBack: true };
+  return null;
+}
+
+/** Unposted counts per pool + rough runway, for refill/reporting. */
+export function queueRunway(queue: QueueItem[]) {
+  const normal = queue.filter(i => !i.posted && !i.difficult).length;
+  const difficult = queue.filter(i => !i.posted && i.difficult).length;
+  return {
+    normal,
+    difficult,
+    normalDays: normal,          // ~1 normal post per Wed/Sun
+    difficultWeeks: difficult / 5, // 5 difficult slots per week (Mon/Tue/Thu/Fri/Sat)
+  };
 }
