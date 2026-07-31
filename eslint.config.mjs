@@ -17,6 +17,7 @@ export default [
       "social-media/**",
       ".claude/worktrees/**",
       ".worktree-*/**",
+      "public/mediapipe/**", // emscripten glue copied from node_modules, not our code
     ],
   },
 

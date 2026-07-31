@@ -39,6 +39,7 @@ const ROUTES: Route[] = [
   { label: 'Opening lesson', url: '/openings/italian/it-1', group: 'Primary' },
   { label: 'Lesson', url: '/lesson/1.1', group: 'Primary' },
   { label: 'Workout', url: '/workout', group: 'Primary' },
+  { label: 'Leaderboard', url: '/leaderboard', group: 'Primary' },
   { label: "Rookie's Run", url: '/run', group: 'Primary' },
   { label: 'Run (replay)', url: `/run/${TODAY}`, group: 'Primary' },
   { label: 'Profile', url: '/profile', group: 'Primary' },

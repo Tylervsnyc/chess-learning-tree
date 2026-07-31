@@ -1,3 +1,15 @@
 # Exclude large raw puzzle data (2.6GB)
 # Production uses clean-puzzles-v2 JSON files instead
 data/puzzles-by-rating/
+
+# Local-only / generated dirs. These are gitignored, so normal git-based
+# production deploys never ship them. But `vercel deploy --archive=tgz` tars up
+# the whole working tree (ignoring .gitignore), which uploads these and lets
+# Next's file tracer bundle them into serverless functions (the spawn()/cwd
+# admin routes), blowing past the 250MB function cap. Excluding them here makes
+# an archive deploy match production. Safe: not in git → production runs without.
+.next/
+out/
+data/witty-games/
+public/Gameplay/
+public/DailyRookSC.MP4

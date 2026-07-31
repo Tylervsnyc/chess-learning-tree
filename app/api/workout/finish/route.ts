@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     missedPuzzles?: unknown;
     seenPuzzleIds?: unknown;
     clientSessionId?: unknown;
+    punches?: unknown;
   };
   try {
     body = await request.json();
@@ -60,6 +61,9 @@ export async function POST(request: NextRequest) {
   const correct = toInt(body.correct);
   const wrong = toInt(body.wrong);
   const perfect = body.perfect === true;
+  // Camera-counted punches thrown during the exercise segments (0 if the user
+  // didn't enable the punch cam). Stored best-effort below.
+  const punches = toInt(body.punches);
   const missedPuzzles = Array.isArray(body.missedPuzzles)
     ? body.missedPuzzles.slice(0, MAX_MISSED)
     : [];
@@ -150,6 +154,17 @@ export async function POST(request: NextRequest) {
       .eq('client_session_id', clientSessionId)
       .maybeSingle();
     sessionId = existing?.id ?? null;
+  }
+
+  // Best-effort: store the session's punch count. The `punches` column is added
+  // by a migration; tolerate its absence (un-migrated DB) so finishing never
+  // breaks — a failed update here is logged, not fatal, and never blocks points.
+  if (!replayed && sessionId && punches > 0) {
+    const { error: punchErr } = await supabase
+      .from('workout_sessions')
+      .update({ punches })
+      .eq('id', sessionId);
+    if (punchErr) console.error('workout punches update failed (column missing?)', punchErr);
   }
 
   // Award points + record seen puzzles exactly once per logical session.

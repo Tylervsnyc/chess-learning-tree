@@ -23,6 +23,8 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { PunchTracker } from '@/components/workout/PunchTracker';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -279,7 +281,37 @@ export default function WorkoutPage() {
   // "End" early → confirm dialog (save / discard / keep going).
   const [endConfirmOpen, setEndConfirmOpen] = useState(false);
 
+  // ── Punch counter (Chess Boxing) ──────────────────────────────────────────
+  // Opt-in camera punch counter during the exercise segments. The tracker
+  // remounts each exercise round (fresh camera), so it restarts its own count;
+  // punchesRef accumulates the WHOLE-session total across rounds, using
+  // segPunchBaseRef to convert the mount's cumulative total into deltas.
+  const [punchCamOn, setPunchCamOn] = useState(false);
+  const punchesRef = useRef(0);
+  const segPunchBaseRef = useRef(0);
+  const [punchTotal, setPunchTotal] = useState(0); // live display
+
+  const onPunch = useCallback((mountTotal: number) => {
+    const delta = mountTotal - segPunchBaseRef.current;
+    if (delta > 0) {
+      punchesRef.current += delta;
+      setPunchTotal(punchesRef.current);
+    }
+    segPunchBaseRef.current = mountTotal;
+  }, []);
+
   const current = schedule[segIndex];
+
+  // Load the saved "count my punches" preference once (client only).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setPunchCamOn(window.localStorage.getItem('cp_punch_cam') === '1');
+  }, []);
+
+  // Each new exercise segment is a fresh tracker mount → reset the per-mount base.
+  useEffect(() => {
+    if (current?.kind === 'workout') segPunchBaseRef.current = 0;
+  }, [segIndex, current?.kind]);
 
   // ── Discard: leave without recording the session ──────────────────────────
   const discardSession = useCallback(() => {
@@ -313,6 +345,7 @@ export default function WorkoutPage() {
           missedPuzzles: missedRef.current,
           seenPuzzleIds: seenIdsRef.current,
           clientSessionId: clientSessionIdRef.current,
+          punches: punchesRef.current,
         }),
       });
       if (res.ok) {
@@ -387,6 +420,9 @@ export default function WorkoutPage() {
     setTargetElo(START_ELO);
     missedRef.current = [];
     seenIdsRef.current = [];
+    punchesRef.current = 0;
+    segPunchBaseRef.current = 0;
+    setPunchTotal(0);
     clientSessionIdRef.current = crypto.randomUUID();
     setFinishResult(null);
     finishingRef.current = false;
@@ -420,6 +456,10 @@ export default function WorkoutPage() {
     setTargetElo(snap.targetElo ?? START_ELO);
     missedRef.current = snap.missed ?? [];
     seenIdsRef.current = snap.seenIds ?? [];
+    // Punches aren't snapshotted; a resumed session counts from here.
+    punchesRef.current = 0;
+    segPunchBaseRef.current = 0;
+    setPunchTotal(0);
     // Reuse the original session id so finishing a resumed workout is idempotent
     // with any earlier finish attempt. Older snapshots won't have one.
     clientSessionIdRef.current = snap.clientSessionId ?? crypto.randomUUID();
@@ -862,11 +902,31 @@ export default function WorkoutPage() {
                   <div className="text-[11px] font-semibold text-chess-text-muted">lifetime</div>
                 </div>
               )}
+              {punchTotal > 0 && (
+                <div>
+                  <div className="text-xl font-black text-chess-text tabular-nums">
+                    {punchTotal}
+                  </div>
+                  <div className="text-[11px] font-semibold text-chess-text-muted">punches</div>
+                </div>
+              )}
             </div>
 
             <div className="w-full pt-2 border-t border-slate-100">
               <StreakComplete />
             </div>
+
+            {FEATURE_FLAGS.LEADERBOARDS && (
+              <button
+                onClick={() => {
+                  playButtonClick();
+                  router.push('/leaderboard');
+                }}
+                className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
+              >
+                See the leaderboard
+              </button>
+            )}
 
             <button
               onClick={() => {
@@ -990,19 +1050,59 @@ export default function WorkoutPage() {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-6">
-            <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
-            <div className="text-7xl font-black text-chess-text tabular-nums">
-              {fmtTime(secondsLeft)}
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-chess-text">
-                {promptFor(current.kind)}
-              </h2>
-              <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
-                {pick(ROOKIE_LINES.workout, lineSeed)}
-              </p>
-            </div>
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 text-center gap-5">
+            {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && punchCamOn ? (
+              <>
+                <div className="text-6xl font-black text-chess-text tabular-nums">
+                  {fmtTime(secondsLeft)}
+                </div>
+                <PunchTracker
+                  key={segIndex}
+                  autoStart
+                  onPunch={onPunch}
+                  className="w-full max-w-xs"
+                />
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    setPunchCamOn(false);
+                    if (typeof window !== 'undefined')
+                      window.localStorage.setItem('cp_punch_cam', '0');
+                  }}
+                  className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px]"
+                >
+                  Turn off camera
+                </button>
+              </>
+            ) : (
+              <>
+                <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
+                <div className="text-7xl font-black text-chess-text tabular-nums">
+                  {fmtTime(secondsLeft)}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-chess-text">
+                    {promptFor(current.kind)}
+                  </h2>
+                  <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
+                    {pick(ROOKIE_LINES.workout, lineSeed)}
+                  </p>
+                </div>
+                {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && (
+                  <button
+                    onClick={() => {
+                      playButtonClick();
+                      setPunchCamOn(true);
+                      if (typeof window !== 'undefined')
+                        window.localStorage.setItem('cp_punch_cam', '1');
+                    }}
+                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-5 py-3 min-h-[44px] hover:bg-chess-green/5 transition"
+                  >
+                    Count my punches
+                  </button>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
