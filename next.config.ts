@@ -45,6 +45,17 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '**': LAMBDA_EXCLUDES,
   },
+  async headers() {
+    // MediaPipe wasm + pose models only change on package upgrade — cache hard
+    // so the ~10MB punch-cam download happens once per device.
+    const immutable = [
+      { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+    ];
+    return [
+      { source: '/mediapipe/:path*', headers: immutable },
+      { source: '/models/:path*', headers: immutable },
+    ];
+  },
 };
 
 export default nextConfig;

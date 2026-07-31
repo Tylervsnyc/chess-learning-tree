@@ -52,7 +52,9 @@ export function PunchTracker({
   const rafRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef(createPunchDetector());
+  const countsRef = useRef({ left: 0, right: 0 });
   const punchTimesRef = useRef<number[]>([]);
+  const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fpsRef = useRef<{ frames: number; since: number }>({ frames: 0, since: 0 });
   const sensitivityRef = useRef(DEFAULT_SENSITIVITY);
   const onPunchRef = useRef(onPunch);
@@ -86,31 +88,42 @@ export function PunchTracker({
     setStatus('idle');
   }, []);
 
-  const registerPunch = useCallback((side: 'left' | 'right') => {
-    const now = performance.now();
-    punchTimesRef.current.push(now);
-    setCounts((c) => {
-      const next = { ...c, [side]: c[side] + 1 };
-      const total = next.left + next.right;
-      onPunchRef.current?.(total);
-      if (total > 0 && total % 10 === 0) {
-        setHype(HYPE_LINES[(total / 10 - 1) % HYPE_LINES.length]);
-      }
-      return next;
-    });
-    setFlash(true);
-    setTimeout(() => setFlash(false), 150);
-    // punches per minute over the trailing 60s
+  // punches per minute over the trailing 60s — also ticked from the frame loop
+  // so the number drains back to 0 when the user stops punching
+  const updatePpm = useCallback((now: number) => {
     const cutoff = now - 60_000;
     punchTimesRef.current = punchTimesRef.current.filter((t) => t > cutoff);
     setPpm(punchTimesRef.current.length);
   }, []);
+
+  const registerPunch = useCallback((side: 'left' | 'right') => {
+    const now = performance.now();
+    punchTimesRef.current.push(now);
+    // compute outside the setState updater — React may run updaters twice,
+    // which would double-fire onPunch/hype
+    const next = { ...countsRef.current, [side]: countsRef.current[side] + 1 };
+    countsRef.current = next;
+    setCounts(next);
+    const total = next.left + next.right;
+    onPunchRef.current?.(total);
+    if (total > 0 && total % 10 === 0) {
+      setHype(HYPE_LINES[(total / 10 - 1) % HYPE_LINES.length]);
+    }
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    setFlash(true);
+    flashTimeoutRef.current = setTimeout(() => setFlash(false), 150);
+    updatePpm(now);
+  }, [updatePpm]);
 
   const start = useCallback(async () => {
     const gen = ++genRef.current;
     setStatus('loading');
     setErrorMsg('');
     try {
+      // kick off the model load first so the ~10MB download overlaps the
+      // camera permission prompt + warmup; awaited after the camera is up
+      const landmarkerPromise = getLandmarker();
+      landmarkerPromise.catch(() => {}); // observed at the await below
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
@@ -124,7 +137,7 @@ export function PunchTracker({
       video.srcObject = stream;
       await video.play();
 
-      const detector = await getLandmarker();
+      const detector = await landmarkerPromise;
       if (gen !== genRef.current) return;
 
       setStatus('running');
@@ -136,7 +149,8 @@ export function PunchTracker({
         const now = performance.now();
         let lms: { x: number; y: number; visibility?: number }[] | undefined;
         let world: { x: number; y: number; z: number; visibility?: number }[] | undefined;
-        if (video.currentTime !== lastVideoTime) {
+        const newFrame = video.currentTime !== lastVideoTime;
+        if (newFrame) {
           lastVideoTime = video.currentTime;
           const res = detector.detectForVideo(video, now);
           lms = res.landmarks[0];
@@ -148,14 +162,20 @@ export function PunchTracker({
         if (now - f.since > 1000) {
           setFps(Math.round((f.frames * 1000) / (now - f.since)));
           fpsRef.current = { frames: 0, since: now };
+          updatePpm(now);
         }
 
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
-        if (ctx && canvas && lms) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (ctx && canvas) {
+          // resizing a canvas resets its state — only do it when the video size changes
+          if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+          }
+          // clear on every processed frame (not just when landmarks exist), so
+          // the skeleton doesn't freeze on screen when the person leaves frame
+          if (newFrame) ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         if (lms) {
@@ -205,12 +225,15 @@ export function PunchTracker({
       setStatus('error');
       setErrorMsg(e instanceof Error && e.message ? e.message : 'Camera or model failed to load');
     }
-  }, [registerPunch, stop, debug]);
+  }, [registerPunch, updatePpm, stop, debug]);
 
   // autoStart + cleanup on unmount (segment end stops the camera)
   useEffect(() => {
     if (autoStart) start();
-    return stop;
+    return () => {
+      if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+      stop();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -238,7 +261,7 @@ export function PunchTracker({
 
         {status === 'running' && hype && (
           <div className="absolute bottom-3 left-3 right-3 pointer-events-none">
-            <div className="rounded-xl bg-black/60 px-3 py-2 text-sm text-white">🐴 {hype}</div>
+            <div className="rounded-xl bg-black/60 px-3 py-2 text-sm text-white">{hype}</div>
           </div>
         )}
 
@@ -248,7 +271,7 @@ export function PunchTracker({
             {status === 'error' && <div className="text-sm text-red-300">{errorMsg}</div>}
             {status !== 'loading' && (
               <button onClick={start} className="py-3 px-6 rounded-xl bg-green-500 font-bold text-white min-h-[44px]">
-                📷 Start tracking
+                Start tracking
               </button>
             )}
           </div>

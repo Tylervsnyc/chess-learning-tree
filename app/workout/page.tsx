@@ -313,6 +313,12 @@ export default function WorkoutPage() {
     if (current?.kind === 'workout') segPunchBaseRef.current = 0;
   }, [segIndex, current?.kind]);
 
+  // Re-enabling the cam mid-segment is also a fresh mount — a stale base would
+  // make the first punch compute a negative delta and get dropped.
+  useEffect(() => {
+    if (punchCamOn) segPunchBaseRef.current = 0;
+  }, [punchCamOn]);
+
   // ── Discard: leave without recording the session ──────────────────────────
   const discardSession = useCallback(() => {
     clearResume();
