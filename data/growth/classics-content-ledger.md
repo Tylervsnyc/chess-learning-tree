@@ -5,7 +5,7 @@ we've already made a video about — even in a different format (e.g. an old
 meme/one-off reel counts). Update this file every time an episode is built or
 posted. (Referenced by the `/chess-path-classics` skill.)
 
-Last updated: 2026-07-21.
+Last updated: 2026-08-01.
 
 ## Posted — Classics episodes
 | No. | Subject | Comp | Posted | Media id | Modeled on |
@@ -26,6 +26,11 @@ Last updated: 2026-07-21.
 - **The Opera Game (Morphy vs Duke/Count, 1858)** — made June 2026 as a
   meme/Knicks-branded reel (`OperaGameReel`, `public/social/opera-game-reel.mp4`,
   `out/opera-game-*.mp4`). SUBJECT USED — do not remake as a Classics episode.
+
+## Requested by Tyler — priority, build soon
+| Subject | Source | Status |
+|---------|--------|--------|
+| @sam_copeland's "favorite combination so far this year" | [IG reel DbVYClKRYVw](https://www.instagram.com/reel/DbVYClKRYVw/) — Sam Copeland (chess.com writer), caption: "My favorite combination so far this year! #chess" | Requested 2026-08-01. Exact game/position not identifiable from the page — watch the reel to ID the combination before building, then check it's not already in this ledger. |
 
 ## Planned — this week's slate (claim before building)
 | Day | Subject | Modeled on | Status |
