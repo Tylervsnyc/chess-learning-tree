@@ -12,6 +12,12 @@ function ErrorContent() {
 
   // Common error messages
   const getErrorMessage = () => {
+    // The raw supabase-js PKCE error is developer-speak. This happens when a
+    // confirmation link opens in a different browser than the one that started
+    // signup (e.g. signed up in an in-app browser, email opened in Safari).
+    if (errorDescription && /code verifier|PKCE/i.test(errorDescription)) {
+      return 'This link needs to open in the same browser you signed up in. No worries — your account may already be confirmed, so just try signing in below.';
+    }
     if (errorDescription) return errorDescription;
 
     switch (error) {
