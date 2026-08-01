@@ -15,6 +15,7 @@ interface Row {
 interface BoardData {
   scope: Scope;
   period: LeaderboardPeriod;
+  metric?: 'best_round' | 'total';
   crew: { id: string; name: string } | null;
   rows: Row[];
   me: Row | null;
@@ -176,6 +177,12 @@ export default function LeaderboardPage() {
           onChange={(v) => setPeriod(v as LeaderboardPeriod)}
         />
 
+        {data?.metric === 'best_round' && (
+          <p className="text-center text-xs font-semibold text-chess-text-muted -mt-2">
+            Today ranks by your best single round.
+          </p>
+        )}
+
         {/* Handle gate */}
         {needsHandle && (
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
@@ -242,14 +249,14 @@ export default function LeaderboardPage() {
           ) : (
             <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               {data.rows.map((r) => (
-                <RankRow key={r.rank} row={r} />
+                <RankRow key={r.rank} row={r} metric={data.metric ?? 'total'} />
               ))}
               {meOutsideTop && data.me && (
                 <>
                   <div className="text-center text-xs text-chess-text-muted py-1 bg-chess-page">
                     · · ·
                   </div>
-                  <RankRow row={data.me} />
+                  <RankRow row={data.me} metric={data.metric ?? 'total'} />
                 </>
               )}
             </div>
@@ -269,7 +276,7 @@ export default function LeaderboardPage() {
   );
 }
 
-function RankRow({ row }: { row: Row }) {
+function RankRow({ row, metric }: { row: Row; metric: 'best_round' | 'total' }) {
   // Top-3 get a colored rank (gold / silver / bronze) — no emoji.
   const rankColor =
     row.rank === 1
@@ -301,7 +308,9 @@ function RankRow({ row }: { row: Row }) {
       </div>
       <div className="text-right">
         <div className="font-black text-chess-text tabular-nums">{row.points.toLocaleString()}</div>
-        <div className="text-[10px] font-semibold text-chess-text-muted">pts</div>
+        <div className="text-[10px] font-semibold text-chess-text-muted">
+          {metric === 'best_round' ? 'best round' : 'pts'}
+        </div>
       </div>
     </div>
   );

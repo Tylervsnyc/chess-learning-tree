@@ -51,6 +51,23 @@ export const FEATURE_FLAGS = {
    */
   WORKOUT_PUNCH_CAM: true,
   /**
+   * Fight rounds in the Chess Boxing workout — instead of puzzle segments, the
+   * user plays ONE continuous game vs Rookie across all chess segments. The
+   * game freezes during exercise/break segments and resumes the next chess
+   * segment, exactly like real chess boxing. Adds a "Puzzles vs Fight Rookie"
+   * discipline picker to the workout setup screen.
+   */
+  WORKOUT_FIGHT_ROUNDS: true,
+  /**
+   * Combo Coach in the Chess Boxing workout's exercise segments — Rookie calls
+   * boxing combos out loud (standard number system: 1 jab, 2 cross, …) with a
+   * big visual cue, randomized so you react instead of memorize. Punches and
+   * defenses unlock Duolingo-style over completed sessions (curriculum in
+   * lib/workout/combo-coach.ts; pre-generated Rookie voice clips in
+   * public/audio/combo-coach via scripts/generate-combo-voice.ts).
+   */
+  WORKOUT_COMBO_CALLS: true,
+  /**
    * Chess Boxing leaderboards — daily/weekly/monthly boards ranked off workout
    * session points, with a global (opt-in) scope and crew boards joined by code
    * (launch crew: CHESSBOXING NYC). Shows the /leaderboard route + entry points.

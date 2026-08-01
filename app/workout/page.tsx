@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
+import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
+import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { stockfish } from '@/lib/stockfish/stockfish-adapter';
+import { getLevelEngineConfig } from '@/lib/rookie-levels';
+import { getReactiveBookMove } from '@/lib/rookie-opening-book';
 import {
   buildSchedule,
   labelFor,
@@ -11,12 +17,30 @@ import {
   ROUND_LENGTH,
   ROUND_SECONDS,
   PERFECT_SESSION_BONUS,
-  pointsForCorrect,
+  pointsForCorrectV2,
+  payFactor,
   comboMultiplier,
+  MAX_STRIKES_PER_SEGMENT,
+  FIRED_UP_PUNCH_TARGET,
+  whiteMaterialLead,
+  fightMaterialPoints,
+  fightWinBonus,
+  FIGHT_ROUND_MATERIAL_CAP,
+  FIGHT_MATE_ROUND_BONUS,
+  FIGHT_DRAW_SESSION_BONUS,
+  FIGHT_MAX_LEVEL,
   type Segment,
   type SegmentKind,
 } from '@/lib/workout/schedule';
-import { warmupAudio, playButtonClick, playBoxingBell, playWoodClap } from '@/lib/sounds';
+import {
+  warmupAudio,
+  playButtonClick,
+  playBoxingBell,
+  playWoodClap,
+  playMoveSound,
+  playCaptureSound,
+  playCelebrationSound,
+} from '@/lib/sounds';
 import { saveResume, loadResume, clearResume, type WorkoutResumeState } from '@/lib/workout/resume';
 import { WorkoutEvents } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -24,6 +48,8 @@ import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 import { PunchTracker } from '@/components/workout/PunchTracker';
+import { ComboCoach } from '@/components/workout/ComboCoach';
+import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
@@ -119,6 +145,50 @@ const ROOKIE_LINES: Record<Exclude<SegmentKind, 'chess'>, string[]> = {
 function pick<T>(arr: T[], seed: number): T {
   return arr[seed % arr.length];
 }
+
+// ─── Fight rounds (WORKOUT_FIGHT_ROUNDS) ─────────────────────────────────────
+// One continuous game vs Rookie across the chess segments. The game freezes
+// during exercise/break segments and resumes the next chess segment — real
+// chess boxing. Player is always white; Rookie plays at the user's unlocked
+// /play level, hard-capped at FIGHT_MAX_LEVEL (L5+ engines are heavyweight
+// downloads that must never load here).
+
+type Discipline = 'puzzles' | 'fight';
+
+const FIGHT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const FIGHT_ANIM_MS = 300;
+
+/** User's unlocked /play level (same localStorage key /play writes). */
+function loadRookieLevel(): number {
+  if (typeof window === 'undefined') return 1;
+  const level = parseInt(window.localStorage.getItem('rookie-level') || '1', 10);
+  return Number.isFinite(level) ? Math.max(1, Math.min(10, level)) : 1;
+}
+
+// Canned Rookie lines for the fight (no speech systems — just text).
+const FIGHT_LINES = {
+  freeze: [
+    "Board's frozen. I'm not going anywhere.",
+    "Round's over. I'll hold the position — you go hit something.",
+    "Frozen. I'm using this time to plot. Fair warning.",
+  ],
+  resume: [
+    "Where were we. Right — this position. I remember everything.",
+    "Round's back on. I've been thinking about this the whole time.",
+    "Gloves off, board on. Your move when you're ready.",
+  ],
+  rookieLost: [
+    'This is fine. This is completely fine.',
+    "That didn't happen. Rematch. Right now.",
+  ],
+  rookieWon: [
+    'Checkmate — but you made me earn every square of it. Again.',
+    "That's the round. You fought hard. New game — keep swinging.",
+  ],
+  draw: [
+    'A draw. We both live. New game — someone has to win this time.',
+  ],
+} as const;
 
 function fmtTime(s: number): string {
   const m = Math.floor(s / 60);
@@ -217,6 +287,24 @@ function CircuitTimeline({
   );
 }
 
+/** The frozen game, visible but locked, during exercise/break fight segments. */
+function FrozenFightBoard({ fen }: { fen: string }) {
+  return (
+    <div className="relative w-full max-w-[220px] mx-auto">
+      <div className="pointer-events-none opacity-40 grayscale">
+        <ChessPathBoard
+          options={{ position: fen, boardOrientation: 'white', animationDurationInMs: 0 }}
+        />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="rounded-lg bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5">
+          Frozen
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function Legend({ color, label }: { color: string; label: string }) {
   return (
     <span className="flex items-center gap-1.5 text-chess-text-muted">
@@ -230,6 +318,7 @@ type Phase = 'setup' | 'running' | 'done';
 
 interface FinishResult {
   sessionPoints: number;
+  bestRoundPoints: number;
   lifetime: number | null;
   right: number;
   wrong: number;
@@ -238,6 +327,8 @@ interface FinishResult {
   previousBest: number;
   recentPoints: number[]; // chronological, this session last
   rookieLine: string; // Rookie's post-workout encouragement
+  /** Fight sessions only — the game-result line ("You beat Rookie (Level 3)"). */
+  fightSummary: string | null;
 }
 
 export default function WorkoutPage() {
@@ -259,6 +350,25 @@ export default function WorkoutPage() {
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
   const [targetElo, setTargetElo] = useState(START_ELO);
+
+  // Scoring v2: highest targetElo reached this session. Only ratchets up —
+  // it's the anti-sandbag anchor (puzzles far below it pay 1 point flat).
+  const [highWaterElo, setHighWaterElo] = useState(START_ELO);
+  useEffect(() => {
+    setHighWaterElo((h) => Math.max(h, targetElo));
+  }, [targetElo]);
+
+  // 3 strikes: wrong answers in the CURRENT chess segment; the 3rd ends it.
+  const strikesRef = useRef(0);
+  // Rookie's one-liner shown briefly when strikes end a chess segment.
+  const [strikeNotice, setStrikeNotice] = useState<string | null>(null);
+
+  // Fired Up: earned by punching hard in the previous exercise segment;
+  // makes the NEXT chess segment pay +25%.
+  const [firedUp, setFiredUp] = useState(false);
+
+  // Puzzle points earned per round (index = round) → best single round.
+  const roundPointsRef = useRef<number[]>([]);
 
   // Missed puzzles collected this session, stored for later replay.
   const missedRef = useRef<WorkoutPuzzleData[]>([]);
@@ -290,6 +400,9 @@ export default function WorkoutPage() {
   const punchesRef = useRef(0);
   const segPunchBaseRef = useRef(0);
   const [punchTotal, setPunchTotal] = useState(0); // live display
+  // Session total at the START of the current exercise segment — the diff at
+  // segment end is "punches this segment" (feeds Fired Up).
+  const segStartPunchesRef = useRef(0);
 
   const onPunch = useCallback((mountTotal: number) => {
     const delta = mountTotal - segPunchBaseRef.current;
@@ -302,15 +415,403 @@ export default function WorkoutPage() {
 
   const current = schedule[segIndex];
 
+  // ── Fight rounds (WORKOUT_FIGHT_ROUNDS) ───────────────────────────────────
+  // One continuous game vs Rookie; freezes during exercise/break segments.
+  const fightEnabled = FEATURE_FLAGS.WORKOUT_FIGHT_ROUNDS;
+  const [discipline, setDiscipline] = useState<Discipline>('puzzles');
+  const isFight = fightEnabled && discipline === 'fight';
+
+  const [fightFen, setFightFen] = useState(FIGHT_START_FEN);
+  const fightFenRef = useRef(FIGHT_START_FEN); // callback-safe mirror
+  const fightMovesRef = useRef<string[]>([]); // SAN history (opening book + resume)
+  const [fightLevel, setFightLevel] = useState(1);
+  const fightLevelRef = useRef(1);
+  const [fightSelected, setFightSelected] = useState<Square | null>(null);
+  const [fightLastMv, setFightLastMv] = useState<{ from: Square; to: Square } | null>(null);
+  const [rookieThinking, setRookieThinking] = useState(false);
+  const [fightLine, setFightLine] = useState<string | null>(null);
+
+  // Rookie's pending move timer — MUST be cleared when a chess segment ends
+  // (freeze) or she'll move during exercise.
+  const rookieTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True only while a fight chess segment is live — gates moves + engine replies.
+  const fightActiveRef = useRef(false);
+  // Engine loads lazily at the FIRST fight chess segment (7.3MB wasm worker).
+  const sfInitStartedRef = useRef(false);
+  const sfReadyRef = useRef(false);
+
+  // Judges' scoring: white's material lead at the current scoring window's
+  // start; material points already banked per round (per-round cap); every
+  // fight point ever awarded (score state can be stale inside finishSession).
+  const segStartMaterialRef = useRef(0);
+  const fightMaterialByRoundRef = useRef<number[]>([]);
+  const fightScoreRef = useRef(0);
+  const fightWinsRef = useRef(0);
+  const fightLossesRef = useRef(0);
+  const fightDrawsRef = useRef(0);
+
+  // Callback-safe mirrors of state the fight handlers need.
+  const segIndexRef = useRef(0);
+  useEffect(() => {
+    segIndexRef.current = segIndex;
+  }, [segIndex]);
+  const firedUpRef = useRef(false);
+  useEffect(() => {
+    firedUpRef.current = firedUp;
+  }, [firedUp]);
+
+  // ── Fight helpers (all read refs only — stable identities) ────────────────
+
+  /**
+   * Bank this scoring window's judges' points: net material gained since the
+   * window started, level-scaled, Fired Up ×1.25, capped per round. A mate on
+   * Rookie adds a round bonus (counts toward best round) + a level-scaled
+   * session win bonus (does NOT — keeps best-round comparable with puzzles).
+   * Rebases the window to the end position so double-banking adds nothing.
+   */
+  const bankFightSegment = useCallback(
+    (endFen: string, result?: 'win' | 'loss' | 'draw') => {
+      const rIdx = Math.floor(segIndexRef.current / ROUND_LENGTH);
+      const endMaterial = whiteMaterialLead(endFen);
+      const delta = endMaterial - segStartMaterialRef.current;
+      let material = fightMaterialPoints(delta, fightLevelRef.current, firedUpRef.current);
+      const already = fightMaterialByRoundRef.current[rIdx] ?? 0;
+      material = Math.max(0, Math.min(material, FIGHT_ROUND_MATERIAL_CAP - already));
+      fightMaterialByRoundRef.current[rIdx] = already + material;
+
+      let roundPts = material;
+      let sessionOnly = 0;
+      if (result === 'win') {
+        roundPts += FIGHT_MATE_ROUND_BONUS;
+        sessionOnly += fightWinBonus(fightLevelRef.current);
+      } else if (result === 'draw') {
+        sessionOnly += FIGHT_DRAW_SESSION_BONUS;
+      }
+      if (roundPts > 0) {
+        roundPointsRef.current[rIdx] = (roundPointsRef.current[rIdx] ?? 0) + roundPts;
+      }
+      const total = roundPts + sessionOnly;
+      if (total > 0) {
+        fightScoreRef.current += total;
+        setScore((s) => s + total);
+      }
+      segStartMaterialRef.current = endMaterial;
+    },
+    [],
+  );
+
+  /** Freeze the game: kill Rookie's pending move + flush the engine queue. */
+  const freezeFight = useCallback(() => {
+    fightActiveRef.current = false;
+    if (rookieTimerRef.current) {
+      clearTimeout(rookieTimerRef.current);
+      rookieTimerRef.current = null;
+    }
+    stockfish.cancel();
+    setRookieThinking(false);
+  }, []);
+
+  /** Fresh game (session start or auto-rematch) — the session keeps going. */
+  const startNewFightGame = useCallback(() => {
+    fightFenRef.current = FIGHT_START_FEN;
+    setFightFen(FIGHT_START_FEN);
+    fightMovesRef.current = [];
+    setFightSelected(null);
+    setFightLastMv(null);
+    segStartMaterialRef.current = 0;
+  }, []);
+
+  /** Game over mid-session: score it, say the line, rematch immediately. */
+  const onFightGameOver = useCallback(
+    (g: Chess) => {
+      const endFen = g.fen();
+      const seed = fightMovesRef.current.length + segIndexRef.current;
+      if (g.isCheckmate()) {
+        const rookieLost = g.turn() === 'b'; // Rookie is black; black mated = you won
+        if (rookieLost) {
+          fightWinsRef.current += 1;
+          bankFightSegment(endFen, 'win');
+          setFightLine(pick([...FIGHT_LINES.rookieLost], seed));
+          playCelebrationSound();
+        } else {
+          fightLossesRef.current += 1;
+          bankFightSegment(endFen, 'loss'); // banked material stays, no bonus
+          setFightLine(pick([...FIGHT_LINES.rookieWon], seed));
+        }
+      } else {
+        fightDrawsRef.current += 1;
+        bankFightSegment(endFen, 'draw');
+        setFightLine(pick([...FIGHT_LINES.draw], seed));
+      }
+      startNewFightGame();
+    },
+    [bankFightSegment, startNewFightGame],
+  );
+
+  /** Rookie's reply: opening book → random-blunder chance → sampled Stockfish. */
+  const scheduleRookieMove = useCallback(
+    (currentFen: string) => {
+      if (!fightActiveRef.current) return;
+      if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+      setRookieThinking(true);
+
+      const applyRookieMove = (
+        moveInfo: { from: string; to: string; promotion?: string } | { san: string },
+      ) => {
+        rookieTimerRef.current = null;
+        if (!fightActiveRef.current) return; // segment ended while waiting
+        const g = new Chess(fightFenRef.current);
+        if (g.turn() !== 'b' || g.isGameOver()) {
+          setRookieThinking(false);
+          return;
+        }
+        let result;
+        try {
+          result =
+            'san' in moveInfo
+              ? g.move(moveInfo.san)
+              : g.move({
+                  from: moveInfo.from as Square,
+                  to: moveInfo.to as Square,
+                  promotion: (moveInfo.promotion || 'q') as 'q' | 'r' | 'b' | 'n',
+                });
+        } catch {
+          result = null;
+        }
+        if (!result) {
+          setRookieThinking(false);
+          return;
+        }
+        const newFen = g.fen();
+        fightFenRef.current = newFen;
+        setFightFen(newFen);
+        fightMovesRef.current.push(result.san);
+        setFightLastMv({ from: result.from as Square, to: result.to as Square });
+        setFightSelected((prev) => reconcileSelectionAfterOpponentMove(prev, result));
+        setRookieThinking(false);
+        if (result.captured) playCaptureSound();
+        else playMoveSound();
+        if (g.isGameOver()) onFightGameOver(g);
+      };
+
+      const scheduleApply = (
+        moveInfo: { from: string; to: string; promotion?: string } | { san: string },
+        delayMs: number,
+      ) => {
+        rookieTimerRef.current = setTimeout(() => applyRookieMove(moveInfo), delayMs);
+      };
+
+      const fallbackRandom = () => {
+        const g = new Chess(currentFen);
+        const moves = g.moves({ verbose: true });
+        if (!moves.length) {
+          setRookieThinking(false);
+          return;
+        }
+        const mv = moves[Math.floor(Math.random() * moves.length)];
+        scheduleApply({ from: mv.from, to: mv.to, promotion: mv.promotion }, 500);
+      };
+
+      // Opening book (Rookie is black): first 5 of her moves at L3+, same cap
+      // /play uses so beginners don't face 15 moves of theory.
+      const sans = fightMovesRef.current;
+      const rookieMovesPlayed = sans.filter((_, i) => i % 2 === 1).length;
+      if (fightLevelRef.current >= 3 && rookieMovesPlayed < 5) {
+        const book = getReactiveBookMove(currentFen, sans, 'black');
+        if (book.inBook && book.moveSan) {
+          scheduleApply({ san: book.moveSan }, 400);
+          return;
+        }
+      }
+
+      const cfg = getLevelEngineConfig(fightLevelRef.current);
+
+      // Beginner "hung piece" feel — same random-move injection as /play L1-L3.
+      if (cfg.randomMoveChance && Math.random() < cfg.randomMoveChance) {
+        fallbackRandom();
+        return;
+      }
+
+      if (!sfReadyRef.current) {
+        // Engine still loading (first segment) — play a random move, don't stall.
+        fallbackRandom();
+        return;
+      }
+
+      const thinkStart = Date.now();
+      stockfish
+        .getBestMoveSampled(
+          currentFen,
+          cfg.skillLevel,
+          cfg.depth,
+          cfg.multiPV,
+          cfg.poolSize,
+          cfg.tolerance,
+        )
+        .then((uciMove) => {
+          if (!fightActiveRef.current) return; // froze while thinking
+          if (!uciMove) {
+            fallbackRandom();
+            return;
+          }
+          const from = uciMove.slice(0, 2);
+          const to = uciMove.slice(2, 4);
+          const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
+          const wait = Math.max(0, 500 - (Date.now() - thinkStart));
+          scheduleApply({ from, to, promotion }, wait);
+        })
+        .catch(() => {
+          if (fightActiveRef.current) fallbackRandom();
+        });
+    },
+    [onFightGameOver],
+  );
+
+  /** Player's move (white). Returns true if legal — feeds drop + click-to-move. */
+  const doFightMove = useCallback(
+    (from: Square, to: Square): boolean => {
+      if (!fightActiveRef.current) return false;
+      const g = new Chess(fightFenRef.current);
+      if (g.turn() !== 'w') return false;
+      let result;
+      try {
+        result = g.move({ from, to, promotion: 'q' });
+      } catch {
+        return false;
+      }
+      if (!result) return false;
+      const newFen = g.fen();
+      fightFenRef.current = newFen;
+      setFightFen(newFen);
+      fightMovesRef.current.push(result.san);
+      setFightLastMv({ from, to });
+      setFightSelected(null);
+      if (result.captured) playCaptureSound();
+      else playMoveSound();
+      if (g.isGameOver()) {
+        onFightGameOver(g);
+        return true;
+      }
+      // Let the board animation finish before Rookie replies (tracked timer —
+      // cleared on freeze so she never moves during exercise).
+      rookieTimerRef.current = setTimeout(
+        () => scheduleRookieMove(newFen),
+        FIGHT_ANIM_MS + 150,
+      );
+      return true;
+    },
+    [onFightGameOver, scheduleRookieMove],
+  );
+
+  // Derived game for click-to-move + square styles.
+  const fightGame = useMemo(() => {
+    try {
+      return new Chess(fightFen);
+    } catch {
+      return null;
+    }
+  }, [fightFen]);
+
+  const onFightSquareClick = useClickToMove({
+    game: fightGame,
+    ownColor: 'w',
+    selectedSquare: fightSelected,
+    setSelectedSquare: setFightSelected,
+    tryMove: doFightMove,
+    enabled:
+      isFight && phase === 'running' && current?.kind === 'chess' && !rookieThinking,
+  });
+
+  // Lichess-style highlights: last move, check glow, selected + legal dots.
+  const fightSqStyles = useMemo(() => {
+    const s: Record<string, React.CSSProperties> = {};
+    if (!fightGame) return s;
+    if (fightLastMv) {
+      s[fightLastMv.from] = { background: 'rgba(255, 170, 0, 0.4)' };
+      s[fightLastMv.to] = { background: 'rgba(255, 170, 0, 0.4)' };
+    }
+    if (fightGame.isCheck()) {
+      const kingColor = fightGame.turn();
+      for (const row of fightGame.board()) {
+        for (const sq of row) {
+          if (sq && sq.type === 'k' && sq.color === kingColor) {
+            s[sq.square] = {
+              ...s[sq.square],
+              background:
+                'radial-gradient(ellipse at center, rgba(255, 0, 0, 0.8) 0%, rgba(255, 0, 0, 0.35) 40%, rgba(255, 0, 0, 0) 70%)',
+            };
+          }
+        }
+      }
+    }
+    if (fightSelected) {
+      s[fightSelected] = { ...s[fightSelected], background: 'rgba(20, 85, 200, 0.5)' };
+      for (const m of fightGame.moves({ square: fightSelected, verbose: true })) {
+        const has = fightGame.get(m.to as Square);
+        s[m.to] = {
+          ...s[m.to],
+          background: has
+            ? 'radial-gradient(transparent 55%, rgba(20, 85, 200, 0.4) 55%)'
+            : 'radial-gradient(rgba(20, 85, 200, 0.5) 22%, transparent 22%)',
+        };
+      }
+    }
+    return s;
+  }, [fightGame, fightLastMv, fightSelected]);
+
+  // Entering a fight chess segment: unfreeze, lazy-init the engine, rebase the
+  // scoring window, and if it's Rookie's turn (segment ended mid-think last
+  // round) reschedule her move.
+  useEffect(() => {
+    if (phase !== 'running' || !isFight) return;
+    if (current?.kind !== 'chess') {
+      fightActiveRef.current = false;
+      return;
+    }
+    fightActiveRef.current = true;
+    segStartMaterialRef.current = whiteMaterialLead(fightFenRef.current);
+    if (!sfInitStartedRef.current) {
+      sfInitStartedRef.current = true;
+      stockfish
+        .init()
+        .then(() => {
+          sfReadyRef.current = true;
+        })
+        .catch(() => {});
+    }
+    if (segIndex > 0) setFightLine(pick([...FIGHT_LINES.resume], segIndex));
+    const g = new Chess(fightFenRef.current);
+    if (!g.isGameOver() && g.turn() === 'b') {
+      rookieTimerRef.current = setTimeout(
+        () => scheduleRookieMove(fightFenRef.current),
+        600,
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, isFight, segIndex, current?.kind]);
+
+  // Kill any pending Rookie move if the page unmounts mid-fight.
+  useEffect(() => {
+    return () => {
+      if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+    };
+  }, []);
+
   // Load the saved "count my punches" preference once (client only).
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setPunchCamOn(window.localStorage.getItem('cp_punch_cam') === '1');
   }, []);
 
-  // Each new exercise segment is a fresh tracker mount → reset the per-mount base.
+  // Each new exercise segment is a fresh tracker mount → reset the per-mount
+  // base and mark the session total so this segment's punches are measurable.
+  // Each new chess segment resets the 3-strike count.
   useEffect(() => {
-    if (current?.kind === 'workout') segPunchBaseRef.current = 0;
+    if (current?.kind === 'workout') {
+      segPunchBaseRef.current = 0;
+      segStartPunchesRef.current = punchesRef.current;
+    }
+    if (current?.kind === 'chess') strikesRef.current = 0;
   }, [segIndex, current?.kind]);
 
   // Re-enabling the cam mid-segment is also a fresh mount — a stale base would
@@ -331,8 +832,32 @@ export default function WorkoutPage() {
     if (finishingRef.current) return;
     finishingRef.current = true;
 
-    const perfect = wrong === 0 && right > 0;
-    const sessionPoints = Math.max(0, score) + (perfect ? PERFECT_SESSION_BONUS : 0);
+    if (isFight) {
+      // Session over with the game unfinished → the final window's material
+      // delta "goes to the scorecards". Banking rebases the window, so if
+      // advanceSegment already scored this segment the delta here is 0.
+      freezeFight();
+      bankFightSegment(fightFenRef.current);
+    }
+
+    const perfect = !isFight && wrong === 0 && right > 0;
+    // Fight points live in a ref — score state set this same tick would be stale.
+    const sessionPoints = isFight
+      ? Math.max(0, fightScoreRef.current)
+      : Math.max(0, score) + (perfect ? PERFECT_SESSION_BONUS : 0);
+
+    let fightSummary: string | null = null;
+    if (isFight) {
+      const w = fightWinsRef.current;
+      const l = fightLossesRef.current;
+      const d = fightDrawsRef.current;
+      const lvl = fightLevelRef.current;
+      if (w > 0) fightSummary = `You beat Rookie (Level ${lvl})${w > 1 ? ` ×${w}` : ''}`;
+      else if (l > 0) fightSummary = `Rookie won this one (Level ${lvl})`;
+      else if (d > 0) fightSummary = `Draw vs Rookie (Level ${lvl})`;
+      else fightSummary = 'Went to the scorecards';
+    }
+    const bestRoundPoints = roundPointsRef.current.reduce((m, p) => Math.max(m, p ?? 0), 0);
     let lifetime: number | null = null;
     let isPersonalBest = false;
     let previousBest = 0;
@@ -352,6 +877,7 @@ export default function WorkoutPage() {
           seenPuzzleIds: seenIdsRef.current,
           clientSessionId: clientSessionIdRef.current,
           punches: punchesRef.current,
+          bestRoundPoints,
         }),
       });
       if (res.ok) {
@@ -376,9 +902,14 @@ export default function WorkoutPage() {
       isPersonalBest,
     });
 
+    // Combo Coach curriculum: one finished session = one step toward the next
+    // punch unlock (finishingRef guards double-count).
+    if (FEATURE_FLAGS.WORKOUT_COMBO_CALLS) bumpComboSessions();
+
     clearResume(); // session over — drop the resume snapshot
     setFinishResult({
       sessionPoints,
+      bestRoundPoints,
       lifetime,
       right,
       wrong,
@@ -387,24 +918,43 @@ export default function WorkoutPage() {
       previousBest,
       recentPoints,
       rookieLine,
+      fightSummary,
     });
     setPhase('done');
-  }, [score, right, wrong, minutes]);
+  }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
 
   // ── Advance to the next segment (or finish) ───────────────────────────────
+  // Runs on timer-out, Skip, and the 3rd strike — all three end a segment the
+  // same way.
   const advanceSegment = useCallback(() => {
-    // Boxing bell rings at the end of every stage (timer-out or Skip).
+    // Boxing bell rings at the end of every stage.
     playBoxingBell();
-    setSegIndex((i) => {
-      const next = i + 1;
-      if (next >= schedule.length) {
-        finishSession();
-        return i;
-      }
-      setSecondsLeft(schedule[next].seconds);
-      return next;
-    });
-  }, [schedule, finishSession]);
+    const cur = schedule[segIndex];
+    if (isFight && cur?.kind === 'chess') {
+      // FREEZE: kill Rookie's pending move + engine work (she must never move
+      // during exercise), then the judges score the round on material.
+      freezeFight();
+      bankFightSegment(fightFenRef.current);
+      setFightLine(pick([...FIGHT_LINES.freeze], segIndex));
+    }
+    if (cur?.kind === 'workout') {
+      // Fired Up check: enough punches THIS exercise segment powers up the
+      // next chess segment. Only reachable with the punch cam on (no cam →
+      // 0 punches → simply not fired up; never a penalty).
+      const segPunches = punchesRef.current - segStartPunchesRef.current;
+      setFiredUp(segPunches >= FIRED_UP_PUNCH_TARGET);
+    } else if (cur?.kind === 'chess') {
+      // Fired Up is spent on the chess segment it powered.
+      setFiredUp(false);
+    }
+    const next = segIndex + 1;
+    if (next >= schedule.length) {
+      finishSession();
+      return;
+    }
+    setSecondsLeft(schedule[next].seconds);
+    setSegIndex(next);
+  }, [schedule, segIndex, finishSession, isFight, freezeFight, bankFightSegment]);
 
   // ── Begin a session ───────────────────────────────────────────────────────
   const begin = useCallback(() => {
@@ -424,24 +974,59 @@ export default function WorkoutPage() {
     comboRef.current = 0;
     setPuzzlePos(0);
     setTargetElo(START_ELO);
+    setHighWaterElo(START_ELO);
+    strikesRef.current = 0;
+    setStrikeNotice(null);
+    setFiredUp(false);
+    roundPointsRef.current = [];
     missedRef.current = [];
     seenIdsRef.current = [];
     punchesRef.current = 0;
     segPunchBaseRef.current = 0;
+    segStartPunchesRef.current = 0;
     setPunchTotal(0);
     clientSessionIdRef.current = crypto.randomUUID();
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
+
+    // Fight rounds: fresh game, Rookie at the user's unlocked /play level
+    // hard-capped at FIGHT_MAX_LEVEL (no picking easier — anti-farming; no
+    // higher — L5+ engines are heavyweight downloads).
+    const fight = fightEnabled && discipline === 'fight';
+    fightFenRef.current = FIGHT_START_FEN;
+    setFightFen(FIGHT_START_FEN);
+    fightMovesRef.current = [];
+    setFightSelected(null);
+    setFightLastMv(null);
+    setRookieThinking(false);
+    setFightLine(null);
+    fightActiveRef.current = false;
+    segStartMaterialRef.current = 0;
+    fightMaterialByRoundRef.current = [];
+    fightScoreRef.current = 0;
+    fightWinsRef.current = 0;
+    fightLossesRef.current = 0;
+    fightDrawsRef.current = 0;
+    if (fight) {
+      const lvl = Math.min(FIGHT_MAX_LEVEL, loadRookieLevel());
+      setFightLevel(lvl);
+      fightLevelRef.current = lvl;
+    }
+
     setPhase('running');
     WorkoutEvents.started(minutes, false);
 
-    // Prefetch the ramped puzzle queue.
-    fetch(`/api/workout/puzzles?minutes=${minutes}`)
-      .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-      .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-      .catch(() => setQueue([]));
-  }, [minutes]);
+    // Prefetch the ramped puzzle queue (puzzles discipline only).
+    if (fight) {
+      setQueue([]);
+    } else {
+      fetch(`/api/workout/puzzles?minutes=${minutes}`)
+        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
+        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
+        .catch(() => setQueue([]));
+    }
+  }, [minutes, fightEnabled, discipline]);
 
   // ── Resume a workout that was killed mid-session ──────────────────────────
   const resume = useCallback((snap: WorkoutResumeState) => {
@@ -460,11 +1045,17 @@ export default function WorkoutPage() {
     comboRef.current = snap.combo;
     setPuzzlePos(snap.puzzlePos);
     setTargetElo(snap.targetElo ?? START_ELO);
+    setHighWaterElo(Math.max(snap.highWaterElo ?? START_ELO, snap.targetElo ?? START_ELO));
+    strikesRef.current = 0; // strikes are per-segment; a resume starts the segment fresh
+    setStrikeNotice(null);
+    setFiredUp(false); // Fired Up isn't snapshotted — earn it again
+    roundPointsRef.current = snap.roundPoints ?? [];
     missedRef.current = snap.missed ?? [];
     seenIdsRef.current = snap.seenIds ?? [];
     // Punches aren't snapshotted; a resumed session counts from here.
     punchesRef.current = 0;
     segPunchBaseRef.current = 0;
+    segStartPunchesRef.current = 0;
     setPunchTotal(0);
     // Reuse the original session id so finishing a resumed workout is idempotent
     // with any earlier finish attempt. Older snapshots won't have one.
@@ -472,11 +1063,42 @@ export default function WorkoutPage() {
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
+
+    // Fight snapshot: rebuild the frozen game with a fresh Chess(fen).
+    const fightSnap = snap.discipline === 'fight' ? snap.fight : undefined;
+    setDiscipline(fightSnap ? 'fight' : 'puzzles');
+    fightActiveRef.current = false;
+    setRookieThinking(false);
+    setFightSelected(null);
+    setFightLastMv(null);
+    setFightLine(null);
+    if (fightSnap) {
+      fightFenRef.current = fightSnap.fen;
+      setFightFen(fightSnap.fen);
+      fightMovesRef.current = [...(fightSnap.moveSans ?? [])];
+      const lvl = Math.max(1, Math.min(FIGHT_MAX_LEVEL, fightSnap.level ?? 1));
+      setFightLevel(lvl);
+      fightLevelRef.current = lvl;
+      segStartMaterialRef.current = fightSnap.segStartMaterial ?? 0;
+      fightMaterialByRoundRef.current = [...(fightSnap.materialByRound ?? [])];
+      fightWinsRef.current = fightSnap.wins ?? 0;
+      fightLossesRef.current = fightSnap.losses ?? 0;
+      fightDrawsRef.current = fightSnap.draws ?? 0;
+      fightScoreRef.current = snap.score; // in fight mode, score IS fight points
+    } else {
+      fightFenRef.current = FIGHT_START_FEN;
+      setFightFen(FIGHT_START_FEN);
+      fightMovesRef.current = [];
+      fightScoreRef.current = 0;
+    }
+
     setPhase('running');
     WorkoutEvents.started(snap.minutes, true);
 
     // Restore the exact saved queue so the same puzzle comes back up.
-    if (snap.queue?.length) {
+    if (fightSnap) {
+      setQueue([]);
+    } else if (snap.queue?.length) {
       setQueue(snap.queue);
     } else {
       // Older snapshot without a queue — fall back to a fresh fetch.
@@ -493,6 +1115,7 @@ export default function WorkoutPage() {
     if (new URLSearchParams(window.location.search).get('preview') === 'result') {
       setFinishResult({
         sessionPoints: 420,
+        bestRoundPoints: 180,
         lifetime: 3180,
         right: 14,
         wrong: 0,
@@ -501,6 +1124,7 @@ export default function WorkoutPage() {
         previousBest: 360,
         recentPoints: [180, 240, 300, 210, 360, 280, 420],
         rookieLine: pickWorkoutFinishLine(),
+        fightSummary: null,
       });
       setPhase('done');
       return;
@@ -522,12 +1146,27 @@ export default function WorkoutPage() {
       combo,
       puzzlePos,
       targetElo,
+      highWaterElo,
+      roundPoints: roundPointsRef.current,
       missed: missedRef.current,
       seenIds: seenIdsRef.current,
       clientSessionId: clientSessionIdRef.current,
       queue,
+      discipline: isFight ? 'fight' : 'puzzles',
+      fight: isFight
+        ? {
+            fen: fightFenRef.current,
+            moveSans: [...fightMovesRef.current],
+            level: fightLevelRef.current,
+            segStartMaterial: segStartMaterialRef.current,
+            materialByRound: [...fightMaterialByRoundRef.current],
+            wins: fightWinsRef.current,
+            losses: fightLossesRef.current,
+            draws: fightDrawsRef.current,
+          }
+        : undefined,
     });
-  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, queue]);
+  }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, highWaterElo, queue, isFight, fightFen]);
 
   // Confetti when the results popup appears — extra burst on a personal best.
   useEffect(() => {
@@ -596,14 +1235,24 @@ export default function WorkoutPage() {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
     const rating = currentPuzzle?.rating ?? 1000;
-    const nextStreak = comboRef.current + 1;
-    comboRef.current = nextStreak;
-    setCombo(nextStreak);
-    setScore((s) => s + pointsForCorrect(rating, nextStreak));
+    // Scoring v2: pay is anchored to the session's high-water ELO. Farm-tier
+    // puzzles (300+ below your peak) pay 1 flat and don't grow the combo —
+    // tanking difficulty on purpose earns nothing.
+    const farm = payFactor(rating, highWaterElo) === 0;
+    let nextStreak = comboRef.current;
+    if (!farm) {
+      nextStreak = comboRef.current + 1;
+      comboRef.current = nextStreak;
+      setCombo(nextStreak);
+    }
+    const pts = pointsForCorrectV2(rating, nextStreak, highWaterElo, firedUp);
+    const rIdx = Math.floor(segIndex / ROUND_LENGTH);
+    roundPointsRef.current[rIdx] = (roundPointsRef.current[rIdx] ?? 0) + pts;
+    setScore((s) => s + pts);
     setRight((r) => r + 1);
     setTargetElo((e) => Math.min(MAX_ELO, e + ELO_UP_ON_CORRECT));
     setPuzzlePos((p) => p + 1);
-  }, [currentPuzzle]);
+  }, [currentPuzzle, highWaterElo, firedUp, segIndex]);
 
   const handleWrong = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
@@ -625,7 +1274,21 @@ export default function WorkoutPage() {
     // Ease off: drop the target so the next puzzle is easier, not harder.
     setTargetElo((e) => Math.max(MIN_ELO, e - ELO_DOWN_ON_WRONG));
     setPuzzlePos((p) => p + 1);
-  }, [currentPuzzle]);
+    // 3 strikes: the 3rd wrong answer in one chess segment ends it now —
+    // mass-failing to tank difficulty costs the rest of the round.
+    strikesRef.current += 1;
+    if (strikesRef.current >= MAX_STRIKES_PER_SEGMENT) {
+      setStrikeNotice("Three down — round's over. Shake it off.");
+      advanceSegment();
+    }
+  }, [currentPuzzle, advanceSegment]);
+
+  // The strike notice is a brief toast — clear itself after a few seconds.
+  useEffect(() => {
+    if (!strikeNotice) return;
+    const t = setTimeout(() => setStrikeNotice(null), 4000);
+    return () => clearTimeout(t);
+  }, [strikeNotice]);
 
   const liveScore = Math.max(0, score);
   const multiplier = comboMultiplier(combo);
@@ -757,6 +1420,49 @@ export default function WorkoutPage() {
             </div>
           </div>
 
+          {/* Discipline picker — puzzles (default) vs one continuous game */}
+          {fightEnabled && (
+            <div>
+              <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide mb-2 text-center">
+                Discipline
+              </h2>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    setDiscipline('puzzles');
+                  }}
+                  className={`rounded-xl border-2 px-3 py-2.5 min-h-[44px] transition flex flex-col items-center leading-tight ${
+                    discipline === 'puzzles'
+                      ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
+                      : 'border-slate-200 bg-chess-surface text-chess-text'
+                  }`}
+                >
+                  <span className="font-black text-sm">Puzzles</span>
+                  <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                    Solve as many as you can
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    setDiscipline('fight');
+                  }}
+                  className={`rounded-xl border-2 px-3 py-2.5 min-h-[44px] transition flex flex-col items-center leading-tight ${
+                    discipline === 'fight'
+                      ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
+                      : 'border-slate-200 bg-chess-surface text-chess-text'
+                  }`}
+                >
+                  <span className="font-black text-sm">Fight Rookie</span>
+                  <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                    One game. It freezes while you train.
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Difficulty adapts — compact bullets */}
           <div
             className="rounded-2xl border border-amber-200 shadow-sm p-3"
@@ -768,22 +1474,54 @@ export default function WorkoutPage() {
                 How it works
               </h2>
             </div>
+            {fightEnabled && discipline === 'fight' ? (
+              <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
+                <li className="flex items-center gap-2">
+                  <span className="text-chess-green">✓</span> One game vs Rookie, across every round
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  Board freezes while you exercise — like the real sport
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  Judges score each round on material you win
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  Checkmate Rookie = big bonus (she plays your /play level)
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  {FIRED_UP_PUNCH_TARGET}+ punches = next round Fired Up (+25%)
+                </li>
+              </ul>
+            ) : (
             <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
               <li className="flex items-center gap-2">
                 <span className="text-chess-green">✓</span> Correct answer = ELO +60
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-chess-red">✗</span> Wrong answer = ELO −100
+                <span className="text-chess-red">✗</span> 3 wrong in a round = round over
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                Harder puzzle = more points (10–25)
+                Harder puzzle = more points (10–45)
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 Solve a streak = combo up to ×2
               </li>
+              <li className="flex items-center gap-2">
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                Easy puzzles below your peak barely pay
+              </li>
+              <li className="flex items-center gap-2">
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                {FIRED_UP_PUNCH_TARGET}+ punches = next round Fired Up (+25%)
+              </li>
             </ul>
+            )}
           </div>
 
           <button
@@ -810,6 +1548,13 @@ export default function WorkoutPage() {
           `}</style>
           <div className="workout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col items-center gap-2.5 text-center">
             <h1 className="text-lg font-black text-chess-text">Chess Boxing complete</h1>
+
+            {/* Fight sessions — the game result on the card */}
+            {finishResult.fightSummary && (
+              <div className="w-full rounded-xl bg-chess-blue/10 px-3 py-2 text-sm font-black text-chess-blue leading-snug">
+                {finishResult.fightSummary}
+              </div>
+            )}
 
             {/* Rookie, breathing calmly, with her line right below */}
             <BreathingRook size="sm" animate />
@@ -838,6 +1583,11 @@ export default function WorkoutPage() {
               <div className="text-xs font-semibold text-chess-text-muted mt-1">
                 points this session
               </div>
+              {finishResult.bestRoundPoints > 0 && (
+                <div className="text-xs font-bold text-chess-text mt-1">
+                  Best round: {finishResult.bestRoundPoints}
+                </div>
+              )}
             </div>
 
             {finishResult.perfect && (
@@ -888,18 +1638,23 @@ export default function WorkoutPage() {
             )}
 
             <div className="flex justify-center gap-6 w-full pt-2 border-t border-slate-100">
-              <div>
-                <div className="text-xl font-black text-chess-green tabular-nums">
-                  {finishResult.right}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">solved</div>
-              </div>
-              <div>
-                <div className="text-xl font-black text-chess-red tabular-nums">
-                  {finishResult.wrong}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">missed</div>
-              </div>
+              {/* Fight sessions have no puzzle counts — the result line covers it */}
+              {!finishResult.fightSummary && (
+                <>
+                  <div>
+                    <div className="text-xl font-black text-chess-green tabular-nums">
+                      {finishResult.right}
+                    </div>
+                    <div className="text-[11px] font-semibold text-chess-text-muted">solved</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-black text-chess-red tabular-nums">
+                      {finishResult.wrong}
+                    </div>
+                    <div className="text-[11px] font-semibold text-chess-text-muted">missed</div>
+                  </div>
+                </>
+              )}
               {finishResult.lifetime !== null && (
                 <div>
                   <div className="text-xl font-black text-chess-text tabular-nums">
@@ -977,6 +1732,14 @@ export default function WorkoutPage() {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
+            {isChess && firedUp && (
+              <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 bg-amber-500/15 text-amber-600">
+                <Icon path={ICONS.bolt} className="w-4 h-4" />
+                <span className="text-sm font-black leading-none whitespace-nowrap">
+                  Fired Up
+                </span>
+              </div>
+            )}
             {isChess && combo >= 2 && (
               <div
                 className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 transition-colors ${
@@ -1023,7 +1786,37 @@ export default function WorkoutPage() {
 
       {/* Body */}
       <div className="flex-1 flex flex-col">
-        {isChess ? (
+        {isChess && isFight ? (
+          <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-3">
+            {/* Rookie's canned line (resume / game-result) or the matchup */}
+            <p className="text-center text-sm font-semibold text-chess-text-muted leading-snug">
+              {fightLine ?? `Fight Rookie · Level ${fightLevel}`}
+            </p>
+            <ChessPathBoard
+              options={{
+                position: fightFen,
+                boardOrientation: 'white',
+                onPieceDrop: (args: any) => {
+                  if (rookieThinking) return false;
+                  return doFightMove(args.sourceSquare as Square, args.targetSquare as Square);
+                },
+                onSquareClick: (args: any) => onFightSquareClick(args.square as Square),
+                squareStyles: fightSqStyles,
+                animationDurationInMs: FIGHT_ANIM_MS,
+              }}
+            />
+            {/* Status — fixed height so the board never shifts */}
+            <div className="text-center h-5">
+              {rookieThinking ? (
+                <span className="text-xs font-medium text-chess-text-muted">
+                  Rookie is thinking…
+                </span>
+              ) : fightGame && fightGame.turn() === 'w' ? (
+                <span className="text-xs font-semibold text-chess-green">Your move</span>
+              ) : null}
+            </div>
+          </div>
+        ) : isChess ? (
           <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
             <p className="text-center text-sm font-semibold text-chess-text-muted">
               {promptFor('chess')}
@@ -1051,9 +1844,10 @@ export default function WorkoutPage() {
             <div>
               <h2 className="text-2xl font-black text-chess-text">Rest</h2>
               <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
-                {pick(ROOKIE_LINES.break, lineSeed)}
+                {isFight && fightLine ? fightLine : pick(ROOKIE_LINES.break, lineSeed)}
               </p>
             </div>
+            {isFight && <FrozenFightBoard fen={fightFen} />}
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 text-center gap-5">
@@ -1062,6 +1856,9 @@ export default function WorkoutPage() {
                 <div className="text-6xl font-black text-chess-text tabular-nums">
                   {fmtTime(secondsLeft)}
                 </div>
+                {FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (
+                  <ComboCoach key={`coach-${segIndex}`} segmentSeconds={current.seconds} />
+                )}
                 <PunchTracker
                   key={segIndex}
                   autoStart
@@ -1079,21 +1876,29 @@ export default function WorkoutPage() {
                 >
                   Turn off camera
                 </button>
+                {isFight && <FrozenFightBoard fen={fightFen} />}
               </>
             ) : (
               <>
-                <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
+                {!FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (
+                  <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
+                )}
                 <div className="text-7xl font-black text-chess-text tabular-nums">
                   {fmtTime(secondsLeft)}
                 </div>
-                <div>
-                  <h2 className="text-2xl font-black text-chess-text">
-                    {promptFor(current.kind)}
-                  </h2>
-                  <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
-                    {pick(ROOKIE_LINES.workout, lineSeed)}
-                  </p>
-                </div>
+                {FEATURE_FLAGS.WORKOUT_COMBO_CALLS ? (
+                  <ComboCoach key={`coach-${segIndex}`} segmentSeconds={current.seconds} />
+                ) : (
+                  <div>
+                    <h2 className="text-2xl font-black text-chess-text">
+                      {promptFor(current.kind)}
+                    </h2>
+                    <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
+                      {isFight && fightLine ? fightLine : pick(ROOKIE_LINES.workout, lineSeed)}
+                    </p>
+                  </div>
+                )}
+                {isFight && <FrozenFightBoard fen={fightFen} />}
                 {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && (
                   <button
                     onClick={() => {
@@ -1137,6 +1942,13 @@ export default function WorkoutPage() {
           </button>
         </div>
       </div>
+
+      {/* Three-strikes toast — Rookie calls the round when the 3rd wrong lands */}
+      {strikeNotice && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] w-[calc(100%-2rem)] max-w-xs rounded-2xl bg-chess-surface border border-slate-200 shadow-lg px-4 py-3 text-center text-sm font-bold text-chess-text">
+          {strikeNotice}
+        </div>
+      )}
 
       {/* End-early confirm: save / discard / keep going */}
       {endConfirmOpen && (

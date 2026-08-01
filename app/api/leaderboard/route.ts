@@ -6,14 +6,19 @@ import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderbo
 /**
  * GET /api/leaderboard?scope=global|crew&period=daily|weekly|monthly&crewId=
  *
- * Ranks users by TOTAL workout points earned within the period window
- * (rewards showing up and doing more sessions). Scores come straight from
- * workout_sessions.points — no scoring logic here (Tyler tunes that upstream).
+ * Weekly/monthly rank by TOTAL workout points earned within the window
+ * (rewards showing up and doing more sessions). DAILY ranks by BEST SINGLE
+ * ROUND (max workout_sessions.best_round_points) so grinding many sessions
+ * can't buy the day — one great round wins it. Legacy sessions without
+ * best_round_points fall back to that user's best single-session points.
+ * Scores come straight from workout_sessions — no scoring logic here (Tyler
+ * tunes that upstream).
  *
  * - global: only users who opted in AND set a handle.
  * - crew:   members of the caller's crew (or ?crewId=). Requires membership.
  *
- * Returns { rows: top 50, me: {rank, points, username}, ... }.
+ * Returns { rows: top 50, me: {rank, points, username}, metric, ... } where
+ * metric is 'best_round' (daily) or 'total' (weekly/monthly).
  */
 
 const TOP_N = 50;
@@ -67,25 +72,63 @@ export async function GET(request: NextRequest) {
     memberIds = new Set((members ?? []).map((r) => r.user_id as string));
   }
 
-  // ── Sum points per user within the window ──────────────────────────────────
-  const { data: sessions, error } = await svc
+  // ── Score per user within the window ───────────────────────────────────────
+  // Daily = best single round; weekly/monthly = total points. The
+  // best_round_points column may not be migrated yet — retry the read without
+  // it and fall back to per-session points.
+  type SessionRow = {
+    user_id: string;
+    points: number | null;
+    punches?: number | null;
+    best_round_points?: number | null;
+  };
+  let sessions: SessionRow[] | null = null;
+  const first = await svc
     .from('workout_sessions')
-    .select('user_id, points, created_at, punches')
+    .select('user_id, points, created_at, punches, best_round_points')
     .gte('created_at', startISO);
+  let error = first.error;
+  sessions = (first.data ?? null) as SessionRow[] | null;
+  if (error && /best_round_points/.test(error.message ?? '')) {
+    const retry = await svc
+      .from('workout_sessions')
+      .select('user_id, points, created_at, punches')
+      .gte('created_at', startISO);
+    error = retry.error;
+    sessions = (retry.data ?? null) as SessionRow[] | null;
+  }
 
   if (error) {
     console.error('leaderboard sessions read failed', error);
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
+  const metric: 'best_round' | 'total' = period === 'daily' ? 'best_round' : 'total';
+
   const totals = new Map<string, number>();
   const punchTotals = new Map<string, number>();
+  // Daily fallback for users with only legacy rows (no best_round_points):
+  // their best single-session points still puts them on the board.
+  const bestRounds = new Map<string, number>();
+  const bestSessions = new Map<string, number>();
   for (const row of sessions ?? []) {
     const uid = row.user_id as string;
     if (memberIds && !memberIds.has(uid)) continue;
-    totals.set(uid, (totals.get(uid) ?? 0) + ((row.points as number) ?? 0));
+    const pts = (row.points as number) ?? 0;
+    totals.set(uid, (totals.get(uid) ?? 0) + pts);
     punchTotals.set(uid, (punchTotals.get(uid) ?? 0) + ((row.punches as number) ?? 0));
+    const br = (row as { best_round_points?: number | null }).best_round_points;
+    if (typeof br === 'number') {
+      bestRounds.set(uid, Math.max(bestRounds.get(uid) ?? 0, br));
+    }
+    bestSessions.set(uid, Math.max(bestSessions.get(uid) ?? 0, pts));
   }
+
+  const scoreFor = (uid: string): number => {
+    if (metric === 'total') return totals.get(uid) ?? 0;
+    const br = bestRounds.get(uid);
+    return br !== undefined ? br : bestSessions.get(uid) ?? 0;
+  };
 
   // Handles + opt-in for the candidate users.
   const uids = [...totals.keys()];
@@ -106,11 +149,16 @@ export async function GET(request: NextRequest) {
   // ── Build the ranked list ──────────────────────────────────────────────────
   type Entry = { userId: string; username: string; points: number; punches: number };
   const eligible: Entry[] = [];
-  for (const [uid, points] of totals) {
+  for (const uid of totals.keys()) {
     const h = handleById.get(uid);
     if (!h?.username) continue; // no handle → not shown
     if (scope === 'global' && !h.optIn) continue; // global honors opt-out
-    eligible.push({ userId: uid, username: h.username, points, punches: punchTotals.get(uid) ?? 0 });
+    eligible.push({
+      userId: uid,
+      username: h.username,
+      points: scoreFor(uid),
+      punches: punchTotals.get(uid) ?? 0,
+    });
   }
   eligible.sort((a, b) => b.points - a.points || a.username.localeCompare(b.username));
 
@@ -127,6 +175,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     scope,
     period,
+    metric,
     crew: crew ? { id: crew.id, name: crew.name } : null,
     rows: ranked.slice(0, TOP_N),
     me: meRow, // null if the caller has no points/handle in this window

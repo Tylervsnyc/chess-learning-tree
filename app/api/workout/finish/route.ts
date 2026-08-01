@@ -6,11 +6,14 @@ const MAX_MISSED = 30;
 
 // Server-side sanity caps. Points and punches come from the client and feed the
 // public leaderboard, so they must be bounded here: a legit session tops out
-// well under these (25 pts/puzzle × combo over ≤32 min; humans peak ~300
+// well under these (45 pts/puzzle × combo over ≤32 min; humans peak ~300
 // punches/min).
 const MAX_SESSION_POINTS = 5000;
 const MAX_PUNCHES_PER_MINUTE = 350;
 const MAX_SESSION_PUNCHES = 10000;
+// Best single round (scoring v2) — one 3-min chess segment can't honestly
+// clear this.
+const MAX_BEST_ROUND_POINTS = 1500;
 
 /**
  * POST /api/workout/finish
@@ -48,6 +51,7 @@ export async function POST(request: NextRequest) {
     seenPuzzleIds?: unknown;
     clientSessionId?: unknown;
     punches?: unknown;
+    bestRoundPoints?: unknown;
   };
   try {
     body = await request.json();
@@ -76,6 +80,8 @@ export async function POST(request: NextRequest) {
     (durationMinutes && durationMinutes > 0 ? durationMinutes : 32) * MAX_PUNCHES_PER_MINUTE,
     MAX_SESSION_PUNCHES,
   );
+  // Best single-round score (scoring v2) — feeds the daily leaderboard.
+  const bestRoundPoints = Math.min(Math.max(0, toInt(body.bestRoundPoints)), MAX_BEST_ROUND_POINTS);
   const missedPuzzles = Array.isArray(body.missedPuzzles)
     ? body.missedPuzzles.slice(0, MAX_MISSED)
     : [];
@@ -132,12 +138,12 @@ export async function POST(request: NextRequest) {
   // the points increment. A genuine insert error (not a conflict) still lets us
   // award points, matching the prior "a missing session log shouldn't cost the
   // user their points" behavior.
-  // Punches ride along in the insert (RLS only allows INSERT on
-  // workout_sessions — a post-hoc UPDATE would silently match 0 rows). If the
-  // punches migration hasn't run yet the whole insert fails on the unknown
-  // column, so retry once without it.
+  // Punches + best_round_points ride along in the insert (RLS only allows
+  // INSERT on workout_sessions — a post-hoc UPDATE would silently match 0
+  // rows). If a column's migration hasn't run yet the whole insert fails on
+  // the unknown column, so retry without the offending optional column(s).
   let sessionId: string | null = null;
-  const sessionRow: Record<string, unknown> = {
+  let sessionRow: Record<string, unknown> = {
     user_id: user.id,
     client_session_id: clientSessionId,
     duration_minutes: durationMinutes,
@@ -147,6 +153,7 @@ export async function POST(request: NextRequest) {
     perfect,
     missed_puzzles: missedPuzzles,
     ...(punches > 0 ? { punches } : {}),
+    ...(bestRoundPoints > 0 ? { best_round_points: bestRoundPoints } : {}),
   };
   const upsertSession = (row: Record<string, unknown>) =>
     supabase
@@ -155,10 +162,16 @@ export async function POST(request: NextRequest) {
       .select('id');
 
   let { data: insertedRows, error: sessionError } = await upsertSession(sessionRow);
-  if (sessionError && punches > 0 && /punches/.test(sessionError.message ?? '')) {
-    console.error('workout session insert failed (punches column missing?), retrying without', sessionError);
-    const { punches: _dropped, ...withoutPunches } = sessionRow;
-    ({ data: insertedRows, error: sessionError } = await upsertSession(withoutPunches));
+  // Graceful degrade for not-yet-migrated optional columns: the error names
+  // the unknown column; drop it and retry (at most once per optional column).
+  const OPTIONAL_COLUMNS = ['best_round_points', 'punches'] as const;
+  for (const col of OPTIONAL_COLUMNS) {
+    if (!sessionError || sessionRow[col] === undefined) continue;
+    if (!new RegExp(col).test(sessionError.message ?? '')) continue;
+    console.error(`workout session insert failed (${col} column missing?), retrying without`, sessionError);
+    const { [col]: _dropped, ...rest } = sessionRow;
+    sessionRow = rest;
+    ({ data: insertedRows, error: sessionError } = await upsertSession(sessionRow));
   }
 
   if (sessionError) console.error('workout session insert failed', sessionError);

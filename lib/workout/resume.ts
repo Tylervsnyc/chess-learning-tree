@@ -13,8 +13,26 @@
 import type { WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 
 const KEY = 'workout-in-progress';
-const VERSION = 5; // bumped: snapshot now includes the idempotency clientSessionId
+const VERSION = 7; // bumped: fight rounds — snapshot may carry the frozen game
 const MAX_AGE_MS = 3 * 60 * 60 * 1000; // 3 hours
+
+/** Minimal frozen-game state for a fight-rounds session (WORKOUT_FIGHT_ROUNDS). */
+export interface FightResumeState {
+  /** Position when the snapshot was taken — a fresh Chess(fen) restores it. */
+  fen: string;
+  /** SAN move list so far (feeds Rookie's opening book after a resume). */
+  moveSans: string[];
+  /** Rookie's level for this session (capped at FIGHT_MAX_LEVEL). */
+  level: number;
+  /** White's material lead at the current scoring segment's start. */
+  segStartMaterial: number;
+  /** Material judges' points already banked per round (per-round cap). */
+  materialByRound: number[];
+  /** Session game results so far (auto-rematch means multiple games). */
+  wins: number;
+  losses: number;
+  draws: number;
+}
 
 export interface WorkoutResumeState {
   v: number;
@@ -29,6 +47,10 @@ export interface WorkoutResumeState {
   puzzlePos: number;
   /** Current adaptive difficulty target (ELO) — climbs on correct, drops on wrong. */
   targetElo: number;
+  /** Highest targetElo reached this session — the scoring v2 anti-sandbag anchor. */
+  highWaterElo: number;
+  /** Puzzle points earned per round (index = round), for best-round tracking. */
+  roundPoints: number[];
   missed: WorkoutPuzzleData[];
   /** Ids of every puzzle shown so far, so finish records them after a resume. */
   seenIds: string[];
@@ -36,6 +58,10 @@ export interface WorkoutResumeState {
   clientSessionId: string;
   /** The exact puzzle queue, so resume lands on the same puzzle. */
   queue: WorkoutPuzzleData[];
+  /** 'fight' = one continuous game vs Rookie. Absent/undefined = puzzles. */
+  discipline?: 'puzzles' | 'fight';
+  /** Frozen game state — present only for fight sessions. */
+  fight?: FightResumeState;
 }
 
 export function saveResume(state: Omit<WorkoutResumeState, 'v' | 'savedAt'>): void {

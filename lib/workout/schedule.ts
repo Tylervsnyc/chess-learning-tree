@@ -19,18 +19,36 @@ export const BREAK_SECONDS = 60; // 1 minute
 /** Flat bonus for finishing a whole session with zero wrong answers. */
 export const PERFECT_SESSION_BONUS = 50;
 
-// ─── Scoring: base points × combo multiplier ────────────────────────────────
+// ─── Scoring v2: base × combo × pay factor, anchored to your high-water ELO ──
 // Harder puzzles are worth more (base tiers). A run of correct answers grows a
-// combo multiplier; a single wrong answer breaks the combo back to ×1 and
-// scores 0 (no negative — losing the streak is the cost). Combo persists across
-// the whole session; breaks/workout segments don't reset it.
+// combo multiplier; a wrong answer breaks the combo back to ×1 and scores 0.
+//
+// Anti-sandbagging (the v2 change): every award is anchored to the session's
+// HIGH-WATER ELO — the highest adaptive target you've reached this session,
+// which only ratchets up. Puzzles near your high water pay full; slightly
+// below pay half; far below (300+ under) are "farm" tier — they pay exactly
+// 1 point and never grow the combo. So tanking the difficulty target by
+// failing on purpose earns nothing: the easy puzzles that follow are farm.
+//
+// Two more v2 mechanics (enforced by the workout page, constants live here):
+// - 3 STRIKES: the 3rd wrong answer inside one chess segment ends that
+//   segment immediately, so mass-failing to tank difficulty costs the round.
+// - FIRED UP: throw FIRED_UP_PUNCH_TARGET+ punches during one exercise
+//   segment (punch cam on) and the NEXT chess segment pays +25%.
 
-/** Base points for a correct puzzle, by puzzle rating. */
+/** Wrong answers allowed in one chess segment; the 3rd ends the segment. */
+export const MAX_STRIKES_PER_SEGMENT = 3;
+/** Point multiplier on a Fired Up chess segment. */
+export const FIRED_UP_MULTIPLIER = 1.25;
+/** Punches within ONE exercise segment needed to fire up the next chess segment. */
+export const FIRED_UP_PUNCH_TARGET = 80;
+
+/** Base points for a correct puzzle, by puzzle rating (v2 tiers). */
 export function basePoints(rating: number): number {
   if (rating < 1000) return 10;
-  if (rating < 1400) return 15;
-  if (rating < 1800) return 20;
-  return 25;
+  if (rating < 1400) return 18;
+  if (rating < 1800) return 30;
+  return 45;
 }
 
 /** Combo multiplier for the current correct-streak length. */
@@ -42,11 +60,109 @@ export function comboMultiplier(streak: number): number {
 }
 
 /**
- * Points awarded for a correct answer given the streak length AFTER this
- * answer (i.e. pass `prevStreak + 1`). Rounded to a whole number.
+ * How much a puzzle pays relative to the session's high-water ELO.
+ * 1 = full (at or near your peak), 0.5 = a bit below, 0 = "farm" tier
+ * (300+ below peak) — farm puzzles pay a flat 1 point and must not grow
+ * the combo.
  */
-export function pointsForCorrect(rating: number, streakAfter: number): number {
-  return Math.round(basePoints(rating) * comboMultiplier(streakAfter));
+export function payFactor(puzzleRating: number, highWaterElo: number): number {
+  if (puzzleRating >= highWaterElo - 150) return 1;
+  if (puzzleRating >= highWaterElo - 300) return 0.5;
+  return 0; // farm tier
+}
+
+/**
+ * v2 points for a correct answer. Pass the streak length AFTER this answer
+ * (i.e. `prevStreak + 1`). Farm-tier puzzles (payFactor 0) pay a flat 1 —
+ * no combo, no Fired Up scaling. Everything else pays at least 1.
+ */
+export function pointsForCorrectV2(
+  rating: number,
+  streakAfter: number,
+  highWaterElo: number,
+  firedUp: boolean,
+): number {
+  const pf = payFactor(rating, highWaterElo);
+  if (pf === 0) return 1;
+  const raw = Math.round(basePoints(rating) * comboMultiplier(streakAfter) * pf);
+  const scaled = firedUp ? Math.round(raw * FIRED_UP_MULTIPLIER) : raw;
+  return Math.max(1, scaled);
+}
+
+// ─── Fight rounds (WORKOUT_FIGHT_ROUNDS): "judges' points" scoring ───────────
+// One continuous game vs Rookie across the chess segments. At each chess-
+// segment end (and at any game end) the segment is scored on NET MATERIAL
+// gained since the segment started — like judges scoring a boxing round.
+// Points scale with Rookie's level (beating up Baby Mode pays half), Fired Up
+// (≥80 punches the previous exercise segment) pays +25%, and each round's
+// material points are capped so one blowout segment can't run away with the
+// leaderboard. Checkmating Rookie adds a round bonus + a session win bonus;
+// the win bonus deliberately does NOT count toward bestRoundPoints so the
+// daily best-round board stays comparable with puzzle rounds.
+
+/** Judges' points per pawn-equivalent of net material gained in a segment. */
+export const FIGHT_POINTS_PER_PAWN = 10;
+/** Cap on material judges' points per ROUND (one chess segment per round). */
+export const FIGHT_ROUND_MATERIAL_CAP = 120;
+/** Round-points bonus for checkmating Rookie (counts toward best round). */
+export const FIGHT_MATE_ROUND_BONUS = 100;
+/** Session bonus for checkmating Rookie (level-scaled, NOT in bestRoundPoints). */
+export const FIGHT_WIN_SESSION_BONUS = 300;
+/** Session bonus for a draw/stalemate (unscaled, NOT in bestRoundPoints). */
+export const FIGHT_DRAW_SESSION_BONUS = 100;
+/** Fight rounds cap Rookie at this /play level (L5+ engines are heavyweight). */
+export const FIGHT_MAX_LEVEL = 4;
+
+/** Pawn-equivalent piece values for the cheap material eval. */
+export const FIGHT_PIECE_VALUES: Record<string, number> = {
+  p: 1, n: 3, b: 3, r: 5, q: 9, k: 0,
+};
+
+/** How much a fight round pays relative to Rookie's level (anti farm-the-baby). */
+export function fightLevelFactor(level: number): number {
+  switch (Math.max(1, Math.min(FIGHT_MAX_LEVEL, Math.round(level)))) {
+    case 1: return 0.5;
+    case 2: return 0.7;
+    case 3: return 0.85;
+    default: return 1;
+  }
+}
+
+/**
+ * White's material lead in pawn units from a FEN (the player is always white
+ * in fight rounds). Positive = player is up material.
+ */
+export function whiteMaterialLead(fen: string): number {
+  const board = fen.split(' ')[0];
+  let lead = 0;
+  for (const ch of board) {
+    const lower = ch.toLowerCase();
+    const val = FIGHT_PIECE_VALUES[lower];
+    if (val === undefined) continue;
+    lead += ch === lower ? -val : val; // lowercase = black
+  }
+  return lead;
+}
+
+/**
+ * Judges' points for one segment: +10 per pawn-equivalent of NET material
+ * gained since the segment started, level-scaled, Fired Up ×1.25, never
+ * negative. The per-round cap is applied by the caller (a game can end and a
+ * segment can end inside the same round — the cap covers their sum).
+ */
+export function fightMaterialPoints(
+  materialDelta: number,
+  level: number,
+  firedUp: boolean,
+): number {
+  if (materialDelta <= 0) return 0;
+  const raw = materialDelta * FIGHT_POINTS_PER_PAWN * fightLevelFactor(level);
+  return Math.round(firedUp ? raw * FIRED_UP_MULTIPLIER : raw);
+}
+
+/** Level-scaled session bonus for checkmating Rookie. */
+export function fightWinBonus(level: number): number {
+  return Math.round(FIGHT_WIN_SESSION_BONUS * fightLevelFactor(level));
 }
 
 export type SegmentKind = 'chess' | 'workout' | 'break';
