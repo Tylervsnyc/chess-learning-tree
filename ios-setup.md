@@ -37,6 +37,30 @@ After `ios:add`, add to `ios/App/App/Info.plist`:
 (The punch model runs on-device via getUserMedia in the WKWebView; this key is
 what lets the camera start.)
 
+## Apple Health (Chess Boxing workouts → Health app)
+
+The code side is done: a local `HealthWorkout` plugin
+(`ios/App/App/HealthWorkoutPlugin.swift`, registered in
+`BridgeViewController.swift`) saves finished workouts to Apple Health as
+boxing workouts. Usage strings are in `Info.plist`, the entitlement is in
+`App/App.entitlements`, and the web app calls it behind the `APPLE_HEALTH`
+flag (inert in normal browsers).
+
+What only Tyler can do (once, ~15 min):
+1. In [developer.apple.com](https://developer.apple.com/account/resources/identifiers)
+   → Identifiers → `com.learnthroughstories.chessboxing` → check **HealthKit**
+   and save. (The project uses Manual signing, so the App ID must carry the
+   capability.)
+2. Regenerate + re-download the `com.learnthroughstories.chessboxing AppStore`
+   provisioning profile (editing the App ID invalidates it), double-click to
+   install.
+3. In Xcode → App target → Signing & Capabilities: confirm **HealthKit**
+   appears (add it with `+ Capability` if not — it should pick up the existing
+   entitlements file).
+4. Build to your phone / TestFlight. Finish a workout → iOS shows the Health
+   permission sheet → the session lands in the Health app as a Boxing workout
+   and the results card shows "Saved to Apple Health."
+
 ## Notes
 - `capacitor.config.ts` loads `https://chesspath.app` behind a native splash.
 - For on-device testing against your local dev server, temporarily set

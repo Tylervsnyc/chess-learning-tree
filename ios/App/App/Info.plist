@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Chess Boxing saves your finished workouts to Apple Health. It never reads your health data.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Chess Boxing saves your finished workouts (duration and estimated calories) to Apple Health.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Chess Boxing counts your punches during the workout using the camera. Video never leaves your phone.</string>
 	<key>UILaunchStoryboardName</key>

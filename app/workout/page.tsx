@@ -25,6 +25,11 @@ import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 import { PunchTracker } from '@/components/workout/PunchTracker';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import {
+  isAppleHealthAvailable,
+  logWorkoutToAppleHealth,
+  estimateWorkoutCalories,
+} from '@/lib/health/apple-health';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -85,6 +90,9 @@ const ICONS = {
     </>
   ),
   bolt: <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />,
+  heart: (
+    <path d="M19.5 12.6 12 20l-7.5-7.4a5 5 0 1 1 7.5-6.6 5 5 0 1 1 7.5 6.6Z" />
+  ),
 } as const;
 
 function iconFor(kind: SegmentKind): keyof typeof ICONS {
@@ -273,6 +281,11 @@ export default function WorkoutPage() {
 
   const [finishResult, setFinishResult] = useState<FinishResult | null>(null);
   const finishingRef = useRef(false);
+
+  // Apple Health (iOS shell only) — wall-clock session start for the HKWorkout
+  // interval, and whether the save landed (shows a line on the results card).
+  const sessionStartRef = useRef(0);
+  const [healthLogged, setHealthLogged] = useState(false);
   const confettiFiredRef = useRef(false); // fire results confetti once (StrictMode double-mounts effects)
 
   // Resume-on-kill: a saved in-progress workout found on mount (setup screen).
@@ -376,6 +389,29 @@ export default function WorkoutPage() {
       isPersonalBest,
     });
 
+    // Chess Boxing iOS shell: save the session to Apple Health as a boxing
+    // workout. Fire-and-forget — a no-op on the open web, and a failure or
+    // denied permission never touches the finish flow.
+    if (isAppleHealthAvailable()) {
+      const endMs = Date.now();
+      const startMs = sessionStartRef.current || endMs - minutes * 60_000;
+      const exerciseSeconds = schedule.reduce(
+        (total, seg) => total + (seg.kind === 'workout' ? seg.seconds : 0),
+        0
+      );
+      const otherSeconds = schedule.reduce(
+        (total, seg) => total + (seg.kind !== 'workout' ? seg.seconds : 0),
+        0
+      );
+      const calories = estimateWorkoutCalories(exerciseSeconds, otherSeconds);
+      logWorkoutToAppleHealth({ startMs, endMs, calories }).then((saved) => {
+        if (saved) {
+          setHealthLogged(true);
+          WorkoutEvents.healthLogged(calories, minutes);
+        }
+      });
+    }
+
     clearResume(); // session over — drop the resume snapshot
     setFinishResult({
       sessionPoints,
@@ -389,7 +425,7 @@ export default function WorkoutPage() {
       rookieLine,
     });
     setPhase('done');
-  }, [score, right, wrong, minutes]);
+  }, [score, right, wrong, minutes, schedule]);
 
   // ── Advance to the next segment (or finish) ───────────────────────────────
   const advanceSegment = useCallback(() => {
@@ -430,6 +466,8 @@ export default function WorkoutPage() {
     segPunchBaseRef.current = 0;
     setPunchTotal(0);
     clientSessionIdRef.current = crypto.randomUUID();
+    sessionStartRef.current = Date.now();
+    setHealthLogged(false);
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
@@ -469,6 +507,10 @@ export default function WorkoutPage() {
     // Reuse the original session id so finishing a resumed workout is idempotent
     // with any earlier finish attempt. Older snapshots won't have one.
     clientSessionIdRef.current = snap.clientSessionId ?? crypto.randomUUID();
+    // Like punches, the original start isn't snapshotted — the Health interval
+    // covers the resumed portion only.
+    sessionStartRef.current = Date.now();
+    setHealthLogged(false);
     setFinishResult(null);
     finishingRef.current = false;
     confettiFiredRef.current = false;
@@ -844,6 +886,13 @@ export default function WorkoutPage() {
               <div className="flex items-center justify-center gap-1 text-xs font-bold text-chess-gold">
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5" />
                 Flawless run · +{PERFECT_SESSION_BONUS} bonus
+              </div>
+            )}
+
+            {healthLogged && (
+              <div className="flex items-center justify-center gap-1 text-[11px] font-semibold text-chess-text-muted">
+                <Icon path={ICONS.heart} className="w-3.5 h-3.5 text-chess-red" />
+                Saved to Apple Health
               </div>
             )}
 

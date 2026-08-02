@@ -56,6 +56,15 @@ export const FEATURE_FLAGS = {
    * (launch crew: CHESSBOXING NYC). Shows the /leaderboard route + entry points.
    */
   LEADERBOARDS: true,
+  /**
+   * Apple Health logging for Chess Boxing workouts — iOS shell only. On finish,
+   * the session is saved to Apple Health as a boxing workout (duration +
+   * estimated calories) via the shell's local HealthWorkout Capacitor plugin
+   * (lib/health/apple-health.ts). Inert on the open web: the Capacitor bridge
+   * doesn't exist there, so every call is a no-op — safe to keep ON so the
+   * TestFlight build (which loads this prod site) can exercise it.
+   */
+  APPLE_HEALTH: true,
 } as const;
 
 /**

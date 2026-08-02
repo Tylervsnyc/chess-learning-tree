@@ -192,6 +192,9 @@ export const WorkoutEvents = {
   // Fires whenever the do-anything streak grows (any activity), observed live.
   streakExtended: (current: number, longest: number) =>
     trackEvent('streak_extended', { current, longest }),
+  // Session saved to Apple Health (Chess Boxing iOS shell only).
+  healthLogged: (calories: number, minutes: number) =>
+    trackEvent('workout_health_logged', { calories, minutes }),
 };
 
 // Level test funnel
