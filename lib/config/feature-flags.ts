@@ -73,6 +73,16 @@ export const FEATURE_FLAGS = {
    * (launch crew: CHESSBOXING NYC). Shows the /leaderboard route + entry points.
    */
   LEADERBOARDS: true,
+  /**
+   * Bout mode (/box/bout) — the Chess Boxing app's flagship fight: ONE game vs
+   * Rookie split across three 3:00 chess rounds with two 60s boxing rounds
+   * between them. The board freezes at every bell; you resume the same
+   * position. One real clock (the user's 9:00 bank — flagging is a real loss);
+   * Rookie's clock is pacing/flavor only. Final bell with no mate goes to the
+   * judges' cards (boxing-round punch scores, tie to the user). Design:
+   * docs/chess-boxing-app-structure.md.
+   */
+  BOUT_MODE: true,
 } as const;
 
 /**

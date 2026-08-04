@@ -260,6 +260,13 @@ html {
   height: 100dvh; /* Use dynamic viewport height for mobile */
 }
 
+/* Chess Boxing native shell: reserve space above the fixed bottom tab bar.
+   BoxTabBar toggles this class; body is the flex column, so padding here
+   shrinks every page's internal scroll container above the bar. */
+html.has-box-tabbar body {
+  padding-bottom: calc(52px + env(safe-area-inset-bottom));
+}
+
 body {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background-color: var(--color-chess-page);

@@ -6,6 +6,8 @@ import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
 import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
+import { NativeSplash } from '@/components/chessboxing/NativeSplash';
+import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
@@ -72,6 +74,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <NativeSplash />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
@@ -91,6 +94,9 @@ export default function RootLayout({
                 {children}
               </RookieErrorBoundary>
             </main>
+            <SilentErrorBoundary label="BoxTabBar">
+              <BoxTabBar />
+            </SilentErrorBoundary>
           </PostHogProvider>
         </Suspense>
       </body>

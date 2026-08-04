@@ -194,6 +194,13 @@ export const WorkoutEvents = {
     trackEvent('streak_extended', { current, longest }),
 };
 
+// Bout mode (BOUT_MODE) — one game vs Rookie split across chess rounds
+export const BoutEvents = {
+  started: (level: number) => trackEvent('bout_started', { level }),
+  finished: (data: { outcome: string; moves: number; punches: number; level: number }) =>
+    trackEvent('bout_finished', data),
+};
+
 // Level test funnel
 export const LevelTestEvents = {
   started: (transition: string) => trackEvent('level_test_started', { transition }),
