@@ -31,6 +31,46 @@ Create app record, cert, profile, archive, upload to TestFlight
 
 Upload the built IPA to TestFlight
 
+### ios status
+
+```sh
+[bundle exec] fastlane ios status
+```
+
+Show latest TestFlight build processing status
+
+### ios invite
+
+```sh
+[bundle exec] fastlane ios invite
+```
+
+Distribute latest build to internal testers
+
+### ios add_tester
+
+```sh
+[bundle exec] fastlane ios add_tester
+```
+
+Add Tyler as internal tester
+
+### ios debug_dist
+
+```sh
+[bundle exec] fastlane ios debug_dist
+```
+
+Debug build distribution state
+
+### ios fix_compliance
+
+```sh
+[bundle exec] fastlane ios fix_compliance
+```
+
+Set export compliance on latest build
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
