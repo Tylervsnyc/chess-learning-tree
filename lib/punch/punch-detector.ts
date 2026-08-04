@@ -10,8 +10,20 @@
  *   - speed crosses `speedT` shoulder-widths/sec  (slider-tunable, default 6)
  *   - while moving OUTWARD (radial velocity > MIN_RADIAL) — the return stroke
  *     of the same punch is inward and gets suppressed
+ *   - with ABSOLUTE wrist speed ≥ MIN_ABS_RATIO of the relative speed — a
+ *     torso sway/whip moves the shoulder under a near-still wrist, which
+ *     spikes relative speed only (2026-08-01 field clip: phantom at 0.73×,
+ *     every real punch ≥ 0.87×)
  *   - per-hand refractory of REFRACTORY_S, re-armed once speed falls below
- *     speedT * HYSTERESIS
+ *     speedT * HYSTERESIS AND the arm has retracted below its extension at
+ *     fire time (or REARM_TIMEOUT_S passes) — pose jitter mid-hook can dip
+ *     speed under the hysteresis and back over the threshold while the SAME
+ *     punch is still in flight, which double-counted it (2026-08-01 clip:
+ *     refire 0.27s after the real fire at ext 1.25, never retracted)
+ *   - only after WARMUP_S of continuous pose tracking — the first frames
+ *     after the model acquires (or re-acquires) a person read as 10+ sw/s
+ *     garbage while the pose estimate converges, which fired phantom counts
+ *     at camera start
  *
  * Why not wrist-extension thresholds (v1): extension only sees straight
  * punches. On the field video v1 counted 15/32 — it missed hooks/compact
@@ -42,6 +54,10 @@ export const MIN_RADIAL = 1; // sw/s outward — gates out return strokes
 export const REFRACTORY_S = 0.2; // min gap between counts on one hand
 export const HYSTERESIS = 0.6; // re-arm once speed < speedT * this
 export const MIN_SHOULDER_W = 0.05; // meters — degenerate-pose guard
+export const MIN_ABS_RATIO = 0.8; // abs wrist speed ≥ this × rel speed to fire
+export const WARMUP_S = 0.5; // no fires until pose tracked this long
+export const TRACK_GAP_RESET_S = 0.5; // pose lost this long → warm up again
+export const REARM_TIMEOUT_S = 1.0; // failsafe re-arm if ext never retracts
 /**
  * Cross-hand phantom suppression: a hard punch rotates the torso, which
  * whips the OTHER wrist relative to its shoulder and double-fires (seen on
@@ -65,6 +81,8 @@ type Sample = { t: number; ext: number; rel: Vec3; wrist: Vec3 };
 type HandState = {
   armed: boolean;
   lastFire: number;
+  /** extension at the last fire — must retract below this to re-arm */
+  fireExt: number;
   radial: number;
   speed: number;
   absSpeed: number;
@@ -90,6 +108,7 @@ export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: nu
   const mkHand = (): HandState => ({
     armed: true,
     lastFire: -Infinity,
+    fireExt: Infinity,
     radial: 0,
     speed: 0,
     absSpeed: 0,
@@ -98,6 +117,9 @@ export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: nu
   const hands: Record<PunchSide, HandState> = { left: mkHand(), right: mkHand() };
   // fires held for PENDING_S so a stronger cross-hand fire can cancel a phantom
   let pending: { ev: PunchEvent; abs: number }[] = [];
+  // warmup: no fires until the pose has been tracked WARMUP_S continuously
+  let trackedSince = Infinity;
+  let lastValidT = -Infinity;
 
   /**
    * Feed one frame of WORLD landmarks (meters). Returns punches fired this
@@ -126,6 +148,17 @@ export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: nu
     if (!ls || !rs || !ok(KP.LS) || !ok(KP.RS)) return { events, ext, speed, radial, abs };
     const shoulderW = dist3(ls, rs);
     if (shoulderW <= MIN_SHOULDER_W) return { events, ext, speed, radial, abs };
+
+    // (re)start the warmup clock when tracking begins or resumes after a gap —
+    // the first samples after (re)acquisition are convergence garbage
+    if (tSeconds - lastValidT > TRACK_GAP_RESET_S) {
+      trackedSince = tSeconds;
+      hands.left.history = [];
+      hands.right.history = [];
+      pending = [];
+    }
+    lastValidT = tSeconds;
+    const warm = tSeconds - trackedSince >= WARMUP_S;
 
     const sides: { side: PunchSide; wrist: number; shoulder: number }[] = [
       { side: 'left', wrist: KP.LW, shoulder: KP.LS },
@@ -169,13 +202,16 @@ export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: nu
       abs[s.side] = hand.absSpeed;
 
       if (
+        warm &&
         hand.armed &&
         hand.speed > speedT &&
         hand.radial > MIN_RADIAL &&
+        hand.absSpeed >= MIN_ABS_RATIO * hand.speed &&
         tSeconds - hand.lastFire > refractoryS
       ) {
         hand.armed = false;
         hand.lastFire = tSeconds;
+        hand.fireExt = e;
         const ev: PunchEvent = { side: s.side, t: tSeconds, ext: e, velocity: hand.speed };
         // cross-hand phantom check: within PENDING_S only the higher
         // absolute-wrist-speed fire survives
@@ -189,7 +225,14 @@ export function createPunchDetector(opts?: { refractoryS?: number; pendingS?: nu
         } else {
           pending.push({ ev, abs: hand.absSpeed });
         }
-      } else if (!hand.armed && hand.speed < speedT * HYSTERESIS) {
+      } else if (
+        !hand.armed &&
+        hand.speed < speedT * HYSTERESIS &&
+        // same-punch refire guard: the arm must actually retract past where it
+        // was when it fired (pose jitter mid-punch passes the speed hysteresis
+        // alone); timeout is the failsafe if noise keeps ext above that mark
+        (e < hand.fireExt || tSeconds - hand.lastFire > REARM_TIMEOUT_S)
+      ) {
         hand.armed = true;
       }
     }
