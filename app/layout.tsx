@@ -8,6 +8,7 @@ import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
 import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
 import { NativeSplash } from '@/components/chessboxing/NativeSplash';
 import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
+import { NativeHomeRedirect } from '@/components/chessboxing/NativeHomeRedirect';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
@@ -75,6 +76,9 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <NativeSplash />
+        <SilentErrorBoundary label="NativeHomeRedirect">
+          <NativeHomeRedirect />
+        </SilentErrorBoundary>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
