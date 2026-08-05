@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
+import { LockerHome } from '@/components/chessboxing/LockerHome';
 import { getStreak, type StreakData } from '@/lib/streak-client';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
@@ -27,7 +27,6 @@ export function BoxToday() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [last, setLast] = useState<LastSession | null | undefined>(undefined);
   const [rank, setRank] = useState<{ rank: number; total: number } | null | undefined>(undefined);
-  const [choosing, setChoosing] = useState(false);
   // Settings gear only shows inside the app shell (same detection as
   // BoxTabBar: Capacitor native, or the ?boxapp=1 debug session key).
   const [inShell, setInShell] = useState(false);
@@ -74,7 +73,6 @@ export function BoxToday() {
               <GearIcon />
             </Link>
           )}
-          <BoxingLogoLoader size={84} />
           <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
             Chess Boxing
           </h1>
@@ -85,6 +83,14 @@ export function BoxToday() {
               day: 'numeric',
             })}
           </p>
+        </div>
+
+        {/* The locker: gloves = bout, board = puzzle workout. Chalk = streak. */}
+        <div className="mx-auto w-full max-w-[380px] overflow-hidden rounded-2xl">
+          <LockerHome
+            onFight={() => router.push(FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/workout')}
+            onTrain={() => router.push('/workout')}
+          />
         </div>
 
         {/* Stats row */}
@@ -115,77 +121,10 @@ export function BoxToday() {
           />
         </div>
 
-        {/* Start → mode choice */}
-        {!choosing ? (
-          <button
-            onClick={() => setChoosing(true)}
-            className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-xl py-5 min-h-[64px] shadow-[0_4px_0_#b53437] tap-highlight"
-          >
-            Start
-          </button>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => router.push('/workout')}
-              className="w-full text-left bg-chess-surface rounded-2xl border-2 border-[#e5484d] shadow-sm p-4 tap-highlight"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-black text-chess-text text-lg">Puzzle Workout</div>
-                  <div className="text-sm text-chess-text-muted mt-0.5">
-                    Rounds of puzzles and punches against the clock.
-                  </div>
-                </div>
-                <span className="text-[#e5484d] font-black text-2xl" aria-hidden>
-                  &rsaquo;
-                </span>
-              </div>
-            </button>
-
-            {FEATURE_FLAGS.BOUT_MODE ? (
-              <button
-                onClick={() => router.push('/box/bout')}
-                className="w-full text-left bg-chess-surface rounded-2xl border-2 border-[#e5484d] shadow-sm p-4 tap-highlight"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="font-black text-chess-text text-lg">Bout vs Rookie</div>
-                    <div className="text-sm text-chess-text-muted mt-0.5">
-                      One game, split across rounds. The bell always wins.
-                    </div>
-                  </div>
-                  <span className="text-[#e5484d] font-black text-2xl" aria-hidden>
-                    &rsaquo;
-                  </span>
-                </div>
-              </button>
-            ) : (
-              <div
-                aria-disabled
-                className="w-full text-left bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 opacity-60"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="font-black text-chess-text text-lg">Bout vs Rookie</div>
-                    <div className="text-sm text-chess-text-muted mt-0.5">
-                      One game, split across rounds. The bell always wins.
-                    </div>
-                  </div>
-                  <span className="shrink-0 text-[10px] font-black uppercase tracking-wide text-chess-text-muted bg-chess-page rounded-full px-2.5 py-1">
-                    Coming soon
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={() => setChoosing(false)}
-              className="text-sm font-bold text-chess-text-muted py-2 min-h-[44px] tap-highlight"
-            >
-              Back
-            </button>
-          </div>
-        )}
+        {/* Legend under the locker */}
+        <p className="text-center text-xs font-semibold text-chess-text-muted -mt-2">
+          Tap the gloves to fight{FEATURE_FLAGS.BOUT_MODE ? '' : ' (workout for now)'} &middot; tap the board to train
+        </p>
       </div>
     </div>
   );

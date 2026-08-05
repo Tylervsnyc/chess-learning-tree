@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getStreak, peekStreak, getStoredUserId } from '@/lib/streak-client';
+import { ChessChase } from '@/components/chessboxing/ChessChase';
 
 /**
  * LockerHome — the Chess Boxing home screen. Layered art (GPT-cut from
@@ -15,8 +16,8 @@ import { getStreak, peekStreak, getStoredUserId } from '@/lib/streak-client';
  */
 
 const ASSET = {
-  base: '/test-assets/locker-base-patched.png',
-  gloves: '/test-assets/locker-gloves.png',
+  base: '/boxing/locker/base.webp',
+  gloves: '/boxing/locker/gloves.webp',
 };
 
 const KEYFRAMES = `
@@ -147,9 +148,27 @@ export function LockerHome({
           transition: 'filter 0.2s',
         }} />
 
+      {/* the perpetual chase on the chess board */}
+      <ChessChase />
+
       {/* chalk streak on the door (left strip) */}
       <div style={{ position: 'absolute', left: '1.5%', top: '8%', width: '13%', height: '58%', pointerEvents: 'none' }}>
         <ChalkTallies count={streak} />
+      </div>
+
+      {/* Enemy's Tears — label on the water bottle */}
+      <div
+        style={{
+          position: 'absolute', left: '82.8%', top: '74.5%', width: '10%',
+          transform: 'rotate(-2deg)',
+          background: '#f4ecd9', borderRadius: 4, padding: '4% 0.5%',
+          textAlign: 'center', pointerEvents: 'none',
+          boxShadow: 'inset 0 -2px 0 rgba(0,0,0,0.12)',
+        }}
+      >
+        <div style={{ fontSize: 'clamp(4px, 1vw, 8.5px)', fontWeight: 800, lineHeight: 1.25, color: '#22293a', letterSpacing: 0.2 }}>
+          ENEMY&apos;S<br />TEARS
+        </div>
       </div>
 
       {/* FIGHT tap zone (gloves) */}
@@ -164,17 +183,17 @@ export function LockerHome({
         onClick={() => onTrain?.()}
         onMouseEnter={() => setHover('train')} onMouseLeave={() => setHover(null)}
         aria-label="Train — puzzle workout"
-        style={{ position: 'absolute', left: '20%', top: '60%', width: '68%', height: '26%', background: 'none', border: 'none', cursor: 'pointer',
+        style={{ position: 'absolute', left: '18%', top: '64%', width: '68%', height: '20%', background: 'none', border: 'none', cursor: 'pointer',
           filter: hover === 'train' ? 'brightness(1.1)' : 'none' }}
       />
 
       {/* labels */}
-      <div style={{ position: 'absolute', left: '50%', top: '54.5%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
+      <div style={{ position: 'absolute', left: '50%', top: '56.5%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
         background: hover === 'fight' ? '#e5484d' : 'rgba(9, 14, 28, 0.65)', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 1.5,
         transition: 'background 0.2s', pointerEvents: 'none' }}>
         FIGHT
       </div>
-      <div style={{ position: 'absolute', left: '50%', top: '87.5%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
+      <div style={{ position: 'absolute', left: '50%', top: '82%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
         background: hover === 'train' ? '#e5484d' : 'rgba(9, 14, 28, 0.65)', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 1.5,
         transition: 'background 0.2s', pointerEvents: 'none' }}>
         TRAIN
