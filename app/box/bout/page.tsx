@@ -7,9 +7,8 @@
  * boxing rounds; you resume the same position gassed. Design doc:
  * docs/chess-boxing-app-structure.md ("Bout mode" — binding).
  *
- * Engine: the SAME vs-Rookie stack /play and the workout's Fight Rounds use —
- * stockfish adapter + getLevelEngineConfig + reactive opening book. No second
- * implementation.
+ * Engine: pickRookieMove (lib/rookie/pick-move.ts) — the SAME picker /play and
+ * the workout's Fight Rounds use. No second implementation.
  *
  * Boxing rounds have NO physical tracking (2026-08-05, Tyler): no camera, no
  * tap pad, nothing counted. A boxing round is a timer and Rookie in your
@@ -29,9 +28,10 @@ import { useRouter } from 'next/navigation';
 import { Chess, type Square } from 'chess.js';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
-import { getLevelEngineConfig } from '@/lib/rookie-levels';
-import { getReactiveBookMove } from '@/lib/rookie-opening-book';
+import { pickRookieMove } from '@/lib/rookie/pick-move';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
@@ -48,28 +48,39 @@ import {
   playCelebrationSound,
 } from '@/lib/sounds';
 import {
-  BOUT_SEGMENTS,
-  BOXING_ROUND_COUNT,
-  USER_BANK_SECONDS,
-  ROOKIE_CLOCK_SECONDS,
+  buildSegments,
+  bankSeconds,
+  boxingRoundCount,
+  chessRoundCount,
+  boutDurationSeconds,
+  BOUT_FORMATS,
+  BOUT_FORMAT_ORDER,
+  RANKED_FORMAT,
   ROOKIE_CLOCK_FLOOR,
   ROOKIE_THINK_MIN_MS,
   ROOKIE_THINK_MAX_MS,
   CHESS_ROUND_SECONDS,
   BOXING_ROUND_SECONDS,
+  BREAK_SECONDS,
   boutPoints,
   decideOnMaterial,
   materialBalance,
   fmtClock,
   pickLine,
   BOUT_LINES,
+  type BoutFormat,
   type BoutOutcome,
 } from '@/lib/bout/bout';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
-type Phase = 'prefight' | 'chess' | 'bell' | 'boxing' | 'done';
+/**
+ * 'break' is a REAL round on the card, not a transition: 1:00 between every
+ * round, counted down on screen. The card structure (chess · break · boxing ·
+ * break · chess …) is locked in lib/bout/bout.ts — this page only runs it.
+ */
+type Phase = 'prefight' | 'chess' | 'break' | 'boxing' | 'done';
 
 /** User's unlocked /play level (same localStorage key /play writes). */
 function loadRookieLevel(): number {
@@ -109,16 +120,34 @@ export default function BoutPage() {
   const router = useRouter();
 
   const [phase, setPhase] = useState<Phase>('prefight');
-  const [segIndex, setSegIndex] = useState(0); // into BOUT_SEGMENTS
+
+  // ── The card ──────────────────────────────────────────────────────────────
+  // Format picks the LENGTH; the structure is built, never chosen. Only
+  // RANKED_FORMAT pays points (and only once a day) — see /api/bout/finish.
+  const [format, setFormat] = useState<BoutFormat>(RANKED_FORMAT);
+  const segments = useMemo(() => buildSegments(format), [format]);
+  // Callbacks read the card off a ref so a mid-bout re-render can't rebuild
+  // them, exactly like the clock refs below.
+  const segmentsRef = useRef(segments);
+  segmentsRef.current = segments;
+  const bank = bankSeconds(format);
+  const chessRounds = chessRoundCount(format);
+  const boxingRounds = boxingRoundCount(format);
+  // Whether TODAY's ranked bout is still available (server is the authority;
+  // this is only so the pre-fight screen can be honest before you fight).
+  const [rankedLeft, setRankedLeft] = useState<number | null>(null);
+  const [wasRanked, setWasRanked] = useState<boolean | null>(null);
+
+  const [segIndex, setSegIndex] = useState(0); // into segments
   const [roundLeft, setRoundLeft] = useState(0); // bell timer for current segment
   const [bellLine, setBellLine] = useState('');
 
   // ── Clocks ────────────────────────────────────────────────────────────────
   // userBank is the ONE real clock; rookieClock is flavor and never flags.
-  const [userBank, setUserBank] = useState(USER_BANK_SECONDS);
+  const [userBank, setUserBank] = useState(bank);
   // Mirror of userBank for the finish path — finishBout has no deps on purpose
   // (it must never be re-created mid-bout), so it reads the clock off a ref.
-  const userBankRef = useRef(USER_BANK_SECONDS);
+  const userBankRef = useRef(bank);
   // One idempotency key per bout, minted in begin(). A retry or a double-tap
   // on the result screen can never write a second row.
   const boutKeyRef = useRef('');
@@ -127,7 +156,7 @@ export default function BoutPage() {
   // Points confirmed by the server — the client preview is the fallback.
   const [savedPoints, setSavedPoints] = useState<number | null>(null);
   const [sharing, setSharing] = useState(false);
-  const [rookieClock, setRookieClock] = useState(ROOKIE_CLOCK_SECONDS);
+  const [rookieClock, setRookieClock] = useState(bank);
 
   // ── Game (same shape as the workout's Fight Rounds) ───────────────────────
   const [fen, setFen] = useState(START_FEN);
@@ -150,16 +179,20 @@ export default function BoutPage() {
   const confettiFiredRef = useRef(false);
 
   const seedRef = useRef(1);
-  // Boxing rounds the user reached the bell in — the conditioning half of the
-  // score. Nothing else about a boxing round is measured (see below).
+  // Boxing rounds the user reached the bell in. Nothing else about a boxing
+  // round is measured — reaching every bell is the "went the distance" bonus.
   const roundsSurvivedRef = useRef(0);
+  // Card facts frozen at the opening bell, so finishBout (which deliberately
+  // has no deps) scores the bout that was actually fought.
+  const boxingRoundsRef = useRef(boxingRounds);
+  const rankedRef = useRef(true);
 
   const [result, setResult] = useState<BoutResult | null>(null);
   // Rookie's corner: one line at a time during a boxing round, swapped on a
   // timer. She is the entire round now, so she can't go quiet.
   const [cornerLine, setCornerLine] = useState<string>(BOUT_LINES.boxing[0]);
 
-  const seg = BOUT_SEGMENTS[segIndex];
+  const seg = segments[segIndex];
 
   // ── Finish ────────────────────────────────────────────────────────────────
   const finishBout = useCallback(
@@ -209,7 +242,15 @@ export default function BoutPage() {
         roundsSurvived: roundsSurvivedRef.current,
         moves: movesRef.current.length,
         clockLeft: userBankRef.current,
-        points: boutPoints({ outcome, roundsSurvived: roundsSurvivedRef.current }),
+        // Client-side PREVIEW only — the server recomputes and may zero it out
+        // (unranked format, or today's ranked bout already spent).
+        points: boutPoints({
+          outcome,
+          roundsSurvived: roundsSurvivedRef.current,
+          level: levelRef.current,
+          boxingRounds: boxingRoundsRef.current,
+          ranked: rankedRef.current,
+        }),
         finalFen: fenRef.current,
         boutKey: boutKeyRef.current,
       });
@@ -306,40 +347,22 @@ export default function BoutPage() {
         scheduleApply({ from: mv.from, to: mv.to, promotion: mv.promotion });
       };
 
-      // Opening book (Rookie is black): first 5 of her moves at L3+ — same cap
-      // /play and Fight Rounds use.
-      const sans = movesRef.current;
-      const rookieMovesPlayed = sans.filter((_, i) => i % 2 === 1).length;
-      if (levelRef.current >= 3 && rookieMovesPlayed < 5) {
-        const book = getReactiveBookMove(currentFen, sans, 'black');
-        if (book.inBook && book.moveSan) {
-          scheduleApply({ san: book.moveSan });
-          return;
-        }
-      }
-
-      const cfg = getLevelEngineConfig(levelRef.current);
-      if (cfg.randomMoveChance && Math.random() < cfg.randomMoveChance) {
-        fallbackRandom();
-        return;
-      }
-      if (!sfReadyRef.current) {
-        fallbackRandom();
-        return;
-      }
-      stockfish
-        .getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize, cfg.tolerance)
-        .then((uci) => {
+      // ONE picker for every surface (lib/rookie/pick-move.ts) — the bell can
+      // freeze the board mid-think, so the guard is re-checked on resolve.
+      pickRookieMove({
+        fen: currentFen,
+        sans: movesRef.current,
+        rookieColor: 'black',
+        level: levelRef.current,
+        engineReady: sfReadyRef.current,
+      })
+        .then((decision) => {
           if (!chessActiveRef.current) return;
-          if (!uci) {
+          if (!decision) {
             fallbackRandom();
             return;
           }
-          scheduleApply({
-            from: uci.slice(0, 2),
-            to: uci.slice(2, 4),
-            promotion: uci.length > 4 ? uci[4] : undefined,
-          });
+          scheduleApply(decision.move);
         })
         .catch(() => {
           if (chessActiveRef.current) fallbackRandom();
@@ -387,13 +410,27 @@ export default function BoutPage() {
     }
   }, [fen]);
 
-  const onSquareClick = useClickToMove({
+  // Premove — the bout's think window is a padded 2-4s, so this is where it
+  // matters most: queue your reply while Rookie stalls and the round keeps moving.
+  const { premove, setPremove, clearPremove, premoveEnabled } = usePremove({
+    fen,
+    isMyTurn: game?.turn() === 'w',
+    tryMove: doMove,
+    enabled: phase === 'chess',
+    fireDelayMs: ANIM_MS,
+  });
+
+  const { onSquareClick, onPremoveDrop } = useClickToMove({
     game,
     ownColor: 'w',
     selectedSquare: selected,
     setSelectedSquare: setSelected,
     tryMove: doMove,
-    enabled: phase === 'chess' && !rookieThinking,
+    // Stays on during Rookie's turn so a premove can be set; useClickToMove
+    // still refuses to EXECUTE a move when it isn't white's turn.
+    enabled: phase === 'chess',
+    premoveEnabled,
+    setPremove,
   });
 
   const sqStyles = useMemo(() => {
@@ -419,28 +456,62 @@ export default function BoutPage() {
     }
     if (selected) {
       s[selected] = { ...s[selected], background: 'rgba(20, 85, 200, 0.5)' };
-      for (const m of game.moves({ square: selected, verbose: true })) {
-        const has = game.get(m.to as Square);
-        s[m.to] = {
-          ...s[m.to],
+      // Our turn: real legal moves. Rookie's turn: relaxed premove targets.
+      const dests =
+        game.turn() === 'w'
+          ? game.moves({ square: selected, verbose: true }).map((m) => m.to as Square)
+          : premoveEnabled
+            ? premoveDests(fen, selected, 'w')
+            : [];
+      for (const to of dests) {
+        const has = game.get(to);
+        s[to] = {
+          ...s[to],
           background: has
             ? 'radial-gradient(transparent 55%, rgba(20, 85, 200, 0.4) 55%)'
             : 'radial-gradient(rgba(20, 85, 200, 0.5) 22%, transparent 22%)',
         };
       }
     }
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      s[sq] = { ...s[sq], ...style };
+    }
     return s;
-  }, [game, lastMv, selected]);
+  }, [game, fen, lastMv, selected, premove, premoveEnabled]);
 
   // ── Segment transitions ───────────────────────────────────────────────────
 
-  /** The bell always wins: freeze the board mid-position (or end a boxing round). */
+  /** Move onto the next segment of the card (chess · break · boxing · break …). */
+  const advance = useCallback(() => {
+    const next = segIndex + 1;
+    const nextSeg = segmentsRef.current[next];
+    if (!nextSeg) return; // final bell already decided the bout
+    setSegIndex(next);
+    setRoundLeft(nextSeg.seconds);
+    if (nextSeg.kind === 'boxing') {
+      setRookieLine(pickLine(BOUT_LINES.boxing, next));
+      setPhase('boxing');
+    } else if (nextSeg.kind === 'break') {
+      setPhase('break');
+    } else {
+      setRookieLine(pickLine(BOUT_LINES.bellResume, next + movesRef.current.length));
+      setPhase('chess');
+    }
+  }, [segIndex]);
+
+  /**
+   * A segment hit zero. The bell always wins: a chess round freezes the board
+   * mid-position, a boxing round is banked as survived, a break just ends.
+   * Every one of them rolls straight into the next segment — the 1:00 break
+   * IS the transition, so nothing else sits between rounds.
+   */
   const ringBell = useCallback(() => {
-    playBoxingBell();
-    const cur = BOUT_SEGMENTS[segIndex];
-    const isLast = segIndex >= BOUT_SEGMENTS.length - 1;
+    const cur = segmentsRef.current[segIndex];
+    if (!cur) return;
+    const isLast = segIndex >= segmentsRef.current.length - 1;
 
     if (cur.kind === 'chess') {
+      playBoxingBell();
       // FREEZE: kill Rookie's pending move + engine work.
       chessActiveRef.current = false;
       if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
@@ -448,37 +519,23 @@ export default function BoutPage() {
       setRookieThinking(false);
       rookieThinkingRef.current = false;
       if (isLast) {
-        // Final bell, no mate → the judges decide.
         // Final bell, nobody mated: the decision is the position itself.
         finishBout(decideOnMaterial(fenRef.current));
         return;
       }
       setBellLine(pickLine(BOUT_LINES.bellFreeze, segIndex + movesRef.current.length));
-    } else {
+    } else if (cur.kind === 'boxing') {
+      playBoxingBell();
       // Boxing round survived to the bell. Nothing is measured inside it —
       // reaching the end IS the achievement.
       roundsSurvivedRef.current = Math.max(roundsSurvivedRef.current, cur.round);
       setBellLine(pickLine(BOUT_LINES.bellResume, segIndex + roundsSurvivedRef.current));
-    }
-    setPhase('bell');
-  }, [segIndex, finishBout]);
-
-  /** Leave the bell overlay into the next segment. */
-  const nextSegment = useCallback(() => {
-    const next = segIndex + 1;
-    const nextSeg = BOUT_SEGMENTS[next];
-    if (!nextSeg) return; // final bell already decided the bout
-    setSegIndex(next);
-    setRoundLeft(nextSeg.seconds);
-    if (nextSeg.kind === 'boxing') {
-      setRookieLine(pickLine(BOUT_LINES.boxing, next));
-      setPhase('boxing');
     } else {
-      setRookieLine(pickLine(BOUT_LINES.bellResume, next + movesRef.current.length));
-      setPhase('chess');
+      // End of the break — the next round's bell.
+      playBoxingBell();
     }
-    playBoxingBell();
-  }, [segIndex]);
+    advance();
+  }, [segIndex, finishBout, advance]);
 
   // Rookie's corner rotation — a fresh line every ~12s for the whole boxing
   // round, walking forward through the pool from a per-round offset so two
@@ -495,12 +552,11 @@ export default function BoutPage() {
     return () => clearInterval(t);
   }, [phase, segIndex]);
 
-  // Auto-advance the bell overlay after a short beat.
+  // Rookie's break line — one per break, picked when the break starts.
   useEffect(() => {
-    if (phase !== 'bell') return;
-    const t = setTimeout(nextSegment, 2600);
-    return () => clearTimeout(t);
-  }, [phase, nextSegment]);
+    if (phase !== 'break') return;
+    setCornerLine(pickLine(BOUT_LINES.breakLines, segIndex + movesRef.current.length));
+  }, [phase, segIndex]);
 
   // Entering a chess segment: unfreeze; if it's Rookie's turn (bell caught her
   // mid-think last round) reschedule her move.
@@ -516,12 +572,13 @@ export default function BoutPage() {
 
   // ── The 1s tick: round timer + clocks ─────────────────────────────────────
   useEffect(() => {
-    if (phase !== 'chess' && phase !== 'boxing') return;
+    if (phase !== 'chess' && phase !== 'boxing' && phase !== 'break') return;
     if (roundLeft <= 0) {
       ringBell();
       return;
     }
-    if (roundLeft === 10) playWoodClap();
+    // The 10-second warning belongs to the rounds, not the rest.
+    if (roundLeft === 10 && phase !== 'break') playWoodClap();
     const t = setTimeout(() => {
       setRoundLeft((s) => s - 1);
       if (phase === 'chess') {
@@ -570,15 +627,19 @@ export default function BoutPage() {
             roundsSurvived: result.roundsSurvived,
             moves: result.moves,
             level: levelRef.current,
+            format,
             clockLeftSeconds: result.clockLeft,
             finalFen: result.finalFen,
             clientSessionId: result.boutKey,
           }),
         });
         if (!res.ok) return; // 401 logged-out, or a real failure — nothing to claim
-        const body = (await res.json()) as { ok?: boolean; points?: number };
+        const body = (await res.json()) as { ok?: boolean; points?: number; ranked?: boolean };
         if (cancelled) return;
         if (typeof body.points === 'number') setSavedPoints(body.points);
+        // The server decides ranked vs exhibition — the card says whichever
+        // it actually was, never the client's guess.
+        if (typeof body.ranked === 'boolean') setWasRanked(body.ranked);
         // The bout is a finished unit — it can earn the day.
         await claimStreakToday();
       } catch {
@@ -589,7 +650,7 @@ export default function BoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [phase, result]);
+  }, [phase, result, format]);
 
   // Confetti when the user wins the bout.
   useEffect(() => {
@@ -619,12 +680,18 @@ export default function BoutPage() {
     setFen(START_FEN);
     movesRef.current = [];
     setSelected(null);
+    clearPremove();
     setLastMv(null);
     setRookieThinking(false);
     rookieThinkingRef.current = false;
-    setUserBank(USER_BANK_SECONDS);
-    userBankRef.current = USER_BANK_SECONDS;
-    setRookieClock(ROOKIE_CLOCK_SECONDS);
+    setUserBank(bank);
+    userBankRef.current = bank;
+    // Rookie's clock is flavor — it only has to look like a peer of yours.
+    setRookieClock(bank);
+    boxingRoundsRef.current = boxingRounds;
+    // Preview only; /api/bout/finish has the final say on whether this pays.
+    rankedRef.current = format === RANKED_FORMAT && (rankedLeft ?? 1) > 0;
+    setWasRanked(null);
     boutKeyRef.current =
       typeof crypto !== 'undefined' && 'randomUUID' in crypto
         ? crypto.randomUUID()
@@ -653,11 +720,28 @@ export default function BoutPage() {
     }
 
     setSegIndex(0);
-    setRoundLeft(BOUT_SEGMENTS[0].seconds);
+    setRoundLeft(segmentsRef.current[0].seconds);
     setRookieLine(null);
     setPhase('chess');
     BoutEvents.started(lvl);
-  }, []);
+  }, [bank, boxingRounds, format, rankedLeft, clearPremove]);
+
+  // Is today's ranked bout still on the table? Read once on the pre-fight
+  // screen and after every finish, so the picker never promises points it
+  // can't pay. Failure is silent — never block a fight over a stat line.
+  useEffect(() => {
+    if (phase !== 'prefight') return;
+    let cancelled = false;
+    fetch('/api/bout/today')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && typeof d?.rankedLeft === 'number') setRankedLeft(d.rankedLeft);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [phase]);
 
   if (!FEATURE_FLAGS.BOUT_MODE) {
     return (
@@ -689,31 +773,85 @@ export default function BoutPage() {
             </p>
           </div>
 
-          {/* Round card */}
+          {/* Format — the ONLY thing that varies. Structure is always
+              chess · break · boxing · break · chess. */}
+          <div className="shrink-0">
+            <div className="flex gap-1.5" role="group" aria-label="Bout length">
+              {BOUT_FORMAT_ORDER.map((id) => {
+                const spec = BOUT_FORMATS[id];
+                const active = format === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => {
+                      playButtonClick();
+                      setFormat(id);
+                    }}
+                    aria-pressed={active}
+                    className={`flex-1 rounded-xl px-2 py-2 min-h-[48px] border-2 transition tap-highlight ${
+                      active
+                        ? 'border-[#e5484d] bg-red-50'
+                        : 'border-slate-200 bg-chess-surface'
+                    }`}
+                  >
+                    <span
+                      className={`block text-[13px] font-black leading-tight ${
+                        active ? 'text-[#e5484d]' : 'text-chess-text'
+                      }`}
+                    >
+                      {spec.label}
+                    </span>
+                    <span className="block text-[10px] font-bold text-chess-text-muted tabular-nums">
+                      {Math.round(boutDurationSeconds(id) / 60)} min
+                      {id === RANKED_FORMAT ? ' · ranked' : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-center text-[11px] font-semibold text-chess-text-muted mt-1 leading-snug">
+              {format === RANKED_FORMAT && rankedLeft === 0
+                ? "Today's ranked bout is spent — this one's an exhibition. Still counts for your streak."
+                : BOUT_FORMATS[format].blurb}
+            </p>
+          </div>
+
+          {/* Round card — a strip, not a list: the Championship card is 11
+              rounds and this screen never scrolls (see HARD RULE above). The
+              widths are proportional to the seconds, so the shape of the bout
+              reads at a glance and the breaks look like the rests they are. */}
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-3 shrink-0">
             <h2 className="text-[10px] font-black text-chess-text-muted uppercase tracking-wide text-center mb-1.5">
               Round card
             </h2>
-            <div className="flex flex-col gap-1">
-              {BOUT_SEGMENTS.map((s, i) => (
+            <div className="flex gap-[3px] h-7" aria-hidden>
+              {segments.map((s, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-between rounded-lg px-3 py-1 ${
-                    s.kind === 'chess' ? 'bg-violet-50' : 'bg-orange-50'
+                  className={`rounded-md flex items-center justify-center overflow-hidden ${
+                    s.kind === 'chess'
+                      ? 'bg-violet-200 text-violet-900'
+                      : s.kind === 'boxing'
+                        ? 'bg-orange-200 text-orange-900'
+                        : 'bg-slate-100'
                   }`}
+                  style={{ flexGrow: s.seconds, flexBasis: 0 }}
                 >
-                  <span className="text-[13px] font-black text-chess-text">
-                    {s.kind === 'chess' ? `Chess ${s.round}` : `Boxing ${s.round}`}
-                    {s.kind === 'chess' && s.round === 3 && (
-                      <span className="text-chess-text-muted font-bold"> · final round</span>
-                    )}
-                  </span>
-                  <span className="text-xs font-bold text-chess-text-muted tabular-nums">
-                    {fmtClock(s.seconds)}
-                  </span>
+                  {s.kind !== 'break' && (
+                    <span className="text-[11px] font-black leading-none">
+                      {s.kind === 'chess' ? 'C' : 'B'}
+                      {s.round}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
+            <p className="text-[11px] font-bold text-chess-text-muted text-center mt-1.5 leading-snug">
+              {chessRounds} × chess {fmtClock(CHESS_ROUND_SECONDS)}
+              {boxingRounds > 0 && <> · {boxingRounds} × boxing {fmtClock(BOXING_ROUND_SECONDS)}</>}
+              <br />
+              {fmtClock(BREAK_SECONDS)} break between every round
+            </p>
           </div>
 
           {/* Rules in one glance */}
@@ -723,11 +861,12 @@ export default function BoutPage() {
           >
             <ul className="flex flex-col gap-1 text-xs font-bold text-amber-900 leading-snug">
               <li>One game, frozen at every bell — you come back gassed.</li>
-              <li>
-                Your clock: {fmtClock(USER_BANK_SECONDS)} for all chess rounds. Flag = loss.
-              </li>
+              <li>Your clock: {fmtClock(bank)} for all chess rounds. Flag = loss.</li>
               <li>Rookie thinks 2-4s a move. She never flags. Rude, honestly.</li>
-              <li>Boxing rounds: {BOXING_ROUND_SECONDS}s of work. Rookie&apos;s in your corner.</li>
+              <li>
+                Boxing rounds: {Math.round(BOXING_ROUND_SECONDS / 60)} min of work,{' '}
+                {BREAK_SECONDS}s rest between every round.
+              </li>
               <li>No mate by the final bell — material decides. Level goes to you.</li>
             </ul>
           </div>
@@ -869,12 +1008,25 @@ export default function BoutPage() {
                 <div className="text-[11px] font-semibold text-chess-text-muted">clock left</div>
               </div>
               <div>
-                <div className="text-xl font-black text-chess-green tabular-nums">
+                <div
+                  className={`text-xl font-black tabular-nums ${
+                    earned > 0 ? 'text-chess-green' : 'text-chess-text-muted'
+                  }`}
+                >
                   {earned.toLocaleString()}
                 </div>
                 <div className="text-[11px] font-semibold text-chess-text-muted">points</div>
               </div>
             </div>
+
+            {/* Why it paid nothing — said plainly, so a 0 never reads as a bug. */}
+            {wasRanked === false && (
+              <p className="text-[11px] font-bold text-chess-text-muted leading-snug">
+                {format === RANKED_FORMAT
+                  ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
+                  : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`}
+              </p>
+            )}
 
             <div className="flex gap-2 w-full mt-1">
               <button
@@ -913,13 +1065,22 @@ export default function BoutPage() {
   }
 
   // ── RUNNING (chess / bell / boxing) ───────────────────────────────────────
-  const isChess = phase === 'chess';
   const isBoxing = phase === 'boxing';
-  const roundLabel = seg
-    ? seg.kind === 'chess'
-      ? `Chess ${seg.round} of 3`
-      : `Boxing ${seg.round} of ${BOXING_ROUND_COUNT}`
-    : '';
+  const isBreak = phase === 'break';
+  // During a break the header names what's COMING — that's what you're
+  // resting for.
+  const upNext = isBreak ? segments[segIndex + 1] : null;
+  const roundLabel = isBreak
+    ? upNext
+      ? upNext.kind === 'chess'
+        ? `Chess ${upNext.round} of ${chessRounds} next`
+        : `Boxing ${upNext.round} of ${boxingRounds} next`
+      : 'Break'
+    : seg
+      ? seg.kind === 'chess'
+        ? `Chess ${seg.round} of ${chessRounds}`
+        : `Boxing ${seg.round} of ${boxingRounds}`
+      : '';
 
   return (
     // HARD RULE: no scroll. Fixed column — header + flexible middle + footer.
@@ -931,7 +1092,11 @@ export default function BoutPage() {
         <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2 flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">
-              {seg?.kind === 'chess' && seg.round === 3 ? 'Final round' : 'Round'}
+              {isBreak
+                ? 'Break'
+                : seg?.kind === 'chess' && seg.round === chessRounds
+                  ? 'Final round'
+                  : 'Round'}
             </span>
             <span className="text-sm font-black text-chess-text">{roundLabel}</span>
           </div>
@@ -1030,8 +1195,12 @@ export default function BoutPage() {
                     position: fen,
                     boardOrientation: 'white',
                     onPieceDrop: (args: any) => {
-                      if (rookieThinking) return false;
-                      return doMove(args.sourceSquare as Square, args.targetSquare as Square);
+                      const from = args.sourceSquare as Square;
+                      const to = args.targetSquare as Square;
+                      // Dragging on Rookie's turn queues a premove (snaps back
+                      // — the highlight is what says a move is waiting).
+                      if (rookieThinking || game?.turn() !== 'w') return onPremoveDrop(from, to);
+                      return doMove(from, to);
                     },
                     onSquareClick: (args: any) => onSquareClick(args.square as Square),
                     squareStyles: sqStyles,
@@ -1096,21 +1265,31 @@ export default function BoutPage() {
         </div>
       </div>
 
-      {/* Bell overlay — the freeze moment between rounds */}
-      {phase === 'bell' && (
+      {/* BREAK — a real 1:00 round on the card, counted down. Sits over the
+          frozen board so you can still see the position you're coming back to. */}
+      {isBreak && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
           <style>{`
-            @keyframes bellPop { 0% { opacity:0; transform: scale(.6);} 60%{opacity:1; transform: scale(1.08);} 100%{transform: scale(1);} }
-            .bout-bell-card { animation: bellPop .35s cubic-bezier(.2,.9,.3,1.2); }
+            @keyframes bellPop { 0% { opacity:0; transform: scale(.92);} 100%{opacity:1; transform: scale(1);} }
+            .bout-bell-card { animation: bellPop .35s cubic-bezier(.16,1,.3,1); }
           `}</style>
-          <div className="bout-bell-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-3 text-center">
+          <div className="bout-bell-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col items-center gap-2 text-center">
             <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#e5484d]">
               The bell
             </span>
             <h2 className="text-2xl font-black text-chess-text">
-              {BOUT_SEGMENTS[segIndex]?.kind === 'chess' ? 'Gloves on' : 'Back to the board'}
+              {upNext?.kind === 'boxing' ? 'Gloves on' : 'Back to the board'}
             </h2>
+            <div
+              className={`text-6xl font-black tabular-nums leading-none my-1 ${
+                roundLeft <= 10 ? 'text-[#e5484d]' : 'text-chess-text'
+              }`}
+              aria-label="Break time remaining"
+            >
+              {fmtClock(roundLeft)}
+            </div>
             <p className="text-sm font-semibold text-chess-text-muted leading-snug">{bellLine}</p>
+            <p className="text-xs font-bold text-chess-text leading-snug">{cornerLine}</p>
           </div>
         </div>
       )}

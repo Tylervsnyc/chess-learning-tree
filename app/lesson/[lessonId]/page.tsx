@@ -5,6 +5,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import {
   playCorrectSound,
   playErrorSound,
@@ -527,6 +529,11 @@ export default function LessonPage() {
     return currentPuzzle.themes.some(t => t.toLowerCase().includes('mate'));
   }, [currentPuzzle]);
 
+  // The player owns one side for the whole puzzle — during the opponent's
+  // 400ms reply `game.turn()` is the OPPONENT, and a premove must never be able
+  // to pick up their pieces.
+  const puzzleOwnColor: 'w' | 'b' = currentPuzzle?.playerColor === 'black' ? 'b' : 'w';
+
   // Square styles
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
@@ -547,9 +554,18 @@ export default function LessonPage() {
 
     if (selectedSquare && game && !showMoveHint) {
       styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
-      const moves = game.moves({ square: selectedSquare, verbose: true });
+      // Our turn: real legal moves. Opponent's reply window: relaxed premove targets.
+      const dests: { to: Square; captured: boolean }[] =
+        game.turn() === puzzleOwnColor
+          ? game
+              .moves({ square: selectedSquare, verbose: true })
+              .map(m => ({ to: m.to as Square, captured: !!m.captured }))
+          : premoveDests(currentFen ?? '', selectedSquare, puzzleOwnColor).map(to => ({
+              to,
+              captured: !!game.get(to),
+            }));
       const currentSelectionSquares: Square[] = [selectedSquare];
-      for (const move of moves) {
+      for (const move of dests) {
         styles[move.to] = {
           background: move.captured
             ? 'radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.3) 60%)'
@@ -801,14 +817,44 @@ export default function LessonPage() {
     }
   }, [game, currentPuzzle, currentFen, moveIndex, moveStatus, streak, completedPuzzleCount, wrongAttempts, showMoveHint, lessonId, currentIndex, puzzleHadWrongAttempt, totalPuzzles]);
 
+  /**
+   * A premove here must be the SOLUTION move. `tryMove` scores any other legal
+   * move as a wrong answer, and a queued move should never cost someone the
+   * puzzle — anything else cancels silently.
+   */
+  const isSolutionMove = useCallback(
+    (from: Square, to: Square) => {
+      if (!currentPuzzle || moveIndex >= currentPuzzle.solutionMoves.length) return false;
+      try {
+        const g = new Chess(currentFen ?? '');
+        const mv = g.move({ from, to, promotion: 'q' });
+        return !!mv && normalizeMove(mv.san) === normalizeMove(currentPuzzle.solutionMoves[moveIndex]);
+      } catch {
+        return false;
+      }
+    },
+    [currentPuzzle, moveIndex, currentFen],
+  );
+
+  const { premove, setPremove, premoveEnabled } = usePremove({
+    fen: currentFen ?? '',
+    isMyTurn: game?.turn() === puzzleOwnColor,
+    tryMove,
+    enabled: moveStatus === 'playing' && introState === 'playing',
+    validate: isSolutionMove,
+    fireDelayMs: 300,
+  });
+
   // Handle square click — shared hook
-  const handleClickToMove = useClickToMove({
+  const { onSquareClick: handleClickToMove, onPremoveDrop } = useClickToMove({
     game,
-    ownColor: game?.turn() ?? 'w',
+    ownColor: puzzleOwnColor,
     selectedSquare,
     setSelectedSquare,
     tryMove,
     enabled: moveStatus === 'playing' && introState === 'playing',
+    premoveEnabled,
+    setPremove,
   });
 
   const onSquareClick = useCallback(
@@ -817,6 +863,16 @@ export default function LessonPage() {
     },
     [handleClickToMove],
   );
+
+  // A pending premove sits on top of the puzzle's own highlights.
+  const boardSquareStyles = useMemo(() => {
+    if (!premove) return squareStyles;
+    const merged = { ...squareStyles };
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      merged[sq] = { ...merged[sq], ...style };
+    }
+    return merged;
+  }, [squareStyles, premove]);
 
   // Progress stats - use first attempt results for final score (declared before recordAndAdvance)
   const firstAttemptCorrectCount = Object.values(firstAttemptResults).filter(r => r === 'correct').length;
@@ -1391,10 +1447,14 @@ export default function LessonPage() {
                   boardOrientation: currentPuzzle.playerColor,
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onPieceDrop: isAnimatingSetup ? undefined : (args: any) => {
-                    return tryMove(args.sourceSquare as Square, args.targetSquare as Square);
+                    const from = args.sourceSquare as Square;
+                    const to = args.targetSquare as Square;
+                    // Opponent's reply window → queue a premove instead.
+                    if (game && game.turn() !== puzzleOwnColor) return onPremoveDrop(from, to);
+                    return tryMove(from, to);
                   },
                   onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
-                  squareStyles: squareStyles,
+                  squareStyles: boardSquareStyles,
                   animationDurationInMs: animationDuration,
                   draggingPieceGhostStyle: { opacity: 1 },
                   boardStyle: {

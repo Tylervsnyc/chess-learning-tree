@@ -2905,3 +2905,47 @@ Then resize the browser through phone (360px) → iPad (768px) → desktop (1280
 ---
 
 *This document is the source of truth. If code disagrees with this document, either the code is wrong or this document needs updating. There is no third option.*
+
+---
+
+## 51. Premove
+
+Queue your reply while it's the opponent's turn. Shipped behind `FEATURE_FLAGS.PREMOVE` (ON). One implementation, shared by every board with an opponent reply.
+
+### The two rule sets (keep them apart)
+
+**Targeting is RELAXED.** When the premove is set, the position it will run in hasn't happened yet, so we only ask "could this piece plausibly go there?" — never "is this legal?". `premoveDests()` in `lib/chess/premove.ts` ignores blockers (sliders slide through pieces), occupancy (you may target your own piece's square), check and pins. Pawns get both pushes **and** both diagonal captures regardless of what's there. The king gets its castle target when it's on e1/e8 with a friendly rook on the a/h file — castling *rights* are not checked. (Same rules as lichess/chessground.)
+
+**Execution is STRICT.** The instant it becomes the player's turn the move is tested against the real position with chess.js. Legal → it plays. Illegal → it cancels silently. No error sound, no wrong-move penalty, no streak hit.
+
+### Behavior
+
+- **Set:** select one of your pieces on the opponent's turn, then a destination. Drag works too — the drag snaps back and the premove highlight becomes the only visual truth (the board is controlled by the `position` FEN; a piece must never sit somewhere the FEN disagrees with).
+- **One at a time.** A new premove replaces the old one. No multi-premove queue.
+- **Cancel:** clicking an empty/invalid square, setting a different premove, the move becoming illegal, or the game/segment/puzzle ending.
+- **Auto-queen** on promotion premoves — never show a promotion picker for a queued move.
+- **Highlight:** from + to squares tinted in the premove color (`PREMOVE_HIGHLIGHT`), distinct from selection and last-move. While a piece is selected on the opponent's turn, the move dots show relaxed premove targets, not legal moves.
+- **Fires after the opponent's animation** (`fireDelayMs`, default = the board's animation duration) so two moves never land in the same frame.
+
+### Architecture (do not add a second path)
+
+- `lib/chess/premove.ts` — pure: `premoveDests`, `isPremoveLegal`, `premoveSquareStyles`. No React.
+- `hooks/usePremove.ts` — owns the one pending premove and runs it. The runner is an **effect keyed on `fen`**, NOT a call inside the opponent's move handler: every `tryMove` in this codebase closes over the `fen` state (`new Chess(fen)`), so firing synchronously would play the premove against the pre-opponent position. It calls the surface's normal `tryMove`, so sounds, speech, mood, eval, logging, game-over and the opponent's next reply all fire identically to a hand-made move.
+- `hooks/useClickToMove.ts` — the single input path. Its `!isOwnTurn` branch sets the premove; `onPremoveDrop` handles drags.
+
+### Puzzle and lesson lines
+
+Puzzle surfaces grade a legal-but-wrong move as a **wrong answer**. A queued move must never cost someone a puzzle, so those surfaces pass `validate` to `usePremove` and only the **solution move** fires — anything else cancels silently. They also pass a stable player color (`processed.playerColor`), never `game.turn()`, so a premove can't pick up the opponent's pieces during their reply.
+
+### Where it's live
+
+| Surface | Think window |
+|---------|--------------|
+| `/play` | ~0.5s |
+| `/box/bout` | 2–4s (biggest payoff) |
+| `/workout` fight rounds | ~0.5s |
+| `/lesson/[lessonId]`, `/level-test/[transition]`, `WorkoutPuzzle`, `/openings/[slug]/[lessonId]` (puzzle steps) | 300–400ms scripted reply |
+
+Not applicable: `/run` (not standard chess), onboarding/tutorial boards (single move, no reply), read-only boards.
+
+Sandbox: `/test/premove` — a fake opponent with a configurable think delay.

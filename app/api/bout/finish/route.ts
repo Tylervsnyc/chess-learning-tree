@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
+import { periodStartISO } from '@/lib/leaderboard/period';
 import {
   boutPoints,
   boutResult,
-  BOXING_ROUND_COUNT,
-  USER_BANK_SECONDS,
+  bankSeconds,
+  boxingRoundCount,
+  isBoutFormat,
+  DAILY_RANKED_BOUT_LIMIT,
+  RANKED_FORMAT,
+  type BoutFormat,
   type BoutOutcome,
 } from '@/lib/bout/bout';
 
@@ -17,6 +22,7 @@ import {
  *   roundsSurvived: number,   // boxing rounds reached the bell in
  *   moves: number,
  *   level: number,
+ *   format: BoutFormat,       // sparring | standard | championship
  *   clockLeftSeconds: number,
  *   finalFen?: string,
  *   clientSessionId: string,  // idempotency key, generated per bout
@@ -27,19 +33,29 @@ import {
  * (/api/leaderboard), and the fight record on /profile.
  *
  * TRUST: points are NOT accepted from the client — they are recomputed here
- * from the reported result via boutPoints(), and the only input that feeds it
- * is roundsSurvived, clamped to the number of boxing rounds that exist. There
- * is NO physical tracking in a bout (no camera, no tap pad), so there is
- * nothing a client could inflate beyond that. The write uses
- * the service role because bout_sessions has no public insert policy (a user
- * must not be able to hand-write a row onto a public board).
+ * from the reported result via boutPoints(), on inputs clamped to what the
+ * reported format can actually contain. There is NO physical tracking in a
+ * bout (no camera, no tap pad), so there is nothing a client could inflate
+ * beyond that. The write uses the service role because bout_sessions has no
+ * public insert policy (a user must not be able to hand-write a row onto a
+ * public board).
  *
- * Returns { ok, boutId, points, result } — or { ok: false, needsMigration: true }
- * if the table isn't migrated yet, so the client can finish the bout cleanly
- * instead of erroring in the user's face.
+ * RANKED vs EXHIBITION — a bout only pays points if BOTH hold:
+ *   1. format === RANKED_FORMAT (Standard). One board, one card length; a
+ *      ranking across different-length bouts isn't a ranking.
+ *   2. the user is under DAILY_RANKED_BOUT_LIMIT ranked bouts today. Fight
+ *      Night: one that counts, then unlimited exhibition.
+ * An exhibition bout still writes a row (0 points) so it counts for the streak
+ * and the fight record — it just can't buy the weekly/monthly board. "Today"
+ * is the leaderboard's own daily window, so the cap and the board can never
+ * disagree about where the day starts.
+ *
+ * Returns { ok, boutId, points, result, ranked } — or
+ * { ok: false, needsMigration: true } if the table isn't migrated yet, so the
+ * client can finish the bout cleanly instead of erroring in the user's face.
  */
 
-// A 3-round bout at 3:00 a round with a 9:00 bank can't run past this.
+// Even the 6-chess-round Championship card can't run past this.
 const MAX_MOVES = 400;
 
 const OUTCOMES: readonly BoutOutcome[] = [
@@ -82,17 +98,21 @@ export async function POST(request: NextRequest) {
   }
   const outcome = body.outcome;
 
-  const roundsSurvived = clampInt(body.roundsSurvived, BOXING_ROUND_COUNT);
+  // Unknown/absent format falls back to the ranked one — old clients that
+  // don't send it were all fighting the Standard card.
+  const format: BoutFormat = isBoutFormat(body.format) ? body.format : RANKED_FORMAT;
+  const boxingRounds = boxingRoundCount(format);
+
+  const roundsSurvived = clampInt(body.roundsSurvived, boxingRounds);
   const moves = clampInt(body.moves, MAX_MOVES);
   const level = Math.max(1, Math.min(10, clampInt(body.level, 10) || 1));
-  const clockLeftSeconds = clampInt(body.clockLeftSeconds, USER_BANK_SECONDS);
+  const clockLeftSeconds = clampInt(body.clockLeftSeconds, bankSeconds(format));
   const finalFen = typeof body.finalFen === 'string' ? body.finalFen.slice(0, 120) : null;
   const clientSessionId =
     typeof body.clientSessionId === 'string' && body.clientSessionId.length <= 64
       ? body.clientSessionId
       : null;
 
-  const points = boutPoints({ outcome, roundsSurvived });
   const result = boutResult(outcome);
 
   const svc = createServiceClient();
@@ -106,15 +126,39 @@ export async function POST(request: NextRequest) {
       .eq('client_session_id', clientSessionId)
       .maybeSingle();
     if (existing) {
+      const storedPoints = (existing.points as number) ?? 0;
       return NextResponse.json({
         ok: true,
         boutId: existing.id as string,
-        points: (existing.points as number) ?? points,
+        points: storedPoints,
         result: (existing.result as string) ?? result,
+        ranked: storedPoints > 0,
         duplicate: true,
       });
     }
   }
+
+  // ── Ranked or exhibition ───────────────────────────────────────────────────
+  // Only the ranked card pays, and only under the daily cap. Points-bearing
+  // rows in today's window ARE the ranked bouts (an exhibition stores 0), so
+  // the count needs no extra column and can't drift from what the board sees.
+  let ranked = format === RANKED_FORMAT;
+  if (ranked) {
+    const { data: todaysRanked, error: capError } = await svc
+      .from('bout_sessions')
+      .select('id, points')
+      .eq('user_id', user.id)
+      .gt('points', 0)
+      .gte('created_at', periodStartISO('daily'));
+    // A failed read must not silently hand out a free ranked bout — but it
+    // also must not eat one the user earned. Missing table = no bouts yet.
+    if (capError && !/bout_sessions/.test(capError.message ?? '')) {
+      console.error('bout daily cap read failed', capError);
+    }
+    if ((todaysRanked ?? []).length >= DAILY_RANKED_BOUT_LIMIT) ranked = false;
+  }
+
+  const points = boutPoints({ outcome, roundsSurvived, level, boxingRounds, ranked });
 
   const { data, error } = await svc
     .from('bout_sessions')
@@ -141,11 +185,11 @@ export async function POST(request: NextRequest) {
     // result screen is already earned.
     if (/bout_sessions/.test(error.message ?? '')) {
       console.warn('bout_sessions not migrated — bout not persisted', error.message);
-      return NextResponse.json({ ok: false, needsMigration: true, points, result });
+      return NextResponse.json({ ok: false, needsMigration: true, points, result, ranked });
     }
     console.error('bout finish insert failed', error);
     return NextResponse.json({ error: 'write failed' }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, boutId: data.id as string, points, result });
+  return NextResponse.json({ ok: true, boutId: data.id as string, points, result, ranked });
 }

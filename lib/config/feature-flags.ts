@@ -90,6 +90,17 @@ export const FEATURE_FLAGS = {
    * docs/chess-boxing-app-structure.md.
    */
   BOUT_MODE: true,
+  /**
+   * Premove — queue your reply while it's the opponent's turn. Select one of
+   * your pieces and a destination during Rookie's think (0.5s on /play and
+   * fight rounds, a padded 2-4s in a bout); the instant it's your turn the move
+   * plays if it's legal, and silently cancels if it isn't. One premove at a
+   * time; a new one replaces it. Targeting is relaxed (blockers/check ignored),
+   * execution is strict — see lib/chess/premove.ts. On puzzle/lesson lines a
+   * premove that isn't the solution move cancels silently rather than counting
+   * as a wrong answer.
+   */
+  PREMOVE: true,
 } as const;
 
 /**

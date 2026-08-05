@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Chess, Square } from 'chess.js'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard'
+import { usePremove } from '@/hooks/usePremove'
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove'
 import { ChessProgressBar } from '@/components/puzzle/ChessProgressBar'
 import { ActivityComplete } from '@/components/shared/ActivityComplete'
 import { writeBreadcrumb } from '@/lib/session-breadcrumb'
@@ -587,6 +589,40 @@ export default function OpeningLessonPage() {
     }
   }, [currentStep, moveStatus, puzzleFen, puzzleMoveIndex, correctCount, lessonId, currentStepIndex, slug])
 
+  // ─── Premove (puzzle steps only) ───
+  // A puzzle step auto-plays the opponent's reply 300ms after a correct move,
+  // and the board stays live through it. Without premove, a click landing in
+  // that window is graded against the PRE-reply position — a wrong answer for
+  // being fast. Premove turns that window into a queued move instead, and only
+  // ever fires the SOLUTION move (anything else cancels silently).
+  const puzzleStepFen = currentStep?.type === 'puzzle' ? (puzzleFen || currentStep.fen) : ''
+  const puzzleOwnColor: 'w' | 'b' =
+    currentStep?.type === 'puzzle' && currentStep.playerColor === 'black' ? 'b' : 'w'
+  const puzzleTurn = useMemo(() => {
+    if (!puzzleStepFen) return null
+    try { return new Chess(puzzleStepFen).turn() } catch { return null }
+  }, [puzzleStepFen])
+
+  const isPuzzleSolutionMove = useCallback((from: Square, to: Square) => {
+    if (currentStep?.type !== 'puzzle') return false
+    const expectedSan = currentStep.solutionMoves[puzzleMoveIndex]
+    if (!expectedSan) return false
+    try {
+      const g = new Chess(puzzleStepFen)
+      const mv = g.move({ from, to, promotion: 'q' })
+      return !!mv && mv.san === expectedSan
+    } catch { return false }
+  }, [currentStep, puzzleMoveIndex, puzzleStepFen])
+
+  const { premove, setPremove, premoveEnabled } = usePremove({
+    fen: puzzleStepFen,
+    isMyTurn: puzzleTurn === puzzleOwnColor,
+    tryMove: handlePuzzleMove,
+    enabled: currentStep?.type === 'puzzle' && moveStatus === 'waiting',
+    validate: isPuzzleSolutionMove,
+    fireDelayMs: 300,
+  })
+
   // ─── Square click ───
   const handleSquareClick = useCallback((square: Square) => {
     if (!currentStep) return
@@ -597,9 +633,22 @@ export default function OpeningLessonPage() {
 
     try {
       const game = new Chess(fen)
+      const awaitingOpponent =
+        currentStep.type === 'puzzle' && premoveEnabled && game.turn() !== puzzleOwnColor
 
       if (selectedSquare) {
         if (selectedSquare === square) {
+          setSelectedSquare(null)
+          return
+        }
+        if (awaitingOpponent) {
+          // Opponent's reply is still landing — queue the move instead of
+          // having it graded against the old position.
+          if (premoveDests(fen, selectedSquare, puzzleOwnColor).includes(square)) {
+            setPremove({ from: selectedSquare, to: square })
+          } else {
+            setPremove(null)
+          }
           setSelectedSquare(null)
           return
         }
@@ -611,6 +660,7 @@ export default function OpeningLessonPage() {
         setSelectedSquare(null)
         return
       }
+      if (awaitingOpponent && !game.get(square)) setPremove(null)
 
       const piece = game.get(square)
       if (piece) {
@@ -622,7 +672,7 @@ export default function OpeningLessonPage() {
         }
       }
     } catch { /* ignore */ }
-  }, [currentStep, selectedSquare, puzzleFen, moveStatus, handlePlayMove, handlePuzzleMove])
+  }, [currentStep, selectedSquare, puzzleFen, moveStatus, handlePlayMove, handlePuzzleMove, premoveEnabled, puzzleOwnColor, setPremove])
 
   // ─── Piece drop ───
   const handlePieceDrop = useCallback(({ sourceSquare, targetSquare }: { piece: unknown; sourceSquare: string; targetSquare: string | null }) => {
@@ -631,10 +681,19 @@ export default function OpeningLessonPage() {
     if (currentStep.type === 'play-move') {
       handlePlayMove(sourceSquare as Square, targetSquare as Square)
     } else if (currentStep.type === 'puzzle') {
-      handlePuzzleMove(sourceSquare as Square, targetSquare as Square)
+      const from = sourceSquare as Square
+      const to = targetSquare as Square
+      // Opponent's reply still landing → queue it rather than be graded early.
+      if (premoveEnabled && puzzleTurn !== puzzleOwnColor) {
+        if (premoveDests(puzzleStepFen, from, puzzleOwnColor).includes(to)) {
+          setPremove({ from, to })
+        }
+        return true
+      }
+      handlePuzzleMove(from, to)
     }
     return true
-  }, [currentStep, moveStatus, handlePlayMove, handlePuzzleMove])
+  }, [currentStep, moveStatus, handlePlayMove, handlePuzzleMove, premoveEnabled, puzzleTurn, puzzleOwnColor, puzzleStepFen, setPremove])
 
   // ─── Square styles ───
   const squareStyles = useMemo(() => {
@@ -680,14 +739,27 @@ export default function OpeningLessonPage() {
         const fen = currentStep.type === 'puzzle' ? (puzzleFen || currentStep.fen) : currentStep.fen
         try {
           const game = new Chess(fen)
-          const moves = game.moves({ square: selectedSquare, verbose: true })
-          for (const m of moves) {
+          // Our turn: real legal moves. Opponent's reply window: premove targets.
+          const dests: { to: Square; captured: boolean }[] =
+            currentStep.type === 'puzzle' && premoveEnabled && game.turn() !== puzzleOwnColor
+              ? premoveDests(fen, selectedSquare, puzzleOwnColor).map(to => ({
+                  to,
+                  captured: !!game.get(to),
+                }))
+              : game
+                  .moves({ square: selectedSquare, verbose: true })
+                  .map(m => ({ to: m.to as Square, captured: !!m.captured }))
+          for (const m of dests) {
             styles[m.to] = {
               background: m.captured ? MOVE_INDICATOR.capture : MOVE_INDICATOR.quiet,
             }
           }
         } catch { /* ignore */ }
       }
+    }
+
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      styles[sq] = { ...styles[sq], ...style }
     }
 
     if (currentStep?.type === 'instruction' && currentStep.highlightSquares) {
@@ -697,7 +769,7 @@ export default function OpeningLessonPage() {
     }
 
     return styles
-  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts, lastOpponentHighlight])
+  }, [selectedSquare, currentStep, puzzleFen, moveStatus, wrongAttempts, lastOpponentHighlight, premove, premoveEnabled, puzzleOwnColor])
 
   // ─── Arrows (library — blue for instruction, red for threats) ───
   const arrows = useMemo(() => {

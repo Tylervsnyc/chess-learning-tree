@@ -265,7 +265,7 @@ export default function TestCoachPage() {
     return tryMove(args.sourceSquare as Square, args.targetSquare as Square);
   }, [tryMove]);
 
-  const onClickSquare = useClickToMove({
+  const { onSquareClick: onClickSquare } = useClickToMove({
     game,
     ownColor: 'w',
     selectedSquare: selected,

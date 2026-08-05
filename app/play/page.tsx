@@ -15,14 +15,12 @@ import {
   playCelebrationSound,
   getSharedAudioContext,
 } from '@/lib/sounds';
-import { getReactiveBookMove } from '@/lib/rookie-opening-book';
+import { pickRookieMove } from '@/lib/rookie/pick-move';
 import {
   ROOKIE_LEVELS,
   WINS_TO_ADVANCE,
   getRookieLevel,
   getLevelElo,
-  getLevelEngineConfig,
-  getEasyFirstWinConfig,
 } from '@/lib/rookie-levels';
 import { useOpeningProgress } from '@/hooks/useOpeningProgress';
 import { PlayEvents, IgActivationEvents } from '@/lib/analytics/posthog';
@@ -50,6 +48,8 @@ import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
 import { useName } from '@/hooks/useName';
@@ -1334,80 +1334,33 @@ export default function PlayRookiePage() {
       }
     };
 
-    // Opening book check — skip at low levels so Rookie doesn't play perfect theory
-    // Levels 1-3 (ELO 200-600): no book, just engine moves
-    // Levels 4+: use the opening book
+    // ONE picker for every surface (lib/rookie/pick-move.ts) — book → Maia →
+    // random injection → sampled Stockfish → never-stall fallback. /play is the
+    // only caller that logs the decision, so the log line comes back on the
+    // decision itself rather than being written at each branch.
     const rookieColor = playerColor === 'white' ? 'black' : 'white';
     const gameMoves = moveLogRef.current.map(m => m.san);
-    // Cap book to Rookie's first 5 moves at L1-L4 so beginners don't play
-    // 15 moves of Ruy Lopez theory. L5+ use the full opening trie since
-    // stronger players legitimately know theory.
-    const rookieMovesPlayed = gameMoves.filter((_, i) => (rookieColor === 'white' ? i % 2 === 0 : i % 2 === 1)).length;
-    const bookCapped = rookieLevel <= 4 && rookieMovesPlayed >= 5;
-    // Day 5 (IG_EASY_FIRST_WIN): skip book theory entirely in the eased first
-    // game so Rookie plays purely weak/random moves and hangs into a fast win.
-    const bookResult = !bookCapped && !igEasyActiveRef.current
-      ? getReactiveBookMove(currentFen, gameMoves, rookieColor, studiedSlugs)
-      : { inBook: false, moveSan: null, moveUci: null, matchedSlug: null, matchedName: null };
-    if (bookResult.inBook && bookResult.moveSan) {
-      if (bookResult.matchedSlug) {
-        matchedOpeningRef.current = { slug: bookResult.matchedSlug, name: bookResult.matchedName! };
-      }
-      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `opening-book: ${bookResult.moveSan} (${bookResult.matchedName})`, details: { engine: 'opening-book', opening: bookResult.matchedSlug, move: bookResult.moveSan } });
-      rookieTimerRef.current = setTimeout(() => applyRookieMove({ san: bookResult.moveSan! }), 400);
-      return;
-    }
-
-    // Maia at L5/L6 — neural-net moves tuned to human ELO (1100/1200).
-    // Falls through to Stockfish if Maia isn't ready (model not downloaded yet).
-    const useMaia = rookieLevel === 5 || rookieLevel === 6;
-    if (useMaia && maia.getStatus() === 'ready') {
-      const maiaElo = rookieLevel === 5 ? 1300 : 1500;
-      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `maia (elo=${maiaElo})`, details: { engine: 'maia', rookieLevel, eloSelf: maiaElo } });
-      const thinkStart = Date.now();
-      maia.getMaiaMove(currentFen, maiaElo, maiaElo).then((uciMove) => {
-        if (gen !== gameGenRef.current) return;
-        if (!uciMove) { fallbackRandomMove(currentFen, gen); return; }
-        const from = uciMove.slice(0, 2);
-        const to = uciMove.slice(2, 4);
-        const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
-        const wait = Math.max(0, 500 - (Date.now() - thinkStart));
-        rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
-      }).catch(() => {
-        if (gen !== gameGenRef.current) return;
-        fallbackRandomMove(currentFen, gen);
-      });
-      return;
-    }
-
-    // Stockfish MultiPV sampling — weak-human feel via top-N candidate pool.
-    // Day 5 (IG_EASY_FIRST_WIN): the IG cohort's first game uses an extra-easy,
-    // blunder-prone config so a cold beginner wins fast (engine-only; level stays 1).
-    const cfg = igEasyActiveRef.current ? getEasyFirstWinConfig() : getLevelEngineConfig(rookieLevel);
-
-    // Random move injection for L1-L3 — true beginner "hung piece" feel that
-    // Stockfish can't produce on its own (even at skill 0, its worst move is ~1000 ELO).
-    if (cfg.randomMoveChance && Math.random() < cfg.randomMoveChance) {
-      const g = new Chess(currentFen);
-      const moves = g.moves({ verbose: true });
-      if (moves.length > 0) {
-        const pick = moves[Math.floor(Math.random() * moves.length)];
-        log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `random move (level=${rookieLevel}, chance=${cfg.randomMoveChance}) -> ${pick.san}`, details: { engine: 'random', rookieLevel, chance: cfg.randomMoveChance, move: pick.san } });
-        rookieTimerRef.current = setTimeout(() => applyRookieMove({ from: pick.from, to: pick.to, promotion: pick.promotion }), 500);
-        return;
-      }
-    }
-
-    log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: `stockfish sampled (level=${rookieLevel}, skill=${cfg.skillLevel}, depth=${cfg.depth}, pool=${cfg.poolSize}/${cfg.multiPV})`, details: { engine: 'stockfish-sampled', rookieLevel, ...cfg } });
     const thinkStart = Date.now();
-    stockfish.getBestMoveSampled(currentFen, cfg.skillLevel, cfg.depth, cfg.multiPV, cfg.poolSize, cfg.tolerance).then((uciMove) => {
+    pickRookieMove({
+      fen: currentFen,
+      sans: gameMoves,
+      rookieColor,
+      level: rookieLevel,
+      studiedSlugs,
+      // Day 5 (IG_EASY_FIRST_WIN): the IG cohort's first game runs an extra
+      // blunder-prone engine and skips book theory so a cold beginner wins fast.
+      easyFirstWin: igEasyActiveRef.current,
+    }).then((decision) => {
       if (gen !== gameGenRef.current) return; // stale — new game started
-      if (!uciMove) { fallbackRandomMove(currentFen, gen); return; }
-      const from = uciMove.slice(0, 2);
-      const to = uciMove.slice(2, 4);
-      const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
-      const wait = Math.max(0, 500 - (Date.now() - thinkStart));
-      rookieTimerRef.current = setTimeout(() => applyRookieMove({ from, to, promotion }), wait);
+      if (!decision) { fallbackRandomMove(currentFen, gen); return; }
+      if (decision.opening) {
+        matchedOpeningRef.current = { slug: decision.opening.slug, name: decision.opening.name };
+      }
+      log({ moveNum: moveNumRef.current, type: 'engine', who: 'system', summary: decision.summary, details: decision.detail });
+      // Book moves land fast (400ms); engine moves pace to a 500ms floor.
+      const floor = decision.engine === 'opening-book' ? 400 : 500;
+      const wait = Math.max(0, floor - (Date.now() - thinkStart));
+      rookieTimerRef.current = setTimeout(() => applyRookieMove(decision.move), wait);
     }).catch(() => {
       if (gen !== gameGenRef.current) return;
       fallbackRandomMove(currentFen, gen);
@@ -1539,13 +1492,25 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // CLICK TO MOVE — shared hook (reuses the memoized game — same FEN)
   // ════════════════════════════════
-  const onClickSquare = useClickToMove({
+  // Premove — queue a reply while Rookie thinks; it plays the instant it's your
+  // turn if it's legal, and silently cancels if it isn't.
+  const { premove, setPremove, clearPremove, premoveEnabled } = usePremove({
+    fen,
+    isMyTurn,
+    tryMove: doPlayerMove,
+    enabled: phase === 'playing',
+    fireDelayMs: ANIM_MS,
+  });
+
+  const { onSquareClick: onClickSquare, onPremoveDrop } = useClickToMove({
     game,
     ownColor: playerColor === 'white' ? 'w' : 'b',
     selectedSquare: selected,
     setSelectedSquare: setSelected,
     tryMove: doPlayerMove,
     enabled: phase === 'playing',
+    premoveEnabled,
+    setPremove,
   });
 
   // Kick off Rookie's first move if player is black
@@ -1713,19 +1678,27 @@ export default function PlayRookiePage() {
     }
     if (selected) {
       s[selected] = { ...s[selected], background: 'rgba(20, 85, 200, 0.5)' };
-      // Read-only legal-move query on the memoized game (same FEN — no re-parse)
-      for (const m of game.moves({ square: selected, verbose: true })) {
-        const has = game.get(m.to as Square);
-        s[m.to] = {
-          ...s[m.to],
+      // On our turn: real legal moves. On Rookie's turn: relaxed premove targets.
+      const onOurTurn = isMyTurn;
+      const dests = onOurTurn
+        ? game.moves({ square: selected, verbose: true }).map(m => m.to as Square)
+        : premoveEnabled ? premoveDests(fen, selected, playerColor === 'white' ? 'w' : 'b') : [];
+      for (const to of dests) {
+        const has = game.get(to);
+        s[to] = {
+          ...s[to],
           background: has
             ? 'radial-gradient(transparent 55%, rgba(20, 85, 200, 0.4) 55%)'
             : 'radial-gradient(rgba(20, 85, 200, 0.5) 22%, transparent 22%)',
         };
       }
     }
+    // Pending premove sits on top — it must stay readable over last-move.
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      s[sq] = { ...s[sq], ...style };
+    }
     return s;
-  }, [game, lastMv, selected, reviewMoveColor]);
+  }, [game, fen, lastMv, selected, reviewMoveColor, isMyTurn, premove, premoveEnabled, playerColor]);
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
@@ -1745,6 +1718,7 @@ export default function PlayRookiePage() {
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
+    clearPremove();
     setGameResult(null);
     setRookieThinking(false);
     setResignArmed(false);
@@ -1769,7 +1743,7 @@ export default function PlayRookiePage() {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('cp:activity-recorded'));
     }
-  }, [speech, moodSystem, postGame, rookieLevel]);
+  }, [speech, moodSystem, postGame, rookieLevel, clearPremove]);
 
   // ════════════════════════════════
   // START GAME
@@ -1801,6 +1775,7 @@ export default function PlayRookiePage() {
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
+    clearPremove();
     setGameResult(null);
     setRookieThinking(false);
     setResignArmed(false);
@@ -2417,8 +2392,13 @@ export default function PlayRookiePage() {
               position: fen,
               boardOrientation: playerColor,
               onPieceDrop: isReview ? undefined : ((args: any) => {
-                if (rookieThinking) return false;
-                return doPlayerMove(args.sourceSquare as Square, args.targetSquare as Square);
+                const from = args.sourceSquare as Square;
+                const to = args.targetSquare as Square;
+                // Dragging on Rookie's turn sets a premove instead. It returns
+                // false on purpose: the piece snaps back and the premove
+                // highlight is the only thing that says a move is queued.
+                if (rookieThinking || !isMyTurn) return onPremoveDrop(from, to);
+                return doPlayerMove(from, to);
               }) as any,
               onSquareClick: isReview ? undefined : ((args: any) => onClickSquare(args.square as Square)) as any,
               squareStyles: sqStyles,

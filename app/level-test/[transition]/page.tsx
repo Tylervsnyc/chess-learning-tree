@@ -15,6 +15,8 @@ import { useUser } from '@/hooks/useUser';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { fireConfetti } from '@/lib/confetti';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -165,6 +167,11 @@ export default function LevelTestPage() {
     }
   }, [currentFen]);
 
+  // The player owns one side for the whole puzzle — during the opponent's 400ms
+  // reply `chess.turn()` is the OPPONENT, and a premove must never be able to
+  // pick up their pieces.
+  const puzzleOwnColor: 'w' | 'b' = currentPuzzle?.playerColor === 'black' ? 'b' : 'w';
+
   // Square styles for highlighting
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
@@ -177,7 +184,16 @@ export default function LevelTestPage() {
 
     if (selectedSquare && chess) {
       styles[selectedSquare] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
-      const moves = chess.moves({ square: selectedSquare, verbose: true });
+      // Our turn: real legal moves. Opponent's reply window: relaxed premove targets.
+      const moves: { to: Square; captured: boolean }[] =
+        chess.turn() === puzzleOwnColor
+          ? chess
+              .moves({ square: selectedSquare, verbose: true })
+              .map(m => ({ to: m.to as Square, captured: !!m.captured }))
+          : premoveDests(currentFen, selectedSquare, puzzleOwnColor).map(to => ({
+              to,
+              captured: !!chess.get(to),
+            }));
       const currentSelectionSquares: Square[] = [selectedSquare];
       for (const move of moves) {
         styles[move.to] = {
@@ -200,7 +216,7 @@ export default function LevelTestPage() {
     }
 
     return styles;
-  }, [selectedSquare, chess, currentPuzzle, moveIndex]);
+  }, [selectedSquare, chess, currentFen, currentPuzzle, moveIndex, puzzleOwnColor]);
 
   // Try to make a move
   const tryMove = useCallback((from: Square, to: Square) => {
@@ -318,14 +334,39 @@ export default function LevelTestPage() {
     }
   }, [chess, currentPuzzle, moveIndex, moveStatus, streak, correctCount]);
 
+  /**
+   * A premove here must be the SOLUTION move — `tryMove` scores any other legal
+   * move as a wrong answer, and a queued move should never cost someone the test.
+   */
+  const isSolutionMove = useCallback(
+    (from: Square, to: Square) => {
+      const solutionMoves = currentPuzzle?.solutionMoves;
+      if (!solutionMoves || moveIndex >= solutionMoves.length) return false;
+      const expected = parseUciMove(solutionMoves[moveIndex]);
+      return expected.from === from && expected.to === to;
+    },
+    [currentPuzzle, moveIndex],
+  );
+
+  const { premove, setPremove, premoveEnabled } = usePremove({
+    fen: currentFen,
+    isMyTurn: chess?.turn() === puzzleOwnColor,
+    tryMove,
+    enabled: moveStatus === 'playing',
+    validate: isSolutionMove,
+    fireDelayMs: 300,
+  });
+
   // Handle square click — shared hook
-  const handleClickToMove = useClickToMove({
+  const { onSquareClick: handleClickToMove, onPremoveDrop } = useClickToMove({
     game: chess,
-    ownColor: chess?.turn() ?? 'w',
+    ownColor: puzzleOwnColor,
     selectedSquare,
     setSelectedSquare,
     tryMove,
     enabled: moveStatus === 'playing',
+    premoveEnabled,
+    setPremove,
   });
 
   const onSquareClick = useCallback(
@@ -334,6 +375,16 @@ export default function LevelTestPage() {
     },
     [handleClickToMove],
   );
+
+  // A pending premove sits on top of the puzzle's own highlights.
+  const boardSquareStyles = useMemo(() => {
+    if (!premove) return squareStyles;
+    const merged = { ...squareStyles };
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      merged[sq] = { ...merged[sq], ...style };
+    }
+    return merged;
+  }, [squareStyles, premove]);
 
   // Handle continue after puzzle result
   const handleContinue = useCallback(() => {
@@ -721,10 +772,14 @@ export default function LevelTestPage() {
                 boardOrientation: currentPuzzle.playerColor,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onPieceDrop: isAnimatingSetup ? undefined : (args: any) => {
-                  return tryMove(args.sourceSquare as Square, args.targetSquare as Square);
+                  const from = args.sourceSquare as Square;
+                  const to = args.targetSquare as Square;
+                  // Opponent's reply window → queue a premove instead.
+                  if (chess && chess.turn() !== puzzleOwnColor) return onPremoveDrop(from, to);
+                  return tryMove(from, to);
                 },
                 onSquareClick: isAnimatingSetup ? undefined : onSquareClick,
-                squareStyles: squareStyles,
+                squareStyles: boardSquareStyles,
                 animationDurationInMs: animationDuration,
                 draggingPieceGhostStyle: { opacity: 1 },
                 boardStyle: {

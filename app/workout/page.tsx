@@ -6,9 +6,10 @@ import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
-import { getLevelEngineConfig } from '@/lib/rookie-levels';
-import { getReactiveBookMove } from '@/lib/rookie-opening-book';
+import { pickRookieMove } from '@/lib/rookie/pick-move';
 import {
   buildSchedule,
   labelFor,
@@ -612,53 +613,25 @@ export default function WorkoutPage() {
         scheduleApply({ from: mv.from, to: mv.to, promotion: mv.promotion }, 500);
       };
 
-      // Opening book (Rookie is black): first 5 of her moves at L3+, same cap
-      // /play uses so beginners don't face 15 moves of theory.
-      const sans = fightMovesRef.current;
-      const rookieMovesPlayed = sans.filter((_, i) => i % 2 === 1).length;
-      if (fightLevelRef.current >= 3 && rookieMovesPlayed < 5) {
-        const book = getReactiveBookMove(currentFen, sans, 'black');
-        if (book.inBook && book.moveSan) {
-          scheduleApply({ san: book.moveSan }, 400);
-          return;
-        }
-      }
-
-      const cfg = getLevelEngineConfig(fightLevelRef.current);
-
-      // Beginner "hung piece" feel — same random-move injection as /play L1-L3.
-      if (cfg.randomMoveChance && Math.random() < cfg.randomMoveChance) {
-        fallbackRandom();
-        return;
-      }
-
-      if (!sfReadyRef.current) {
-        // Engine still loading (first segment) — play a random move, don't stall.
-        fallbackRandom();
-        return;
-      }
-
+      // ONE picker for every surface (lib/rookie/pick-move.ts). A segment can
+      // end while she's thinking, so the guard is re-checked on resolve.
       const thinkStart = Date.now();
-      stockfish
-        .getBestMoveSampled(
-          currentFen,
-          cfg.skillLevel,
-          cfg.depth,
-          cfg.multiPV,
-          cfg.poolSize,
-          cfg.tolerance,
-        )
-        .then((uciMove) => {
+      pickRookieMove({
+        fen: currentFen,
+        sans: fightMovesRef.current,
+        rookieColor: 'black',
+        level: fightLevelRef.current,
+        engineReady: sfReadyRef.current,
+      })
+        .then((decision) => {
           if (!fightActiveRef.current) return; // froze while thinking
-          if (!uciMove) {
+          if (!decision) {
             fallbackRandom();
             return;
           }
-          const from = uciMove.slice(0, 2);
-          const to = uciMove.slice(2, 4);
-          const promotion = uciMove.length > 4 ? uciMove[4] : undefined;
+          // Pace every reply to a ~500ms floor so she never snaps back instantly.
           const wait = Math.max(0, 500 - (Date.now() - thinkStart));
-          scheduleApply({ from, to, promotion }, wait);
+          scheduleApply(decision.move, wait);
         })
         .catch(() => {
           if (fightActiveRef.current) fallbackRandom();
@@ -712,14 +685,34 @@ export default function WorkoutPage() {
     }
   }, [fightFen]);
 
-  const onFightSquareClick = useClickToMove({
+  // Premove — queue your reply during Rookie's think. Disabled the moment the
+  // segment stops being a live chess round, so nothing survives the bell.
+  const fightBoardLive =
+    isFight && phase === 'running' && current?.kind === 'chess';
+
+  const {
+    premove: fightPremove,
+    setPremove: setFightPremove,
+    premoveEnabled: fightPremoveEnabled,
+  } = usePremove({
+    fen: fightFen,
+    isMyTurn: fightGame?.turn() === 'w',
+    tryMove: doFightMove,
+    enabled: fightBoardLive,
+    fireDelayMs: FIGHT_ANIM_MS,
+  });
+
+  const { onSquareClick: onFightSquareClick, onPremoveDrop: onFightPremoveDrop } = useClickToMove({
     game: fightGame,
     ownColor: 'w',
     selectedSquare: fightSelected,
     setSelectedSquare: setFightSelected,
     tryMove: doFightMove,
-    enabled:
-      isFight && phase === 'running' && current?.kind === 'chess' && !rookieThinking,
+    // Stays on during Rookie's turn so a premove can be set; execution is still
+    // gated on it being white's move.
+    enabled: fightBoardLive,
+    premoveEnabled: fightPremoveEnabled,
+    setPremove: setFightPremove,
   });
 
   // Lichess-style highlights: last move, check glow, selected + legal dots.
@@ -746,18 +739,28 @@ export default function WorkoutPage() {
     }
     if (fightSelected) {
       s[fightSelected] = { ...s[fightSelected], background: 'rgba(20, 85, 200, 0.5)' };
-      for (const m of fightGame.moves({ square: fightSelected, verbose: true })) {
-        const has = fightGame.get(m.to as Square);
-        s[m.to] = {
-          ...s[m.to],
+      // Our turn: real legal moves. Rookie's turn: relaxed premove targets.
+      const dests =
+        fightGame.turn() === 'w'
+          ? fightGame.moves({ square: fightSelected, verbose: true }).map((m) => m.to as Square)
+          : fightPremoveEnabled
+            ? premoveDests(fightFen, fightSelected, 'w')
+            : [];
+      for (const to of dests) {
+        const has = fightGame.get(to);
+        s[to] = {
+          ...s[to],
           background: has
             ? 'radial-gradient(transparent 55%, rgba(20, 85, 200, 0.4) 55%)'
             : 'radial-gradient(rgba(20, 85, 200, 0.5) 22%, transparent 22%)',
         };
       }
     }
+    for (const [sq, style] of Object.entries(premoveSquareStyles(fightPremove))) {
+      s[sq] = { ...s[sq], ...style };
+    }
     return s;
-  }, [fightGame, fightLastMv, fightSelected]);
+  }, [fightGame, fightFen, fightLastMv, fightSelected, fightPremove, fightPremoveEnabled]);
 
   // Entering a fight chess segment: unfreeze, lazy-init the engine, rebase the
   // scoring window, and if it's Rookie's turn (segment ended mid-think last
@@ -1797,8 +1800,14 @@ export default function WorkoutPage() {
                 position: fightFen,
                 boardOrientation: 'white',
                 onPieceDrop: (args: any) => {
-                  if (rookieThinking) return false;
-                  return doFightMove(args.sourceSquare as Square, args.targetSquare as Square);
+                  const from = args.sourceSquare as Square;
+                  const to = args.targetSquare as Square;
+                  // Rookie's turn → queue a premove (the drag snaps back; the
+                  // premove highlight is what shows the move is waiting).
+                  if (rookieThinking || fightGame?.turn() !== 'w') {
+                    return onFightPremoveDrop(from, to);
+                  }
+                  return doFightMove(from, to);
                 },
                 onSquareClick: (args: any) => onFightSquareClick(args.square as Square),
                 squareStyles: fightSqStyles,

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Chess, Square } from 'chess.js';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
+import { useClickToMove } from '@/hooks/useClickToMove';
+import { usePremove } from '@/hooks/usePremove';
+import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import {
   processPuzzle,
   parseUciMove,
@@ -173,34 +176,49 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
     [game, status, moveIndex, processed, themes, finishWrong, finishCorrect],
   );
 
-  // Click-to-move support (mirrors lesson page selection behavior).
-  const onSquareClick = useCallback(
-    ({ square }: { square: string }) => {
-      if (!game || status !== 'playing') return;
-      const sq = square as Square;
-      if (selected) {
-        if (sq === selected) {
-          setSelected(null);
-          return;
-        }
-        const moved = tryMove(selected, sq);
-        if (!moved) {
-          // If clicking another own piece, switch selection.
-          const piece = game.get(sq);
-          if (piece && piece.color === game.turn()) {
-            setSelected(sq);
-          } else {
-            setSelected(null);
-          }
-        }
-        return;
-      }
-      const piece = game.get(sq);
-      if (piece && piece.color === game.turn()) {
-        setSelected(sq);
-      }
+  // The player owns one side for the whole puzzle — during the opponent's 350ms
+  // reply `game.turn()` is the OPPONENT, and a premove must never be able to
+  // pick up their pieces.
+  const ownColor: 'w' | 'b' = processed.playerColor === 'black' ? 'b' : 'w';
+
+  /**
+   * A premove here must be the SOLUTION move — `tryMove` scores anything else
+   * as WRONG and skips to the next puzzle, and a queued move should never cost
+   * someone a puzzle.
+   */
+  const isSolutionMove = useCallback(
+    (from: Square, to: Square) => {
+      if (moveIndex >= processed.solutionMoves.length) return false;
+      const expected = parseUciMove(processed.solutionMoves[moveIndex]);
+      return expected.from === from && expected.to === to;
     },
-    [game, status, selected, tryMove],
+    [moveIndex, processed.solutionMoves],
+  );
+
+  const { premove, setPremove, premoveEnabled } = usePremove({
+    fen,
+    isMyTurn: game?.turn() === ownColor,
+    tryMove,
+    enabled: status === 'playing',
+    validate: isSolutionMove,
+    fireDelayMs: 250,
+  });
+
+  // Click-to-move + premove — the same shared input path every other board uses.
+  const { onSquareClick: handleClickToMove, onPremoveDrop } = useClickToMove({
+    game,
+    ownColor,
+    selectedSquare: selected,
+    setSelectedSquare: setSelected,
+    tryMove,
+    enabled: status === 'playing',
+    premoveEnabled,
+    setPremove,
+  });
+
+  const onSquareClick = useCallback(
+    ({ square }: { square: string }) => handleClickToMove(square as Square),
+    [handleClickToMove],
   );
 
   // Square highlights: setup move (orange) on first move, selection + legal
@@ -215,7 +233,14 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
 
     if (selected && game) {
       styles[selected] = { backgroundColor: 'rgba(100, 200, 255, 0.6)' };
-      for (const m of game.moves({ square: selected, verbose: true })) {
+      // Our turn: real legal moves. Opponent's reply window: premove targets.
+      const dests: { to: Square; captured: boolean }[] =
+        game.turn() === ownColor
+          ? game
+              .moves({ square: selected, verbose: true })
+              .map(m => ({ to: m.to as Square, captured: !!m.captured }))
+          : premoveDests(fen, selected, ownColor).map(to => ({ to, captured: !!game.get(to) }));
+      for (const m of dests) {
         styles[m.to] = {
           background: m.captured
             ? 'radial-gradient(circle, transparent 60%, rgba(0,0,0,0.3) 60%)'
@@ -224,8 +249,12 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
       }
     }
 
+    for (const [sq, style] of Object.entries(premoveSquareStyles(premove))) {
+      styles[sq] = { ...styles[sq], ...style };
+    }
+
     return styles;
-  }, [moveIndex, status, selected, game, processed.lastMoveFrom, processed.lastMoveTo]);
+  }, [moveIndex, status, selected, game, fen, ownColor, premove, processed.lastMoveFrom, processed.lastMoveTo]);
 
   return (
     <div className="w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square">
@@ -241,10 +270,14 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
           options={{
             position: fen,
             boardOrientation: processed.playerColor,
-            onPieceDrop: (args: { sourceSquare: string; targetSquare: string | null }) =>
-              args.targetSquare
-                ? tryMove(args.sourceSquare as Square, args.targetSquare as Square)
-                : false,
+            onPieceDrop: (args: { sourceSquare: string; targetSquare: string | null }) => {
+              if (!args.targetSquare) return false;
+              const from = args.sourceSquare as Square;
+              const to = args.targetSquare as Square;
+              // Opponent's reply window → queue a premove instead.
+              if (game && game.turn() !== ownColor) return onPremoveDrop(from, to);
+              return tryMove(from, to);
+            },
             onSquareClick,
             squareStyles,
             animationDurationInMs: 250,

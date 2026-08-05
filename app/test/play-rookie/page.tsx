@@ -350,7 +350,7 @@ export default function RookieChatPage() {
   // ════════════════════════════════
   const clickGame = useMemo(() => { try { return new Chess(fen); } catch { return null; } }, [fen]);
 
-  const onClickSquare = useClickToMove({
+  const { onSquareClick: onClickSquare } = useClickToMove({
     game: clickGame,
     ownColor: playerColor === 'white' ? 'w' : 'b',
     selectedSquare: selected,
