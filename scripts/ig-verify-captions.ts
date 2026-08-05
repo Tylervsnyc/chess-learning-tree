@@ -24,7 +24,8 @@ import * as fs from 'fs';
 import { Chess } from 'chess.js';
 import { discoverReels } from '../lib/ig-reels';
 import { loadQueue } from '../lib/ig-queue';
-import { THEME_HOOKS, DIFFICULT_HOOKS } from '../lib/ig-captions';
+import { THEME_HOOKS, DIFFICULT_HOOKS, captionHash } from '../lib/ig-captions';
+import { hookForPuzzle } from '../lib/ig-puzzle-insight';
 
 interface PoolPuzzle {
   puzzleId: string; fen: string; moves: string;
@@ -136,12 +137,22 @@ function checkCaption(id: string, where: string, caption: string): Problem[] {
     problems.push({ id, where, claim: `Rating: ${ratingLine[1]}`, truth: `actual rating ${facts.rating}` });
   }
 
-  // Difficult hooks make no claim about the puzzle — nothing to falsify.
+  // Generic difficult hooks make no claim about the puzzle — nothing to falsify.
   if (DIFFICULT_HOOK_SET.has(hook)) return problems;
 
   const claimed = HOOK_THEME[hook];
   if (!claimed) {
-    problems.push({ id, where, claim: firstLine, truth: 'hook is not in any current pool' });
+    // Not a pool line — it should be the position-derived insight hook. Recompute
+    // it and require an exact match, so a hand-edited or stale insight claim
+    // (e.g. "mate in 3" after the pools changed) cannot slip through.
+    const expected = hookForPuzzle(puzzle.fen, puzzle.moves.split(' '), captionHash(id));
+    if (expected && norm(expected) === hook) return problems;
+    problems.push({
+      id, where, claim: firstLine,
+      truth: expected
+        ? `does not match the insight this position yields ("${expected}")`
+        : 'hook is not in any pool and this position yields no insight hook',
+    });
     return problems;
   }
 

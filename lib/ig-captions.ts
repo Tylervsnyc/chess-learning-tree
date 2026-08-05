@@ -10,6 +10,8 @@
  * the week (Tyler flagged it 2026-08-04). See RULES.md §44 "Caption Format".
  */
 
+import { hookForPuzzle } from './ig-puzzle-insight';
+
 export const THEME_HOOKS: Record<string, string[]> = {
   mateIn1: [
     'Checkmate in ONE move!',
@@ -207,14 +209,33 @@ export interface CaptionInput {
   theme: string;
   quip: string;
   difficult: boolean;
+  /** Puzzle FEN + raw Lichess moves. Supply these and a difficult reel opens
+   *  with a line derived from the actual position instead of generic hype. */
+  fen?: string;
+  rawMoves?: string[];
+}
+
+/**
+ * The hook for a reel. Difficult reels prefer a position-derived insight
+ * (lib/ig-puzzle-insight.ts) and only fall back to the generic DIFFICULT_HOOKS
+ * pool when the position yields nothing provable.
+ */
+export function hookForReel(
+  { puzzleId, theme, difficult, fen, rawMoves }: CaptionInput,
+): string {
+  const hash = captionHash(puzzleId);
+  if (difficult && fen && rawMoves?.length) {
+    const insight = hookForPuzzle(fen, rawMoves, hash);
+    if (insight) return insight;
+  }
+  return hookFor(theme, difficult, hash);
 }
 
 /** The canonical caption. Deterministic in puzzleId — same puzzle, same text. */
-export function generateCaption({
-  puzzleId, rating, theme, quip, difficult,
-}: CaptionInput): string {
+export function generateCaption(input: CaptionInput): string {
+  const { puzzleId, rating, quip, difficult } = input;
   const hash = captionHash(puzzleId);
-  const hook = hookFor(theme, difficult, hash);
+  const hook = hookForReel(input);
   const guessLine = difficult ? `\n${guessLineFor(hash)}\n` : '';
 
   return `${hook}

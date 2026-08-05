@@ -135,7 +135,9 @@
     "CDQic",
     "KVFZL",
     "TgCjS",
-    "CykYi"
+    "CykYi",
+    "jelEL",
+    "4Vs0I"
   ],
   "renders": [
     {
@@ -928,6 +930,18 @@
       "puzzleId": "CykYi",
       "date": "8.11.26",
       "file": "daily.8.11.26-CykYi.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "jelEL",
+      "date": "8.12.26",
+      "file": "daily.8.12.26-jelEL.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "4Vs0I",
+      "date": "8.13.26",
+      "file": "daily.8.13.26-4Vs0I.mp4",
       "difficult": true
     }
   ]

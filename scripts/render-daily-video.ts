@@ -182,6 +182,9 @@ function main() {
     theme: puzzle.theme,
     quip,
     difficult,
+    // Difficult reels open with a line derived from THIS position, not hype.
+    fen: puzzle.fen,
+    rawMoves,
   });
   fs.writeFileSync(outputFile.replace('.mp4', '.txt'), caption);
 

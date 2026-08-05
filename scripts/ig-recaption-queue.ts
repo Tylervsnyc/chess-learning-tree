@@ -15,15 +15,17 @@ import * as fs from 'fs';
 import { loadQueue, saveQueue } from '../lib/ig-queue';
 import {
   THEME_HOOKS, GUESS_LINES, CTA_LINES,
-  captionHash, hookFor, guessLineFor, ctaFor,
+  captionHash, hookForReel, guessLineFor, ctaFor,
 } from '../lib/ig-captions';
 
-// puzzleId → theme from the render pools (ground truth, beats line inference)
-const PUZZLE_THEME: Record<string, string> = {};
+// puzzleId → the puzzle itself, from the render pools. Needed for the theme AND
+// for the position, so difficult items get a real insight hook rather than hype.
+interface PoolPuzzle { puzzleId: string; fen: string; moves: string; theme: string }
+const PUZZLES: Record<string, PoolPuzzle> = {};
 for (const f of ['data/video-puzzle-pool.json', 'data/video-puzzle-pool-hard.json']) {
   if (!fs.existsSync(f)) continue;
   for (const p of JSON.parse(fs.readFileSync(f, 'utf8')).puzzles ?? []) {
-    if (p.puzzleId && p.theme) PUZZLE_THEME[p.puzzleId] = p.theme;
+    if (p.puzzleId) PUZZLES[p.puzzleId] = p;
   }
 }
 
@@ -56,10 +58,20 @@ async function main() {
     // items with no flag at all fall back to reading their text.
     const isDifficult = item.difficult ?? /DIFFICULT|TOUGH|miss it/i.test(firstLine);
 
-    const theme =
-      (item.puzzleId && PUZZLE_THEME[item.puzzleId]) ||
-      OLD_HOOK_THEME[norm(firstLine)] ||
-      'generic';
+    const puzzle = item.puzzleId ? PUZZLES[item.puzzleId] : undefined;
+    const theme = puzzle?.theme || OLD_HOOK_THEME[norm(firstLine)] || 'generic';
+
+    // hookForReel prefers a position-derived insight on difficult reels and
+    // falls back to the pools when the position yields nothing provable.
+    const newHook = hookForReel({
+      puzzleId: item.puzzleId ?? item.date,
+      rating: 0,
+      theme,
+      quip: '',
+      difficult: isDifficult,
+      fen: puzzle?.fen,
+      rawMoves: puzzle?.moves.split(' '),
+    });
 
     // Queue captions are emoji-stripped, so match every pool line emoji-blind.
     const GUESS_SET = new Set(GUESS_LINES.map(norm));
@@ -67,7 +79,7 @@ async function main() {
 
     const caption = lines
       .map(line => {
-        if (line === firstLine) return hookFor(theme, isDifficult, hash);
+        if (line === firstLine) return newHook;
         if (GUESS_SET.has(norm(line))) return guessLineFor(hash);
         if (CTA_SET.has(norm(line))) return ctaFor(hash);
         return line;
