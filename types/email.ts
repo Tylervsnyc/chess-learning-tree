@@ -9,7 +9,8 @@ export type EmailType =
   | 'update_april_2026'
   | 'rating_reveal'
   | 'patron_thank_you'
-  | 'streak_science';
+  | 'streak_science'
+  | 'knicks_takeover';
 
 export interface EmailPreferences {
   user_id: string;
